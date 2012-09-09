@@ -1,0 +1,6 @@
+*.pyc
+*.sublime-*
+kalite/static/flvplayer/template_maxi_1.6.0/
+kalite/userdata.sqlite
+khan-exercises/
+notes.txt

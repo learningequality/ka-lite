@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block watch_selected %}selected{% endblock watch_selected %}
+
+{% block bodyjs %}
+<script src="{{ STATIC_URL }}js/swfobject.js"></script>
+<script>
+    $(function() {
+        $("#video_thumb").load(function() {
+            var flashVars = {};
+            flashVars.flv = "{{ video.download_urls.mp4 }}";
+            flashVars.showstop = "1";
+            flashVars.showvolume = "1";
+            flashVars.showfullscreen = "1";
+            flashVars.showiconplay = "1";
+            flashVars.iconplaybgcolor = "cceaa9";
+            flashVars.startimage = "{{ video.download_urls.png }}";
+            flashVars.margin = 0;
+            // document.monFlash.SetVariable("player:jsStartImage", "rorobong.jpg");
+            var objParams = {};
+            objParams.movie = "{{ STATIC_URL }}flvplayer/player_flv_maxi.swf";
+            flashVars.allowFullScreen = "true";
+            flashVars.allowScriptAccess = "always";            
+            swfobject.embedSWF(
+                "{{ STATIC_URL }}flvplayer/player_flv_maxi.swf",
+                "flashcontent",
+                $("#video_thumb").width(),
+                $("#video_thumb").height(),
+                "9.0.0",
+                "",
+                flashVars,
+                objParams,
+                {},
+                function(callbackObj) {
+                    if (callbackObj.success && callbackObj.ref.SetVariable) {
+                        $("#video_thumb").hide();
+                        $(".video-container").css("background-color", "white")
+                    } else {
+                        $("#flashcontent").hide();
+                    }
+                }
+            );
+        });
+    });
+</script>
+{% endblock bodyjs %}
+
+{% block content %}
+<h2 class="title-header">
+    <span class="title">{{ video.title }}</span><br/>
+    <span class="long-description">{{ video.description }}</span>
+</h2>
+
+{% if prev %}
+<a style="float: left;" href="../{{ prev.readable_id }}/">&lt; {{ prev.title }}</a>
+{% endif %}
+
+{% if next %}
+<a style="float: right; padding-right: 4px;" href="../{{ next.readable_id }}/">{{ next.title }} &gt;</a>
+{% endif %}
+
+<div class="clear"></div>
+
+<div class="video-container" style="background-color: black;">
+    <div id="flashcontent" style="position: absolute;"></div>
+    <img id="video_thumb" src="{{ video.download_urls.png }}" width="100%"/>
+</div>
+
+{% endblock content %}

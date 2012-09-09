@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block watch_selected %}selected{% endblock watch_selected %}
+
+{% block content %}
+
+<h1>{{ title }}</h1>
+
+{% if topics %}
+<h2>Subtopics</h2>
+<ol>
+    {% for subtopic in topics %}
+    <li style="font-size: 15px; line-height: 23px; margin-left: 10px;">
+        <a href="{{ subtopic.id }}">{{ subtopic.title }}</a>
+    </li>
+    {% endfor %}
+    <br/>
+</ol>
+{% endif %}
+
+{% if videos %}
+<h2>Videos</h2>
+<ol>
+    {% for video in videos %}
+    <li style="font-size: 15px; line-height: 23px; margin-left: 10px;">
+        <!--<a href="mplayer:///khan/videofiles/{{ video.youtube_id }}.ogv">{{ video.title }}</a>-->
+        <a href="v/{{ video.readable_id }}">{{ video.title }}</a>
+    </li>
+    {% endfor %}
+    <br/>
+</ol>
+{% endif %}
+
+{% if exercises %}
+<h2>Exercises</h2>
+<ol>
+    {% for exercise in exercises %}
+    <li style="font-size: 15px; line-height: 23px; margin-left: 10px;">
+        <a href="#">{{ exercise.display_name }}</a>
+    </li>
+    {% endfor %}
+    <br/>
+</ol>
+{% endif %}
+
+{% endblock content %}

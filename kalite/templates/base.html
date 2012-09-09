@@ -1,0 +1,67 @@
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>KA Lite | {{ title }}</title>
+        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/khan-site.css"></link>
+        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/khan-lite.css"></link>
+        {% block headcss %}{% endblock headcss %}
+        <script src="{{ STATIC_URL }}js/jquery-1.8.1.min.js"></script>
+        {% block headjs %}{% endblock headjs %}
+    </head>
+    <body class="light">
+        <div id="outer-wrapper">
+            <div id="page-container">
+                <div id="page-container-inner">
+                    <div id="fb-root"></div>
+                    <header>
+                        <div id="top-header">
+                            <div class="top-header-links">
+                                <div class="clear"></div>
+                                <div id="nav-and-search">
+                                    <div class="sitewide-navigation">
+                                        <nav>
+                                            <span class="links nav-subheader">
+                                                <span class="dropdown topic-browser-dropdown">
+                                                    <a href="/" class="watch-navlink {% block watch_selected %}{% endblock watch_selected %}">Watch</a>
+                                                <a href="/exercisedashboard" class="practice-navlink {% block practice_selected %}{% endblock practice_selected %}">Practice</a>
+                                                </span>
+                                            </span>
+                                        </nav>
+                                    </div>
+                                    <div class="clear"></div>
+                                </div>
+                            </div>
+
+                            <div id="logo">
+                                <a id="logo-image-small" href="/" title="Khan Academy" name="logo-image">
+                                    <img src="{{ STATIC_URL }}images/ka-logo-small.png"/>
+                                </a>
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                    </header>
+                    <div id="container" class="single-video visited-no-recolor" style="overflow: hidden;">
+                        <article class="videos-content clearfix">
+                            {% block content %}{% endblock content %}
+                        </article>
+                    </div>
+                    <div id="end-of-page-spacer" style="height: 38px;">&nbsp;</div>
+                    <div id="badge-notification-container" class="badge-award-container" style="display:none;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="push"></div>
+        <footer id="footer" class="short">
+            <div id="leaves">
+                <div class="inner">
+                    <div id="copyright" class="tiny">
+                        <small>&copy;2017 Khan Academy&#0153;</small> <a rel="license" id="creative-commons-link" name="creative-commons-link"></a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        {% block bodyjs %}{% endblock bodyjs %}
+    </body>
+</html>
+
