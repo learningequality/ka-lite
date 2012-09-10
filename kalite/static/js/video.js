@@ -1,5 +1,5 @@
 var flashVars = {
-    srt: 1,
+    // srt: 1,
     showswitchsubtitles: 1,
     srtcolor: "eeeeee",
     srtsize: 16,
@@ -11,7 +11,8 @@ var flashVars = {
     showiconplay: 1,
     iconplaybgcolor: "cceaa9",
     margin: 0,
-    buffermessage: "Loading... (_n_)"
+    buffermessage: "Loading... (_n_)",
+    videobgcolor: "000000"
 };
 
 var objParams = {
@@ -20,7 +21,7 @@ var objParams = {
     allowScriptAccess: "always"
 };
 
-function embed_swf(el, width, height) {
+function embed_swf(el, width, height, callback) {
     swfobject.embedSWF(
         "/static/flvplayer/player_flv_maxi.swf",
         el,
@@ -31,13 +32,6 @@ function embed_swf(el, width, height) {
         flashVars,
         objParams,
         {},
-        function(callbackObj) {
-            if (callbackObj.success && callbackObj.ref.SetVariable) {
-                $("#video_thumb").hide();
-                $(".video-container").css("background-color", "white")
-            } else {
-                $("#flashcontent").hide();
-            }
-        }
+        callback
     );
 }

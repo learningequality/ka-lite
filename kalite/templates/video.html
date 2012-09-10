@@ -7,20 +7,29 @@
 <script src="{{ STATIC_URL }}js/video.js"></script>
 <script>
     $(function() {
-        $("#video_thumb").load(function() {
+        $("#video-thumb").load(function() {
+            
             flashVars.flv = "{{ video.download_urls.mp4 }}";
             // flashVars.flv = "/static/videos/95tChNVzodY.mp4";
             flashVars.startimage = "{{ video.download_urls.png }}";
-            var width = $("#video_thumb").width();
-            var height = $("#video_thumb").height();
-            embed_swf("flashcontent", width, height, function(callbackObj) {
-                if (callbackObj.success && callbackObj.ref.SetVariable) {
-                    $("#video_thumb").hide();
-                    $(".video-container").css("background-color", "white")
+            var width = $("#video-thumb").width();
+            var height = $("#video-thumb").height();
+            
+            $("#video-thumb").css({position: "absolute"});
+            $("#video-container").css({height: height});
+            
+            embed_swf("flash-content", width, height, function(callbackObj) {
+                if (callbackObj.success) {
+                    setTimeout(function() {
+                        $("#flash-container").css("left", "0px");
+                        $("#video-thumb").hide();
+                        $("#video-container").css("background-color", "white")
+                    }, 500);
                 } else {
-                    $("#flashcontent").hide();
+                    $("#flash-content").hide();
                 }
             });
+            
         });
     });
 </script>
@@ -42,9 +51,11 @@
 
 <div class="clear"></div>
 
-<div class="video-container" style="background-color: black;">
-    <div id="flashcontent" style="position: absolute;"></div>
-    <img id="video_thumb" src="{{ video.download_urls.png }}" width="100%"/>
+<div id="video-container" style="background-color: black; position: relative;">
+    <div id="flash-container" style="position: absolute; left: -10000px;">
+        <div id="flash-content"></div>
+    </div>
+    <img id="video-thumb" src="{{ video.download_urls.png }}" width="100%">
 </div>
 
 {% endblock content %}
