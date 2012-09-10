@@ -4,52 +4,23 @@
 
 {% block bodyjs %}
 <script src="{{ STATIC_URL }}js/swfobject.js"></script>
+<script src="{{ STATIC_URL }}js/video.js"></script>
 <script>
     $(function() {
         $("#video_thumb").load(function() {
-            
-            var flashVars = {};
             flashVars.flv = "{{ video.download_urls.mp4 }}";
             // flashVars.flv = "/static/videos/95tChNVzodY.mp4";
-            flashVars.srt = 1;
-            flashVars.showswitchsubtitles = 1;
-            flashVars.srtcolor = "eeeeee";
-            flashVars.srtsize = 16;
-            //flashVars.srtbgcolor = "000000";
-            flashVars.showstop = 1;
-            flashVars.showvolume = 1;
-            flashVars.showfullscreen = 1;
-            flashVars.ondoubleclick = "fullscreen";
-            flashVars.showiconplay = 1;
-            flashVars.iconplaybgcolor = "cceaa9";
             flashVars.startimage = "{{ video.download_urls.png }}";
-            flashVars.margin = 0;
-            flashVars.buffermessage = "Loading...";
-            
-            var objParams = {};
-            objParams.movie = "{{ STATIC_URL }}flvplayer/player_flv_maxi.swf";
-            objParams.allowFullScreen = "true";
-            objParams.allowScriptAccess = "always";            
-            
-            swfobject.embedSWF(
-                "{{ STATIC_URL }}flvplayer/player_flv_maxi.swf",
-                "flashcontent",
-                $("#video_thumb").width(),
-                $("#video_thumb").height(),
-                "9",
-                "",
-                flashVars,
-                objParams,
-                {},
-                function(callbackObj) {
-                    if (callbackObj.success && callbackObj.ref.SetVariable) {
-                        $("#video_thumb").hide();
-                        $(".video-container").css("background-color", "white")
-                    } else {
-                        $("#flashcontent").hide();
-                    }
+            var width = $("#video_thumb").width();
+            var height = $("#video_thumb").height();
+            embed_swf("flashcontent", width, height, function(callbackObj) {
+                if (callbackObj.success && callbackObj.ref.SetVariable) {
+                    $("#video_thumb").hide();
+                    $(".video-container").css("background-color", "white")
+                } else {
+                    $("#flashcontent").hide();
                 }
-            );
+            });
         });
     });
 </script>
