@@ -1,7 +1,6 @@
 from django.http import HttpResponse, HttpResponseNotFound
 from annoying.decorators import render_to
-from kalite import settings
-import json
+import settings
 
 slug_key = {
     "Topic": "id",
