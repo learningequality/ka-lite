@@ -22,9 +22,11 @@
                 if (callbackObj.success) {
                     setTimeout(function() {
                         $("#flash-container").css("left", "0px");
-                        $("#video-thumb").hide();
-                        $("#video-container").css("background-color", "white")
-                    }, 500);
+                        setTimeout(function() {
+                            $("#video-thumb").hide();
+                            $("#video-container").css("background-color", "white");
+                        }, 50);
+                    }, 1500);
                 } else {
                     $("#flash-content").hide();
                 }
