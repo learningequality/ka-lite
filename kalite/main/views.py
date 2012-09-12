@@ -1,4 +1,6 @@
-from django.http import HttpResponse, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
+from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
+from django.template import RequestContext
 from annoying.decorators import render_to
 import settings
 
@@ -72,5 +74,29 @@ def video_handler(request, video, prev=None, next=None):
         "title": video[title_key["Video"]],
         "prev": prev,
         "next": next,
+    }
+    return context
+    
+@render_to("exercise.html")
+def exercise_handler(request, exercise):
+    context = {
+        "exercise": exercise,
+        "title": exercise[title_key["Exercise"]],
+        "exercise_template": "exercises/" + exercise[slug_key["Exercise"]] + ".html",
+    }
+    return context
+    # return render_to_response("exercises/%s.html" % exercise[slug_key["Exercise"]],
+    #     context_instance=RequestContext(request))
+
+def exercise_dashboard(request, splat=""):
+    context = {
+        "title": "Knowledge map",
+    }
+    return render_to_response("knowledgemap.html",
+        context_instance=RequestContext(request))
+    
+@render_to("exercise_skeleton.html")
+def exercise_skeleton(request):
+    context = {
     }
     return context

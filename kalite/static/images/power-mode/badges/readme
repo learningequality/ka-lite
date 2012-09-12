@@ -1,0 +1,21 @@
+
+You can add custom icons for each topic's exercise completion badge.
+
+Steps:
+
+1) Add your custom icon in all appropriate sizes and statuses to /images/power-mode/badges.
+    ...your filename should match the title of the target topic, and 
+    it should be lowercased, alphanumeric, and use underscores instead of spaces.
+
+    Examples for topic "Addition and subtraction":
+        40x40px: /images/power-mode/badges/addition-and-subtraction-40x40.png
+        60x60px: /images/power-mode/badges/addition-and-subtraction-60x60.png
+
+        40x40px (completed): /images/power-mode/badges/addition-and-subtraction-completed-40x40.png
+        60x60px (completed): /images/power-mode/badges/addition-and-subtraction-completed-60x60.png
+
+2) Add the topic name (such as "Addition and subtraction") to the TOPICS_WITH_CUSTOM_ICONS
+    list at the end of badges/topic_exercise_badges.py.
+
+    TODO: come up w/ a nicer process for this.
+

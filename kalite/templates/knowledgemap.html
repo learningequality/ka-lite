@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block practice_selected %}selected{% endblock practice_selected %}
+
+{% block headjs %}
+<script type='text/javascript' src='{{ STATIC_URL }}js/underscore.js'></script>
+<script type='text/javascript' src='{{ STATIC_URL }}khan-exercises/utils/raphael.js'></script>
+<script type='text/javascript' src='{{ STATIC_URL }}js/kmap-editor.js'></script>
+{% endblock headjs %}
+
+{% block headcss %}
+<link rel='stylesheet' type='text/css' href='{{ STATIC_URL }}css/kmap_editor.css'>
+{% endblock headcss %}
+
+{% block content %}
+<div id="map-edit-container">
+    <div id="map-container">
+        <div id="map"></div>
+        <a class="topic-button" href="/exercisedashboard/">Back to topics</a>
+    </div>
+</div>
+{% endblock content %}

@@ -1,12 +1,17 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>KA Lite | {{ title }}</title>
+        <title>{{ title }} | KA Lite</title>
         <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/khan-site.css"></link>
-        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/khan-lite.css"></link>
         {% block headcss %}{% endblock headcss %}
-        <script src="{{ STATIC_URL }}js/jquery-1.8.1.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/khan-lite.css"></link>
+        <script>
+            var csrftoken = "{{ csrf_token }}";
+        </script>
+        <script src="{{ STATIC_URL }}js/jquery.js"></script>
+        <script src="{{ STATIC_URL }}js/khan-lite.js"></script>
         {% block headjs %}{% endblock headjs %}
+        {% block extra_head %}{% endblock extra_head %}
     </head>
     <body class="light">
         <div id="outer-wrapper">
