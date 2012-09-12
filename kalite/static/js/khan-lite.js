@@ -28,3 +28,44 @@ $.ajaxSetup({
         }
     }
 });
+
+function doRequest(url, data, method) {
+    return $.ajax({
+        url: url,
+        type: method || "GET",
+        data: JSON.stringify(data),
+        contentType: "application/json",
+        dataType: "json"
+    });
+}
+
+function updatePercentCompleted(correct) {
+
+    if (exerciseData.percentCompleted === 100) {
+        return;
+    }
+
+    // update the streak; increment by 10 if correct, otherwise reset to 0
+    if (correct) {
+        exerciseData.percentCompleted += 10;
+    } else {
+        exerciseData.percentCompleted = 0;
+    }
+
+    // max out at the percentage completed at 100%
+    exerciseData.percentCompleted = Math.min(exerciseData.percentCompleted, 100);
+
+    // update the streak bar UI
+    $("#streakbar .progress-bar").css("width", exerciseData.percentCompleted + "%");
+    if (exerciseData.percentCompleted >= 100) {
+        $("#streakbar .progress-bar").addClass("completed");
+    }
+
+    var data = {
+        exercise: exerciseData.exerciseModel.name,
+        percentCompleted: exerciseData.percentCompleted
+    };
+
+    doRequest("/api/exercises/attempt", data, "POST");
+
+};

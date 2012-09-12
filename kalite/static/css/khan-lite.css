@@ -97,3 +97,35 @@ div#map-container {
     min-height: 1000px;
     min-width: 800px;
 }
+
+#streakbar .streak {
+    border: 1px solid #cccccc;
+    height: 30px;
+    background-color: #F7F7F7;
+}
+
+#streakbar .streak .progress-bar {
+    width: 0%;
+    height: 100%;
+    background-color: #FC3F3F;
+    padding: 0px;
+    border: none;
+}
+
+#streakbar .streak .progress-bar.completed {
+    width: 100%;
+    background-color: #5BDB44;
+}
+
+.practice-exercise-description {
+    opacity: 0.5;
+    font-size: 0.7em;
+}
+
+.current-card #problemarea {
+    margin-top: -5px;
+}
+
+.current-card #answer_area_wrap {
+    margin-top: 15px;
+}

@@ -85,18 +85,10 @@ def exercise_handler(request, exercise):
         "exercise_template": "exercises/" + exercise[slug_key["Exercise"]] + ".html",
     }
     return context
-    # return render_to_response("exercises/%s.html" % exercise[slug_key["Exercise"]],
-    #     context_instance=RequestContext(request))
 
-def exercise_dashboard(request, splat=""):
+@render_to("knowledgemap.html")
+def exercise_dashboard(request):
     context = {
         "title": "Knowledge map",
-    }
-    return render_to_response("knowledgemap.html",
-        context_instance=RequestContext(request))
-    
-@render_to("exercise_skeleton.html")
-def exercise_skeleton(request):
-    context = {
     }
     return context
