@@ -72,16 +72,17 @@ def topic_handler(request, topic):
 @render_to("video.html")
 def video_handler(request, video, prev=None, next=None):
     try:
-        with open(settings.DATA_PATH + video["youtube_id"] + "_exercises.json") as fp:
-            related_exercise_path = settings.NODE_CACHE["Exercise"][json.loads(fp.read())[0]["name"]]
+        with open(settings.DATA_PATH + "../videos/" + video["youtube_id"] + "_exercises.json") as fp:
+            related_exercise = settings.NODE_CACHE["Exercise"][json.loads(fp.read())[0]["name"]]
     except:
-        related_exercise_path = ""
+        related_exercise = None
         
     context = {
         "video": video,
         "title": video[title_key["Video"]],
         "prev": prev,
         "next": next,
+        "related_exercise": related_exercise,
     }
     return context
     
@@ -104,3 +105,13 @@ def exercise_dashboard(request):
         "exercise_paths": json.dumps(paths),
     }
     return context
+    
+@render_to("homepage.html")
+def homepage_handler(request):
+    topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"], settings.TOPICS["children"])
+    context = {
+        "title": "Home",
+        "topics": topics,
+    }
+    return context
+        

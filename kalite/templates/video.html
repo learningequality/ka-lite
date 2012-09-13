@@ -43,6 +43,9 @@
 <h2 class="title-header">
     <span class="title">{{ video.title }}</span><br/>
     <span class="long-description">{{ video.description }}</span>
+    {% if related_exercise %}
+    <a style="float:right; margin-top: -17px; font-size: 14px;" href="{{ related_exercise.path }}" class="practice simple-button green desktop-only" title="Test your understanding with an exercise">Practice this concept</a>
+    {% endif %}
 </h2>
 
 {% if prev %}

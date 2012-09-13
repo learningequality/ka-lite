@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block watch_selected %}selected{% endblock watch_selected %}
+
+{% block headjs %}
+<script type='text/javascript' src='{{ STATIC_URL }}js/underscore.js'></script>
+<script>
+    
+</script>
+{% endblock headjs %}
+
+{% block headcss %}
+
+{% endblock headcss %}
+
+{% block content %}
+
+<style>
+
+.suggested-action {
+    background-color: #F7F7F7;
+    color: #444!important;
+    display: block;
+    margin-bottom: 0;
+    padding: 14px;
+    position: relative;
+    width: 370px;
+    float: left;
+    margin-right: 25px;
+}
+
+.suggested-actions {
+    padding-top: 124px;
+}
+
+.suggested-action:hover {
+    border-color: #C3CA7D;
+    -webkit-box-shadow: 0 0 10px #76A005;
+    -moz-box-shadow: 0 0 10px #76a005;
+    box-shadow: 0 0 10px #76A005;
+    color: #444!important;
+    text-decoration: none!important;
+}
+
+.suggested-action-title {
+    text-decoration: underline;
+}
+
+.suggested-action-image-link {
+    background-size: cover;
+    background-repeat: no-repeat;
+    border-bottom: 1px solid #DCE0B3;
+    display: block;
+    height: 130px;
+    margin: -10px -14px -15px -14px;
+}
+
+.suggested-action-title {
+    color: #005987;
+    text-decoration: none;
+}
+
+article {
+    padding: 0 0 10px 35px;
+}
+
+</style>
+
+<div class="col2 forty-sixty" style="max-width:81%; text-align: justify; padding-bottom: 10px;">
+<h2 class="main-headline" style="white-space: pre;">A free world-class education for anyone anywhere.</h2>
+</div>
+
+<div class="vertical-shadow suggested-action">
+    <h2 class="pulls ellipsis suggested-action-title">Learn by watching videos!</h2>
+    <p class="pulled" style="padding: 20px 0 0 40px; font-size: 16px; line-height: 26px;">
+        <a href="math">Math</a><br/>
+        <a href="science">Science</a><br/>
+        <a href="finance-economics">Finance &amp; Economics</a><br/>
+        <a href="humanities">Humanities</a><br/>
+        <a href="test-prep">Test Prep</a><br/>
+    </p>
+</div>
+
+<div>
+    <a class="vertical-shadow suggested-action" href="/exercisedashboard">
+        <h2 class="pulls ellipsis suggested-action-title">Learn by doing exercises!</h2>
+        <p class="pulled">Practice your math skills from addition to calculus and everything in between.</p>
+        <div class="suggested-action-image-link" style="background-image: url(/static/images/knowledge-map-derivative-intuition.png);"></div>
+    </a>
+</div>
+
+<div class="clear"></div>
+
+<p>Khan Academy Lite is a light-weight web server for viewing and interacting with core Khan Academy content (videos and exercises) without needing an internet connection.</p>
+
+{% endblock content %}
