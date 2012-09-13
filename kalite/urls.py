@@ -15,6 +15,7 @@ urlpatterns = patterns('',
 
     url(r'^images/(.+)$', lambda request, path: HttpResponseRedirect('/static/images/' + path)),
 
+    url(r'^$', 'main.views.splat_handler', {"splat": ""}),
     url(r'^(?P<splat>.+)/$', 'main.views.splat_handler'),
 
 )

@@ -11,9 +11,13 @@ def download_video(youtube_id, format="mp4"):
     url = download_url % (filename, filename)
     download_file(url, filepath)
     
-    thumb_filename = "%(id)s.png" % {"id": youtube_id}
-    thumb_filepath = download_path + thumb_filename
-    thumb_url = download_url % (filename, thumb_filename)
+    large_thumb_filename = "%(id)s.png" % {"id": youtube_id}
+    large_thumb_filepath = download_path + large_thumb_filename
+    large_thumb_url = download_url % (filename, large_thumb_filename)
+    download_file(large_thumb_url, large_thumb_filepath)
+    
+    thumb_filepath = download_path + youtube_id + ".jpg"
+    thumb_url = "http://img.youtube.com/vi/%(id)s/hqdefault.jpg" % {"id": youtube_id}
     download_file(thumb_url, thumb_filepath)
 
 

@@ -6,6 +6,9 @@
 <script type='text/javascript' src='{{ STATIC_URL }}js/underscore.js'></script>
 <script type='text/javascript' src='{{ STATIC_URL }}khan-exercises/utils/raphael.js'></script>
 <script type='text/javascript' src='{{ STATIC_URL }}js/kmap-editor.js'></script>
+<script>
+    var exercise_paths = {{ exercise_paths|safe }};
+</script>
 {% endblock headjs %}
 
 {% block headcss %}
@@ -13,6 +16,7 @@
 {% endblock headcss %}
 
 {% block content %}
+
 <div id="map-edit-container">
     <div id="map-container">
         <div id="map"></div>

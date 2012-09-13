@@ -1,3 +1,4 @@
+import re, json
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
@@ -57,10 +58,11 @@ def splat_handler(request, splat):
 def topic_handler(request, topic):
     videos = filter(lambda node: node["kind"] == "Video", topic["children"])
     exercises = filter(lambda node: node["kind"] == "Exercise" and node["live"], topic["children"])
-    topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"], topic["children"])
+    topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"] and "Video" in node["contains"], topic["children"])
     context = {
         "topic": topic,
         "title": topic[title_key["Topic"]],
+        "description": re.sub(r'<[^>]*?>', '', topic["description"] or ""),
         "videos": videos,
         "exercises": exercises,
         "topics": topics,
@@ -79,16 +81,20 @@ def video_handler(request, video, prev=None, next=None):
     
 @render_to("exercise.html")
 def exercise_handler(request, exercise):
+    related_videos = [settings.NODE_CACHE["Video"][key] for key in exercise["related_video_readable_ids"]]
     context = {
         "exercise": exercise,
         "title": exercise[title_key["Exercise"]],
         "exercise_template": "exercises/" + exercise[slug_key["Exercise"]] + ".html",
+        "related_videos": related_videos,
     }
     return context
 
 @render_to("knowledgemap.html")
 def exercise_dashboard(request):
+    paths = {key: val["path"] for key, val in settings.NODE_CACHE["Exercise"].items()}
     context = {
         "title": "Knowledge map",
+        "exercise_paths": json.dumps(paths),
     }
     return context

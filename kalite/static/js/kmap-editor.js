@@ -163,7 +163,7 @@ var KMapEditor = {
                     .addClass("exercise");
 
                 var newEx = $("<a>")
-                    .attr("href", "/exercises/" + ex.name + ".html")
+                    .attr("href", exercise_paths[ex.name])
                     .appendTo(newDiv);
 
                 $("<img>")

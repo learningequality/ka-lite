@@ -4,7 +4,10 @@
 
 {% block content %}
 
-<h1>{{ title }}</h1>
+<h1 class="title-header">
+    <div class="title">{{ title }}</div>
+    <div class="long-description" style="margin-top: 5px;">{{ description }}</div>
+</h1>
 
 {% if topics %}
 <h2>Subtopics</h2>

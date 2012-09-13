@@ -98,6 +98,10 @@ div#map-container {
     min-width: 800px;
 }
 
+#answer_area_wrap {
+    width: 229px;
+}
+
 #streakbar .streak {
     border: 1px solid #cccccc;
     height: 30px;
@@ -123,7 +127,7 @@ div#map-container {
 }
 
 .current-card #problemarea {
-    margin-top: -5px;
+    margin-top: 0;
 }
 
 .current-card #answer_area_wrap {

@@ -1,9 +1,6 @@
 import json
 import os
 
-# TODO(jamiealexandre): use a trimmed down version of this
-TOPICS = json.loads(open("topictree.json").read())
-
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -21,6 +18,9 @@ DATABASES = {
 }
 
 PROJECT_PATH=os.path.dirname(os.path.realpath(__file__))
+
+TOPICS = json.loads(open(PROJECT_PATH + "/static/data/topics.json").read())
+NODE_CACHE = json.loads(open(PROJECT_PATH + "/static/data/nodecache.json").read())
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
