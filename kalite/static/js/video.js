@@ -2,7 +2,7 @@ var flashVars = {
     srt: 1,
     showswitchsubtitles: 1,
     srtcolor: "eeeeee",
-    srtsize: 20,
+    srtsize: 25,
     srtbgcolor: "000000",
     showstop: 1,
     showvolume: 1,
