@@ -71,6 +71,12 @@ def topic_handler(request, topic):
     
 @render_to("video.html")
 def video_handler(request, video, prev=None, next=None):
+    try:
+        with open(settings.DATA_PATH + video["youtube_id"] + "_exercises.json") as fp:
+            related_exercise_path = settings.NODE_CACHE["Exercise"][json.loads(fp.read())[0]["name"]]
+    except:
+        related_exercise_path = ""
+        
     context = {
         "video": video,
         "title": video[title_key["Video"]],

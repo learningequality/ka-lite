@@ -4,6 +4,7 @@ download_path = os.path.dirname(os.path.realpath(__file__)) + "/../static/videos
 
 download_url = "http://s3.amazonaws.com/KA-youtube-converted/%s/%s"
 
+
 def download_video(youtube_id, format="mp4"):
     
     filename = "%(id)s.%(format)s" % {"id": youtube_id, "format": format}
@@ -19,11 +20,15 @@ def download_video(youtube_id, format="mp4"):
     thumb_filepath = download_path + youtube_id + ".jpg"
     thumb_url = "http://img.youtube.com/vi/%(id)s/hqdefault.jpg" % {"id": youtube_id}
     download_file(thumb_url, thumb_filepath)
-
+    
+    exercise_filepath = download_path + youtube_id + "_exercises.json"
+    exercise_url = "http://www.khanacademy.org/api/v1/videos/%(id)s/exercises" % {"id": youtube_id}
+    download_file(exercise_url, exercise_filepath)
+    
 
 def download_file(url, filepath):
     download = requests.get(url)
-    filesize = int(download.headers['content-length'])
+    filesize = int(download.headers['content-length'] or 1)
 
     CHUNK = 128 * 1024
     with open(filepath, 'wb') as fp:

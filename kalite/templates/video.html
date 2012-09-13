@@ -9,9 +9,11 @@
     $(function() {
         $("#video-thumb").load(function() {
             
-            flashVars.flv = "{{ video.download_urls.mp4 }}";
-            // flashVars.flv = "/static/videos/95tChNVzodY.mp4";
-            flashVars.startimage = "{{ video.download_urls.png }}";
+            // flashVars.flv = "{{ video.download_urls.mp4 }}";
+            flashVars.flv = "/static/videos/{{ video.youtube_id }}.mp4";
+            // flashVars.startimage = "{{ video.download_urls.png }}";
+            flashVars.startimage = "/static/videos/{{ video.youtube_id }}.png";
+            flashVars.srturl = "/static/videos/{{ video.youtube_id }}.srt";
             var width = $("#video-thumb").width();
             var height = $("#video-thumb").height();
             

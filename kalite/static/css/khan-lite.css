@@ -7,11 +7,11 @@ body {
 }
 
 #page-container, #page-container-inner {
-    background: transparent url(/static/images/content-border.1.png) no-repeat right 85px;
+    background: transparent url(/static/images/content-border.1.png) no-repeat right 50px;
 }
 
 #page-container {
-    background-position: 0 85px;
+    background-position: 0 50px;
     min-width: 600px;
     max-width: 900px;
 }
@@ -98,6 +98,10 @@ div#map-container {
     min-width: 800px;
 }
 
+div.exercises-card {
+    width: 800px;
+}
+
 #answer_area_wrap {
     width: 229px;
 }
@@ -132,4 +136,8 @@ div#map-container {
 
 .current-card #answer_area_wrap {
     margin-top: 15px;
+}
+
+.info-box #related-video-list {
+    margin-left: -10px;
 }

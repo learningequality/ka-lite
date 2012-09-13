@@ -17,10 +17,12 @@ DATABASES = {
     }
 }
 
-PROJECT_PATH=os.path.dirname(os.path.realpath(__file__))
+PROJECT_PATH = os.path.dirname(os.path.realpath(__file__))
 
-TOPICS = json.loads(open(PROJECT_PATH + "/static/data/topics.json").read())
-NODE_CACHE = json.loads(open(PROJECT_PATH + "/static/data/nodecache.json").read())
+DATA_PATH = PROJECT_PATH + "/static/data/"
+
+TOPICS = json.loads(open(DATA_PATH + "topics.json").read())
+NODE_CACHE = json.loads(open(DATA_PATH + "nodecache.json").read())
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name

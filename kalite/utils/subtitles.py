@@ -23,7 +23,7 @@ def get_subtitles(youtube_id, language, format="json"):
     elif format=="srt":
         r = requests.get("%s/%s/languages/%s/subtitles/?format=srt" % (base_url, video_id, language), headers=headers)
         # return the subtitle text, replacing empty subtitle lines with spaces to make the FLV player happy
-        return r.text.replace("\n\n\n", "\n   \n\n").replace("\r\n\r\n\r\n", "\r\n   \r\n\r\n")
+        return (r.text or "").replace("\n\n\n", "\n   \n\n").replace("\r\n\r\n\r\n", "\r\n   \r\n\r\n")
 
 def download_subtitles(youtube_id, language):
     
@@ -32,7 +32,7 @@ def download_subtitles(youtube_id, language):
     filepath = download_path + "%s.srt" % youtube_id
     
     with open(filepath, 'w') as fp:
-        fp.write(subtitles)
+        fp.write(subtitles.encode('UTF-8'))
 
 
 if __name__ == '__main__':
