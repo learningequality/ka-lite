@@ -1,11 +1,38 @@
-import requests, sys, os
+import requests, sys, os, re
 
 download_path = os.path.dirname(os.path.realpath(__file__)) + "/../static/videos/"
 
+data_path = os.path.dirname(os.path.realpath(__file__)) + "/../static/data/"
+
 download_url = "http://s3.amazonaws.com/KA-youtube-converted/%s/%s"
 
+def download_all_videos():
+    all_youtube_ids = list(set(re.findall("youtube_id\": \"([^\"]+)\"", open(data_path + "topics.json").read())))
+    for id in all_youtube_ids:
+        download_video(id)
+
+# http://code.activestate.com/recipes/82465-a-friendly-mkdir/
+def _mkdir(newdir):
+    """works the way a good mkdir should :)
+        - already exists, silently complete
+        - regular file in the way, raise an exception
+        - parent directory(ies) does not exist, make them as well
+    """
+    if os.path.isdir(newdir):
+        pass
+    elif os.path.isfile(newdir):
+        raise OSError("a file with the same name as the desired " \
+                      "dir, '%s', already exists." % newdir)
+    else:
+        head, tail = os.path.split(newdir)
+        if head and not os.path.isdir(head):
+            _mkdir(head)
+        if tail:
+            os.mkdir(newdir)
 
 def download_video(youtube_id, format="mp4"):
+    
+    _mkdir(download_path)
     
     filename = "%(id)s.%(format)s" % {"id": youtube_id, "format": format}
     filepath = download_path + filename
