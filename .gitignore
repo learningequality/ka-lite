@@ -2,6 +2,7 @@
 *.sublime-*
 kalite/static/flvplayer/template_maxi_1.6.0/
 kalite/userdata.sqlite
-khan-exercises/
 notes.txt
 kalite/static/videos/
+kalite/static/presentation/
+exercises/
