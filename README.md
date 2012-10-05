@@ -3,3 +3,18 @@
 Khan Academy Lite is a lightweight Django web app for hosting core Khan Academy content (videos and exercises) from a local server, without needing internet connectivity. Primary use cases include:
 * Mobile school "vans", which transport a server and multiple laptops/tablets between a number of schools/orphanages in remote communities on a rotating basis, and syncing up with a central database (to download new content and upload analytics) when in an area with internet connectivity.
 * For servers/computer labs located in remote schools, which could be slowly syncing with a central server over a cell network or via USB keys.
+
+**Installing and Running**
+
+First, clone the repository. As it includes khan-exercises as a git submodule, you will need to do a recursive clone, e.g.:
+`git clone --recursive git@github.com:jamalex/ka-lite.git`
+
+Then, you'll need to ensure you have Python installed (version >= 2.5 and < 3), and the following Python packages:
+`django`, `django_annoying`, and `requests` (using, for example, `easy_install` or `pip`)
+
+Then, navigate into the ./ka-lite/kalite/ directory and run:
+`./manage.py syncdb`
+to initialize the database, and to set an admin username/password.
+
+To run the server in development mode, simply run:
+`./manage.py runserver`
