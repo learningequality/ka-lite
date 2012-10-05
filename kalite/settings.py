@@ -93,4 +93,6 @@ INSTALLED_APPS = (
     # 'django.contrib.sites', # TODO(jamiealexandre): remove this?
     'django.contrib.staticfiles',
     'django.contrib.admin',
+    'django_extensions',
+    'securesync',
 )
