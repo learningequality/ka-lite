@@ -7,7 +7,7 @@ Khan Academy Lite is a lightweight Django web app for hosting core Khan Academy 
 **Installing and Running**
 
 First, clone the repository. As it includes [khan-exercises](https://github.com/Khan/khan-exercises) as a git submodule, you will need to do a recursive clone, e.g.:
-`git clone --recursive git@github.com:jamalex/ka-lite.git`
+`git clone --recursive https://github.com/jamalex/ka-lite.git`
 
 Then, you'll need to ensure you have Python installed (version >= 2.5 and < 3), and the following Python packages:
 `django`, `django_annoying`, `south`, and `requests` (using, for example, `easy_install` or `pip`)
