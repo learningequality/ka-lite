@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models, transaction
 import crypto
 import base64
@@ -8,38 +9,26 @@ _unhashable_fields = ["signature", "signed_by"]
 _always_hash_fields = ["signed_version", "id"]
 
 
-class InvalidSignatureException(Exception):
-    def __str__(self):
-        return "The model's signature was invalid."
-
-
-class DeviceSignerNotTrustedException(Exception):
-    def __str__(self):
-        return "The device is not signed by a trusted authority."
-
-
-class OwnDeviceNotRegisteredException(Exception):
-    def __str__(self):
-        return "This device has not yet been registered."
-
-
 class DeviceMetadata(models.Model):
-    device = models.OneToOneField("Device")
+    device = models.OneToOneField("Device", blank=True, null=True)
     is_trusted_authority = models.BooleanField(default=False)
     is_own_device = models.BooleanField(default=False)
     counter_position = models.IntegerField(default=0)
 
 class SyncedModel(models.Model):
-    id = models.CharField(primary_key=True, max_length=20)
+    id = models.CharField(primary_key=True, max_length=32)
     counter = models.IntegerField()
-    signature = models.CharField(max_length=90)
+    signature = models.CharField(max_length=90, blank=True)
     signed_version = models.IntegerField(default=1)
-    signed_by = models.ForeignKey("Device")
+    signed_by = models.ForeignKey("Device", blank=True, null=True)
 
-    def sign(self):
-        self.signature = base64.encodestring(crypto.sign(self._hashable_representation(), key)).strip()
+    def sign(self, device=None):
+        self.signed_by = device or Device.get_own_device()
+        self.signature = base64.encodestring(crypto.sign(self._hashable_representation())).strip()
 
     def verify(self):
+        if not self.signed_by:
+            return False
         key = self.signed_by.get_public_key()
         return crypto.verify(self._hashable_representation(), base64.decodestring(self.signature), key)
     
@@ -58,33 +47,45 @@ class SyncedModel(models.Model):
                     val = val.pk
                 chunks.append("%s=%s" % (field, val))
         return "&".join(chunks)
-        
-    def save(self, unsigned=False, *args, **kwargs):
+
+    def save(self, own_device=None, *args, **kwargs):
+        own_device = own_device or Device.get_own_device()
+        namespace = own_device.id and uuid.UUID(own_device.id) or uuid.uuid4()
+        if not self.counter:
+            self.counter = own_device.increment_and_get_counter()
         if not self.id:
-            self.id = uuid.uuid1().hex
-        if not unsigned:
-            if not self.signature and not self.signed_by:
-                own_device = Device.get_own_device()
-                self.signed_by = own_device
-                self.counter = own_device.increment_and_get_counter()
-                self.sign()
-            if not self.verify():
-                raise InvalidSignatureException()
+            self.id = uuid.uuid5(namespace, str(self.counter)).hex
+        self.full_clean()
+        super(SyncedModel, self).save()
+        if not self.signature:
+            self.sign(device=own_device)
+        self.full_clean()
         super(SyncedModel, self).save(*args, **kwargs)
+
+    def clean(self):
+        if self.signature:
+            if not self.verify():
+                raise ValidationError("The model's signature was invalid.")
+            if self.requires_authority_signature:
+                if not self.signed_by.get_metadata().is_trusted_authority:
+                    raise ValidationError("This model must be signed by a trusted authority.")
 
     class Meta:
         abstract = True
 
-
 class Organization(SyncedModel):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)    
+
+    requires_authority_signature = True
 
 
 class Zone(SyncedModel):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
     organization = models.ForeignKey("Organization")
+
+    requires_authority_signature = True
 
 
 class Facility(SyncedModel):
@@ -95,6 +96,8 @@ class Facility(SyncedModel):
     latitude = models.FloatField(blank=True, null=True)
     longitude = models.FloatField(blank=True, null=True)
     zone = models.ForeignKey(Zone)
+
+    requires_authority_signature = True
 
 
 class Device(SyncedModel):
@@ -111,7 +114,7 @@ class Device(SyncedModel):
 
     def _hashable_representation(self):
         fields = ["signed_version", "name", "description", "primary_zone", "public_key"]
-        super(Device, self)._hashable_representation(fields=fields)
+        return super(Device, self)._hashable_representation(fields=fields)
 
     def get_metadata(self):        
         try:
@@ -123,32 +126,34 @@ class Device(SyncedModel):
     def get_own_device():
         devices = DeviceMetadata.objects.filter(is_own_device=True)
         if devices.count() == 0:
-            raise OwnDeviceNotRegisteredException()
-        return devices[0].device    
-        
-    def save(self):
-        if not self.signed_by.get_metadata().is_trusted_authority():
-            raise DeviceSignerNotTrustedException()
-        super(Device, self).save()
-
-    def save_as_trusted_authority(self):
-        super(Device, self).save(unsigned=True)
-        metadata = self.get_metadata()
-        metadata.is_trusted_authority = True
-        metadata.save()
-
-    def save_as_own_device(self):
-        super(Device, self).save()
-        metadata = self.get_metadata()
-        metadata.is_own_device = True
-        metadata.save()
+            return None
+        return devices[0].device
+            
+    def save(self, self_signed=False, is_own_device=False, *args, **kwargs):
+        super(Device, self).save(own_device=is_own_device and self or None, *args, **kwargs)
+        if self_signed and is_own_device:
+            self.set_public_key(crypto.public_key)
+            self.sign(device=self)
+            super(Device, self).save(own_device=self, *args, **kwargs)
+        if self_signed:
+            metadata = self.get_metadata()
+            metadata.is_trusted_authority = True
+            metadata.save()
+        if is_own_device:
+            metadata = self.get_metadata()
+            metadata.is_own_device = True
+            metadata.save()
 
     @transaction.commit_on_success
     def increment_and_get_counter(self):
         metadata = self.get_metadata()
+        if not metadata.device.id:
+            return 0
         metadata.counter_position += 1
         metadata.save()
         return metadata.counter_position
+        
+    requires_authority_signature = True
 
 # Sync order:
 #   Devices
