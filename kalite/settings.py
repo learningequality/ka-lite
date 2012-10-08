@@ -96,3 +96,6 @@ INSTALLED_APPS = (
     'south',
     'securesync',
 )
+
+CENTRAL_SERVER = True
+

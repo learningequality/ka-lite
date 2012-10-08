@@ -88,7 +88,22 @@ class Zone(SyncedModel):
     requires_authority_signature = True
 
 
+ZONE_ORG_ROLES = (
+    ("superuser", "Full administrative privileges"),
+    ("analytics", "Can view analytics, but not administer")
+)
+
+class ZoneOrganizations(SyncedModel):
+    zone = models.ForeignKey(Zone)
+    organization = models.ForeignKey(Organization)
+    role = models.CharField(max_length=15, choices=ZONE_ORG_ROLES)
+    notes = models.TextField(blank=True)
+
+    requires_authority_signature = True
+
+
 class Facility(SyncedModel):
+    
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
     address = models.CharField(max_length=400, blank=True)
@@ -99,6 +114,17 @@ class Facility(SyncedModel):
 
     requires_authority_signature = True
 
+
+class FacilityUser(SyncedModel):
+    facility = models.ForeignKey(Facility)
+    username = models.CharField(max_length=30)
+    first_name = models.CharField(max_length=30, blank=True)
+    last_name = models.CharField(max_length=30, blank=True)
+    notes = models.TextField(blank=True)
+    password = models.CharField(max_length=128, help_text="Use '[algo]$[salt]$[hexdigest]'.")
+
+    class Meta:
+        unique_together = ("facility", "username")
 
 class Device(SyncedModel):
     name = models.CharField(max_length=100)
