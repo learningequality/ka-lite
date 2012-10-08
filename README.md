@@ -10,7 +10,9 @@ First, clone the repository. As it includes [khan-exercises](https://github.com/
 `git clone --recursive https://github.com/jamalex/ka-lite.git`
 
 Then, you'll need to ensure you have Python installed (version >= 2.5 and < 3), and the following Python packages:
-`django`, `django_annoying`, `south`, and `requests` (using, for example, `easy_install` or `pip`)
+`django`, `django_annoying`, `django_extensions`, `M2Crypto`, `south`, and `requests` (using, for example, `easy_install` or `pip`)
+
+(Note: the easiest way to install `M2Crypto` on Ubuntu is `sudo apt-get install python-m2crypto`)
 
 Then, navigate into the `./ka-lite/kalite/` directory and run:
 `./manage.py syncdb`
