@@ -50,16 +50,18 @@ class SyncedModel(models.Model):
 
     def save(self, own_device=None, *args, **kwargs):
         own_device = own_device or Device.get_own_device()
+        if not own_device:
+            raise ValidationError("Cannot save another Device before registering this Device.")
         namespace = own_device.id and uuid.UUID(own_device.id) or uuid.uuid4()
         if not self.counter:
             self.counter = own_device.increment_and_get_counter()
         if not self.id:
             self.id = uuid.uuid5(namespace, str(self.counter)).hex
-        self.full_clean()
+        # self.full_clean()
         super(SyncedModel, self).save()
         if not self.signature:
             self.sign(device=own_device)
-        self.full_clean()
+        # self.full_clean()
         super(SyncedModel, self).save(*args, **kwargs)
 
     def clean(self):
@@ -142,6 +144,7 @@ class Device(SyncedModel):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
     public_key = models.CharField(max_length=200)
+    revoked = models.BooleanField(default=False)
 
     def set_public_key(self, key):
         self.public_key = ":".join(base64.encodestring(x).strip() for x in key.pub())
@@ -150,7 +153,7 @@ class Device(SyncedModel):
         return crypto.RSA.new_pub_key(base64.decodestring(q) for q in self.public_key.split(":"))
 
     def _hashable_representation(self):
-        fields = ["signed_version", "name", "description", "primary_zone", "public_key"]
+        fields = ["signed_version", "name", "description", "public_key"]
         return super(Device, self)._hashable_representation(fields=fields)
 
     def get_metadata(self):        
@@ -165,6 +168,13 @@ class Device(SyncedModel):
         if devices.count() == 0:
             return None
         return devices[0].device
+    
+    @staticmethod
+    def create_central_authority_device(name):
+        own_device = Device()
+        own_device.name = name
+        own_device.set_public_key(crypto.public_key)
+        own_device.save(self_signed=True, is_own_device=True)
             
     def save(self, self_signed=False, is_own_device=False, *args, **kwargs):
         super(Device, self).save(own_device=is_own_device and self or None, *args, **kwargs)
@@ -189,6 +199,9 @@ class Device(SyncedModel):
         metadata.counter_position += 1
         metadata.save()
         return metadata.counter_position
+        
+    def __str__(self):
+        return self.name
         
     requires_authority_signature = True
 
