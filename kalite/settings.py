@@ -94,8 +94,9 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django_extensions',
     'south',
+    'main',
     'securesync',
 )
 
-CENTRAL_SERVER = True
+CENTRAL_SERVER = False
 
