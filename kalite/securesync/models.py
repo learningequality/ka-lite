@@ -20,7 +20,7 @@ class SyncedModel(models.Model):
     counter = models.IntegerField()
     signature = models.CharField(max_length=90, blank=True)
     signed_version = models.IntegerField(default=1)
-    signed_by = models.ForeignKey("Device", blank=True, null=True)
+    signed_by = models.ForeignKey("Device", blank=True, null=True, related_name="+")
 
     def sign(self, device=None):
         self.signed_by = device or Device.get_own_device()
@@ -126,10 +126,21 @@ class FacilityUser(SyncedModel):
     class Meta:
         unique_together = ("facility", "username")
 
+
+class DeviceZones(SyncedModel):
+    device = models.ForeignKey("Device")
+    zone = models.ForeignKey("Zone")
+    primary = models.BooleanField(default=True)
+    
+    class Meta:
+        unique_together = ("device", "zone")
+        
+    requires_authority_signature = True
+
+
 class Device(SyncedModel):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
-    primary_zone = models.ForeignKey(Zone, blank=True, null=True)
     public_key = models.CharField(max_length=200)
 
     def set_public_key(self, key):
@@ -182,4 +193,10 @@ class Device(SyncedModel):
     requires_authority_signature = True
 
 # Sync order:
-#   Devices
+#   Device
+#   Organization
+#   Zone
+#   DeviceZone
+#   ZoneOrganizations
+#   Facility
+#   FacilityUser
