@@ -1,4 +1,4 @@
-import requests, sys, os, re
+import requests, sys, os, re, json
 
 download_path = os.path.dirname(os.path.realpath(__file__)) + "/../static/videos/"
 
@@ -6,10 +6,35 @@ data_path = os.path.dirname(os.path.realpath(__file__)) + "/../static/data/"
 
 download_url = "http://s3.amazonaws.com/KA-youtube-converted/%s/%s"
 
-def download_all_videos():
-    all_youtube_ids = list(set(re.findall("youtube_id\": \"([^\"]+)\"", open(data_path + "topics.json").read())))
+def get_video_ids(topic_tree):
+    if topic_tree["kind"] == "Video":
+        return [topic_tree["youtube_id"]]
+    elif topic_tree["kind"] == "Topic":
+        results = []
+        for kid in topic_tree.get("children", []):
+            results += get_video_ids(kid)
+        return results
+    else:
+        return []
+
+def get_video_ids_for_topic(topic_id, topic_tree=None):
+    topic_tree = topic_tree or json.loads(open(data_path + "topics.json").read())
+    if topic_tree["kind"] != "Topic":
+        return []
+    if topic_tree.get("id", "") == topic_id:
+        return list(set(get_video_ids(topic_tree)))
+    else:
+        for kid in topic_tree.get("children", []):
+            ids = get_video_ids_for_topic(topic_id, kid)
+            if ids:
+                return ids
+        return []
+
+def download_all_videos(topic="root"):
+    all_youtube_ids = get_video_ids_for_topic(topic)
     for id in all_youtube_ids:
         download_video(id)
+        # print id
 
 # http://code.activestate.com/recipes/82465-a-friendly-mkdir/
 def _mkdir(newdir):
@@ -73,7 +98,10 @@ def download_file(url, filepath):
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
-        download_video(sys.argv[1])
+        if sys.argv[1].startswith("topic:"):
+            download_all_videos(sys.argv[1].split(":")[1])
+        else:
+            download_video(sys.argv[1])
     else:
-        print "USAGE: python videos.py <youtube_id>"
+        print "USAGE: python videos.py (<youtube_id> | topic:<topic_id>)"
     
