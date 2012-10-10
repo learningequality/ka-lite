@@ -99,7 +99,7 @@ def exercise_handler(request, exercise):
 
 @render_to("knowledgemap.html")
 def exercise_dashboard(request):
-    paths = {key: val["path"] for key, val in settings.NODE_CACHE["Exercise"].items()}
+    paths = dict((key, val["path"]) for key, val in settings.NODE_CACHE["Exercise"].items())
     context = {
         "title": "Knowledge map",
         "exercise_paths": json.dumps(paths),
