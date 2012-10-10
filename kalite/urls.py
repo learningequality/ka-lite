@@ -21,6 +21,8 @@ if settings.CENTRAL_SERVER:
     urlpatterns += patterns('',
     
         url(r'^$', 'central.views.homepage_handler'), 
+
+        url(r'^accounts/', include('registration.urls')),   
     
     )
 

@@ -93,10 +93,23 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django_extensions',
+    'registration',
     'south',
     'main',
     'securesync',
+    'django.contrib.humanize',
+
 )
 
-CENTRAL_SERVER = False
+CENTRAL_SERVER = True
+
+# Registration settings for development server. Run python -m smtpd -n -c DebuggingServer localhost:1025 to set up test email server
+
+ACCOUNT_ACTIVATION_DAYS = 7
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 1025
+EMAIL_HOST_USER = ""
+EMAIL_HOST_PASSWORD = ""
+EMAIL_USE_TLS = False
+DEFAULT_FROM_EMAIL = 'testing@example.com'
 
