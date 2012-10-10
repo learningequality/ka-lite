@@ -210,7 +210,7 @@ syncing_models = [Device, Organization, Zone, DeviceZones, ZoneOrganizations, Fa
 
 def get_serialized_models(device_counters=None):
     if not device_counters:
-        device_counters = {device.id: 0 for device in Device.objects.all()}
+        device_counters = dict((device.id, 0) for device in Device.objects.all())
     models = []
     for Model in syncing_models:
         for device_id, counter in device_counters.items():
