@@ -219,8 +219,14 @@ def get_serialized_models(device_counters=None):
     
 def save_serialized_models(data):
     models = serializers.deserialize("json", data)
+    unsaved_models = []
     for model in models:
-        # TODO(jamalex): more robust way to do this? (otherwise, it barfs about Id already existing):
-        model.object._state.adding = False
-        model.object.full_clean()
-        model.save()
+        try:
+            # TODO(jamalex): more robust way to do this? (otherwise, it barfs about the id already existing):
+            model.object._state.adding = False
+            model.object.full_clean()
+            model.save()
+        except ValidationError as e:
+            print "Error saving model %s: %s" % (model, e)
+            unsaved_models.append(model.object)
+    return unsaved_models
