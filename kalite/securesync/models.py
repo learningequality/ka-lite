@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
+from django.core import serializers
 import crypto
 import base64
 import uuid
@@ -8,6 +9,7 @@ import uuid
 _unhashable_fields = ["signature", "signed_by"]
 _always_hash_fields = ["signed_version", "id"]
 
+json_serializer = serializers.get_serializer("json")()
 
 class DeviceMetadata(models.Model):
     device = models.OneToOneField("Device", blank=True, null=True)
@@ -34,7 +36,7 @@ class SyncedModel(models.Model):
     
     def _hashable_representation(self, fields=None):
         if not fields:
-            fields = [field.name for field in self._meta.fields if field not in _unhashable_fields]
+            fields = [field.name for field in self._meta.fields if field.name not in _unhashable_fields]
             fields.sort()
         for field in _always_hash_fields:
             if field not in fields:
@@ -57,8 +59,7 @@ class SyncedModel(models.Model):
             self.counter = own_device.increment_and_get_counter()
         if not self.id:
             self.id = uuid.uuid5(namespace, str(self.counter)).hex
-        # self.full_clean()
-        super(SyncedModel, self).save()
+            super(SyncedModel, self).save(*args, **kwargs)
         if not self.signature:
             self.sign(device=own_device)
         # self.full_clean()
@@ -205,11 +206,21 @@ class Device(SyncedModel):
         
     requires_authority_signature = True
 
-# Sync order:
-#   Device
-#   Organization
-#   Zone
-#   DeviceZone
-#   ZoneOrganizations
-#   Facility
-#   FacilityUser
+syncing_models = [Device, Organization, Zone, DeviceZones, ZoneOrganizations, Facility, FacilityUser]
+
+def get_serialized_models(device_counters=None):
+    if not device_counters:
+        device_counters = {device.id: 0 for device in Device.objects.all()}
+    models = []
+    for Model in syncing_models:
+        for device_id, counter in device_counters.items():
+            models += Model.objects.filter(signed_by=device_id, counter__gte=counter)
+    return json_serializer.serialize(models, ensure_ascii=False, indent=2)
+    
+def save_serialized_models(data):
+    models = serializers.deserialize("json", data)
+    for model in models:
+        # TODO(jamalex): more robust way to do this? (otherwise, it barfs about Id already existing):
+        model.object._state.adding = False
+        model.object.full_clean()
+        model.save()
