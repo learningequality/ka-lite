@@ -26,9 +26,13 @@ def create_session(request):
     data = simplejson.loads(request.raw_post_data or "{}")
     if "client_nonce" not in data:
         return JsonResponse({"error": "Client nonce must be specified."}, status=500)
+    if len(data["client_nonce"]) != 32 or re.match("[^0-9a-fA-F]", data["client_nonce"]):
+        return JsonResponse({"error": "Client nonce is malformed (must be 32-digit hex)."}, status=500)
     if "client_device" not in data:
         return JsonResponse({"error": "Client device must be specified."}, status=500)
     if "server_nonce" not in data:
+        if SyncSession.objects.filter(client_nonce=data["client_nonce"]).count():
+            return JsonResponse({"error": "Session already exists; include server nonce and signature."}, status=500)
         session = SyncSession()
         session.client_nonce = data["client_nonce"]
         try:
@@ -38,6 +42,8 @@ def create_session(request):
              return JsonResponse({"error": "Client device matching id could not be found."}, status=500)
         session.server_nonce = uuid.uuid4().hex
         session.server_device = Device.get_own_device()
+        if session.client_device.pk == session.server_device.pk:
+            return JsonResponse({"error": "I know myself when I see myself, and you're not me."}, status=500)
         session.save()
     else:
         # try:
