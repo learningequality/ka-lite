@@ -103,9 +103,9 @@ import sys
 import urllib
 
 def _reporthook(numblocks, blocksize, filesize, url=None):
-    # print "reporthook(%s, %s, %s)" % (numblocks, blocksize, filesize)
     base = os.path.basename(url)
-    #XXX Should handle possible filesize=-1.
+    if filesize <= 0:
+        filesize = blocksize
     try:
         percent = min((numblocks*blocksize*100)/filesize, 100)
     except:
