@@ -40,6 +40,11 @@ class SyncSession(models.Model):
         return base64.encodestring(crypto.sign(self._hashable_representation())).strip()
 
 
+class RegisteredDevicePublicKey(models.Model):
+    public_key = models.CharField(max_length=200, primary_key=True)
+    zone = models.ForeignKey("Zone")
+
+
 class DeviceMetadata(models.Model):
     device = models.OneToOneField("Device", blank=True, null=True)
     is_trusted_authority = models.BooleanField(default=False)
@@ -85,8 +90,7 @@ class SyncedModel(models.Model):
         if not own_device:
             raise ValidationError("Cannot save another Device before registering this Device.")
         namespace = own_device.id and uuid.UUID(own_device.id) or uuid.uuid4()
-        if not self.counter:
-            self.counter = own_device.increment_and_get_counter()
+        self.counter = own_device.increment_and_get_counter()
         if not self.id:
             self.id = uuid.uuid5(namespace, str(self.counter)).hex
             super(SyncedModel, self).save(*args, **kwargs)
@@ -105,6 +109,7 @@ class SyncedModel(models.Model):
 
     class Meta:
         abstract = True
+
 
 class Organization(SyncedModel):
     name = models.CharField(max_length=100)
@@ -136,7 +141,6 @@ class ZoneOrganizations(SyncedModel):
 
 
 class Facility(SyncedModel):
-    
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
     address = models.CharField(max_length=400, blank=True)
@@ -178,10 +182,10 @@ class Device(SyncedModel):
     revoked = models.BooleanField(default=False)
 
     def set_public_key(self, key):
-        self.public_key = ":".join(base64.encodestring(x).strip() for x in key.pub())
+        self.public_key = crypto.serialize_public_key(key)
 
     def get_public_key(self):
-        return crypto.RSA.new_pub_key(base64.decodestring(q) for q in self.public_key.split(":"))
+        return crypto.deserialize_public_key(self.public_key)
 
     def _hashable_representation(self):
         fields = ["signed_version", "name", "description", "public_key"]
@@ -201,7 +205,7 @@ class Device(SyncedModel):
         return devices[0].device
     
     @staticmethod
-    def create_central_authority_device(name):
+    def initialize_central_authority_device(name):
         own_device = Device()
         own_device.name = name
         own_device.set_public_key(crypto.public_key)
@@ -262,3 +266,4 @@ def save_serialized_models(data):
             print "Error saving model %s: %s" % (model, e)
             unsaved_models.append(model.object)
     return unsaved_models
+    

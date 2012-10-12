@@ -4,6 +4,7 @@ import views
 
 urlpatterns = patterns('',
 
+    url(r'^register$', views.register),
     url(r'^session/create$', views.create_session),
     url(r'^session/destroy$', views.destroy_session),
     url(r'^models/count$', views.count_models),
