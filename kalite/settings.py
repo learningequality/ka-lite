@@ -90,10 +90,20 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django_extensions',
+    'registration',
     'south',
     'main',
     'securesync',
+    'django.contrib.humanize',
 )
 
 CENTRAL_SERVER = False
+
+ACCOUNT_ACTIVATION_DAYS = 7
+DEFAULT_FROM_EMAIL = 'kalite@adhocsync.com'
+
+if CENTRAL_SERVER:
+    INSTALLED_APPS += ('postmark',)
+    EMAIL_BACKEND = 'postmark.backends.PostmarkBackend'
+    from secrets import *
 

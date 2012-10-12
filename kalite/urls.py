@@ -24,6 +24,8 @@ if settings.CENTRAL_SERVER:
     urlpatterns += patterns('',
     
         url(r'^$', 'central.views.homepage_handler'), 
+
+        url(r'^accounts/', include('registration.urls')),   
     
     )
 
@@ -34,6 +36,8 @@ else:
         url(r'^exercisedashboard/$', 'main.views.exercise_dashboard'),
         
         url(r'^$', 'main.views.homepage_handler'),
+        
+        url(r'^videodownload/$', 'main.views.video_download'),
         
         url(r'^(?P<splat>.+)/$', 'main.views.splat_handler'),
 

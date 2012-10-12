@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block headjs %}
+
+<script src="{{ STATIC_URL }}js/jquery.dynatree.min.js"></script>
+
+<script type="text/javascript">
+  var treeData = [
+    {title: "item1 with key and tooltip", tooltip: "Look, a tool tip!" },
+    {title: "item2: selected on init", select: true },
+    
+    {title: "Math", isFolder: true, key: "id3",
+      children: [
+        {title: "Sub-item 3.1",
+          children: [
+            {title: "Sub-item 3.1.1", key: "id3.1.1" },
+            {title: "Sub-item 3.1.2", key: "id3.1.2" }
+          ]
+        },
+        {title: "Sub-item 3.2",
+          children: [
+            {title: "Sub-item 3.2.1", key: "id3.2.1" },
+            {title: "Sub-item 3.2.2", key: "id3.2.2" }
+          ]
+        }
+      ]
+    },
+    {title: "Document with some children (expanded on init)", key: "id4", expand: true,
+      children: [
+        {title: "Sub-item 4.1 (active on init)", activate: true,
+          children: [
+            {title: "Sub-item 4.1.1", key: "id4.1.1" },
+            {title: "Sub-item 4.1.2", key: "id4.1.2" }
+          ]
+        },
+        {title: "Sub-item 4.2 (selected on init)", select: true,
+          children: [
+            {title: "Sub-item 4.2.1", key: "id4.2.1" },
+            {title: "Sub-item 4.2.2", key: "id4.2.2" }
+          ]
+        },
+        {title: "Sub-item 4.3 (hideCheckbox)", hideCheckbox: true },
+        {title: "Sub-item 4.4 (unselectable)", unselectable: true }
+      ]
+    }
+  ];
+  
+</script>
+{% endblock headjs %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% block content %}
+  <p class="description">
+    This tree has <b>checkoxes and selectMode 3 (hierarchical multi-selection)</b> enabled.<br>
+    A double-click handler selects the node.<br>
+    A keydown handler selects on [space].
+  </p>
+  <div id="tree3"></div>
+  <div>Selected keys: <span id="echoSelection3">-</span></div>
+  <div>Selected root keys: <span id="echoSelectionRootKeys3">-</span></div>
+  <div>Selected root nodes: <span id="echoSelectionRoots3">-</span></div>
+{% endblock content %}
+

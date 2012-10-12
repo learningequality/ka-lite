@@ -116,3 +116,12 @@ def homepage_handler(request):
     }
     return context
         
+@render_to("video_download.html")
+def video_download(request):
+#    topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"], settings.TOPICS["children"])
+    context = {
+#        "title": "Home",
+#        "topics": topics,
+    }
+    return context
+        
