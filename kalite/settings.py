@@ -98,18 +98,16 @@ INSTALLED_APPS = (
     'main',
     'securesync',
     'django.contrib.humanize',
+    'postmark',
 
 )
 
 CENTRAL_SERVER = True
 
-# Registration settings for development server. Run python -m smtpd -n -c DebuggingServer localhost:1025 to set up test email server
-
 ACCOUNT_ACTIVATION_DAYS = 7
-EMAIL_HOST = 'localhost'
-EMAIL_PORT = 1025
-EMAIL_HOST_USER = ""
-EMAIL_HOST_PASSWORD = ""
-EMAIL_USE_TLS = False
-DEFAULT_FROM_EMAIL = 'testing@example.com'
+DEFAULT_FROM_EMAIL = 'kalite@adhocsync.com'
+
+if CENTRAL_SERVER:
+    EMAIL_BACKEND = 'postmark.backends.PostmarkBackend'
+    from secrets import *
 
