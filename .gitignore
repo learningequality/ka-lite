@@ -8,3 +8,5 @@ kalite/static/presentation/
 exercises/
 kalite/private_key.pem
 kalite/secrets.py
+.project
+.pydevproject
