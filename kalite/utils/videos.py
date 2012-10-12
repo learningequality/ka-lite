@@ -78,7 +78,8 @@ def download_video(youtube_id, format="mp4"):
     download_file(exercise_url, exercise_filepath)
     
 
-def download_file(url, filepath):
+def download_file_old(url, filepath):
+        
     download = requests.get(url)
     filesize = int(download.headers['content-length'] or 1)
 
@@ -95,6 +96,34 @@ def download_file(url, filepath):
             fp.write(chunk)
             i += 1
         print ""
+
+
+import os
+import sys
+import urllib
+
+def _reporthook(numblocks, blocksize, filesize, url=None):
+    base = os.path.basename(url)
+    if filesize <= 0:
+        filesize = blocksize
+    try:
+        percent = min((numblocks*blocksize*100)/filesize, 100)
+    except:
+        percent = 100
+    if numblocks != 0:
+        sys.stdout.write("\b"*70)
+    sys.stdout.write("%-66s%3d%%" % (base, percent))
+
+def download_file(url, dst):
+    # print "get url '%s' to '%s'" % (url, dst)
+    if sys.stdout.isatty():
+        urllib.urlretrieve(url, dst,
+                           lambda nb, bs, fs, url=url: _reporthook(nb,bs,fs,url))
+        sys.stdout.write('\n')
+    else:
+        urllib.urlretrieve(url, dst)
+
+
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:

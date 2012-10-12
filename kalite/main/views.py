@@ -4,6 +4,7 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect, ge
 from django.template import RequestContext
 from annoying.decorators import render_to
 import settings
+from main import topicdata
 
 slug_key = {
     "Topic": "id",
@@ -19,7 +20,7 @@ title_key = {
 
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
-    current_node = settings.TOPICS
+    current_node = topicdata.TOPICS
     seeking = "Topic"
     for slug in slugs:
         if slug == "v":
@@ -73,7 +74,7 @@ def topic_handler(request, topic):
 def video_handler(request, video, prev=None, next=None):
     try:
         with open(settings.DATA_PATH + "../videos/" + video["youtube_id"] + "_exercises.json") as fp:
-            related_exercise = settings.NODE_CACHE["Exercise"][json.loads(fp.read())[0]["name"]]
+            related_exercise = topicdata.NODE_CACHE["Exercise"][json.loads(fp.read())[0]["name"]]
     except:
         related_exercise = None
         
@@ -88,7 +89,7 @@ def video_handler(request, video, prev=None, next=None):
     
 @render_to("exercise.html")
 def exercise_handler(request, exercise):
-    related_videos = [settings.NODE_CACHE["Video"][key] for key in exercise["related_video_readable_ids"]]
+    related_videos = [topicdata.NODE_CACHE["Video"][key] for key in exercise["related_video_readable_ids"]]
     context = {
         "exercise": exercise,
         "title": exercise[title_key["Exercise"]],
@@ -99,7 +100,7 @@ def exercise_handler(request, exercise):
 
 @render_to("knowledgemap.html")
 def exercise_dashboard(request):
-    paths = dict((key, val["path"]) for key, val in settings.NODE_CACHE["Exercise"].items())
+    paths = dict((key, val["path"]) for key, val in topicdata.NODE_CACHE["Exercise"].items())
     context = {
         "title": "Knowledge map",
         "exercise_paths": json.dumps(paths),
@@ -108,7 +109,7 @@ def exercise_dashboard(request):
     
 @render_to("homepage.html")
 def homepage_handler(request):
-    topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"], settings.TOPICS["children"])
+    topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"], topicdata.TOPICS["children"])
     context = {
         "title": "Home",
         "topics": topics,
