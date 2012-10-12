@@ -11,5 +11,5 @@ urlpatterns = patterns('securesync.api_views',
 )
 
 urlpatterns = patterns('securesync.views',
-    url(r'^register$', 'register'),
+    url(r'^register/$', 'register'),
 )

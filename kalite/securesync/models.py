@@ -121,12 +121,14 @@ class Organization(SyncedModel):
     url = models.URLField(verbose_name="Website URL", blank=True)
 
     requires_authority_signature = True
+    
+    def get_zones(self):
+        return Zone.objects.filter(pk__in=[zo.zone.pk for zo in self.zoneorganization_set.all()])
 
 
 class Zone(SyncedModel):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
-    organization = models.ForeignKey("Organization")
 
     requires_authority_signature = True
 
@@ -148,6 +150,9 @@ class ZoneOrganization(SyncedModel):
 class OrganizationUser(models.Model):
     user = models.ForeignKey(User)
     organization = models.ForeignKey(Organization)
+
+    def get_zones(self):
+        return self.organization.get_zones()
 
 
 class Facility(SyncedModel):

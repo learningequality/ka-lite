@@ -25,13 +25,12 @@ admin.site.register(Organization, OrganizationAdmin)
 
 
 class ZoneAdmin(admin.ModelAdmin):
-    list_display = ("name", "description", "organization")
-    list_filter = ("organization",)
+    list_display = ("name", "description",)
 admin.site.register(Zone, ZoneAdmin)
 
 
 class ZoneOrganizationAdmin(admin.ModelAdmin):
-    list_display = ("zone", "organization", "role")
+    list_display = ("zone", "organization", "role",)
     list_filter = ("zone", "organization", "role",)
 admin.site.register(ZoneOrganization, ZoneOrganizationAdmin)
 
