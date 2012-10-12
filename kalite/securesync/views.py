@@ -6,6 +6,7 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect, ge
 from django.template import RequestContext
 from django.utils import simplejson
 from annoying.decorators import render_to
+# from forms import OrganizationForm
 
 import crypto
 import settings
@@ -13,7 +14,18 @@ from securesync.models import SyncSession, Device, RegisteredDevicePublicKey, Zo
 
 @render_to("securesync/register.html")
 def register(request):
+    
     zones = Zone.objects.all()
     return {
         "zones": zones
     }
+
+
+# @render_to("securesync/edit_organization.html")
+# def edit_organization(request):
+#     if request.method == 'POST':
+#         form = OrganizationForm(data=request.POST)
+#         if form.is_valid():
+        
+        
+#     else:
