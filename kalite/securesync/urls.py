@@ -2,12 +2,14 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.conf.urls.defaults import patterns, include, url
 import views
 
-urlpatterns = patterns('',
+urlpatterns = patterns('securesync.api_views',
+    url(r'^api/register$', 'register'),
+    url(r'^api/session/create$', 'create_session'),
+    url(r'^api/session/destroy$', 'destroy_session'),
+    url(r'^api/models/count$', 'count_models'),
+    url(r'^api/models/update$', 'update_models'),
+)
 
-    url(r'^register$', views.register),
-    url(r'^session/create$', views.create_session),
-    url(r'^session/destroy$', views.destroy_session),
-    url(r'^models/count$', views.count_models),
-    url(r'^models/update$', views.update_models),
-    
+urlpatterns = patterns('securesync.views',
+    url(r'^register$', 'register'),
 )
