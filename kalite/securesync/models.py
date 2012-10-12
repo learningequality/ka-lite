@@ -1,6 +1,7 @@
+from django.contrib.auth.models import User
+from django.core import serializers
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
-from django.core import serializers
 import crypto
 import base64
 import uuid
@@ -51,13 +52,16 @@ class DeviceMetadata(models.Model):
     is_own_device = models.BooleanField(default=False)
     counter_position = models.IntegerField(default=0)
 
+    class Meta:    
+        verbose_name_plural = "Device metadata"
+
 
 class SyncedModel(models.Model):
-    id = models.CharField(primary_key=True, max_length=32)
-    counter = models.IntegerField()
-    signature = models.CharField(max_length=90, blank=True)
-    signed_version = models.IntegerField(default=1)
-    signed_by = models.ForeignKey("Device", blank=True, null=True, related_name="+")
+    id = models.CharField(primary_key=True, max_length=32, editable=False)
+    counter = models.IntegerField(editable=False)
+    signature = models.CharField(max_length=90, blank=True, editable=False)
+    signed_version = models.IntegerField(default=1, editable=False)
+    signed_by = models.ForeignKey("Device", blank=True, null=True, related_name="+", editable=False)
 
     def sign(self, device=None):
         self.signed_by = device or Device.get_own_device()
@@ -113,7 +117,8 @@ class SyncedModel(models.Model):
 
 class Organization(SyncedModel):
     name = models.CharField(max_length=100)
-    description = models.TextField(blank=True)    
+    description = models.TextField(blank=True)
+    url = models.URLField(verbose_name="Website URL", blank=True)
 
     requires_authority_signature = True
 
@@ -131,13 +136,18 @@ ZONE_ORG_ROLES = (
     ("analytics", "Can view analytics, but not administer")
 )
 
-class ZoneOrganizations(SyncedModel):
+class ZoneOrganization(SyncedModel):
     zone = models.ForeignKey(Zone)
     organization = models.ForeignKey(Organization)
     role = models.CharField(max_length=15, choices=ZONE_ORG_ROLES)
     notes = models.TextField(blank=True)
 
     requires_authority_signature = True
+
+
+class OrganizationUser(models.Model):
+    user = models.ForeignKey(User)
+    organization = models.ForeignKey(Organization)
 
 
 class Facility(SyncedModel):
@@ -150,6 +160,9 @@ class Facility(SyncedModel):
     zone = models.ForeignKey(Zone)
 
     requires_authority_signature = True
+
+    class Meta:    
+        verbose_name_plural = "Facilities"
 
 
 class FacilityUser(SyncedModel):
@@ -164,7 +177,7 @@ class FacilityUser(SyncedModel):
         unique_together = ("facility", "username")
 
 
-class DeviceZones(SyncedModel):
+class DeviceZone(SyncedModel):
     device = models.ForeignKey("Device")
     zone = models.ForeignKey("Zone")
     primary = models.BooleanField(default=True)
@@ -240,7 +253,7 @@ class Device(SyncedModel):
         
     requires_authority_signature = True
 
-syncing_models = [Device, Organization, Zone, DeviceZones, ZoneOrganizations, Facility, FacilityUser]
+syncing_models = [Device, Organization, Zone, DeviceZone, ZoneOrganization, Facility, FacilityUser]
 
 def get_serialized_models(device_counters=None, limit=1000):
     if not device_counters:
