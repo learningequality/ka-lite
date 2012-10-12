@@ -21,9 +21,6 @@ PROJECT_PATH = os.path.dirname(os.path.realpath(__file__))
 
 DATA_PATH = PROJECT_PATH + "/static/data/"
 
-TOPICS = json.loads(open(DATA_PATH + "topics.json").read())
-NODE_CACHE = json.loads(open(DATA_PATH + "nodecache.json").read())
-
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 TIME_ZONE = 'America/Chicago'
@@ -93,10 +90,21 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django_extensions',
+    'registration',
     'south',
     'main',
     'securesync',
+    'django.contrib.humanize',
+    'postmark',
+
 )
 
-CENTRAL_SERVER = False
+CENTRAL_SERVER = True
+
+ACCOUNT_ACTIVATION_DAYS = 7
+DEFAULT_FROM_EMAIL = 'kalite@adhocsync.com'
+
+if CENTRAL_SERVER:
+    EMAIL_BACKEND = 'postmark.backends.PostmarkBackend'
+    from secrets import *
 

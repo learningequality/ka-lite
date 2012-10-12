@@ -11,11 +11,46 @@ _always_hash_fields = ["signed_version", "id"]
 
 json_serializer = serializers.get_serializer("json")()
 
+
+class SyncSession(models.Model):
+    client_nonce = models.CharField(max_length=32, primary_key=True)
+    client_device = models.ForeignKey("Device", related_name="client_sessions")
+    server_nonce = models.CharField(max_length=32, blank=True)
+    server_device = models.ForeignKey("Device", blank=True, null=True, related_name="server_sessions")
+    verified = models.BooleanField(default=False)
+    
+    def _hashable_representation(self):
+        return "%s:%s:%s:%s" % (
+            self.client_nonce, self.client_device.pk,
+            self.server_nonce, self.server_device.pk,
+        )
+        
+    def _verify_signature(self, device, signature):
+        return crypto.verify(self._hashable_representation(),
+                             base64.decodestring(signature),
+                             device.get_public_key())
+
+    def verify_client_signature(self, signature):
+        return self._verify_signature(self.client_device, signature)
+
+    def verify_server_signature(self, signature):
+        return self._verify_signature(self.server_device, signature)
+
+    def sign(self):
+        return base64.encodestring(crypto.sign(self._hashable_representation())).strip()
+
+
+class RegisteredDevicePublicKey(models.Model):
+    public_key = models.CharField(max_length=200, primary_key=True)
+    zone = models.ForeignKey("Zone")
+
+
 class DeviceMetadata(models.Model):
     device = models.OneToOneField("Device", blank=True, null=True)
     is_trusted_authority = models.BooleanField(default=False)
     is_own_device = models.BooleanField(default=False)
     counter_position = models.IntegerField(default=0)
+
 
 class SyncedModel(models.Model):
     id = models.CharField(primary_key=True, max_length=32)
@@ -55,8 +90,7 @@ class SyncedModel(models.Model):
         if not own_device:
             raise ValidationError("Cannot save another Device before registering this Device.")
         namespace = own_device.id and uuid.UUID(own_device.id) or uuid.uuid4()
-        if not self.counter:
-            self.counter = own_device.increment_and_get_counter()
+        self.counter = own_device.increment_and_get_counter()
         if not self.id:
             self.id = uuid.uuid5(namespace, str(self.counter)).hex
             super(SyncedModel, self).save(*args, **kwargs)
@@ -75,6 +109,7 @@ class SyncedModel(models.Model):
 
     class Meta:
         abstract = True
+
 
 class Organization(SyncedModel):
     name = models.CharField(max_length=100)
@@ -106,7 +141,6 @@ class ZoneOrganizations(SyncedModel):
 
 
 class Facility(SyncedModel):
-    
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
     address = models.CharField(max_length=400, blank=True)
@@ -148,10 +182,10 @@ class Device(SyncedModel):
     revoked = models.BooleanField(default=False)
 
     def set_public_key(self, key):
-        self.public_key = ":".join(base64.encodestring(x).strip() for x in key.pub())
+        self.public_key = crypto.serialize_public_key(key)
 
     def get_public_key(self):
-        return crypto.RSA.new_pub_key(base64.decodestring(q) for q in self.public_key.split(":"))
+        return crypto.deserialize_public_key(self.public_key)
 
     def _hashable_representation(self):
         fields = ["signed_version", "name", "description", "public_key"]
@@ -171,7 +205,7 @@ class Device(SyncedModel):
         return devices[0].device
     
     @staticmethod
-    def create_central_authority_device(name):
+    def initialize_central_authority_device(name):
         own_device = Device()
         own_device.name = name
         own_device.set_public_key(crypto.public_key)
@@ -208,13 +242,15 @@ class Device(SyncedModel):
 
 syncing_models = [Device, Organization, Zone, DeviceZones, ZoneOrganizations, Facility, FacilityUser]
 
-def get_serialized_models(device_counters=None):
+def get_serialized_models(device_counters=None, limit=1000):
     if not device_counters:
         device_counters = dict((device.id, 0) for device in Device.objects.all())
     models = []
     for Model in syncing_models:
         for device_id, counter in device_counters.items():
             models += Model.objects.filter(signed_by=device_id, counter__gte=counter)
+            if len(models) > limit:
+                return json_serializer.serialize(models[0:limit], ensure_ascii=False, indent=2)
     return json_serializer.serialize(models, ensure_ascii=False, indent=2)
     
 def save_serialized_models(data):
@@ -230,3 +266,4 @@ def save_serialized_models(data):
             print "Error saving model %s: %s" % (model, e)
             unsaved_models.append(model.object)
     return unsaved_models
+    
