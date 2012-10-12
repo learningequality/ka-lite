@@ -32,6 +32,8 @@ else:
         
         url(r'^$', 'main.views.homepage_handler'),
         
+        url(r'^videodownload/$', 'main.views.video_download'),
+        
         url(r'^(?P<splat>.+)/$', 'main.views.splat_handler'),
 
     )
