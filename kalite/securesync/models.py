@@ -39,11 +39,17 @@ class SyncSession(models.Model):
 
     def sign(self):
         return base64.encodestring(crypto.sign(self._hashable_representation())).strip()
+        
+    def __unicode__(self):
+        return "%s... -> %s..." % (self.client_device.pk[0:5], self.server_device.pk[0:5])
 
 
 class RegisteredDevicePublicKey(models.Model):
     public_key = models.CharField(max_length=200, primary_key=True)
     zone = models.ForeignKey("Zone")
+
+    def __unicode__(self):
+        return "%s... (Zone: %s)" % (self.public_key[0:5], self.zone)
 
 
 class DeviceMetadata(models.Model):
@@ -54,6 +60,9 @@ class DeviceMetadata(models.Model):
 
     class Meta:    
         verbose_name_plural = "Device metadata"
+
+    def __unicode__(self):
+        return "(Device: %s)" % (self.device)
 
 
 class SyncedModel(models.Model):
@@ -69,6 +78,8 @@ class SyncedModel(models.Model):
 
     def verify(self):
         if not self.signed_by:
+            return False
+        if self.requires_authority_signature and not self.signed_by.get_metadata().is_trusted_authority:
             return False
         key = self.signed_by.get_public_key()
         return crypto.verify(self._hashable_representation(), base64.decodestring(self.signature), key)
@@ -92,27 +103,24 @@ class SyncedModel(models.Model):
     def save(self, own_device=None, *args, **kwargs):
         own_device = own_device or Device.get_own_device()
         if not own_device:
-            raise ValidationError("Cannot save another Device before registering this Device.")
-        namespace = own_device.id and uuid.UUID(own_device.id) or uuid.uuid4()
+            raise ValidationError("Cannot save any synced models before registering this Device.")
         self.counter = own_device.increment_and_get_counter()
         if not self.id:
+            namespace = own_device.id and uuid.UUID(own_device.id) or uuid.uuid4()
             self.id = uuid.uuid5(namespace, str(self.counter)).hex
-            super(SyncedModel, self).save(*args, **kwargs)
-        if not self.signature:
+            super(SyncedModel, self).save(*args, **kwargs) # TODO(jamalex): can we get rid of this?
+        if not self.signed_by or self.signed_by == own_device:
             self.sign(device=own_device)
-        # self.full_clean()
         super(SyncedModel, self).save(*args, **kwargs)
 
-    def clean(self):
-        if self.signature:
-            if not self.verify():
-                raise ValidationError("The model's signature was invalid.")
-            if self.requires_authority_signature:
-                if not self.signed_by.get_metadata().is_trusted_authority:
-                    raise ValidationError("This model must be signed by a trusted authority.")
+    requires_authority_signature = False
 
     class Meta:
         abstract = True
+
+    def __unicode__(self):
+        return "%s... (Signed by: %s...)" % (self.pk[0:5], self.signed_by.pk[0:5])
+
 
 
 class Organization(SyncedModel):
@@ -125,12 +133,18 @@ class Organization(SyncedModel):
     def get_zones(self):
         return Zone.objects.filter(pk__in=[zo.zone.pk for zo in self.zoneorganization_set.all()])
 
+    def __unicode__(self):
+        return self.name
+
 
 class Zone(SyncedModel):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
 
     requires_authority_signature = True
+    
+    def __unicode__(self):
+        return self.name
 
 
 ZONE_ORG_ROLES = (
@@ -145,7 +159,10 @@ class ZoneOrganization(SyncedModel):
     notes = models.TextField(blank=True)
 
     requires_authority_signature = True
-
+    
+    def __unicode__(self):
+        return "Zone: %s, Organization: %s" % (self.zone, self.organization)
+        
 
 class OrganizationUser(models.Model):
     user = models.ForeignKey(User)
@@ -153,6 +170,9 @@ class OrganizationUser(models.Model):
 
     def get_zones(self):
         return self.organization.get_zones()
+
+    def __unicode__(self):
+        return "%s (Organization: %s)" % (self.user, self.organization)
 
 
 class Facility(SyncedModel):
@@ -169,6 +189,9 @@ class Facility(SyncedModel):
     class Meta:    
         verbose_name_plural = "Facilities"
 
+    def __unicode__(self):
+        return "%s (Zone: %s)" % (self.name, self.zone)
+
 
 class FacilityUser(SyncedModel):
     facility = models.ForeignKey(Facility)
@@ -181,7 +204,10 @@ class FacilityUser(SyncedModel):
     class Meta:
         unique_together = ("facility", "username")
 
+    def __unicode__(self):
+        return "%s (Facility: %s)" % ((self.first_name + " " + self.last_name).strip() or self.username, self.facility)
 
+    
 class DeviceZone(SyncedModel):
     device = models.ForeignKey("Device")
     zone = models.ForeignKey("Zone")
@@ -191,6 +217,9 @@ class DeviceZone(SyncedModel):
         unique_together = ("device", "zone")
         
     requires_authority_signature = True
+
+    def __unicode__(self):
+        return "Device: %s, Zone: %s" % (self.device, self.zone)
 
 
 class Device(SyncedModel):
@@ -253,7 +282,7 @@ class Device(SyncedModel):
         metadata.save()
         return metadata.counter_position
         
-    def __str__(self):
+    def __unicode__(self):
         return self.name
         
     requires_authority_signature = True
@@ -279,6 +308,8 @@ def save_serialized_models(data):
             # TODO(jamalex): more robust way to do this? (otherwise, it barfs about the id already existing):
             model.object._state.adding = False
             model.object.full_clean()
+            if not model.verify():
+                raise ValidationError("The signature did not match!")
             model.save()
         except ValidationError as e:
             print "Error saving model %s: %s" % (model, e)
