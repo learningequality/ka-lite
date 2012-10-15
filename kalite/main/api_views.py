@@ -55,12 +55,11 @@ def get_video_logs(request):
     if "facility_user" not in request.session:
         return JsonResponse([])
     user = request.session["facility_user"]
-    youtube_ids = data.get("youtube_ids", [])
     responses = []
-    for youtube_id in youtube_ids:
+    for youtube_id in data:
         response = _get_video_log_dict(request, user, youtube_id)
         if response:
-            response.append(response)
+            responses.append(response)
     return JsonResponse(responses)
     
 
@@ -68,16 +67,40 @@ def _get_video_log_dict(request, user, youtube_id):
     if not youtube_id:
         return {}
     try:
-        exerciselog = ExerciseLog.objects.filter(user=user, youtube_id=youtube_id).latest("counter")
-    except ExerciseLog.DoesNotExist:
+        videolog = VideoLog.objects.filter(user=user, youtube_id=youtube_id).latest("counter")
+    except VideoLog.DoesNotExist:
         return {}
     return {
         "youtube_id": youtube_id,
-        "total_seconds_watched": exerciselog.total_seconds_watched,
-        "complete": exerciselog.complete,
+        "total_seconds_watched": videolog.total_seconds_watched,
+        "complete": videolog.complete,
     }
 
 
 def get_exercise_logs(request):
     data = simplejson.loads(request.raw_post_data or "[]")
-    # TBD
+    if not isinstance(data, list):
+        return JsonResponse([])
+    if "facility_user" not in request.session:
+        return JsonResponse([])
+    user = request.session["facility_user"]
+    responses = []
+    for exercise_id in data:
+        response = _get_exercise_log_dict(request, user, exercise_id)
+        if response:
+            responses.append(response)
+    return JsonResponse(responses)
+    
+
+def _get_exercise_log_dict(request, user, exercise_id):
+    if not exercise_id:
+        return {}
+    try:
+        exerciselog = ExerciseLog.objects.filter(user=user, exercise_id=exercise_id).latest("counter")
+    except ExerciseLog.DoesNotExist:
+        return {}
+    return {
+        "exercise_id": exercise_id,
+        "streak_progress": exerciselog.streak_progress,
+        "complete": exerciselog.streak_progress == 100,
+    }
