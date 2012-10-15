@@ -8,14 +8,10 @@ function updateStreakBar() {
 
 function updatePercentCompleted(correct) {
 
-    if (exerciseData.percentCompleted === 100) {
-        return;
-    }
-
     // update the streak; increment by 10 if correct, otherwise reset to 0
     if (correct && !exerciseData.hintUsed) {
         exerciseData.percentCompleted += 10;
-    } else {
+    } else if (exerciseData.percentCompleted < 100) {
         exerciseData.percentCompleted = 0;
     }
 
@@ -38,7 +34,6 @@ $(function() {
     $(Exercises).trigger("problemTemplateRendered");
     $(Exercises).trigger("readyForNextProblem", {userExercise: exerciseData});
     $(Khan).bind("checkAnswer", function(ev, data) {
-        console.log(data)
         updatePercentCompleted(data.pass);
     });
     $(Khan).bind("hintUsed", function(ev, data) {
@@ -49,7 +44,12 @@ $(function() {
     $("#next-question-button").click(function() {
         _.defer(function() {
             exerciseData.hintUsed = false;
+            exerciseData.seed = Math.floor(Math.random() * 500);
             $(Exercises).trigger("readyForNextProblem", {userExercise: exerciseData});
         });
+    });
+    doRequest("/api/get_exercise_logs", [exerciseData.exerciseModel.name], "POST").success(function(data) {
+        exerciseData.percentCompleted = data[0].streak_progress;
+        updateStreakBar();
     });
 });
