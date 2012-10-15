@@ -1,7 +1,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>{{ title }} | KA Lite</title>
+        <title>{% block title %}{{ title }}{% endblock title %} | KA Lite</title>
         <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/khan-site.css"></link>
         {% block headcss %}{% endblock headcss %}
         <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/khan-lite.css"></link>

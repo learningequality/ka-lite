@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, get_hexdigest, check_password
 from django.core import serializers
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
@@ -206,8 +206,18 @@ class FacilityUser(SyncedModel):
 
     def __unicode__(self):
         return "%s (Facility: %s)" % ((self.first_name + " " + self.last_name).strip() or self.username, self.facility)
+        
+    def check_password(self, raw_password):
+        return check_password(raw_password, self.password)
 
-    
+    def set_password(self, raw_password):
+        import random
+        algo = 'sha1'
+        salt = get_hexdigest(algo, str(random.random()), str(random.random()))[:5]
+        hsh = get_hexdigest(algo, salt, raw_password)
+        self.password = '%s$%s$%s' % (algo, salt, hsh)
+
+
 class DeviceZone(SyncedModel):
     device = models.ForeignKey("Device")
     zone = models.ForeignKey("Zone")

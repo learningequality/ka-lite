@@ -16,7 +16,7 @@ class JsonResponse(HttpResponse):
 
 
 @csrf_exempt
-def register(request):
+def register_public_key(request):
     data = simplejson.loads(request.raw_post_data or "{}")
     if "public_key" not in data:
         return JsonResponse({"error": "Public key must be specified."}, status=500)
