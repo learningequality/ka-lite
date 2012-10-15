@@ -9,5 +9,8 @@ urlpatterns = patterns('main.api_views',
     
     url(r'^save_video_log$', 'save_video_log'),
     url(r'^save_exercise_log$', 'save_exercise_log'),
+
+    url(r'^get_video_logs$', 'get_video_logs'),
+    url(r'^get_exercise_logs$', 'get_exercise_logs'),
     
 )

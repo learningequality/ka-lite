@@ -46,3 +46,38 @@ def save_exercise_log(request):
         return JsonResponse({})
     except ValidationError as e:
         return JsonResponse({"error": "Could not save ExerciseLog: %s" % e}, status=500)
+
+
+def get_video_logs(request):
+    data = simplejson.loads(request.raw_post_data or "[]")
+    if not isinstance(data, list):
+        return JsonResponse([])
+    if "facility_user" not in request.session:
+        return JsonResponse([])
+    user = request.session["facility_user"]
+    youtube_ids = data.get("youtube_ids", [])
+    responses = []
+    for youtube_id in youtube_ids:
+        response = _get_video_log_dict(request, user, youtube_id)
+        if response:
+            response.append(response)
+    return JsonResponse(responses)
+    
+
+def _get_video_log_dict(request, user, youtube_id):
+    if not youtube_id:
+        return {}
+    try:
+        exerciselog = ExerciseLog.objects.filter(user=user, youtube_id=youtube_id).latest("counter")
+    except ExerciseLog.DoesNotExist:
+        return {}
+    return {
+        "youtube_id": youtube_id,
+        "total_seconds_watched": exerciselog.total_seconds_watched,
+        "complete": exerciselog.complete,
+    }
+
+
+def get_exercise_logs(request):
+    data = simplejson.loads(request.raw_post_data or "[]")
+    # TBD
