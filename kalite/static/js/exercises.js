@@ -25,11 +25,12 @@ function updatePercentCompleted(correct) {
     updateStreakBar();
 
     var data = {
-        exercise: exerciseData.exerciseModel.name,
-        percentCompleted: exerciseData.percentCompleted
+        exercise_id: exerciseData.exerciseModel.name,
+        streak_progress: exerciseData.percentCompleted,
+        correct: correct
     };
 
-    doRequest("/api/exercises/attempt", data, "POST");
+    doRequest("/api/save_exercise_log", data, "POST");
 
 };
 
@@ -37,6 +38,7 @@ $(function() {
     $(Exercises).trigger("problemTemplateRendered");
     $(Exercises).trigger("readyForNextProblem", {userExercise: exerciseData});
     $(Khan).bind("checkAnswer", function(ev, data) {
+        console.log(data)
         updatePercentCompleted(data.pass);
     });
     $(Khan).bind("hintUsed", function(ev, data) {

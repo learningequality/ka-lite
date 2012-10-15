@@ -108,7 +108,7 @@ def exercise_dashboard(request):
     return context
     
 @render_to("homepage.html")
-def homepage_handler(request):
+def homepage(request):
     topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"], topicdata.TOPICS["children"])
     context = {
         "title": "Home",

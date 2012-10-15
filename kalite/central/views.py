@@ -6,7 +6,7 @@ from annoying.decorators import render_to
 import settings
 
 @render_to("central/homepage.html")
-def homepage_handler(request):
+def homepage(request):
     context = {}
     return context
         
