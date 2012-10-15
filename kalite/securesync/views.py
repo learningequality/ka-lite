@@ -48,6 +48,11 @@ def login(request):
         "form": form
     }
 
+def logout(request):
+    if "facility_user" in request.session:
+        del request.session["facility_user"]
+    return HttpResponseRedirect("/")
+
 # @render_to("securesync/edit_organization.html")
 # def edit_organization(request):
 #     if request.method == 'POST':

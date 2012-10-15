@@ -75,6 +75,24 @@ footer.short .inner {
     padding-left: 4px;
 }
 
+/* Logic for sitewide navigation */
+.logged-in .logged-out-only{
+    display: none;
+}
+
+.logged-in .logged-in-only{
+    display: inline;
+}
+
+.logged-out .logged-out-only{
+    display: inline;
+}
+
+.logged-out .logged-in-only{
+    display: none;
+}
+/* end sitewide navigation logic */
+
 .top-header-links {
     position: absolute;
     top: 0;
