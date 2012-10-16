@@ -216,6 +216,15 @@ li .progress-circle {
     top: 0;
 }
 
+.related-video-list .progress-circle {
+    margin-left: 0;
+    top: 2px;
+}
+
+.related-video-inline .progress-circle {
+    margin-left: 10px;
+}
+
 .progress-circle.complete {
     background: url(/static/images/circle-complete.png) no-repeat;
 }

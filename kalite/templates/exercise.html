@@ -104,7 +104,8 @@
                                                                 <div class="thumb" style="background-image: url(http://img.youtube.com/vi/{{ video.youtube_id }}/hqdefault.jpg); ">
                                                                     <div class="thumbnail_label" style="margin-top: 68px; ">
                                                                         <div class="thumbnail_desc">
-                                                                            <span class="vid-progress">{{ video.title }}</span>
+                                                                            <span class="progress-circle" data-youtube-id="{{ video.youtube_id }}"></span>
+                                                                            <span>{{ video.title }}</span>
                                                                         </div>
                                                                         <div class="thumbnail_teaser" style="height: 0px; ">{{ video.description }}</div>
                                                                     </div>
@@ -115,7 +116,8 @@
                                                     {% else %}
                                                     <li>
                                                         <a class="related-video related-video-inline" href="{{ video.path }}" title="{{ video.title }}" target="_blank">
-                                                            <span class="video-title vid-progress">
+                                                            <span class="video-title">
+                                                                <span class="progress-circle" data-youtube-id="{{ video.youtube_id }}"></span>
                                                                 {{ video.title }}
                                                             </span>
                                                         </a>
