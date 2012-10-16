@@ -226,7 +226,7 @@ class FacilityUser(SyncedModel):
 
 class DeviceZone(SyncedModel):
     device = models.ForeignKey("Device")
-    zone = models.ForeignKey("Zone")
+    zone = models.ForeignKey("Zone", db_index=True)
     primary = models.BooleanField(default=True)
     
     class Meta:
@@ -334,3 +334,11 @@ def save_serialized_models(data):
             unsaved_models.append(model.object)
     return unsaved_models
     
+def get_device_counters(zones):
+    if not isinstance(zones, list):
+        zones = [zones]
+    device_counters = {}
+    for device_zone in DeviceZone.objects.filter(zone__in=zones):
+        if device_zone.device.id not in device_counters:
+            device_counters[device_zone.device.id] = device_zone.device.get_metadata().counter_position + 1
+    return device_counters
