@@ -6,6 +6,7 @@
         if (data.logged_in){
             $('body').removeClass("logged-out");
             $('body').addClass("logged-in");
+            $('#logged_in_greeting').append(data.username + "!");
         }
         else {
             $('body').removeClass("logged-in");
@@ -27,5 +28,9 @@
     <span class="dropdown topic-browser-dropdown logged-in-only">
         <a href="/securesync/logout" class="">Logout</a>
     </span>
+    <span class="logged-in-only" id="logged_in_greeting">
+        Hi&nbsp;
+    </span>
+
 
 {% endblock sitewide_navigation %}

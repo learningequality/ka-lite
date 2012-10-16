@@ -52,14 +52,20 @@ footer.short .inner {
     position: relative;
     background-image: url(/static/images/non-repeating-sprites.4.png);
     background-position: -10px -261px;
-    width: 317px;
+    width: 35%;
 }
+
+#logo-image-small img {
+    width: 100%;
+}
+
 .dark #top-header #logo #logo-image {
     background-image: url(/static/images/non-repeating-sprites.4.png);
     background-position: -320px -465px;
 }
 
 #nav-and-search {
+    position: relative;
     right: 10px;
     top: 15px;
 }
@@ -96,6 +102,29 @@ footer.short .inner {
     display: none;
 }
 /* end sitewide navigation logic */
+
+/*greeting styling*/
+
+.sitewide-navigation {
+    white-space: nowrap;
+}
+
+#logged_in_greeting {
+    padding-left: 20px;
+    color: #263500;
+    text-overflow: ellipsis;
+    white-space:nowrap;
+    overflow: hidden;
+}
+
+.nav-subheader {
+    background: transparent;
+}
+
+#logo {
+    max-width: 328px;
+    width: 20%;
+}
 
 .top-header-links {
     position: absolute;
