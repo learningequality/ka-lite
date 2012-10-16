@@ -76,19 +76,23 @@ footer.short .inner {
 }
 
 /* Logic for sitewide navigation */
-.logged-in .logged-out-only{
+.logged-out-only, .logged-in-only {
+    display:none;
+}
+
+.logged-in .logged-out-only {
     display: none;
 }
 
-.logged-in .logged-in-only{
+.logged-in .logged-in-only {
     display: inline;
 }
 
-.logged-out .logged-out-only{
+.logged-out .logged-out-only {
     display: inline;
 }
 
-.logged-out .logged-in-only{
+.logged-out .logged-in-only {
     display: none;
 }
 /* end sitewide navigation logic */

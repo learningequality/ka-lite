@@ -2,11 +2,17 @@
 
 {% block basejs %}
 <script type="text/javascript">
-	// check here to see if user is logged in
-
-
+    doRequest("/securesync/api/logininfo").success(function(data){
+        if (data.logged_in){
+            $('body').removeClass("logged-out");
+            $('body').addClass("logged-in");
+        }
+        else {
+            $('body').removeClass("logged-in");
+            $('body').addClass("logged-out");
+        };
+    })
 </script>
-
 {% endblock basejs %}
 
 {% block sitewide_navigation %}
