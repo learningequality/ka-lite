@@ -85,10 +85,12 @@ def create_session(request):
     
 @csrf_exempt
 def destroy_session(request):
-    
-    return JsonResponse({
-        "body": request.raw_post_data
-    })
+    try:
+        session = SyncSession.objects.get(client_nonce=data["client_nonce"])
+    except SyncSession.DoesNotExist:
+        return JsonResponse({"error": "Session with specified client nonce could not be found."}, status=500)
+    session.delete()
+    return JsonResponse({})
     
     
 @csrf_exempt
