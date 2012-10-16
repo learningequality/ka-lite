@@ -48,10 +48,9 @@ footer.short .inner {
     height: 50px;
 }
 #top-header #logo {
-    height: 100px;
-    position: relative;
     background-image: url(/static/images/non-repeating-sprites.4.png);
     background-position: -10px -261px;
+    max-width: 328px;
     width: 35%;
 }
 
@@ -59,22 +58,17 @@ footer.short .inner {
     width: 100%;
 }
 
-.dark #top-header #logo #logo-image {
-    background-image: url(/static/images/non-repeating-sprites.4.png);
-    background-position: -320px -465px;
-}
-
 #nav-and-search {
     position: relative;
     right: 10px;
-    top: 15px;
+    top: 21px;
 }
 
 .nav-subheader > span > a.selected::after {
-    top: 29px;
+    top: 21px;
 }
 .nav-subheader > span > a.selected::before {
-    top: 27px;
+    top: 19px;
 }
 
 .watch-navlink {
@@ -119,11 +113,6 @@ footer.short .inner {
 
 .nav-subheader {
     background: transparent;
-}
-
-#logo {
-    max-width: 328px;
-    width: 20%;
 }
 
 .top-header-links {
