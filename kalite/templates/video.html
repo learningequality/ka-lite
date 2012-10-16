@@ -6,6 +6,16 @@
 <script src="{{ STATIC_URL }}js/swfobject.js"></script>
 <script src="{{ STATIC_URL }}js/video.js"></script>
 <script>
+
+    var videoData = {
+        youtube_id: "{{ video.youtube_id }}",
+        points: 0,
+        total_seconds_watched: 0,
+        last_second_watched: 0,
+        last_second_watched_walltime: new Date(),
+        seconds_watched_since_save: 0
+    };
+
     $(function() {
         $("#video-thumb").load(function() {
             
@@ -20,7 +30,7 @@
             $("#video-thumb").css({position: "absolute"});
             $("#video-container").css({height: height});
             
-            embed_swf("flash-content", width, height, function(callbackObj) {
+            embedSwf("flash-content", width, height, function(callbackObj) {
                 if (callbackObj.success) {
                     setTimeout(function() {
                         $("#flash-container").css("left", "0px");
@@ -49,11 +59,11 @@
 </h2>
 
 {% if prev %}
-<a style="float: left;" href="../{{ prev.readable_id }}/">&lt; {{ prev.title }}</a>
+<a style="float: left;" href="../{{ prev.readable_id }}/" data-youtube-id="{{ prev.youtube_id }}">&lt; {{ prev.title }}</a>
 {% endif %}
 
 {% if next %}
-<a style="float: right; padding-right: 4px;" href="../{{ next.readable_id }}/">{{ next.title }} &gt;</a>
+<a style="float: right; padding-right: 4px;" href="../{{ next.readable_id }}/" data-youtube-id="{{ next.youtube_id }}">{{ next.title }} &gt;</a>
 {% endif %}
 
 <div class="clear"></div>
@@ -64,5 +74,7 @@
     </div>
     <img id="video-thumb" src="/static/videos/{{ video.youtube_id }}.png" width="100%">
 </div>
+
+<p class="points-container" style="display: none;">Points: <span class="points">0</span></p>
 
 {% endblock content %}

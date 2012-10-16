@@ -7,6 +7,7 @@ class VideoLog(SyncedModel):
     youtube_id = models.CharField(max_length=11, db_index=True)
     seconds_watched = models.IntegerField()
     total_seconds_watched = models.IntegerField(default=0)
+    points = models.IntegerField()
     complete = models.BooleanField(default=False)
 
 

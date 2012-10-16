@@ -21,10 +21,16 @@ def save_video_log(request):
         videolog.total_seconds_watched = data.get("total_seconds_watched", 0)
     videolog.youtube_id = data.get("youtube_id", "")
     videolog.seconds_watched = data.get("seconds_watched", None)
+    videolog.complete = data.get("complete", False)
+    videolog.points = data.get("points", None)
+    
     try:
         videolog.full_clean()
         videolog.save()
-        return JsonResponse({})
+        return JsonResponse({
+            "points": videolog.points,
+            "complete": videolog.complete,
+        })
     except ValidationError as e:
         return JsonResponse({"error": "Could not save VideoLog: %s" % e}, status=500)
 
@@ -74,6 +80,7 @@ def _get_video_log_dict(request, user, youtube_id):
         "youtube_id": youtube_id,
         "total_seconds_watched": videolog.total_seconds_watched,
         "complete": videolog.complete,
+        "points": videolog.points,
     }
 
 
