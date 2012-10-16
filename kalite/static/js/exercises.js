@@ -38,7 +38,9 @@ $(function() {
     });
     $(Khan).bind("hintUsed", function(ev, data) {
         exerciseData.hintUsed = true;
-        exerciseData.percentCompleted = 0;
+        if (exerciseData.percentCompleted < 100) {
+            exerciseData.percentCompleted = 0;
+        }
         updateStreakBar();
     });
     $("#next-question-button").click(function() {
@@ -49,6 +51,9 @@ $(function() {
         });
     });
     doRequest("/api/get_exercise_logs", [exerciseData.exerciseModel.name], "POST").success(function(data) {
+        if (data.length === 0) {
+            return;
+        }
         exerciseData.percentCompleted = data[0].streak_progress;
         updateStreakBar();
     });
