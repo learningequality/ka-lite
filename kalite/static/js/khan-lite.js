@@ -38,3 +38,15 @@ function doRequest(url, data, method) {
         dataType: "json"
     });
 }
+
+$(function() {
+    var youtube_ids = $.map($(".progress-circle[data-youtube-id]"), function(el) { return $(el).data("youtube-id") });
+    if (youtube_ids.length > 0) {
+        doRequest("/api/get_video_logs", youtube_ids, "POST").success(function(data) {
+            $.each(data, function(ind, video) {
+                var newClass = video.complete ? "complete" : "partial";
+                $("[data-youtube-id='" + video.youtube_id + "']").addClass(newClass);
+            });
+        });
+    }
+});

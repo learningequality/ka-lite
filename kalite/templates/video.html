@@ -59,11 +59,11 @@
 </h2>
 
 {% if prev %}
-<a style="float: left;" href="../{{ prev.readable_id }}/" data-youtube-id="{{ prev.youtube_id }}">&lt; {{ prev.title }}</a>
+<a style="float: left;" href="../{{ prev.readable_id }}/">&lt; {{ prev.title }} <span class="progress-circle" data-youtube-id="{{ prev.youtube_id }}"></span></a>
 {% endif %}
 
 {% if next %}
-<a style="float: right; padding-right: 4px;" href="../{{ next.readable_id }}/" data-youtube-id="{{ next.youtube_id }}">{{ next.title }} &gt;</a>
+<a style="float: right; padding-right: 4px;" href="../{{ next.readable_id }}/"><span class="progress-circle" data-youtube-id="{{ next.youtube_id }}"></span> {{ next.title }} &gt;</a>
 {% endif %}
 
 <div class="clear"></div>

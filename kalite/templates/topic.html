@@ -27,6 +27,7 @@
     {% for video in videos %}
     <li style="font-size: 15px; line-height: 23px; margin-left: 10px;">
         <!--<a href="mplayer:///khan/videofiles/{{ video.youtube_id }}.ogv">{{ video.title }}</a>-->
+        <span class="progress-circle" data-youtube-id="{{ video.youtube_id }}"></span>
         <a href="v/{{ video.readable_id }}">{{ video.title }}</a>
     </li>
     {% endfor %}

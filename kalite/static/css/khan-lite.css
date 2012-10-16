@@ -213,3 +213,24 @@ div.exercises-card {
 .basic-form .submit, .basic-form h2 {
     margin-left: 134px;
 }
+
+.progress-circle {
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+    position: relative;
+    top: 2px;
+}
+
+li .progress-circle {
+    margin-left: -15px;
+    top: 0;
+}
+
+.progress-circle.complete {
+    background: url(/static/images/circle-complete.png) no-repeat;
+}
+
+.progress-circle.partial {
+    background: url(/static/images/circle-partial.png) no-repeat;
+}
