@@ -11,6 +11,7 @@
         <script src="{{ STATIC_URL }}js/jquery.js"></script>
         <script src="{{ STATIC_URL }}js/khan-lite.js"></script>
         {% block headjs %}{% endblock headjs %}
+        {% block basejs %}{% endblock basejs %}
         {% block extra_head %}{% endblock extra_head %}
     </head>
     <body class="light">
@@ -26,10 +27,8 @@
                                     <div class="sitewide-navigation">
                                         <nav>
                                             <span class="links nav-subheader">
-                                                <span class="dropdown topic-browser-dropdown">
-                                                    <a href="/" class="watch-navlink {% block watch_selected %}{% endblock watch_selected %}">Watch</a>
-                                                <a href="/exercisedashboard" class="practice-navlink {% block practice_selected %}{% endblock practice_selected %}">Practice</a>
-                                                </span>
+                                                {% block sitewide_navigation %}
+                                                {% endblock sitewide_navigation %}
                                             </span>
                                         </nav>
                                     </div>

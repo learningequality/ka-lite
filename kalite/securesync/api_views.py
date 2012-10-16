@@ -11,7 +11,7 @@ from securesync.models import SyncSession, Device, RegisteredDevicePublicKey, js
 class JsonResponse(HttpResponse):
     def __init__(self, content, *args, **kwargs):
         if not isinstance(content, str):
-            content = simplejson.dumps(content, indent=2, cls=json.DjangoJSONEncoder, ensure_ascii=False)
+            content = simplejson.dumps(content, indent=2, ensure_ascii=False)
         super(JsonResponse, self).__init__(content, content_type='application/json', *args, **kwargs)
 
 
@@ -105,3 +105,23 @@ def update_models(request):
     return JsonResponse({
         "body": request.raw_post_data
     })
+
+def login_info(request):
+    if "facility_user" not in request.session:
+        return JsonResponse({
+            "logged_in": False
+        })
+    else:
+        user = request.session["facility_user"]
+        return JsonResponse({
+            "logged_in": True,
+            "username": user.get_name(),
+        })
+
+
+
+
+
+
+
+

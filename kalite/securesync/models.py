@@ -217,6 +217,12 @@ class FacilityUser(SyncedModel):
         hsh = get_hexdigest(algo, salt, raw_password)
         self.password = '%s$%s$%s' % (algo, salt, hsh)
 
+    def get_name(self):
+        if self.first_name and self.last_name:
+            return u"%s %s" % (self.first_name, self.last_name)
+        else:
+            return self.username
+
 
 class DeviceZone(SyncedModel):
     device = models.ForeignKey("Device")

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+
+
+{% block sitewide_navigation %}
+    <span class="dropdown topic-browser-dropdown">
+        <a href="/" class="watch-navlink {% block watch_selected %}{% endblock watch_selected %}">Watch</a>
+        <a href="/exercisedashboard" class="practice-navlink {% block practice_selected %}{% endblock practice_selected %}">Practice</a>
+    </span>
+    <span class="dropdown topic-browser-dropdown" id="login_false">
+        <a href="/securesync/adduser" class="">Sign Up</a>
+        <a href="/securesync/login" class="">Login</a>
+    </span>
+{% endblock sitewide_navigation %}
