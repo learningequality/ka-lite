@@ -15,18 +15,25 @@ public_key = RSA.new_pub_key(private_key.pub())
 def sign(message, key=None):
     if not key:
         key = private_key
-    return key.sign(hashlib.sha1(message).digest(), algo="sha1").replace("\n", "")
+    return key.sign(hashed(message, base64encode=False), algo="sha1").replace("\n", "")
+
+def hashed(message, base64encode=True):
+    sha1sum = hashlib.sha1(message).digest()
+    if base64encode:
+        return base64.encodestring(sha1sum).replace("\n", "")
+    else:
+        return sha1sum
 
 def verify(message, signature, key=None):
     if not key:
         key = public_key
     try:
-        return key.verify(hashlib.sha1(message).digest(), signature, algo="sha1") == 1
+        return key.verify(hashed(message, base64encode=False), signature, algo="sha1") == 1
     except RSA.RSAError:
         return False
 
 def serialize_public_key(key):
-    return ":".join(base64.encodestring(x).strip() for x in key.pub()).replace("\n", "")
+    return ":".join(base64.encodestring(x).replace("\n", "") for x in key.pub()).replace("\n", "")
     
 def deserialize_public_key(key_str):
     return RSA.new_pub_key(base64.decodestring(q) for q in key_str.split(":"))
