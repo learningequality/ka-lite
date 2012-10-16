@@ -1,5 +1,5 @@
 from django.db import models
-from securesync.models import SyncedModel, FacilityUser
+from securesync.models import SyncedModel, FacilityUser, syncing_models
 
 
 class VideoLog(SyncedModel):
@@ -19,3 +19,6 @@ class ExerciseLog(SyncedModel):
     seed = models.IntegerField(blank=True, null=True)
     streak_progress = models.IntegerField()
     hints_used = models.IntegerField(blank=True, null=True)
+    
+
+syncing_models.extend([VideoLog, ExerciseLog])

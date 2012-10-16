@@ -326,6 +326,8 @@ def save_serialized_models(data):
             model.object.full_clean()
             if not model.verify():
                 raise ValidationError("The signature did not match!")
+            # TODO(jamalex): also make sure that if the model already exists, it is signed by the same device
+            # (to prevent devices from overwriting each other's models... or do we want to allow that?)
             model.save()
         except ValidationError as e:
             print "Error saving model %s: %s" % (model, e)
