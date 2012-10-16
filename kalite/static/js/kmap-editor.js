@@ -22,6 +22,9 @@ var KMapEditor = {
     IMG_DEV: null,
     IMG_SELECTED: null,
     IMG_SELECTED_DEV: null,
+    IMG_NOT_STARTED: null,
+    IMG_PARTIAL: null,
+    IMG_COMPLETE: null,
 
     // exerciseData       /api/v1/exercises
     // defaultMapLayout   /api/v1/topicversion/default/maplayout
@@ -71,6 +74,9 @@ var KMapEditor = {
         this.IMG_DEV = "/images/node-not-started-" + this.ICON_SIZE + "-faded.png";
         this.IMG_SELECTED = "/images/node-complete-" + this.ICON_SIZE + ".png";
         this.IMG_SELECTED_DEV = "/images/node-complete-" + this.ICON_SIZE + "-faded.png";
+        this.IMG_NOT_STARTED = "/images/node-not-started-" + this.ICON_SIZE + ".png";
+        this.IMG_PARTIAL = "/images/node-partial-" + this.ICON_SIZE + ".png";
+        this.IMG_COMPLETE = "/images/node-complete-" + this.ICON_SIZE + ".png";
     },
 
     createCanvas: function() {
@@ -166,9 +172,16 @@ var KMapEditor = {
                     .attr("href", exercise_paths[ex.name])
                     .appendTo(newDiv);
 
+                var image_src = KMapEditor.IMG_NOT_STARTED;
+                if (KMapEditor.exercisesCompleted[ex.name] === "partial") {
+                    image_src = KMapEditor.IMG_PARTIAL;
+                } else if (KMapEditor.exercisesCompleted[ex.name] === "complete") {
+                    image_src = KMapEditor.IMG_COMPLETE;
+                }
+
                 $("<img>")
                     .attr({
-                        src: (KMapEditor.exercisesCompleted[ex.name] === 1 ? KMapEditor.IMG_SELECTED : KMapEditor.IMG_LIVE),
+                        src: image_src,
                         width: KMapEditor.ICON_SIZE,
                         height: KMapEditor.ICON_SIZE
                     })
@@ -220,11 +233,15 @@ $(document).ready(function() {
 
     if (vars["topic"]) {
         $.getJSON("/static/data/topicdata/" + vars["topic"] + ".json", function(exerciseLayout) {
-            // TODO(jamiealexandre): re-enable the following once endpoints are live
-            // $.getJSON("/api/exercises", function(exercisesCompleted) {
-            //     KMapEditor.init(exerciseLayout, [], exercisesCompleted, 8);
-            // });
-            KMapEditor.init(exerciseLayout, [], [], 8);
+            var exercise_ids = $.map(exerciseLayout, function(exercise) { return exercise.name });
+            console.log(exercise_ids);
+            doRequest("/api/get_exercise_logs", exercise_ids, "POST").success(function(data) {
+                var exercisesCompleted = {};
+                $.each(data, function(ind, status) {
+                    exercisesCompleted[status.exercise_id] = status.complete ? "complete" : "partial";
+                });
+                KMapEditor.init(exerciseLayout, [], exercisesCompleted, 8);
+            });
         });
     } else {
         $(".topic-button").hide();
