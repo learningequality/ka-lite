@@ -1,4 +1,5 @@
 import re, json, uuid
+from django.contrib.auth.decorators import login_required
 from django.core.serializers import json, serialize
 from django.core.urlresolvers import reverse
 from django.db.models.query import QuerySet
@@ -13,14 +14,36 @@ import crypto
 import settings
 from securesync.models import SyncSession, Device, RegisteredDevicePublicKey, Zone
 
+def central_server_only(handler):
+    def wrapper_fn(*args, **kwargs):
+        if not settings.CENTRAL_SERVER:
+            return HttpResponseNotFound("This path is only available on the central server.")
+        return handler(*args, **kwargs)
+    return wrapper_fn
+
+def distributed_server_only(handler):
+    def wrapper_fn(*args, **kwargs):
+        if settings.CENTRAL_SERVER:
+            return HttpResponseNotFound("This path is only available on distributed servers.")
+        return handler(*args, **kwargs)
+    return wrapper_fn
+
+@central_server_only
+@login_required
 @render_to("securesync/register_device.html")
 def register_device(request):
-    form = RegisteredDevicePublicKeyForm(request.user)
-    
+    if request.method == 'POST':
+        form = RegisteredDevicePublicKeyForm(request.user, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse("homepage"))
+    else:
+        form = RegisteredDevicePublicKeyForm(request.user)
     return {
         "form": form
     }
 
+@distributed_server_only
 @render_to("securesync/add_facility_user.html")
 def add_facility_user(request):
     if request.method == 'POST':
@@ -35,6 +58,7 @@ def add_facility_user(request):
         "form": form
     }
 
+@distributed_server_only
 @render_to("securesync/login.html")
 def login(request):
     if request.method == 'POST':
@@ -48,6 +72,7 @@ def login(request):
         "form": form
     }
 
+@distributed_server_only
 def logout(request):
     if "facility_user" in request.session:
         del request.session["facility_user"]

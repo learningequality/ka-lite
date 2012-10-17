@@ -1,0 +1,14 @@
+{% extends 'base_distributed.html' %}
+
+{% block title %}Add facility user{% endblock title %}
+
+{% block content %}
+
+<form action="." method="post" class="basic-form">
+{% csrf_token %}
+<h2>Register a device</h2>
+{{ form.as_p }}
+<input type="submit" value="Register" class="submit"/>
+</form>
+
+{% endblock content %}
