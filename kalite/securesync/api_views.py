@@ -3,9 +3,7 @@ from django.http import HttpResponse
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
 
-import crypto
-import settings
-from securesync.models import SyncSession, Device, RegisteredDevicePublicKey, json_serializer, get_device_counters
+from models import SyncSession, Device, RegisteredDevicePublicKey, json_serializer, get_device_counters, save_serialized_models
 
 
 class JsonResponse(HttpResponse):
@@ -101,13 +99,31 @@ def destroy_session(data, session):
 @csrf_exempt
 @require_sync_session
 def device_counters(data, session):
+    if "device_counters" not in data:
+        return JsonResponse({"error": "Must provide device counters."}, status=500)
     client_counters = data["device_counters"]
-    server_counters = get_device_counters(session)
-    
+    server_counters = get_device_counters(session.client_device.get_zones())
+    counters_to_request = {}
+    counters_to_send = {}
+    for device in client_counters:
+        if client_counters[device] > server_counters.get(device, 0):
+            counters_to_request[device] = server_counters.get(device, 0) + 1
+    for device in server_counters:
+        if server_counters[device] > client_counters.get(device, 0):
+            counters_to_send[device] = client_counters.get(device, 0) + 1
     return JsonResponse({
-        "body": request.raw_post_data
+        "device_counters": counters_to_request,
+        "models": get_serialized_models(counters_to_send, limit=data.get("limit", 100))
     })
 
+@csrf_exempt
+@require_sync_session
+def update_models(data, session):
+    if "models" not in data:
+        return JsonResponse({"error": "Must provide device counters."}, status=500)
+    save_serialized_models(data["models"])
+    return JsonResponse({})
+    
 
 def login_info(request):
     if "facility_user" not in request.session:

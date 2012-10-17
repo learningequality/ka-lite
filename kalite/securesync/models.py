@@ -315,6 +315,9 @@ class Device(SyncedModel):
         
     def __unicode__(self):
         return self.name
+
+    def get_zones(self):
+        return [dz.zone for dz in self.devicezone_set.all()]
         
     requires_authority_signature = True
 
@@ -337,8 +340,6 @@ def save_serialized_models(data):
             # TODO(jamalex): more robust way to do this? (otherwise, it barfs about the id already existing):
             model.object._state.adding = False
             model.object.full_clean()
-            if not model.verify():
-                raise ValidationError("The signature did not match!")
             # TODO(jamalex): also make sure that if the model already exists, it is signed by the same device
             # (to prevent devices from overwriting each other's models... or do we want to allow that?)
             model.object.save(imported=True)
