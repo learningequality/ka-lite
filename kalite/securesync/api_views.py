@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
 
+import crypto
 from models import SyncSession, Device, RegisteredDevicePublicKey, json_serializer, get_device_counters, save_serialized_models
 
 
@@ -126,14 +127,18 @@ def update_models(data, session):
     
 
 def login_info(request):
-    if "facility_user" not in request.session:
-        return JsonResponse({
-            "logged_in": False
-        })
-    else:
+    data = {
+        "logged_in": False,
+        "registered": True,
+    }
+    if "facility_user" in request.session:
         user = request.session["facility_user"]
-        return JsonResponse({
-            "logged_in": True,
-            "username": user.get_name(),
-        })
-
+        data["logged_in"] = True
+        data["username"] = user.get_name()
+    device = Device.get_own_device()
+    if not device:
+        data["registered"] = False
+        device = Device()
+        device.set_public_key(crypto.public_key)
+    data["public_key"] = device.public_key
+    return JsonResponse(data)
