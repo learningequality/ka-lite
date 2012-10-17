@@ -5,7 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 import crypto
 import settings
-from securesync.models import SyncSession, Device, RegisteredDevicePublicKey, json_serializer
+from securesync.models import SyncSession, Device, RegisteredDevicePublicKey, json_serializer, get_device_counters
 
 
 class JsonResponse(HttpResponse):
@@ -14,6 +14,15 @@ class JsonResponse(HttpResponse):
             content = simplejson.dumps(content, indent=2, ensure_ascii=False)
         super(JsonResponse, self).__init__(content, content_type='application/json', *args, **kwargs)
 
+def require_sync_session(handler):
+    def wrapper_fn(request):
+        data = simplejson.loads(request.raw_post_data or "{}")
+        try:
+            session = SyncSession.objects.get(client_nonce=data["client_nonce"])
+        except SyncSession.DoesNotExist:
+            return JsonResponse({"error": "Session with specified client nonce could not be found."}, status=500)
+        return handler(data, session)
+    return wrapper_fn
 
 @csrf_exempt
 def register_public_key(request):
@@ -84,29 +93,21 @@ def create_session(request):
     })
     
 @csrf_exempt
-def destroy_session(request):
-    try:
-        session = SyncSession.objects.get(client_nonce=data["client_nonce"])
-    except SyncSession.DoesNotExist:
-        return JsonResponse({"error": "Session with specified client nonce could not be found."}, status=500)
+@require_sync_session
+def destroy_session(data, session):
     session.delete()
     return JsonResponse({})
     
-    
 @csrf_exempt
-def count_models(request):
+@require_sync_session
+def device_counters(data, session):
+    client_counters = data["device_counters"]
+    server_counters = get_device_counters(session)
     
     return JsonResponse({
         "body": request.raw_post_data
     })
-    
-    
-@csrf_exempt 
-def update_models(request):
-    
-    return JsonResponse({
-        "body": request.raw_post_data
-    })
+
 
 def login_info(request):
     if "facility_user" not in request.session:
@@ -119,11 +120,4 @@ def login_info(request):
             "logged_in": True,
             "username": user.get_name(),
         })
-
-
-
-
-
-
-
 
