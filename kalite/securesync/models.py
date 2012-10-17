@@ -1,11 +1,12 @@
-from django.contrib.auth.models import User, get_hexdigest, check_password
+from django.contrib.auth.models import User, check_password
 from django.core import serializers
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
 import crypto
 import base64
 import uuid
-
+import random
+import hashlib
 
 _unhashable_fields = ["signature", "signed_by"]
 _always_hash_fields = ["signed_version", "id"]
@@ -218,11 +219,9 @@ class FacilityUser(SyncedModel):
         return check_password(raw_password, self.password)
 
     def set_password(self, raw_password):
-        import random
-        algo = 'sha1'
-        salt = get_hexdigest(algo, str(random.random()), str(random.random()))[:5]
-        hsh = get_hexdigest(algo, salt, raw_password)
-        self.password = '%s$%s$%s' % (algo, salt, hsh)
+        salt = hashlib.sha1(str(random.random())).hexdigest()[:5]
+        hsh = hashlib.sha1(salt + raw_password)
+        self.password = 'sha1$%s$%s' % (salt, hsh)
 
     def get_name(self):
         if self.first_name and self.last_name:
@@ -248,7 +247,7 @@ class DeviceZone(SyncedModel):
 class Device(SyncedModel):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
-    public_key = models.CharField(max_length=200)
+    public_key = models.CharField(max_length=200, db_index=True)
     revoked = models.BooleanField(default=False)
 
     def set_public_key(self, key):
