@@ -10,3 +10,4 @@ kalite/private_key.pem
 kalite/secrets.py
 .project
 .pydevproject
+.DS_Store
