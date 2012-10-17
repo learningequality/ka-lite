@@ -100,16 +100,24 @@ class SyncedModel(models.Model):
                 chunks.append("%s=%s" % (field, val))
         return "&".join(chunks)
 
-    def save(self, own_device=None, *args, **kwargs):
+    def save(self, own_device=None, imported=False, *args, **kwargs):
         own_device = own_device or Device.get_own_device()
         if not own_device:
             raise ValidationError("Cannot save any synced models before registering this Device.")
-        self.counter = own_device.increment_and_get_counter()
-        if not self.id:
-            namespace = own_device.id and uuid.UUID(own_device.id) or uuid.uuid4()
-            self.id = uuid.uuid5(namespace, str(self.counter)).hex
-            super(SyncedModel, self).save(*args, **kwargs) # TODO(jamalex): can we get rid of this?
-        if not self.signed_by or self.signed_by == own_device:
+        if imported:
+            if not self.signed_by:
+                raise ValidationError("Imported models must be signed.")
+            if not self.verify():
+                raise ValidationError("Imported model's signature did not match.")
+            self.signed_by.set_counter_position(self.counter)
+        else: # local model
+            if self.signed_by and self.signed_by != own_device:
+                raise ValidationError("Cannot modify models signed by another device.")
+            self.counter = own_device.increment_and_get_counter()
+            if not self.id:
+                namespace = own_device.id and uuid.UUID(own_device.id) or uuid.uuid4()
+                self.id = uuid.uuid5(namespace, str(self.counter)).hex
+                super(SyncedModel, self).save(*args, **kwargs) # TODO(jamalex): can we get rid of this?
             self.sign(device=own_device)
         super(SyncedModel, self).save(*args, **kwargs)
 
@@ -120,7 +128,6 @@ class SyncedModel(models.Model):
 
     def __unicode__(self):
         return "%s... (Signed by: %s...)" % (self.pk[0:5], self.signed_by.pk[0:5])
-
 
 
 class Organization(SyncedModel):
@@ -260,6 +267,14 @@ class Device(SyncedModel):
         except DeviceMetadata.DoesNotExist:
             return DeviceMetadata(device=self)
 
+    def set_counter_position(self, counter_position):
+        metadata = self.get_metadata()
+        if not metadata.device.id:
+            return
+        if counter_position > metadata.counter_position:
+            metadata.counter_position = counter_position
+            metadata.save()
+
     @staticmethod
     def get_own_device():
         devices = DeviceMetadata.objects.filter(is_own_device=True)
@@ -305,15 +320,13 @@ class Device(SyncedModel):
 
 syncing_models = [Device, Organization, Zone, DeviceZone, ZoneOrganization, Facility, FacilityUser]
 
-def get_serialized_models(device_counters=None, limit=1000):
+def get_serialized_models(device_counters=None, limit=100):
     if not device_counters:
         device_counters = dict((device.id, 0) for device in Device.objects.all())
     models = []
     for Model in syncing_models:
         for device_id, counter in device_counters.items():
-            models += Model.objects.filter(signed_by=device_id, counter__gte=counter)
-            if len(models) > limit:
-                return json_serializer.serialize(models[0:limit], ensure_ascii=False, indent=2)
+            models += Model.objects.filter(signed_by=device_id, counter__gte=counter, counter__lt=counter+limit)
     return json_serializer.serialize(models, ensure_ascii=False, indent=2)
     
 def save_serialized_models(data):
@@ -328,7 +341,7 @@ def save_serialized_models(data):
                 raise ValidationError("The signature did not match!")
             # TODO(jamalex): also make sure that if the model already exists, it is signed by the same device
             # (to prevent devices from overwriting each other's models... or do we want to allow that?)
-            model.save()
+            model.object.save(imported=True)
         except ValidationError as e:
             print "Error saving model %s: %s" % (model, e)
             unsaved_models.append(model.object)
@@ -340,5 +353,5 @@ def get_device_counters(zones):
     device_counters = {}
     for device_zone in DeviceZone.objects.filter(zone__in=zones):
         if device_zone.device.id not in device_counters:
-            device_counters[device_zone.device.id] = device_zone.device.get_metadata().counter_position + 1
+            device_counters[device_zone.device.id] = device_zone.device.get_metadata().counter_position
     return device_counters
