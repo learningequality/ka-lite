@@ -1,6 +1,7 @@
 import re, json, requests, urllib2, uuid
 
 from models import SyncSession, Device, RegisteredDevicePublicKey, json_serializer, get_device_counters, save_serialized_models
+import crypto
 import settings
 
 
@@ -32,10 +33,10 @@ class SyncClient(object):
             return "connection_error"
         except Exception:
             return "error"
-        
+            
     def register(self):
         r = self.post("register", {
-            "public_key": Device.get_own_device().public_key
+            "public_key": crypto.serialize_public_key()
         })
         if r.status_code == 200:
             return "registered"

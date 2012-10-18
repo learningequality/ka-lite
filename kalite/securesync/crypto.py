@@ -32,7 +32,7 @@ def verify(message, signature, key=None):
     except RSA.RSAError:
         return False
 
-def serialize_public_key(key):
+def serialize_public_key(key=public_key):
     return ":".join(base64.encodestring(x).replace("\n", "") for x in key.pub()).replace("\n", "")
     
 def deserialize_public_key(key_str):
