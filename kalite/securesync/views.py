@@ -13,6 +13,7 @@ from forms import RegisteredDevicePublicKeyForm, FacilityUserForm, LoginForm
 import crypto
 import settings
 from securesync.models import SyncSession, Device, RegisteredDevicePublicKey, Zone
+from securesync.api_client import SyncClient
 
 def central_server_only(handler):
     def wrapper_fn(*args, **kwargs):
@@ -28,10 +29,32 @@ def distributed_server_only(handler):
         return handler(*args, **kwargs)
     return wrapper_fn
 
+def register_public_key(request):
+    if settings.CENTRAL_SERVER:
+        return register_public_key_server(request)
+    else:
+        return register_public_key_client(request)
+
+@render_to("securesync/register_public_key_client.html")
+def register_public_key_client(request):
+    client = SyncClient()
+    if client.test_connection() != "success":
+        return {"no_internet": True}
+    reg_status = client.register()
+    if reg_status == "registered":
+        return {"newly_registered": True}
+    if reg_status == "device_already_registered":
+        return {"already_registered": True}
+    if reg_status == "public_key_unregistered":
+        return {
+            "unregistered": True,
+            "registration_url": client.path_to_url("/securesync/register/"),
+        }
+
 @central_server_only
 @login_required
-@render_to("securesync/register_device.html")
-def register_device(request):
+@render_to("securesync/register_public_key_server.html")
+def register_public_key_server(request):
     if request.method == 'POST':
         form = RegisteredDevicePublicKeyForm(request.user, data=request.POST)
         if form.is_valid():

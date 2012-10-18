@@ -2,15 +2,19 @@
 
 {% block basejs %}
 <script type="text/javascript">
-    doRequest("/securesync/api/logininfo").success(function(data){
+    doRequest("/securesync/api/status").success(function(data){
         if (data.logged_in){
             $('body').removeClass("logged-out");
             $('body').addClass("logged-in");
-            $('#logged_in_greeting').append(data.username + "!");
+            $('#logged_in_name').text(data.username);
         }
         else {
             $('body').removeClass("logged-in");
-            $('body').addClass("logged-out");
+            if (!data.registered && data.central_server_host) {
+                
+            } else {
+                $('body').addClass("logged-out");
+            }
         };
     })
 </script>
@@ -20,16 +24,17 @@
     <span class="dropdown topic-browser-dropdown">
         <a href="/" class="watch-navlink {% block watch_selected %}{% endblock watch_selected %}">Watch</a>
         <a href="/exercisedashboard" class="practice-navlink {% block practice_selected %}{% endblock practice_selected %}">Practice</a>
+        <a href="/securesync/adduser" class="logged-out-only">Sign Up</a>
+        <a href="/securesync/login" class="logged-out-only">Login</a>
     </span>
-    <span class="dropdown topic-browser-dropdown logged-out-only">
-        <a href="/securesync/adduser" class="">Sign Up</a>
-        <a href="/securesync/login" class="">Login</a>
+    <span class="dropdown topic-browser-dropdown unregistered-only">
+        <a href="/securesync/login" class="logged-out-only">Login</a>
+    </span>
+    <span class="logged-in-only">
+        Hi <span id="logged_in_name"></span>!
     </span>
     <span class="dropdown topic-browser-dropdown logged-in-only">
-        <a href="/securesync/logout" class="">Logout</a>
-    </span>
-    <span class="logged-in-only" id="logged_in_greeting">
-        Hi&nbsp;
+        <a href="/securesync/logout" class="">(Logout)</a>
     </span>
 
 
