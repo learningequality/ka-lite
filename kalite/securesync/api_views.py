@@ -143,17 +143,10 @@ def test_connection(request):
 def status(request):
     data = {
         "logged_in": False,
-        "registered": True,
+        "registered": Device.get_own_device() and True or False,
     }
     if "facility_user" in request.session:
         user = request.session["facility_user"]
         data["logged_in"] = True
         data["username"] = user.get_name()
-    device = Device.get_own_device()
-    if not device:
-        data["registered"] = False
-        data["central_server_host"] = settings.CENTRAL_SERVER_HOST
-        device = Device()
-        device.set_public_key(crypto.public_key)
-    data["public_key"] = device.public_key
     return JsonResponse(data)

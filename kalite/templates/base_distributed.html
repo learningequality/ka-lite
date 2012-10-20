@@ -10,8 +10,8 @@
         }
         else {
             $('body').removeClass("logged-in");
-            if (!data.registered && data.central_server_host) {
-                
+            if (!data.registered) {
+                $(".unregistered-only").show();
             } else {
                 $('body').addClass("logged-out");
             }
@@ -28,7 +28,7 @@
         <a href="/securesync/login" class="logged-out-only">Login</a>
     </span>
     <span class="dropdown topic-browser-dropdown unregistered-only">
-        <a href="/securesync/login" class="logged-out-only">Login</a>
+        <a href="/securesync/register" class="unregistered-only">Register device</a>
     </span>
     <span class="logged-in-only">
         Hi <span id="logged_in_name"></span>!

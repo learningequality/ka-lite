@@ -131,7 +131,7 @@ class SyncedModel(models.Model):
         return "%s... (Signed by: %s...)" % (self.pk[0:5], self.signed_by.pk[0:5])
 
 
-class Organization(SyncedModel):
+class Organization(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
     url = models.URLField(verbose_name="Website URL", blank=True)
@@ -160,7 +160,7 @@ ZONE_ORG_ROLES = (
     ("analytics", "Can view analytics, but not administer")
 )
 
-class ZoneOrganization(SyncedModel):
+class ZoneOrganization(models.Model):
     zone = models.ForeignKey(Zone)
     organization = models.ForeignKey(Organization)
     role = models.CharField(max_length=15, choices=ZONE_ORG_ROLES)
@@ -191,8 +191,6 @@ class Facility(SyncedModel):
     latitude = models.FloatField(blank=True, null=True)
     longitude = models.FloatField(blank=True, null=True)
     zone = models.ForeignKey(Zone)
-
-    requires_authority_signature = True
 
     class Meta:    
         verbose_name_plural = "Facilities"
@@ -320,7 +318,7 @@ class Device(SyncedModel):
         
     requires_authority_signature = True
 
-syncing_models = [Device, Organization, Zone, DeviceZone, ZoneOrganization, Facility, FacilityUser]
+syncing_models = [Device, Organization, Zone, DeviceZone, Facility, FacilityUser]
 
 def get_serialized_models(device_counters=None, limit=100):
     if not device_counters:

@@ -1,4 +1,4 @@
-import re, json, uuid
+import re, json, uuid, urllib
 from django.contrib.auth.decorators import login_required
 from django.core.serializers import json, serialize
 from django.core.urlresolvers import reverse
@@ -51,7 +51,7 @@ def register_public_key_client(request):
         return {
             "unregistered": True,
             "registration_url": client.path_to_url(
-                "/securesync/register/?" + crypto.serialize_public_key()),
+                "/securesync/register/?" + urllib.quote(crypto.serialize_public_key())),
         }
 
 @central_server_only

@@ -9,7 +9,7 @@ admin.site.register(SyncSession, SyncSessionAdmin)
 
 
 class RegisteredDevicePublicKeyAdmin(admin.ModelAdmin):
-    list_display = ("public_key", "public_key",)
+    list_display = ("public_key",)
     list_filter = ("zone",)
 admin.site.register(RegisteredDevicePublicKey, RegisteredDevicePublicKeyAdmin)
 
