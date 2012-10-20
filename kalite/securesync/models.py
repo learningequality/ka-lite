@@ -218,7 +218,7 @@ class FacilityUser(SyncedModel):
 
     def set_password(self, raw_password):
         salt = hashlib.sha1(str(random.random())).hexdigest()[:5]
-        hsh = hashlib.sha1(salt + raw_password)
+        hsh = hashlib.sha1(salt + raw_password).hexdigest()
         self.password = 'sha1$%s$%s' % (salt, hsh)
 
     def get_name(self):
