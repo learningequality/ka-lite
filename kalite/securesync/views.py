@@ -37,6 +37,8 @@ def register_public_key(request):
 
 @render_to("securesync/register_public_key_client.html")
 def register_public_key_client(request):
+    if Device.get_own_device():
+        return {"already_registered": True}
     client = SyncClient()
     if client.test_connection() != "success":
         return {"no_internet": True}
@@ -48,7 +50,8 @@ def register_public_key_client(request):
     if reg_status == "public_key_unregistered":
         return {
             "unregistered": True,
-            "registration_url": client.path_to_url("/securesync/register/"),
+            "registration_url": client.path_to_url(
+                "/securesync/register/?" + crypto.serialize_public_key()),
         }
 
 @central_server_only
