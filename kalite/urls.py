@@ -12,12 +12,21 @@ urlpatterns = patterns('',
     url(r'^securesync/', include(securesync.urls)),
 )
 
+urlpatterns += patterns('',
+        url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {
+            'document_root': settings.STATIC_ROOT,
+        }),
+   )
+
 if settings.CENTRAL_SERVER:
 
     urlpatterns += patterns('',
         url(r'^$', 'central.views.homepage', {}, 'homepage'), 
         url(r'^accounts/', include('registration.urls')),
     )
+    
+    handler404 = 'main.views.central_404_handler'
+    handler500 = 'main.views.central_500_handler'
 
 else:
     
@@ -26,5 +35,10 @@ else:
         url(r'^$', 'homepage', {}, 'homepage'),
         url(r'^videodownload/$', 'video_download', {}, 'video_download'),
         url(r'^api/', include('main.api_urls')),
+        
+        # the following pattern is a catch-all, so keep it last:
         url(r'^(?P<splat>.+)/$', 'splat_handler', {}, 'splat_handler'),
     )
+    
+    handler404 = 'main.views.distributed_404_handler'
+    handler500 = 'main.views.distributed_500_handler'
