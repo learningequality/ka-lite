@@ -13,3 +13,4 @@ kalite/secrets.py
 *.db
 *.sqlite*
 *.patch
+kalite/local_settings.py
