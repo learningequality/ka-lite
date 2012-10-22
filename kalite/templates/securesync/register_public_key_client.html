@@ -1,0 +1,37 @@
+{% extends 'base_distributed.html' %}
+
+{% block headjs %}
+<script>
+    $(function() {
+        $(".refresh-link").click(function() {
+            window.location.reload();
+        });
+    });
+</script>
+{% endblock headjs %}
+
+
+{% block content %}
+
+<h2>Device registration</h2>
+
+{% if newly_registered %}
+<p>Congratulations, this device has now been registered.</p>
+{% endif %}
+
+{% if already_registered %}
+<p>This device has already been registered.</p>
+{% endif %}
+
+{% if no_internet %}
+<p>The device needs to have internet access when first being registered. Please ensure it is connected to the internet, and then <a href="." class="refresh-link">refresh this page</a>.</p>
+{% endif %}
+
+{% if unregistered %}
+<ol>
+    <li>Login to the central server and <a href="{{ registration_url }}" target="_blank">register this device in a zone</a> (this will open a new window).</li>
+    <li>Return here and <a href="." class="refresh-link">refresh this page</a> to complete the registration process.</li>
+</ol>
+{% endif %}
+
+{% endblock content %}

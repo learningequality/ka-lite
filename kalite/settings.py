@@ -1,7 +1,7 @@
 import json
 import os
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -23,7 +23,7 @@ DATA_PATH = PROJECT_PATH + "/static/data/"
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-TIME_ZONE = 'America/Chicago'
+TIME_ZONE = 'America/Los_Angeles'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -48,7 +48,7 @@ STATIC_URL = '/static/'
 ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 # Directory where static files will be consolidated
-STATIC_ROOT = PROJECT_PATH + '/static-cache/'
+STATIC_ROOT = PROJECT_PATH + '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
@@ -98,6 +98,8 @@ INSTALLED_APPS = (
 
 CENTRAL_SERVER = False
 
+CENTRAL_SERVER_HOST = "http://127.0.0.1:9000/"
+
 ACCOUNT_ACTIVATION_DAYS = 7
 DEFAULT_FROM_EMAIL = 'kalite@adhocsync.com'
 
@@ -106,3 +108,7 @@ if CENTRAL_SERVER:
     EMAIL_BACKEND = 'postmark.backends.PostmarkBackend'
     from secrets import *
 
+try:
+    from local_settings import *
+except ImportError:
+    pass

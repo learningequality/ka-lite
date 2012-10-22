@@ -1,8 +1,9 @@
 {% extends 'base_distributed.html' %}
 
 {% block headjs %}
-
+<script src="{{ STATIC_URL }}js/jquery-ui.custom.min.js"></script>
 <script src="{{ STATIC_URL }}js/jquery.dynatree.min.js"></script>
+<link href="{{ STATIC_URL }}css/ui.dynatree.css"rel="stylesheet" type="text/css"/>
 
 <script type="text/javascript">
   var treeData = [
@@ -12,6 +13,7 @@
     {title: "Math", isFolder: true, key: "math",
       children: [
         {title: "Algebra",
+        icon: "circle-empty.png",
           children: [
             {title: "Intro", key: "intro" },
             {title: "Linear function", key: "linear-function" }
@@ -29,8 +31,10 @@
   ];
   
   
-  
+   $(function(){ 
+   	
       $("#tree3").dynatree({
+      imagePath:"../images/",
       checkbox: true,
       selectMode: 3,
       children: treeData,
@@ -65,8 +69,9 @@
       idPrefix: "dynatree-Cb3-"
     });
   
-  
+  });
 </script>
+
 {% endblock headjs %}
 
 

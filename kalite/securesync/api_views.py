@@ -4,6 +4,7 @@ from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
 
 import crypto
+import settings
 from models import SyncSession, Device, RegisteredDevicePublicKey, json_serializer, get_device_counters, save_serialized_models
 
 
@@ -24,15 +25,24 @@ def require_sync_session(handler):
     return wrapper_fn
 
 @csrf_exempt
-def register_public_key(request):
+def register_device(request):
     data = simplejson.loads(request.raw_post_data or "{}")
     if "public_key" not in data:
         return JsonResponse({"error": "Public key must be specified."}, status=500)
     try:
         registration = RegisteredDevicePublicKey.objects.get(pk=data["public_key"])
     except RegisteredDevicePublicKey.DoesNotExist:
-         return JsonResponse({"error": "Device registration with public key not found; "
-            "login and register first?"}, status=500)
+        try:
+            device = Device.objects.get(public_key=data["public_key"])
+            return JsonResponse({
+                "error": "This device has already been registered",
+                "code": "device_already_registered",
+            }, status=500)            
+        except Device.DoesNotExist:
+            return JsonResponse({
+                "error": "Device registration with public key not found; login and register first?",
+                "code": "public_key_unregistered",
+            }, status=500)
     client_device = Device()
     client_device.name = data.get("name", "New device")
     client_device.description = data.get("description", "")
@@ -125,20 +135,18 @@ def update_models(data, session):
     save_serialized_models(data["models"])
     return JsonResponse({})
     
+@csrf_exempt
+def test_connection(request):
+    return HttpResponse("OK")
 
-def login_info(request):
+
+def status(request):
     data = {
         "logged_in": False,
-        "registered": True,
+        "registered": Device.get_own_device() and True or False,
     }
     if "facility_user" in request.session:
         user = request.session["facility_user"]
         data["logged_in"] = True
         data["username"] = user.get_name()
-    device = Device.get_own_device()
-    if not device:
-        data["registered"] = False
-        device = Device()
-        device.set_public_key(crypto.public_key)
-    data["public_key"] = device.public_key
     return JsonResponse(data)

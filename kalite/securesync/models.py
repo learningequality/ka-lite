@@ -1,11 +1,12 @@
-from django.contrib.auth.models import User, get_hexdigest, check_password
+from django.contrib.auth.models import User, check_password
 from django.core import serializers
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
 import crypto
 import base64
 import uuid
-
+import random
+import hashlib
 
 _unhashable_fields = ["signature", "signed_by"]
 _always_hash_fields = ["signed_version", "id"]
@@ -45,7 +46,7 @@ class SyncSession(models.Model):
 
 
 class RegisteredDevicePublicKey(models.Model):
-    public_key = models.CharField(max_length=200, primary_key=True)
+    public_key = models.CharField(max_length=200, primary_key=True, help_text="(this field should be filled in automatically; don't change it)")
     zone = models.ForeignKey("Zone")
 
     def __unicode__(self):
@@ -130,7 +131,7 @@ class SyncedModel(models.Model):
         return "%s... (Signed by: %s...)" % (self.pk[0:5], self.signed_by.pk[0:5])
 
 
-class Organization(SyncedModel):
+class Organization(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
     url = models.URLField(verbose_name="Website URL", blank=True)
@@ -159,7 +160,7 @@ ZONE_ORG_ROLES = (
     ("analytics", "Can view analytics, but not administer")
 )
 
-class ZoneOrganization(SyncedModel):
+class ZoneOrganization(models.Model):
     zone = models.ForeignKey(Zone)
     organization = models.ForeignKey(Organization)
     role = models.CharField(max_length=15, choices=ZONE_ORG_ROLES)
@@ -191,8 +192,6 @@ class Facility(SyncedModel):
     longitude = models.FloatField(blank=True, null=True)
     zone = models.ForeignKey(Zone)
 
-    requires_authority_signature = True
-
     class Meta:    
         verbose_name_plural = "Facilities"
 
@@ -218,11 +217,9 @@ class FacilityUser(SyncedModel):
         return check_password(raw_password, self.password)
 
     def set_password(self, raw_password):
-        import random
-        algo = 'sha1'
-        salt = get_hexdigest(algo, str(random.random()), str(random.random()))[:5]
-        hsh = get_hexdigest(algo, salt, raw_password)
-        self.password = '%s$%s$%s' % (algo, salt, hsh)
+        salt = hashlib.sha1(str(random.random())).hexdigest()[:5]
+        hsh = hashlib.sha1(salt + raw_password).hexdigest()
+        self.password = 'sha1$%s$%s' % (salt, hsh)
 
     def get_name(self):
         if self.first_name and self.last_name:
@@ -248,7 +245,7 @@ class DeviceZone(SyncedModel):
 class Device(SyncedModel):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
-    public_key = models.CharField(max_length=200)
+    public_key = models.CharField(max_length=200, db_index=True)
     revoked = models.BooleanField(default=False)
 
     def set_public_key(self, key):
@@ -321,7 +318,7 @@ class Device(SyncedModel):
         
     requires_authority_signature = True
 
-syncing_models = [Device, Organization, Zone, DeviceZone, ZoneOrganization, Facility, FacilityUser]
+syncing_models = [Device, Organization, Zone, DeviceZone, Facility, FacilityUser]
 
 def get_serialized_models(device_counters=None, limit=100):
     if not device_counters:

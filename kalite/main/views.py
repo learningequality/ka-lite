@@ -1,5 +1,5 @@
 import re, json
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from annoying.decorators import render_to
@@ -30,8 +30,9 @@ def splat_handler(request, splat):
         else:
             children = [child for child in current_node['children'] if child['kind'] == seeking]
             if not children:
-                return HttpResponseNotFound("No children of type '%s' found for node '%s'!" %
-                    (seeking, current_node[title_key[current_node['kind']]]))
+                # return HttpResponseNotFound("No children of type '%s' found for node '%s'!" %
+                #     (seeking, current_node[title_key[current_node['kind']]]))
+                raise Http404
             match = None
             prev = None
             next = None
@@ -44,8 +45,9 @@ def splat_handler(request, splat):
                 else:
                     prev = child
             if not match:
-                return HttpResponseNotFound("Child with slug '%s' of type '%s' not found in node '%s'!" %
-                    (slug, seeking, current_node[title_key[current_node['kind']]]))
+                # return HttpResponseNotFound("Child with slug '%s' of type '%s' not found in node '%s'!" %
+                #     (slug, seeking, current_node[title_key[current_node['kind']]]))
+                raise Http404
             current_node = match
     if current_node["kind"] == "Topic":
         return topic_handler(request, current_node)
@@ -53,7 +55,8 @@ def splat_handler(request, splat):
         return video_handler(request, video=current_node, prev=prev, next=next)
     if current_node["kind"] == "Exercise":
         return exercise_handler(request, current_node)
-    return HttpResponseNotFound("No valid item found at this address!")
+    # return HttpResponseNotFound("No valid item found at this address!")
+    raise Http404
 
 @render_to("topic.html")
 def topic_handler(request, topic):
@@ -125,3 +128,10 @@ def video_download(request):
     }
     return context
         
+@render_to("404_distributed.html")
+def distributed_404_handler(request):
+    return {}
+    
+@render_to("500_distributed.html")
+def distributed_500_handler(request):
+    return {}

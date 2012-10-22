@@ -1,7 +1,6 @@
 *.pyc
 *.sublime-*
 kalite/static/flvplayer/template_maxi_1.6.0/
-kalite/userdata.sqlite
 notes.txt
 kalite/static/videos/
 kalite/static/presentation/
@@ -11,3 +10,7 @@ kalite/secrets.py
 .project
 .pydevproject
 .DS_Store
+*.db
+*.sqlite*
+*.patch
+kalite/local_settings.py

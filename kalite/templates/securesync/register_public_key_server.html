@@ -2,6 +2,14 @@
 
 {% block title %}Add facility user{% endblock title %}
 
+{% block headjs %}
+<script>
+    $(function() {
+        $("#id_public_key").val(window.location.search.slice(1));
+    });
+</script>
+{% endblock headjs %}
+
 {% block content %}
 
 <form action="." method="post" class="basic-form">
