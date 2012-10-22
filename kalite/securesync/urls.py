@@ -15,6 +15,7 @@ urlpatterns = patterns('securesync.api_views',
 urlpatterns += patterns('securesync.views',
     url(r'^register/$', 'register_public_key', {}, 'register_public_key'),
     url(r'^adduser/$', 'add_facility_user', {}, 'add_facility_user'),
+    url(r'^addfacility/$', 'add_facility', {}, 'add_facility'),
     url(r'^login/$', 'login', {}, 'login'),
     url(r'^logout/$', 'logout', {}, 'logout'),
 )

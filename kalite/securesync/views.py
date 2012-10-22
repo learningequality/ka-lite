@@ -84,6 +84,20 @@ def add_facility_user(request):
         "form": form
     }
 
+@render_to("securesync/add_facility.html")
+def add_facility(request):
+    if request.method == 'POST':
+        form = FacilityForm(data=request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect()
+    else:
+        form = FacilityForm()
+    return {
+        "form": form
+    }
+
+
 @distributed_server_only
 @render_to("securesync/login.html")
 def login(request):

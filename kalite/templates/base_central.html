@@ -7,12 +7,14 @@
 {% endblock basejs %}
 
 {% block sitewide_navigation %}
-    <span class="dropdown topic-browser-dropdown">
-        <a href="/" class="watch-navlink {% block watch_selected %}{% endblock watch_selected %}">Watch</a>
-        <a href="/exercisedashboard" class="practice-navlink {% block practice_selected %}{% endblock practice_selected %}">Practice</a>
-    </span>
-    <span class="dropdown topic-browser-dropdown" id="login_false">
-        <a href="/securesync/adduser" class="">Sign Up</a>
-        <a href="/securesync/login" class="">Login</a>
-    </span>
+	{% if user.is_authenticated %}
+		<span class="dropdown topic-browser-dropdown">
+        	<a href="/accounts/logout" class="">{{ user.username }} &nbsp; (Logout)</a>
+    	</span>
+    {% else %}
+	    <span class="dropdown topic-browser-dropdown">
+	        <a href="/accounts/register" class="">Sign Up</a>
+	        <a href="/accounts/login" class="">Login</a>
+	    </span>
+	{% endif %}
 {% endblock sitewide_navigation %}

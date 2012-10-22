@@ -23,6 +23,13 @@ class FacilityUserForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput, label="Password")
 
 
+class FacilityForm(forms.ModelForm):
+
+    class Meta:
+        model = Facility
+        fields = ("name", "description", "address", "latitude", "longitude", "zone",)
+
+
 class LoginForm(forms.ModelForm):
     password = forms.CharField(label="Password", widget=forms.PasswordInput)
 

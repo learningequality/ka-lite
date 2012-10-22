@@ -48,7 +48,7 @@ STATIC_URL = '/static/'
 ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 # Directory where static files will be consolidated
-STATIC_ROOT = PROJECT_PATH + '/static/'
+STATIC_ROOT = PROJECT_PATH + '/static-files/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
