@@ -1,7 +1,9 @@
 import os
 import sys
 
-# sys.path = ['/home/jamalex/webapps/ka-lite', '/home/jamalex/webapps/ka-lite/lib/python2.5'] + sys.path
+PROJECT_PATH = os.path.dirname(os.path.realpath(__file__))
+
+sys.path = [PROJECT_PATH, PROJECT_PATH + "/../"] + sys.path
 
 from django.core.handlers.wsgi import WSGIHandler
 
