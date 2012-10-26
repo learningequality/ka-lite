@@ -8,7 +8,7 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect, ge
 from django.template import RequestContext
 from django.utils import simplejson
 from annoying.decorators import render_to
-from forms import RegisteredDevicePublicKeyForm, FacilityUserForm, LoginForm
+from forms import RegisteredDevicePublicKeyForm, FacilityUserForm, LoginForm, FacilityForm
 
 import crypto
 import settings
@@ -90,7 +90,7 @@ def add_facility(request):
         form = FacilityForm(data=request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect()
+            return HttpResponseRedirect("add_facility_user")
     else:
         form = FacilityForm()
     return {
