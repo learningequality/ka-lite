@@ -242,3 +242,18 @@ li .progress-circle {
 .unregistered-only {
     display: none;
 }
+
+#content_tree .complete span.dynatree-icon {
+    margin-top: 2px;
+    background: url(/static/images/circle-complete.png) no-repeat;
+}
+
+#content_tree .partial span.dynatree-icon {
+    margin-top: 2px;    
+    background: url(/static/images/circle-partial.png) no-repeat;
+}
+
+#content_tree .unstarted span.dynatree-icon {
+    margin-top: 2px;
+    background: url(/static/images/circle-empty.png) no-repeat;
+}
