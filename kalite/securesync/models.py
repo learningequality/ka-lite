@@ -46,7 +46,7 @@ class SyncSession(models.Model):
 
 
 class RegisteredDevicePublicKey(models.Model):
-    public_key = models.CharField(max_length=200, primary_key=True, help_text="(this field should be filled in automatically; don't change it)")
+    public_key = models.CharField(max_length=500, primary_key=True, help_text="(this field should be filled in automatically; don't change it)")
     zone = models.ForeignKey("Zone")
 
     def __unicode__(self):
@@ -69,13 +69,13 @@ class DeviceMetadata(models.Model):
 class SyncedModel(models.Model):
     id = models.CharField(primary_key=True, max_length=32, editable=False)
     counter = models.IntegerField(editable=False)
-    signature = models.CharField(max_length=90, blank=True, editable=False)
+    signature = models.CharField(max_length=360, blank=True, editable=False)
     signed_version = models.IntegerField(default=1, editable=False)
     signed_by = models.ForeignKey("Device", blank=True, null=True, related_name="+", editable=False)
 
     def sign(self, device=None):
         self.signed_by = device or Device.get_own_device()
-        self.signature = base64.encodestring(crypto.sign(self._hashable_representation())).strip()
+        self.signature = base64.encodestring(crypto.sign(self._hashable_representation())).replace("\n", "")
 
     def verify(self):
         if not self.signed_by:
@@ -147,8 +147,6 @@ class Organization(models.Model):
     description = models.TextField(blank=True)
     url = models.URLField(verbose_name="Website URL", blank=True)
 
-    requires_authority_signature = True
-    
     def get_zones(self):
         return Zone.objects.filter(pk__in=[zo.zone.pk for zo in self.zoneorganization_set.all()])
 
@@ -166,19 +164,11 @@ class Zone(SyncedModel):
         return self.name
 
 
-ZONE_ORG_ROLES = (
-    ("superuser", "Full administrative privileges"),
-    ("analytics", "Can view analytics, but not administer")
-)
-
 class ZoneOrganization(models.Model):
     zone = models.ForeignKey(Zone)
     organization = models.ForeignKey(Organization)
-    role = models.CharField(max_length=15, choices=ZONE_ORG_ROLES)
     notes = models.TextField(blank=True)
 
-    requires_authority_signature = True
-    
     def __unicode__(self):
         return "Zone: %s, Organization: %s" % (self.zone, self.organization)
         
@@ -257,7 +247,6 @@ class Device(SyncedModel):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
     public_key = models.CharField(max_length=200, db_index=True)
-    revoked = models.BooleanField(default=False)
 
     def set_public_key(self, key):
         self.public_key = crypto.serialize_public_key(key)
@@ -327,8 +316,6 @@ class Device(SyncedModel):
     def get_zones(self):
         return [dz.zone for dz in self.devicezone_set.all()]
         
-    requires_authority_signature = True
-
 syncing_models = [Device, Organization, Zone, DeviceZone, Facility, FacilityUser]
 
 def get_serialized_models(device_counters=None, limit=100):

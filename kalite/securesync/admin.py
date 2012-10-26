@@ -60,6 +60,6 @@ admin.site.register(DeviceZone, DeviceZoneAdmin)
 
 
 class DeviceAdmin(admin.ModelAdmin):
-    list_display = ("name", "description", "revoked",)
+    list_display = ("name", "description",)
 admin.site.register(Device, DeviceAdmin)
 
