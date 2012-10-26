@@ -7,21 +7,28 @@
 
 <script type="text/javascript">
   var treeData = [
-    {title: "item1 with key and tooltip", tooltip: "Look, a tool tip!" },
-    {title: "item2: selected on init", select: true },
-    
+
     {title: "Math", isFolder: true, key: "math",
       children: [
-        {title: "Algebra",
-        icon: "circle-empty.png",
+        {
+          title: "Algebra",
+          addClass: "complete",
           children: [
-            {title: "Intro", key: "intro" },
+            {
+              title: "Intro",
+              key: "intro"
+            },
             {title: "Linear function", key: "linear-function" }
           ]
         },
         {title: "Geometry",
+        addClass: "partial",
           children: [
-            {title: "Basic geometry", key: "basic-geometry" },
+            {
+              title: "Basic geometry",
+              key: "basic-geometry", 
+              addClass: "unstarted"
+            },
             {title: "Angles", key: "angles" }
           ]
         }
@@ -33,7 +40,7 @@
   
    $(function(){ 
    	
-      $("#tree3").dynatree({
+      $("#content_tree").dynatree({
       imagePath:"../images/",
       checkbox: true,
       selectMode: 3,
@@ -74,31 +81,13 @@
 
 {% endblock headjs %}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 {% block content %}
   <p class="description">
     This tree has <b>checkoxes and selectMode 3 (hierarchical multi-selection)</b> enabled.<br>
     A double-click handler selects the node.<br>
     A keydown handler selects on [space].
   </p>
-  <div id="tree3"></div>
+  <div id="content_tree"></div>
   <div>Selected keys: <span id="echoSelection3">-</span></div>
   <div>Selected root keys: <span id="echoSelectionRootKeys3">-</span></div>
   <div>Selected root nodes: <span id="echoSelectionRoots3">-</span></div>
