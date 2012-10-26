@@ -3,13 +3,13 @@ from models import *
 
 
 class VideoLogAdmin(admin.ModelAdmin):
-    list_display = ("youtube_id", "user", "seconds_watched", "total_seconds_watched",)
-    list_filter = ("youtube_id", "user")
+    list_display = ("youtube_id", "user", "points", "total_seconds_watched", "complete",)
+    list_filter = ("youtube_id", "user", "complete",)
 admin.site.register(VideoLog, VideoLogAdmin)
 
 
 class ExerciseLogAdmin(admin.ModelAdmin):
-    list_display = ("exercise_id", "user", "correct", "streak_progress",)
-    list_filter = ("exercise_id", "user", "correct",)
+    list_display = ("exercise_id", "user", "streak_progress", "complete",)
+    list_filter = ("exercise_id", "user", "complete",)
 admin.site.register(ExerciseLog, ExerciseLogAdmin)
 

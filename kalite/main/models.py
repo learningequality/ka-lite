@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from securesync.models import SyncedModel, FacilityUser, syncing_models
 
@@ -5,20 +6,23 @@ from securesync.models import SyncedModel, FacilityUser, syncing_models
 class VideoLog(SyncedModel):
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
     youtube_id = models.CharField(max_length=11, db_index=True)
-    seconds_watched = models.IntegerField()
     total_seconds_watched = models.IntegerField(default=0)
-    points = models.IntegerField()
+    points = models.IntegerField(default=0)
     complete = models.BooleanField(default=False)
 
+    def get_uuid(self, *args, **kwargs):
+        namespace = uuid.UUID(self.user.id)
+        return uuid.uuid5(namespace, self.youtube_id).hex
 
 class ExerciseLog(SyncedModel):
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
     exercise_id = models.CharField(max_length=50, db_index=True)
-    answer = models.TextField(blank=True)
-    correct = models.BooleanField()
-    seed = models.IntegerField(blank=True, null=True)
-    streak_progress = models.IntegerField()
-    hints_used = models.IntegerField(blank=True, null=True)
-    
+    streak_progress = models.IntegerField(default=0)
+    attempts = models.IntegerField(default=0)
+    complete = models.BooleanField(default=False)
+
+    def get_uuid(self, *args, **kwargs):
+        namespace = uuid.UUID(self.user.id)
+        return uuid.uuid5(namespace, self.exercise_id).hex
 
 syncing_models.extend([VideoLog, ExerciseLog])
