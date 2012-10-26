@@ -3,7 +3,6 @@
 {% block title %}Add Facility{% endblock title %}
 
 {% block extra_head %}{{ block.super }}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/addfacility.css"></link>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUVMGp6Uks8OCczFfrWo20zHnmENyW5O0&v=3.exp&sensor=false&libraries=places">
 </script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
@@ -65,8 +64,10 @@ function initialize()
         var bounds = map.getBounds();
         searchBox.setBounds(bounds);
 
-
+   
     });
+
+    $('#map_canvas').show();
 
 }
 
@@ -83,20 +84,41 @@ function addr(ad) {
 
 </script>
 
+<style>
+#map_canvas {
+    display: none;
+}
+#search-panel {
+    position: absolute;
+    top: 575px;
+    left: 50%;
+    margin-left: -180px;
+    width: 350px;
+    z-index: 5;
+    background-color: #fff;
+    padding: 5px;
+    border: 1px solid #999;
+}       
+#target {
+    width: 345px;
+}
+</style>
+
 {% endblock %}
 
 {% block content %}
-
+<h2>Add a new facility</h2>
+<div id="search-panel">
+    <input id="target" type="text" placeholder="Search Box">
+</div>
+<div id="map_canvas" style="width:100%; height: 600px"></div>
 <form action="." method="post" class="basic-form">
 {% csrf_token %}
-<h2>Add a new facility</h2>
+<div></div>
 {{ form.as_p }}
 <input type="submit" value="Create facility" class="submit"/>
 </form>
 
-<div id="search-panel">
-            <input id="target" type="text" placeholder="Search Box">
-        </div>
-        <div id="map_canvas" style="width:100%; height: 600px"></div>
+
 
 {% endblock content %}
