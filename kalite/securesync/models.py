@@ -116,11 +116,22 @@ class SyncedModel(models.Model):
                 raise ValidationError("Cannot modify models signed by another device.")
             self.counter = own_device.increment_and_get_counter()
             if not self.id:
-                namespace = own_device.id and uuid.UUID(own_device.id) or uuid.uuid4()
-                self.id = uuid.uuid5(namespace, str(self.counter)).hex
+                self.id = self.get_uuid(own_device=own_device)
                 super(SyncedModel, self).save(*args, **kwargs) # TODO(jamalex): can we get rid of this?
             self.sign(device=own_device)
         super(SyncedModel, self).save(*args, **kwargs)
+
+    def get_uuid(self, own_device=None):
+        own_device = own_device or Device.get_own_device()
+        namespace = own_device.id and uuid.UUID(own_device.id) or uuid.uuid4()
+        return uuid.uuid5(namespace, str(self.counter)).hex
+
+    def get_existing_instance(self):
+        uuid = self.id or self.get_uuid()
+        try:
+            return self.__class__.objects.get(id=uuid)
+        except self.__class__.DoesNotExist:
+            return None
 
     requires_authority_signature = False
 
