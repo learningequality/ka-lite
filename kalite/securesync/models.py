@@ -133,6 +133,9 @@ class SyncedModel(models.Model):
         except self.__class__.DoesNotExist:
             return None
 
+    def get_zone(self):
+        return getattr(self, "zone", None) or (self.signed_by and self.signed_by.get_zone()) or None
+
     requires_authority_signature = False
 
     class Meta:
@@ -191,13 +194,13 @@ class Facility(SyncedModel):
     address_normalized = models.CharField(max_length=400, blank=True)
     latitude = models.FloatField(blank=True, null=True)
     longitude = models.FloatField(blank=True, null=True)
-    zone = models.ForeignKey(Zone)
+    zone = models.ForeignKey(Zone, blank=True, null=True)
 
     class Meta:    
         verbose_name_plural = "Facilities"
 
     def __unicode__(self):
-        return "%s (Zone: %s)" % (self.name, self.zone)
+        return "%s (Zone: %s)" % (self.name, self.zone)    
 
 
 class FacilityUser(SyncedModel):
@@ -207,6 +210,7 @@ class FacilityUser(SyncedModel):
     last_name = models.CharField(max_length=30, blank=True)
     notes = models.TextField(blank=True)
     password = models.CharField(max_length=128, help_text="Use '[algo]$[salt]$[hexdigest]'.")
+    zone = models.ForeignKey(Zone, blank=True, null=True)
 
     class Meta:
         unique_together = ("facility", "username")
@@ -230,17 +234,14 @@ class FacilityUser(SyncedModel):
 
 
 class DeviceZone(SyncedModel):
-    device = models.ForeignKey("Device")
+    device = models.ForeignKey("Device", unique=True)
     zone = models.ForeignKey("Zone", db_index=True)
     primary = models.BooleanField(default=True)
-    
-    class Meta:
-        unique_together = ("device", "zone")
-        
+            
     requires_authority_signature = True
 
     def __unicode__(self):
-        return "Device: %s, Zone: %s" % (self.device, self.zone)
+        return "Device: %s, assigned to Zone: %s" % (self.device, self.zone)
 
 
 class Device(SyncedModel):
@@ -313,8 +314,9 @@ class Device(SyncedModel):
     def __unicode__(self):
         return self.name
 
-    def get_zones(self):
-        return [dz.zone for dz in self.devicezone_set.all()]
+    def get_zone(self):
+        zones = self.devicezone_set.all()
+        return zones.count() and zones[0] or None
         
 syncing_models = [Device, Organization, Zone, DeviceZone, Facility, FacilityUser]
 
@@ -343,11 +345,9 @@ def save_serialized_models(data):
             unsaved_models.append(model.object)
     return unsaved_models
     
-def get_device_counters(zones):
-    if not isinstance(zones, list):
-        zones = [zones]
+def get_device_counters(zone):
     device_counters = {}
-    for device_zone in DeviceZone.objects.filter(zone__in=zones):
+    for device_zone in DeviceZone.objects.filter(zone=zone):
         if device_zone.device.id not in device_counters:
             device_counters[device_zone.device.id] = device_zone.device.get_metadata().counter_position
     return device_counters

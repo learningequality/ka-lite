@@ -113,7 +113,7 @@ def device_counters(data, session):
     if "device_counters" not in data:
         return JsonResponse({"error": "Must provide device counters."}, status=500)
     client_counters = data["device_counters"]
-    server_counters = get_device_counters(session.client_device.get_zones())
+    server_counters = get_device_counters(session.client_device.get_zone())
     counters_to_request = {}
     counters_to_send = {}
     for device in client_counters:
