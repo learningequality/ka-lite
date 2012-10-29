@@ -29,7 +29,8 @@
               key: "basic-geometry", 
               addClass: "unstarted"
             },
-            {title: "Angles", key: "angles" }
+            {title: "Angles", key: "angles" },
+            {title: "Triangles", key: "triangles", addClass:"complete"}
           ]
         }
       ]
@@ -70,6 +71,7 @@
           return false;
         }
       },
+
       // The following options are only required, if we have more than one tree on one page:
 //        initId: "treeData",
       cookieId: "dynatree-Cb3",
@@ -77,6 +79,16 @@
     });
   
   });
+  
+	function findincomplete(){
+      	var arr = $("#content_tree").dynatree("getSelectedNodes");
+      	var arr_incomplete =  $.grep(arr, function(node){	
+      		return !$(node.span).hasClass("complete") && node.childList == null; 
+      	});
+      	
+      	return arr_incomplete;
+	}
+  
 </script>
 
 {% endblock headjs %}
