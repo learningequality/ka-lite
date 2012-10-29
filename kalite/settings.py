@@ -75,6 +75,15 @@ STATICFILES_FINDERS = (
 SECRET_KEY = hasattr(local_settings, "SECRET_KEY") and local_settings.SECRET_KEY \
     or "8qq-!fa$92i=s1gjjitd&%s@4%ka9lj+=@n7a&fzjpwu%3kd#u"
 
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.contrib.auth.context_processors.auth",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.i18n",
+    "django.core.context_processors.media",
+    "django.core.context_processors.static",
+    "django.contrib.messages.context_processors.messages"
+)
+
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     "django.template.loaders.filesystem.Loader",
@@ -87,6 +96,7 @@ MIDDLEWARE_CLASSES = (
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
 )
 
 ROOT_URLCONF = "kalite.urls"
@@ -104,6 +114,7 @@ INSTALLED_APPS = (
     "main",
     "securesync",
     "django.contrib.humanize",
+    "django.contrib.messages",
 )
 
 CENTRAL_SERVER_HOST = "http://127.0.0.1:9000/"
