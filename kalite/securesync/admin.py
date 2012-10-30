@@ -15,7 +15,7 @@ admin.site.register(RegisteredDevicePublicKey, RegisteredDevicePublicKeyAdmin)
 
 
 class DeviceMetadataAdmin(admin.ModelAdmin):
-    list_display = ("device", "is_trusted_authority", "is_own_device", "counter_position",)
+    list_display = ("device", "is_trusted", "is_own_device", "counter_position",)
 admin.site.register(DeviceMetadata, DeviceMetadataAdmin)
 
 

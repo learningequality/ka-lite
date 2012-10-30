@@ -3,15 +3,18 @@ from django.core import serializers
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
 import crypto
-import base64
 import uuid
 import random
 import hashlib
+import settings
+
 
 _unhashable_fields = ["signature", "signed_by"]
 _always_hash_fields = ["signed_version", "id"]
 
 json_serializer = serializers.get_serializer("json")()
+
+ROOT_UUID_NAMESPACE = uuid.uuid5(uuid.NAMESPACE_URL, settings.CENTRAL_SERVER_HOST)
 
 
 class SyncSession(models.Model):
@@ -29,7 +32,7 @@ class SyncSession(models.Model):
         
     def _verify_signature(self, device, signature):
         return crypto.verify(self._hashable_representation(),
-                             base64.decodestring(signature),
+                             decode_base64(signature),
                              device.get_public_key())
 
     def verify_client_signature(self, signature):
@@ -39,7 +42,7 @@ class SyncSession(models.Model):
         return self._verify_signature(self.server_device, signature)
 
     def sign(self):
-        return base64.encodestring(crypto.sign(self._hashable_representation())).strip()
+        return crypto.encode_base64(crypto.sign(self._hashable_representation()))
         
     def __unicode__(self):
         return "%s... -> %s..." % (self.client_device.pk[0:5], self.server_device.pk[0:5])
@@ -55,7 +58,7 @@ class RegisteredDevicePublicKey(models.Model):
 
 class DeviceMetadata(models.Model):
     device = models.OneToOneField("Device", blank=True, null=True)
-    is_trusted_authority = models.BooleanField(default=False)
+    is_trusted = models.BooleanField(default=False)
     is_own_device = models.BooleanField(default=False)
     counter_position = models.IntegerField(default=0)
 
@@ -75,15 +78,18 @@ class SyncedModel(models.Model):
 
     def sign(self, device=None):
         self.signed_by = device or Device.get_own_device()
-        self.signature = base64.encodestring(crypto.sign(self._hashable_representation())).replace("\n", "")
+        self.signature = crypto.encode_base64(crypto.sign(self._hashable_representation()))
 
     def verify(self):
         if not self.signed_by:
             return False
-        if self.requires_authority_signature and not self.signed_by.get_metadata().is_trusted_authority:
+        if self.requires_trusted_signature and not self.signed_by.get_metadata().is_trusted:
             return False
         key = self.signed_by.get_public_key()
-        return crypto.verify(self._hashable_representation(), base64.decodestring(self.signature), key)
+        try:
+            return crypto.verify(self._hashable_representation(), crypto.decode_base64(self.signature), key)
+        except:
+            return False
     
     def _hashable_representation(self, fields=None):
         if not fields:
@@ -116,14 +122,14 @@ class SyncedModel(models.Model):
                 raise ValidationError("Cannot modify models signed by another device.")
             self.counter = own_device.increment_and_get_counter()
             if not self.id:
-                self.id = self.get_uuid(own_device=own_device)
+                self.id = self.get_uuid()
                 super(SyncedModel, self).save(*args, **kwargs) # TODO(jamalex): can we get rid of this?
             self.sign(device=own_device)
         super(SyncedModel, self).save(*args, **kwargs)
 
-    def get_uuid(self, own_device=None):
-        own_device = own_device or Device.get_own_device()
-        namespace = own_device.id and uuid.UUID(own_device.id) or uuid.uuid4()
+    def get_uuid(self):
+        own_device = Device.get_own_device()
+        namespace = own_device.id and uuid.UUID(own_device.id) or ROOT_UUID_NAMESPACE
         return uuid.uuid5(namespace, str(self.counter)).hex
 
     def get_existing_instance(self):
@@ -136,7 +142,7 @@ class SyncedModel(models.Model):
     def get_zone(self):
         return getattr(self, "zone", None) or (self.signed_by and self.signed_by.get_zone()) or None
 
-    requires_authority_signature = False
+    requires_trusted_signature = False
 
     class Meta:
         abstract = True
@@ -161,7 +167,7 @@ class Zone(SyncedModel):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
 
-    requires_authority_signature = True
+    requires_trusted_signature = True
     
     def __unicode__(self):
         return self.name
@@ -238,14 +244,14 @@ class DeviceZone(SyncedModel):
     zone = models.ForeignKey("Zone", db_index=True)
     primary = models.BooleanField(default=True)
             
-    requires_authority_signature = True
+    requires_trusted_signature = True
 
     def __unicode__(self):
         return "Device: %s, assigned to Zone: %s" % (self.device, self.zone)
 
 
 class Device(SyncedModel):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, blank=True)
     description = models.TextField(blank=True)
     public_key = models.CharField(max_length=200, db_index=True)
 
@@ -277,30 +283,22 @@ class Device(SyncedModel):
     def get_own_device():
         devices = DeviceMetadata.objects.filter(is_own_device=True)
         if devices.count() == 0:
-            return None
-        return devices[0].device
+            own_device = Device.initialize_own_device()
+        else:
+            own_device = devices[0].device
+        return own_device
     
     @staticmethod
-    def initialize_central_authority_device(name):
-        own_device = Device()
-        own_device.name = name
+    def initialize_own_device(**kwargs):
+        own_device = Device(**kwargs)
         own_device.set_public_key(crypto.public_key)
-        own_device.save(self_signed=True, is_own_device=True)
-            
-    def save(self, self_signed=False, is_own_device=False, *args, **kwargs):
-        super(Device, self).save(own_device=is_own_device and self or None, *args, **kwargs)
-        if self_signed and is_own_device:
-            self.set_public_key(crypto.public_key)
-            self.sign(device=self)
-            super(Device, self).save(own_device=self, *args, **kwargs)
-        if self_signed:
-            metadata = self.get_metadata()
-            metadata.is_trusted_authority = True
-            metadata.save()
-        if is_own_device:
-            metadata = self.get_metadata()
-            metadata.is_own_device = True
-            metadata.save()
+        own_device.sign(device=own_device)
+        own_device.save(own_device=own_device)
+        metadata = own_device.get_metadata()
+        metadata.is_own_device = True
+        metadata.is_trusted = True
+        metadata.save()
+        return own_device
 
     @transaction.commit_on_success
     def increment_and_get_counter(self):
@@ -312,13 +310,20 @@ class Device(SyncedModel):
         return metadata.counter_position
         
     def __unicode__(self):
-        return self.name
+        return self.name or self.id[0:5]
 
     def get_zone(self):
         zones = self.devicezone_set.all()
         return zones.count() and zones[0] or None
-        
+
+    def get_uuid(self):
+        if not self.public_key:
+            return uuid.uuid4()
+        return uuid.uuid5(ROOT_UUID_NAMESPACE, self.public_key).hex
+
+
 syncing_models = [Device, Organization, Zone, DeviceZone, Facility, FacilityUser]
+
 
 def get_serialized_models(device_counters=None, limit=100):
     if not device_counters:
