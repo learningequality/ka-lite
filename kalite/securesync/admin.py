@@ -42,8 +42,7 @@ admin.site.register(OrganizationUser, OrganizationUserAdmin)
 
 
 class FacilityAdmin(admin.ModelAdmin):
-    list_display = ("name", "address", "zone")
-    list_filter = ("zone",)
+    list_display = ("name", "address",)
 admin.site.register(Facility, FacilityAdmin)
 
 

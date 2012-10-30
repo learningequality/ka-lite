@@ -200,13 +200,12 @@ class Facility(SyncedModel):
     address_normalized = models.CharField(max_length=400, blank=True)
     latitude = models.FloatField(blank=True, null=True)
     longitude = models.FloatField(blank=True, null=True)
-    zone = models.ForeignKey(Zone, blank=True, null=True)
 
     class Meta:    
         verbose_name_plural = "Facilities"
 
     def __unicode__(self):
-        return "%s (Zone: %s)" % (self.name, self.zone)    
+        return "%s (%s)" % (self.name, self.id[:5])
 
 
 class FacilityUser(SyncedModel):
@@ -216,13 +215,12 @@ class FacilityUser(SyncedModel):
     last_name = models.CharField(max_length=30, blank=True)
     notes = models.TextField(blank=True)
     password = models.CharField(max_length=128, help_text="Use '[algo]$[salt]$[hexdigest]'.")
-    zone = models.ForeignKey(Zone, blank=True, null=True)
 
     class Meta:
         unique_together = ("facility", "username")
 
     def __unicode__(self):
-        return "%s (Facility: %s)" % ((self.first_name + " " + self.last_name).strip() or self.username, self.facility)
+        return "%s (Facility: %s)" % (self.get_name(), self.facility)
         
     def check_password(self, raw_password):
         return check_password(raw_password, self.password)
