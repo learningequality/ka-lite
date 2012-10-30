@@ -94,7 +94,7 @@ def add_facility(request):
         form = FacilityForm(data=request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect("add_facility_user")
+            return HttpResponseRedirect(reverse("add_facility_user"))
     else:
         form = FacilityForm()
     return {
