@@ -152,18 +152,6 @@ class SyncedModel(models.Model):
         return "%s... (Signed by: %s...)" % (self.pk[0:5], self.signed_by.pk[0:5])
 
 
-class Organization(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True)
-    url = models.URLField(verbose_name="Website URL", blank=True)
-
-    def get_zones(self):
-        return Zone.objects.filter(pk__in=[zo.zone.pk for zo in self.zoneorganization_set.all()])
-
-    def __unicode__(self):
-        return self.name
-
-
 class Zone(SyncedModel):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
@@ -172,27 +160,7 @@ class Zone(SyncedModel):
     
     def __unicode__(self):
         return self.name
-
-
-class ZoneOrganization(models.Model):
-    zone = models.ForeignKey(Zone)
-    organization = models.ForeignKey(Organization)
-    notes = models.TextField(blank=True)
-
-    def __unicode__(self):
-        return "Zone: %s, Organization: %s" % (self.zone, self.organization)
         
-
-class OrganizationUser(models.Model):
-    user = models.ForeignKey(User)
-    organization = models.ForeignKey(Organization)
-
-    def get_zones(self):
-        return self.organization.get_zones()
-
-    def __unicode__(self):
-        return "%s (Organization: %s)" % (self.user, self.organization)
-
 
 class Facility(SyncedModel):
     name = models.CharField(max_length=100)
@@ -320,7 +288,7 @@ class Device(SyncedModel):
         return uuid.uuid5(ROOT_UUID_NAMESPACE, self.public_key).hex
 
 
-syncing_models = [Device, Organization, Zone, DeviceZone, Facility, FacilityUser]
+syncing_models = [Device, Zone, DeviceZone, Facility, FacilityUser]
 
 
 def get_serialized_models(device_counters=None, limit=100):
