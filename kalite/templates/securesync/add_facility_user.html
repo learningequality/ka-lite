@@ -1,5 +1,6 @@
 {% extends 'base_distributed.html' %}
 
+
 {% block title %}Add facility user{% endblock title %}
 
 {% block content %}
@@ -10,5 +11,9 @@
 {{ form.as_p }}
 <input type="submit" value="Create user" class="submit"/>
 </form>
+
+<script>
+$('#id_facility').parent().append('<a href="{% url add_facility %}"> (Add a new Facility)</a>');
+</script>
 
 {% endblock content %}

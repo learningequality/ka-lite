@@ -5,7 +5,6 @@
 {% block extra_head %}{{ block.super }}
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUVMGp6Uks8OCczFfrWo20zHnmENyW5O0&v=3.exp&sensor=false&libraries=places">
 </script>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 <script> 
 $(function() {
     $('#id_address_normalized').parent().hide();
@@ -68,6 +67,8 @@ function initialize()
     });
 
     $('#map_canvas').show();
+    $('#id_direc_no_map').hide();
+    $('#id_direc_map').show();
 
 }
 
@@ -102,19 +103,33 @@ function addr(ad) {
 #target {
     width: 345px;
 }
+
+#id_name, #id_address {
+    width: 300px;
+} 
+
+#id_latitude, #id_longitude {
+    width: 150px;
+}
+
+#id_direc_map {
+    display: none;
+}
+
 </style>
 
 {% endblock %}
 
 {% block content %}
 <h2>Add a new facility</h2>
+<p id="id_direc_no_map">Please enter the following information about your facility.</p>
+<p id="id_direc_map">Please use this map and search box to find your Facility, then enter the information in the form below</p>
 <div id="search-panel">
     <input id="target" type="text" placeholder="Search Box">
 </div>
 <div id="map_canvas" style="width:100%; height: 600px"></div>
 <form action="." method="post" class="basic-form">
 {% csrf_token %}
-<div></div>
 {{ form.as_p }}
 <input type="submit" value="Create facility" class="submit"/>
 </form>
