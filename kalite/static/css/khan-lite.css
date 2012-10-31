@@ -243,6 +243,14 @@ li .progress-circle {
     display: none;
 }
 
+.errors, .login_error {
+    color: red;
+}
+
+.login_error {
+    margin: 0;
+}
+
 #content_tree .complete span.dynatree-icon {
     margin-top: 2px;
     background: url(/static/images/circle-complete.png) no-repeat;
