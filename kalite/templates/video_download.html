@@ -13,6 +13,7 @@
         {
           title: "Algebra",
           addClass: "complete",
+          key: "algebra",
           children: [
             {
               title: "Intro",
@@ -23,6 +24,7 @@
         },
         {title: "Geometry",
         addClass: "partial",
+        key: "geometry",
           children: [
             {
               title: "Basic geometry",
@@ -87,6 +89,12 @@
       	});
       	
       	return arr_incomplete;
+	}
+	
+	function setNodeClass(nodeKey,className){
+		var node = $("#content_tree").dynatree("getTree").getNodeByKey(nodeKey);
+		var $span = $(node.span);
+		$span.removeClass("unstarted partial complete").addClass(className);
 	}
   
 </script>
