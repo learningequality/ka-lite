@@ -7,16 +7,37 @@
 <h1>Log in</h1>
 
 {% if form.errors %}
-<p class="error">Please correct the errors below:</p>
+<p class="login_error">Incorrect user name or password:</p>
 {% endif %}
-
 <form method="post" action="?next={{ next|default:"/" }}">{% csrf_token %}
 <dl>
-<dt><label for="id_username">Username:</label>{% if form.username.errors %} <span class="error">{{ form.username.errors|join:", " }}</span>{% endif %}</dt>
-<dd>{{ form.username }}</dd>
-<dt><label for="id_password">Password:</label>{% if form.password.errors %} <span class="error">{{ form.password.errors|join:", " }}</span>{% endif %}</dt>
-<dd>{{ form.password }}</dd>
-<dt><input type="submit" value="Log in" /></dt>
+<dt>
+	<label for="id_username">
+		Email:
+	</label>
+	{% if form.username.errors %} 
+	<span class="errors">
+		{{ form.email.errors.as_text }}
+	</span>{% endif %}
+</dt>
+<dd>
+	{{ form.username }}
+</dd>
+<dt>
+	<label for="id_password">
+		Password:
+	</label>
+	{% if form.password1.errors %} 
+	<span class="errors">
+		{{ form.password1.errors.as_text }}
+	</span>{% endif %}
+</dt>
+<dd>
+	{{ form.password }}
+</dd>
+<dt>
+	<input type="submit" value="Log in" />
+</dt>
 </dl>
 </form>
 {% endblock %}

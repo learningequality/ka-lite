@@ -12,12 +12,14 @@
   
   <form method="post" action="" class="wide">
 	{% csrf_token %}
+    <input type="hidden" name="username"/>
     <p>
-      <label for="id_username">Username:</label>
-      {% if form.username.errors %}
-        <p class="errors">{{ form.username.errors.as_text }}</p>
-      {% endif %}
-      {{ form.username }}
+      <label for="id_first_name">First Name:</label>
+      {{ form.first_name }}
+    </p>
+    <p>
+      <label for="id_last_name">Last Name:</label>
+      {{ form.last_name }}
     </p>
     <p>
       <label for="id_email">Email address:</label>
