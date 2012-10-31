@@ -23,6 +23,7 @@ class SyncSession(models.Model):
     server_nonce = models.CharField(max_length=32, blank=True)
     server_device = models.ForeignKey("Device", blank=True, null=True, related_name="server_sessions")
     verified = models.BooleanField(default=False)
+    timestamp = models.DateTimeField(auto_now=True)
     
     def _hashable_representation(self):
         return "%s:%s:%s:%s" % (
@@ -240,7 +241,6 @@ class FacilityUser(SyncedModel):
 class DeviceZone(SyncedModel):
     device = models.ForeignKey("Device", unique=True)
     zone = models.ForeignKey("Zone", db_index=True)
-    primary = models.BooleanField(default=True)
             
     requires_trusted_signature = True
 

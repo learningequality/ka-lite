@@ -53,7 +53,7 @@ admin.site.register(FacilityUser, FacilityUserAdmin)
 
 
 class DeviceZoneAdmin(admin.ModelAdmin):
-    list_display = ("device", "zone", "primary",)
+    list_display = ("device", "zone",)
     list_filter = ("device", "zone",)
 admin.site.register(DeviceZone, DeviceZoneAdmin)
 
