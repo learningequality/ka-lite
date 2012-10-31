@@ -14,16 +14,16 @@ class JsonResponse(HttpResponse):
 
 
 def save_video_log(request):
+    if "facility_user" not in request.session:
+        return JsonResponse({})
     data = simplejson.loads(request.raw_post_data or "{}")
     videolog = VideoLog()
-    if "facility_user" in request.session:
-        videolog.user = request.session["facility_user"]
-        videolog.total_seconds_watched = data.get("total_seconds_watched", 0)
+    videolog.user = request.session["facility_user"]
     videolog.youtube_id = data.get("youtube_id", "")
-    videolog.seconds_watched = data.get("seconds_watched", None)
-    videolog.complete = data.get("complete", False)
-    videolog.points = data.get("points", None)
-    
+    old_videolog = videolog.get_existing_instance() or VideoLog()
+    videolog.total_seconds_watched = old_videolog.total_seconds_watched + data.get("seconds_watched", 0)
+    videolog.complete = old_videolog.complete or data.get("complete", False)
+    videolog.points = max(old_videolog.points, data.get("points", None)) or None
     try:
         videolog.full_clean()
         videolog.save()
@@ -36,15 +36,14 @@ def save_video_log(request):
 
 
 def save_exercise_log(request):
+    if "facility_user" not in request.session:
+        return JsonResponse({})
     data = simplejson.loads(request.raw_post_data or "{}")
     exerciselog = ExerciseLog()
-    if "facility_user" in request.session:
-        exerciselog.user = request.session["facility_user"]
+    exerciselog.user = request.session["facility_user"]
     exerciselog.exercise_id = data.get("exercise_id", "")
-    exerciselog.answer = data.get("answer", "")
-    exerciselog.correct = data.get("correct", "")
-    exerciselog.seed = data.get("seed", None)
-    exerciselog.hints_used = data.get("hints_used", None)
+    old_exerciselog = exerciselog.get_existing_instance() or ExerciseLog()
+    exerciselog.attempts = old_exerciselog.attempts + 1
     exerciselog.streak_progress = data.get("streak_progress", None)
     try:
         exerciselog.full_clean()

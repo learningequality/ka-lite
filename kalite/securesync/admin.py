@@ -15,7 +15,7 @@ admin.site.register(RegisteredDevicePublicKey, RegisteredDevicePublicKeyAdmin)
 
 
 class DeviceMetadataAdmin(admin.ModelAdmin):
-    list_display = ("device", "is_trusted_authority", "is_own_device", "counter_position",)
+    list_display = ("device", "is_trusted", "is_own_device", "counter_position",)
 admin.site.register(DeviceMetadata, DeviceMetadataAdmin)
 
 
@@ -30,8 +30,8 @@ admin.site.register(Zone, ZoneAdmin)
 
 
 class ZoneOrganizationAdmin(admin.ModelAdmin):
-    list_display = ("zone", "organization", "role",)
-    list_filter = ("zone", "organization", "role",)
+    list_display = ("zone", "organization",)
+    list_filter = ("zone", "organization",)
 admin.site.register(ZoneOrganization, ZoneOrganizationAdmin)
 
 
@@ -42,8 +42,7 @@ admin.site.register(OrganizationUser, OrganizationUserAdmin)
 
 
 class FacilityAdmin(admin.ModelAdmin):
-    list_display = ("name", "address", "zone")
-    list_filter = ("zone",)
+    list_display = ("name", "address",)
 admin.site.register(Facility, FacilityAdmin)
 
 
@@ -60,6 +59,6 @@ admin.site.register(DeviceZone, DeviceZoneAdmin)
 
 
 class DeviceAdmin(admin.ModelAdmin):
-    list_display = ("name", "description", "revoked",)
+    list_display = ("name", "description",)
 admin.site.register(Device, DeviceAdmin)
 

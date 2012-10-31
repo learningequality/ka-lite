@@ -8,11 +8,12 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect, ge
 from django.template import RequestContext
 from django.utils import simplejson
 from annoying.decorators import render_to
-from forms import RegisteredDevicePublicKeyForm, FacilityUserForm, LoginForm
+from forms import RegisteredDevicePublicKeyForm, FacilityUserForm, LoginForm, FacilityForm
+from django.contrib import messages
 
 import crypto
 import settings
-from securesync.models import SyncSession, Device, RegisteredDevicePublicKey, Zone
+from securesync.models import SyncSession, Device, RegisteredDevicePublicKey, Zone, Facility
 from securesync.api_client import SyncClient
 
 def central_server_only(handler):
@@ -78,6 +79,9 @@ def add_facility_user(request):
             form.instance.set_password(form.cleaned_data["password"])
             form.save()
             return HttpResponseRedirect(reverse("login"))
+    elif Facility.objects.count() == 0:
+        messages.error(request, "You must add a facility before creating a user" )
+        return HttpResponseRedirect(reverse("add_facility")) 
     else:
         form = FacilityUserForm()
     return {
@@ -90,7 +94,7 @@ def add_facility(request):
         form = FacilityForm(data=request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect()
+            return HttpResponseRedirect(reverse("add_facility_user"))
     else:
         form = FacilityForm()
     return {

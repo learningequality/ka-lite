@@ -1,0 +1,21 @@
+ #search-panel
+    {
+        position: absolute;
+        top: 585px;
+        left: 50%;
+        margin-left: -180px;
+        width: 350px;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #999;
+    }       
+    #target
+    {
+        width: 345px;
+    }
+    @media print {
+      html, body {
+        height: auto;
+      }
+    }

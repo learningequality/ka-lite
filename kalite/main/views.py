@@ -135,3 +135,12 @@ def distributed_404_handler(request):
 @render_to("500_distributed.html")
 def distributed_500_handler(request):
     return {}
+    
+@render_to("404_central.html")
+def central_404_handler(request):
+    return {}
+    
+@render_to("500_central.html")
+def central_500_handler(request):
+    return {}
+    

@@ -47,6 +47,9 @@
                     </header>
                     <div id="container" class="visited-no-recolor" style="overflow: hidden;">
                         <article class="clearfix">
+                            {% for message in messages %}
+                            <div class="{{ message.tags }} message">{{ message }}</div>
+                            {% endfor %}
                             {% block content %}{% endblock content %}
                         </article>
                     </div>
