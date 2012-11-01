@@ -13,7 +13,7 @@ class ZoneOrganizationAdmin(admin.ModelAdmin):
 admin.site.register(ZoneOrganization, ZoneOrganizationAdmin)
 
 
-class OrganizationUserAdmin(admin.ModelAdmin):
-    list_display = ("user", "organization",)
-    list_filter = ("user", "organization",)
-admin.site.register(OrganizationUser, OrganizationUserAdmin)
+# class OrganizationUserAdmin(admin.ModelAdmin):
+#     list_display = ("user", "organization",)
+#     list_filter = ("user", "organization",)
+# admin.site.register(OrganizationUser, OrganizationUserAdmin)

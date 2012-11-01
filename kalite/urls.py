@@ -23,6 +23,7 @@ if settings.CENTRAL_SERVER:
     urlpatterns += patterns('',
         url(r'^$', 'central.views.homepage', {}, 'homepage'), 
         url(r'^accounts/', include('registration.urls')),
+        url(r'^organization/', 'central.views.organization_form', {}, 'organization_form'),
     )
     
     handler404 = 'main.views.central_404_handler'

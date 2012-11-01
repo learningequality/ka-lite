@@ -1,10 +1,12 @@
 from django.db import models
 from securesync.models import Zone
+from django.contrib.auth.models import User
 
 class Organization(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
     url = models.URLField(verbose_name="Website URL", blank=True)
+    users = models.ManyToManyField(User)
 
     def get_zones(self):
         return Zone.objects.filter(pk__in=[zo.zone.pk for zo in self.zoneorganization_set.all()])
@@ -21,12 +23,12 @@ class ZoneOrganization(models.Model):
         return "Zone: %s, Organization: %s" % (self.zone, self.organization)
 
 
-class OrganizationUser(models.Model):
-    user = models.ForeignKey(User)
-    organization = models.ForeignKey(Organization)
+# class OrganizationUser(models.Model):
+#     user = models.ForeignKey(User)
+#     organization = models.ForeignKey(Organization)
 
-    def get_zones(self):
-        return self.organization.get_zones()
+#     def get_zones(self):
+#         return self.organization.get_zones()
 
-    def __unicode__(self):
-        return "%s (Organization: %s)" % (self.user, self.organization)
+#     def __unicode__(self):
+#         return "%s (Organization: %s)" % (self.user, self.organization)
