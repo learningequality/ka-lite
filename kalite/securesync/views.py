@@ -54,6 +54,7 @@ def register_public_key_client(request):
             "registration_url": client.path_to_url(
                 "/securesync/register/?" + urllib.quote(crypto.serialize_public_key())),
         }
+    return HttpResponse("Registration status: " + reg_status)
 
 @central_server_only
 @login_required
