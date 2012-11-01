@@ -282,6 +282,15 @@ class Device(SyncedModel):
         zones = self.devicezone_set.all()
         return zones.count() and zones[0] or None
 
+    def verify(self):
+        if self.signed_by_id != self.id:
+            return False
+        key = self.get_public_key()
+        try:
+            return crypto.verify(self._hashable_representation(), crypto.decode_base64(self.signature), key)
+        except:
+            return False
+
     def get_uuid(self):
         if not self.public_key:
             return uuid.uuid4()
