@@ -38,7 +38,7 @@ def register_public_key(request):
 
 @render_to("securesync/register_public_key_client.html")
 def register_public_key_client(request):
-    if Device.get_own_device():
+    if Device.get_own_device().get_zone():
         return {"already_registered": True}
     client = SyncClient()
     if client.test_connection() != "success":

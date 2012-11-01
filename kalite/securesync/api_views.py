@@ -77,9 +77,11 @@ def register_device(request):
     # delete the RegisteredDevicePublicKey, now that we've initialized the device and put it in its zone
     registration.delete()
     
-    # return our local (server) Device, and the newly created DeviceZone, to the client
+    # return our local (server) Device, its Zone, and the newly created DeviceZone, to the client
     return JsonResponse(
-        json_serializer.serialize([Device.get_own_device(), device_zone], ensure_ascii=False, indent=2)
+        json_serializer.serialize(
+            [Device.get_own_device(), registration.zone, device_zone], ensure_ascii=False, indent=2
+        )
     )
 
 @csrf_exempt

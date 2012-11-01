@@ -35,10 +35,20 @@ class SyncClient(object):
             return "error"
             
     def register(self):
+        own_device = Device.get_own_device()
         r = self.post("register", {
-            "public_key": crypto.serialize_public_key()
+            "client_device": json_serializer.serialize([own_device], ensure_ascii=False, indent=2)
         })
         if r.status_code == 200:
+            models = serializers.deserialize("json", r.text)
+            for model in models:
+                if not model.object.verify():
+                    continue
+                # save the imported model, and mark the returned Device as trusted
+                if isinstance(model.object, Device):
+                    model.object.save(is_trusted=True)
+                else:
+                    model.object.save()
             return "registered"
         return json.loads(r.text).get("code")
     
