@@ -1,0 +1,12 @@
+{% extends 'base_central.html' %}
+
+
+{% block content %}
+
+<form action="." method="post" class="basic-form">
+{% csrf_token %}
+{{ form.as_p }}
+<input type="submit" value="Create organization" class="submit"/>
+</form>
+
+{% endblock content %}

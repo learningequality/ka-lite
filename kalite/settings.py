@@ -124,7 +124,7 @@ CENTRAL_SERVER = hasattr(local_settings, "CENTRAL_SERVER") and local_settings.CE
 if CENTRAL_SERVER:
     ACCOUNT_ACTIVATION_DAYS = 7
     DEFAULT_FROM_EMAIL = "kalite@adhocsync.com"
-    INSTALLED_APPS += ("postmark", "kalite.registration",)
+    INSTALLED_APPS += ("postmark", "kalite.registration", "central")
     EMAIL_BACKEND = "postmark.backends.PostmarkBackend"
 
 # import these one extra time to overwrite any settings not explicitly looking for local settings
