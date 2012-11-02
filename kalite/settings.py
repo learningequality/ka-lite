@@ -126,6 +126,7 @@ if CENTRAL_SERVER:
     DEFAULT_FROM_EMAIL = "kalite@adhocsync.com"
     INSTALLED_APPS += ("postmark", "kalite.registration", "central")
     EMAIL_BACKEND = "postmark.backends.PostmarkBackend"
+    AUTH_PROFILE_MODULE = 'central.UserProfile'
 
 # import these one extra time to overwrite any settings not explicitly looking for local settings
 try:
