@@ -63,7 +63,35 @@ class SyncClient(object):
             "client_nonce": self.session.client_nonce,
             "client_device": self.session.client_device.pk,
         })
+        data = json.loads(r.content)
+        signature = data.get("signature", "")
+        session = serializers.deserialize("json", data["session"]).next().object
+        if not session.verify_server_signature(signature):
+            raise Exception("Signature did not match.")
+        if session.client_nonce != self.session.client_nonce:
+            raise Exception("Client nonce did not match.")
+        if session.client_device != self.session.client_device:
+            raise Exception("Client device did not match.")
+        if not session.server_device.get_metadata().is_trusted:
+            raise Exception("The server is not trusted.")
+        self.session.server_nonce = session.server_nonce
+        self.session.server_device = session.server_device
+        self.session.verified = True
+        self.session.timestamp = session.timestamp
+        self.session.save()
+
+        r = self.post("session/create", {
+            "client_nonce": self.session.client_nonce,
+            "client_device": self.session.client_device.pk,
+            "server_nonce": self.session.server_nonce,
+            "server_device": self.session.server_device.pk,
+            "signature": session.sign(),
+        })
         
+        if r.status_code == 200:
+            return "success"
+        else:
+            return r
         
     def close_session(self):
         if not self.session:
@@ -71,5 +99,7 @@ class SyncClient(object):
         self.post("session/destroy", {
             "client_nonce": self.session.client_nonce
         })
+        self.session.delete()
+        return "success"
 
 
