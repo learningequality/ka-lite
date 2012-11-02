@@ -33,7 +33,7 @@ class SyncSession(models.Model):
         
     def _verify_signature(self, device, signature):
         return crypto.verify(self._hashable_representation(),
-                             decode_base64(signature),
+                             crypto.decode_base64(signature),
                              device.get_public_key())
 
     def verify_client_signature(self, signature):
@@ -46,7 +46,8 @@ class SyncSession(models.Model):
         return crypto.encode_base64(crypto.sign(self._hashable_representation()))
         
     def __unicode__(self):
-        return "%s... -> %s..." % (self.client_device.pk[0:5], self.server_device.pk[0:5])
+        return "%s... -> %s..." % (self.client_device.pk[0:5],
+            (self.server_device and self.server_device.pk[0:5] or "?????"))
 
 
 class RegisteredDevicePublicKey(models.Model):
