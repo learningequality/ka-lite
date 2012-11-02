@@ -5,7 +5,7 @@
 {% block headjs %}
 <script>
     $(function() {
-        $("#id_public_key").val(window.location.search.slice(1));
+        $("#id_public_key").val(decodeURIComponent(window.location.search.slice(1)));
     });
 </script>
 {% endblock headjs %}

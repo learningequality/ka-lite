@@ -33,7 +33,7 @@ class SyncSession(models.Model):
         
     def _verify_signature(self, device, signature):
         return crypto.verify(self._hashable_representation(),
-                             decode_base64(signature),
+                             crypto.decode_base64(signature),
                              device.get_public_key())
 
     def verify_client_signature(self, signature):
@@ -46,7 +46,8 @@ class SyncSession(models.Model):
         return crypto.encode_base64(crypto.sign(self._hashable_representation()))
         
     def __unicode__(self):
-        return "%s... -> %s..." % (self.client_device.pk[0:5], self.server_device.pk[0:5])
+        return "%s... -> %s..." % (self.client_device.pk[0:5],
+            (self.server_device and self.server_device.pk[0:5] or "?????"))
 
 
 class RegisteredDevicePublicKey(models.Model):
@@ -82,7 +83,7 @@ class SyncedModel(models.Model):
         self.signature = crypto.encode_base64(crypto.sign(self._hashable_representation()))
 
     def verify(self):
-        if not self.signed_by:
+        if not self.signed_by_id:
             return False
         if self.requires_trusted_signature and not self.signed_by.get_metadata().is_trusted:
             return False
@@ -113,11 +114,10 @@ class SyncedModel(models.Model):
         if not own_device:
             raise ValidationError("Cannot save any synced models before registering this Device.")
         if imported:
-            if not self.signed_by:
+            if not self.signed_by_id:
                 raise ValidationError("Imported models must be signed.")
             if not self.verify():
                 raise ValidationError("Imported model's signature did not match.")
-            self.signed_by.set_counter_position(self.counter)
         else: # local model
             if self.signed_by and self.signed_by != own_device:
                 raise ValidationError("Cannot modify models signed by another device.")
@@ -127,6 +127,8 @@ class SyncedModel(models.Model):
                 super(SyncedModel, self).save(*args, **kwargs) # TODO(jamalex): can we get rid of this?
             self.sign(device=own_device)
         super(SyncedModel, self).save(*args, **kwargs)
+        if imported:
+            self.signed_by.set_counter_position(self.counter)
 
     def get_uuid(self):
         own_device = Device.get_own_device()
@@ -280,7 +282,24 @@ class Device(SyncedModel):
 
     def get_zone(self):
         zones = self.devicezone_set.all()
-        return zones.count() and zones[0] or None
+        return zones.count() and zones[0].zone or None
+    get_zone.short_description = "Zone"
+
+    def verify(self):
+        if self.signed_by_id != self.id:
+            return False
+        key = self.get_public_key()
+        try:
+            return crypto.verify(self._hashable_representation(), crypto.decode_base64(self.signature), key)
+        except:
+            return False
+
+    def save(self, is_trusted=False, *args, **kwargs):
+        super(Device, self).save(*args, **kwargs)
+        if is_trusted:
+            metadata = self.get_metadata()
+            metadata.is_trusted = True
+            metadata.save()
 
     def get_uuid(self):
         if not self.public_key:

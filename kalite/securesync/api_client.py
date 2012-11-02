@@ -1,4 +1,5 @@
 import re, json, requests, urllib2, uuid
+from django.core import serializers
 
 from models import SyncSession, Device, RegisteredDevicePublicKey, json_serializer, get_device_counters, save_serialized_models
 import crypto
@@ -26,7 +27,7 @@ class SyncClient(object):
         
     def test_connection(self):
         try:
-            if self.get("test", timeout=5).text != "OK":
+            if self.get("test", timeout=5).content != "OK":
                 return "bad_address"
             return "success"
         except requests.ConnectionError:
@@ -35,12 +36,22 @@ class SyncClient(object):
             return "error"
             
     def register(self):
+        own_device = Device.get_own_device()
         r = self.post("register", {
-            "public_key": crypto.serialize_public_key()
+            "client_device": json_serializer.serialize([own_device], ensure_ascii=False, indent=2)
         })
         if r.status_code == 200:
+            models = serializers.deserialize("json", r.content)
+            for model in models:
+                if not model.object.verify():
+                    continue
+                # save the imported model, and mark the returned Device as trusted
+                if isinstance(model.object, Device):
+                    model.object.save(is_trusted=True, imported=True)
+                else:
+                    model.object.save(imported=True)
             return "registered"
-        return json.loads(r.text).get("code")
+        return json.loads(r.content).get("code")
     
     def start_session(self):
         if self.session:

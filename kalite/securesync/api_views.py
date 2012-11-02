@@ -11,7 +11,7 @@ from models import SyncSession, Device, DeviceZone, RegisteredDevicePublicKey, j
 
 class JsonResponse(HttpResponse):
     def __init__(self, content, *args, **kwargs):
-        if not isinstance(content, str):
+        if not isinstance(content, str) and not isinstance(content, unicode):
             content = simplejson.dumps(content, indent=2, ensure_ascii=False)
         super(JsonResponse, self).__init__(content, content_type='application/json', *args, **kwargs)
 
@@ -34,7 +34,7 @@ def register_device(request):
         return JsonResponse({"error": "Serialized client device must be provided."}, status=500)
     try:
         models = serializers.deserialize("json", data["client_device"])
-        client_device = models[0].object
+        client_device = models.next().object
     except:
         return JsonResponse({
             "error": "Could not decode the client device model; corrupted?",
@@ -67,8 +67,10 @@ def register_device(request):
                 "code": "public_key_unregistered",
             }, status=500)
     
+    client_device.signed_by = client_device
+    
     # the device checks out; let's save it!
-    client_device.save()
+    client_device.save(imported=True)
     
     # create the DeviceZone for the new device
     device_zone = DeviceZone(device=client_device, zone=registration.zone)
@@ -77,9 +79,11 @@ def register_device(request):
     # delete the RegisteredDevicePublicKey, now that we've initialized the device and put it in its zone
     registration.delete()
     
-    # return our local (server) Device, and the newly created DeviceZone, to the client
+    # return our local (server) Device, its Zone, and the newly created DeviceZone, to the client
     return JsonResponse(
-        json_serializer.serialize([Device.get_own_device(), device_zone], ensure_ascii=False, indent=2)
+        json_serializer.serialize(
+            [Device.get_own_device(), registration.zone, device_zone], ensure_ascii=False, indent=2
+        )
     )
 
 @csrf_exempt

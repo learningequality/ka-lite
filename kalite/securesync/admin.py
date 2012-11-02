@@ -42,6 +42,21 @@ admin.site.register(DeviceZone, DeviceZoneAdmin)
 
 
 class DeviceAdmin(admin.ModelAdmin):
-    list_display = ("name", "description",)
+    list_display = ("device_id", "name", "description", "is_own_device", "is_trusted", "get_zone")
+    
+    def is_own_device(self, obj):
+        return obj.devicemetadata.is_own_device
+    is_own_device.boolean = True
+    is_own_device.admin_order_field = "devicemetadata__is_own_device"
+    
+    def is_trusted(self, obj):
+        return obj.devicemetadata.is_trusted
+    is_trusted.boolean = True
+    is_trusted.admin_order_field = "devicemetadata__is_trusted"
+
+    def device_id(self, obj):
+        return obj.id[0:5]
+    device_id.admin_order_field = "id"
+
 admin.site.register(Device, DeviceAdmin)
 
