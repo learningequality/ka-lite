@@ -14,3 +14,5 @@ kalite/secrets.py
 *.sqlite*
 *.patch
 kalite/local_settings.py
+writeup/
+build/
