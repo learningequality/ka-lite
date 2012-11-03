@@ -125,11 +125,7 @@ def create_session(request):
         session.save()
         
     return JsonResponse({
-        "client_nonce": session.client_nonce,
-        "client_device": session.client_device.pk,
-        "server_nonce": session.server_nonce,
-        "server_device": session.server_device.pk,
-        "verified": session.verified,
+        "session": json_serializer.serialize([session], ensure_ascii=False, indent=2),
         "signature": session.sign(),
     })
     
