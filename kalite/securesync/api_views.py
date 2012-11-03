@@ -175,7 +175,7 @@ def test_connection(request):
 def status(request):
     data = {
         "logged_in": False,
-        "registered": Device.get_own_device() and True or False,
+        "registered": bool(Device.get_own_device().get_zone()),
     }
     if "facility_user" in request.session:
         user = request.session["facility_user"]
