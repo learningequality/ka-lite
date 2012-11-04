@@ -6,11 +6,14 @@ class OrganizationAdmin(admin.ModelAdmin):
     list_display = ("name", "description", "url")
 admin.site.register(Organization, OrganizationAdmin)
 
+class UserProfileAdmin(admin.ModelAdmin):
+	list_display = ("user",)
+admin.site.register(UserProfile, UserProfileAdmin)
 
-class ZoneOrganizationAdmin(admin.ModelAdmin):
-    list_display = ("zone", "organization",)
-    list_filter = ("zone", "organization",)
-admin.site.register(ZoneOrganization, ZoneOrganizationAdmin)
+# class ZoneOrganizationAdmin(admin.ModelAdmin):
+#     list_display = ("zone", "organization",)
+#     list_filter = ("zone", "organization",)
+# admin.site.register(ZoneOrganization, ZoneOrganizationAdmin)
 
 
 # class OrganizationUserAdmin(admin.ModelAdmin):
