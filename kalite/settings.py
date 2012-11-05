@@ -115,6 +115,7 @@ INSTALLED_APPS = (
     "securesync",
     "django.contrib.humanize",
     "django.contrib.messages",
+    "chronograph",
 )
 
 CENTRAL_SERVER_HOST = "http://127.0.0.1:9000/"
