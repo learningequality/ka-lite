@@ -1,7 +1,5 @@
 {% extends 'base_central.html' %}
 
-{% block watch_selected %}selected{% endblock watch_selected %}
-
 {% block headjs %}
 <script type='text/javascript' src='{{ STATIC_URL }}js/underscore.js'></script>
 <script>
@@ -10,10 +8,6 @@
 {% endblock headjs %}
 
 {% block headcss %}
-
-{% endblock headcss %}
-
-{% block content %}
 
 <style>
 body {
@@ -25,23 +19,51 @@ ul, li {
     margin-left: 15px;
 }
 
+.help_text {
+	margin: 2px 0px;
+	font-size: 12px;
+	position: relative;
+	top: -20px;
+}
+
+h2, h3, h4 {
+	margin-bottom: 5px;
+}
+
+.organization {
+	margin-bottom: 20px;
+	border-bottom: dotted gray 1px;
+}
+
+#aff_zones {
+	font-weight: bold;
+}
+
+#container .h3 !important{
+	border-bottom: none;
+}
+
+
 #last {
 	margin-top: 25px;
 }
 
 </style>
 
-{% if user.is_authenticated %}
+{% endblock headcss %}
+
+{% block content %}
 
 <div id="org_list_container">
 	<h1>My Organizations</h1>
+	<p class="help_text">(Click on any organization or zone name to update information).</p>
 	<ul id="org_list">
 		{% if organizations %}
 			{% for org in organizations %}
-				<li class="org_title">
+				<li class="organization">
 					<h2><a href="{% url organization_form id=org.id %}">{{ org.name }}</a></h2>
 					<ul class="zone_list">
-						<h3>Affiliated Zones</h3>
+						<h4 id="aff_zones">Affiliated Zones</h4>
 						{% for zone in org.get_zones %}
 						<li class="zone_title">
 							<h4><a href="{% url zone_form org_id=org.id id=zone.id %}">{{ zone.name }}</a></h4>
@@ -65,13 +87,4 @@ ul, li {
 	</ul>
 </div>
 
-
-{% else %}
-<p>Khan Academy Lite is a lightweight Django web app for hosting core Khan Academy content (videos and exercises) from a local server, without needing internet connectivity. Primary use cases include:</p>
-
-<ul>
-    <li>Mobile school "vans", which transport a server and multiple laptops/tablets between a number of schools/orphanages in remote communities on a rotating basis, and syncing up with a central database (to download new content and upload analytics) when in an area with internet connectivity.</li>
-    <li>For servers/computer labs located in remote schools, which could be slowly syncing with a central server over a cell network or via USB keys.</li>
-</ul>
-{% endif %}
 {% endblock content %}
