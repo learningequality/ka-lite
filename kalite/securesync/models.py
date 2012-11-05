@@ -188,6 +188,7 @@ class FacilityUser(SyncedModel):
     username = models.CharField(max_length=30)
     first_name = models.CharField(max_length=30, blank=True)
     last_name = models.CharField(max_length=30, blank=True)
+    is_teacher = models.BooleanField(default=False)
     notes = models.TextField(blank=True)
     password = models.CharField(max_length=128, help_text="Use '[algo]$[salt]$[hexdigest]'.")
 
