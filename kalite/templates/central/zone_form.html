@@ -1,0 +1,44 @@
+{% extends 'base_central.html' %}
+
+{% block content %}
+
+<style>
+
+.helptext {
+	font-size: .85em;
+	position: relative;
+	left: 135px;
+	top: -7px;
+}
+
+input, textarea {
+	width: 275px;
+}
+
+input.submit{
+	margin-bottom: 100px;
+	margin-top: 10px;
+}
+
+</style>
+
+<form action="." method="post" class="basic-form">
+{% csrf_token %}
+
+{% if form.instance.pk %}
+<h2>Update Your Zone</h2>
+{% else %}
+<h2>Create A Zone</h2>
+{% endif %}
+
+{{ form.as_p }}
+
+{% if form.instance.pk %}
+<input type="submit" value="Update Zone" class="submit"/>
+{% else %}
+<input type="submit" value="Create Zone" class="submit"/>
+{% endif %}
+
+</form>
+
+{% endblock content %}

@@ -16,10 +16,17 @@
 {% block content %}
 
 <style>
+body {
+	min-height: 500px;
+}
 
 ul, li {
-    list-style: disc outside none;
+    list-style: none;
     margin-left: 15px;
+}
+
+#last {
+	margin-top: 25px;
 }
 
 </style>
@@ -27,22 +34,37 @@ ul, li {
 {% if user.is_authenticated %}
 
 <div id="org_list_container">
-	<h2>My Organizations</h2>
+	<h1>My Organizations</h1>
 	<ul id="org_list">
-		{% for org in organizations %}
-			<li>
-				{{ org.name }}
-				<ul class="zone_list">
-					{% for zone in org.get_zones %}
-					<li>
-						{{ zone.name }}
-					</li>
-					{% endfor %}
-				</ul>
+		{% if organizations %}
+			{% for org in organizations %}
+				<li class="org_title">
+					<h2><a href="{% url organization_form id=org.id %}">{{ org.name }}</a></h2>
+					<ul class="zone_list">
+						<h3>Affiliated Zones</h3>
+						{% for zone in org.get_zones %}
+						<li class="zone_title">
+							<h4><a href="{% url zone_form org_id=org.id id=zone.id %}">{{ zone.name }}</a></h4>
+						</li>
+						{% endfor %}
+						<li>
+						  <a href="{% url zone_form org_id=org.id id='new' %}">Create a new zone.</a>
+						</li>
+						
+					</ul>
+				</li>
+			{% endfor %}
+			<li id="last">
+				<a href="/organization/new/">Create a new organization.</a>
 			</li>
-		{% endfor %}
+		{% else %}
+			<li>
+				You currently have no organizations. Would you like to <a href="/organization/new/">create a new organization?</a>
+			</li>
+		{% endif %}
 	</ul>
 </div>
+
 
 {% else %}
 <p>Khan Academy Lite is a lightweight Django web app for hosting core Khan Academy content (videos and exercises) from a local server, without needing internet connectivity. Primary use cases include:</p>

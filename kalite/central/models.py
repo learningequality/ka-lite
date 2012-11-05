@@ -20,7 +20,7 @@ class Organization(models.Model):
         return self.name
 
     def save(self, owner=None, *args, **kwargs):
-        if not self.owner:
+        if not self.owner_id:
             self.owner = owner
         super(Organization, self).save(*args, **kwargs)
 
