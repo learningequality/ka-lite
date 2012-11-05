@@ -20,6 +20,8 @@ def require_sync_session(handler):
         data = simplejson.loads(request.raw_post_data or "{}")
         try:
             session = SyncSession.objects.get(client_nonce=data["client_nonce"])
+            if session.closed:
+                return JsonResponse({"error": "Session is already closed."}, status=500)
         except SyncSession.DoesNotExist:
             return JsonResponse({"error": "Session with specified client nonce could not be found."}, status=500)
         return handler(data, session)
@@ -107,6 +109,7 @@ def create_session(request):
              return JsonResponse({"error": "Client device matching id could not be found."}, status=500)
         session.server_nonce = uuid.uuid4().hex
         session.server_device = Device.get_own_device()
+        session.ip = request.META.get("HTTP_X_FORWARDED_FOR", request.META.get('REMOTE_ADDR', ""))
         if session.client_device.pk == session.server_device.pk:
             return JsonResponse({"error": "I know myself when I see myself, and you're not me."}, status=500)
         session.save()
@@ -132,7 +135,8 @@ def create_session(request):
 @csrf_exempt
 @require_sync_session
 def destroy_session(data, session):
-    session.delete()
+    session.closed = True
+    session.save()
     return JsonResponse({})
     
 @csrf_exempt
@@ -166,7 +170,6 @@ def update_models(data, session):
 @csrf_exempt
 def test_connection(request):
     return HttpResponse("OK")
-
 
 def status(request):
     data = {
