@@ -23,7 +23,11 @@ class SyncSession(models.Model):
     server_nonce = models.CharField(max_length=32, blank=True)
     server_device = models.ForeignKey("Device", blank=True, null=True, related_name="server_sessions")
     verified = models.BooleanField(default=False)
+    ip = models.CharField(max_length=50, blank=True)
     timestamp = models.DateTimeField(auto_now=True)
+    models_uploaded = models.IntegerField(default=0)
+    models_downloaded = models.IntegerField(default=0)
+    closed = models.BooleanField(default=False)
     
     def _hashable_representation(self):
         return "%s:%s:%s:%s" % (
@@ -307,7 +311,7 @@ class Device(SyncedModel):
         return uuid.uuid5(ROOT_UUID_NAMESPACE, self.public_key).hex
 
 
-syncing_models = [Device, Zone, DeviceZone, Facility, FacilityUser]
+syncing_models = [Facility, FacilityUser]
 
 
 def get_serialized_models(device_counters=None, limit=100):
