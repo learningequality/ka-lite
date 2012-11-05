@@ -85,7 +85,7 @@ class SyncClient(object):
             "client_device": self.session.client_device.pk,
             "server_nonce": self.session.server_nonce,
             "server_device": self.session.server_device.pk,
-            "signature": session.sign(),
+            "signature": self.session.sign(),
         })
         
         if r.status_code == 200:
