@@ -112,6 +112,7 @@ INSTALLED_APPS = (
     "django_extensions",
     "south",
     "main",
+    "central",
     "securesync",
     "django.contrib.humanize",
     "django.contrib.messages",
