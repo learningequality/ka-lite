@@ -1,4 +1,4 @@
-import re, json, requests, urllib2, uuid
+import re, json, requests, urllib, urllib2, uuid
 from django.core import serializers
 
 from models import SyncSession, Device, RegisteredDevicePublicKey, json_serializer, get_device_counters, save_serialized_models
@@ -19,11 +19,16 @@ class SyncClient(object):
         else:
             return self.url + "/securesync/api/" + path
     
-    def post(self, path, payload="", *args, **kwargs):
+    def post(self, path, payload={}, *args, **kwargs):
+        if self.session and self.session.client_nonce:
+            payload["client_nonce"] = self.session.client_nonce
         return requests.post(self.path_to_url(path), data=json.dumps(payload))
 
-    def get(self, path, *args, **kwargs):
-        return requests.get(self.path_to_url(path), *args, **kwargs)
+    def get(self, path, payload={}, *args, **kwargs):
+        if self.session and self.session.client_nonce:
+            payload["client_nonce"] = self.session.client_nonce
+        query = urllib.urlencode(payload)
+        return requests.get(self.path_to_url(path) + "?" + query, *args, **kwargs)
         
     def test_connection(self):
         try:
@@ -102,4 +107,7 @@ class SyncClient(object):
         self.session.delete()
         return "success"
 
-
+    def get_device_counters(self):
+        r = self.get("device/counters")
+        print r.content
+        

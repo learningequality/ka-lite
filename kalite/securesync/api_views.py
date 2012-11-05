@@ -17,8 +17,13 @@ class JsonResponse(HttpResponse):
 
 def require_sync_session(handler):
     def wrapper_fn(request):
-        data = simplejson.loads(request.raw_post_data or "{}")
+        if request.raw_post_data:
+            data = simplejson.loads(request.raw_post_data)
+        else:
+            data = request.GET
         try:
+            if "client_nonce" not in data:
+                return JsonResponse({"error": "Client nonce must be specified."}, status=500)
             session = SyncSession.objects.get(client_nonce=data["client_nonce"])
             if session.closed:
                 return JsonResponse({"error": "Session is already closed."}, status=500)
