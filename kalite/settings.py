@@ -5,7 +5,7 @@ try:
     from local_settings import *
     import local_settings
 except ImportError:
-    pass
+    local_settings = {}
 
 DEBUG = hasattr(local_settings, "DEBUG") and local_settings.DEBUG or False
 TEMPLATE_DEBUG = hasattr(local_settings, "TEMPLATE_DEBUG") and local_settings.TEMPLATE_DEBUG or DEBUG
