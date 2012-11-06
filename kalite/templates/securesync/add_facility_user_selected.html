@@ -1,0 +1,26 @@
+{% extends 'base_distributed.html' %}
+
+
+{% block title %}Add facility user{% endblock title %}
+
+{% block content %}
+
+
+<form action="." method="post" class="basic-form">
+{% csrf_token %}
+<h2>Add a new user</h2>
+<p><label>Facility: </label>{{ facility }} <a href="{% url add_facility_user %}"> (Change facility)</a></p>
+{{ form.as_p }}
+<input type="submit" value="Create user" class="submit"/>
+</form>
+
+<script>
+{% if request.session.facility_user.is_teacher or user.is_superuser %}
+$('#id_group').parent().append('<a href="{% url add_group %}"> (Add a new Group)</a>');
+{% endif %}
+{% if not request.session.facility_user.is_teacher and not user.is_superuser %}
+$('#id_is_teacher').parent().hide();
+{% endif %}
+</script>
+
+{% endblock content %}

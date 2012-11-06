@@ -1,5 +1,5 @@
 from django import forms
-from models import RegisteredDevicePublicKey, Zone, FacilityUser, Facility
+from models import RegisteredDevicePublicKey, Zone, FacilityUser, Facility, FacilityGroup
 
 class RegisteredDevicePublicKeyForm(forms.ModelForm):
 
@@ -15,12 +15,22 @@ class RegisteredDevicePublicKeyForm(forms.ModelForm):
 
 
 class FacilityUserForm(forms.ModelForm):
-
+    
+    def __init__(self,request,*args,**kwargs):
+        self.request = request
+        super(FacilityUserForm,self).__init__(*args,**kwargs)
+    
     class Meta:
         model = FacilityUser
-        fields = ("facility", "username", "first_name", "last_name",)
+        fields = ("facility","group", "username", "first_name", "last_name","is_teacher",)
 
     password = forms.CharField(widget=forms.PasswordInput, label="Password")
+    facility = forms.ModelChoiceField(queryset=Facility.objects.all(),widget=forms.HiddenInput, label="Facility")
+    
+    def clean_is_teacher(self):
+        if self.cleaned_data["is_teacher"] and not self.request.session["facility_user"].is_teacher:
+            raise forms.ValidationError("I'm sorry, Dave. I'm afraid I can't do that.")
+        return self.cleaned_data["is_teacher"]
 
 
 class FacilityForm(forms.ModelForm):
@@ -28,6 +38,12 @@ class FacilityForm(forms.ModelForm):
     class Meta:
         model = Facility
         fields = ("name", "description", "address", "address_normalized", "latitude", "longitude",)
+        
+class FacilityGroupForm(forms.ModelForm):
+
+    class Meta:
+        model = FacilityGroup
+        fields = ("name","facility",)
 
 
 class LoginForm(forms.ModelForm):
