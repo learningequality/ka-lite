@@ -97,9 +97,14 @@ def add_facility_user_selected(request,id):
         form = FacilityUserForm(request,initial={'facility':id})
         facility = Facility.objects.get(pk=id)
         form.fields["group"].queryset = FacilityGroup.objects.filter(facility=id)
+    if Facility.objects.count() == 1:
+        singlefacility = True
+    else:
+        singlefacility = False
     return {
         "form": form,
-        "facility": facility
+        "facility": facility,
+        "singlefacility": singlefacility
     }
 
 @render_to("securesync/add_facility.html")

@@ -16,7 +16,11 @@
             </li>
             {% endfor %}
         {% else %}
-            <li>You currently have no facilities. Would you like to create a facility?</li>
+            {% if request.session.facility_user.is_teacher or user.is_superuser %}
+                <li>You currently have no facilities. Would you like to create a facility?</li>
+            {% else %}
+                <li>There are currently no facilities available, please ask an administrator or teacher to set one up.</li>
+            {% endif %}
         {% endif %}
         <p id="facility"></p>
 
