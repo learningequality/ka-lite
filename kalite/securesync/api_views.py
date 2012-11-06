@@ -175,8 +175,8 @@ def device_counters(data, session):
 def upload_models(data, session):
     if "models" not in data:
         return JsonResponse({"error": "Must provide models."}, status=500)
-    save_serialized_models(data["models"])
-    return JsonResponse({})
+    result = save_serialized_models(data["models"])
+    return JsonResponse(result)
 
 @csrf_exempt
 @require_sync_session
