@@ -1,19 +1,29 @@
 {% extends 'base_distributed.html' %}
 
 
-{% block title %}Add facility user{% endblock title %}
+{% block title %}Select user facility {% endblock title %}
 
 {% block content %}
 
-<form action="." method="post" class="basic-form">
-{% csrf_token %}
-<h2>Add a new user</h2>
-{{ form.as_p }}
-<input type="submit" value="Create user" class="submit"/>
-</form>
+<div id="facility_list_container">
+    <h1>Facilities</h1>
+    <p class="help_text">(Click on any facility to add a user to that facility).</p>
+    <ul id="facility_list">
+        {% if facilities %}
+            {% for facility in facilities %}
+            <li class="facility_title">
+                <h2><a href="{% url add_facility_user_selected id=facility.id %}">{{ facility.name }}</a></h2>
+            </li>
+            {% endfor %}
+        {% else %}
+            <li>You currently have no facilities. Would you like to create a facility?</li>
+        {% endif %}
+        <p id="facility"></p>
 
 <script>
-$('#id_facility').parent().append('<a href="{% url add_facility %}"> (Add a new Facility)</a>');
+{% if request.session.facility_user.is_teacher or user.is_superuser %}
+$('#facility').append('<a href="{% url add_facility %}"> Add a new Facility</a>');
+{% endif %}
 </script>
 
 {% endblock content %}

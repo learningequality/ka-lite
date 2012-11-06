@@ -8,12 +8,12 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect, ge
 from django.template import RequestContext
 from django.utils import simplejson
 from annoying.decorators import render_to
-from forms import RegisteredDevicePublicKeyForm, FacilityUserForm, LoginForm, FacilityForm
+from forms import RegisteredDevicePublicKeyForm, FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
 from django.contrib import messages
 
 import crypto
 import settings
-from securesync.models import SyncSession, Device, RegisteredDevicePublicKey, Zone, Facility
+from securesync.models import SyncSession, Device, RegisteredDevicePublicKey, Zone, Facility, FacilityGroup
 from securesync.api_client import SyncClient
 
 def central_server_only(handler):
@@ -74,19 +74,32 @@ def register_public_key_server(request):
 @distributed_server_only
 @render_to("securesync/add_facility_user.html")
 def add_facility_user(request):
+    facilities = Facility.objects.all()
+    context = {'facilities': facilities}
+    return context
+    
+@distributed_server_only
+@render_to("securesync/add_facility_user_selected.html")
+def add_facility_user_selected(request,id):
     if request.method == 'POST':
-        form = FacilityUserForm(data=request.POST)
+        form = FacilityUserForm(request,data=request.POST)
         if form.is_valid():
             form.instance.set_password(form.cleaned_data["password"])
             form.save()
             return HttpResponseRedirect(reverse("login"))
     elif Facility.objects.count() == 0:
         messages.error(request, "You must add a facility before creating a user" )
-        return HttpResponseRedirect(reverse("add_facility")) 
+        return HttpResponseRedirect(reverse("add_facility"))
+    elif id==None:
+        messages.error(request, "You must add a facility before creating a user" )
+        return HttpResponseRedirect(reverse("add_facility"))
     else:
-        form = FacilityUserForm()
+        form = FacilityUserForm(request,initial={'facility':id})
+        facility = Facility.objects.get(pk=id)
+        form.fields["group"].queryset = FacilityGroup.objects.filter(facility=id)
     return {
-        "form": form
+        "form": form,
+        "facility": facility
     }
 
 @render_to("securesync/add_facility.html")
@@ -98,6 +111,19 @@ def add_facility(request):
             return HttpResponseRedirect(reverse("add_facility_user"))
     else:
         form = FacilityForm()
+    return {
+        "form": form
+    }
+
+@render_to("securesync/add_group.html")
+def add_group(request):
+    if request.method == 'POST':
+        form = FacilityGroupForm(data=request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse("add_facility_user"))
+    else:
+        form = FacilityGroupForm()
     return {
         "form": form
     }

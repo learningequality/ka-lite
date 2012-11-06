@@ -150,10 +150,14 @@ class SyncClient(object):
     def sync_models(self):
         
         if self.counters_to_download is None or self.counters_to_upload is None:
-            return "Nothing to sync; run sync_device_records first."
+            raise Exception("Nothing to sync; run sync_device_records first.")
             
         response = json.loads(self.post("models/download", {"device_counters": self.counters_to_download}).content)
-        save_serialized_models(response.get("models", "[]"))
+        download_results = save_serialized_models(response.get("models", "[]"))
         
-        self.post("models/upload", {"models": get_serialized_models(self.counters_to_upload)})
+        response = self.post("models/upload", {"models": get_serialized_models(self.counters_to_upload)})
+        upload_results = json.loads(response.content)
         
+        results = {"download_results": download_results, "upload_results": upload_results}
+        
+        return results
