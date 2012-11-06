@@ -12,7 +12,7 @@ class VideoLog(SyncedModel):
 
     def get_uuid(self, *args, **kwargs):
         namespace = uuid.UUID(self.user.id)
-        return uuid.uuid5(namespace, self.youtube_id).hex
+        return uuid.uuid5(namespace, str(self.youtube_id)).hex
 
 class ExerciseLog(SyncedModel):
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
@@ -23,6 +23,6 @@ class ExerciseLog(SyncedModel):
 
     def get_uuid(self, *args, **kwargs):
         namespace = uuid.UUID(self.user.id)
-        return uuid.uuid5(namespace, self.exercise_id).hex
+        return uuid.uuid5(namespace, str(self.exercise_id)).hex
 
 syncing_models.extend([VideoLog, ExerciseLog])
