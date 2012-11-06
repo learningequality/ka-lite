@@ -9,7 +9,7 @@
 <form action="." method="post" class="basic-form">
 {% csrf_token %}
 <h2>Add a new user</h2>
-<p><label>Facility: </label>{{ facility }} <a href="{% url add_facility_user %}"> (Change facility)</a></p>
+<p><label>Facility: </label>{{ facility }} {% if not singlefacility or request.session.facility_user.is_teacher or user.is_superuser %}<a href="{% url add_facility_user %}"> (Change facility)</a></p>{% endif %}
 {{ form.as_p }}
 <input type="submit" value="Create user" class="submit"/>
 </form>
