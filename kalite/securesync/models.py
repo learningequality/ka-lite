@@ -333,8 +333,12 @@ def get_serialized_models(device_counters=None, limit=100):
     return json_serializer.serialize(models, ensure_ascii=False, indent=2)
     
 def save_serialized_models(data):
-    models = serializers.deserialize("json", data)
+    if isinstance(data, str) or isinstance(data, unicode):
+        models = serializers.deserialize("json", data)
+    else:
+        models = serializers.deserialize("python", data)
     unsaved_models = []
+    saved_model_count = 0
     for model in models:
         try:
             # TODO(jamalex): more robust way to do this? (otherwise, it barfs about the id already existing):
@@ -343,10 +347,14 @@ def save_serialized_models(data):
             # TODO(jamalex): also make sure that if the model already exists, it is signed by the same device
             # (to prevent devices from overwriting each other's models... or do we want to allow that?)
             model.object.save(imported=True)
+            saved_model_count += 1
         except ValidationError as e:
             print "Error saving model %s: %s" % (model, e)
             unsaved_models.append(model.object)
-    return unsaved_models
+    return {
+        "unsaved_models": unsaved_models,
+        "saved_model_count": saved_model_count,
+    }
     
 def get_device_counters(zone):
     device_counters = {}
