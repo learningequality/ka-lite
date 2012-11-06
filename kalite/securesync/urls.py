@@ -7,8 +7,10 @@ urlpatterns = patterns('securesync.api_views',
     url(r'^api/test$', 'test_connection', {}, 'test_connection'),
     url(r'^api/session/create$', 'create_session', {}, 'create_session'),
     url(r'^api/session/destroy$', 'destroy_session', {}, 'destroy_session'),
-    url(r'^api/models/count$', 'device_counters', {}, 'device_counters'),
-    url(r'^api/models/update$', 'update_models', {}, 'update_models'),
+    url(r'^api/device/counters$', 'device_counters', {}, 'device_counters'),
+    url(r'^api/device/download$', 'device_download', {}, 'device_download'),
+    url(r'^api/models/download$', 'download_models', {}, 'download_models'),
+    url(r'^api/models/upload$', 'upload_models', {}, 'upload_models'),
     url(r'^api/status$', 'status', {}, 'status'),
 )
 
