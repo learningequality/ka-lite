@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 import crypto
 import settings
-from models import SyncSession, Device, DeviceZone, RegisteredDevicePublicKey, json_serializer, get_device_counters, save_serialized_models
+from models import *
 
 
 class JsonResponse(HttpResponse):
@@ -143,31 +143,47 @@ def destroy_session(data, session):
     session.closed = True
     session.save()
     return JsonResponse({})
+
+@csrf_exempt
+@require_sync_session
+def device_download(data, session):
+    zone = session.client_device.get_zone()
+    devicezones = list(DeviceZone.objects.filter(zone=zone).filter(device__in=data["devices"]))
+    devices = [devicezone.device for devicezone in devicezones]
+    return JsonResponse({
+        "devices": json_serializer.serialize(
+            devices + devicezones, ensure_ascii=False, indent=2
+        )
+    })
+
+@csrf_exempt
+@require_sync_session
+def device_upload(data, session):
+    # TODO(jamalex): check that the uploaded devices belong to the client device's zone and whatnot
+    save_serialized_models(data.get("devices", "[]"))
     
 @csrf_exempt
 @require_sync_session
 def device_counters(data, session):
     device_counters = get_device_counters(session.client_device.get_zone())
-    # counters_to_request = {}
-    # counters_to_send = {}
-    # for device in client_counters:
-    #     if client_counters[device] > device_counters.get(device, 0):
-    #         counters_to_request[device] = device_counters.get(device, 0) + 1
-    # for device in device_counters:
-    #     if device_counters[device] > client_counters.get(device, 0):
-    #         counters_to_send[device] = client_counters.get(device, 0) + 1
     return JsonResponse({
         "device_counters": device_counters,
-        # "models": get_serialized_models(counters_to_send, limit=data.get("limit", 100))
     })
 
 @csrf_exempt
 @require_sync_session
-def update_models(data, session):
+def upload_models(data, session):
     if "models" not in data:
         return JsonResponse({"error": "Must provide models."}, status=500)
     save_serialized_models(data["models"])
     return JsonResponse({})
+
+@csrf_exempt
+@require_sync_session
+def download_models(data, session):
+    if "device_counters" not in data:
+        return JsonResponse({"error": "Must provide device counters."}, status=500)
+    return JsonResponse({"models": get_serialized_models(data["device_counters"])})
     
 @csrf_exempt
 def test_connection(request):
