@@ -352,7 +352,7 @@ def save_serialized_models(data):
             print "Error saving model %s: %s" % (model, e)
             unsaved_models.append(model.object)
     return {
-        "unsaved_models": unsaved_models,
+        "unsaved_model_count": len(unsaved_models),
         "saved_model_count": saved_model_count,
     }
     

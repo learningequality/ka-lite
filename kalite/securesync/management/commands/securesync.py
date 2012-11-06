@@ -28,9 +28,9 @@ class Command(BaseCommand):
         self.stdout.write("Syncing models...\n")
         results = session.sync_models()
         self.stdout.write("\tUploaded: %d (%d failed)\n" % (results["upload_results"]["saved_model_count"],
-                                                len(results["upload_results"]["unsaved_models"])))
+                                                results["upload_results"]["unsaved_model_count"]))
         self.stdout.write("\tDownloaded: %d (%d failed)\n" % (results["download_results"]["saved_model_count"],
-                                                len(results["download_results"]["unsaved_models"])))
+                                                results["download_results"]["unsaved_model_count"]))
         
         self.stdout.write("Closing session...\n")
         session.close_session()
