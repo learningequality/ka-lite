@@ -1,13 +1,16 @@
+from models import *
+
 import re, json, requests, urllib, urllib2, uuid
 from django.core import serializers
 
-from models import SyncSession, Device, RegisteredDevicePublicKey, json_serializer, get_device_counters, save_serialized_models
 import crypto
 import settings
 
 
 class SyncClient(object):
     session = None
+    counters_to_download = None
+    counters_to_upload = None
     
     def __init__(self, host=settings.CENTRAL_SERVER_HOST):
         url = urllib2.urlparse.urlparse(host)
@@ -107,7 +110,50 @@ class SyncClient(object):
         self.session.delete()
         return "success"
 
-    def get_device_counters(self):
+    def get_server_device_counters(self):
         r = self.get("device/counters")
-        print r.content
+        return json.loads(r.content or "{}").get("device_counters", {})
+        
+    def get_client_device_counters(self):
+        return get_device_counters(self.session.client_device.get_zone())
+
+    def sync_device_records(self):
+        
+        server_counters = self.get_server_device_counters()
+        client_counters = self.get_client_device_counters()
+        
+        devices_to_download = []
+        devices_to_upload = []
+        
+        self.counters_to_download = {}
+        self.counters_to_upload = {}
+        
+        for device in client_counters:
+            if device not in server_counters:
+                devices_to_upload.append(device)
+                self.counters_to_upload[device] = 0
+            elif client_counters[device] > server_counters[device]:
+                self.counters_to_upload[device] = server_counters[device] + 1
+        
+        for device in server_counters:
+            if device not in client_counters:
+                devices_to_download.append(device)
+                self.counters_to_download = 0
+            elif server_counters[device] > client_counters[device]:
+                self.counters_to_download[device] = client_counters[device] + 1
+
+        response = json.loads(self.post("device/download", {"devices": devices_to_download}).content)
+        save_serialized_models(response.get("devices", "[]"))
+        
+        # TODO(jamalex): upload local devices as well? only needed once we have P2P syncing
+        
+    def sync_models(self):
+        
+        if self.counters_to_download is None or self.counters_to_upload is None:
+            return "Nothing to sync; run sync_device_records first."
+            
+        response = json.loads(self.post("models/download", {"device_counters": self.counters_to_download}).content)
+        save_serialized_models(response.get("models", "[]"))
+        
+        self.post("models/upload", {"models": get_serialized_models(self.counters_to_upload)})
         

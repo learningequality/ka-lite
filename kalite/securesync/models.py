@@ -324,7 +324,7 @@ syncing_models = [Facility, FacilityUser]
 
 
 def get_serialized_models(device_counters=None, limit=100):
-    if not device_counters:
+    if device_counters is None:
         device_counters = dict((device.id, 0) for device in Device.objects.all())
     models = []
     for Model in syncing_models:
