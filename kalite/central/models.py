@@ -2,6 +2,9 @@ from django.db import models
 from securesync.models import Zone
 from django.contrib.auth.models import User
 
+def get_or_create_user_profile(user):
+    return UserProfile.objects.get_or_create(user=user)[0]
+
 class Organization(models.Model):
     name = models.CharField(verbose_name="org name", max_length=100)
     description = models.TextField(help_text="<br/>How is this organization using KA Lite?", blank=True, )

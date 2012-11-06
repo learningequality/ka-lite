@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from annoying.decorators import render_to
-from central.models import Organization
+from central.models import Organization, get_or_create_user_profile
 from central.forms import OrganizationForm, ZoneForm
 from securesync.models import Zone
 from django.core.urlresolvers import reverse
@@ -16,7 +16,7 @@ import settings
 def homepage(request):
     if not request.user.is_authenticated():
         return landing_page(request)
-    organizations = request.user.get_profile().get_organizations()
+    organizations = get_or_create_user_profile(request.user).get_organizations()
     context = {'organizations': organizations}
     return context
 
