@@ -19,7 +19,7 @@ urlpatterns += patterns('securesync.views',
     url(r'^adduser/$', 'add_facility_user', {}, 'add_facility_user'),
     url(r'^facility/(?P<id>\w+)/adduser/$', 'add_facility_user_selected', {}, 'add_facility_user_selected'),
     url(r'^addfacility/$', 'add_facility', {}, 'add_facility'),
-    url(r'^addgroup/$', 'add_group', {}, 'add_group'),
+    url(r'^addgroup/(?P<id>\w+)/$', 'add_group', {}, 'add_group'),
     url(r'^login/$', 'login', {}, 'login'),
     url(r'^logout/$', 'logout', {}, 'logout'),
 )
