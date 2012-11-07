@@ -6,4 +6,4 @@ class AuthFlag:
                 authflag = True
         elif request.user.is_superuser:
             authflag = True
-        request.authflag = authflag
+        request.is_admin = authflag

@@ -16,7 +16,7 @@
             </li>
             {% endfor %}
         {% else %}
-            {% if request.authflag %}
+            {% if request.is_admin %}
                 <li>You currently have no facilities. Would you like to create a facility?</li>
             {% else %}
                 <li>There are currently no facilities available, please ask an administrator or teacher to set one up.</li>
@@ -25,7 +25,7 @@
         <p id="facility"></p>
 
 <script>
-{% if request.authflag %}
+{% if request.is_admin %}
 $('#facility').append('<a href="{% url add_facility %}"> Add a new Facility</a>');
 {% endif %}
 </script>

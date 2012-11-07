@@ -193,6 +193,7 @@ def status(request):
     data = {
         "logged_in": False,
         "registered": bool(Device.get_own_device().get_zone()),
+        "is_admin": request.is_admin,
     }
     if "facility_user" in request.session:
         user = request.session["facility_user"]
