@@ -319,17 +319,19 @@ class Device(SyncedModel):
             return uuid.uuid4()
         return uuid.uuid5(ROOT_UUID_NAMESPACE, self.public_key).hex
 
-
-syncing_models = [Facility, FacilityUser]
-
+settings.add_syncing_models([Facility, FacilityGroup, FacilityUser])
 
 def get_serialized_models(device_counters=None, limit=100):
     if device_counters is None:
         device_counters = dict((device.id, 0) for device in Device.objects.all())
     models = []
-    for Model in syncing_models:
+    for Model in settings.syncing_models:
         for device_id, counter in device_counters.items():
-            models += Model.objects.filter(signed_by=device_id, counter__gte=counter, counter__lt=counter+limit)
+            models += Model.objects.filter(signed_by=device_id, counter__gte=counter)[0:limit - len(models)]
+            if len(models) == limit:
+                break
+        if len(models) == limit:
+            break        
     return json_serializer.serialize(models, ensure_ascii=False, indent=2)
     
 def save_serialized_models(data):
@@ -349,10 +351,9 @@ def save_serialized_models(data):
             model.object.save(imported=True)
             saved_model_count += 1
         except ValidationError as e:
-            print "Error saving model %s: %s" % (model, e)
             unsaved_models.append(model.object)
     return {
-        "unsaved_models": unsaved_models,
+        "unsaved_model_count": len(unsaved_models),
         "saved_model_count": saved_model_count,
     }
     

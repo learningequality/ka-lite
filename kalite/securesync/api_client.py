@@ -148,9 +148,9 @@ class SyncClient(object):
         # TODO(jamalex): upload local devices as well? only needed once we have P2P syncing
         
     def sync_models(self):
-        
+
         if self.counters_to_download is None or self.counters_to_upload is None:
-            raise Exception("Nothing to sync; run sync_device_records first.")
+            self.sync_device_records()
             
         response = json.loads(self.post("models/download", {"device_counters": self.counters_to_download}).content)
         download_results = save_serialized_models(response.get("models", "[]"))
@@ -159,5 +159,8 @@ class SyncClient(object):
         upload_results = json.loads(response.content)
         
         results = {"download_results": download_results, "upload_results": upload_results}
+        
+        self.counters_to_download = None
+        self.counters_to_upload = None
         
         return results

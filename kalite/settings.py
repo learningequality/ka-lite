@@ -137,3 +137,9 @@ try:
     from local_settings import *
 except ImportError:
     pass
+
+syncing_models = []
+def add_syncing_models(models):
+    for model in models:
+        if model not in syncing_models:
+            syncing_models.append(model)
