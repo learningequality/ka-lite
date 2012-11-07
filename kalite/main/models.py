@@ -1,7 +1,7 @@
 import uuid
 from django.db import models
-from securesync.models import SyncedModel, FacilityUser, syncing_models
-
+from securesync.models import SyncedModel, FacilityUser
+import settings
 
 class VideoLog(SyncedModel):
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
@@ -25,4 +25,4 @@ class ExerciseLog(SyncedModel):
         namespace = uuid.UUID(self.user.id)
         return uuid.uuid5(namespace, str(self.exercise_id)).hex
 
-syncing_models.extend([VideoLog, ExerciseLog])
+settings.add_syncing_models([VideoLog, ExerciseLog])
