@@ -28,7 +28,7 @@ class FacilityUserForm(forms.ModelForm):
     facility = forms.ModelChoiceField(queryset=Facility.objects.all(),widget=forms.HiddenInput, label="Facility")
     
     def clean_is_teacher(self):
-        if self.cleaned_data["is_teacher"] and not self.request.authflag:
+        if self.cleaned_data["is_teacher"] and not self.request.is_admin:
             raise forms.ValidationError("I'm sorry, Dave. I'm afraid I can't do that.")
         return self.cleaned_data["is_teacher"]
 

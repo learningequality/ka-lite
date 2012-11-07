@@ -325,13 +325,20 @@ def get_serialized_models(device_counters=None, limit=100):
     if device_counters is None:
         device_counters = dict((device.id, 0) for device in Device.objects.all())
     models = []
-    for Model in settings.syncing_models:
-        for device_id, counter in device_counters.items():
-            models += Model.objects.filter(signed_by=device_id, counter__gte=counter)[0:limit - len(models)]
-            if len(models) == limit:
-                break
-        if len(models) == limit:
-            break        
+    completed = False
+    actual_limit = 0
+    # loop until we've got something, or until there's nothing left
+    while len(models) == 0 and not completed:
+        # assume completed until proven otherwise
+        completed = True
+        # increase the actual limit by the limit size
+        actual_limit += limit
+        for Model in settings.syncing_models:
+            for device_id, counter in device_counters.items():
+                # check whether there are any models that will be excluded by our limit, so we know to ask again
+                if Model.objects.filter(signed_by=device_id, counter__gte=counter+actual_limit).count() > 0:
+                    completed = False
+                models += Model.objects.filter(signed_by=device_id, counter__gte=counter, counter__lt=counter+actual_limit)
     return json_serializer.serialize(models, ensure_ascii=False, indent=2)
     
 def save_serialized_models(data):
