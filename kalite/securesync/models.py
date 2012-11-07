@@ -329,7 +329,11 @@ def get_serialized_models(device_counters=None, limit=100):
     models = []
     for Model in syncing_models:
         for device_id, counter in device_counters.items():
-            models += Model.objects.filter(signed_by=device_id, counter__gte=counter, counter__lt=counter+limit)
+            models += Model.objects.filter(signed_by=device_id, counter__gte=counter).limit(limit - len(models))
+            if len(models) == limit:
+                break
+        if len(models) == limit:
+            break        
     return json_serializer.serialize(models, ensure_ascii=False, indent=2)
     
 def save_serialized_models(data):
