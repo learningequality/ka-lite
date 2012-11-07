@@ -26,3 +26,9 @@ class ExerciseLog(SyncedModel):
         return uuid.uuid5(namespace, str(self.exercise_id)).hex
 
 settings.add_syncing_models([VideoLog, ExerciseLog])
+
+class VideoFile(models.Model):
+    youtube_id = models.CharField(max_length=11, primary_key=True)
+    flagged_for_download = models.BooleanField(default=False)
+    download_in_progress = models.BooleanField(default=False)
+    percent_complete = models.IntegerField(default=0)
