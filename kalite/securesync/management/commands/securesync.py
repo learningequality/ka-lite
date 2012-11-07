@@ -15,12 +15,14 @@ class Command(BaseCommand):
         session = SyncClient(**kwargs)
         
         if session.test_connection() != "success":
-            raise CommandError("KA Lite host is currently unreachable: %s" % session.url)
+            self.stderr.write("KA Lite host is currently unreachable: %s\n" % session.url)
+            return
         
         self.stdout.write("Initiating SyncSession...\n")
         result = session.start_session()
         if result != "success":
-            raise CommandError("Unable to initiate session: %s" % result.content)
+            self.stderr.write("Unable to initiate session: %s\n" % result.content)
+            return
                 
         self.stdout.write("Syncing models...\n")
         results = session.sync_models()
