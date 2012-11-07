@@ -9,18 +9,18 @@
 <form action="." method="post" class="basic-form">
 {% csrf_token %}
 <h2>Add a new user</h2>
-<p><label>Facility: </label>{{ facility }} {% if not singlefacility or request.session.facility_user.is_teacher or user.is_superuser %}<a href="{% url add_facility_user %}"> (Change facility)</a></p>{% endif %}
+<p><label>Facility: </label>{{ facility }} {% if not singlefacility or request.authflag %}<a href="{% url add_facility_user %}"> (Change facility)</a></p>{% endif %}
 {{ form.as_p }}
 <input type="submit" value="Create user" class="submit"/>
 </form>
 
 <script>
-{% if request.session.facility_user.is_teacher or user.is_superuser %}
-$('#id_group').parent().append('<a href="{% url add_group %}"> (Add a new Group)</a>');
+{% if request.authflag %}
+$('#id_group').parent().append('<a href="{% url add_group id=facility.id %}"> (Add a new Group)</a>');
 {% endif %}
-{% if not request.session.facility_user.is_teacher and not user.is_superuser %}
+{% if not request.authflag %}
 $('#id_is_teacher').parent().hide();
 {% endif %}
 </script>
-
+q{{ request.authflag }}q
 {% endblock content %}

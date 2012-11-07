@@ -121,16 +121,21 @@ def add_facility(request):
     }
 
 @render_to("securesync/add_group.html")
-def add_group(request):
+def add_group(request,id):
+    facilities = Facility.objects.all()
+    groups = FacilityGroup.objects.all()
     if request.method == 'POST':
         form = FacilityGroupForm(data=request.POST)
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse("add_facility_user"))
     else:
-        form = FacilityGroupForm()
+        form = FacilityGroupForm(initial={'facility':id})
     return {
-        "form": form
+        "form": form,
+        "facility_id": id,
+        "facilities": facilities,
+        "groups": groups
     }
 
 
