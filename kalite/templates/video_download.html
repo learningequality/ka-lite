@@ -1,9 +1,32 @@
 {% extends 'base_distributed.html' %}
+{% block headcss %}
+<link href="{{ STATIC_URL }}css/ui.dynatree.css"rel="stylesheet" type="text/css"/>
+<style>
+.download_buttons {
+	padding: 5px 15px 10px 5px;
+	width: 400px;
+	float: left;
+}
 
+.vertical-shadow{
+	width: 400px;
+	height: 70px;
+}	
+
+.button_text{
+	padding: 5px 0px 0px 10px; 
+}
+
+.button_style{
+	padding: 0px 0px 10px 10px;
+}
+
+</style>
+{% endblock headcss %}
 {% block headjs %}
 <script src="{{ STATIC_URL }}js/jquery-ui.custom.min.js"></script>
 <script src="{{ STATIC_URL }}js/jquery.dynatree.min.js"></script>
-<link href="{{ STATIC_URL }}css/ui.dynatree.css"rel="stylesheet" type="text/css"/>
+
 
 <script type="text/javascript">
   var treeData = [
@@ -43,26 +66,30 @@
   
    $(function(){ 
    	
+   	$("#withSelected").hide();
+   	$("#download_videos").hide();
+   	
       $("#content_tree").dynatree({
       imagePath:"../images/",
       checkbox: true,
       selectMode: 3,
       children: treeData,
       onSelect: function(select, node) {
-        // Get a list of all selected nodes, and convert to a key array:
-        var selKeys = $.map(node.tree.getSelectedNodes(), function(node){
-          return node.data.key;
-        });
-        $("#echoSelection3").text(selKeys.join(", "));
+      
+      	var numberOfVideo = findincomplete().length;
+      	
+      	if (numberOfVideo > 0){
+      		$(".video_count").text(numberOfVideo);
+      		$("#withSelected").show();
+      		$("#noneSelected").hide();
+      		$("#download_videos").show();
+      	} else {
+      		$("#noneSelected").show();
+      		$("#withSelected").hide();
+      		$("#download_videos").hide();
+      	}
+      	
 
-        // Get a list of all selected TOP nodes
-        var selRootNodes = node.tree.getSelectedNodes(true);
-        // ... and convert to a key array:
-        var selRootKeys = $.map(selRootNodes, function(node){
-          return node.data.key;
-        });
-        $("#echoSelectionRootKeys3").text(selRootKeys.join(", "));
-        $("#echoSelectionRoots3").text(selRootNodes.join(", "));
       },
       onDblClick: function(node, event) {
         node.toggleSelect();
@@ -102,14 +129,44 @@
 {% endblock headjs %}
 
 {% block content %}
-  <p class="description">
-    This tree has <b>checkoxes and selectMode 3 (hierarchical multi-selection)</b> enabled.<br>
-    A double-click handler selects the node.<br>
-    A keydown handler selects on [space].
-  </p>
+
+<!-- Dowanload Button -->
+
+<div class="download_buttons">
+	<div class="vertical-shadow suggested-action">
+        <h2 id="noneSelected" class="button_text">Please select videos to download (below)</h2>
+        <h2 id="withSelected" class="button_text">Download <span class="video_count">0</span> video selected below </h2>
+        
+	<span class= "button_style"><button id="download_videos" type="button">Download Selected Videos</button></span>
+
+	</div>
+</div>
+
+
+<div class="download_buttons">
+	<div class="vertical-shadow suggested-action">
+	<h2 class="button_text">Download/update subtitles for all videos</h2>
+
+<span class= "button_style">
+	<select id="language">
+	  <option value="chinese">English</option>
+	  <option value="chinese">Chinese</option>
+	  <option value="spanish">Spanish</option>
+	  <option value="French">French</option>
+	  <option value="japanese">Japanese</option>
+	</select>
+</span>
+
+	<button id="download_subtitles" type="button">Download Subtitles </button>
+	
+	
+	</div>
+</div>
+<!-- End -->
+
+ <!--  <p class="description">
+  </p> -->
+  <div style="clear: both;"> </div>
   <div id="content_tree"></div>
-  <div>Selected keys: <span id="echoSelection3">-</span></div>
-  <div>Selected root keys: <span id="echoSelectionRootKeys3">-</span></div>
-  <div>Selected root nodes: <span id="echoSelectionRoots3">-</span></div>
 {% endblock content %}
 
