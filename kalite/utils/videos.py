@@ -1,4 +1,4 @@
-import requests, sys, os, re, json
+import sys, os, re, json, urllib
 
 download_path = os.path.dirname(os.path.realpath(__file__)) + "/../static/videos/"
 
@@ -55,52 +55,62 @@ def _mkdir(newdir):
         if tail:
             os.mkdir(newdir)
 
-def download_video(youtube_id, format="mp4"):
+def callback_percent_proxy(callback, start_percent=0, end_percent=100):
+    if not callback:
+        return None
+    percent_range_size = end_percent - start_percent
+    def inner_fn(numblocks, blocksize, filesize, *args, **kwargs):
+        if filesize <= 0:
+            filesize = blocksize
+        try:
+            fraction = min(float(numblocks*blocksize)/filesize, 1.0)
+        except:
+            fraction = 1.0
+        callback(start_percent + int(fraction * percent_range_size))
+    return inner_fn
+
+def download_video(youtube_id, format="mp4", callback=None):
     
     _mkdir(download_path)
     
     filename = "%(id)s.%(format)s" % {"id": youtube_id, "format": format}
     filepath = download_path + filename
     url = download_url % (filename, filename)
-    download_file(url, filepath)
+    download_file(url, filepath, callback_percent_proxy(callback, end_percent=91))
     
     large_thumb_filename = "%(id)s.png" % {"id": youtube_id}
     large_thumb_filepath = download_path + large_thumb_filename
     large_thumb_url = download_url % (filename, large_thumb_filename)
-    download_file(large_thumb_url, large_thumb_filepath)
+    download_file(large_thumb_url, large_thumb_filepath, callback_percent_proxy(callback, start_percent=91, end_percent=94))
     
     thumb_filepath = download_path + youtube_id + ".jpg"
     thumb_url = "http://img.youtube.com/vi/%(id)s/hqdefault.jpg" % {"id": youtube_id}
-    download_file(thumb_url, thumb_filepath)
+    download_file(thumb_url, thumb_filepath, callback_percent_proxy(callback, start_percent=94, end_percent=97))
     
     exercise_filepath = download_path + youtube_id + "_exercises.json"
     exercise_url = "http://www.khanacademy.org/api/v1/videos/%(id)s/exercises" % {"id": youtube_id}
-    download_file(exercise_url, exercise_filepath)
+    download_file(exercise_url, exercise_filepath, callback_percent_proxy(callback, start_percent=97, end_percent=100))
     
 
-def download_file_old(url, filepath):
+# def download_file_old(url, filepath):
         
-    download = requests.get(url)
-    filesize = int(download.headers['content-length'] or 1)
+#     download = requests.get(url)
+#     filesize = int(download.headers['content-length'] or 1)
 
-    CHUNK = 128 * 1024
-    with open(filepath, 'wb') as fp:
-        i = 0
-        print "     (%s)" % url,
-        while True:
-            print "\r%d%%" % min(round((i * CHUNK * 100.0) / filesize), 100),
-            sys.stdout.flush()
-            chunk = download.raw.read(CHUNK)
-            if not chunk:
-                break
-            fp.write(chunk)
-            i += 1
-        print ""
+#     CHUNK = 128 * 1024
+#     with open(filepath, 'wb') as fp:
+#         i = 0
+#         print "     (%s)" % url,
+#         while True:
+#             print "\r%d%%" % min(round((i * CHUNK * 100.0) / filesize), 100),
+#             sys.stdout.flush()
+#             chunk = download.raw.read(CHUNK)
+#             if not chunk:
+#                 break
+#             fp.write(chunk)
+#             i += 1
+#         print ""
 
-
-import os
-import sys
-import urllib
 
 def _reporthook(numblocks, blocksize, filesize, url=None):
     base = os.path.basename(url)
@@ -111,19 +121,21 @@ def _reporthook(numblocks, blocksize, filesize, url=None):
     except:
         percent = 100
     if numblocks != 0:
-        sys.stdout.write("\b"*70)
-    sys.stdout.write("%-66s%3d%%" % (base, percent))
+        sys.stdout.write("\b"*40)
+    sys.stdout.write("%-36s%3d%%" % (base, percent))
+    if percent == 100:
+        sys.stdout.write("\n")
 
-def download_file(url, dst):
-    # print "get url '%s' to '%s'" % (url, dst)
+def _nullhook(*args, **kwargs):
+    pass
+
+def download_file(url, dst, callback=None):
     if sys.stdout.isatty():
-        urllib.urlretrieve(url, dst,
-                           lambda nb, bs, fs, url=url: _reporthook(nb,bs,fs,url))
-        sys.stdout.write('\n')
+        callback = callback or _reporthook
     else:
-        urllib.urlretrieve(url, dst)
-
-
+        callback = callback or _nullhook
+    urllib.urlretrieve(url, dst,
+        lambda nb, bs, fs, url=url: callback(nb,bs,fs,url))
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:

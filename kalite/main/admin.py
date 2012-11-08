@@ -13,3 +13,10 @@ class ExerciseLogAdmin(admin.ModelAdmin):
     list_filter = ("exercise_id", "user", "complete",)
 admin.site.register(ExerciseLog, ExerciseLogAdmin)
 
+
+class VideoFileAdmin(admin.ModelAdmin):
+    list_display = ("youtube_id", "flagged_for_download", "download_in_progress", "percent_complete",)
+    list_filter = ("flagged_for_download", "download_in_progress",)
+admin.site.register(VideoFile, VideoFileAdmin)
+
+
