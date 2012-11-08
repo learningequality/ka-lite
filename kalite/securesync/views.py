@@ -115,6 +115,7 @@ def add_facility(request):
             form.save()
             return HttpResponseRedirect(reverse("add_facility_user"))
     elif request.method =='POST' and not request.is_admin:
+        messages.error(request,"Just what do you think you're doing, Dave?")
         return HttpResponseRedirect(reverse("login"))
     else:
         form = FacilityForm()
@@ -132,6 +133,7 @@ def add_group(request,id):
             form.save()
             return HttpResponseRedirect(reverse("add_facility_user"))
     elif request.method =='POST' and not request.is_admin:
+        messages.error(request,"This mission is too important for me to allow you to jeopardize it.")
         return HttpResponseRedirect(reverse("login"))
     else:
         form = FacilityGroupForm(initial={'facility':id})
