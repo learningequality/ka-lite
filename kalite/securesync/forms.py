@@ -37,7 +37,7 @@ class FacilityForm(forms.ModelForm):
 
     class Meta:
         model = Facility
-        fields = ("name", "description", "address", "address_normalized", "latitude", "longitude",)
+        fields = ("name", "description", "address", "address_normalized", "latitude", "longitude","zoom")
         
 class FacilityGroupForm(forms.ModelForm):
 

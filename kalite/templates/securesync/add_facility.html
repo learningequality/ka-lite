@@ -5,12 +5,28 @@
 {% block extra_head %}{{ block.super }}
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUVMGp6Uks8OCczFfrWo20zHnmENyW5O0&v=3.9&sensor=false&libraries=places">
 </script>
-<script> 
-$(function() {
-    $('#id_address_normalized').parent().hide();
-});
-</script>
-<script> 
+<script>
+    $(function() {
+        $('#id_address_normalized').parent().hide();
+        $('#id_zoom').parent().hide();
+      
+    });
+
+    function displayFormLatLng(map, marker) {
+        var longitude = $("#id_longitude").val();
+        var latitude = $("#id_latitude").val();
+        var zoom = $("#id_zoom").val();
+        if (longitude && latitude) {
+            var latLng = new google.maps.LatLng(latitude, longitude);
+            map.setCenter(latLng);
+            marker.setPosition(latLng);
+            marker.setVisible(true);
+            if (zoom) {
+                map.setZoom(zoom);
+            }
+            
+        }
+    }
    
 function initialize()
 {
@@ -35,10 +51,13 @@ function initialize()
         clickable: true,
     });
 
+    showZoom(map.getZoom());
+
     google.maps.event.addListener(map, 'click', function(ev) {
             marker.setVisible(true);
             marker.setPosition(ev.latLng);
-            info(ev.latLng.lat(), ev.latLng.lng());
+            getLatLng(ev.latLng.lat(), ev.latLng.lng());
+            showZoom(map.getZoom());
     });
 
 
@@ -49,37 +68,47 @@ function initialize()
         marker.setVisible(true);
         marker.setPosition(place.geometry.location);
         bounds.extend(place.geometry.location);
-        info(place.geometry.location.lat(), place.geometry.location.lng());
-        addr(place.formatted_address);
+        getLatLng(place.geometry.location.lat(), place.geometry.location.lng());
+        getAddress(place.formatted_address);
+        showZoom(map.getZoom());
         // if a place has a geometry, display it on the map
-        if (place.geometry.viewport)
-        {
+        if (place.geometry.viewport) {
             map.fitBounds(place.geometry.viewport);   
-            market.setPosition(place.geometry.viewport);
+            marker.setPosition(place.geometry.viewport);
         } 
-        else
-        map.setCenter(place.geometry.location);
-        map.setZoom(13);
-       
+        else {
+            map.setCenter(place.geometry.location);
+            map.setZoom(13);
+        }
+
+
     });
-  
+
 
     $('#map_canvas').show();
     $('#id_direc_no_map').hide();
     $('#id_direc_map').show();
+    $("#id_longitude, #id_latitude").change(function() { displayFormLatLng(map, marker); });
+    displayFormLatLng(map, marker);
 
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);
 
-function info(lat, long) {
+function getLatLng(lat, lon) {
     $("#id_latitude").val(lat);
-    $("#id_longitude").val(long);
+    $("#id_longitude").val(lon);
 }
 
-function addr(ad) {
+function getAddress(ad) {
     $("#id_address_normalized").val(ad);
 }
+
+function showZoom(zm) {
+    $("#id_zoom").val(zm);
+}
+
+
 
 </script>
 
