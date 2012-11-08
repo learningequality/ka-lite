@@ -18,23 +18,23 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         
-        if VideoFile.objects.filter(download_in_progress=True).count() > 0:
-            self.stderr.write("Another download is still in progress; aborting.\n")
-            return
-        
-        videos = VideoFile.objects.filter(flagged_for_download=True, download_in_progress=False)
-        if videos.count() == 0:
-            self.stdout.write("Nothing to download; aborting.\n")
-            return
+        while True: # loop until the method is aborted
+            
+            if VideoFile.objects.filter(download_in_progress=True).count() > 0:
+                self.stderr.write("Another download is still in progress; aborting.\n")
+                return
+            
+            videos = VideoFile.objects.filter(flagged_for_download=True, download_in_progress=False)
+            if videos.count() == 0:
+                self.stdout.write("Nothing to download; aborting.\n")
+                return
 
-        video = videos[0]
-        
-        video.download_in_progress = True
-        video.percent_complete = 0
-        video.save()
-        
-        self.stdout.write("Downloading video '%s'...\n" % video.youtube_id)
-        download_video(video.youtube_id, callback=download_progress_callback(video))
-        self.stdout.write("Download is complete!\n")
-        
-        self.handle()
+            video = videos[0]
+            
+            video.download_in_progress = True
+            video.percent_complete = 0
+            video.save()
+            
+            self.stdout.write("Downloading video '%s'...\n" % video.youtube_id)
+            download_video(video.youtube_id, callback=download_progress_callback(video))
+            self.stdout.write("Download is complete!\n")
