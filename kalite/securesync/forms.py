@@ -38,14 +38,16 @@ class FacilityForm(forms.ModelForm):
     class Meta:
         model = Facility
         fields = ("name", "description", "address", "address_normalized", "latitude", "longitude",)
+    
         
 class FacilityGroupForm(forms.ModelForm):
+
+    facility = forms.ModelChoiceField(queryset=Facility.objects.all(),widget=forms.HiddenInput, label="Facility")
 
     class Meta:
         model = FacilityGroup
         fields = ("name","facility",)
-    facility = forms.ModelChoiceField(queryset=Facility.objects.all(),widget=forms.HiddenInput, label="Facility")
-
+    
 
 class LoginForm(forms.ModelForm):
     password = forms.CharField(label="Password", widget=forms.PasswordInput)
