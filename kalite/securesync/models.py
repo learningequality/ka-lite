@@ -175,6 +175,7 @@ class Facility(SyncedModel):
     address_normalized = models.CharField(max_length=400, blank=True)
     latitude = models.FloatField(blank=True, null=True)
     longitude = models.FloatField(blank=True, null=True)
+    zoom = models.FloatField(blank=True, null=True)
 
     class Meta:    
         verbose_name_plural = "Facilities"
