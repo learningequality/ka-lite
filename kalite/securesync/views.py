@@ -109,11 +109,13 @@ def add_facility_user_selected(request,id):
 
 @render_to("securesync/add_facility.html")
 def add_facility(request):
-    if request.method == 'POST':
+    if request.method == 'POST' and request.is_admin:
         form = FacilityForm(data=request.POST)
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse("add_facility_user"))
+    elif request.method =='POST' and not request.is_admin:
+        return HttpResponseRedirect(reverse("login"))
     else:
         form = FacilityForm()
     return {
@@ -124,11 +126,13 @@ def add_facility(request):
 def add_group(request,id):
     facilities = Facility.objects.all()
     groups = FacilityGroup.objects.all()
-    if request.method == 'POST':
+    if request.method == 'POST' and request.is_admin:
         form = FacilityGroupForm(data=request.POST)
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse("add_facility_user"))
+    elif request.method =='POST' and not request.is_admin:
+        return HttpResponseRedirect(reverse("login"))
     else:
         form = FacilityGroupForm(initial={'facility':id})
     return {

@@ -2,21 +2,26 @@
 
 {% block basejs %}
 <script type="text/javascript">
-    doRequest("/securesync/api/status").success(function(data){
-        if (data.logged_in){
-            $('body').removeClass("logged-out");
-            $('body').addClass("logged-in");
-            $('#logged_in_name').text(data.username);
-        }
-        else {
-            $('body').removeClass("logged-in");
-            if (!data.registered) {
-                $(".unregistered-only").show();
-            } else {
-                $('body').addClass("logged-out");
+    function toggle_state(state, status){
+        $("." + (status ? "not-" : "") + state + "-only").hide(); 
+        $("." + (!status ? "not-" : "") + state + "-only").show(); 
+    }
+
+    $(function(){
+        $("[class$=-only]").hide();
+        doRequest("/securesync/api/status").success(function(data){
+            toggle_state("logged-in", data.logged_in);
+            toggle_state("registered", data.registered);
+            toggle_state("admin", data.is_admin);
+            if (data.logged_in){
+                $('#logged_in_name').text(data.username);
             }
-        };
-    })
+        });        
+    });
+
+
+
+
 </script>
 {% endblock basejs %}
 
@@ -24,11 +29,12 @@
     <span class="dropdown topic-browser-dropdown">
         <a href="/" class="watch-navlink {% block watch_selected %}{% endblock watch_selected %}">Watch</a>
         <a href="/exercisedashboard" class="practice-navlink {% block practice_selected %}{% endblock practice_selected %}">Practice</a>
-        <a href="/securesync/adduser" class="logged-out-only">Sign Up</a>
-        <a href="/securesync/login" class="logged-out-only">Login</a>
+        <a href="/securesync/adduser" class="admin-only">Add User</a>
+        <a href="/securesync/adduser" class="not-logged-in-only">Sign Up</a>
+        <a href="/securesync/login" class="not-logged-in-only">Login</a>
     </span>
-    <span class="dropdown topic-browser-dropdown unregistered-only">
-        <a href="/securesync/register" class="unregistered-only">Register device</a>
+    <span class="dropdown topic-browser-dropdown registered-only">
+        <a href="/securesync/register" class="admin-only">Register device</a>
     </span>
     <span class="dropdown topic-browser-dropdown logged-in-only">
         <a href="/securesync/logout" class=""><span id="logged_in_name"></span> (Logout)</a>
