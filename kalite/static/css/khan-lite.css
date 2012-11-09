@@ -75,28 +75,6 @@ footer.short .inner {
     padding-left: 4px;
 }
 
-/* Logic for sitewide navigation */
-.logged-out-only, .logged-in-only {
-    display:none !important;
-}
-
-.logged-in .logged-out-only {
-    display: none !important;
-}
-
-.logged-in .logged-in-only {
-    display: inline !important;
-}
-
-.logged-out .logged-out-only {
-    display: inline !important;
-}
-
-.logged-out .logged-in-only {
-    display: none !important;
-}
-/* end sitewide navigation logic */
-
 /*greeting styling*/
 
 .sitewide-navigation {
