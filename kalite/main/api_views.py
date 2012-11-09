@@ -173,7 +173,7 @@ def convert_topic_tree(node, level=0):
                 children.append(child)
         return {
             "title": node[title_key["Topic"]],
-            "description": re.sub(r'<[^>]*?>', '', node["description"] or ""),
+            "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
             "isFolder": True,
             "key": node[slug_key["Topic"]],
             "children": children,
@@ -183,7 +183,7 @@ def convert_topic_tree(node, level=0):
     if node["kind"] == "Video":
         return {
             "title": node[title_key["Video"]],
-            "description": re.sub(r'<[^>]*?>', '', node["description"] or ""),
+            "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
             "key": node["youtube_id"],
             "addClass": get_video_download_status(node["youtube_id"]),
         }
