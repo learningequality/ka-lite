@@ -1,9 +1,8 @@
 class AuthFlag:
-    def process_request(self,request):
+    def process_request(self, request):
         authflag = False
-        if request.session.get('facility_user'):
-            if request.session.get('facility_user').is_teacher:
-                authflag = True
-        elif request.user.is_superuser:
+        if "facility_user" in request.session:
+            authflag = request.session.get('facility_user').is_teacher
+        if request.user.is_superuser:
             authflag = True
         request.is_admin = authflag
