@@ -10,6 +10,7 @@ from django.utils import simplejson
 from annoying.decorators import render_to
 from forms import RegisteredDevicePublicKeyForm, FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
 from django.contrib import messages
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout      
 
 import crypto
 import settings
@@ -149,10 +150,15 @@ def add_group(request,id):
 @render_to("securesync/login.html")
 def login(request):
     if request.method == 'POST':
+        username = request.POST.get("username", "")
+        password = request.POST.get("password", "")
+        user = authenticate(username=username, password=password)
         form = LoginForm(data=request.POST, request=request)
-        if form.is_valid():
+        if form.is_valid() and data.get("facility_user"):
             request.session["facility_user"] = form.get_user()
-            return HttpResponseRedirect("/")
+        if user is not None:
+            auth_login(request, user)
+        return HttpResponseRedirect("/")   
     else:
         form = LoginForm()
     return {
@@ -163,6 +169,7 @@ def login(request):
 def logout(request):
     if "facility_user" in request.session:
         del request.session["facility_user"]
+    auth_logout(request)
     return HttpResponseRedirect("/")
 
 # @render_to("securesync/edit_organization.html")
