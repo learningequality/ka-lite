@@ -21,6 +21,20 @@
 	padding: 0px 0px 10px 10px;
 }
 
+
+.progress_style{
+	padding: 5px 0px 5px 0px;
+}
+
+.progress_text{
+	color: #005987;
+}
+
+#progressbar{
+	background-color:#005987;
+}
+
+
 </style>
 {% endblock headcss %}
 {% block headjs %}
@@ -29,6 +43,8 @@
 
 
 <script type="text/javascript">
+
+
   var treeData = [
 
     {title: "Math", isFolder: true, key: "math",
@@ -106,6 +122,15 @@
       cookieId: "dynatree-Cb3",
       idPrefix: "dynatree-Cb3-"
     });
+    
+// Progress Bar Jquery Starts
+
+  	$( "#progressbar" ).progressbar({
+	    value: 37
+	    
+	});
+	
+// Progress Bar Jquery Ends  
   
   });
   
@@ -162,11 +187,26 @@
 	
 	</div>
 </div>
+
+
 <!-- End -->
 
- <!--  <p class="description">
-  </p> -->
+
+
   <div style="clear: both;"> </div>
+
+
+
+<div class="progress_style">
+	
+<h2 id="withSelected" class="progress_text">Downloading <span class="downloding_video">Linear Algebra</span></h2>
+
+<div id="progressbar"> </div>
+
+</div>
+
+
+  
   <div id="content_tree"></div>
 {% endblock content %}
 
