@@ -1,10 +1,20 @@
 import re, json
 from django.core.exceptions import ValidationError
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotAllowed
 from django.utils import simplejson
+from annoying.functions import get_object_or_None
+import settings
+from settings import slug_key, title_key
+from main import topicdata
 
-from models import FacilityUser, VideoLog, ExerciseLog
+from models import FacilityUser, VideoLog, ExerciseLog, VideoFile
 
+def require_admin(handler):
+    def wrapper_fn(request, *args, **kwargs):
+        if not request.is_admin:
+            return HttpResponseNotAllowed("This path is only available to admins.")
+        return handler(request, *args, **kwargs)
+    return wrapper_fn
 
 class JsonResponse(HttpResponse):
     def __init__(self, content, *args, **kwargs):
@@ -110,3 +120,76 @@ def _get_exercise_log_dict(request, user, exercise_id):
         "streak_progress": exerciselog.streak_progress,
         "complete": exerciselog.streak_progress == 100,
     }
+
+@require_admin
+def start_video_download(request):
+    youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
+    for id in youtube_ids:
+        videofile = get_object_or_None(VideoFile, youtube_id=id) or VideoFile(youtube_id=id)
+        if videofile.download_in_progress:
+            continue
+        videofile.flagged_for_download = True
+        videofile.percent_complete = 0
+        videofile.save()
+    return JsonResponse({})
+
+@require_admin
+def check_video_download(request):
+    youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
+    percentages = {}
+    for id in youtube_ids:
+        videofile = get_object_or_None(VideoFile, youtube_id=id) or VideoFile(youtube_id=id)
+        percentages[id] = videofile.percent_complete
+    return JsonResponse(percentages)
+
+def get_video_download_status(youtube_id):
+    videofile = get_object_or_None(VideoFile, youtube_id=youtube_id)
+    if not videofile:
+        return "unstarted"
+    if videofile.percent_complete == 0 and not videofile.download_in_progress:
+        return "unstarted"
+    if videofile.percent_complete == 100 and not videofile.download_in_progress:
+        return "complete"
+    else:
+        return "partial"
+
+def convert_topic_tree(node, level=0):
+    if node["kind"] == "Topic":
+        if "Video" not in node["contains"]:
+            return None
+        children = []
+        unstarted = True
+        complete = True
+        for child_node in node["children"]:
+            child = convert_topic_tree(child_node, level+1)
+            if child:
+                if child["addClass"] == "unstarted":
+                    complete = False
+                if child["addClass"] == "partial":
+                    complete = False
+                    unstarted = False
+                if child["addClass"] == "complete":
+                    unstarted = False       
+                children.append(child)
+        return {
+            "title": node[title_key["Topic"]],
+            "description": re.sub(r'<[^>]*?>', '', node["description"] or ""),
+            "isFolder": True,
+            "key": node[slug_key["Topic"]],
+            "children": children,
+            "addClass": complete and "complete" or unstarted and "unstarted" or "partial",
+            "expand": level < 1
+        }
+    if node["kind"] == "Video":
+        return {
+            "title": node[title_key["Video"]],
+            "description": re.sub(r'<[^>]*?>', '', node["description"] or ""),
+            "key": node["youtube_id"],
+            "addClass": get_video_download_status(node["youtube_id"]),
+        }
+    return None
+
+@require_admin
+def get_topic_tree(request):
+    return JsonResponse(convert_topic_tree(topicdata.TOPICS))
+    

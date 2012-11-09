@@ -43,94 +43,52 @@
 
 
 <script type="text/javascript">
-
-
-  var treeData = [
-
-    {title: "Math", isFolder: true, key: "math",
-      children: [
-        {
-          title: "Algebra",
-          addClass: "complete",
-          key: "algebra",
-          children: [
-            {
-              title: "Intro",
-              key: "intro"
-            },
-            {title: "Linear function", key: "linear-function" }
-          ]
-        },
-        {title: "Geometry",
-        addClass: "partial",
-        key: "geometry",
-          children: [
-            {
-              title: "Basic geometry",
-              key: "basic-geometry", 
-              addClass: "unstarted"
-            },
-            {title: "Angles", key: "angles" },
-            {title: "Triangles", key: "triangles", addClass:"complete"}
-          ]
-        }
-      ]
-    },
-   
-  ];
-  
   
    $(function(){ 
    	
    	$("#withSelected").hide();
    	$("#download_videos").hide();
    	
-      $("#content_tree").dynatree({
-      imagePath:"../images/",
-      checkbox: true,
-      selectMode: 3,
-      children: treeData,
-      onSelect: function(select, node) {
+    doRequest("/api/get_topic_tree", {}, "POST").success(function(treeData) {
       
-      	var numberOfVideo = findincomplete().length;
-      	
-      	if (numberOfVideo > 0){
-      		$(".video_count").text(numberOfVideo);
-      		$("#withSelected").show();
-      		$("#noneSelected").hide();
-      		$("#download_videos").show();
-      	} else {
-      		$("#noneSelected").show();
-      		$("#withSelected").hide();
-      		$("#download_videos").hide();
-      	}
-      	
+      $("#content_tree").dynatree({
+        imagePath:"../images/",
+        checkbox: true,
+        selectMode: 3,
+        children: treeData,
+        onSelect: function(select, node) {
+        
+        	var numberOfVideos = findincomplete().length;
+        	
+        	if (numberOfVideos > 0){
+        		$(".video_count").text(numberOfVideos);
+        		$("#withSelected").show();
+        		$("#noneSelected").hide();
+        		$("#download_videos").show();
+        	} else {
+        		$("#noneSelected").show();
+        		$("#withSelected").hide();
+        		$("#download_videos").hide();
+        	}
+        	
 
-      },
-      onDblClick: function(node, event) {
-        node.toggleSelect();
-      },
-      onKeydown: function(node, event) {
-        if( event.which == 32 ) {
+        },
+        onDblClick: function(node, event) {
           node.toggleSelect();
-          return false;
-        }
-      },
-
-      // The following options are only required, if we have more than one tree on one page:
-//        initId: "treeData",
-      cookieId: "dynatree-Cb3",
-      idPrefix: "dynatree-Cb3-"
+        },
+        onKeydown: function(node, event) {
+          if( event.which == 32 ) {
+            node.toggleSelect();
+            return false;
+          }
+        },
+      });
+          
     });
-    
-// Progress Bar Jquery Starts
-
-  	$( "#progressbar" ).progressbar({
-	    value: 37
-	    
-	});
-	
-// Progress Bar Jquery Ends  
+  
+    $("#progressbar").progressbar({
+      value: 37
+    });
   
   });
   
