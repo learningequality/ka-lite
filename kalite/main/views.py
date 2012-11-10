@@ -71,8 +71,10 @@ def video_handler(request, video, prev=None, next=None):
     except:
         related_exercise = None
 
-    if request.user.is_anonymous:
-        messages.warning(request, "Friendly reminder: You are not currently logged in, so any work you do won\'t be saved.")
+    if request.user.is_authenticated():
+        messages.warning(request, "Note: You're logged in as an admin (not a facility user), so your video progress and points won't be saved.")
+    elif not request.is_logged_in:
+        messages.warning(request, "Friendly reminder: You are not currently logged in, so your video progress and points won't be saved.")    
         
     context = {
         "video": video,
@@ -86,6 +88,12 @@ def video_handler(request, video, prev=None, next=None):
 @render_to("exercise.html")
 def exercise_handler(request, exercise):
     related_videos = [topicdata.NODE_CACHE["Video"][key] for key in exercise["related_video_readable_ids"]]
+
+    if request.user.is_authenticated():
+        messages.warning(request, "Note: You're logged in as an admin (not a facility user), so your exercise progress and points won't be saved.")
+    elif not request.is_logged_in:
+        messages.warning(request, "Friendly reminder: You are not currently logged in, so your exercise progress and points won't be saved.")
+
     context = {
         "exercise": exercise,
         "title": exercise[title_key["Exercise"]],
