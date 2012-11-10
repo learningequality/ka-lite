@@ -194,9 +194,13 @@ def status(request):
         "logged_in": False,
         "registered": bool(Device.get_own_device().get_zone()),
         "is_admin": request.is_admin,
+        "only_admin": request.only_admin,
     }
     if "facility_user" in request.session:
         user = request.session["facility_user"]
         data["logged_in"] = True
         data["username"] = user.get_name()
+    if request.user.is_authenticated():
+        data["logged_in"] = True
+        data["username"] = request.user.username
     return JsonResponse(data)
