@@ -3,6 +3,8 @@ from django.core import serializers
 from django.http import HttpResponse
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Sum, Avg
+from main.models import VideoLog, ExerciseLog
 
 import crypto
 import settings
@@ -200,6 +202,7 @@ def status(request):
         user = request.session["facility_user"]
         data["logged_in"] = True
         data["username"] = user.get_name()
+        data["points"] = VideoLog.objects.filter(user=request.session["facility_user"]).aggregate(Sum("points"))["points__sum"] + ExerciseLog.objects.filter(user=request.session["facility_user"]).aggregate(Sum("points"))["points__sum"] 
     if request.user.is_authenticated():
         data["logged_in"] = True
         data["username"] = request.user.username
