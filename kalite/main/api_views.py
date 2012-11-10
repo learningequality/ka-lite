@@ -178,7 +178,7 @@ def convert_topic_tree(node, level=0):
             "key": node[slug_key["Topic"]],
             "children": children,
             "addClass": complete and "complete" or unstarted and "unstarted" or "partial",
-            "expand": level < 1
+            "expand": level < 1,
         }
     if node["kind"] == "Video":
         return {

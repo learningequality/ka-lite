@@ -55,7 +55,7 @@ def topic_handler(request, topic):
     context = {
         "topic": topic,
         "title": topic[title_key["Topic"]],
-        "description": re.sub(r'<[^>]*?>', '', node.get("description", "")),
+        "description": re.sub(r'<[^>]*?>', '', topic["description"] or ""),
         "videos": videos,
         "exercises": exercises,
         "topics": topics,
