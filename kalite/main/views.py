@@ -6,6 +6,7 @@ from annoying.decorators import render_to
 import settings
 from settings import slug_key, title_key
 from main import topicdata
+from django.contrib import messages
 
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
@@ -69,6 +70,9 @@ def video_handler(request, video, prev=None, next=None):
             related_exercise = topicdata.NODE_CACHE["Exercise"][json.loads(fp.read())[0]["name"]]
     except:
         related_exercise = None
+
+    if request.user.is_anonymous:
+        messages.warning(request, "Friendly reminder: You are not currently logged in, so any work you do won\'t be saved.")
         
     context = {
         "video": video,
