@@ -19,6 +19,7 @@ class ExerciseLog(SyncedModel):
     exercise_id = models.CharField(max_length=50, db_index=True)
     streak_progress = models.IntegerField(default=0)
     attempts = models.IntegerField(default=0)
+    points = models.IntegerField(default=0)
     complete = models.BooleanField(default=False)
 
     def get_uuid(self, *args, **kwargs):
