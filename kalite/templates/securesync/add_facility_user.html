@@ -1,33 +1,30 @@
 {% extends 'base_distributed.html' %}
 
 
-{% block title %}Select user facility {% endblock title %}
+{% block title %}Add facility user{% endblock title %}
 
 {% block content %}
 
-<div id="facility_list_container">
-    <h1>Facilities</h1>
-    <p class="help_text">(Click on any facility to {% if request.is_admin %}add a user to{% else %}sign up at{% endif %} that facility)</p>
-    <ul id="facility_list">
-        {% if facilities %}
-            {% for facility in facilities %}
-            <li class="facility_title">
-                <h2><a href="{% url add_facility_user_selected id=facility.id %}">{{ facility }}</a></h2>
-            </li>
-            {% endfor %}
-        {% else %}
-            {% if request.is_admin %}
-                <li>You currently have no facilities. Would you like to create a facility?</li>
-            {% else %}
-                <li>There are currently no facilities available, please ask an administrator or teacher to set one up.</li>
-            {% endif %}
-        {% endif %}
-        <p id="facility"></p>
+
+<form action="." method="post" class="basic-form">
+{% csrf_token %}
+<h2>{% if request.is_admin %}
+        Add a new user
+    {% else %}
+        Sign up for an account
+    {% endif %}
+</h2>
+<p><label>Facility: </label>{{ facility }} {% if not singlefacility or request.is_admin %}<a href="{% url select_facility_to_add_user %}"> (Select a different facility)</a></p>{% endif %}
+{{ form.as_p }}
+<input type="submit" value="Create user" class="submit"/>
+</form>
 
 <script>
 {% if request.is_admin %}
-$('#facility').append('<a href="{% url add_facility %}"> Add a new Facility</a>');
+$('#id_group').parent().find(".helptext").html('(<a href="{% url add_group id=facility.id %}">Add a new Group</a>)');
+{% endif %}
+{% if not request.is_admin %}
+$('#id_is_teacher').parent().hide();
 {% endif %}
 </script>
-
 {% endblock content %}

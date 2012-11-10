@@ -191,9 +191,10 @@ class FacilityGroup(SyncedModel):
     def __unicode__(self):
         return self.name
 
+
 class FacilityUser(SyncedModel):
     facility = models.ForeignKey(Facility)
-    group = models.ForeignKey(FacilityGroup, blank=True, null=True, help_text="(optional)")
+    group = models.ForeignKey(FacilityGroup, verbose_name="Group/class", blank=True, null=True, help_text="(optional)")
     username = models.CharField(max_length=30)
     first_name = models.CharField(max_length=30, blank=True)
     last_name = models.CharField(max_length=30, blank=True)

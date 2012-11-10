@@ -73,30 +73,26 @@ def register_public_key_server(request):
     }
 
 @distributed_server_only
-@render_to("securesync/add_facility_user.html")
-def add_facility_user(request):
+@render_to("securesync/select_facility_to_add_user.html")
+def select_facility_to_add_user(request):
     facilities = Facility.objects.all()
-    context = {'facilities': facilities}
+    context = {"facilities": facilities}
     return context
     
 @distributed_server_only
-@render_to("securesync/add_facility_user_selected.html")
-def add_facility_user_selected(request, id):
-    if request.method == 'POST':
-        form = FacilityUserForm(request,data=request.POST)
+@render_to("securesync/add_facility_user.html")
+def add_facility_user(request, id):
+    if request.method == "POST":
+        form = FacilityUserForm(request, data=request.POST)
         if form.is_valid():
             form.instance.set_password(form.cleaned_data["password"])
             form.save()
             return HttpResponseRedirect(reverse("login"))
-
-    elif Facility.objects.count() == 0:
-        messages.error(request, "You must add a facility before creating a user" )
-        return HttpResponseRedirect(reverse("add_facility"))
-    elif id==None:
+    elif Facility.objects.count() == 0 or id is None:
         messages.error(request, "You must add a facility before creating a user" )
         return HttpResponseRedirect(reverse("add_facility"))
     else:
-        form = FacilityUserForm(request,initial={'facility':id})
+        form = FacilityUserForm(request, initial={'facility':id})
     facility = Facility.objects.get(pk=id)
     form.fields["group"].queryset = FacilityGroup.objects.filter(facility=id)
     if Facility.objects.count() == 1:
@@ -106,7 +102,7 @@ def add_facility_user_selected(request, id):
     return {
         "form": form,
         "facility": facility,
-        "singlefacility": singlefacility
+        "singlefacility": singlefacility,
     }
 
 @render_to("securesync/add_facility.html")
@@ -115,7 +111,7 @@ def add_facility(request):
         form = FacilityForm(data=request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse("add_facility_user"))
+            return HttpResponseRedirect(reverse("select_facility_to_add_user"))
     elif request.method =='POST' and not request.is_admin:
         messages.error(request,"Just what do you think you're doing, Dave?")
         return HttpResponseRedirect(reverse("login"))
@@ -133,7 +129,7 @@ def add_group(request, id):
         form = FacilityGroupForm(data=request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse("add_facility_user_selected", kwargs={"id": id}))
+            return HttpResponseRedirect(reverse("add_facility_user", kwargs={"id": id}))
     elif request.method =='POST' and not request.is_admin:
         messages.error(request,"This mission is too important for me to allow you to jeopardize it.")
         return HttpResponseRedirect(reverse("login"))
