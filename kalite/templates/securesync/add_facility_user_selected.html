@@ -8,15 +8,20 @@
 
 <form action="." method="post" class="basic-form">
 {% csrf_token %}
-<h2>Add a new user</h2>
-<p><label>Facility: </label>{{ facility }} {% if not singlefacility or request.is_admin %}<a href="{% url add_facility_user %}"> (Change facility)</a></p>{% endif %}
+<h2>{% if request.is_admin %}
+        Add a new user
+    {% else %}
+        Sign up for an account
+    {% endif %}
+</h2>
+<p><label>Facility: </label>{{ facility }} {% if not singlefacility or request.is_admin %}<a href="{% url add_facility_user %}"> (Select a different facility)</a></p>{% endif %}
 {{ form.as_p }}
 <input type="submit" value="Create user" class="submit"/>
 </form>
 
 <script>
 {% if request.is_admin %}
-$('#id_group').parent().append('<a href="{% url add_group id=facility.id %}"> (Add a new Group)</a>');
+$('#id_group').parent().find(".helptext").html('(<a href="{% url add_group id=facility.id %}">Add a new Group</a>)');
 {% endif %}
 {% if not request.is_admin %}
 $('#id_is_teacher').parent().hide();

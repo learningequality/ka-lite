@@ -181,7 +181,7 @@ class Facility(SyncedModel):
         verbose_name_plural = "Facilities"
 
     def __unicode__(self):
-        return "%s (%s)" % (self.name, self.id[:5])
+        return "%s (#%s)" % (self.name, int(self.id[:3], 16))
 
 
 class FacilityGroup(SyncedModel):
@@ -189,15 +189,15 @@ class FacilityGroup(SyncedModel):
     name = models.CharField(max_length=30)
     
     def __unicode__(self):
-        return "%s (Facility: %s)" % (self.name, self.facility)
+        return self.name
 
 class FacilityUser(SyncedModel):
     facility = models.ForeignKey(Facility)
-    group = models.ForeignKey(FacilityGroup,blank=True,null=True)
+    group = models.ForeignKey(FacilityGroup, blank=True, null=True, help_text="(optional)")
     username = models.CharField(max_length=30)
     first_name = models.CharField(max_length=30, blank=True)
     last_name = models.CharField(max_length=30, blank=True)
-    is_teacher = models.BooleanField(default=False)
+    is_teacher = models.BooleanField(default=False, help_text="(whether this user should have teacher permissions)")
     notes = models.TextField(blank=True)
     password = models.CharField(max_length=128, help_text="Use '[algo]$[salt]$[hexdigest]'.")
 
