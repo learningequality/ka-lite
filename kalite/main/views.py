@@ -4,20 +4,9 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect, ge
 from django.template import RequestContext
 from annoying.decorators import render_to
 import settings
+from settings import slug_key, title_key
 from main import topicdata
 from django.contrib import messages
-
-slug_key = {
-    "Topic": "id",
-    "Video": "readable_id",
-    "Exercise": "name",
-}
-
-title_key = {
-    "Topic": "title",
-    "Video": "title",
-    "Exercise": "display_name",
-}
 
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
@@ -67,7 +56,7 @@ def topic_handler(request, topic):
     context = {
         "topic": topic,
         "title": topic[title_key["Topic"]],
-        "description": re.sub(r'<[^>]*?>', '', topic["description"] or ""),
+        "description": re.sub(r'<[^>]*?>', '', node.get("description", "")),
         "videos": videos,
         "exercises": exercises,
         "topics": topics,

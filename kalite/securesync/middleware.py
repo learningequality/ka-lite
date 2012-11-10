@@ -15,3 +15,4 @@ class AuthFlags:
         	request.is_logged_in = True
         if request.is_admin and not request.is_teacher:
         	request.only_admin = True
+

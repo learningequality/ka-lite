@@ -21,6 +21,23 @@
 	padding: 0px 0px 10px 10px;
 }
 
+
+.progress_style{
+	padding: 5px 0px 5px 0px;
+}
+
+.progress_text{
+	color: #005987;
+}
+
+.ui-widget-header{
+	background: #008000;
+}
+
+.downloding_video{
+	color: red;
+}
+
 </style>
 {% endblock headcss %}
 {% block headjs %}
@@ -29,82 +46,51 @@
 
 
 <script type="text/javascript">
-  var treeData = [
-
-    {title: "Math", isFolder: true, key: "math",
-      children: [
-        {
-          title: "Algebra",
-          addClass: "complete",
-          key: "algebra",
-          children: [
-            {
-              title: "Intro",
-              key: "intro"
-            },
-            {title: "Linear function", key: "linear-function" }
-          ]
-        },
-        {title: "Geometry",
-        addClass: "partial",
-        key: "geometry",
-          children: [
-            {
-              title: "Basic geometry",
-              key: "basic-geometry", 
-              addClass: "unstarted"
-            },
-            {title: "Angles", key: "angles" },
-            {title: "Triangles", key: "triangles", addClass:"complete"}
-          ]
-        }
-      ]
-    },
-   
-  ];
-  
   
    $(function(){ 
    	
    	$("#withSelected").hide();
    	$("#download_videos").hide();
    	
-      $("#content_tree").dynatree({
-      imagePath:"../images/",
-      checkbox: true,
-      selectMode: 3,
-      children: treeData,
-      onSelect: function(select, node) {
+    doRequest("/api/get_topic_tree", {}, "POST").success(function(treeData) {
       
-      	var numberOfVideo = findincomplete().length;
-      	
-      	if (numberOfVideo > 0){
-      		$(".video_count").text(numberOfVideo);
-      		$("#withSelected").show();
-      		$("#noneSelected").hide();
-      		$("#download_videos").show();
-      	} else {
-      		$("#noneSelected").show();
-      		$("#withSelected").hide();
-      		$("#download_videos").hide();
-      	}
-      	
+      $("#content_tree").dynatree({
+        imagePath:"../images/",
+        checkbox: true,
+        selectMode: 3,
+        children: treeData,
+        onSelect: function(select, node) {
+        
+        	var numberOfVideos = findincomplete().length;
+        	
+        	if (numberOfVideos > 0){
+        		$(".video_count").text(numberOfVideos);
+        		$("#withSelected").show();
+        		$("#noneSelected").hide();
+        		$("#download_videos").show();
+        	} else {
+        		$("#noneSelected").show();
+        		$("#withSelected").hide();
+        		$("#download_videos").hide();
+        	}
+        	
 
-      },
-      onDblClick: function(node, event) {
-        node.toggleSelect();
-      },
-      onKeydown: function(node, event) {
-        if( event.which == 32 ) {
+        },
+        onDblClick: function(node, event) {
           node.toggleSelect();
-          return false;
-        }
-      },
-
-      // The following options are only required, if we have more than one tree on one page:
-//        initId: "treeData",
-      cookieId: "dynatree-Cb3",
-      idPrefix: "dynatree-Cb3-"
+        },
+        onKeydown: function(node, event) {
+          if( event.which == 32 ) {
+            node.toggleSelect();
+            return false;
+          }
+        },
+      });
+          
+    });
+  
+    $("#progressbar").progressbar({
+      value: 37
     });
   
   });
@@ -135,7 +121,7 @@
 <div class="download_buttons">
 	<div class="vertical-shadow suggested-action">
         <h2 id="noneSelected" class="button_text">Please select videos to download (below)</h2>
-        <h2 id="withSelected" class="button_text">Download <span class="video_count">0</span> video selected below </h2>
+        <h2 id="withSelected" class="button_text">Download <span class="video_count">0</span> videos selected below </h2>
         
 	<span class= "button_style"><button id="download_videos" type="button">Download Selected Videos</button></span>
 
@@ -162,11 +148,19 @@
 	
 	</div>
 </div>
+
 <!-- End -->
 
- <!--  <p class="description">
-  </p> -->
-  <div style="clear: both;"> </div>
-  <div id="content_tree"></div>
+<div style="clear: both;"> </div>
+
+<div class="progress_style">
+	
+	<h2 id="withSelected" class="progress_text">Downloading video 6 of 11<span class="downloding_video"> (Linear Algebra)</span></h2>
+  	<div id="progressbar"></div>
+
+</div>
+
+
+  <div id="content_tree"><br/><h2>Loading topic tree... Please wait!</h2></div>
 {% endblock content %}
 
