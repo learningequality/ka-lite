@@ -98,7 +98,7 @@ MIDDLEWARE_CLASSES = (
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
-    "securesync.middleware.AuthFlag",
+    "securesync.middleware.AuthFlags",
 )
 
 ROOT_URLCONF = "kalite.urls"

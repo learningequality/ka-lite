@@ -50,6 +50,16 @@
 {% endblock bodyjs %}
 
 {% block content %}
+
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    also this
+    {% endfor %}
+</ul>
+{% endif %}
+
 <h2 class="title-header">
     <span class="title">{{ video.title }}</span><br/>
     <span class="long-description">{{ video.description }}</span>

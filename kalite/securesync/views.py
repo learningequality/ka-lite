@@ -81,13 +81,14 @@ def add_facility_user(request):
     
 @distributed_server_only
 @render_to("securesync/add_facility_user_selected.html")
-def add_facility_user_selected(request,id):
+def add_facility_user_selected(request, id):
     if request.method == 'POST':
         form = FacilityUserForm(request,data=request.POST)
         if form.is_valid():
             form.instance.set_password(form.cleaned_data["password"])
             form.save()
             return HttpResponseRedirect(reverse("login"))
+
     elif Facility.objects.count() == 0:
         messages.error(request, "You must add a facility before creating a user" )
         return HttpResponseRedirect(reverse("add_facility"))
@@ -96,8 +97,8 @@ def add_facility_user_selected(request,id):
         return HttpResponseRedirect(reverse("add_facility"))
     else:
         form = FacilityUserForm(request,initial={'facility':id})
-        facility = Facility.objects.get(pk=id)
-        form.fields["group"].queryset = FacilityGroup.objects.filter(facility=id)
+    facility = Facility.objects.get(pk=id)
+    form.fields["group"].queryset = FacilityGroup.objects.filter(facility=id)
     if Facility.objects.count() == 1:
         singlefacility = True
     else:
@@ -125,14 +126,14 @@ def add_facility(request):
     }
 
 @render_to("securesync/add_group.html")
-def add_group(request,id):
+def add_group(request, id):
     facilities = Facility.objects.all()
     groups = FacilityGroup.objects.all()
     if request.method == 'POST' and request.is_admin:
         form = FacilityGroupForm(data=request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse("add_facility_user"))
+            return HttpResponseRedirect(reverse("add_facility_user_selected", kwargs={"id": id}))
     elif request.method =='POST' and not request.is_admin:
         messages.error(request,"This mission is too important for me to allow you to jeopardize it.")
         return HttpResponseRedirect(reverse("login"))
@@ -149,16 +150,21 @@ def add_group(request,id):
 @distributed_server_only
 @render_to("securesync/login.html")
 def login(request):
+    if request.user.is_authenticated():
+        auth_logout(request)
+    if "facility_user" in request.session:
+        del request.session["facility_user"]
     if request.method == 'POST':
         username = request.POST.get("username", "")
         password = request.POST.get("password", "")
         user = authenticate(username=username, password=password)
-        form = LoginForm(data=request.POST, request=request)
-        if form.is_valid() and data.get("facility_user"):
-            request.session["facility_user"] = form.get_user()
-        if user is not None:
+        if user:
             auth_login(request, user)
-        return HttpResponseRedirect("/")   
+            return HttpResponseRedirect("/") 
+        form = LoginForm(data=request.POST, request=request)
+        if form.is_valid():
+            request.session["facility_user"] = form.get_user()
+            return HttpResponseRedirect("/") 
     else:
         form = LoginForm()
     return {

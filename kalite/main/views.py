@@ -5,6 +5,7 @@ from django.template import RequestContext
 from annoying.decorators import render_to
 import settings
 from main import topicdata
+from django.contrib import messages
 
 slug_key = {
     "Topic": "id",
@@ -80,6 +81,9 @@ def video_handler(request, video, prev=None, next=None):
             related_exercise = topicdata.NODE_CACHE["Exercise"][json.loads(fp.read())[0]["name"]]
     except:
         related_exercise = None
+
+    if request.user.is_anonymous:
+        messages.warning(request, "Friendly reminder: You are not currently logged in, so any work you do won\'t be saved.")
         
     context = {
         "video": video,
