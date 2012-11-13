@@ -14,7 +14,7 @@
 <div id="selection-bar">
 {% if facilities %}
     <div class="selection">
-        <h2>Select Facility</h2><select name="facilities">
+        <h2>Select Facility</h2><select id="facilities">
             {% for facility in facilities %}
                 <option>{{ facility }}</option>
             {% endfor %}
@@ -23,19 +23,19 @@
 {% endif %}
 {% if groups %}
     <div class="selection">
-        <h2>Select Group</h2><select name="group">
+        <h2>Select Group</h2><select id="group">
             {% for group in groups %}
-                <option value="{{ group.id }}">{{ group }}</option>
+                <option value="{{ group.id }}" {% if request.GET.group == group.id %}selected{% endif %}>{{ group }}</option>
             {% endfor %}
         </select>
     </div>
 {% endif %}
 {% if topics %}
     <div class="selection">
-        <h2>Select Topic</h2><select name="topic">
-            <option value="null" selected>----</option>
+        <h2>Select Topic</h2><select id="topic">
+            <option value="null" {% if not request.GET.topic %}selected{% endif %}>----</option>
             {% for topic in topics %}
-                <option value="{{ topic.id }}">{{ topic.standalone_title }}</option>
+                <option value="{{ topic.id }}"{% if request.GET.topic == topic.id %}selected{% endif %}>{{ topic.standalone_title }}</option>
             {% endfor %}
         </select>
     </div>
@@ -74,7 +74,7 @@ $(document).ready(function() {
     if (vars["topic"]) {
         $.getJSON("/static/data/topicdata/" + vars["topic"] + ".json", function(topicdata, group) {
             var exercise_ids = $.map(topicdata, function(exercise) { return exercise.name });
-            var exercise_names = $.map(topicdata, function(exericse) { return exercise.display_name})
+            var exercise_names = $.map(topicdata, function(exercise) { return exercise.display_name})
             var group_exercises = {group: vars["group"], exercises: exercise_ids};
             console.log(exercise_ids);
             console.log(exercise_names);
@@ -98,5 +98,25 @@ $(document).ready(function() {
         });
     };
 });
+
+$("#topic").change(function(){
+    var vars = {}
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    vars["topic"] = $("#topic option:selected").val();
+    url = "?" + $.param(vars);
+    window.location.href = url;
+});
+$("#group").change(function(){
+    var vars = {}
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    vars["group"] = $("#group option:selected").val();
+    url = "?" + $.param(vars);
+    window.location.href = url;
+});
+
 </script>
 {% endblock content %}
