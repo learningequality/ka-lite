@@ -1,5 +1,7 @@
 import uuid
 from django.db import models
+from django.db.models import Sum, Avg
+
 from securesync.models import SyncedModel, FacilityUser
 import settings
 
@@ -14,6 +16,10 @@ class VideoLog(SyncedModel):
         namespace = uuid.UUID(self.user.id)
         return uuid.uuid5(namespace, str(self.youtube_id)).hex
 
+    @staticmethod
+    def get_points_for_user(user):
+        return VideoLog.objects.filter(user=user).aggregate(Sum("points")).get("points__sum", 0) or 0
+
 class ExerciseLog(SyncedModel):
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
     exercise_id = models.CharField(max_length=50, db_index=True)
@@ -26,6 +32,10 @@ class ExerciseLog(SyncedModel):
         namespace = uuid.UUID(self.user.id)
         return uuid.uuid5(namespace, str(self.exercise_id)).hex
 
+    @staticmethod
+    def get_points_for_user(user):
+        return ExerciseLog.objects.filter(user=user).aggregate(Sum("points")).get("points__sum", 0) or 0
+
 settings.add_syncing_models([VideoLog, ExerciseLog])
 
 class VideoFile(models.Model):
@@ -33,3 +43,4 @@ class VideoFile(models.Model):
     flagged_for_download = models.BooleanField(default=False)
     download_in_progress = models.BooleanField(default=False)
     percent_complete = models.IntegerField(default=0)
+    
