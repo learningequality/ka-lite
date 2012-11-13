@@ -158,7 +158,7 @@ function showZoom(zm) {
     <input id="target" type="text" placeholder="Search Box">
 </div>
 <div id="map_canvas" style="width:100%; height: 600px"></div>
-<form id="facility_form" action="." method="post" class="basic-form">
+<form id="facility_form" method="post" class="basic-form">
 {% csrf_token %}
 {{ form.as_p }}
 <input type="submit" value="Create facility" class="submit"/>
