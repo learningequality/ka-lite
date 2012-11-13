@@ -34,6 +34,7 @@ else:
     
     urlpatterns += patterns('main.views',
         url(r'^exercisedashboard/$', 'exercise_dashboard', {}, 'exercise_dashboard'),
+        url(r'^teacherpanel/$', 'teacher_panel', {}, 'teacher_panel'),
         url(r'^$', 'homepage', {}, 'homepage'),
         url(r'^videodownload/$', 'video_download', {}, 'video_download'),
         url(r'^api/', include('main.api_urls')),
