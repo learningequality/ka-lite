@@ -17,6 +17,13 @@ import settings
 from securesync.models import SyncSession, Device, RegisteredDevicePublicKey, Zone, Facility, FacilityGroup
 from securesync.api_client import SyncClient
 
+def require_admin(handler):
+    def wrapper_fn(request, *args, **kwargs):
+        if not request.is_admin:
+            return HttpResponseRedirect(reverse("login") + "?next=" + request.path)
+        return handler(request, *args, **kwargs)
+    return wrapper_fn
+
 def central_server_only(handler):
     def wrapper_fn(*args, **kwargs):
         if not settings.CENTRAL_SERVER:
@@ -37,6 +44,7 @@ def register_public_key(request):
     else:
         return register_public_key_client(request)
 
+@require_admin
 @render_to("securesync/register_public_key_client.html")
 def register_public_key_client(request):
     if Device.get_own_device().get_zone():
@@ -105,6 +113,7 @@ def add_facility_user(request, id):
         "singlefacility": singlefacility,
     }
 
+@require_admin
 @render_to("securesync/add_facility.html")
 def add_facility(request):
     if request.method == 'POST' and request.is_admin:
@@ -121,6 +130,7 @@ def add_facility(request):
         "form": form
     }
 
+@require_admin
 @render_to("securesync/add_group.html")
 def add_group(request, id):
     facilities = Facility.objects.all()
@@ -151,16 +161,19 @@ def login(request):
     if "facility_user" in request.session:
         del request.session["facility_user"]
     if request.method == 'POST':
-        username = request.POST.get("username", "")
+        next = request.GET.get("next", "/")
+        if next[0] != "/":
+            next = "/"
+    username = request.POST.get("username", "")
         password = request.POST.get("password", "")
         user = authenticate(username=username, password=password)
         if user:
             auth_login(request, user)
-            return HttpResponseRedirect("/") 
+            return HttpResponseRedirect(next)
         form = LoginForm(data=request.POST, request=request)
         if form.is_valid():
             request.session["facility_user"] = form.get_user()
-            return HttpResponseRedirect("/") 
+                return HttpResponseRedirect(next)
     else:
         form = LoginForm()
     return {
@@ -172,7 +185,10 @@ def logout(request):
     if "facility_user" in request.session:
         del request.session["facility_user"]
     auth_logout(request)
-    return HttpResponseRedirect("/")
+    next = request.GET.get("next", "/")
+    if next[0] != "/":
+        next = "/"
+    return HttpResponseRedirect(next)
 
 # @render_to("securesync/edit_organization.html")
 # def edit_organization(request):

@@ -7,6 +7,7 @@ import settings
 from settings import slug_key, title_key
 from main import topicdata
 from django.contrib import messages
+from securesync.views import require_admin
 
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
@@ -120,6 +121,7 @@ def homepage(request):
     }
     return context
         
+@require_admin
 @render_to("video_download.html")
 def video_download(request):
 #    topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"], settings.TOPICS["children"])

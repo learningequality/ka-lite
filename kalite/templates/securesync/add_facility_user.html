@@ -6,7 +6,7 @@
 {% block content %}
 
 
-<form action="." method="post" class="basic-form">
+<form method="post" class="basic-form">
 {% csrf_token %}
 <h2>{% if request.is_admin %}
         Add a new user
