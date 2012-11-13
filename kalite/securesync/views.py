@@ -164,7 +164,7 @@ def login(request):
         next = request.GET.get("next", "/")
         if next[0] != "/":
             next = "/"
-    username = request.POST.get("username", "")
+        username = request.POST.get("username", "")
         password = request.POST.get("password", "")
         user = authenticate(username=username, password=password)
         if user:
@@ -173,7 +173,7 @@ def login(request):
         form = LoginForm(data=request.POST, request=request)
         if form.is_valid():
             request.session["facility_user"] = form.get_user()
-                return HttpResponseRedirect(next)
+            return HttpResponseRedirect(next)
     else:
         form = LoginForm()
     return {

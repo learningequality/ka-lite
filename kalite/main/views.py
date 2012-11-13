@@ -166,4 +166,3 @@ def central_404_handler(request):
 @render_to("500_central.html")
 def central_500_handler(request):
     return {}
-    
