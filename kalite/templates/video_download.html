@@ -2,40 +2,55 @@
 {% block headcss %}
 <link href="{{ STATIC_URL }}css/ui.dynatree.css"rel="stylesheet" type="text/css"/>
 <style>
-.download_buttons {
-	padding: 5px 15px 10px 5px;
-	width: 400px;
-	float: left;
+.download-actions {
+    width: 400px;
+    float: left;
+    margin-right: 10px;
 }
 
-.vertical-shadow{
-	width: 400px;
-	height: 70px;
-}	
+.vertical-shadow {
+    height: 60px;
+    padding: 10px;
+} 
 
-.button_text{
-	padding: 5px 0px 0px 10px; 
+.progress-section {
+    padding: 5px 0px 5px 0px;
 }
 
-.button_style{
-	padding: 0px 0px 10px 10px;
+.progress-text {
+    color: #005987;
 }
 
-
-.progress_style{
-	padding: 5px 0px 5px 0px;
+.video-title {
+    color: #AFAFAF;
 }
 
-.progress_text{
-	color: #005987;
+#progressbar-container {
+    position: relative;
+    height: 30px;
+    margin-bottom: 15px;
 }
 
-.ui-widget-header{
-	background: #008000;
+.progressbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 20px;
 }
 
-.downloding_video{
-	color: #AFAFAF;
+#progressbar-current {
+    opacity: 0.6;
+    height: 7px;
+    z-index: 100;
+}
+
+#progressbar-overall .ui-widget-header {
+    background: #00A000;
+}
+
+#progressbar-current .ui-widget-header {
+    background: #00D020;
 }
 
 </style>
@@ -46,148 +61,142 @@
 
 
 <script type="text/javascript">
-  
-   $(function(){ 
-   	
-   	$("#withSelected").hide();
-   	$("#download_videos").hide();
-   	
-    doRequest("/api/get_topic_tree", {}, "POST").success(function(treeData) {
-      
-      $("#content_tree").dynatree({
-        imagePath:"../images/",
-        checkbox: true,
-        selectMode: 3,
-        children: treeData,
-        onSelect: function(select, node) {
+    
+     $(function(){ 
         
-        	var numberOfVideos = findincomplete().length;
-        	
-        	if (numberOfVideos > 0){
-        		$(".video_count").text(numberOfVideos);
-        		$("#withSelected").show();
-        		$("#noneSelected").hide();
-        		$("#download_videos").show();
-        	} else {
-        		$("#noneSelected").show();
-        		$("#withSelected").hide();
-        		$("#download_videos").hide();
-        	}
-        	
+        $("#withSelected").hide();
+        $("#download_videos").hide();
+        
+        doRequest("/api/get_topic_tree", {}, "POST").success(function(treeData) {
+            
+            $("#content_tree").dynatree({
+                imagePath:"../images/",
+                checkbox: true,
+                selectMode: 3,
+                children: treeData,
+                onSelect: function(select, node) {
+                
+                    var numberOfVideos = findincomplete().length;
+                    
+                    if (numberOfVideos > 0){
+                        $(".video_count").text(numberOfVideos);
+                        $("#withSelected").show();
+                        $("#noneSelected").hide();
+                        $("#download_videos").show();
+                    } else {
+                        $("#noneSelected").show();
+                        $("#withSelected").hide();
+                        $("#download_videos").hide();
+                    }
+                    
 
-        },
-        onDblClick: function(node, event) {
-          node.toggleSelect();
-        },
-        onKeydown: function(node, event) {
-          if( event.which == 32 ) {
-            node.toggleSelect();
-            return false;
-          }
-        },
-      });
-          
+                },
+                onDblClick: function(node, event) {
+                    node.toggleSelect();
+                },
+                onKeydown: function(node, event) {
+                    if( event.which == 32 ) {
+                        node.toggleSelect();
+                        return false;
+                    }
+                },
+            });
+                    
+        });
+    
+        $("#progressbar-overall").progressbar({
+            value: 37
+        });
+
+        $("#progressbar-current").progressbar({
+            value: 64
+        });
+    
+        $("#download_videos").click(function(){
+            var videos = findincomplete()
+            window.downloading_video_ids = $.map(videos, function(node){
+                return node.data.key;
+            });
+            
+            window.downloading_video_titles = $.map(videos, function(node){
+                return node.data.title;
+            });
+            
+            window.downloading_video_index = 0;
+            
+            
+            doRequest("/api/start_video_download", {"youtube_ids": downloading_video_ids}, "POST")
+    
+        });
+    
     });
-  
-    $("#progressbar").progressbar({
-      value: 37
-    });
-  
-  	$("#download_videos").click(function(){
-  		var videos = findincomplete()
-  		window.downloading_video_ids = $.map(videos, function(node){
-  			return node.data.key;
-  		});
-  		
-  		window.downloading_video_titles = $.map(videos, function(node){
-  			return node.data.title;
-  		});
-  		
-  		window.downloading_video_index = 0;
-  		
-  		
-  		doRequest("/api/start_video_download", {"youtube_ids": downloading_video_ids}, "POST")
-  
-  	});
-  	
-
-
-  
-  });
-  
-  
-  
-  
-	function findincomplete(){
-      	var arr = $("#content_tree").dynatree("getSelectedNodes");
-      	var arr_incomplete =  $.grep(arr, function(node){	
-      		return !$(node.span).hasClass("complete") && node.childList == null; 
-      	});
-      	
-      	return arr_incomplete;
-	}
-	
-	function setNodeClass(nodeKey,className){
-		var node = $("#content_tree").dynatree("getTree").getNodeByKey(nodeKey);
-		var $span = $(node.span);
-		$span.removeClass("unstarted partial complete").addClass(className);
-	}
-	
-	
-  
+    
+    
+    
+    
+    function findincomplete(){
+                var arr = $("#content_tree").dynatree("getSelectedNodes");
+                var arr_incomplete =    $.grep(arr, function(node){ 
+                    return !$(node.span).hasClass("complete") && node.childList == null; 
+                });
+                
+                return arr_incomplete;
+    }
+    
+    function setNodeClass(nodeKey,className){
+        var node = $("#content_tree").dynatree("getTree").getNodeByKey(nodeKey);
+        var $span = $(node.span);
+        $span.removeClass("unstarted partial complete").addClass(className);
+    }
+        
 </script>
 
 {% endblock headjs %}
 
 {% block content %}
 
-<!-- Dowanload Button -->
-
-<div class="download_buttons">
-	<div class="vertical-shadow suggested-action">
+<div class="download-actions">
+    <div class="vertical-shadow">
         <h2 id="noneSelected" class="button_text">Please select videos to download (below)</h2>
         <h2 id="withSelected" class="button_text">Download <span class="video_count">0</span> videos selected below </h2>
-        
-	<span class= "button_style"><button id="download_videos" type="button">Download Selected Videos</button></span>
-
-	</div>
+        <button id="download_videos" type="button">Download Selected Videos</button>
+    </div>
 </div>
 
+<div class="download-actions">
+    <div class="vertical-shadow">
+        <h2 class="button_text">Download/update subtitles for all videos</h2>
 
-<div class="download_buttons">
-	<div class="vertical-shadow suggested-action">
-	<h2 class="button_text">Download/update subtitles for all videos</h2>
-
-<span class= "button_style">
-	<select id="language">
-	  <option value="chinese">English</option>
-	  <option value="chinese">Chinese</option>
-	  <option value="spanish">Spanish</option>
-	  <option value="French">French</option>
-	  <option value="japanese">Japanese</option>
-	</select>
-</span>
-
-	<button id="download_subtitles" type="button">Download Subtitles </button>
-	
-	
-	</div>
+        <span class= "button_style">
+            <select id="language">
+                <option value="chinese">English</option>
+                <option value="chinese">Chinese</option>
+                <option value="spanish">Spanish</option>
+                <option value="French">French</option>
+                <option value="japanese">Japanese</option>
+            </select>
+        </span>
+        <button id="download_subtitles" type="button">Download Subtitles </button>    
+    </div>
 </div>
 
-<!-- End -->
+<div style="clear: both;"></div>
 
-<div style="clear: both;"> </div>
-
-<div class="progress_style">
-	
-	<h2 id="withSelected" class="progress_text">Downloading video <span class="number_video_downloaded"> 6</span> of 
-		<span class="number_video_downloading">11</span>
-		<span class="downloding_video"> (Linear Algebra)</span></h2>
-  	<div id="progressbar"></div>
-
+<div class="progress-section">
+    
+    <h2 id="withSelected" class="progress-text">
+        Downloading video
+        <span class="number_video_downloaded">6</span>
+        of
+        <span class="number_video_downloading">11</span>
+        (<span class="video-title">Linear Algebra</span>)
+    </h2>
+    <div id="progressbar-container">
+        <div class="progressbar" id="progressbar-overall"></div>
+        <div class="progressbar" id="progressbar-current"></div>
+    </div>
 </div>
 
+<div id="content_tree"><br/><h2>Loading topic tree... Please wait!</h2></div>
 
-  <div id="content_tree"><br/><h2>Loading topic tree... Please wait!</h2></div>
 {% endblock content %}
-
