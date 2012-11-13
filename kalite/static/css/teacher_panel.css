@@ -1,0 +1,8 @@
+div#selection-bar {
+    width:100%;
+}
+
+div.selection {
+    float:left;
+    padding: 10px;
+}

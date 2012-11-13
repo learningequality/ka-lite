@@ -2,11 +2,14 @@ import re, json
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
+from django.core.urlresolvers import reverse
 from annoying.decorators import render_to
 import settings
 from settings import slug_key, title_key
 from main import topicdata
 from django.contrib import messages
+
+from securesync.models import Facility, FacilityGroup
 
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
@@ -126,6 +129,23 @@ def video_download(request):
     context = {
 #        "title": "Home",
 #        "topics": topics,
+    }
+    return context
+
+@render_to("teacher_panel.html")
+def teacher_panel(request):
+    topics = topicdata.EXERCISE_TOPICS["topics"].values()
+    if not request.is_admin:
+        messages.error(request,"I think you know what the problem is just as well as I do.")
+        return HttpResponseRedirect(reverse("login"))
+    facilities = False
+    if request.only_admin:
+            facilities = Facility.objects.all()
+    groups = FacilityGroup.objects.filter(facility=request.session.get("facility_user").facility)
+    context = {
+        "facilites": facilities,
+        "groups": groups,
+        "topics": topics,
     }
     return context
         

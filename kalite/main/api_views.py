@@ -192,4 +192,25 @@ def convert_topic_tree(node, level=0):
 @require_admin
 def get_topic_tree(request):
     return JsonResponse(convert_topic_tree(topicdata.TOPICS))
-    
+
+@require_admin
+def get_group_data(request):
+    data = simplejson.loads(request.raw_post_data or "[]")
+    if not isinstance(data, list):
+        return JsonResponse([])
+    if "facility_user" not in request.session:
+        return JsonResponse([])
+    group = data["group"]
+    exercise_ids = data["exercises"]
+    users = []
+    if group:
+        users = FacilityUser.objects.filter(group = group)
+    group_responses = {}
+    for user in users:
+        responses = []
+        for exercise_id in exercise_ids:
+            response = _get_exercise_log_dict(request, user, exercise_id)
+            if response:
+                responses.append(response)
+        group_responses[user] = responses
+    return JsonResponse(group_responses)

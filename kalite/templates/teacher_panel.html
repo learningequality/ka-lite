@@ -1,0 +1,102 @@
+{% extends 'base_distributed.html' %}
+
+{% block practice_selected %}selected{% endblock practice_selected %}
+
+{% block headjs %}
+<script type='text/javascript' src='{{ STATIC_URL }}js/underscore.js'></script>
+{% endblock headjs %}
+
+{% block headcss %}
+<link rel='stylesheet' type='text/css' href='{{ STATIC_URL }}css/teacher_panel.css'>
+{% endblock headcss %}
+
+{% block content %}
+<div id="selection-bar">
+{% if facilities %}
+    <div class="selection">
+        <h2>Select Facility</h2><select name="facilities">
+            {% for facility in facilities %}
+                <option>{{ facility }}</option>
+            {% endfor %}
+        </select>
+    </div>
+{% endif %}
+{% if groups %}
+    <div class="selection">
+        <h2>Select Group</h2><select name="group">
+            {% for group in groups %}
+                <option value="{{ group.id }}">{{ group }}</option>
+            {% endfor %}
+        </select>
+    </div>
+{% endif %}
+{% if topics %}
+    <div class="selection">
+        <h2>Select Topic</h2><select name="topic">
+            <option value="null" selected>----</option>
+            {% for topic in topics %}
+                <option value="{{ topic.id }}">{{ topic.standalone_title }}</option>
+            {% endfor %}
+        </select>
+    </div>
+{% endif %}
+</div>
+
+<div id="displaygrid"></div>
+
+<script>
+
+drawgrid = function(exercises, userData) {
+    var table = "<table><tr><th>User</th>";
+    for (var i = 0; i < exercises.length; i++) {
+        table += "<th>" + exercises[i] + "</th>";
+    };
+    table += "</tr>";
+    for (user in userData) {
+        table += "<tr>";
+        data = userData[user]
+        table += "<th>" + user + "</th>";
+        for (exercise in data) {
+            status = data[exercise];
+            table += "<td>" + status + "</td>";
+        };
+        table += "</tr>";
+    };
+    table += "</table>"
+    $("#displaygrid").html(table);
+};
+
+$(document).ready(function() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    if (vars["topic"]) {
+        $.getJSON("/static/data/topicdata/" + vars["topic"] + ".json", function(topicdata, group) {
+            var exercise_ids = $.map(topicdata, function(exercise) { return exercise.name });
+            var exercise_names = $.map(topicdata, function(exericse) { return exercise.display_name})
+            var group_exercises = {group: vars["group"], exercises: exercise_ids};
+            console.log(exercise_ids);
+            console.log(exercise_names);
+            console.log(group_exercises)
+            doRequest("/api/get_group_data", group_exercises, "POST").success(function(data) {
+                __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+                var userExercises = {};
+                $.each(data, function(ind, userdata) {
+                    var exercisesCompleted = {};
+                    $.each(userdata, function(ind, status) {
+                        if (__indexOf.call(exercise_ids, status.exercise_id) >= 0) {
+                        exercisesCompleted[status.exercise_id] = status.complete ? "complete" : "partial";
+                        } else {
+                            exercisesCompleted[status.exercise_id] = "none";
+                        }
+                    });
+                    userExercises[userdata.user] = exercisesCompleted
+                });
+                drawgrid(exercise_names, userExercises);
+            });
+        });
+    };
+});
+</script>
+{% endblock content %}
