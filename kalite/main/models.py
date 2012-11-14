@@ -27,6 +27,12 @@ class ExerciseLog(SyncedModel):
     attempts = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
     complete = models.BooleanField(default=False)
+    struggling = models.BooleanField(default=False)
+    
+    def save(self, *args, **kwargs):
+        if self.attempts > 20 and complete==False:
+            struggling = True
+        super(ExerciseLog, self).save(*args, **kwargs)
 
     def get_uuid(self, *args, **kwargs):
         namespace = uuid.UUID(self.user.id)
