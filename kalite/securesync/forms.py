@@ -22,7 +22,7 @@ class FacilityUserForm(forms.ModelForm):
     
     class Meta:
         model = FacilityUser
-        fields = ("facility","group", "username", "first_name", "last_name","is_teacher",)
+        fields = ("facility","group", "username", "first_name", "last_name",)
 
     password = forms.CharField(widget=forms.PasswordInput, label="Password")
     facility = forms.ModelChoiceField(queryset=Facility.objects.all(),widget=forms.HiddenInput, label="Facility")
