@@ -1,34 +1,32 @@
 {% extends 'base_distributed.html' %}
+
+{% block title %}Video Download{% endblock %}
+
 {% block headcss %}
 <link href="{{ STATIC_URL }}css/ui.dynatree.css"rel="stylesheet" type="text/css"/>
 <style>
+
 .download-actions {
     width: 400px;
     float: left;
     margin-right: 10px;
-}
-
-.vertical-shadow {
     height: 60px;
     padding: 10px;
-} 
+}
 
 .progress-section {
-    padding: 5px 0px 5px 0px;
+    padding: 5px 0px 0px 0px;
+    display: none;
 }
 
 .progress-text {
     color: #005987;
 }
 
-.video-title {
-    color: #AFAFAF;
-}
-
 #progressbar-container {
     position: relative;
-    height: 30px;
-    margin-bottom: 15px;
+    height: 25px;
+    margin-left: 0 2px 0 -1px;
 }
 
 .progressbar {
@@ -40,7 +38,7 @@
 }
 
 #progressbar-current {
-    opacity: 0.6;
+    opacity: 0.9;
     height: 7px;
     z-index: 100;
 }
@@ -53,21 +51,30 @@
     background: #00D020;
 }
 
+#download-legend-selected, #download-videos {
+    display: none;
+}
+
+#content_tree {
+    margin-top: 15px;
+}
+
 </style>
 {% endblock headcss %}
 {% block headjs %}
 <script src="{{ STATIC_URL }}js/jquery-ui.custom.min.js"></script>
 <script src="{{ STATIC_URL }}js/jquery.dynatree.min.js"></script>
 
-
 <script type="text/javascript">
+
+    window.downloading_videos = [];
+    window.download_index = 0;
     
-     $(function(){ 
+    window.download_check_interval = null;
+    
+    $(function() { 
         
-        $("#withSelected").hide();
-        $("#download_videos").hide();
-        
-        doRequest("/api/get_topic_tree", {}, "POST").success(function(treeData) {
+        doRequest("/api/get_topic_tree", {}).success(function(treeData) {
             
             $("#content_tree").dynatree({
                 imagePath:"../images/",
@@ -76,19 +83,18 @@
                 children: treeData,
                 onSelect: function(select, node) {
                 
-                    var numberOfVideos = findincomplete().length;
+                    var numberOfVideos = findSelectedIncompleteVideos().length;
                     
-                    if (numberOfVideos > 0){
+                    if (numberOfVideos > 0) {
                         $(".video_count").text(numberOfVideos);
-                        $("#withSelected").show();
-                        $("#noneSelected").hide();
-                        $("#download_videos").show();
+                        $("#download-legend-selected").show();
+                        $("#download-legend-unselected").hide();
+                        $("#download-videos").show();
                     } else {
-                        $("#noneSelected").show();
-                        $("#withSelected").hide();
-                        $("#download_videos").hide();
+                        $("#download-legend-unselected").show();
+                        $("#download-legend-selected").hide();
+                        $("#download-videos").hide();
                     }
-                    
 
                 },
                 onDblClick: function(node, event) {
@@ -105,91 +111,159 @@
         });
     
         $("#progressbar-overall").progressbar({
-            value: 37
+            value: 0,
+            max: 10000000
         });
 
         $("#progressbar-current").progressbar({
-            value: 64
+            value: 0,
+            max: 100
         });
     
-        $("#download_videos").click(function(){
-            var videos = findincomplete()
-            window.downloading_video_ids = $.map(videos, function(node){
+        $("#download-videos").click(function() {
+            var videos = findSelectedIncompleteVideos();
+            
+            var video_ids = $.map(videos, function(node) {
                 return node.data.key;
             });
-            
-            window.downloading_video_titles = $.map(videos, function(node){
-                return node.data.title;
-            });
-            
-            window.downloading_video_index = 0;
-            
-            
-            doRequest("/api/start_video_download", {"youtube_ids": downloading_video_ids}, "POST")
+                        
+            doRequest("/api/start_video_download", {youtube_ids: video_ids}).success(startDownloadChecks);
     
         });
+        
+        startDownloadChecks();
     
     });
     
-    
-    
-    
-    function findincomplete(){
-                var arr = $("#content_tree").dynatree("getSelectedNodes");
-                var arr_incomplete =    $.grep(arr, function(node){ 
-                    return !$(node.span).hasClass("complete") && node.childList == null; 
-                });
-                
-                return arr_incomplete;
+    function startDownloadChecks() {
+        doRequest("/api/get_video_download_list").success(function(video_ids) {
+            window.downloading_videos = video_ids;
+            window.download_index = 0;
+            clearInterval(window.download_check_interval);
+            if (video_ids.length == 0) {
+                return;
+            }
+            window.download_check_interval = setInterval(checkVideoDownloadProgress, 1000);
+            checkVideoDownloadProgress();
+        });
     }
     
-    function setNodeClass(nodeKey,className){
-        var node = $("#content_tree").dynatree("getTree").getNodeByKey(nodeKey);
-        var $span = $(node.span);
-        $span.removeClass("unstarted partial complete").addClass(className);
+    function checkVideoDownloadProgress() {
+        var currentKey = window.downloading_videos[window.download_index];
+        doRequest("/api/check_video_download", {youtube_ids: [currentKey]}).success(function(progress) {
+            window.current_download_percent = progress[currentKey];
+            updateProgressDisplay();
+            if (window.current_download_percent == 100) {
+                setNodeClass(currentKey, "complete");
+                window.download_index++;
+                if (window.download_index >= window.downloading_videos.length) {
+                    clearInterval(window.download_check_interval);
+                    $(".progress-section").hide();
+                    return;
+                }
+                checkVideoDownloadProgress();
+            }
+        });
     }
-        
+    
+    function updateProgressDisplay() {
+        if (window.download_index < window.downloading_videos.length) {
+            $(".progress-section").show();
+        } else {
+            $(".progress-section").hide();
+            return;
+        }
+        $("#progressbar-current").progressbar({value: window.current_download_percent});
+        $("#progressbar-overall").progressbar({
+            value: window.download_index * 100 + window.current_download_percent,
+            max: window.downloading_videos.length * 100
+        });
+        var currentKey = window.downloading_videos[window.download_index];
+        var currentNode = $("#content_tree").dynatree("getTree").getNodeByKey(currentKey);
+        $(".video-title").text(currentNode.data.title);
+        $(".video-downloading-current").text(window.download_index + 1);
+        $(".video-downloading-total").text(window.downloading_videos.length);
+    }
+    
+    function findSelectedIncompleteVideos() {
+        var arr = $("#content_tree").dynatree("getSelectedNodes");
+        return $.grep(arr, function(node) { 
+            return node.data.addClass != "complete" && node.childList == null;
+        });
+    }
+    
+    function getNode(nodeKey) {
+        return $("#content_tree").dynatree("getTree").getNodeByKey(nodeKey);
+    }
+    
+    function setNodeClass(nodeKey, className) {
+        var node = getNode(nodeKey);
+        $(node.span).removeClass("unstarted partial complete").addClass(className);
+        node.data.addClass = className;
+        if (node.parent) {
+            updateNodeClass(node.parent);
+        }
+    }
+
+    function updateNodeClass(node) {
+        if (node.childList) {
+            var complete = true;
+            var unstarted = true;
+            for (var i = 0; i < node.childList.length; i++) {
+                var child = node.childList[i];
+                if (child.data.addClass != "complete") {
+                    complete = false;
+                }
+                if (child.data.addClass != "unstarted") {
+                    unstarted = false;
+                }
+            }
+            if (complete) {
+                setNodeClass(node.data.key, "complete");
+            } else if (unstarted) {
+                setNodeClass(node.data.key, "unstarted");
+            } else {
+                setNodeClass(node.data.key, "partial");
+            }
+        }
+    }
+
 </script>
 
 {% endblock headjs %}
 
 {% block content %}
 
-<div class="download-actions">
-    <div class="vertical-shadow">
-        <h2 id="noneSelected" class="button_text">Please select videos to download (below)</h2>
-        <h2 id="withSelected" class="button_text">Download <span class="video_count">0</span> videos selected below </h2>
-        <button id="download_videos" type="button">Download Selected Videos</button>
-    </div>
+<div class="download-actions vertical-shadow">
+    <h2 id="download-legend-unselected" class="button_text">Please select videos to download (below)</h2>
+    <h2 id="download-legend-selected" class="button_text">Download <span class="video_count">0</span> videos selected below </h2>
+    <button id="download-videos" type="button">Download Selected Videos</button>
 </div>
 
-<div class="download-actions">
-    <div class="vertical-shadow">
-        <h2 class="button_text">Download/update subtitles for all videos</h2>
-
-        <span class= "button_style">
-            <select id="language">
-                <option value="chinese">English</option>
-                <option value="chinese">Chinese</option>
-                <option value="spanish">Spanish</option>
-                <option value="French">French</option>
-                <option value="japanese">Japanese</option>
-            </select>
-        </span>
-        <button id="download_subtitles" type="button">Download Subtitles </button>    
-    </div>
+<div class="download-actions vertical-shadow">
+    <h2 class="button_text">Download/update subtitles for all videos</h2>
+    <span class= "button_style">
+        <select id="language">
+            <option value="chinese">English</option>
+            <option value="chinese">Chinese</option>
+            <option value="spanish">Spanish</option>
+            <option value="French">French</option>
+            <option value="japanese">Japanese</option>
+        </select>
+    </span>
+    <button id="download_subtitles" type="button">Download Subtitles</button>
 </div>
 
 <div style="clear: both;"></div>
 
 <div class="progress-section">
     
-    <h2 id="withSelected" class="progress-text">
+    <h2 class="progress-text">
         Downloading video
-        <span class="number_video_downloaded">6</span>
+        <span class="video-downloading-current">6</span>
         of
-        <span class="number_video_downloading">11</span>
-        (<span class="video-title">Linear Algebra</span>)
+        <span class="video-downloading-total">11</span>
+        ("<span class="video-title">Linear Algebra</span>")...
     </h2>
     <div id="progressbar-container">
         <div class="progressbar" id="progressbar-overall"></div>

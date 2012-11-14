@@ -42,5 +42,8 @@ class VideoFile(models.Model):
     youtube_id = models.CharField(max_length=11, primary_key=True)
     flagged_for_download = models.BooleanField(default=False)
     download_in_progress = models.BooleanField(default=False)
+    priority = models.IntegerField(default=0)
     percent_complete = models.IntegerField(default=0)
     
+    class Meta:
+        ordering = ["priority", "youtube_id"]

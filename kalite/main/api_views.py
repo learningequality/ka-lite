@@ -2,11 +2,12 @@ import re, json
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse, HttpResponseNotAllowed
 from django.utils import simplejson
+from django.db.models import Max
 from annoying.functions import get_object_or_None
 import settings
 from settings import slug_key, title_key
 from main import topicdata
-
+from utils.jobs import force_job
 from models import FacilityUser, VideoLog, ExerciseLog, VideoFile
 
 def require_admin(handler):
@@ -124,13 +125,18 @@ def _get_exercise_log_dict(request, user, exercise_id):
 @require_admin
 def start_video_download(request):
     youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
+    downloading_videos = VideoFile.objects.filter(flagged_for_download=True)
+    priority = downloading_videos.aggregate(Max("priority")).get("priority__max", 0) or 0
     for id in youtube_ids:
         videofile = get_object_or_None(VideoFile, youtube_id=id) or VideoFile(youtube_id=id)
         if videofile.download_in_progress:
             continue
+        priority += 1
+        videofile.priority = priority
         videofile.flagged_for_download = True
         videofile.percent_complete = 0
         videofile.save()
+    force_job("videodownload", "Download Videos")
     return JsonResponse({})
 
 @require_admin
@@ -152,6 +158,12 @@ def get_video_download_status(youtube_id):
         return "complete"
     else:
         return "partial"
+
+@require_admin
+def get_video_download_list(request):
+    videofiles = VideoFile.objects.filter(flagged_for_download=True).values("youtube_id")
+    video_ids = [video["youtube_id"] for video in videofiles]
+    return JsonResponse(video_ids)
 
 def convert_topic_tree(node, level=0):
     if node["kind"] == "Topic":
@@ -214,3 +226,4 @@ def get_group_data(request):
                 responses.append(response)
         group_responses[user] = responses
     return JsonResponse(group_responses)
+    
