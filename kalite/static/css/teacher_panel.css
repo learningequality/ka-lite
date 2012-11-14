@@ -16,21 +16,60 @@ div#displaygrid {
     padding: 10px;
 }
 
-div#displaygrid > table {
-    max-width: 100%;
+div#displaygrid > div.users {
+    float: left;
+    width:10%;
 }
+
+div#displaygrid > div.userstatus {
+    float: left;
+    width:90%;
+    overflow: auto;
+}
+
+div.users > table {
+    width: 100%;
+}
+
 
 div#displaygrid > table, th, td {
     border: 1px solid black;
-    padding: 5px;
+    padding: 2px;
 }
 
-div#displaygrid > th.headrow {
+td.status {
+    height: 30px;
+}
+
+th.username {
+    height: 30px;
+}
+
+th.headrow {
+    height: 30px;
+    max-width: 100px;
     text-transform: capitalize;
     font-weight: bold;
-    -webkit-writing-mode: vertical-rl;
+    text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    -webkit-text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
-.data {
-    
+
+td.complete {
+    background-color: green;
+}
+
+td.partial {
+    background-color: yellow;
+}
+
+td.struggle {
+    background-color: red;
+}
+
+td.none {
+    background-color: #EEEEEE;
 }
