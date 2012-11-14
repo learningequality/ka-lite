@@ -235,7 +235,7 @@ $(document).ready(function() {
         $.getJSON("/static/data/topicdata/" + vars["topic"] + ".json", function(exerciseLayout) {
             console.log(exerciseLayout);
             var exercise_ids = $.map(exerciseLayout, function(exercise) { return exercise.name });
-            doRequest("/api/get_exercise_logs", exercise_ids, "POST").success(function(data) {
+            doRequest("/api/get_exercise_logs", exercise_ids).success(function(data) {
                 var exercisesCompleted = {};
                 $.each(data, function(ind, status) {
                     exercisesCompleted[status.exercise_id] = status.complete ? "complete" : "partial";

@@ -45,7 +45,7 @@ function updatePoints() {
 
 $(function() {
 
-    doRequest("/api/get_video_logs", [videoData.youtube_id], "POST").success(function(data) {
+    doRequest("/api/get_video_logs", [videoData.youtube_id]).success(function(data) {
         if (data.length === 0) {
             return;
         }
@@ -89,7 +89,7 @@ function updateVideoStats(time, duration) {
             points: points,
             complete: points === 100
         }
-        doRequest("/api/save_video_log", data, "POST").success(function(data) {
+        doRequest("/api/save_video_log", data).success(function(data) {
             videoData.points = data.points;
             videoData.complete = data.complete;
             updatePoints();

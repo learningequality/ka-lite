@@ -17,5 +17,6 @@ urlpatterns = patterns('main.api_views',
     url(r'^start_video_download$', 'start_video_download'),
     url(r'^check_video_download$', 'check_video_download'),
     url(r'^get_topic_tree$', 'get_topic_tree'),
+    url(r'^get_video_download_list$', 'get_video_download_list'),
     
 )

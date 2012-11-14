@@ -26,7 +26,7 @@ function updatePercentCompleted(correct) {
         correct: correct
     };
 
-    doRequest("/api/save_exercise_log", data, "POST");
+    doRequest("/api/save_exercise_log", data);
 
 };
 
@@ -50,7 +50,7 @@ $(function() {
             $(Exercises).trigger("readyForNextProblem", {userExercise: exerciseData});
         });
     });
-    doRequest("/api/get_exercise_logs", [exerciseData.exerciseModel.name], "POST").success(function(data) {
+    doRequest("/api/get_exercise_logs", [exerciseData.exerciseModel.name]).success(function(data) {
         if (data.length === 0) {
             return;
         }

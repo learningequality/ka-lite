@@ -158,9 +158,9 @@ def add_group(request, id):
 def login(request):
     if request.user.is_authenticated():
         auth_logout(request)
-    if "facility_user" in request.session:
-        del request.session["facility_user"]
     if request.method == 'POST':
+        if "facility_user" in request.session:
+            del request.session["facility_user"]
         next = request.GET.get("next", "/")
         if next[0] != "/":
             next = "/"
