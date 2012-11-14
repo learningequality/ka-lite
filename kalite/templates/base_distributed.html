@@ -10,15 +10,12 @@
     $(function(){
         $("[class$=-only]").hide();
         doRequest("/securesync/api/status").success(function(data){
-            toggle_state("logged-in", data.logged_in);
+            toggle_state("logged-in", data.is_logged_in);
             toggle_state("registered", data.registered);
+            toggle_state("django-admin", data.is_django_user);
             toggle_state("admin", data.is_admin);
-            if (data.logged_in){
+            if (data.is_logged_in){
                 $('#logged-in-name').text(data.username + " (Logout)");
-            }
-        console.log(data.only_admin);
-            if (data.only_admin){
-                $('.not-admin').hide();
             }
 
         });        
@@ -28,10 +25,11 @@
 
 {% block sitewide_navigation %}
 <span class="dropdown topic-browser-dropdown">
-    <a href="/" class="watch-navlink not-admin {% block watch_selected %}{% endblock watch_selected %}">Watch</a>
-    <a href="/exercisedashboard" class="practice-navlink not-admin {% block practice_selected %}{% endblock practice_selected %}">Practice</a>
-    <a href="/securesync/adduser" class="admin-only">Add User</a>
-    <a href="/admin" class="admin-only">Admin</a>
+    <a href="/" class="watch-navlink not-django-admin-only {% block watch_selected %}{% endblock watch_selected %}">Watch</a>
+    <a href="/exercisedashboard" class="practice-navlink not-django-admin-only {% block practice_selected %}{% endblock practice_selected %}">Practice</a>
+    <a href="/securesync/adduser" class="admin-only">Add Student</a>
+    <a href="/securesync/addteacher" class="admin-only">Add Teacher</a>
+    <a href="/admin" class="django-admin-only">Admin</a>
     <a href="/securesync/adduser" class="not-logged-in-only">Sign Up</a>
     <a href="/securesync/login" class="not-logged-in-only">Login</a>
 </span>

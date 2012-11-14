@@ -192,10 +192,10 @@ def test_connection(request):
 
 def status(request):
     data = {
-        "logged_in": False,
+        "is_logged_in": request.is_logged_in,
         "registered": bool(Device.get_own_device().get_zone()),
         "is_admin": request.is_admin,
-        "only_admin": request.only_admin,
+        "is_django_user": request.is_django_user,
         "points": 0,
     }
     if "facility_user" in request.session:
