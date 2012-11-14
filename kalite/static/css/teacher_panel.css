@@ -1,3 +1,6 @@
+div#content {
+    width: 100%;
+}
 div#selection-bar {
     width:100%;
 }
@@ -5,4 +8,29 @@ div#selection-bar {
 div.selection {
     float:left;
     padding: 10px;
+}
+
+div#displaygrid {
+    float: left;
+    width: 100%;
+    padding: 10px;
+}
+
+div#displaygrid > table {
+    max-width: 100%;
+}
+
+div#displaygrid > table, th, td {
+    border: 1px solid black;
+    padding: 5px;
+}
+
+div#displaygrid > th.headrow {
+    text-transform: capitalize;
+    font-weight: bold;
+    -webkit-writing-mode: vertical-rl;
+}
+
+.data {
+    
 }

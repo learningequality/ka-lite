@@ -196,7 +196,7 @@ def get_topic_tree(request):
 @require_admin
 def get_group_data(request):
     data = simplejson.loads(request.raw_post_data or "[]")
-    if not isinstance(data, list):
+    if not isinstance(data["exercises"], list):
         return JsonResponse([])
     if "facility_user" not in request.session:
         return JsonResponse([])
@@ -212,5 +212,5 @@ def get_group_data(request):
             response = _get_exercise_log_dict(request, user, exercise_id)
             if response:
                 responses.append(response)
-        group_responses[user] = responses
+        group_responses[user.username] = responses
     return JsonResponse(group_responses)

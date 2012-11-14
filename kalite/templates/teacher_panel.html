@@ -11,6 +11,7 @@
 {% endblock headcss %}
 
 {% block content %}
+<div id="content">
 <div id="selection-bar">
 {% if facilities %}
     <div class="selection">
@@ -43,22 +44,22 @@
 </div>
 
 <div id="displaygrid"></div>
-
+</div>
 <script>
 
 drawgrid = function(exercises, userData) {
-    var table = "<table><tr><th>User</th>";
+    var table = "<table><tr><th class='headrow'>User</th>";
     for (var i = 0; i < exercises.length; i++) {
-        table += "<th>" + exercises[i] + "</th>";
+        table += "<th class='headrow data'>" + exercises[i] + "</th>";
     };
     table += "</tr>";
     for (user in userData) {
         table += "<tr>";
         data = userData[user]
-        table += "<th>" + user + "</th>";
+        table += "<th class='username'>" + user + "</th>";
         for (exercise in data) {
             status = data[exercise];
-            table += "<td>" + status + "</td>";
+            table += "<td class='status data'>" + status + "</td>";
         };
         table += "</tr>";
     };
@@ -74,13 +75,13 @@ $(document).ready(function() {
     if (vars["topic"]) {
         $.getJSON("/static/data/topicdata/" + vars["topic"] + ".json", function(topicdata, group) {
             var exercise_ids = $.map(topicdata, function(exercise) { return exercise.name });
-            var exercise_names = $.map(topicdata, function(exercise) { return exercise.display_name})
-            var group_exercises = {group: vars["group"], exercises: exercise_ids};
+            var exercise_names = $.map(topicdata, function(exercise) { return exercise.display_name});
+            console.log(vars["group"]);
             console.log(exercise_ids);
-            console.log(exercise_names);
-            console.log(group_exercises)
+            var group_exercises = {group: vars["group"], exercises: exercise_ids};
             doRequest("/api/get_group_data", group_exercises, "POST").success(function(data) {
                 __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+                console.log(data)
                 var userExercises = {};
                 $.each(data, function(ind, userdata) {
                     var exercisesCompleted = {};
@@ -89,9 +90,10 @@ $(document).ready(function() {
                         exercisesCompleted[status.exercise_id] = status.complete ? "complete" : "partial";
                         } else {
                             exercisesCompleted[status.exercise_id] = "none";
+                            console.log("Caught");
                         }
+                        userExercises[userdata.user] = exercisesCompleted
                     });
-                    userExercises[userdata.user] = exercisesCompleted
                 });
                 drawgrid(exercise_names, userExercises);
             });
