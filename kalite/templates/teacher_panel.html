@@ -25,6 +25,7 @@
 {% if groups %}
     <div class="selection">
         <h2>Select Group</h2><select id="group">
+        <option {% if not request.GET.group %}selected{% endif %}>----</option>
             {% for group in groups %}
                 <option value="{{ group.id }}" {% if request.GET.group == group.id %}selected{% endif %}>{{ group }}</option>
             {% endfor %}
@@ -34,7 +35,7 @@
 {% if topics %}
     <div class="selection">
         <h2>Select Topic</h2><select id="topic">
-            <option value="null" {% if not request.GET.topic %}selected{% endif %}>----</option>
+            <option {% if not request.GET.topic %}selected{% endif %}>----</option>
             {% for topic in topics %}
                 <option value="{{ topic.id }}"{% if request.GET.topic == topic.id %}selected{% endif %}>{{ topic.standalone_title }}</option>
             {% endfor %}
@@ -47,22 +48,27 @@
 </div>
 <script>
 
-drawgrid = function(exercises, userData) {
+drawgrid = function(topic_data, userData) {
+    console.log(userData);
     var table = "<table><tr><th class='headrow'>User</th>";
-    for (var i = 0; i < exercises.length; i++) {
-        table += "<th class='headrow data'>" + exercises[i] + "</th>";
+    for (var i = 0; i < topic_data.length; i++) {
+        table += "<th class='headrow data'>" + topic_data[i].display_name + "</th>";
     };
     table += "</tr>";
-    for (user in userData) {
+    $.each(userData, function(user,data) {
+        console.log(user);
+        console.log(topic_data);
         table += "<tr>";
-        data = userData[user]
         table += "<th class='username'>" + user + "</th>";
-        for (exercise in data) {
-            status = data[exercise];
-            table += "<td class='status data'>" + status + "</td>";
-        };
+        $.each(topic_data, function(ind,exercise) {
+            if (data[exercise.name]!=undefined) {
+                table += "<td class='status data'>" + (data[exercise.name].complete ? "complete" : "partial") + "</td>";
+            } else {
+                table += "<td class='status data'>" + 'none' + "</td>";
+            };
+        });
         table += "</tr>";
-    };
+    });
     table += "</table>"
     $("#displaygrid").html(table);
 };
@@ -75,27 +81,21 @@ $(document).ready(function() {
     if (vars["topic"]) {
         $.getJSON("/static/data/topicdata/" + vars["topic"] + ".json", function(topicdata, group) {
             var exercise_ids = $.map(topicdata, function(exercise) { return exercise.name });
-            var exercise_names = $.map(topicdata, function(exercise) { return exercise.display_name});
             console.log(vars["group"]);
             console.log(exercise_ids);
             var group_exercises = {group: vars["group"], exercises: exercise_ids};
-            doRequest("/api/get_group_data", group_exercises, "POST").success(function(data) {
+            doRequest("/api/get_group_data", group_exercises).success(function(data) {
                 __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
                 console.log(data)
                 var userExercises = {};
-                $.each(data, function(ind, userdata) {
+                $.each(data, function(user, userdata) {
                     var exercisesCompleted = {};
                     $.each(userdata, function(ind, status) {
-                        if (__indexOf.call(exercise_ids, status.exercise_id) >= 0) {
-                        exercisesCompleted[status.exercise_id] = status.complete ? "complete" : "partial";
-                        } else {
-                            exercisesCompleted[status.exercise_id] = "none";
-                            console.log("Caught");
-                        }
-                        userExercises[userdata.user] = exercisesCompleted
+                        exercisesCompleted[status.exercise_id] = status;
                     });
+                    userExercises[user] = exercisesCompleted;
                 });
-                drawgrid(exercise_names, userExercises);
+                drawgrid(topicdata, userExercises);
             });
         });
     };
