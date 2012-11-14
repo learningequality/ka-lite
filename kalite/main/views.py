@@ -137,6 +137,7 @@ def video_download(request):
 @render_to("teacher_panel.html")
 def teacher_panel(request):
     topics = topicdata.EXERCISE_TOPICS["topics"].values()
+    topics = sorted(topics, key = lambda k: (k["y"], k["x"]))
     if not request.is_admin:
         messages.error(request,"I think you know what the problem is just as well as I do.")
         return HttpResponseRedirect(reverse("login"))
