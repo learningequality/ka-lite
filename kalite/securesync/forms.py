@@ -18,7 +18,7 @@ class FacilityUserForm(forms.ModelForm):
     
     def __init__(self,request,*args,**kwargs):
         self.request = request
-        super(FacilityUserForm,self).__init__(*args,**kwargs)
+        super(FacilityUserForm,self).__init__(*args, **kwargs)
     
     class Meta:
         model = FacilityUser
@@ -27,11 +27,6 @@ class FacilityUserForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput, label="Password")
     facility = forms.ModelChoiceField(queryset=Facility.objects.all(),widget=forms.HiddenInput, label="Facility")
     
-    def clean_is_teacher(self):
-        if self.cleaned_data["is_teacher"] and not self.request.is_admin:
-            raise forms.ValidationError("I'm sorry, Dave. I'm afraid I can't do that.")
-        return self.cleaned_data["is_teacher"]
-
 
 class FacilityForm(forms.ModelForm):
 

@@ -10,7 +10,8 @@ from django.utils import simplejson
 from annoying.decorators import render_to
 from forms import RegisteredDevicePublicKeyForm, FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
 from django.contrib import messages
-from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout      
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout   
+from annoying.functions import get_object_or_None   
 
 import crypto
 import settings
@@ -43,6 +44,26 @@ def register_public_key(request):
         return register_public_key_server(request)
     else:
         return register_public_key_client(request)
+
+def facility_required(handler):
+    def inner_fn(request, *args, **kwargs):
+        facility = None
+        if Facility.objects.count() == 0:
+            messages.error(request, "You must first add a facility")
+            return HttpResponseRedirect(reverse("add_facility"))
+        elif "facility" in request.GET:
+            facility = get_object_or_None(Facility, pk=request.GET["facility"])
+            print request.GET["facility"]
+        elif "facility_user" in request.session:
+            facility = request.session["facility_user"].facility
+        elif Facility.objects.count() == 1:
+            facility = Facility.objects.all()[0]
+
+        if facility:
+            return handler(request, facility, *args, **kwargs)
+        else:
+            return facility_selection(request)
+    return inner_fn
 
 @require_admin
 @render_to("securesync/register_public_key_client.html")
@@ -80,29 +101,47 @@ def register_public_key_server(request):
         "form": form
     }
 
+
+@require_admin
 @distributed_server_only
-@render_to("securesync/select_facility_to_add_user.html")
-def select_facility_to_add_user(request):
+@render_to("securesync/facility_admin.html")
+def facility_admin(request):
     facilities = Facility.objects.all()
     context = {"facilities": facilities}
     return context
-    
+
 @distributed_server_only
+@render_to("securesync/facility_selection.html")
+def facility_selection(request):
+    facilities = Facility.objects.all()
+    context = {"facilities": facilities}
+    return context
+
+@distributed_server_only
+@require_admin
+def add_facility_teacher(request):
+    return add_facility_user(request, is_teacher=True)
+
+@distributed_server_only
+def add_facility_student(request):
+    return add_facility_user(request, is_teacher=False)
+
 @render_to("securesync/add_facility_user.html")
-def add_facility_user(request, id):
+@facility_required
+def add_facility_user(request, facility, is_teacher):
     if request.method == "POST":
         form = FacilityUserForm(request, data=request.POST)
         if form.is_valid():
             form.instance.set_password(form.cleaned_data["password"])
+            form.instance.is_teacher = is_teacher
             form.save()
             return HttpResponseRedirect(reverse("login"))
-    elif Facility.objects.count() == 0 or id is None:
+    elif Facility.objects.count() == 0:
         messages.error(request, "You must add a facility before creating a user" )
         return HttpResponseRedirect(reverse("add_facility"))
     else:
-        form = FacilityUserForm(request, initial={'facility':id})
-    facility = Facility.objects.get(pk=id)
-    form.fields["group"].queryset = FacilityGroup.objects.filter(facility=id)
+        form = FacilityUserForm(request)
+    form.fields["group"].queryset = FacilityGroup.objects.filter(facility=facility)
     if Facility.objects.count() == 1:
         singlefacility = True
     else:
@@ -189,6 +228,7 @@ def logout(request):
     if next[0] != "/":
         next = "/"
     return HttpResponseRedirect(next)
+
 
 # @render_to("securesync/edit_organization.html")
 # def edit_organization(request):

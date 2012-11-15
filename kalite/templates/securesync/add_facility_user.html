@@ -14,7 +14,7 @@
         Sign up for an account
     {% endif %}
 </h2>
-<p><label>Facility: </label>{{ facility }} {% if not singlefacility or request.is_admin %}<a href="{% url select_facility_to_add_user %}"> (Select a different facility)</a></p>{% endif %}
+<p><label>Facility: </label>{{ facility }} {% if not singlefacility or request.is_admin %}<a href="?facility=select"> (Select a different facility)</a></p>{% endif %}
 {{ form.as_p }}
 <input type="submit" value="Create user" class="submit"/>
 </form>
