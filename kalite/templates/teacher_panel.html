@@ -12,6 +12,7 @@
 
 {% block content %}
 <div id="content">
+<a href="?facility=select">Select Facility</a>
 <div id="selection-bar">
 {% if groups %}
     <div class="selection">
@@ -22,8 +23,12 @@
             {% endfor %}
         </select>
     </div>
+{% else %}
+    <div class="selection">
+        <h2>No Groups at this Facility</h2>
+    </div>
 {% endif %}
-{% if topics %}
+{% if topics and groups %}
     <div class="selection">
         <h2>Select Topic</h2><select id="topic">
             <option {% if not request.GET.topic %}selected{% endif %}>----</option>
