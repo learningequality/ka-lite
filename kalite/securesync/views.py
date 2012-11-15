@@ -8,7 +8,7 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect, ge
 from django.template import RequestContext
 from django.utils import simplejson
 from annoying.decorators import render_to
-from forms import RegisteredDevicePublicKeyForm, FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
+from forms import RegisteredDevicePublicKeyForm, FacilityUserForm, FacilityTeacherForm, LoginForm, FacilityForm, FacilityGroupForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout   
 from annoying.functions import get_object_or_None   
@@ -129,19 +129,28 @@ def add_facility_student(request):
 @render_to("securesync/add_facility_user.html")
 @facility_required
 def add_facility_user(request, facility, is_teacher):
+    if is_teacher:
+        Form = FacilityTeacherForm
+    else:
+        Form = FacilityUserForm
     if request.method == "POST":
-        form = FacilityUserForm(request, data=request.POST)
+        form = Form(request, data=request.POST)
         if form.is_valid():
             form.instance.set_password(form.cleaned_data["password"])
+            form.instance.facility = facility
             form.instance.is_teacher = is_teacher
             form.save()
-            return HttpResponseRedirect(reverse("login"))
+            return HttpResponseRedirect(reverse("login") + "?facility=" + facility.pk)
     elif Facility.objects.count() == 0:
         messages.error(request, "You must add a facility before creating a user" )
         return HttpResponseRedirect(reverse("add_facility"))
     else:
-        form = FacilityUserForm(request)
-    form.fields["group"].queryset = FacilityGroup.objects.filter(facility=facility)
+        if is_teacher:
+            form = Form(request)
+        else:
+            form = Form(request, initial={"group": request.GET.get("group", None)})
+    if not is_teacher:
+        form.fields["group"].queryset = FacilityGroup.objects.filter(facility=facility)
     if Facility.objects.count() == 1:
         singlefacility = True
     else:
@@ -150,6 +159,7 @@ def add_facility_user(request, facility, is_teacher):
         "form": form,
         "facility": facility,
         "singlefacility": singlefacility,
+        "teacher": is_teacher,
     }
 
 @require_admin
@@ -170,24 +180,25 @@ def add_facility(request):
     }
 
 @require_admin
+@facility_required
 @render_to("securesync/add_group.html")
-def add_group(request, id):
+def add_group(request, facility):
     facilities = Facility.objects.all()
     groups = FacilityGroup.objects.all()
     if request.method == 'POST' and request.is_admin:
         form = FacilityGroupForm(data=request.POST)
         if form.is_valid():
+            form.instance.facility = facility
             form.save()
-            return HttpResponseRedirect(reverse("add_facility_user", kwargs={"id": id}))
+            return HttpResponseRedirect(reverse("add_facility_student") + "?facility=" + facility.pk + "&group=" + form.instance.pk)
     elif request.method =='POST' and not request.is_admin:
         messages.error(request,"This mission is too important for me to allow you to jeopardize it.")
         return HttpResponseRedirect(reverse("login"))
     else:
-        form = FacilityGroupForm(initial={'facility':id})
+        form = FacilityGroupForm(initial={"facility": id})
     return {
         "form": form,
-        "facility_id": id,
-        "facilities": facilities,
+        "facility": facility,
         "groups": groups
     }
 
@@ -209,12 +220,12 @@ def login(request):
         if user:
             auth_login(request, user)
             return HttpResponseRedirect(next)
-        form = LoginForm(data=request.POST, request=request)
+        form = LoginForm(data=request.POST, request=request, initial={"facility": request.GET.get("facility", None)})
         if form.is_valid():
             request.session["facility_user"] = form.get_user()
             return HttpResponseRedirect(next)
     else:
-        form = LoginForm()
+        form = LoginForm(initial={"facility": request.GET.get("facility", None)})
     return {
         "form": form
     }

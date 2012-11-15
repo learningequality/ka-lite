@@ -6,15 +6,8 @@
 <h2>Add a new group</h2>
 
 <form method="post" class="basic-form">
-    <p><label>Facility: </label><select id="facility_group">
-    
-        {% if facilities %}
-            {% for facility in facilities %}
-                <option value="{% url add_group id=facility.id %}" {% if facility.id == facility_id %}selected{% endif %}>{{ facility }}</option>
-            {% endfor %}
-        {% endif %}
+    <p><label>Facility: </label>{{ facility }} <a href="?facility=select"> (Select a different facility)</a></p>
 
-    </select></p>
     {% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Create group" class="submit"/>
