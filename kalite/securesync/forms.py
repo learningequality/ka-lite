@@ -15,6 +15,8 @@ class RegisteredDevicePublicKeyForm(forms.ModelForm):
 
 
 class FacilityUserForm(forms.ModelForm):
+
+    password = forms.CharField(widget=forms.PasswordInput, label="Password")    
     
     def __init__(self,request,*args,**kwargs):
         self.request = request
@@ -22,11 +24,23 @@ class FacilityUserForm(forms.ModelForm):
     
     class Meta:
         model = FacilityUser
-        fields = ("facility","group", "username", "first_name", "last_name",)
+        fields = ("group", "username", "first_name", "last_name",)
 
-    password = forms.CharField(widget=forms.PasswordInput, label="Password")
-    facility = forms.ModelChoiceField(queryset=Facility.objects.all(),widget=forms.HiddenInput, label="Facility")
+    def clean(self):
+        username = self.cleaned_data.get('username')
+        facility = self.cleaned_data.get('facility')
+        
+        if FacilityUser.objects.filter(username=username, facility=facility).count() > 0:
+            raise forms.ValidationError("A user with this username at this facility already exists. Please choose a new username and try again.")
+
+        return self.cleaned_data
+
     
+class FacilityTeacherForm(FacilityUserForm):
+
+    class Meta:
+        model = FacilityUser
+        fields = ("username", "first_name", "last_name",)
 
 class FacilityForm(forms.ModelForm):
 
@@ -37,11 +51,9 @@ class FacilityForm(forms.ModelForm):
         
 class FacilityGroupForm(forms.ModelForm):
 
-    facility = forms.ModelChoiceField(queryset=Facility.objects.all(),widget=forms.HiddenInput, label="Facility")
-
     class Meta:
         model = FacilityGroup
-        fields = ("name","facility",)
+        fields = ("name",)
     
 
 class LoginForm(forms.ModelForm):
