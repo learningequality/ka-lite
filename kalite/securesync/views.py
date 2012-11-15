@@ -49,7 +49,10 @@ def facility_required(handler):
     def inner_fn(request, *args, **kwargs):
         facility = None
         if Facility.objects.count() == 0:
-            messages.error(request, "You must first add a facility")
+            if request.is_admin:
+                messages.error(request, "You must first add a facility, before you can do that.")
+            else:
+                messages.error(request, "You must first have the administrator of this server log in to add a facility.")
             return HttpResponseRedirect(reverse("add_facility"))
         elif "facility" in request.GET:
             facility = get_object_or_None(Facility, pk=request.GET["facility"])
@@ -169,9 +172,9 @@ def add_facility(request):
         form = FacilityForm(data=request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse("select_facility_to_add_user"))
+            return HttpResponseRedirect(reverse("add_facility_student") + "?facility=" + form.instance.pk)
     elif request.method =='POST' and not request.is_admin:
-        messages.error(request,"Just what do you think you're doing, Dave?")
+        messages.error(request, "Just what do you think you're doing, Dave?")
         return HttpResponseRedirect(reverse("login"))
     else:
         form = FacilityForm()
