@@ -13,15 +13,6 @@
 {% block content %}
 <div id="content">
 <div id="selection-bar">
-{% if facilities %}
-    <div class="selection">
-        <h2>Select Facility</h2><select id="facilities">
-            {% for facility in facilities %}
-                <option>{{ facility }}</option>
-            {% endfor %}
-        </select>
-    </div>
-{% endif %}
 {% if groups %}
     <div class="selection">
         <h2>Select Group</h2><select id="group">
@@ -108,7 +99,11 @@ $("#topic").change(function(){
     var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
         vars[key] = value;
     });
-    vars["topic"] = $("#topic option:selected").val();
+    if($("#topic option:selected").val()!="----") {
+        vars["topic"] = $("#topic option:selected").val();
+    } else {
+        delete vars["topic"];
+    };
     url = "?" + $.param(vars);
     window.location.href = url;
 });
@@ -117,7 +112,11 @@ $("#group").change(function(){
     var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
         vars[key] = value;
     });
-    vars["group"] = $("#group option:selected").val();
+    if($("#group option:selected").val()!="----") {
+        vars["group"] = $("#group option:selected").val();
+    } else {
+        delete vars["group"];
+    };
     url = "?" + $.param(vars);
     window.location.href = url;
 });
