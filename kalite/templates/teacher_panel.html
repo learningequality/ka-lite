@@ -84,6 +84,9 @@ $(document).ready(function() {
         $.getJSON("/static/data/topicdata/" + vars["topic"] + ".json", function(topicdata, group) {
             var exercise_ids = $.map(topicdata, function(exercise) { return exercise.name });
             var group_exercises = {group: vars["group"], exercises: exercise_ids};
+            console.log(topicdata);
+            topicdata = _.sortBy(topicdata, "v_position");
+            topicdata = _.sortBy(topicdata, "h_position");
             doRequest("/api/get_group_data", group_exercises).success(function(data) {
                 __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
                 var userExercises = {};
