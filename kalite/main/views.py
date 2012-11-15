@@ -142,6 +142,7 @@ def teacher_panel(request,facility):
     topics = sorted(topics, key = lambda k: (k["y"], k["x"]))
     groups = FacilityGroup.objects.filter(facility=facility)
     context = {
+        "facility": facility,
         "groups": groups,
         "topics": topics,
     }
