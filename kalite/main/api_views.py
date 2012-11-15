@@ -119,7 +119,7 @@ def _get_exercise_log_dict(request, user, exercise_id):
     return {
         "exercise_id": exercise_id,
         "streak_progress": exerciselog.streak_progress,
-        "complete": exerciselog.streak_progress == 100,
+        "complete": exerciselog.complete,
         "struggling": exerciselog.struggling,
     }
 

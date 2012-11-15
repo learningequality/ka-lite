@@ -28,10 +28,15 @@ class ExerciseLog(SyncedModel):
     points = models.IntegerField(default=0)
     complete = models.BooleanField(default=False)
     struggling = models.BooleanField(default=False)
+    attempts_before_completion = models.IntegerField(blank=True, null=True)
     
     def save(self, *args, **kwargs):
-        if self.attempts > 20 and complete==False:
-            struggling = True
+        if self.attempts > 20 and not self.complete:
+            self.struggling = True
+        already_complete = self.complete
+        self.complete = (self.streak_progress >= 100)
+        if not already_complete and self.complete:
+            self.attempts_before_completion = self.attempts
         super(ExerciseLog, self).save(*args, **kwargs)
 
     def get_uuid(self, *args, **kwargs):
@@ -53,3 +58,26 @@ class VideoFile(models.Model):
     
     class Meta:
         ordering = ["priority", "youtube_id"]
+
+class Settings(models.Model):
+    name = models.CharField(max_length=30, primary_key=True)
+    value = models.TextField(blank=True)
+    datatype = models.CharField(max_length=10, default="str")
+    
+    @staticmethod
+    def set(name, value):
+        setting = Settings(name=name, value=str(value), datatype=value.__class__.__name__)
+        setting.save()
+        
+    @staticmethod
+    def get(name):
+        try:
+            setting = Settings.objects.get(name=name)
+            if setting.datatype == "int":
+                return int(setting.value)
+            if setting.datatype == "float":
+                return float(setting.value)
+            return setting.value
+        except Settings.DoesNotExist:
+            return ""
+        
