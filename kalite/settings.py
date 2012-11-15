@@ -18,8 +18,8 @@ MANAGERS = ADMINS
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3", # Add "postgresql_psycopg2", "postgresql", "mysql", "sqlite3" or "oracle".
-        "NAME": "userdata.sqlite",              # Or path to database file if using sqlite3.
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": "data.sqlite",
     }
 }
 
@@ -98,6 +98,7 @@ MIDDLEWARE_CLASSES = (
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
+    "securesync.middleware.DBCheck",
     "securesync.middleware.AuthFlags",
 )
 
