@@ -56,6 +56,7 @@ def save_exercise_log(request):
     old_exerciselog = exerciselog.get_existing_instance() or ExerciseLog()
     exerciselog.attempts = old_exerciselog.attempts + 1
     exerciselog.streak_progress = data.get("streak_progress", None)
+    
     try:
         exerciselog.full_clean()
         exerciselog.save()

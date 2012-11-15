@@ -1,21 +1,45 @@
-from M2Crypto import RSA
-import base64, hashlib
+import base64, hashlib, rsa
 from kalite import settings
+from config.models import Settings
 
-private_key_path = settings.PROJECT_PATH + "/private_key.pem"
+keys = {
+    "private": None,
+    "public": None,
+}
 
-try:
-    private_key = RSA.load_key(private_key_path)
-except IOError:
-    private_key = RSA.gen_key(2048, 65537, callback=lambda x,y,z: None)
-    private_key.save_key(private_key_path, None)
+def load_keys():
+    private_key_string = Settings.get("private_key")
+    if private_key_string:
+        public_key_string = Settings.get("public_key")
+        keys["private"] = rsa.PrivateKey.load_pkcs1(private_key_string)
+        keys["public"] = rsa.PublicKey.load_pkcs1(public_key_string)
+    else:
+        reset_keys()
 
-public_key = RSA.new_pub_key(private_key.pub())
+def reset_keys():
+    print "Generating 2048-bit RSA public/private keys..."
+    try:
+        (public_key, private_key) = rsa.newkeys(2048, poolsize=4)
+    except:
+        (public_key, private_key) = rsa.newkeys(2048)
+    print "Done!"
+    Settings.set("private_key", private_key.save_pkcs1())
+    Settings.set("public_key", public_key.save_pkcs1())    
+    keys["private"] = private_key
+    keys["public"] = public_key
+
+def get_public_key():
+    if not keys["public"]:
+        load_keys()
+    return keys["public"]
+
+def get_private_key():
+    if not keys["private"]:
+        load_keys()
+    return keys["private"]
 
 def sign(message, key=None):
-    if not key:
-        key = private_key
-    return key.sign(hashed(message, base64encode=False), algo="sha1")
+    return rsa.sign(hashed(message, base64encode=False), key or get_private_key(), "SHA-1")
 
 def hashed(message, base64encode=False):
     sha1sum = hashlib.sha1(message).digest()
@@ -25,18 +49,19 @@ def hashed(message, base64encode=False):
         return sha1sum
 
 def verify(message, signature, key=None):
-    if not key:
-        key = public_key
     try:
-        return key.verify(hashed(message, base64encode=False), signature, algo="sha1") == 1
-    except RSA.RSAError:
+        rsa.verify(hashed(message, base64encode=False), signature, key or get_public_key())
+    except rsa.pkcs1.VerificationError:
         return False
+    return True
 
-def serialize_public_key(key=public_key):
-    return ":".join(encode_base64(x) for x in key.pub())
+def serialize_public_key(key=None):
+    if not key:
+        key = get_public_key()
+    return key.save_pkcs1()
     
 def deserialize_public_key(key_str):
-    return RSA.new_pub_key(decode_base64(q) for q in key_str.split(":"))
+    return rsa.PublicKey.load_pkcs1(key_str)
     
 def encode_base64(data):
     return base64.encodestring(data).replace("\n", "")

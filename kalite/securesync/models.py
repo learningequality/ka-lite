@@ -236,7 +236,7 @@ class DeviceZone(SyncedModel):
 class Device(SyncedModel):
     name = models.CharField(max_length=100, blank=True)
     description = models.TextField(blank=True)
-    public_key = models.CharField(max_length=200, db_index=True)
+    public_key = models.CharField(max_length=500, db_index=True)
 
     def set_public_key(self, key):
         self.public_key = crypto.serialize_public_key(key)
@@ -274,7 +274,7 @@ class Device(SyncedModel):
     @staticmethod
     def initialize_own_device(**kwargs):
         own_device = Device(**kwargs)
-        own_device.set_public_key(crypto.public_key)
+        own_device.set_public_key(crypto.get_public_key())
         own_device.sign(device=own_device)
         own_device.save(own_device=own_device)
         metadata = own_device.get_metadata()
@@ -319,7 +319,7 @@ class Device(SyncedModel):
     def get_uuid(self):
         if not self.public_key:
             return uuid.uuid4()
-        return uuid.uuid5(ROOT_UUID_NAMESPACE, self.public_key).hex
+        return uuid.uuid5(ROOT_UUID_NAMESPACE, str(self.public_key)).hex
 
 settings.add_syncing_models([Facility, FacilityGroup, FacilityUser])
 
