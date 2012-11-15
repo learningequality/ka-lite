@@ -29,6 +29,11 @@ class FacilityAdmin(admin.ModelAdmin):
 admin.site.register(Facility, FacilityAdmin)
 
 
+class FacilityGroupAdmin(admin.ModelAdmin):
+    list_display = ("name", "facility",)
+admin.site.register(FacilityGroup, FacilityGroupAdmin)
+
+
 class FacilityUserAdmin(admin.ModelAdmin):
     list_display = ("facility", "username", "first_name", "last_name",)
     list_filter = ("facility",)
