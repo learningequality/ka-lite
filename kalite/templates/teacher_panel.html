@@ -51,7 +51,10 @@ drawgrid = function(topic_data, userData) {
         table += "<th class='headrow data' title='" + topic_data[i].display_name + "'>" + topic_data[i].display_name + "</th>";
     };
     table += "</tr>";
-    $.each(userData, function(user,data) {
+    users = _.keys(userData);
+    users = users.sort();
+    $.each(users, function(ind,user) {
+        data = userData[user];
         table += "<tr>";
         usertable += "<th class='username'>" + user + "</th></tr>";
         $.each(topic_data, function(ind,exercise) {
@@ -84,7 +87,6 @@ $(document).ready(function() {
             topicdata = _.sortBy(topicdata, "v_position");
             topicdata = _.sortBy(topicdata, "h_position");
             doRequest("/api/get_group_data", group_exercises).success(function(data) {
-                __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
                 var userExercises = {};
                 $.each(data, function(user, userdata) {
                     var exercisesCompleted = {};
