@@ -211,8 +211,6 @@ def get_group_data(request):
     data = simplejson.loads(request.raw_post_data or "{exercises:''}")
     if not isinstance(data["exercises"], list):
         return JsonResponse([])
-    if "facility_user" not in request.session:
-        return JsonResponse([])
     group = data["group"]
     exercise_ids = data["exercises"]
     users = []
