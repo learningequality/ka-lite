@@ -58,3 +58,26 @@ class VideoFile(models.Model):
     
     class Meta:
         ordering = ["priority", "youtube_id"]
+
+class Settings(models.Model):
+    name = models.CharField(max_length=30, primary_key=True)
+    value = models.TextField(blank=True)
+    datatype = models.CharField(max_length=10, default="str")
+    
+    @staticmethod
+    def set(name, value):
+        setting = Settings(name=name, value=str(value), datatype=value.__class__.__name__)
+        setting.save()
+        
+    @staticmethod
+    def get(name):
+        try:
+            setting = Settings.objects.get(name=name)
+            if setting.datatype == "int":
+                return int(setting.value)
+            if setting.datatype == "float":
+                return float(setting.value)
+            return setting.value
+        except Settings.DoesNotExist:
+            return ""
+        
