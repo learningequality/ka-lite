@@ -12,7 +12,7 @@
 
 {% block content %}
 <div id="content">
-<a href="?facility=select">Select Facility</a>
+<div class="facility"><h2>Coach Reports for {{ facility }} (<a href="?facility=select">Change Facility</a>)</h2></div>
 <div id="selection-bar">
 {% if groups %}
     <div class="selection">
@@ -68,7 +68,7 @@ drawgrid = function(topic_data, userData) {
     usertable += "</table></div>";
     table += "</table></div>";
     $("#displaygrid").html(usertable+table);
-    $('.headrow.user').height($('.headrow.data').height()+2)
+    $('.headrow.user').height($('.headrow.data').outerHeight())
 };
 
 $(document).ready(function() {

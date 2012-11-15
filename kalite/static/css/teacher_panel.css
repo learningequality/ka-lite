@@ -5,6 +5,10 @@ div#selection-bar {
     width:100%;
 }
 
+div#facility {
+    float: left;
+}
+
 div.selection {
     float:left;
     padding: 10px;
@@ -34,6 +38,7 @@ div.users > table {
 
 div#displaygrid > table, th, td {
     border: 1px solid black;
+    padding: 2px;
 }
 
 td.status {
