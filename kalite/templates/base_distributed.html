@@ -25,19 +25,19 @@
 
 {% block sitewide_navigation %}
 <span class="dropdown topic-browser-dropdown">
-    <a href="/" class="watch-navlink not-django-admin-only {% block watch_selected %}{% endblock watch_selected %}">Watch</a>
-    <a href="/exercisedashboard" class="practice-navlink not-django-admin-only {% block practice_selected %}{% endblock practice_selected %}">Practice</a>
-    <a href="/securesync/adduser" class="admin-only">Add Student</a>
-    <a href="/securesync/addteacher" class="admin-only">Add Teacher</a>
+    <a href="{% url homepage %}" class="watch-navlink not-django-admin-only {% block watch_selected %}{% endblock watch_selected %}">Watch</a>
+    <a href="{% url exercise_dashboard %}" class="practice-navlink not-django-admin-only {% block practice_selected %}{% endblock practice_selected %}">Practice</a>
+    <a href="{% url add_facility_student %}" class="admin-only">Add Student</a>
+    <a href="{% url add_facility_teacher %}" class="admin-only">Add Teacher</a>
     <a href="/admin" class="django-admin-only">Admin</a>
-    <a href="/securesync/adduser" class="not-logged-in-only">Sign Up</a>
-    <a href="/securesync/login" class="not-logged-in-only">Login</a>
+    <a href="{% url add_facility_student %}" class="not-logged-in-only">Sign Up</a>
+    <a href="{% url login %}" class="not-logged-in-only">Login</a>
 </span>
 <span class="dropdown topic-browser-dropdown not-registered-only">
-    <a href="/securesync/register" class="admin-only">Register device</a>
+    <a href="{% url register_public_key %}" class="admin-only">Register device</a>
 </span>
 <span class="dropdown topic-browser-dropdown logged-in-only">
-    <a href="/securesync/logout" id="logged-in-name">&nbsp;Logout</a>
+    <a href="{% url logout %}" id="logged-in-name">&nbsp;Logout</a>
 </span>
 
 {% endblock sitewide_navigation %}

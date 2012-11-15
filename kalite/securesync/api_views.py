@@ -200,10 +200,10 @@ def status(request):
     }
     if "facility_user" in request.session:
         user = request.session["facility_user"]
-        data["logged_in"] = True
+        data["is_logged_in"] = True
         data["username"] = user.get_name()
         data["points"] = VideoLog.get_points_for_user(user) + ExerciseLog.get_points_for_user(user)
     if request.user.is_authenticated():
-        data["logged_in"] = True
+        data["is_logged_in"] = True
         data["username"] = request.user.username
     return JsonResponse(data)
