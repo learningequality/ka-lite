@@ -225,5 +225,5 @@ def get_group_data(request):
             response = _get_exercise_log_dict(request, user, exercise_id)
             if response:
                 responses.append(response)
-        group_responses[user.username] = responses
+        group_responses[user.get_name()] = responses
     return JsonResponse(group_responses)

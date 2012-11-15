@@ -49,28 +49,30 @@
 <script>
 
 drawgrid = function(topic_data, userData) {
-    console.log(userData);
-    var table = "<table><tr><th class='headrow'>User</th>";
+    var usertable = "<div class='users'><table><tr><th class='headrow user'>User</th></tr>";
+    var table = "<div class='userstatus'><table><tr>";
     for (var i = 0; i < topic_data.length; i++) {
-        table += "<th class='headrow data'>" + topic_data[i].display_name + "</th>";
+        table += "<th class='headrow data' title='" + topic_data[i].display_name + "'>" + topic_data[i].display_name + "</th>";
     };
     table += "</tr>";
     $.each(userData, function(user,data) {
-        console.log(user);
-        console.log(topic_data);
         table += "<tr>";
-        table += "<th class='username'>" + user + "</th>";
+        usertable += "<th class='username'>" + user + "</th></tr>";
         $.each(topic_data, function(ind,exercise) {
             if (data[exercise.name]!=undefined) {
-                table += "<td class='status data'>" + (data[exercise.name].complete ? "complete" : "partial") + "</td>";
+                struggle = data[exercise.name].struggling
+                complete = data[exercise.name].complete
+                table += "<td class='status data " + (struggle ? "struggle" : (complete ? "complete" : "partial")) + "' title='" + (struggle ? "Struggling" : (complete ? "Complete" : "Attempted")) + "'></td>";
             } else {
-                table += "<td class='status data'>" + 'none' + "</td>";
+                table += "<td class='status data none' title='Not Attempted'></td>";
             };
         });
         table += "</tr>";
     });
-    table += "</table>"
-    $("#displaygrid").html(table);
+    usertable += "</table></div>";
+    table += "</table></div>";
+    $("#displaygrid").html(usertable+table);
+    $('.headrow.user').height($('.headrow.data').height()+2)
 };
 
 $(document).ready(function() {
@@ -81,12 +83,12 @@ $(document).ready(function() {
     if (vars["topic"]) {
         $.getJSON("/static/data/topicdata/" + vars["topic"] + ".json", function(topicdata, group) {
             var exercise_ids = $.map(topicdata, function(exercise) { return exercise.name });
-            console.log(vars["group"]);
-            console.log(exercise_ids);
             var group_exercises = {group: vars["group"], exercises: exercise_ids};
+            console.log(topicdata);
+            topicdata = _.sortBy(topicdata, "v_position");
+            topicdata = _.sortBy(topicdata, "h_position");
             doRequest("/api/get_group_data", group_exercises).success(function(data) {
                 __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
-                console.log(data)
                 var userExercises = {};
                 $.each(data, function(user, userdata) {
                     var exercisesCompleted = {};
