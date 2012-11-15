@@ -134,6 +134,7 @@ def video_download(request):
     }
     return context
 
+@require_admin
 @render_to("teacher_panel.html")
 def teacher_panel(request):
     topics = topicdata.EXERCISE_TOPICS["topics"].values()
@@ -142,7 +143,7 @@ def teacher_panel(request):
         messages.error(request,"I think you know what the problem is just as well as I do.")
         return HttpResponseRedirect(reverse("login"))
     facilities = False
-    if request.only_admin:
+    if request.is_django_user:
             facilities = Facility.objects.all()
     groups = FacilityGroup.objects.filter(facility=request.session.get("facility_user").facility)
     context = {

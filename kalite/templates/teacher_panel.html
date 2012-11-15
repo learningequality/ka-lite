@@ -49,7 +49,7 @@
 <script>
 
 drawgrid = function(topic_data, userData) {
-    var usertable = "<div class='users'><table><tr><th class='headrow'>User</th></tr>";
+    var usertable = "<div class='users'><table><tr><th class='headrow user'>User</th></tr>";
     var table = "<div class='userstatus'><table><tr>";
     for (var i = 0; i < topic_data.length; i++) {
         table += "<th class='headrow data' title='" + topic_data[i].display_name + "'>" + topic_data[i].display_name + "</th>";
@@ -72,6 +72,7 @@ drawgrid = function(topic_data, userData) {
     usertable += "</table></div>";
     table += "</table></div>";
     $("#displaygrid").html(usertable+table);
+    $('.headrow.user').height($('.headrow.data').height()+2)
 };
 
 $(document).ready(function() {

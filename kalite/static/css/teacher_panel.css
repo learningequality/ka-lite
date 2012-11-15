@@ -34,7 +34,6 @@ div.users > table {
 
 div#displaygrid > table, th, td {
     border: 1px solid black;
-    padding: 2px;
 }
 
 td.status {
@@ -43,18 +42,14 @@ td.status {
 
 th.username {
     height: 30px;
+    border: 1px solid black;
+    padding: 2px;
 }
 
 th.headrow {
-    height: 30px;
-    max-width: 100px;
+    width: 100px;
     text-transform: capitalize;
     font-weight: bold;
-    text-overflow: ellipsis;
-    -o-text-overflow: ellipsis;
-    -webkit-text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
 }
 
 
