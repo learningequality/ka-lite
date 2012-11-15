@@ -8,12 +8,12 @@
 
 <form method="post" class="basic-form">
 {% csrf_token %}
-<h2>{% if request.is_admin %}
+<h1>{% if request.is_admin %}
 		Add a new {% if teacher %}teacher{% else %}student{% endif %}
     {% else %}
         Sign up for an account
     {% endif %}
-</h2>
+</h1>
 <p><label>Facility: </label>{{ facility }} {% if not singlefacility or request.is_admin %}<a href="?facility=select"> (Select a different facility)</a></p>{% endif %}
 {{ form.as_p }}
 <input type="submit" value="Create user" class="submit"/>

@@ -1,13 +1,11 @@
 {% extends 'base_distributed.html' %}
 
-
-{% block title %}Select user facility {% endblock title %}
+{% block title %}Select facility{% endblock title %}
 
 {% block content %}
 
 <div id="facility_list_container">
-    <h1>Facilities</h1>
-    <p class="help_text">Please select a facility.</p>
+    <h1>Please select a facility</h1>
     <ul id="facility_list">
         {% if facilities %}
             {% for facility in facilities %}
@@ -22,12 +20,10 @@
                 <li>There are currently no facilities available, please ask an administrator or teacher to set one up.</li>
             {% endif %}
         {% endif %}
-        <p id="facility"></p>
-
-<script>
-{% if request.is_admin %}
-$('#facility').append('<a href="{% url add_facility %}"> Add a new Facility</a>');
-{% endif %}
-</script>
+        {% if request.is_admin %}
+            <p><a href="{% url add_facility %}">Add a new Facility</a></p>
+        {% endif %}
+    </ul>
+</div>
 
 {% endblock content %}

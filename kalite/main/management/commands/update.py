@@ -18,3 +18,4 @@ class Command(BaseCommand):
         if results.stderr:
             self.stderr.write(results.stderr)
         return results
+    
