@@ -8,7 +8,7 @@ import settings
 from settings import slug_key, title_key
 from main import topicdata
 from django.contrib import messages
-from securesync.views import require_admin
+from securesync.views import require_admin, facility_required
 
 from securesync.models import Facility, FacilityGroup
 
@@ -135,19 +135,13 @@ def video_download(request):
     return context
 
 @require_admin
+@facility_required
 @render_to("teacher_panel.html")
-def teacher_panel(request):
+def teacher_panel(request,facility):
     topics = topicdata.EXERCISE_TOPICS["topics"].values()
     topics = sorted(topics, key = lambda k: (k["y"], k["x"]))
-    if not request.is_admin:
-        messages.error(request,"I think you know what the problem is just as well as I do.")
-        return HttpResponseRedirect(reverse("login"))
-    facilities = False
-    if request.is_django_user:
-            facilities = Facility.objects.all()
-    groups = FacilityGroup.objects.filter(facility=request.session.get("facility_user").facility)
+    groups = FacilityGroup.objects.filter(facility=facility)
     context = {
-        "facilites": facilities,
         "groups": groups,
         "topics": topics,
     }
