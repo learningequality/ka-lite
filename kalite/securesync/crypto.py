@@ -58,10 +58,10 @@ def verify(message, signature, key=None):
 def serialize_public_key(key=None):
     if not key:
         key = get_public_key()
-    return key.save_pkcs1()
+    return "".join([line for line in key.save_pkcs1().split("\n") if line and not line.startswith("-----")])
     
 def deserialize_public_key(key_str):
-    return rsa.PublicKey.load_pkcs1(key_str)
+    return rsa.PublicKey.load_pkcs1("-----BEGIN RSA PUBLIC KEY-----\n%s\n-----END RSA PUBLIC KEY-----" % key_str)
     
 def encode_base64(data):
     return base64.encodestring(data).replace("\n", "")
