@@ -269,3 +269,7 @@ li .progress-circle {
    background-color: #FFFF91; 
    border-color: #CDCD00;
 }
+
+.errorlist {
+    padding-bottom: 10px;
+}
