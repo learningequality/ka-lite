@@ -267,7 +267,7 @@ def crypto_login(request):
         client = SyncClient()
         result = client.test_connection()
         if result != "success":
-            return HttpResponseServerError("Unable to connect to central server (%s)." % result)
+            return HttpResponseServerError("Unable to connect to central server (status: %s)." % result)
         response = client.start_session()
         if not client.session:
             return HttpResponseServerError("Unable to start session (error: %s)." % response)

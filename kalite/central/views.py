@@ -79,8 +79,10 @@ def crypto_login(request):
     if not request.user.is_superuser:
         return HttpResponseNotAllowed()
     ip = request.GET.get("ip", "")
-    url = "http://%s/securesync/crypto_login/" % ip
-    response = requests.get(url).content
+    if not ip:
+        return HttpResponseNotFound("Please specify an IP (as a GET param).")
+    url = "http://%s/securesync/cryptologin/" % ip
+    response = requests.get(url)
     if response.status_code != 200:
         return HttpResponse(response.content)
     server_nonce = response.content
