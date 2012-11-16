@@ -262,14 +262,4 @@ def crypto_login(request):
             user.backend = "django.contrib.auth.backends.ModelBackend"
             auth_login(request, user)
         session.delete()
-        return HttpResponseRedirect("/")
-    else:
-        client = SyncClient()
-        result = client.test_connection()
-        if result != "success":
-            return HttpResponseServerError("Unable to connect to central server (status: %s)." % result)
-        response = client.start_session()
-        if not client.session:
-            return HttpResponseServerError("Unable to start session (error: %s)." % response)
-        return HttpResponse(client.session.server_nonce)
-
+    return HttpResponseRedirect("/")

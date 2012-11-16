@@ -12,9 +12,10 @@ class SyncClient(object):
     counters_to_download = None
     counters_to_upload = None
     
-    def __init__(self, host=settings.CENTRAL_SERVER_HOST):
+    def __init__(self, host=settings.CENTRAL_SERVER_HOST, require_trusted=True):
         url = urllib2.urlparse.urlparse(host)
-        self.url = "%s://%s" % (url.scheme, url.netloc)        
+        self.url = "%s://%s" % (url.scheme, url.netloc)
+        self.require_trusted = require_trusted
     
     def path_to_url(self, path):
         if path.startswith("/"):
@@ -80,7 +81,7 @@ class SyncClient(object):
             raise Exception("Client nonce did not match.")
         if session.client_device != self.session.client_device:
             raise Exception("Client device did not match.")
-        if not session.server_device.get_metadata().is_trusted:
+        if self.require_trusted and not session.server_device.get_metadata().is_trusted:
             raise Exception("The server is not trusted.")
         self.session.server_nonce = session.server_nonce
         self.session.server_device = session.server_device
@@ -108,6 +109,7 @@ class SyncClient(object):
             "client_nonce": self.session.client_nonce
         })
         self.session.delete()
+        self.session = None
         return "success"
 
     def get_server_device_counters(self):

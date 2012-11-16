@@ -5,6 +5,7 @@ from django.template import RequestContext
 from annoying.decorators import render_to
 from central.models import Organization, get_or_create_user_profile
 from central.forms import OrganizationForm, ZoneForm
+from securesync.api_client import SyncClient
 from securesync.models import Zone, SyncSession
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
@@ -81,11 +82,12 @@ def crypto_login(request):
     ip = request.GET.get("ip", "")
     if not ip:
         return HttpResponseNotFound("Please specify an IP (as a GET param).")
-    url = "http://%s/securesync/cryptologin/" % ip
-    response = requests.get(url)
-    if response.status_code != 200:
-        return HttpResponse(response.content)
-    server_nonce = response.content
-    session = SyncSession.objects.get(server_nonce=server_nonce)
-    return HttpResponseRedirect("%s?client_nonce=%s" % (url, client_nonce))
+    host = "http://%s/" % ip
+    client = SyncClient(host=host, require_trusted=False)
+    if client.test_connection() != "success":
+        return HttpResponse("Unable to connect to a KA Lite server at %s" % host)
+    client.start_session() 
+    if not client.session or not client.session.client_nonce:
+        return HttpResponse("Unable to establish a session with KA Lite server at %s" % host)
+    return HttpResponseRedirect("%ssecuresync/cryptologin/?client_nonce=%s" % (host, client.session.client_nonce))
     
