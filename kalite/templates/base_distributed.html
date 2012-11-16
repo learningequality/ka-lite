@@ -25,16 +25,16 @@
 
 {% block sitewide_navigation %}
 <span class="dropdown topic-browser-dropdown">
-    <a href="{% url homepage %}" class="watch-navlink not-django-admin-only {% block watch_selected %}{% endblock watch_selected %}">Watch</a>
-    <a href="{% url exercise_dashboard %}" class="practice-navlink not-django-admin-only {% block practice_selected %}{% endblock practice_selected %}">Practice</a>
-    <a href="{% url add_facility_student %}" class="admin-only">Add Student</a>
-    <a href="{% url add_facility_teacher %}" class="admin-only">Add Teacher</a>
-    <a href="/admin" class="django-admin-only">Admin</a>
-    <a href="{% url add_facility_student %}" class="not-logged-in-only">Sign Up</a>
-    <a href="{% url login %}" class="not-logged-in-only">Login</a>
+    <a href="{% url homepage %}" id="nav_watch" class="watch-navlink not-django-admin-only {% block watch_selected %}{% endblock watch_selected %}">Watch</a>
+    <a href="{% url exercise_dashboard %}" id="nav_practice" class="practice-navlink not-django-admin-only {% block practice_selected %}{% endblock practice_selected %}">Practice</a>
+    <a href="{% url add_facility_student %}" id="nav_addstudent" class="admin-only {% block addstudent_selected %}{% endblock addstudent_selected %}">Add Student</a>
+    <a href="{% url add_facility_teacher %}" id="nav_addteacher" class="admin-only {% block addteacher_selected %}{% endblock addteacher_selected %}">Add Teacher</a>
+    <a href="/admin" id="nav_admin" class="django-admin-only">Admin</a>
+    <a href="{% url add_facility_student %}" id="nav_signup" class="not-logged-in-only {% block signup_selected %}{% endblock signup_selected %}">Sign Up</a>
+    <a href="{% url login %}" id="nav_login" class="not-logged-in-only {% block login_selected %}{% endblock login_selected %}">Login</a>
 </span>
 <span class="dropdown topic-browser-dropdown not-registered-only">
-    <a href="{% url register_public_key %}" class="admin-only">Register device</a>
+    <a href="{% url register_public_key %}" id="nav_registerdevice" class="admin-only {% block register_selected %}{% endblock register_selected %}">Register device</a>
 </span>
 <span class="dropdown topic-browser-dropdown logged-in-only">
     <a href="{% url logout %}" id="logged-in-name">&nbsp;Logout</a>

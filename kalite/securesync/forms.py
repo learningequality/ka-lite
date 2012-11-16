@@ -43,7 +43,10 @@ class FacilityTeacherForm(FacilityUserForm):
 
     class Meta:
         model = FacilityUser
-        fields = ("username", "first_name", "last_name",)
+        fields = ("facility", "username", "first_name", "last_name",)
+        widgets = {
+            'facility': forms.HiddenInput(),
+        }
 
 class FacilityForm(forms.ModelForm):
 

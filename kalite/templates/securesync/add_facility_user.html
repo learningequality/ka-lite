@@ -1,5 +1,7 @@
 {% extends 'base_distributed.html' %}
-
+{% block addteacher_selected %}{% if teacher %}selected{% endif %}{% endblock addteacher_selected %}
+{% block addstudent_selected %}{% if not teacher %}selected{% endif %}{% endblock addstudent_selected %}
+{% block signup_selected %}{% if not request.admin %}selected{% endif %}{% endblock signup_selected %}
 
 {% block title %}Add facility user{% endblock title %}
 
