@@ -91,27 +91,6 @@ def download_video(youtube_id, format="mp4", callback=None):
     exercise_url = "http://www.khanacademy.org/api/v1/videos/%(id)s/exercises" % {"id": youtube_id}
     download_file(exercise_url, exercise_filepath, callback_percent_proxy(callback, start_percent=97, end_percent=100))
     
-
-# def download_file_old(url, filepath):
-        
-#     download = requests.get(url)
-#     filesize = int(download.headers['content-length'] or 1)
-
-#     CHUNK = 128 * 1024
-#     with open(filepath, 'wb') as fp:
-#         i = 0
-#         print "     (%s)" % url,
-#         while True:
-#             print "\r%d%%" % min(round((i * CHUNK * 100.0) / filesize), 100),
-#             sys.stdout.flush()
-#             chunk = download.raw.read(CHUNK)
-#             if not chunk:
-#                 break
-#             fp.write(chunk)
-#             i += 1
-#         print ""
-
-
 def _reporthook(numblocks, blocksize, filesize, url=None):
     base = os.path.basename(url)
     if filesize <= 0:

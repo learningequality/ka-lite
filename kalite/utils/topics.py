@@ -2,7 +2,7 @@ import json, requests, copy, os
 
 data_path = os.path.dirname(os.path.realpath(__file__)) + "/../static/data/"
 
-key_whitelists = {
+attribute_whitelists = {
     "Topic": ["kind", "hide", "description", "id", "topic_page_url", "title", "extended_slug", "children"],
     "Video": ["kind", "description", "title", "duration", "keywords", "youtube_id", "download_urls", "readable_id"],
     "Exercise": ["kind", "description", "related_video_readable_ids", "display_name", "live", "name", "seconds_per_fast_problem", "prerequisites"]
@@ -26,7 +26,9 @@ kind_slugs = {
     "Topic": ""
 }
 
-kinds_blacklist = [None, "Separator", "CustomStack"]
+kind_blacklist = [None, "Separator", "CustomStack"]
+
+slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res"]
 
 def download_topictree():
     
@@ -41,7 +43,7 @@ def download_topictree():
         keys_to_delete = []
         
         for key in node:
-            if key not in key_whitelists[kind]:
+            if key not in attribute_whitelists[kind]:
                 keys_to_delete.append(key)
         
         for key in keys_to_delete:
@@ -61,11 +63,19 @@ def download_topictree():
 
         kinds = set([kind])
 
-        for child in node.get("children", []):
-            if child.get("kind", None) in kinds_blacklist:
+        children_to_delete = []
+        for i, child in enumerate(node.get("children", [])):
+            child_kind = child.get("kind", None)
+            if child_kind in kind_blacklist:
+                continue
+            if child[slug_key[child_kind]] in slug_blacklist:
+                children_to_delete.append(i)
                 continue
             kinds = kinds.union(recurse_nodes(child, node["path"]))
-            
+        
+        for i in reversed(children_to_delete):
+            del node["children"][i]    
+        
         if kind=="Topic":
             node["contains"] = list(kinds)
         
@@ -78,3 +88,4 @@ def download_topictree():
     
     with open(data_path + "nodecache.json", "w") as fp:
         fp.write(json.dumps(node_cache, indent=4))
+
