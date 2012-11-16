@@ -253,7 +253,7 @@ def crypto_login(request):
             session = SyncSession.objects.get(client_nonce=client_nonce)
         except SyncSession.DoesNotExist:
             return HttpResponseServerError("Session not found.")
-        if True or session.server_device.get_metadata().is_trusted:
+        if session.server_device.get_metadata().is_trusted:
             user = get_object_or_None(User, username="centraladmin")
             if not user:
                 user = User(username="centraladmin", is_superuser=True, is_staff=True, is_active=True)
