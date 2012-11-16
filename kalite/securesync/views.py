@@ -98,6 +98,7 @@ def register_public_key_server(request):
         form = RegisteredDevicePublicKeyForm(request.user, data=request.POST)
         if form.is_valid():
             form.save()
+            messages.success(request, "The device's public key has been successfully registered. You may now close this window.")
             return HttpResponseRedirect(reverse("homepage"))
     else:
         form = RegisteredDevicePublicKeyForm(request.user)
