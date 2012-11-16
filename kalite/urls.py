@@ -25,6 +25,7 @@ if settings.CENTRAL_SERVER:
         url(r'^accounts/', include('registration.urls')),
         url(r'^organization/(?P<id>\w+)/$', 'central.views.organization_form', {}, 'organization_form'),
         url(r'^organization/(?P<org_id>\w+)/zone/(?P<id>\w+)/$', 'central.views.zone_form', {}, 'zone_form'),
+        url(r'^cryptologin/$', 'central.views.crypto_login', {}, 'crypto_login'), 
     )
     
     handler404 = 'main.views.central_404_handler'

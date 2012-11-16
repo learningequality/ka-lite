@@ -5,10 +5,10 @@ from django.template import RequestContext
 from annoying.decorators import render_to
 from central.models import Organization, get_or_create_user_profile
 from central.forms import OrganizationForm, ZoneForm
-from securesync.models import Zone
+from securesync.models import Zone, SyncSession
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
-
+import requests
 
 import settings
 
@@ -24,7 +24,7 @@ def homepage(request):
 def landing_page(request):
     return {}
  
-@login_required     
+@login_required
 @render_to("central/organization_form.html")
 def organization_form(request, id=None):
     if id != "new":
@@ -72,4 +72,18 @@ def zone_form(request, id=None, org_id=None):
         form = ZoneForm(instance=zone)
     return {
         'form': form
-    } 
+    }
+    
+@login_required
+def crypto_login(request):
+    if not request.user.is_superuser:
+        return HttpResponseNotAllowed()
+    ip = request.GET.get("ip", "")
+    url = "http://%s/securesync/crypto_login/" % ip
+    response = requests.get(url).content
+    if response.status_code != 200:
+        return HttpResponse(response.content)
+    server_nonce = response.content
+    session = SyncSession.objects.get(server_nonce=server_nonce)
+    return HttpResponseRedirect("%s?client_nonce=%s" % (url, client_nonce))
+    

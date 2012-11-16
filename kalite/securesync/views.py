@@ -1,5 +1,6 @@
 import re, json, uuid, urllib
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.core.serializers import json, serialize
 from django.core.urlresolvers import reverse
 from django.db.models.query import QuerySet
@@ -243,12 +244,31 @@ def logout(request):
         next = "/"
     return HttpResponseRedirect(next)
 
+@distributed_server_only
+def crypto_login(request):
+    if "client_nonce" in request.GET:
+        client_nonce = request.GET["client_nonce"]
+        try:
+            session = SyncSession.objects.get(client_nonce=client_nonce)
+        except SyncSession.DoesNotExist:
+            return HttpResponseServerError("Session not found.")
+        if True or session.server_device.get_metadata().is_trusted:
+            user = get_object_or_None(User, username="centraladmin")
+            if not user:
+                user = User(username="centraladmin", is_superuser=True, is_staff=True, is_active=True)
+                user.set_unusable_password()
+                user.save()
+            user.backend = "django.contrib.auth.backends.ModelBackend"
+            auth_login(request, user)
+        session.delete()
+        return HttpResponseRedirect("/")
+    else:
+        client = SyncClient()
+        result = client.test_connection()
+        if result != "success":
+            return HttpResponseServerError("Unable to connect to central server (%s)." % result)
+        response = client.start_session()
+        if not client.session:
+            return HttpResponseServerError("Unable to start session (error: %s)." % response)
+        return HttpResponse(client.session.server_nonce)
 
-# @render_to("securesync/edit_organization.html")
-# def edit_organization(request):
-#     if request.method == 'POST':
-#         form = OrganizationForm(data=request.POST)
-#         if form.is_valid():
-        
-        
-#     else:

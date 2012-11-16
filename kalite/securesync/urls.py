@@ -22,6 +22,7 @@ urlpatterns += patterns('securesync.views',
     url(r'^facilityselection/$', 'facility_selection', {}, 'facility_selection'),
     url(r'^facilityadmin/$', 'facility_admin', {}, 'facility_admin'),
     url(r'^addgroup/$', 'add_group', {}, 'add_group'),
+    url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'),
     url(r'^login/$', 'login', {}, 'login'),
     url(r'^logout/$', 'logout', {}, 'logout'),
 )
