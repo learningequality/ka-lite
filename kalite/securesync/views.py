@@ -139,10 +139,9 @@ def add_facility_user(request, facility, is_teacher):
     else:
         Form = FacilityUserForm
     if request.method == "POST":
-        form = Form(request, data=request.POST)
+        form = Form(request, data=request.POST, initial={"facility": facility})
         if form.is_valid():
             form.instance.set_password(form.cleaned_data["password"])
-            form.instance.facility = facility
             form.instance.is_teacher = is_teacher
             form.save()
             return HttpResponseRedirect(reverse("login") + "?facility=" + facility.pk)
@@ -151,9 +150,9 @@ def add_facility_user(request, facility, is_teacher):
         return HttpResponseRedirect(reverse("add_facility"))
     else:
         if is_teacher:
-            form = Form(request)
+            form = Form(request, initial={"facility": facility})
         else:
-            form = Form(request, initial={"group": request.GET.get("group", None)})
+            form = Form(request, initial={"facility": facility, "group": request.GET.get("group", None)})
     if not is_teacher:
         form.fields["group"].queryset = FacilityGroup.objects.filter(facility=facility)
     if Facility.objects.count() == 1:
@@ -200,7 +199,7 @@ def add_group(request, facility):
         messages.error(request,"This mission is too important for me to allow you to jeopardize it.")
         return HttpResponseRedirect(reverse("login"))
     else:
-        form = FacilityGroupForm(initial={"facility": id})
+        form = FacilityGroupForm()
     return {
         "form": form,
         "facility": facility,

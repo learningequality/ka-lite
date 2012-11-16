@@ -24,14 +24,17 @@ class FacilityUserForm(forms.ModelForm):
     
     class Meta:
         model = FacilityUser
-        fields = ("group", "username", "first_name", "last_name",)
+        fields = ("facility", "group", "username", "first_name", "last_name",)
+        widgets = {
+            'facility': forms.HiddenInput(),
+        }
 
     def clean(self):
         username = self.cleaned_data.get('username')
         facility = self.cleaned_data.get('facility')
         
         if FacilityUser.objects.filter(username=username, facility=facility).count() > 0:
-            raise forms.ValidationError("A user with this username at this facility already exists. Please choose a new username and try again.")
+            raise forms.ValidationError("A user with this username at this facility already exists. Please choose a new username (or select a different facility) and try again.")
 
         return self.cleaned_data
 
