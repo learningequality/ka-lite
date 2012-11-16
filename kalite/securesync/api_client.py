@@ -40,8 +40,8 @@ class SyncClient(object):
             return "success"
         except requests.ConnectionError:
             return "connection_error"
-        except Exception:
-            return "error"
+        except Exception as e:
+            return "error (%s)" % e
             
     def register(self):
         own_device = Device.get_own_device()
