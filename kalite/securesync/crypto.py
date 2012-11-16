@@ -12,7 +12,7 @@ def load_keys():
     if private_key_string:
         public_key_string = Settings.get("public_key")
         keys["private"] = rsa.PrivateKey.load_pkcs1(private_key_string)
-        keys["public"] = rsa.PublicKey.load_pkcs1(public_key_string)
+        keys["public"] = deserialize_public_key(public_key_string)
     else:
         reset_keys()
 
@@ -24,7 +24,7 @@ def reset_keys():
         (public_key, private_key) = rsa.newkeys(2048)
     print "Done!"
     Settings.set("private_key", private_key.save_pkcs1())
-    Settings.set("public_key", public_key.save_pkcs1())    
+    Settings.set("public_key", serialize_public_key(public_key))
     keys["private"] = private_key
     keys["public"] = public_key
 
