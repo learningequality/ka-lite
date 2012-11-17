@@ -53,10 +53,10 @@
 <h2 class="title-header">
     <span class="title">{{ video.title }}</span><br/>
     <span class="long-description">{{ video.description }}</span>
-    {% if related_exercise %}
+    {% if video.related_exercise %}
     <span style="float:right; margin-top: -17px; font-size: 14px;">
-        <span class="progress-circle" data-exercise-id="{{ related_exercise.name }}"></span>
-        <a href="{{ related_exercise.path }}" class="simple-button green" title="Test your understanding with an exercise">Practice this concept</a>
+        <span class="progress-circle" data-exercise-id="{{ video.related_exercise.slug }}"></span>
+        <a href="{{ video.related_exercise.path }}" class="simple-button green" title="Exercise: '{{ video.related_exercise.title }}'">Practice this concept</a>
     </span>
     {% endif %}
 </h2>

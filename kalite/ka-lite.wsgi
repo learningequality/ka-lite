@@ -1,9 +1,8 @@
-import os
-import sys
+import os, sys
 
 PROJECT_PATH = os.path.dirname(os.path.realpath(__file__))
 
-sys.path = [PROJECT_PATH, PROJECT_PATH + "/../"] + sys.path
+sys.path = [PROJECT_PATH, os.path.join(PROJECT_PATH, "../"), os.path.join(PROJECT_PATH, "../python-packages/")] + sys.path
 
 from django.core.handlers.wsgi import WSGIHandler
 

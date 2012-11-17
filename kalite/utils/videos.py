@@ -81,16 +81,12 @@ def download_video(youtube_id, format="mp4", callback=None):
     large_thumb_filename = "%(id)s.png" % {"id": youtube_id}
     large_thumb_filepath = download_path + large_thumb_filename
     large_thumb_url = download_url % (filename, large_thumb_filename)
-    download_file(large_thumb_url, large_thumb_filepath, callback_percent_proxy(callback, start_percent=91, end_percent=94))
+    download_file(large_thumb_url, large_thumb_filepath, callback_percent_proxy(callback, start_percent=91, end_percent=96))
     
     thumb_filepath = download_path + youtube_id + ".jpg"
     thumb_url = "http://img.youtube.com/vi/%(id)s/hqdefault.jpg" % {"id": youtube_id}
-    download_file(thumb_url, thumb_filepath, callback_percent_proxy(callback, start_percent=94, end_percent=97))
-    
-    exercise_filepath = download_path + youtube_id + "_exercises.json"
-    exercise_url = "http://www.khanacademy.org/api/v1/videos/%(id)s/exercises" % {"id": youtube_id}
-    download_file(exercise_url, exercise_filepath, callback_percent_proxy(callback, start_percent=97, end_percent=100))
-    
+    download_file(thumb_url, thumb_filepath, callback_percent_proxy(callback, start_percent=96, end_percent=100))
+        
 def _reporthook(numblocks, blocksize, filesize, url=None):
     base = os.path.basename(url)
     if filesize <= 0:
