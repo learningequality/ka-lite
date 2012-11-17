@@ -1,6 +1,6 @@
 {% extends 'base_distributed.html' %}
 
-{% block title %}Add Facility{% endblock title %}
+{% block title %}Facility{% endblock title %}
 
 {% block extra_head %}{{ block.super }}
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUVMGp6Uks8OCczFfrWo20zHnmENyW5O0&v=3.9&sensor=false&libraries=places">
@@ -9,8 +9,8 @@
 $(function() {
     $('#id_address_normalized').parent().hide();
     $('#id_zoom').parent().hide();
-    $('#id_latitude').parent().hide();
-    $('#id_longitude').parent().hide();
+    // $('#id_latitude').parent().hide();
+    // $('#id_longitude').parent().hide();
 });
 
 function displayFormLatLng(map, marker) {
@@ -57,7 +57,7 @@ function initialize()
     google.maps.event.addListener(map, 'click', function(ev) {
             marker.setVisible(true);
             marker.setPosition(ev.latLng);
-            getLatLng(ev.latLng.lat(), ev.latLng.lng());
+            saveLatLng(ev.latLng.lat(), ev.latLng.lng());
             showZoom(map.getZoom());
     });
 
@@ -69,7 +69,7 @@ function initialize()
         marker.setVisible(true);
         marker.setPosition(place.geometry.location);
         bounds.extend(place.geometry.location);
-        getLatLng(place.geometry.location.lat(), place.geometry.location.lng());
+        saveLatLng(place.geometry.location.lat(), place.geometry.location.lng());
         getAddress(place.formatted_address);
         showZoom(map.getZoom());
         // if a place has a geometry, display it on the map
@@ -89,14 +89,15 @@ function initialize()
     $('#map_canvas').show();
     $('#id_direc_no_map').hide();
     $('#id_direc_map').show();
-    $("#id_longitude, #id_latitude").change(function() { displayFormLatLng(map, marker); });
-    displayFormLatLng(map, marker);
+    google.maps.event.addListenerOnce(map, 'idle', function(){
+        displayFormLatLng(map, marker)
+    });
 
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);
 
-function getLatLng(lat, lon) {
+function saveLatLng(lat, lon) {
     $("#id_latitude").val(lat);
     $("#id_longitude").val(lon);
 }
@@ -151,7 +152,7 @@ function showZoom(zm) {
 {% endblock %}
 
 {% block content %}
-<h2>Add a new facility</h2>
+<h2>{% if form.instance.id %}Edit a facility{% else %}Add a new Facility{% endif %}</h2>
 <p id="id_direc_no_map">Please enter the following information about your facility.</p>
 <p id="id_direc_map">Please use this map and search box to find your Facility, then enter the information in the form below</p>
 <div id="search-panel">
@@ -161,7 +162,7 @@ function showZoom(zm) {
 <form id="facility_form" method="post" class="basic-form">
 {% csrf_token %}
 {{ form.as_p }}
-<input type="submit" value="Create facility" class="submit"/>
+<input type="submit" value="Save facility" class="submit"/>
 </form>
 
 
