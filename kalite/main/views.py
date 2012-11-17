@@ -1,4 +1,4 @@
-import re, json
+import re, json, sys
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
@@ -146,7 +146,11 @@ def distributed_404_handler(request):
     
 @render_to("500_distributed.html")
 def distributed_500_handler(request):
-    return {}
+    errortype, value, tb = sys.exc_info()
+    return {
+        "errortype": errortype.__name__,
+        "value": str(value),
+    }
     
 @render_to("404_central.html")
 def central_404_handler(request):
