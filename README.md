@@ -22,3 +22,4 @@ to update the database schema.
 
 To run the server in development mode, simply run:
 `./manage.py runserver`
+and then visit [http://127.0.0.1:8000/](http://127.0.0.1:8000/) in your browser.
