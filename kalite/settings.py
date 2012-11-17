@@ -16,14 +16,14 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
+PROJECT_PATH = os.path.dirname(os.path.realpath(__file__))
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": "data.sqlite",
+        "NAME": PROJECT_PATH + "/data.sqlite",
     }
 }
-
-PROJECT_PATH = os.path.dirname(os.path.realpath(__file__))
 
 DATA_PATH = PROJECT_PATH + "/static/data/"
 
