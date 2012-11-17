@@ -108,8 +108,8 @@ def register_public_key_server(request):
 
 @require_admin
 @distributed_server_only
-@render_to("securesync/facility.html")
-def facility(request):
+@render_to("securesync/facility_admin.html")
+def facility_admin(request):
     facilities = Facility.objects.all()
     context = {"facilities": facilities}
     return context
