@@ -311,6 +311,24 @@ li .progress-circle {
     left: 49px !important;
 }
 
+/*Update*/
+.nav-subheader > span > a#nav_update.selected:after {
+    left: 27px !important;
+}
+
+.nav-subheader > span > a#nav_update.selected:before {
+    left: 26px !important;
+}
+
+/*Coach */
+.nav-subheader > span > a#nav_teacherpanel.selected:after {
+    left: 25px !important;
+}
+
+.nav-subheader > span > a#nav_teacherpanel.selected:before {
+    left: 24px !important;
+}
+
 /*Register*/
 .nav-subheader > span > a#nav_registerdevice.selected:after {
     left: 60px !important;
@@ -332,7 +350,6 @@ li .progress-circle {
 .nav-subheader > span > a#nav_signup.selected:after {
     left: 27px !important;
 }
-
 .nav-subheader > span > a#nav_signup.selected:before {
     left: 26px !important;
 }
