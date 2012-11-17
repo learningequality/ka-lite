@@ -118,7 +118,7 @@ def homepage(request):
         
 @require_admin
 @render_to("video_download.html")
-def video_download(request):
+def update(request):
 #    topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"], settings.TOPICS["children"])
     context = {
 #        "title": "Home",
