@@ -34,7 +34,9 @@ def download_topictree():
     
     topics = json.loads(requests.get("http://www.khanacademy.org/api/v1/topictree").content)
 
-    node_cache = {}    
+    node_cache = {}
+    
+    related_exercise = {}
 
     def recurse_nodes(node, path=""):
 
@@ -63,6 +65,15 @@ def download_topictree():
 
         kinds = set([kind])
 
+        if kind == "Exercise":
+            exercise = {
+                "slug": node[slug_key[kind]],
+                "title": node[title_key[kind]],
+                "path": node["path"],
+            }
+            for video_id in node.get("related_video_readable_ids", []):
+                related_exercise[video_id] = exercise
+
         children_to_delete = []
         for i, child in enumerate(node.get("children", [])):
             child_kind = child.get("kind", None)
@@ -80,8 +91,15 @@ def download_topictree():
             node["contains"] = list(kinds)
         
         return kinds
-    
+
+    def recurse_nodes_to_add_related_exercise(node):
+        if node["kind"] == "Video":
+            node["related_exercise"] = related_exercise.get(node["slug"], None)
+        for child in node.get("children", []):
+            recurse_nodes_to_add_related_exercise(child)
+            
     recurse_nodes(topics)
+    recurse_nodes_to_add_related_exercise(topics)
     
     with open(data_path + "topics.json", "w") as fp:
         fp.write(json.dumps(topics, indent=4))

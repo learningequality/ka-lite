@@ -112,16 +112,17 @@ INSTALLED_APPS = (
     "django.contrib.sessions",
     "django.contrib.staticfiles",
     "django.contrib.admin",
-    "django_extensions",
-    "south",
-    "main",
-    "central",
-    "securesync",
     "django.contrib.humanize",
     "django.contrib.messages",
+    "south",
     "chronograph",
+    "securesync",
     "config",
+    "main",
 )
+
+if DEBUG:
+    INSTALLED_APPS += ("django_extensions",)
 
 CENTRAL_SERVER_HOST = "http://127.0.0.1:9000/"
 
