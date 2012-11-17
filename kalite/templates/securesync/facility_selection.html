@@ -21,7 +21,7 @@
             {% endif %}
         {% endif %}
         {% if request.is_admin %}
-            <p><a href="{% url add_facility %}">Add a new Facility</a></p>
+            <p><a href="{% url facility_edit id="new" %}">Add a new Facility</a></p>
         {% endif %}
     </ul>
 </div>
