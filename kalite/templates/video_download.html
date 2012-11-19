@@ -25,24 +25,18 @@
     color: #005987;
 }
 
-#progressbar-container {
-    position: relative;
-    height: 25px;
-    margin-left: 0 2px 0 -1px;
-}
-
-.progressbar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 20px;
-}
 
 #progressbar-current {
     opacity: 0.9;
     height: 7px;
-    z-index: 100;
+    margin-top: -7px;
+    margin-bottom: 9px;
+}
+
+#progressbar-overall {
+    opacity: 0.9;
+    height: 12px;
+    margin-top: -7px
 }
 
 #progressbar-overall .ui-widget-header {
@@ -50,7 +44,7 @@
 }
 
 #progressbar-current .ui-widget-header {
-    background: #00D020;
+    background: #00AFD0;
 }
 
 #download-legend-selected, #download-videos {
@@ -261,16 +255,21 @@
 <div class="progress-section">
     
     <h2 class="progress-text">
-        Downloading video
+        Downloading video:
+        "<span class="video-title">Linear Algebra</span>"...
+    </h2>
+    
+        <div class="progressbar" id="progressbar-current"></div>
+        
+   <h2 class="progress-text">
+        Overall download progress:
         <span class="video-downloading-current">6</span>
         of
         <span class="video-downloading-total">11</span>
-        ("<span class="video-title">Linear Algebra</span>")...
-    </h2>
-    <div id="progressbar-container">
+    </h2>     
+        
+        
         <div class="progressbar" id="progressbar-overall"></div>
-        <div class="progressbar" id="progressbar-current"></div>
-    </div>
 </div>
 
 <div id="content_tree"><br/><h2>Loading topic tree... Please wait!</h2></div>
