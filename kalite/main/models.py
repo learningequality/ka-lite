@@ -2,8 +2,9 @@ import uuid
 from django.db import models
 from django.db.models import Sum, Avg
 
-from securesync.models import SyncedModel, FacilityUser
+from securesync.models import SyncedModel, FacilityUser, Device
 import settings
+from datetime import datetime
 
 class VideoLog(SyncedModel):
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
@@ -11,7 +12,19 @@ class VideoLog(SyncedModel):
     total_seconds_watched = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
     complete = models.BooleanField(default=False)
-
+    completion_timestamp = models.DateTimeField(blank=True, null=True)
+    completion_counter = models.IntegerField(blank=True, null=True)
+    
+    
+    def save(self, *args, **kwargs):
+        already_complete = self.complete
+        self.complete = (self.points >= 100)
+        if not already_complete and self.complete:
+            self.completion_timestamp = datetime.now()
+            self.completion_counter = Device.get_own_device().get_counter()
+            self.attempts_before_completion = self.attempts
+        super(ExerciseLog, self).save(*args, **kwargs)
+    
     def get_uuid(self, *args, **kwargs):
         namespace = uuid.UUID(self.user.id)
         return uuid.uuid5(namespace, str(self.youtube_id)).hex
@@ -29,6 +42,8 @@ class ExerciseLog(SyncedModel):
     complete = models.BooleanField(default=False)
     struggling = models.BooleanField(default=False)
     attempts_before_completion = models.IntegerField(blank=True, null=True)
+    completion_timestamp = models.DateTimeField(blank=True, null=True)
+    completion_counter = models.IntegerField(blank=True, null=True)
     
     def save(self, *args, **kwargs):
         if self.attempts > 20 and not self.complete:
@@ -36,6 +51,8 @@ class ExerciseLog(SyncedModel):
         already_complete = self.complete
         self.complete = (self.streak_progress >= 100)
         if not already_complete and self.complete:
+            self.completion_timestamp = datetime.now()
+            self.completion_counter = Device.get_own_device().get_counter()
             self.attempts_before_completion = self.attempts
         super(ExerciseLog, self).save(*args, **kwargs)
 

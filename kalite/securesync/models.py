@@ -292,6 +292,12 @@ class Device(SyncedModel):
         metadata.save()
         return metadata.counter_position
         
+    def get_counter(self):
+        metadata = self.get_metadata()
+        if not metadata.device.id:
+            return 0
+        return metadata.counter_position
+        
     def __unicode__(self):
         return self.name or self.id[0:5]
 
