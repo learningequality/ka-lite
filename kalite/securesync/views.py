@@ -106,7 +106,6 @@ def register_public_key_server(request):
         "form": form
     }
 
-
 @require_admin
 @distributed_server_only
 @render_to("securesync/facility_admin.html")
@@ -114,6 +113,30 @@ def facility_admin(request):
     facilities = Facility.objects.all()
     context = {"facilities": facilities}
     return context
+
+@require_admin
+@distributed_server_only
+@render_to("securesync/facility_edit.html")
+def facility_edit(request, id=None):
+    if id != "new":
+        facil = get_object_or_404(Facility, pk=id)
+    else:
+        facil = None
+    if request.method == "POST":
+        form = FacilityForm(data=request.POST, instance=facil)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse("add_facility_student") + "?facility=" + form.instance.pk)
+        elif request.method =="POST":
+            messages.error(request, "Just what do you think you're doing, Dave?")
+            return HttpResponseRedirect(reverse("login"))
+    else:
+        form = FacilityForm(instance=facil)
+    return {
+        "form": form
+    }
+
+        
 
 @distributed_server_only
 @render_to("securesync/facility_selection.html")

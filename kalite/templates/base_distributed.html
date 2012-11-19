@@ -12,7 +12,7 @@
         doRequest("/securesync/api/status").success(function(data){
             toggle_state("logged-in", data.is_logged_in);
             toggle_state("registered", data.registered);
-            toggle_state("django-admin", data.is_django_user);
+            toggle_state("django-user", data.is_django_user);
             toggle_state("admin", data.is_admin);
             if (data.is_logged_in){
                 $('#logged-in-name').text(data.username + " (Logout)");
@@ -25,19 +25,21 @@
 
 {% block sitewide_navigation %}
 <span class="dropdown topic-browser-dropdown">
-    <a href="{% url homepage %}" class="watch-navlink not-django-admin-only {% block watch_selected %}{% endblock watch_selected %}">Watch</a>
-    <a href="{% url exercise_dashboard %}" class="practice-navlink not-django-admin-only {% block practice_selected %}{% endblock practice_selected %}">Practice</a>
-    <a href="{% url add_facility_student %}" class="admin-only">Add Student</a>
-    <a href="{% url add_facility_teacher %}" class="admin-only">Add Teacher</a>
-    <a href="/admin" class="django-admin-only">Admin</a>
-    <a href="{% url add_facility_student %}" class="not-logged-in-only">Sign Up</a>
-    <a href="{% url login %}" class="not-logged-in-only">Login</a>
+    <a href="{% url homepage %}" id="nav_watch" class="watch-navlink not-admin-only {% block watch_selected %}{% endblock watch_selected %}" title="Watch Videos">Watch</a>
+    <a href="{% url exercise_dashboard %}" id="nav_practice" class="practice-navlink not-admin-only {% block practice_selected %}{% endblock practice_selected %} title="Practice Lessons"">Practice</a>
+    <a href="{% url add_facility_student %}" id="nav_addstudent" class="admin-only {% block addstudent_selected %}{% endblock addstudent_selected %}" title="Add a student">Add Student</a>
+    <a href="{% url add_facility_teacher %}" id="nav_addteacher" class="admin-only {% block addteacher_selected %}{% endblock addteacher_selected %}" title="Add a teacher">Add Teacher</a>
+    <a href="/admin" id="nav_admin" class="django-user-only" title="Visit the admin panel">Admin</a>
+    <a href="{% url update %}" id="nav_update" class="admin-only {% block update_selected %}{% endblock update_selected %}" title="Update this server with new videos and subtitles">Update</a>
+    <a href="{% url teacher_panel %}" id="nav_teacherpanel" class="admin-only {% block teacherpanel_selected %}{% endblock teacherpanel_selected %}" title="Track the progress of your students">Coach</a>
+    <a href="{% url add_facility_student %}" id="nav_signup" class="not-logged-in-only {% block signup_selected %}{% endblock signup_selected %}" title="Register to start tracking your progress">Sign Up</a>
+    <a href="{% url login %}" id="nav_login" class="not-logged-in-only {% block login_selected %}{% endblock login_selected %}" title="Login">Login</a>
 </span>
 <span class="dropdown topic-browser-dropdown not-registered-only">
-    <a href="{% url register_public_key %}" class="admin-only">Register device</a>
+    <a href="{% url register_public_key %}" id="nav_registerdevice" class="admin-only {% block register_selected %}{% endblock register_selected %}" title="Register this device with the central server">Register device</a>
 </span>
 <span class="dropdown topic-browser-dropdown logged-in-only">
-    <a href="{% url logout %}" id="logged-in-name">&nbsp;Logout</a>
+    <a href="{% url logout %}" id="logged-in-name" title="Logout">&nbsp;Logout</a>
 </span>
 
 {% endblock sitewide_navigation %}

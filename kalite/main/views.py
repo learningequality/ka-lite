@@ -1,4 +1,4 @@
-import re, json
+import re, json, sys
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
@@ -69,23 +69,15 @@ def topic_handler(request, topic):
     
 @render_to("video.html")
 def video_handler(request, video, prev=None, next=None):
-    try:
-        with open(settings.DATA_PATH + "../videos/" + video["youtube_id"] + "_exercises.json") as fp:
-            related_exercise = topicdata.NODE_CACHE["Exercise"][json.loads(fp.read())[0]["name"]]
-    except:
-        related_exercise = None
-
     if request.user.is_authenticated():
         messages.warning(request, "Note: You're logged in as an admin (not a facility user), so your video progress and points won't be saved.")
     elif not request.is_logged_in:
-        messages.warning(request, "Friendly reminder: You are not currently logged in, so your video progress and points won't be saved.")    
-        
+        messages.warning(request, "Friendly reminder: You are not currently logged in, so your video progress and points won't be saved.")
     context = {
         "video": video,
         "title": video[title_key["Video"]],
         "prev": prev,
         "next": next,
-        "related_exercise": related_exercise,
     }
     return context
     
@@ -126,7 +118,7 @@ def homepage(request):
         
 @require_admin
 @render_to("video_download.html")
-def video_download(request):
+def update(request):
 #    topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"], settings.TOPICS["children"])
     context = {
 #        "title": "Home",
@@ -154,7 +146,11 @@ def distributed_404_handler(request):
     
 @render_to("500_distributed.html")
 def distributed_500_handler(request):
-    return {}
+    errortype, value, tb = sys.exc_info()
+    return {
+        "errortype": errortype.__name__,
+        "value": str(value),
+    }
     
 @render_to("404_central.html")
 def central_404_handler(request):

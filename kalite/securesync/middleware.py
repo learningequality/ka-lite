@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from models import Device
 
 class DBCheck:
-    def process_request(self,request):
+    def process_request(self, request):
         try:
             count = Device.objects.count()
         except DatabaseError:
@@ -15,7 +15,7 @@ class DBCheck:
                 return HttpResponse("Please run 'python manage.py syncdb' to create an administrator user, before running the server.")
 
 class AuthFlags:
-    def process_request(self,request):
+    def process_request(self, request):
         request.is_admin = False
         request.is_teacher = False
         request.is_logged_in = False
