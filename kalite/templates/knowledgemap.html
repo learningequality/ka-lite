@@ -3,16 +3,16 @@
 {% block practice_selected %}selected{% endblock practice_selected %}
 
 {% block headjs %}
-<script type='text/javascript' src='{{ STATIC_URL }}js/underscore.js'></script>
-<script type='text/javascript' src='{{ STATIC_URL }}khan-exercises/utils/raphael.js'></script>
-<script type='text/javascript' src='{{ STATIC_URL }}js/kmap-editor.js'></script>
+<script type='text/javascript' src='{{ MEDIA_URL }}js/underscore.js'></script>
+<script type='text/javascript' src='{{ MEDIA_URL }}khan-exercises/utils/raphael.js'></script>
+<script type='text/javascript' src='{{ MEDIA_URL }}js/kmap-editor.js'></script>
 <script>
     var exercise_paths = {{ exercise_paths|safe }};
 </script>
 {% endblock headjs %}
 
 {% block headcss %}
-<link rel='stylesheet' type='text/css' href='{{ STATIC_URL }}css/kmap_editor.css'>
+<link rel='stylesheet' type='text/css' href='{{ MEDIA_URL }}css/kmap_editor.css'>
 {% endblock headcss %}
 
 {% block content %}

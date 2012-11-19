@@ -3,12 +3,12 @@
 {% block practice_selected %}selected{% endblock practice_selected %}
 
 {% block headcss %}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}khan-exercises/css/khan-exercise.css"></link>
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}khan-exercises/css/khan-exercise.css"></link>
 {% endblock headcss %}
 
 {% block headjs %}
 <script>
-    var urlBaseOverride = "{{ STATIC_URL }}khan-exercises/";
+    var urlBaseOverride = "{{ MEDIA_URL }}khan-exercises/";
     // some dummy features on the Exercises object to make khan-exercises.js happy
     Exercises = {
         completeStack: {
@@ -18,9 +18,9 @@
         incompleteStack: [0]
     };
 </script>
-<script src="{{ STATIC_URL }}js/underscore.js"></script>
-<script src="{{ STATIC_URL }}khan-exercises/khan-exercise.js"></script>
-<script src="{{ STATIC_URL }}khan-exercises/jquery-ui.js"></script>
+<script src="{{ MEDIA_URL }}js/underscore.js"></script>
+<script src="{{ MEDIA_URL }}khan-exercises/khan-exercise.js"></script>
+<script src="{{ MEDIA_URL }}khan-exercises/jquery-ui.js"></script>
 <script>
     var exerciseData = {
         "description": "{{ exercise.description }}",
@@ -36,7 +36,7 @@
         "percentCompleted": 0
     };    
 </script>
-<script src="{{ STATIC_URL }}js/exercises.js"></script>
+<script src="{{ MEDIA_URL }}js/exercises.js"></script>
 {% endblock headjs %}
 
 {% block content %}

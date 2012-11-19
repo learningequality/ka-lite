@@ -9,25 +9,21 @@
 $(function() {
     $('#id_address_normalized').parent().hide();
     $('#id_zoom').parent().hide();
-    // $('#id_latitude').parent().hide();
-    // $('#id_longitude').parent().hide();
+    $('#id_latitude').parent().hide();
+    $('#id_longitude').parent().hide();
 });
 
 function displayFormLatLng(map, marker) {
     var longitude = $("#id_longitude").val();
     var latitude = $("#id_latitude").val();
-    var zoom = $("#id_zoom").val();
     if (longitude && latitude) {
         var latLng = new google.maps.LatLng(latitude, longitude);
         map.setCenter(latLng);
         marker.setPosition(latLng);
         marker.setVisible(true);
-        if (zoom) {
-            map.setZoom(zoom);
-        }
-        
     }
 }
+
    
 function initialize()
 {
@@ -52,13 +48,12 @@ function initialize()
         clickable: true,
     });
 
-    showZoom(map.getZoom());
+    saveZoom(map.getZoom());
 
     google.maps.event.addListener(map, 'click', function(ev) {
             marker.setVisible(true);
             marker.setPosition(ev.latLng);
             saveLatLng(ev.latLng.lat(), ev.latLng.lng());
-            showZoom(map.getZoom());
     });
 
 
@@ -71,7 +66,6 @@ function initialize()
         bounds.extend(place.geometry.location);
         saveLatLng(place.geometry.location.lat(), place.geometry.location.lng());
         getAddress(place.formatted_address);
-        showZoom(map.getZoom());
         // if a place has a geometry, display it on the map
         if (place.geometry.viewport) {
             map.fitBounds(place.geometry.viewport);   
@@ -89,8 +83,13 @@ function initialize()
     $('#map_canvas').show();
     $('#id_direc_no_map').hide();
     $('#id_direc_map').show();
-    google.maps.event.addListenerOnce(map, 'idle', function(){
-        displayFormLatLng(map, marker)
+    google.maps.event.addListenerOnce(map, 'idle', function() {
+        displayFormLatLng(map, marker);
+    });
+
+
+    google.maps.event.addListener(map, 'zoom_changed', function(){
+        saveZoom(map.getZoom());
     });
 
 }
@@ -106,7 +105,7 @@ function getAddress(ad) {
     $("#id_address_normalized").val(ad);
 }
 
-function showZoom(zm) {
+function saveZoom(zm) {
     $("#id_zoom").val(zm);
 }
 
