@@ -87,11 +87,9 @@ function updateVideoStats(time, duration) {
             total_seconds_watched: Math.floor(videoData.total_seconds_watched),
             seconds_watched: Math.floor(videoData.seconds_watched_since_save),
             points: points,
-            complete: points === 100
         }
         doRequest("/api/save_video_log", data).success(function(data) {
             videoData.points = data.points;
-            videoData.complete = data.complete;
             updatePoints();
         });
         videoData.seconds_watched_since_save = 0;
