@@ -21,8 +21,14 @@
     display: none;
 }
 
+.progress-waiting {
+    padding: 5px 0px 0px 0px;
+    display: none;
+}
+
 .progress-text {
     color: #005987;
+    margin-top: 1.5px;
 }
 
 
@@ -105,6 +111,8 @@
             });
                     
         });
+        
+       
     
         $("#progressbar-overall").progressbar({
             value: 0,
@@ -120,13 +128,19 @@
             var videos = findSelectedIncompleteVideos();
             
             var video_ids = $.map(videos, function(node) {
+           		node.select(false);
                 return node.data.key;
             });
-                        
+                    
             doRequest("/api/start_video_download", {youtube_ids: video_ids}).success(startDownloadChecks);
+    	
+            $(".progress-section").hide();
+            $(".progress-waiting").show();
+                 
     
         });
         
+       
         startDownloadChecks();
     
     });
@@ -164,11 +178,19 @@
     
     function updateProgressDisplay() {
         if (window.download_index < window.downloading_videos.length) {
-            $(".progress-section").show();
+            if (download_index > 0 || current_download_percent > 0) {
+            	 $(".progress-section").show();
+            	 $(".progress-waiting").hide();
+    	 	} else {
+            	 $(".progress-section").hide();
+            	 $(".progress-waiting").show();	
+        	}
+            
         } else {
             $(".progress-section").hide();
             return;
         }
+        
         $("#progressbar-current").progressbar({value: window.current_download_percent});
         $("#progressbar-overall").progressbar({
             value: window.download_index * 100 + window.current_download_percent,
@@ -252,11 +274,17 @@
 
 <div style="clear: both;"></div>
 
+<div class="progress-waiting">
+	<h2 class="progress-text">
+        Download will start soon...
+    </h2>
+</div>
+
 <div class="progress-section">
     
     <h2 class="progress-text">
         Downloading video:
-        "<span class="video-title">Linear Algebra</span>"...
+        "<span class="video-title"> </span>"...
     </h2>
     
         <div class="progressbar" id="progressbar-current"></div>
