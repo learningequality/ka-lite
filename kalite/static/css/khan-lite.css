@@ -132,9 +132,10 @@ div.exercises-card {
 #streakbar .streak .progress-bar {
     width: 0%;
     height: 100%;
-    background-color: #FC3F3F;
+    background-color: #9F9FFC;
     padding: 0px;
     border: none;
+    text-align: center;
 }
 
 #streakbar .streak .progress-bar.completed {
@@ -351,6 +352,50 @@ li .progress-circle {
 }
 .nav-subheader > span > a#nav_signup.selected:before {
     left: 26px !important;
+}
+
+
+#hint-remainder {
+    line-height: 110%;
+}
+
+#totalpoints {
+    font-weight: bold;
+    font-size: 1.5em;  
+    padding-top: 4px; 
+}
+
+#questionpoints {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #666600;
+    background-color: #EEEEFF;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+}
+
+.points-container {
+    margin: 0px;
+    padding: 2px;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-right: 4px;
+    margin-top: -10px;
+    font-weight: bold;
+    font-size: 0.8em;
+    float: right;
+    background-color: #EEEEFF;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+}
+
+.vidprev {
+    float: left;
+}
+
+.vidnext {
+    float: right;
+    padding-right: 4px;
 }
 /*El Fin*/
 
