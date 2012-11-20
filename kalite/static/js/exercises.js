@@ -4,7 +4,13 @@ function updateStreakBar() {
     $("#totalpoints").html(exerciseData.points > 0 ? (exerciseData.points) : "")
     if (exerciseData.percentCompleted >= 100) {
         $("#streakbar .progress-bar").addClass("completed");
+        $("#hint-remainder").hide();
     }
+}
+
+function updateQuestionPoints(points) {
+    //Show points for correct question, or none if not answered yet.
+    $("#questionpoints").html(points ? (points + " points!") : "");
 }
 
 function updatePercentCompleted(correct) {
@@ -15,7 +21,9 @@ function updatePercentCompleted(correct) {
         if (exerciseData.percentCompleted < 101) {
             bumpprob = Math.floor(Math.random()*100)
             bump = (bumpprob < 90) ? 1 : (bumpprob < 99 ? 1.5 : 2);
-            exerciseData.points += Math.ceil(basepoints*bump);
+            inc = Math.ceil(basepoints*bump);
+            exerciseData.points += inc;
+            updateQuestionPoints(inc);
         }
     } else if (exerciseData.percentCompleted < 100) {
         exerciseData.percentCompleted = 0;
@@ -55,6 +63,7 @@ $(function() {
     basepoints = Math.ceil(7*Math.log(exerciseData.exerciseModel.secondsPerFastProblem));
     $("#next-question-button").click(function() {
         _.defer(function() {
+            updateQuestionPoints(false);
             exerciseData.hintUsed = false;
             exerciseData.seed = Math.floor(Math.random() * 500);
             $(Exercises).trigger("readyForNextProblem", {userExercise: exerciseData});
