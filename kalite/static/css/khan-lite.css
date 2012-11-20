@@ -133,9 +133,10 @@ div.exercises-card {
 #streakbar .streak .progress-bar {
     width: 0%;
     height: 100%;
-    background-color: #FC3F3F;
+    background-color: #9F9FFC;
     padding: 0px;
     border: none;
+    text-align: center;
 }
 
 #streakbar .streak .progress-bar.completed {
@@ -352,6 +353,17 @@ li .progress-circle {
 }
 .nav-subheader > span > a#nav_signup.selected:before {
     left: 26px !important;
+}
+
+
+#hint-remainder {
+    line-height: 110%;
+}
+
+#totalpoints {
+    font-weight: bold;
+    font-size: 1.5em;  
+    padding-top: 4px; 
 }
 /*El Fin*/
 

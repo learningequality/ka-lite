@@ -4,6 +4,7 @@
 
 {% block headcss %}
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}khan-exercises/css/khan-exercise.css"></link>
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/khan-lite.css"></link>
 {% endblock headcss %}
 
 {% block headjs %}
@@ -33,7 +34,8 @@
             "relatedVideos": []
         },
         "readOnly": false,
-        "percentCompleted": 0
+        "percentCompleted": 0,
+        "points": 0
     };    
 </script>
 <script src="{{ STATIC_URL }}js/exercises.js"></script>
@@ -65,7 +67,7 @@
                                 <form id="answerform" action="/exercisedashboard" method="get" name="answerform">
                                     <div id="streakbar" class="info-box" title="Your progress streak bar for this exercise">
                                         <div class="streak">
-                                            <div class="progress-bar"></div>
+                                            <div class="progress-bar"><div id="totalpoints"></div></div>
                                         </div>
                                     </div>
                                     <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px">
@@ -85,7 +87,7 @@
                                         <div id="get-hint-button-container">
                                             <input id="hint" type="button" class="simple-button orange full-width" value="I'd like a hint" name="hint"/>
                                         </div>
-                                        <span id="hint-remainder">Note: this will reset your streak!</span>
+                                        <span id="hint-remainder">Note: this will reset your streak and points for this exercise!</span>
                                     </div>
 
                                     <div class="info-box related-video-box">
