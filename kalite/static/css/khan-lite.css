@@ -381,7 +381,6 @@ li .progress-circle {
     padding-right: 5px;
     margin-right: 4px;
     margin-top: -10px;
-    font-weight: bold;
     font-size: 0.8em;
     float: right;
     background-color: #EEEEFF;
@@ -396,6 +395,13 @@ li .progress-circle {
 .vidnext {
     float: right;
     padding-right: 4px;
+}
+
+#sitepoints {
+    float: right;
+    margin-top: 3px;
+    margin-right: 20px;
+    font-size: 1.2em;
 }
 /*El Fin*/
 
