@@ -1,9 +1,15 @@
 if [ -f "runwsgiserver.pid" ];
 then
     pid=`cat runwsgiserver.pid`
-    echo "(Warning: Web server may still be running; stopping old process ($pid) first)"
-    kill $pid
+    echo "(Warning: Web server may still be running; attempting to stop old process ($pid) first)"
+    kill $pid 2> /dev/null
     rm runwsgiserver.pid
+fi
+
+pids=`ps -C python -f | grep runwsgiserver | awk '{print $2}'`
+if [ "$pids" ]; then
+    echo "(Warning: Web server seems to have been started elsewhere; stopping all processes ($pids))"
+    kill $pids
 fi
 
 echo "Running the web server on port 8008."
