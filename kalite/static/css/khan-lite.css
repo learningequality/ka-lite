@@ -372,5 +372,10 @@ li .progress-circle {
     color: #666600;
     background-color: #EEEEFF;
 }
+
+.points-container {
+    font-weight: bold;
+    font-size: 1.5em;  
+}
 /*El Fin*/
 
