@@ -50,8 +50,7 @@ footer.short .inner {
 #top-header #logo {
     background-image: url(/static/images/non-repeating-sprites.4.png);
     background-position: -10px -261px;
-    max-width: 328px;
-    width: 35%;
+    width: 200px; 
 }
 
 #logo-image-small img {

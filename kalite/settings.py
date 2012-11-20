@@ -21,7 +21,7 @@ PROJECT_PATH = os.path.dirname(os.path.realpath(__file__))
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": PROJECT_PATH + "/data.sqlite",
+        "NAME": PROJECT_PATH + "/database/data.sqlite",
     }
 }
 
@@ -45,31 +45,12 @@ USE_I18N = True
 # calendars according to the current locale
 USE_L10N = True
 
-# URL prefix for static files.
-# Example: "http://media.lawrence.com/static/"
-STATIC_URL = "/static/"
-
 # URL prefix for admin static files -- CSS, JavaScript and images.
 # Make sure to use a trailing slash.
 ADMIN_MEDIA_PREFIX = "/static/admin/"
 
-# Directory where static files will be consolidated
-if DEBUG:
-    STATIC_ROOT = PROJECT_PATH + "/static-files/"
-else:
-    STATIC_ROOT = PROJECT_PATH + "/static/"
-
-# Additional locations of static files
-STATICFILES_DIRS = (
-    PROJECT_PATH + "/static/",
-)
-
-# List of finder classes that know how to find static files in
-# various locations.
-STATICFILES_FINDERS = (
-    "django.contrib.staticfiles.finders.FileSystemFinder",
-    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-)
+MEDIA_ROOT = PROJECT_PATH + "/static/"
+MEDIA_URL = "/static/"
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = hasattr(local_settings, "SECRET_KEY") and local_settings.SECRET_KEY \
@@ -80,7 +61,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.debug",
     "django.core.context_processors.i18n",
     "django.core.context_processors.media",
-    "django.core.context_processors.static",
     "django.contrib.messages.context_processors.messages",
     "django.core.context_processors.request",
 )
@@ -110,12 +90,12 @@ INSTALLED_APPS = (
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
-    "django.contrib.staticfiles",
     "django.contrib.admin",
     "django.contrib.humanize",
     "django.contrib.messages",
     "south",
     "chronograph",
+    "django_wsgiserver",
     "securesync",
     "config",
     "main",
