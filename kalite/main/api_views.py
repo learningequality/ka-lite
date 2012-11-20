@@ -33,7 +33,7 @@ def save_video_log(request):
     videolog.youtube_id = data.get("youtube_id", "")
     old_videolog = videolog.get_existing_instance() or VideoLog()
     videolog.total_seconds_watched = old_videolog.total_seconds_watched + data.get("seconds_watched", 0)
-    videolog.points = max(old_videolog.points, data.get("points", None)) or None
+    videolog.points = max(old_videolog.points or 0, data.get("points", 0)) or 0
     try:
         videolog.full_clean()
         videolog.save()
