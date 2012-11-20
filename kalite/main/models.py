@@ -23,7 +23,7 @@ class VideoLog(SyncedModel):
             self.completion_timestamp = datetime.now()
             self.completion_counter = Device.get_own_device().get_counter()
             self.attempts_before_completion = self.attempts
-        super(ExerciseLog, self).save(*args, **kwargs)
+        super(VideoLog, self).save(*args, **kwargs)
     
     def get_uuid(self, *args, **kwargs):
         namespace = uuid.UUID(self.user.id)
