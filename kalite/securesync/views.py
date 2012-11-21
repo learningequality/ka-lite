@@ -18,6 +18,7 @@ import crypto
 import settings
 from securesync.models import SyncSession, Device, RegisteredDevicePublicKey, Zone, Facility, FacilityGroup
 from securesync.api_client import SyncClient
+from utils.jobs import force_job
 
 def require_admin(handler):
     def wrapper_fn(request, *args, **kwargs):
@@ -68,18 +69,24 @@ def facility_required(handler):
             return facility_selection(request)
     return inner_fn
 
+def force_sync():
+    force_job("securesync", "Secure Sync", "HOURLY")
+
 @require_admin
 @render_to("securesync/register_public_key_client.html")
 def register_public_key_client(request):
     if Device.get_own_device().get_zone():
+        force_sync()
         return {"already_registered": True}
     client = SyncClient()
     if client.test_connection() != "success":
         return {"no_internet": True}
     reg_status = client.register()
     if reg_status == "registered":
+        force_sync()
         return {"newly_registered": True}
     if reg_status == "device_already_registered":
+        force_sync()
         return {"already_registered": True}
     if reg_status == "public_key_unregistered":
         return {
