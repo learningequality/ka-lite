@@ -238,7 +238,7 @@ def start_server_servestatic(options):
     # another way to serve the admin media three application
     path = { '/': app,
              settings.MEDIA_URL: mediahandler.MediaHandler(settings.MEDIA_ROOT),
-             settings.ADMIN_MEDIA_PREFIX: mediahandler.MediaHandler(
+             settings.STATIC_URL + "admin/": mediahandler.MediaHandler(
                  os.path.join( django.contrib.admin.__path__[0],
                                'static/admin' )
                  )

@@ -45,10 +45,6 @@ USE_I18N = True
 # calendars according to the current locale
 USE_L10N = True
 
-# URL prefix for admin static files -- CSS, JavaScript and images.
-# Make sure to use a trailing slash.
-ADMIN_MEDIA_PREFIX = "/static/admin/"
-
 MEDIA_ROOT = PROJECT_PATH + "/static/"
 MEDIA_URL = "/static/"
 
