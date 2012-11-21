@@ -38,6 +38,27 @@
     };    
 </script>
 <script src="{{ MEDIA_URL }}js/exercises.js"></script>
+
+<script>
+    $(function(){
+        if (Khan.scratchpad.isVisible()) {
+            $(".current-card-contents #workarea").css("margin-top","50px");
+        } else {
+            $(".current-card-contents #workarea").css("margin-top","10px");
+        } 
+        $("#scratchpad-show").click(function(){
+            console.log("entered the click function!");
+            _.defer(function() {
+                if (Khan.scratchpad.isVisible()) {
+                    $(".current-card-contents #workarea").css("margin-top","50px");
+                } else {
+                    $(".current-card-contents #workarea").css("margin-top","10px");
+                };
+            });
+        });
+    });
+</script>
+
 {% endblock headjs %}
 
 {% block content %}

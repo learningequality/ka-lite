@@ -407,4 +407,14 @@ li .progress-circle {
     font-size: 1.2em;
 }
 
+#scratchpad > div {
+    margin-top: 10px;
+    max-width: 514px;
+}
+
+.current-card-contents #workarea {
+    margin-top: 50px;
+    margin-right: 30px;
+}
+
 
