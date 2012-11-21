@@ -9,8 +9,12 @@ from settings import slug_key, title_key
 from main import topicdata
 from django.contrib import messages
 from securesync.views import require_admin, facility_required
-
+from config.models import Settings
 from securesync.models import Facility, FacilityGroup
+from django.utils.safestring import mark_safe
+from config.models import Settings
+from securesync.api_client import SyncClient
+from django.contrib import messages
 
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
@@ -51,6 +55,19 @@ def splat_handler(request, splat):
         return exercise_handler(request, current_node)
     # return HttpResponseNotFound("No valid item found at this address!")
     raise Http404
+
+def check_setup_status(handler):
+    def wrapper_fn(request, *args, **kwargs):
+        client = SyncClient()
+        if not request.is_admin and Facility.objects.count() == 0:
+            messages.warning(request, mark_safe("Please login <a href='%s'>here</a> with the account you created in the installation script, to complete the setup." % reverse("login")))
+        if request.is_admin:
+            if not Settings.get("registered") and client.test_connection() == "success":
+                messages.warning(request, mark_safe("Please register your device <a href='%s'>here</a>, so that it can synchronize with the central server." % reverse("register_public_key")))
+            elif Facility.objects.count() == 0:
+                messages.warning(request, mark_safe("Please create a facility <a href='%s'>here</a>." % reverse("facility_edit")))
+        return handler(request, *args, **kwargs)
+    return wrapper_fn
 
 @render_to("topic.html")
 def topic_handler(request, topic):
@@ -107,12 +124,14 @@ def exercise_dashboard(request):
     }
     return context
     
+@check_setup_status
 @render_to("homepage.html")
 def homepage(request):
     topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"], topicdata.TOPICS["children"])
     context = {
         "title": "Home",
         "topics": topics,
+        "registered": Settings.get("registered"),
     }
     return context
         
