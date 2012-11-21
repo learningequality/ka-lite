@@ -44,7 +44,7 @@ Installing on Windows
 
 Install Python (version 2.5, 2.6 or 2.7), if not already installed. Python 2.7 can be downloaded [here](http://www.python.org/download/releases/2.7.3/). On 32-bit Windows, use the [x86 MSI Installer](http://www.python.org/ftp/python/2.7.3/python-2.7.3.msi), and on 64-bit Windows, use the [X86-64 MSI Installer](http://www.python.org/ftp/python/2.7.3/python-2.7.3.amd64.msi).
 
-You will need Python to be on your system PATH, so that it can be run from the command prompt (cmd.exe); see [this video](http://www.youtube.com/watch?v=ndNlFy-5GKA&hd=1#t=243s) for instructions (note that this is for version 2.7; just adapt the paths for older versions). It may be good to add ";C:\Python27\;C:\Python27\Scripts" to your path, instead of just ";C:\Python27\" as recommended in the video.
+You will need Python to be on your system PATH, so that it can be run from the command prompt (cmd.exe); see [this video](http://www.youtube.com/watch?v=ndNlFy-5GKA&hd=1#t=243s) for instructions (note that this is for version 2.7; just adapt the paths for older versions). It may be good to add `;C:\Python27\;C:\Python27\Scripts` to your path, instead of just `;C:\Python27\` as recommended in the video.
 
 ### 2. Install git
 
@@ -78,7 +78,7 @@ To get the recommended virtual host settings, run `python manage.py apacheconfig
 
 ### Linux
 
-Most versions of Linux should have Apache available for installation through their package management systems. In Ubuntu/Debian, you should be able to install Apache and mod_esgi via:
+Most versions of Linux should have Apache available for installation through their package management systems. In Ubuntu/Debian, you should be able to install Apache and mod_wsgi via:
 
 `sudo apt-get install apache2 libapache2-mod-wsgi`
 
