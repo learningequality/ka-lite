@@ -17,3 +17,4 @@ kalite/local_settings.py
 writeup/
 build/
 virtualenv/
+*.pid

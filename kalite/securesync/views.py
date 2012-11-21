@@ -58,7 +58,6 @@ def facility_required(handler):
             return HttpResponseRedirect(reverse("add_facility"))
         elif "facility" in request.GET:
             facility = get_object_or_None(Facility, pk=request.GET["facility"])
-            print request.GET["facility"]
         elif "facility_user" in request.session:
             facility = request.session["facility_user"].facility
         elif Facility.objects.count() == 1:

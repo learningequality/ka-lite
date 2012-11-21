@@ -2,15 +2,15 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>{% block title %}{{ title }}{% endblock title %} | KA Lite</title>
-        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/khan-site.css"></link>
+        <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/khan-site.css"></link>
         {% block headcss %}{% endblock headcss %}
-        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/khan-lite.css"></link>
-        <link rel="shortcut icon" href="{{ STATIC_URL }}images/favicon.ico">
+        <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/khan-lite.css"></link>
+        <link rel="shortcut icon" href="{{ MEDIA_URL }}images/favicon.ico">
         <script>
             var csrftoken = "{{ csrf_token }}";
         </script>
-        <script src="{{ STATIC_URL }}js/jquery.js"></script>
-        <script src="{{ STATIC_URL }}js/khan-lite.js"></script>
+        <script src="{{ MEDIA_URL }}js/jquery.js"></script>
+        <script src="{{ MEDIA_URL }}js/khan-lite.js"></script>
         {% block headjs %}{% endblock headjs %}
         {% block basejs %}{% endblock basejs %}
         {% block extra_head %}{% endblock extra_head %}
@@ -22,6 +22,7 @@
                     <div id="fb-root"></div>
                     <header>
                         <div id="top-header">
+                            <div id="sitepoints"></div>
                             <div class="top-header-links">
                                 <div class="clear"></div>
                                 <div id="nav-and-search">
@@ -39,7 +40,7 @@
 
                             <div id="logo">
                                 <a id="logo-image-small" href="/" title="Khan Academy" name="logo-image">
-                                    <img src="{{ STATIC_URL }}images/ka-logo-small.png"/>
+                                    <img src="{{ MEDIA_URL }}images/ka-logo-small.png"/>
                                 </a>
                             </div>
                             <div class="clear"></div>
