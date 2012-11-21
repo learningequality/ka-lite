@@ -1,6 +1,9 @@
+import time
 from django.core.management.base import BaseCommand, CommandError
 from kalite.main.models import VideoFile
 from kalite.utils.videos import download_video
+from utils.jobs import force_job
+
 
 def download_progress_callback(video):
     def inner_fn(percent):
@@ -36,5 +39,12 @@ class Command(BaseCommand):
             video.save()
             
             self.stdout.write("Downloading video '%s'...\n" % video.youtube_id)
-            download_video(video.youtube_id, callback=download_progress_callback(video))
-            self.stdout.write("Download is complete!\n")
+            try:
+                download_video(video.youtube_id, callback=download_progress_callback(video))
+                self.stdout.write("Download is complete!\n")
+            except Exception as e:
+                self.stderr.write("Error in downloading: %s\n" % e)
+                video.download_in_progress = False
+                video.save()
+                force_job("videodownload", "Download Videos")
+                return
