@@ -1,0 +1,1 @@
+Running syncdb will create a file in this directory called "data.sqlite". This contains all the data for the local server's database, including the public and private keys, and hence must be kept secret and not shared across servers. If copying this codebase to another server, delete the 'data.sqlite' file and re-run the installation script.

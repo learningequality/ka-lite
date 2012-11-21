@@ -52,6 +52,8 @@ ADMIN_MEDIA_PREFIX = "/static/admin/"
 MEDIA_ROOT = PROJECT_PATH + "/static/"
 MEDIA_URL = "/static/"
 
+STATIC_URL = "/static/"
+
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = hasattr(local_settings, "SECRET_KEY") and local_settings.SECRET_KEY \
     or "8qq-!fa$92i=s1gjjitd&%s@4%ka9lj+=@n7a&fzjpwu%3kd#u"

@@ -240,7 +240,7 @@ def start_server_servestatic(options):
              settings.MEDIA_URL: mediahandler.MediaHandler(settings.MEDIA_ROOT),
              settings.ADMIN_MEDIA_PREFIX: mediahandler.MediaHandler(
                  os.path.join( django.contrib.admin.__path__[0],
-                               'media' )
+                               'static/admin' )
                  )
              }
     dispatcher =  WSGIPathInfoDispatcher( path )
