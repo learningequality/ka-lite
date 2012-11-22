@@ -1,2 +1,1 @@
-Set oShell = WScript.CreateObject("WScript.Shell")
-Set oProc = oShell.Run("python cronserver.py", 0, True)
+WScript.CreateObject("WScript.Shell").Run("python cronserver.py", 0, False)
