@@ -170,7 +170,8 @@
         doRequest("/api/start_subtitle_download", {new_only: true}).success(startSubtitleDownloadChecks);
     	
             // $(".progress-section").hide();
-            // $(".progress-waiting").show();			$(".progress-subtitle").show();
+            // $(".progress-waiting").show();
+			$(".progress-subtitle").show();
         });
        
     
@@ -353,7 +354,7 @@
         <select id="language">
             {% if languages %}
                 {% for language in languages %}
-                    <option value="{{ language.id }}" {% if language.id==default_language %} selected {% endif %}>{{ language.name }}</option>
+                    <option value="{{ language.id }}" {% ifequal language.id default_language %} selected {% endifequal %}>{{ language.name }}</option>
                 {% endfor %}
             {% endif %}
         </select>
