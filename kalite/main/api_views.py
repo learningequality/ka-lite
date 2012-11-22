@@ -2,13 +2,14 @@ import re, json
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse, HttpResponseNotAllowed
 from django.utils import simplejson
-from django.db.models import Max
+from django.db.models import Max, Q
 from annoying.functions import get_object_or_None
 import settings
 from settings import slug_key, title_key
 from main import topicdata
 from utils.jobs import force_job
 from models import FacilityUser, VideoLog, ExerciseLog, VideoFile
+from config.models import Settings
 
 def require_admin(handler):
     def wrapper_fn(request, *args, **kwargs):
@@ -167,6 +168,33 @@ def get_video_download_list(request):
     videofiles = VideoFile.objects.filter(flagged_for_download=True).values("youtube_id")
     video_ids = [video["youtube_id"] for video in videofiles]
     return JsonResponse(video_ids)
+
+@require_admin
+def start_subtitle_download(request):
+    update_only = simplejson.loads(request.raw_post_data or "{}").get("update_only", False)
+    if update_only:
+        videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True), subtitles_downloaded=False)
+    else:
+        videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True))
+    for videofile in videofile:
+        if videofile.subtitle_download_in_progress:
+            continue
+        videofile.flagged_for_subtitle_download = True
+        videofile.save()
+    force_job("subtitledownload", "Download Subtitles")
+    return JsonResponse({})
+
+@require_admin
+def check_subtitle_download(request):
+    videofiles = VideoFile.objects.filter(flagged_for_subtitle_download=True)
+    return JsonResponse(videofiles.count())
+
+@require_admin
+def get_subtitle_download_list(request):
+    videofiles = VideoFile.objects.filter(flagged_for_subtitle_download=True).values("youtube_id")
+    video_ids = [video["youtube_id"] for video in videofiles]
+    return JsonResponse(video_ids)
+
 
 def convert_topic_tree(node, level=0):
     if node["kind"] == "Topic":

@@ -9,11 +9,22 @@ headers = {
 
 base_url = "https://www.universalsubtitles.org/api2/partners/videos"
 
+class NoSubs(Exception):
+    def __init__(self,value):
+        self.value
+    
+    def __str__(value):
+        return repr(self.value)
+
 def get_subtitles(youtube_id, language, format="json"):
     
     # use the base video endpoint to get the Amara video id from the Youtube ID
     r = requests.get("%s?video_url=http://www.youtube.com/watch?v=%s" % (base_url, youtube_id), headers=headers)
-    video_id = json.loads(r.text)["objects"][0]["id"]
+    content = json.loads(r.text)
+    if content.has_key("objects"):
+        video_id = json.loads(r.text)["objects"][0]["id"]
+    else:
+        return False
     
     # use the Amara video id to get the subtitles and translated metadata in the target language
     if format=="json":
@@ -29,10 +40,15 @@ def download_subtitles(youtube_id, language):
     
     subtitles = get_subtitles(youtube_id, language, format="srt")
     
-    filepath = download_path + "%s.srt" % youtube_id
+    if subtitles:
     
-    with open(filepath, 'w') as fp:
-        fp.write(subtitles.encode('UTF-8'))
+        filepath = download_path + "%s.srt" % youtube_id
+        
+        with open(filepath, 'w') as fp:
+            fp.write(subtitles.encode('UTF-8'))
+    
+    else:
+        raise NoSubs
 
 
 if __name__ == '__main__':
