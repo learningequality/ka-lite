@@ -108,6 +108,9 @@
                         return false;
                     }
                 },
+                onPostInit: function() {
+            		startDownloadChecks();
+                }
             });
                     
         });
@@ -141,7 +144,6 @@
         });
         
        
-        startDownloadChecks();
     
     });
     

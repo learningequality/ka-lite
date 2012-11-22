@@ -62,6 +62,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.media",
     "django.contrib.messages.context_processors.messages",
     "django.core.context_processors.request",
+    "main.custom_context_processors.custom"
 )
 
 # List of callables that know how to import templates from various sources.
@@ -77,8 +78,6 @@ MIDDLEWARE_CLASSES = (
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
-    "securesync.middleware.DBCheck",
-    "securesync.middleware.AuthFlags",
 )
 
 ROOT_URLCONF = "kalite.urls"
@@ -113,6 +112,12 @@ if CENTRAL_SERVER:
     INSTALLED_APPS += ("postmark", "kalite.registration", "central")
     EMAIL_BACKEND = "postmark.backends.PostmarkBackend"
     AUTH_PROFILE_MODULE = 'central.UserProfile'
+
+if not CENTRAL_SERVER:
+    MIDDLEWARE_CLASSES += (
+        "securesync.middleware.DBCheck",
+        "securesync.middleware.AuthFlags",
+    )
 
 # import these one extra time to overwrite any settings not explicitly looking for local settings
 try:

@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from main.models import VideoLog, ExerciseLog
+from config.models import Settings
 
 import crypto
 import settings
@@ -193,7 +194,7 @@ def test_connection(request):
 def status(request):
     data = {
         "is_logged_in": request.is_logged_in,
-        "registered": bool(Device.get_own_device().get_zone()),
+        "registered": bool(Settings.get("registered")),
         "is_admin": request.is_admin,
         "is_django_user": request.is_django_user,
         "points": 0,

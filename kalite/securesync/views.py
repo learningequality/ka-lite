@@ -13,6 +13,7 @@ from forms import RegisteredDevicePublicKeyForm, FacilityUserForm, FacilityTeach
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout   
 from annoying.functions import get_object_or_None   
+from config.models import Settings
 
 import crypto
 import settings
@@ -69,24 +70,25 @@ def facility_required(handler):
             return facility_selection(request)
     return inner_fn
 
-def force_sync():
+def set_as_registered():
     force_job("securesync", "Secure Sync", "HOURLY")
+    Settings.set("registered", True)
 
 @require_admin
 @render_to("securesync/register_public_key_client.html")
 def register_public_key_client(request):
     if Device.get_own_device().get_zone():
-        force_sync()
+        set_as_registered()   
         return {"already_registered": True}
     client = SyncClient()
     if client.test_connection() != "success":
         return {"no_internet": True}
     reg_status = client.register()
     if reg_status == "registered":
-        force_sync()
+        set_as_registered()
         return {"newly_registered": True}
     if reg_status == "device_already_registered":
-        force_sync()
+        set_as_registered()
         return {"already_registered": True}
     if reg_status == "public_key_unregistered":
         return {
