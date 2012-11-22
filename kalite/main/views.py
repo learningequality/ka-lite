@@ -2,6 +2,7 @@ import re, json, sys
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
+from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from annoying.decorators import render_to
 import settings
@@ -138,12 +139,8 @@ def homepage(request):
 @require_admin
 @render_to("video_download.html")
 def update(request):
-#    topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"], settings.TOPICS["children"])
-    context = {
-#        "title": "Home",
-#        "topics": topics,
-    }
-    return context
+    call_command("videoscan")
+    return {}
 
 @require_admin
 @facility_required

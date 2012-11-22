@@ -27,11 +27,11 @@ class Command(BaseCommand):
             video.percent_complete = 100
             video.flagged_for_download = False
             video.save()
-            print "Marked %s as complete." % youtube_id
+            # print "Marked %s as complete." % youtube_id
         
         for youtube_id in deleted_videos:
             video = get_object_or_None(VideoFile, youtube_id=youtube_id)
             if not video:
                 continue
             video.delete()
-            print "Deleted %s." % youtube_id
+            # print "Deleted %s." % youtube_id
