@@ -1,7 +1,7 @@
 @echo off
 
 echo The stop command is not yet cleanly implemented for Windows.
-echo To stop the server, we will have to kill all processes called "python.exe".
+echo We will have to kill all processes called "wscript.exe" and "python.exe".
 
 :choice
 set /P c=Do you wish to proceed [Y/N]?
