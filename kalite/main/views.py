@@ -65,7 +65,7 @@ def check_setup_status(handler):
             if not Settings.get("registered") and client.test_connection() == "success":
                 messages.warning(request, mark_safe("Please follow the directions to register your device <a href='%s'>here</a>, so that it can synchronize with the central server." % reverse("register_public_key")))
             elif Facility.objects.count() == 0:
-                messages.warning(request, mark_safe("Please create a facility <a href='%s'>here</a>." % reverse("facility_admin")))
+                messages.warning(request, mark_safe("Please create a facility <a href='%s'>here</a>. Users will not be able to sign up until you do so." % reverse("add_facility")))
         return handler(request, *args, **kwargs)
     return wrapper_fn
 
