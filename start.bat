@@ -1,7 +1,7 @@
 @echo off
 cd kalite
 echo.
-start cronstart.bat
+start /B runhidden.vbs "cronstart.bat"
 echo.
-start serverstart.bat
+start /B runhidden.vbs "serverstart.bat"
 cd ..
