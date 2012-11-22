@@ -45,12 +45,22 @@
     margin-top: -7px
 }
 
+#progressbar-subtitle{
+	opacity: 0.9;
+    height: 12px;
+    margin-top: -7px
+}
+
 #progressbar-overall .ui-widget-header {
     background: #00A000;
 }
 
 #progressbar-current .ui-widget-header {
     background: #00AFD0;
+}
+
+#progressbar-subtitle .ui-widget-header {
+    background: #C4D831;
 }
 
 #download-legend-selected, #download-videos {
@@ -126,6 +136,11 @@
             value: 0,
             max: 100
         });
+        
+        $("#progressbar-subtitle").progressbar({
+            value: 0,
+            max: 10000000
+        });
     
         $("#download-videos").click(function() {
             var videos = findSelectedIncompleteVideos();
@@ -139,10 +154,21 @@
     	
             $(".progress-section").hide();
             $(".progress-waiting").show();
-                 
-    
         });
         
+        $("#download-subtitles").click(function() {
+            var videos = findSelectedIncompleteVideos();
+            
+            var video_ids = $.map(videos, function(node) {
+           		node.select(false);
+                return node.data.key;
+            });
+                    
+            doRequest("/api/start_subtitle_download", {youtube_ids: video_ids}).success(startDownloadChecks);
+    	
+            // $(".progress-section").hide();
+            // $(".progress-waiting").show();			$(".progress-subtitle").show();
+        });
        
     
     });
@@ -198,6 +224,13 @@
             value: window.download_index * 100 + window.current_download_percent,
             max: window.downloading_videos.length * 100
         });
+
+        $("#progressbar-subtitle").progressbar({
+            value: window.download_index * 100 + window.current_download_percent,
+            max: window.downloading_subtitle.length * 100
+        });
+
+
         var currentKey = window.downloading_videos[window.download_index];
         var currentNode = $("#content_tree").dynatree("getTree").getNodeByKey(currentKey);
         $(".video-title").text(currentNode.data.title);
@@ -292,14 +325,23 @@
         <div class="progressbar" id="progressbar-current"></div>
         
    <h2 class="progress-text">
-        Overall download progress:
+        Overall video download progress:
         <span class="video-downloading-current">6</span>
         of
         <span class="video-downloading-total">11</span>
     </h2>     
         
-        
         <div class="progressbar" id="progressbar-overall"></div>
+        
+   	<h2 class="progress-text">
+        Subtitle download progress:
+        <span class="video-downloading-current">5</span>
+        of
+        <span class="video-downloading-total">21</span>
+    </h2> 
+    
+    <div class="progressbar" id="progressbar-subtitle"></div>
+    
 </div>
 
 <div id="content_tree"><br/><h2>Loading topic tree... Please wait!</h2></div>
