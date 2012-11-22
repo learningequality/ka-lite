@@ -11,7 +11,7 @@ goto :choice
 
 :yes
 taskkill /f /im python.exe
-exit
+exit /B
 
 :no
 echo The server has not been stopped.
