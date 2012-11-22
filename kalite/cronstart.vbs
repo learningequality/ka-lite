@@ -1,1 +1,1 @@
-WScript.CreateObject("WScript.Shell").Run("python cronserver.py", 0, False)
+WScript.CreateObject("WScript.Shell").Run "python cronserver.py", 0, False
