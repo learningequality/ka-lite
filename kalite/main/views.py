@@ -2,6 +2,7 @@ import re, json, sys
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
+from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from annoying.decorators import render_to
 import settings
@@ -138,6 +139,7 @@ def homepage(request):
 @require_admin
 @render_to("video_download.html")
 def update(request):
+    call_command("videoscan")
     language_lookup = topicdata.LANGUAGE_LOOKUP
     language_list = topicdata.LANGUAGE_LIST
     default_language = Settings.get("subtitle_language") or "en"
@@ -145,12 +147,9 @@ def update(request):
         language_list.append(default_language)
     languages = [{"id":key,"name":language_lookup[key]} for key in language_list]
     languages = sorted(languages, key = lambda k: k["name"])
-#    topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"], settings.TOPICS["children"])
     context = {
         "language": languages,
         "default_language": default_language,
-#        "title": "Home",
-#        "topics": topics,
     }
     return context
 

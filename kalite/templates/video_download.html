@@ -26,6 +26,12 @@
     display: none;
 }
 
+.subtitle-section {
+    padding: 5px 0px 0px 0px;
+    display: none;
+}
+
+
 .progress-text {
     color: #005987;
     margin-top: 1.5px;
@@ -45,12 +51,22 @@
     margin-top: -7px
 }
 
+#progressbar-subtitle{
+	opacity: 0.9;
+    height: 12px;
+    margin-top: -7px
+}
+
 #progressbar-overall .ui-widget-header {
     background: #00A000;
 }
 
 #progressbar-current .ui-widget-header {
     background: #00AFD0;
+}
+
+#progressbar-subtitle .ui-widget-header {
+    background: #C4D831;
 }
 
 #download-legend-selected, #download-videos {
@@ -71,8 +87,10 @@
 
     window.downloading_videos = [];
     window.download_index = 0;
+    window.download_subtitle_index = 0;
     
     window.download_check_interval = null;
+    window.download_subtitle_check_interval = null;
     
     $(function() { 
         
@@ -126,6 +144,11 @@
             value: 0,
             max: 100
         });
+        
+        $("#progressbar-subtitle").progressbar({
+            value: 0,
+            max: 10000000
+        });
     
         $("#download-videos").click(function() {
             var videos = findSelectedIncompleteVideos();
@@ -139,10 +162,16 @@
     	
             $(".progress-section").hide();
             $(".progress-waiting").show();
-                 
-    
         });
         
+        
+        $("#download-subtitles").click(function() {
+        	
+        doRequest("/api/start_subtitle_download", {new_only: true}).success(startSubtitleDownloadChecks);
+    	
+            // $(".progress-section").hide();
+            // $(".progress-waiting").show();			$(".progress-subtitle").show();
+        });
        
     
     });
@@ -159,6 +188,38 @@
             checkVideoDownloadProgress();
         });
     }
+    
+    
+    function startSubtitleDownloadChecks() {
+    	doRequest("/api/get_subtitle_download_list").success(function(video_ids) {
+	        window.downloading_subtitles = video_ids;
+	        window.download_subtitle_index = 0;
+	        clearInterval(window.download_subtitle_check_interval);
+	        if (video_ids.length == 0) {
+	            return;
+	        }
+	        window.download_subtitle_check_interval = setInterval(checkSubtitleDownloadProgress, 1000);
+	        checkSubtitleDownloadProgress();
+    	});
+}
+    
+   	function checkSubtitleDownloadProgress() {
+        doRequest("/api/check_subtitle_download").success(function(progress) {
+            window.download_subtitle_index = window.downloading_subtitles.length - progress ;
+            updateProgressDisplay();
+            if (progress == 0) {
+            	clearInterval(window.download_subtitle_check_interval);
+                $(".progress-subtitle").hide();
+                return;
+            }
+            checkVideoDownloadProgress();
+  
+        });
+    }
+    
+    
+    
+    
     
     function checkVideoDownloadProgress() {
         var currentKey = window.downloading_videos[window.download_index];
@@ -187,23 +248,49 @@
             	 $(".progress-section").hide();
             	 $(".progress-waiting").show();	
         	}
+        
             
         } else {
             $(".progress-section").hide();
             return;
         }
         
+
         $("#progressbar-current").progressbar({value: window.current_download_percent});
         $("#progressbar-overall").progressbar({
             value: window.download_index * 100 + window.current_download_percent,
             max: window.downloading_videos.length * 100
         });
+
+
         var currentKey = window.downloading_videos[window.download_index];
         var currentNode = $("#content_tree").dynatree("getTree").getNodeByKey(currentKey);
         $(".video-title").text(currentNode.data.title);
         $(".video-downloading-current").text(window.download_index + 1);
         $(".video-downloading-total").text(window.downloading_videos.length);
+   
+       
     }
+    
+    function updateSubtitleProgressDisplay() {
+    	
+    	if (window.download_subtitle_index < window.downloading_subtitles.length) {
+     		$(".subtitle-section").show();
+      	} else {
+        	$(".subtitle-section").hide();
+        return;
+    	}
+    
+        $("#progressbar-subtitle").progressbar({
+        value: window.download_subtitle_index * 100 + window.current_download_percent,
+        max: window.downloading_subtitles.length * 100
+    	});
+    
+        $(".subtitle-downloading-current").text(window.download_subtitle_index + 1);
+        $(".subtitle-downloading-total").text(window.downloading_subtitles.length);  
+    
+    }
+    
     
     function findSelectedIncompleteVideos() {
         var arr = $("#content_tree").dynatree("getSelectedNodes");
@@ -292,15 +379,31 @@
         <div class="progressbar" id="progressbar-current"></div>
         
    <h2 class="progress-text">
-        Overall download progress:
+        Overall video download progress:
         <span class="video-downloading-current">6</span>
         of
         <span class="video-downloading-total">11</span>
     </h2>     
         
-        
         <div class="progressbar" id="progressbar-overall"></div>
+    
 </div>
+
+
+
+<div class="subtitle-section">
+	
+<h2 class="progress-text">
+        Subtitle download progress:
+        <span class="subtitle-downloading-current">5</span>
+        of
+        <span class="subtitle-downloading-total">21</span>
+    </h2> 
+    
+<div class="progressbar" id="progressbar-subtitle"></div>
+
+</div>
+
 
 <div id="content_tree"><br/><h2>Loading topic tree... Please wait!</h2></div>
 
