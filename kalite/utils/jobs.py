@@ -9,6 +9,5 @@ def force_job(command, name, frequency="YEARLY"):
         job = Job(command=command)
         job.frequency = frequency
         job.name = name
-        job.next_run = datetime.now()
-    job.force_run = True
+    job.next_run = datetime.now()
     job.save()
