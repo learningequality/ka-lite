@@ -140,7 +140,18 @@ def homepage(request):
 @render_to("video_download.html")
 def update(request):
     call_command("videoscan")
-    return {}
+    language_lookup = topicdata.LANGUAGE_LOOKUP
+    language_list = topicdata.LANGUAGE_LIST
+    default_language = Settings.get("subtitle_language") or "en"
+    if default_language not in language_list:
+        language_list.append(default_language)
+    languages = [{"id":key,"name":language_lookup[key]} for key in language_list]
+    languages = sorted(languages, key = lambda k: k["name"])
+    context = {
+        "language": languages,
+        "default_language": default_language,
+    }
+    return context
 
 @require_admin
 @facility_required
