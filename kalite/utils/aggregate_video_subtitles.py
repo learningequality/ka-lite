@@ -14,3 +14,11 @@ languagenos = {}
 
 for video,data in videos.iteritems():
     r = requests.get("%s?video_url=http://www.youtube.com/watch?v=%s" % (base_url, data['youtube_id']))
+    languages = json.loads(r.content)['objects'][0]['languages']
+    videolanguages[video] = []
+    for language in languages:
+        videolanguages[video].append(language['code'])
+        if languagenos.has_key(language['code']):
+            languagenos[language['code']] += 1
+        else:
+            languagenos[language['code']] = 1

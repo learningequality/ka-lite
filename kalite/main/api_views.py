@@ -171,8 +171,8 @@ def get_video_download_list(request):
 
 @require_admin
 def start_subtitle_download(request):
-    update_only = simplejson.loads(request.raw_post_data or "{}").get("update_only", False)
-    if update_only:
+    new_only = simplejson.loads(request.raw_post_data or "{}").get("new_only", False)
+    if new_only:
         videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True), subtitles_downloaded=False)
     else:
         videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True))
