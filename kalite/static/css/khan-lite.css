@@ -50,7 +50,7 @@ footer.short .inner {
 #top-header #logo {
     background-image: url(/static/images/non-repeating-sprites.4.png);
     background-position: -10px -261px;
-    width: 200px; 
+    width: 200px;
 }
 
 #logo-image-small img {
@@ -354,6 +354,9 @@ li .progress-circle {
     left: 26px !important;
 }
 
+#nav_addstudent, #nav_addteacher, #nav_admin, #nav_teacherpanel, #nav_watch, #nav_practice, #nav_signup, #nav_login {
+    display: none;
+}
 
 #hint-remainder {
     line-height: 110%;
@@ -403,5 +406,15 @@ li .progress-circle {
     margin-right: 20px;
     font-size: 1.2em;
 }
-/*El Fin*/
+
+#scratchpad > div {
+    margin-top: 10px;
+    max-width: 514px;
+}
+
+.current-card-contents #workarea {
+    margin-top: 50px;
+    margin-right: 30px;
+}
+
 
