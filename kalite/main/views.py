@@ -138,8 +138,17 @@ def homepage(request):
 @require_admin
 @render_to("video_download.html")
 def update(request):
+    language_lookup = topicdata.LANGUAGE_LOOKUP
+    language_list = topicdata.LANGUAGE_LIST
+    default_language = Settings.get("subtitle_language") or "en"
+    if default_language not in language_list:
+        language_list.append(default_language)
+    languages = [{"id":key,"name":language_lookup[key]} for key in language_list]
+    languages = sorted(languages, key = lambda k: k["name"])
 #    topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"], settings.TOPICS["children"])
     context = {
+        "language": languages,
+        "default_language": default_language,
 #        "title": "Home",
 #        "topics": topics,
     }

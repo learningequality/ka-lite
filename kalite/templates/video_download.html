@@ -264,11 +264,11 @@
     <h2 class="button_text">Download/update subtitles for all videos</h2>
     <span class= "button_style">
         <select id="language">
-            <option value="chinese">English</option>
-            <option value="chinese">Chinese</option>
-            <option value="spanish">Spanish</option>
-            <option value="French">French</option>
-            <option value="japanese">Japanese</option>
+            {% if languages %}
+                {% for language in languages %}
+                    <option value="{{ language.id }}" {% if language.id==default_language %} selected {% endif %}>{{ language.name }}</option>
+                {% endfor %}
+            {% endif %}
         </select>
     </span>
     <button id="download_subtitles" type="button">Download Subtitles</button>
