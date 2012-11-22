@@ -1,7 +1,7 @@
 @echo off
 cd kalite
 echo.
-cronstart.bat
+start /B cronstart.bat
 echo.
-serverstart.bat
+start /B serverstart.bat
 cd ..
