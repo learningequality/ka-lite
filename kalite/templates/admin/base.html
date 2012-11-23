@@ -1,0 +1,74 @@
+{% extends "base_distributed.html" %}
+
+{% load admin_static %}{% load url from future %}{% load i18n %}
+
+{% block admin_selected %}selected{% endblock admin_selected %}
+
+{% block headcss %}
+    <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}" />
+    {% block extrastyle %}{% endblock %}
+    <style>
+        {% if is_popup %}
+        header, footer {
+            display: none;
+        }
+        {% endif %}
+        #content-related {
+            display: none;
+        }
+        div.breadcrumbs {
+            border-bottom: 0px;
+        }
+    </style>
+{% endblock headcss %}
+
+{% block headjs %}
+<script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";</script>
+{% endblock headjs %}
+
+{% block bodyclass %}{% if is_popup %}popup {% endif %}{% endblock %}
+
+{% block outer_content %}
+<div id="container">
+
+    {% if not is_popup %}
+    <!-- Header -->
+    <div id="header">
+        {% block nav-global %}{% endblock %}
+    </div>
+    <!-- END Header -->
+    {% block breadcrumbs %}
+    <div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+    {% if title %} &rsaquo; {{ title }}{% endif %}
+    </div>
+    {% endblock %}
+    {% endif %}
+
+    {% block messages %}
+        {% if messages %}
+        <ul class="messagelist">{% for message in messages %}
+          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}</ul>
+        {% endif %}
+    {% endblock messages %}
+
+    <div id="container" class="visited-no-recolor" style="overflow: hidden;">
+        <article class="clearfix">
+            {% block pretitle %}{% endblock %}
+            {% block content_title %}{% if title %}<h1>{{ title }}</h1>{% endif %}{% endblock %}
+            {% block content %}
+            {% block object-tools %}{% endblock %}
+            {{ content }}
+            {% endblock %}
+            {% block sidebar %}{% endblock %}
+            <br class="clear" />
+        </article>
+    </div>
+
+    {% block footer %}<div id="footer"></div>{% endblock %}
+</div>
+{% endblock outer_content %}
+
+</body>
+</html>

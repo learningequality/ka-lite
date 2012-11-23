@@ -14,8 +14,9 @@
         {% block headjs %}{% endblock headjs %}
         {% block basejs %}{% endblock basejs %}
         {% block extra_head %}{% endblock extra_head %}
+        {% block extrahead %}{% endblock extrahead %}
     </head>
-    <body class="light">
+    <body class="light {% block bodyclass %}{% endblock %}">
         <div id="outer-wrapper">
             <div id="page-container">
                 <div id="page-container-inner">
@@ -46,14 +47,18 @@
                             <div class="clear"></div>
                         </div>
                     </header>
+                        {% block outer_content %}
                     <div id="container" class="visited-no-recolor" style="overflow: hidden;">
                         <article class="clearfix">
+                            {% block precontent %}
                             {% for message in messages %}
                             <div class="{{ message.tags }} message">{{ message }}</div>
                             {% endfor %}
+                            {% endblock precontent %}
                             {% block content %}{% endblock content %}
                         </article>
                     </div>
+                    {% endblock outer_content %}
                     <div id="end-of-page-spacer" style="height: 38px;">&nbsp;</div>
                     <div id="badge-notification-container" class="badge-award-container" style="display:none;"></div>
                 </div>
@@ -65,7 +70,7 @@
             <div id="leaves">
                 <div class="inner">
                     <div id="copyright" class="tiny">
-                        <small>&copy;2017 Khan Academy&#0153;</small> <a rel="license" id="creative-commons-link" name="creative-commons-link"></a>
+                        <a rel="license" id="creative-commons-link" name="creative-commons-link"></a>
                     </div>
                 </div>
             </div>
