@@ -67,7 +67,7 @@ To start the server, run the `start.bat` script in the `ka-lite` folder. You may
 If you see a "Windows Security Alert" [warning about Windows Firewall blocking Python](kalite/static/images/windows-python-network-permissions.png), be sure to check both checkboxes (as seen in the picture) and click "Allow access", to ensure that the server will be accessible.
 
 
-(Optional: Install and configure Apache/mod_wsgi)
+Optional: Install and configure Apache/mod_wsgi
 ===
 
-KA Lite includes a web server implemented in pure Python for serving the website, capable of handling hundreds of simultaneous users while using very little memory. However, if for some reason you wish to serve the website through Apache and mod_wsgi, [here are some useful tips](INSTALL-APACHE.md).
+KA Lite includes a web server implemented in pure Python for serving the website, capable of handling hundreds of simultaneous users while using very little memory. However, if for some reason you wish to serve the website through Apache and mod_wsgi, [here are some useful tips](docs/INSTALL-APACHE.md).
