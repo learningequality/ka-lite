@@ -1,0 +1,245 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-09-29 13:45+0200\n"
+"PO-Revision-Date: 2010-09-29 13:55+0200\n"
+"Last-Translator: Jannis Leidel <jannis@leidel.info>\n"
+"Language-Team: German <de@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
+#: admin.py:39
+msgid ""
+"Can't specify a shell_command if a django admin command is already specified"
+msgstr ""
+"Bitte keinen Kommandozeilenbefehl eingeben, wenn schon ein django-admin-Befehl eingegeben wurde."
+
+#: admin.py:47
+msgid "Must specify either command or shell command"
+msgstr "Entweder ein django-admin-Befehl oder ein Kommandzeilenbefehl eingeben."
+
+#: admin.py:64
+msgid "Job Details"
+msgstr "Auftragsdetails"
+
+#: admin.py:68
+msgid "E-mail subscriptions"
+msgstr "E-Mail-Benachrichtigung"
+
+#: admin.py:72
+msgid "Frequency options"
+msgstr "Optionen"
+
+#: admin.py:93
+msgid "Last run"
+msgstr "Letzter Durchlauf"
+
+#: admin.py:98 admin.py:157
+msgid "OK"
+msgstr "Okay"
+
+#: admin.py:105
+msgid "Run"
+msgstr "Ausführen"
+
+#: admin.py:111
+msgid "Logs"
+msgstr "Logs"
+
+#: admin.py:122
+#, python-format
+msgid "The job \"%(job)s\" was run successfully."
+msgstr "Der Auftrag \"%(job)s\" wurde erfolgreich ausgeführt."
+
+#: admin.py:146
+msgid "Output"
+msgstr "Ausgabe"
+
+#: admin.py:153
+msgid "Name"
+msgstr "Name"
+
+#: admin.py:165
+msgid "(No output)"
+msgstr ""
+
+#: admin.py:172
+msgid "(No errors)"
+msgstr ""
+
+#: models.py:28
+msgid "Yearly"
+msgstr "Jährlich"
+
+#: models.py:29
+msgid "Monthly"
+msgstr "Monatlich"
+
+#: models.py:30
+msgid "Weekly"
+msgstr "Wöchentlich"
+
+#: models.py:31
+msgid "Daily"
+msgstr "Täglich"
+
+#: models.py:32
+msgid "Hourly"
+msgstr "Stündlich"
+
+#: models.py:33
+msgid "Minutely"
+msgstr "Minütlich"
+
+#: models.py:34
+msgid "Secondly"
+msgstr "Sekündlich"
+
+#: models.py:40
+msgid "name"
+msgstr "Name"
+
+#: models.py:41
+msgid "frequency"
+msgstr "Häufigkeit"
+
+#: models.py:42
+msgid "params"
+msgstr "Parameter"
+
+#: models.py:43
+msgid ""
+"Comma-separated list of <a href=\"http://labix.org/python-dateutil\" target="
+"\"_blank\">rrule parameters</a>. e.g: interval:15"
+msgstr ""
+"Durch Kommas getrennte <a href=\"http://labix.org/python-dateutil\" target="
+"\"_blank\">rrule-Parameter</a>. z.B.: interval:15"
+
+#: models.py:44
+msgid "command"
+msgstr "Befehl"
+
+#: models.py:45
+msgid "A valid django-admin command to run."
+msgstr "Ein regulärer django-admin-Befehl zum Ausführen."
+
+#: models.py:46
+msgid "shell command"
+msgstr "Kommandozeilenbefehl"
+
+#: models.py:47
+msgid "A shell command."
+msgstr "Ein Kommandozeilenbefehl."
+
+#: models.py:48
+msgid "This command needs to run within a shell?"
+msgstr "Muss dieser Auftrag in einer Shell ausgeführt werden?"
+
+#: models.py:49
+msgid "args"
+msgstr "Argumente"
+
+#: models.py:50
+msgid "Space separated list; e.g: arg1 option1=True"
+msgstr "Durch Leerzeichen getrennte Argumentliste, z.B. arg1 option1=True"
+
+#: models.py:51
+msgid "disabled"
+msgstr "deaktiviert"
+
+#: models.py:51
+msgid "If checked this job will never run."
+msgstr "Auftrag wird nie ausgeführt, wenn aktiviert."
+
+#: models.py:52
+msgid "next run"
+msgstr "Nächster Durchlauf"
+
+#: models.py:52
+msgid "If you don't set this it will be determined automatically"
+msgstr "Wird automatisch ermittelt, wenn nicht ausgefüllt"
+
+#: models.py:53
+msgid "last run"
+msgstr "Letzter Durchlauf"
+
+#: models.py:54
+msgid "Running?"
+msgstr "Läuft gerade?"
+
+#: models.py:56
+msgid "subscribers"
+msgstr "Empfänger"
+
+#: models.py:65
+#, python-format
+msgid "%(name)s - disabled"
+msgstr "%(name)s - deaktiviert"
+
+#: models.py:85
+msgid "never (disabled)"
+msgstr "nie (deaktiviert)"
+
+#: models.py:90
+msgid "due"
+msgstr "fällig"
+
+#: models.py:93
+msgid "second"
+msgid_plural "seconds"
+msgstr[0] "Sekunde"
+msgstr[1] "Sekunden"
+
+#: models.py:94
+#, python-format
+msgid "%(number)d %(type)s"
+msgstr "%(number)d %(type)s"
+
+#: models.py:100
+msgid "time until next run"
+msgstr "Zeit bis zum nächsten Durchlauf"
+
+#: templates/admin/chronograph/job/change_form.html:6
+msgid "Changelog"
+msgstr "Änderungen"
+
+#: templates/admin/chronograph/job/change_form.html:7
+msgid "View Logs"
+msgstr "Log öffnen"
+
+#: templates/admin/chronograph/job/change_form.html:8
+msgid "Run Job"
+msgstr "Auftrag ausführen"
+
+#: templates/admin/chronograph/job/change_form.html:11
+#: templates/admin/chronograph/log/change_form.html:8
+msgid "View on site"
+msgstr "Auf Seite anzeigen"
+
+#: templates/admin/chronograph/job/change_list.html:11
+#, python-format
+msgid "Add %(name)s"
+msgstr "%(name)s hinzufügen"
+
+#: templates/admin/chronograph/log/change_form.html:7
+msgid "History"
+msgstr "Geschichte"
+
+#: templates/admin/chronograph/log/change_form.html:18
+msgid "Please correct the error below."
+msgid_plural "Please correct the errors below."
+msgstr[0] "Bitte korrigieren sie folgenden Fehler."
+msgstr[1] "Bitte korrigieren sie folgende Fehler."
+
+#: templates/admin/chronograph/log/change_form.html:30
+msgid "Delete"
+msgstr "Löschen"

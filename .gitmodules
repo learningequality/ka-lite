@@ -1,6 +1,3 @@
 [submodule "kalite/static/khan-exercises"]
 	path = kalite/static/khan-exercises
 	url = https://github.com/Khan/khan-exercises.git
-[submodule "python-packages/django-chronograph"]
-	path = python-packages/django-chronograph
-	url = https://github.com/jamalex/django-chronograph.git
