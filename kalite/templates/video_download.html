@@ -185,7 +185,7 @@
             if (video_ids.length == 0) {
                 return;
             }
-            window.download_check_interval = setInterval(checkVideoDownloadProgress, 1000);
+            window.download_check_interval = setInterval(checkVideoDownloadProgress, 5000);
             checkVideoDownloadProgress();
         });
     }
@@ -199,7 +199,7 @@
 	        if (video_ids.length == 0) {
 	            return;
 	        }
-	        window.download_subtitle_check_interval = setInterval(checkSubtitleDownloadProgress, 1000);
+	        window.download_subtitle_check_interval = setInterval(checkSubtitleDownloadProgress, 5000);
 	        checkSubtitleDownloadProgress();
     	});
 }

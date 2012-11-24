@@ -7,7 +7,7 @@ from utils.jobs import force_job
 
 def download_progress_callback(video):
     def inner_fn(percent):
-        if (percent - video.percent_complete) >= 5 or percent == 100:
+        if (percent - video.percent_complete) >= 10 or percent == 100:
             if percent == 100:
                 video.flagged_for_download = False
                 video.download_in_progress = False
