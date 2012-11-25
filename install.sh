@@ -26,16 +26,18 @@ else
     exit 1
 fi    
 
-echo "----------------------------------------------------------------"
+echo "--------------------------------------------------------------------------------"
 echo
 echo "This script will configure the database and prepare it for use."
 echo
 echo "When asked if you want to create a superuser, type 'yes' and enter your details."
-echo "You must remember this login information, as you will need to enter it to administer the website."
+echo "You must remember this login information, as you will need to enter it to"
+echo "administer the website."
 echo
-echo "----------------------------------------------------------------"
+echo "--------------------------------------------------------------------------------"
 echo
 read -n 1 -p "Press any key to continue..."
+echo
 
 python manage.py syncdb --migrate
 
@@ -43,3 +45,22 @@ python manage.py syncdb --migrate
 chmod 777 database
 chmod 766 database/data.sqlite
 
+echo
+python manage.py generatekeys
+echo
+
+hostname=`uname -n`
+echo -n "Please enter a name for this server (or, press Enter to use '$hostname'): "
+read -e name
+if [ "$name" ]; then
+    hostname=$name
+fi
+echo -n "Please enter a one-line description for this server (or, press Enter to leave blank): "
+read -e description
+python manage.py initdevice "$hostname" "$description"
+
+echo
+echo "CONGRATULATIONS! You've finished installing the KA Lite server software."
+echo "Please run 'start.bat' to start the server, and then load the url"
+echo "http://127.0.0.1:8008/ to complete the device configuration."
+echo
