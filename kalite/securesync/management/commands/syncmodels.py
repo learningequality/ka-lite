@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from kalite.securesync.api_client import SyncClient
+from securesync.api_client import SyncClient
 
 class Command(BaseCommand):
     args = "<target server host (protocol://domain:port)>"
