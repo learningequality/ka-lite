@@ -1,8 +1,8 @@
-Installation steps
+Installation overview
 ===
 
-1. Install [Python](http://www.python.org/) version 2.6 or 2.7
-2. Install [git](http://git-scm.com/)
+1. Install Python version 2.6 or 2.7
+2. Install git
 3. Download the KA Lite codebase using git
 4. Run the installation script to complete configuration
 5. Run the server
@@ -24,15 +24,15 @@ Install git by running `sudo apt-get install git-core` or the equivalent command
 
 Clone the repository into a directory of your choice. As it includes [khan-exercises](https://github.com/Khan/khan-exercises) as a git submodule, you will need to do a recursive clone, i.e.:
 
-`git clone --recursive https://github.com/jamalex/ka-lite.git`
-
-(this will put the project code in a subdirectory of your current directory, named `ka-lite`)
+`git clone --recursive https://github.com/jamalex/ka-lite.git` (this will put the project code in a subdirectory of your current directory, named `ka-lite`)
 
 ### 4. Run the installation script
 
-Inside the `ka-lite` directory (that you cloned above) you should find a script called `install.sh`. Run this script to initialize the server database.
+Inside the `ka-lite` directory (that you cloned above) you should find a script called `install.sh`. Use `cd ka-lite` to navigate into the directory, and run this script using `./install.sh` to initialize the server database.
 
 ### 5. Run the server
+
+(If you're installing the server to test/develop, rather than deploy, follow the instructions [here](docs/DEVELOPMENT.md) instead.)
 
 To start the server, run the `start.sh` script in the `ka-lite` directory. You may want to have this script run automatically when you start the computer.
 
@@ -54,15 +54,15 @@ Install the latest version of [git for Windows](http://code.google.com/p/msysgit
 
 Clone the repository into a folder of your choice. As it includes [khan-exercises](https://github.com/Khan/khan-exercises) as a git submodule, you will need to do a recursive clone, i.e. (from cmd.exe):
 
-`git clone --recursive https://github.com/jamalex/ka-lite.git`
+`git clone --recursive https://github.com/jamalex/ka-lite.git` (this will put the project code in a subfolder of your current folder, named `ka-lite`)
 
 ### 4. Run the installation script
 
-Inside the `ka-lite` folder (that you cloned above) you should find a script called `install.bat`. Run this script to initialize the server database.
+Inside the `ka-lite` folder (that you cloned above) you should find a script called `install.bat`. Use `cd ka-lite` to navigate into the directory, and run this script with `install.bat`, to initialize the server database.
 
 ### 5. Run the server
 
-To start the server, run the `start.bat` script in the `ka-lite` folder. You may want to have this script run automatically when you start the computer.
+To start the server, run the `start.bat` script in the `ka-lite` folder. You may want to have this script run automatically when you start the computer, by creating a shortcut to start.bat and [copying it to the Startup folder in the Start Menu](http://windows.microsoft.com/en-US/windows-vista/Run-a-program-automatically-when-Windows-starts) -- the installation script should also have given you the option of having this done automatically.
 
 If you see a "Windows Security Alert" [warning about Windows Firewall blocking Python](kalite/static/images/windows-python-network-permissions.png), be sure to check both checkboxes (as seen in the picture) and click "Allow access", to ensure that the server will be accessible.
 
