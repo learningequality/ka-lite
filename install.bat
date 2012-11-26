@@ -61,7 +61,7 @@ if /I "%c%" EQU "N" goto :no
 goto :choice
 :yes
 createshortcut.vbs
-echo "A link to start.bat was added to the Start Menu's Startup (all users) folder."
+echo A link to start.bat was added to the Start Menu's Startup (all users) folder.
 echo.
 :no
 
