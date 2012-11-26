@@ -53,6 +53,18 @@ set /p name=Please enter a name for this server (or, press Enter to use the defa
 set /p description=Please enter a one-line description for this server (or, press Enter to leave blank): 
 python manage.py initdevice "%name%" "%description%"
 
+:choice
+echo.
+set /P c=Do you wish to set KA Lite to load automatically when you start Windows [Y/N]?
+if /I "%c%" EQU "Y" goto :yes
+if /I "%c%" EQU "N" goto :no
+goto :choice
+:yes
+createshortcut.vbs
+echo "A link to start.bat was added to the Start Menu's Startup (all users) folder."
+echo.
+:no
+
 echo.
 echo CONGRATULATIONS! You've finished installing the KA Lite server software.
 echo Please run 'start.bat' to start the server, and then load the url
@@ -60,3 +72,5 @@ echo http://127.0.0.1:8008/ to complete the device configuration.
 echo.
 
 cd ..
+
+pause
