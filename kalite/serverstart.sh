@@ -6,7 +6,7 @@ then
     rm runwsgiserver.pid
 fi
 
-pids=`ps -C python -f | grep runwsgiserver | awk '{print $2}'`
+pids=`ps -f -a | grep runwsgiserver | awk '{print $2}'`
 if [ "$pids" ]; then
     echo "(Warning: Web server seems to have been started elsewhere; stopping all processes ($pids))"
     kill $pids
