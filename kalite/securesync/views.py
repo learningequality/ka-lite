@@ -59,10 +59,14 @@ def facility_required(handler):
             return HttpResponseRedirect(reverse("add_facility"))
         elif "facility" in request.GET:
             facility = get_object_or_None(Facility, pk=request.GET["facility"])
+            if "set_default" in request.GET and request.is_admin and facility and not facility.is_default():
+                Settings.set("default_facility", facility.id)
         elif "facility_user" in request.session:
             facility = request.session["facility_user"].facility
         elif Facility.objects.count() == 1:
             facility = Facility.objects.all()[0]
+        else:
+            facility = get_object_or_None(Facility, pk=Settings.get("default_facility"))
 
         if facility:
             return handler(request, facility, *args, **kwargs)
