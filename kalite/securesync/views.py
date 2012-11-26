@@ -71,7 +71,7 @@ def facility_required(handler):
     return inner_fn
 
 def set_as_registered():
-    force_job("securesync", "Secure Sync", "HOURLY")
+    force_job("syncmodels", "Secure Sync", "HOURLY")
     Settings.set("registered", True)
 
 @require_admin

@@ -1,7 +1,7 @@
 Installation steps
 ===
 
-1. Install [Python](http://www.python.org/) version 2.5, 2.6 or 2.7
+1. Install [Python](http://www.python.org/) version 2.6 or 2.7
 2. Install [git](http://git-scm.com/)
 3. Download the KA Lite codebase using git
 4. Run the installation script to complete configuration
@@ -12,7 +12,7 @@ Installing on Linux
 
 ### 1. Install Python
 
-Almost all popular versions of Linux come with Python already installed. To ensure that it is a usable version, run `python -V` from the command line, and ensure that the version number starts with 2.5, 2.6, or 2.7.
+Almost all popular versions of Linux come with Python already installed. To ensure that it is a usable version, run `python -V` from the command line, and ensure that the version number starts with 2.6, or 2.7.
 
 If Python is not installed, install it by running `sudo apt-get install python` or the equivalent command in your distribution's package manager.
 
@@ -42,7 +42,7 @@ Installing on Windows
 
 ### 1. Install Python
 
-Install Python (version 2.5, 2.6 or 2.7), if not already installed. Python 2.7 can be downloaded [here](http://www.python.org/download/releases/2.7.3/). On 32-bit Windows, use the [x86 MSI Installer](http://www.python.org/ftp/python/2.7.3/python-2.7.3.msi), and on 64-bit Windows, use the [X86-64 MSI Installer](http://www.python.org/ftp/python/2.7.3/python-2.7.3.amd64.msi).
+Install Python (version 2.6 or 2.7), if not already installed. Python 2.7 can be downloaded [here](http://www.python.org/download/releases/2.7.3/). On 32-bit Windows, use the [x86 MSI Installer](http://www.python.org/ftp/python/2.7.3/python-2.7.3.msi), and on 64-bit Windows, use the [X86-64 MSI Installer](http://www.python.org/ftp/python/2.7.3/python-2.7.3.amd64.msi).
 
 You will need Python to be on your system PATH, so that it can be run from the command prompt (cmd.exe); see [this video](http://www.youtube.com/watch?v=ndNlFy-5GKA&hd=1#t=243s) for instructions (note that this is for version 2.7; just adapt the paths for older versions). It may be good to add `;C:\Python27\;C:\Python27\Scripts` to your path, instead of just `;C:\Python27\` as recommended in the video.
 

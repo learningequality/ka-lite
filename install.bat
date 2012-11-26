@@ -15,7 +15,7 @@ if exist database\data.sqlite (
 python -c "import sys; sys.version_info[0]==2 and sys.version_info[1] >= 5 and sys.exit(0) or sys.exit(1)"
 if ERRORLEVEL 1 (
     echo -------------------------------------------------------------------
-    echo Error: You must have Python version 2.5, 2.6, or 2.7 installed.
+    echo Error: You must have Python version 2.6 or 2.7 installed.
     echo Your version is:
     python -V
     echo -------------------------------------------------------------------
@@ -25,13 +25,11 @@ if ERRORLEVEL 1 (
 if ERRORLEVEL 9009 (
     echo -------------------------------------------------------------------
     echo Error: You do not seem to have Python installed, or it is not on
-    echo the PATH. Install version 2.5, 2.6, or 2.7, and re-run this script.
+    echo the PATH. Install version 2.6 or 2.7, and re-run this script.
     echo -------------------------------------------------------------------
     cd ..
     exit /B
 )
-
-cd ..
 
 echo -------------------------------------------------------------------
 echo.
@@ -45,8 +43,20 @@ echo -------------------------------------------------------------------
 echo.
 pause
 
-cd kalite
-
 python manage.py syncdb --migrate
+
+echo.
+python manage.py generatekeys
+echo.
+
+set /p name=Please enter a name for this server (or, press Enter to use the default): 
+set /p description=Please enter a one-line description for this server (or, press Enter to leave blank): 
+python manage.py initdevice "%name%" "%description%"
+
+echo.
+echo CONGRATULATIONS! You've finished installing the KA Lite server software.
+echo Please run 'start.bat' to start the server, and then load the url
+echo http://127.0.0.1:8008/ to complete the device configuration.
+echo.
 
 cd ..

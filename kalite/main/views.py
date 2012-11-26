@@ -16,6 +16,7 @@ from django.utils.safestring import mark_safe
 from config.models import Settings
 from securesync.api_client import SyncClient
 from django.contrib import messages
+from utils.jobs import force_job
 
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
@@ -140,6 +141,7 @@ def homepage(request):
 @render_to("video_download.html")
 def update(request):
     call_command("videoscan")
+    force_job("videodownload", "Download Videos")
     language_lookup = topicdata.LANGUAGE_LOOKUP
     language_list = topicdata.LANGUAGE_LIST
     default_language = Settings.get("subtitle_language") or "en"
