@@ -15,7 +15,7 @@ if exist database\data.sqlite (
 python -c "import sys; sys.version_info[0]==2 and sys.version_info[1] >= 5 and sys.exit(0) or sys.exit(1)"
 if ERRORLEVEL 1 (
     echo -------------------------------------------------------------------
-    echo Error: You must have Python version 2.5, 2.6, or 2.7 installed.
+    echo Error: You must have Python version 2.6 or 2.7 installed.
     echo Your version is:
     python -V
     echo -------------------------------------------------------------------
@@ -25,7 +25,7 @@ if ERRORLEVEL 1 (
 if ERRORLEVEL 9009 (
     echo -------------------------------------------------------------------
     echo Error: You do not seem to have Python installed, or it is not on
-    echo the PATH. Install version 2.5, 2.6, or 2.7, and re-run this script.
+    echo the PATH. Install version 2.6 or 2.7, and re-run this script.
     echo -------------------------------------------------------------------
     cd ..
     exit /B
