@@ -7,7 +7,7 @@ from config.models import Settings
             
 
 class Command(BaseCommand):
-    help = "Download all videos marked to be downloaded"
+    help = "Download all subtitles marked to be downloaded"
 
     def handle(self, *args, **options):
         
@@ -40,10 +40,11 @@ class Command(BaseCommand):
             except NoSubs as e:
                 video.flagged_for_subtitle_download = False
                 video.subtitle_download_in_progress = False
-                video.subtitles_downloaded = False
+                video.subtitles_downloaded = True
                 video.save()
+                self.stderr.write("No subtitles available\n")
             except Exception as e:
-                self.stderr.write("Error in downloading subtitles for: %s\n" % e)
+                self.stderr.write("Error in downloading subtitles: %s\n" % e)
                 video.subtitle_download_in_progress = False
                 video.save()
                 force_job("subtitledownload", "Download Subtitles")
