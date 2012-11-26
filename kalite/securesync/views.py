@@ -13,11 +13,13 @@ from forms import RegisteredDevicePublicKeyForm, FacilityUserForm, FacilityTeach
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout   
 from annoying.functions import get_object_or_None   
+from config.models import Settings
 
 import crypto
 import settings
 from securesync.models import SyncSession, Device, RegisteredDevicePublicKey, Zone, Facility, FacilityGroup
 from securesync.api_client import SyncClient
+from utils.jobs import force_job
 
 def require_admin(handler):
     def wrapper_fn(request, *args, **kwargs):
@@ -57,7 +59,6 @@ def facility_required(handler):
             return HttpResponseRedirect(reverse("add_facility"))
         elif "facility" in request.GET:
             facility = get_object_or_None(Facility, pk=request.GET["facility"])
-            print request.GET["facility"]
         elif "facility_user" in request.session:
             facility = request.session["facility_user"].facility
         elif Facility.objects.count() == 1:
@@ -69,18 +70,25 @@ def facility_required(handler):
             return facility_selection(request)
     return inner_fn
 
+def set_as_registered():
+    force_job("syncmodels", "Secure Sync", "HOURLY")
+    Settings.set("registered", True)
+
 @require_admin
 @render_to("securesync/register_public_key_client.html")
 def register_public_key_client(request):
     if Device.get_own_device().get_zone():
+        set_as_registered()   
         return {"already_registered": True}
     client = SyncClient()
     if client.test_connection() != "success":
         return {"no_internet": True}
     reg_status = client.register()
     if reg_status == "registered":
+        set_as_registered()
         return {"newly_registered": True}
     if reg_status == "device_already_registered":
+        set_as_registered()
         return {"already_registered": True}
     if reg_status == "public_key_unregistered":
         return {

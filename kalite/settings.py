@@ -21,11 +21,15 @@ PROJECT_PATH = os.path.dirname(os.path.realpath(__file__))
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": PROJECT_PATH + "/data.sqlite",
+        "NAME": PROJECT_PATH + "/database/data.sqlite",
+        "OPTIONS": {
+            "timeout": 60,
+        },
     }
 }
 
 DATA_PATH = PROJECT_PATH + "/static/data/"
+VIDEO_PATH = PROJECT_PATH + "/static/videos/"
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -35,8 +39,6 @@ TIME_ZONE = "America/Los_Angeles"
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = hasattr(local_settings, "LANGUAGE_CODE") and local_settings.LANGUAGE_CODE or "en-us"
 
-# SITE_ID = 1
-
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
 USE_I18N = True
@@ -45,31 +47,10 @@ USE_I18N = True
 # calendars according to the current locale
 USE_L10N = True
 
-# URL prefix for static files.
-# Example: "http://media.lawrence.com/static/"
+MEDIA_ROOT = PROJECT_PATH + "/static/"
+MEDIA_URL = "/static/"
+
 STATIC_URL = "/static/"
-
-# URL prefix for admin static files -- CSS, JavaScript and images.
-# Make sure to use a trailing slash.
-ADMIN_MEDIA_PREFIX = "/static/admin/"
-
-# Directory where static files will be consolidated
-if DEBUG:
-    STATIC_ROOT = PROJECT_PATH + "/static-files/"
-else:
-    STATIC_ROOT = PROJECT_PATH + "/static/"
-
-# Additional locations of static files
-STATICFILES_DIRS = (
-    PROJECT_PATH + "/static/",
-)
-
-# List of finder classes that know how to find static files in
-# various locations.
-STATICFILES_FINDERS = (
-    "django.contrib.staticfiles.finders.FileSystemFinder",
-    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-)
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = hasattr(local_settings, "SECRET_KEY") and local_settings.SECRET_KEY \
@@ -80,9 +61,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.debug",
     "django.core.context_processors.i18n",
     "django.core.context_processors.media",
-    "django.core.context_processors.static",
     "django.contrib.messages.context_processors.messages",
     "django.core.context_processors.request",
+    "main.custom_context_processors.custom"
 )
 
 # List of callables that know how to import templates from various sources.
@@ -98,8 +79,6 @@ MIDDLEWARE_CLASSES = (
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
-    "securesync.middleware.DBCheck",
-    "securesync.middleware.AuthFlags",
 )
 
 ROOT_URLCONF = "kalite.urls"
@@ -110,12 +89,12 @@ INSTALLED_APPS = (
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
-    "django.contrib.staticfiles",
     "django.contrib.admin",
     "django.contrib.humanize",
     "django.contrib.messages",
     "south",
     "chronograph",
+    "django_wsgiserver",
     "securesync",
     "config",
     "main",
@@ -134,6 +113,12 @@ if CENTRAL_SERVER:
     INSTALLED_APPS += ("postmark", "kalite.registration", "central")
     EMAIL_BACKEND = "postmark.backends.PostmarkBackend"
     AUTH_PROFILE_MODULE = 'central.UserProfile'
+
+if not CENTRAL_SERVER:
+    MIDDLEWARE_CLASSES += (
+        "securesync.middleware.DBCheck",
+        "securesync.middleware.AuthFlags",
+    )
 
 # import these one extra time to overwrite any settings not explicitly looking for local settings
 try:

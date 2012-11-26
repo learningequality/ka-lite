@@ -2,6 +2,7 @@ import re, json, sys
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
+from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from annoying.decorators import render_to
 import settings
@@ -9,8 +10,13 @@ from settings import slug_key, title_key
 from main import topicdata
 from django.contrib import messages
 from securesync.views import require_admin, facility_required
-
+from config.models import Settings
 from securesync.models import Facility, FacilityGroup
+from django.utils.safestring import mark_safe
+from config.models import Settings
+from securesync.api_client import SyncClient
+from django.contrib import messages
+from utils.jobs import force_job
 
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
@@ -51,6 +57,19 @@ def splat_handler(request, splat):
         return exercise_handler(request, current_node)
     # return HttpResponseNotFound("No valid item found at this address!")
     raise Http404
+
+def check_setup_status(handler):
+    def wrapper_fn(request, *args, **kwargs):
+        client = SyncClient()
+        if not request.is_admin and Facility.objects.count() == 0:
+            messages.warning(request, mark_safe("Please login <a href='%s'>here</a> with the account you created in the installation script, to complete the setup." % reverse("login")))
+        if request.is_admin:
+            if not Settings.get("registered") and client.test_connection() == "success":
+                messages.warning(request, mark_safe("Please follow the directions to register your device <a href='%s'>here</a>, so that it can synchronize with the central server." % reverse("register_public_key")))
+            elif Facility.objects.count() == 0:
+                messages.warning(request, mark_safe("Please create a facility <a href='%s'>here</a>. Users will not be able to sign up until you do so." % reverse("add_facility")))
+        return handler(request, *args, **kwargs)
+    return wrapper_fn
 
 @render_to("topic.html")
 def topic_handler(request, topic):
@@ -107,22 +126,32 @@ def exercise_dashboard(request):
     }
     return context
     
+@check_setup_status
 @render_to("homepage.html")
 def homepage(request):
     topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"], topicdata.TOPICS["children"])
     context = {
         "title": "Home",
         "topics": topics,
+        "registered": Settings.get("registered"),
     }
     return context
         
 @require_admin
 @render_to("video_download.html")
 def update(request):
-#    topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"], settings.TOPICS["children"])
+    call_command("videoscan")
+    force_job("videodownload", "Download Videos")
+    language_lookup = topicdata.LANGUAGE_LOOKUP
+    language_list = topicdata.LANGUAGE_LIST
+    default_language = Settings.get("subtitle_language") or "en"
+    if default_language not in language_list:
+        language_list.append(default_language)
+    languages = [{"id":key,"name":language_lookup[key]} for key in language_list]
+    languages = sorted(languages, key = lambda k: k["name"])
     context = {
-#        "title": "Home",
-#        "topics": topics,
+        "language": languages,
+        "default_language": default_language,
     }
     return context
 

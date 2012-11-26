@@ -18,6 +18,8 @@ class Settings(models.Model):
                 return int(setting.value)
             if setting.datatype == "float":
                 return float(setting.value)
+            if setting.datatype == "bool":
+                return bool(setting.value)
             return setting.value
         except Settings.DoesNotExist:
             return ""

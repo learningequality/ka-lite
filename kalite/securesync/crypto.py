@@ -17,12 +17,10 @@ def load_keys():
         reset_keys()
 
 def reset_keys():
-    print "Generating 2048-bit RSA public/private keys..."
     try:
         (public_key, private_key) = rsa.newkeys(2048, poolsize=4)
     except:
         (public_key, private_key) = rsa.newkeys(2048)
-    print "Done!"
     Settings.set("private_key", private_key.save_pkcs1())
     Settings.set("public_key", serialize_public_key(public_key))
     keys["private"] = private_key

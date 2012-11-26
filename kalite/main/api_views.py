@@ -2,13 +2,14 @@ import re, json
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse, HttpResponseNotAllowed
 from django.utils import simplejson
-from django.db.models import Max
+from django.db.models import Max, Q
 from annoying.functions import get_object_or_None
 import settings
 from settings import slug_key, title_key
 from main import topicdata
 from utils.jobs import force_job
 from models import FacilityUser, VideoLog, ExerciseLog, VideoFile
+from config.models import Settings
 
 def require_admin(handler):
     def wrapper_fn(request, *args, **kwargs):
@@ -33,7 +34,7 @@ def save_video_log(request):
     videolog.youtube_id = data.get("youtube_id", "")
     old_videolog = videolog.get_existing_instance() or VideoLog()
     videolog.total_seconds_watched = old_videolog.total_seconds_watched + data.get("seconds_watched", 0)
-    videolog.points = max(old_videolog.points, data.get("points", None)) or None
+    videolog.points = max(old_videolog.points or 0, data.get("points", 0)) or 0
     try:
         videolog.full_clean()
         videolog.save()
@@ -55,6 +56,7 @@ def save_exercise_log(request):
     old_exerciselog = exerciselog.get_existing_instance() or ExerciseLog()
     exerciselog.attempts = old_exerciselog.attempts + 1
     exerciselog.streak_progress = data.get("streak_progress", None)
+    exerciselog.points = data.get("points", None)
     
     try:
         exerciselog.full_clean()
@@ -120,6 +122,7 @@ def _get_exercise_log_dict(request, user, exercise_id):
         "exercise_id": exercise_id,
         "streak_progress": exerciselog.streak_progress,
         "complete": exerciselog.complete,
+        "points": exerciselog.points,
         "struggling": exerciselog.struggling,
     }
 
@@ -165,6 +168,33 @@ def get_video_download_list(request):
     videofiles = VideoFile.objects.filter(flagged_for_download=True).values("youtube_id")
     video_ids = [video["youtube_id"] for video in videofiles]
     return JsonResponse(video_ids)
+
+@require_admin
+def start_subtitle_download(request):
+    new_only = simplejson.loads(request.raw_post_data or "{}").get("new_only", False)
+    if new_only:
+        videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True), subtitles_downloaded=False)
+    else:
+        videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True))
+    for videofile in videofile:
+        if videofile.subtitle_download_in_progress:
+            continue
+        videofile.flagged_for_subtitle_download = True
+        videofile.save()
+    force_job("subtitledownload", "Download Subtitles")
+    return JsonResponse({})
+
+@require_admin
+def check_subtitle_download(request):
+    videofiles = VideoFile.objects.filter(flagged_for_subtitle_download=True)
+    return JsonResponse(videofiles.count())
+
+@require_admin
+def get_subtitle_download_list(request):
+    videofiles = VideoFile.objects.filter(flagged_for_subtitle_download=True).values("youtube_id")
+    video_ids = [video["youtube_id"] for video in videofiles]
+    return JsonResponse(video_ids)
+
 
 def convert_topic_tree(node, level=0):
     if node["kind"] == "Topic":

@@ -23,7 +23,7 @@ class VideoLog(SyncedModel):
             self.completion_timestamp = datetime.now()
             self.completion_counter = Device.get_own_device().get_counter()
             self.attempts_before_completion = self.attempts
-        super(ExerciseLog, self).save(*args, **kwargs)
+        super(VideoLog, self).save(*args, **kwargs)
     
     def get_uuid(self, *args, **kwargs):
         namespace = uuid.UUID(self.user.id)
@@ -69,9 +69,12 @@ settings.add_syncing_models([VideoLog, ExerciseLog])
 class VideoFile(models.Model):
     youtube_id = models.CharField(max_length=11, primary_key=True)
     flagged_for_download = models.BooleanField(default=False)
+    flagged_for_subtitle_download = models.BooleanField(default=False)
     download_in_progress = models.BooleanField(default=False)
+    subtitle_download_in_progress = models.BooleanField(default=False)
     priority = models.IntegerField(default=0)
     percent_complete = models.IntegerField(default=0)
+    subtitles_downloaded = models.BooleanField(default=False)
     
     class Meta:
         ordering = ["priority", "youtube_id"]

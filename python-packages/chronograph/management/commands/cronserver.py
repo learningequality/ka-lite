@@ -17,8 +17,12 @@ class CronThread(Thread):
     daemon = True
     
     def run(self):
-        logger.info("Running due jobs...")
-        call_command('cron')
+        jobs = Job.objects.due()
+        if jobs:
+            logger.info("Running %d due jobs... (%s)" % (jobs.count(), ", ".join(['"%s"' % job.name for job in jobs])))
+            call_command('cron')
+        else:
+            logger.info("No jobs due to run.")
 
 class Command(BaseCommand):
     args = "time"
@@ -41,12 +45,8 @@ class Command(BaseCommand):
         try:
             sys.stdout.write("Starting cronserver.  Jobs will run every %d seconds.\n" % time_wait)
             sys.stdout.write("Quit the server with CONTROL-C.\n")
-            
-            seconds = datetime.now().second
-            if seconds > 0:
-                sleep(60-seconds)
-            
-            # Run server untill killed
+                        
+            # Run server until killed
             while True:
                 thread = CronThread()
                 thread.start()

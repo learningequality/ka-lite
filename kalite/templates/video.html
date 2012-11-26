@@ -3,8 +3,8 @@
 {% block watch_selected %}selected{% endblock watch_selected %}
 
 {% block bodyjs %}
-<script src="{{ STATIC_URL }}js/swfobject.js"></script>
-<script src="{{ STATIC_URL }}js/video.js"></script>
+<script src="{{ MEDIA_URL }}js/swfobject.js"></script>
+<script src="{{ MEDIA_URL }}js/video.js"></script>
 <script>
 
     var videoData = {
@@ -59,14 +59,19 @@
         <a href="{{ video.related_exercise.path }}" class="simple-button green" title="Exercise: '{{ video.related_exercise.title }}'">Practice this concept</a>
     </span>
     {% endif %}
+    <div class="clear"></div>
+<div class="points-container" style="display: none;">Points: <span class="points">0</span></div>
 </h2>
 
+
+<div class="clear"></div>
+
 {% if prev %}
-<a style="float: left;" href="../{{ prev.readable_id }}/">&lt; {{ prev.title }} <span class="progress-circle" data-youtube-id="{{ prev.youtube_id }}"></span></a>
+<div class="vidprev"><a href="../{{ prev.readable_id }}/">&lt; {{ prev.title }} <span class="progress-circle" data-youtube-id="{{ prev.youtube_id }}"></span></a></div>
 {% endif %}
 
 {% if next %}
-<a style="float: right; padding-right: 4px;" href="../{{ next.readable_id }}/"><span class="progress-circle" data-youtube-id="{{ next.youtube_id }}"></span> {{ next.title }} &gt;</a>
+<div class="vidnext"><a href="../{{ next.readable_id }}/"><span class="progress-circle" data-youtube-id="{{ next.youtube_id }}"></span> {{ next.title }} &gt;</a></div>
 {% endif %}
 
 <div class="clear"></div>
@@ -77,7 +82,5 @@
     </div>
     <img id="video-thumb" src="/static/videos/{{ video.youtube_id }}.png" width="100%">
 </div>
-
-<p class="points-container" style="display: none;">Points: <span class="points">0</span></p>
 
 {% endblock content %}

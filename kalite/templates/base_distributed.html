@@ -16,6 +16,9 @@
             toggle_state("admin", data.is_admin);
             if (data.is_logged_in){
                 $('#logged-in-name').text(data.username + " (Logout)");
+                if (data.points!=0){
+                    $('#sitepoints').text("Points: " + data.points);
+                }
             }
 
         });        
@@ -24,12 +27,13 @@
 {% endblock basejs %}
 
 {% block sitewide_navigation %}
+
 <span class="dropdown topic-browser-dropdown">
     <a href="{% url homepage %}" id="nav_watch" class="watch-navlink not-admin-only {% block watch_selected %}{% endblock watch_selected %}" title="Watch Videos">Watch</a>
     <a href="{% url exercise_dashboard %}" id="nav_practice" class="practice-navlink not-admin-only {% block practice_selected %}{% endblock practice_selected %} title="Practice Lessons"">Practice</a>
     <a href="{% url add_facility_student %}" id="nav_addstudent" class="admin-only {% block addstudent_selected %}{% endblock addstudent_selected %}" title="Add a student">Add Student</a>
     <a href="{% url add_facility_teacher %}" id="nav_addteacher" class="admin-only {% block addteacher_selected %}{% endblock addteacher_selected %}" title="Add a teacher">Add Teacher</a>
-    <a href="/admin" id="nav_admin" class="django-user-only" title="Visit the admin panel">Admin</a>
+    <a href="/admin" id="nav_admin" class="django-user-only {% block admin_selected %}{% endblock admin_selected %}" title="Visit the admin panel">Admin</a>
     <a href="{% url update %}" id="nav_update" class="admin-only {% block update_selected %}{% endblock update_selected %}" title="Update this server with new videos and subtitles">Update</a>
     <a href="{% url teacher_panel %}" id="nav_teacherpanel" class="admin-only {% block teacherpanel_selected %}{% endblock teacherpanel_selected %}" title="Track the progress of your students">Coach</a>
     <a href="{% url add_facility_student %}" id="nav_signup" class="not-logged-in-only {% block signup_selected %}{% endblock signup_selected %}" title="Register to start tracking your progress">Sign Up</a>
