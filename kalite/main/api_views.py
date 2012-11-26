@@ -172,14 +172,24 @@ def get_video_download_list(request):
 @require_admin
 def start_subtitle_download(request):
     new_only = simplejson.loads(request.raw_post_data or "{}").get("new_only", False)
+    language = simplejson.loads(request.raw_post_data or "{}").get("language", "")
+    language_list = topicdata.LANGUAGE_LIST
+    current_language = Settings.get("subtitle_language")
+    new_only = new_only and (current_language == language)
+    if language in language_list:
+        Settings.set("subtitle_language", language)
+    else:
+        return JsonResponse({"error": "This language is not currently supported - please update the language list"}, status=500)
     if new_only:
         videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True), subtitles_downloaded=False)
     else:
         videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True))
-    for videofile in videofile:
+    for videofile in videofiles:
         if videofile.subtitle_download_in_progress:
             continue
         videofile.flagged_for_subtitle_download = True
+        if not new_only:
+            videofile.subtitles_downloaded = False
         videofile.save()
     force_job("subtitledownload", "Download Subtitles")
     return JsonResponse({})

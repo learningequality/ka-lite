@@ -12,8 +12,13 @@
     width: 400px;
     float: left;
     margin-right: 10px;
+    margin-top: 5px;
     height: 60px;
     padding: 10px;
+}
+
+.subtitles-download {
+    width: 500px;
 }
 
 .progress-section {
@@ -36,7 +41,6 @@
     color: #005987;
     margin-top: 1.5px;
 }
-
 
 #progressbar-current {
     opacity: 0.9;
@@ -165,13 +169,24 @@
         });
         
         
-        $("#download-subtitles").click(function() {
-        	
-        doRequest("/api/start_subtitle_download", {new_only: true}).success(startSubtitleDownloadChecks);
-    	
-            // $(".progress-section").hide();
-            // $(".progress-waiting").show();
-			$(".progress-subtitle").show();
+        $(".download-subtitles").click(function(event) {
+        
+            var new_only = $(event.target).attr("new_only");
+            var language = $("#language option:selected").val();
+            console.log(new_only)
+            if (new_only!="true") {
+                if(!confirm("This will update subtitles for all downloaded videos.")) {
+                    return
+                }
+            }
+            
+            if (language) {
+                doRequest("/api/start_subtitle_download", {language: language, new_only: new_only}).success(startSubtitleDownloadChecks);
+                $(".progress-subtitle").show();
+            } else {
+                alert("You have not selected a language")
+            }
+			
         });
        
     
@@ -190,7 +205,6 @@
         });
     }
     
-    
     function startSubtitleDownloadChecks() {
     	doRequest("/api/get_subtitle_download_list").success(function(video_ids) {
 	        window.downloading_subtitles = video_ids;
@@ -202,18 +216,18 @@
 	        window.download_subtitle_check_interval = setInterval(checkSubtitleDownloadProgress, 1000);
 	        checkSubtitleDownloadProgress();
     	});
-}
+    }
     
    	function checkSubtitleDownloadProgress() {
-        doRequest("/api/check_subtitle_download").success(function(progress) {
-            window.download_subtitle_index = window.downloading_subtitles.length - progress ;
-            updateProgressDisplay();
-            if (progress == 0) {
+        doRequest("/api/check_subtitle_download").success(function(remainder) {
+            window.download_subtitle_index = window.downloading_subtitles.length - remainder;
+            console.log(remainder);
+            updateSubtitleProgressDisplay();
+            if (remainder == 0) {
             	clearInterval(window.download_subtitle_check_interval);
                 $(".progress-subtitle").hide();
                 return;
             }
-            checkVideoDownloadProgress();
   
         });
     }
@@ -283,11 +297,11 @@
     	}
     
         $("#progressbar-subtitle").progressbar({
-        value: window.download_subtitle_index * 100 + window.current_download_percent,
+        value: window.download_subtitle_index * 100,
         max: window.downloading_subtitles.length * 100
     	});
     
-        $(".subtitle-downloading-current").text(window.download_subtitle_index + 1);
+        $(".subtitle-downloading-current").text(window.download_subtitle_index);
         $(".subtitle-downloading-total").text(window.downloading_subtitles.length);  
     
     }
@@ -348,8 +362,8 @@
     <button id="download-videos" type="button">Download Selected Videos</button>
 </div>
 
-<div class="download-actions vertical-shadow">
-    <h2 class="button_text">Download/update subtitles for all videos</h2>
+<div class="download-actions subtitles-download vertical-shadow">
+    <h2 class="button_text">Download/update subtitles for videos</h2>
     <span class= "button_style">
         <select id="language">
             {% if languages %}
@@ -359,7 +373,8 @@
             {% endif %}
         </select>
     </span>
-    <button id="download_subtitles" type="button">Download Subtitles</button>
+    <button class="download-subtitles" new_only=true type="button">Download Missing Subtitles</button>
+    <button class="download-subtitles" type="button">Update All Subtitles</button>
 </div>
 
 <div style="clear: both;"></div>
