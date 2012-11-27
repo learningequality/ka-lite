@@ -59,10 +59,14 @@ def facility_required(handler):
             return HttpResponseRedirect(reverse("add_facility"))
         elif "facility" in request.GET:
             facility = get_object_or_None(Facility, pk=request.GET["facility"])
+            if "set_default" in request.GET and request.is_admin and facility and not facility.is_default():
+                Settings.set("default_facility", facility.id)
         elif "facility_user" in request.session:
             facility = request.session["facility_user"].facility
         elif Facility.objects.count() == 1:
             facility = Facility.objects.all()[0]
+        else:
+            facility = get_object_or_None(Facility, pk=Settings.get("default_facility"))
 
         if facility:
             return handler(request, facility, *args, **kwargs)
@@ -135,9 +139,6 @@ def facility_edit(request, id=None):
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse("add_facility_student") + "?facility=" + form.instance.pk)
-        elif request.method =="POST":
-            messages.error(request, "Just what do you think you're doing, Dave?")
-            return HttpResponseRedirect(reverse("login"))
     else:
         form = FacilityForm(instance=facil)
     return {
@@ -200,14 +201,11 @@ def add_facility_user(request, facility, is_teacher):
 @require_admin
 @render_to("securesync/add_facility.html")
 def add_facility(request):
-    if request.method == 'POST' and request.is_admin:
+    if request.method == "POST":
         form = FacilityForm(data=request.POST)
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse("add_facility_student") + "?facility=" + form.instance.pk)
-    elif request.method =='POST' and not request.is_admin:
-        messages.error(request, "Just what do you think you're doing, Dave?")
-        return HttpResponseRedirect(reverse("login"))
     else:
         form = FacilityForm()
     return {

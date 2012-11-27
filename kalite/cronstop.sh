@@ -1,4 +1,4 @@
-pids=`ps -C python -f | grep cronserver.py | awk '{print $2}'`
+pids=`ps -f -a | grep cronserver.py | awk '{print $2}'`
 
 if [ "$pids" ]; then
     echo "----------------------------------------------------------------"

@@ -2,6 +2,7 @@ from django.contrib.auth.models import User, check_password
 from django.core import serializers
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
+from config.models import Settings
 import crypto
 import uuid
 import random
@@ -182,6 +183,9 @@ class Facility(SyncedModel):
 
     def __unicode__(self):
         return "%s (#%s)" % (self.name, int(self.id[:3], 16))
+
+    def is_default(self):
+        return self.id == Settings.get("default_facility")
 
 
 class FacilityGroup(SyncedModel):

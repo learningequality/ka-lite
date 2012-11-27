@@ -10,11 +10,9 @@ headers = {
 base_url = "https://www.universalsubtitles.org/api2/partners/videos"
 
 class NoSubs(Exception):
-    def __init__(self,value):
-        self.value
     
     def __str__(value):
-        return repr(self.value)
+        return "No Subtitles for this video"
 
 def get_subtitles(youtube_id, language, format="json"):
     
@@ -48,7 +46,7 @@ def download_subtitles(youtube_id, language):
             fp.write(subtitles.encode('UTF-8'))
     
     else:
-        raise NoSubs
+        raise NoSubs()
 
 
 if __name__ == '__main__':
