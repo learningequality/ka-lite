@@ -12,8 +12,8 @@ class Command(BaseCommand):
     help = "Sync up the database's version of what videos have been downloaded with the actual folder contents"
 
     def handle(self, *args, **options):
-        
-        existing_videos = set([path.split("/")[-1].split(".")[0] for path in glob.glob(settings.VIDEO_PATH + "*.mp4")])
+        files = glob.glob(settings.VIDEO_PATH + "*.mp4")
+        existing_videos = set([path.replace("\\", "/").split("/")[-1].split(".")[0] for path in files])
         marked_videos = set([video.youtube_id for video in VideoFile.objects.filter(percent_complete=100)])
         partial_videos = set([video.youtube_id for video in VideoFile.objects.filter(download_in_progress=True)])
         
