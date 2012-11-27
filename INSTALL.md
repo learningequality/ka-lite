@@ -40,6 +40,8 @@ Inside the `ka-lite` directory (that you cloned above) you should find a script 
 
 (If you're installing the server to test/develop, rather than deploy, follow the [development instructions](docs/DEVELOPMENT.md) instead.)
 
+The installation script should have given you the option of setting the server to run automatically in the background when the computer boots. If you skipped this step, you can do it later by running `sudo ./runatboot.sh` from inside the `ka-lite/kalite` directory. 
+
 To start the server, run the `start.sh` script in the `ka-lite` directory. You may want to have this script run automatically when you start the computer.
 
 The local KA Lite website should now be accessible at [http://127.0.0.1:8008/](http://127.0.0.1:8008/) (replace 127.0.0.1 with your computer's external ip address or domain to access it from another connected computer).
@@ -64,13 +66,13 @@ Clone the repository into a folder of your choice. Load `cmd.exe`, and use `cd` 
 
 `git clone --recursive https://github.com/jamalex/ka-lite.git`
 
-If you get the message `'git' is not recognized as an internal or external command, operable program or batch file.`, this means git was not added to your PATH. In this case, you can either uninstall git and then re-follow the [git installation instructions above](#2-install-git-1), or [add `C:\Program Files\git\bin` (or maybe `C:\Program Files (x86)\git\bin`) to your PATH](http://stackoverflow.com/a/4493004/527280).
+If you get the message `'git' is not recognized as an internal or external command, operable program or batch file.`, this means git was not added to your PATH. In this case, you can either uninstall git and then re-follow the [git installation instructions above](#2-install-git-1), or [add the git bin folder to your PATH](http://stackoverflow.com/a/4493004/527280) -- use `C:\Program Files\git\bin` (or maybe `C:\Program Files (x86)\git\bin`) as the path.
 
 (The `--recursive` is required because it includes [khan-exercises](https://github.com/Khan/khan-exercises) as a git submodule.)
 
 ### 4. Run the installation script
 
-Inside the `ka-lite` folder (that you cloned above) you should find a script called `install.bat`. Use `cd ka-lite` to navigate into the directory, and run this script with `install.bat`, to initialize the server database.
+Inside the `ka-lite` folder (that you cloned above) you should find a script called `install.bat`. Use `cd ka-lite` to navigate into the directory, and run this script by typing `install.bat` and pressing Enter, to initialize the server database.
 
 ### 5. Run the server
 
