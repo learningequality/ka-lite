@@ -6,3 +6,5 @@ KA Lite is a lightweight Django web app for serving core Khan Academy content (v
 * In correctional facilities and other environments where providing educational materials is of value, but users cannot be given general internet access.
 
 To install KA Lite on Linux or Windows, view the [installation guide](https://github.com/jamalex/ka-lite/blob/master/INSTALL.md).
+
+If you'd like to contribute, please check out the [provisional development guidelines](https://github.com/jamalex/ka-lite/blob/master/docs/DEVELOPMENT.md).
