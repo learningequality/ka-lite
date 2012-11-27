@@ -15,7 +15,6 @@ class VideoLog(SyncedModel):
     completion_timestamp = models.DateTimeField(blank=True, null=True)
     completion_counter = models.IntegerField(blank=True, null=True)
     
-    
     def save(self, *args, **kwargs):
         already_complete = self.complete
         self.complete = (self.points >= 100)

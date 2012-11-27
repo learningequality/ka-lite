@@ -8,63 +8,49 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding field 'ExerciseLog.struggling'
-        db.add_column('main_exerciselog', 'struggling',
-                      self.gf('django.db.models.fields.BooleanField')(default=False),
-                      keep_default=False)
+        # Adding model 'RegisteredDevicePublicKey'
+        db.create_table('securesync_registereddevicepublickey', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('public_key', self.gf('django.db.models.fields.CharField')(max_length=500)),
+            ('zone', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['securesync.Zone'])),
+        ))
+        db.send_create_signal('securesync', ['RegisteredDevicePublicKey'])
 
 
     def backwards(self, orm):
-        # Deleting field 'ExerciseLog.struggling'
-        db.delete_column('main_exerciselog', 'struggling')
+        # Deleting model 'RegisteredDevicePublicKey'
+        db.delete_table('securesync_registereddevicepublickey')
 
 
     models = {
-        'main.exerciselog': {
-            'Meta': {'object_name': 'ExerciseLog'},
-            'attempts': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'complete': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'counter': ('django.db.models.fields.IntegerField', [], {}),
-            'exercise_id': ('django.db.models.fields.CharField', [], {'max_length': '50', 'db_index': 'True'}),
-            'id': ('django.db.models.fields.CharField', [], {'max_length': '32', 'primary_key': 'True'}),
-            'points': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'signature': ('django.db.models.fields.CharField', [], {'max_length': '360', 'blank': 'True'}),
-            'signed_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Device']"}),
-            'signed_version': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
-            'streak_progress': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'struggling': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['securesync.FacilityUser']", 'null': 'True', 'blank': 'True'})
-        },
-        'main.videofile': {
-            'Meta': {'object_name': 'VideoFile'},
-            'download_in_progress': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'flagged_for_download': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'percent_complete': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'youtube_id': ('django.db.models.fields.CharField', [], {'max_length': '11', 'primary_key': 'True'})
-        },
-        'main.videolog': {
-            'Meta': {'object_name': 'VideoLog'},
-            'complete': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'counter': ('django.db.models.fields.IntegerField', [], {}),
-            'id': ('django.db.models.fields.CharField', [], {'max_length': '32', 'primary_key': 'True'}),
-            'points': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'signature': ('django.db.models.fields.CharField', [], {'max_length': '360', 'blank': 'True'}),
-            'signed_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Device']"}),
-            'signed_version': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
-            'total_seconds_watched': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['securesync.FacilityUser']", 'null': 'True', 'blank': 'True'}),
-            'youtube_id': ('django.db.models.fields.CharField', [], {'max_length': '11', 'db_index': 'True'})
-        },
         'securesync.device': {
             'Meta': {'object_name': 'Device'},
             'counter': ('django.db.models.fields.IntegerField', [], {}),
             'description': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'id': ('django.db.models.fields.CharField', [], {'max_length': '32', 'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
-            'public_key': ('django.db.models.fields.CharField', [], {'max_length': '200', 'db_index': 'True'}),
+            'public_key': ('django.db.models.fields.CharField', [], {'max_length': '500', 'db_index': 'True'}),
             'signature': ('django.db.models.fields.CharField', [], {'max_length': '360', 'blank': 'True'}),
             'signed_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Device']"}),
             'signed_version': ('django.db.models.fields.IntegerField', [], {'default': '1'})
+        },
+        'securesync.devicemetadata': {
+            'Meta': {'object_name': 'DeviceMetadata'},
+            'counter_position': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
+            'device': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['securesync.Device']", 'unique': 'True', 'null': 'True', 'blank': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'is_own_device': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'is_trusted': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
+        },
+        'securesync.devicezone': {
+            'Meta': {'object_name': 'DeviceZone'},
+            'counter': ('django.db.models.fields.IntegerField', [], {}),
+            'device': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['securesync.Device']", 'unique': 'True'}),
+            'id': ('django.db.models.fields.CharField', [], {'max_length': '32', 'primary_key': 'True'}),
+            'signature': ('django.db.models.fields.CharField', [], {'max_length': '360', 'blank': 'True'}),
+            'signed_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Device']"}),
+            'signed_version': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
+            'zone': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['securesync.Zone']"})
         },
         'securesync.facility': {
             'Meta': {'object_name': 'Facility'},
@@ -106,7 +92,36 @@ class Migration(SchemaMigration):
             'signed_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Device']"}),
             'signed_version': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
             'username': ('django.db.models.fields.CharField', [], {'max_length': '30'})
+        },
+        'securesync.registereddevicepublickey': {
+            'Meta': {'object_name': 'RegisteredDevicePublicKey'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'public_key': ('django.db.models.fields.CharField', [], {'max_length': '500'}),
+            'zone': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['securesync.Zone']"})
+        },
+        'securesync.syncsession': {
+            'Meta': {'object_name': 'SyncSession'},
+            'client_device': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'client_sessions'", 'to': "orm['securesync.Device']"}),
+            'client_nonce': ('django.db.models.fields.CharField', [], {'max_length': '32', 'primary_key': 'True'}),
+            'closed': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'ip': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
+            'models_downloaded': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
+            'models_uploaded': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
+            'server_device': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'server_sessions'", 'null': 'True', 'to': "orm['securesync.Device']"}),
+            'server_nonce': ('django.db.models.fields.CharField', [], {'max_length': '32', 'blank': 'True'}),
+            'timestamp': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
+            'verified': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
+        },
+        'securesync.zone': {
+            'Meta': {'object_name': 'Zone'},
+            'counter': ('django.db.models.fields.IntegerField', [], {}),
+            'description': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
+            'id': ('django.db.models.fields.CharField', [], {'max_length': '32', 'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
+            'signature': ('django.db.models.fields.CharField', [], {'max_length': '360', 'blank': 'True'}),
+            'signed_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Device']"}),
+            'signed_version': ('django.db.models.fields.IntegerField', [], {'default': '1'})
         }
     }
 
-    complete_apps = ['main']
+    complete_apps = ['securesync']

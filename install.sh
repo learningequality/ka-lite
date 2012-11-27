@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd kalite
+cd `dirname "${BASH_SOURCE[0]}"`/kalite
 
 if [ -f "database/data.sqlite" ]; then
     echo "----------------------------------------------------------------"
@@ -58,6 +58,28 @@ fi
 echo -n "Please enter a one-line description for this server (or, press Enter to leave blank): "
 read -e description
 python manage.py initdevice "$hostname" "$description"
+
+initd_available=`command -v update-rc.d`
+if [ $initd_available ]; then
+    while true
+    do
+        echo "Do you wish to set the KA Lite server to run in the background automatically"
+        echo -n "when you start this computer (you will need root/sudo privileges) [Y/N]? "
+        read CONFIRM
+        case $CONFIRM in
+            y|Y)
+                echo
+                sudo ./runatboot.sh
+                echo
+                break
+                ;;
+            n|N)
+                echo
+                break
+                ;;
+        esac
+    done
+fi
 
 echo
 echo "CONGRATULATIONS! You've finished installing the KA Lite server software."

@@ -62,7 +62,7 @@ def register_device(request):
         
     # we have a valid self-signed Device, so now check if its public key has been registered
     try:
-        registration = RegisteredDevicePublicKey.objects.get(pk=client_device.public_key)
+        registration = RegisteredDevicePublicKey.objects.get(public_key=client_device.public_key)
     except RegisteredDevicePublicKey.DoesNotExist:
         try:
             device = Device.objects.get(public_key=client_device.public_key)
