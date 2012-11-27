@@ -75,6 +75,7 @@ class VideoFile(models.Model):
     priority = models.IntegerField(default=0)
     percent_complete = models.IntegerField(default=0)
     subtitles_downloaded = models.BooleanField(default=False)
+    cancel_download = models.BooleanField(default=False)
     
     class Meta:
         ordering = ["priority", "youtube_id"]
