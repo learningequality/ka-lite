@@ -7,9 +7,14 @@ Views which allow users to create and activate accounts.
 from django.shortcuts import redirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.contrib import messages
 
 from registration.backends import get_backend
 
+def complete(request, *args, **kwargs):
+    messages.success(request, "Congratulations! Your account is now active. To get started, "
+        + "login to the central server below, then create an organization and add a zone to it.")
+    return redirect("auth_login")
 
 def activate(request, backend,
              template_name='registration/activate.html',

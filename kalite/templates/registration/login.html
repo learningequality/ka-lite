@@ -2,9 +2,35 @@
 
 {% block title %}Log in{% endblock %}
 
+{% block register_selected %}{% endblock register_selected %}
+{% block login_selected %}selected{% endblock login_selected %}
+
+{% block headcss %}
+<style>
+label {
+    width: 59px;
+    display: block;
+    float: left;
+    text-align: right;
+    padding-right: 10px;
+    font-weight: bold;
+}
+input {
+	margin-bottom: 15px;
+}
+.submit {
+    margin-left: 71px;
+}
+</style>
+{% endblock headcss %}
+
 {% block content %}
 
 <h1>Log in</h1>
+
+<p>Please note that this is the central server; you cannot log in here using your local server's account information.</p>
+
+<p>If you do not have an account on the central server, you can <a href="/accounts/register/">sign up here</a>.</p>
 
 {% if form.errors %}
 <p class="login_error">Incorrect user name or password:</p>
@@ -36,13 +62,12 @@
 	{{ form.password }}
 </dd>
 <dt>
-	<input type="submit" value="Log in" />
+	<input type="submit" class="submit" value="Log in" />
 </dt>
 </dl>
 </form>
 {% endblock %}
 
 {% block content-related %}
-<p>If you don't have an account, you can <a href="/accounts/register/">sign
-up</a> for one.
+<p>If you don't have an account, you can <a href="/accounts/register/">sign up</a> for one.
 {% endblock %}
