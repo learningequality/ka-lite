@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd kalite
+cd `dirname "${BASH_SOURCE[0]}"`/kalite
 
 if [ -f "database/data.sqlite" ]; then
     echo "----------------------------------------------------------------"
