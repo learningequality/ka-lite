@@ -56,7 +56,7 @@ class SyncSession(models.Model):
 
 
 class RegisteredDevicePublicKey(models.Model):
-    public_key = models.CharField(max_length=500, primary_key=True, help_text="(this field should be filled in automatically; don't change it)")
+    public_key = models.CharField(max_length=500, help_text="(this field should be filled in automatically; don't change it)")
     zone = models.ForeignKey("Zone")
 
     def __unicode__(self):
