@@ -40,9 +40,9 @@ Inside the `ka-lite` directory (that you cloned above) you should find a script 
 
 (If you're installing the server to test/develop, rather than deploy, follow the [development instructions](docs/DEVELOPMENT.md) instead.)
 
-The installation script should have given you the option of setting the server to run automatically in the background when the computer boots. If you skipped this step, you can do it later by running `sudo ./runatboot.sh` from inside the `ka-lite/kalite` directory. 
+To start the server, run the `start.sh` script in the `ka-lite` directory.
 
-To start the server, run the `start.sh` script in the `ka-lite` directory. You may want to have this script run automatically when you start the computer.
+You may want to have this script run automatically when you start the computer. If you are running Ubuntu or another Debian variant, the installation script should have given you the option of setting the server to run automatically in the background when the computer boots. If you skipped this step, you can do it later by running `sudo ./runatboot.sh` from inside the `ka-lite/kalite` directory.
 
 The local KA Lite website should now be accessible at [http://127.0.0.1:8008/](http://127.0.0.1:8008/) (replace 127.0.0.1 with your computer's external ip address or domain to access it from another connected computer).
 
@@ -78,7 +78,9 @@ Inside the `ka-lite` folder (that you cloned above) you should find a script cal
 
 (If you're installing the server to test/develop, rather than deploy, follow the [development instructions](docs/DEVELOPMENT.md) instead.)
 
-To start the server, run the `start.bat` script in the `ka-lite` folder. You may want to have this script run automatically when you start the computer, by creating a shortcut to start.bat and [copying it to the Startup folder in the Start Menu](http://windows.microsoft.com/en-US/windows-vista/Run-a-program-automatically-when-Windows-starts) -- the installation script should also have given you the option of having this done automatically.
+To start the server, run the `start.bat` script in the `ka-lite` folder.
+
+You may want to have this script run automatically when you start the computer, by creating a shortcut to `start.bat` and [copying it to the Startup folder in the Start Menu](http://windows.microsoft.com/en-US/windows-vista/Run-a-program-automatically-when-Windows-starts) -- the installation script should also have given you the option of having this done automatically.
 
 If at any point you see a "Windows Security Alert" [warning about Windows Firewall blocking Python](kalite/static/images/windows-python-network-permissions.png), be sure to check both checkboxes (as seen in the picture) and click "Allow access", to ensure that the server will be accessible.
 

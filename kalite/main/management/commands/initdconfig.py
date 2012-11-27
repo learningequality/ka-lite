@@ -19,12 +19,13 @@ script_template = """
 
 case "$1" in
     start)
-        echo -n "Starting ka-lite "
-        startproc %(project_path)s/../start.sh
+        echo "Starting ka-lite!"
+        %(project_path)s/../start.sh
         ;;
     stop)
-        echo -n "Shutting down ka-lite "
-        startproc %(project_path)s/../stop.sh
+        echo "Shutting down ka-lite!"
+        echo
+        %(project_path)s/../stop.sh
         ;;
 esac
 
