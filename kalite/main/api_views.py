@@ -136,6 +136,7 @@ def start_video_download(request):
         if videofile.download_in_progress:
             continue
         priority += 1
+        videofile.cancel_download = False
         videofile.priority = priority
         videofile.flagged_for_download = True
         videofile.percent_complete = 0
@@ -185,6 +186,7 @@ def start_subtitle_download(request):
     else:
         videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True))
     for videofile in videofiles:
+        videofile.cancel_download = False
         if videofile.subtitle_download_in_progress:
             continue
         videofile.flagged_for_subtitle_download = True
@@ -205,6 +207,15 @@ def get_subtitle_download_list(request):
     video_ids = [video["youtube_id"] for video in videofiles]
     return JsonResponse(video_ids)
 
+@require_admin
+def cancel_downloads(request):
+    videofiles = VideoFile.objects.filter(Q(flagged_for_download=True) | Q(flagged_for_subtitle_download=True))
+    for videofile in videofiles:
+        videofile.cancel_download = True
+        videofile.flagged_for_download = False
+        videofile.flagged_for_subtitle_download = False
+        videofile.save()
+    return JsonResponse({})
 
 def convert_topic_tree(node, level=0):
     if node["kind"] == "Topic":

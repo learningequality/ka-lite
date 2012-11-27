@@ -188,6 +188,16 @@
             }
 			
         });
+        
+        $("#cancel-download").click(function() {
+            
+            doRequest("/api/cancel_downloads").success(console.log("Downloads Cancelled"))
+            clearInterval(window.download_check_interval);
+            clearInterval(window.download_subtitle_check_interval);
+            $(".progress-section").hide();
+            $(".progress-subtitle").hide();
+            
+        })
        
     
     });
@@ -379,6 +389,8 @@
 
 <div style="clear: both;"></div>
 
+<button id="cancel-download" type="button">Cancel All Downloads</button>
+    
 <div class="progress-waiting">
 	<h2 class="progress-text">
         Download will start soon...
