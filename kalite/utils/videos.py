@@ -1,4 +1,4 @@
-import sys, os, re, json, urllib
+import sys, os, re, json, urllib, glob
 
 download_path = os.path.dirname(os.path.realpath(__file__)) + "/../static/videos/"
 
@@ -97,19 +97,15 @@ def download_video(youtube_id, format="mp4", callback=None):
         download_file(thumb_url, thumb_filepath, callback_percent_proxy(callback, start_percent=96, end_percent=100))
         
     except DownloadCancelled:
+        delete_downloaded_files(youtube_id)
+        
+def delete_downloaded_files(youtube_id):
+    for filepath in glob.glob(download_path + youtube_id + ".*"):
         try:
             os.remove(filepath)
         except OSError:
             pass
-        try:
-            os.remove(large_thumb_filepath)
-        except OSError:
-            pass
-        try:
-            os.remove(thumb_filepath)
-        except OSError:
-            pass
-        
+
 def _reporthook(numblocks, blocksize, filesize, url=None):
     base = os.path.basename(url)
     if filesize <= 0:
