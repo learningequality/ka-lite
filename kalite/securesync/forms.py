@@ -6,8 +6,7 @@ class RegisteredDevicePublicKeyForm(forms.ModelForm):
     def __init__(self, user, *args, **kwargs):
         super(RegisteredDevicePublicKeyForm, self).__init__(*args, **kwargs)
         if not user.is_superuser:
-            self.fields['zone'].queryset = list(set(reduce(lambda x,y: x+y,
-                [org.get_zones() for org in user.organization_set.all()])))
+            self.fields['zone'].queryset = Zone.objects.filter(organization__in=user.organization_set.all())
 
     class Meta:
         model = RegisteredDevicePublicKey
