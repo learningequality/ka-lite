@@ -244,6 +244,7 @@ def add_group(request, facility):
 @distributed_server_only
 @render_to("securesync/login.html")
 def login(request):
+    facilities = Facility.objects.all()
     if request.user.is_authenticated():
         auth_logout(request)
     if request.method == 'POST':
@@ -265,7 +266,8 @@ def login(request):
     else:
         form = LoginForm(initial={"facility": request.GET.get("facility", None)})
     return {
-        "form": form
+        "form": form,
+        "facilities": facilities
     }
 
 @distributed_server_only

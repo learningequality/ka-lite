@@ -5,13 +5,13 @@
 
 {% block content %}
 
-<div id="facility_list_container">
+<div id="facility-list-container">
     <h1>Facilities</h1>
-    <ul id="facility_list">
+    <ul id="facility-list">
         {% if facilities %}
             {% for facility in facilities %}
-            <li class="facility_title">
-                <h2>{{ facility }}<a class="facility-action simple-button" href="{% url facility_edit id=facility.id %}">Edit facility</a><a class="facility-action simple-button" href="{% url add_facility_student %}?facility={{facility.id}}">Add student</a> <a class="facility-action simple-button" href="{% url add_facility_teacher %}?facility={{facility.id}}">Add teacher</a><a class="facility-action simple-button" href="{% url add_group %}?facility={{facility.id}}">Add group</a></h2>
+            <li class="facility-title">
+                <h2><div id="facility-name">{{ facility }}</div><a class="facility-action simple-button" href="{% url facility_edit id=facility.id %}">Edit facility</a><a class="facility-action simple-button" href="{% url add_facility_student %}?facility={{facility.id}}">Add student</a> <a class="facility-action simple-button" href="{% url add_facility_teacher %}?facility={{facility.id}}">Add teacher</a><a class="facility-action simple-button" href="{% url add_group %}?facility={{facility.id}}">Add group</a></h2>
             </li>
             {% endfor %}
         {% else %}
@@ -25,16 +25,32 @@
 
 <script>
     {% if request.is_admin %}
-    $('#facility').append('<a href="{% url facility_edit id="new" %}"> Add a new Facility</a>');
+    $('#facility').append('<a id="add-facility-button" href="{% url facility_edit id="new" %}"> Add a new Facility</a>');
     {% endif %}
 </script>
 
 <style>
 .facility-action {
-    font-size: 14px;
+    font-size: 12px;
     margin-left: 10px;
+    float: left;
+    margin-bottom: 12px;
 }
 
+#facility-name {
+    font-size: 14px;
+    float: left;
+    width: 135px;
+    clear: both;
+    padding-bottom: 12px;
+    padding-top: 3px;
+}
+
+#add-facility-button {
+    float: left;
+    clear: both;
+    padding-top: 30px;
+}
 </style>
 
 {% endblock content %}
