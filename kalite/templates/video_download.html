@@ -189,7 +189,7 @@
             $("#cancel-download").show();
         });
 
-        $("#download-videos").click(function() {
+        $("#delete-videos").click(function() {
             var videos = findSelectedStartedVideos();
             var video_ids = $.map(videos, function(node) {
                 return node.data.key;
@@ -197,11 +197,12 @@
 
             unselectAllNodes();
             
-            doRequest("/api/delete_videos", {youtube_ids: video_ids});
+            doRequest("/api/delete_videos", {youtube_ids: video_ids}).complete(function() {
+                $.each(video_ids, function(ind, id) {
+                    setNodeClass(id, "unstarted");
+                });
+            });
         
-            $(".progress-section").hide();
-            $(".progress-waiting").show();
-            $("#cancel-download").show();
         });
         
         $(".download-subtitles").click(function(event) {
