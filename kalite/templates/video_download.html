@@ -371,17 +371,26 @@
         });
     }
     
-    function getNode(nodeKey) {
-        return $("#content_tree").dynatree("getTree").getNodeByKey(nodeKey);
+    function withNodes(nodeKey, callback, currentNode) {
+        if (!currentNode) {
+            currentNode = $("#content_tree").dynatree("getTree").tnRoot.childList[0];
+        }
+        $.each(currentNode.childList || [], function(ind, child) {
+            if (child.data.key == nodeKey) {
+                callback(child);
+            }
+            withNodes(nodeKey, callback, child);
+        });
     }
     
     function setNodeClass(nodeKey, className) {
-        var node = getNode(nodeKey);
-        $(node.span).removeClass("unstarted partial complete").addClass(className);
-        node.data.addClass = className;
-        if (node.parent) {
-            updateNodeClass(node.parent);
-        }
+        withNodes(nodeKey, function(node) {
+            $(node.span).removeClass("unstarted partial complete").addClass(className);
+            node.data.addClass = className;
+            if (node.parent) {
+                updateNodeClass(node.parent);
+            }            
+        });
     }
 
     function updateNodeClass(node) {
@@ -430,8 +439,8 @@
             {% endif %}
         </select>
     </span>
-    <button class="download-subtitles" new_only=true type="button">Download Missing Subtitles</button>
-    <button class="download-subtitles" type="button">Update All Subtitles</button>
+    <button class="download-subtitles" new_only=true type="button">Get Missing Subtitles</button>
+    <button class="download-subtitles" type="button">Get/Update All Subtitles</button>
 </div>
 
 <div style="clear: both;"></div>
