@@ -102,45 +102,47 @@
     
     $(function() {
         
-        doRequest("/api/get_topic_tree", {}).success(function(treeData) {
-            
-            $("#content_tree").dynatree({
-                imagePath:"../images/",
-                checkbox: true,
-                selectMode: 3,
-                children: treeData,
-                onSelect: function(select, node) {
+        setTimeout(function() {
+            doRequest("/api/get_topic_tree", {}).success(function(treeData) {
                 
-                    var numberOfVideos = findSelectedIncompleteVideos().length;
+                $("#content_tree").dynatree({
+                    imagePath:"../images/",
+                    checkbox: true,
+                    selectMode: 3,
+                    children: treeData,
+                    onSelect: function(select, node) {
                     
-                    if (numberOfVideos > 0) {
-                        $(".video_count").text(numberOfVideos);
-                        $("#download-legend-selected").show();
-                        $("#download-legend-unselected").hide();
-                        $("#download-videos").show();
-                    } else {
-                        $("#download-legend-unselected").show();
-                        $("#download-legend-selected").hide();
-                        $("#download-videos").hide();
-                    }
+                        var numberOfVideos = findSelectedIncompleteVideos().length;
+                        
+                        if (numberOfVideos > 0) {
+                            $(".video_count").text(numberOfVideos);
+                            $("#download-legend-selected").show();
+                            $("#download-legend-unselected").hide();
+                            $("#download-videos").show();
+                        } else {
+                            $("#download-legend-unselected").show();
+                            $("#download-legend-selected").hide();
+                            $("#download-videos").hide();
+                        }
 
-                },
-                onDblClick: function(node, event) {
-                    node.toggleSelect();
-                },
-                onKeydown: function(node, event) {
-                    if( event.which == 32 ) {
+                    },
+                    onDblClick: function(node, event) {
                         node.toggleSelect();
-                        return false;
+                    },
+                    onKeydown: function(node, event) {
+                        if( event.which == 32 ) {
+                            node.toggleSelect();
+                            return false;
+                        }
+                    },
+                    onPostInit: function() {
+                		startDownloadChecks();
+                        startSubtitleDownloadChecks();
                     }
-                },
-                onPostInit: function() {
-            		startDownloadChecks();
-                    startSubtitleDownloadChecks();
-                }
+                });
+                        
             });
-                    
-        });
+        }, 200);
         
     
         $("#progressbar-overall").progressbar({
