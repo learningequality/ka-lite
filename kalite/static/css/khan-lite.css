@@ -370,7 +370,7 @@ li .progress-circle {
     left: 19px !important;
 }
 
-#nav_addstudent, #nav_addteacher, #nav_admin, #nav_teacherpanel, #nav_watch, #nav_practice, #nav_signup, #nav_login {
+#nav_addstudent, #nav_addteacher, #nav_admin, #nav_teacherpanel, #nav_watch, #nav_practice, #nav_signup, #nav_login, #nav_update {
     display: none;
 }
 
