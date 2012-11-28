@@ -8,21 +8,25 @@
 
 <form method="post" class="basic-form">
 {% csrf_token %}
+{% if form.errors %}
+    <p class="errors">Please correct the errors below:</p>
+{% endif %}
 <h2>Login</h2>
+    {{ form.non_field_errors }}
 	{% if facilities.count > 0 %}
-	    <p>
-	        {{ form.facility.errors }}
-	        <label for="id_facility">Facility:</label>
-	        {{ form.facility }}
-	    </p>
+        {{ form.facility.errors }}
+        <p>
+            <label for="id_facility">Facility:</label>
+            {{ form.facility }}
+        </p>    
     {% endif %}
+    {{ form.username.errors }}
     <p>
-        {{ form.username.errors }}
         <label for="id_username">Username:</label>
         {{ form.username }}
     </p>
+    {{ form.password.errors }}
     <p>
-        {{ form.password.errors }}
         <label for="id_password">Password:</label>
         {{ form.password }}
     </p>
