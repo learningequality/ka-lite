@@ -73,6 +73,8 @@ class SyncClient(object):
             "client_device": self.session.client_device.pk,
         })
         data = json.loads(r.content)
+        if data.get("error", ""):
+            raise Exception(data.get("error", ""))
         signature = data.get("signature", "")
         session = serializers.deserialize("json", data["session"]).next().object
         if not session.verify_server_signature(signature):
