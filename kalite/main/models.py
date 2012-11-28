@@ -15,7 +15,6 @@ class VideoLog(SyncedModel):
     completion_timestamp = models.DateTimeField(blank=True, null=True)
     completion_counter = models.IntegerField(blank=True, null=True)
     
-    
     def save(self, *args, **kwargs):
         already_complete = self.complete
         self.complete = (self.points >= 100)
@@ -75,6 +74,7 @@ class VideoFile(models.Model):
     priority = models.IntegerField(default=0)
     percent_complete = models.IntegerField(default=0)
     subtitles_downloaded = models.BooleanField(default=False)
+    cancel_download = models.BooleanField(default=False)
     
     class Meta:
         ordering = ["priority", "youtube_id"]

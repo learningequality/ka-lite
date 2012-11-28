@@ -53,9 +53,11 @@ def facility_required(handler):
         facility = None
         if Facility.objects.count() == 0:
             if request.is_admin:
-                messages.error(request, "You must first add a facility, before you can do that.")
+                messages.error(request, "To continue, you must first add a facility (e.g. for your school). " \
+                    + "Please use the form below to add a facility.")
             else:
-                messages.error(request, "You must first have the administrator of this server log in to add a facility.")
+                messages.error(request,
+                    "You must first have the administrator of this server log in below to add a facility.")
             return HttpResponseRedirect(reverse("add_facility"))
         elif "facility" in request.GET:
             facility = get_object_or_None(Facility, pk=request.GET["facility"])
@@ -176,7 +178,10 @@ def add_facility_user(request, facility, is_teacher):
             form.instance.set_password(form.cleaned_data["password"])
             form.instance.is_teacher = is_teacher
             form.save()
-            return HttpResponseRedirect(reverse("login") + "?facility=" + facility.pk)
+            if request.is_logged_in:
+                return HttpResponseRedirect(reverse("homepage"))
+            else:
+                return HttpResponseRedirect(reverse("login") + "?facility=" + facility.pk)
     elif Facility.objects.count() == 0:
         messages.error(request, "You must add a facility before creating a user" )
         return HttpResponseRedirect(reverse("add_facility"))

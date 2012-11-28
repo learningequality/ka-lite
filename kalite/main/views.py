@@ -142,6 +142,7 @@ def homepage(request):
 def update(request):
     call_command("videoscan")
     force_job("videodownload", "Download Videos")
+    force_job("subtitledownload", "Download Subtitles")
     language_lookup = topicdata.LANGUAGE_LOOKUP
     language_list = topicdata.LANGUAGE_LIST
     default_language = Settings.get("subtitle_language") or "en"

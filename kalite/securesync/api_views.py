@@ -62,7 +62,7 @@ def register_device(request):
         
     # we have a valid self-signed Device, so now check if its public key has been registered
     try:
-        registration = RegisteredDevicePublicKey.objects.get(pk=client_device.public_key)
+        registration = RegisteredDevicePublicKey.objects.get(public_key=client_device.public_key)
     except RegisteredDevicePublicKey.DoesNotExist:
         try:
             device = Device.objects.get(public_key=client_device.public_key)
@@ -109,6 +109,8 @@ def create_session(request):
             return JsonResponse({"error": "Session already exists; include server nonce and signature."}, status=500)
         session = SyncSession()
         session.client_nonce = data["client_nonce"]
+        session.client_os = data.get("client_os", "")
+        session.client_version = data.get("client_version", "")
         try:
             client_device = Device.objects.get(pk=data["client_device"])
             session.client_device = client_device
