@@ -8,6 +8,7 @@ from django.shortcuts import redirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib import messages
+from django.contrib.auth import logout
 
 from registration.backends import get_backend
 
@@ -208,3 +209,7 @@ def register(request, backend, success_url=None, form_class=None,
     return render_to_response(template_name,
                               { 'form': form },
                               context_instance=context)
+
+def logout_view(request):
+    logout(request)
+    return redirect("homepage")
