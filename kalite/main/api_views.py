@@ -8,6 +8,7 @@ import settings
 from settings import slug_key, title_key
 from main import topicdata
 from utils.jobs import force_job
+from utils.videos import delete_downloaded_files
 from models import FacilityUser, VideoLog, ExerciseLog, VideoFile
 from config.models import Settings
 
@@ -142,6 +143,20 @@ def start_video_download(request):
         videofile.percent_complete = 0
         videofile.save()
     force_job("videodownload", "Download Videos")
+    return JsonResponse({})
+
+@require_admin
+def delete_videos(request):
+    youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
+    for id in youtube_ids:
+        delete_downloaded_files(id)
+        videofile = get_object_or_None(VideoFile, youtube_id=id)
+        if not videofile:
+            continue
+        videofile.cancel_download = True
+        videofile.flagged_for_download = False
+        videofile.flagged_for_subtitle_download = False
+        videofile.save()
     return JsonResponse({})
 
 @require_admin
