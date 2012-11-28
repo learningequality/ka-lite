@@ -9,7 +9,23 @@
 <form method="post" class="basic-form">
 {% csrf_token %}
 <h2>Login</h2>
-{{ form.as_p }}
+	{% if facilities.count > 0 %}
+	    <p>
+	        {{ form.facility.errors }}
+	        <label for="id_facility">Facility:</label>
+	        {{ form.facility }}
+	    </p>
+    {% endif %}
+    <p>
+        {{ form.username.errors }}
+        <label for="id_username">Username:</label>
+        {{ form.username }}
+    </p>
+    <p>
+        {{ form.password.errors }}
+        <label for="id_password">Password:</label>
+        {{ form.password }}
+    </p>
 <input type="submit" value="Login" class="submit"/>
 </form>
 
