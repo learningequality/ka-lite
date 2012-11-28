@@ -13,7 +13,7 @@ ul {
 article {
     padding: 30px;
 }
-#nav_signup, #nav_login {
+#nav_signup, #nav_login, #nav_admin {
     display: block;
 }
 </style>
@@ -29,7 +29,10 @@ article {
 	<span class="dropdown topic-browser-dropdown">
         <a href="/" id="nav_home" class="{% block home_selected %}{% endblock home_selected %}">Home</a>
     {% if user.is_authenticated %}
-        <a href="/accounts/logout">{{ user.username }} &nbsp; (Logout)</a>
+        {% if user.is_superuser %}
+        <a href="/admin/" id="nav_admin" class="{% block admin_selected %}{% endblock admin_selected %}">Admin</a>
+        {% endif %}
+        <a href="/accounts/logout/">{{ user.username }} &nbsp; (Logout)</a>
     {% else %}
         <a href="/accounts/register/" id="nav_signup" class="{% block register_selected %}{% endblock register_selected %}">Sign Up</a>
         <a href="/accounts/login/" id="nav_login" class="{% block login_selected %}{% endblock login_selected %}">Login</a>
