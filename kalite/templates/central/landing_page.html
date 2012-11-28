@@ -1,5 +1,7 @@
 {% extends 'base_central.html' %}
 
+{% block home_selected %}selected{% endblock home_selected %}
+
 {% block headjs %}
 <script type='text/javascript' src='{{ MEDIA_URL }}js/underscore.js'></script>
 <script>
@@ -7,18 +9,17 @@
 </script>
 {% endblock headjs %}
 
-{% block headcss %}
-
-{% endblock headcss %}
-
 {% block content %}
 
-<p>Khan Academy Lite is a lightweight Django web app for hosting core Khan Academy content (videos and exercises) from a local server, without needing internet connectivity. Primary use cases include:</p>
+<h1>Welcome to KA Lite!</h1>
+
+<p>KA Lite is a lightweight Django web app for hosting core Khan Academy content (videos and exercises) from a local server, without needing internet connectivity. Primary use cases include:</p>
 
 <ul>
     <li>Mobile school "vans", which transport a server and multiple laptops/tablets between a number of schools/orphanages in remote communities on a rotating basis, and syncing up with a central database (to download new content and upload analytics) when in an area with internet connectivity.</li>
     <li>For servers/computer labs located in remote schools, which could be slowly syncing with a central server over a cell network or via USB keys.</li>
 </ul>
 
+<p>KA Lite can run on any Linux or Windows server, with minimal requirements. To get started, <a href="/accounts/register/">sign up for an account</a> on this site, create an organization and zone, and then follow the <a href="https://github.com/jamalex/ka-lite/blob/master/INSTALL.md" target="_blank">installation instructions</a> on your server.
 
 {% endblock content %}

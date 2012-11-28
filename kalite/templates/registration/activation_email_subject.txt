@@ -1,1 +1,1 @@
-Activate your Khan Academy Lite account - you have {{ expiration_days }} days left before the registration expires!
+Activate your KA Lite account now!

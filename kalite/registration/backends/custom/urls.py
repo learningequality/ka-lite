@@ -23,12 +23,10 @@ from django.views.generic.simple import direct_to_template
 
 from registration.views import activate
 from registration.views import register
-
+from registration.views import complete
 
 urlpatterns = patterns('',
-                       url(r'^activate/complete/$',
-                           direct_to_template,
-                           { 'template': 'registration/activation_complete.html' },
+                       url(r'^activate/complete/$', complete, {},
                            name='registration_activation_complete'),
                        # Activation keys get matched by \w+ instead of the more specific
                        # [a-fA-F0-9]{40} because a bad activation key should still get to the view;

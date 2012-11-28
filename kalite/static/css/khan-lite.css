@@ -13,7 +13,7 @@ body {
 #page-container {
     background-position: 0 50px;
     min-width: 600px;
-    max-width: 1200px;
+    max-width: 1100px;
 }
 
 article {
@@ -40,7 +40,7 @@ footer #creative-commons-link {
     margin-right: 15px;
 }
 footer.short .inner {
-    max-width: 1200px;
+    max-width: 1100px;
     margin: 0 auto;
 }
 
@@ -359,6 +359,14 @@ li .progress-circle {
     left: 20px !important;
 }
 .nav-subheader > span > a#nav_admin.selected:before {
+    left: 19px !important;
+}
+
+/*Home*/
+.nav-subheader > span > a#nav_home.selected:after {
+    left: 20px !important;
+}
+.nav-subheader > span > a#nav_home.selected:before {
     left: 19px !important;
 }
 
