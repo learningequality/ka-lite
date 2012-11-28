@@ -158,7 +158,6 @@ class SyncClient(object):
         if self.counters_to_download is None or self.counters_to_upload is None:
             self.sync_device_records()
             
-        print self.post("models/download", {"device_counters": self.counters_to_download}).content
         response = json.loads(self.post("models/download", {"device_counters": self.counters_to_download}).content)
         download_results = save_serialized_models(response.get("models", "[]"))
         

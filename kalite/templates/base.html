@@ -3,8 +3,9 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>{% block title %}{{ title }}{% endblock title %} | KA Lite</title>
         <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/khan-site.css"></link>
-        {% block headcss %}{% endblock headcss %}
         <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/khan-lite.css"></link>
+        {% block basecss %}{% endblock basecss %}
+        {% block headcss %}{% endblock headcss %}
         <link rel="shortcut icon" href="{{ MEDIA_URL }}images/favicon.ico">
         <script>
             var csrftoken = "{{ csrf_token }}";
