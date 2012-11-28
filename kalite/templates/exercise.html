@@ -6,6 +6,8 @@
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}khan-exercises/css/khan-exercise.css"></link>
 {% endblock headcss %}
 
+{% block title %}Exercise{% endblock title %}
+
 {% block headjs %}
 <script>
     var urlBaseOverride = "{{ MEDIA_URL }}khan-exercises/";
