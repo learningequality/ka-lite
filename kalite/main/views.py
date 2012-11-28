@@ -62,12 +62,12 @@ def check_setup_status(handler):
     def wrapper_fn(request, *args, **kwargs):
         client = SyncClient()
         if not request.is_admin and Facility.objects.count() == 0:
-            messages.warning(request, mark_safe("Please login <a href='%s'>here</a> with the account you created in the installation script, to complete the setup." % reverse("login")))
+            messages.warning(request, mark_safe("Please <a href='%s'>login</a> with the account you created in the installation script, to complete the setup." % reverse("login")))
         if request.is_admin:
             if not Settings.get("registered") and client.test_connection() == "success":
-                messages.warning(request, mark_safe("Please follow the directions to register your device <a href='%s'>here</a>, so that it can synchronize with the central server." % reverse("register_public_key")))
+                messages.warning(request, mark_safe("Please <a href='%s'>follow the directions to register your device</a>, so that it can synchronize with the central server." % reverse("register_public_key")))
             elif Facility.objects.count() == 0:
-                messages.warning(request, mark_safe("Please create a facility <a href='%s'>here</a>. Users will not be able to sign up until you do so." % reverse("add_facility")))
+                messages.warning(request, mark_safe("Please <a href='%s'>create a facility</a>. Users will not be able to sign up until you do so." % reverse("add_facility")))
         return handler(request, *args, **kwargs)
     return wrapper_fn
 
