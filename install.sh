@@ -4,7 +4,7 @@ cd `dirname "${BASH_SOURCE[0]}"`/kalite
 
 if [ -f "database/data.sqlite" ]; then
     echo "----------------------------------------------------------------"
-    echo "Error: Database file already exists! If this is a new installation, you should delete the file kalite/data.sqlite and then re-run this script."
+    echo "Error: Database file already exists! If this is a new installation, you should delete the file kalite/database/data.sqlite and then re-run this script."
     echo "----------------------------------------------------------------"
     exit 1
 fi
