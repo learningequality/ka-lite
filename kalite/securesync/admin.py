@@ -3,8 +3,8 @@ from models import *
 
 
 class SyncSessionAdmin(admin.ModelAdmin):
-    list_display = ("client_device", "server_device", "verified",)
-    list_filter = ("verified",)
+    list_display = ("client_nonce", "client_device", "ip", "server_device", "verified", "closed", "timestamp", "client_version",)
+    list_filter = ("verified", "closed", "client_version",)
 admin.site.register(SyncSession, SyncSessionAdmin)
 
 

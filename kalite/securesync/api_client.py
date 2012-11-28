@@ -5,7 +5,7 @@ from django.core import serializers
 
 import crypto
 import settings
-
+import kalite
 
 class SyncClient(object):
     session = None
@@ -71,6 +71,8 @@ class SyncClient(object):
         r = self.post("session/create", {
             "client_nonce": self.session.client_nonce,
             "client_device": self.session.client_device.pk,
+            "client_version": kalite.VERSION,
+            "client_os": kalite.OS,
         })
         data = json.loads(r.content)
         if data.get("error", ""):
@@ -142,7 +144,7 @@ class SyncClient(object):
         for device in server_counters:
             if device not in client_counters:
                 devices_to_download.append(device)
-                self.counters_to_download = 0
+                self.counters_to_download[device] = 0
             elif server_counters[device] > client_counters[device]:
                 self.counters_to_download[device] = client_counters[device] + 1
 
@@ -156,6 +158,7 @@ class SyncClient(object):
         if self.counters_to_download is None or self.counters_to_upload is None:
             self.sync_device_records()
             
+        print self.post("models/download", {"device_counters": self.counters_to_download}).content
         response = json.loads(self.post("models/download", {"device_counters": self.counters_to_download}).content)
         download_results = save_serialized_models(response.get("models", "[]"))
         
