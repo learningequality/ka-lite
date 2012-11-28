@@ -109,6 +109,8 @@ def create_session(request):
             return JsonResponse({"error": "Session already exists; include server nonce and signature."}, status=500)
         session = SyncSession()
         session.client_nonce = data["client_nonce"]
+        session.client_os = data.get("client_os", "")
+        session.client_version = data.get("client_version", "")
         try:
             client_device = Device.objects.get(pk=data["client_device"])
             session.client_device = client_device

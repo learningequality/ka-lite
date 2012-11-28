@@ -5,7 +5,7 @@ from django.core import serializers
 
 import crypto
 import settings
-
+import kalite
 
 class SyncClient(object):
     session = None
@@ -71,8 +71,12 @@ class SyncClient(object):
         r = self.post("session/create", {
             "client_nonce": self.session.client_nonce,
             "client_device": self.session.client_device.pk,
+            "client_version": kalite.VERSION,
+            "client_os": kalite.OS,
         })
         data = json.loads(r.content)
+        if data.get("error", ""):
+            raise Exception(data.get("error", ""))
         signature = data.get("signature", "")
         session = serializers.deserialize("json", data["session"]).next().object
         if not session.verify_server_signature(signature):
@@ -140,7 +144,7 @@ class SyncClient(object):
         for device in server_counters:
             if device not in client_counters:
                 devices_to_download.append(device)
-                self.counters_to_download = 0
+                self.counters_to_download[device] = 0
             elif server_counters[device] > client_counters[device]:
                 self.counters_to_download[device] = client_counters[device] + 1
 

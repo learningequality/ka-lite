@@ -215,6 +215,8 @@ def cancel_downloads(request):
         videofile.flagged_for_download = False
         videofile.flagged_for_subtitle_download = False
         videofile.save()
+    force_job("videodownload", stop=True)
+    force_job("subtitledownload", stop=True)
     return JsonResponse({})
 
 def convert_topic_tree(node, level=0):
