@@ -271,20 +271,25 @@
     
    	function checkSubtitleDownloadProgress() {
         doRequest("/api/check_subtitle_download").success(function(remainder) {
+            if (!window.download_subtitle_check_interval) {
+                return;
+            }
             window.download_subtitle_index = window.downloading_subtitles.length - remainder;
             updateSubtitleProgressDisplay();
             if (remainder == 0) {
             	clearInterval(window.download_subtitle_check_interval);
-                $(".progress-subtitle").hide();
+                $(".progress-subtitle, #cancel-download").hide();
                 return;
             }
-  
         });
     }
     
     function checkVideoDownloadProgress() {
         var currentKey = window.downloading_videos[window.download_index];
         doRequest("/api/check_video_download", {youtube_ids: [currentKey]}).success(function(progress) {
+            if (!window.download_check_interval) {
+                return;
+            }
             window.current_download_percent = progress[currentKey];
             updateProgressDisplay();
             if (window.current_download_percent == 100) {
@@ -292,7 +297,7 @@
                 window.download_index++;
                 if (window.download_index >= window.downloading_videos.length) {
                     clearInterval(window.download_check_interval);
-                    $(".progress-section").hide();
+                    $(".progress-section, #cancel-download").hide();
                     return;
                 }
                 checkVideoDownloadProgress();
@@ -429,7 +434,7 @@
 </div>
 
 <div class="download-actions subtitles-download vertical-shadow">
-    <h2 class="button_text">Download/update subtitles for videos</h2>
+    <h2 class="button_text">Download/update subtitles for existing videos</h2>
     <span class= "button_style">
         <select id="language">
             {% if languages %}
@@ -439,14 +444,12 @@
             {% endif %}
         </select>
     </span>
-    <button class="download-subtitles" new_only=true type="button">Get Missing Subtitles</button>
     <button class="download-subtitles" type="button">Get/Update All Subtitles</button>
+    <button class="download-subtitles" new_only=true type="button">Get Missing Subtitles Only</button>
 </div>
 
 <div style="clear: both;"></div>
 
-
-    
 <div class="progress-waiting">
 	<h2 class="progress-text">
         Downloads will start soon... Please wait!
