@@ -7,9 +7,6 @@
         {% block basecss %}{% endblock basecss %}
         {% block headcss %}{% endblock headcss %}
         <link rel="shortcut icon" href="{{ MEDIA_URL }}images/favicon.ico">
-        <script>
-            var csrftoken = "{{ csrf_token }}";
-        </script>
         <script src="{{ MEDIA_URL }}js/jquery.js"></script>
         <script src="{{ MEDIA_URL }}js/khan-lite.js"></script>
         {% block headjs %}{% endblock headjs %}
