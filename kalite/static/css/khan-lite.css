@@ -174,7 +174,6 @@ div.exercises-card {
 
 .basic-form .errorlist {
     margin-left: 134px;
-    color: red;
 }
 
 .basic-form .submit, .basic-form h2 {
@@ -272,6 +271,7 @@ li .progress-circle {
 
 .errorlist {
     padding-bottom: 10px;
+    color: red;
 }
 
 /*Dylan ugly-fixing the nav bar arrows... */
