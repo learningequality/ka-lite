@@ -380,8 +380,9 @@ li .progress-circle {
 
 #totalpoints {
     font-weight: bold;
-    font-size: 1.5em;  
-    padding-top: 4px; 
+    font-size: 1.2em;  
+    padding-top: 4px;
+    color: #77C;
 }
 
 #questionpoints {
