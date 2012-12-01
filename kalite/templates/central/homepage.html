@@ -76,6 +76,43 @@ h2, h3, h4 {
 						</li>
 						
 					</ul>
+					<ul class="member_list">
+						<h4 id="aff_members">Affiliated Members</h4>
+						{% for member in org.get_members %}
+							<li class="member_name">
+								<h4>
+									{% if member.first_name and member.last_name %}
+										{{ member.first_name }}&nbsp;{{ member.last_name}}
+									{% else %}
+										{{ member.username }}
+									{% endif %}
+										:&nbsp;{{member.email }}
+								</h4>
+							</li>
+						{% endfor %}
+						{% for invited in invitations %}
+							<li class="invited_members">
+								<h4>
+									{{ invited }} : (Pending)
+								</h4>
+							</li>
+						{% endfor %}
+						<h4 id="invite_member">
+							Add New Members
+						</h4>
+						<form method="post">
+							{% csrf_token %}
+							{{ form.errors }}
+							<input type="hidden" name="organization" value="{{ org.pk }}">
+							{{ form.invited_by }}
+							<li>
+								{{ form.email_to_invite }}
+							</li>
+							<li>
+								<input type="submit" value="Send invite!">
+							</li>
+						</form>
+					</ul>
 				</li>
 			{% endfor %}
 			<li id="last">

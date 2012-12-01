@@ -3,8 +3,8 @@ from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from annoying.decorators import render_to
-from central.models import Organization, get_or_create_user_profile
-from central.forms import OrganizationForm, ZoneForm
+from central.models import Organization, OrganizationInvitation, get_or_create_user_profile
+from central.forms import OrganizationForm, ZoneForm, OrganizationInvitationForm
 from securesync.api_client import SyncClient
 from securesync.models import Zone, SyncSession
 from django.core.urlresolvers import reverse
@@ -18,7 +18,19 @@ def homepage(request):
     if not request.user.is_authenticated():
         return landing_page(request)
     organizations = get_or_create_user_profile(request.user).get_organizations()
-    context = {'organizations': organizations}
+    if request.method == 'POST':
+        form = OrganizationInvitationForm(data=request.POST)
+        if form.is_valid():
+            form.instance.send(request)
+            ## include a message about it being sent, add them to pending list?
+            return HttpResponseRedirect(reverse("homepage"))
+    else:
+        form = OrganizationInvitationForm(initial={"invited_by": request.user})
+    context = {
+        'organizations': organizations,
+        'form': form,
+        'invitations': OrganizationInvitation.objects.filter(email_to_invite=request.user.email)
+    }
     return context
 
 @render_to("central/landing_page.html")
