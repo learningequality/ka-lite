@@ -84,6 +84,7 @@ class SyncedModel(models.Model):
     signature = models.CharField(max_length=360, blank=True, editable=False)
     signed_version = models.IntegerField(default=1, editable=False)
     signed_by = models.ForeignKey("Device", blank=True, null=True, related_name="+", editable=False)
+    zone_fallback = models.ForeignKey("Zone", blank=True, null=True, related_name="+")
 
     def sign(self, device=None):
         self.signed_by = device or Device.get_own_device()
@@ -150,7 +151,7 @@ class SyncedModel(models.Model):
             return None
 
     def get_zone(self):
-        return getattr(self, "zone", None) or (self.signed_by and self.signed_by.get_zone()) or None
+        return getattr(self, "zone", None) or (self.signed_by and self.signed_by.get_zone()) or self.zone_fallback or None
 
     requires_trusted_signature = False
 
@@ -341,7 +342,7 @@ class Device(SyncedModel):
 
 settings.add_syncing_models([Facility, FacilityGroup, FacilityUser, SyncedLog])
 
-def get_serialized_models(device_counters=None, limit=100):
+def get_serialized_models(device_counters=None, limit=100, zone=None):
     if device_counters is None:
         device_counters = dict((device.id, 0) for device in Device.objects.all())
     models = []
