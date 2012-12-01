@@ -3,12 +3,14 @@ from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from annoying.decorators import render_to
-from central.models import Organization, get_or_create_user_profile
-from central.forms import OrganizationForm, ZoneForm
+from central.models import Organization, OrganizationInvitation, get_or_create_user_profile
+from central.forms import OrganizationForm, ZoneForm, OrganizationInvitationForm
 from securesync.api_client import SyncClient
 from securesync.models import Zone, SyncSession
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
+from securesync.models import Facility
+from securesync.forms import FacilityForm
 import requests
 
 import settings
@@ -18,7 +20,19 @@ def homepage(request):
     if not request.user.is_authenticated():
         return landing_page(request)
     organizations = get_or_create_user_profile(request.user).get_organizations()
-    context = {'organizations': organizations}
+    if request.method == 'POST':
+        form = OrganizationInvitationForm(data=request.POST)
+        if form.is_valid():
+            form.instance.send(request)
+            ## include a message about it being sent, add them to pending list?
+            return HttpResponseRedirect(reverse("homepage"))
+    else:
+        form = OrganizationInvitationForm(initial={"invited_by": request.user})
+    context = {
+        'organizations': organizations,
+        'form': form,
+        'invitations': OrganizationInvitation.objects.filter(email_to_invite=request.user.email)
+    }
     return context
 
 @render_to("central/landing_page.html")
@@ -74,7 +88,37 @@ def zone_form(request, id=None, org_id=None):
     return {
         'form': form
     }
-    
+
+@login_required
+@render_to("securesync/facility_admin.html")
+def central_facility_admin(request, zone_id=None):
+    # still need to check if user has the rights to do this
+    facilities = Facility.objects.all()
+    context = {"facilities": facilities}
+    return context
+
+@login_required
+@render_to("securesync/facility_edit.html")
+def central_facility_edit(request, id=None, zone_id=None):
+    if id != "new":
+        facil = get_object_or_404(Facility, pk=id)
+    else:
+        facil = None
+    if request.method == "POST":
+        form = FacilityForm(data=request.POST, instance=facil)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse("add_facility_student") + "?facility=" + form.instance.pk)
+    else:
+        form = FacilityForm(instance=facil)
+    return {
+        "form": form
+    }
+
+@render_to("central/getting_started.html")
+def get_started(request):
+    return {}
+
 @login_required
 def crypto_login(request):
     if not request.user.is_superuser:

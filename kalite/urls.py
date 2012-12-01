@@ -25,7 +25,10 @@ if settings.CENTRAL_SERVER:
         url(r'^accounts/', include('registration.urls')),
         url(r'^organization/(?P<id>\w+)/$', 'central.views.organization_form', {}, 'organization_form'),
         url(r'^organization/(?P<org_id>\w+)/zone/(?P<id>\w+)/$', 'central.views.zone_form', {}, 'zone_form'),
+        url(r'^zone/(?P<zone_id>\w+)/facility/$', 'central.views.central_facility_admin', {}, 'central_facility_admin'),
+        url(r'^zone/(?P<zone_id>\w+)/facility/(?P<id>\w+)/$', 'central.views.central_facility_edit', {}, 'central_facility_admin'),
         url(r'^cryptologin/$', 'central.views.crypto_login', {}, 'crypto_login'), 
+        url(r'^getstarted/$','central.views.get_started', {}, 'get_started'),
     )
     
     handler404 = 'main.views.central_404_handler'
