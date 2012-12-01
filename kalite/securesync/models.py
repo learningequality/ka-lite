@@ -239,6 +239,12 @@ class DeviceZone(SyncedModel):
         return "Device: %s, assigned to Zone: %s" % (self.device, self.zone)
 
 
+class SyncedLog(SyncedModel):
+    category = models.CharField(max_length=30)
+    value = models.CharField(max_length=250, blank=True)
+    data = models.TextField(blank=True)
+
+
 class Device(SyncedModel):
     name = models.CharField(max_length=100, blank=True)
     description = models.TextField(blank=True)
@@ -333,7 +339,7 @@ class Device(SyncedModel):
             return uuid.uuid4()
         return uuid.uuid5(ROOT_UUID_NAMESPACE, str(self.public_key)).hex
 
-settings.add_syncing_models([Facility, FacilityGroup, FacilityUser])
+settings.add_syncing_models([Facility, FacilityGroup, FacilityUser, SyncedLog])
 
 def get_serialized_models(device_counters=None, limit=100):
     if device_counters is None:
