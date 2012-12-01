@@ -53,16 +53,22 @@ def facility_required(handler):
         facility = None
         if Facility.objects.count() == 0:
             if request.is_admin:
-                messages.error(request, "You must first add a facility, before you can do that.")
+                messages.error(request, "To continue, you must first add a facility (e.g. for your school). " \
+                    + "Please use the form below to add a facility.")
             else:
-                messages.error(request, "You must first have the administrator of this server log in to add a facility.")
+                messages.error(request,
+                    "You must first have the administrator of this server log in below to add a facility.")
             return HttpResponseRedirect(reverse("add_facility"))
         elif "facility" in request.GET:
             facility = get_object_or_None(Facility, pk=request.GET["facility"])
+            if "set_default" in request.GET and request.is_admin and facility and not facility.is_default():
+                Settings.set("default_facility", facility.id)
         elif "facility_user" in request.session:
             facility = request.session["facility_user"].facility
         elif Facility.objects.count() == 1:
             facility = Facility.objects.all()[0]
+        else:
+            facility = get_object_or_None(Facility, pk=Settings.get("default_facility"))
 
         if facility:
             return handler(request, facility, *args, **kwargs)
@@ -135,9 +141,6 @@ def facility_edit(request, id=None):
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse("add_facility_student") + "?facility=" + form.instance.pk)
-        elif request.method =="POST":
-            messages.error(request, "Just what do you think you're doing, Dave?")
-            return HttpResponseRedirect(reverse("login"))
     else:
         form = FacilityForm(instance=facil)
     return {
@@ -175,7 +178,10 @@ def add_facility_user(request, facility, is_teacher):
             form.instance.set_password(form.cleaned_data["password"])
             form.instance.is_teacher = is_teacher
             form.save()
-            return HttpResponseRedirect(reverse("login") + "?facility=" + facility.pk)
+            if request.is_logged_in:
+                return HttpResponseRedirect(reverse("homepage"))
+            else:
+                return HttpResponseRedirect(reverse("login") + "?facility=" + facility.pk)
     elif Facility.objects.count() == 0:
         messages.error(request, "You must add a facility before creating a user" )
         return HttpResponseRedirect(reverse("add_facility"))
@@ -200,14 +206,11 @@ def add_facility_user(request, facility, is_teacher):
 @require_admin
 @render_to("securesync/add_facility.html")
 def add_facility(request):
-    if request.method == 'POST' and request.is_admin:
+    if request.method == "POST":
         form = FacilityForm(data=request.POST)
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse("add_facility_student") + "?facility=" + form.instance.pk)
-    elif request.method =='POST' and not request.is_admin:
-        messages.error(request, "Just what do you think you're doing, Dave?")
-        return HttpResponseRedirect(reverse("login"))
     else:
         form = FacilityForm()
     return {
@@ -241,6 +244,7 @@ def add_group(request, facility):
 @distributed_server_only
 @render_to("securesync/login.html")
 def login(request):
+    facilities = Facility.objects.all()
     if request.user.is_authenticated():
         auth_logout(request)
     if request.method == 'POST':
@@ -262,7 +266,8 @@ def login(request):
     else:
         form = LoginForm(initial={"facility": request.GET.get("facility", None)})
     return {
-        "form": form
+        "form": form,
+        "facilities": facilities
     }
 
 @distributed_server_only

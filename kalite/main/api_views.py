@@ -8,6 +8,7 @@ import settings
 from settings import slug_key, title_key
 from main import topicdata
 from utils.jobs import force_job
+from utils.videos import delete_downloaded_files
 from models import FacilityUser, VideoLog, ExerciseLog, VideoFile
 from config.models import Settings
 
@@ -136,11 +137,26 @@ def start_video_download(request):
         if videofile.download_in_progress:
             continue
         priority += 1
+        videofile.cancel_download = False
         videofile.priority = priority
         videofile.flagged_for_download = True
         videofile.percent_complete = 0
         videofile.save()
     force_job("videodownload", "Download Videos")
+    return JsonResponse({})
+
+@require_admin
+def delete_videos(request):
+    youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
+    for id in youtube_ids:
+        delete_downloaded_files(id)
+        videofile = get_object_or_None(VideoFile, youtube_id=id)
+        if not videofile:
+            continue
+        videofile.cancel_download = True
+        videofile.flagged_for_download = False
+        videofile.flagged_for_subtitle_download = False
+        videofile.save()
     return JsonResponse({})
 
 @require_admin
@@ -172,14 +188,25 @@ def get_video_download_list(request):
 @require_admin
 def start_subtitle_download(request):
     new_only = simplejson.loads(request.raw_post_data or "{}").get("new_only", False)
+    language = simplejson.loads(request.raw_post_data or "{}").get("language", "")
+    language_list = topicdata.LANGUAGE_LIST
+    current_language = Settings.get("subtitle_language")
+    new_only = new_only and (current_language == language)
+    if language in language_list:
+        Settings.set("subtitle_language", language)
+    else:
+        return JsonResponse({"error": "This language is not currently supported - please update the language list"}, status=500)
     if new_only:
         videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True), subtitles_downloaded=False)
     else:
         videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True))
-    for videofile in videofile:
+    for videofile in videofiles:
+        videofile.cancel_download = False
         if videofile.subtitle_download_in_progress:
             continue
         videofile.flagged_for_subtitle_download = True
+        if not new_only:
+            videofile.subtitles_downloaded = False
         videofile.save()
     force_job("subtitledownload", "Download Subtitles")
     return JsonResponse({})
@@ -195,6 +222,17 @@ def get_subtitle_download_list(request):
     video_ids = [video["youtube_id"] for video in videofiles]
     return JsonResponse(video_ids)
 
+@require_admin
+def cancel_downloads(request):
+    videofiles = VideoFile.objects.filter(Q(flagged_for_download=True) | Q(flagged_for_subtitle_download=True))
+    for videofile in videofiles:
+        videofile.cancel_download = True
+        videofile.flagged_for_download = False
+        videofile.flagged_for_subtitle_download = False
+        videofile.save()
+    force_job("videodownload", stop=True)
+    force_job("subtitledownload", stop=True)
+    return JsonResponse({})
 
 def convert_topic_tree(node, level=0):
     if node["kind"] == "Topic":

@@ -3,12 +3,10 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>{% block title %}{{ title }}{% endblock title %} | KA Lite</title>
         <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/khan-site.css"></link>
-        {% block headcss %}{% endblock headcss %}
         <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/khan-lite.css"></link>
+        {% block basecss %}{% endblock basecss %}
+        {% block headcss %}{% endblock headcss %}
         <link rel="shortcut icon" href="{{ MEDIA_URL }}images/favicon.ico">
-        <script>
-            var csrftoken = "{{ csrf_token }}";
-        </script>
         <script src="{{ MEDIA_URL }}js/jquery.js"></script>
         <script src="{{ MEDIA_URL }}js/khan-lite.js"></script>
         {% block headjs %}{% endblock headjs %}
@@ -40,7 +38,7 @@
                             </div>
 
                             <div id="logo">
-                                <a id="logo-image-small" href="/" title="Khan Academy" name="logo-image">
+                                <a id="logo-image-small" href="/" title="KA Lite Home" name="logo-image">
                                     <img src="{{ MEDIA_URL }}images/ka-logo-small.png"/>
                                 </a>
                             </div>

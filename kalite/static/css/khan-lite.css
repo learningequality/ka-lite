@@ -13,7 +13,7 @@ body {
 #page-container {
     background-position: 0 50px;
     min-width: 600px;
-    max-width: 1200px;
+    max-width: 1100px;
 }
 
 article {
@@ -40,7 +40,7 @@ footer #creative-commons-link {
     margin-right: 15px;
 }
 footer.short .inner {
-    max-width: 1200px;
+    max-width: 1100px;
     margin: 0 auto;
 }
 
@@ -313,37 +313,37 @@ li .progress-circle {
 
 /*Update*/
 .nav-subheader > span > a#nav_update.selected:after {
-    left: 27px !important;
+    left: 24px !important;
 }
 
 .nav-subheader > span > a#nav_update.selected:before {
-    left: 26px !important;
+    left: 23px !important;
 }
 
 /*Coach */
 .nav-subheader > span > a#nav_teacherpanel.selected:after {
-    left: 25px !important;
+    left: 24px !important;
 }
 
 .nav-subheader > span > a#nav_teacherpanel.selected:before {
-    left: 24px !important;
+    left: 23px !important;
 }
 
 /*Register*/
 .nav-subheader > span > a#nav_registerdevice.selected:after {
-    left: 60px !important;
+    left: 56px !important;
 }
 
 .nav-subheader > span > a#nav_registerdevice.selected:before {
-    left: 59px !important;
+    left: 55px !important;
 }
 
 /*Login*/
 .nav-subheader > span > a#nav_login.selected:after {
-    left: 23px !important;
+    left: 19px !important;
 }
 .nav-subheader > span > a#nav_login.selected:before {
-    left: 22px !important;
+    left: 18px !important;
 }
 
 /*Sign Up*/
@@ -354,7 +354,23 @@ li .progress-circle {
     left: 26px !important;
 }
 
-#nav_addstudent, #nav_addteacher, #nav_admin, #nav_teacherpanel, #nav_watch, #nav_practice, #nav_signup, #nav_login {
+/*Admin*/
+.nav-subheader > span > a#nav_admin.selected:after {
+    left: 20px !important;
+}
+.nav-subheader > span > a#nav_admin.selected:before {
+    left: 19px !important;
+}
+
+/*Home*/
+.nav-subheader > span > a#nav_home.selected:after {
+    left: 20px !important;
+}
+.nav-subheader > span > a#nav_home.selected:before {
+    left: 19px !important;
+}
+
+#nav_addstudent, #nav_addteacher, #nav_admin, #nav_teacherpanel, #nav_watch, #nav_practice, #nav_signup, #nav_login, #nav_update {
     display: none;
 }
 

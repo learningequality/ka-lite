@@ -1,5 +1,7 @@
 {% extends 'base_central.html' %}
 
+{% block home_selected %}selected{% endblock home_selected %}
+
 {% block headjs %}
 <script type='text/javascript' src='{{ MEDIA_URL }}js/underscore.js'></script>
 <script>
@@ -85,6 +87,10 @@ h2, h3, h4 {
 			</li>
 		{% endif %}
 	</ul>
+</div>
+
+<div>	
+	<p>After creating an organization and adding a zone to it, above, you're ready to follow the <a href="https://github.com/jamalex/ka-lite/blob/master/INSTALL.md" target="_blank">installation instructions</a> on the server where you'll be running KA Lite.</p>
 </div>
 
 {% endblock content %}

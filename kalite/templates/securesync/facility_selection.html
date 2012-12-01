@@ -10,7 +10,7 @@
         {% if facilities %}
             {% for facility in facilities %}
             <li class="facility_title">
-                <h2><a href="?facility={{facility.pk}}">{{ facility }}</a></h2>
+                <h2><a href="?facility={{facility.pk}}">{{ facility }}</a> {% if facilities.count > 1 %}{% if facility.is_default %} <span class=default-setter>(this is the default)</span>{% else %}<a class=default-setter href="?facility={{facility.pk}}&set_default=True"> (set as the default facility)</a>{% endif %}{% endif %}</h2>
             </li>
             {% endfor %}
         {% else %}
@@ -21,9 +21,15 @@
             {% endif %}
         {% endif %}
         {% if request.is_admin %}
-            <p><a href="{% url facility_edit id="new" %}">Add a new Facility</a></p>
+            <p><a href="{% url facility_admin %}">Administer Facilities</a></p>
         {% endif %}
     </ul>
 </div>
+
+<style>
+.default-setter {
+    font-size: 14px;
+}
+</style>
 
 {% endblock content %}

@@ -2,6 +2,7 @@ from django.contrib.auth.models import User, check_password
 from django.core import serializers
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
+from config.models import Settings
 import crypto
 import uuid
 import random
@@ -24,6 +25,8 @@ class SyncSession(models.Model):
     server_device = models.ForeignKey("Device", blank=True, null=True, related_name="server_sessions")
     verified = models.BooleanField(default=False)
     ip = models.CharField(max_length=50, blank=True)
+    client_version = models.CharField(max_length=100, blank=True)
+    client_os = models.CharField(max_length=200, blank=True)
     timestamp = models.DateTimeField(auto_now=True)
     models_uploaded = models.IntegerField(default=0)
     models_downloaded = models.IntegerField(default=0)
@@ -55,7 +58,7 @@ class SyncSession(models.Model):
 
 
 class RegisteredDevicePublicKey(models.Model):
-    public_key = models.CharField(max_length=500, primary_key=True, help_text="(this field should be filled in automatically; don't change it)")
+    public_key = models.CharField(max_length=500, help_text="(this field should be filled in automatically; don't change it)")
     zone = models.ForeignKey("Zone")
 
     def __unicode__(self):
@@ -182,6 +185,9 @@ class Facility(SyncedModel):
 
     def __unicode__(self):
         return "%s (#%s)" % (self.name, int(self.id[:3], 16))
+
+    def is_default(self):
+        return self.id == Settings.get("default_facility")
 
 
 class FacilityGroup(SyncedModel):

@@ -26,7 +26,7 @@ consult a specific backend's documentation for details.
 from django.conf.urls.defaults import *
 
 from django.contrib.auth import views as auth_views
-
+from views import logout_view
 
 urlpatterns = patterns('',
                        url(r'^login/$',
@@ -34,8 +34,7 @@ urlpatterns = patterns('',
                            {'template_name': 'registration/login.html'},
                            name='auth_login'),
                        url(r'^logout/$',
-                           auth_views.logout,
-                           {'template_name': 'registration/logout.html'},
+                           logout_view,
                            name='auth_logout'),
                        url(r'^password/change/$',
                            auth_views.password_change,

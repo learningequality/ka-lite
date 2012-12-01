@@ -1,17 +1,26 @@
 import time
 from django.core.management.base import BaseCommand, CommandError
 from kalite.main.models import VideoFile
-from kalite.utils.videos import download_video
+from kalite.utils.videos import download_video, DownloadCancelled
 from utils.jobs import force_job
 
 
-def download_progress_callback(video):
+def download_progress_callback(videofile):
     def inner_fn(percent):
+        video = VideoFile.objects.get(pk=videofile.pk)
+        if video.cancel_download == True:
+            video.percent_complete = 0
+            video.flagged_for_download = False
+            video.download_in_progress = False
+            video.save()
+            print "Download Cancelled"
+            raise DownloadCancelled()
         if (percent - video.percent_complete) >= 5 or percent == 100:
             if percent == 100:
                 video.flagged_for_download = False
                 video.download_in_progress = False
             video.percent_complete = percent
+            print percent
             video.save()
     return inner_fn
             
@@ -33,6 +42,12 @@ class Command(BaseCommand):
                 return
 
             video = videos[0]
+            
+            if video.cancel_download == True:
+                video.download_in_progress = False
+                video.save()
+                self.stdout.write("Download cancelled; aborting.\n")
+                return
             
             video.download_in_progress = True
             video.percent_complete = 0

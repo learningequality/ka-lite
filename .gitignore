@@ -18,3 +18,4 @@ writeup/
 build/
 virtualenv/
 *.pid
+mergetomaster.sh

@@ -1,10 +1,15 @@
-import sys, os, re, json, urllib
+import sys, os, re, json, urllib, glob
 
 download_path = os.path.dirname(os.path.realpath(__file__)) + "/../static/videos/"
 
 data_path = os.path.dirname(os.path.realpath(__file__)) + "/../static/data/"
 
 download_url = "http://s3.amazonaws.com/KA-youtube-converted/%s/%s"
+
+class DownloadCancelled(Exception):
+    def __str__(self):
+        return "Download has been cancelled"
+
 
 def get_video_ids(topic_tree):
     if topic_tree["kind"] == "Video":
@@ -73,20 +78,34 @@ def download_video(youtube_id, format="mp4", callback=None):
     
     _mkdir(download_path)
     
-    filename = "%(id)s.%(format)s" % {"id": youtube_id, "format": format}
-    filepath = download_path + filename
-    url = download_url % (filename, filename)
-    download_file(url, filepath, callback_percent_proxy(callback, end_percent=91))
+    video_filename = "%(id)s.%(format)s" % {"id": youtube_id, "format": format}
+    filepath = download_path + video_filename
+    url = download_url % (video_filename, video_filename)
     
     large_thumb_filename = "%(id)s.png" % {"id": youtube_id}
     large_thumb_filepath = download_path + large_thumb_filename
-    large_thumb_url = download_url % (filename, large_thumb_filename)
-    download_file(large_thumb_url, large_thumb_filepath, callback_percent_proxy(callback, start_percent=91, end_percent=96))
+    large_thumb_url = download_url % (video_filename, large_thumb_filename)
     
     thumb_filepath = download_path + youtube_id + ".jpg"
     thumb_url = "http://img.youtube.com/vi/%(id)s/hqdefault.jpg" % {"id": youtube_id}
-    download_file(thumb_url, thumb_filepath, callback_percent_proxy(callback, start_percent=96, end_percent=100))
+    
+    try:
+        download_file(url, filepath, callback_percent_proxy(callback, end_percent=91))
         
+        download_file(large_thumb_url, large_thumb_filepath, callback_percent_proxy(callback, start_percent=91, end_percent=96))
+
+        download_file(thumb_url, thumb_filepath, callback_percent_proxy(callback, start_percent=96, end_percent=100))
+        
+    except DownloadCancelled:
+        delete_downloaded_files(youtube_id)
+        
+def delete_downloaded_files(youtube_id):
+    for filepath in glob.glob(download_path + youtube_id + ".*"):
+        try:
+            os.remove(filepath)
+        except OSError:
+            pass
+
 def _reporthook(numblocks, blocksize, filesize, url=None):
     base = os.path.basename(url)
     if filesize <= 0:

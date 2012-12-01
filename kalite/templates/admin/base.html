@@ -1,4 +1,4 @@
-{% extends "base_distributed.html" %}
+{% extends base_template %}
 
 {% load admin_static %}{% load url from future %}{% load i18n %}
 
@@ -16,8 +16,15 @@
         #content-related {
             display: none;
         }
-        div.breadcrumbs {
-            border-bottom: 0px;
+        .breadcrumbs {
+            padding: 12px 8px 15px 30px;
+        }
+        article {
+            padding: 0;
+        }
+        #post-breadcrumb-block {
+            padding: 30px;
+            padding-top: 8px;
         }
     </style>
 {% endblock headcss %}
@@ -37,12 +44,6 @@
         {% block nav-global %}{% endblock %}
     </div>
     <!-- END Header -->
-    {% block breadcrumbs %}
-    <div class="breadcrumbs">
-    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
-    {% if title %} &rsaquo; {{ title }}{% endif %}
-    </div>
-    {% endblock %}
     {% endif %}
 
     {% block messages %}
@@ -55,13 +56,21 @@
 
     <div id="container" class="visited-no-recolor" style="overflow: hidden;">
         <article class="clearfix">
-            {% block pretitle %}{% endblock %}
-            {% block content_title %}{% if title %}<h1>{{ title }}</h1>{% endif %}{% endblock %}
-            {% block content %}
-            {% block object-tools %}{% endblock %}
-            {{ content }}
+            {% block breadcrumbs %}
+                <div class="breadcrumbs">
+                <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+                {% if title %} &rsaquo; {{ title }}{% endif %}
+                </div>
             {% endblock %}
-            {% block sidebar %}{% endblock %}
+            <div id="post-breadcrumb-block">
+                {% block pretitle %}{% endblock %}
+                {% block content_title %}{% if title %}<h1>{{ title }}</h1>{% endif %}{% endblock %}
+                {% block content %}
+                {% block object-tools %}{% endblock %}
+                {{ content }}
+                {% endblock %}
+                {% block sidebar %}{% endblock %}
+            </div>
             <br class="clear" />
         </article>
     </div>

@@ -2,6 +2,9 @@
 
 {% block basejs %}
 <script type="text/javascript">
+
+    var csrftoken = "{{ csrf_token }}";
+
     function toggle_state(state, status){
         $("." + (status ? "not-" : "") + state + "-only").hide(); 
         $("." + (!status ? "not-" : "") + state + "-only").show(); 
