@@ -86,31 +86,35 @@ h2, h3, h4 {
 							<li class="member_name">
 								<h4>
 									{% if member.first_name and member.last_name %}
-										{{ member.first_name }}&nbsp;{{ member.last_name}}
+										{{ member.first_name }}&nbsp;{{ member.last_name}},
 									{% else %}
-										{{ member.username }}
+										{{ member.username }},
 									{% endif %}
-										:&nbsp;{{member.email }}
+										&nbsp;{{member.email }}
 								</h4>
 							</li>
 						{% endfor %}
 						{% for invited in invitations %}
-							<li class="invited_members">
-								<h4>
-									{{ invited }} : (Pending)
-								</h4>
-							</li>
+							{% if invited.organization == org %}
+								<li class="invited_members">
+									<h4>
+										{{ invited.email_to_invite }} has been invited to join {{ org }}.
+									</h4>
+								</li>
+							{% endif %}
 						{% endfor %}
 						<h4 id="invite_member">
 							Add New Members
 						</h4>
 						<form method="post">
 							{% csrf_token %}
-							{{ form.errors }}
+							{% for error in org.form.non_field_errors %}
+								<span class="errors">{{ error }}</span>
+							{% endfor %}
 							<input type="hidden" name="organization" value="{{ org.pk }}">
-							{{ form.invited_by }}
+							{{ org.form.invited_by }}
 							<li>
-								{{ form.email_to_invite }}
+								{{ org.form.email_to_invite }}
 							</li>
 							<li>
 								<input type="submit" value="Send invite!">

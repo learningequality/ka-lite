@@ -8,11 +8,19 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        # Deleting model 'OrganizationInvitation'
+        db.delete_table('central_organizationinvitation')
+
+        # Removing M2M table for field invited_by on 'OrganizationInvitation'
+        db.delete_table('central_organizationinvitation_invited_by')
+
+
+    def backwards(self, orm):
         # Adding model 'OrganizationInvitation'
         db.create_table('central_organizationinvitation', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('email_to_invite', self.gf('django.db.models.fields.EmailField')(max_length=75)),
             ('organization', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['central.Organization'], unique=True)),
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
         ))
         db.send_create_signal('central', ['OrganizationInvitation'])
 
@@ -23,14 +31,6 @@ class Migration(SchemaMigration):
             ('user', models.ForeignKey(orm['auth.user'], null=False))
         ))
         db.create_unique('central_organizationinvitation_invited_by', ['organizationinvitation_id', 'user_id'])
-
-
-    def backwards(self, orm):
-        # Deleting model 'OrganizationInvitation'
-        db.delete_table('central_organizationinvitation')
-
-        # Removing M2M table for field invited_by on 'OrganizationInvitation'
-        db.delete_table('central_organizationinvitation_invited_by')
 
 
     models = {
@@ -75,13 +75,6 @@ class Migration(SchemaMigration):
             'url': ('django.db.models.fields.URLField', [], {'max_length': '200', 'blank': 'True'}),
             'users': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.User']", 'symmetrical': 'False'}),
             'zones': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['securesync.Zone']", 'symmetrical': 'False'})
-        },
-        'central.organizationinvitation': {
-            'Meta': {'object_name': 'OrganizationInvitation'},
-            'email_to_invite': ('django.db.models.fields.EmailField', [], {'max_length': '75'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'invited_by': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.User']", 'symmetrical': 'False'}),
-            'organization': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['central.Organization']", 'unique': 'True'})
         },
         'central.userprofile': {
             'Meta': {'object_name': 'UserProfile'},

@@ -20,18 +20,20 @@ def homepage(request):
     if not request.user.is_authenticated():
         return landing_page(request)
     organizations = get_or_create_user_profile(request.user).get_organizations()
+    for org in organizations:
+        org.form = OrganizationInvitationForm(initial={"invited_by": request.user})
     if request.method == 'POST':
         form = OrganizationInvitationForm(data=request.POST)
+        for org in organizations:
+            if org.pk == int(request.POST.get('organization')):
+                org.form = form
         if form.is_valid():
-            form.instance.send(request)
-            ## include a message about it being sent, add them to pending list?
+            # form.instance.send(request)
+            form.save()
             return HttpResponseRedirect(reverse("homepage"))
-    else:
-        form = OrganizationInvitationForm(initial={"invited_by": request.user})
     context = {
         'organizations': organizations,
-        'form': form,
-        'invitations': OrganizationInvitation.objects.filter(email_to_invite=request.user.email)
+        'invitations': OrganizationInvitation.objects.filter(invited_by=request.user)
     }
     return context
 

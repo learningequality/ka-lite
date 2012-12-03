@@ -45,8 +45,11 @@ class UserProfile(models.Model):
 
 class OrganizationInvitation(models.Model):
     email_to_invite = models.EmailField(verbose_name="Email of invitee", max_length=75)
-    invited_by = models.OneToOneField(User)
-    organization = models.OneToOneField(Organization)
+    invited_by = models.ForeignKey(User)
+    organization = models.ForeignKey(Organization)
+
+    class Meta:
+        unique_together = ('email_to_invite', 'organization')
 
     def send(self, request):
         to_email = self.email_to_invite

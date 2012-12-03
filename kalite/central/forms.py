@@ -23,3 +23,15 @@ class OrganizationInvitationForm(ModelForm):
             'invited_by': forms.HiddenInput(),
             'organization': forms.HiddenInput(),
         }
+
+	def clean(self):
+		email_to_invite = self.cleaned_data.get('email_to_invite')
+		organization = self.cleaned_data.get('organization')
+		user = self.cleaned_data.get('invited_by')
+
+		if email_to_invite == user.email:
+			raise forms.ValidationError("You are already a part of this organization.")
+		if OrganizationInvitation.objects.filter(organization=organization, email_to_invite=email_to_invite).count() > 0:
+			raise forms.ValidationError("You have already sent an invitation email to this user.")
+
+		return self.cleaned_data
