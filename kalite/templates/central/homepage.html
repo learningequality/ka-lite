@@ -25,7 +25,7 @@ ul, li {
 	margin: 2px 0px;
 	font-size: 12px;
 	position: relative;
-	top: -20px;
+	top: 0px;
 }
 
 .facility_link {
@@ -61,10 +61,30 @@ h2, h3, h4 {
 {% block content %}
 
 <div id="org_list_container">
-	<h1>My Organizations</h1>
-	<p class="help_text">(Click on any organization or zone name to update information).</p>
+	<h2>My Organizations</h2>
+	{% if received_invitations|length > 0 %}
+		<div class="org-invite">
+			<ul>
+				{% for invite in received_invitations %}
+					<form method="post" action="{% url org_invite_action invite_id=invite.pk %}"> 
+						{% csrf_token %}
+						<li>
+							You have been invited by {{ invite.invited_by }} to help administer "{{ invite.organization }}." Please click below to join the organization or decline this invitation. 
+						</li>
+						<li> 
+							<input type="submit" name="join" value="Join">
+							<input type="submit" name="decline" value="Decline">
+						</li>
+					</form>
+				{% endfor %}
+			</ul>
+		</div>
+	{% endif %}
 	<ul id="org_list">
 		{% if organizations %}
+		<li>
+			<p class="help_text">(Click on any organization or zone name to update information).</p>
+		</li>
 			{% for org in organizations %}
 				<li class="organization">
 					<h2><a href="{% url organization_form id=org.id %}">{{ org.name }}</a></h2>
@@ -94,11 +114,11 @@ h2, h3, h4 {
 								</h4>
 							</li>
 						{% endfor %}
-						{% for invited in invitations %}
-							{% if invited.organization == org %}
-								<li class="invited_members">
+						{% for invite in sent_invitations %}
+							{% if invite.organization == org %}
+								<li class="invite_members">
 									<h4>
-										{{ invited.email_to_invite }} has been invited to join {{ org }}.
+										{{ invite.email_to_invite }} has been invited to join {{ org }}.
 									</h4>
 								</li>
 							{% endif %}
