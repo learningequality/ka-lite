@@ -94,8 +94,10 @@ def zone_form(request, id=None, org_id=None):
 def central_facility_admin(request, zone_id=None):
     # still need to check if user has the rights to do this
     facilities = Facility.objects.all()
-    context = {"facilities": facilities}
-    return context
+    return {
+        "zone_id": zone_id,
+        "facilities": facilities,
+    } 
 
 @login_required
 @render_to("securesync/facility_edit.html")
@@ -107,12 +109,14 @@ def central_facility_edit(request, id=None, zone_id=None):
     if request.method == "POST":
         form = FacilityForm(data=request.POST, instance=facil)
         if form.is_valid():
+            form.instance.zone_fallback = get_object_or_404(Zone, pk=zone_id)
             form.save()
-            return HttpResponseRedirect(reverse("add_facility_student") + "?facility=" + form.instance.pk)
+            return HttpResponseRedirect(reverse("central_facility_admin", kwargs={"zone_id": zone_id}))
     else:
         form = FacilityForm(instance=facil)
     return {
-        "form": form
+        "form": form,
+        "zone_id": zone_id,
     }
 
 @render_to("central/getting_started.html")
