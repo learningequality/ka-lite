@@ -12,25 +12,15 @@ class Migration(SchemaMigration):
         db.create_table('central_organizationinvitation', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('email_to_invite', self.gf('django.db.models.fields.EmailField')(max_length=75)),
-            ('organization', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['central.Organization'], unique=True)),
+            ('invited_by', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
+            ('organization', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['central.Organization'])),
         ))
         db.send_create_signal('central', ['OrganizationInvitation'])
-
-        # Adding M2M table for field invited_by on 'OrganizationInvitation'
-        db.create_table('central_organizationinvitation_invited_by', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('organizationinvitation', models.ForeignKey(orm['central.organizationinvitation'], null=False)),
-            ('user', models.ForeignKey(orm['auth.user'], null=False))
-        ))
-        db.create_unique('central_organizationinvitation_invited_by', ['organizationinvitation_id', 'user_id'])
 
 
     def backwards(self, orm):
         # Deleting model 'OrganizationInvitation'
         db.delete_table('central_organizationinvitation')
-
-        # Removing M2M table for field invited_by on 'OrganizationInvitation'
-        db.delete_table('central_organizationinvitation_invited_by')
 
 
     models = {
@@ -80,8 +70,8 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'OrganizationInvitation'},
             'email_to_invite': ('django.db.models.fields.EmailField', [], {'max_length': '75'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'invited_by': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.User']", 'symmetrical': 'False'}),
-            'organization': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['central.Organization']", 'unique': 'True'})
+            'invited_by': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"}),
+            'organization': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['central.Organization']"})
         },
         'central.userprofile': {
             'Meta': {'object_name': 'UserProfile'},

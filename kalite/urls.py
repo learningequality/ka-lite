@@ -25,6 +25,7 @@ if settings.CENTRAL_SERVER:
         url(r'^accounts/', include('registration.urls')),
         url(r'^organization/(?P<id>\w+)/$', 'central.views.organization_form', {}, 'organization_form'),
         url(r'^organization/(?P<org_id>\w+)/zone/(?P<id>\w+)/$', 'central.views.zone_form', {}, 'zone_form'),
+        url(r'^organization/invite_action/(?P<invite_id>\w+)/$', 'central.views.org_invite_action', {}, 'org_invite_action'),
         url(r'^zone/(?P<zone_id>\w+)/facility/$', 'central.views.central_facility_admin', {}, 'central_facility_admin'),
         url(r'^zone/(?P<zone_id>\w+)/facility/new/$', 'central.views.central_facility_edit', {"id": "new"}, 'central_facility_add'),
         url(r'^zone/(?P<zone_id>\w+)/facility/(?P<id>\w+)/$', 'central.views.central_facility_edit', {}, 'central_facility_edit'),

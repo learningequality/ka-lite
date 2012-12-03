@@ -50,6 +50,7 @@ class ExerciseLog(SyncedModel):
         already_complete = self.complete
         self.complete = (self.streak_progress >= 100)
         if not already_complete and self.complete:
+            self.struggling = False
             self.completion_timestamp = datetime.now()
             self.completion_counter = Device.get_own_device().get_counter()
             self.attempts_before_completion = self.attempts
