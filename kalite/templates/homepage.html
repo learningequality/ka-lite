@@ -11,10 +11,6 @@
 
 {% block headcss %}
 
-{% endblock headcss %}
-
-{% block content %}
-
 <style>
 
 .suggested-action {
@@ -38,53 +34,80 @@
     -webkit-box-shadow: 0 0 10px #76A005;
     -moz-box-shadow: 0 0 10px #76a005;
     box-shadow: 0 0 10px #76A005;
-    color: #444!important;
-    text-decoration: none!important;
 }
 
+.suggested-action a:hover {
+    text-decoration: none!important;
+    color: #005987;
+}
 .suggested-action-image-link {
     background-size: cover;
     background-repeat: no-repeat;
     border-bottom: 1px solid #DCE0B3;
     display: block;
     height: 130px;
-    margin: -10px -14px -15px -14px;
+    margin: -5px -14px -15px -14px;
 }
 
 .suggested-action-title {
     color: #005987;
     text-decoration: none;
+    font-size: 21px;
 }
 
-article {
-    padding: 0 0 10px 35px;
+.message {
+    margin-left: 7px;
+}
+
+.main-headline {
+    font-size: 26px;
+    margin: 10px 0 20px 0;
+    padding: 0;
+}
+
+.topic-list {
+    padding: 5px 0 0 0;
+    font-size: 24px;
+    font-family: "MuseoSans500", sans-serif;
+}
+
+.topic-list a {
+    display: block;
+    padding: 0 0 8px 40px;
+    font-size: 18px;
+}
+
+a:hover, a:hover .suggested-action-title {
+    color: #2F92A5!important;
+}
+
+.front-page {
+    padding-left: 7px;
 }
 
 </style>
+{% endblock headcss %}
 
-<div class="col2 forty-sixty" style="max-width:81%; text-align: justify; padding-bottom: 10px;">
-<h2 class="main-headline" style="white-space: pre;">A free world-class education for anyone anywhere.</h2>
-</div>
-
-<div class="clear"></div>
-
-<div>
+{% block content %}
+<div class="front-page">
+    
+    <h2 class="main-headline">A free world-class education for anyone anywhere.</h2>
     
     <div class="vertical-shadow suggested-action">
-        <h2 class="pulls ellipsis suggested-action-title">Learn by watching videos!</h2>
-        <p class="pulled" style="padding: 20px 0 0 40px; font-size: 16px; line-height: 26px;">
-            <a href="math">Math</a><br/>
-            <a href="science">Science</a><br/>
-            <a href="finance-economics">Finance &amp; Economics</a><br/>
-            <a href="humanities">Humanities</a><br/>
-            <a href="test-prep">Test Prep</a><br/>
+        <h2 class="suggested-action-title">Learn by watching videos!</h2>
+        <p class="topic-list">
+            <a href="math">Math</a>
+            <a href="science">Science</a>
+            <a href="finance-economics">Finance &amp; Economics</a>
+            <a href="humanities">Humanities</a>
+            <a href="test-prep">Test Prep</a>
         </p>
     </div>
 
-    <div>
-        <a class="vertical-shadow suggested-action" href="/exercisedashboard">
-            <h2 class="pulls ellipsis suggested-action-title">Learn by doing exercises!</h2>
-            <p class="pulled">Practice your math skills from addition to calculus and everything in between.</p>
+    <div class="vertical-shadow suggested-action">
+        <a href="/exercisedashboard">
+            <h2 class="suggested-action-title">Learn by doing exercises!</h2>
+            <p>Practice your math skills from addition to calculus and everything in between.</p>
             <div class="suggested-action-image-link" style="background-image: url(/static/images/knowledge-map-derivative-intuition.png);"></div>
         </a>
     </div>

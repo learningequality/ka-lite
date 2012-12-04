@@ -245,12 +245,16 @@ li .progress-circle {
 
 .message {
     width: 60%;
-    padding: 3px;
+    padding: 4px;
     padding-left: 10px;
-    margin-top: 10px;
-    margin-bottom: 5px;
+    margin-top: 0;
+    margin-bottom: 10px;
     border-style: solid;
     border-width: 1px;
+    font-size: 13px;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
 }
 
 .message.error {
@@ -260,16 +264,15 @@ li .progress-circle {
 }
 
 .message.success {
-    color: #3D5B43;
-    background-color: #6EFF70;
-    border-color: #3D5B43;
+    color: #273C2B;
+    background-color: #8AF07C;
+    border-color: #273C2B;
 }
 
 .message.warning {
     color: #330000;
     background-color: #FF9955; 
     border-color: #330000;
-    border-radius: 5px;
 }
 
 .errorlist {
