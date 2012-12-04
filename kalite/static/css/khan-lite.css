@@ -254,7 +254,7 @@ li .progress-circle {
 }
 
 .message.error {
-    color: #330000;
+    color: #FFFFFF;
     background-color: #FF3030; 
     border-color: #330000;
 }
