@@ -210,7 +210,7 @@
             var new_only = $(event.target).attr("new_only");
             var language = $("#language option:selected").val();
             if (new_only!="true") {
-                if(!confirm("This will download updated subtitles for all downloaded videos.")) {
+                if(!confirm("You are about to download new subtitles for all downloaded videos. This may take a long time.")) {
                     return;
                 }
             }
