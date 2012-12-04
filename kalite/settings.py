@@ -103,7 +103,7 @@ INSTALLED_APPS = (
 if DEBUG:
     INSTALLED_APPS += ("django_extensions",)
 
-CENTRAL_SERVER_HOST = "http://kalite.adhocsync.com/"
+CENTRAL_SERVER_HOST = "https://kalite.adhocsync.com/"
 
 CENTRAL_SERVER = hasattr(local_settings, "CENTRAL_SERVER") and local_settings.CENTRAL_SERVER or False
 
