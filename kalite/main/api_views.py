@@ -2,7 +2,7 @@ import re, json
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse, HttpResponseNotAllowed
 from django.utils import simplejson
-from django.db.models import Max, Q
+from django.db.models import Q
 from annoying.functions import get_object_or_None
 import settings
 from settings import slug_key, title_key
@@ -12,6 +12,8 @@ from utils.videos import delete_downloaded_files
 from models import FacilityUser, VideoLog, ExerciseLog, VideoFile
 from config.models import Settings
 from utils.decorators import require_admin
+from utils.general import break_into_chunks
+from utils.orderedset import OrderedSet
 
 class JsonResponse(HttpResponse):
     def __init__(self, content, *args, **kwargs):
@@ -123,19 +125,17 @@ def _get_exercise_log_dict(request, user, exercise_id):
 
 @require_admin
 def start_video_download(request):
-    youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
-    downloading_videos = VideoFile.objects.filter(flagged_for_download=True)
-    priority = downloading_videos.aggregate(Max("priority")).get("priority__max", 0) or 0
-    for id in youtube_ids:
-        videofile = get_object_or_None(VideoFile, youtube_id=id) or VideoFile(youtube_id=id)
-        if videofile.download_in_progress:
-            continue
-        priority += 1
-        videofile.cancel_download = False
-        videofile.priority = priority
-        videofile.flagged_for_download = True
-        videofile.percent_complete = 0
-        videofile.save()
+    youtube_ids = OrderedSet(simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", []))
+    
+    video_files_to_create = [id for id in youtube_ids if not get_object_or_None(VideoFile, youtube_id=id)]
+    video_files_to_update = youtube_ids - OrderedSet(video_files_to_create)
+    
+    VideoFile.objects.bulk_create([VideoFile(youtube_id=id, flagged_for_download=True) for id in video_files_to_create])
+    
+    for chunk in break_into_chunks(video_files_to_create):
+        video_files_needing_model_update = VideoFile.objects.filter(download_in_progress=False, youtube_id__in=chunk)
+        video_files_needing_model_update.update(percent_complete=0, cancel_download=False, flagged_for_download=True)
+
     force_job("videodownload", "Download Videos")
     return JsonResponse({})
 
@@ -219,11 +219,7 @@ def get_subtitle_download_list(request):
 @require_admin
 def cancel_downloads(request):
     videofiles = VideoFile.objects.filter(Q(flagged_for_download=True) | Q(flagged_for_subtitle_download=True))
-    for videofile in videofiles:
-        videofile.cancel_download = True
-        videofile.flagged_for_download = False
-        videofile.flagged_for_subtitle_download = False
-        videofile.save()
+    videofiles.update(cancel_download=True, flagged_for_download=False, flagged_for_subtitle_download=False)
     force_job("videodownload", stop=True)
     force_job("subtitledownload", stop=True)
     return JsonResponse({})
