@@ -23,7 +23,7 @@ from utils.jobs import force_job
 
 def require_admin(handler):
     def wrapper_fn(request, *args, **kwargs):
-        if not request.is_admin:
+        if not settings.CENTRAL_SERVER and request.is_admin:
             return HttpResponseRedirect(reverse("login") + "?next=" + request.path)
         return handler(request, *args, **kwargs)
     return wrapper_fn

@@ -21,6 +21,9 @@ class Organization(models.Model):
     def get_zones(self):
         return list(self.zones.all())
 
+    def add_member(self, user):
+        return self.users.add(user)
+
     def get_members(self):
         return list(self.users.all())
 
