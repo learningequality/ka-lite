@@ -14,7 +14,7 @@ from models import *
 class JsonResponse(HttpResponse):
     def __init__(self, content, *args, **kwargs):
         if not isinstance(content, str) and not isinstance(content, unicode):
-            content = simplejson.dumps(content, indent=2, ensure_ascii=False)
+            content = simplejson.dumps(content, ensure_ascii=False)
         super(JsonResponse, self).__init__(content, content_type='application/json', *args, **kwargs)
 
 def require_sync_session(handler):
@@ -91,7 +91,7 @@ def register_device(request):
     # return our local (server) Device, its Zone, and the newly created DeviceZone, to the client
     return JsonResponse(
         json_serializer.serialize(
-            [Device.get_own_device(), registration.zone, device_zone], ensure_ascii=False, indent=2
+            [Device.get_own_device(), registration.zone, device_zone], ensure_ascii=False
         )
     )
 
@@ -137,7 +137,7 @@ def create_session(request):
         session.save()
         
     return JsonResponse({
-        "session": json_serializer.serialize([session], ensure_ascii=False, indent=2),
+        "session": json_serializer.serialize([session], ensure_ascii=False),
         "signature": session.sign(),
     })
     
@@ -156,7 +156,7 @@ def device_download(data, session):
     devices = [devicezone.device for devicezone in devicezones]
     return JsonResponse({
         "devices": json_serializer.serialize(
-            devices + devicezones, ensure_ascii=False, indent=2
+            devices + devicezones, ensure_ascii=False
         )
     })
 

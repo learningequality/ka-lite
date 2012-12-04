@@ -360,7 +360,7 @@ def get_serialized_models(device_counters=None, limit=100, zone=None):
                 if Model.objects.filter(signed_by=device_id, counter__gte=counter+actual_limit).count() > 0:
                     completed = False
                 models += Model.objects.filter(signed_by=device_id, counter__gte=counter, counter__lt=counter+actual_limit)
-    return json_serializer.serialize(models, ensure_ascii=False, indent=2)
+    return json_serializer.serialize(models, ensure_ascii=False)
     
 def save_serialized_models(data):
     if isinstance(data, str) or isinstance(data, unicode):

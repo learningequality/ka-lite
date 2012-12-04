@@ -47,7 +47,7 @@ class SyncClient(object):
     def register(self):
         own_device = Device.get_own_device()
         r = self.post("register", {
-            "client_device": json_serializer.serialize([own_device], ensure_ascii=False, indent=2)
+            "client_device": json_serializer.serialize([own_device], ensure_ascii=False)
         })
         if r.status_code == 200:
             models = serializers.deserialize("json", r.content)

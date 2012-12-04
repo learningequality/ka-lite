@@ -102,8 +102,8 @@ def download_topictree():
     recurse_nodes_to_add_related_exercise(topics)
     
     with open(data_path + "topics.json", "w") as fp:
-        fp.write(json.dumps(topics, indent=4))
+        fp.write(json.dumps(topics, indent=2))
     
     with open(data_path + "nodecache.json", "w") as fp:
-        fp.write(json.dumps(node_cache, indent=4))
+        fp.write(json.dumps(node_cache, indent=2))
 

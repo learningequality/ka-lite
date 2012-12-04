@@ -16,7 +16,7 @@ from utils.decorators import require_admin
 class JsonResponse(HttpResponse):
     def __init__(self, content, *args, **kwargs):
         if not isinstance(content, str) and not isinstance(content, unicode):
-            content = simplejson.dumps(content, indent=2, ensure_ascii=False)
+            content = simplejson.dumps(content, ensure_ascii=False)
         super(JsonResponse, self).__init__(content, content_type='application/json', *args, **kwargs)
 
 
