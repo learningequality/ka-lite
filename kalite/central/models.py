@@ -1,6 +1,8 @@
 from django.db import models
 from securesync.models import Zone
 from django.contrib.auth.models import User
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
 
 def get_or_create_user_profile(user):
     return UserProfile.objects.get_or_create(user=user)[0]
@@ -19,6 +21,12 @@ class Organization(models.Model):
     def get_zones(self):
         return list(self.zones.all())
 
+    def add_member(self, user):
+        return self.users.add(user)
+
+    def get_members(self):
+        return list(self.users.all())
+
     def __unicode__(self):
         return self.name
 
@@ -35,3 +43,28 @@ class UserProfile(models.Model):
 
     def get_organizations(self):
         return list(self.user.organization_set.all())
+
+## Create new class of organization invites to check against people that have been invited
+
+class OrganizationInvitation(models.Model):
+    email_to_invite = models.EmailField(verbose_name="Email of invitee", max_length=75)
+    invited_by = models.ForeignKey(User)
+    organization = models.ForeignKey(Organization)
+
+    class Meta:
+        unique_together = ('email_to_invite', 'organization')
+
+    def send(self, request):
+        to_email = self.email_to_invite
+        sender = 'kalite@adhocsync.com'
+        context = {
+            'organization': self.organization,
+            'invited_by': self.invited_by
+        }
+        if User.objects.filter(email=to_email).count() > 0:
+            subject = render_to_string('org_invite_email_subject.txt', context)
+            body = render_to_string('org_invite_email.txt', context)
+        else:
+            subject = render_to_string('central/central_invite_email_subject.txt', context)
+            body = render_to_string('central/central_invite_email.txt', context)
+        send_mail(subject, body, sender, [to_email], fail_silently=False)

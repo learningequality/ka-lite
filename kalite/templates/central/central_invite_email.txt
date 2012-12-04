@@ -1,0 +1,8 @@
+{% load humanize %}
+Hello there! You were just invited by {% if invited_by.first_name and invited_by.last_name %}{{ invited_by.first_name }} {{ invited_by.last_name }}{% else %}{{ invited_by.username }}{% endif %} to join KA-Lite as an administrator for {{ organization }}. 
+
+According to our records, you don't yet have a KA-Lite account. Visit http://kalite.adhocsync.com{% url registration_register %} to sign up for an account. Once you get registered, there will be a message waiting for you to accept your admin position with {{ organization }}. 
+
+Best regards, 
+
+The KA-Lite Team 

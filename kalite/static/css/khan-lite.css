@@ -174,7 +174,6 @@ div.exercises-card {
 
 .basic-form .errorlist {
     margin-left: 134px;
-    color: red;
 }
 
 .basic-form .submit, .basic-form h2 {
@@ -272,6 +271,7 @@ li .progress-circle {
 
 .errorlist {
     padding-bottom: 10px;
+    color: red;
 }
 
 /*Dylan ugly-fixing the nav bar arrows... */
@@ -380,8 +380,9 @@ li .progress-circle {
 
 #totalpoints {
     font-weight: bold;
-    font-size: 1.5em;  
-    padding-top: 4px; 
+    font-size: 1.2em;  
+    padding-top: 4px;
+    color: #77C;
 }
 
 #questionpoints {
@@ -433,4 +434,7 @@ li .progress-circle {
     margin-right: 30px;
 }
 
-
+.org-invite {
+    display: block;
+    position: relative;
+}

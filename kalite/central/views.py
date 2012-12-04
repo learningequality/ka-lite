@@ -3,12 +3,15 @@ from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from annoying.decorators import render_to
-from central.models import Organization, get_or_create_user_profile
-from central.forms import OrganizationForm, ZoneForm
+from central.models import Organization, OrganizationInvitation, get_or_create_user_profile
+from central.forms import OrganizationForm, ZoneForm, OrganizationInvitationForm
 from securesync.api_client import SyncClient
 from securesync.models import Zone, SyncSession
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
+from securesync.models import Facility
+from securesync.forms import FacilityForm
+from django.contrib import messages
 import requests
 
 import settings
@@ -18,8 +21,41 @@ def homepage(request):
     if not request.user.is_authenticated():
         return landing_page(request)
     organizations = get_or_create_user_profile(request.user).get_organizations()
-    context = {'organizations': organizations}
+    for org in organizations:
+        org.form = OrganizationInvitationForm(initial={"invited_by": request.user})
+    if request.method == 'POST':
+        form = OrganizationInvitationForm(data=request.POST)
+        for org in organizations:
+            if org.pk == int(request.POST.get('organization')):
+                org.form = form
+        if form.is_valid():
+            form.instance.send(request)
+            form.save()
+            return HttpResponseRedirect(reverse("homepage"))
+    user = request.user
+    received_invitations = OrganizationInvitation.objects.filter(email_to_invite=user.email)
+    context = {
+        'user': user,
+        'organizations': organizations,
+        'sent_invitations': OrganizationInvitation.objects.filter(invited_by=user),
+        'received_invitations': received_invitations
+    }
     return context
+
+def org_invite_action(request, invite_id):
+    invite = OrganizationInvitation.objects.filter(pk=invite_id)[0]
+    org = Organization.objects.filter(pk=invite.organization.pk)[0]
+    if request.user.email != invite.email_to_invite:
+        return HttpResponseNotAllowed("It's not nice to force your way into groups.")
+    if request.method == 'POST':
+        data = request.POST
+        if data.get('join'):
+            messages.success(request, "You have joined " + org.name + " as an admin.")
+            org.add_member(request.user)
+        if data.get('decline'):
+            messages.warning(request, "You have declined to join " + org.name + " as an admin.")
+        invite.delete()
+    return HttpResponseRedirect(reverse("homepage"))
 
 @render_to("central/landing_page.html")
 def landing_page(request):
@@ -74,7 +110,41 @@ def zone_form(request, id=None, org_id=None):
     return {
         'form': form
     }
-    
+
+@login_required
+@render_to("securesync/facility_admin.html")
+def central_facility_admin(request, zone_id=None):
+    # still need to check if user has the rights to do this
+    facilities = Facility.objects.all()
+    return {
+        "zone_id": zone_id,
+        "facilities": facilities,
+    } 
+
+@login_required
+@render_to("securesync/facility_edit.html")
+def central_facility_edit(request, id=None, zone_id=None):
+    if id != "new":
+        facil = get_object_or_404(Facility, pk=id)
+    else:
+        facil = None
+    if request.method == "POST":
+        form = FacilityForm(data=request.POST, instance=facil)
+        if form.is_valid():
+            form.instance.zone_fallback = get_object_or_404(Zone, pk=zone_id)
+            form.save()
+            return HttpResponseRedirect(reverse("central_facility_admin", kwargs={"zone_id": zone_id}))
+    else:
+        form = FacilityForm(instance=facil)
+    return {
+        "form": form,
+        "zone_id": zone_id,
+    }
+
+@render_to("central/getting_started.html")
+def get_started(request):
+    return {}
+
 @login_required
 def crypto_login(request):
     if not request.user.is_superuser:

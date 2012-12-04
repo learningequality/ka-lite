@@ -103,7 +103,9 @@ def video_handler(request, video, prev=None, next=None):
 @render_to("exercise.html")
 def exercise_handler(request, exercise):
     related_videos = [topicdata.NODE_CACHE["Video"][key] for key in exercise["related_video_readable_ids"]]
-
+    
+    referURL = request.META["HTTP_REFERER"]
+    
     if request.user.is_authenticated():
         messages.warning(request, "Note: You're logged in as an admin (not a facility user), so your exercise progress and points won't be saved.")
     elif not request.is_logged_in:
@@ -114,6 +116,7 @@ def exercise_handler(request, exercise):
         "title": exercise[title_key["Exercise"]],
         "exercise_template": "exercises/" + exercise[slug_key["Exercise"]] + ".html",
         "related_videos": related_videos,
+        "referURL": referURL,
     }
     return context
 

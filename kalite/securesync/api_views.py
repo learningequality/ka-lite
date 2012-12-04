@@ -164,8 +164,10 @@ def device_download(data, session):
 @require_sync_session
 def device_upload(data, session):
     # TODO(jamalex): check that the uploaded devices belong to the client device's zone and whatnot
-    save_serialized_models(data.get("devices", "[]"))
-    
+    # (although it will only save zones from here if centrally signed, and devices if registered in a zone)
+    result = save_serialized_models(data.get("devices", "[]"))
+    return JsonResponse(result)
+        
 @csrf_exempt
 @require_sync_session
 def device_counters(data, session):
