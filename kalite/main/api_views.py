@@ -11,13 +11,7 @@ from utils.jobs import force_job
 from utils.videos import delete_downloaded_files
 from models import FacilityUser, VideoLog, ExerciseLog, VideoFile
 from config.models import Settings
-
-def require_admin(handler):
-    def wrapper_fn(request, *args, **kwargs):
-        if not request.is_admin:
-            return HttpResponseNotAllowed("This path is only available to admins.")
-        return handler(request, *args, **kwargs)
-    return wrapper_fn
+from utils.decorators import require_admin
 
 class JsonResponse(HttpResponse):
     def __init__(self, content, *args, **kwargs):
