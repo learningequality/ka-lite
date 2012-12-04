@@ -74,10 +74,14 @@ def organization_form(request, id=None):
         form = OrganizationForm(data=request.POST, instance=org)
         if form.is_valid():
             # form.instance.owner = form.instance.owner or request.user 
+            old_org = bool(form.instance.pk)
             form.instance.save(owner=request.user)
             form.instance.users.add(request.user)
             # form.instance.save()
-            return HttpResponseRedirect(reverse("homepage"))
+            if old_org:
+                return HttpResponseRedirect(reverse("homepage"))
+            else:    
+                return HttpResponseRedirect(reverse("zone_form", kwargs={"id": "new", "org_id": form.instance.pk}) )
     else:
         form = OrganizationForm(instance=org)
     return {
