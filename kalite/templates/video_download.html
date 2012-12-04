@@ -8,6 +8,10 @@
 <link href="{{ MEDIA_URL }}css/ui.dynatree.css"rel="stylesheet" type="text/css"/>
 <style>
 
+ul.dynatree-container li, .ui-widget-content {
+    background-image: none;
+}
+
 .download-actions {
     width: 400px;
     float: left;
@@ -122,6 +126,7 @@
                     checkbox: true,
                     selectMode: 3,
                     children: treeData,
+                    debugLevel: 0,
                     onSelect: function(select, node) {
                     
                         var newVideoCount = findSelectedIncompleteVideos().length;
