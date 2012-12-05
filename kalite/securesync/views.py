@@ -20,13 +20,7 @@ import settings
 from securesync.models import SyncSession, Device, RegisteredDevicePublicKey, Zone, Facility, FacilityGroup
 from securesync.api_client import SyncClient
 from utils.jobs import force_job
-
-def require_admin(handler):
-    def wrapper_fn(request, *args, **kwargs):
-        if not request.is_admin:
-            return HttpResponseRedirect(reverse("login") + "?next=" + request.path)
-        return handler(request, *args, **kwargs)
-    return wrapper_fn
+from utils.decorators import require_admin
 
 def central_server_only(handler):
     def wrapper_fn(*args, **kwargs):
@@ -244,6 +238,7 @@ def add_group(request, facility):
 @distributed_server_only
 @render_to("securesync/login.html")
 def login(request):
+    facilities = Facility.objects.all()
     if request.user.is_authenticated():
         auth_logout(request)
     if request.method == 'POST':
@@ -265,7 +260,8 @@ def login(request):
     else:
         form = LoginForm(initial={"facility": request.GET.get("facility", None)})
     return {
-        "form": form
+        "form": form,
+        "facilities": facilities
     }
 
 @distributed_server_only

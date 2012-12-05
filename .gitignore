@@ -19,3 +19,4 @@ build/
 virtualenv/
 *.pid
 mergetomaster.sh
+videos/

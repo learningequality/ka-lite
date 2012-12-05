@@ -1,0 +1,74 @@
+{% extends base_template %}
+
+{% block title %}Getting started with KA Lite{% endblock title %}
+
+{% block content %}
+<style>
+
+.suggested-action {
+    background-color: #F7F7F7;
+    color: #444!important;
+    display: block;
+    margin-bottom: 10px;
+    padding: 14px;
+    position: relative;
+    float: center;
+    margin-left: 10%;
+    margin-right: 10%;
+    max-width: 770px;
+    min-width: 500px;
+}
+
+.suggested-action:hover {
+    border-color: #C3CA7D;
+    -webkit-box-shadow: 0 0 10px #76A005;
+    -moz-box-shadow: 0 0 10px #76a005;
+    box-shadow: 0 0 10px #76A005;
+    color: #444!important;
+    text-decoration: none!important;
+}
+
+.suggested-action-title {
+	color: #005987;
+    text-decoration: none;
+}
+
+.suggested-action-text {
+	text-indent: -12;
+	padding-left: 12;
+}
+
+</style>
+
+<h2> Getting Started With KA Lite</h2>
+
+<p>KA Lite can run on any Linux or Windows server, with minimal requirements. To get started:
+
+<div>
+	
+	<div class="vertical-shadow suggested-action">
+		<h2 class="pulls ellipsis suggested-action-title">1. Sign up</h2>
+			<li> First <a href="/accounts/register/">sign up for an account</a> on this site.</li>
+			<li class="suggested-action-text"> The next step will be to create an organization and zone. An organization is an entity responsible for administering multiple different zones and facilities. Organizations can have multiple administrators. A zone is the area in which multiple devices may connect to share content with each other. A facility is the place where the server is located that enables sharing within a zone.</li>
+		</ul>
+	</div>
+	
+	<div class="vertical-shadow suggested-action">
+		<h2 class="pulls ellipsis suggested-action-title">2. Install</h2>
+			<li class="suggested-action-text" > Next, follow the <a href="https://github.com/jamalex/ka-lite/blob/master/INSTALL.md" target="_blank">installation instructions</a> to get KA Lite up and running on your server. All information regarding installation, including running the server and setting up KA Lite can be found in the installation instructions.</li>
+	</div>
+	
+	<div class="vertical-shadow suggested-action">
+		<h2 class="pulls ellipsis suggested-action-title">3. Register device</h2>
+		<li class="suggested-action-text">After installation, you should run the server as shown in the installation instructions. You will be prompted to create an account and register your device on your server. </li>
+
+	</div>
+
+<div>
+
+<!-- checklist: -->
+	<!-- software installation on device -->
+		<!-- explain that they'll need to have a device on a network with other devices -->
+		<!-- bullet points, break into chunks -->
+
+{% endblock content %}

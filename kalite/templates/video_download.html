@@ -8,6 +8,10 @@
 <link href="{{ MEDIA_URL }}css/ui.dynatree.css"rel="stylesheet" type="text/css"/>
 <style>
 
+ul.dynatree-container li, .ui-widget-content {
+    background-image: none;
+}
+
 .download-actions {
     width: 400px;
     float: left;
@@ -72,7 +76,7 @@
     background: #C4D831;
 }
 
-#download-legend-selected, #download-videos {
+#download-legend-selected, #download-videos, #delete-videos {
     display: none;
 }
 
@@ -83,6 +87,18 @@
 #cancel-download {
     display: none;
     margin-top: 10px;
+}
+
+#download-videos {
+    font-weight: bold;
+    padding: 4px 10px 5px 10px;
+    margin-bottom: 5px;
+    color: #52A852;
+}
+
+#delete-videos {
+    color: #AC4343;
+    padding: 0 10px 0 10px;
 }
 
 </style>
@@ -102,45 +118,50 @@
     
     $(function() {
         
-        doRequest("/api/get_topic_tree", {}).success(function(treeData) {
-            
-            $("#content_tree").dynatree({
-                imagePath:"../images/",
-                checkbox: true,
-                selectMode: 3,
-                children: treeData,
-                onSelect: function(select, node) {
+        setTimeout(function() {
+            doRequest("/api/get_topic_tree", {}).success(function(treeData) {
                 
-                    var numberOfVideos = findSelectedIncompleteVideos().length;
+                $("#content_tree").dynatree({
+                    imagePath:"../images/",
+                    checkbox: true,
+                    selectMode: 3,
+                    children: treeData,
+                    debugLevel: 0,
+                    onSelect: function(select, node) {
                     
-                    if (numberOfVideos > 0) {
-                        $(".video_count").text(numberOfVideos);
-                        $("#download-legend-selected").show();
-                        $("#download-legend-unselected").hide();
-                        $("#download-videos").show();
-                    } else {
-                        $("#download-legend-unselected").show();
-                        $("#download-legend-selected").hide();
+                        var newVideoCount = findSelectedIncompleteVideos().length;
+                        var oldVideoCount = findSelectedStartedVideos().length;
+                        
                         $("#download-videos").hide();
-                    }
-
-                },
-                onDblClick: function(node, event) {
-                    node.toggleSelect();
-                },
-                onKeydown: function(node, event) {
-                    if( event.which == 32 ) {
+                        $("#delete-videos").hide();
+                        $("#download-legend-unselected").toggle(newVideoCount + oldVideoCount == 0);
+                        
+                        if (newVideoCount > 0) {
+                            $(".new-video-count").text(newVideoCount);
+                            $("#download-videos").show();                                
+                        }
+                        if (oldVideoCount > 0) {
+                            $(".old-video-count").text(oldVideoCount);
+                            $("#delete-videos").show();
+                        }
+                    },
+                    onDblClick: function(node, event) {
                         node.toggleSelect();
-                        return false;
+                    },
+                    onKeydown: function(node, event) {
+                        if( event.which == 32 ) {
+                            node.toggleSelect();
+                            return false;
+                        }
+                    },
+                    onPostInit: function() {
+                		startDownloadChecks();
+                        startSubtitleDownloadChecks();
                     }
-                },
-                onPostInit: function() {
-            		startDownloadChecks();
-                    startSubtitleDownloadChecks();
-                }
+                });
+                        
             });
-                    
-        });
+        }, 200);
         
     
         $("#progressbar-overall").progressbar({
@@ -159,18 +180,34 @@
         });
     
         $("#download-videos").click(function() {
-            var videos = findSelectedIncompleteVideos();
-            
+            var videos = findSelectedIncompleteVideos();            
             var video_ids = $.map(videos, function(node) {
-           		node.select(false);
                 return node.data.key;
             });
-                    
+
+            unselectAllNodes();
+
             doRequest("/api/start_video_download", {youtube_ids: video_ids}).success(startDownloadChecks);
     	
             $(".progress-section").hide();
             $(".progress-waiting").show();
             $("#cancel-download").show();
+        });
+
+        $("#delete-videos").click(function() {
+            var videos = findSelectedStartedVideos();
+            var video_ids = $.map(videos, function(node) {
+                return node.data.key;
+            });
+
+            unselectAllNodes();
+            
+            doRequest("/api/delete_videos", {youtube_ids: video_ids}).complete(function() {
+                $.each(video_ids, function(ind, id) {
+                    setNodeClass(id, "unstarted");
+                });
+            });
+        
         });
         
         $(".download-subtitles").click(function(event) {
@@ -178,7 +215,7 @@
             var new_only = $(event.target).attr("new_only");
             var language = $("#language option:selected").val();
             if (new_only!="true") {
-                if(!confirm("This will download updated subtitles for all downloaded videos.")) {
+                if(!confirm("You are about to download new subtitles for all downloaded videos. This may take a long time.")) {
                     return;
                 }
             }
@@ -203,6 +240,12 @@
        
     
     });
+    
+    function unselectAllNodes() {
+        $.each($("#content_tree").dynatree("getSelectedNodes"), function(ind, node) {
+            node.select(false);
+        });
+    }
     
     function startDownloadChecks() {
         doRequest("/api/get_video_download_list").success(function(video_ids) {
@@ -233,20 +276,25 @@
     
    	function checkSubtitleDownloadProgress() {
         doRequest("/api/check_subtitle_download").success(function(remainder) {
+            if (!window.download_subtitle_check_interval) {
+                return;
+            }
             window.download_subtitle_index = window.downloading_subtitles.length - remainder;
             updateSubtitleProgressDisplay();
             if (remainder == 0) {
             	clearInterval(window.download_subtitle_check_interval);
-                $(".progress-subtitle").hide();
+                $(".progress-subtitle, #cancel-download").hide();
                 return;
             }
-  
         });
     }
     
     function checkVideoDownloadProgress() {
         var currentKey = window.downloading_videos[window.download_index];
         doRequest("/api/check_video_download", {youtube_ids: [currentKey]}).success(function(progress) {
+            if (!window.download_check_interval) {
+                return;
+            }
             window.current_download_percent = progress[currentKey];
             updateProgressDisplay();
             if (window.current_download_percent == 100) {
@@ -254,7 +302,7 @@
                 window.download_index++;
                 if (window.download_index >= window.downloading_videos.length) {
                     clearInterval(window.download_check_interval);
-                    $(".progress-section").hide();
+                    $(".progress-section, #cancel-download").hide();
                     return;
                 }
                 checkVideoDownloadProgress();
@@ -319,25 +367,40 @@
     
     }
     
-    
     function findSelectedIncompleteVideos() {
         var arr = $("#content_tree").dynatree("getSelectedNodes");
         return $.grep(arr, function(node) { 
             return node.data.addClass != "complete" && node.childList == null;
         });
     }
+
+    function findSelectedStartedVideos() {
+        var arr = $("#content_tree").dynatree("getSelectedNodes");
+        return $.grep(arr, function(node) { 
+            return node.data.addClass != "unstarted" && node.childList == null;
+        });
+    }
     
-    function getNode(nodeKey) {
-        return $("#content_tree").dynatree("getTree").getNodeByKey(nodeKey);
+    function withNodes(nodeKey, callback, currentNode) {
+        if (!currentNode) {
+            currentNode = $("#content_tree").dynatree("getTree").tnRoot.childList[0];
+        }
+        $.each(currentNode.childList || [], function(ind, child) {
+            if (child.data.key == nodeKey) {
+                callback(child);
+            }
+            withNodes(nodeKey, callback, child);
+        });
     }
     
     function setNodeClass(nodeKey, className) {
-        var node = getNode(nodeKey);
-        $(node.span).removeClass("unstarted partial complete").addClass(className);
-        node.data.addClass = className;
-        if (node.parent) {
-            updateNodeClass(node.parent);
-        }
+        withNodes(nodeKey, function(node) {
+            $(node.span).removeClass("unstarted partial complete").addClass(className);
+            node.data.addClass = className;
+            if (node.parent) {
+                updateNodeClass(node.parent);
+            }            
+        });
     }
 
     function updateNodeClass(node) {
@@ -371,12 +434,12 @@
 
 <div class="download-actions vertical-shadow">
     <h2 id="download-legend-unselected" class="button_text">Please select videos to download (below)</h2>
-    <h2 id="download-legend-selected" class="button_text">Download <span class="video_count">0</span> videos selected below </h2>
-    <button id="download-videos" type="button">Download Selected Videos</button>
+    <button id="download-videos" type="button">Download <span class="new-video-count">0</span> new selected videos</button>
+    <button id="delete-videos" type="button">Delete <span class="old-video-count">0</span> selected videos</button>
 </div>
 
 <div class="download-actions subtitles-download vertical-shadow">
-    <h2 class="button_text">Download/update subtitles for videos</h2>
+    <h2 class="button_text">Download/update subtitles for existing videos</h2>
     <span class= "button_style">
         <select id="language">
             {% if languages %}
@@ -386,14 +449,12 @@
             {% endif %}
         </select>
     </span>
-    <button class="download-subtitles" new_only=true type="button">Download Missing Subtitles</button>
-    <button class="download-subtitles" type="button">Update All Subtitles</button>
+    <button class="download-subtitles" type="button">Get/Update All Subtitles</button>
+    <button class="download-subtitles" new_only=true type="button">Get Missing Subtitles Only</button>
 </div>
 
 <div style="clear: both;"></div>
 
-
-    
 <div class="progress-waiting">
 	<h2 class="progress-text">
         Downloads will start soon... Please wait!
@@ -435,6 +496,6 @@
 
 <button id="cancel-download" type="button">Cancel All Downloads</button>
 
-<div id="content_tree"><br/><h2>Loading topic tree... Please wait!</h2></div>
+<div id="content_tree"><br/><h2> Loading topic tree... Please wait!</h2></div>
 
 {% endblock content %}

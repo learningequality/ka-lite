@@ -174,7 +174,6 @@ div.exercises-card {
 
 .basic-form .errorlist {
     margin-left: 134px;
-    color: red;
 }
 
 .basic-form .submit, .basic-form h2 {
@@ -245,33 +244,40 @@ li .progress-circle {
 }
 
 .message {
-    width: 100%;
-    padding: 3px;
+    width: 60%;
+    padding: 4px;
     padding-left: 10px;
-    margin-top: 2px;
-    margin-bottom: 5px;
+    margin-top: 0;
+    margin-bottom: 10px;
     border-style: solid;
     border-width: 1px;
+    font-size: 13px;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
 }
 
 .message.error {
-    color:#D8000C;
-    background-color: #FFBABA;
+    color: #FFFFFF;
+    background-color: #FF3030; 
+    border-color: #330000;
 }
 
 .message.success {
-    color: #008B00;
-    background-color: #A5F3B0;
+    color: #273C2B;
+    background-color: #8AF07C;
+    border-color: #273C2B;
 }
 
 .message.warning {
-   color: #8B8B00;
-   background-color: #FFFF91; 
-   border-color: #CDCD00;
+    color: #330000;
+    background-color: #FF9955; 
+    border-color: #330000;
 }
 
 .errorlist {
     padding-bottom: 10px;
+    color: red;
 }
 
 /*Dylan ugly-fixing the nav bar arrows... */
@@ -380,8 +386,9 @@ li .progress-circle {
 
 #totalpoints {
     font-weight: bold;
-    font-size: 1.5em;  
-    padding-top: 4px; 
+    font-size: 1.2em;  
+    padding-top: 4px;
+    color: #77C;
 }
 
 #questionpoints {
@@ -433,4 +440,7 @@ li .progress-circle {
     margin-right: 30px;
 }
 
-
+.org-invite {
+    display: block;
+    position: relative;
+}

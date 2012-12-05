@@ -10,13 +10,7 @@ class UserProfileAdmin(admin.ModelAdmin):
 	list_display = ("user",)
 admin.site.register(UserProfile, UserProfileAdmin)
 
-# class ZoneOrganizationAdmin(admin.ModelAdmin):
-#     list_display = ("zone", "organization",)
-#     list_filter = ("zone", "organization",)
-# admin.site.register(ZoneOrganization, ZoneOrganizationAdmin)
 
-
-# class OrganizationUserAdmin(admin.ModelAdmin):
-#     list_display = ("user", "organization",)
-#     list_filter = ("user", "organization",)
-# admin.site.register(OrganizationUser, OrganizationUserAdmin)
+class OrganizationInvitationAdmin(admin.ModelAdmin):
+    list_display = ("email_to_invite", "invited_by", "organization")
+admin.site.register(OrganizationInvitation, OrganizationInvitationAdmin)

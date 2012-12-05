@@ -62,12 +62,12 @@ def check_setup_status(handler):
     def wrapper_fn(request, *args, **kwargs):
         client = SyncClient()
         if not request.is_admin and Facility.objects.count() == 0:
-            messages.warning(request, mark_safe("Please login <a href='%s'>here</a> with the account you created in the installation script, to complete the setup." % reverse("login")))
+            messages.warning(request, mark_safe("Please <a href='%s'>login</a> with the account you created in the installation script, to complete the setup." % reverse("login")))
         if request.is_admin:
             if not Settings.get("registered") and client.test_connection() == "success":
-                messages.warning(request, mark_safe("Please follow the directions to register your device <a href='%s'>here</a>, so that it can synchronize with the central server." % reverse("register_public_key")))
+                messages.warning(request, mark_safe("Please <a href='%s'>follow the directions to register your device</a>, so that it can synchronize with the central server." % reverse("register_public_key")))
             elif Facility.objects.count() == 0:
-                messages.warning(request, mark_safe("Please create a facility <a href='%s'>here</a>. Users will not be able to sign up until you do so." % reverse("add_facility")))
+                messages.warning(request, mark_safe("Please <a href='%s'>create a facility</a>. Users will not be able to sign up until you do so." % reverse("add_facility")))
         return handler(request, *args, **kwargs)
     return wrapper_fn
 
@@ -103,7 +103,9 @@ def video_handler(request, video, prev=None, next=None):
 @render_to("exercise.html")
 def exercise_handler(request, exercise):
     related_videos = [topicdata.NODE_CACHE["Video"][key] for key in exercise["related_video_readable_ids"]]
-
+    
+    referURL = request.META["HTTP_REFERER"]
+    
     if request.user.is_authenticated():
         messages.warning(request, "Note: You're logged in as an admin (not a facility user), so your exercise progress and points won't be saved.")
     elif not request.is_logged_in:
@@ -114,6 +116,7 @@ def exercise_handler(request, exercise):
         "title": exercise[title_key["Exercise"]],
         "exercise_template": "exercises/" + exercise[slug_key["Exercise"]] + ".html",
         "related_videos": related_videos,
+        "referURL": referURL,
     }
     return context
 

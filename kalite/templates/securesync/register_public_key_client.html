@@ -2,6 +2,8 @@
 
 {% block register_selected %}selected{% endblock register_selected %}
 
+{% block title %}Register a Device{% endblock title %}
+
 {% block headjs %}
 <script>
 
@@ -38,9 +40,9 @@
 {% endif %}
 
 {% if unregistered %}
-    <p>If you have not created an organization and zone yet, please <a href="{{ central_server_host }}">login to the central server and create them</a> (You will have to create an account there first).</p>
-    <p>If you already have an organization and a zone, please login to the central server and <a href="{{ registration_url }}" target="_blank">register this device in a zone</a> (this will open a new window).</p>
-    <p>Return here and <a href="." class="refresh-link">refresh this page</a> to complete the registration process.</p>
+<p>If you have not created an organization and zone yet, please <a href="{{ central_server_host }}" target="_blank">login to the central server and create them</a> (You will have to create an account there first).</p>
+<p>If you already have an organization and a zone, please <a href="{{ registration_url }}" target="_blank">login to the central server and register this device in a zone</a> (this will open a new window).</p>
+<p>Return here and <a href="." class="refresh-link">refresh this page</a> to complete the registration process.</p>
 {% endif %}
 
 {% endblock content %}
