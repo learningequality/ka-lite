@@ -59,7 +59,7 @@ class SyncClient(object):
                     model.object.save(is_trusted=True, imported=True)
                 else:
                     model.object.save(imported=True)
-            return "registered"
+            return {"code": "registered"}
         return json.loads(r.content)
     
     def start_session(self):
