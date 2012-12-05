@@ -27,6 +27,11 @@
 
 <h2>Device registration</h2>
 
+{% if error_msg %}
+<p>Sorry, there was an error during registration. Please make sure your device is fully up to date (run <b>python manage.py update</b> and then stop/start the server).</p>
+<p>The error message was: <b>{{ error_msg }}</b></p>
+{% endif %}
+
 {% if newly_registered %}
 <p>Congratulations, this device has now been registered.</p>
 {% endif %}

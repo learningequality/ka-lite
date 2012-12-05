@@ -344,6 +344,10 @@ li .progress-circle {
     left: 55px !important;
 }
 
+#nav_registerdevice {
+    color: darkRed;
+}
+
 /*Login*/
 .nav-subheader > span > a#nav_login.selected:after {
     left: 19px !important;

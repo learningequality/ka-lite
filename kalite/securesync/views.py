@@ -83,7 +83,8 @@ def register_public_key_client(request):
     client = SyncClient()
     if client.test_connection() != "success":
         return {"no_internet": True}
-    reg_status = client.register()
+    reg_response = client.register()
+    reg_status = reg_response.get("code")
     if reg_status == "registered":
         set_as_registered()
         return {"newly_registered": True}
@@ -96,6 +97,9 @@ def register_public_key_client(request):
             "registration_url": client.path_to_url(
                 "/securesync/register/?" + urllib.quote(crypto.serialize_public_key())),
         }
+    error_msg = reg_response.get("error", "")
+    if error_msg:
+        return {"error_msg": error_msg}
     return HttpResponse("Registration status: " + reg_status)
 
 @central_server_only
