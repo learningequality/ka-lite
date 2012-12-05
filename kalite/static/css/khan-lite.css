@@ -448,3 +448,11 @@ li .progress-circle {
     display: block;
     position: relative;
 }
+
+.helptext {
+    font-size: .85em;
+    display: block;
+    position: relative;
+    left: 135px;
+    top: -3px;
+}

@@ -172,13 +172,17 @@ class Zone(SyncedModel):
         
 
 class Facility(SyncedModel):
-    name = models.CharField(max_length=100)
+    name = models.CharField(help_text="(This is the name that students/teachers will see when choosing their facility; it can be in the local language.)", max_length=100)
     description = models.TextField(blank=True)
-    address = models.CharField(max_length=400, blank=True)
+    address = models.CharField(help_text="(Please provide as detailed an address as possible.)", max_length=400, blank=True)
     address_normalized = models.CharField(max_length=400, blank=True)
     latitude = models.FloatField(blank=True, null=True)
     longitude = models.FloatField(blank=True, null=True)
     zoom = models.FloatField(blank=True, null=True)
+    contact_name = models.CharField(help_text="(Who should we contact with any questions about this facility?)", max_length=60, blank=True)
+    contact_phone = models.CharField(max_length=60, blank=True)
+    contact_email = models.EmailField(max_length=60, blank=True)
+    user_count = models.IntegerField(help_text="(How many potential users do you estimate there are at this facility?)", blank=True, null=True)
 
     class Meta:    
         verbose_name_plural = "Facilities"
