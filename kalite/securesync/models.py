@@ -85,6 +85,7 @@ class SyncedModel(models.Model):
     signed_version = models.IntegerField(default=1, editable=False)
     signed_by = models.ForeignKey("Device", blank=True, null=True, related_name="+", editable=False)
     zone_fallback = models.ForeignKey("Zone", blank=True, null=True, related_name="+")
+    deleted = models.BooleanField(default=False)
 
     def sign(self, device=None):
         self.signed_by = device or Device.get_own_device()
@@ -127,8 +128,6 @@ class SyncedModel(models.Model):
             if not self.verify():
                 raise ValidationError("Imported model's signature did not match.")
         else: # local model
-            if self.signed_by and self.signed_by != own_device:
-                raise ValidationError("Cannot modify models signed by another device.")
             self.counter = own_device.increment_and_get_counter()
             if not self.id:
                 self.id = self.get_uuid()
