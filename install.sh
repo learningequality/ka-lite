@@ -63,6 +63,7 @@ initd_available=`command -v update-rc.d`
 if [ $initd_available ]; then
     while true
     do
+        echo
         echo "Do you wish to set the KA Lite server to run in the background automatically"
         echo -n "when you start this computer (you will need root/sudo privileges) [Y/N]? "
         read CONFIRM

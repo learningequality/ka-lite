@@ -62,7 +62,7 @@ def check_setup_status(handler):
     def wrapper_fn(request, *args, **kwargs):
         client = SyncClient()
         if not request.is_admin and Facility.objects.count() == 0:
-            messages.warning(request, mark_safe("Please <a href='%s'>login</a> with the account you created in the installation script, to complete the setup." % reverse("login")))
+            messages.warning(request, mark_safe("Please <a href='%s'>login</a> with the account you created while running the installation script, to complete the setup." % reverse("login")))
         if request.is_admin:
             if not Settings.get("registered") and client.test_connection() == "success":
                 messages.warning(request, mark_safe("Please <a href='%s'>follow the directions to register your device</a>, so that it can synchronize with the central server." % reverse("register_public_key")))
@@ -89,7 +89,7 @@ def topic_handler(request, topic):
 @render_to("video.html")
 def video_handler(request, video, prev=None, next=None):
     if request.user.is_authenticated():
-        messages.warning(request, "Note: You're logged in as an admin (not a facility user), so your video progress and points won't be saved.")
+        messages.warning(request, "Note: You're logged in as an admin (not as a student/teacher), so your video progress and points won't be saved.")
     elif not request.is_logged_in:
         messages.warning(request, "Friendly reminder: You are not currently logged in, so your video progress and points won't be saved.")
     context = {
@@ -107,7 +107,7 @@ def exercise_handler(request, exercise):
     referURL = request.META["HTTP_REFERER"]
     
     if request.user.is_authenticated():
-        messages.warning(request, "Note: You're logged in as an admin (not a facility user), so your exercise progress and points won't be saved.")
+        messages.warning(request, "Note: You're logged in as an admin (not as a student/teacher), so your exercise progress and points won't be saved.")
     elif not request.is_logged_in:
         messages.warning(request, "Friendly reminder: You are not currently logged in, so your exercise progress and points won't be saved.")
 
