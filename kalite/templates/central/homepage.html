@@ -32,16 +32,34 @@ ul, li {
 	padding-left: 5px;
 }
 
+h1.title {
+	font-size: 30px;
+}
+
 h2, h3, h4 {
 	margin-bottom: 5px;
 }
 
-.organization {
-	margin-bottom: 20px;
-	border-bottom: dotted gray 1px;
+.title-bar {
+	margin-bottom: .7em;
 }
 
-#aff_zones {
+.title-bar > a {
+	position: relative;
+	top: 2px;
+}
+
+h2.title {
+	float: left;
+	margin-right: 5px;
+}
+
+h2.title {
+	font-size: 25px;
+}
+
+h4.title {
+
 	font-weight: bold;
 }
 
@@ -54,104 +72,124 @@ h2, h3, h4 {
 	margin-top: 25px;
 }
 
+.organization {
+	width: 90%;
+	padding: 20px 0px;
+	padding-left: 20px;
+	margin: 20px 0px;
+	border: 1px dotted gray;
+	border-radius: 5px;
+	background-color: #F8F8F8;
+}
+
+.organization > li {
+	list-style-type: none;
+	margin: 0px;
+	padding: 0px;
+}
+
+#new-zone {
+	margin-top: 10px;
+}
+
+#zones, #members {
+	width: 45%;
+	float: left;
+}
+
+.clearfix {
+	width: 100%;
+	clear: both; 
+}
+
 </style>
 
 {% endblock headcss %}
 
 {% block content %}
 
-<div id="org_list_container">
-	<h2>My Organizations</h2>
+<div id="org_container">
+	<h1 class="title">My Organizations</h2>
 	{% if received_invitations|length > 0 %}
 		<div class="org-invite">
-			<ul>
 				{% for invite in received_invitations %}
 					<form method="post" action="{% url org_invite_action invite_id=invite.pk %}"> 
 						{% csrf_token %}
-						<li>
+						<div>
 							You have been invited by {{ invite.invited_by }} to help administer "{{ invite.organization }}." Please click below to join the organization or decline this invitation. 
-						</li>
-						<li> 
+						</div>
+						<div> 
 							<input type="submit" name="join" value="Join">
 							<input type="submit" name="decline" value="Decline">
-						</li>
+						</div>
 					</form>
 				{% endfor %}
-			</ul>
 		</div>
 	{% endif %}
-	<ul id="org_list">
-		{% if organizations %}
-		<li>
-			<p class="help_text">(Click on any organization or zone name to update information).</p>
-		</li>
-			{% for org in organizations %}
-				<li class="organization">
-					<h2><a href="{% url organization_form id=org.id %}">{{ org.name }}</a></h2>
-					<ul class="zone_list">
-						<h4 id="aff_zones">Affiliated Zones</h4>
-						{% for zone in org.get_zones %}
-						<li class="zone_title">
-							<h4><a href="{% url zone_form org_id=org.id id=zone.id %}">{{ zone.name }}</a><span class="facility_link"><a href="{% url central_facility_admin zone_id=zone.id %}">(Administer facilities)</a></span></h4>
-						</li>
-						{% endfor %}
-						<li>
-						  <a href="{% url zone_form org_id=org.id id='new' %}">Create a new zone.</a>
-						</li>
-						
-					</ul>
-					<ul class="member_list">
-						<h4 id="aff_members">Affiliated Members</h4>
-						{% for member in org.get_members %}
-							<li class="member_name">
-								<h4>
+	<div id="organizations">
+			{% if organizations %}
+				{% for org in organizations %}
+					<div class="organization">
+						<div class="title-bar">
+							<h2 class="title">{{ org.name }}</h2><a href="{% url organization_form id=org.id %}">(edit)</a>
+						</div>
+						<div id="zones">
+							<h4 class="title">Affiliated Zones</h4>
+							{% for zone in org.get_zones %}
+								<h4><a href="{% url zone_form org_id=org.id id=zone.id %}">{{ zone.name }}</a><span class="facility_link"><a href="{% url central_facility_admin zone_id=zone.id %}">(Administer facilities)</a></span></h4>
+							{% endfor %}
+							<form method="link" action="{% url zone_form org_id=org.id id='new' %}">
+								<input class="add" type="submit" value="Create a new zone">
+							</form>
+						</div>
+						<div id="members">
+							<h4 class="title">Organization Admins</h4>
+							{% for member in org.get_members %}
+								<h4 title="{{member.email }}">
 									{% if member.first_name and member.last_name %}
-										{{ member.first_name }}&nbsp;{{ member.last_name }},
+										{{ member.first_name }}&nbsp;{{ member.last_name }}
 									{% else %}
-										{{ member.username }},
+										{{ member.username }}
 									{% endif %}
-										&nbsp;{{member.email }}
 								</h4>
-							</li>
-						{% endfor %}
-						{% for invite in sent_invitations %}
-							{% if invite.organization == org %}
-								<li class="invite_members">
+							{% endfor %}
+							{% for invite in sent_invitations %}
+								{% if invite.organization == org %}
 									<h4>
 										{{ invite.email_to_invite }} has been invited to join {{ org }}.
 									</h4>
-								</li>
-							{% endif %}
-						{% endfor %}
-						<h4 id="invite_member">
-							Add New Members
-						</h4>
-						<form method="post">
-							{% csrf_token %}
-							{% for error in org.form.non_field_errors %}
-								<span class="errors">{{ error }}</span>
+								{% endif %}
 							{% endfor %}
-							<input type="hidden" name="organization" value="{{ org.pk }}">
-							{{ org.form.invited_by }}
-							<li>
-								{{ org.form.email_to_invite }}
-							</li>
-							<li>
-								<input type="submit" value="Send invite!">
-							</li>
-						</form>
-					</ul>
-				</li>
-			{% endfor %}
-			<li id="last">
-				<a href="/organization/new/">Create a new organization.</a>
-			</li>
-		{% else %}
-			<li>
-				You currently have no organizations. Would you like to <a href="/organization/new/">create a new organization?</a>
-			</li>
-		{% endif %}
-	</ul>
+							<div class="add">
+								<h4 class="title">
+									Add Admin
+								</h4>
+								<form method="post">
+									{% csrf_token %}
+									{% for error in org.form.non_field_errors %}
+										<span class="errors">{{ error }}</span>
+									{% endfor %}
+									<input type="hidden" name="organization" value="{{ org.pk }}">
+									{{ org.form.invited_by }}
+									<input type="text" placeholder="example@email.com" name="email_to_invite">
+									<input type="submit" value="Send invite!">
+								</form>
+							</div>
+					</div>
+					<div class="clearfix"></div>
+					</div>
+				{% endfor %}
+				<div id="last">
+					<form method="link" action="/organization/new/">
+						<input type="submit" value="Create a new organization">
+					</form>
+				</div>
+			{% else %}
+				<div>
+					You currently have no organizations. Would you like to <a href="/organization/new/">create a new organization?</a>
+				</div>
+			{% endif %}
+	</div>
 </div>
 
 <div>	

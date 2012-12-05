@@ -62,8 +62,8 @@ class OrganizationInvitation(models.Model):
             'invited_by': self.invited_by
         }
         if User.objects.filter(email=to_email).count() > 0:
-            subject = render_to_string('org_invite_email_subject.txt', context)
-            body = render_to_string('org_invite_email.txt', context)
+            subject = render_to_string('central/org_invite_email_subject.txt', context)
+            body = render_to_string('central/org_invite_email.txt', context)
         else:
             subject = render_to_string('central/central_invite_email_subject.txt', context)
             body = render_to_string('central/central_invite_email.txt', context)
