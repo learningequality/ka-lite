@@ -225,7 +225,7 @@ class FacilityUser(SyncedModel):
             return self.password == crypt(raw_password, self.password)
 
     def set_password(self, raw_password):
-        self.password = crypt(raw_password, iterations=10000)
+        self.password = crypt(raw_password, iterations=Settings.get("password_hash_iterations", 2000))
 
     def get_name(self):
         if self.first_name and self.last_name:
