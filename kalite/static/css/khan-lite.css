@@ -456,3 +456,14 @@ li .progress-circle {
     left: 135px;
     top: -3px;
 }
+
+.glossary-link {
+    background: url('/static/images/question_mark.png') no-repeat center;
+    display: inline-block;
+    width: 28px;
+    height: 21px;
+    float: center;
+    margin-bottom: -5px;
+    margin-left: -5px;
+    margin-right: -5px;
+}
