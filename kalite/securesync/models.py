@@ -5,10 +5,8 @@ from django.db import models, transaction
 from config.models import Settings
 import crypto
 import uuid
-import random
-import hashlib
 import settings
-
+from pbkdf2 import crypt
 
 _unhashable_fields = ["signature", "signed_by"]
 _always_hash_fields = ["signed_version", "id"]
@@ -219,12 +217,15 @@ class FacilityUser(SyncedModel):
         return "%s (Facility: %s)" % (self.get_name(), self.facility)
         
     def check_password(self, raw_password):
-        return check_password(raw_password, self.password)
+        if self.password.split("$", 1)[0] == "sha1":
+            # use Django's built-in password checker for SHA1-hashed passwords
+            return check_password(raw_password, self.password)
+        if self.password.split("$", 2)[1] == "p5k2":
+            # use PBKDF2 password checking
+            return self.password == crypt(raw_password, self.password)
 
     def set_password(self, raw_password):
-        salt = hashlib.sha1(str(random.random())).hexdigest()[:5]
-        hsh = hashlib.sha1(salt + raw_password).hexdigest()
-        self.password = 'sha1$%s$%s' % (salt, hsh)
+        self.password = crypt(raw_password, iterations=10000)
 
     def get_name(self):
         if self.first_name and self.last_name:
