@@ -44,9 +44,9 @@ def register_device(request):
     try:
         models = serializers.deserialize("json", data["client_device"])
         client_device = models.next().object
-    except:
+    except Exception as e:
         return JsonResponse({
-            "error": "Could not decode the client device model; corrupted?",
+            "error": "Could not decode the client device model: %r" % e,
             "code": "client_device_corrupted",
         }, status=500)
     if not isinstance(client_device, Device):
