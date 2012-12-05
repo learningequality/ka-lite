@@ -15,9 +15,6 @@ function initialize()
         new google.maps.LatLng(-33.8902, 151.1759),
         new google.maps.LatLng(-33.8474, 151.2631));
     map.fitBounds(defaultBounds);
-
-    var input = document.getElementById('target');
-    var searchBox = new google.maps.places.SearchBox(input);
     
     var myLatLng = new google.maps.LatLng(-33.8902, 151.1759);
 
@@ -36,28 +33,8 @@ function initialize()
     });
 
 
-    google.maps.event.addListener(searchBox, 'places_changed', function() {
-        var places = searchBox.getPlaces();
-        var bounds = new google.maps.LatLngBounds();
-        if (places.length === 0) { 
-            marker.setVisible(false);
-            return;
-        } 
-        var place = places[0];
-        marker.setVisible(true);
-        marker.setPosition(place.geometry.location);
-        bounds.extend(place.geometry.location);
-        info(place.geometry.location.lat(), place.geometry.location.lng());
-        addr(place.formatted_address);
-        map.fitBounds(bounds);
-        map.setZoom(13);
-       
-    });
     google.maps.event.addListener(map, 'bounds_changed', function(){
         var bounds = map.getBounds();
-        searchBox.setBounds(bounds);
-
-
     });
 
 }
@@ -79,18 +56,6 @@ function addr(ad) {
 
 {% block extrastyle %}{{ block.super }}
 <style>
-    #search-panel
-    {
-        position: absolute;
-        top: 585px;
-        left: 50%;
-        margin-left: -180px;
-        width: 350px;
-        z-index: 5;
-        background-color: #fff;
-        padding: 5px;
-        border: 1px solid #999;
-    }       
     #target
     {
         width: 345px;
@@ -105,9 +70,5 @@ function addr(ad) {
 {% endblock %}
 
 {% block content %}{{ block.super }}
-
-        <div id="search-panel">
-            <input id="target" type="text" placeholder="Search Box">
-        </div>
         <div id="map_canvas" style="width:100%; height: 600px"></div>
 {% endblock %}
