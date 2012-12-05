@@ -246,6 +246,7 @@ li .progress-circle {
 .message {
     width: 75%;
     padding: 4px;
+    padding-bottom: 5px;
     padding-left: 10px;
     margin-top: 0;
     margin-bottom: 10px;
@@ -261,6 +262,10 @@ li .progress-circle {
     color: #FFFFFF;
     background-color: #FF3030; 
     border-color: #330000;
+}
+
+.message.error a {
+    color: #6969C4;
 }
 
 .message.success {
