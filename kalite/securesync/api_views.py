@@ -33,7 +33,9 @@ def require_sync_session(handler):
                 return JsonResponse({"error": "Session is already closed."}, status=500)
         except SyncSession.DoesNotExist:
             return JsonResponse({"error": "Session with specified client nonce could not be found."}, status=500)
-        return handler(data, session)
+        response = handler(data, session)
+        session.save()
+        return response
     return wrapper_fn
 
 @csrf_exempt
@@ -147,7 +149,6 @@ def create_session(request):
 @require_sync_session
 def destroy_session(data, session):
     session.closed = True
-    session.save()
     return JsonResponse({})
 
 @csrf_exempt
@@ -156,11 +157,8 @@ def device_download(data, session):
     zone = session.client_device.get_zone()
     devicezones = list(DeviceZone.objects.filter(zone=zone, device__in=data["devices"]))
     devices = [devicezone.device for devicezone in devicezones]
-    return JsonResponse({
-        "devices": json_serializer.serialize(
-            devices + devicezones, ensure_ascii=False
-        )
-    })
+    session.models_downloaded += len(devices) + len(devicezones)
+    return JsonResponse({"devices": json_serializer.serialize(devices + devicezones, ensure_ascii=False)})
 
 @csrf_exempt
 @require_sync_session
@@ -168,6 +166,7 @@ def device_upload(data, session):
     # TODO(jamalex): check that the uploaded devices belong to the client device's zone and whatnot
     # (although it will only save zones from here if centrally signed, and devices if registered in a zone)
     result = save_serialized_models(data.get("devices", "[]"))
+    session.models_uploaded += result["saved_model_count"]
     return JsonResponse(result)
         
 @csrf_exempt
@@ -184,6 +183,7 @@ def upload_models(data, session):
     if "models" not in data:
         return JsonResponse({"error": "Must provide models."}, status=500)
     result = save_serialized_models(data["models"])
+    session.models_uploaded += result["saved_model_count"]
     return JsonResponse(result)
 
 @csrf_exempt
@@ -191,8 +191,10 @@ def upload_models(data, session):
 def download_models(data, session):
     if "device_counters" not in data:
         return JsonResponse({"error": "Must provide device counters."}, status=500)
+    result = get_serialized_models(data["device_counters"], zone=session.client_device.get_zone(), include_count=True)
+    session.models_downloaded += result["count"]
     return JsonResponse({
-        "models": get_serialized_models(data["device_counters"], zone=session.client_device.get_zone())
+        "models": result["models"]
     })
     
 @csrf_exempt

@@ -149,7 +149,9 @@ class SyncClient(object):
                 self.counters_to_download[device] = client_counters[device] + 1
 
         response = json.loads(self.post("device/download", {"devices": devices_to_download}).content)
-        save_serialized_models(response.get("devices", "[]"))
+        download_results = save_serialized_models(response.get("devices", "[]"))
+        
+        self.session.models_downloaded += download_results["saved_model_count"]
         
         # TODO(jamalex): upload local devices as well? only needed once we have P2P syncing
         
@@ -161,12 +163,14 @@ class SyncClient(object):
         response = json.loads(self.post("models/download", {"device_counters": self.counters_to_download}).content)
         download_results = save_serialized_models(response.get("models", "[]"))
         
+        self.session.models_downloaded += download_results["saved_model_count"]
+        
         response = self.post("models/upload", {"models": get_serialized_models(self.counters_to_upload)})
         upload_results = json.loads(response.content)
         
-        results = {"download_results": download_results, "upload_results": upload_results}
+        self.session.models_uploaded += upload_results["saved_model_count"]
         
         self.counters_to_download = None
         self.counters_to_upload = None
         
-        return results
+        return {"download_results": download_results, "upload_results": upload_results}

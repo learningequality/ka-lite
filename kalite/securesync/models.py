@@ -372,7 +372,7 @@ class Device(SyncedModel):
 settings.add_syncing_models([Facility, FacilityGroup, FacilityUser, SyncedLog])
 
 
-def get_serialized_models(device_counters=None, limit=100, zone=None):
+def get_serialized_models(device_counters=None, limit=100, zone=None, include_count=False):
     
     # use the current device's zone if one was not specified
     if not zone:
@@ -434,8 +434,13 @@ def get_serialized_models(device_counters=None, limit=100, zone=None):
         if not instances_remaining:
             break
     
-    # serialize the models we found, and return them
-    return json_serializer.serialize(models, ensure_ascii=False)
+    # serialize the models we found
+    serialized_models = json_serializer.serialize(models, ensure_ascii=False)
+    
+    if include_count:
+        return {"models": serialized_models, "count": len(models)}
+    else:
+        return serialized_models
 
 
 def save_serialized_models(data):
@@ -449,10 +454,10 @@ def save_serialized_models(data):
         try:
             # TODO(jamalex): more robust way to do this? (otherwise, it might barf about the id already existing):
             model.object._state.adding = False
-            model.object.full_clean()
             model.object.save(imported=True)
             saved_model_count += 1
         except ValidationError as e:
+            print e, model.object
             unsaved_models.append(model.object)
     return {
         "unsaved_model_count": len(unsaved_models),
