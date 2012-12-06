@@ -166,10 +166,12 @@ def teacher_panel(request,facility):
     topics = topicdata.EXERCISE_TOPICS["topics"].values()
     topics = sorted(topics, key = lambda k: (k["y"], k["x"]))
     groups = FacilityGroup.objects.filter(facility=facility)
+    paths = dict((key, val["path"]) for key, val in topicdata.NODE_CACHE["Exercise"].items())
     context = {
         "facility": facility,
         "groups": groups,
         "topics": topics,
+        "exercise_paths": json.dumps(paths),
     }
     return context
         
