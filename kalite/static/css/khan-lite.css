@@ -246,6 +246,7 @@ li .progress-circle {
 .message {
     width: 75%;
     padding: 4px;
+    padding-bottom: 5px;
     padding-left: 10px;
     margin-top: 0;
     margin-bottom: 10px;
@@ -263,6 +264,10 @@ li .progress-circle {
     border-color: #330000;
 }
 
+.message.error a {
+    color: #6969C4;
+}
+
 .message.success {
     color: #273C2B;
     background-color: #8AF07C;
@@ -276,7 +281,7 @@ li .progress-circle {
 }
 
 .errorlist {
-    padding-bottom: 10px;
+/*    padding-bottom: 10px;*/
     color: red;
 }
 
@@ -455,4 +460,15 @@ li .progress-circle {
     position: relative;
     left: 135px;
     top: -3px;
+}
+
+.glossary-link {
+    background: url('/static/images/question_mark.png') no-repeat center;
+    display: inline-block;
+    width: 28px;
+    height: 21px;
+    float: center;
+    margin-bottom: -5px;
+    margin-left: -5px;
+    margin-right: -5px;
 }
