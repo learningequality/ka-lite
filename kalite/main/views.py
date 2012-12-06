@@ -62,7 +62,9 @@ def check_setup_status(handler):
     def wrapper_fn(request, *args, **kwargs):
         client = SyncClient()
         if not request.is_admin and Facility.objects.count() == 0:
-            messages.warning(request, mark_safe("Please <a href='%s'>login</a> with the account you created while running the installation script, to complete the setup." % reverse("login")))
+            messages.warning(request, mark_safe(
+                "Please <a href='%s?next=%s'>login</a> with the account you created while running the installation script, \
+                to complete the setup." % (reverse("login"), reverse("register_public_key"))))
         if request.is_admin:
             if not Settings.get("registered") and client.test_connection() == "success":
                 messages.warning(request, mark_safe("Please <a href='%s'>follow the directions to register your device</a>, so that it can synchronize with the central server." % reverse("register_public_key")))
@@ -104,8 +106,6 @@ def video_handler(request, video, prev=None, next=None):
 def exercise_handler(request, exercise):
     related_videos = [topicdata.NODE_CACHE["Video"][key] for key in exercise["related_video_readable_ids"]]
     
-    referURL = request.META["HTTP_REFERER"]
-    
     if request.user.is_authenticated():
         messages.warning(request, "Note: You're logged in as an admin (not as a student/teacher), so your exercise progress and points won't be saved.")
     elif not request.is_logged_in:
@@ -116,7 +116,6 @@ def exercise_handler(request, exercise):
         "title": exercise[title_key["Exercise"]],
         "exercise_template": "exercises/" + exercise[slug_key["Exercise"]] + ".html",
         "related_videos": related_videos,
-        "referURL": referURL,
     }
     return context
 
