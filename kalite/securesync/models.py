@@ -4,9 +4,11 @@ from django.core import serializers
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.db.models import Q
+from django.utils.text import compress_string
 from config.models import Settings
 import crypto
 import uuid
+import zlib
 import settings
 from pbkdf2 import crypt
 
@@ -372,7 +374,7 @@ class Device(SyncedModel):
 settings.add_syncing_models([Facility, FacilityGroup, FacilityUser, SyncedLog])
 
 
-def get_serialized_models(device_counters=None, limit=100, zone=None, include_count=False):
+def get_serialized_models(device_counters=None, limit=100, zone=None, include_count=False, try_gzip=False):
     
     # use the current device's zone if one was not specified
     if not zone:
@@ -391,8 +393,8 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
     models = []
     boost = 0
     
-    # loop until we've found some models
-    while len(models) == 0:
+    # loop until we've found some models, or determined there are none to get
+    while True:
         
         # assume no instances remaining until proven otherwise
         instances_remaining = False
@@ -423,19 +425,23 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
             # if we didn't get all the available instances in this pass, abort; we don't want to include instances
             # from later Model classes before all the instances of the previous Model have been retrieved
             if instances_remaining:
-                # if we found nothing on this pass...
-                if len(models) == 0:
-                    # then boost the effective limit, so we have a chance of catching something the next time round
-                    boost += limit
+                # boost the effective limit, so we have a chance of catching something if we do another round
+                boost += limit
                 # break out of the Model loop; don't want to try any more classes until this one is done
                 break
         
-        # if we got everything there is to get, then call it quits
-        if not instances_remaining:
+        # if we got some models, or there were none to get, then call it quits
+        if len(models) > 0 or not instances_remaining:
             break
     
     # serialize the models we found
     serialized_models = json_serializer.serialize(models, ensure_ascii=False)
+    
+    # if requested and it's worth it, compress the serialized models to save bandwidth
+    if try_gzip and len(serialized_models) > 200:
+        compressed_models = "gzip:" + compress_string(serialized_models)
+        if len(compressed_models) < len(serialized_models):
+            serialized_models = compressed_models
     
     if include_count:
         return {"models": serialized_models, "count": len(models)}
@@ -445,6 +451,9 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
 
 def save_serialized_models(data):
     if isinstance(data, str) or isinstance(data, unicode):
+        # http://stackoverflow.com/questions/6123223/howto-uncompress-gzipped-data-in-a-byte-array
+        if len(data) > 5 and data[0:5] == "gzip:":
+            data = zlib.decompress(data[5:], 15 + 16)
         models = serializers.deserialize("json", data)
     else:
         models = serializers.deserialize("python", data)

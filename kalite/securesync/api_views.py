@@ -3,6 +3,7 @@ from django.core import serializers
 from django.http import HttpResponse
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.gzip import gzip_page
 from main.models import VideoLog, ExerciseLog
 from config.models import Settings
 
@@ -152,6 +153,7 @@ def destroy_session(data, session):
     return JsonResponse({})
 
 @csrf_exempt
+@gzip_page
 @require_sync_session
 def device_download(data, session):
     zone = session.client_device.get_zone()
@@ -170,6 +172,7 @@ def device_upload(data, session):
     return JsonResponse(result)
         
 @csrf_exempt
+@gzip_page
 @require_sync_session
 def device_counters(data, session):
     device_counters = get_device_counters(session.client_device.get_zone())
@@ -187,6 +190,7 @@ def upload_models(data, session):
     return JsonResponse(result)
 
 @csrf_exempt
+@gzip_page
 @require_sync_session
 def download_models(data, session):
     if "device_counters" not in data:
