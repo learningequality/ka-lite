@@ -27,6 +27,8 @@ def require_sync_session(handler):
             if "client_nonce" not in data:
                 return JsonResponse({"error": "Client nonce must be specified."}, status=500)
             session = SyncSession.objects.get(client_nonce=data["client_nonce"])
+            if not session.verified:
+                return JsonResponse({"error": "Session has not yet been verified."}, status=500)
             if session.closed:
                 return JsonResponse({"error": "Session is already closed."}, status=500)
         except SyncSession.DoesNotExist:
@@ -152,7 +154,7 @@ def destroy_session(data, session):
 @require_sync_session
 def device_download(data, session):
     zone = session.client_device.get_zone()
-    devicezones = list(DeviceZone.objects.filter(zone=zone).filter(device__in=data["devices"]))
+    devicezones = list(DeviceZone.objects.filter(zone=zone, device__in=data["devices"]))
     devices = [devicezone.device for devicezone in devicezones]
     return JsonResponse({
         "devices": json_serializer.serialize(
@@ -189,7 +191,9 @@ def upload_models(data, session):
 def download_models(data, session):
     if "device_counters" not in data:
         return JsonResponse({"error": "Must provide device counters."}, status=500)
-    return JsonResponse({"models": get_serialized_models(data["device_counters"])})
+    return JsonResponse({
+        "models": get_serialized_models(data["device_counters"], zone=session.client_device.get_zone())
+    })
     
 @csrf_exempt
 def test_connection(request):

@@ -8,6 +8,7 @@ from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from django.utils import simplejson
+from django.utils.html import strip_tags
 from annoying.decorators import render_to
 from forms import RegisteredDevicePublicKeyForm, FacilityUserForm, FacilityTeacherForm, LoginForm, FacilityForm, FacilityGroupForm
 from django.contrib import messages
@@ -42,9 +43,22 @@ def register_public_key(request):
     else:
         return register_public_key_client(request)
 
+def get_facility_from_request(request):
+    if "facility" in request.GET:
+        facility = get_object_or_None(Facility, pk=request.GET["facility"])
+        if "set_default" in request.GET and request.is_admin and facility:
+            Settings.set("default_facility", facility.id)
+    elif "facility_user" in request.session:
+        facility = request.session["facility_user"].facility
+    elif Facility.objects.count() == 1:
+        facility = Facility.objects.all()[0]
+    else:
+        facility = get_object_or_None(Facility, pk=Settings.get("default_facility"))
+    return facility
+
 def facility_required(handler):
     def inner_fn(request, *args, **kwargs):
-        facility = None
+        
         if Facility.objects.count() == 0:
             if request.is_admin:
                 messages.error(request, "To continue, you must first add a facility (e.g. for your school). " \
@@ -53,21 +67,14 @@ def facility_required(handler):
                 messages.error(request,
                     "You must first have the administrator of this server log in below to add a facility.")
             return HttpResponseRedirect(reverse("add_facility"))
-        elif "facility" in request.GET:
-            facility = get_object_or_None(Facility, pk=request.GET["facility"])
-            if "set_default" in request.GET and request.is_admin and facility and not facility.is_default():
-                Settings.set("default_facility", facility.id)
-        elif "facility_user" in request.session:
-            facility = request.session["facility_user"].facility
-        elif Facility.objects.count() == 1:
-            facility = Facility.objects.all()[0]
         else:
-            facility = get_object_or_None(Facility, pk=Settings.get("default_facility"))
-
+            facility = get_facility_from_request(request)
+        
         if facility:
             return handler(request, facility, *args, **kwargs)
         else:
             return facility_selection(request)
+    
     return inner_fn
 
 def set_as_registered():
@@ -243,26 +250,43 @@ def add_group(request, facility):
 @render_to("securesync/login.html")
 def login(request):
     facilities = Facility.objects.all()
-    if request.user.is_authenticated():
-        auth_logout(request)
+    
+    facility = get_facility_from_request(request)
+    facility_id = facility and facility.id or None
+    
     if request.method == 'POST':
+        
+        # log out any Django user
+        if request.user.is_authenticated():
+            auth_logout(request)
+        
+        # log out a facility user
         if "facility_user" in request.session:
             del request.session["facility_user"]
-        next = request.GET.get("next", "/")
-        if next[0] != "/":
-            next = "/"
+        
         username = request.POST.get("username", "")
         password = request.POST.get("password", "")
+        
+        # first try logging in as a Django user
         user = authenticate(username=username, password=password)
         if user:
             auth_login(request, user)
-            return HttpResponseRedirect(next)
-        form = LoginForm(data=request.POST, request=request, initial={"facility": request.GET.get("facility", None)})
+            return HttpResponseRedirect(request.next or "/")
+        
+        # try logging in as a facility user
+        form = LoginForm(data=request.POST, request=request, initial={"facility": facility_id})
         if form.is_valid():
             request.session["facility_user"] = form.get_user()
-            return HttpResponseRedirect(next)
-    else:
-        form = LoginForm(initial={"facility": request.GET.get("facility", None)})
+            messages.success(request, "You've been logged in! We hope you enjoy your time with KA Lite " +
+                                        "-- be sure to log out when you finish.")
+            return HttpResponseRedirect(form.non_field_errors() or request.next or "/")
+        else:
+            messages.error(request, strip_tags(form.non_field_errors()) or
+                "There was an error logging you in. Please correct any errors listed below, and try again.")
+        
+    else: # render the unbound login form
+        form = LoginForm(initial={"facility": facility_id})
+    
     return {
         "form": form,
         "facilities": facilities

@@ -50,7 +50,7 @@
                         <article class="clearfix">
                             {% block precontent %}
                             {% for message in messages %}
-                            <div class="{{ message.tags }} message">{{ message }}</div>
+                            <div class="{{ message.tags }} message">{{ message|safe }}</div>
                             {% endfor %}
                             {% endblock precontent %}
                             {% block content %}{% endblock content %}

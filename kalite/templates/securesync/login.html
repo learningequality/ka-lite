@@ -7,19 +7,17 @@
 {% block content %}
 
 <form method="post" class="basic-form">
-{% csrf_token %}
-{% if form.errors %}
-    <p class="errors">Please correct the errors below:</p>
-{% endif %}
-<h2>Login</h2>
-    {{ form.non_field_errors }}
-	{% if facilities.count > 0 %}
+    {% csrf_token %}
+    
+    <h2>Login</h2>
+
+    <div style="{% if facilities.count < 2 %}display: none;{% endif %}">
         {{ form.facility.errors }}
         <p>
             <label for="id_facility">Facility:</label>
             {{ form.facility }}
-        </p>    
-    {% endif %}
+        </p>
+    </div>
     {{ form.username.errors }}
     <p>
         <label for="id_username">Username:</label>

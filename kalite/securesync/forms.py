@@ -57,7 +57,7 @@ class FacilityForm(forms.ModelForm):
 
     class Meta:
         model = Facility
-        fields = ("name", "description", "address", "address_normalized", "latitude", "longitude", "zoom")
+        fields = ("name", "description", "address", "address_normalized", "latitude", "longitude", "zoom", "contact_name", "contact_phone", "contact_email", "user_count",)
 
         
 class FacilityGroupForm(forms.ModelForm):
@@ -79,7 +79,6 @@ class LoginForm(forms.ModelForm):
         super(LoginForm, self).__init__(*args, **kwargs)
         self.fields['facility'].queryset = Facility.objects.all()
 
-
     def clean(self):
         username = self.cleaned_data.get('username')
         facility = self.cleaned_data.get('facility')
@@ -88,12 +87,12 @@ class LoginForm(forms.ModelForm):
         try:
             self.user_cache = FacilityUser.objects.get(username=username, facility=facility)
         except FacilityUser.DoesNotExist as e:
-            raise forms.ValidationError("User not found. Did you type your username correctly, and choose the right facility?")
+            raise forms.ValidationError("Username was not found for this facility. Did you type your username correctly, and choose the right facility?")
         
         if not self.user_cache.check_password(password):
             self.user_cache = None
             if password and "password" not in self._errors:
-                self._errors["password"] = ["Password was incorrect."]
+                self._errors["password"] = self.error_class(["The password did not match. Please try again."])
         
         return self.cleaned_data
 

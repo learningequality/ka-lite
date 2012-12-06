@@ -129,8 +129,12 @@ function saveZoom(zm) {
     width: 545px;
 }
 
-#id_name, #id_address {
+#id_name {
     width: 300px;
+}
+
+#id_address {
+    width: 500px;
 } 
 
 #id_latitude, #id_longitude {
@@ -148,17 +152,19 @@ function saveZoom(zm) {
     font-size: 14px;
 }
 
-
 </style>
 
 {% endblock %}
 
 {% block content %}
 <h2>{% if form.instance.id %}Edit a facility{% else %}Add a new Facility{% endif %}</h2>
-<div id="id_direc_no_map">Please enter the following information about your facility.</div>
-<div id="id_direc_map">Please use this map and search box to find your facility, then enter the information in the form below</div>
+<div id="id_direc_no_map">Please enter the following information about your facility. Please enter a detailed address, because knowing where you are in the world allows us to better plan for future deployments and partnerships.</div>
+<div id="id_direc_map">
+    Please use this search box to locate your facility (click on the map to select a spot), then then enter the additional information in the form below.<br/>
+    (Knowing, as closely as possible, where you are in the world allows us to better plan for future deployments and partnerships)
+</div>
 <div id="search-panel">
-    <input id="target" type="text" placeholder="Search for your facility's address to set its location on the map">
+    <input id="target" type="text" placeholder="Search for your facility's address or name to find its location on the map (enter to search)">
 </div>
 <div id="map_canvas"></div>
 <form id="facility_form" method="post" class="basic-form">
