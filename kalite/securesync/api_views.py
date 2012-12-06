@@ -27,6 +27,8 @@ def require_sync_session(handler):
             if "client_nonce" not in data:
                 return JsonResponse({"error": "Client nonce must be specified."}, status=500)
             session = SyncSession.objects.get(client_nonce=data["client_nonce"])
+            if not session.verified:
+                return JsonResponse({"error": "Session has not yet been verified."}, status=500)
             if session.closed:
                 return JsonResponse({"error": "Session is already closed."}, status=500)
         except SyncSession.DoesNotExist:
