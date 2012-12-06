@@ -47,10 +47,10 @@
 <script>
 
 drawgrid = function(topic_data, userData) {
-    var usertable = "<div class='users'><table><tr><th class='headrow user'>User</th></tr>";
+    var usertable = "<div class='users'><table><tr><th class='headrowuser'>User</th></tr>";
     var table = "<div class='userstatus'><table><tr>";
     for (var i = 0; i < topic_data.length; i++) {
-        table += "<th class='headrow data' title='" + topic_data[i].display_name + "'>" + topic_data[i].display_name + "</th>";
+        table += "<th class='headrow data'> <span title='" + (topic_data[i].description || "") + "'>" + topic_data[i].display_name + "</span></th>";
     };
     table += "</tr>";
     users = _.keys(userData);
@@ -58,11 +58,11 @@ drawgrid = function(topic_data, userData) {
     $.each(users, function(ind,user) {
         data = userData[user];
         table += "<tr>";
-        usertable += "<th class='username'>" + user + "</th></tr>";
+        usertable += "<th class='username'> <span title='" + user + "'>" + user + "</span></th></tr>";
         $.each(topic_data, function(ind,exercise) {
             if (data[exercise.name]!=undefined) {
-                struggle = data[exercise.name].struggling
-                complete = data[exercise.name].complete
+                struggle = data[exercise.name].struggling;
+                complete = data[exercise.name].complete;
                 table += "<td class='status data " + (struggle ? "struggle" : (complete ? "complete" : "partial")) + "' title='" + (struggle ? "Struggling" : (complete ? "Complete" : "Attempted")) + "'></td>";
             } else {
                 table += "<td class='status data none' title='Not Attempted'></td>";
@@ -73,7 +73,7 @@ drawgrid = function(topic_data, userData) {
     usertable += "</table></div>";
     table += "</table></div>";
     $("#displaygrid").html(usertable+table);
-    $('.headrow.user').height($('.headrow.data').outerHeight())
+    $('.headrowuser').height($('.headrow.data').outerHeight())
 };
 
 $(document).ready(function() {

@@ -47,8 +47,10 @@ td.status {
 
 th.username {
     height: 30px;
+    max-height: 30px;
     border: 1px solid black;
     padding: 2px;
+    white-space: nowrap;
 }
 
 th.headrow {
@@ -57,6 +59,11 @@ th.headrow {
     font-weight: bold;
 }
 
+th.headrowuser {
+    text-transform: capitalize;
+    font-weight: bold;
+    border-right-style:none;
+}
 
 td.complete {
     background-color: green;
