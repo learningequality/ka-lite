@@ -111,6 +111,10 @@ h4.title {
 	clear: both; 
 }
 
+#invited-tag {
+	color: gray;
+}
+
 </style>
 
 {% endblock headcss %}
@@ -181,12 +185,20 @@ h4.title {
 										{{ member.username }}
 									{% endif %}
 								</h4>
+								<form method="post" action="{% url delete_admin org_id=org.id user_id=member.id %}">
+										{% csrf_token %}
+										<input type="submit" value="Remove Admin">
+								</form>
 							{% endfor %}
 							{% for invite in sent_invitations %}
 								{% if invite.organization == org %}
-									<h4>
-										{{ invite.email_to_invite }} has been invited to join {{ org }}.
+									<h4 id="invited-tag">
+										{{ invite.email_to_invite }} (invited)
 									</h4>
+									<form method="post" action="{% url delete_invite org_id=org.id invite_id=invite.pk %}">
+										{% csrf_token %}
+										<input type="submit" value="Revoke Invitation">
+									</form>
 								{% endif %}
 							{% endfor %}
 							<div class="add">
