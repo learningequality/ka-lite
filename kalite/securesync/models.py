@@ -1,7 +1,9 @@
+from annoying.functions import get_object_or_None
 from django.contrib.auth.models import User, check_password
 from django.core import serializers
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
+from django.db.models import Q
 from config.models import Settings
 import crypto
 import uuid
@@ -76,6 +78,14 @@ class DeviceMetadata(models.Model):
         return "(Device: %s)" % (self.device)
 
 
+class SyncedModelManager(models.Manager):
+    
+    def by_zone(self, zone):
+        # get model instances that were signed by devices in the zone,
+        # or signed by a trusted authority that said they were for the zone
+        return self.filter(Q(signed_by__devicezone__zone=zone) |
+            Q(signed_by__devicemetadata__is_trusted=True, zone_fallback=zone))
+
 class SyncedModel(models.Model):
     id = models.CharField(primary_key=True, max_length=32, editable=False)
     counter = models.IntegerField(editable=False)
@@ -84,6 +94,8 @@ class SyncedModel(models.Model):
     signed_by = models.ForeignKey("Device", blank=True, null=True, related_name="+", editable=False)
     zone_fallback = models.ForeignKey("Zone", blank=True, null=True, related_name="+")
     deleted = models.BooleanField(default=False)
+
+    objects = SyncedModelManager()
 
     def sign(self, device=None):
         self.signed_by = device or Device.get_own_device()
@@ -148,7 +160,19 @@ class SyncedModel(models.Model):
             return None
 
     def get_zone(self):
-        return getattr(self, "zone", None) or (self.signed_by and self.signed_by.get_zone()) or self.zone_fallback or None
+        # some models have a direct zone attribute; try for that
+        zone = getattr(self, "zone", None)
+        # otherwise, try getting the zone of the device that signed it
+        if not zone and self.signed_by:
+            zone = self.signed_by.get_zone()
+        # otherwise, if it's signed by a trusted authority, try getting the fallback zone
+        if not zone and self.signed_by and self.signed_by.get_metadata().is_trusted:
+            zone = self.zone_fallback
+        return zone
+    get_zone.short_description = "Zone"
+
+    def in_zone(self, zone):
+        return zone == self.get_zone()
 
     requires_trusted_signature = False
 
@@ -296,7 +320,7 @@ class Device(SyncedModel):
         own_device.save(own_device=own_device)
         metadata = own_device.get_metadata()
         metadata.is_own_device = True
-        metadata.is_trusted = True
+        metadata.is_trusted = settings.CENTRAL_SERVER
         metadata.save()
         return own_device
 
@@ -320,7 +344,7 @@ class Device(SyncedModel):
 
     def get_zone(self):
         zones = self.devicezone_set.all()
-        return zones.count() and zones[0].zone or None
+        return zones and zones[0].zone or None
     get_zone.short_description = "Zone"
 
     def verify(self):
@@ -344,28 +368,76 @@ class Device(SyncedModel):
             return uuid.uuid4()
         return uuid.uuid5(ROOT_UUID_NAMESPACE, str(self.public_key)).hex
 
+
 settings.add_syncing_models([Facility, FacilityGroup, FacilityUser, SyncedLog])
 
+
 def get_serialized_models(device_counters=None, limit=100, zone=None):
-    if device_counters is None:
-        device_counters = dict((device.id, 0) for device in Device.objects.all())
-    models = []
-    completed = False
-    actual_limit = 0
-    # loop until we've got something, or until there's nothing left
-    while len(models) == 0 and not completed:
-        # assume completed until proven otherwise
-        completed = True
-        # increase the actual limit by the limit size
-        actual_limit += limit
-        for Model in settings.syncing_models:
-            for device_id, counter in device_counters.items():
-                # check whether there are any models that will be excluded by our limit, so we know to ask again
-                if Model.objects.filter(signed_by=device_id, counter__gte=counter+actual_limit).count() > 0:
-                    completed = False
-                models += Model.objects.filter(signed_by=device_id, counter__gte=counter, counter__lt=counter+actual_limit)
-    return json_serializer.serialize(models, ensure_ascii=False)
     
+    # use the current device's zone if one was not specified
+    if not zone:
+        zone = Device.get_own_device().get_zone()
+    
+    # if no devices specified, assume we're starting from zero, and include all devices in the zone
+    if device_counters is None:        
+        device_counters = dict((device.id, 0) for device in Device.objects.by_zone(zone))
+    
+    # remove all requested devices that either don't exist or aren't in the correct zone
+    for device_id in device_counters.keys():
+        device = get_object_or_None(Device, pk=device_id)
+        if not device or not (device.in_zone(zone) or device.get_metadata().is_trusted):
+            del device_counters[device_id]
+    
+    models = []
+    boost = 0
+    
+    # loop until we've found some models
+    while len(models) == 0:
+        
+        # assume no instances remaining until proven otherwise
+        instances_remaining = False
+                
+        # loop through all the model classes marked as syncable
+        for Model in settings.syncing_models:
+            
+            # loop through each of the devices of interest
+            for device_id, counter in device_counters.items():
+                
+                device = Device.objects.get(pk=device_id)
+                queryset = Model.objects.filter(signed_by=device)
+                
+                # for trusted (central) device, only include models with the correct fallback zone
+                if not device.in_zone(zone):
+                    if device.get_metadata().is_trusted:
+                        queryset = queryset.filter(zone_fallback=zone)
+                    else:
+                        continue
+
+                # check whether there are any models that will be excluded by our limit, so we know to ask again
+                if not instances_remaining and queryset.filter(counter__gte=counter+limit+boost).count() > 0:
+                    instances_remaining = True
+            
+                # pull out the model instances within the given counter range
+                models += queryset.filter(counter__gte=counter, counter__lt=counter+limit+boost)
+                
+            # if we didn't get all the available instances in this pass, abort; we don't want to include instances
+            # from later Model classes before all the instances of the previous Model have been retrieved
+            if instances_remaining:
+                # if we found nothing on this pass...
+                if len(models) == 0:
+                    # then boost the effective limit, so we have a chance of catching something the next time round
+                    boost += limit
+                # break out of the Model loop; don't want to try any more classes until this one is done
+                break
+        
+        # if we got everything there is to get, then call it quits
+        if not instances_remaining:
+            break
+    
+    # serialize the models we found, and return them
+    return json_serializer.serialize(models, ensure_ascii=False)
+
+
 def save_serialized_models(data):
     if isinstance(data, str) or isinstance(data, unicode):
         models = serializers.deserialize("json", data)
@@ -375,11 +447,9 @@ def save_serialized_models(data):
     saved_model_count = 0
     for model in models:
         try:
-            # TODO(jamalex): more robust way to do this? (otherwise, it barfs about the id already existing):
+            # TODO(jamalex): more robust way to do this? (otherwise, it might barf about the id already existing):
             model.object._state.adding = False
             model.object.full_clean()
-            # TODO(jamalex): also make sure that if the model already exists, it is signed by the same device
-            # (to prevent devices from overwriting each other's models... or do we want to allow that?)
             model.object.save(imported=True)
             saved_model_count += 1
         except ValidationError as e:
@@ -388,10 +458,11 @@ def save_serialized_models(data):
         "unsaved_model_count": len(unsaved_models),
         "saved_model_count": saved_model_count,
     }
+
     
 def get_device_counters(zone):
     device_counters = {}
-    for device_zone in DeviceZone.objects.filter(zone=zone):
-        if device_zone.device.id not in device_counters:
-            device_counters[device_zone.device.id] = device_zone.device.get_metadata().counter_position
+    for device in Device.objects.by_zone(zone):
+        if device.id not in device_counters:
+            device_counters[device.id] = device.get_metadata().counter_position
     return device_counters

@@ -154,7 +154,7 @@ def destroy_session(data, session):
 @require_sync_session
 def device_download(data, session):
     zone = session.client_device.get_zone()
-    devicezones = list(DeviceZone.objects.filter(zone=zone).filter(device__in=data["devices"]))
+    devicezones = list(DeviceZone.objects.filter(zone=zone, device__in=data["devices"]))
     devices = [devicezone.device for devicezone in devicezones]
     return JsonResponse({
         "devices": json_serializer.serialize(
@@ -191,7 +191,9 @@ def upload_models(data, session):
 def download_models(data, session):
     if "device_counters" not in data:
         return JsonResponse({"error": "Must provide device counters."}, status=500)
-    return JsonResponse({"models": get_serialized_models(data["device_counters"])})
+    return JsonResponse({
+        "models": get_serialized_models(data["device_counters"], zone=session.client_device.get_zone())
+    })
     
 @csrf_exempt
 def test_connection(request):
