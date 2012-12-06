@@ -46,11 +46,14 @@
 </div>
 <script>
 
+var exercise_paths = {{ exercise_paths|safe }};
+
 drawgrid = function(topic_data, userData) {
     var usertable = "<div class='users'><table><tr><th class='headrowuser'>User</th></tr>";
     var table = "<div class='userstatus'><table><tr>";
     for (var i = 0; i < topic_data.length; i++) {
-        table += "<th class='headrow data'> <span title='" + (topic_data[i].description || "") + "'>" + topic_data[i].display_name + "</span></th>";
+        table += "<th class='headrow data'><a href='" + exercise_paths[topic_data[i].name] + "'><span title='" + (topic_data[i].description || "") + "'>" + topic_data[i].display_name + "</span></a></th>";
+        console.log(topic_data[i])
     };
     table += "</tr>";
     users = _.keys(userData);
