@@ -1,8 +1,12 @@
 {% extends base_template %}
 
 {% block title %}Getting started with KA Lite{% endblock title %}
-
 {% block content %}
+<script>
+$(function() {
+	$('.glossary-link').wrap('<a href="{% url glossary %}"></a>');
+});
+</script>
 <style>
 
 .suggested-action {
@@ -37,7 +41,6 @@
 	text-indent: -12;
 	padding-left: 12;
 }
-
 </style>
 
 <h2> Getting Started With KA Lite</h2>
@@ -49,7 +52,7 @@
 	<div class="vertical-shadow suggested-action">
 		<h2 class="pulls ellipsis suggested-action-title">1. Sign up</h2>
 			<li> First <a href="/accounts/register/">sign up for an account</a> on this site.</li>
-			<li class="suggested-action-text"> The next step will be to create an organization and zone. An organization is an entity responsible for administering multiple different zones and facilities. Organizations can have multiple administrators. A zone is the area in which multiple devices may connect to share content with each other. A facility is the place where the server is located that enables sharing within a zone.</li>
+			<li class="suggested-action-text"> The next step will be to create an Organization <span class="glossary-link" title="An Organization is an entity responsible for administering zones."></span> and Zone <span class="glossary-link" data-definition="An Organization is an entity" title="A Zone is an area in which devices can share content."></span>. An organization is an entity responsible for administering multiple different zones and facilities. Organizations can have multiple administrators. A zone is the area in which multiple devices may connect to share content with each other. A facility is the place where the server is located that enables sharing within a zone.</li>
 		</ul>
 	</div>
 	
@@ -65,10 +68,5 @@
 	</div>
 
 <div>
-
-<!-- checklist: -->
-	<!-- software installation on device -->
-		<!-- explain that they'll need to have a device on a network with other devices -->
-		<!-- bullet points, break into chunks -->
 
 {% endblock content %}

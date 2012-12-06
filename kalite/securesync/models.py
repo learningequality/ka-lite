@@ -5,10 +5,8 @@ from django.db import models, transaction
 from config.models import Settings
 import crypto
 import uuid
-import random
-import hashlib
 import settings
-
+from pbkdf2 import crypt
 
 _unhashable_fields = ["signature", "signed_by"]
 _always_hash_fields = ["signed_version", "id"]
@@ -85,6 +83,7 @@ class SyncedModel(models.Model):
     signed_version = models.IntegerField(default=1, editable=False)
     signed_by = models.ForeignKey("Device", blank=True, null=True, related_name="+", editable=False)
     zone_fallback = models.ForeignKey("Zone", blank=True, null=True, related_name="+")
+    deleted = models.BooleanField(default=False)
 
     def sign(self, device=None):
         self.signed_by = device or Device.get_own_device()
@@ -127,8 +126,6 @@ class SyncedModel(models.Model):
             if not self.verify():
                 raise ValidationError("Imported model's signature did not match.")
         else: # local model
-            if self.signed_by and self.signed_by != own_device:
-                raise ValidationError("Cannot modify models signed by another device.")
             self.counter = own_device.increment_and_get_counter()
             if not self.id:
                 self.id = self.get_uuid()
@@ -173,13 +170,17 @@ class Zone(SyncedModel):
         
 
 class Facility(SyncedModel):
-    name = models.CharField(max_length=100)
+    name = models.CharField(help_text="(This is the name that students/teachers will see when choosing their facility; it can be in the local language.)", max_length=100)
     description = models.TextField(blank=True)
-    address = models.CharField(max_length=400, blank=True)
+    address = models.CharField(help_text="(Please provide as detailed an address as possible.)", max_length=400, blank=True)
     address_normalized = models.CharField(max_length=400, blank=True)
     latitude = models.FloatField(blank=True, null=True)
     longitude = models.FloatField(blank=True, null=True)
     zoom = models.FloatField(blank=True, null=True)
+    contact_name = models.CharField(help_text="(Who should we contact with any questions about this facility?)", max_length=60, blank=True)
+    contact_phone = models.CharField(max_length=60, blank=True)
+    contact_email = models.EmailField(max_length=60, blank=True)
+    user_count = models.IntegerField(help_text="(How many potential users do you estimate there are at this facility?)", blank=True, null=True)
 
     class Meta:    
         verbose_name_plural = "Facilities"
@@ -216,12 +217,15 @@ class FacilityUser(SyncedModel):
         return "%s (Facility: %s)" % (self.get_name(), self.facility)
         
     def check_password(self, raw_password):
-        return check_password(raw_password, self.password)
+        if self.password.split("$", 1)[0] == "sha1":
+            # use Django's built-in password checker for SHA1-hashed passwords
+            return check_password(raw_password, self.password)
+        if self.password.split("$", 2)[1] == "p5k2":
+            # use PBKDF2 password checking
+            return self.password == crypt(raw_password, self.password)
 
     def set_password(self, raw_password):
-        salt = hashlib.sha1(str(random.random())).hexdigest()[:5]
-        hsh = hashlib.sha1(salt + raw_password).hexdigest()
-        self.password = 'sha1$%s$%s' % (salt, hsh)
+        self.password = crypt(raw_password, iterations=Settings.get("password_hash_iterations", 2000))
 
     def get_name(self):
         if self.first_name and self.last_name:

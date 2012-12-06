@@ -149,6 +149,10 @@ def central_facility_edit(request, id=None, zone_id=None):
 def get_started(request):
     return {}
 
+@render_to("central/glossary.html")
+def glossary(request):
+    return {}
+
 @login_required
 def crypto_login(request):
     if not request.user.is_superuser:

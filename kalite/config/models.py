@@ -11,7 +11,7 @@ class Settings(models.Model):
         setting.save()
         
     @staticmethod
-    def get(name):
+    def get(name, default=""):
         try:
             setting = Settings.objects.get(name=name)
             if setting.datatype == "int":
@@ -22,7 +22,7 @@ class Settings(models.Model):
                 return bool(setting.value)
             return setting.value
         except Settings.DoesNotExist:
-            return ""
+            return default
         
     class Meta:
         verbose_name = "Settings"

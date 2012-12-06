@@ -244,13 +244,18 @@ li .progress-circle {
 }
 
 .message {
-    width: 60%;
-    padding: 3px;
+    width: 75%;
+    padding: 4px;
+    padding-bottom: 5px;
     padding-left: 10px;
-    margin-top: 10px;
-    margin-bottom: 5px;
+    margin-top: 0;
+    margin-bottom: 10px;
     border-style: solid;
     border-width: 1px;
+    font-size: 13px;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
 }
 
 .message.error {
@@ -259,21 +264,24 @@ li .progress-circle {
     border-color: #330000;
 }
 
+.message.error a {
+    color: #6969C4;
+}
+
 .message.success {
-    color: #3D5B43;
-    background-color: #6EFF70;
-    border-color: #3D5B43;
+    color: #273C2B;
+    background-color: #8AF07C;
+    border-color: #273C2B;
 }
 
 .message.warning {
     color: #330000;
     background-color: #FF9955; 
     border-color: #330000;
-    border-radius: 5px;
 }
 
 .errorlist {
-    padding-bottom: 10px;
+/*    padding-bottom: 10px;*/
     color: red;
 }
 
@@ -339,6 +347,10 @@ li .progress-circle {
 
 .nav-subheader > span > a#nav_registerdevice.selected:before {
     left: 55px !important;
+}
+
+#nav_registerdevice {
+    color: darkRed;
 }
 
 /*Login*/
@@ -440,4 +452,23 @@ li .progress-circle {
 .org-invite {
     display: block;
     position: relative;
+}
+
+.helptext {
+    font-size: .85em;
+    display: block;
+    position: relative;
+    left: 135px;
+    top: -3px;
+}
+
+.glossary-link {
+    background: url('/static/images/question_mark.png') no-repeat center;
+    display: inline-block;
+    width: 28px;
+    height: 21px;
+    float: center;
+    margin-bottom: -5px;
+    margin-left: -5px;
+    margin-right: -5px;
 }

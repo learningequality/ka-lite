@@ -31,6 +31,7 @@ if settings.CENTRAL_SERVER:
         url(r'^zone/(?P<zone_id>\w+)/facility/(?P<id>\w+)/$', 'central.views.central_facility_edit', {}, 'central_facility_edit'),
         url(r'^cryptologin/$', 'central.views.crypto_login', {}, 'crypto_login'), 
         url(r'^getstarted/$','central.views.get_started', {}, 'get_started'),
+        url(r'^glossary/$', 'central.views.glossary', {}, 'glossary'),
     )
     
     handler404 = 'main.views.central_404_handler'
