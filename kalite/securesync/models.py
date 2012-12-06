@@ -466,7 +466,7 @@ def save_serialized_models(data):
             model.object.save(imported=True)
             saved_model_count += 1
         except ValidationError as e:
-            print e, model.object
+            print e, model.object._hashable_representation()
             unsaved_models.append(model.object)
     return {
         "unsaved_model_count": len(unsaved_models),
