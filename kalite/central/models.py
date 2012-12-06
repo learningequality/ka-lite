@@ -44,7 +44,6 @@ class UserProfile(models.Model):
     def get_organizations(self):
         return list(self.user.organization_set.all())
 
-## Create new class of organization invites to check against people that have been invited
 
 class OrganizationInvitation(models.Model):
     email_to_invite = models.EmailField(verbose_name="Email of invitee", max_length=75)
@@ -62,9 +61,16 @@ class OrganizationInvitation(models.Model):
             'invited_by': self.invited_by
         }
         if User.objects.filter(email=to_email).count() > 0:
-            subject = render_to_string('org_invite_email_subject.txt', context)
-            body = render_to_string('org_invite_email.txt', context)
+            subject = render_to_string('central/org_invite_email_subject.txt', context)
+            body = render_to_string('central/org_invite_email.txt', context)
         else:
             subject = render_to_string('central/central_invite_email_subject.txt', context)
             body = render_to_string('central/central_invite_email.txt', context)
         send_mail(subject, body, sender, [to_email], fail_silently=False)
+
+
+class DeletionRecord(models.Model):
+    organization = models.ForeignKey(Organization)
+    deleter = models.ForeignKey(User, related_name="deletion_actor")
+    deleted_user = models.ForeignKey(User, related_name="deletion_recipient", blank=True, null=True)
+    deleted_invite = models.ForeignKey(OrganizationInvitation, blank=True, null=True)

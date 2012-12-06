@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from annoying.decorators import render_to
-from central.models import Organization, OrganizationInvitation, get_or_create_user_profile
+from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile
 from central.forms import OrganizationForm, ZoneForm, OrganizationInvitationForm
 from securesync.api_client import SyncClient
 from securesync.models import Zone, SyncSession
@@ -43,8 +43,8 @@ def homepage(request):
     return context
 
 def org_invite_action(request, invite_id):
-    invite = OrganizationInvitation.objects.filter(pk=invite_id)[0]
-    org = Organization.objects.filter(pk=invite.organization.pk)[0]
+    invite = OrganizationInvitation.objects.get(pk=invite_id)
+    org = Organization.objects.get(pk=invite.organization.pk)
     if request.user.email != invite.email_to_invite:
         return HttpResponseNotAllowed("It's not nice to force your way into groups.")
     if request.method == 'POST':
@@ -55,6 +55,26 @@ def org_invite_action(request, invite_id):
         if data.get('decline'):
             messages.warning(request, "You have declined to join " + org.name + " as an admin.")
         invite.delete()
+    return HttpResponseRedirect(reverse("homepage"))
+
+def delete_admin(request, org_id, user_id):
+    org = Organization.objects.get(pk=org_id)
+    admin = org.users.get(pk=user_id)
+    if org.owner == admin:
+        return HttpResponseNotAllowed("This admin is the owner of this organization. Please contact us if you are sure you need to remove this user.")
+    deletion = DeletionRecord(organization=org, deleter=request.user, deleted_user=admin)
+    deletion.save()
+    org.users.remove(admin)
+    messages.success(request, "You have succesfully removed " + admin.username + " as an administrator for " + org.name + ".")
+    return HttpResponseRedirect(reverse("homepage"))
+
+def delete_invite(request, org_id, invite_id):
+    org = Organization.objects.get(pk=org_id)
+    invite = OrganizationInvitation.objects.get(pk=invite_id)
+    deletion = DeletionRecord(organization=org, deleter=request.user, deleted_invite=invite)
+    deletion.save()
+    invite.delete()
+    messages.success(request, "You have succesfully revoked the invitation for " + invite.email_to_invite + ".")
     return HttpResponseRedirect(reverse("homepage"))
 
 @render_to("central/landing_page.html")
