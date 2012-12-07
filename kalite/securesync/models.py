@@ -231,10 +231,10 @@ class FacilityUser(SyncedModel):
     group = models.ForeignKey(FacilityGroup, verbose_name="Group/class", blank=True, null=True, help_text="(optional)")
     username = models.CharField(max_length=30)
     first_name = models.CharField(max_length=30, blank=True)
-    last_name = models.CharField(max_length=30, blank=True)
+    last_name = models.CharField(max_length=60, blank=True)
     is_teacher = models.BooleanField(default=False, help_text="(whether this user should have teacher permissions)")
     notes = models.TextField(blank=True)
-    password = models.CharField(max_length=128, help_text="Use '[algo]$[salt]$[hexdigest]'.")
+    password = models.CharField(max_length=128)
 
     class Meta:
         unique_together = ("facility", "username")
@@ -271,7 +271,7 @@ class DeviceZone(SyncedModel):
 
 
 class SyncedLog(SyncedModel):
-    category = models.CharField(max_length=30)
+    category = models.CharField(max_length=50)
     value = models.CharField(max_length=250, blank=True)
     data = models.TextField(blank=True)
 
