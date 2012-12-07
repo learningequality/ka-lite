@@ -165,7 +165,7 @@ class SyncClient(object):
         
         self.session.models_downloaded += download_results["saved_model_count"]
         
-        response = self.post("models/upload", {"models": get_serialized_models(self.counters_to_upload, try_gzip=True)})
+        response = self.post("models/upload", {"models": get_serialized_models(self.counters_to_upload)})
         upload_results = json.loads(response.content)
         
         self.session.models_uploaded += upload_results["saved_model_count"]

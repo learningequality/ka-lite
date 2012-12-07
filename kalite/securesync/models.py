@@ -374,7 +374,7 @@ class Device(SyncedModel):
 settings.add_syncing_models([Facility, FacilityGroup, FacilityUser, SyncedLog])
 
 
-def get_serialized_models(device_counters=None, limit=100, zone=None, include_count=False, try_gzip=False):
+def get_serialized_models(device_counters=None, limit=10000, zone=None, include_count=False, try_gzip=False):
     
     # use the current device's zone if one was not specified
     if not zone:
