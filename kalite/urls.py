@@ -43,7 +43,7 @@ else:
     
     urlpatterns += patterns('main.views',
         url(r'^exercisedashboard/$', 'exercise_dashboard', {}, 'exercise_dashboard'),
-        url(r'^teacherpanel/$', 'teacher_panel', {}, 'teacher_panel'),
+        url(r'^coachreports/$', 'coach_reports', {}, 'coach_reports'),
         url(r'^$', 'homepage', {}, 'homepage'),
         url(r'^update/$', 'update', {}, 'update'),
         url(r'^api/', include('main.api_urls')),

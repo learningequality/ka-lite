@@ -38,7 +38,7 @@
     <a href="{% url add_facility_teacher %}" id="nav_addteacher" class="admin-only {% block addteacher_selected %}{% endblock addteacher_selected %}" title="Add a teacher">Add Teacher</a>
     <a href="/admin" id="nav_admin" class="django-user-only {% block admin_selected %}{% endblock admin_selected %}" title="Visit the admin panel">Admin</a>
     <a href="{% url update %}" id="nav_update" class="admin-only {% block update_selected %}{% endblock update_selected %}" title="Update this server with new videos and subtitles">Update</a>
-    <a href="{% url teacher_panel %}" id="nav_teacherpanel" class="admin-only {% block teacherpanel_selected %}{% endblock teacherpanel_selected %}" title="Track the progress of your students">Coach</a>
+    <a href="{% url coach_reports %}" id="nav_coachreports" class="admin-only {% block coachreports_selected %}{% endblock coachreports_selected %}" title="Track the progress of your students">Coach</a>
     <a href="{% url add_facility_student %}" id="nav_signup" class="not-logged-in-only {% block signup_selected %}{% endblock signup_selected %}" title="Register to start tracking your progress">Sign Up</a>
     <a href="{% url login %}" id="nav_login" class="not-logged-in-only {% block login_selected %}{% endblock login_selected %}" title="Login">Login</a>
 </span>

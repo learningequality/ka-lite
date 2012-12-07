@@ -332,11 +332,11 @@ li .progress-circle {
 }
 
 /*Coach */
-.nav-subheader > span > a#nav_teacherpanel.selected:after {
+.nav-subheader > span > a#nav_coachreports.selected:after {
     left: 24px !important;
 }
 
-.nav-subheader > span > a#nav_teacherpanel.selected:before {
+.nav-subheader > span > a#nav_coachreports.selected:before {
     left: 23px !important;
 }
 
@@ -385,7 +385,7 @@ li .progress-circle {
     left: 19px !important;
 }
 
-#nav_addstudent, #nav_addteacher, #nav_admin, #nav_teacherpanel, #nav_watch, #nav_practice, #nav_signup, #nav_login, #nav_update {
+#nav_addstudent, #nav_addteacher, #nav_admin, #nav_coachreports, #nav_watch, #nav_practice, #nav_signup, #nav_login, #nav_update {
     display: none;
 }
 

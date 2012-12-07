@@ -160,8 +160,8 @@ def update(request):
 
 @require_admin
 @facility_required
-@render_to("teacher_panel.html")
-def teacher_panel(request,facility):
+@render_to("coach_reports.html")
+def coach_reports(request, facility):
     topics = topicdata.EXERCISE_TOPICS["topics"].values()
     topics = sorted(topics, key = lambda k: (k["y"], k["x"]))
     groups = FacilityGroup.objects.filter(facility=facility)

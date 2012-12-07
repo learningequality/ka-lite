@@ -1,16 +1,16 @@
 {% extends 'base_distributed.html' %}
 
-{% block teacherpanel_selected %}selected{% endblock teacherpanel_selected %}
+{% block coachreports_selected %}selected{% endblock coachreports_selected %}
 
 {% block headjs %}
 <script type='text/javascript' src='{{ MEDIA_URL }}js/underscore.js'></script>
 {% endblock headjs %}
 
 {% block headcss %}
-<link rel='stylesheet' type='text/css' href='{{ MEDIA_URL }}css/teacher_panel.css'>
+<link rel='stylesheet' type='text/css' href='{{ MEDIA_URL }}css/coach_reports.css'>
 {% endblock headcss %}
 
-{% block title %}Teaching Reports{% endblock title %}
+{% block title %}Coach Reports{% endblock title %}
 
 {% block content %}
 <div id="content">
@@ -84,7 +84,8 @@ $(document).ready(function() {
     var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
         vars[key] = value;
     });
-    if (vars["topic"]) {
+    if (vars["topic"] && vars["group"]) {
+        $("#displaygrid").show();
         $.getJSON("/static/data/topicdata/" + vars["topic"] + ".json", function(topicdata, group) {
             var exercise_ids = $.map(topicdata, function(exercise) { return exercise.name });
             var group_exercises = {group: vars["group"], exercises: exercise_ids};

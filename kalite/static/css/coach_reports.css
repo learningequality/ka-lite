@@ -19,6 +19,7 @@ div#displaygrid {
     float: left;
     width: 100%;
     padding: 10px;
+    display: none;
 }
 
 div#displaygrid > div.users {
@@ -85,3 +86,4 @@ td.struggle {
 td.none {
     background-color: #EEEEEE;
 }
+
