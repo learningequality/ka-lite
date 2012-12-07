@@ -374,7 +374,19 @@ class Device(SyncedModel):
 settings.add_syncing_models([Facility, FacilityGroup, FacilityUser, SyncedLog])
 
 
-def get_serialized_models(device_counters=None, limit=10000, zone=None, include_count=False, try_gzip=False):
+class ImportPurgatory(models.Model):
+    timestamp = models.DateTimeField(auto_now_add=True)
+    counter = models.IntegerField()
+    retry_attempts = models.IntegerField(default=0)
+    serialized_models = models.TextField()
+    exceptions = models.TextField()
+    
+    def save(self, *args, **kwargs):
+        self.counter = self.counter or Device.get_own_device().get_counter()
+        super(ImportPurgatory, self).save(*args, **kwargs)
+
+
+def get_serialized_models(device_counters=None, limit=100, zone=None, include_count=False):
     
     # use the current device's zone if one was not specified
     if not zone:
@@ -393,7 +405,7 @@ def get_serialized_models(device_counters=None, limit=10000, zone=None, include_
     models = []
     boost = 0
     
-    # loop until we've found some models, or determined there are none to get
+    # loop until we've found some models, or determined that there are none to get
     while True:
         
         # assume no instances remaining until proven otherwise
@@ -421,28 +433,17 @@ def get_serialized_models(device_counters=None, limit=10000, zone=None, include_
             
                 # pull out the model instances within the given counter range
                 models += queryset.filter(counter__gte=counter, counter__lt=counter+limit+boost)
-                
-            # if we didn't get all the available instances in this pass, abort; we don't want to include instances
-            # from later Model classes before all the instances of the previous Model have been retrieved
-            if instances_remaining:
-                # boost the effective limit, so we have a chance of catching something if we do another round
-                boost += limit
-                # break out of the Model loop; don't want to try any more classes until this one is done
-                break
-        
+                        
         # if we got some models, or there were none to get, then call it quits
         if len(models) > 0 or not instances_remaining:
             break
+
+        # boost the effective limit, so we have a chance of catching something when we do another round
+        boost += limit
     
     # serialize the models we found
     serialized_models = json_serializer.serialize(models, ensure_ascii=False)
-    
-    # if requested and it's worth it, compress the serialized models to save bandwidth
-    if try_gzip and len(serialized_models) > 200:
-        compressed_models = "gzip:" + compress_string(serialized_models)
-        if len(compressed_models) < len(serialized_models):
-            serialized_models = compressed_models
-    
+        
     if include_count:
         return {"models": serialized_models, "count": len(models)}
     else:
@@ -450,14 +451,23 @@ def get_serialized_models(device_counters=None, limit=10000, zone=None, include_
 
 
 def save_serialized_models(data):
+    
+    # if data is from a purgatory object, load it up
+    if isinstance(data, ImportPurgatory):
+        purgatory = data
+        data = purgatory.serialized_models
+    else:
+        purgatory = None
+    
+    # deserialize the models, either from text or a list of dictionaries
     if isinstance(data, str) or isinstance(data, unicode):
-        # http://stackoverflow.com/questions/6123223/howto-uncompress-gzipped-data-in-a-byte-array
-        if len(data) > 5 and data[0:5] == "gzip:":
-            data = zlib.decompress(data[5:], 15 + 16)
         models = serializers.deserialize("json", data)
     else:
         models = serializers.deserialize("python", data)
+
+    # try importing each of the models in turn
     unsaved_models = []
+    exceptions = ""
     saved_model_count = 0
     for model in models:
         try:
@@ -466,8 +476,20 @@ def save_serialized_models(data):
             model.object.save(imported=True)
             saved_model_count += 1
         except ValidationError as e:
-            print e, model.object._hashable_representation()
+            exceptions += "%s\n" % e
             unsaved_models.append(model.object)
+
+    # deal with any models that didn't validate properly; throw them into purgatory so we can try again later    
+    if unsaved_models:
+        if not purgatory:
+            purgatory = ImportPurgatory()
+        purgatory.serialized_models = json_serializer.serialize(unsaved_models, ensure_ascii=False)
+        purgatory.exceptions = exceptions
+        purgatory.retry_attempts += 1
+        purgatory.save()
+    elif purgatory: # everything saved properly this time, so we can eliminate the purgatory instance
+        purgatory.delete()
+    
     return {
         "unsaved_model_count": len(unsaved_models),
         "saved_model_count": saved_model_count,
