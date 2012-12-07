@@ -101,7 +101,7 @@ INSTALLED_APPS = (
     "main",
 )
 
-if DEBUG:
+if DEBUG or CENTRAL_SERVER:
     INSTALLED_APPS += ("django_extensions",)
 
 CENTRAL_SERVER_HOST = "https://kalite.adhocsync.com/"

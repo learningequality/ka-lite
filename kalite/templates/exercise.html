@@ -66,6 +66,10 @@
                 };
             });
         });
+        $(".return-link").click(function() {
+            window.history.go(-1);
+            return false;
+        });
     });
 </script>
 
@@ -74,7 +78,9 @@
 {% block content %}
 
     <div class="exercises-header">
-        <div class="return-link"><a href="{{ referURL }}">&#60; Return</a></div>
+        {% if request.META.HTTP_REFERER %}
+        <a class="return-link" href="{{ request.META.HTTP_REFERER }}">&#60; Return</a>
+        {% endif %}
         <h2>
             <span class="practice-exercise-topic-context">Practicing</span> {{ title }}
             {% if exercise.description %}<br/><span class="practice-exercise-description">{{ exercise.description }}</span>{% endif %}

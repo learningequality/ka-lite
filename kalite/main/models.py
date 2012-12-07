@@ -8,7 +8,7 @@ from datetime import datetime
 
 class VideoLog(SyncedModel):
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
-    youtube_id = models.CharField(max_length=11, db_index=True)
+    youtube_id = models.CharField(max_length=20, db_index=True)
     total_seconds_watched = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
     complete = models.BooleanField(default=False)
@@ -16,12 +16,14 @@ class VideoLog(SyncedModel):
     completion_counter = models.IntegerField(blank=True, null=True)
     
     def save(self, *args, **kwargs):
-        already_complete = self.complete
-        self.complete = (self.points >= 100)
-        if not already_complete and self.complete:
-            self.completion_timestamp = datetime.now()
-            self.completion_counter = Device.get_own_device().get_counter()
-            self.attempts_before_completion = self.attempts
+        if not kwargs.get("imported", False):
+            self.full_clean()
+            already_complete = self.complete
+            self.complete = (self.points >= 100)
+            if not already_complete and self.complete:
+                self.completion_timestamp = datetime.now()
+                self.completion_counter = Device.get_own_device().get_counter()
+                self.attempts_before_completion = self.attempts
         super(VideoLog, self).save(*args, **kwargs)
     
     def get_uuid(self, *args, **kwargs):
@@ -34,7 +36,7 @@ class VideoLog(SyncedModel):
 
 class ExerciseLog(SyncedModel):
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
-    exercise_id = models.CharField(max_length=50, db_index=True)
+    exercise_id = models.CharField(max_length=100, db_index=True)
     streak_progress = models.IntegerField(default=0)
     attempts = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
@@ -45,15 +47,17 @@ class ExerciseLog(SyncedModel):
     completion_counter = models.IntegerField(blank=True, null=True)
     
     def save(self, *args, **kwargs):
-        if self.attempts > 20 and not self.complete:
-            self.struggling = True
-        already_complete = self.complete
-        self.complete = (self.streak_progress >= 100)
-        if not already_complete and self.complete:
-            self.struggling = False
-            self.completion_timestamp = datetime.now()
-            self.completion_counter = Device.get_own_device().get_counter()
-            self.attempts_before_completion = self.attempts
+        if not kwargs.get("imported", False):
+            self.full_clean()
+            if self.attempts > 20 and not self.complete:
+                self.struggling = True
+            already_complete = self.complete
+            self.complete = (self.streak_progress >= 100)
+            if not already_complete and self.complete:
+                self.struggling = False
+                self.completion_timestamp = datetime.now()
+                self.completion_counter = Device.get_own_device().get_counter()
+                self.attempts_before_completion = self.attempts
         super(ExerciseLog, self).save(*args, **kwargs)
 
     def get_uuid(self, *args, **kwargs):
@@ -67,7 +71,7 @@ class ExerciseLog(SyncedModel):
 settings.add_syncing_models([VideoLog, ExerciseLog])
 
 class VideoFile(models.Model):
-    youtube_id = models.CharField(max_length=11, primary_key=True)
+    youtube_id = models.CharField(max_length=20, primary_key=True)
     flagged_for_download = models.BooleanField(default=False)
     flagged_for_subtitle_download = models.BooleanField(default=False)
     download_in_progress = models.BooleanField(default=False)
