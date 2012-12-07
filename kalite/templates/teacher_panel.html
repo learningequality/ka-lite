@@ -18,7 +18,7 @@
 <div id="selection-bar">
 {% if groups %}
     <div class="selection">
-        <h2>Select Group</h2><select id="group">
+        <div class="subtitle">Select Group</div><select id="group">
         <option {% if not request.GET.group %}selected{% endif %}>----</option>
             {% for group in groups %}
                 <option value="{{ group.id }}" {% if request.GET.group == group.id %}selected{% endif %}>{{ group }}</option>
@@ -27,12 +27,12 @@
     </div>
 {% else %}
     <div class="selection">
-        <h2>No Groups at this Facility</h2>
+        <div class="subtitle">No Groups at this Facility</div>
     </div>
 {% endif %}
 {% if topics and groups %}
     <div class="selection">
-        <h2>Select Topic</h2><select id="topic">
+        <div class="subtitle">Select Topic</div><select id="topic">
             <option {% if not request.GET.topic %}selected{% endif %}>----</option>
             {% for topic in topics %}
                 <option value="{{ topic.id }}"{% if request.GET.topic == topic.id %}selected{% endif %}>{{ topic.standalone_title }}</option>
@@ -42,7 +42,7 @@
 {% endif %}
 </div>
 
-<div id="displaygrid"></div>
+<div id="displaygrid"><div class="subtitle">Loading student data...</div></div>
 </div>
 <script>
 

@@ -12,6 +12,7 @@ div#facility {
 div.selection {
     float:left;
     padding: 10px;
+    padding-top: 0;
 }
 
 div#displaygrid {
@@ -35,6 +36,10 @@ div.users > table {
     width: 100%;
 }
 
+.subtitle {
+    font-size: 1.15em;
+    font-weight: bold;
+}
 
 div#displaygrid > table, th, td {
     border: 1px solid black;
