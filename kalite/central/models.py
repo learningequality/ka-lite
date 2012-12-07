@@ -27,6 +27,9 @@ class Organization(models.Model):
     def get_members(self):
         return list(self.users.all())
 
+    def is_member(self, user):
+        return self.users.filter(user=user).count() > 0
+
     def __unicode__(self):
         return self.name
 

@@ -29,6 +29,8 @@ def homepage(request):
             if org.pk == int(request.POST.get('organization')):
                 org.form = form
         if form.is_valid():
+            if not form.instance.organization.is_member(request.user):
+                return HttpResponseNotAllowed("Unfortunately for you, you do not have permission to do that.")
             form.instance.send(request)
             form.save()
             return HttpResponseRedirect(reverse("homepage"))
@@ -62,6 +64,8 @@ def delete_admin(request, org_id, user_id):
     admin = org.users.get(pk=user_id)
     if org.owner == admin:
         return HttpResponseNotAllowed("This admin is the owner of this organization. Please contact us if you are sure you need to remove this user.")
+    if request.user == admin:
+        return HttpResponseNotAllowed("Your personal views are your own, but here at KA-Lite, you are not allowed to delete yourself.")
     deletion = DeletionRecord(organization=org, deleter=request.user, deleted_user=admin)
     deletion.save()
     org.users.remove(admin)
