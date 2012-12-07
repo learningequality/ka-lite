@@ -9,11 +9,11 @@ from main import topicdata
 def sigmoid(theta, a, b):
     return 1.0 / (1.0 + exp(b - a * theta))
 
-usernames = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t"]
-
 firstnames = ["Richard","Kwame","Jamie","Alison","Nadia","Zenab","Guan","Dylan","Vicky","Melanie","Michelle","Yamira","Elena","Thomas","Jorge","Lucille","Arnold","Rachel","Daphne","Sofia"]
 
 lastnames = ["Awolowo","Clement","Smith","Ramirez","Hussein","Wong","Franklin","Lopez","Brown","Paterson","De Soto","Khan","Mench","Merkel","Roschenko","Picard","Jones","French","Karnowski","Boyle"]
+
+usernames = [firstname[0].lower() + lastname.lower() for firstname, lastname in zip(firstnames, lastnames)]
 
 proficiency = [random.random() * 0.8 for i in range(10)] + [random.random() for i in range(10)]
 

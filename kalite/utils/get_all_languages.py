@@ -10,6 +10,6 @@ langs = langs['languages']
 
 output = open(save_path + 'languages.json','w')
 
-json.dump(langs,output)
+json.dump(langs, output)
 
 output.close()

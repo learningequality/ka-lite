@@ -14,125 +14,126 @@
 
 {% block content %}
 <div id="content">
-<div class="facility"><h2>Coach Reports for {{ facility }} (<a href="?facility=select">Change Facility</a>)</h2></div>
-<div id="selection-bar">
-{% if groups %}
-    <div class="selection">
-        <div class="subtitle">Select Group</div><select id="group">
-        <option {% if not request.GET.group %}selected{% endif %}>----</option>
-            {% for group in groups %}
-                <option value="{{ group.id }}" {% if request.GET.group == group.id %}selected{% endif %}>{{ group }}</option>
-            {% endfor %}
-        </select>
+    <div class="facility"><h2>Coach Reports for {{ facility }} (<a href="?facility=select">Change Facility</a>)</h2></div>
+    <div id="selection-bar">
+    {% if groups %}
+        <div class="selection">
+            <div class="subtitle">Select Group</div><select id="group">
+            <option {% if not request.GET.group %}selected{% endif %}>----</option>
+                {% for group in groups %}
+                    <option value="{{ group.id }}" {% if request.GET.group == group.id %}selected{% endif %}>{{ group }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    {% else %}
+        <div class="selection">
+            <div class="subtitle">No Groups at this Facility</div>
+        </div>
+    {% endif %}
+    {% if topics and groups %}
+        <div class="selection">
+            <div class="subtitle">Select Topic</div><select id="topic">
+                <option {% if not request.GET.topic %}selected{% endif %}>----</option>
+                {% for topic in topics %}
+                    <option value="{{ topic.id }}"{% if request.GET.topic == topic.id %}selected{% endif %}>{{ topic.standalone_title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    {% endif %}
     </div>
-{% else %}
-    <div class="selection">
-        <div class="subtitle">No Groups at this Facility</div>
-    </div>
-{% endif %}
-{% if topics and groups %}
-    <div class="selection">
-        <div class="subtitle">Select Topic</div><select id="topic">
-            <option {% if not request.GET.topic %}selected{% endif %}>----</option>
-            {% for topic in topics %}
-                <option value="{{ topic.id }}"{% if request.GET.topic == topic.id %}selected{% endif %}>{{ topic.standalone_title }}</option>
-            {% endfor %}
-        </select>
-    </div>
-{% endif %}
-</div>
 
-<div id="displaygrid"><div class="subtitle">Loading student data...</div></div>
-</div>
+    {% if students %}
+        <div style="clear: both;"></div>
+        <div id="displaygrid">
+            <div style="clear: both;"></div>
+            <div class="users">
+                <table>
+                    <tbody>
+                        <tr>
+                            <th class="headrowuser">
+                                Student
+                            </th>
+                        </tr>
+                        {% for student in students %}
+                            <tr>
+                                <th class="username">
+                                    <span title="{{ student.first_name }} {{ student.last_name }} ({{ student.username }})">
+                                        {{ student.first_name }} {{ student.last_name }}
+                                    </span>
+                                </th>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div style="clear: both;"></div>
+            </div>
+            <div class="userstatus">
+                <table>
+                    <tbody>
+                        <tr>
+                            {% for exercise in exercises %}
+                                <th class="headrow data">
+                                    <a href="{{ exercise.path }}"><span title='"{{ exercise.display_name }}"{% if exercise.description %} ({{ exercise.description }}){% endif %}'>{{ exercise.short_display_name }}</span></a>
+                                </th>
+                            {% endfor %}
+                        </tr>
+                        {% for student in students %}
+                            <tr>
+                                {% for log in student.exercise_logs %}
+                                    {% if log %}
+                                        {% if log.struggling %}
+                                            <td class="status data struggle" title="Struggling"></td>
+                                        {% elif log.complete %}
+                                            <td class="status data complete" title="Complete"></td>
+                                        {% else %}
+                                            <td class="status data partial" title="Attempted"></td>
+                                        {% endif %}
+                                    {% else %}
+                                        <td class="status data" title="Not Attempted"></td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div style="clear: both;"></div>
+        <p><div class="subtitle">Please select a group and topic above.</div></p>
+    {% endif %}
+</div> 
+
 <script>
 
-var exercise_paths = {{ exercise_paths|safe }};
-
-drawgrid = function(topic_data, userData) {
-    var usertable = "<div class='users'><table><tr><th class='headrowuser'>User</th></tr>";
-    var table = "<div class='userstatus'><table><tr>";
-    for (var i = 0; i < topic_data.length; i++) {
-        table += "<th class='headrow data'><a href='" + exercise_paths[topic_data[i].name] + "'><span title='" + (topic_data[i].description || "") + "'>" + topic_data[i].display_name + "</span></a></th>";
-        console.log(topic_data[i])
-    };
-    table += "</tr>";
-    users = _.keys(userData);
-    users = users.sort();
-    $.each(users, function(ind,user) {
-        data = userData[user];
-        table += "<tr>";
-        usertable += "<th class='username'> <span title='" + user + "'>" + user + "</span></th></tr>";
-        $.each(topic_data, function(ind,exercise) {
-            if (data[exercise.name]!=undefined) {
-                struggle = data[exercise.name].struggling;
-                complete = data[exercise.name].complete;
-                table += "<td class='status data " + (struggle ? "struggle" : (complete ? "complete" : "partial")) + "' title='" + (struggle ? "Struggling" : (complete ? "Complete" : "Attempted")) + "'></td>";
-            } else {
-                table += "<td class='status data none' title='Not Attempted'></td>";
-            };
-        });
-        table += "</tr>";
-    });
-    usertable += "</table></div>";
-    table += "</table></div>";
-    $("#displaygrid").html(usertable+table);
-    $('.headrowuser').height($('.headrow.data').outerHeight())
-};
-
-$(document).ready(function() {
+function setGetParam(name, val) {
     var vars = {};
-    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+    var parts = window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m, key, value) {
         vars[key] = value;
     });
-    if (vars["topic"] && vars["group"]) {
-        $("#displaygrid").show();
-        $.getJSON("/static/data/topicdata/" + vars["topic"] + ".json", function(topicdata, group) {
-            var exercise_ids = $.map(topicdata, function(exercise) { return exercise.name });
-            var group_exercises = {group: vars["group"], exercises: exercise_ids};
-            console.log(topicdata);
-            topicdata = _.sortBy(topicdata, "v_position");
-            topicdata = _.sortBy(topicdata, "h_position");
-            doRequest("/api/get_group_data", group_exercises).success(function(data) {
-                var userExercises = {};
-                $.each(data, function(user, userdata) {
-                    var exercisesCompleted = {};
-                    $.each(userdata, function(ind, status) {
-                        exercisesCompleted[status.exercise_id] = status;
-                    });
-                    userExercises[user] = exercisesCompleted;
-                });
-                drawgrid(topicdata, userExercises);
-            });
-        });
-    };
-});
-
-$("#topic").change(function(){
-    var vars = {}
-    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
-        vars[key] = value;
-    });
-    if($("#topic option:selected").val()!="----") {
-        vars["topic"] = $("#topic option:selected").val();
+    if (val != "" && val != "----") {
+        vars[name] = val;
     } else {
-        delete vars["topic"];
-    };
+        delete vars[name];
+    }
     url = "?" + $.param(vars);
-    window.location.href = url;
-});
-$("#group").change(function(){
-    var vars = {}
-    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
-        vars[key] = value;
-    });
-    if($("#group option:selected").val()!="----") {
-        vars["group"] = $("#group option:selected").val();
-    } else {
-        delete vars["group"];
-    };
-    url = "?" + $.param(vars);
-    window.location.href = url;
-});
+    window.location.href = url;    
+}
 
+$(function() {
+
+    $("#topic").change(function(){
+        setGetParam("topic", $("#topic option:selected").val());
+    });
+
+    $("#group").change(function(){
+       setGetParam("group", $("#group option:selected").val()); 
+    });
+    
+    $(window).resize(function() {
+        $('.headrowuser').height($('.headrow.data').outerHeight());
+    }).resize();
+    
+});
 </script>
 {% endblock content %}

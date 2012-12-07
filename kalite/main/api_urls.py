@@ -12,7 +12,6 @@ urlpatterns = patterns('main.api_views',
 
     url(r'^get_video_logs$', 'get_video_logs'),
     url(r'^get_exercise_logs$', 'get_exercise_logs'),
-    url(r'^get_group_data$', 'get_group_data'),
 
     url(r'^start_video_download$', 'start_video_download'),
     url(r'^check_video_download$', 'check_video_download'),

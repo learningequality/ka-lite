@@ -5,6 +5,7 @@ from django.template import RequestContext
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from annoying.decorators import render_to
+from annoying.functions import get_object_or_None
 import settings
 from settings import slug_key, title_key
 from main import topicdata
@@ -12,6 +13,7 @@ from django.contrib import messages
 from securesync.views import require_admin, facility_required
 from config.models import Settings
 from securesync.models import Facility, FacilityGroup
+from models import FacilityUser, VideoLog, ExerciseLog
 from django.utils.safestring import mark_safe
 from config.models import Settings
 from securesync.api_client import SyncClient
@@ -150,8 +152,8 @@ def update(request):
     default_language = Settings.get("subtitle_language") or "en"
     if default_language not in language_list:
         language_list.append(default_language)
-    languages = [{"id":key,"name":language_lookup[key]} for key in language_list]
-    languages = sorted(languages, key = lambda k: k["name"])
+    languages = [{"id": key, "name": language_lookup[key]} for key in language_list]
+    languages = sorted(languages, key=lambda k: k["name"])
     context = {
         "languages": languages,
         "default_language": default_language,
@@ -172,6 +174,24 @@ def coach_reports(request, facility):
         "topics": topics,
         "exercise_paths": json.dumps(paths),
     }
+    topic = request.GET.get("topic", "")
+    group = request.GET.get("group", "")
+    if group and topic and re.match("^[\w\-]+$", topic):
+        exercises = json.loads(open("%stopicdata/%s.json" % (settings.DATA_PATH, topic)).read())
+        exercises = sorted(exercises, key=lambda e: (e["h_position"], e["v_position"]))
+        context["exercises"] = [{
+            "display_name": ex["display_name"],
+            "description": ex["description"],
+            "short_display_name": ex["short_display_name"],
+            "path": topicdata.NODE_CACHE["Exercise"][ex["name"]]["path"],
+        } for ex in exercises]
+        users = get_object_or_404(FacilityGroup, pk=group).facilityuser_set.order_by("first_name", "last_name")
+        context["students"] = [{
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "username": user.username,
+            "exercise_logs": [get_object_or_None(ExerciseLog, user=user, exercise_id=ex["name"]) for ex in exercises],
+        } for user in users]
     return context
         
 @render_to("404_distributed.html")

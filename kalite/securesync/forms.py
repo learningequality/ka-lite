@@ -23,9 +23,9 @@ class FacilityUserForm(forms.ModelForm):
 
     password = forms.CharField(widget=forms.PasswordInput, label="Password")    
     
-    def __init__(self,request,*args,**kwargs):
+    def __init__(self, request, *args, **kwargs):
         self.request = request
-        super(FacilityUserForm,self).__init__(*args, **kwargs)
+        super(FacilityUserForm, self).__init__(*args, **kwargs)
     
     class Meta:
         model = FacilityUser
