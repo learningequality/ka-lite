@@ -140,7 +140,7 @@
 {% block content %}
 
 <div id="org_container">
-	<h1 class="title floatleft">My Organizations</h2><span class="glossary-link nudge-left" title="An Organization is an entity responsible for administering zones."></span>
+	<h1 class="title">My Organizations<span class="glossary-link nudge-left" title="An Organization is an entity responsible for administering zones."></span></h2>
 	{% if received_invitations|length > 0 %}
 		{% for invite in received_invitations %}
 			<div class="org-invite">
@@ -257,9 +257,8 @@
 					</form>
 				</div>
 			{% else %}
-				<div>
-					You currently have no organizations. Would you like to <a href="/organization/new/">create a new organization?</a>
-				</div>
+				<h2>You currently have no organizations. Would you like to <a href="/organization/new/">create a new organization</a>?</h2>
+				<h2>To join an existing organization, contact one of its administrators to have them add you.</h2>
 			{% endif %}
 	</div>
 </div>
