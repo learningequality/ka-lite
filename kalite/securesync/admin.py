@@ -70,3 +70,6 @@ class DeviceAdmin(admin.ModelAdmin):
 
 admin.site.register(Device, DeviceAdmin)
 
+class ImportPurgatoryAdmin(admin.ModelAdmin):
+    list_display = ("timestamp", "counter", "retry_attempts",)
+admin.site.register(ImportPurgatory, ImportPurgatoryAdmin)

@@ -7,6 +7,7 @@ from django.db.models import Q
 from django.utils.text import compress_string
 from config.models import Settings
 import crypto
+import datetime
 import uuid
 import zlib
 import settings
@@ -127,6 +128,9 @@ class SyncedModel(models.Model):
             if val:
                 if isinstance(val, models.Model):
                     val = val.pk
+                if isinstance(val, datetime.datetime):
+                    val = "%04d-%02d-%02d %d:%02d:%02d" %
+                        (val.year, val.month, val.day, val.hour, val.minute, val.second)
                 chunks.append("%s=%s" % (field, val))
         return "&".join(chunks)
 
