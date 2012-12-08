@@ -40,7 +40,8 @@ def sign(message, key=None):
     return rsa.sign(hashed(message, base64encode=False), key or get_private_key(), "SHA-1")
 
 def hashed(message, base64encode=False):
-    sha1sum = hashlib.sha1(message).digest()
+    # encode the message as UTF-8, replacing any invalid characters so they don't blow up the hashing
+    sha1sum = hashlib.sha1(message.encode("utf-8", "replace")).digest()
     if base64encode:
         return encode_base64(sha1sum)
     else:

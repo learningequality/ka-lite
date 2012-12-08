@@ -115,13 +115,26 @@ class SyncedModel(models.Model):
         except:
             return False
     
-    def _hashable_representation(self, fields=None):
+    def _hashable_fields(self, fields=None):
+        
+        # if no fields were specified, build a list of all the model's field names
         if not fields:
             fields = [field.name for field in self._meta.fields if field.name not in _unhashable_fields]
+            # sort the list of fields, for consistency
             fields.sort()
+        
+        # certain fields should always be included
         for field in _always_hash_fields:
             if field not in fields:
                 fields = [field] + fields
+        
+        # certain fields should never be included
+        fields = [field for field in fields if field not in _unhashable_fields]
+                
+        return fields
+    
+    def _hashable_representation(self, fields=None):
+        fields = self._hashable_fields(fields)
         chunks = []
         for field in fields:
             val = getattr(self, field)
@@ -131,6 +144,8 @@ class SyncedModel(models.Model):
                 if isinstance(val, datetime.datetime):
                     val = ("%04d-%02d-%02d %d:%02d:%02d" %
                         (val.year, val.month, val.day, val.hour, val.minute, val.second))
+                    # encode the message as UTF-8, replacing any invalid characters so they don't blow up the hashing
+                    val = val.encode("utf-8", "replace")
                 chunks.append("%s=%s" % (field, val))
         return "&".join(chunks)
 
