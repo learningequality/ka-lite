@@ -101,6 +101,8 @@ class SyncedModel(models.Model):
     objects = SyncedModelManager()
 
     def sign(self, device=None):
+        if not self.id:
+            self.id = self.get_uuid()
         self.signed_by = device or Device.get_own_device()
         self.signature = crypto.encode_base64(crypto.sign(self._hashable_representation()))
 
@@ -150,21 +152,28 @@ class SyncedModel(models.Model):
         return "&".join(chunks)
 
     def save(self, own_device=None, imported=False, *args, **kwargs):
+        
+        # we allow for the "own device" to be passed in so that a device can sign itself (before existing)
         own_device = own_device or Device.get_own_device()
+        
+        # this will probably never happen (since getting the device creates it), but just to be safe
         if not own_device:
             raise ValidationError("Cannot save any synced models before registering this Device.")
+        
+        # imported models are signed by other devices; make sure they check out
         if imported:
             if not self.signed_by_id:
                 raise ValidationError("Imported models must be signed.")
             if not self.verify():
                 raise ValidationError("Imported model's signature did not match.")
-        else: # local model
+        else: # local models need to be signed by us
             self.counter = own_device.increment_and_get_counter()
-            if not self.id:
-                self.id = self.get_uuid()
-                super(SyncedModel, self).save(*args, **kwargs) # TODO(jamalex): can we get rid of this?
             self.sign(device=own_device)
+        
+        # call the base Django Model save to write to the DB
         super(SyncedModel, self).save(*args, **kwargs)
+        
+        # for imported models, we want to keep track of the counter position we're at for that device
         if imported:
             self.signed_by.set_counter_position(self.counter)
 
