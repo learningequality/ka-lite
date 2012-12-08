@@ -145,7 +145,8 @@ def facility_edit(request, id=None):
         form = FacilityForm(data=request.POST, instance=facil)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse("add_facility_student") + "?facility=" + form.instance.pk)
+            messages.success(request, "The facility '%s' has been successfully saved!" % form.instance.name)
+            return HttpResponseRedirect(request.next or reverse("facility_admin"))
     else:
         form = FacilityForm(instance=facil)
     return {
