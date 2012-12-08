@@ -1,7 +1,7 @@
 from annoying.functions import get_object_or_None
 from django.contrib.auth.models import User, check_password
 from django.core import serializers
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models, transaction
 from django.db.models import Q
 from django.utils.text import compress_string
@@ -139,16 +139,30 @@ class SyncedModel(models.Model):
         fields = self._hashable_fields(fields)
         chunks = []
         for field in fields:
-            val = getattr(self, field)
+            
+            try:
+                val = getattr(self, field)
+            except ObjectDoesNotExist as e:
+                # if it's a foreign key and is broken, just use the id of the related model
+                val = getattr(self, field + "_id")
+            
             if val:
+                # convert models to just an id
                 if isinstance(val, models.Model):
                     val = val.pk
+                
+                # convert datetimes to a str in a predictable way
                 if isinstance(val, datetime.datetime):
                     val = ("%04d-%02d-%02d %d:%02d:%02d" %
                         (val.year, val.month, val.day, val.hour, val.minute, val.second))
-                    # encode the message as UTF-8, replacing any invalid characters so they don't blow up the hashing
+
+                # encode string value as UTF-8, replacing any invalid characters so they don't blow up the hashing
+                if isinstance(val, unicode):
                     val = val.encode("utf-8", "replace")
+
+                # add this field/val pair onto the chunks to include in the hash
                 chunks.append("%s=%s" % (field, val))
+                
         return "&".join(chunks)
 
     def save(self, own_device=None, imported=False, *args, **kwargs):
