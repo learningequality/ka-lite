@@ -129,8 +129,8 @@ class SyncedModel(models.Model):
                 if isinstance(val, models.Model):
                     val = val.pk
                 if isinstance(val, datetime.datetime):
-                    val = "%04d-%02d-%02d %d:%02d:%02d" %
-                        (val.year, val.month, val.day, val.hour, val.minute, val.second)
+                    val = ("%04d-%02d-%02d %d:%02d:%02d" %
+                        (val.year, val.month, val.day, val.hour, val.minute, val.second))
                 chunks.append("%s=%s" % (field, val))
         return "&".join(chunks)
 
