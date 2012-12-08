@@ -23,12 +23,14 @@ from securesync.api_client import SyncClient
 from utils.jobs import force_job
 from utils.decorators import require_admin
 
+
 def central_server_only(handler):
     def wrapper_fn(*args, **kwargs):
         if not settings.CENTRAL_SERVER:
             return HttpResponseNotFound("This path is only available on the central server.")
         return handler(*args, **kwargs)
     return wrapper_fn
+
 
 def distributed_server_only(handler):
     def wrapper_fn(*args, **kwargs):
@@ -37,11 +39,13 @@ def distributed_server_only(handler):
         return handler(*args, **kwargs)
     return wrapper_fn
 
+
 def register_public_key(request):
     if settings.CENTRAL_SERVER:
         return register_public_key_server(request)
     else:
         return register_public_key_client(request)
+
 
 def get_facility_from_request(request):
     if "facility" in request.GET:
@@ -55,6 +59,7 @@ def get_facility_from_request(request):
     else:
         facility = get_object_or_None(Facility, pk=Settings.get("default_facility"))
     return facility
+
 
 def facility_required(handler):
     def inner_fn(request, *args, **kwargs):
@@ -77,9 +82,11 @@ def facility_required(handler):
     
     return inner_fn
 
+
 def set_as_registered():
     force_job("syncmodels", "Secure Sync", "HOURLY")
     Settings.set("registered", True)
+
 
 @require_admin
 @render_to("securesync/register_public_key_client.html")
@@ -125,6 +132,7 @@ def register_public_key_server(request):
         "form": form
     }
 
+
 @require_admin
 @distributed_server_only
 @render_to("securesync/facility_admin.html")
@@ -132,6 +140,7 @@ def facility_admin(request):
     facilities = Facility.objects.all()
     context = {"facilities": facilities}
     return context
+
 
 @require_admin
 @distributed_server_only
@@ -145,14 +154,14 @@ def facility_edit(request, id=None):
         form = FacilityForm(data=request.POST, instance=facil)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse("add_facility_student") + "?facility=" + form.instance.pk)
+            messages.success(request, "The facility '%s' has been successfully saved!" % form.instance.name)
+            return HttpResponseRedirect(request.next or reverse("facility_admin"))
     else:
         form = FacilityForm(instance=facil)
     return {
         "form": form
     }
 
-        
 
 @distributed_server_only
 @render_to("securesync/facility_selection.html")
@@ -161,14 +170,17 @@ def facility_selection(request):
     context = {"facilities": facilities}
     return context
 
+
 @distributed_server_only
 @require_admin
 def add_facility_teacher(request):
     return add_facility_user(request, is_teacher=True)
 
+
 @distributed_server_only
 def add_facility_student(request):
     return add_facility_user(request, is_teacher=False)
+
 
 @render_to("securesync/add_facility_user.html")
 @facility_required
@@ -208,6 +220,7 @@ def add_facility_user(request, facility, is_teacher):
         "teacher": is_teacher,
     }
 
+
 @require_admin
 @render_to("securesync/add_facility.html")
 def add_facility(request):
@@ -221,6 +234,7 @@ def add_facility(request):
     return {
         "form": form
     }
+
 
 @require_admin
 @facility_required
@@ -292,6 +306,7 @@ def login(request):
         "facilities": facilities
     }
 
+
 @distributed_server_only
 def logout(request):
     if "facility_user" in request.session:
@@ -301,6 +316,7 @@ def logout(request):
     if next[0] != "/":
         next = "/"
     return HttpResponseRedirect(next)
+
 
 @distributed_server_only
 def crypto_login(request):
