@@ -499,10 +499,18 @@ def save_serialized_models(data):
     saved_model_count = 0
     for model in models:
         try:
-            # TODO(jamalex): more robust way to do this? (otherwise, it might barf about the id already existing):
+            # TODO(jamalex): more robust way to do this? (otherwise, it might barf about the id already existing)
             model.object._state.adding = False
+            
+            # verify that all fields are valid, and that foreign keys can be resolved
+            model.object.full_clean()
+            
+            # save the imported model
             model.object.save(imported=True)
+            
+            # keep track of how many models have been successfully saved
             saved_model_count += 1
+            
         except ValidationError as e:
             exceptions += "%s\n" % e
             unsaved_models.append(model.object)
