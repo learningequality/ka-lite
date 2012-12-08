@@ -254,6 +254,8 @@ class Facility(SyncedModel):
         verbose_name_plural = "Facilities"
 
     def __unicode__(self):
+        if not self.id:
+            return self.name
         return "%s (#%s)" % (self.name, int(self.id[:3], 16))
 
     def is_default(self):
@@ -523,16 +525,26 @@ def save_serialized_models(data):
             # verify that all fields are valid, and that foreign keys can be resolved
             model.object.full_clean()
             
-            # save the imported model
+            # save the imported model (checking that the signature is valid in the process)
             model.object.save(imported=True)
             
             # keep track of how many models have been successfully saved
             saved_model_count += 1
             
-        except ValidationError as e:
-            exceptions += "%s\n" % e
+        except ValidationError as e: # the model could not be saved
+            
+            # keep a running list of models and exceptions, to be stored in purgatory
+            exceptions += "%s: %s\n" % (model.pk, e)
             unsaved_models.append(model.object)
-
+            
+            # if the model is at least properly signed, try incrementing the counter for the signing device
+            # (because otherwise we may never ask for additional models)
+            try:
+                if model.verify():
+                    model.signed_by.set_counter_position(model.counter)
+            except:
+                pass
+            
     # deal with any models that didn't validate properly; throw them into purgatory so we can try again later    
     if unsaved_models:
         if not purgatory:
