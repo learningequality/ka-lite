@@ -513,6 +513,10 @@ def save_serialized_models(data):
     saved_model_count = 0
     for model in models:
         try:
+            # only allow the importing of models that are subclasses of SyncedModel
+            if not isinstance(model, SyncedModel):
+                raise ValidationError("Cannot save model: %s is not a subclass of SyncedModel." % model.__class__)
+            
             # TODO(jamalex): more robust way to do this? (otherwise, it might barf about the id already existing)
             model.object._state.adding = False
             
