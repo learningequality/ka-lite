@@ -422,6 +422,7 @@ class ImportPurgatory(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     counter = models.IntegerField()
     retry_attempts = models.IntegerField(default=0)
+    model_count = models.IntegerField(default=0)
     serialized_models = models.TextField()
     exceptions = models.TextField()
     
@@ -551,6 +552,7 @@ def save_serialized_models(data):
             purgatory = ImportPurgatory()
         purgatory.serialized_models = json_serializer.serialize(unsaved_models, ensure_ascii=False)
         purgatory.exceptions = exceptions
+        purgatory.model_count = len(unsaved_models)
         purgatory.retry_attempts += 1
         purgatory.save()
     elif purgatory: # everything saved properly this time, so we can eliminate the purgatory instance
