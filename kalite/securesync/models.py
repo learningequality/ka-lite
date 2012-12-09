@@ -115,9 +115,14 @@ class SyncedModel(models.Model):
             # but it's a model class that requires trusted signatures, verification fails
             if self.requires_trusted_signature:
                 return False
-            # or if it's not in the same zone as our device (or the DeviceZone was revoked), verification fails
-            if not self.signed_by.get_zone() == Device.get_own_device().get_zone():
-                return False
+            if settings.CENTRAL_SERVER:
+                # if it's not in a zone at all (or its DeviceZone was revoked), verification fails
+                if not self.signed_by.get_zone():
+                    return False
+            else:
+                # or if it's not in the same zone as our device (or the DeviceZone was revoked), verification fails
+                if self.signed_by.get_zone() != Device.get_own_device().get_zone():
+                    return False
         # by this point, we know that we're ok with accepting this model from the device that it says signed it
         # now, we just need to check whether or not it is actually signed by that model's private key
         key = self.signed_by.get_public_key()
