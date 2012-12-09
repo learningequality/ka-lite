@@ -139,14 +139,14 @@ class SyncClient(object):
                 devices_to_upload.append(device)
                 self.counters_to_upload[device] = 0
             elif client_counters[device] > server_counters[device]:
-                self.counters_to_upload[device] = server_counters[device] + 1
+                self.counters_to_upload[device] = server_counters[device]
         
         for device in server_counters:
             if device not in client_counters:
                 devices_to_download.append(device)
                 self.counters_to_download[device] = 0
             elif server_counters[device] > client_counters[device]:
-                self.counters_to_download[device] = client_counters[device] + 1
+                self.counters_to_download[device] = client_counters[device]
 
         response = json.loads(self.post("device/download", {"devices": devices_to_download}).content)
         download_results = save_serialized_models(response.get("devices", "[]"))

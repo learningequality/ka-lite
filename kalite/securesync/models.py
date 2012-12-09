@@ -72,7 +72,7 @@ class DeviceMetadata(models.Model):
     device = models.OneToOneField("Device", blank=True, null=True)
     is_trusted = models.BooleanField(default=False)
     is_own_device = models.BooleanField(default=False)
-    counter_position = models.IntegerField(default=-1)
+    counter_position = models.IntegerField(default=0)
 
     class Meta:    
         verbose_name_plural = "Device metadata"
@@ -484,11 +484,11 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
                         continue
 
                 # check whether there are any models that will be excluded by our limit, so we know to ask again
-                if not instances_remaining and queryset.filter(counter__gte=counter+limit+boost).count() > 0:
+                if not instances_remaining and queryset.filter(counter__gt=counter+limit+boost).count() > 0:
                     instances_remaining = True
             
                 # pull out the model instances within the given counter range
-                models += queryset.filter(counter__gte=counter, counter__lt=counter+limit+boost)
+                models += queryset.filter(counter__gt=counter, counter__lte=counter+limit+boost)
                         
         # if we got some models, or there were none to get, then call it quits
         if len(models) > 0 or not instances_remaining:
