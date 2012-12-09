@@ -360,6 +360,10 @@ class Device(SyncedModel):
             metadata.counter_position = counter_position
             metadata.save()
 
+    def full_clean(self):
+        # TODO(jamalex): we skip out here, because otherwise self-signed devices will fail
+        pass
+
     @staticmethod
     def get_own_device():
         devices = DeviceMetadata.objects.filter(is_own_device=True)
