@@ -26,16 +26,22 @@ class Command(BaseCommand):
         facility = Facility(name="Wilson Elementary")
         facility.save()
         group1 = FacilityGroup(facility=facility, name="Class 4E")
+        group1.full_clean()
         group1.save()
         group2 = FacilityGroup(facility=facility, name="Class 5B")
+        group2.full_clean()
         group2.save()
         facilityusers = []
         
         for i in range(0,10):
             newuser1 = FacilityUser(facility=facility, username=usernames[i], first_name=firstnames[i], last_name=lastnames[i], group=group1)
+            newuser1.set_password("blah")
+            newuser1.full_clean()
             newuser1.save()
             facilityusers.append(newuser1)
             newuser2 = FacilityUser(facility=facility, username=usernames[i+10], first_name=firstnames[i+10], last_name=lastnames[i+10], group=group2)
+            newuser2.set_password("blah")
+            newuser2.full_clean()
             newuser2.save()
             facilityusers.append(newuser2)
         
@@ -55,5 +61,6 @@ class Command(BaseCommand):
                     streak_progress = max(10, min(100, 10 * random.random() + 10 * attempts * sig))
                     print int(attempts), int(streak_progress), user.first_name, exercise["name"]
                     log = ExerciseLog(user=user, exercise_id=exercise["name"], attempts=attempts, streak_progress=streak_progress)
+                    log.full_clean()
                     log.save()
-                    
+            
