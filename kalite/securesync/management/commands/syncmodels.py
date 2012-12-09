@@ -1,3 +1,4 @@
+from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from securesync.api_client import SyncClient
 
@@ -6,6 +7,9 @@ class Command(BaseCommand):
     help = "Synchronize the local SyncedModels with a remote server"
 
     def handle(self, *args, **options):
+
+        self.stdout.write("Checking purgatory for unsaved models...\n")
+        call_command("retrypurgatory")
 
         kwargs = {}
 
@@ -47,8 +51,11 @@ class Command(BaseCommand):
             if success_count + fail_count == 0:
                 break
         
-        self.stdout.write("Closing session...\n(Uploaded: %d, Downloaded: %d)\n" % 
+        self.stdout.write("Closing session... (Total uploaded: %d, Total downloaded: %d)\n" % 
             (client.session.models_uploaded, client.session.models_downloaded))
+
+        self.stdout.write("Checking purgatory once more, to try saving any unsaved models...\n")
+        call_command("retrypurgatory")
         
         client.close_session()
         
