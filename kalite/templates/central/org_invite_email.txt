@@ -1,8 +1,8 @@
 {% load humanize %}
-Hello there! You were just invited by {% if invited_by.first_name and invited_by.last_name %}{{ invited_by.first_name }} {{ invited_by.last_name }}{% else %}{{ invited_by.username }}{% endif %} to become an administrator for {{ organization }} on KA-Lite. 
+Hello there! You were just invited by {% if invited_by.first_name and invited_by.last_name %}{{ invited_by.first_name }} {{ invited_by.last_name }}{% else %}{{ invited_by.username }}{% endif %} to become an administrator for '{{ organization }}'' on KA Lite. 
 
-Visit http://kalite.adhocsync.com{% url auth_login %} to log in to KA-Lite and there will be a message waiting for you to confirm your administratorship for {{ organization }}! 
+Visit http://kalite.adhocsync.com{% url auth_login %} to log in to KA Lite and there will be a message waiting for you to confirm your administratorship for {{ organization }}! 
 
 Best regards, 
 
-The KA-Lite Team 
+The KA Lite Team 
