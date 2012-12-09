@@ -25,13 +25,27 @@ class Command(BaseCommand):
             return
                 
         self.stdout.write("Syncing models...\n")
-        results = client.sync_models()
-        while results["upload_results"]["saved_model_count"] + results["download_results"]["saved_model_count"] > 0:
-            self.stdout.write("\tUploaded: %d (%d failed)\n" % (results["upload_results"]["saved_model_count"],
-                                                    results["upload_results"]["unsaved_model_count"]))
-            self.stdout.write("\tDownloaded: %d (%d failed)\n" % (results["download_results"]["saved_model_count"],
-                                                    results["download_results"]["unsaved_model_count"]))
+        
+        while True:
             results = client.sync_models()
+            
+            # display counts for this block of models being transferred
+            self.stdout.write("\tUploaded: %d (%d failed)\n" % (
+                results["upload_results"]["saved_model_count"],
+                results["upload_results"]["unsaved_model_count"]))
+            self.stdout.write("\tDownloaded: %d (%d failed)\n" % (
+                results["download_results"]["saved_model_count"],
+                results["download_results"]["unsaved_model_count"]))
+            
+            # count the number of successes and failures
+            upload_results = results["upload_results"]
+            download_results = results["download_results"]
+            success_count = upload_results["saved_model_count"] + download_results["saved_model_count"]
+            fail_count = upload_results["unsaved_model_count"] + download_results["unsaved_model_count"]
+            
+            # stop when nothing is being transferred anymore
+            if success_count + fail_count == 0:
+                break
         
         self.stdout.write("Closing session...\n(Uploaded: %d, Downloaded: %d)\n" % 
             (client.session.models_uploaded, client.session.models_downloaded))

@@ -525,20 +525,24 @@ def save_serialized_models(data):
     unsaved_models = []
     exceptions = ""
     saved_model_count = 0
-    for model in models:
+    for modelwrapper in models:
         try:
+            
+            # extract the model from the deserialization wrapper
+            model = modelwrapper.object
+            
             # only allow the importing of models that are subclasses of SyncedModel
             if not isinstance(model, SyncedModel):
                 raise ValidationError("Cannot save model: %s is not a subclass of SyncedModel." % model.__class__)
             
             # TODO(jamalex): more robust way to do this? (otherwise, it might barf about the id already existing)
-            model.object._state.adding = False
+            model._state.adding = False
             
             # verify that all fields are valid, and that foreign keys can be resolved
-            model.object.full_clean()
+            model.full_clean()
             
             # save the imported model (checking that the signature is valid in the process)
-            model.object.save(imported=True)
+            model.save(imported=True)
             
             # keep track of how many models have been successfully saved
             saved_model_count += 1
@@ -546,8 +550,8 @@ def save_serialized_models(data):
         except ValidationError as e: # the model could not be saved
             
             # keep a running list of models and exceptions, to be stored in purgatory
-            exceptions += "%s: %s\n" % (model.object.pk, e)
-            unsaved_models.append(model.object)
+            exceptions += "%s: %s\n" % (model.pk, e)
+            unsaved_models.append(model)
             
             # if the model is at least properly signed, try incrementing the counter for the signing device
             # (because otherwise we may never ask for additional models)
