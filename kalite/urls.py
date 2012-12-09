@@ -20,20 +20,20 @@ urlpatterns += patterns('',
 
 if settings.CENTRAL_SERVER:
 
-    urlpatterns += patterns('',
-        url(r'^$', 'central.views.homepage', {}, 'homepage'), 
-        url(r'^delete_admin/(?P<org_id>\w+)/(?P<user_id>\w+)/$', 'central.views.delete_admin', {}, 'delete_admin'), 
-        url(r'^delete_invite/(?P<org_id>\w+)/(?P<invite_id>\w+)/$', 'central.views.delete_invite', {}, 'delete_invite'), 
+    urlpatterns += patterns('central.views',
+        url(r'^$', 'homepage', {}, 'homepage'), 
+        url(r'^delete_admin/(?P<org_id>\w+)/(?P<user_id>\w+)/$', 'delete_admin', {}, 'delete_admin'), 
+        url(r'^delete_invite/(?P<org_id>\w+)/(?P<invite_id>\w+)/$', 'delete_invite', {}, 'delete_invite'), 
         url(r'^accounts/', include('registration.urls')),
-        url(r'^organization/(?P<id>\w+)/$', 'central.views.organization_form', {}, 'organization_form'),
-        url(r'^organization/(?P<org_id>\w+)/zone/(?P<id>\w+)/$', 'central.views.zone_form', {}, 'zone_form'),
-        url(r'^organization/invite_action/(?P<invite_id>\w+)/$', 'central.views.org_invite_action', {}, 'org_invite_action'),
-        url(r'^zone/(?P<zone_id>\w+)/facility/$', 'central.views.central_facility_admin', {}, 'central_facility_admin'),
-        url(r'^zone/(?P<zone_id>\w+)/facility/new/$', 'central.views.central_facility_edit', {"id": "new"}, 'central_facility_add'),
-        url(r'^zone/(?P<zone_id>\w+)/facility/(?P<id>\w+)/$', 'central.views.central_facility_edit', {}, 'central_facility_edit'),
-        url(r'^cryptologin/$', 'central.views.crypto_login', {}, 'crypto_login'), 
-        url(r'^getstarted/$','central.views.get_started', {}, 'get_started'),
-        url(r'^glossary/$', 'central.views.glossary', {}, 'glossary'),
+        url(r'^organization/(?P<id>\w+)/$', 'organization_form', {}, 'organization_form'),
+        url(r'^organization/(?P<org_id>\w+)/zone/(?P<id>\w+)/$', 'zone_form', {}, 'zone_form'),
+        url(r'^organization/invite_action/(?P<invite_id>\w+)/$', 'org_invite_action', {}, 'org_invite_action'),
+        url(r'^organization/(?P<org_id>\w+)/zone/(?P<zone_id>\w+)/facility/$', 'central_facility_admin', {}, 'central_facility_admin'),
+        url(r'^organization/(?P<org_id>\w+)/zone/(?P<zone_id>\w+)/facility/new/$', 'central_facility_edit', {"id": "new"}, 'central_facility_add'),
+        url(r'^organization/(?P<org_id>\w+)/zone/(?P<zone_id>\w+)/facility/(?P<id>\w+)/$', 'central_facility_edit', {}, 'central_facility_edit'),
+        url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'), 
+        url(r'^getstarted/$','get_started', {}, 'get_started'),
+        url(r'^glossary/$', 'glossary', {}, 'glossary'),
     )
     
     handler404 = 'main.views.central_404_handler'

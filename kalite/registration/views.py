@@ -14,7 +14,7 @@ from registration.backends import get_backend
 
 def complete(request, *args, **kwargs):
     messages.success(request, "Congratulations! Your account is now active. To get started, "
-        + "login to the central server below, then create an organization and add a zone to it.")
+        + "login to the central server below, to administer organizations and zones.")
     return redirect("auth_login")
 
 def activate(request, backend,

@@ -16,64 +16,88 @@ import requests
 
 import settings
 
+
 @render_to("central/homepage.html")
 def homepage(request):
+    
+    # show the static landing page to users that aren't logged in
     if not request.user.is_authenticated():
         return landing_page(request)
+    
+    # get a list of all the organizations this user helps administer    
     organizations = get_or_create_user_profile(request.user).get_organizations()
+    
+    # add invitation forms to each of the organizations
     for org in organizations:
         org.form = OrganizationInvitationForm(initial={"invited_by": request.user})
-    if request.method == 'POST':
+    
+    # handle a submitted invitation form
+    if request.method == "POST":
         form = OrganizationInvitationForm(data=request.POST)
-        for org in organizations:
-            if org.pk == int(request.POST.get('organization')):
-                org.form = form
         if form.is_valid():
+            # ensure that the current user is a member of the organization to which someone is being invited
             if not form.instance.organization.is_member(request.user):
                 return HttpResponseNotAllowed("Unfortunately for you, you do not have permission to do that.")
+            # send the invitation email, and save the invitation record
             form.instance.send(request)
             form.save()
             return HttpResponseRedirect(reverse("homepage"))
-    user = request.user
-    received_invitations = OrganizationInvitation.objects.filter(email_to_invite=user.email)
-    context = {
-        'user': user,
-        'organizations': organizations,
-        'sent_invitations': OrganizationInvitation.objects.filter(invited_by=user),
-        'received_invitations': received_invitations
+        else: # we need to inject the form into the correct organization, so errors are displayed inline
+            for org in organizations:
+                if org.pk == int(request.POST.get("organization")):
+                    org.form = form
+                    
+    return {
+        "organizations": organizations,
+        "invitations": OrganizationInvitation.objects.filter(email_to_invite=request.user.email)
     }
-    return context
 
+
+@render_to("central/landing_page.html")
+def landing_page(request):
+    return {}
+
+
+@login_required
 def org_invite_action(request, invite_id):
     invite = OrganizationInvitation.objects.get(pk=invite_id)
-    org = Organization.objects.get(pk=invite.organization.pk)
+    org = invite.organization
     if request.user.email != invite.email_to_invite:
         return HttpResponseNotAllowed("It's not nice to force your way into groups.")
-    if request.method == 'POST':
+    if request.method == "POST":
         data = request.POST
-        if data.get('join'):
+        if data.get("join"):
             messages.success(request, "You have joined " + org.name + " as an admin.")
             org.add_member(request.user)
-        if data.get('decline'):
+        if data.get("decline"):
             messages.warning(request, "You have declined to join " + org.name + " as an admin.")
         invite.delete()
     return HttpResponseRedirect(reverse("homepage"))
 
+
+@login_required
 def delete_admin(request, org_id, user_id):
     org = Organization.objects.get(pk=org_id)
     admin = org.users.get(pk=user_id)
+    if not org.is_member(request.user):
+        return HttpResponseNotAllowed("Nice try, but you have to be an admin for an org to delete someone from it.")
     if org.owner == admin:
-        return HttpResponseNotAllowed("This admin is the owner of this organization. Please contact us if you are sure you need to remove this user.")
+        return HttpResponseNotAllowed("The owner of an organization cannot be removed.")
     if request.user == admin:
-        return HttpResponseNotAllowed("Your personal views are your own, but here at KA-Lite, you are not allowed to delete yourself.")
+        return HttpResponseNotAllowed("Your personal views are your own, but in this case " +
+            "you are not allowed to delete yourself.")
     deletion = DeletionRecord(organization=org, deleter=request.user, deleted_user=admin)
     deletion.save()
     org.users.remove(admin)
     messages.success(request, "You have succesfully removed " + admin.username + " as an administrator for " + org.name + ".")
     return HttpResponseRedirect(reverse("homepage"))
 
+
+@login_required
 def delete_invite(request, org_id, invite_id):
     org = Organization.objects.get(pk=org_id)
+    if not org.is_member(request.user):
+        return HttpResponseNotAllowed("Nice try, but you have to be an admin for an org to delete its invitations.")
     invite = OrganizationInvitation.objects.get(pk=invite_id)
     deletion = DeletionRecord(organization=org, deleter=request.user, deleted_invite=invite)
     deletion.save()
@@ -81,16 +105,13 @@ def delete_invite(request, org_id, invite_id):
     messages.success(request, "You have succesfully revoked the invitation for " + invite.email_to_invite + ".")
     return HttpResponseRedirect(reverse("homepage"))
 
-@render_to("central/landing_page.html")
-def landing_page(request):
-    return {}
  
 @login_required
 @render_to("central/organization_form.html")
 def organization_form(request, id=None):
     if id != "new":
         org = get_object_or_404(Organization, pk=id)
-        if org.users.filter(pk=request.user.pk).count() == 0:
+        if not org.is_member(request.user):
             return HttpResponseNotAllowed("You do not have permissions for this organization.")
     else:
         org = None
@@ -115,9 +136,9 @@ def organization_form(request, id=None):
 
 @login_required
 @render_to("central/zone_form.html")
-def zone_form(request, id=None, org_id=None):
+def zone_form(request, org_id=None, id=None):
     org = get_object_or_404(Organization, pk=org_id)
-    if org.users.filter(pk=request.user.pk).count() == 0:
+    if not org.is_member(request.user):
         return HttpResponseNotAllowed("You do not have permissions for this organization.")
     if id != "new":
         zone = get_object_or_404(Zone, pk=id)
@@ -125,35 +146,40 @@ def zone_form(request, id=None, org_id=None):
             return HttpResponseNotAllowed("This organization does not have permissions for this zone.")
     else:
         zone = None
-    if request.method == 'POST':
+    if request.method == "POST":
         form = ZoneForm(data=request.POST, instance=zone)
         if form.is_valid():
-            # form.instance.owner = form.instance.owner or request.user 
             form.instance.save()
             org.zones.add(form.instance)
-            # form.instance.save()
             return HttpResponseRedirect(reverse("homepage"))
     else:
         form = ZoneForm(instance=zone)
     return {
-        'form': form
+        "form": form
     }
+
 
 @login_required
 @render_to("securesync/facility_admin.html")
-def central_facility_admin(request, zone_id=None):
-    # still need to check if user has the rights to do this
-    facilities = Facility.objects.all()
+def central_facility_admin(request, org_id=None, zone_id=None):
+    facilities = Facility.objects.by_zone(zone_id)
     return {
         "zone_id": zone_id,
         "facilities": facilities,
     } 
 
+
 @login_required
 @render_to("securesync/facility_edit.html")
-def central_facility_edit(request, id=None, zone_id=None):
+def central_facility_edit(request, org_id=None, zone_id=None, id=None):
+    org = get_object_or_404(Organization, pk=org_id)
+    if not org.is_member(request.user):
+        return HttpResponseNotAllowed("You do not have permissions for this organization.")
+    zone = org.zones.get(pk=zone_id)
     if id != "new":
         facil = get_object_or_404(Facility, pk=id)
+        if not facil.in_zone(zone):
+            return HttpResponseNotAllowed("This facility does not belong to this zone.")
     else:
         facil = None
     if request.method == "POST":
@@ -161,7 +187,7 @@ def central_facility_edit(request, id=None, zone_id=None):
         if form.is_valid():
             form.instance.zone_fallback = get_object_or_404(Zone, pk=zone_id)
             form.save()
-            return HttpResponseRedirect(reverse("central_facility_admin", kwargs={"zone_id": zone_id}))
+            return HttpResponseRedirect(reverse("central_facility_admin", kwargs={"org_id": org_id, "zone_id": zone_id}))
     else:
         form = FacilityForm(instance=facil)
     return {
@@ -169,13 +195,16 @@ def central_facility_edit(request, id=None, zone_id=None):
         "zone_id": zone_id,
     }
 
+
 @render_to("central/getting_started.html")
 def get_started(request):
     return {}
 
+
 @render_to("central/glossary.html")
 def glossary(request):
     return {}
+
 
 @login_required
 def crypto_login(request):
@@ -192,4 +221,5 @@ def crypto_login(request):
     if not client.session or not client.session.client_nonce:
         return HttpResponse("Unable to establish a session with KA Lite server at %s" % host)
     return HttpResponseRedirect("%ssecuresync/cryptologin/?client_nonce=%s" % (host, client.session.client_nonce))
+
     

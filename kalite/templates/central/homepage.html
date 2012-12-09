@@ -112,8 +112,8 @@
 		margin-top: 10px;
 	}
 
-	#zones, #members {
-		width: 45%;
+	.zones, .members {
+		min-width: 300px;
 		float: left;
 		padding: 6px 0px 10px 20px;
 	}
@@ -147,7 +147,7 @@
 				<form method="post" action="{% url org_invite_action invite_id=invite.pk %}"> 
 					{% csrf_token %}
 					<div id="invite-text">
-						<p>You have been invited by <a href="mailto:{{invite.invited_by.email}}">{{ invite.invited_by }}</a> to help administer <span style="font-weight:bold">"{{ invite.organization }}."</span> Please click below to join the organization or decline this invitation.</p> 
+						<p>You have been invited by <a href="mailto:{{invite.invited_by.email}}">{% firstof invite.invited_by.get_full_name invite.invited_by.username %}</a> to help administer "<span style="font-weight:bold">{{ invite.organization }}</span>". Please click below to join the organization or to decline this invitation.</p> 
 						<div class="inputs">
 							<input type="submit" name="join" value="Join">
 							<input type="submit" name="decline" value="Decline">
@@ -172,7 +172,7 @@
 							<div class="clearfix"></div>
 						</div>
 						</div>
-						<div id="zones">
+						<div class="zones">
 							<h4 class="title floatleft">Affiliated Zones</h4><span class="glossary-link nudge-left" title="A Zone is the area in which multiple devices may connect to share content with each other."></span>
 							<div class="clearfix"></div>
 							{% for zone in org.get_zones %}
@@ -183,7 +183,7 @@
 									<a href="{% url zone_form org_id=org.id id=zone.id %}">
 										(Edit Zone)
 									</a>
-									<a href="{% url central_facility_admin zone_id=zone.id %}">
+									<a href="{% url central_facility_admin org_id=org.id zone_id=zone.id %}">
 										(Manage Facilities)
 									</a>
 								</div>
@@ -194,45 +194,39 @@
 								<input class="add" type="submit" value="Create a new zone">
 							</form>
 						</div>
-						<div id="members">
+						<div class="members">
 							<h4 class="title floatleft">Organization Admins</h4><span class="glossary-link nudge-left" title="An Organization Admin is a user responsible for overseeing an organization."></span>
 							<div class="clearfix"></div>
 							{% for member in org.get_members %}
 								<h4 title="{{member.email }}" class="floatleft">
-									{% if member.first_name and member.last_name %}
-										{{ member.first_name }}&nbsp;{{ member.last_name }}
-									{% else %}
-										{{ member.username }}
-									{% endif %}
+									{% firstof member.get_full_name member.username %}
 								</h4>
 								<div class="nudge-left floatleft">
-									{% if org.owner != member %}
-										<form method="post" action="{% url delete_admin org_id=org.id user_id=member.id %}">
-												{% csrf_token %}
-												<a href="" class="remove-admin-submit">(Remove Admin)</a>
-										</form>
-									{% elif org.owner == member and member == request.user %}
+									{% if org.owner == member and member == request.user %}
 										(You are the owner)
 									{% elif member == request.user %}
 										(You)
 									{% elif org.owner == member %}
 										(Owner)
+									{% else %}
+										<form method="post" action="{% url delete_admin org_id=org.id user_id=member.id %}">
+												{% csrf_token %}
+												(<a href="" class="remove-admin-submit">Remove Admin</a>)
+										</form>
 									{% endif %}
 								</div>
 								<div class="clearfix"></div>
 							{% endfor %}
-							{% for invite in sent_invitations %}
-								{% if invite.organization == org %}
-									<h4 id="invited-tag" class="floatleft">
-										{{ invite.email_to_invite }} (invited)
-									</h4>
-									<div class="nudge-left floatleft">
-										<form method="post" action="{% url delete_invite org_id=org.id invite_id=invite.pk %}">
-											{% csrf_token %}
-											<a href="" class="remove-invite-submit">(Revoke Invite)</a>
-										</form>
-									</div>
-								{% endif %}
+							{% for invite in org.invitations.all %}
+								<h4 id="invited-tag" class="floatleft">
+									{{ invite.email_to_invite }} (invited)
+								</h4>
+								<div class="nudge-left floatleft">
+									<form method="post" action="{% url delete_invite org_id=org.id invite_id=invite.pk %}">
+										{% csrf_token %}
+										<a href="" class="remove-invite-submit">(Revoke Invite)</a>
+									</form>
+								</div>
 								<div class="clearfix"></div>
 							{% endfor %}
 							<div class="add">
