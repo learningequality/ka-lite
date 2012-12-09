@@ -107,10 +107,19 @@ class SyncedModel(models.Model):
         self.signature = crypto.encode_base64(crypto.sign(self._hashable_representation()))
 
     def verify(self):
+        # if nobody signed it, verification fails
         if not self.signed_by_id:
             return False
-        if self.requires_trusted_signature and not self.signed_by.get_metadata().is_trusted:
-            return False
+        # if it's not a trusted device...
+        if not self.signed_by.get_metadata().is_trusted:
+            # but it's a model class that requires trusted signatures, verification fails
+            if self.requires_trusted_signature:
+                return False
+            # or if it's not in the same zone as our device (or the DeviceZone was revoked), verification fails
+            if not self.signed_by.get_zone() == Device.get_own_device().get_zone():
+                return False
+        # by this point, we know that we're ok with accepting this model from the device that it says signed it
+        # now, we just need to check whether or not it is actually signed by that model's private key
         key = self.signed_by.get_public_key()
         try:
             return crypto.verify(self._hashable_representation(), crypto.decode_base64(self.signature), key)
@@ -307,6 +316,8 @@ class FacilityUser(SyncedModel):
 class DeviceZone(SyncedModel):
     device = models.ForeignKey("Device", unique=True)
     zone = models.ForeignKey("Zone", db_index=True)
+    revoked = models.BooleanField(default=False)
+    max_counter = models.IntegerField(blank=True, null=True)
             
     requires_trusted_signature = True
 
@@ -389,7 +400,7 @@ class Device(SyncedModel):
         return self.name or self.id[0:5]
 
     def get_zone(self):
-        zones = self.devicezone_set.all()
+        zones = self.devicezone_set.filter(revoked=False)
         return zones and zones[0].zone or None
     get_zone.short_description = "Zone"
 
@@ -535,7 +546,7 @@ def save_serialized_models(data):
         except ValidationError as e: # the model could not be saved
             
             # keep a running list of models and exceptions, to be stored in purgatory
-            exceptions += "%s: %s\n" % (model.pk, e)
+            exceptions += "%s: %s\n" % (model.object.pk, e)
             unsaved_models.append(model.object)
             
             # if the model is at least properly signed, try incrementing the counter for the signing device
