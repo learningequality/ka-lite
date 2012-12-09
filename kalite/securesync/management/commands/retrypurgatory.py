@@ -13,10 +13,10 @@ class Command(BaseCommand):
             return
 
         for purgatory in purgatories:
-            self.stdout.write("Attempting to save %d models from %s (attempt #%d)...\n" %
-                (purgatory.model_count, purgatory.timestamp, purgatory.retry_attempts))
+            self.stdout.write("Attempting to save %d models (attempt #%d)...\n" %
+                (purgatory.model_count, purgatory.retry_attempts))
             unsaved = save_serialized_models(purgatory)["unsaved_model_count"]
             if unsaved:
-                self.stdout.write("\tThere were %d models that still did not save. :(\n")
+                self.stdout.write("\t%d models still did not save. :(\n" % unsaved)
             else:
                 self.stdout.write("\tAll models were saved successfully! :)\n")
