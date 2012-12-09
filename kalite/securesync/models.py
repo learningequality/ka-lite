@@ -331,10 +331,19 @@ class SyncedLog(SyncedModel):
     data = models.TextField(blank=True)
 
 
+class DeviceManager(models.Manager):
+    
+    def by_zone(self, zone):
+        # get Devices that belong to a particular zone, or are a trusted authority
+        return self.filter(Q(devicezone__zone=zone, devicezone__revoked=False) |
+            Q(devicemetadata__is_trusted=True))
+
 class Device(SyncedModel):
     name = models.CharField(max_length=100, blank=True)
     description = models.TextField(blank=True)
     public_key = models.CharField(max_length=500, db_index=True)
+
+    objects = DeviceManager()
 
     def set_public_key(self, key):
         self.public_key = crypto.serialize_public_key(key)
