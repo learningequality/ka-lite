@@ -72,7 +72,7 @@ class DeviceMetadata(models.Model):
     device = models.OneToOneField("Device", blank=True, null=True)
     is_trusted = models.BooleanField(default=False)
     is_own_device = models.BooleanField(default=False)
-    counter_position = models.IntegerField(default=0)
+    counter_position = models.IntegerField(default=-1)
 
     class Meta:    
         verbose_name_plural = "Device metadata"
