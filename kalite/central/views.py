@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from annoying.decorators import render_to
-from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile
+from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing
 from central.forms import OrganizationForm, ZoneForm, OrganizationInvitationForm
 from securesync.api_client import SyncClient
 from securesync.models import Zone, SyncSession
@@ -55,7 +55,8 @@ def homepage(request):
 
 @render_to("central/landing_page.html")
 def landing_page(request):
-    return {}
+    feed = FeedListing.objects.order_by('-posted_date')[:5]
+    return {"feed": feed}
 
 
 @login_required

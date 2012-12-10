@@ -19,6 +19,8 @@ urlpatterns += patterns('',
    )
 
 if settings.CENTRAL_SERVER:
+    
+    from central.feeds import RssSiteNewsFeed, AtomSiteNewsFeed
 
     urlpatterns += patterns('central.views',
         url(r'^$', 'homepage', {}, 'homepage'), 
@@ -34,6 +36,8 @@ if settings.CENTRAL_SERVER:
         url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'), 
         url(r'^getstarted/$','get_started', {}, 'get_started'),
         url(r'^glossary/$', 'glossary', {}, 'glossary'),
+        url(r'^feeds/rss/$', RssSiteNewsFeed()),
+        url(r'^feeds/atom/$', AtomSiteNewsFeed()),
     )
     
     handler404 = 'main.views.central_404_handler'
