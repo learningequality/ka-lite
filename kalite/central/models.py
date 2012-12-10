@@ -90,3 +90,7 @@ class FeedListing(models.Model):
     def get_absolute_url(self):
         return self.url
     
+class Subscription(models.Model):
+    email = models.EmailField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+    ip = models.CharField(max_length=100, blank=True)
