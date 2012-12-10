@@ -19,11 +19,7 @@ article {
 </style>
 {% endblock basecss %}
 
-{% block basejs %}
-<script type="text/javascript">
-
-</script>
-{% endblock basejs %}
+{% block analytics %}{% include 'analytics.html' %}{% endblock analytics %}
 
 {% block sitewide_navigation %}
 	<span class="dropdown topic-browser-dropdown">
