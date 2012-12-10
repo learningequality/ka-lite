@@ -432,6 +432,10 @@ class Device(SyncedModel):
             return False
 
     def save(self, is_trusted=False, *args, **kwargs):
+        if self.id and self.id != self.get_uuid():
+            raise ValidationError("ID must match device's public key.")
+        if self.signed_by_id and self.signed_by_id != self.id and not self.signed_by.get_metadata().is_trusted:
+            raise ValidationError("Devices must either be self-signed or signed by a trusted authority.")
         super(Device, self).save(*args, **kwargs)
         if is_trusted:
             metadata = self.get_metadata()
@@ -439,8 +443,6 @@ class Device(SyncedModel):
             metadata.save()
 
     def get_uuid(self):
-        if not self.public_key:
-            return uuid.uuid4()
         return uuid.uuid5(ROOT_UUID_NAMESPACE, str(self.public_key)).hex
 
 
