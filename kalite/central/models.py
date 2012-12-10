@@ -78,3 +78,15 @@ class DeletionRecord(models.Model):
     deleter = models.ForeignKey(User, related_name="deletion_actor")
     deleted_user = models.ForeignKey(User, related_name="deletion_recipient", blank=True, null=True)
     deleted_invite = models.ForeignKey(OrganizationInvitation, blank=True, null=True)
+
+
+class FeedListing(models.Model):
+    title = models.CharField(max_length=150)
+    author = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
+    posted_date = models.DateTimeField()
+    url = models.URLField()
+    
+    def get_absolute_url(self):
+        return self.url
+    
