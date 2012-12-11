@@ -554,9 +554,14 @@ li .progress-circle {
     padding: 10px 10px 10px 10px;
     width: 60%;
     
-    /*Layout*/
+    /*Layout*//*
     position: relative;
-    left: 20%;
+    left: 20%;*/
+}
+.subscriberow-spacer-left,
+.subscriberow-spacer-right {
+    width: 20%;
+    visibility: hidden;
 }
 #subscribe_sec .cent-s-by-s{
     float: left;
@@ -582,9 +587,6 @@ li .progress-circle {
 .subscribe-text{
     width: 40%;
     margin-left: 10px;
-}
-.subscribe-text p{
-    margin: 0;
     margin-top: 10px;
     line-height: normal;
     font-size: 13px;
@@ -624,6 +626,9 @@ li .progress-circle {
 /* Relevant to share section */
 #share_sec{
     width: 45%;
+}
+.social_media_sharing a{
+
 }
 
 /* Relevant to contribute section */
@@ -745,11 +750,12 @@ article {
 
             <!-- Second Content Row-->
             <div class="row subscriberow">
+            <div class="col subscriberow-spacer-left"> &nbsp; </div>
             <div id="subscribe_sec" class="col onecol">
                 <div class="cent-s-by-s subscribe-title"><h1>SUBSCRIBE<br/></h1><h2>FOR UPDATES</h2></div>
                 <div class="exclamation cent-s-by-s greenword">!</div>
                 <div class="cent-s-by-s subscribe-text">
-                    <p>We’re constantly updating this software and we’d love to let you know more about what we are developing.</p>
+                    We’re constantly updating this software and we’d love to let you know more about what we are developing.
                 </div>
                 <div class="cent-s-by-s subscribe-form">
                     <form>
@@ -758,12 +764,27 @@ article {
                     </form>
                 </div>
             </div>
+            <div class="col subscriberow-spacer-right"> &nbsp; </div>
             </div>
 
             <!-- Third Content Row-->
             <div class="row">
-            <div id="share_sec" class="col threecol">share</div>
-            <div id="contribute_sec" class="col threecol">contribute</div>
+            <div id="share_sec" class="col threecol social_media_sharing">
+                <div>
+                    <p>Share this project with your friends and colleages.</p>
+                </div>
+                <a>Twitter</a>
+                <a>Facebook</a>
+                <a>LinkedIn</a>
+                <a>Google+</a>
+                <a>Pintrest</a>
+                <a>Reddit</a>
+                <a>The Rest</a>
+            </div>
+            <div id="contribute_sec" class="col threecol">
+                <p><span class="greenword">Contribute</span> to this open-source project.</p>
+                <a>Contibute <span class="contribute-button-subtitle">(via Github)</span></a>
+            </div>
             <div id="donate_sec" class="col threecol">donate</div>
             </div>
 
