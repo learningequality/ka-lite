@@ -634,8 +634,18 @@ li .progress-circle {
     border-color: #DBE6E0;      /* Color: Moon */
     border-style: solid;
 }
-.social_media_sharing a{
-
+#share_sec div{
+    float: left;
+}
+#share-text{
+    width: 24%;
+}
+.share-title{
+    font-size: 22px;
+}
+#share-block{
+    margin-left: 10px;
+    margin-top: 10px;
 }
 
 /* Relevant to contribute section */
@@ -853,28 +863,34 @@ article {
             <!-- Third Content Row-->
             <div class="row">
             <div id="share_sec" class="col threecol social_media_sharing">
-                <div >
-                    <p>Share this project with your friends and colleages.</p>
+                <div id="share-text">
+                    <span class="greenword share-title">Share</span><br/> this project with your friends and colleages.
                 </div>
-                <a>Twitter</a>
-                <a>Facebook</a>
-                <a>LinkedIn</a>
-                <a>Google+</a>
-                <a>Pintrest</a>
-                <a>Reddit</a>
-                <a>The Rest</a>
+                <div id="share-block">
+                    <img src="/static/images/social-fb-t.png" width="101" height="62" alt="FB and twitter" usemap="#socialmap">
+                    <map name="socialmap">
+                        <area shape="rect" coords="0,0,50,62" alt="Facebook" href="http://www.facebook.com/share.php?u=http://bit.ly/RnZgUp">
+                        <area shape="rect" coords="51,0,101,62" alt="Twitter" href="https://twitter.com/intent/tweet?text=KAlite!:+Enabling+the+power+of+Khan+Academy+for+remote+communities+http://bit.ly/RnZgUp">
+                    </map>
+
+                    <div class="g-plus" data-action="share" data-annotation="vertical-bubble" data-height="60" data-href="http://kalite.adhocsync.com/"></div>
+
+                    <a href="http://pinterest.com/pin/create/button/?url=http%3A%2F%2Fkalite.adhocsync.com&media=http%3A%2F%2Fkalite.adhocsync.com%2Fstatic%2Fimages%2Fka-logo-small.png&description=An%20amazing%20project%20to%20bring%20the%20Khan%20Academy%20educational%20experience%20to%20places%20without%20Internet%20access!" class="pin-it-button" count-layout="vertical"><img border="0" src="//assets.pinterest.com/images/PinExt.png" title="Pin It" /></a>
+
+                    <script src="//platform.linkedin.com/in.js" type="text/javascript"> </script> <script type="IN/Share" data-url="kalite.adhocsync.com" data-counter="top"></script>
+                </div>
             </div>
             <div id="contribute_sec" class="col threecol">
                 <div id="contribute-text">
                     Are you skilled at Python, Django, Javascript, QA, HTML, CSS, HW testing or other tools? <span class="greenword">Contribute</span> to this open-source project.
                 </div>
-                <button type="button" id="contribute-button">Contribute<br/><span class="contribute-button-subtitle">(via Github)</span></button>
+                <button id="contribute-button" onClick="window.open('https://github.com/jamalex/ka-lite/blob/master/docs/DEVELOPMENT.md')">Contribute<br/><span class="contribute-button-subtitle">(via Github)</span></button>
             </div>
             <div id="donate_sec" class="col threecol">
                 <div id="donate-text">
                     We are still in the process of setting up ways to accept donations. <span class="greenword" style="font-style: oblique">In the meantime, please consider supporting Khan Academy as it is a great organization that this project aims to support.</span>
                 </div>
-                <button type="button" id="donate-button">Donate</button>
+                <button id="donate-button" onClick="window.open('http://www.khanacademy.org/donate')">Donate</button>
             </div>
             </div>
 
@@ -903,7 +919,15 @@ article {
             </div>
         </div>
     </footer>
-        
+
+<script type="text/javascript">
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+<script type="text/javascript" src="//assets.pinterest.com/js/pinit.js"></script>        
 </body>
 </html>
 
