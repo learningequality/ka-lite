@@ -595,7 +595,7 @@ li .progress-circle {
 .subscribe-form{
     width: 25%;
     margin-left: 10px;
-    margin-top: 10px;
+    margin-top: 5px;
 }
 .subscribe-form form{
     padding: 1px;
@@ -603,11 +603,12 @@ li .progress-circle {
 .subscribe-form input[type=text]{
     border: 1px;
     border-radius: 5px;
-    border-color: #bbb;         /* Color: Light Grey */
+    border-color: #bbb;         /* Color: medium-light Grey */
     border-style: solid;
     padding: 1px;
     padding-left: 3px;
     width: 100%;
+    font-size: 12px;
     
     /*font*/
     color: #555;                /* Color: Medium Grey */
@@ -617,15 +618,21 @@ li .progress-circle {
     background: #78AB46;        /* Color: Pea Green */
     color: white;
     border-width: 1px;
-    border-color: #9CBA7F;      /* Color: Mint Candy*/
+    border-color: #9CBA7F;      /* Color: Mint Candy */
     border-radius: 5px;
     width: 100%;
+    font-size: 14px;
+}
+.subscribe-form input[type=button]:hover{
+    color: #DBE6E0;      /* Color: Moon */
 }
 
 
 /* Relevant to share section */
 #share_sec{
-    width: 45%;
+    width: 37%;
+    border-color: #DBE6E0;      /* Color: Moon */
+    border-style: solid;
 }
 .social_media_sharing a{
 
@@ -633,12 +640,88 @@ li .progress-circle {
 
 /* Relevant to contribute section */
 #contribute_sec{
-    width: 35%;
+    width: 35.5%;
+    padding-left: 10px;
+    border-right: 1px;
+    border-left: 1px;
+    border-color: #DBE6E0;      /* Color: Moon */
+    border-style: solid;
+}
+#contribute_sec div{
+    float: left;
+}
+#contribute-text{
+    line-height: 21px;
+    font-size: 13px;
+    width: 50%;
+    text-align: justify;
+}
+/*button stuff*/
+#contribute-button{
+    background: #78AB46;        /* Color: Pea Green */
+    border-width: 1px;
+    border-color: #9CBA7F;      /* Color: Mint Candy */
+    border-radius: 5px;
+    width: 150px;
+    padding: 10px;
+    padding-top: 12px;
+
+    /* Text */
+    text-align: center;
+}
+#contribute_sec button{
+    color: white;
+    line-height: 14px;
+    font-size: 18px;
+    margin-left: 20px;
+    margin-top: 20px;
+}
+#contribute_sec button:hover{
+    color: #DBE6E0;      /* Color: Moon */
+    line-height: 14px;
+}
+.contribute-button-subtitle{
+    font-size: 10px;
 }
 
 /* Relevant to donate section */
 #donate_sec{
-    width: 19.5%;
+    width: 25%;
+    margin-left: 10px;
+}
+#donate_sec div{
+    float: left;
+}
+#donate-text{
+    margin-top: 4px;
+    line-height: 14px;
+    font-size: 12px;
+    text-align: justify;
+    width: 65%;
+}
+/*button stuff*/
+#donate-button{
+    background: #78AB46;        /* Color: Pea Green */
+    border-width: 1px;
+    border-color: #9CBA7F;      /* Color: Mint Candy */
+    border-radius: 5px;
+    padding: 10px;
+    padding-top: 12px;
+    width: 80px;
+
+    /* Text */
+    text-align: center;
+}
+#donate_sec button{
+    color: white;
+    line-height: 14px;
+    font-size: 14px;
+    margin-left: 10px;
+    margin-top: 20px;
+}
+#donate_sec button:hover{
+    color: #DBE6E0;      /* Color: Moon */
+    line-height: 14px;
 }
 /** Content END **/
 
@@ -770,7 +853,7 @@ article {
             <!-- Third Content Row-->
             <div class="row">
             <div id="share_sec" class="col threecol social_media_sharing">
-                <div>
+                <div >
                     <p>Share this project with your friends and colleages.</p>
                 </div>
                 <a>Twitter</a>
@@ -782,10 +865,17 @@ article {
                 <a>The Rest</a>
             </div>
             <div id="contribute_sec" class="col threecol">
-                <p><span class="greenword">Contribute</span> to this open-source project.</p>
-                <a>Contibute <span class="contribute-button-subtitle">(via Github)</span></a>
+                <div id="contribute-text">
+                    Are you skilled at Python, Django, Javascript, QA, HTML, CSS, HW testing or other tools? <span class="greenword">Contribute</span> to this open-source project.
+                </div>
+                <button type="button" id="contribute-button">Contribute<br/><span class="contribute-button-subtitle">(via Github)</span></button>
             </div>
-            <div id="donate_sec" class="col threecol">donate</div>
+            <div id="donate_sec" class="col threecol">
+                <div id="donate-text">
+                    We are still in the process of setting up ways to accept donations. <span class="greenword" style="font-style: oblique">In the meantime, please consider supporting Khan Academy as it is a great organization that this project aims to support.</span>
+                </div>
+                <button type="button" id="donate-button">Donate</button>
+            </div>
             </div>
 
             </div> <!--end content-->
