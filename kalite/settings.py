@@ -10,6 +10,8 @@ except ImportError:
 DEBUG = hasattr(local_settings, "DEBUG") and local_settings.DEBUG or False
 TEMPLATE_DEBUG = hasattr(local_settings, "TEMPLATE_DEBUG") and local_settings.TEMPLATE_DEBUG or DEBUG
 
+INTERNAL_IPS = ("127.0.0.1",)
+
 CENTRAL_SERVER = hasattr(local_settings, "CENTRAL_SERVER") and local_settings.CENTRAL_SERVER or False
 
 ADMINS = (

@@ -4,7 +4,7 @@ require 'json'
 
 maplayout = open("http://www.khanacademy.org/api/v1/topicversion/default/maplayout").read
 
-File.open("maplayout_data.json", 'w') do |f|
+File.open("../static/data/maplayout_data.json", 'w') do |f|
     f.write(maplayout)
 end
 
@@ -30,7 +30,7 @@ JSON.parse(maplayout)["topics"].each do |k, v|
         excepted = topicdata
     end
 
-    File.open("topicdata/#{k}.json", 'w') do |f|
+    File.open("../static/data/topicdata/#{k}.json", 'w') do |f|
         f.write(excepted)
     end
 end

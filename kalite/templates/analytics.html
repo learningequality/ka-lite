@@ -1,0 +1,56 @@
+{{ settings }}
+{% if not debug and not request.user.is_superuser %}
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-36937407-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+  
+  // track time on site/page more accurately
+  (function (tos) {
+    
+    window.setInterval(function () {
+
+      tos = (function (t) {
+        return t[0] == 50 ? (parseInt(t[1]) + 1) + ':00' : (t[1] || '0') + ':' + (parseInt(t[0]) + 10);
+      })(tos.split(':').reverse());
+
+      window.pageTracker ? pageTracker._trackEvent('Time', 'Log', tos) : _gaq.push(['_trackEvent', 'Time', 'Log', tos]);
+
+    }, 10000);
+    
+  })('00');
+
+  // track outbound link clicks
+  (function($) {
+    $(function() {
+        $('a[href^="http"]:not([href*="' + document.domain + '"])').click(function(e) {
+
+        // When a user clicks an external link
+
+        if ($(this).attr('target') !== '_blank') {
+          e.preventDefault();
+
+          // If the link is not set to target='_blank'
+          // set a 300ms delay before loading this page
+          // which allows Google Analytics to register the event 
+
+          (function(a) {
+            setTimeout(function() {
+              document.location = a.attr('href');
+            },300)
+          })($(this));
+        }
+
+        window.pageTracker ? pageTracker._trackEvent('Outbound', $(this).attr('href'), "#" + $(this).closest('[id!=""]').attr('id')) : _gaq.push(['_trackEvent', 'Outbound', $(this).attr('href'), "#" + $(this).closest('[id!=""]').attr('id')]);
+       });
+     })
+  })(jQuery)
+  
+</script>
+{% endif %}

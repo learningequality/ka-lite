@@ -44,7 +44,7 @@
                 {% endif %}
             </div>
             {% endfor %}
-            <p><a id="add-facility-button" href="{% if is_central %}{% url central_facility_add zone_id=zone_id %}{% else %}{% url facility_edit id="new" %}{% endif %}">Add a new Facility</a><p>
+            <p><a id="add-facility-button" href="new/">Add a new Facility</a><p>
         {% else %}
             <p>You currently have no facilities. Would you like to <a href="new/">create a facility</a>?</p>
         {% endif %}

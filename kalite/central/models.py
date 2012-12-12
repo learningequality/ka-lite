@@ -28,7 +28,7 @@ class Organization(models.Model):
         return list(self.users.all())
 
     def is_member(self, user):
-        return self.users.filter(user=user).count() > 0
+        return self.users.filter(pk=user.pk).count() > 0
 
     def __unicode__(self):
         return self.name
@@ -37,6 +37,7 @@ class Organization(models.Model):
         if not self.owner_id:
             self.owner = owner
         super(Organization, self).save(*args, **kwargs)
+
 
 class UserProfile(models.Model):  
     user = models.OneToOneField(User)
@@ -47,11 +48,11 @@ class UserProfile(models.Model):
     def get_organizations(self):
         return list(self.user.organization_set.all())
 
-
+    
 class OrganizationInvitation(models.Model):
     email_to_invite = models.EmailField(verbose_name="Email of invitee", max_length=75)
     invited_by = models.ForeignKey(User)
-    organization = models.ForeignKey(Organization)
+    organization = models.ForeignKey(Organization, related_name="invitations")
 
     class Meta:
         unique_together = ('email_to_invite', 'organization')
@@ -77,3 +78,19 @@ class DeletionRecord(models.Model):
     deleter = models.ForeignKey(User, related_name="deletion_actor")
     deleted_user = models.ForeignKey(User, related_name="deletion_recipient", blank=True, null=True)
     deleted_invite = models.ForeignKey(OrganizationInvitation, blank=True, null=True)
+
+
+class FeedListing(models.Model):
+    title = models.CharField(max_length=150)
+    author = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
+    posted_date = models.DateTimeField()
+    url = models.URLField()
+    
+    def get_absolute_url(self):
+        return self.url
+    
+class Subscription(models.Model):
+    email = models.EmailField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+    ip = models.CharField(max_length=100, blank=True)

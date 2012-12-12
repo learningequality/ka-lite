@@ -115,9 +115,14 @@ class SyncedModel(models.Model):
             # but it's a model class that requires trusted signatures, verification fails
             if self.requires_trusted_signature:
                 return False
-            # or if it's not in the same zone as our device (or the DeviceZone was revoked), verification fails
-            if not self.signed_by.get_zone() == Device.get_own_device().get_zone():
-                return False
+            if settings.CENTRAL_SERVER:
+                # if it's not in a zone at all (or its DeviceZone was revoked), verification fails
+                if not self.signed_by.get_zone():
+                    return False
+            else:
+                # or if it's not in the same zone as our device (or the DeviceZone was revoked), verification fails
+                if self.signed_by.get_zone() != Device.get_own_device().get_zone():
+                    return False
         # by this point, we know that we're ok with accepting this model from the device that it says signed it
         # now, we just need to check whether or not it is actually signed by that model's private key
         key = self.signed_by.get_public_key()
@@ -331,10 +336,19 @@ class SyncedLog(SyncedModel):
     data = models.TextField(blank=True)
 
 
+class DeviceManager(models.Manager):
+    
+    def by_zone(self, zone):
+        # get Devices that belong to a particular zone, or are a trusted authority
+        return self.filter(Q(devicezone__zone=zone, devicezone__revoked=False) |
+            Q(devicemetadata__is_trusted=True))
+
 class Device(SyncedModel):
     name = models.CharField(max_length=100, blank=True)
     description = models.TextField(blank=True)
     public_key = models.CharField(max_length=500, db_index=True)
+
+    objects = DeviceManager()
 
     def set_public_key(self, key):
         self.public_key = crypto.serialize_public_key(key)
@@ -418,6 +432,10 @@ class Device(SyncedModel):
             return False
 
     def save(self, is_trusted=False, *args, **kwargs):
+        if self.id and self.id != self.get_uuid():
+            raise ValidationError("ID must match device's public key.")
+        if self.signed_by_id and self.signed_by_id != self.id and not self.signed_by.get_metadata().is_trusted:
+            raise ValidationError("Devices must either be self-signed or signed by a trusted authority.")
         super(Device, self).save(*args, **kwargs)
         if is_trusted:
             metadata = self.get_metadata()
@@ -425,8 +443,6 @@ class Device(SyncedModel):
             metadata.save()
 
     def get_uuid(self):
-        if not self.public_key:
-            return uuid.uuid4()
         return uuid.uuid5(ROOT_UUID_NAMESPACE, str(self.public_key)).hex
 
 
