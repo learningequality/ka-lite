@@ -3,12 +3,13 @@ from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from annoying.decorators import render_to
-from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing
+from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
 from central.forms import OrganizationForm, ZoneForm, OrganizationInvitationForm
 from securesync.api_client import SyncClient
 from securesync.models import Zone, SyncSession
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from securesync.models import Facility
 from securesync.forms import FacilityForm
 from django.contrib import messages
@@ -58,6 +59,15 @@ def landing_page(request):
     feed = FeedListing.objects.order_by('-posted_date')[:5]
     return {"feed": feed}
 
+
+@csrf_exempt # because we want the front page to cache properly
+def add_subscription(request):
+    if request.method == "POST":
+        sub = Subscription(email=request.POST.get("email"))
+        sub.ip = request.META.get("HTTP_X_FORWARDED_FOR", request.META.get('REMOTE_ADDR', ""))
+        sub.save()
+        messages.success(request, "A subscription for '%s' was added." % request.POST.get("email"))
+    return HttpResponseRedirect(reverse("homepage"))
 
 @login_required
 def org_invite_action(request, invite_id):
