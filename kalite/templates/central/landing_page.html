@@ -19,15 +19,16 @@
 .subscriberow{
     min-height: 100px;
 }
-.videorow{
+.screenshotrow{
     /*Width works out to be 1038px*/
-    min-height: 290px;
+    min-height: 285px;
+    min-width: 700px;
 }
 /*** Layout END ***/
 
 /** Content Section Containers **/
-/* Relevant to Video Section*/
-#video_sec{
+/* Relevant to screenshot Section*/
+#screenshot_sec{
     /*hi*/
 }
 
@@ -44,10 +45,7 @@
     
     /*Sizing*/
     padding: 20px;
-    padding-top: 20px;
     padding-bottom: 0;
-    width: 46.4%;
-    min-height: 262px; /*account for padding and border 10+10+4+4 = 28 :: 290 - 28 = 262*/
 }
 .greenword{
     color: #78AB46;             /* Color: Pea Green */
@@ -59,11 +57,10 @@
 }
 
 /* Get Started section */
-#second-row {
-    margin-top: 25px;
+#get-started-contribute {
+    margin: 25px auto;
     height: 70px;
-
-    width: 80%;
+    width: 860px;
 }
 #get_started_sec {
     text-align: center;
@@ -71,8 +68,8 @@
 
     /* Size */
     padding-left: 10px;
-    padding-right: 10px;
-    width: 30%;
+    padding-right: 30px;
+    width: 400px;
 
     border-right: 1px;
     border-color: #DBE6E0;      /* Color: Moon */
@@ -85,8 +82,8 @@
     border-width: 1px;
     border-color: #9CBA7F;      /* Color: Mint Candy */
     border-radius: 5px;
-    width: 80%;
-    min-width: 199px;
+    width: 50%;
+    min-width: 150px;
     height: 50px;
     font-size: 24px;
 }
@@ -96,17 +93,18 @@
 
 /* Relevant to contribute section */
 #contribute_sec{
-    width: 60%;
-    margin-left: 10px;
+    /*width: 45%;*/
+    margin-left: 37px;
     /*border-right: 1px;*/      /* Uncomment when donate is back */
 }
 #contribute_sec div{
     float: left;
 }
-#contribute-text{
+#action-text{
+    float: left;
     line-height: 21px;
     font-size: 13px;
-    width: 60%;
+    width: 180px;
     text-align: justify;
 }
 /*button stuff*/
@@ -124,14 +122,13 @@
 }
 #contribute_sec button{
     color: white;
-    line-height: 14px;
-    font-size: 18px;
+    line-height: 16px;
+    font-size: 19px;
     margin-left: 20px;
     margin-top: 5px;
 }
 #contribute_sec button:hover{
     color: #DBE6E0;      /* Color: Moon */
-    line-height: 14px;
 }
 .contribute-button-subtitle{
     font-size: 10px;
@@ -140,6 +137,7 @@
 /* Relevant to subscription section */
 .subscriberow{
     margin-top: 10px;
+    margin-left: 7px;
 }
 #subscribe_sec{
     border-color: #DBE6E0;      /* Color: Moon */
@@ -148,7 +146,7 @@
     /*Size*/
     padding-left: 10px;
     padding-right: 10px;
-    width: 60%;
+    /*width: 60%;*/
     
     /*Layout*//*
     position: relative;
@@ -176,21 +174,27 @@
     margin-left: 3px;
 }
 .subscribe-text{
-    width: 40%;
-    margin-left: 10px;
-    margin-top: 10px;
-    line-height: normal;
+    width: 230px;
+    margin-top: -2px;
+    padding: 0 5px 0 8px;
+    line-height: 21px;
     font-size: 13px;
     text-align: justify;
 }
 .subscribe-form{
-    width: 25%;
+    width: 170px;
     margin-left: 10px;
     margin-top: 5px;
 }
 .subscribe-form form{
     padding: 1px;
 }
+
+.subscribe-form input {
+    height: 22px;
+    width: 130px;
+}
+
 .subscribe-form input[type=text]{
     border: 1px;
     border-radius: 5px;
@@ -198,20 +202,20 @@
     border-style: solid;
     padding: 1px;
     padding-left: 3px;
-    width: 100%;
     font-size: 12px;
+    margin-bottom: 5px;
     
     /*font*/
     color: #555;                /* Color: Medium Grey */
     font-style: oblique;
 }
+
 .subscribe-form input[type=button]{
     background: #78AB46;        /* Color: Pea Green */
     color: white;
     border-width: 1px;
     border-color: #9CBA7F;      /* Color: Mint Candy */
     border-radius: 5px;
-    width: 100%;
     font-size: 14px;
 }
 .subscribe-form input[type=button]:hover{
@@ -220,7 +224,7 @@
 
 /* Relevant to share section */
 #share_sec{
-    width: 37%;
+    /*width: 37%;*/
     border-color: #DBE6E0;      /* Color: Moon */
     border-style: solid;
 }
@@ -236,7 +240,7 @@
 }
 #share-block{
     margin-left: 15px;
-    margin-top: 10px;
+    /*margin-top: 10px;*/
 }
 
 /* Relevant to donate section */
@@ -299,6 +303,45 @@ article {
     display: block;
 }
 
+/* Jamie added */
+
+#screenshot {
+    width: 100%;
+    height: 100%;
+}
+
+.screenshotrow img {
+    height: 274px;
+}
+
+#screenshot_sec {
+    height: 273px;
+    border: 1px solid #d5deb9;
+    border-top-width: 5px;
+    border-bottom-width: 4px;
+    border-left-width: 2px;
+}
+
+#motivation_sec {
+    border-left: 1px solid #d5deb9;
+    width: 480px;
+    min-height: 254px;
+}
+
+.share-subscribe-section {
+    margin-top: 25px;
+    min-width: 300px;
+}
+
+#inner-content {
+    width: 950px;
+    margin: 0 auto;
+}
+
+#motivation_sec h1 {
+    line-height: 1.3em;
+}
+
 </style>
 {% endblock headcss %}
 
@@ -306,69 +349,49 @@ article {
           
 <!--This part of the Landing created by Pratik Bose Pramanik. Contact him if things look bad. -->
 
-<div id="content_rounded"> <!-- start content probably dont need this -->
+<div id="inner-content"> <!-- start content probably don't need this -->
 
 <!--First Content Row-->
-<div class="row videorow">
-    <!-- Video or Image Carousel -->
-    <div id="video_sec" class="col twocol">
-        <embed 
-            width="514" 
-            height="290" 
-            src="http://www.youtube.com/embed/34n6s-17AsM?showinfo=0&modestbranding=0"
-            frameborder="0"  
-            allowfullscreen>
-        </embed>
+<div class="screenshotrow">
+    <!-- screenshot or Image Carousel -->
+    <div id="screenshot_sec" class="col twocol">
+        <img src="{{ MEDIA_URL }}images/landing-page/coach-reports-cropped.png">
     </div>
     <!-- Motivation -->
     <div id="motivation_sec" class="col twocol">
-        <h1>Only 30% of the world has access to the Internet.<br/>100% of the world needs an education.</h1>
+        <h1>Only 30% of the world has internet.<br/>100% of the world needs education.</h1>
         <p><span class="greenword">KA<em>lite!</em></span> lets remote communities get the benefit of the electronic education movement revolution.</p>
         <ul>
-            <li>Access to more cirriculum than any other format.</li>
+            <li>Access to more curriculum than any other format.</li>
             <li>Minimal resources to get up and running. Can be served from a RPi or other low-cost computer capable of running Apache or WSGI.</li>
             <li>Enable students anywhere. Sync once and educate!</li>
         </ul>
     </div>
 </div>
 
-<!-- Second Content Row  - Get Started and Contribute -->
-<div id="second-row" class="row">
-
-    <div id="get_started_sec" class="col">
-        <button id="get-started-button" onClick="window.open('https://github.com/jamalex/ka-lite/blob/master/INSTALL.md')"> Get Started! </button>
-    </div>
-
-    <div id="contribute_sec" class="col">
-        <div id="contribute-text">
-            Are you skilled at Python, Django, Javascript, HTML, CSS, QA, cryptyography or networking? <span class="greenword">Contribute</span> to this open-source project.
-        </div>
-        <button id="contribute-button" onClick="window.open('https://github.com/jamalex/ka-lite/blob/master/docs/DEVELOPMENT.md')">Contribute<br/><span class="contribute-button-subtitle">(via Github)</span></button>
-    </div>
-
-</div>
-
-<!-- Third Content Row - Subscribe and Share -->
+<!-- Second Content Row - Subscribe and Share -->
 <div class="row subscriberow">
 
-    <div id="subscribe_sec" class="col onecol">
+    <div id="subscribe_sec" class="col onecol share-subscribe-section">
         <div class="cent-s-by-s subscribe-title"><h1>SUBSCRIBE<br/></h1><h2>FOR UPDATES</h2></div>
         <div class="exclamation cent-s-by-s greenword">!</div>
         <div class="cent-s-by-s subscribe-text">
-            We’re constantly updating this software and we’d love to let you know more about what we are developing.
+            We’re constantly updating KA Lite and we’d love to let you know more when there are new developments.
         </div>
         <div class="cent-s-by-s subscribe-form">
             <form>
-                <input type="text" name="email" value="email address"><br/>
+                <input type="text" name="email" placeholder="email address"><br/>
                 <input type="button" value="Subscribe">
             </form>
         </div>
     </div>
 
-    <div id="share_sec" class="col social_media_sharing">
-        <div id="share-text">
+    <div id="share_sec" class="col social_media_sharing share-subscribe-section">
+        <!--<div class="cent-s-by-s subscribe-title"><h1>SHARING<br/></h1><h2>IS CARING</h2></div>
+        <div class="exclamation cent-s-by-s greenword">!</div>-->
+        <!--<div id="share-text">
             <span class="greenword share-title">SHARE</span>
-        </div>
+        </div>-->
         <div id="share-block">
             <!-- FB and Twitter -->
             <img src="/static/images/social-fb-t.png" width="101" height="62" alt="FB and twitter" usemap="#socialmap">
@@ -380,15 +403,36 @@ article {
             <!-- G+ -->
             <div class="g-plus" data-action="share" data-annotation="vertical-bubble" data-height="60" data-href="http://kalite.adhocsync.com/"></div>
 
+            <!-- LinkedIN -->
+            <script src="//platform.linkedin.com/in.js" type="text/javascript"> </script> <script type="IN/Share" data-url="kalite.adhocsync.com" data-counter="top"></script>
+
             <!-- Pinterest -->
             <a href="http://pinterest.com/pin/create/button/?url=http%3A%2F%2Fkalite.adhocsync.com&media=http%3A%2F%2Fkalite.adhocsync.com%2Fstatic%2Fimages%2Fka-logo-small.png&description=An%20amazing%20project%20to%20bring%20the%20Khan%20Academy%20educational%20experience%20to%20places%20without%20Internet%20access!" class="pin-it-button" count-layout="vertical"><img border="0" src="//assets.pinterest.com/images/PinExt.png" title="Pin It" /></a>
 
-            <!-- LinkedIN -->
-            <script src="//platform.linkedin.com/in.js" type="text/javascript"> </script> <script type="IN/Share" data-url="kalite.adhocsync.com" data-counter="top"></script>
         </div>
     </div>
 
 </div>
+
+<!-- Third Content Row  - Get Started and Contribute -->
+<div id="get-started-contribute" class="row">
+
+    <div id="get_started_sec" class="col">
+        <div id="action-text">
+            Do you have a computer you'd like to install this on? Don't worry, it's easy!
+        </div>
+        <a href="https://github.com/jamalex/ka-lite/blob/master/INSTALL.md" target="_blank"><button id="get-started-button">Get Started!</button></a>
+    </div>
+
+    <div id="contribute_sec" class="col">
+        <div id="action-text">
+            Do you have any skills you'd like to contribute to this open-source project?
+        </div>
+        <a href="https://github.com/jamalex/ka-lite/blob/master/docs/DEVELOPMENT.md" target="_blank"><button id="contribute-button">Contribute<br/><span class="contribute-button-subtitle">(via Github)</span></button></a>
+    </div>
+
+</div>
+
 
 </div> <!--end promo content-->
 
