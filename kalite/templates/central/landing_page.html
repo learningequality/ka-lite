@@ -2,6 +2,8 @@
 
 {% block home_selected %}selected{% endblock home_selected %}
 
+{% block title %}Home{% endblock %}
+
 {% block headcss %}
 <style type="text/css">
 
@@ -45,6 +47,7 @@
     
     /*Sizing*/
     padding: 20px;
+    padding-right: 10px;
     padding-bottom: 0;
 }
 .greenword{
@@ -291,7 +294,7 @@
     margin: 25px auto;
     min-height: 70px;
     width: 860px;
-    padding-top: 15px;
+    padding-top: 25px;
 
     border-top: 1px dashed #DBE6E0; /* Color: Moon */
 }
@@ -354,9 +357,9 @@ article {
 }
 
 #screenshot_sec {
-    height: 273px;
+    height: 274px;
     border: 1px solid #d5deb9;
-    border-top-width: 5px;
+    border-top-width: 4px;
     border-bottom-width: 4px;
     border-left-width: 2px;
 }
@@ -381,6 +384,10 @@ article {
     line-height: 1.3em;
 }
 
+.rss-feed-icon {
+    margin-top: -5px;
+}
+
 </style>
 {% endblock headcss %}
 
@@ -398,12 +405,15 @@ article {
     </div>
     <!-- Motivation -->
     <div id="motivation_sec" class="col twocol">
-        <h1>Only 30% of the world has internet.<br/>100% of the world needs education.</h1>
-        <p><span class="greenword">KA<em>lite!</em></span> lets remote communities get the benefit of the electronic education movement revolution.</p>
+        <h1>Only 35% of the world has internet.<br/>100% of the world needs education.</h1>
+        <p>KA Lite is an offline version of Khan Academy that runs on almost anything.
+            
+            </p>
         <ul>
-            <li>Access to more curriculum than any other format.</li>
-            <li>Minimal resources to get up and running. Can be served from a RPi or other low-cost computer capable of running Apache or WSGI.</li>
-            <li>Enable students anywhere. Sync once and educate!</li>
+            <li>Bringing the online education revolution to rural communities</li>
+            <li>Synchronize and manage your organization's deployments centrally.</li>
+            <li>Quick installation, minimal system requirements, and simple to use.</li>
+            <li>Students can earn points, teacher can view coach reports.</li>
         </ul>
     </div>
 </div>
@@ -460,7 +470,7 @@ article {
         <div id="action-text">
             Do you have a computer you'd like to install this on? Don't worry, it's easy!
         </div>
-        <a href="https://github.com/jamalex/ka-lite/blob/master/INSTALL.md" target="_blank"><button id="get-started-button">Get Started!</button></a>
+        <a href="{% url get_started %}"><button id="get-started-button">Get Started!</button></a>
     </div>
 
     <div id="contribute_sec" class="col">
@@ -472,15 +482,15 @@ article {
 
 </div>
 
-
 </div> <!--end promo content-->
 
+{% if feed %}
 <div id="bottom_content" class="row">  
     <div id="rss-logo">
-        <a href="./feeds/rss/"><img src="/static/images/rssfeed.png"></img></a>
+        <a href="{% url rss_feed %}"><img class="rss-feed-icon" src="{{ STATIC_URL }}images/rssfeed.jpg"/></a>
     </div>
     <div id="rss-feed">
-        <h2>Newsfeed</h2>
+        <h2>Read more!</h2>
         {% for entry in feed %}
             <div class="rss-entry"><span class="rss-title"><a href="{{ entry.url }}" target="_blank" title="{{ entry.description }}">{{entry.title}}</a></span> 
                 {% if entry.description|length >= 1000 %}
@@ -495,6 +505,7 @@ article {
     <div id="press-col">
     </div>
 </div>
+{% endif %}
 <!-- Pratik didn't touch stuff after this -->
 {% endblock content %}
 

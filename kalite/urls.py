@@ -36,8 +36,8 @@ if settings.CENTRAL_SERVER:
         url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'), 
         url(r'^getstarted/$','get_started', {}, 'get_started'),
         url(r'^glossary/$', 'glossary', {}, 'glossary'),
-        url(r'^feeds/rss/$', RssSiteNewsFeed()),
-        url(r'^feeds/atom/$', AtomSiteNewsFeed()),
+        url(r'^feeds/rss/$', RssSiteNewsFeed(), {}, 'rss_feed'),
+        url(r'^feeds/atom/$', AtomSiteNewsFeed(), {}, 'atom_feed'),
     )
     
     handler404 = 'main.views.central_404_handler'
