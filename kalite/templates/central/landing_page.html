@@ -155,7 +155,8 @@
 #subscribe_sec .cent-s-by-s{
     float: left;
 }
-.subscribe-title h1,h2{
+.subscribe-title h1,
+.subscribe-title h2{
     color: #78AB46;             /* Color: Pea Green */
     font-weight: bold;
     line-height: normal;
@@ -175,7 +176,7 @@
 }
 .subscribe-text{
     width: 230px;
-    margin-top: -2px;
+    margin-top: 0px;
     padding: 0 5px 0 8px;
     line-height: 21px;
     font-size: 13px;
@@ -280,10 +281,48 @@
     margin-top: 20px;
 }
 #donate_sec button:hover{
-    color: #DBE6E0;      /* Color: Moon */
+    color: #DBE6E0;             /* Color: Moon */
     line-height: 14px;
 }
 /** Content END **/
+
+/* RSS Feed relevant stuff */
+#bottom_content{
+    margin: 25px auto;
+    min-height: 70px;
+    width: 860px;
+    padding-top: 15px;
+
+    border-top: 1px dashed #DBE6E0; /* Color: Moon */
+}
+#rss-logo{
+    float: left;
+    margin-left: 10px;
+}
+#rss-feed{
+    float: left;
+    min-width: 400px;
+    max-width: 500px;
+    margin-left: 10px;
+}
+#rss-feed h2{
+    font-size: 22px;
+}
+.rss-entry {
+    margin-bottom: 10px;
+}
+.rss-title{
+    display: block;
+    font-size: 16px;
+    color: #333;
+    padding-bottom: 1px;
+    margin-bottom: 0;
+    border-bottom: 1px dotted #DBE6E0; /* Color: Moon */
+}
+.rss-entry p{
+    margin: 1px 0;
+    font-size: 
+}
 
 /*** Landing Page END */
 
@@ -436,8 +475,25 @@ article {
 
 </div> <!--end promo content-->
 
-<div id="bottom_content">
+<div id="bottom_content" class="row">  
+    <div id="rss-logo">
+        <a href="./feeds/rss/"><img src="/static/images/rssfeed.png"></img></a>
+    </div>
+    <div id="rss-feed">
+        <h2>Newsfeed</h2>
+        {% for entry in feed %}
+            <div class="rss-entry"><span class="rss-title"><a href="{{ entry.url }}" target="_blank" title="{{ entry.description }}">{{entry.title}}</a></span> 
+                {% if entry.description|length >= 1000 %}
+                    <p>{{ entry.description|slice:":500" }}<a href="{{ entry.url }}" target="_blank" title="{{ entry.description }}">...</a></p>
+                {% else %}
+                    <p>{{ entry.description }}</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
 
+    <div id="press-col">
+    </div>
 </div>
 <!-- Pratik didn't touch stuff after this -->
 {% endblock content %}
