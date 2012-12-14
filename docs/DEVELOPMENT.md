@@ -1,7 +1,7 @@
 How to contribute
 ===
 
-Firstly, thank you for being willing to offer your time to contribute to the KA Lite efforts! The project is run by volunteers dedicated to helping make educational materials more accessible to those in need, and every contribution makes a difference.
+Firstly, thank you for being willing to offer your time to contribute to the KA Lite efforts! The project is run by volunteers dedicated to helping make educational materials more accessible to those in need, and every contribution makes a difference. Feel free to follow the instructions below to start playing with the codebase, but you'll probably want to [contact us](http://jamiealexandre.com/contact/) to figure out what would be good for you to work on.
 
 ### Getting started
 
@@ -22,6 +22,10 @@ KA Lite is designed to function reasonably well on low power devices (such as a 
 ### CSS
 
 The file `khan-site.css` is from khan-exercises, and we don't want to modify it, in case we want to update it from there in the future. Instead, most CSS styling goes in khan-lite.css, and will override any styles defined in `khan-site.css`. For styles that will only ever be used on a single page, they can be defined in a `<style>` block inside `{% block headcss %}`. Avoid using inline (tag attribute) styles at all costs.
+
+### Python dependencies
+
+Because we want an extremely low friction cross-platform installation process, we do not want to depend on any Python libraries that are not pure Python. Then, the package itself can be fully included in the download package without worrying about what platform it was compiled for.
 
 ### Python
 

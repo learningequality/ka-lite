@@ -39,6 +39,8 @@ class RegistrationForm(forms.Form):
                                 label=_("Password"))
     password2 = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict, render_value=False),
                                 label=_("Password (again)"))
+    tos1 = forms.BooleanField(required=False)
+    tos2 = forms.BooleanField(required=False)
     
     def clean_username(self):
         """
@@ -46,6 +48,14 @@ class RegistrationForm(forms.Form):
         
         """
         return self.cleaned_data['email']
+
+    def clean_tos1(self):
+        if not self.cleaned_data['tos1']:
+            raise forms.ValidationError(_("You must acknowledge having read these terms."))
+
+    def clean_tos2(self):
+        if not self.cleaned_data['tos2']:
+            raise forms.ValidationError(_("You must acknowledge having read these terms."))
 
     def clean(self):
         """
