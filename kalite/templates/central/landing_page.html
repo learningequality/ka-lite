@@ -3,7 +3,22 @@
 {% block home_selected %}selected{% endblock home_selected %}
 
 {% block title %}Home{% endblock %}
-
+{% block extrahead %}
+<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.8.3.min.js"></script> 
+<script type="text/javascript" src="{{ MEDIA_URL }}js/simple.carousel.js"></script> 
+<script type="text/javascript">
+    jQuery(document).ready(function() {
+        $(".carousel-class").simplecarousel({
+            next: $('.next'),
+            prev: $('.prev'),
+            slidespeed: 700,
+            auto: 8000,
+            width: 470,
+            height: 337
+        });
+    });
+</script>
+{% endblock extrahead %}
 {% block headcss %}
 <style type="text/css">
 
@@ -366,7 +381,7 @@ article {
 
 #motivation_sec {
     border-left: 1px solid #d5deb9;
-    width: 480px;
+    width: 445px;
     min-height: 254px;
 }
 
@@ -401,7 +416,12 @@ article {
 <div class="screenshotrow">
     <!-- screenshot or Image Carousel -->
     <div id="screenshot_sec" class="col twocol">
-        <img src="{{ MEDIA_URL }}images/landing-page/coach-reports-cropped.png">
+        <ul class="carousel-class">
+            <li class="carousel-pic"><img src="{{ MEDIA_URL }}images/landing-page/coach-reports-cropped.png"></li>
+            <li class="carousel-pic"><img src="{{ MEDIA_URL }}images/landing-page/exercises-cropped.png"></li>
+            <li class="carousel-pic"><img src="{{ MEDIA_URL }}images/landing-page/subtitle-mashup.png"></li>
+            <li class="carousel-pic"><img src="{{ MEDIA_URL }}images/landing-page/vid-down-cropped.png"></li>
+        </ul>
     </div>
     <!-- Motivation -->
     <div id="motivation_sec" class="col twocol">
@@ -517,6 +537,6 @@ article {
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
   })();
 </script>
-<script type="text/javascript" src="//assets.pinterest.com/js/pinit.js"></script>        
+<script type="text/javascript" src="//assets.pinterest.com/js/pinit.js"></script>
 {% endblock bodyjs %}
 
