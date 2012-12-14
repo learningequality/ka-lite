@@ -26,7 +26,7 @@ kind_slugs = {
     "Topic": ""
 }
 
-kind_blacklist = [None, "Separator", "CustomStack"]
+kind_blacklist = [None, "Separator", "CustomStack", "Scratchpad"]
 
 slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res"]
 
