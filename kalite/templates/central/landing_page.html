@@ -15,7 +15,7 @@
     margin: 0 auto;
     overflow: hidden;
 }
-.col{
+.col, .floatleft{
     float: left;
 }
 .subscriberow{
@@ -62,24 +62,22 @@
 /* Get Started section */
 #get-started-contribute {
     margin: 25px auto;
-    height: 70px;
-    width: 860px;
+    height: auto;
+    width: 100%;
 }
 #get_started_sec {
-    text-align: center;
     padding-bottom: 15px;
 
     /* Size */
     padding-left: 10px;
-    padding-right: 30px;
-    width: 400px;
-
+    /*padding-right: 30px;*/
+    width: 60%;
+    height: auto;
     border-right: 1px;
     border-color: #DBE6E0;      /* Color: Moon */
     border-style: solid;
 }
 #get-started-button{
-    margin-top: 5px;
     background: #78AB46;        /* Color: Pea Green */
     color: white;
     border-width: 1px;
@@ -99,16 +97,22 @@
     /*width: 45%;*/
     margin-left: 37px;
     /*border-right: 1px;*/      /* Uncomment when donate is back */
+
+    width: 30%;
+    height: auto;
 }
 #contribute_sec div{
     float: left;
 }
-#action-text{
+.action-text{
+    font-weight: bold;
     float: left;
     line-height: 21px;
     font-size: 13px;
-    width: 180px;
+    width: 50%;
+    margin-right: 30px;
     text-align: justify;
+    margin-left: 50px;
 }
 /*button stuff*/
 #contribute-button{
@@ -119,15 +123,15 @@
     width: 150px;
     padding: 10px;
     padding-top: 12px;
+    left: 20px;
+    position: relative;
 
-    /* Text */
-    text-align: center;
 }
 #contribute_sec button{
     color: white;
     line-height: 16px;
     font-size: 19px;
-    margin-left: 20px;
+    /*margin-left: 20px;*/
     margin-top: 5px;
 }
 #contribute_sec button:hover{
@@ -274,7 +278,7 @@
     width: 80px;
 
     /* Text */
-    text-align: center;
+    /*text-align: center;*/
 }
 #donate_sec button{
     color: white;
@@ -394,6 +398,30 @@ article {
     margin-left: 44px;
 }
 
+/* Dylan's extra, apart from what I changed above (sorry... rush to launch) */
+.mini-action-section {
+    width: 48%;
+    float: left;
+    margin-right: 10px;
+}
+
+.button-section, #get_started_sec > h2, #contribute_sec > h2 {
+    margin-left: 40px;
+}
+
+.button-section > #contribute-button {
+    position: relative;
+    left: 50px;
+} 
+
+.button-section button {
+    margin-top: 10px;
+}
+
+#left-bump {
+    margin-left: 85px;
+}
+
 </style>
 {% endblock headcss %}
 
@@ -453,7 +481,7 @@ article {
             <img src="/static/images/social-fb-t.png" width="101" height="62" alt="FB and twitter" usemap="#socialmap">
             <map name="socialmap">
                 <area shape="rect" coords="0,0,50,62" alt="Facebook" href="http://www.facebook.com/share.php?u=http://bit.ly/RnZgUp">
-                <area shape="rect" coords="51,0,101,62" alt="Twitter" href="https://twitter.com/intent/tweet?text=KAlite!:+Enabling+the+power+of+Khan+Academy+for+remote+communities+http://bit.ly/RnZgUp">
+                <area shape="rect" coords="51,0,101,62" alt="Twitter" href="https://twitter.com/intent/tweet?text=KA+Lite%2C+an+offline+version+of+Khan+Academy+for+rural+schools&url=http%3A%2F%2Fkalite.adhocsync.com%2F">
             </map>
 
             <!-- G+ -->
@@ -472,19 +500,46 @@ article {
 
 <!-- Third Content Row  - Get Started and Contribute -->
 <div id="get-started-contribute" class="row">
-
-    <div id="get_started_sec" class="col">
-        <div id="action-text">
-            Do you have a computer you'd like to install this on? Don't worry, it's easy!
+    <div id="get_started_sec" class="floatleft">
+        <h2>
+            Know somewhere that KA Lite could be useful?
+        </h2>
+        <div class="mini-action-section">
+            <div class="action-text">
+                Ready to get started? 
+            </div>
+            <div class="button-section">
+                <a href="{% url get_started %}">
+                    <button id="get-started-button">
+                        Install now!
+                    </button>
+                </a>
+            </div>
         </div>
-        <a href="{% url get_started %}"><button id="get-started-button">Get Started!</button></a>
+        <div class="mini-action-section">
+            <div class="action-text">
+                Want to talk further?
+            </div>
+            <div class="button-section">
+                <a href="https://docs.google.com/spreadsheet/viewform?formkey=dEhEOWRNVDBzWTdsUnFQYWlCWnZoWWc6MQ">
+                    <button id="get-started-button">
+                        Let us know!
+                    </button>
+                </a>
+            </div>
+        </div>
     </div>
 
-    <div id="contribute_sec" class="col">
-        <div id="action-text">
-            Do you have any skills you'd like to contribute to this open-source project?
+    <div id="contribute_sec" class="floatleft">
+        <h2>
+            Want to contribute?
+        </h2>
+        <div class="action-text" id="left-bump">
+            We'd love help!
         </div>
-        <a href="https://github.com/jamalex/ka-lite/blob/master/docs/DEVELOPMENT.md" target="_blank"><button id="contribute-button">Contribute<br/><span class="contribute-button-subtitle">(via Github)</span></button></a>
+        <div class="button-section">
+            <a href="https://github.com/jamalex/ka-lite/blob/master/docs/DEVELOPMENT.md" target="_blank"><button id="contribute-button">Contribute<br/><span class="contribute-button-subtitle">(via Github)</span></button></a>
+        </div>
     </div>
 
 </div>
