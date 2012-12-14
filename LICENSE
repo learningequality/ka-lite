@@ -1,0 +1,57 @@
+------------------------------------------------------------------------------
+For the KA Lite software:
+------------------------------------------------------------------------------
+
+The KA Lite software itself is MIT licensed (see http://opensource.org/licenses/MIT):
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+------------------------------------------------------------------------------
+For the khan-exercises framework:
+------------------------------------------------------------------------------
+
+While the framework is MIT licensed, the exercises are licensed separately under a Creative Commons Attribution/Non-Commercial/Share-Alike License.
+
+See: https://khan-exercises.readthedocs.org/en/latest/#small-print
+
+
+------------------------------------------------------------------------------
+For the Khan Academy content (exercises and videos):
+------------------------------------------------------------------------------
+Unless otherwise indicated, all Licensed Educational Content is the property of Khan Academy or its subsidiaries or affiliated companies and/or third-party licensors and, subject to the terms and conditions of these Terms, is licensed to You under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0 United States License (available at http://creativecommons.org/licenses/by-nc-sa/3.0/us/) (the “Creative Commons License”).
+
+See: http://www.khanacademy.org/about/tos#7
+
+
+------------------------------------------------------------------------------
+For the Python packages found under "ka-lite/python-packages":
+(please alert us to any discrepancies)
+------------------------------------------------------------------------------
+
+Under the New BSD license (http://opensource.org/licenses/BSD-3-Clause):
+django
+django-chronograph
+django-annoying
+django_extensions
+GitPython
+django-postmark
+pyasn1
+werkzeug
+
+Under the Simplified BSD license:
+dateutil
+
+Under the MIT license:
+iso8601
+
+Under the ISC license (http://opensource.org/licenses/isc-license):
+requests
+
+Under the ASL license v2 (http://www.apache.org/licenses/LICENSE-2.0.html):
+rsa
+south

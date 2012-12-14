@@ -14,48 +14,77 @@ label {
 .submit {
     margin-left: 71px;
 }
+.errorlist {
+    /*position: relative;*/
+    margin-top: -20px;
+    margin-bottom: 0;
+}
 </style>
 {% endblock headcss %}
 
 {% block content %}
 
-  {% if form.errors %}
-  <p class="errors">Please correct the errors below: {{ form.non_field_errors }}</p>
+  {% if form.non_field_errors %}
+  <div class="errorlist">Please correct the errors below: {{ form.non_field_errors }}</div>
   {% endif %}
 
   <h1>Create an account</h1>
   
-  <form method="post" action="" class="wide">
+  <form method="post" action="" class="wide basic-form">
 	{% csrf_token %}
     <input type="hidden" name="username"/>
     <p>
       <label for="id_first_name">First Name:</label>
       {{ form.first_name }}
+      {% if form.first_name.errors %}
+        <div class="errorlist">{{ form.first_name.errors.as_text }}</div>
+      {% endif %}
     </p>
     <p>
       <label for="id_last_name">Last Name:</label>
       {{ form.last_name }}
+      {% if form.last_name.errors %}
+        <div class="errorlist">{{ form.last_name.errors.as_text }}</div>
+      {% endif %}
     </p>
     <p>
       <label for="id_email">Email address:</label>
-      {% if form.email.errors %}
-        <p class="errors">{{ form.email.errors.as_text }}</p>
-      {% endif %}
       {{ form.email }}
+      {% if form.email.errors %}
+        <div class="errorlist">{{ form.email.errors.as_text }}</div>
+      {% endif %}
     </p>
     <p>
       <label for="id_password1">Password:</label>
-      {% if form.password1.errors %}
-        <p class="errors">{{ form.password1.errors.as_text }}</p>
-      {% endif %}
       {{ form.password1 }}
+      {% if form.password1.errors %}
+        <div class="errorlist">{{ form.password1.errors.as_text }}</div>
+      {% endif %}
     </p>
     <p>
       <label for="id_password2">Password (again):</label>
-      {% if form.password2.errors %}
-        <p class="errors">{{ form.password2.errors.as_text }}</p>
-      {% endif %}
       {{ form.password2 }}
+      {% if form.password2.errors %}
+        <div class="errorlist">{{ form.password2.errors.as_text }}</div>
+      {% endif %}
+    </p>
+    <p>
+      <label for="id_tos1"></label>
+      {{ form.tos1 }}
+      I acknowledge that the Khan Academy videos and exercises used within KA Lite are for
+      <a href="http://www.khanacademy.org/about/tos#7" target="_blank">non-commercial purposes only</a>.
+      {% if form.tos1.errors %}
+        <div class="errorlist">{{ form.tos1.errors.as_text }}</div>
+      {% endif %}
+    </p>
+    <p>
+      <label for="id_tos2"></label>
+      {{ form.tos2 }}
+      I acknowledge having read the <a href="http://www.khanacademy.org/about/api-tos" target="_blank">
+      Khan Academy API terms of service</a>, and that KA Lite uses this API.
+      {% if form.tos2.errors %}
+        <div class="errorlist">{{ form.tos2.errors.as_text }}</div>
+      {% endif %}
     </p>
     <p class="submit"><input class="submit" type="submit" value="Register &rarr;"></p>
   </form>
