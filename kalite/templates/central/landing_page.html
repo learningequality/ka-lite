@@ -11,11 +11,11 @@
 <script type="text/javascript">
     jQuery(document).ready(function() {
         $(".carousel-class").simplecarousel({
-            next: $('.next'),
-            prev: $('.prev'),
+            next: $('#next-button'),
+            prev: $('#prev-button'),
             slidespeed: 700,
             auto: 8000,
-            width: 470,
+            width: 420,
             height: 337
         });
     });
@@ -65,7 +65,8 @@
     /*Sizing*/
     padding: 15px;
     padding-right: 10px;
-    padding-bottom: 0;
+    padding-bottom: 6px;
+    padding-left: 25px;
 }
 .greenword{
     color: #78AB46;             /* Color: Pea Green */
@@ -374,7 +375,7 @@ article {
 }
 
 #screenshot_sec {
-    height: 274px;
+    height: 275px;
     border: 1px solid #d5deb9;
     border-top-width: 4px;
     border-bottom-width: 4px;
@@ -401,6 +402,10 @@ article {
     line-height: 1.3em;
 }
 
+.motivation_text {
+    font-size: 13px;
+}
+
 .rss-feed-icon {
     margin-top: -5px;
 }
@@ -412,7 +417,34 @@ article {
 }
 
 #next-button, #prev-button {
-    background-image: 
+    background-image: url("{{ MEDIA_URL }}images/landing-page/arrows.png");
+    background-repeat: no-repeat;
+    margin-top: -25px;
+    width: 39px;
+    height: 40px;
+    position: absolute;
+}
+
+#next-button {
+    right: -20px;
+    background-position: left -40px;
+    width: 40px;
+}
+
+#prev-button {
+    left: -20px;
+    background-position: left top;
+    width: 40px;
+}
+
+#button-sec {
+    position: absolute;
+    margin-top: 145px;
+    width: 422px;
+}
+
+.carousel-pic {
+    /*margin-left: 5px;*/
 }
 
 </style>
@@ -427,28 +459,30 @@ article {
 <!--First Content Row-->
 <div class="screenshotrow">
     <!-- screenshot or Image Carousel -->
-    <span id="next-button"></span>
-    <span id="prev-button"></span>
     <div id="screenshot_sec" class="col twocol">
+        <div id="button-sec">
+            <span id="prev-button"></span>
+            <span id="next-button"></span>
+        </div>
         <ul class="carousel-class">
-            <li class="carousel-pic"><img src="{{ MEDIA_URL }}images/landing-page/coach-reports-cropped.png"></li>
             <li class="carousel-pic"><img src="{{ MEDIA_URL }}images/landing-page/exercises-cropped.png"></li>
             <li class="carousel-pic"><img src="{{ MEDIA_URL }}images/landing-page/subtitle-mashup.png"></li>
             <li class="carousel-pic"><img src="{{ MEDIA_URL }}images/landing-page/vid-down-cropped.png"></li>
+            <li class="carousel-pic"><img src="{{ MEDIA_URL }}images/landing-page/coach-reports-cropped.png"></li>
         </ul>
     </div>
     <!-- Motivation -->
     <div id="motivation_sec" class="col twocol">
         <h1>Only 35% of the world has internet.<br/>100% of the world needs education.</h1>
-        <p>KA Lite is an offline version of <a href="http://www.khanacademy.org/" target="_blank">Khan Academy</a> that runs on almost anything.
+        <p class="motivation_text">KA Lite is an offline version of <a href="http://www.khanacademy.org/" target="_blank">Khan Academy</a> that runs on almost anything.
             
             </p>
         <ul>
-            <li>Bringing the online education revolution to rural communities.</li>
-            <li>Synchronize and manage your organization's deployments centrally.</li>
-            <li>Quick installation, minimal system requirements, and simple to use.</li>
-            <li>Students can earn points, teacher can view coach reports.</li>
-            <li>Choose which videos to download, and languages for subtitles.</li>
+            <li class="motivation_text">Bringing the online education revolution to rural communities.</li>
+            <li class="motivation_text">Synchronize and manage your organization's deployments centrally.</li>
+            <li class="motivation_text">Quick installation, minimal system requirements, and simple to use.</li>
+            <li class="motivation_text">Students can earn points, teacher can view coach reports.</li>
+            <li class="motivation_text">Choose which videos to download, and languages for subtitles.</li>
         </ul>
     </div>
 </div>
