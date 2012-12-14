@@ -23,5 +23,5 @@ admin.site.register(FeedListing, FeedListingAdmin)
 
 
 class SubscriptionAdmin(admin.ModelAdmin):
-    list_display = ("email", "ip",)
+    list_display = ("email", "timestamp", "ip",)
 admin.site.register(Subscription, SubscriptionAdmin)
