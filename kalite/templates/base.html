@@ -7,7 +7,9 @@
         {% block basecss %}{% endblock basecss %}
         {% block headcss %}{% endblock headcss %}
         <link rel="shortcut icon" href="{{ MEDIA_URL }}images/favicon.ico">
+        {% block jqueryjs %}
         <script src="{{ MEDIA_URL }}js/jquery.js"></script>
+        {% endblock jqueryjs %}
         <script src="{{ MEDIA_URL }}js/khan-lite.js"></script>
         {% block headjs %}{% endblock headjs %}
         {% block basejs %}{% endblock basejs %}
