@@ -9,13 +9,17 @@ if [ -f "database/data.sqlite" ]; then
     exit 1
 fi
 
-python_installed=`command -v python`
-if [ $python_installed ]; then
-    python_ver_ok=`python -c 'import sys; print(sys.version_info[0]==2 and sys.version_info[1] >= 5 and 1 or 0)'`
-    if [ $python_ver_ok != '1' ]; then
+pyexec=`command -v python2`
+if [[ ! -e $pyexec ]]; then
+    pyexec=`command -v python` 
+fi
+
+if [ $pyexec ]; then
+    python_ver_ok=`$pyexec -c 'import sys; print(sys.version_info[0]==2 and sys.version_info[1] >= 5 and 1 or 0)'`
+    if [[ $python_ver_ok != '1' ]]; then
         echo "----------------------------------------------------------------"
         echo "Error: You must have Python version 2.6.x or 2.7.x installed. Your version is:"
-        python -V
+        $pyexec -V
         echo "----------------------------------------------------------------"
         exit 1
     fi
@@ -39,14 +43,14 @@ echo
 read -n 1 -p "Press any key to continue..."
 echo
 
-python manage.py syncdb --migrate
+$pyexec manage.py syncdb --migrate
 
 # set the database permissions so that Apache will be able to access them
 chmod 777 database
 chmod 766 database/data.sqlite
 
 echo
-python manage.py generatekeys
+$pyexec manage.py generatekeys
 echo
 
 hostname=`uname -n`
@@ -57,7 +61,7 @@ if [ "$name" ]; then
 fi
 echo -n "Please enter a one-line description for this server (or, press Enter to leave blank): "
 read -e description
-python manage.py initdevice "$hostname" "$description"
+$pyexec manage.py initdevice "$hostname" "$description"
 
 initd_available=`command -v update-rc.d`
 if [ $initd_available ]; then
