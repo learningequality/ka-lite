@@ -9,21 +9,28 @@
 {% block headjs %}
 <script type="text/javascript" src="{{ MEDIA_URL }}js/simple.carousel.js"></script> 
 <script type="text/javascript">
-    jQuery(document).ready(function() {
+    $(function() {
         $(".carousel-class").simplecarousel({
             next: $('#next-button'),
             prev: $('#prev-button'),
             slidespeed: 700,
-            auto: 8000,
+            auto: 6000,
             width: 420,
             height: 337
         });
     });
 </script>
+<script type="text/javascript">
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+<script type="text/javascript" src="//assets.pinterest.com/js/pinit.js"></script>
 {% endblock headjs %}
 {% block headcss %}
 <style type="text/css">
-
 /**** Landing Page Specific Style by Pratik Pramanik ****/
 
 /*** Layout ***/
@@ -87,13 +94,14 @@
     padding-bottom: 15px;
 
     /* Size */
-    padding-left: 10px;
+    /*padding-left: 10px;*/
     /*padding-right: 30px;*/
-    width: 60%;
+    width: 65%;
     height: auto;
     border-right: 1px;
     border-color: #DBE6E0;      /* Color: Moon */
     border-style: solid;
+    text-align: center;
 }
 #get-started-button{
     background: #78AB46;        /* Color: Pea Green */
@@ -113,11 +121,12 @@
 /* Relevant to contribute section */
 #contribute_sec{
     /*width: 45%;*/
-    margin-left: 37px;
+    margin-left: 30px;
     /*border-right: 1px;*/      /* Uncomment when donate is back */
 
-    width: 30%;
+    width: 25%;
     height: auto;
+    text-align: center;
 }
 #contribute_sec div{
     float: left;
@@ -127,10 +136,10 @@
     float: left;
     line-height: 21px;
     font-size: 13px;
-    width: 50%;
-    margin-right: 30px;
-    text-align: justify;
-    margin-left: 50px;
+    width: 100%;
+    /*margin-right: 30px;*/
+    text-align: center;
+    /*margin-left: 50px;*/
 }
 /*button stuff*/
 #contribute-button{
@@ -141,9 +150,6 @@
     width: 150px;
     padding: 10px;
     padding-top: 12px;
-    left: 20px;
-    position: relative;
-
 }
 #contribute_sec button{
     color: white;
@@ -451,16 +457,13 @@ article {
     width: 48%;
     float: left;
     margin-right: 10px;
+    text-align: center;
 }
 
 .button-section, #get_started_sec > h2, #contribute_sec > h2 {
-    margin-left: 40px;
+    /*margin-left: 40px;*/
+    width: 100%;
 }
-
-.button-section > #contribute-button {
-    position: relative;
-    left: 50px;
-} 
 
 .button-section button {
     margin-top: 10px;
@@ -559,7 +562,7 @@ article {
 <div id="get-started-contribute" class="row">
     <div id="get_started_sec" class="floatleft">
         <h2>
-            Know somewhere that KA Lite could be useful?
+            Do you know somewhere that KA Lite could be useful?
         </h2>
         <div class="mini-action-section">
             <div class="action-text">
@@ -575,12 +578,12 @@ article {
         </div>
         <div class="mini-action-section">
             <div class="action-text">
-                Want to talk further?
+                Want deployment advice?
             </div>
             <div class="button-section">
                 <a href="https://docs.google.com/spreadsheet/viewform?formkey=dEhEOWRNVDBzWTdsUnFQYWlCWnZoWWc6MQ">
                     <button id="get-started-button">
-                        Let us know!
+                        Contact us
                     </button>
                 </a>
             </div>
@@ -591,7 +594,7 @@ article {
         <h2>
             Want to contribute?
         </h2>
-        <div class="action-text" id="left-bump">
+        <div class="action-text">
             We'd love help!
         </div>
         <div class="button-section">
@@ -625,17 +628,6 @@ article {
     </div>
 </div>
 {% endif %}
-<!-- Pratik didn't touch stuff after this -->
-{% endblock content %}
 
-{% block bodyjs %}
-<script type="text/javascript">
-  (function() {
-    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-    po.src = 'https://apis.google.com/js/plusone.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-  })();
-</script>
-<script type="text/javascript" src="//assets.pinterest.com/js/pinit.js"></script>
-{% endblock bodyjs %}
+{% endblock content %}
 
