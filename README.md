@@ -14,4 +14,4 @@ Official website: http://kalite.adhocsync.com/
 ---
 
 The KA Lite sourcecode itself is [MIT licensed](http://opensource.org/licenses/MIT), and the other included software
-and content is licensed as described in the [LICENSE](./LICENSE) file. Please note that KA Lite is not officially affiliated with, nor maintained by, Khan Academy, but rather makes use of Khan Academy's open API and Creative Commons content, which may only be used for non-commercial purposes.
+and content is licensed as described in the [LICENSE](https://raw.github.com/jamalex/ka-lite/master/LICENSE) file. Please note that KA Lite is not officially affiliated with, nor maintained by, Khan Academy, but rather makes use of Khan Academy's open API and Creative Commons content, which may only be used for non-commercial purposes.
