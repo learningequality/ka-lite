@@ -27,7 +27,6 @@
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
   })();
 </script>
-<script type="text/javascript" src="//assets.pinterest.com/js/pinit.js"></script>
 {% endblock headjs %}
 {% block headcss %}
 <style type="text/css">
@@ -551,8 +550,8 @@ article {
             <script src="//platform.linkedin.com/in.js" type="text/javascript"> </script> <script type="IN/Share" data-url="kalite.adhocsync.com" data-counter="top"></script>
 
             <!-- Pinterest -->
-            <a href="http://pinterest.com/pin/create/button/?url=http%3A%2F%2Fkalite.adhocsync.com&media=http%3A%2F%2Fkalite.adhocsync.com%2Fstatic%2Fimages%2Fka-logo-small.png&description=An%20amazing%20project%20to%20bring%20the%20Khan%20Academy%20educational%20experience%20to%20places%20without%20Internet%20access!" class="pin-it-button" count-layout="vertical"><img border="0" src="//assets.pinterest.com/images/PinExt.png" title="Pin It" /></a>
-
+            <a data-pin-config="above" href="//pinterest.com/pin/create/button/?url=http%3A%2F%2Fkalite.adhocsync.com%2F&media=http%3A%2F%2Fkalite.adhocsync.com%2Fstatic%2Fimages%2Flanding-page%2Fcoach-reports-cropped.png&description=KA%20Lite%20is%20an%20offline%20version%20of%20Khan%20Academy%20that%20runs%20on%20almost%20anything!%20For%20the%2065%25%20of%20the%20world%20with%20no%20internet%20access!" data-pin-do="buttonPin" ><img src="//assets.pinterest.com/images/pidgets/pin_it_button.png" /></a>
+            
         </div>
     </div>
 
@@ -631,3 +630,6 @@ article {
 
 {% endblock content %}
 
+{% block bodyjs %}
+<script type="text/javascript" src="//assets.pinterest.com/js/pinit.js"></script>
+{% endblock %}
