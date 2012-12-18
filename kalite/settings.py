@@ -103,6 +103,7 @@ INSTALLED_APPS = (
     "securesync",
     "config",
     "main",
+    "faq",
 )
 
 if DEBUG or CENTRAL_SERVER:
