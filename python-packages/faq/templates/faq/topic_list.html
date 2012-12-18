@@ -1,0 +1,12 @@
+{% extends "faq/base.html" %}
+
+{% block title %}{{ block.super }}: Topics{% endblock %}
+
+{% block body %}
+<h1>Topics</h1>
+<ul>
+  {% for topic in topics %}
+    <li><a href="{{ topic.get_absolute_url }}">{{ topic }}</a></li>
+  {% endfor %}
+</ul>
+{% endblock %}
