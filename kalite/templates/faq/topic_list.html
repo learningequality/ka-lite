@@ -1,12 +1,15 @@
 {% extends "faq/base.html" %}
 
-{% block title %}{{ block.super }}: Topics{% endblock %}
+{% block title %}{{ block.super }}Frequently Asked Questions: Topics{% endblock %}
 
 {% block content %}{{ block.super }}
-<h1>Topics</h1>
-<ul>
-  {% for topic in topics %}
-    <li><a href="{{ topic.get_absolute_url }}">{{ topic }}</a></li>
-  {% endfor %}
-</ul>
+<h1>Frequently Asked Questions</h1>
+<div id="id-topics">
+	<h2>Topics</h2>
+	<ul>
+	  {% for topic in topics %}
+	    <li><a href="{{ topic.get_absolute_url }}">{{ topic }}</a></li>
+	  {% endfor %}
+	</ul>
+</div>
 {% endblock %}
