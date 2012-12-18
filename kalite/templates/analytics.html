@@ -1,5 +1,5 @@
 {{ settings }}
-{% if not debug and not request.user.is_superuser %}
+{% if not debug and not request.user.is_staff %}
 <script type="text/javascript">
   var _gaq = _gaq || [];
   _gaq.push(['_setAccount', 'UA-36937407-1']);
