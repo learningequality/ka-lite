@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 
+{% block titletag %}
+<title>{% block title %}{{ title }}{% endblock title %} | KA Lite, an offline version of Khan Academy</title>
+{% endblock %}
+
 {% block basecss %}
 <style type="text/css">
 ul {

@@ -1,7 +1,9 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        {% block titletag %}
         <title>{% block title %}{{ title }}{% endblock title %} | KA Lite</title>
+        {% endblock %}
         <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/khan-site.css"></link>
         <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/khan-lite.css"></link>
         {% block basecss %}{% endblock basecss %}
