@@ -1,3 +1,8 @@
+pyexec=`command -v python2`
+if [[ ! -e $pyexec ]]; then
+    pyexec=`command -v python` 
+fi
+
 cd `dirname "${BASH_SOURCE[0]}"`
 if [ -f "runwsgiserver.pid" ];
 then
@@ -14,7 +19,7 @@ if [ "$pids" ]; then
 fi
 
 echo "Running the web server on port 8008."
-python manage.py runwsgiserver host=0.0.0.0 port=8008 threads=50 daemonize=true pidfile=runwsgiserver.pid
+$pyexec manage.py runwsgiserver host=0.0.0.0 port=8008 threads=50 daemonize=true pidfile=runwsgiserver.pid
 echo "The server should now be accessible locally at: http://127.0.0.1:8008/"
 
 ifconfig_path=`command -v ifconfig`
