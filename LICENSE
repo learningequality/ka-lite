@@ -38,6 +38,7 @@ django
 django-chronograph
 django-annoying
 django_extensions
+django-faq
 GitPython
 django-postmark
 pyasn1
