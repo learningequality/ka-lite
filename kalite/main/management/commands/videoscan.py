@@ -16,8 +16,8 @@ class Command(BaseCommand):
         # delete VideoFile objects that are not marked as in progress, but are neither 0% nor 100% done; they're broken
         VideoFile.objects.filter(download_in_progress=False, percent_complete__gt=0, percent_complete__lt=100).delete()
 
-        files = glob.glob(settings.VIDEO_PATH + "*.mp4")
-        subtitle_files = glob.glob(settings.VIDEO_PATH + "*.srt")
+        files = glob.glob(settings.CONTENT_ROOT + "*.mp4")
+        subtitle_files = glob.glob(settings.CONTENT_ROOT + "*.srt")
         videos_marked_at_all = set([video.youtube_id for video in VideoFile.objects.all()])
         videos_marked_as_in_progress = set([video.youtube_id for video in VideoFile.objects.filter(download_in_progress=True)])
         videos_marked_as_unstarted = set([video.youtube_id for video in VideoFile.objects.filter(percent_complete=0, download_in_progress=False)])

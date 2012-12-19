@@ -1,10 +1,17 @@
 import sys, os, re, json, urllib, glob
 
-download_path = os.path.dirname(os.path.realpath(__file__)) + "/../static/videos/"
+PROJECT_PATH = os.path.dirname(os.path.realpath(__file__)) + "/../"
 
-data_path = os.path.dirname(os.path.realpath(__file__)) + "/../static/data/"
+sys.path = [PROJECT_PATH] + sys.path
+
+import settings
+
+download_path = settings.CONTENT_ROOT
+
+data_path = settings.DATA_PATH
 
 download_url = "http://s3.amazonaws.com/KA-youtube-converted/%s/%s"
+
 
 class DownloadCancelled(Exception):
     def __str__(self):

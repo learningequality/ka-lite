@@ -1,6 +1,12 @@
 import requests, json, os, sys
 
-download_path = os.path.dirname(os.path.realpath(__file__)) + "/../static/videos/"
+PROJECT_PATH = os.path.dirname(os.path.realpath(__file__)) + "/../"
+
+sys.path = [PROJECT_PATH] + sys.path
+
+import settings
+
+download_path = settings.CONTENT_ROOT
 
 headers = {
     "X-api-username": "",
@@ -19,8 +25,8 @@ def get_subtitles(youtube_id, language, format="json"):
     # use the base video endpoint to get the Amara video id from the Youtube ID
     r = requests.get("%s?video_url=http://www.youtube.com/watch?v=%s" % (base_url, youtube_id), headers=headers)
     content = json.loads(r.text)
-    if content.has_key("objects"):
-        video_id = json.loads(r.text)["objects"][0]["id"]
+    if content.get("objects", None):
+        video_id = content["objects"][0]["id"]
     else:
         return False
     
