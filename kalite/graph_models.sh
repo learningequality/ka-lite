@@ -1,7 +1,6 @@
-pyexec=`command -v python2`
-if [[ ! -e $pyexec ]]; then
-    pyexec=`command -v python` 
-f
+#!/bin/bash
+
+pyexec=`../python.sh`
 
 cd `dirname "${BASH_SOURCE[0]}"`
 $pyexec manage.py graph_models securesync main -g -o model_graph.png
