@@ -13,10 +13,13 @@ urlpatterns = patterns('',
 )
 
 urlpatterns += patterns('',
-        url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {
-            'document_root': settings.MEDIA_ROOT,
-        }),
-   )
+    url(r'^' + settings.CONTENT_URL[1:] + '(?P<path>.*)$', 'django.views.static.serve', {
+        'document_root': settings.CONTENT_ROOT,
+    }),
+    url(r'^' + settings.MEDIA_URL[1:] + '(?P<path>.*)$', 'django.views.static.serve', {
+        'document_root': settings.MEDIA_ROOT,
+    }),
+)
 
 if settings.CENTRAL_SERVER:
     
@@ -39,6 +42,7 @@ if settings.CENTRAL_SERVER:
         url(r'^addsubscription/$', 'add_subscription', {}, 'add_subscription'),
         url(r'^feeds/rss/$', RssSiteNewsFeed(), {}, 'rss_feed'),
         url(r'^feeds/atom/$', AtomSiteNewsFeed(), {}, 'atom_feed'),
+        url(r'^faq/', include('faq.urls')),
     )
     
     handler404 = 'main.views.central_404_handler'

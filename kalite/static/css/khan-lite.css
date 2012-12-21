@@ -385,6 +385,14 @@ li .progress-circle {
     left: 19px !important;
 }
 
+/*FAQ*/
+.nav-subheader > span > a#nav_faq.selected:after {
+    left: 11px !important;
+}
+.nav-subheader > span > a#nav_faq.selected:before {
+    left: 10px !important;
+}
+
 #nav_addstudent, #nav_addteacher, #nav_admin, #nav_coachreports, #nav_watch, #nav_practice, #nav_signup, #nav_login, #nav_update {
     display: none;
 }

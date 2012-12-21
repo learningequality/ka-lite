@@ -20,10 +20,10 @@
         $("#video-thumb").load(function() {
             
             // flashVars.flv = "{{ video.download_urls.mp4 }}";
-            flashVars.flv = "/static/videos/{{ video.youtube_id }}.mp4";
+            flashVars.flv = "{{ CONTENT_URL }}{{ video.youtube_id }}.mp4";
             // flashVars.startimage = "{{ video.download_urls.png }}";
-            flashVars.startimage = "/static/videos/{{ video.youtube_id }}.png";
-            flashVars.srturl = "/static/videos/{{ video.youtube_id }}.srt";
+            flashVars.startimage = "{{ CONTENT_URL }}{{ video.youtube_id }}.png";
+            flashVars.srturl = "{{ CONTENT_URL }}{{ video.youtube_id }}.srt";
             var width = $("#video-thumb").width();
             var height = $("#video-thumb").height();
             
@@ -80,7 +80,7 @@
     <div id="flash-container" style="position: absolute; left: -10000px;">
         <div id="flash-content"></div>
     </div>
-    <img id="video-thumb" src="/static/videos/{{ video.youtube_id }}.png" width="100%">
+    <img id="video-thumb" src="{{ CONTENT_URL }}{{ video.youtube_id }}.png" width="100%">
 </div>
 
 {% endblock content %}

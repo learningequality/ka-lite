@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset=utf-8 /> 
+  <title>{% block title %}Django FAQ {% endblock %}</title>	
+</head>
+<body>
+  {% for message in messages %}
+    <p class="message">{{ message }}</p>
+  {% endfor %}
+  {% block body %}{% endblock %}
+</body>
+</html>
+
