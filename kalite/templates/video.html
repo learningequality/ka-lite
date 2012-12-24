@@ -1,53 +1,16 @@
 {% extends 'base_distributed.html' %}
 
+{% block headcss %}
+    <link href="{{ MEDIA_URL }}video-js/video-js.min.css" rel="stylesheet" type="text/css">
+{% endblock headcss %}
+{% block headjs %}
+    <script src="{{ MEDIA_URL }}video-js/video.min.js"></script>
+    <script>
+        _V_.options.flash.swf = "{{ MEDIA_URL }}video-js/video-js.swf";
+    </script>
+{% endblock headjs %}
+
 {% block watch_selected %}selected{% endblock watch_selected %}
-
-{% block bodyjs %}
-<script src="{{ MEDIA_URL }}js/swfobject.js"></script>
-<script src="{{ MEDIA_URL }}js/video.js"></script>
-<script>
-
-    var videoData = {
-        youtube_id: "{{ video.youtube_id }}",
-        points: 0,
-        total_seconds_watched: 0,
-        last_second_watched: 0,
-        last_second_watched_walltime: new Date(),
-        seconds_watched_since_save: 0
-    };
-
-    $(function() {
-        $("#video-thumb").load(function() {
-            
-            // flashVars.flv = "{{ video.download_urls.mp4 }}";
-            flashVars.flv = "{{ CONTENT_URL }}{{ video.youtube_id }}.mp4";
-            // flashVars.startimage = "{{ video.download_urls.png }}";
-            flashVars.startimage = "{{ CONTENT_URL }}{{ video.youtube_id }}.png";
-            flashVars.srturl = "{{ CONTENT_URL }}{{ video.youtube_id }}.srt";
-            var width = $("#video-thumb").width();
-            var height = $("#video-thumb").height();
-            
-            $("#video-thumb").css({position: "absolute"});
-            $("#video-container").css({height: height});
-            
-            embedSwf("flash-content", width, height, function(callbackObj) {
-                if (callbackObj.success) {
-                    setTimeout(function() {
-                        $("#flash-container").css("left", "0px");
-                        setTimeout(function() {
-                            $("#video-thumb").hide();
-                            $("#video-container").css("background-color", "white");
-                        }, 50);
-                    }, 500);
-                } else {
-                    $("#flash-content").hide();
-                }
-            });
-            
-        });
-    });
-</script>
-{% endblock bodyjs %}
 
 {% block content %}
 <h2 class="title-header">
@@ -62,10 +25,7 @@
     <div class="clear"></div>
 <div class="points-container" style="display: none;">Points: <span class="points">0</span></div>
 </h2>
-
-
 <div class="clear"></div>
-
 {% if prev %}
 <div class="vidprev"><a href="../{{ prev.readable_id }}/">&lt; {{ prev.title }} <span class="progress-circle" data-youtube-id="{{ prev.youtube_id }}"></span></a></div>
 {% endif %}
@@ -84,3 +44,48 @@
 </div>
 
 {% endblock content %}
+
+{% block bodyjs %}
+<script>
+
+    var videoData = {
+        youtube_id: "{{ video.youtube_id }}",
+        points: 0,
+        total_seconds_watched: 0,
+        last_second_watched: 0,
+        last_second_watched_walltime: new Date(),
+        seconds_watched_since_save: 0
+    };
+
+    $(function() {
+        $("#video-thumb").load(function() {
+
+            var videoSourceFile = "{{ CONTENT_URL }}{{ video.youtube_id }}.mp4";
+            var subtitleSourceFile = ["{{ CONTENT_URL }}{{ video.youtube_id }}.srt"];
+            var startImage = "{{ CONTENT_URL }}{{ video.youtube_id }}.png";
+            var srturl = "{{ CONTENT_URL }}{{ video.youtube_id }}.srt";
+            var width = $("#video-thumb").width();
+            var height = $("#video-thumb").height();
+
+            $("#video-thumb").css({position: "absolute"});
+            $("#video-container").css({height: height});
+
+            var videojshtml = '<video id="'+ videoData.youtube_id +'" class="video-js vjs-default-skin" controls preload="none" width="' + width + '" height="' + height + '" poster="' + startImage + '" data-setup="{}">\
+            <source src="' + videoSourceFile + '" type=\'video/mp4\' />\
+            <track kind="captions" src="' + subtitleSourceFile + '" srclang="en" label="English" >\
+            </video>';
+
+            $('#flash-content').append(videojshtml);
+            _V_('#' + videoData.youtube_id, {}, function() {
+                setTimeout(function() {
+                    $("#flash-container").css("left", "0px");
+                    setTimeout(function() {
+                            $("#video-thumb").hide();
+                            $("#video-container").css("background-color", "white");
+                        }, 50);
+                    }, 500);
+                });
+        });
+    });
+</script>
+{% endblock bodyjs %}
