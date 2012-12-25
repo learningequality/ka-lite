@@ -101,6 +101,13 @@ ul.dynatree-container li, .ui-widget-content {
     padding: 0 10px 0 10px;
 }
 
+#retry-video-download, #retry-subtitle-download {
+    color: red;
+    padding: 0 10px 0 10px;
+    display: none;
+    margin-top: 15px;
+}
+
 </style>
 {% endblock headcss %}
 {% block headjs %}
@@ -209,7 +216,7 @@ ul.dynatree-container li, .ui-widget-content {
             });
         
         });
-        
+
         $(".download-subtitles").click(function(event) {
         
             var new_only = $(event.target).attr("new_only");
@@ -238,6 +245,9 @@ ul.dynatree-container li, .ui-widget-content {
             doRequest("/api/cancel_downloads");
         });
        
+        $("#retry-video-download").click(function() {
+            doRequest("/api/start_video_download", {});
+        });
     
     });
     
@@ -306,6 +316,10 @@ ul.dynatree-container li, .ui-widget-content {
                     return;
                 }
                 checkVideoDownloadProgress();
+            } else if (!progress["downloading"]) {
+                $("#retry-video-download").show();
+            } else {
+                $("#retry-video-download").hide();
             }
         });
     }
@@ -479,6 +493,8 @@ ul.dynatree-container li, .ui-widget-content {
         
     <div class="progressbar" id="progressbar-overall"></div>
     
+    <button id="retry-video-download" type="button">Video download error... click to retry</button>
+    
 </div>
 
 <div class="subtitle-section">
@@ -491,6 +507,8 @@ ul.dynatree-container li, .ui-widget-content {
     </h2> 
     
     <div class="progressbar" id="progressbar-subtitle"></div>
+    
+    {# <button id="retry-subtitle-download" type="button">Subtitle download error... click to retry</button> #}
 
 </div>
 
