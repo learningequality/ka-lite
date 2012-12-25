@@ -1,7 +1,8 @@
 import re, json, sys
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
+from django.template.loader import render_to_string
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from annoying.decorators import render_to
@@ -193,23 +194,20 @@ def coach_reports(request, facility):
             "exercise_logs": [get_object_or_None(ExerciseLog, user=user, exercise_id=ex["name"]) for ex in exercises],
         } for user in users]
     return context
-        
-@render_to("404_distributed.html")
+
 def distributed_404_handler(request):
-    return {}
-    
-@render_to("500_distributed.html")
+    return HttpResponseNotFound(render_to_string("404_distributed.html", {}, context_instance=RequestContext(request)))
+
 def distributed_500_handler(request):
     errortype, value, tb = sys.exc_info()
-    return {
+    context = {
         "errortype": errortype.__name__,
         "value": str(value),
     }
+    return HttpResponseServerError(render_to_string("500_distributed.html", context, context_instance=RequestContext(request)))
     
-@render_to("404_central.html")
 def central_404_handler(request):
-    return {}
+    return HttpResponseNotFound(render_to_string("404_central.html", {}, context_instance=RequestContext(request)))
     
-@render_to("500_central.html")
 def central_500_handler(request):
-    return {}
+    return HttpResponseServerError(render_to_string("500_central.html", {}, context_instance=RequestContext(request)))
