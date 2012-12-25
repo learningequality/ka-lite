@@ -1,5 +1,6 @@
 #!/bin/bash
 
+pyexec=`./python.sh`
 cd `dirname "${BASH_SOURCE[0]}"`/kalite
 
 if [ -f "database/data.sqlite" ]; then
@@ -7,11 +8,6 @@ if [ -f "database/data.sqlite" ]; then
     echo "Error: Database file already exists! If this is a new installation, you should delete the file kalite/database/data.sqlite and then re-run this script."
     echo "----------------------------------------------------------------"
     exit 1
-fi
-
-pyexec=`command -v python2`
-if [[ ! -e $pyexec ]]; then
-    pyexec=`command -v python` 
 fi
 
 if [ $pyexec ]; then

@@ -1,7 +1,6 @@
-pyexec=`command -v python2`
-if [[ ! -e $pyexec ]]; then
-    pyexec=`command -v python` 
-fi
+#!/bin/bash
+
+pyexec=`../python.sh`
 
 cd `dirname "${BASH_SOURCE[0]}"`
 if [ -f "runwsgiserver.pid" ];
