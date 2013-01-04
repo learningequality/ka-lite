@@ -1,5 +1,9 @@
 cd `dirname "${BASH_SOURCE[0]}"`/kalite
-echo
-./cronstart.sh
-echo
-./serverstart.sh
+if [ -f "database/data.sqlite" ]; then
+	echo
+	./cronstart.sh
+	echo
+	./serverstart.sh
+else
+	echo "Run install.sh first!"
+fi
