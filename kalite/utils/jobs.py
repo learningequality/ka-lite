@@ -14,3 +14,6 @@ def force_job(command, name="", frequency="YEARLY", stop=False):
     else:
         job.next_run = datetime.now()
     job.save()
+
+def job_status(command):
+    return Job.objects.filter(command=command, is_running=True).count() > 0

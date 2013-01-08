@@ -7,7 +7,7 @@ from annoying.functions import get_object_or_None
 import settings
 from settings import slug_key, title_key
 from main import topicdata
-from utils.jobs import force_job
+from utils.jobs import force_job, job_status
 from utils.videos import delete_downloaded_files
 from models import FacilityUser, VideoLog, ExerciseLog, VideoFile
 from config.models import Settings
@@ -157,6 +157,7 @@ def delete_videos(request):
 def check_video_download(request):
     youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
     percentages = {}
+    percentages["downloading"] = job_status("videodownload")
     for id in youtube_ids:
         videofile = get_object_or_None(VideoFile, youtube_id=id) or VideoFile(youtube_id=id)
         percentages[id] = videofile.percent_complete
@@ -218,10 +219,19 @@ def get_subtitle_download_list(request):
 
 @require_admin
 def cancel_downloads(request):
-    videofiles = VideoFile.objects.filter(Q(flagged_for_download=True) | Q(flagged_for_subtitle_download=True))
-    videofiles.update(cancel_download=True, flagged_for_download=False, flagged_for_subtitle_download=False)
+    
+    # clear all download in progress flags, to make sure new downloads will go through
+    VideoFile.objects.all().update(download_in_progress=False)
+    
+    # unflag all video downloads
+    VideoFile.objects.filter(flagged_for_download=True).update(cancel_download=True, flagged_for_download=False)
+    
+    # unflag all subtitle downloads
+    VideoFile.objects.filter(flagged_for_subtitle_download=True).update(cancel_download=True, flagged_for_subtitle_download=False)
+
     force_job("videodownload", stop=True)
     force_job("subtitledownload", stop=True)
+
     return JsonResponse({})
 
 def convert_topic_tree(node, level=0):

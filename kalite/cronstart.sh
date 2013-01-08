@@ -1,3 +1,7 @@
+#!/bin/bash
+
+pyexec=`../python.sh`
+
 cd `dirname "${BASH_SOURCE[0]}"`
 pids=`ps aux | grep cronserver.py | grep -v "grep" | awk '{print $2}'`
 
@@ -8,4 +12,4 @@ fi
 
 echo "Starting the cron server in the background."
 
-python cronserver.py &
+$pyexec cronserver.py &

@@ -13,7 +13,7 @@ headers = {
     "X-apikey": "",
 }
 
-base_url = "https://www.universalsubtitles.org/api2/partners/videos"
+base_url = "https://amara.org/api2/partners/videos"
 
 class NoSubs(Exception):
     

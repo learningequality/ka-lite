@@ -5,7 +5,7 @@ from kalite.utils.videos import download_video, DownloadCancelled
 from utils.jobs import force_job
 
 
-def download_progress_callback(videofile):
+def download_progress_callback(self, videofile):
     def inner_fn(percent):
         video = VideoFile.objects.get(pk=videofile.pk)
         if video.cancel_download == True:
@@ -13,14 +13,14 @@ def download_progress_callback(videofile):
             video.flagged_for_download = False
             video.download_in_progress = False
             video.save()
-            print "Download Cancelled"
+            self.stderr.write("Download Cancelled!\n")
             raise DownloadCancelled()
         if (percent - video.percent_complete) >= 5 or percent == 100:
             if percent == 100:
                 video.flagged_for_download = False
                 video.download_in_progress = False
             video.percent_complete = percent
-            print percent
+            self.stdout.write("%d\n" % percent)
             video.save()
     return inner_fn
             
@@ -55,7 +55,7 @@ class Command(BaseCommand):
             
             self.stdout.write("Downloading video '%s'...\n" % video.youtube_id)
             try:
-                download_video(video.youtube_id, callback=download_progress_callback(video))
+                download_video(video.youtube_id, callback=download_progress_callback(self, video))
                 self.stdout.write("Download is complete!\n")
             except Exception as e:
                 self.stderr.write("Error in downloading: %s\n" % e)

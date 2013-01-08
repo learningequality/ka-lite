@@ -12,6 +12,8 @@ data_path = settings.DATA_PATH
 
 download_url = "http://s3.amazonaws.com/KA-youtube-converted/%s/%s"
 
+import socket
+socket.setdefaulttimeout(20)
 
 class DownloadCancelled(Exception):
     def __str__(self):
@@ -105,7 +107,11 @@ def download_video(youtube_id, format="mp4", callback=None):
         
     except DownloadCancelled:
         delete_downloaded_files(youtube_id)
-        
+    
+    except Exception as e:
+        delete_downloaded_files(youtube_id)
+        raise e
+    
 def delete_downloaded_files(youtube_id):
     for filepath in glob.glob(download_path + youtube_id + ".*"):
         try:
