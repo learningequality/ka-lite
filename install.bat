@@ -1,5 +1,21 @@
 @echo off
 
+copy %0 kalite
+
+if %ERRORLEVEL% == 1 (
+	echo -------------------------------------------------------------------
+	echo You have no permissions to write on this directory!
+	echo You must change your permissions or copy/clone all files to 
+	echo a directory where you have permissions to write and then 
+	echo re-run this script.
+	echo -------------------------------------------------------------------
+	exit /B
+) else (
+	if %ERRORLEVEL% == 0 (
+		del kalite\%0
+	)
+)
+
 cd kalite
 
 if exist database\data.sqlite (

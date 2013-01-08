@@ -1,5 +1,25 @@
 #!/bin/bash
 
+current_dir=`dirname "${BASH_SOURCE[0]}"`
+if [ ! `id -u` -eq `stat -c "%u" $current_dir` ]; then
+	echo "-------------------------------------------------------------------"
+	echo "You are not the owner of this directory!"
+	echo "Please copy all files to a directory that you own and then" 
+	echo "re-run this script."
+	echo "-------------------------------------------------------------------"
+	exit 1
+fi
+
+if [ ! -w `dirname "${BASH_SOURCE[0]}"`/kalite ]; then
+	echo "-------------------------------------------------------------------"
+	echo "You have no permissions to write on this directory!"
+	echo "You must change your permissions or copy/clone all files to" 
+	echo "a directory where you have permissions to write and then" 
+	echo "re-run this script."
+	echo "-------------------------------------------------------------------"
+	exit 1
+fi
+
 cd `dirname "${BASH_SOURCE[0]}"`/kalite
 
 if [ -f "database/data.sqlite" ]; then
