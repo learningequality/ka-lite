@@ -480,3 +480,14 @@ li .progress-circle {
     margin-left: -5px;
     margin-right: -5px;
 }
+
+.thumb {
+    overflow: hidden;
+    position: relative;
+}
+
+.thumb .thumbimage {
+    position: absolute;
+    width: 200px;
+    z-index: -10;
+}
