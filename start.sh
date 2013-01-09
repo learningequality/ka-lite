@@ -1,5 +1,5 @@
 #!/bin/bash
-cd `dirname "${BASH_SOURCE[0]}"`/kalite
+cd kalite
 if [ -f "database/data.sqlite" ] ; then
 	echo
 	./cronstart.sh
@@ -7,5 +7,5 @@ if [ -f "database/data.sqlite" ] ; then
 	./serverstart.sh
 else
 	echo "Please run install.sh first!"
-	cd ..
 fi
+cd ..

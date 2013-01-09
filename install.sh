@@ -12,10 +12,7 @@ fi
 
 if [ ! -w `dirname "${BASH_SOURCE[0]}"`/kalite ]; then
 	echo "-------------------------------------------------------------------"
-	echo "You have no permissions to write on this directory!"
-	echo "You must change your permissions or copy/clone all files to" 
-	echo "a directory where you have permissions to write and then" 
-	echo "re-run this script."
+	echo "You do not have permission to write to this directory!"
 	echo "-------------------------------------------------------------------"
 	exit 1
 fi
