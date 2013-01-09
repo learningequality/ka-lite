@@ -141,7 +141,8 @@
                                                     <li>
                                                         <div class="thumbnail">
                                                             <a class="related-video" href="{{ video.path }}" title="{{ video.title }}" target="_blank">
-                                                                <div class="thumb" style="background-image: url('{{ CONTENT_URL }}{{ video.youtube_id }}.jpg'); ">
+                                                                <div class="thumb">
+                                                                    <img class="thumbimage" src="{{ CONTENT_URL }}{{ video.youtube_id }}.png"/>
                                                                     <div class="thumbnail_label" style="margin-top: 68px; ">
                                                                         <div class="thumbnail_desc">
                                                                             <span class="progress-circle" data-youtube-id="{{ video.youtube_id }}"></span>
