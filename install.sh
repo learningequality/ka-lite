@@ -1,5 +1,39 @@
 #!/bin/bash
 
+if [ `id -u` -eq 0 ]; then
+	while true; do
+		echo "-------------------------------------------------------------------"
+		echo "You are installing KA-Lite as root user!"
+		echo "Installing as root may cause some permission problems while running"
+		echo "as a normal user in the future."
+		echo "-------------------------------------------------------------------"
+		echo
+		read -p "Do you wish to continue and install it as root?" yn
+		case $yn in
+			[Yy]* ) break;;
+			[Nn]* ) exit 1;;
+			* ) echo "Please answer yes or no.";;
+		esac
+	done
+fi
+
+current_dir=`dirname "${BASH_SOURCE[0]}"`
+if [ ! `id -u` -eq `stat -c "%u" $current_dir` ]; then
+	echo "-------------------------------------------------------------------"
+	echo "You are not the owner of this directory!"
+	echo "Please copy all files to a directory that you own and then" 
+	echo "re-run this script."
+	echo "-------------------------------------------------------------------"
+	exit 1
+fi
+
+if [ ! -w `dirname "${BASH_SOURCE[0]}"`/kalite ]; then
+	echo "-------------------------------------------------------------------"
+	echo "You do not have permission to write to this directory!"
+	echo "-------------------------------------------------------------------"
+	exit 1
+fi
+
 pyexec=`./python.sh`
 cd `dirname "${BASH_SOURCE[0]}"`/kalite
 

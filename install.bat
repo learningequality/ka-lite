@@ -1,5 +1,18 @@
 @echo off
 
+copy %0 kalite\writetest.temp
+
+if %ERRORLEVEL% == 1 (
+	echo -------------------------------------------------------------------
+	echo You do not have permission to write to this directory!
+	echo -------------------------------------------------------------------
+	exit /B
+) else (
+	if %ERRORLEVEL% == 0 (
+		del kalite\writetest.temp
+	)
+)
+
 cd kalite
 
 if exist database\data.sqlite (

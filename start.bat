@@ -1,11 +1,14 @@
 @echo off
 cd kalite
+if exist database\data.sqlite (
+	REM transfer any previously downloaded content from the old location to the new
+	move static\videos\* ..\content > nul 2> nul
 
-REM transfer any previously downloaded content from the old location to the new
-move static\videos\* ..\content > nul 2> nul
-
-echo Starting the cron server in the background.
-start /B runhidden.vbs "cronstart.bat"
-echo Running the web server in the background, on port 8008.
-start /B runhidden.vbs "serverstart.bat"
+	echo Starting the cron server in the background.
+	start /B runhidden.vbs "cronstart.bat"
+	echo Running the web server in the background, on port 8008.
+	start /B runhidden.vbs "serverstart.bat"
+) else (
+	echo Please run install.bat first!
+)
 cd ..
