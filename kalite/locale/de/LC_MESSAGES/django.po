@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-09 16:07-0800\n"
+"POT-Creation-Date: 2013-01-10 12:05-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -82,48 +82,138 @@ msgstr ""
 msgid "registration profiles"
 msgstr ""
 
-#: templates/base_distributed.html:35
-msgid "Watch"
+#: templates/404_distributed.html:5 templates/404_distributed.html.py:8
+msgid "Page not found"
 msgstr ""
 
-#: templates/base_distributed.html:36
-msgid "Practice"
+#: templates/404_distributed.html:10
+msgid "Sorry, but the requested page could not be found."
+msgstr ""
+
+#: templates/500_distributed.html:5 templates/500_distributed.html.py:8
+msgid "Error"
+msgstr ""
+
+#: templates/500_distributed.html:10
+msgid "Sorry, but there was an error while trying to load the page."
 msgstr ""
 
 #: templates/base_distributed.html:37
-msgid "Add Student"
+msgid "Watch"
 msgstr ""
 
 #: templates/base_distributed.html:38
-msgid "Add Teacher"
+msgid "Practice"
 msgstr ""
 
 #: templates/base_distributed.html:39
-msgid "Admin"
+msgid "Add Student"
 msgstr ""
 
 #: templates/base_distributed.html:40
-msgid "Update"
+msgid "Add Teacher"
 msgstr ""
 
 #: templates/base_distributed.html:41
-msgid "Coach"
+msgid "Admin"
 msgstr ""
 
 #: templates/base_distributed.html:42
-msgid "Sign Up"
+msgid "Update"
 msgstr ""
 
 #: templates/base_distributed.html:43
+msgid "Coach"
+msgstr ""
+
+#: templates/base_distributed.html:44
+msgid "Sign Up"
+msgstr ""
+
+#: templates/base_distributed.html:45
 msgid "Login"
 msgstr ""
 
-#: templates/base_distributed.html:46
+#: templates/base_distributed.html:48
 msgid "Register device"
 msgstr ""
 
-#: templates/base_distributed.html:49
+#: templates/base_distributed.html:51
 msgid "Logout"
+msgstr ""
+
+#: templates/video_download.html:7
+msgid "Video Download"
+msgstr ""
+
+#: templates/video_download.html:227
+msgid ""
+"You are about to download new subtitles for all downloaded videos. This may "
+"take a long time."
+msgstr ""
+
+#: templates/video_download.html:236
+msgid "Please select a language first"
+msgstr ""
+
+#: templates/video_download.html:452
+msgid "Please select videos to download (below)"
+msgstr ""
+
+#: templates/video_download.html:453
+msgid "Download "
+msgstr ""
+
+#: templates/video_download.html:453
+msgid " new selected videos"
+msgstr ""
+
+#: templates/video_download.html:454
+msgid "Delete "
+msgstr ""
+
+#: templates/video_download.html:454
+msgid " selected videos"
+msgstr ""
+
+#: templates/video_download.html:458
+msgid "Download/update subtitles for existing videos"
+msgstr ""
+
+#: templates/video_download.html:468
+msgid "Get/Update All Subtitles"
+msgstr ""
+
+#: templates/video_download.html:469
+msgid "Get Missing Subtitles Only"
+msgstr ""
+
+#: templates/video_download.html:476
+msgid "Downloads will start soon... Please wait!"
+msgstr ""
+
+#: templates/video_download.html:483
+msgid "Downloading video:"
+msgstr ""
+
+#: templates/video_download.html:490
+msgid "Overall video download progress:"
+msgstr ""
+
+#: templates/video_download.html:492 templates/video_download.html.py:507
+msgid "of"
+msgstr ""
+
+#: templates/video_download.html:498
+msgid "Video download error... click to retry"
+msgstr ""
+
+#: templates/video_download.html:517
+msgid "Cancel All Downloads"
+msgstr ""
+
+#: templates/video_download.html:519
+msgid " Loading topic tree... Please wait!"
 msgstr ""
 
 #: templates/admin/base.html:61
