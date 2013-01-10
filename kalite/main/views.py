@@ -20,6 +20,7 @@ from config.models import Settings
 from securesync.api_client import SyncClient
 from django.contrib import messages
 from utils.jobs import force_job
+from django.utils.translation import ugettext as _
 
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))

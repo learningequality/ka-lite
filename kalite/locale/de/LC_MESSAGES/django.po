@@ -1,0 +1,279 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-01-09 16:07-0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
+#: registration/admin.py:23
+msgid "Activate users"
+msgstr ""
+
+#: registration/admin.py:43
+msgid "Re-send activation emails"
+msgstr ""
+
+#: registration/forms.py:37
+msgid "Email address"
+msgstr ""
+
+#: registration/forms.py:39
+msgid "Password"
+msgstr ""
+
+#: registration/forms.py:41
+msgid "Password (again)"
+msgstr ""
+
+#: registration/forms.py:54 registration/forms.py:58
+msgid "You must acknowledge having read these terms."
+msgstr ""
+
+#: registration/forms.py:70
+msgid "The two password fields didn't match."
+msgstr ""
+
+#: registration/forms.py:81
+msgid "I have read and agree to the Terms of Service"
+msgstr ""
+
+#: registration/forms.py:82
+msgid "You must agree to the terms to register"
+msgstr ""
+
+#: registration/forms.py:98
+msgid ""
+"This email address is already in use. Please supply a different email "
+"address."
+msgstr ""
+
+#: registration/forms.py:125
+msgid ""
+"Registration using free email addresses is prohibited. Please supply a "
+"different email address."
+msgstr ""
+
+#: registration/models.py:167
+msgid "user"
+msgstr ""
+
+#: registration/models.py:168
+msgid "activation key"
+msgstr ""
+
+#: registration/models.py:173
+msgid "registration profile"
+msgstr ""
+
+#: registration/models.py:174
+msgid "registration profiles"
+msgstr ""
+
+#: templates/base_distributed.html:35
+msgid "Watch"
+msgstr ""
+
+#: templates/base_distributed.html:36
+msgid "Practice"
+msgstr ""
+
+#: templates/base_distributed.html:37
+msgid "Add Student"
+msgstr ""
+
+#: templates/base_distributed.html:38
+msgid "Add Teacher"
+msgstr ""
+
+#: templates/base_distributed.html:39
+msgid "Admin"
+msgstr ""
+
+#: templates/base_distributed.html:40
+msgid "Update"
+msgstr ""
+
+#: templates/base_distributed.html:41
+msgid "Coach"
+msgstr ""
+
+#: templates/base_distributed.html:42
+msgid "Sign Up"
+msgstr ""
+
+#: templates/base_distributed.html:43
+msgid "Login"
+msgstr ""
+
+#: templates/base_distributed.html:46
+msgid "Register device"
+msgstr ""
+
+#: templates/base_distributed.html:49
+msgid "Logout"
+msgstr ""
+
+#: templates/admin/base.html:61
+msgid "Home"
+msgstr ""
+
+#: templates/admin/login.html:18
+msgid "Please correct the error below."
+msgid_plural "Please correct the errors below."
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/admin/login.html:34
+msgid "Username:"
+msgstr ""
+
+#: templates/admin/login.html:38
+msgid "Password:"
+msgstr ""
+
+#: templates/admin/login.html:45
+msgid "Forgotten your password or username?"
+msgstr ""
+
+#: templates/admin/login.html:49
+#: templates/registration/password_reset_complete.html:14
+msgid "Log in"
+msgstr ""
+
+#: templates/registration/password_change_done.html:4
+#: templates/registration/password_change_done.html:8
+msgid "Password change successful"
+msgstr ""
+
+#: templates/registration/password_change_done.html:10
+msgid "Your password was changed."
+msgstr ""
+
+#: templates/registration/password_change_form.html:5
+#: templates/registration/password_change_form.html:9
+msgid "Password change"
+msgstr ""
+
+#: templates/registration/password_change_form.html:11
+msgid ""
+"Please enter your old password, for security's sake, and then enter your new "
+"password twice so we can verify you typed it in correctly."
+msgstr ""
+
+#: templates/registration/password_change_form.html:16
+msgid "Old password:"
+msgstr ""
+
+#: templates/registration/password_change_form.html:18
+#: templates/registration/password_reset_confirm.html:19
+msgid "New password:"
+msgstr ""
+
+#: templates/registration/password_change_form.html:20
+#: templates/registration/password_reset_confirm.html:21
+msgid "Confirm password:"
+msgstr ""
+
+#: templates/registration/password_change_form.html:22
+#: templates/registration/password_reset_confirm.html:22
+msgid "Change my password"
+msgstr ""
+
+#: templates/registration/password_reset_complete.html:6
+#: templates/registration/password_reset_complete.html:10
+msgid "Password reset complete"
+msgstr ""
+
+#: templates/registration/password_reset_complete.html:12
+msgid "Your password has been set.  You may go ahead and log in now."
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:6
+#: templates/registration/password_reset_form.html:6
+#: templates/registration/password_reset_form.html:10
+msgid "Password reset"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:12
+msgid "Enter new password"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:14
+msgid ""
+"Please enter your new password twice so we can verify you typed it in "
+"correctly."
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:27
+msgid "Password reset unsuccessful"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:29
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used.  Please request a new password reset."
+msgstr ""
+
+#: templates/registration/password_reset_done.html:6
+#: templates/registration/password_reset_done.html:10
+msgid "Password reset successful"
+msgstr ""
+
+#: templates/registration/password_reset_done.html:12
+msgid ""
+"We've e-mailed you instructions for setting your password to the e-mail "
+"address you submitted. You should be receiving it shortly."
+msgstr ""
+
+#: templates/registration/password_reset_email.html:2
+msgid "You're receiving this e-mail because you requested a password reset"
+msgstr ""
+
+#: templates/registration/password_reset_email.html:3
+#, python-format
+msgid "for your user account at %(site_name)s"
+msgstr ""
+
+#: templates/registration/password_reset_email.html:5
+msgid "Please go to the following page and choose a new password:"
+msgstr ""
+
+#: templates/registration/password_reset_email.html:9
+msgid "Your username, in case you've forgotten:"
+msgstr ""
+
+#: templates/registration/password_reset_email.html:11
+msgid "Thanks for using our site!"
+msgstr ""
+
+#: templates/registration/password_reset_email.html:13
+#, python-format
+msgid "The %(site_name)s team"
+msgstr ""
+
+#: templates/registration/password_reset_form.html:12
+msgid ""
+"Forgotten your password? Enter your e-mail address below, and we'll e-mail "
+"instructions for setting a new one."
+msgstr ""
+
+#: templates/registration/password_reset_form.html:17
+msgid "E-mail address:"
+msgstr ""
+
+#: templates/registration/password_reset_form.html:17
+msgid "Reset my password"
+msgstr ""

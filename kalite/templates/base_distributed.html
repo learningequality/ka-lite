@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load i18n %}
 {% block basejs %}
 <script type="text/javascript">
 
@@ -32,21 +32,21 @@
 {% block sitewide_navigation %}
 
 <span class="dropdown topic-browser-dropdown">
-    <a href="{% url homepage %}" id="nav_watch" class="watch-navlink not-admin-only {% block watch_selected %}{% endblock watch_selected %}" title="Watch Videos">Watch</a>
-    <a href="{% url exercise_dashboard %}" id="nav_practice" class="practice-navlink not-admin-only {% block practice_selected %}{% endblock practice_selected %} title="Practice Lessons"">Practice</a>
-    <a href="{% url add_facility_student %}" id="nav_addstudent" class="admin-only {% block addstudent_selected %}{% endblock addstudent_selected %}" title="Add a student">Add Student</a>
-    <a href="{% url add_facility_teacher %}" id="nav_addteacher" class="admin-only {% block addteacher_selected %}{% endblock addteacher_selected %}" title="Add a teacher">Add Teacher</a>
-    <a href="/admin" id="nav_admin" class="django-user-only {% block admin_selected %}{% endblock admin_selected %}" title="Visit the admin panel">Admin</a>
-    <a href="{% url update %}" id="nav_update" class="admin-only {% block update_selected %}{% endblock update_selected %}" title="Update this server with new videos and subtitles">Update</a>
-    <a href="{% url coach_reports %}" id="nav_coachreports" class="admin-only {% block coachreports_selected %}{% endblock coachreports_selected %}" title="Track the progress of your students">Coach</a>
-    <a href="{% url add_facility_student %}" id="nav_signup" class="not-logged-in-only {% block signup_selected %}{% endblock signup_selected %}" title="Register to start tracking your progress">Sign Up</a>
-    <a href="{% url login %}" id="nav_login" class="not-logged-in-only {% block login_selected %}{% endblock login_selected %}" title="Login">Login</a>
+    <a href="{% url homepage %}" id="nav_watch" class="watch-navlink not-admin-only {% block watch_selected %}{% endblock watch_selected %}" title="Watch Videos">{% trans "Watch" %}</a>
+    <a href="{% url exercise_dashboard %}" id="nav_practice" class="practice-navlink not-admin-only {% block practice_selected %}{% endblock practice_selected %} title="Practice Lessons"">{% trans "Practice" %}</a>
+    <a href="{% url add_facility_student %}" id="nav_addstudent" class="admin-only {% block addstudent_selected %}{% endblock addstudent_selected %}" title="Add a student">{% trans "Add Student" %}</a>
+    <a href="{% url add_facility_teacher %}" id="nav_addteacher" class="admin-only {% block addteacher_selected %}{% endblock addteacher_selected %}" title="Add a teacher">{% trans "Add Teacher" %}</a>
+    <a href="/admin" id="nav_admin" class="django-user-only {% block admin_selected %}{% endblock admin_selected %}" title="Visit the admin panel">{% trans "Admin" %}</a>
+    <a href="{% url update %}" id="nav_update" class="admin-only {% block update_selected %}{% endblock update_selected %}" title="Update this server with new videos and subtitles">{% trans "Update" %}</a>
+    <a href="{% url coach_reports %}" id="nav_coachreports" class="admin-only {% block coachreports_selected %}{% endblock coachreports_selected %}" title="Track the progress of your students">{% trans "Coach" %}</a>
+    <a href="{% url add_facility_student %}" id="nav_signup" class="not-logged-in-only {% block signup_selected %}{% endblock signup_selected %}" title="Register to start tracking your progress">{% trans "Sign Up" %}</a>
+    <a href="{% url login %}" id="nav_login" class="not-logged-in-only {% block login_selected %}{% endblock login_selected %}" title="Login">{% trans "Login" %}</a>
 </span>
 <span class="dropdown topic-browser-dropdown not-registered-only">
-    <a href="{% url register_public_key %}" id="nav_registerdevice" class="admin-only {% block register_selected %}{% endblock register_selected %}" title="Register this device with the central server">Register device</a>
+    <a href="{% url register_public_key %}" id="nav_registerdevice" class="admin-only {% block register_selected %}{% endblock register_selected %}" title="Register this device with the central server">{% trans "Register device" %}</a>
 </span>
 <span class="dropdown topic-browser-dropdown logged-in-only">
-    <a href="{% url logout %}" id="logged-in-name" title="Logout">&nbsp;Logout</a>
+    <a href="{% url logout %}" id="logged-in-name" title="Logout">&nbsp;{% trans "Logout" %}</a>
 </span>
 
 {% endblock sitewide_navigation %}
