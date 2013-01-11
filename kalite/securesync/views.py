@@ -23,6 +23,7 @@ from securesync.api_client import SyncClient
 from utils.jobs import force_job
 from utils.decorators import require_admin
 
+from django.utils.translation import ugettext as _
 
 def central_server_only(handler):
     def wrapper_fn(*args, **kwargs):
@@ -154,7 +155,8 @@ def facility_edit(request, id=None):
         form = FacilityForm(data=request.POST, instance=facil)
         if form.is_valid():
             form.save()
-            messages.success(request, "The facility '%s' has been successfully saved!" % form.instance.name)
+            # Translators: Do not change the text of '%(facility_name)s' because it is a variable, but you can change its position. 
+            messages.success(request, _("The facility '%(facility_name)s' has been successfully saved!") % {"facility_name": form.instance.name})
             return HttpResponseRedirect(request.next or reverse("facility_admin"))
     else:
         form = FacilityForm(instance=facil)

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-09 16:07-0800\n"
+"POT-Creation-Date: 2013-01-10 12:11-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,7 +30,7 @@ msgstr ""
 msgid "Email address"
 msgstr ""
 
-#: registration/forms.py:39
+#: registration/forms.py:39 securesync/forms.py:26 securesync/forms.py:73
 msgid "Password"
 msgstr ""
 
@@ -80,6 +80,22 @@ msgstr ""
 
 #: registration/models.py:174
 msgid "registration profiles"
+msgstr ""
+
+#: securesync/forms.py:44
+msgid ""
+"A user with this username at this facility already exists. Please choose a "
+"new username (or select a different facility) and try again."
+msgstr ""
+
+#: securesync/forms.py:92
+msgid ""
+"Username was not found for this facility. Did you type your username "
+"correctly, and choose the right facility?"
+msgstr ""
+
+#: securesync/forms.py:97
+msgid "The password did not match. Please try again."
 msgstr ""
 
 #: templates/base_distributed.html:35
