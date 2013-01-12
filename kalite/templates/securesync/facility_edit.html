@@ -1,6 +1,8 @@
 {% extends base_template %}
 
-{% block title %}Facility{% endblock title %}
+{% load i18n %}
+
+{% block title %}{% trans "Facility" %}{% endblock title %}
 
 {% block extra_head %}{{ block.super }}
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUVMGp6Uks8OCczFfrWo20zHnmENyW5O0&v=3.9&sensor=false&libraries=places">
@@ -157,20 +159,22 @@ function saveZoom(zm) {
 {% endblock %}
 
 {% block content %}
-<h2>{% if form.instance.id %}Edit a facility{% else %}Add a new Facility{% endif %}</h2>
-<div id="id_direc_no_map">Please enter the following information about your facility. Please enter a detailed address, because knowing where you are in the world allows us to better plan for future deployments and partnerships.</div>
+<h2>{% if form.instance.id %}{% trans "Edit a facility" %}{% else %}{% trans "Add a new Facility" %}{% endif %}</h2>
+<div id="id_direc_no_map">{% trans "Please enter the following information about your facility. Please enter a detailed address, because knowing where you are in the world allows us to better plan for future deployments and partnerships." %}</div>
 <div id="id_direc_map">
-    Please use this search box to locate your facility (and/or click on the map to select a spot), and then enter the additional information in the form below.<br/>
-    (Knowing, as closely as possible, where you are in the world allows us to better plan for future deployments and partnerships)
+    {% trans "Please use this search box to locate your facility (and/or click on the map to select a spot), and then enter the additional information in the form below." %}<br/>
+    {% trans "(Knowing, as closely as possible, where you are in the world allows us to better plan for future deployments and partnerships)" %}
 </div>
 <div id="search-panel">
-    <input id="target" type="text" placeholder="Search for your facility's address or name to find its location on the map (enter to search)">
+    {% trans "Search for your facility's address or name to find its location on the map (enter to search)" as placeholder %}
+    <input id="target" type="text" placeholder="{{placeholder}}">
 </div>
 <div id="map_canvas"></div>
 <form id="facility_form" method="post" class="basic-form">
 {% csrf_token %}
 {{ form.as_p }}
-<input type="submit" value="Save facility" class="submit"/>
+{% trans "Save facility" as value %}
+<input type="submit" value="{{ value }}" class="submit"/>
 </form>
 
 

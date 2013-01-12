@@ -1,5 +1,7 @@
 {% extends 'base_distributed.html' %}
 
+{% load i18n %}
+
 {% block watch_selected %}selected{% endblock watch_selected %}
 
 {% block headjs %}
@@ -91,23 +93,28 @@ a:hover, a:hover .suggested-action-title {
 {% block content %}
 <div class="front-page">
     
-    <h2 class="main-headline">A free world-class education for anyone anywhere.</h2>
+    <h2 class="main-headline">{% trans "A free world-class education for anyone anywhere." %}</h2>
     
     <div class="vertical-shadow suggested-action">
-        <h2 class="suggested-action-title">Learn by watching videos!</h2>
+        <h2 class="suggested-action-title">{% trans "Learn by watching videos!" %}</h2>
         <p class="topic-list">
-            <a href="math">Math</a>
-            <a href="science">Science</a>
-            <a href="finance-economics">Finance &amp; Economics</a>
-            <a href="humanities">Humanities</a>
-            <a href="test-prep">Test Prep</a>
+            {% comment %}Translators: This will appear in a list of video topics.{% endcomment %}
+            <a href="math">{% trans "Math" %}</a>
+            {% comment %}Translators: This will appear in a list of video topics.{% endcomment %}            
+            <a href="science">{% trans "Science" %}</a>
+            {% comment %}Translators: This will appear in a list of video topics.{% endcomment %}
+            <a href="finance-economics">{% trans "Finance" %} &amp; {% trans "Economics" %}</a>
+            {% comment %}Translators: This will appear in a list of video topics.{% endcomment %}
+            <a href="humanities">{% trans "Humanities" %}</a>
+            {% comment %}Translators: This will appear in a list of video topics.{% endcomment %}
+            <a href="test-prep">{% trans "Test Prep" %}</a>
         </p>
     </div>
 
     <div class="vertical-shadow suggested-action">
         <a href="/exercisedashboard">
-            <h2 class="suggested-action-title">Learn by doing exercises!</h2>
-            <p>Practice your math skills from addition to calculus and everything in between.</p>
+            <h2 class="suggested-action-title">{% trans "Learn by doing exercises!" %}</h2>
+            <p>{% trans "Practice your math skills from addition to calculus and everything in between." %}</p>
             <div class="suggested-action-image-link" style="background-image: url(/static/images/knowledge-map-derivative-intuition.png);"></div>
         </a>
     </div>
@@ -116,6 +123,6 @@ a:hover, a:hover .suggested-action-title {
     
 </div>
 
-<p>KA Lite is a light-weight web server for viewing and interacting with core Khan Academy content (videos and exercises) without needing an internet connection.</p>
+<p>{% trans "KA Lite is a light-weight web server for viewing and interacting with core Khan Academy content (videos and exercises) without needing an Internet connection." %}</p>
 
 {% endblock content %}

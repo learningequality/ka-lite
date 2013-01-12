@@ -1,5 +1,7 @@
 {% extends 'base_distributed.html' %}
 
+{% load i18n %}
+
 {% block practice_selected %}selected{% endblock practice_selected %}
 
 {% block headcss %}
@@ -79,10 +81,11 @@
 
     <div class="exercises-header">
         {% if request.META.HTTP_REFERER %}
-        <a class="return-link" href="{{ request.META.HTTP_REFERER }}">&#60; Return</a>
+        {% comment %} Translators: Return in this sense, means to go back. {% endcomment %}
+        <a class="return-link" href="{{ request.META.HTTP_REFERER }}">&#60; {% trans "Return" %}</a>
         {% endif %}
         <h2>
-            <span class="practice-exercise-topic-context">Practicing</span> {{ title }}
+            <span class="practice-exercise-topic-context">{% trans "Practicing" %}</span> {{ title }}
             {% if exercise.description %}<br/><span class="practice-exercise-description">{{ exercise.description }}</span>{% endif %}
         </h2>
     </div>
@@ -102,38 +105,41 @@
                             </div>
                             <div id="answer_area_wrap"><div id="answer_area">
                                 <form id="answerform" action="/exercisedashboard" method="get" name="answerform">
-                                    <div id="streakbar" class="info-box" title="Your progress streak bar for this exercise">
+                                    {% trans "Your progress streak bar for this exercise" as prog_streak %}
+                                    <div id="streakbar" class="info-box" title="{{ prog_streak }}">
                                         <div class="streak">
                                             <div class="progress-bar"><div id="totalpoints"></div></div>
                                         </div>
                                     </div>
                                     <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px">
                                     <div id="answercontent" class="info-box">
-                                        <span class="info-box-header">Answer</span>
+                                        <span class="info-box-header">{% trans "Answer" %}</span>
                                         <div id="questionpoints"></div>
                                         <div id="solutionarea" class="fancy-scrollbar"></div>
                                         <ul id="examples" style="display: none"></ul>
                                         <div class="answer-buttons">
                                         <input type="button" class="simple-button green" id="check-answer-button" value="Check Answer"/>
-                                        <input type="button" class="simple-button green" id="next-question-button" style="display:none;" name="correctnextbutton" value="Correct! Next Question..."/>
+                                        {% trans "Correct! Next Question..." as next_btn %}
+                                        <input type="button" class="simple-button green" id="next-question-button" style="display:none;" name="correctnextbutton" value="{{ next_btn }}"/>
                                         <span id="show-solution-button-container"></span>
                                         <div id="check-answer-results"><p class="check-answer-message info-box-sub-description"></p></div>
                                         </div>
                                     </div>
                                     <div class="info-box hint-box">
-                                        <span class="info-box-header">Need help?</span>
+                                        <span class="info-box-header">{% trans "Need help?" %}</span>
                                         <div id="get-hint-button-container">
-                                            <input id="hint" type="button" class="simple-button orange full-width" value="I'd like a hint" name="hint"/>
+                                            {% trans "I'd like a hint" as hint %}
+                                            <input id="hint" type="button" class="simple-button orange full-width" value="{{ hint }}" name="hint"/>
                                         </div>
-                                        <span id="hint-remainder">Note: this will reset your streak and points for this exercise!</span>
+                                        <span id="hint-remainder">{% trans "Note: this will reset your streak and points for this exercise!" %}</span>
                                     </div>
 
                                     <div class="info-box related-video-box">
                                         <div id="related-video-content">
-                                            <span class="info-box-header">Stuck? Watch a video.</span>
+                                            <span class="info-box-header">{% trans "Stuck? Watch a video." %}</span>
 
                                             <div id="related-video-list">
-                                                <span class="related-content-title">Related videos:</span>
+                                                <span class="related-content-title">{% trans "Related videos:" %}</span>
                                                 <ul class="related-video-list">
                                                     {% if related_videos %}
                                                     {% for video in related_videos %}
@@ -179,8 +185,8 @@
                 </div>
                 <div id="extras" class="single-exercise">
                     <ul>
-                        <li> <a id="scratchpad-show" href style>Show scratchpad</a>
-                            <span id="scratchpad-not-available" style="display: none;">Scratchpad not available</span>
+                        <li> <a id="scratchpad-show" href style>{% trans "Show scratchpad" %}</a>
+                            <span id="scratchpad-not-available" style="display: none;">{% trans "Scratchpad not available" %}</span>
                         </li>
                     </ul>
                 </div>
