@@ -1,4 +1,5 @@
 import re, json, sys
+import urllib2
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
@@ -93,7 +94,15 @@ def topic_handler(request, topic):
     
 @render_to("video.html")
 def video_handler(request, video, prev=None, next=None):
-    if request.user.is_authenticated():
+    video_resource_url = ''.join(['http://127.0.0.1:8008/content/',video['youtube_id'],'.png'])
+    open_result = 404
+    try:
+        open_result = urllib2.urlopen(video_resource_url).code
+    except:
+        open_result = 404
+    if not open_result == 200:
+        messages.warning(request, "Video not found! You can download it logged as an admin/teacher by pressing the update button.")
+    elif request.user.is_authenticated():
         messages.warning(request, "Note: You're logged in as an admin (not as a student/teacher), so your video progress and points won't be saved.")
     elif not request.is_logged_in:
         messages.warning(request, "Friendly reminder: You are not currently logged in, so your video progress and points won't be saved.")
