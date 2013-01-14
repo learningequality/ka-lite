@@ -14,7 +14,7 @@ from django.contrib import messages
 from securesync.views import require_admin, facility_required
 from config.models import Settings
 from securesync.models import Facility, FacilityGroup
-from models import FacilityUser, VideoLog, ExerciseLog
+from models import FacilityUser, VideoLog, ExerciseLog, VideoFile
 from django.utils.safestring import mark_safe
 from config.models import Settings
 from securesync.api_client import SyncClient
@@ -93,7 +93,14 @@ def topic_handler(request, topic):
     
 @render_to("video.html")
 def video_handler(request, video, prev=None, next=None):
-    if request.user.is_authenticated():
+    if not VideoFile.objects.filter(pk=video['youtube_id']).exists():
+        if request.user.is_authenticated() and request.user.is_superuser:
+            messages.warning(request, "Video not found! You can download it by going to update page!")
+        elif request.is_logged_in:
+            messages.warning(request, "Video not found! Please contact your teacher or an admin!")
+        elif not request.is_logged_in:
+            messages.warning(request, "Video not found! You must login as an admin/teacher to download the video!")
+    elif request.user.is_authenticated():
         messages.warning(request, "Note: You're logged in as an admin (not as a student/teacher), so your video progress and points won't be saved.")
     elif not request.is_logged_in:
         messages.warning(request, "Friendly reminder: You are not currently logged in, so your video progress and points won't be saved.")
