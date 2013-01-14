@@ -97,7 +97,7 @@ def video_handler(request, video, prev=None, next=None):
         if request.user.is_authenticated() and request.user.is_superuser:
             messages.warning(request, "Video not found! You can download it by going to update page!")
         elif request.is_logged_in:
-            messages.warning(request, "Video not found! Please contact your teacher or and admin!")
+            messages.warning(request, "Video not found! Please contact your teacher or an admin!")
         elif not request.is_logged_in:
             messages.warning(request, "Video not found! You must login as an admin/teacher to download the video!")
     elif request.user.is_authenticated():
