@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-11 16:33-0800\n"
+"POT-Creation-Date: 2013-01-15 11:45-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,425 +23,395 @@ msgid ""
 "Note: You're logged in as an admin (not as a student/teacher), so your video "
 "progress and points won't be saved."
 msgstr ""
+"Bitte beachten! Sie sind als Admin eingeloggt (nicht als Schüler/Lehrer), "
+"deshalb werden Ihre Videosequenzen und Punkte nicht gespeichert. "
 
 #: main/views.py:100
 msgid ""
 "Friendly reminder: You are not currently logged in, so your video progress "
 "and points won't be saved."
 msgstr ""
+"Hinweis: Sie sind momentan nicht eingeloggt, deshalb werden Ihre "
+"Videosequenzen und Punkte nicht gespeichert. "
 
 #: main/views.py:114
 msgid ""
 "Note: You're logged in as an admin (not as a student/teacher), so your "
 "exercise progress and points won't be saved."
 msgstr ""
+"Bitte beachten! Sie sind als Admin eingeloggt (nicht als Schüler/Lehrer), "
+"deshalb werden Ihre Übungsfortschritte und erreichte Punktzahl nicht "
+"gespeichert."
 
 #: main/views.py:116
 msgid ""
 "Friendly reminder: You are not currently logged in, so your exercise "
 "progress and points won't be saved."
-msgstr ""
+msgstr "Hinweis: Sie sind momentan nicht eingeloggt"
 
-#: registration/admin.py:23
-msgid "Activate users"
-msgstr ""
-
-#: registration/admin.py:43
-msgid "Re-send activation emails"
-msgstr ""
-
-#: registration/forms.py:37
-msgid "Email address"
-msgstr ""
-
-#: registration/forms.py:39 securesync/forms.py:26 securesync/forms.py:73
+#: securesync/forms.py:26 securesync/forms.py:73
+#, fuzzy
 msgid "Password"
-msgstr ""
-
-#: registration/forms.py:41
-msgid "Password (again)"
-msgstr ""
-
-#: registration/forms.py:54 registration/forms.py:58
-msgid "You must acknowledge having read these terms."
-msgstr ""
-
-#: registration/forms.py:70
-msgid "The two password fields didn't match."
-msgstr ""
-
-#: registration/forms.py:81
-msgid "I have read and agree to the Terms of Service"
-msgstr ""
-
-#: registration/forms.py:82
-msgid "You must agree to the terms to register"
-msgstr ""
-
-#: registration/forms.py:98
-msgid ""
-"This email address is already in use. Please supply a different email "
-"address."
-msgstr ""
-
-#: registration/forms.py:125
-msgid ""
-"Registration using free email addresses is prohibited. Please supply a "
-"different email address."
-msgstr ""
-
-#: registration/models.py:167
-msgid "user"
-msgstr ""
-
-#: registration/models.py:168
-msgid "activation key"
-msgstr ""
-
-#: registration/models.py:173
-msgid "registration profile"
-msgstr ""
-
-#: registration/models.py:174
-msgid "registration profiles"
-msgstr ""
+msgstr "Passwort:"
 
 #: securesync/forms.py:44
 msgid ""
 "A user with this username at this facility already exists. Please choose a "
 "new username (or select a different facility) and try again."
 msgstr ""
+"Ein Benutzer mit diesem Benutzernamen ist bereits vorhanden für diese "
+"Fazilitaet. Bitte einen neuen Benutzernamen oder andere Fazilitaet wählen "
+"und nochmals versuchen."
 
 #: securesync/forms.py:92
 msgid ""
 "Username was not found for this facility. Did you type your username "
 "correctly, and choose the right facility?"
 msgstr ""
+"Benutzername wurde für diese Fazilitaet nicht gefunden. Haben Sie Ihren "
+"Benutzernamen richtig eingegeben?  Und die richtige Fazilitaet gewählt?"
 
 #: securesync/forms.py:97
 msgid "The password did not match. Please try again."
-msgstr ""
+msgstr "Das Passwort stimmt nicht. Bitte nochmals versuchen."
 
 #: securesync/models.py:257 securesync/models.py:283
 msgid "Name"
-msgstr ""
+msgstr "Name"
 
 #: securesync/models.py:257
 msgid ""
 "(This is the name that students/teachers will see when choosing their "
 "facility; it can be in the local language.)"
 msgstr ""
+"(Dies ist der Name, dass Schüler/Lehrer bei der Wahl ihrer Fazilitaet "
+"sehen.  Es kann in der Landessprache sein.)"
 
 #: securesync/models.py:258
 msgid "Description"
-msgstr ""
+msgstr "Beschreibung"
 
 #: securesync/models.py:259
 msgid "Address"
-msgstr ""
+msgstr "Adresse"
 
 #: securesync/models.py:259
 msgid "(Please provide as detailed an address as possible.)"
-msgstr ""
+msgstr "(Bitte eine so detaillierte Adresse wie möglich angeben.)"
 
 #: securesync/models.py:261
 msgid "Latitude"
-msgstr ""
+msgstr "Breitengrad"
 
 #: securesync/models.py:262
 msgid "Longitude"
-msgstr ""
+msgstr "Längengrad"
 
 #: securesync/models.py:263
 msgid "Zoom"
-msgstr ""
+msgstr "Zoom"
 
 #: securesync/models.py:264
 msgid "Contact Name"
-msgstr ""
+msgstr "Kontakt Name"
 
 #: securesync/models.py:264
 msgid "(Who should we contact with any questions about this facility?)"
-msgstr ""
+msgstr "(Wen sollten wir kontaktieren mit Fragen bzgl. diese Fazilitaet?)"
 
 #: securesync/models.py:265
 msgid "Contact Phone"
-msgstr ""
+msgstr "Kontakt Telefon"
 
 #: securesync/models.py:266
 msgid "Contact Email"
-msgstr ""
+msgstr "Kontakt E-Mail Adresse"
 
 #: securesync/models.py:267
 msgid "User Count"
-msgstr ""
+msgstr "Anzahl Benutzer"
 
 #: securesync/models.py:267
 msgid "(How many potential users do you estimate there are at this facility?)"
-msgstr ""
+msgstr "(Wie viele potentielle Benutzer schätzen Sie für diese Fazilitaet?)"
 
 #. Translators: This is a label in a form.
 #: securesync/models.py:282 securesync/models.py:291
 #: templates/securesync/facility_edit.html:5
 msgid "Facility"
-msgstr ""
+msgstr "Fazilitaet"
 
 #. Translators: This is a label in a form.
 #: securesync/models.py:293
 msgid "(Group/class)"
-msgstr ""
+msgstr "(Gruppe/Klasse)"
 
 #: securesync/models.py:293
 msgid "(optional)"
-msgstr ""
+msgstr "(optional)"
 
 #. Translators: This is a label in a form.
 #: securesync/models.py:295
 msgid "Username"
-msgstr ""
+msgstr " Benutzername"
 
 #. Translators: This is a label in a form.
 #: securesync/models.py:297
 msgid "First Name"
-msgstr ""
+msgstr "Vorname"
 
 #. Translators: This is a label in a form.
 #: securesync/models.py:299
 msgid "Last Name"
-msgstr ""
+msgstr "Nachname"
 
 #. Translators: This is a label in a form.
 #: securesync/models.py:301
 msgid "(whether this user should have teacher permissions)"
-msgstr ""
+msgstr "(ob dieser Benutzer Lehrerrechten haben soll)"
 
 #: securesync/views.py:39
 msgid "This path is only available on distributed servers."
-msgstr ""
+msgstr "Dieser Path ist nur auf dezentrale Server verfügbar."
 
 #: securesync/views.py:70
 msgid "To continue, you must first add a facility (e.g. for your school). "
 msgstr ""
+"Um fortzufahren, müssen Sie zuerst eine Fazilitaet registrieren (z.B. für "
+"Ihre Schule). "
 
 #: securesync/views.py:71
 msgid "Please use the form below to add a facility."
 msgstr ""
+"Bitte das untenstehende Formular benutzen, um eine Fazilitaet hinzufügen."
 
 #: securesync/views.py:74
 msgid ""
 "You must first have the administrator of this server log in below to add a "
 "facility."
 msgstr ""
+"Um eine Fazilitaet hinzuzufügen muss der Administrator dieser Server zuerst "
+"unten einloggen."
 
 #: securesync/views.py:118
 msgid "Registration status: "
-msgstr ""
+msgstr "Anmeldestatus: "
 
 #: securesync/views.py:128
 msgid ""
 "The device's public key has been successfully registered. You may now close "
 "this window."
 msgstr ""
+"Der öffentliche Schlüssel für dieses Gerät wurde erfolgreich registriert. "
+"Sie können nun dieses Fenster schließen."
 
 #. Translators: Do not change the text of '%(facility_name)s' because it is a variable, but you can change its position.
 #: securesync/views.py:159
 #, python-format
 msgid "The facility '%(facility_name)s' has been successfully saved!"
-msgstr ""
+msgstr "Die Fazilitaet '%(facility_name)s' wurde erfolgreich gespeichert!"
 
 #: securesync/views.py:205
 msgid "You must add a facility before creating a user"
 msgstr ""
+"Bevor Sie eine Benutzer registrieren, müssen Sie eine Fazilitaet erstellen."
 
 #: securesync/views.py:254
 msgid "This mission is too important for me to allow you to jeopardize it."
-msgstr ""
+msgstr "Diese Aufgabe ist zu wichtig, dass ich erlaube Sie es zu gefährden."
 
 #: securesync/views.py:296
 msgid "You've been logged in! We hope you enjoy your time with KA Lite "
 msgstr ""
+"Sie sind eingeloggt! Wir Hoffen, dass Sie Ihrer Zeit mit KA Lite genießen. "
 
 #: securesync/views.py:297
 msgid "-- be sure to log out when you finish."
-msgstr ""
+msgstr "-- bitte ausloggen wenn Sie fertig sind."
 
 #: securesync/views.py:301
 msgid ""
 "There was an error logging you in. Please correct any errors listed below, "
 "and try again."
 msgstr ""
+"Es gab einen Fehler bei den Versuch einzuloggen, bitte eventuelle unten "
+"aufgeführten Fehler korrigieren und nochmals versuchen."
 
 #: templates/404_distributed.html:5 templates/404_distributed.html.py:8
 msgid "Page not found"
-msgstr ""
+msgstr "Seite nicht gefunden"
 
 #: templates/404_distributed.html:10
 msgid "Sorry, but the requested page could not be found."
-msgstr ""
+msgstr "Sorry, die angeforderte Seite konnte nicht gefunden werden."
 
 #: templates/500_distributed.html:5 templates/500_distributed.html.py:8
 msgid "Error"
-msgstr ""
+msgstr "Fehler"
 
 #: templates/500_distributed.html:10
 msgid "Sorry, but there was an error while trying to load the page."
-msgstr ""
+msgstr "Sorry, es gab ein Fehler beim Versuch, die Seite zu laden."
 
 #: templates/base.html:77
 msgid "Videos and Exercises"
-msgstr ""
+msgstr "Videos und Übungen"
 
 #. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
 #: templates/base_distributed.html:38
 msgid "Watch"
-msgstr ""
+msgstr "Ansehen"
 
 #. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
 #: templates/base_distributed.html:40
 msgid "Practice"
-msgstr ""
+msgstr "Üben"
 
 #. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
 #: templates/base_distributed.html:42
 msgid "Add Student"
-msgstr ""
+msgstr "Student/Studentin hinzufügen"
 
 #. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
 #: templates/base_distributed.html:44
 msgid "Add Teacher"
-msgstr ""
+msgstr "Lehrer/Lehrerin hinzufügen"
 
 #. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
 #: templates/base_distributed.html:46
 msgid "Admin"
-msgstr ""
+msgstr "Admin"
 
 #. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
 #: templates/base_distributed.html:48
 msgid "Update"
-msgstr ""
+msgstr "Aktualisieren"
 
 #. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
 #: templates/base_distributed.html:50
 msgid "Coach"
-msgstr ""
+msgstr "Trainer"
 
 #. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
 #: templates/base_distributed.html:52
 msgid "Sign Up"
-msgstr ""
+msgstr "Registrieren"
 
 #. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
 #: templates/base_distributed.html:54 templates/securesync/login.html:7
 #: templates/securesync/login.html.py:14 templates/securesync/login.html:36
 msgid "Login"
-msgstr ""
+msgstr "Einloggen"
 
 #. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
 #: templates/base_distributed.html:58
 msgid "Register device"
-msgstr ""
+msgstr "Gerät registrieren"
 
 #. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
 #: templates/base_distributed.html:62
 msgid "Logout"
-msgstr ""
+msgstr "Ausloggen"
 
 #. Translators: Return in this sense, means to go back.
 #: templates/exercise.html:85
 msgid "Return"
-msgstr ""
+msgstr "Zurück"
 
 #: templates/exercise.html:88
 msgid "Practicing"
-msgstr ""
+msgstr "Übe gerade"
 
 #: templates/exercise.html:108
 msgid "Your progress streak bar for this exercise"
-msgstr ""
+msgstr "Ihr Fortschrittsergebnis für diese Übung"
 
 #: templates/exercise.html:116
 msgid "Answer"
-msgstr ""
+msgstr "Antwort"
 
 #: templates/exercise.html:122
 msgid "Correct! Next Question..."
-msgstr ""
+msgstr "Richtig! Nächste Aufgabe..."
 
 #: templates/exercise.html:129
 msgid "Need help?"
-msgstr ""
+msgstr "Brauchen Sie Hilfe?"
 
 #: templates/exercise.html:131
 msgid "I'd like a hint"
-msgstr ""
+msgstr "IIch möchte einen Tipp"
 
 #: templates/exercise.html:134
 msgid "Note: this will reset your streak and points for this exercise!"
 msgstr ""
+"Hinweis: dies wird Ihre Fortschrittsergebnis und Punktzahl für diese Übung "
+"zurückgesetzen!"
 
 #: templates/exercise.html:139
 msgid "Stuck? Watch a video."
-msgstr ""
+msgstr "Probleme?  Schau ein Video an."
 
 #: templates/exercise.html:142
 msgid "Related videos:"
-msgstr ""
+msgstr "Verwandte Videos:"
 
 #: templates/exercise.html:188
 msgid "Show scratchpad"
-msgstr ""
+msgstr "Scratchpad anzeigen"
 
 #: templates/exercise.html:189
 msgid "Scratchpad not available"
-msgstr ""
+msgstr "Scratchpad nicht verfügbar"
 
 #: templates/homepage.html:96
 msgid "A free world-class education for anyone anywhere."
-msgstr ""
+msgstr "Eine kostenlose Weltklasse-Bildung für jeden und überall."
 
 #: templates/homepage.html:99
 msgid "Learn by watching videos!"
-msgstr ""
+msgstr "Durch Videos lernen!"
 
 #. Translators: This will appear in a list of video topics.
 #: templates/homepage.html:102
 msgid "Math"
-msgstr ""
+msgstr "Mathe"
 
 #. Translators: This will appear in a list of video topics.
 #: templates/homepage.html:104
 msgid "Science"
-msgstr ""
+msgstr "Wissenschaft"
 
 #. Translators: This will appear in a list of video topics.
 #: templates/homepage.html:106
 msgid "Finance"
-msgstr ""
+msgstr "Finanz"
 
 #: templates/homepage.html:106
 msgid "Economics"
-msgstr ""
+msgstr "Wirtschaft"
 
 #. Translators: This will appear in a list of video topics.
 #: templates/homepage.html:108
 msgid "Humanities"
-msgstr ""
+msgstr "Geisteswissenschaften"
 
 #. Translators: This will appear in a list of video topics.
 #: templates/homepage.html:110
 msgid "Test Prep"
-msgstr ""
+msgstr "Prüfungsvorbereitung"
 
 #: templates/homepage.html:116
 msgid "Learn by doing exercises!"
-msgstr ""
+msgstr "Durch Übungen lernen!"
 
 #: templates/homepage.html:117
 msgid ""
 "Practice your math skills from addition to calculus and everything in "
 "between."
 msgstr ""
+"Mathematischen Fähigkeiten, von Addition bis Calculus und alles was "
+"dazwischen liegt, üben."
 
 #: templates/homepage.html:126
 msgid ""
@@ -449,360 +419,238 @@ msgid ""
 "Khan Academy content (videos and exercises) without needing an Internet "
 "connection."
 msgstr ""
+"KA Lite ist ein vereinfachte Web-Server zur Bildbetrachtung und Interaktion "
+"mit Khan Academy Kerninhalte (Videos und Übungen), ohne, dass eine "
+"Internetverbindung benötigt wird."
 
 #: templates/knowledgemap.html:20
 msgid "Your Knowledge Map"
-msgstr ""
+msgstr "Ihr Lernpfad"
 
 #: templates/knowledgemap.html:27
 msgid "Back to topics"
-msgstr ""
+msgstr "Zurück zu den Themen"
 
 #: templates/topic.html:15
 msgid "Subtopics"
-msgstr ""
+msgstr "Unterthemen"
 
 #: templates/topic.html:27
 msgid "Videos"
-msgstr ""
+msgstr "Videos"
 
 #: templates/topic.html:41
 msgid "Exercises"
-msgstr ""
+msgstr "Übungen"
 
 #. Translators: Example usage=> Exercise: Name of Exercise
 #: templates/video.html:62
 msgid "Exercise"
-msgstr ""
+msgstr "Übung"
 
 #: templates/video.html:63
 msgid "Practice this concept"
-msgstr ""
+msgstr "Konzept üben"
 
 #: templates/video.html:67
 msgid "Points"
-msgstr ""
+msgstr "Punkte"
 
 #: templates/video_download.html:7
 msgid "Video Download"
-msgstr ""
+msgstr "Video Runterladen"
 
 #: templates/video_download.html:227
 msgid ""
 "You are about to download new subtitles for all downloaded videos. This may "
 "take a long time."
 msgstr ""
+"Sie sind dabei, neue Untertitel für alle heruntergeladenen Videos "
+"herunterzuladen. Dies kann sehr lange dauern."
 
 #: templates/video_download.html:236
 msgid "Please select a language first"
-msgstr ""
+msgstr "Bitte zuerst eine Sprache wählen"
 
 #: templates/video_download.html:452
 msgid "Please select videos to download (below)"
-msgstr ""
+msgstr "Bitte Videos zum runterladen unten auswählen"
 
 #: templates/video_download.html:453
 msgid "Download "
-msgstr ""
+msgstr "Runterladen "
 
 #: templates/video_download.html:453
 msgid " new selected videos"
-msgstr ""
+msgstr " neue ausgewählten Videos"
 
 #: templates/video_download.html:454
 msgid "Delete "
-msgstr ""
+msgstr "Löschen "
 
 #: templates/video_download.html:454
 msgid " selected videos"
-msgstr ""
+msgstr " ausgewählten Videos"
 
 #: templates/video_download.html:458
 msgid "Download/update subtitles for existing videos"
-msgstr ""
+msgstr "Runterladen / aktualisieren Untertitel für bestehende Videos"
 
 #: templates/video_download.html:468
 msgid "Get/Update All Subtitles"
-msgstr ""
+msgstr "Alle Untertitel holen / aktualisieren  "
 
 #: templates/video_download.html:469
 msgid "Get Missing Subtitles Only"
-msgstr ""
+msgstr "Nur fehlende Untertitel holen"
 
 #: templates/video_download.html:476
 msgid "Downloads will start soon... Please wait!"
-msgstr ""
+msgstr "Runterladung wird bald beginnen ... Bitte warten!"
 
 #: templates/video_download.html:483
 msgid "Downloading video:"
-msgstr ""
+msgstr "Video wird heruntergeladen:"
 
 #: templates/video_download.html:490
 msgid "Overall video download progress:"
-msgstr ""
+msgstr "Video-Download-Fortschritt insgesamt:"
 
 #: templates/video_download.html:492 templates/video_download.html.py:507
 msgid "of"
-msgstr ""
+msgstr "von"
 
 #: templates/video_download.html:498
 msgid "Video download error... click to retry"
-msgstr ""
+msgstr "Video-Download-Fehler... Klicken um nochmals zu versuchen"
 
 #: templates/video_download.html:517
 msgid "Cancel All Downloads"
-msgstr ""
+msgstr "Alle Downloads abbrechen"
 
 #: templates/video_download.html:519
 msgid " Loading topic tree... Please wait!"
-msgstr ""
+msgstr " Themenbaum wird geladen ... Bitte warten!"
 
 #: templates/admin/base.html:61
 msgid "Home"
-msgstr ""
+msgstr "Home"
 
 #: templates/admin/login.html:18
 msgid "Please correct the error below."
 msgid_plural "Please correct the errors below."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Bitte untere Fehler korrigieren."
+msgstr[1] "Bitte untere Fehler korrigieren."
 
 #: templates/admin/login.html:34
 msgid "Username:"
-msgstr ""
+msgstr "Benutzername:"
 
 #: templates/admin/login.html:38
 msgid "Password:"
-msgstr ""
+msgstr "Passwort:"
 
 #: templates/admin/login.html:45
 msgid "Forgotten your password or username?"
-msgstr ""
+msgstr "Passwort oder Benutzername vergessen?"
 
 #: templates/admin/login.html:49
-#: templates/registration/password_reset_complete.html:14
 msgid "Log in"
-msgstr ""
-
-#: templates/registration/password_change_done.html:4
-#: templates/registration/password_change_done.html:8
-msgid "Password change successful"
-msgstr ""
-
-#: templates/registration/password_change_done.html:10
-msgid "Your password was changed."
-msgstr ""
-
-#: templates/registration/password_change_form.html:5
-#: templates/registration/password_change_form.html:9
-msgid "Password change"
-msgstr ""
-
-#: templates/registration/password_change_form.html:11
-msgid ""
-"Please enter your old password, for security's sake, and then enter your new "
-"password twice so we can verify you typed it in correctly."
-msgstr ""
-
-#: templates/registration/password_change_form.html:16
-msgid "Old password:"
-msgstr ""
-
-#: templates/registration/password_change_form.html:18
-#: templates/registration/password_reset_confirm.html:19
-msgid "New password:"
-msgstr ""
-
-#: templates/registration/password_change_form.html:20
-#: templates/registration/password_reset_confirm.html:21
-msgid "Confirm password:"
-msgstr ""
-
-#: templates/registration/password_change_form.html:22
-#: templates/registration/password_reset_confirm.html:22
-msgid "Change my password"
-msgstr ""
-
-#: templates/registration/password_reset_complete.html:6
-#: templates/registration/password_reset_complete.html:10
-msgid "Password reset complete"
-msgstr ""
-
-#: templates/registration/password_reset_complete.html:12
-msgid "Your password has been set.  You may go ahead and log in now."
-msgstr ""
-
-#: templates/registration/password_reset_confirm.html:6
-#: templates/registration/password_reset_form.html:6
-#: templates/registration/password_reset_form.html:10
-msgid "Password reset"
-msgstr ""
-
-#: templates/registration/password_reset_confirm.html:12
-msgid "Enter new password"
-msgstr ""
-
-#: templates/registration/password_reset_confirm.html:14
-msgid ""
-"Please enter your new password twice so we can verify you typed it in "
-"correctly."
-msgstr ""
-
-#: templates/registration/password_reset_confirm.html:27
-msgid "Password reset unsuccessful"
-msgstr ""
-
-#: templates/registration/password_reset_confirm.html:29
-msgid ""
-"The password reset link was invalid, possibly because it has already been "
-"used.  Please request a new password reset."
-msgstr ""
-
-#: templates/registration/password_reset_done.html:6
-#: templates/registration/password_reset_done.html:10
-msgid "Password reset successful"
-msgstr ""
-
-#: templates/registration/password_reset_done.html:12
-msgid ""
-"We've e-mailed you instructions for setting your password to the e-mail "
-"address you submitted. You should be receiving it shortly."
-msgstr ""
-
-#: templates/registration/password_reset_email.html:2
-msgid "You're receiving this e-mail because you requested a password reset"
-msgstr ""
-
-#: templates/registration/password_reset_email.html:3
-#, python-format
-msgid "for your user account at %(site_name)s"
-msgstr ""
-
-#: templates/registration/password_reset_email.html:5
-msgid "Please go to the following page and choose a new password:"
-msgstr ""
-
-#: templates/registration/password_reset_email.html:9
-msgid "Your username, in case you've forgotten:"
-msgstr ""
-
-#: templates/registration/password_reset_email.html:11
-msgid "Thanks for using our site!"
-msgstr ""
-
-#. Translators: Please do not change the variable text %(site_name)s.
-#: templates/registration/password_reset_email.html:14
-#, python-format
-msgid "The %(site_name)s team"
-msgstr ""
-
-#: templates/registration/password_reset_form.html:12
-msgid ""
-"Forgotten your password? Enter your e-mail address below, and we'll e-mail "
-"instructions for setting a new one."
-msgstr ""
-
-#: templates/registration/password_reset_form.html:17
-msgid "E-mail address:"
-msgstr ""
-
-#: templates/registration/password_reset_form.html:17
-msgid "Reset my password"
-msgstr ""
+msgstr "Einloggen"
 
 #: templates/securesync/add_facility_user.html:8
 msgid "Add facility user"
-msgstr ""
+msgstr "Fazilitaetsbenutzer hinzufügen"
 
 #. Translators: The sentence will be: Add a new student or teacher
 #: templates/securesync/add_facility_user.html:17
 msgid "Add a new"
-msgstr ""
+msgstr "Ein neue"
 
 #: templates/securesync/add_facility_user.html:17
 msgid " teacher"
-msgstr ""
+msgstr " Lehrer hinzufügen"
 
 #: templates/securesync/add_facility_user.html:17
 msgid " student"
-msgstr ""
+msgstr " Student hinzufügen"
 
 #: templates/securesync/add_facility_user.html:19
 msgid "Sign up for an account"
-msgstr ""
+msgstr "Registrieren für ein Konto"
 
 #. Translators: This will be a label in a form.
 #: templates/securesync/add_facility_user.html:22
 #: templates/securesync/login.html:20
 msgid "Facility: "
-msgstr ""
+msgstr "Fazilität: "
 
 #: templates/securesync/add_facility_user.html:22
 #: templates/securesync/add_group.html:11
 msgid "(Select a different facility)"
-msgstr ""
+msgstr "(Eine andere Fazilität wählen)"
 
 #: templates/securesync/add_facility_user.html:24
 msgid "Create user"
-msgstr ""
+msgstr "Benutzer hinzufügen"
 
 #: templates/securesync/add_facility_user.html:30
 #: templates/securesync/add_group.html:8
 msgid "Add a new group"
-msgstr ""
+msgstr "Neue Gruppe hinzufügen"
 
 #: templates/securesync/add_group.html:5
 msgid "Add Group"
-msgstr ""
+msgstr "Gruppe hinzufügen"
 
 #: templates/securesync/add_group.html:11
 msgid "Facility:"
-msgstr ""
+msgstr "Fazilität:"
 
 #: templates/securesync/add_group.html:15
 msgid "Create group"
-msgstr ""
+msgstr "Gruppe hinzufügen"
 
 #: templates/securesync/facility_admin.html:5
 msgid "Select user facility"
-msgstr ""
+msgstr "Benutzer-Fazilität wählen"
 
 #: templates/securesync/facility_admin.html:36
 msgid "Facilities"
-msgstr ""
+msgstr "Fazilitäten"
 
 #: templates/securesync/facility_admin.html:41
 msgid "Edit facility"
-msgstr ""
+msgstr "Fazilität bearbeiten"
 
 #: templates/securesync/facility_admin.html:43
 msgid "Add student"
-msgstr ""
+msgstr "Student hinzufügen"
 
 #: templates/securesync/facility_admin.html:44
 msgid "Add teacher"
-msgstr ""
+msgstr "Lehrer hinzufügen"
 
 #: templates/securesync/facility_admin.html:45
 msgid "Add group"
-msgstr ""
+msgstr "Gruppe hinzufügen"
 
 #: templates/securesync/facility_admin.html:49
 #: templates/securesync/facility_edit.html:162
 msgid "Add a new Facility"
-msgstr ""
+msgstr "Neue Fazilität hinzufügen"
 
 #: templates/securesync/facility_admin.html:51
 msgid "You currently have no facilities. Would you like to"
-msgstr ""
+msgstr "Sie haben derzeit keine Fazilität. Möchten Sie "
 
 #: templates/securesync/facility_admin.html:51
 msgid "create a facility"
-msgstr ""
+msgstr "eine Fazilität anlegen"
 
 #: templates/securesync/facility_edit.html:162
 msgid "Edit a facility"
-msgstr ""
+msgstr "Eine Fazilität bearbeiten"
 
 #: templates/securesync/facility_edit.html:163
 msgid ""
@@ -810,6 +658,9 @@ msgid ""
 "detailed address, because knowing where you are in the world allows us to "
 "better plan for future deployments and partnerships."
 msgstr ""
+"Bitte folgende Informationen bzgl. Ihrer Fazilität eingeben. Bitte eine "
+"genaue Adresse angeben da wir künftige Projekte und Partnerschaften besser "
+"planen können wenn wir wissen wo Sie in der Welt sind."
 
 #: templates/securesync/facility_edit.html:165
 msgid ""
@@ -817,62 +668,71 @@ msgid ""
 "to select a spot), and then enter the additional information in the form "
 "below."
 msgstr ""
+"Bitte dieses Suchfeld benutzen, um Ihre Fazilität zu finden (und / oder auf "
+"die Karte klicken, um eine Stelle zu wählen), und dann die zusätzlichen "
+"Informationen in das unten stehende Formular eingeben."
 
 #: templates/securesync/facility_edit.html:166
 msgid ""
 "(Knowing, as closely as possible, where you are in the world allows us to "
 "better plan for future deployments and partnerships)"
 msgstr ""
+"(Das Wissen wo Sie in der Welt sind, so genau wie möglich, erlaubt es uns, "
+"künftigen Projekten und Partnerschaften besser zu planen.)"
 
 #: templates/securesync/facility_edit.html:169
 msgid ""
 "Search for your facility's address or name to find its location on the map "
 "(enter to search)"
 msgstr ""
+"Der Adresse oder Lage Ihrer Fazilität eingeben, um es auf der Karte zu "
+"finden  (eingeben zu suchen)"
 
 #: templates/securesync/facility_edit.html:176
 msgid "Save facility"
-msgstr ""
+msgstr "Fazilität speichern"
 
 #: templates/securesync/facility_selection.html:5
 msgid "Select facility"
-msgstr ""
+msgstr "Fazilität wählen"
 
 #: templates/securesync/facility_selection.html:15
 msgid "(this is the default)"
-msgstr ""
+msgstr "(dies ist der Standardwert)"
 
 #: templates/securesync/facility_selection.html:15
 msgid "(set as the default facility)"
-msgstr ""
+msgstr "(als Standard-Fazilität setzen)"
 
 #: templates/securesync/facility_selection.html:20
 msgid "You currently have no facilities. Would you like to create a facility?"
-msgstr ""
+msgstr "Sie haben derzeit keine Fazilität. Möchten Sie eine Fazilität anlegen?"
 
 #: templates/securesync/facility_selection.html:22
 msgid ""
 "There are currently no facilities available, please ask an administrator or "
 "teacher to set one up."
 msgstr ""
+"Derzeit stehen keine Fazilitäten zur Verfügung.  Bitte ein Verwalter oder "
+"Lehrer fragen eine einzurichten."
 
 #: templates/securesync/facility_selection.html:26
 msgid "Administer Facilities"
-msgstr ""
+msgstr "Fazilitäten verwalten"
 
 #. Translators: This will be a label in a form.
 #: templates/securesync/login.html:27
 msgid "Username: "
-msgstr ""
+msgstr "Benutzername: "
 
 #. Translators: This will be a label in a form.
 #: templates/securesync/login.html:33
 msgid "Password: "
-msgstr ""
+msgstr "Passwort: "
 
 #: templates/securesync/register_public_key_client.html:5
 msgid "Register a Device"
-msgstr ""
+msgstr "Ein Gerät registrieren"
 
 #. Translators: Please do not edit the variable text: %(command)s
 #: templates/securesync/register_public_key_client.html:33
@@ -881,58 +741,179 @@ msgid ""
 "Sorry, there was an error during registration. Please make sure your device "
 "is fully up to date (run %(command)s and then stop/start the server).\" "
 msgstr ""
+"Leider gab es einen Fehler waehrend der Registrierung. Bitte sicherstellen, "
+"dass Ihr Gerät auf dem neuesten Stand ist ( %(command)s laufen lassen und "
+"dann der Server stoppen und starten).  "
 
 #: templates/securesync/register_public_key_client.html:34
 msgid "The error message was:"
-msgstr ""
+msgstr "Die Fehlermeldung lautet:"
 
 #: templates/securesync/register_public_key_client.html:38
 msgid "Congratulations, this device has now been registered."
-msgstr ""
+msgstr "Glückwunsch, dieses Gerät ist jetzt registriert."
 
 #: templates/securesync/register_public_key_client.html:42
 msgid "This device has already been registered."
-msgstr ""
+msgstr "Dieses Gerät wurde bereits registriert."
 
 #: templates/securesync/register_public_key_client.html:46
 msgid ""
 "The device needs to have internet access when first being registered. Please "
 "ensure it is connected to the internet, and then"
 msgstr ""
+"Beim ersten Registrierung einen Gerät, muss es über einen Internetanschluss "
+"verfügen. Bitte sicherstellen, dass es mit dem Internet verbunden ist, und "
+"dann"
 
 #: templates/securesync/register_public_key_client.html:46
 #: templates/securesync/register_public_key_client.html:52
 msgid "refresh this page"
-msgstr ""
+msgstr "diese Seite aktualisieren"
 
 #: templates/securesync/register_public_key_client.html:50
 msgid "If you have not created an organization and zone yet, please"
-msgstr ""
+msgstr "Falls Sie noch keine Organisation und Zone erstellt haben, bitte "
 
 #: templates/securesync/register_public_key_client.html:50
 msgid "login to the central server and create them"
-msgstr ""
+msgstr "in den zentralen Server einloggen und diesen erstellen."
 
 #: templates/securesync/register_public_key_client.html:50
 msgid "(You will have to create an account there first)."
-msgstr ""
+msgstr "(Sie müssen dort ein Konto erst erstellen)."
 
 #: templates/securesync/register_public_key_client.html:51
 msgid "If you already have an organization and a zone, please"
-msgstr ""
+msgstr "Falls Sie eine Organisation und Zone schon erstellt haben, bitte "
 
 #: templates/securesync/register_public_key_client.html:51
 msgid "login to the central server and register this device in a zone "
 msgstr ""
+"in den zentralen Server einloggen und dieses Gerät in einer Zone "
+"registrieren. "
 
 #: templates/securesync/register_public_key_client.html:51
 msgid "(this will open a new window)."
-msgstr ""
+msgstr "(Dies wird ein neues Fenster öffnen)."
 
 #: templates/securesync/register_public_key_client.html:52
 msgid "Return here and"
-msgstr ""
+msgstr "Kehren Sie zu dieser Seite zurück und"
 
 #: templates/securesync/register_public_key_client.html:52
 msgid "to complete the registration process."
+msgstr "um die Registrierung abzuschließen."
+
+#. Translators: Please ignore the html tags e.g. "Please login as one below, or <a href='%s'>go to home.</a>" is simply "Please login as one below, or go to home."
+#: utils/decorators.py:13
+#, python-format
+msgid ""
+"To view the page you were trying to view, you need to be logged in as a "
+"teacher or an admin. Please login as one below, or <a href='%s'>go to home.</"
+"a>"
 msgstr ""
+
+#~ msgid "Subtitle download progress:"
+#~ msgstr "Untertitel Download-Fortschritt:"
+
+#~ msgid "Password change successful"
+#~ msgstr "Passwort Änderung erfolgreich"
+
+#~ msgid "Your password was changed."
+#~ msgstr "Ihr Passwort wurde geändert."
+
+#~ msgid "Password change"
+#~ msgstr "Passwort ändern"
+
+#~ msgid ""
+#~ "Please enter your old password, for security's sake, and then enter your "
+#~ "new password twice so we can verify you typed it in correctly."
+#~ msgstr ""
+#~ "Sicherheitshalber, bitte Ihr altes Passwort und dann zweimal Ihr neues "
+#~ "Passwort eingeben, sodass wir überprüfen können, dass Sie nicht vertippt "
+#~ "haben."
+
+#~ msgid "Old password:"
+#~ msgstr "Alte Passwort:"
+
+#~ msgid "New password:"
+#~ msgstr "Neue Passwort:"
+
+#~ msgid "Confirm password:"
+#~ msgstr "Passwort bestätigen:"
+
+#~ msgid "Change my password"
+#~ msgstr "Mein Passwort ändern"
+
+#~ msgid "Password reset complete"
+#~ msgstr "Passwort Zurücksetzen abgeschlossen"
+
+#~ msgid "Your password has been set.  You may go ahead and log in now."
+#~ msgstr "Ihr Passwort ist bereit.  Sie koennen jetzt einloggen."
+
+#~ msgid "Password reset"
+#~ msgstr "Passwort rücksetzen"
+
+#~ msgid "Enter new password"
+#~ msgstr "Neues Passwort eingeben"
+
+#~ msgid ""
+#~ "Please enter your new password twice so we can verify you typed it in "
+#~ "correctly."
+#~ msgstr ""
+#~ "Bitte Ihr neues Passwort zweimal eingeben, sodass wir bestätigen können, "
+#~ "dass Sie nicht vertippt haben."
+
+#~ msgid "Password reset unsuccessful"
+#~ msgstr "Password Rücksetzung gescheitert"
+
+#~ msgid ""
+#~ "The password reset link was invalid, possibly because it has already been "
+#~ "used.  Please request a new password reset."
+#~ msgstr ""
+#~ "Der Passwort-Rücksetzungslink war ungültig, möglicherweise, weil es "
+#~ "bereits verwendet wurde. Bitte ein neues Passwort-Rücksetzung anfordern."
+
+#~ msgid "Password reset successful"
+#~ msgstr "Passwort-Rücksetzung erfolgreich"
+
+#~ msgid ""
+#~ "We've e-mailed you instructions for setting your password to the e-mail "
+#~ "address you submitted. You should be receiving it shortly."
+#~ msgstr ""
+#~ "Wir haben Sie Anweisungen zum Einrichten Ihr Passwort per E-Mail "
+#~ "versandt. Sie sollten sie in Kürze erhalten."
+
+#~ msgid "You're receiving this e-mail because you requested a password reset"
+#~ msgstr ""
+#~ "Sie erhalten diese E-Mail, weil Sie einen Passwort-Rücksetzung "
+#~ "angefordert haben"
+
+#~ msgid "for your user account at %(site_name)s"
+#~ msgstr "für Ihr Benutzerkonto bei %(site_name)s"
+
+#~ msgid "Please go to the following page and choose a new password:"
+#~ msgstr "Bitte zur folgenden Seite gehen und dort ein neues Passwort wählen"
+
+#~ msgid "Your username, in case you've forgotten:"
+#~ msgstr "Ihr Benutzername, falls Sie es vergessen haben:"
+
+#~ msgid "Thanks for using our site!"
+#~ msgstr "Danke, dass Sie unserer Website benutzt haben!"
+
+#~ msgid "The %(site_name)s team"
+#~ msgstr "Die %(site_name)s Mannschaft"
+
+#~ msgid ""
+#~ "Forgotten your password? Enter your e-mail address below, and we'll e-"
+#~ "mail instructions for setting a new one."
+#~ msgstr ""
+#~ "Passwort vergessen? Geben Sie Ihre E-Mail-Adresse unten ein und wir "
+#~ "werden Anweisungen zum Einrichten eines neuen Passwort per E-Mail senden."
+
+#~ msgid "E-mail address:"
+#~ msgstr "E-Mail-Adresse:"
+
+#~ msgid "Reset my password"
+#~ msgstr "Mein Passwort zurücksetzen"
