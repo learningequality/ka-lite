@@ -94,8 +94,8 @@ def topic_handler(request, topic):
 @render_to("video.html")
 def video_handler(request, video, prev=None, next=None):
     if not VideoFile.objects.filter(pk=video['youtube_id']).exists():
-        if request.user.is_authenticated() and request.user.is_superuser:
-            messages.warning(request, "Video not found! You can download it by going to update page!")
+        if request.is_admin:
+            messages.warning(request, "Video not found! You can download it by going to the Update page!")
         elif request.is_logged_in:
             messages.warning(request, "Video not found! Please contact your teacher or an admin!")
         elif not request.is_logged_in:
