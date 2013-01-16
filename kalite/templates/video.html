@@ -52,7 +52,7 @@
 {% block content %}
 <h2 class="title-header">
     <span class="title">{{ video.title }}</span><br/>
-    {% if video.description != null %}
+    {% if video.description %}
         <span class="long-description">{{ video.description }}</span>
     {% endif %}
     {% if video.related_exercise %}
