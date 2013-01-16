@@ -23,7 +23,6 @@ class VideoLog(SyncedModel):
             if not already_complete and self.complete:
                 self.completion_timestamp = datetime.now()
                 self.completion_counter = Device.get_own_device().get_counter()
-                self.attempts_before_completion = self.attempts
         super(VideoLog, self).save(*args, **kwargs)
     
     def get_uuid(self, *args, **kwargs):

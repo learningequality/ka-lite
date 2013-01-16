@@ -1,5 +1,7 @@
 {% extends 'base_distributed.html' %}
 
+{% load i18n %}
+
 {% block watch_selected %}selected{% endblock watch_selected %}
 
 {% block content %}
@@ -10,7 +12,7 @@
 </h1>
 
 {% if topics %}
-<h2>Subtopics</h2>
+<h2>{% trans "Subtopics" %}</h2>
 <ol>
     {% for subtopic in topics %}
     <li style="font-size: 15px; line-height: 23px; margin-left: 10px;">
@@ -22,7 +24,7 @@
 {% endif %}
 
 {% if videos %}
-<h2>Videos</h2>
+<h2>{% trans "Videos" %}</h2>
 <ol>
     {% for video in videos %}
     <li style="font-size: 15px; line-height: 23px; margin-left: 10px;">
@@ -36,7 +38,7 @@
 {% endif %}
 
 {% if exercises %}
-<h2>Exercises</h2>
+<h2>{% trans "Exercises" %}</h2>
 <ol>
     {% for exercise in exercises %}
     <li style="font-size: 15px; line-height: 23px; margin-left: 10px;">

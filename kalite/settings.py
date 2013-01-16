@@ -22,6 +22,8 @@ MANAGERS = ADMINS
 
 PROJECT_PATH = os.path.dirname(os.path.realpath(__file__))
 
+LOCALE_PATHS = (PROJECT_PATH + "/../content",)
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",

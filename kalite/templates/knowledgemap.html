@@ -1,5 +1,7 @@
 {% extends 'base_distributed.html' %}
 
+{% load i18n %}
+
 {% block practice_selected %}selected{% endblock practice_selected %}
 
 {% block headjs %}
@@ -15,14 +17,14 @@
 <link rel='stylesheet' type='text/css' href='{{ MEDIA_URL }}css/kmap_editor.css'>
 {% endblock headcss %}
 
-{% block title %}Your Knowledge Map{% endblock title %}
+{% block title %}{% trans "Your Knowledge Map" %}{% endblock title %}
 
 {% block content %}
 
 <div id="map-edit-container">
     <div id="map-container">
         <div id="map"></div>
-        <a class="topic-button" href="/exercisedashboard/">Back to topics</a>
+        <a class="topic-button" href="/exercisedashboard/">{% trans "Back to topics" %}</a>
     </div>
 </div>
 {% endblock content %}

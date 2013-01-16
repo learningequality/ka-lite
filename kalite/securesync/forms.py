@@ -1,5 +1,7 @@
 from django import forms
 from models import RegisteredDevicePublicKey, Zone, FacilityUser, Facility, FacilityGroup
+from django.utils.translation import ugettext_lazy as _
+
 
 class RegisteredDevicePublicKeyForm(forms.ModelForm):
 
@@ -21,7 +23,7 @@ class RegisteredDevicePublicKeyForm(forms.ModelForm):
 
 class FacilityUserForm(forms.ModelForm):
 
-    password = forms.CharField(widget=forms.PasswordInput, label="Password")    
+    password = forms.CharField(widget=forms.PasswordInput, label=_("Password"))    
     
     def __init__(self, request, *args, **kwargs):
         self.request = request
@@ -39,7 +41,7 @@ class FacilityUserForm(forms.ModelForm):
         facility = self.cleaned_data.get('facility')
         
         if FacilityUser.objects.filter(username=username, facility=facility).count() > 0:
-            raise forms.ValidationError("A user with this username at this facility already exists. Please choose a new username (or select a different facility) and try again.")
+            raise forms.ValidationError(_("A user with this username at this facility already exists. Please choose a new username (or select a different facility) and try again."))
 
         return self.cleaned_data
 
@@ -68,7 +70,7 @@ class FacilityGroupForm(forms.ModelForm):
     
 
 class LoginForm(forms.ModelForm):
-    password = forms.CharField(label="Password", widget=forms.PasswordInput)
+    password = forms.CharField(label=_("Password"), widget=forms.PasswordInput)
 
     class Meta:
         model = FacilityUser
@@ -87,12 +89,12 @@ class LoginForm(forms.ModelForm):
         try:
             self.user_cache = FacilityUser.objects.get(username=username, facility=facility)
         except FacilityUser.DoesNotExist as e:
-            raise forms.ValidationError("Username was not found for this facility. Did you type your username correctly, and choose the right facility?")
+            raise forms.ValidationError(_("Username was not found for this facility. Did you type your username correctly, and choose the right facility?"))
         
         if not self.user_cache.check_password(password):
             self.user_cache = None
             if password and "password" not in self._errors:
-                self._errors["password"] = self.error_class(["The password did not match. Please try again."])
+                self._errors["password"] = self.error_class([_("The password did not match. Please try again.")])
         
         return self.cleaned_data
 
