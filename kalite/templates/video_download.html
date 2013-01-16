@@ -190,13 +190,12 @@ ul.dynatree-container li, .ui-widget-content {
     
         $("#download-videos").click(function() {
             var videos = findSelectedIncompleteVideos();            
-            var video_ids = $.map(videos, function(node) {
+            var video_queue = $.map(videos, function(node) {
                 return node.data.key;
             });
 
             unselectAllNodes();
-
-            doRequest("/api/start_video_download", {youtube_ids: video_ids}).success(startDownloadChecks);
+            doRequest("/api/start_video_download", {youtube_ids: video_queue}).success(startDownloadChecks);
     	
             $(".progress-section").hide();
             $(".progress-waiting").show();
@@ -205,14 +204,14 @@ ul.dynatree-container li, .ui-widget-content {
 
         $("#delete-videos").click(function() {
             var videos = findSelectedStartedVideos();
-            var video_ids = $.map(videos, function(node) {
+            var video_queue = $.map(videos, function(node) {
                 return node.data.key;
             });
 
             unselectAllNodes();
             
-            doRequest("/api/delete_videos", {youtube_ids: video_ids}).complete(function() {
-                $.each(video_ids, function(ind, id) {
+            doRequest("/api/delete_videos", {youtube_ids: video_queue}).complete(function() {
+                $.each(video_queue, function(ind, id) {
                     setNodeClass(id, "unstarted");
                 });
             });
@@ -242,6 +241,12 @@ ul.dynatree-container li, .ui-widget-content {
             
             clearInterval(window.download_check_interval);
             clearInterval(window.download_subtitle_check_interval);
+            window.downloading_videos = [];
+            window.download_index = 0;
+            window.download_subtitle_index = 0;
+            
+            window.download_check_interval = null;
+            window.download_subtitle_check_interval = null;
             $(".progress-section, .progress-waiting, .subtitle-section, #cancel-download").hide();
             
             doRequest("/api/cancel_downloads");
