@@ -132,8 +132,8 @@ def start_video_download(request):
     
     VideoFile.objects.bulk_create([VideoFile(youtube_id=id, flagged_for_download=True) for id in video_files_to_create])
     
-    for chunk in break_into_chunks(video_files_to_create):
-        video_files_needing_model_update = VideoFile.objects.filter(download_in_progress=False, youtube_id__in=chunk)
+    for chunk in break_into_chunks(youtube_ids):
+        video_files_needing_model_update = VideoFile.objects.filter(download_in_progress=False, youtube_id__in=chunk).exclude(percent_complete=100)
         video_files_needing_model_update.update(percent_complete=0, cancel_download=False, flagged_for_download=True)
 
     force_job("videodownload", "Download Videos")
