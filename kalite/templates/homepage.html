@@ -25,6 +25,7 @@
     width: 370px;
     float: left;
     margin-right: 25px;
+    min-height: 225px;
 }
 
 .suggested-actions {
@@ -98,16 +99,9 @@ a:hover, a:hover .suggested-action-title {
     <div class="vertical-shadow suggested-action">
         <h2 class="suggested-action-title">{% trans "Learn by watching videos!" %}</h2>
         <p class="topic-list">
-            {% comment %}Translators: This will appear in a list of video topics.{% endcomment %}
-            <a href="math">{% trans "Math" %}</a>
-            {% comment %}Translators: This will appear in a list of video topics.{% endcomment %}            
-            <a href="science">{% trans "Science" %}</a>
-            {% comment %}Translators: This will appear in a list of video topics.{% endcomment %}
-            <a href="finance-economics">{% trans "Finance" %} &amp; {% trans "Economics" %}</a>
-            {% comment %}Translators: This will appear in a list of video topics.{% endcomment %}
-            <a href="humanities">{% trans "Humanities" %}</a>
-            {% comment %}Translators: This will appear in a list of video topics.{% endcomment %}
-            <a href="test-prep">{% trans "Test Prep" %}</a>
+            {% for topic in topics %}
+            <a href="{{ topic.slug }}">{{ topic.title }}</a>
+            {% endfor %}
         </p>
     </div>
 
