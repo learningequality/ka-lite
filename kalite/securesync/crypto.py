@@ -1,6 +1,6 @@
 # see crypto_notes.txt in this directory for more info about key formats, etc
 
-import base64, hashlib, sys
+import base64, hashlib, sys, re
 from kalite import settings
 from config.models import Settings
 import rsa as PYRSA
@@ -25,11 +25,7 @@ class Key(object):
     def __init__(self, private_key_string=None, public_key_string=None, key=None, use_m2crypto=M2CRYPTO_EXISTS):
         
         self._using_m2crypto = use_m2crypto
-        
-        # had problems importing public keys into M2Crypto, and verifying is very fast in pyrsa anyway, so:
-        if public_key_string and not private_key_string:
-            self._using_m2crypto = False
-        
+                
         if private_key_string:
             self.set_private_key_string(private_key_string)
         
@@ -107,6 +103,9 @@ class Key(object):
         if pem_string.startswith(PKCS8_HEADER):
             pem_string = pem_string[len(PKCS8_HEADER):]
         
+        # remove newlines, to ensure consistency when used as an index (e.g. on central server)
+        pem_string = pem_string.replace("\n", "")
+        
         return pem_string
 
     def get_private_key_string(self):
@@ -130,6 +129,9 @@ class Key(object):
             # add the PKCS#8 header if it doesn't exist
             if not public_key_string.startswith(PKCS8_HEADER):
                 public_key_string = PKCS8_HEADER + public_key_string
+            # break up the base64 key string into lines of max length 64, to please m2crypto
+            public_key_string = public_key_string.replace("\n", "")
+            public_key_string = "\n".join(re.findall(".{1,64}", public_key_string))
         else:
             header_string = "RSA PUBLIC KEY"
             # remove PKCS#8 header if it exists
@@ -140,7 +142,6 @@ class Key(object):
         public_key_string = add_pem_headers(public_key_string, header_string)
         
         if self._using_m2crypto:
-            # TODO(jamalex): this doesn't seem to work reliably; see __init__
             self._public_key = M2RSA.load_pub_key_bio(M2BIO.MemoryBuffer(public_key_string))
         else:
             self._public_key = PYRSA.PublicKey.load_pkcs1(public_key_string)
