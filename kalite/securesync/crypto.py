@@ -1,66 +1,202 @@
-import base64, hashlib, rsa
+# see crypto_notes.txt in this directory for more info about key formats, etc
+
+import base64, hashlib, sys
 from kalite import settings
 from config.models import Settings
+import rsa as PYRSA
 
-keys = {
-    "private": None,
-    "public": None,
-}
+try:
+    from M2Crypto import RSA as M2RSA
+    from M2Crypto import BIO as M2BIO
+    M2CRYPTO_EXISTS = True
+except:
+    M2CRYPTO_EXISTS = False
+
+PKCS8_HEADER = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8A"
+
+_own_key = None
+
+class Key(object):
+    
+    _public_key = None
+    _private_key = None
+    _using_m2crypto = False
+    
+    def __init__(self, private_key_string=None, public_key_string=None, key=None, use_m2crypto=M2CRYPTO_EXISTS):
+        
+        self._using_m2crypto = use_m2crypto
+        
+        # had problems importing public keys into M2Crypto, and verifying is very fast in pyrsa anyway, so:
+        if public_key_string and not private_key_string:
+            self._using_m2crypto = False
+        
+        if private_key_string:
+            self.set_private_key_string(private_key_string)
+        
+        if public_key_string:
+            self.set_public_key_string(public_key_string)
+        
+        # if no keys were provided, assume we're generating a new key
+        if not private_key_string and not public_key_string:
+            self._generate_new_key()
+
+    def _generate_new_key(self):
+        if self._using_m2crypto:
+            self._private_key = M2RSA.gen_key(2048, 65537, lambda x,y,z: None)
+            self._public_key = M2RSA.RSA_pub(self._private_key.rsa)
+        else:
+            try:
+                (self._public_key, self._private_key) = PYRSA.newkeys(2048, poolsize=4)
+            except:
+                (self._public_key, self._private_key) = PYRSA.newkeys(2048)
+    
+    def sign(self, message, base64encode=True):
+        
+        if not self._private_key:
+            raise Exception("Key object does not have a private key defined, and thus cannot be used to sign.")
+        
+        if self._using_m2crypto:
+            signature = self._private_key.sign(hashed(message), algo="sha1")
+        else:
+            signature = PYRSA.sign(message, self._private_key, "SHA-1")
+        
+        if base64encode:
+            return encode_base64(signature)
+        else:
+            return signature
+            
+    def verify(self, message, signature):
+        # assume we're dealing with a base64 encoded signature, but pass on through if not
+        try:
+            signature = decode_base64(signature)
+        except:
+            pass
+        
+        # try verifying using the public key if available, otherwise the private key
+        key = self._public_key or self._private_key or None
+        if not key:
+            raise Exception("Key object does not have public or private key defined, and thus cannot be used to verify.")
+        
+        if self._using_m2crypto:
+            try:
+                key.verify(hashed(message), signature, algo="sha1")
+                return True
+            except M2RSA.RSAError:
+                return False
+        else:
+            try:
+                PYRSA.verify(message, signature, key)
+                return True
+            except PYRSA.pkcs1.VerificationError:
+                return False
+    
+    def get_public_key_string(self):
+        
+        if not self._public_key:
+            raise Exception("Key object does not have a public key defined.")
+        
+        if self._using_m2crypto:
+            pem_string = self._public_key.as_pem(None)
+        else:
+            pem_string = self._public_key.save_pkcs1()
+        
+        # remove the headers and footer (to save space, but mostly because the text in them varies)
+        pem_string = remove_pem_headers(pem_string)
+        
+        # remove the PKCS#8 header so the key won't cause problems for older versions
+        if pem_string.startswith(PKCS8_HEADER):
+            pem_string = pem_string[len(PKCS8_HEADER):]
+        
+        return pem_string
+
+    def get_private_key_string(self):
+        if not self._private_key:
+            raise Exception("Key object does not have a private key defined.")
+        if self._using_m2crypto:
+            return self._private_key.as_pem(None)
+        else:
+            return self._private_key.save_pkcs1()
+
+    def set_public_key_string(self, public_key_string):
+        
+        # convert from unicode, as this can throw off the key parsing
+        public_key_string = str(public_key_string)
+        
+        # remove the PEM header/footer
+        public_key_string = remove_pem_headers(public_key_string)
+                
+        if self._using_m2crypto:
+            header_string = "PUBLIC KEY"
+            # add the PKCS#8 header if it doesn't exist
+            if not public_key_string.startswith(PKCS8_HEADER):
+                public_key_string = PKCS8_HEADER + public_key_string
+        else:
+            header_string = "RSA PUBLIC KEY"
+            # remove PKCS#8 header if it exists
+            if public_key_string.startswith(PKCS8_HEADER):
+                public_key_string = public_key_string[len(PKCS8_HEADER):]
+
+        # add the appropriate PEM header/footer
+        public_key_string = add_pem_headers(public_key_string, header_string)
+        
+        if self._using_m2crypto:
+            # TODO(jamalex): this doesn't seem to work reliably; see __init__
+            self._public_key = M2RSA.load_pub_key_bio(M2BIO.MemoryBuffer(public_key_string))
+        else:
+            self._public_key = PYRSA.PublicKey.load_pkcs1(public_key_string)
+
+    def set_private_key_string(self, private_key_string):
+
+        # convert from unicode, as this can throw off the key parsing
+        private_key_string = str(private_key_string)
+
+        private_key_string = add_pem_headers(private_key_string, "RSA PRIVATE KEY")
+        
+        if self._using_m2crypto:
+            self._private_key = M2RSA.load_key_string(private_key_string)
+            self._public_key = M2RSA.RSA_pub(self._private_key.rsa)
+        else:
+            self._private_key = PYRSA.PrivateKey.load_pkcs1(private_key_string)
+            # TODO(jamalex): load public key here automatically as well?
+    
+    def __str__(self):
+        return self.get_public_key_string()
+
+def remove_pem_headers(pem_string):
+    if not pem_string.strip().startswith("-----"):
+        return pem_string
+    return "\n".join([line for line in pem_string.split("\n") if line and not line.startswith("---")])
+
+def add_pem_headers(pem_string, header_string):
+    context = {
+        "key": remove_pem_headers(pem_string),
+        "header_string": header_string,
+    }
+    return "-----BEGIN %(header_string)s-----\n%(key)s\n-----END %(header_string)s-----" % context
 
 def load_keys():
     private_key_string = Settings.get("private_key")
-    if private_key_string:
-        public_key_string = Settings.get("public_key")
-        keys["private"] = rsa.PrivateKey.load_pkcs1(private_key_string)
-        keys["public"] = deserialize_public_key(public_key_string)
+    public_key_string = Settings.get("public_key")
+    if private_key_string and public_key_string:
+        sys.modules[__name__]._own_key = Key(
+            public_key_string=public_key_string,
+            private_key_string=private_key_string)
     else:
         reset_keys()
 
 def reset_keys():
-    try:
-        (public_key, private_key) = rsa.newkeys(2048, poolsize=4)
-    except:
-        (public_key, private_key) = rsa.newkeys(2048)
-    Settings.set("private_key", private_key.save_pkcs1())
-    Settings.set("public_key", serialize_public_key(public_key))
-    keys["private"] = private_key
-    keys["public"] = public_key
+    sys.modules[__name__]._own_key = Key()
+    Settings.set("private_key", _own_key.get_private_key_string())
+    Settings.set("public_key", _own_key.get_public_key_string())
 
-def get_public_key():
-    if not keys["public"]:
+def get_own_key():
+    if not _own_key:
         load_keys()
-    return keys["public"]
+    return _own_key
 
-def get_private_key():
-    if not keys["private"]:
-        load_keys()
-    return keys["private"]
-
-def sign(message, key=None):
-    return rsa.sign(hashed(message, base64encode=False), key or get_private_key(), "SHA-1")
-
-def hashed(message, base64encode=False):
+def hashed(message):
     # encode the message as UTF-8, replacing any invalid characters so they don't blow up the hashing
-    sha1sum = hashlib.sha1(message.encode("utf-8", "replace")).digest()
-    if base64encode:
-        return encode_base64(sha1sum)
-    else:
-        return sha1sum
-
-def verify(message, signature, key=None):
-    try:
-        rsa.verify(hashed(message, base64encode=False), signature, key or get_public_key())
-    except rsa.pkcs1.VerificationError:
-        return False
-    return True
-
-def serialize_public_key(key=None):
-    if not key:
-        key = get_public_key()
-    return "".join([line for line in key.save_pkcs1().split("\n") if line and not line.startswith("-----")])
-    
-def deserialize_public_key(key_str):
-    return rsa.PublicKey.load_pkcs1("-----BEGIN RSA PUBLIC KEY-----\n%s\n-----END RSA PUBLIC KEY-----" % key_str)
+    return hashlib.sha1(message.encode("utf-8", "replace")).digest()
     
 def encode_base64(data):
     return base64.encodestring(data).replace("\n", "")
