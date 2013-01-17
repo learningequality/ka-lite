@@ -125,7 +125,6 @@ class SyncedModel(models.Model):
                     return False
         # by this point, we know that we're ok with accepting this model from the device that it says signed it
         # now, we just need to check whether or not it is actually signed by that model's private key
-        key = self.signed_by.get_public_key()
         try:
             return self.signed_by.get_key().verify(self._hashable_representation(), self.signature)
         except:
