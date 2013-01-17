@@ -14,12 +14,13 @@ from django.contrib import messages
 from securesync.views import require_admin, facility_required
 from config.models import Settings
 from securesync.models import Facility, FacilityGroup
-from models import FacilityUser, VideoLog, ExerciseLog
+from models import FacilityUser, VideoLog, ExerciseLog, VideoFile
 from django.utils.safestring import mark_safe
 from config.models import Settings
 from securesync.api_client import SyncClient
 from django.contrib import messages
 from utils.jobs import force_job
+from django.utils.translation import ugettext as _
 
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
@@ -94,9 +95,18 @@ def topic_handler(request, topic):
 @render_to("video.html")
 def video_handler(request, video, prev=None, next=None):
     if request.user.is_authenticated():
-        messages.warning(request, "Note: You're logged in as an admin (not as a student/teacher), so your video progress and points won't be saved.")
+        messages.warning(request, _("Note: You're logged in as an admin (not as a student/teacher), so your video progress and points won't be saved."))
+    if not VideoFile.objects.filter(pk=video['youtube_id']).exists():
+        if request.is_admin:
+            messages.warning(request, _("Video not found! You can download it by going to the Update page!"))
+        elif request.is_logged_in:
+            messages.warning(request, _("Video not found! Please contact your teacher or an admin!"))
+        elif not request.is_logged_in:
+            messages.warning(request, _("Video not found! You must login as an admin/teacher to download the video!"))
+    elif request.user.is_authenticated():
+        messages.warning(request, _("Note: You're logged in as an admin (not as a student/teacher), so your video progress and points won't be saved."))
     elif not request.is_logged_in:
-        messages.warning(request, "Friendly reminder: You are not currently logged in, so your video progress and points won't be saved.")
+        messages.warning(request, _("Friendly reminder: You are not currently logged in, so your video progress and points won't be saved."))
     context = {
         "video": video,
         "title": video[title_key["Video"]],
@@ -110,9 +120,9 @@ def exercise_handler(request, exercise):
     related_videos = [topicdata.NODE_CACHE["Video"][key] for key in exercise["related_video_readable_ids"]]
     
     if request.user.is_authenticated():
-        messages.warning(request, "Note: You're logged in as an admin (not as a student/teacher), so your exercise progress and points won't be saved.")
+        messages.warning(request, _("Note: You're logged in as an admin (not as a student/teacher), so your exercise progress and points won't be saved."))
     elif not request.is_logged_in:
-        messages.warning(request, "Friendly reminder: You are not currently logged in, so your exercise progress and points won't be saved.")
+        messages.warning(request, _("Friendly reminder: You are not currently logged in, so your exercise progress and points won't be saved."))
 
     context = {
         "exercise": exercise,

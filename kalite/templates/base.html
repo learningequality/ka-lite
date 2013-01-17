@@ -20,6 +20,7 @@
         {% block extrahead %}{% endblock extrahead %}
         {% block analytics %}{% endblock analytics %}
     </head>
+    {% load i18n %}
     <body class="light {% block bodyclass %}{% endblock %}">
         <div id="outer-wrapper">
             <div id="page-container">
@@ -74,7 +75,7 @@
             <div id="leaves">
                 <div class="inner">
                     <div id="copyright" class="tiny">
-                        Videos and Exercises &copy; 2013 Khan Academy 
+                        {% trans "Videos and Exercises" %} &copy; 2013 Khan Academy 
                         <a rel="license" id="creative-commons-link" {% if is_central %} href="http://creativecommons.org/licenses/by-nc-sa/2.0/" target="_blank"{% endif %}></a>
                     </div>
                 </div>

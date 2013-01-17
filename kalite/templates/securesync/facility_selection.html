@@ -1,27 +1,29 @@
 {% extends 'base_distributed.html' %}
 
-{% block title %}Select facility{% endblock title %}
+{% load i18n %}
+
+{% block title %}{% trans "Select facility" %}{% endblock title %}
 
 {% block content %}
 
 <div id="facility_list_container">
-    <h1>Please select a facility</h1>
+    <h1>{% trans Please select a facility %}</h1>
     <ul id="facility_list">
         {% if facilities %}
             {% for facility in facilities %}
             <li class="facility_title">
-                <h2><a href="?facility={{facility.pk}}">{{ facility }}</a> {% if facilities.count > 1 %}{% if facility.is_default %} <span class=default-setter>(this is the default)</span>{% else %}<a class=default-setter href="?facility={{facility.pk}}&set_default=True"> (set as the default facility)</a>{% endif %}{% endif %}</h2>
+                <h2><a href="?facility={{facility.pk}}">{{ facility }}</a> {% if facilities.count > 1 %}{% if facility.is_default %} <span class=default-setter>{% trans "(this is the default)" %}</span>{% else %}<a class=default-setter href="?facility={{facility.pk}}&set_default=True"> {% trans "(set as the default facility)" %}</a>{% endif %}{% endif %}</h2>
             </li>
             {% endfor %}
         {% else %}
             {% if request.is_admin %}
-                <li>You currently have no facilities. Would you like to create a facility?</li>
+                <li>{% trans "You currently have no facilities. Would you like to create a facility?" %}</li>
             {% else %}
-                <li>There are currently no facilities available, please ask an administrator or teacher to set one up.</li>
+                <li>{% trans "There are currently no facilities available, please ask an administrator or teacher to set one up." %}</li>
             {% endif %}
         {% endif %}
         {% if request.is_admin %}
-            <p><a href="{% url facility_admin %}">Administer Facilities</a></p>
+            <p><a href="{% url facility_admin %}">{% trans "Administer Facilities" %}</a></p>
         {% endif %}
     </ul>
 </div>

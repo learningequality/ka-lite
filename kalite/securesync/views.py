@@ -23,6 +23,7 @@ from securesync.api_client import SyncClient
 from utils.jobs import force_job
 from utils.decorators import require_admin
 
+from django.utils.translation import ugettext as _
 
 def central_server_only(handler):
     def wrapper_fn(*args, **kwargs):
@@ -35,7 +36,7 @@ def central_server_only(handler):
 def distributed_server_only(handler):
     def wrapper_fn(*args, **kwargs):
         if settings.CENTRAL_SERVER:
-            return HttpResponseNotFound("This path is only available on distributed servers.")
+            return HttpResponseNotFound(_("This path is only available on distributed servers."))
         return handler(*args, **kwargs)
     return wrapper_fn
 
@@ -66,11 +67,11 @@ def facility_required(handler):
         
         if Facility.objects.count() == 0:
             if request.is_admin:
-                messages.error(request, "To continue, you must first add a facility (e.g. for your school). " \
-                    + "Please use the form below to add a facility.")
+                messages.error(request, _("To continue, you must first add a facility (e.g. for your school). ") \
+                    + _("Please use the form below to add a facility."))
             else:
                 messages.error(request,
-                    "You must first have the administrator of this server log in below to add a facility.")
+                    _("You must first have the administrator of this server log in below to add a facility."))
             return HttpResponseRedirect(reverse("add_facility"))
         else:
             facility = get_facility_from_request(request)
@@ -114,7 +115,7 @@ def register_public_key_client(request):
     error_msg = reg_response.get("error", "")
     if error_msg:
         return {"error_msg": error_msg}
-    return HttpResponse("Registration status: " + reg_status)
+    return HttpResponse(_("Registration status: ") + reg_status)
 
 @central_server_only
 @login_required
@@ -124,7 +125,7 @@ def register_public_key_server(request):
         form = RegisteredDevicePublicKeyForm(request.user, data=request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, "The device's public key has been successfully registered. You may now close this window.")
+            messages.success(request, _("The device's public key has been successfully registered. You may now close this window."))
             return HttpResponseRedirect(reverse("homepage"))
     else:
         form = RegisteredDevicePublicKeyForm(request.user)
@@ -154,7 +155,8 @@ def facility_edit(request, id=None):
         form = FacilityForm(data=request.POST, instance=facil)
         if form.is_valid():
             form.save()
-            messages.success(request, "The facility '%s' has been successfully saved!" % form.instance.name)
+            # Translators: Do not change the text of '%(facility_name)s' because it is a variable, but you can change its position. 
+            messages.success(request, _("The facility '%(facility_name)s' has been successfully saved!") % {"facility_name": form.instance.name})
             return HttpResponseRedirect(request.next or reverse("facility_admin"))
     else:
         form = FacilityForm(instance=facil)
@@ -200,7 +202,7 @@ def add_facility_user(request, facility, is_teacher):
             else:
                 return HttpResponseRedirect(reverse("login") + "?facility=" + facility.pk)
     elif Facility.objects.count() == 0:
-        messages.error(request, "You must add a facility before creating a user" )
+        messages.error(request, _("You must add a facility before creating a user"))
         return HttpResponseRedirect(reverse("add_facility"))
     else:
         if is_teacher:
@@ -249,7 +251,7 @@ def add_group(request, facility):
             form.save()
             return HttpResponseRedirect(reverse("add_facility_student") + "?facility=" + facility.pk + "&group=" + form.instance.pk)
     elif request.method =='POST' and not request.is_admin:
-        messages.error(request,"This mission is too important for me to allow you to jeopardize it.")
+        messages.error(request, _("This mission is too important for me to allow you to jeopardize it."))
         return HttpResponseRedirect(reverse("login"))
     else:
         form = FacilityGroupForm()
@@ -291,12 +293,12 @@ def login(request):
         form = LoginForm(data=request.POST, request=request, initial={"facility": facility_id})
         if form.is_valid():
             request.session["facility_user"] = form.get_user()
-            messages.success(request, "You've been logged in! We hope you enjoy your time with KA Lite " +
-                                        "-- be sure to log out when you finish.")
+            messages.success(request, _("You've been logged in! We hope you enjoy your time with KA Lite ") +
+                                        _("-- be sure to log out when you finish."))
             return HttpResponseRedirect(form.non_field_errors() or request.next or "/")
         else:
             messages.error(request, strip_tags(form.non_field_errors()) or
-                "There was an error logging you in. Please correct any errors listed below, and try again.")
+                _("There was an error logging you in. Please correct any errors listed below, and try again."))
         
     else: # render the unbound login form
         form = LoginForm(initial={"facility": facility_id})

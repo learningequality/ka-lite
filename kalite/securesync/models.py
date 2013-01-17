@@ -12,6 +12,8 @@ import uuid
 import zlib
 import settings
 from pbkdf2 import crypt
+from django.utils.translation import ugettext_lazy as _
+
 
 _unhashable_fields = ["signature", "signed_by"]
 _always_hash_fields = ["signed_version", "id"]
@@ -250,17 +252,17 @@ class Zone(SyncedModel):
         
 
 class Facility(SyncedModel):
-    name = models.CharField(help_text="(This is the name that students/teachers will see when choosing their facility; it can be in the local language.)", max_length=100)
-    description = models.TextField(blank=True)
-    address = models.CharField(help_text="(Please provide as detailed an address as possible.)", max_length=400, blank=True)
+    name = models.CharField(verbose_name=_("Name"), help_text=_("(This is the name that students/teachers will see when choosing their facility; it can be in the local language.)"), max_length=100)
+    description = models.TextField(blank=True, verbose_name=_("Description"))
+    address = models.CharField(verbose_name=_("Address"), help_text=_("(Please provide as detailed an address as possible.)"), max_length=400, blank=True)
     address_normalized = models.CharField(max_length=400, blank=True)
-    latitude = models.FloatField(blank=True, null=True)
-    longitude = models.FloatField(blank=True, null=True)
-    zoom = models.FloatField(blank=True, null=True)
-    contact_name = models.CharField(help_text="(Who should we contact with any questions about this facility?)", max_length=60, blank=True)
-    contact_phone = models.CharField(max_length=60, blank=True)
-    contact_email = models.EmailField(max_length=60, blank=True)
-    user_count = models.IntegerField(help_text="(How many potential users do you estimate there are at this facility?)", blank=True, null=True)
+    latitude = models.FloatField(blank=True, verbose_name=_("Latitude"), null=True)
+    longitude = models.FloatField(blank=True, verbose_name=_("Longitude"), null=True)
+    zoom = models.FloatField(blank=True, verbose_name=_("Zoom"), null=True)
+    contact_name = models.CharField(verbose_name=_("Contact Name"), help_text=_("(Who should we contact with any questions about this facility?)"), max_length=60, blank=True)
+    contact_phone = models.CharField(max_length=60, verbose_name=_("Contact Phone"), blank=True)
+    contact_email = models.EmailField(max_length=60, verbose_name=_("Contact Email"), blank=True)
+    user_count = models.IntegerField(verbose_name=_("User Count"), help_text=_("(How many potential users do you estimate there are at this facility?)"), blank=True, null=True)
 
     class Meta:    
         verbose_name_plural = "Facilities"
@@ -275,20 +277,26 @@ class Facility(SyncedModel):
 
 
 class FacilityGroup(SyncedModel):
-    facility = models.ForeignKey(Facility)
-    name = models.CharField(max_length=30)
+    facility = models.ForeignKey(Facility, verbose_name=_("Facility"))
+    name = models.CharField(max_length=30, verbose_name=_("Name"))
     
     def __unicode__(self):
         return self.name
 
 
 class FacilityUser(SyncedModel):
-    facility = models.ForeignKey(Facility)
-    group = models.ForeignKey(FacilityGroup, verbose_name="Group/class", blank=True, null=True, help_text="(optional)")
-    username = models.CharField(max_length=30)
-    first_name = models.CharField(max_length=30, blank=True)
-    last_name = models.CharField(max_length=60, blank=True)
-    is_teacher = models.BooleanField(default=False, help_text="(whether this user should have teacher permissions)")
+    # Translators: This is a label in a form.
+    facility = models.ForeignKey(Facility, verbose_name=_("Facility"))
+    # Translators: This is a label in a form.
+    group = models.ForeignKey(FacilityGroup, verbose_name=_("(Group/class)"), blank=True, null=True, help_text=_("(optional)"))
+    # Translators: This is a label in a form.
+    username = models.CharField(max_length=30, verbose_name=_("Username"))
+    # Translators: This is a label in a form.
+    first_name = models.CharField(max_length=30, verbose_name=_("First Name"), blank=True)
+    # Translators: This is a label in a form.
+    last_name = models.CharField(max_length=60, verbose_name=_("Last Name"), blank=True)
+    # Translators: This is a label in a form.
+    is_teacher = models.BooleanField(default=False, help_text=_("(whether this user should have teacher permissions)"))
     notes = models.TextField(blank=True)
     password = models.CharField(max_length=128)
 

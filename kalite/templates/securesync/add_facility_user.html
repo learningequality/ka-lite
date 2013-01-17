@@ -3,7 +3,9 @@
 {% block addstudent_selected %}{% if not teacher %}selected{% endif %}{% endblock addstudent_selected %}
 {% block signup_selected %}{% if not request.admin %}selected{% endif %}{% endblock signup_selected %}
 
-{% block title %}Add facility user{% endblock title %}
+{% load i18n %}
+
+{% block title %}{% trans "Add facility user" %}{% endblock title %}
 
 {% block content %}
 
@@ -11,19 +13,22 @@
 <form method="post" class="basic-form">
 {% csrf_token %}
 <h1>{% if request.is_admin %}
-		Add a new {% if teacher %}teacher{% else %}student{% endif %}
+		{% comment %} Translators: The sentence will be: Add a new student or teacher {% endcomment %}
+		{% trans "Add a new" %}{% if teacher %}{% trans " teacher" %}{% else %}{% trans " student" %}{% endif %}
     {% else %}
-        Sign up for an account
+        {% trans "Sign up for an account" %}
     {% endif %}
 </h1>
-<p><label>Facility: </label>{{ facility }} {% if not singlefacility or request.is_admin %}<a href="?facility=select"> (Select a different facility)</a></p>{% endif %}
+<p><label>{% trans "Facility: " %}</label>{{ facility }} {% if not singlefacility or request.is_admin %}<a href="?facility=select">{% trans "(Select a different facility)" %}</a></p>{% endif %}
 {{ form.as_p }}
-<input type="submit" value="Create user" class="submit"/>
+{% trans "Create user" as create_user %}
+<input type="submit" value="{{ create_user }}" class="submit"/>
 </form>
 
 <script>
 {% if request.is_admin %}
-$('#id_group').parent().find(".helptext").html('(<a href="{% url add_group %}?facility={{facility.id}}">Add a new Group</a>)');
+{% trans "Add a new group" as add_new_group %}
+$('#id_group').parent().find(".helptext").html('(<a href="{% url add_group %}?facility={{facility.id}}">{{add_new_group}}</a>)');
 {% endif %}
 {% if not request.is_admin %}
 $('#id_is_teacher').parent().hide();
