@@ -78,12 +78,24 @@ class Key(object):
                 key.verify(hashed(message), signature, algo="sha1")
                 return True
             except M2RSA.RSAError:
+                # some old versions accidentally double-hashed; make sure those old sigs verify too
+                try:
+                    key.verify(hashed(hashed(message)), signature, algo="sha1")
+                    return True
+                except M2RSA.RSAError:
+                    pass
                 return False
         else:
             try:
                 PYRSA.verify(message, signature, key)
                 return True
             except PYRSA.pkcs1.VerificationError:
+                # some old versions accidentally double-hashed; make sure those old sigs verify too
+                try:
+                    PYRSA.verify(hashed(message), signature, key)
+                    return True
+                except PYRSA.pkcs1.VerificationError:
+                    pass
                 return False
     
     def get_public_key_string(self):
@@ -196,8 +208,12 @@ def get_own_key():
     return _own_key
 
 def hashed(message):
-    # encode the message as UTF-8, replacing any invalid characters so they don't blow up the hashing
-    return hashlib.sha1(message.encode("utf-8", "replace")).digest()
+    # try to encode the message as UTF-8, replacing any invalid characters so they don't blow up the hashing
+    try:
+        message = message.encode("utf-8", "replace")
+    except UnicodeDecodeError:
+        pass
+    return hashlib.sha1(message).digest()
     
 def encode_base64(data):
     return base64.encodestring(data).replace("\n", "")
