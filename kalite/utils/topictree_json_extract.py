@@ -5,6 +5,9 @@ import polib
 rootnode = json.loads(open("../static/data/topics.json").read())
 
 def recurse_json(node):
+	## Returns list of key value pairs for translation
+	## optional param will recurse until it hits a node of that title
+
 	# Titles list to store translatable titles 
 	nodes = []
 
@@ -21,9 +24,9 @@ def recurse_json(node):
 	for child in node.get("children", []):
 		nodes += recurse_json(child)
 	return nodes 
+ 
 
-
-def generate_po(nodes):
+def generate_po(nodes, filename):
 	# Create po file 
 	po = polib.POFile()
 	po.metadata = {
@@ -41,7 +44,7 @@ def generate_po(nodes):
 	# Append titles & descriptions 
 	for node in nodes:
 		for key in ["title", "description"]:
-			if not node.get(key):
+			if not node.get(key) or node.get("kind") == "Separator":
 				continue
 			entry = polib.POEntry(
 			    msgid= node.get(key),
@@ -51,19 +54,40 @@ def generate_po(nodes):
 			po.append(entry)
 
 	# Save()
-	po.save('topics.po')
+	po.save(filename)
 
 
-translatable_json = recurse_json(rootnode)
-generate_po(translatable_json)
+def node_info(node, lst):
+	if node.get("title"):
+		node_info = {
+		"title": node.get("title"),
+		"description": node.get("description"),
+		"kind": node.get("kind")
+		}
+		lst.append(node_info)
+	return lst
 
 
+def decimals_for_bill():
+	for_bill = []
+	mathnode = rootnode.get("children")[0]
+	arithmetic_prealgebra_node = mathnode.get("children")[0]
+	node_info(rootnode, for_bill)
+	node_info(mathnode, for_bill)
+	node_info(arithmetic_prealgebra_node, for_bill)
+	for i in range(0, 4):
+		for_bill += recurse_json(arithmetic_prealgebra_node.get("children")[i])
+
+	generate_po(for_bill, 'decimals.po')
 
 
+def sitewide_po():
+	translatable_json = recurse_json(rootnode)
+	generate_po(translatable_json, 'topics.po')
 
 
-
-
+decimals_for_bill()
+sitewide_po()
 
 
 

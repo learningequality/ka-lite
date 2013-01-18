@@ -156,10 +156,6 @@ msgctxt "Exercise description"
 msgid "Subtract two 2-3 digit numbers without borrowing"
 msgstr ""
 
-msgctxt "Separator title"
-msgid "----------"
-msgstr ""
-
 msgctxt "Video title"
 msgid "Level 2 Addition"
 msgstr ""
@@ -275,10 +271,6 @@ msgstr ""
 
 msgctxt "Exercise description"
 msgid "Subtract two 4-digit numbers. Borrow twice"
-msgstr ""
-
-msgctxt "Separator title"
-msgid "----------"
 msgstr ""
 
 msgctxt "Video title"
@@ -672,10 +664,6 @@ msgctxt "Exercise description"
 msgid "Multiply 1 or 2 digits by 3 digits, with carrying"
 msgstr ""
 
-msgctxt "Separator title"
-msgid "----------"
-msgstr ""
-
 msgctxt "Video title"
 msgid "Multiplication 7: Old video giving more examples"
 msgstr ""
@@ -741,10 +729,6 @@ msgstr ""
 
 msgctxt "Exercise description"
 msgid "Divide multi-digit numbers."
-msgstr ""
-
-msgctxt "Separator title"
-msgid "----------"
 msgstr ""
 
 msgctxt "Video title"
@@ -1240,10 +1224,6 @@ msgctxt "Exercise description"
 msgid "Add and subtract positive and negative single-digit integers"
 msgstr ""
 
-msgctxt "Separator title"
-msgid "----------"
-msgstr ""
-
 msgctxt "Video title"
 msgid "Adding decimals of different signs word problem"
 msgstr ""
@@ -1325,10 +1305,6 @@ msgctxt "Exercise description"
 msgid ""
 "Word problems with addition, subtraction, multiplication, and division of "
 "positive and negative numbers."
-msgstr ""
-
-msgctxt "Separator title"
-msgid "----------"
 msgstr ""
 
 msgctxt "Video title"
@@ -1545,10 +1521,6 @@ msgstr ""
 
 msgctxt "Exercise title"
 msgid "Adding and subtracting decimals word problems"
-msgstr ""
-
-msgctxt "Separator title"
-msgid "----------"
 msgstr ""
 
 msgctxt "Video title"
@@ -1830,10 +1802,6 @@ msgstr ""
 
 msgctxt "Exercise title"
 msgid "Converting decimals to percents"
-msgstr ""
-
-msgctxt "Separator title"
-msgid "----------"
 msgstr ""
 
 msgctxt "Video title"
@@ -2217,10 +2185,6 @@ msgstr ""
 
 msgctxt "Exercise title"
 msgid "Adding and subtracting fractions"
-msgstr ""
-
-msgctxt "Separator title"
-msgid "----------"
 msgstr ""
 
 msgctxt "Video title"
@@ -4002,10 +3966,6 @@ msgctxt "Video description"
 msgid "Algebraic Expression Least Common Multiple"
 msgstr ""
 
-msgctxt "Separator title"
-msgid "----------"
-msgstr ""
-
 msgctxt "Video title"
 msgid "Examples of evaluating variable expressions"
 msgstr ""
@@ -5178,10 +5138,6 @@ msgctxt "Video description"
 msgid "Writing and using inequalities 3"
 msgstr ""
 
-msgctxt "Separator title"
-msgid "----------"
-msgstr ""
-
 msgctxt "Topic title"
 msgid "Compound and absolute value inequalities"
 msgstr ""
@@ -5450,10 +5406,6 @@ msgid ""
 "increases, or stays the same as the other increases."
 msgstr ""
 
-msgctxt "Separator title"
-msgid "----------"
-msgstr ""
-
 msgctxt "Video title"
 msgid "Graphing lines 1"
 msgstr ""
@@ -5600,10 +5552,6 @@ msgctxt "Exercise description"
 msgid ""
 "Adjust the slope and y-intercept of a line to make it go through given "
 "points."
-msgstr ""
-
-msgctxt "Separator title"
-msgid "----------"
 msgstr ""
 
 msgctxt "Video title"
@@ -5790,10 +5738,6 @@ msgctxt "Exercise description"
 msgid "Given x and y values, write the equation of a line."
 msgstr ""
 
-msgctxt "Separator title"
-msgid "----------"
-msgstr ""
-
 msgctxt "Exercise title"
 msgid "Equations from tables"
 msgstr ""
@@ -5941,10 +5885,6 @@ msgid ""
 "lines."
 msgstr ""
 
-msgctxt "Separator title"
-msgid "----------"
-msgstr ""
-
 msgctxt "Video title"
 msgid "Algebra: Slope and Y-intercept intuition"
 msgstr ""
@@ -6054,10 +5994,6 @@ msgctxt "Exercise description"
 msgid ""
 "Graph a linear inequality on the coordinate plane. Determine whether given "
 "ordered pairs are solutions."
-msgstr ""
-
-msgctxt "Separator title"
-msgid "----------"
 msgstr ""
 
 msgctxt "Video title"
@@ -6332,10 +6268,6 @@ msgctxt "Exercise description"
 msgid ""
 "Determine how many solutions exist to a given system of equations (one, "
 "zero, infinite)."
-msgstr ""
-
-msgctxt "Separator title"
-msgid "----------"
 msgstr ""
 
 msgctxt "Video title"
@@ -9017,10 +8949,6 @@ msgid ""
 "Multiply two expressions with variables and exponents to get a polynomial"
 msgstr ""
 
-msgctxt "Separator title"
-msgid "----------"
-msgstr ""
-
 msgctxt "Video title"
 msgid "Level 1 multiplying expressions"
 msgstr ""
@@ -9120,10 +9048,6 @@ msgstr ""
 
 msgctxt "Video description"
 msgid "u12 l2 t3 we2 Difference of Cubes Factoring"
-msgstr ""
-
-msgctxt "Separator title"
-msgid "----------"
 msgstr ""
 
 msgctxt "Video title"
@@ -9457,10 +9381,6 @@ msgctxt "Video description"
 msgid "Slightly harder rational inequality problem"
 msgstr ""
 
-msgctxt "Separator title"
-msgid "----------"
-msgstr ""
-
 msgctxt "Video title"
 msgid "Rationalizing Denominators of Expressions"
 msgstr ""
@@ -9661,10 +9581,6 @@ msgstr ""
 
 msgctxt "Video description"
 msgid " Graphing Logarithmic Functions"
-msgstr ""
-
-msgctxt "Separator title"
-msgid "----------"
 msgstr ""
 
 msgctxt "Video title"
@@ -10565,10 +10481,6 @@ msgctxt "Exercise description"
 msgid "Find the absolute value of a complex number."
 msgstr ""
 
-msgctxt "Separator title"
-msgid "----------"
-msgstr ""
-
 msgctxt "Video title"
 msgid "Example: Complex roots for a quadratic"
 msgstr ""
@@ -10875,10 +10787,6 @@ msgctxt "Exercise description"
 msgid ""
 "Determine which angles must be congruent when parallel lines are crossed by "
 "a transversal."
-msgstr ""
-
-msgctxt "Separator title"
-msgid "----------"
 msgstr ""
 
 msgctxt "Video title"
@@ -11888,10 +11796,6 @@ msgctxt "Video description"
 msgid "Introduction to the Pythagorean Theorem"
 msgstr ""
 
-msgctxt "Separator title"
-msgid "----------"
-msgstr ""
-
 msgctxt "Video title"
 msgid "Pythagorean Theorem II"
 msgstr ""
@@ -11998,10 +11902,6 @@ msgstr ""
 msgctxt "Video description"
 msgid ""
 "Using what we know about triangles to find the area of a regular hexagon"
-msgstr ""
-
-msgctxt "Separator title"
-msgid "----------"
 msgstr ""
 
 msgctxt "Video title"
@@ -12400,10 +12300,6 @@ msgstr ""
 
 msgctxt "Video description"
 msgid "Proving whether a special quadrilateral can exist"
-msgstr ""
-
-msgctxt "Separator title"
-msgid "----------"
 msgstr ""
 
 msgctxt "Video title"
@@ -12898,10 +12794,6 @@ msgstr ""
 
 msgctxt "Video description"
 msgid "Area of rhombus from circumradii of triangles"
-msgstr ""
-
-msgctxt "Separator title"
-msgid "----------"
 msgstr ""
 
 msgctxt "Video title"
@@ -15871,10 +15763,6 @@ msgctxt "Exercise title"
 msgid "Special right triangles"
 msgstr ""
 
-msgctxt "Separator title"
-msgid "----------"
-msgstr ""
-
 msgctxt "Video title"
 msgid "Using Trig Functions"
 msgstr ""
@@ -16048,10 +15936,6 @@ msgctxt "Exercise title"
 msgid "Unit circle"
 msgstr ""
 
-msgctxt "Separator title"
-msgid "----------"
-msgstr ""
-
 msgctxt "Video title"
 msgid "Trigonometry word problems (part 1)"
 msgstr ""
@@ -16157,10 +16041,6 @@ msgstr ""
 
 msgctxt "Exercise title"
 msgid "Graphs of sine and cosine"
-msgstr ""
-
-msgctxt "Separator title"
-msgid "----------"
 msgstr ""
 
 msgctxt "Video title"
@@ -18575,10 +18455,6 @@ msgstr ""
 
 msgctxt "Exercise title"
 msgid "Derivatives 1"
-msgstr ""
-
-msgctxt "Separator title"
-msgid "----------"
 msgstr ""
 
 msgctxt "Video title"

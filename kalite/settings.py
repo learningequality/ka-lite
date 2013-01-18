@@ -22,7 +22,7 @@ MANAGERS = ADMINS
 
 PROJECT_PATH = os.path.dirname(os.path.realpath(__file__))
 
-LOCALE_PATHS = (PROJECT_PATH + "/../content",)
+LOCALE_PATHS = (PROJECT_PATH + "/locale",)
 
 DATABASES = {
     "default": {
