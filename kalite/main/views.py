@@ -94,15 +94,13 @@ def topic_handler(request, topic):
     
 @render_to("video.html")
 def video_handler(request, video, prev=None, next=None):
-    if request.user.is_authenticated():
-        messages.warning(request, _("Note: You're logged in as an admin (not as a student/teacher), so your video progress and points won't be saved."))
     if not VideoFile.objects.filter(pk=video['youtube_id']).exists():
         if request.is_admin:
-            messages.warning(request, _("Video not found! You can download it by going to the Update page!"))
+            messages.warning(request, _("This video was not found! You can download it by going to the Update page."))
         elif request.is_logged_in:
-            messages.warning(request, _("Video not found! Please contact your teacher or an admin!"))
+            messages.warning(request, _("This video was not found! Please contact your teacher or an admin to have it downloaded."))
         elif not request.is_logged_in:
-            messages.warning(request, _("Video not found! You must login as an admin/teacher to download the video!"))
+            messages.warning(request, _("This video was not found! You must login as an admin/teacher to download the video."))
     elif request.user.is_authenticated():
         messages.warning(request, _("Note: You're logged in as an admin (not as a student/teacher), so your video progress and points won't be saved."))
     elif not request.is_logged_in:
