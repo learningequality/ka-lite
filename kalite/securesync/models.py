@@ -20,7 +20,8 @@ _always_hash_fields = ["signed_version", "id"]
 
 json_serializer = serializers.get_serializer("json")()
 
-ROOT_UUID_NAMESPACE = uuid.uuid5(uuid.NAMESPACE_URL, settings.CENTRAL_SERVER_HOST)
+# ROOT_UUID_NAMESPACE = uuid.uuid5(uuid.NAMESPACE_URL, settings.CENTRAL_SERVER_HOST)
+ROOT_UUID_NAMESPACE = uuid.uuid5(uuid.NAMESPACE_URL, "https://kalite.adhocsync.com/")
 
 
 class SyncSession(models.Model):
@@ -441,8 +442,9 @@ class Device(SyncedModel):
         return self.get_key().verify(self._hashable_representation(), self.signature)
 
     def save(self, is_trusted=False, *args, **kwargs):
-        if self.id and self.id != self.get_uuid():
-            raise ValidationError("ID must match device's public key.")
+        # TODO(jamalex): uncomment out the following, but allow for devices created on old versions somehow
+        # if self.id and self.id != self.get_uuid():
+        #     raise ValidationError("ID must match device's public key.")
         if self.signed_by_id and self.signed_by_id != self.id and not self.signed_by.get_metadata().is_trusted:
             raise ValidationError("Devices must either be self-signed or signed by a trusted authority.")
         super(Device, self).save(*args, **kwargs)
