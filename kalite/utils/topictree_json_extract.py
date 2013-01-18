@@ -70,12 +70,26 @@ def node_info(node, lst):
 
 def decimals_for_bill():
 	for_bill = []
-	mathnode = rootnode.get("children")[0]
-	arithmetic_prealgebra_node = mathnode.get("children")[0]
+
+	#top level
 	node_info(rootnode, for_bill)
-	node_info(mathnode, for_bill)
-	node_info(arithmetic_prealgebra_node, for_bill)
+
+	#2nd level e.g. Math, Science & Econ, etc. 
 	for i in range(0, 4):
+		node_info(rootnode.get("children")[i], for_bill)
+
+	#3rd level e.g. Arithmetic & Prealgebra, etc
+	mathnode = rootnode.get("children")[0]
+	for i in range(0, 11):
+		node_info(mathnode.get("children")[i], for_bill)
+
+	#4th Level e.g.
+	arithmetic_prealgebra_node = mathnode.get("children")[0]
+	for i in range(0, 10):
+		node_info(arithmetic_prealgebra_node.get("children")[i], for_bill)
+	
+	#5th Level e.g. all children up until decimals 
+	for i in range(0, 5):
 		for_bill += recurse_json(arithmetic_prealgebra_node.get("children")[i])
 
 	generate_po(for_bill, 'decimals.po')

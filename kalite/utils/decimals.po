@@ -24,6 +24,18 @@ msgid "Math"
 msgstr ""
 
 msgctxt "Topic title"
+msgid "Science & Economics"
+msgstr ""
+
+msgctxt "Topic title"
+msgid "Humanities"
+msgstr ""
+
+msgctxt "Topic title"
+msgid "Test Prep"
+msgstr ""
+
+msgctxt "Topic title"
 msgid "Arithmetic and Pre-Algebra"
 msgstr ""
 
@@ -33,6 +45,199 @@ msgid ""
 "want to make sure you know these topics). After this, you should be ready "
 "for algebra. This topic includes videos from the former developmental math "
 "playlists."
+msgstr ""
+
+msgctxt "Topic title"
+msgid "Algebra"
+msgstr ""
+
+msgctxt "Topic description"
+msgid ""
+"Conceptual videos and worked examples from basic algebra through algebra 2. "
+"Includes videos from the former algebra worked examples playlists. "
+msgstr ""
+
+msgctxt "Topic title"
+msgid "Geometry"
+msgstr ""
+
+msgctxt "Topic description"
+msgid ""
+"This is a first year, high-school level course on Geometry (which is based "
+"on Euclid's elements).  It revisits many of the basic geometrical concepts "
+"studied in earlier courses, but addresses them with more mathematical rigor."
+" There is strong focus on proving theorems and results from basic "
+"postulates."
+msgstr ""
+
+msgctxt "Topic title"
+msgid "Trigonometry and precalculus"
+msgstr ""
+
+msgctxt "Topic description"
+msgid ""
+"Videos and exercises on trigonometry.  Watch the \"Geometry\" playlist first"
+" if you have trouble understanding the topics covered here."
+msgstr ""
+
+msgctxt "Topic title"
+msgid "Calculus"
+msgstr ""
+
+msgctxt "Topic description"
+msgid ""
+"Topics covered in the first two or three semesters of college calculus.  "
+"Everything from limits to derivatives to integrals to vector calculus. "
+"Should understand the topics in the pre-calculus playlist first (the limit "
+"videos are in both playlists)"
+msgstr ""
+
+msgctxt "Topic title"
+msgid "Probability and statistics"
+msgstr ""
+
+msgctxt "Topic title"
+msgid "Differential Equations"
+msgstr ""
+
+msgctxt "Topic description"
+msgid ""
+"Topics covered in a first year course in differential equations.  Need to "
+"understand basic differentiation and integration from Calculus playlist "
+"before starting here."
+msgstr ""
+
+msgctxt "Topic title"
+msgid "Linear Algebra"
+msgstr ""
+
+msgctxt "Topic description"
+msgid ""
+"Matrices, vectors, vector spaces, transformations, eigenvectors/values.  "
+"Covers all topics in a first year college linear algebra course.  This is an"
+" advanced course normally taken by science or engineering majors after "
+"taking at least two semesters of calculus (although calculus really isn't a "
+"prereq) so don't confuse this with regular high school algebra."
+msgstr ""
+
+msgctxt "Topic title"
+msgid "Applied Math"
+msgstr ""
+
+msgctxt "Topic description"
+msgid ""
+"The branches of mathematics that are involved in the study of the physical "
+"or biological or sociological world."
+msgstr ""
+
+msgctxt "Topic title"
+msgid "Brain Teasers"
+msgstr ""
+
+msgctxt "Topic description"
+msgid ""
+"Random logic puzzles and brain teasers.  Fun to do and useful for many job "
+"interviews!"
+msgstr ""
+
+msgctxt "Topic title"
+msgid "Vi Hart"
+msgstr ""
+
+msgctxt "Topic description"
+msgid ""
+"Recreational mathematics and inspirational videos by resident mathemusician "
+"Vi Hart"
+msgstr ""
+
+msgctxt "Topic title"
+msgid "Addition and subtraction"
+msgstr ""
+
+msgctxt "Topic description"
+msgid ""
+"Adding and subtracting positive and negative whole numbers. Starts with "
+"1+1=2 and covers carrying, borrowing, and word problems."
+msgstr ""
+
+msgctxt "Topic title"
+msgid "Multiplication and division"
+msgstr ""
+
+msgctxt "Topic description"
+msgid ""
+"Multiplying and dividing positive and negative whole numbers, understanding "
+"place value, and rounding numbers."
+msgstr ""
+
+msgctxt "Topic title"
+msgid "Factors and multiples"
+msgstr ""
+
+msgctxt "Topic description"
+msgid ""
+"Understanding and finding factors and multiples. After these videos, you'll "
+"be ready for fractions."
+msgstr ""
+
+msgctxt "Topic title"
+msgid "Negative numbers and absolute value"
+msgstr ""
+
+msgctxt "Topic description"
+msgid ""
+"Extending our understanding of numbers below 0.  Thinking about \"absolute\""
+" distance from 0."
+msgstr ""
+
+msgctxt "Topic title"
+msgid "Decimals and percent"
+msgstr ""
+
+msgctxt "Topic description"
+msgid ""
+"Understanding decimals conceptually, using operations with decimals, "
+"rounding and estimating with decimals, and converting decimals."
+msgstr ""
+
+msgctxt "Topic title"
+msgid "Fractions"
+msgstr ""
+
+msgctxt "Topic description"
+msgid ""
+"Understanding fractions conceptually, using operations with fractions, and "
+"converting fractions."
+msgstr ""
+
+msgctxt "Topic title"
+msgid "Ratios, proportions, units and rates"
+msgstr ""
+
+msgctxt "Topic title"
+msgid "Exponents, radicals, and scientific notation"
+msgstr ""
+
+msgctxt "Topic description"
+msgid "Understanding and solving exponents without algebra."
+msgstr ""
+
+msgctxt "Topic title"
+msgid "Interpreting data"
+msgstr ""
+
+msgctxt "Topic description"
+msgid ""
+"Getting familiar with constructing and interpreting various types of charts,"
+" graphs and tables."
+msgstr ""
+
+msgctxt "Topic title"
+msgid "Arithmetic properties"
+msgstr ""
+
+msgctxt "Topic description"
+msgid "Putting names to properties of common arithmetic operations"
 msgstr ""
 
 msgctxt "Topic title"
@@ -1384,4 +1589,586 @@ msgstr ""
 
 msgctxt "Video description"
 msgid "1-7, number properties and absolute value equations"
+msgstr ""
+
+msgctxt "Topic title"
+msgid "Decimals and percent"
+msgstr ""
+
+msgctxt "Topic description"
+msgid ""
+"Understanding decimals conceptually, using operations with decimals, "
+"rounding and estimating with decimals, and converting decimals."
+msgstr ""
+
+msgctxt "Topic title"
+msgid "Conceptualizing decimals and place notation"
+msgstr ""
+
+msgctxt "Topic description"
+msgid ""
+"You've been using decimals all of your life.  When you pay $0.75 at a "
+"vending machine, 0.75 is a decimal.  When you see the ratings of gymnastics "
+"judges at the Olympics (\"9.5, 9.4, 7.5 (booooo)\"), those are decimals.  "
+"This tutorial will help you understand this powerful tool all the better.  "
+"Before you know it, you'll be representing numbers that are in-between whole"
+" numbers all the time!"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Decimal Place Value"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Decimal Place Value"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Decimal Place Value 2"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Decimal Place Value 2"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Comparing Decimals"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Comparing Decimals"
+msgstr ""
+
+msgctxt "Exercise title"
+msgid "Understanding decimals place value"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Decimals on a Number Line"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Decimals on a Number Line"
+msgstr ""
+
+msgctxt "Exercise title"
+msgid "Decimals on the number line 1"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Points on a number line"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Points on a number line"
+msgstr ""
+
+msgctxt "Exercise title"
+msgid "Decimals on the number line 2"
+msgstr ""
+
+msgctxt "Topic title"
+msgid "Adding and subtracting decimals"
+msgstr ""
+
+msgctxt "Topic description"
+msgid ""
+"You get the general idea of decimal is and what the digits in different "
+"places represent (place value).  Now you're ready to do something with the "
+"decimals.  Adding and subtracting is a good place to start.  This will allow"
+" you to add your families expenses to figure out if your little brother is "
+"laundering money (perhaps literally).  Have fun!"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Adding Decimals"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Adding Decimals"
+msgstr ""
+
+msgctxt "Exercise title"
+msgid "Adding decimals 2"
+msgstr ""
+
+msgctxt "Exercise title"
+msgid "Adding decimals 0.5"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Subtracting Decimals"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Subtracting Decimals"
+msgstr ""
+
+msgctxt "Exercise title"
+msgid "Subtracting decimals 0.5"
+msgstr ""
+
+msgctxt "Exercise title"
+msgid "Adding decimals"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Subtracting Decimals Word Problem"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Subtracting Decimals Word Problem"
+msgstr ""
+
+msgctxt "Exercise title"
+msgid "Subtracting decimals"
+msgstr ""
+
+msgctxt "Exercise title"
+msgid "Adding and subtracting decimals word problems"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Adding decimals of different signs word problem"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Subtracting decimals (old)"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Subtracting decimal numbers"
+msgstr ""
+
+msgctxt "Topic title"
+msgid "Multiplying decimals"
+msgstr ""
+
+msgctxt "Topic description"
+msgid ""
+"The real world is seldom about whole numbers.  If you precisely measure "
+"anything, you're likely to get a decimal.  If you don't know how to multiply"
+" these decimals, then you won't be able to do all the powerful things that "
+"multiplication can do in the real world (figure out your commission as a "
+"robot possum salesperson, determining how much shag carpet you need for your"
+" secret lair, etc.)."
+msgstr ""
+
+msgctxt "Video title"
+msgid "Multiplying Decimals"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Multiplying Decimals"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Multiplying Decimals 3"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Multiplying Decimals 3"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Multiplication 8: Multiplying decimals (Old video)"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Multiplying decimals (www.khanacademy.org)"
+msgstr ""
+
+msgctxt "Exercise title"
+msgid "Multiplying decimals"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Multiplying a Decimal by a Power of 10"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Multiplying a Decimal by a Power of 10"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Dividing a Decimal by a Power of 10"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Dividing a Decimal by a Power of 10"
+msgstr ""
+
+msgctxt "Exercise title"
+msgid "Understanding moving the decimal"
+msgstr ""
+
+msgctxt "Topic title"
+msgid "Dividing decimals"
+msgstr ""
+
+msgctxt "Topic description"
+msgid ""
+"You can add, subtract and multiply decimals.  You know you'd feel a bit "
+"empty if you couldn't divide them as well. But something more powerful is "
+"going to happen.  If you are like us, you never quite liked those pesky "
+"remainders when dividing whole numbers.  Well, those pesky remainders better"
+" watch out because they are going to be divided too!!!! Ah ha ha ha ha!!!!!"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Dividing decimal"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Dividing decimal numbers"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Dividing Decimals"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Dividing Decimals"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Dividing Decimals 2.1"
+msgstr ""
+
+msgctxt "Video description"
+msgid ".1 Dividing Decimals 2.1"
+msgstr ""
+
+msgctxt "Exercise title"
+msgid "Dividing decimals 0.5"
+msgstr ""
+
+msgctxt "Exercise title"
+msgid "Dividing decimals 1"
+msgstr ""
+
+msgctxt "Exercise title"
+msgid "Dividing decimals 2"
+msgstr ""
+
+msgctxt "Exercise title"
+msgid "Dividing decimals"
+msgstr ""
+
+msgctxt "Topic title"
+msgid "Converting between fractions and decimals"
+msgstr ""
+
+msgctxt "Topic description"
+msgid ""
+"Both fractions and decimals are desperate to capture that little part of our"
+" heart that desires to express non-whole numbers.  But must we commit?  "
+"Can't we have business in the front and party in the back (younger people "
+"should luck up the word \"mullet\" to see a hair-style worth considering for"
+" your next trip to the barber)?  Can't it look like a pump, but feel like a "
+"sneaker?  Well, if 18-wheelers can turn into self-righteous robots, then why"
+" can't decimals and fractions turn into each other?"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Decimals and Fractions"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Decimals and Fractions"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Converting fractions to decimals"
+msgstr ""
+
+msgctxt "Video description"
+msgid "How to express a fraction as a decimal"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Converting fractions to decimals (ex1)"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Converting fractions to decimals (ex1)"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Converting fractions to decimals (ex2)"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Converting fractions to decimals (ex2)"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Converting Fractions to Decimals Example"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Converting Fractions to Decimals"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Converting decimals to fractions 1 (ex 1)"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Converting decimals to fractions 1 (ex 1)"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Converting decimals to fractions 1 (ex 2)"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Converting decimals to fractions 1 (ex 2)"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Converting decimals to fractions 1 (ex 3)"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Converting decimals to fractions 1 (ex 3)"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Converting decimals to fractions 2 (ex 1)"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Converting decimals to fractions 2 (ex 1)"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Converting decimals to fractions 2 (ex 2)"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Converting decimals to fractions 2 (ex 2)"
+msgstr ""
+
+msgctxt "Topic title"
+msgid "Intro to percentages"
+msgstr ""
+
+msgctxt "Topic description"
+msgid ""
+"At least 50% of the math that you end up doing in your real life will involve percentages.  We're not really sure about that figure, but it sounds authoritative.  Anyway, unless you've watched this tutorial, you're really in no position to argue otherwise.\n"
+"\n"
+"As you'll see \"percent\" literally means \"per cent\" or \"per hundred\".  It's a pseudo-decimally thing that our society likes to use even though decimals or fractions alone would have done the trick.  Either way, we're 100% sure you'll find this useful."
+msgstr ""
+
+msgctxt "Video title"
+msgid "Describing the Meaning of Percent"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Describing the Meaning of Percent"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Describing the Meaning of Percent 2"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Describing the Meaning of Percent 2"
+msgstr ""
+
+msgctxt "Exercise title"
+msgid "Converting percents to decimals"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Representing a number as a decimal, percent, and fraction"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Representing a number as a decimal, percent, and fraction"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Converting decimals to percents (ex 1)"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Converting decimals to percents (ex 1)"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Converting decimals to percents (ex 2)"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Converting decimals to percents (ex 2)"
+msgstr ""
+
+msgctxt "Exercise title"
+msgid "Converting decimals to percents"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Identifying Percent Amount and Base"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Identifying Percent Amount and Base"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Representing a number as a decimal, percent, and fraction 2"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Representing a number as a decimal, percent, and fraction 2"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Ordering numeric expressions"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Ordering numbers expressed as decimals, fractions, and percentages"
+msgstr ""
+
+msgctxt "Topic title"
+msgid "Percent word problems"
+msgstr ""
+
+msgctxt "Topic description"
+msgid ""
+"Whether you're calculating a tip at your favorite restaurant or figuring out"
+" how many decades you'll be paying your student debt because of the "
+"interest, percents will show up again and again and again in your life.  "
+"This tutorial will expose you to some of these problems before they show up "
+"in your actual life so you can handle them with ease (kind of like a vaccine"
+" for the brain).  Enjoy."
+msgstr ""
+
+msgctxt "Video title"
+msgid "Growing by a percentage"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Growing a quantity by a percentage"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Solving Percent Problems"
+msgstr ""
+
+msgctxt "Video description"
+msgid "U05_L2_T1_we1 Solving Percent Problems"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Solving Percent Problems 2"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Solving Percent Problems 2"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Solving Percent Problems 3"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Solving Percent Problems 3"
+msgstr ""
+
+msgctxt "Exercise title"
+msgid "Discount tax and tip word problems"
+msgstr ""
+
+msgctxt "Exercise title"
+msgid "Markup and commission word problems"
+msgstr ""
+
+msgctxt "Topic title"
+msgid "Estimating and rounding with decimals"
+msgstr ""
+
+msgctxt "Topic description"
+msgid ""
+"Laziness is usually considered a bad thing.  But sometimes, it is useful to be lazy in a smart way.  Why do a big, hairy calculation if you just need a rough estimate? Why keep track of 2.345609 when you only need 2.35? \n"
+"\n"
+"This tutorial will get you comfortable with sometimes being a little rough with numbers.  By being able to round and estimate them, it'll only add one more tool to your toolkit."
+msgstr ""
+
+msgctxt "Video title"
+msgid "Rounding Decimals"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Rounding Decimals"
+msgstr ""
+
+msgctxt "Exercise title"
+msgid "Rounding numbers"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Estimation with Decimals"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Estimation with Decimals"
+msgstr ""
+
+msgctxt "Exercise title"
+msgid "Estimation with decimals"
+msgstr ""
+
+msgctxt "Topic title"
+msgid "Significant figures"
+msgstr ""
+
+msgctxt "Topic description"
+msgid ""
+"There is a strong temptation in life to appear precise, even when you are aren't accurate.   If you  precisely measure one dimension of a carpet to be 3.256 meters and eyeball the other dimensional to be \"roughly 2 meters\", can you really claim that the area is  7.512 square meters (3.256 x 2)?  Isn't that a little misleading?  \n"
+"\n"
+"This tutorial gets us thinking about this conundrum and gives us the best practices that scientists and engineers use to not mislead each other."
+msgstr ""
+
+msgctxt "Video title"
+msgid "Significant Figures"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Introduction to significant figures"
+msgstr ""
+
+msgctxt "Video title"
+msgid "More on Significant Figures"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Understanding the \"rules of thumb\" for significant figures"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Addition and Subtraction with Significant Figures"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Addition and Subtraction with Significant Figures"
+msgstr ""
+
+msgctxt "Video title"
+msgid "Multiplying and Dividing with Significant Figures"
+msgstr ""
+
+msgctxt "Video description"
+msgid "Multiplying and dividing with significant figures"
+msgstr ""
+
+msgctxt "Exercise title"
+msgid "Significant figures"
+msgstr ""
+
+msgctxt "Exercise description"
+msgid "Determine how many significant figures a given number has."
 msgstr ""
