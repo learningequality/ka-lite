@@ -5,10 +5,12 @@
 {% block content %}{{ block.super }}
 <h1>Frequently Asked Questions</h1>
 <div id="id-topics">
-	<h2>Topics</h2>
 	<ul>
 	  {% for topic in topics %}
-	    <li><a href="{{ topic.get_absolute_url }}">{{ topic }}</a></li>
+	    <h2><a href="{{ topic.get_absolute_url }}">{{ topic }}</a></h2>
+	    {% for question in topic.questions.all %}
+	    	<div class="topic-indented"><a href="{{ question.get_absolute_url }}">{{ question }}</a></div>
+	    {% endfor %}
 	  {% endfor %}
 	</ul>
 </div>

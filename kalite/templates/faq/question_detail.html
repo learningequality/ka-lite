@@ -5,10 +5,12 @@
 
 {% block content %}{{ block.super }}
 
-{{ object.text }}
+<span class="question-detail-question"><h3>{{ object.text }}</h3></span>
 
-<br/>
+<div class="question-detail-answer">{{ object.answer }}</div>
 
-{{ object.answer }}
+</br>
+
+<span><a href="{% url faq_topic_list %}">Back to topic list...</a></span>
 
 {% endblock %}

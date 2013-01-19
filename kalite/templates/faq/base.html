@@ -1,6 +1,6 @@
 {% extends base_template %}
 {% block faq_selected %}selected{% endblock faq_selected %}
-{% block basecss %}
+{% block headcss %}
 <style>
 .question {
 	font-weight: bold;
@@ -9,6 +9,17 @@
 #id-topics {
 	margin-left: 25px;
 }
+
+.topic-indented {
+	margin-left: 25px;
+}
+
+.question-detail-answer {
+	/*margin-left: 15px;*/
+	margin-top: -15px;
+}
+
+}
 </style>
-{% endblock basecss %}
+{% endblock headcss %}
 

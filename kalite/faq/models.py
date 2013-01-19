@@ -60,6 +60,9 @@ class Question(models.Model):
     
     objects = QuestionManager()
     
+    def get_absolute_url(self):
+        return self.topic.get_absolute_url() + "/" + self.slug
+
     class Meta:
         verbose_name = _("Frequent asked question")
         verbose_name_plural = _("Frequently asked questions")
