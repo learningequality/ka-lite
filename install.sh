@@ -34,7 +34,8 @@ if [ ! -w `dirname "${BASH_SOURCE[0]}"`/kalite ]; then
 	exit 1
 fi
 
-pyexec=`./python.sh`
+SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
+pyexec=`$SCRIPT_DIR/python.sh`
 cd `dirname "${BASH_SOURCE[0]}"`/kalite
 
 if [ -f "database/data.sqlite" ]; then
