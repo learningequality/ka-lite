@@ -17,19 +17,20 @@
         last_second_watched_walltime: new Date(),
         seconds_watched_since_save: 0
     };
-
-    $(function() {
-        $("#video-thumb").load(function() {
+    
+    $("#video-thumb").each(function() {
+        var dynamic_img = $(this).attr("src");
+        $(this).load(function() {
             
             // flashVars.flv = "{{ video.download_urls.mp4 }}";
             flashVars.flv = "{{ CONTENT_URL }}{{ video.youtube_id }}.mp4";
             // flashVars.startimage = "{{ video.download_urls.png }}";
             flashVars.startimage = "{{ CONTENT_URL }}{{ video.youtube_id }}.png";
             flashVars.srturl = "{{ CONTENT_URL }}{{ video.youtube_id }}.srt";
-            var width = $("#video-thumb").width();
-            var height = $("#video-thumb").height();
+            var width = $(this).width();
+            var height = $(this).height();
             
-            $("#video-thumb").css({position: "absolute"});
+            $(this).css({position: "absolute"});
             $("#video-container").css({height: height});
             
             embedSwf("flash-content", width, height, function(callbackObj) {
@@ -46,7 +47,7 @@
                 }
             });
             
-        });
+        }).attr("src",dynamic_img);
     });
 </script>
 {% endblock bodyjs %}
