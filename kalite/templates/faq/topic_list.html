@@ -7,9 +7,9 @@
 <div id="id-topics">
 	<ul>
 	{% for topic in topics %}
-	    <h2><a href="{{ topic.get_absolute_url }}">{{ topic }}</a>{% if user.is_staff %}<a class="faq-change-links" target="_blank" href="/admin/faq/topic/{{ topic.pk }}/">(edit topic)</a>{% endif %}</h2>
+	    <h2><a href="{{ topic.get_absolute_url }}">{{ topic|safe }}</a>{% if user.is_staff %}<a class="faq-change-links" target="_blank" href="/admin/faq/topic/{{ topic.pk }}/">(edit topic)</a>{% endif %}</h2>
 	    {% for question in topic.questions.all %}
-	    	<div class="topic-indented"><a href="{{ question.get_absolute_url }}">{{ question }}</a></div>
+	    	<div class="topic-indented"><a href="{{ question.get_absolute_url }}">{{ question|safe }}</a></div>
 	    {% endfor %}
 	{% endfor %}
 	</ul>

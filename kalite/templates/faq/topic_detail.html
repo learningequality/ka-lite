@@ -3,11 +3,11 @@
 {% block title %}{{ block.super }}: {{ topic }}{% endblock %}
 
 {% block content %}{{ block.super }}
-<h3>Frequently Asked Questions: {{ topic }} {% if user.is_staff %}<a class="faq-change-links" href="/admin/faq/question/add/">(add question)</a>{% endif %}</h3>
+<h3>Frequently Asked Questions: {{ topic|safe }} {% if user.is_staff %}<a class="faq-change-links" href="/admin/faq/question/add/">(add question)</a>{% endif %}</h3>
 <dl>
 {% for question in questions %}
-  <dt class="question">{{ question.text }}</dt>
-  <dd class="answer">{{ question.answer }}</dd>
+  <dt class="question">{{ question.text|safe }}</dt>
+  <dd class="answer">{{ question.answer|safe }}</dd>
 {% endfor %}
 </dl>
 </br>
