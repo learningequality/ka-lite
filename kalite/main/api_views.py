@@ -132,8 +132,8 @@ def start_video_download(request):
     
     VideoFile.objects.bulk_create([VideoFile(youtube_id=id, flagged_for_download=True) for id in video_files_to_create])
     
-    for chunk in break_into_chunks(video_files_to_create):
-        video_files_needing_model_update = VideoFile.objects.filter(download_in_progress=False, youtube_id__in=chunk)
+    for chunk in break_into_chunks(youtube_ids):
+        video_files_needing_model_update = VideoFile.objects.filter(download_in_progress=False, youtube_id__in=chunk).exclude(percent_complete=100)
         video_files_needing_model_update.update(percent_complete=0, cancel_download=False, flagged_for_download=True)
 
     force_job("videodownload", "Download Videos")
@@ -234,7 +234,7 @@ def cancel_downloads(request):
 
     return JsonResponse({})
 
-def convert_topic_tree(node, level=0):
+def convert_topic_tree(node, level=0, statusdict=None):
     if node["kind"] == "Topic":
         if "Video" not in node["contains"]:
             return None
@@ -242,7 +242,7 @@ def convert_topic_tree(node, level=0):
         unstarted = True
         complete = True
         for child_node in node["children"]:
-            child = convert_topic_tree(child_node, level+1)
+            child = convert_topic_tree(child_node, level=level+1, statusdict=statusdict)
             if child:
                 if child["addClass"] == "unstarted":
                     complete = False
@@ -262,14 +262,29 @@ def convert_topic_tree(node, level=0):
             "expand": level < 1,
         }
     if node["kind"] == "Video":
+        if statusdict:
+            percent = statusdict.get(node["youtube_id"], 0)
+            if not percent:
+                status = "unstarted"
+            elif percent == 100:
+                status = "complete"
+            else:
+                status = "partial"
+        else:
+            # if no pre-computed status dict, then use the older, slower method
+            status = get_video_download_status(node["youtube_id"])
         return {
             "title": node[title_key["Video"]],
             "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
             "key": node["youtube_id"],
-            "addClass": get_video_download_status(node["youtube_id"]),
+            "addClass": status,
         }
     return None
 
+def get_annotated_topic_tree():
+    statusdict = dict(VideoFile.objects.values_list("youtube_id", "percent_complete"))
+    return convert_topic_tree(topicdata.TOPICS, statusdict=statusdict)
+
 @require_admin
 def get_topic_tree(request):
-    return JsonResponse(convert_topic_tree(topicdata.TOPICS))
+    return JsonResponse(get_annotated_topic_tree())

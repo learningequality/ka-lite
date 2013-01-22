@@ -1,3 +1,5 @@
+#!/bin/bash
+
 pids=`ps aux | grep cronserver.py | grep -v "grep" | awk '{print $2}'`
 
 if [ "$pids" ]; then
