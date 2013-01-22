@@ -3,15 +3,15 @@
 {% block title %}{{ block.super }}Frequently Asked Questions: Topics{% endblock %}
 
 {% block content %}{{ block.super }}
-<h1>Frequently Asked Questions</h1>
+<h1>Frequently Asked Questions {% if user.is_staff %}<a class="faq-change-links" href="/admin/faq/topic/add/">(add topic)</a>{% endif %}</h1>
 <div id="id-topics">
 	<ul>
-	  {% for topic in topics %}
-	    <h2><a href="{{ topic.get_absolute_url }}">{{ topic }}</a>{% if user.is_staff %}<a class="faq-topic-edit" target="_blank" href="/admin/faq/topic/{{ topic.pk }}/">(edit topic)</a>{% endif %}</h2>
+	{% for topic in topics %}
+	    <h2><a href="{{ topic.get_absolute_url }}">{{ topic }}</a>{% if user.is_staff %}<a class="faq-change-links" target="_blank" href="/admin/faq/topic/{{ topic.pk }}/">(edit topic)</a>{% endif %}</h2>
 	    {% for question in topic.questions.all %}
 	    	<div class="topic-indented"><a href="{{ question.get_absolute_url }}">{{ question }}</a></div>
 	    {% endfor %}
-	  {% endfor %}
+	{% endfor %}
 	</ul>
 </div>
 {% endblock %}
