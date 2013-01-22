@@ -12,6 +12,8 @@ data_path = settings.DATA_PATH
 
 download_url = "http://s3.amazonaws.com/KA-youtube-converted/%s/%s"
 
+import socket
+socket.setdefaulttimeout(20)
 
 class DownloadCancelled(Exception):
     def __str__(self):
@@ -89,23 +91,22 @@ def download_video(youtube_id, format="mp4", callback=None):
     filepath = download_path + video_filename
     url = download_url % (video_filename, video_filename)
     
-    large_thumb_filename = "%(id)s.png" % {"id": youtube_id}
-    large_thumb_filepath = download_path + large_thumb_filename
-    large_thumb_url = download_url % (video_filename, large_thumb_filename)
-    
-    thumb_filepath = download_path + youtube_id + ".jpg"
-    thumb_url = "http://img.youtube.com/vi/%(id)s/hqdefault.jpg" % {"id": youtube_id}
-    
-    try:
-        download_file(url, filepath, callback_percent_proxy(callback, end_percent=91))
+    thumb_filename = "%(id)s.png" % {"id": youtube_id}
+    thumb_filepath = download_path + thumb_filename
+    thumb_url = download_url % (video_filename, thumb_filename)
         
-        download_file(large_thumb_url, large_thumb_filepath, callback_percent_proxy(callback, start_percent=91, end_percent=96))
-
-        download_file(thumb_url, thumb_filepath, callback_percent_proxy(callback, start_percent=96, end_percent=100))
+    try:
+        download_file(url, filepath, callback_percent_proxy(callback, end_percent=95))
+        
+        download_file(thumb_url, thumb_filepath, callback_percent_proxy(callback, start_percent=95, end_percent=100))
         
     except DownloadCancelled:
         delete_downloaded_files(youtube_id)
-        
+    
+    except Exception as e:
+        delete_downloaded_files(youtube_id)
+        raise e
+    
 def delete_downloaded_files(youtube_id):
     for filepath in glob.glob(download_path + youtube_id + ".*"):
         try:

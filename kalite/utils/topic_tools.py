@@ -1,3 +1,4 @@
+import glob
 from main import topicdata
 
 def find_videos_by_youtube_id(youtube_id, node=topicdata.TOPICS):
@@ -26,3 +27,6 @@ def print_videos(youtube_id):
     print "Videos with YouTube ID '%s':" % youtube_id
     for node in find_videos_by_youtube_id(youtube_id):
         print " > ".join(node["path"].split("/")[1:-3] + [node["title"]])
+        
+def get_downloaded_youtube_ids():
+    return [path.split("/")[-1].split(".")[0] for path in glob.glob("../../content/*.mp4")]

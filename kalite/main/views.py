@@ -1,7 +1,8 @@
 import re, json, sys
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
+from django.template.loader import render_to_string
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from annoying.decorators import render_to
@@ -13,12 +14,13 @@ from django.contrib import messages
 from securesync.views import require_admin, facility_required
 from config.models import Settings
 from securesync.models import Facility, FacilityGroup
-from models import FacilityUser, VideoLog, ExerciseLog
+from models import FacilityUser, VideoLog, ExerciseLog, VideoFile
 from django.utils.safestring import mark_safe
 from config.models import Settings
 from securesync.api_client import SyncClient
 from django.contrib import messages
 from utils.jobs import force_job
+from django.utils.translation import ugettext as _
 
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
@@ -92,10 +94,17 @@ def topic_handler(request, topic):
     
 @render_to("video.html")
 def video_handler(request, video, prev=None, next=None):
-    if request.user.is_authenticated():
-        messages.warning(request, "Note: You're logged in as an admin (not as a student/teacher), so your video progress and points won't be saved.")
+    if not VideoFile.objects.filter(pk=video['youtube_id']).exists():
+        if request.is_admin:
+            messages.warning(request, _("This video was not found! You can download it by going to the Update page."))
+        elif request.is_logged_in:
+            messages.warning(request, _("This video was not found! Please contact your teacher or an admin to have it downloaded."))
+        elif not request.is_logged_in:
+            messages.warning(request, _("This video was not found! You must login as an admin/teacher to download the video."))
+    elif request.user.is_authenticated():
+        messages.warning(request, _("Note: You're logged in as an admin (not as a student/teacher), so your video progress and points won't be saved."))
     elif not request.is_logged_in:
-        messages.warning(request, "Friendly reminder: You are not currently logged in, so your video progress and points won't be saved.")
+        messages.warning(request, _("Friendly reminder: You are not currently logged in, so your video progress and points won't be saved."))
     context = {
         "video": video,
         "title": video[title_key["Video"]],
@@ -109,9 +118,9 @@ def exercise_handler(request, exercise):
     related_videos = [topicdata.NODE_CACHE["Video"][key] for key in exercise["related_video_readable_ids"]]
     
     if request.user.is_authenticated():
-        messages.warning(request, "Note: You're logged in as an admin (not as a student/teacher), so your exercise progress and points won't be saved.")
+        messages.warning(request, _("Note: You're logged in as an admin (not as a student/teacher), so your exercise progress and points won't be saved."))
     elif not request.is_logged_in:
-        messages.warning(request, "Friendly reminder: You are not currently logged in, so your exercise progress and points won't be saved.")
+        messages.warning(request, _("Friendly reminder: You are not currently logged in, so your exercise progress and points won't be saved."))
 
     context = {
         "exercise": exercise,
@@ -193,23 +202,20 @@ def coach_reports(request, facility):
             "exercise_logs": [get_object_or_None(ExerciseLog, user=user, exercise_id=ex["name"]) for ex in exercises],
         } for user in users]
     return context
-        
-@render_to("404_distributed.html")
+
 def distributed_404_handler(request):
-    return {}
-    
-@render_to("500_distributed.html")
+    return HttpResponseNotFound(render_to_string("404_distributed.html", {}, context_instance=RequestContext(request)))
+
 def distributed_500_handler(request):
     errortype, value, tb = sys.exc_info()
-    return {
+    context = {
         "errortype": errortype.__name__,
         "value": str(value),
     }
+    return HttpResponseServerError(render_to_string("500_distributed.html", context, context_instance=RequestContext(request)))
     
-@render_to("404_central.html")
 def central_404_handler(request):
-    return {}
+    return HttpResponseNotFound(render_to_string("404_central.html", {}, context_instance=RequestContext(request)))
     
-@render_to("500_central.html")
 def central_500_handler(request):
-    return {}
+    return HttpResponseServerError(render_to_string("500_central.html", {}, context_instance=RequestContext(request)))

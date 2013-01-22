@@ -1,5 +1,7 @@
 {% extends 'base_distributed.html' %}
 
+{% load i18n %}
+
 {% block headcss %}
     <link href="{{ MEDIA_URL }}video-js/video-js.min.css" rel="stylesheet" type="text/css">
 {% endblock headcss %}
@@ -12,18 +14,26 @@
 
 {% block watch_selected %}selected{% endblock watch_selected %}
 
+{% block bodyjs %}
+<script src="{{ MEDIA_URL }}js/video.js"></script>
+{% endblock bodyjs %}
+
 {% block content %}
 <h2 class="title-header">
     <span class="title">{{ video.title }}</span><br/>
-    <span class="long-description">{{ video.description }}</span>
+    {% if video.description %}
+        <span class="long-description">{{ video.description }}</span>
+    {% endif %}
     {% if video.related_exercise %}
     <span style="float:right; margin-top: -17px; font-size: 14px;">
         <span class="progress-circle" data-exercise-id="{{ video.related_exercise.slug }}"></span>
-        <a href="{{ video.related_exercise.path }}" class="simple-button green" title="Exercise: '{{ video.related_exercise.title }}'">Practice this concept</a>
+        {% comment %}Translators: Example usage=> Exercise: Name of Exercise {% endcomment %}
+        {% trans "Exercise" as exercise %}
+        <a href="{{ video.related_exercise.path }}" class="simple-button green" title="{{ exercise }}: '{{ video.related_exercise.title }}'">{% trans "Practice this concept" %}</a>
     </span>
     {% endif %}
     <div class="clear"></div>
-<div class="points-container" style="display: none;">Points: <span class="points">0</span></div>
+<div class="points-container" style="display: none;">{% trans "Points" %}: <span class="points">0</span></div>
 </h2>
 <div class="clear"></div>
 {% if prev %}

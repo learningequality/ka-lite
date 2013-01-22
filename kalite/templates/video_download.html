@@ -2,7 +2,9 @@
 
 {% block update_selected %}selected{% endblock update_selected %}
 
-{% block title %}Video Download{% endblock %}
+{% load i18n %}
+
+{% block title %}{% trans "Video Download" %}{% endblock %}
 
 {% block headcss %}
 <link href="{{ MEDIA_URL }}css/ui.dynatree.css"rel="stylesheet" type="text/css"/>
@@ -101,6 +103,13 @@ ul.dynatree-container li, .ui-widget-content {
     padding: 0 10px 0 10px;
 }
 
+#retry-video-download, #retry-subtitle-download {
+    color: red;
+    padding: 0 10px 0 10px;
+    display: none;
+    margin-top: 15px;
+}
+
 </style>
 {% endblock headcss %}
 {% block headjs %}
@@ -181,13 +190,12 @@ ul.dynatree-container li, .ui-widget-content {
     
         $("#download-videos").click(function() {
             var videos = findSelectedIncompleteVideos();            
-            var video_ids = $.map(videos, function(node) {
+            var video_queue = $.map(videos, function(node) {
                 return node.data.key;
             });
 
             unselectAllNodes();
-
-            doRequest("/api/start_video_download", {youtube_ids: video_ids}).success(startDownloadChecks);
+            doRequest("/api/start_video_download", {youtube_ids: video_queue}).success(startDownloadChecks);
     	
             $(".progress-section").hide();
             $(".progress-waiting").show();
@@ -196,26 +204,26 @@ ul.dynatree-container li, .ui-widget-content {
 
         $("#delete-videos").click(function() {
             var videos = findSelectedStartedVideos();
-            var video_ids = $.map(videos, function(node) {
+            var video_queue = $.map(videos, function(node) {
                 return node.data.key;
             });
 
             unselectAllNodes();
             
-            doRequest("/api/delete_videos", {youtube_ids: video_ids}).complete(function() {
-                $.each(video_ids, function(ind, id) {
+            doRequest("/api/delete_videos", {youtube_ids: video_queue}).complete(function() {
+                $.each(video_queue, function(ind, id) {
                     setNodeClass(id, "unstarted");
                 });
             });
         
         });
-        
+
         $(".download-subtitles").click(function(event) {
         
             var new_only = $(event.target).attr("new_only");
             var language = $("#language option:selected").val();
             if (new_only!="true") {
-                if(!confirm("You are about to download new subtitles for all downloaded videos. This may take a long time.")) {
+                if(!confirm("{% trans 'You are about to download new subtitles for all downloaded videos. This may take a long time.' %}")) {
                     return;
                 }
             }
@@ -224,7 +232,7 @@ ul.dynatree-container li, .ui-widget-content {
                 doRequest("/api/start_subtitle_download", {language: language, new_only: new_only}).success(startSubtitleDownloadChecks);
                 $(".progress-waiting").show();
             } else {
-                alert("Please select a language first");
+                alert("{% trans 'Please select a language first' %}");
             }
 			
         });
@@ -233,11 +241,20 @@ ul.dynatree-container li, .ui-widget-content {
             
             clearInterval(window.download_check_interval);
             clearInterval(window.download_subtitle_check_interval);
+            window.downloading_videos = [];
+            window.download_index = 0;
+            window.download_subtitle_index = 0;
+            
+            window.download_check_interval = null;
+            window.download_subtitle_check_interval = null;
             $(".progress-section, .progress-waiting, .subtitle-section, #cancel-download").hide();
             
             doRequest("/api/cancel_downloads");
         });
        
+        $("#retry-video-download").click(function() {
+            doRequest("/api/start_video_download", {});
+        });
     
     });
     
@@ -306,6 +323,10 @@ ul.dynatree-container li, .ui-widget-content {
                     return;
                 }
                 checkVideoDownloadProgress();
+            } else if (!progress["downloading"]) {
+                $("#retry-video-download").show();
+            } else {
+                $("#retry-video-download").hide();
             }
         });
     }
@@ -433,13 +454,13 @@ ul.dynatree-container li, .ui-widget-content {
 {% block content %}
 
 <div class="download-actions vertical-shadow">
-    <h2 id="download-legend-unselected" class="button_text">Please select videos to download (below)</h2>
-    <button id="download-videos" type="button">Download <span class="new-video-count">0</span> new selected videos</button>
-    <button id="delete-videos" type="button">Delete <span class="old-video-count">0</span> selected videos</button>
+    <h2 id="download-legend-unselected" class="button_text">{% trans "Please select videos to download (below)" %}</h2>
+    <button id="download-videos" type="button">{% trans "Download " %}<span class="new-video-count">0</span>{% trans " new selected videos" %}</button>
+    <button id="delete-videos" type="button">{% trans "Delete " %}<span class="old-video-count">0</span>{% trans " selected videos" %}</button>
 </div>
 
 <div class="download-actions subtitles-download vertical-shadow">
-    <h2 class="button_text">Download/update subtitles for existing videos</h2>
+    <h2 class="button_text">{% trans "Download/update subtitles for existing videos" %}</h2>
     <span class= "button_style">
         <select id="language">
             {% if languages %}
@@ -449,53 +470,57 @@ ul.dynatree-container li, .ui-widget-content {
             {% endif %}
         </select>
     </span>
-    <button class="download-subtitles" type="button">Get/Update All Subtitles</button>
-    <button class="download-subtitles" new_only=true type="button">Get Missing Subtitles Only</button>
+    <button class="download-subtitles" type="button">{% trans "Get/Update All Subtitles" %}</button>
+    <button class="download-subtitles" new_only=true type="button">{% trans "Get Missing Subtitles Only" %}</button>
 </div>
 
 <div style="clear: both;"></div>
 
 <div class="progress-waiting">
 	<h2 class="progress-text">
-        Downloads will start soon... Please wait!
+        {% trans "Downloads will start soon... Please wait!" %}
     </h2>
 </div>
 
 <div class="progress-section">
     
     <h2 class="progress-text">
-        Downloading video:
+        {% trans "Downloading video:" %}
         "<span class="video-title"> </span>"...
     </h2>
     
         <div class="progressbar" id="progressbar-current"></div>
         
     <h2 class="progress-text">
-        Overall video download progress:
+        {% trans "Overall video download progress:" %}
         <span class="video-downloading-current">0</span>
-        of
+        {% trans "of" %}
         <span class="video-downloading-total">0</span>
     </h2>
         
     <div class="progressbar" id="progressbar-overall"></div>
+    
+    <button id="retry-video-download" type="button">{% trans "Video download error... click to retry" %}</button>
     
 </div>
 
 <div class="subtitle-section">
 	
     <h2 class="progress-text">
-        Subtitle download progress:
+        {% trans "Subtitle download progress:" %}
         <span class="subtitle-downloading-current">5</span>
-        of
+        {% trans "of" context "e.g. '5 of 9'" %}
         <span class="subtitle-downloading-total">21</span>
     </h2> 
     
     <div class="progressbar" id="progressbar-subtitle"></div>
+    
+    {# <button id="retry-subtitle-download" type="button">{% trans "Subtitle download error... click to retry" %}</button> #}
 
 </div>
 
-<button id="cancel-download" type="button">Cancel All Downloads</button>
+<button id="cancel-download" type="button">{% trans "Cancel All Downloads" %}</button>
 
-<div id="content_tree"><br/><h2> Loading topic tree... Please wait!</h2></div>
+<div id="content_tree"><br/><h2>{% trans " Loading topic tree... Please wait!" %}</h2></div>
 
 {% endblock content %}

@@ -1,6 +1,8 @@
 {% extends base_template %}
 
-{% block title %}Select user facility {% endblock title %}
+{% load i18n %}
+
+{% block title %}{% trans "Select user facility" %}{% endblock title %}
 
 {% block headcss %}
 <style>
@@ -31,22 +33,22 @@
 {% block content %}
 
 <div id="facility-list-container">
-    <h1>Facilities</h1>
+    <h1>{% trans "Facilities" %}</h1>
     <div id="facility-list">
         {% if facilities %}
             {% for facility in facilities %}
             <div class="facility-title">
-                <h2><div id="facility-name">{{ facility }}</div><a class="facility-action simple-button" href="{{ facility.id }}/">Edit facility</a>
+                <h2><div id="facility-name">{{ facility }}</div><a class="facility-action simple-button" href="{{ facility.id }}/">{% trans "Edit facility" %}</a>
                 {% if not is_central %}    
-                    <a class="facility-action simple-button" href="{% url add_facility_student %}?facility={{facility.id}}">Add student</a> 
-                    <a class="facility-action simple-button" href="{% url add_facility_teacher %}?facility={{facility.id}}">Add teacher</a>
-                    <a class="facility-action simple-button" href="{% url add_group %}?facility={{facility.id}}">Add group</a></h2>
+                    <a class="facility-action simple-button" href="{% url add_facility_student %}?facility={{facility.id}}">{% trans "Add student" %}</a> 
+                    <a class="facility-action simple-button" href="{% url add_facility_teacher %}?facility={{facility.id}}">{% trans "Add teacher" %}</a>
+                    <a class="facility-action simple-button" href="{% url add_group %}?facility={{facility.id}}">{% trans "Add group" %}</a></h2>
                 {% endif %}
             </div>
             {% endfor %}
-            <p><a id="add-facility-button" href="new/">Add a new Facility</a><p>
+            <p><a id="add-facility-button" href="new/">{% trans "Add a new Facility" %}</a><p>
         {% else %}
-            <p>You currently have no facilities. Would you like to <a href="new/">create a facility</a>?</p>
+            <p>{% trans "You currently have no facilities. Would you like to" %} <a href="new/">{% trans "create a facility" %}</a>?</p>
         {% endif %}
     </div>
 </div>

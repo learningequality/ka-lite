@@ -20,4 +20,8 @@ virtualenv/
 *.pid
 mergetomaster.sh
 videos/
-content/*
+content/*.jpg
+content/*.png
+content/*.mp4
+content/*.json
+content/*.srt
