@@ -45,9 +45,15 @@ class MediaHandler( object ):
         path_info = environ['PATH_INFO']
         if path_info[0] == '/':
             path_info = path_info[1:]
-        # this is the thing I'm not sure is secure, can we prevent
-        # going up outof media root?
-        file_path = os.path.join( self.media_root, path_info )
+
+        file_path = os.path.normpath( os.path.join( self.media_root, path_info ) )
+        
+        # prevent escaping out of paths below media root (e.g. via "..")
+        if not file_path.startswith( self.media_root ):
+            status = '401 UNAUTHORIZED'
+            headers = {'Content-type': 'text/plain'}
+            output = ['Permission denied: %s' % file_path]
+            return done( status, headers, output )            
 
         if not os.path.exists( file_path ):
             status = '404 NOT FOUND'
