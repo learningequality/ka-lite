@@ -83,3 +83,6 @@ class VideoFile(models.Model):
     class Meta:
         ordering = ["priority", "youtube_id"]
 
+
+class LangPack(models.Model):
+    ##TODO(dylan): use this model to keep track of language packs that people have downloaded 

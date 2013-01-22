@@ -5,3 +5,5 @@ class GetNextParam:
 			request.next = next
 		else:
 			request.next = ""
+
+# TODO(dylan): new class that handles finding and setting the language for the session

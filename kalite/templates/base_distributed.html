@@ -63,3 +63,16 @@
 </span>
 
 {% endblock sitewide_navigation %}
+
+
+{% block langselect %}
+    <select> 
+        {% for lang in languages %}
+            <option value="{{ lang }}">{{ lang }}</option>
+        {% endfor %}
+        <!-- TODO(dylan): make sure this renders correctly, might need verbose name, etc -->
+    </select>
+
+{% endblock langselect %}
+
+

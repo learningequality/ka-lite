@@ -148,6 +148,7 @@ def homepage(request):
         "topics": topics,
         "registered": Settings.get("registered"),
     }
+    #TODO(dylan): Make sure that all languages from the language pack model have been included in the context 
     return context
         
 @require_admin
