@@ -5,7 +5,7 @@
 
 {% block content %}{{ block.super }}
 
-<span class="question-detail-question"><h3>{{ object.text }}</h3></span>
+<span class="question-detail-question"><h3>{{ object.text }}{% if user.is_staff %}<a class="faq-topic-edit" target="_blank" href="/admin/faq/question/{{ question.pk }}/">(edit question)</a>{% endif %}</h3></span>
 
 <div class="question-detail-answer">{{ object.answer }}</div>
 
