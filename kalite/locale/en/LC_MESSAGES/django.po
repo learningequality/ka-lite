@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-18 13:30-0800\n"
+"POT-Creation-Date: 2013-01-20 10:05-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,18 +22,23 @@ msgstr ""
 msgid ""
 "This video was not found! You can download it by going to the Update page."
 msgstr ""
+"This video was not found! You can download it by going to the Update page."
 
 #: main/views.py:101
 msgid ""
 "This video was not found! Please contact your teacher or an admin to have it "
 "downloaded."
 msgstr ""
+"This video was not found! Please contact your teacher or an admin to have it "
+"downloaded."
 
 #: main/views.py:103
 msgid ""
 "This video was not found! You must login as an admin/teacher to download the "
 "video."
 msgstr ""
+"This video was not found! You must login as an admin/teacher to download the "
+"video."
 
 #: main/views.py:105
 msgid ""
@@ -70,7 +75,7 @@ msgstr ""
 #: securesync/forms.py:26 securesync/forms.py:73
 #, fuzzy
 msgid "Password"
-msgstr "Password:"
+msgstr "Password"
 
 #: securesync/forms.py:44
 msgid ""
@@ -197,7 +202,7 @@ msgstr "To continue, you must first add a facility (e.g. for your school). "
 
 #: securesync/views.py:71
 msgid "Please use the form below to add a facility."
-msgstr "Please use the form below to add a facility."
+msgstr ""
 
 #: securesync/views.py:74
 msgid ""
@@ -728,17 +733,17 @@ msgstr "Register a Device"
 #: templates/securesync/register_public_key_client.html:31
 #, fuzzy
 msgid "Device registration"
-msgstr "Description"
+msgstr "Device registration"
 
 #. Translators: Please do not edit the variable text: %(command)s
 #: templates/securesync/register_public_key_client.html:35
-#, python-format
+#, fuzzy, python-format
 msgid ""
 "Sorry, there was an error during registration. Please make sure your device "
-"is fully up to date (run %(command)s and then stop/start the server).\" "
+"is fully up to date (run %(command)s and then stop/start the server)."
 msgstr ""
 "Sorry, there was an error during registration. Please make sure your device "
-"is fully up to date (run %(command)s and then stop/start the server). "
+"is fully up to date (run (run %(command)s and then stop/start the server). "
 
 #: templates/securesync/register_public_key_client.html:36
 msgid "The error message was:"
@@ -805,6 +810,9 @@ msgid ""
 "teacher or an admin. Please login as one below, or <a href='%s'>go to home.</"
 "a>"
 msgstr ""
+"To view the page you were trying to view, you need to be logged in as a "
+"teacher or an admin. Please login as one below, or <a href='%s'>go to home.</"
+"a>"
 
 #~ msgid "Math"
 #~ msgstr "Math"

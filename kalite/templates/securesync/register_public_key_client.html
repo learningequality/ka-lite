@@ -32,7 +32,7 @@
 
 {% if error_msg %}
     {% comment %}Translators: Please do not edit the variable text: %(command)s {% endcomment %}
-	<p>{% blocktrans with command="<b>python manage.py update</b>"%}Sorry, there was an error during registration. Please make sure your device is fully up to date (run {{ command }} and then stop/start the server)." {% endblocktrans %}</p>
+	<p>{% blocktrans with command="<b>python manage.py update</b>"%}Sorry, there was an error during registration. Please make sure your device is fully up to date (run {{ command }} and then stop/start the server).{% endblocktrans %}</p>
 	<p>{% trans "The error message was:" %} <b>{{ error_msg }}</b></p>
 {% endif %}
 
