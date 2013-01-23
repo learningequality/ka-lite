@@ -128,6 +128,7 @@ def run_cherrypy_server(host="127.0.0.1", port=8008, threads=50, daemonize=False
         fp.close()
     
     cherrypy.config.update({
+        'server.socket_host': host,
         'server.socket_port': int(port),
         'server.thread_pool': int(threads),
         'checker.on': False,
