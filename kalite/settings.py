@@ -103,7 +103,7 @@ INSTALLED_APPS = (
     "django.contrib.messages",
     "south",
     "chronograph",
-    "django_wsgiserver",
+    "django_cherrypy_wsgiserver",
     "securesync",
     "config",
     "main",
