@@ -5,9 +5,9 @@
 
 {% block content %}{{ block.super }}
 
-<span class="question-detail-question"><h3>{{ object.text }}</h3></span>
+<span class="question-detail-question"><h3>{{ object.text|safe }}{% if user.is_staff %}<a class="faq-change-links" target="_blank" href="/admin/faq/question/{{ question.pk }}/">(edit question)</a>{% endif %}</h3></span>
 
-<div class="question-detail-answer">{{ object.answer }}</div>
+<div class="question-detail-answer">{{ object.answer|safe }}</div>
 
 </br>
 
