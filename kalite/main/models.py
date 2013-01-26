@@ -84,5 +84,16 @@ class VideoFile(models.Model):
         ordering = ["priority", "youtube_id"]
 
 
-class LangPack(models.Model):
-    ##TODO(dylan): use this model to keep track of language packs that people have downloaded 
+class LanguagePack(models.Model):
+    lang_id = models.CharField(max_length=5, primary_key=True)
+    lang_version = models.CharField(max_length=5)
+    software_version = models.CharField(max_length=12)
+    lang_name = models.CharField(max_length=30)
+
+
+
+
+
+
+
+

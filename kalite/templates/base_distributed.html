@@ -67,10 +67,10 @@
 
 {% block langselect %}
     <select> 
-        {% for lang in languages %}
+        {% for lang in language_choices %}
             <option value="{{ lang }}">{{ lang }}</option>
         {% endfor %}
-        <!-- TODO(dylan): make sure this renders correctly, might need verbose name, etc -->
+        <!-- TODO(dylan): javascript for URL redirects and resetting -->
     </select>
 
 {% endblock langselect %}

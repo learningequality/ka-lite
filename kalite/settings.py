@@ -71,7 +71,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.media",
     "django.contrib.messages.context_processors.messages",
     "django.core.context_processors.request",
-    "main.custom_context_processors.custom"
+    "main.custom_context_processors.custom",
+    "main.custom_context_processors.languages"
 )
 
 # List of callables that know how to import templates from various sources.
@@ -129,6 +130,7 @@ if not CENTRAL_SERVER:
         "securesync.middleware.DBCheck",
         "securesync.middleware.AuthFlags",
     )
+
 
 # import these one extra time to overwrite any settings not explicitly looking for local settings
 try:
