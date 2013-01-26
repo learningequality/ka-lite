@@ -1,0 +1,137 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-01-10 13:43-0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
+#: forms.py:26 forms.py:73
+msgid "Password"
+msgstr ""
+
+#: forms.py:44
+msgid ""
+"A user with this username at this facility already exists. Please choose a "
+"new username (or select a different facility) and try again."
+msgstr ""
+
+#: forms.py:92
+msgid ""
+"Username was not found for this facility. Did you type your username "
+"correctly, and choose the right facility?"
+msgstr ""
+
+#: forms.py:97
+msgid "The password did not match. Please try again."
+msgstr ""
+
+#: models.py:257 models.py:283
+msgid "Name"
+msgstr ""
+
+#: models.py:257
+msgid ""
+"(This is the name that students/teachers will see when choosing their "
+"facility; it can be in the local language.)"
+msgstr ""
+
+#: models.py:258
+msgid "Description"
+msgstr ""
+
+#: models.py:259
+msgid "Address"
+msgstr ""
+
+#: models.py:259
+msgid "(Please provide as detailed an address as possible.)"
+msgstr ""
+
+#: models.py:261
+msgid "Latitude"
+msgstr ""
+
+#: models.py:262
+msgid "Longitude"
+msgstr ""
+
+#: models.py:263
+msgid "Zoom"
+msgstr ""
+
+#: models.py:264
+msgid "Contact Name"
+msgstr ""
+
+#: models.py:264
+msgid "(Who should we contact with any questions about this facility?)"
+msgstr ""
+
+#: models.py:265
+msgid "Contact Phone"
+msgstr ""
+
+#: models.py:266
+msgid "Contact Email"
+msgstr ""
+
+#: models.py:267
+msgid "User Count"
+msgstr ""
+
+#: models.py:267
+msgid "(How many potential users do you estimate there are at this facility?)"
+msgstr ""
+
+#. Translators: This is a label in a form.
+#: models.py:282 models.py:291
+msgid "Facility"
+msgstr ""
+
+#. Translators: This is a label in a form.
+#: models.py:293
+msgid "(Group/class)"
+msgstr ""
+
+#: models.py:293
+msgid "(optional)"
+msgstr ""
+
+#. Translators: This is a label in a form.
+#: models.py:295
+msgid "Username"
+msgstr ""
+
+#. Translators: This is a label in a form.
+#: models.py:297
+msgid "First Name"
+msgstr ""
+
+#. Translators: This is a label in a form.
+#: models.py:299
+msgid "Last Name"
+msgstr ""
+
+#. Translators: This is a label in a form.
+#: models.py:301
+msgid "(whether this user should have teacher permissions)"
+msgstr ""
+
+#. Translators: Do not change the text of '%(facility_name)s' because it is a variable, but you can change its position.
+#: views.py:159
+#, python-format
+msgid "The facility '%(facility_name)s' has been successfully saved!"
+msgstr ""
