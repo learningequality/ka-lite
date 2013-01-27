@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-18 13:30-0800\n"
+"POT-Creation-Date: 2013-01-27 09:34-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,37 +27,49 @@ msgstr "Filmu nie odnaleziono! Możesz go pobrać przechodząc do strony Update.
 msgid ""
 "This video was not found! Please contact your teacher or an admin to have it "
 "downloaded."
-msgstr "Filmu nie odnaleziono! Skontaktuj się  z  twoim nauczycielem albo administratorem aby go ściągnąc."
+msgstr ""
+"Filmu nie odnaleziono! Skontaktuj się  z  twoim nauczycielem albo "
+"administratorem aby go ściągnąc."
 
 #: main/views.py:103
 msgid ""
 "This video was not found! You must login as an admin/teacher to download the "
 "video."
-msgstr "Filmu nie odnaleziono! Zaloguj się jako administrator/nauczyciel aby go ściągnąć."
+msgstr ""
+"Filmu nie odnaleziono! Zaloguj się jako administrator/nauczyciel aby go "
+"ściągnąć."
 
 #: main/views.py:105
 msgid ""
 "Note: You're logged in as an admin (not as a student/teacher), so your video "
 "progress and points won't be saved."
-msgstr "Uwaga: Jesteś zalogowany jako administrator (nie jako student/nauczyciel), dlatego twoje osiągnięcia i punkty nie będą zapisane."
+msgstr ""
+"Uwaga: Jesteś zalogowany jako administrator (nie jako student/nauczyciel), "
+"dlatego twoje osiągnięcia i punkty nie będą zapisane."
 
 #: main/views.py:107
 msgid ""
 "Friendly reminder: You are not currently logged in, so your video progress "
 "and points won't be saved."
-msgstr "Hej: Aktualnie nie jesteś zalogowany, więc twoje osiągnięcia i  punkty nie będą zapisane."
+msgstr ""
+"Hej: Aktualnie nie jesteś zalogowany, więc twoje osiągnięcia i  punkty nie "
+"będą zapisane."
 
 #: main/views.py:121
 msgid ""
 "Note: You're logged in as an admin (not as a student/teacher), so your "
 "exercise progress and points won't be saved."
-msgstr "Uwaga: Jesteś zalogowany jako administrator (nie jako student/nauczyciel), dlatego twoje osiągnięcia i punkty nie będą zapisane."
+msgstr ""
+"Uwaga: Jesteś zalogowany jako administrator (nie jako student/nauczyciel), "
+"dlatego twoje osiągnięcia i punkty nie będą zapisane."
 
 #: main/views.py:123
 msgid ""
 "Friendly reminder: You are not currently logged in, so your exercise "
 "progress and points won't be saved."
-msgstr "Hej: Aktualnie nie jesteś zalogowany, więc twoje osiągnięcia i  punkty nie będą zapisane."
+msgstr ""
+"Hej: Aktualnie nie jesteś zalogowany, więc twoje osiągnięcia i  punkty nie "
+"będą zapisane."
 
 #: securesync/forms.py:26 securesync/forms.py:73
 #, fuzzy
@@ -68,13 +80,17 @@ msgstr "Hasło"
 msgid ""
 "A user with this username at this facility already exists. Please choose a "
 "new username (or select a different facility) and try again."
-msgstr "Nazwa użytkownika dla tego serwera już istnieje. Proszę wybierz inną nazwę lub serwer i spróbuj ponownie."
+msgstr ""
+"Nazwa użytkownika dla tego serwera już istnieje. Proszę wybierz inną nazwę "
+"lub serwer i spróbuj ponownie."
 
 #: securesync/forms.py:92
 msgid ""
 "Username was not found for this facility. Did you type your username "
 "correctly, and choose the right facility?"
-msgstr "Użytkownik nieznaleziony dla tego serwera. Sprawdź poprawność nazwy użytkownika oraz serwera."
+msgstr ""
+"Użytkownik nieznaleziony dla tego serwera. Sprawdź poprawność nazwy "
+"użytkownika oraz serwera."
 
 #: securesync/forms.py:97
 msgid "The password did not match. Please try again."
@@ -88,7 +104,8 @@ msgstr "Imię"
 msgid ""
 "(This is the name that students/teachers will see when choosing their "
 "facility; it can be in the local language.)"
-msgstr "(To jest nazwa którą uczniowie/nauczyciele będą widzieli wybierając serwer"
+msgstr ""
+"(To jest nazwa którą uczniowie/nauczyciele będą widzieli wybierając serwer"
 
 #: securesync/models.py:256
 msgid "Description"
@@ -136,7 +153,9 @@ msgstr "Numer użytkownika"
 
 #: securesync/models.py:265
 msgid "(How many potential users do you estimate there are at this facility?)"
-msgstr "Ilu potencjalnych użytkowników zakładasz że znajduje się  w obszarze twojego serwera?"
+msgstr ""
+"Ilu potencjalnych użytkowników zakładasz że znajduje się  w obszarze twojego "
+"serwera?"
 
 #. Translators: This is a label in a form.
 #: securesync/models.py:280 securesync/models.py:289
@@ -189,8 +208,7 @@ msgstr ""
 msgid ""
 "You must first have the administrator of this server log in below to add a "
 "facility."
-msgstr ""
-"Zaloguj się jako administrator aby dodać serwer."
+msgstr "Zaloguj się jako administrator aby dodać serwer."
 
 #: securesync/views.py:118
 msgid "Registration status: "
@@ -200,7 +218,9 @@ msgstr "Status rejestracji. "
 msgid ""
 "The device's public key has been successfully registered. You may now close "
 "this window."
-msgstr "Klucz publiczny komputera został pomyślnie przydzielony. Możesz teraz zamknąć to okno."
+msgstr ""
+"Klucz publiczny komputera został pomyślnie przydzielony. Możesz teraz "
+"zamknąć to okno."
 
 #. Translators: Do not change the text of '%(facility_name)s' because it is a variable, but you can change its position.
 #: securesync/views.py:159
@@ -228,7 +248,9 @@ msgstr "kiedy skończysz pracę, wyloguj się."
 msgid ""
 "There was an error logging you in. Please correct any errors listed below, "
 "and try again."
-msgstr "Wystąpił błąd logowania. Proszę popraw błędy wymienione poniżej ,a następnie spróbuj ponownie."
+msgstr ""
+"Wystąpił błąd logowania. Proszę popraw błędy wymienione poniżej ,a następnie "
+"spróbuj ponownie."
 
 #: templates/404_distributed.html:5 templates/404_distributed.html.py:8
 msgid "Page not found"
@@ -246,7 +268,7 @@ msgstr "Błąd"
 msgid "Sorry, but there was an error while trying to load the page."
 msgstr "Przepraszamy, wystąpił błąd przy próbie ładowania strony."
 
-#: templates/base.html:80
+#: templates/base.html:82
 msgid "Videos and Exercises"
 msgstr "Filmy i ćwiczenia"
 
@@ -337,7 +359,9 @@ msgstr "Proszę o podpowiedź"
 
 #: templates/exercise.html:134
 msgid "Note: this will reset your streak and points for this exercise!"
-msgstr "Uwaga: to zresetuje stan twojego paska postępu oraz punkty dla tego ćwiczenia."
+msgstr ""
+"Uwaga: to zresetuje stan twojego paska postępu oraz punkty dla tego "
+"ćwiczenia."
 
 #: templates/exercise.html:139
 msgid "Stuck? Watch a video."
@@ -371,14 +395,18 @@ msgstr "Ucz się robiąc ćwiczenia!"
 msgid ""
 "Practice your math skills from addition to calculus and everything in "
 "between."
-msgstr "Szlifuj swoje umiejętności matematyczne od dodawania po rachunek różniczkowy i wszystko pomiędzy."
+msgstr ""
+"Szlifuj swoje umiejętności matematyczne od dodawania po rachunek różniczkowy "
+"i wszystko pomiędzy."
 
 #: templates/homepage.html:120
 msgid ""
 "KA Lite is a light-weight web server for viewing and interacting with core "
 "Khan Academy content (videos and exercises) without needing an Internet "
 "connection."
-msgstr "KA Lite jest jest platformą która pozwala na dostęp do zasobów Khan Academy bez dostępnu do internetu"
+msgstr ""
+"KA Lite jest jest platformą która pozwala na dostęp do zasobów Khan Academy "
+"bez dostępnu do internetu"
 
 #: templates/knowledgemap.html:20
 msgid "Your Knowledge Map"
@@ -401,15 +429,15 @@ msgid "Exercises"
 msgstr "Ćwiczenia"
 
 #. Translators: Example usage=> Exercise: Name of Exercise
-#: templates/video.html:64
+#: templates/video.html:65
 msgid "Exercise"
 msgstr "Ćwiczenie"
 
-#: templates/video.html:65
+#: templates/video.html:66
 msgid "Practice this concept"
 msgstr "Poćwicz to"
 
-#: templates/video.html:69
+#: templates/video.html:70
 msgid "Points"
 msgstr "Punkty"
 
@@ -421,7 +449,9 @@ msgstr "Ściągnij film"
 msgid ""
 "You are about to download new subtitles for all downloaded videos. This may "
 "take a long time."
-msgstr "Zamierzasz ściągnąć nowe napisy dla wszystkich filmów. To może trochę potrwać."
+msgstr ""
+"Zamierzasz ściągnąć nowe napisy dla wszystkich filmów. To może trochę "
+"potrwać."
 
 #: templates/video_download.html:235
 msgid "Please select a language first"
@@ -622,20 +652,27 @@ msgid ""
 "Please enter the following information about your facility. Please enter a "
 "detailed address, because knowing where you are in the world allows us to "
 "better plan for future deployments and partnerships."
-msgstr "Proszę podaj informacje o twoim serwerze. Proszę podaj dokładny adres, ponieważ informacja ta pozwoli nam lepiej rozwijać naszą platformę."
+msgstr ""
+"Proszę podaj informacje o twoim serwerze. Proszę podaj dokładny adres, "
+"ponieważ informacja ta pozwoli nam lepiej rozwijać naszą platformę."
 
 #: templates/securesync/facility_edit.html:165
 msgid ""
 "Please use this search box to locate your facility (and/or click on the map "
 "to select a spot), and then enter the additional information in the form "
 "below."
-msgstr "Proszę użyj wyszukiwarki, aby zlokalizować miejsce w którym twój serwer się znajduje (kliknij na mapę, aby wybrać miejsce) ,a następnie wprowadź dodatkowe informacje w formularzu poniżej."
+msgstr ""
+"Proszę użyj wyszukiwarki, aby zlokalizować miejsce w którym twój serwer się "
+"znajduje (kliknij na mapę, aby wybrać miejsce) ,a następnie wprowadź "
+"dodatkowe informacje w formularzu poniżej."
 
 #: templates/securesync/facility_edit.html:166
 msgid ""
 "(Knowing, as closely as possible, where you are in the world allows us to "
 "better plan for future deployments and partnerships)"
-msgstr "(im dokładniej podasz nam swoją lokalizację tym efektowniej będziemy rozwijać platformę KA Lite)"
+msgstr ""
+"(im dokładniej podasz nam swoją lokalizację tym efektowniej będziemy "
+"rozwijać platformę KA Lite)"
 
 #: templates/securesync/facility_edit.html:169
 msgid ""
@@ -667,7 +704,9 @@ msgstr "Obecnie nie masz żadnego serwera. Czy chcesz go stworzyć"
 msgid ""
 "There are currently no facilities available, please ask an administrator or "
 "teacher to set one up."
-msgstr "Nie ma dostępnych serwerów, proszę zapytaj administratora albo nauczyciela aby ustawił jeden."
+msgstr ""
+"Nie ma dostępnych serwerów, proszę zapytaj administratora albo nauczyciela "
+"aby ustawił jeden."
 
 #: templates/securesync/facility_selection.html:26
 msgid "Administer Facilities"
@@ -687,18 +726,16 @@ msgstr "Hasło: "
 msgid "Register a Device"
 msgstr "Zarejestruj komputer"
 
-#: templates/securesync/register_public_key_client.html:31
-#, fuzzy
-msgid "Device registration"
-msgstr "Rejestracja komputera"
-
 #. Translators: Please do not edit the variable text: %(command)s
 #: templates/securesync/register_public_key_client.html:35
-#, python-format
+#, fuzzy, python-format
 msgid ""
 "Sorry, there was an error during registration. Please make sure your device "
-"is fully up to date (run %(command)s and then stop/start the server). "
-msgstr "Przepraszamy, wystąpił błąd podczas rejestracji. Proszę sprawdź czy twój komputer jest zaktualizowany ( uruchom (run %(command)s ,a następnie zatrzymaj/rozpocznij pracę serwera). "
+"is fully up to date (run %(command)s and then stop/start the server).\" "
+msgstr ""
+"Przepraszamy, wystąpił błąd podczas rejestracji. Proszę sprawdź czy twój "
+"komputer jest zaktualizowany ( uruchom (run %(command)s ,a następnie "
+"zatrzymaj/rozpocznij pracę serwera). "
 
 #: templates/securesync/register_public_key_client.html:36
 msgid "The error message was:"
@@ -716,7 +753,9 @@ msgstr "Ten komputer został już zarejestrowany."
 msgid ""
 "The device needs to have internet access when first being registered. Please "
 "ensure it is connected to the internet, and then"
-msgstr "Komputer musi mieć dostęp do internetu, aby zostać zarejestrowanym. Proszę upewnij się że komputer jest podłączony do internetu ,a następnie"
+msgstr ""
+"Komputer musi mieć dostęp do internetu, aby zostać zarejestrowanym. Proszę "
+"upewnij się że komputer jest podłączony do internetu ,a następnie"
 
 #: templates/securesync/register_public_key_client.html:48
 #: templates/securesync/register_public_key_client.html:54
@@ -741,7 +780,8 @@ msgstr "Gdy masz już organizację i strefę, proszę"
 
 #: templates/securesync/register_public_key_client.html:53
 msgid "login to the central server and register this device in a zone "
-msgstr "zaloguj się do centralnego serwera i zarejestruj ten komputer w strefie "
+msgstr ""
+"zaloguj się do centralnego serwera i zarejestruj ten komputer w strefie "
 
 #: templates/securesync/register_public_key_client.html:53
 msgid "(this will open a new window)."
@@ -762,7 +802,14 @@ msgid ""
 "To view the page you were trying to view, you need to be logged in as a "
 "teacher or an admin. Please login as one below, or <a href='%s'>go to home.</"
 "a>"
-msgstr "Aby zobaczyć stronę którą próbujesz zobaczyć, musisz być zalogowany jako nauczyciel albo administrator. Proszę zaloguj się poniżej, albo <a href='%s'>wróć do strony głównej.</a>"
+msgstr ""
+"Aby zobaczyć stronę którą próbujesz zobaczyć, musisz być zalogowany jako "
+"nauczyciel albo administrator. Proszę zaloguj się poniżej, albo <a "
+"href='%s'>wróć do strony głównej.</a>"
+
+#, fuzzy
+#~ msgid "Device registration"
+#~ msgstr "Rejestracja komputera"
 
 #~ msgid "Math"
 #~ msgstr "Matematyka"
@@ -794,7 +841,9 @@ msgstr "Aby zobaczyć stronę którą próbujesz zobaczyć, musisz być zalogowa
 #~ msgid ""
 #~ "Please enter your old password, for security's sake, and then enter your "
 #~ "new password twice so we can verify you typed it in correctly."
-#~ msgstr "Proszę wprowadź swoje stare hasło, a następnie wprowadź nowe hasło dwukrotnie, aby sprawdzić jego poprawność."
+#~ msgstr ""
+#~ "Proszę wprowadź swoje stare hasło, a następnie wprowadź nowe hasło "
+#~ "dwukrotnie, aby sprawdzić jego poprawność."
 
 #~ msgid "Old password:"
 #~ msgstr "Stare hasło:"
@@ -823,7 +872,8 @@ msgstr "Aby zobaczyć stronę którą próbujesz zobaczyć, musisz być zalogowa
 #~ msgid ""
 #~ "Please enter your new password twice so we can verify you typed it in "
 #~ "correctly."
-#~ msgstr "Proszę wprowadź nowe hasło dwukrotnie, aby sprawdzić jego poprawność."
+#~ msgstr ""
+#~ "Proszę wprowadź nowe hasło dwukrotnie, aby sprawdzić jego poprawność."
 
 #~ msgid "Password reset unsuccessful"
 #~ msgstr "Resetowanie hasła nie powiodło się"
@@ -831,7 +881,9 @@ msgstr "Aby zobaczyć stronę którą próbujesz zobaczyć, musisz być zalogowa
 #~ msgid ""
 #~ "The password reset link was invalid, possibly because it has already been "
 #~ "used.  Please request a new password reset."
-#~ msgstr "Link do resetowania hasła jest nieważny, prawdopodobnie ponieważ został już użyty. Proszę zresetuj hasło ponownie."
+#~ msgstr ""
+#~ "Link do resetowania hasła jest nieważny, prawdopodobnie ponieważ został "
+#~ "już użyty. Proszę zresetuj hasło ponownie."
 
 #~ msgid "Password reset successful"
 #~ msgstr "Resetowanie hasła zakończyło się powodzeniem."
@@ -839,7 +891,9 @@ msgstr "Aby zobaczyć stronę którą próbujesz zobaczyć, musisz być zalogowa
 #~ msgid ""
 #~ "We've e-mailed you instructions for setting your password to the e-mail "
 #~ "address you submitted. You should be receiving it shortly."
-#~ msgstr "Wysłaliśmy informacje o ustawieniu hasła na adres e-mail który został podany. Powinieneś go zaraz otrzymać."
+#~ msgstr ""
+#~ "Wysłaliśmy informacje o ustawieniu hasła na adres e-mail który został "
+#~ "podany. Powinieneś go zaraz otrzymać."
 
 #~ msgid "You're receiving this e-mail because you requested a password reset"
 #~ msgstr "Otrzymałeś tego e-maila, ponieważ chciałeś zresetować swoje hasło."
@@ -862,7 +916,9 @@ msgstr "Aby zobaczyć stronę którą próbujesz zobaczyć, musisz być zalogowa
 #~ msgid ""
 #~ "Forgotten your password? Enter your e-mail address below, and we'll e-"
 #~ "mail instructions for setting a new one."
-#~ msgstr "Zapomniałeś hasła? Wprowadź adres e-mail poniżej, a my wyślemy Ci instrukcje."
+#~ msgstr ""
+#~ "Zapomniałeś hasła? Wprowadź adres e-mail poniżej, a my wyślemy Ci "
+#~ "instrukcje."
 
 #~ msgid "E-mail address:"
 #~ msgstr "E-mail adres:"

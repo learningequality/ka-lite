@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-18 13:30-0800\n"
+"POT-Creation-Date: 2013-01-27 09:33-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,43 +21,57 @@ msgstr ""
 #: main/views.py:99
 msgid ""
 "This video was not found! You can download it by going to the Update page."
-msgstr "¡No se ha podido encontrar este video! Puedes descargarlo yendo a la página Actualizar."
+msgstr ""
+"¡No se ha podido encontrar este video! Puedes descargarlo yendo a la página "
+"Actualizar."
 
 #: main/views.py:101
 msgid ""
 "This video was not found! Please contact your teacher or an admin to have it "
 "downloaded."
-msgstr "¡No se ha podido econtrar este video! Por favor, contacta con tu profesor o un administrador para descargarlo."
+msgstr ""
+"¡No se ha podido econtrar este video! Por favor, contacta con tu profesor o "
+"un administrador para descargarlo."
 
 #: main/views.py:103
 msgid ""
 "This video was not found! You must login as an admin/teacher to download the "
 "video."
-msgstr "¡No se ha podido encontrar este video! Debes de autenticarte como admin/profesor para descargar el video."
+msgstr ""
+"¡No se ha podido encontrar este video! Debes de autenticarte como admin/"
+"profesor para descargar el video."
 
 #: main/views.py:105
 msgid ""
 "Note: You're logged in as an admin (not as a student/teacher), so your video "
 "progress and points won't be saved."
-msgstr "Nota: Estas autenticado como administrador (no como estudiante/profesor), por lo tanto tu progreso en videos y puntos no será grabado."
+msgstr ""
+"Nota: Estas autenticado como administrador (no como estudiante/profesor), "
+"por lo tanto tu progreso en videos y puntos no será grabado."
 
 #: main/views.py:107
 msgid ""
 "Friendly reminder: You are not currently logged in, so your video progress "
 "and points won't be saved."
-msgstr "Recuerda: Ahora mismo no estas autenticado, así que tus progresos en videos y puntos no se guardaran."
+msgstr ""
+"Recuerda: Ahora mismo no estas autenticado, así que tus progresos en videos "
+"y puntos no se guardaran."
 
 #: main/views.py:121
 msgid ""
 "Note: You're logged in as an admin (not as a student/teacher), so your "
 "exercise progress and points won't be saved."
-msgstr "Nota: Estás logeado como administrador (no como estudiante/profesor), por lo tanto tus progreso en ejercicios y puntos no se guardarán. "
+msgstr ""
+"Nota: Estás logeado como administrador (no como estudiante/profesor), por lo "
+"tanto tus progreso en ejercicios y puntos no se guardarán. "
 
 #: main/views.py:123
 msgid ""
 "Friendly reminder: You are not currently logged in, so your exercise "
 "progress and points won't be saved."
-msgstr "Recuerda: No estas logeado, así que tus progresos en ejercicios y puntos no se guardarán."
+msgstr ""
+"Recuerda: No estas logeado, así que tus progresos en ejercicios y puntos no "
+"se guardarán."
 
 #: securesync/forms.py:26 securesync/forms.py:73
 #, fuzzy
@@ -68,13 +82,18 @@ msgstr "Contraseña"
 msgid ""
 "A user with this username at this facility already exists. Please choose a "
 "new username (or select a different facility) and try again."
-msgstr "Ya existe un usuario con este nombre de usuario en estas instalaciones. Por favor elige un nuevo nombre de usuario ( o selecciona unas instalaciones diferentes ) y vuélvelo a intentar."
+msgstr ""
+"Ya existe un usuario con este nombre de usuario en estas instalaciones. Por "
+"favor elige un nuevo nombre de usuario ( o selecciona unas instalaciones "
+"diferentes ) y vuélvelo a intentar."
 
 #: securesync/forms.py:92
 msgid ""
 "Username was not found for this facility. Did you type your username "
 "correctly, and choose the right facility?"
-msgstr "No se ha encontrado el nombre de usuario para estas instalaciones. ¿Lo escribiste correctamente eligiendo las instalaciones correctas?"
+msgstr ""
+"No se ha encontrado el nombre de usuario para estas instalaciones. ¿Lo "
+"escribiste correctamente eligiendo las instalaciones correctas?"
 
 #: securesync/forms.py:97
 msgid "The password did not match. Please try again."
@@ -88,7 +107,9 @@ msgstr "Nombre"
 msgid ""
 "(This is the name that students/teachers will see when choosing their "
 "facility; it can be in the local language.)"
-msgstr "(Este es el nombre que los estudiantes/profesores verán cuando elijan su ubicación"
+msgstr ""
+"(Este es el nombre que los estudiantes/profesores verán cuando elijan su "
+"ubicación"
 
 #: securesync/models.py:256
 msgid "Description"
@@ -179,7 +200,9 @@ msgstr "Esta opción está solo disponible en servidores distribuidos."
 
 #: securesync/views.py:70
 msgid "To continue, you must first add a facility (e.g. for your school). "
-msgstr "Para continuar, tienes primero que añadir unas instalaciones (ej. para tu colegio). "
+msgstr ""
+"Para continuar, tienes primero que añadir unas instalaciones (ej. para tu "
+"colegio). "
 
 #: securesync/views.py:71
 msgid "Please use the form below to add a facility."
@@ -190,7 +213,8 @@ msgid ""
 "You must first have the administrator of this server log in below to add a "
 "facility."
 msgstr ""
-"Primero debes con un administrador de este servidor autenticado  abajo para añadir unas instalaciones."
+"Primero debes con un administrador de este servidor autenticado  abajo para "
+"añadir unas instalaciones."
 
 #: securesync/views.py:118
 msgid "Registration status: "
@@ -200,7 +224,9 @@ msgstr "Estado del registro: "
 msgid ""
 "The device's public key has been successfully registered. You may now close "
 "this window."
-msgstr "La clave pública de este dispositívo ha sido registrada correctamente. Puedes cerrar esta ventana."
+msgstr ""
+"La clave pública de este dispositívo ha sido registrada correctamente. "
+"Puedes cerrar esta ventana."
 
 #. Translators: Do not change the text of '%(facility_name)s' because it is a variable, but you can change its position.
 #: securesync/views.py:159
@@ -214,7 +240,8 @@ msgstr "Debes añadir unas instalaciones antes de crear un usuario."
 
 #: securesync/views.py:254
 msgid "This mission is too important for me to allow you to jeopardize it."
-msgstr "Esta misión es demasiado importante para mi como para permitir que la pifies."
+msgstr ""
+"Esta misión es demasiado importante para mi como para permitir que la pifies."
 
 #: securesync/views.py:296
 msgid "You've been logged in! We hope you enjoy your time with KA Lite "
@@ -228,7 +255,9 @@ msgstr "-- Asegúrate de cerrar sesión cuando acabes "
 msgid ""
 "There was an error logging you in. Please correct any errors listed below, "
 "and try again."
-msgstr "Ocurrió un error iniciando sesión. Por favor corrige los errores listados más abajo, y vuelve a intentarlo."
+msgstr ""
+"Ocurrió un error iniciando sesión. Por favor corrige los errores listados "
+"más abajo, y vuelve a intentarlo."
 
 #: templates/404_distributed.html:5 templates/404_distributed.html.py:8
 msgid "Page not found"
@@ -246,7 +275,7 @@ msgstr "Error"
 msgid "Sorry, but there was an error while trying to load the page."
 msgstr "Lo sentimos, pero ocurrió un error intentando cargar la página."
 
-#: templates/base.html:80
+#: templates/base.html:82
 msgid "Videos and Exercises"
 msgstr "Videos y ejercicios."
 
@@ -357,7 +386,8 @@ msgstr "Pizarra no disponible"
 
 #: templates/homepage.html:97
 msgid "A free world-class education for anyone anywhere."
-msgstr "Una educación gratuita de primer nivel para cualquiera en cualquier lugar."
+msgstr ""
+"Una educación gratuita de primer nivel para cualquiera en cualquier lugar."
 
 #: templates/homepage.html:100
 msgid "Learn by watching videos!"
@@ -371,14 +401,19 @@ msgstr "¡Aprende haciendo ejercicios!"
 msgid ""
 "Practice your math skills from addition to calculus and everything in "
 "between."
-msgstr "Practica tus conocimientos de matemáticas desde suma hasta cálculo y todo lo que va en medio."
+msgstr ""
+"Practica tus conocimientos de matemáticas desde suma hasta cálculo y todo lo "
+"que va en medio."
 
 #: templates/homepage.html:120
 msgid ""
 "KA Lite is a light-weight web server for viewing and interacting with core "
 "Khan Academy content (videos and exercises) without needing an Internet "
 "connection."
-msgstr "KA Lite es un servidor web ligero para ver y interactuar con el contenido (videos y ejercicios) del núcleo de Khan Academy sin necesidad de una conexión a internet. "
+msgstr ""
+"KA Lite es un servidor web ligero para ver y interactuar con el contenido "
+"(videos y ejercicios) del núcleo de Khan Academy sin necesidad de una "
+"conexión a internet. "
 
 #: templates/knowledgemap.html:20
 msgid "Your Knowledge Map"
@@ -401,15 +436,15 @@ msgid "Exercises"
 msgstr "Ejercicios"
 
 #. Translators: Example usage=> Exercise: Name of Exercise
-#: templates/video.html:64
+#: templates/video.html:65
 msgid "Exercise"
 msgstr "Ejercicio"
 
-#: templates/video.html:65
+#: templates/video.html:66
 msgid "Practice this concept"
 msgstr "Practica este concepto"
 
-#: templates/video.html:69
+#: templates/video.html:70
 msgid "Points"
 msgstr "Puntos"
 
@@ -421,7 +456,9 @@ msgstr "Descargar Video"
 msgid ""
 "You are about to download new subtitles for all downloaded videos. This may "
 "take a long time."
-msgstr "Estás a punto de descargar nuevos subtítulos para todos los videos descargados. Esto puede podría tardar mucho tiempo."
+msgstr ""
+"Estás a punto de descargar nuevos subtítulos para todos los videos "
+"descargados. Esto puede podría tardar mucho tiempo."
 
 #: templates/video_download.html:235
 msgid "Please select a language first"
@@ -622,26 +659,36 @@ msgid ""
 "Please enter the following information about your facility. Please enter a "
 "detailed address, because knowing where you are in the world allows us to "
 "better plan for future deployments and partnerships."
-msgstr "Please enter the following information about your facility. Please enter a detailed address, because knowing where you are in the world allows us to better plan for future deployments and partnerships."
+msgstr ""
+"Please enter the following information about your facility. Please enter a "
+"detailed address, because knowing where you are in the world allows us to "
+"better plan for future deployments and partnerships."
 
 #: templates/securesync/facility_edit.html:165
 msgid ""
 "Please use this search box to locate your facility (and/or click on the map "
 "to select a spot), and then enter the additional information in the form "
 "below."
-msgstr "Por favor usa este campo de búsqueda para localizar tus instalaciones (y/o clicka en el mapa para seleccionar un punto), y luego introduce la información adicional en el formulario más abajo."
+msgstr ""
+"Por favor usa este campo de búsqueda para localizar tus instalaciones (y/o "
+"clicka en el mapa para seleccionar un punto), y luego introduce la "
+"información adicional en el formulario más abajo."
 
 #: templates/securesync/facility_edit.html:166
 msgid ""
 "(Knowing, as closely as possible, where you are in the world allows us to "
 "better plan for future deployments and partnerships)"
-msgstr "(Sabiendo, lo mejor posible, donde estás en el mundo nos permite planificar mejor futuros acuerdos y desarrollos)"
+msgstr ""
+"(Sabiendo, lo mejor posible, donde estás en el mundo nos permite planificar "
+"mejor futuros acuerdos y desarrollos)"
 
 #: templates/securesync/facility_edit.html:169
 msgid ""
 "Search for your facility's address or name to find its location on the map "
 "(enter to search)"
-msgstr "Busca por la dirección o nombre de las instalaciones para localizarlas en el mapa (introduce para buscar)"
+msgstr ""
+"Busca por la dirección o nombre de las instalaciones para localizarlas en el "
+"mapa (introduce para buscar)"
 
 #: templates/securesync/facility_edit.html:176
 msgid "Save facility"
@@ -667,7 +714,9 @@ msgstr "Actualmente no tienes instalaciones. ¿Quieres crear una instalación?"
 msgid ""
 "There are currently no facilities available, please ask an administrator or "
 "teacher to set one up."
-msgstr "No hay actualmente instalaciones disponibles, por favor pregunta a un administrador o profesor para definir una."
+msgstr ""
+"No hay actualmente instalaciones disponibles, por favor pregunta a un "
+"administrador o profesor para definir una."
 
 #: templates/securesync/facility_selection.html:26
 msgid "Administer Facilities"
@@ -687,18 +736,16 @@ msgstr "Contraseña: "
 msgid "Register a Device"
 msgstr "Registrar un dispositivo"
 
-#: templates/securesync/register_public_key_client.html:31
-#, fuzzy
-msgid "Device registration"
-msgstr "Registro de dispositivo"
-
 #. Translators: Please do not edit the variable text: %(command)s
 #: templates/securesync/register_public_key_client.html:35
-#, python-format
+#, fuzzy, python-format
 msgid ""
 "Sorry, there was an error during registration. Please make sure your device "
-"is fully up to date (run %(command)s and then stop/start the server). "
-msgstr "Lo siento, hubo un error durante el registro. Por favor comprueba que tu dispositivo esté completamente actualizado (ejecuta (run %(command)s y luego detiene/arranca el servidor). "
+"is fully up to date (run %(command)s and then stop/start the server).\" "
+msgstr ""
+"Lo siento, hubo un error durante el registro. Por favor comprueba que tu "
+"dispositivo esté completamente actualizado (ejecuta (run %(command)s y luego "
+"detiene/arranca el servidor). "
 
 #: templates/securesync/register_public_key_client.html:36
 msgid "The error message was:"
@@ -716,7 +763,9 @@ msgstr "Este dispositivo ya ha sido registrado."
 msgid ""
 "The device needs to have internet access when first being registered. Please "
 "ensure it is connected to the internet, and then"
-msgstr "El dispositivo necesita tener acceso a internet cuando es registrado por primera vez. Por favor comprueba que esta conectado a internet, y entonces"
+msgstr ""
+"El dispositivo necesita tener acceso a internet cuando es registrado por "
+"primera vez. Por favor comprueba que esta conectado a internet, y entonces"
 
 #: templates/securesync/register_public_key_client.html:48
 #: templates/securesync/register_public_key_client.html:54
@@ -741,7 +790,8 @@ msgstr "Si ya tienes una organización y zona, por favor"
 
 #: templates/securesync/register_public_key_client.html:53
 msgid "login to the central server and register this device in a zone "
-msgstr "inicia sesión en el servidor central y registra este dispositivo en una zona "
+msgstr ""
+"inicia sesión en el servidor central y registra este dispositivo en una zona "
 
 #: templates/securesync/register_public_key_client.html:53
 msgid "(this will open a new window)."
@@ -762,7 +812,14 @@ msgid ""
 "To view the page you were trying to view, you need to be logged in as a "
 "teacher or an admin. Please login as one below, or <a href='%s'>go to home.</"
 "a>"
-msgstr "Para ver la página que intentabas acceder, necesitas iniciar sesión como profesor o admin. Por favor inicia sesión abajo, o  <a href='%s'>vuelve a la página principal.</a>"
+msgstr ""
+"Para ver la página que intentabas acceder, necesitas iniciar sesión como "
+"profesor o admin. Por favor inicia sesión abajo, o  <a href='%s'>vuelve a la "
+"página principal.</a>"
+
+#, fuzzy
+#~ msgid "Device registration"
+#~ msgstr "Registro de dispositivo"
 
 #~ msgid "Math"
 #~ msgstr "Matemáticas"
@@ -794,7 +851,10 @@ msgstr "Para ver la página que intentabas acceder, necesitas iniciar sesión co
 #~ msgid ""
 #~ "Please enter your old password, for security's sake, and then enter your "
 #~ "new password twice so we can verify you typed it in correctly."
-#~ msgstr "Por favor introduce tu contraseña antigua, por seguridad, y luego introduce tu nueva contraseña dos veces para poder verificar si la has escrito correctamente."
+#~ msgstr ""
+#~ "Por favor introduce tu contraseña antigua, por seguridad, y luego "
+#~ "introduce tu nueva contraseña dos veces para poder verificar si la has "
+#~ "escrito correctamente."
 
 #~ msgid "Old password:"
 #~ msgstr "Contraseña antigua:"
@@ -812,7 +872,8 @@ msgstr "Para ver la página que intentabas acceder, necesitas iniciar sesión co
 #~ msgstr "Password cambiado"
 
 #~ msgid "Your password has been set.  You may go ahead and log in now."
-#~ msgstr "Tu contraseña ha sido cambiada. Ya puedes continuar e iniciar sesión."
+#~ msgstr ""
+#~ "Tu contraseña ha sido cambiada. Ya puedes continuar e iniciar sesión."
 
 #~ msgid "Password reset"
 #~ msgstr "Cambio de contraseña"
@@ -823,7 +884,9 @@ msgstr "Para ver la página que intentabas acceder, necesitas iniciar sesión co
 #~ msgid ""
 #~ "Please enter your new password twice so we can verify you typed it in "
 #~ "correctly."
-#~ msgstr "Por favor introduce tu nueva contraseña dos veces para verificar si es correcta."
+#~ msgstr ""
+#~ "Por favor introduce tu nueva contraseña dos veces para verificar si es "
+#~ "correcta."
 
 #~ msgid "Password reset unsuccessful"
 #~ msgstr "Contraseña cambiada con éxisto"
@@ -831,7 +894,9 @@ msgstr "Para ver la página que intentabas acceder, necesitas iniciar sesión co
 #~ msgid ""
 #~ "The password reset link was invalid, possibly because it has already been "
 #~ "used.  Please request a new password reset."
-#~ msgstr "Tu enlace para cambiar la contraseña es erróneo, posiblemente porque ya ha sido usado. Por favor solicita un nuevo cambio de contraseña."
+#~ msgstr ""
+#~ "Tu enlace para cambiar la contraseña es erróneo, posiblemente porque ya "
+#~ "ha sido usado. Por favor solicita un nuevo cambio de contraseña."
 
 #~ msgid "Password reset successful"
 #~ msgstr "Contraseña cambiada con éxito"
@@ -839,10 +904,13 @@ msgstr "Para ver la página que intentabas acceder, necesitas iniciar sesión co
 #~ msgid ""
 #~ "We've e-mailed you instructions for setting your password to the e-mail "
 #~ "address you submitted. You should be receiving it shortly."
-#~ msgstr "Te hemos enviado instrucciones para cambiar la contraseña a la dirección de email que nos indicaste. Deberías recibirlo en breve. "
+#~ msgstr ""
+#~ "Te hemos enviado instrucciones para cambiar la contraseña a la dirección "
+#~ "de email que nos indicaste. Deberías recibirlo en breve. "
 
 #~ msgid "You're receiving this e-mail because you requested a password reset"
-#~ msgstr "Estas recibiendo este email porque solicitaste cambiar la contraseña "
+#~ msgstr ""
+#~ "Estas recibiendo este email porque solicitaste cambiar la contraseña "
 
 #~ msgid "for your user account at %(site_name)s"
 #~ msgstr "para tu cuenta de usuario en %(site_name)s"
@@ -862,7 +930,9 @@ msgstr "Para ver la página que intentabas acceder, necesitas iniciar sesión co
 #~ msgid ""
 #~ "Forgotten your password? Enter your e-mail address below, and we'll e-"
 #~ "mail instructions for setting a new one."
-#~ msgstr "¿Olvidaste tu contraseña? Introduce tu dirección email, y te enviaremos instrucciones para cambiarla por una nueva."
+#~ msgstr ""
+#~ "¿Olvidaste tu contraseña? Introduce tu dirección email, y te enviaremos "
+#~ "instrucciones para cambiarla por una nueva."
 
 #~ msgid "E-mail address:"
 #~ msgstr "Dirección email:"

@@ -72,7 +72,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.messages.context_processors.messages",
     "django.core.context_processors.request",
     "main.custom_context_processors.custom",
-    "main.custom_context_processors.languages"
+    # "main.custom_context_processors.languages"
 )
 
 # List of callables that know how to import templates from various sources.
