@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-21 17:06-0800\n"
+"POT-Creation-Date: 2013-01-26 16:00-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -277,7 +277,7 @@ msgstr "Fehler"
 msgid "Sorry, but there was an error while trying to load the page."
 msgstr "Sorry, es gab ein Fehler beim Versuch, die Seite zu laden."
 
-#: templates/base.html:80
+#: templates/base.html:82
 msgid "Videos and Exercises"
 msgstr "Videos und Übungen"
 
@@ -439,15 +439,15 @@ msgid "Exercises"
 msgstr "Übungen"
 
 #. Translators: Example usage=> Exercise: Name of Exercise
-#: templates/video.html:64
+#: templates/video.html:65
 msgid "Exercise"
 msgstr "Übung"
 
-#: templates/video.html:65
+#: templates/video.html:66
 msgid "Practice this concept"
 msgstr "Konzept üben"
 
-#: templates/video.html:69
+#: templates/video.html:70
 msgid "Points"
 msgstr "Punkte"
 
@@ -740,17 +740,12 @@ msgstr "Passwort: "
 msgid "Register a Device"
 msgstr "Ein Gerät registrieren"
 
-#: templates/securesync/register_public_key_client.html:31
-#, fuzzy
-msgid "Device registration"
-msgstr "Geräte-Registrierung"
-
 #. Translators: Please do not edit the variable text: %(command)s
 #: templates/securesync/register_public_key_client.html:35
 #, fuzzy, python-format
 msgid ""
 "Sorry, there was an error during registration. Please make sure your device "
-"is fully up to date (run %(command)s and then stop/start the server)."
+"is fully up to date (run %(command)s and then stop/start the server).\" "
 msgstr ""
 "Leider ist waehrend der Registrierung ein Fehler aufgetreten. Bitte stelle "
 "sicher, dass Dein Gerät auf dem neuesten Stand ist ( (run %(command)s laufen "
@@ -827,6 +822,10 @@ msgstr ""
 "Um diese Seite zu sehen müssen Sie als Administrator oder Lehrer eingeloggt "
 "sein.  Bitte als Administrator / Lehrer unten einloggen <a href='%s'>oder "
 "zur Homeseite zurückgehen.</a>"
+
+#, fuzzy
+#~ msgid "Device registration"
+#~ msgstr "Geräte-Registrierung"
 
 #~ msgid "Math"
 #~ msgstr "Mathe"
