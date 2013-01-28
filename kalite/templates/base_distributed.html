@@ -66,13 +66,30 @@
 
 
 {% block langselect %}
-    <select> 
-        {% for lang in language_choices %}
-            <option value="{{ lang }}">{{ lang }}</option>
-        {% endfor %}
-        <!-- TODO(dylan): javascript for URL redirects and resetting -->
-    </select>
+    <form id="language-preferences">
+        <select id="language_selector"> 
+            {% for lang in language_choices %} 
+                <option value="{{ lang.lang_id }}" {% ifequal lang.lang_id current_language %}selected{% endifequal %}>{{ lang.lang_name }}</option>
+            {% endfor %}
+        </select>
+        {% ifnotequal current_language DEFAULT_LANGUAGE %}
+            <input type="checkbox" class="admin-only" id="make_default_language"/>
+            <label class="admin-only" for="make_default_language">{% trans "Use this langauge as the default" %}</label>
+        {% else %}
+            {% trans "(default language)" %}
+        {% endifnotequal %}
+    </form>
 
+    <script type="text/javascript">
+        // If new language is selected, redirect after adding django_language session key
+        $('select#language_selector').change(function(){
+            window.location = "?set_language=" + $('select#language_selector').val()
+        });
+        // If user is admin, they can set currently selected language as the default
+        $('input#make_default_language').click(function(){
+            window.location = "?set_default_language=" + $('select#language_selector').val()
+        });
+    </script>
 {% endblock langselect %}
 
 
