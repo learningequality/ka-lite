@@ -141,22 +141,20 @@
 
 <div id="org_container">
 	<h1 class="title">My Organizations<span class="glossary-link nudge-left" title="An Organization is an entity responsible for administering zones."></span></h2>
-	{% if received_invitations|length > 0 %}
-		{% for invite in received_invitations %}
-			<div class="org-invite">
-				<form method="post" action="{% url org_invite_action invite_id=invite.pk %}"> 
-					{% csrf_token %}
-					<div id="invite-text">
-						<p>You have been invited by <a href="mailto:{{invite.invited_by.email}}">{% firstof invite.invited_by.get_full_name invite.invited_by.username %}</a> to help administer "<span style="font-weight:bold">{{ invite.organization }}</span>". Please click below to join the organization or to decline this invitation.</p> 
-						<div class="inputs">
-							<input type="submit" name="join" value="Join">
-							<input type="submit" name="decline" value="Decline">
-						</div>
+	{% for invite in invitations %}
+		<div class="org-invite">
+			<form method="post" action="{% url org_invite_action invite_id=invite.pk %}"> 
+				{% csrf_token %}
+				<div id="invite-text">
+					<p>You have been invited by <a href="mailto:{{invite.invited_by.email}}">{% firstof invite.invited_by.get_full_name invite.invited_by.username %}</a> to help administer "<span style="font-weight:bold">{{ invite.organization }}</span>". Please click below to join the organization or to decline this invitation.</p> 
+					<div class="inputs">
+						<input type="submit" name="join" value="Join">
+						<input type="submit" name="decline" value="Decline">
 					</div>
-				</form>
-			</div>
-		{% endfor %}
-	{% endif %}
+				</div>
+			</form>
+		</div>
+	{% endfor %}
 	<div id="organizations">
 			{% if organizations %}
 				{% for org in organizations %}
