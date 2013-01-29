@@ -285,116 +285,21 @@ li .progress-circle {
     color: red;
 }
 
-/*Dylan ugly-fixing the nav bar arrows... */
-/*Practice*/
-.nav-subheader > span > a#nav_practice.selected:after {
-    left: 32px !important;
-}
-
-.nav-subheader > span > a#nav_practice.selected:before {
-    left: 31px !important;
-}
-
-/*Watch*/
-.nav-subheader > span > a#nav_watch.selected:after {
-    left: 30px !important;
-}
-
-.nav-subheader > span > a#nav_watch.selected:before {
-    left: 29px !important;
-}
-
-/*Add Student*/
-.nav-subheader > span > a#nav_addstudent.selected:after {
-    left: 50px !important;
-}
-
-.nav-subheader > span > a#nav_addstudent.selected:before {
-    left: 49px !important;
-}
-
-/*Add Teacher*/
-.nav-subheader > span > a#nav_addteacher.selected:after {
-    left: 50px !important;
-}
-
-.nav-subheader > span > a#nav_addteacher.selected:before {
-    left: 49px !important;
-}
-
-/*Update*/
-.nav-subheader > span > a#nav_update.selected:after {
-    left: 24px !important;
-}
-
-.nav-subheader > span > a#nav_update.selected:before {
-    left: 23px !important;
-}
-
-/*Coach */
-.nav-subheader > span > a#nav_coachreports.selected:after {
-    left: 24px !important;
-}
-
-.nav-subheader > span > a#nav_coachreports.selected:before {
-    left: 23px !important;
-}
-
-/*Register*/
-.nav-subheader > span > a#nav_registerdevice.selected:after {
-    left: 56px !important;
-}
-
-.nav-subheader > span > a#nav_registerdevice.selected:before {
-    left: 55px !important;
-}
-
 #nav_registerdevice {
     color: darkRed;
 }
 
-/*Login*/
-.nav-subheader > span > a#nav_login.selected:after {
-    left: 19px !important;
-}
-.nav-subheader > span > a#nav_login.selected:before {
-    left: 18px !important;
-}
-
-/*Sign Up*/
-.nav-subheader > span > a#nav_signup.selected:after {
-    left: 27px !important;
-}
-.nav-subheader > span > a#nav_signup.selected:before {
-    left: 26px !important;
-}
-
-/*Admin*/
-.nav-subheader > span > a#nav_admin.selected:after {
-    left: 20px !important;
-}
-.nav-subheader > span > a#nav_admin.selected:before {
-    left: 19px !important;
-}
-
-/*Home*/
-.nav-subheader > span > a#nav_home.selected:after {
-    left: 20px !important;
-}
-.nav-subheader > span > a#nav_home.selected:before {
-    left: 19px !important;
-}
-
-/*FAQ*/
-.nav-subheader > span > a#nav_faq.selected:after {
-    left: 11px !important;
-}
-.nav-subheader > span > a#nav_faq.selected:before {
-    left: 10px !important;
-}
 
 #nav_addstudent, #nav_addteacher, #nav_admin, #nav_coachreports, #nav_watch, #nav_practice, #nav_signup, #nav_login, #nav_update {
     display: none;
+}
+
+.active:after {
+    content: url(/static/images/nav-selector.gif);
+    position: relative;
+    top: 10px;
+    left: -50%;
+
 }
 
 #hint-remainder {
