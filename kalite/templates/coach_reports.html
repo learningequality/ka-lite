@@ -1,5 +1,7 @@
 {% extends 'base_distributed.html' %}
 
+{% load i18n %}
+
 {% block coachreports_selected %}selected{% endblock coachreports_selected %}
 
 {% block headjs %}
@@ -14,11 +16,11 @@
 
 {% block content %}
 <div id="content">
-    <div class="facility"><h2>Coach Reports for {{ facility }} (<a href="?facility=select">Change Facility</a>)</h2></div>
+    <div class="facility"><h2>{% blocktrans %}Coach Reports for {{ facility }}{% endblocktrans %} (<a href="?facility=select">{% trans "Change Facility" %}</a>)</h2></div>
     <div id="selection-bar">
     {% if groups %}
         <div class="selection">
-            <div class="subtitle">Select Group</div><select id="group">
+            <div class="subtitle">{% trans "Select Group" %}</div><select id="group">
             <option {% if not request.GET.group %}selected{% endif %}>----</option>
                 {% for group in groups %}
                     <option value="{{ group.id }}" {% if request.GET.group == group.id %}selected{% endif %}>{{ group }}</option>
@@ -27,12 +29,12 @@
         </div>
     {% else %}
         <div class="selection">
-            <div class="subtitle">No Groups at this Facility</div>
+            <div class="subtitle">{% trans "No Groups at this Facility" %}</div>
         </div>
     {% endif %}
     {% if topics and groups %}
         <div class="selection">
-            <div class="subtitle">Select Topic</div><select id="topic">
+            <div class="subtitle">{% trans "Select Topic" %}</div><select id="topic">
                 <option {% if not request.GET.topic %}selected{% endif %}>----</option>
                 {% for topic in topics %}
                     <option value="{{ topic.id }}"{% if request.GET.topic == topic.id %}selected{% endif %}>{{ topic.standalone_title }}</option>
@@ -51,7 +53,7 @@
                     <tbody>
                         <tr>
                             <th class="headrowuser">
-                                Student
+                                {% trans "Student" %}
                             </th>
                         </tr>
                         {% for student in students %}
@@ -82,14 +84,14 @@
                                 {% for log in student.exercise_logs %}
                                     {% if log %}
                                         {% if log.struggling %}
-                                            <td class="status data struggle" title="Struggling"></td>
+                                            <td class="status data struggle" title="{% trans "Struggling" %}"></td>
                                         {% elif log.complete %}
-                                            <td class="status data complete" title="Complete"></td>
+                                            <td class="status data complete" title="{% trans "Complete" %}"></td>
                                         {% else %}
-                                            <td class="status data partial" title="Attempted"></td>
+                                            <td class="status data partial" title="{% trans "Attempted" %}"></td>
                                         {% endif %}
                                     {% else %}
-                                        <td class="status data" title="Not Attempted"></td>
+                                        <td class="status data" title="{% trans "Not Attempted" %}"></td>
                                     {% endif %}
                                 {% endfor %}
                             </tr>
@@ -100,7 +102,7 @@
         </div>
     {% else %}
         <div style="clear: both;"></div>
-        <p><div class="subtitle">Please select a group and topic above.</div></p>
+        <p><div class="subtitle">{% trans "Please select a group and topic above." %}</div></p>
     {% endif %}
 </div> 
 
