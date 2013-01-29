@@ -294,12 +294,18 @@ li .progress-circle {
     display: none;
 }
 
-.active:after {
+.nav-subheader a.active:after {
     content: url(/static/images/nav-selector.gif);
     position: relative;
-    top: 10px;
-    left: -50%;
+    top: -12px;
+    display: block;
+    left: 50%;
+    margin-left: -6px;
+}
 
+.nav-subheader a {
+    height: 20px;
+    display: block;
 }
 
 #hint-remainder {
