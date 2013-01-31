@@ -1,12 +1,12 @@
 {% extends "faq/base.html" %}
 
-{% block title %}{{ block.super }}: {{ topic }}{% endblock %}
+{% block title %}{{ block.super }}FAQ: {{ topic }}{% endblock %}
 
 {% block content %}{{ block.super }}
-<h3>Frequently Asked Questions: {{ topic|safe }} {% if user.is_staff %}<a class="faq-change-links" href="/admin/faq/question/add/">(add question)</a>{% endif %}</h3>
+<h2>Frequently Asked Questions: {{ topic|safe }} {% if user.is_staff %}<a class="faq-change-links" href="/admin/faq/question/add/">(add question)</a>{% endif %}</h2>
 <dl>
 {% for question in questions %}
-  <dt class="question">{{ question.text|safe }}</dt>
+  <dt class="question"><a href="{{ question.get_absolute_url }}">{{ question.text|safe }}</a></dt>
   <dd class="answer">{{ question.answer|safe }}</dd>
 {% endfor %}
 </dl>

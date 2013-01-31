@@ -1,6 +1,6 @@
 {% extends "faq/base.html" %}
 
-{% block title %}{{ block.super }}Frequently Asked Questions: Topics{% endblock %}
+{% block title %}{{ block.super }}FAQ{% endblock %}
 
 {% block content %}{{ block.super }}
 <h1>Frequently Asked Questions {% if user.is_staff %}<a class="faq-change-links" href="/admin/faq/topic/add/">(add topic)</a>{% endif %}</h1>
