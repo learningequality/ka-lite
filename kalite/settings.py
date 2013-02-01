@@ -71,7 +71,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.media",
     "django.contrib.messages.context_processors.messages",
     "django.core.context_processors.request",
-    "main.custom_context_processors.custom"
+    "main.custom_context_processors.custom",
 )
 
 # List of callables that know how to import templates from various sources.
@@ -82,8 +82,9 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    "django.middleware.common.CommonMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    'django.middleware.locale.LocaleMiddleware',
+    "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
@@ -128,7 +129,12 @@ if not CENTRAL_SERVER:
     MIDDLEWARE_CLASSES += (
         "securesync.middleware.DBCheck",
         "securesync.middleware.AuthFlags",
+        "main.middleware.SessionLanguage",
     )
+    TEMPLATE_CONTEXT_PROCESSORS += (
+        "main.custom_context_processors.languages",
+    )
+
 
 # import these one extra time to overwrite any settings not explicitly looking for local settings
 try:

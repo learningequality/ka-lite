@@ -21,113 +21,112 @@ msgstr ""
 #: main/views.py:99
 msgid ""
 "This video was not found! You can download it by going to the Update page."
-msgstr ""
-"This video was not found! You can download it by going to the Update page."
+msgstr "Videoen kunne ikke findes! Du kan downloade den under 'opdatering'"
 
 #: main/views.py:101
 msgid ""
 "This video was not found! Please contact your teacher or an admin to have it "
 "downloaded."
 msgstr ""
-"This video was not found! Please contact your teacher or an admin to have it "
-"downloaded."
+"Videoen kunne ikke findes! Kontakt din lærer eller en administrator for at "
+"downloade filen."
 
 #: main/views.py:103
 msgid ""
 "This video was not found! You must login as an admin/teacher to download the "
 "video."
 msgstr ""
-"This video was not found! You must login as an admin/teacher to download the "
-"video."
+"Videoen kunne ikke findes! Man skal være lærer/administrator for at "
+"downloade filen."
 
 #: main/views.py:105
 msgid ""
 "Note: You're logged in as an admin (not as a student/teacher), so your video "
 "progress and points won't be saved."
 msgstr ""
-"Note: You're logged in as an admin (not as a student/teacher), so your video "
-"progress and points won't be saved."
+"Bemærk: Du er nu logget ind som administrator (ikke som lærer/studerende), "
+"Dit arbejde og dine point bliver ikke gemt."
 
 #: main/views.py:107
 msgid ""
 "Friendly reminder: You are not currently logged in, so your video progress "
 "and points won't be saved."
 msgstr ""
-"Friendly reminder: You are not currently logged in, so your video progress "
-"and points won't be saved."
+"Påmindelse: Du er ikke logget ind, Dit arbejde og dine point bliver derfor "
+"ikke gemt."
 
 #: main/views.py:121
 msgid ""
 "Note: You're logged in as an admin (not as a student/teacher), so your "
 "exercise progress and points won't be saved."
 msgstr ""
-"Note: You're logged in as an admin (not as a student/teacher), so your "
-"exercise progress and points won't be saved."
+"Bemærk: Du er logget ind som administrator (ikke som lærer/studerende). De "
+"opgaver du har lavet og dine point bliver derfor ikke gemt."
 
 #: main/views.py:123
 msgid ""
 "Friendly reminder: You are not currently logged in, so your exercise "
 "progress and points won't be saved."
 msgstr ""
-"Friendly reminder: You are not currently logged in, so your exercise "
-"progress and points won't be saved."
+"Påmindelse: Du er ikke logget ind, dine opgaver og point vil derfor ikke "
+"blive gemt."
 
 #: securesync/forms.py:26 securesync/forms.py:73
 #, fuzzy
 msgid "Password"
-msgstr "Password"
+msgstr "Adgangskode"
 
 #: securesync/forms.py:44
 msgid ""
 "A user with this username at this facility already exists. Please choose a "
 "new username (or select a different facility) and try again."
 msgstr ""
-"A user with this username at this facility already exists. Please choose a "
-"new username (or select a different facility) and try again."
+"Der findes allerede en bruger med det navn på denne server. Vælg venligst et "
+"andet brugernavn (eller vælg en anden server) og prøv igen."
 
 #: securesync/forms.py:92
 msgid ""
 "Username was not found for this facility. Did you type your username "
 "correctly, and choose the right facility?"
 msgstr ""
-"Username was not found for this facility. Did you type your username "
-"correctly, and choose the right facility?"
+"Brugernavnet findes ikke i denne udgave. Skrev du brugernavn korrekt og "
+"valgte du den rigtige server?"
 
 #: securesync/forms.py:97
 msgid "The password did not match. Please try again."
-msgstr "The password did not match. Please try again."
+msgstr "Adgangskoden er forkert. Prøv venligst igen."
 
 #: securesync/models.py:255 securesync/models.py:281
 msgid "Name"
-msgstr "Name"
+msgstr "Navn"
 
 #: securesync/models.py:255
 msgid ""
 "(This is the name that students/teachers will see when choosing their "
 "facility; it can be in the local language.)"
 msgstr ""
-"(This is the name that students/teachers will see when choosing their "
-"facility; it can be in the local language.)"
+"(Det er dette navn, som studerende/lærere vil se, når de logger på deres "
+"server. Det kan være på det lokale sprog.)"
 
 #: securesync/models.py:256
 msgid "Description"
-msgstr "Description"
+msgstr "Beskrivelse"
 
 #: securesync/models.py:257
 msgid "Address"
-msgstr "Address"
+msgstr "Adresse"
 
 #: securesync/models.py:257
 msgid "(Please provide as detailed an address as possible.)"
-msgstr "(Please provide as detailed an address as possible.)"
+msgstr "(Skriv venligst så præcis en adresse som muligt)"
 
 #: securesync/models.py:259
 msgid "Latitude"
-msgstr "Latitude"
+msgstr "Breddegrad"
 
 #: securesync/models.py:260
 msgid "Longitude"
-msgstr "Longitude"
+msgstr "Længdegrad"
 
 #: securesync/models.py:261
 msgid "Zoom"
@@ -135,70 +134,72 @@ msgstr "Zoom"
 
 #: securesync/models.py:262
 msgid "Contact Name"
-msgstr "Contact Name"
+msgstr "Kontakt navn"
 
 #: securesync/models.py:262
 msgid "(Who should we contact with any questions about this facility?)"
-msgstr "(Who should we contact with any questions about this facility?)"
+msgstr "(Hvem skal vi kontakte vedrørende spørgsmål om denne server?)"
 
 #: securesync/models.py:263
 msgid "Contact Phone"
-msgstr "Contact Phone"
+msgstr "Kontakt Telefon"
 
 #: securesync/models.py:264
 msgid "Contact Email"
-msgstr "Contact Email"
+msgstr "Kontakt Email"
 
 #: securesync/models.py:265
 msgid "User Count"
-msgstr "User Count"
+msgstr "Antal brugere"
 
 #: securesync/models.py:265
 msgid "(How many potential users do you estimate there are at this facility?)"
-msgstr "(How many potential users do you estimate there are at this facility?)"
+msgstr "(Hvor mange potentielle brugere tror du, der er på denne server)"
 
 #. Translators: This is a label in a form.
 #: securesync/models.py:280 securesync/models.py:289
 #: templates/securesync/facility_edit.html:5
 msgid "Facility"
-msgstr "Facility"
+msgstr "Server"
 
 #. Translators: This is a label in a form.
 #: securesync/models.py:291
 msgid "(Group/class)"
-msgstr "(Group/class)"
+msgstr "(Gruppe/klasse)"
 
 #: securesync/models.py:291
 msgid "(optional)"
-msgstr "(optional)"
+msgstr "(Valgfrit)"
 
 #. Translators: This is a label in a form.
 #: securesync/models.py:293
 msgid "Username"
-msgstr "Username"
+msgstr "Brugernavn"
 
 #. Translators: This is a label in a form.
 #: securesync/models.py:295
 msgid "First Name"
-msgstr "First Name"
+msgstr "Fornavn"
 
 #. Translators: This is a label in a form.
 #: securesync/models.py:297
 msgid "Last Name"
-msgstr "Last Name"
+msgstr "Efternavn"
 
 #. Translators: This is a label in a form.
 #: securesync/models.py:299
 msgid "(whether this user should have teacher permissions)"
-msgstr "(whether this user should have teacher permissions)"
+msgstr "(skal denne bruger have lærertilladelse?)"
 
 #: securesync/views.py:39
 msgid "This path is only available on distributed servers."
-msgstr "This path is only available on distributed servers."
+msgstr "Genvejen er kun tilgængelig på udvalgte servere."
 
 #: securesync/views.py:70
 msgid "To continue, you must first add a facility (e.g. for your school). "
-msgstr "To continue, you must first add a facility (e.g. for your school). "
+msgstr ""
+"For at fortsætte, skal du tilføje en server (f.eks. din skole eller "
+"institution) "
 
 #: securesync/views.py:71
 msgid "Please use the form below to add a facility."
@@ -209,90 +210,86 @@ msgid ""
 "You must first have the administrator of this server log in below to add a "
 "facility."
 msgstr ""
-"You must first have the administrator of this server log in below to add a "
-"facility."
+"Du skal bruge administratorrettigheder for at logge ind og tilføje en "
+"installation "
 
 #: securesync/views.py:118
 msgid "Registration status: "
-msgstr "Registration status: "
+msgstr "Registreringsstatus: "
 
 #: securesync/views.py:128
 msgid ""
 "The device's public key has been successfully registered. You may now close "
 "this window."
-msgstr ""
-"The device's public key has been successfully registered. You may now close "
-"this window."
+msgstr "Enhedens registrering er gennemført. Du kan nu lukke vinduet"
 
 #. Translators: Do not change the text of '%(facility_name)s' because it is a variable, but you can change its position.
 #: securesync/views.py:159
 #, python-format
 msgid "The facility '%(facility_name)s' has been successfully saved!"
-msgstr "The facility '%(facility_name)s' has been successfully saved!"
+msgstr "Serveren '%(facility_name)s' er gemt!"
 
 #: securesync/views.py:205
 msgid "You must add a facility before creating a user"
-msgstr "You must add a facility before creating a user"
+msgstr "Du skal oprette en server, inden du opretter en bruger"
 
 #: securesync/views.py:254
 msgid "This mission is too important for me to allow you to jeopardize it."
-msgstr "This mission is too important for me to allow you to jeopardize it."
+msgstr "."
 
 #: securesync/views.py:296
 msgid "You've been logged in! We hope you enjoy your time with KA Lite "
-msgstr "You've been logged in! We hope you enjoy your time with KA Lite "
+msgstr "Du har været logget ind! Vi håber du har nydt tiden med KA Lite "
 
 #: securesync/views.py:297
 msgid "-- be sure to log out when you finish."
-msgstr "-- be sure to log out when you finish."
+msgstr "-- husk at logge ud, når du er færdig"
 
 #: securesync/views.py:301
 msgid ""
 "There was an error logging you in. Please correct any errors listed below, "
 "and try again."
-msgstr ""
-"There was an error logging you in. Please correct any errors listed below, "
-"and try again."
+msgstr "Der opstod en fejl under login. Ret nedenstående fejl og prøv igen."
 
 #: templates/404_distributed.html:5 templates/404_distributed.html.py:8
 msgid "Page not found"
-msgstr "Page not found"
+msgstr "Siden findes ikke"
 
 #: templates/404_distributed.html:10
 msgid "Sorry, but the requested page could not be found."
-msgstr "Sorry, but the requested page could not be found."
+msgstr "Den ønskede side kunne desværre ikke findes."
 
 #: templates/500_distributed.html:5 templates/500_distributed.html.py:8
 msgid "Error"
-msgstr "Error"
+msgstr "Fejl"
 
 #: templates/500_distributed.html:10
 msgid "Sorry, but there was an error while trying to load the page."
-msgstr "Sorry, but there was an error while trying to load the page."
+msgstr "Beklager! Der opstod en fejl under indlæsning af siden"
 
 #: templates/base.html:82
 msgid "Videos and Exercises"
-msgstr "Videos and Exercises"
+msgstr "Videoer og opgaver"
 
 #. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
 #: templates/base_distributed.html:38
 msgid "Watch"
-msgstr "Watch"
+msgstr "Se video"
 
 #. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
 #: templates/base_distributed.html:40
 msgid "Practice"
-msgstr "Practice"
+msgstr "Opgaver"
 
 #. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
 #: templates/base_distributed.html:42
 msgid "Add Student"
-msgstr "Add Student"
+msgstr "Tilføj elev"
 
 #. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
 #: templates/base_distributed.html:44
 msgid "Add Teacher"
-msgstr "Add Teacher"
+msgstr "Tilføj lærer"
 
 #. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
 #: templates/base_distributed.html:46
@@ -302,17 +299,17 @@ msgstr "Admin"
 #. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
 #: templates/base_distributed.html:48
 msgid "Update"
-msgstr "Update"
+msgstr "Opdater"
 
 #. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
 #: templates/base_distributed.html:50
 msgid "Coach"
-msgstr "Coach"
+msgstr "Lærer"
 
 #. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
 #: templates/base_distributed.html:52
 msgid "Sign Up"
-msgstr "Sign Up"
+msgstr "Tilmelding"
 
 #. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
 #: templates/base_distributed.html:54 templates/securesync/login.html:7
@@ -323,81 +320,79 @@ msgstr "Login"
 #. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
 #: templates/base_distributed.html:58
 msgid "Register device"
-msgstr "Register device"
+msgstr "Registrer enhed"
 
 #. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
 #: templates/base_distributed.html:62
 msgid "Logout"
-msgstr "Logout"
+msgstr "Log ud"
 
 #. Translators: Return in this sense, means to go back.
 #: templates/exercise.html:85
 msgid "Return"
-msgstr "Return"
+msgstr "Tilbage"
 
 #: templates/exercise.html:88
 msgid "Practicing"
-msgstr "Practicing"
+msgstr "Opgaver"
 
 #: templates/exercise.html:108
 msgid "Your progress streak bar for this exercise"
-msgstr "Your progress streak bar for this exercise"
+msgstr "Din fremgang"
 
 #: templates/exercise.html:116
 msgid "Answer"
-msgstr "Answer"
+msgstr "Svar"
 
 #: templates/exercise.html:122
 msgid "Correct! Next Question..."
-msgstr "Correct! Next Question..."
+msgstr "Rigtigt! Næste spørgsmål..."
 
 #: templates/exercise.html:129
 msgid "Need help?"
-msgstr "Need help?"
+msgstr "Skal du bruge hjælp?"
 
 #: templates/exercise.html:131
 msgid "I'd like a hint"
-msgstr "I'd like a hint"
+msgstr "Giv mig et hint!"
 
 #: templates/exercise.html:134
 msgid "Note: this will reset your streak and points for this exercise!"
-msgstr "Note: this will reset your streak and points for this exercise!"
+msgstr "Bemærk: Dette vil nulstille din fremgang og point i denne opgave!"
 
 #: templates/exercise.html:139
 msgid "Stuck? Watch a video."
-msgstr "Stuck? Watch a video."
+msgstr "Gået i stå? Se en video."
 
 #: templates/exercise.html:142
 msgid "Related videos:"
-msgstr "Related videos:"
+msgstr "Se også:"
 
 #: templates/exercise.html:188
 msgid "Show scratchpad"
-msgstr "Show scratchpad"
+msgstr "Vis scratchpad"
 
 #: templates/exercise.html:189
 msgid "Scratchpad not available"
-msgstr "Scratchpad not available"
+msgstr "Scratchpad ikke tilgængelig"
 
 #: templates/homepage.html:97
 msgid "A free world-class education for anyone anywhere."
-msgstr "A free world-class education for anyone anywhere."
+msgstr "Gratis undervisning, hvor som helst og for alle i verden"
 
 #: templates/homepage.html:100
 msgid "Learn by watching videos!"
-msgstr "Learn by watching videos!"
+msgstr "Lær ved at se videoer!"
 
 #: templates/homepage.html:110
 msgid "Learn by doing exercises!"
-msgstr "Learn by doing exercises!"
+msgstr "Lær ved at løse opgaver!"
 
 #: templates/homepage.html:111
 msgid ""
 "Practice your math skills from addition to calculus and everything in "
 "between."
-msgstr ""
-"Practice your math skills from addition to calculus and everything in "
-"between."
+msgstr "Bliv bedre til det matematik, du synes er svært."
 
 #: templates/homepage.html:120
 msgid ""
@@ -405,62 +400,61 @@ msgid ""
 "Khan Academy content (videos and exercises) without needing an Internet "
 "connection."
 msgstr ""
-"KA Lite is a light-weight web server for viewing and interacting with core "
-"Khan Academy content (videos and exercises) without needing an Internet "
-"connection."
+"KA Lite er en offline server version af Khan Academy.  Alt normalt indhold "
+"(opgaver og videoer) er tilgængeligt gennem en lokal server"
 
 #: templates/knowledgemap.html:20
 msgid "Your Knowledge Map"
-msgstr "Your Knowledge Map"
+msgstr "Dit videnskort"
 
 #: templates/knowledgemap.html:27
 msgid "Back to topics"
-msgstr "Back to topics"
+msgstr "Tilbage til emner"
 
 #: templates/topic.html:15
 msgid "Subtopics"
-msgstr "Subtopics"
+msgstr "Underemner"
 
 #: templates/topic.html:27
 msgid "Videos"
-msgstr "Videos"
+msgstr "Videoer"
 
 #: templates/topic.html:41
 msgid "Exercises"
-msgstr "Exercises"
+msgstr "Opgaver"
 
 #. Translators: Example usage=> Exercise: Name of Exercise
 #: templates/video.html:65
 msgid "Exercise"
-msgstr "Exercise"
+msgstr "Opgave"
 
 #: templates/video.html:66
 msgid "Practice this concept"
-msgstr "Practice this concept"
+msgstr "Løs opgaver"
 
 #: templates/video.html:70
 msgid "Points"
-msgstr "Points"
+msgstr "Point"
 
 #: templates/video_download.html:7
 msgid "Video Download"
-msgstr "Video Download"
+msgstr "Download video"
 
 #: templates/video_download.html:226
 msgid ""
 "You are about to download new subtitles for all downloaded videos. This may "
 "take a long time."
 msgstr ""
-"You are about to download new subtitles for all downloaded videos. This may "
-"take a long time."
+"Du er ved at downloade nye undertekster til alle dine videoer. Dette kan "
+"tage lang tid."
 
 #: templates/video_download.html:235
 msgid "Please select a language first"
-msgstr "Please select a language first"
+msgstr "Venligst vælg sprog"
 
 #: templates/video_download.html:457
 msgid "Please select videos to download (below)"
-msgstr "Please select videos to download (below)"
+msgstr "Venligst vælg videoer du vil downloade (nedenunder)"
 
 #: templates/video_download.html:458
 msgid "Download "
@@ -468,185 +462,185 @@ msgstr "Download "
 
 #: templates/video_download.html:458
 msgid " new selected videos"
-msgstr " new selected videos"
+msgstr " nye valgte videoer"
 
 #: templates/video_download.html:459
 msgid "Delete "
-msgstr "Delete "
+msgstr "Slet "
 
 #: templates/video_download.html:459
 msgid " selected videos"
-msgstr " selected videos"
+msgstr " valgte videoer"
 
 #: templates/video_download.html:463
 msgid "Download/update subtitles for existing videos"
-msgstr "Download/update subtitles for existing videos"
+msgstr "Download/opdater undertekster for nuværende videoer"
 
 #: templates/video_download.html:473
 msgid "Get/Update All Subtitles"
-msgstr "Get/Update All Subtitles"
+msgstr "Download/opdater alle undertekster"
 
 #: templates/video_download.html:474
 msgid "Get Missing Subtitles Only"
-msgstr "Get Missing Subtitles Only"
+msgstr "Download manglende undertekster"
 
 #: templates/video_download.html:481
 msgid "Downloads will start soon... Please wait!"
-msgstr "Downloads will start soon... Please wait!"
+msgstr "Download starter snart... Vent venligst!"
 
 #: templates/video_download.html:488
 msgid "Downloading video:"
-msgstr "Downloading video:"
+msgstr "Downloader video"
 
 #: templates/video_download.html:495
 msgid "Overall video download progress:"
-msgstr "Overall video download progress:"
+msgstr "Download status:"
 
 #: templates/video_download.html:497
 msgid "of"
-msgstr "of"
+msgstr "af"
 
 #: templates/video_download.html:503
 msgid "Video download error... click to retry"
-msgstr "Video download error... click to retry"
+msgstr "Video download fejl... Prøv igen!"
 
 #: templates/video_download.html:510
 msgid "Subtitle download progress:"
-msgstr "Subtitle download progress:"
+msgstr "Undertekst download status:"
 
 #: templates/video_download.html:512
 #, fuzzy
 msgctxt "e.g. '5 of 9'"
 msgid "of"
-msgstr "of"
+msgstr "af"
 
 #: templates/video_download.html:522
 msgid "Cancel All Downloads"
-msgstr "Cancel All Downloads"
+msgstr "Afbryd alle downloads"
 
 #: templates/video_download.html:524
 msgid " Loading topic tree... Please wait!"
-msgstr " Loading topic tree... Please wait!"
+msgstr " Download emner... Vent venligst"
 
 #: templates/admin/base.html:62
 msgid "Home"
-msgstr "Home"
+msgstr "Forside"
 
 #: templates/admin/login.html:18
 msgid "Please correct the error below."
 msgid_plural "Please correct the errors below."
-msgstr[0] "Please correct the error below."
-msgstr[1] "Please correct the errors below."
+msgstr[0] "Venligst ret nedenstående fejl."
+msgstr[1] "Venligst ret nedenstående fejl."
 
 #: templates/admin/login.html:34
 msgid "Username:"
-msgstr "Username:"
+msgstr "Brugernavn:"
 
 #: templates/admin/login.html:38
 msgid "Password:"
-msgstr "Password:"
+msgstr "Adgangskode:"
 
 #: templates/admin/login.html:45
 msgid "Forgotten your password or username?"
-msgstr "Forgotten your password or username?"
+msgstr "Har du glemt brugernavn eller adgangskode?"
 
 #: templates/admin/login.html:49
 msgid "Log in"
-msgstr "Log in"
+msgstr "Log ind"
 
 #: templates/securesync/add_facility_user.html:8
 msgid "Add facility user"
-msgstr "Add facility user"
+msgstr "Tilføj bruger på server"
 
 #. Translators: The sentence will be: Add a new student or teacher
 #: templates/securesync/add_facility_user.html:17
 msgid "Add a new"
-msgstr "Add a new"
+msgstr "Tilføj ny"
 
 #: templates/securesync/add_facility_user.html:17
 msgid " teacher"
-msgstr " teacher"
+msgstr " lærer"
 
 #: templates/securesync/add_facility_user.html:17
 msgid " student"
-msgstr " student"
+msgstr " elev"
 
 #: templates/securesync/add_facility_user.html:19
 msgid "Sign up for an account"
-msgstr "Sign up for an account"
+msgstr "Opret en bruger"
 
 #. Translators: This will be a label in a form.
 #: templates/securesync/add_facility_user.html:22
 #: templates/securesync/login.html:20
 msgid "Facility: "
-msgstr "Facility: "
+msgstr "Server: "
 
 #: templates/securesync/add_facility_user.html:22
 #: templates/securesync/add_group.html:11
 msgid "(Select a different facility)"
-msgstr "(Select a different facility)"
+msgstr "(Vælg en anden server)"
 
 #: templates/securesync/add_facility_user.html:24
 msgid "Create user"
-msgstr "Create user"
+msgstr "Opret bruger"
 
 #: templates/securesync/add_facility_user.html:30
 #: templates/securesync/add_group.html:8
 msgid "Add a new group"
-msgstr "Add a new group"
+msgstr "Tilføj ny gruppe"
 
 #: templates/securesync/add_group.html:5
 msgid "Add Group"
-msgstr "Add Group"
+msgstr "Tilføj gruppe"
 
 #: templates/securesync/add_group.html:11
 msgid "Facility:"
-msgstr "Facility:"
+msgstr "Server:"
 
 #: templates/securesync/add_group.html:15
 msgid "Create group"
-msgstr "Create group"
+msgstr "Opret gruppe"
 
 #: templates/securesync/facility_admin.html:5
 msgid "Select user facility"
-msgstr "Select user facility"
+msgstr "Vælg bruger server"
 
 #: templates/securesync/facility_admin.html:36
 msgid "Facilities"
-msgstr "Facilities"
+msgstr "Servere"
 
 #: templates/securesync/facility_admin.html:41
 msgid "Edit facility"
-msgstr "Edit facility"
+msgstr "Rediger server"
 
 #: templates/securesync/facility_admin.html:43
 msgid "Add student"
-msgstr "Add student"
+msgstr "Tilføj elev"
 
 #: templates/securesync/facility_admin.html:44
 msgid "Add teacher"
-msgstr "Add teacher"
+msgstr "Tilføj lærer"
 
 #: templates/securesync/facility_admin.html:45
 msgid "Add group"
-msgstr "Add group"
+msgstr "Tilføj gruppe"
 
 #: templates/securesync/facility_admin.html:49
 #: templates/securesync/facility_edit.html:162
 msgid "Add a new Facility"
-msgstr "Add a new Facility"
+msgstr "Tilføj ny server"
 
 #: templates/securesync/facility_admin.html:51
 msgid "You currently have no facilities. Would you like to"
-msgstr "You currently have no facilities. Would you like to"
+msgstr "Du er ikke tilknyttet en server, vil du"
 
 #: templates/securesync/facility_admin.html:51
 msgid "create a facility"
-msgstr "create a facility"
+msgstr "oprette en server"
 
 #: templates/securesync/facility_edit.html:162
 msgid "Edit a facility"
-msgstr "Edit a facility"
+msgstr "Rediger server"
 
 #: templates/securesync/facility_edit.html:163
 msgid ""
@@ -654,9 +648,9 @@ msgid ""
 "detailed address, because knowing where you are in the world allows us to "
 "better plan for future deployments and partnerships."
 msgstr ""
-"Please enter the following information about your facility. Please enter a "
-"detailed address, because knowing where you are in the world allows us to "
-"better plan for future deployments and partnerships."
+"Venligst indtast følgende oplysninger om din server. Indtast en detaljeret "
+"adresse, da din geografiske lokation hjælper os med henblik på udbredelse og "
+"tiltag i programmet."
 
 #: templates/securesync/facility_edit.html:165
 msgid ""
@@ -664,71 +658,71 @@ msgid ""
 "to select a spot), and then enter the additional information in the form "
 "below."
 msgstr ""
-"Please use this search box to locate your facility (and/or click on the map "
-"to select a spot), and then enter the additional information in the form "
-"below."
+"Brug venligst denne søgefunktion til at lokalisere din server (og/eller vælg "
+"placering på kortet). Tilføj dernæst informationen i nedenstående felter."
 
 #: templates/securesync/facility_edit.html:166
 msgid ""
 "(Knowing, as closely as possible, where you are in the world allows us to "
 "better plan for future deployments and partnerships)"
 msgstr ""
-"(Knowing, as closely as possible, where you are in the world allows us to "
-"better plan for future deployments and partnerships)"
+"(Hvis vi ved, hvor du befinder dig i verden, kan vi bedre planlægge "
+"opdateringer og videreudvikling)"
 
 #: templates/securesync/facility_edit.html:169
 msgid ""
 "Search for your facility's address or name to find its location on the map "
 "(enter to search)"
 msgstr ""
-"Search for your facility's address or name to find its location on the map "
-"(enter to search)"
+"Søg efter server adresse eller navn, for at finde dens lokation på kortet "
+"(tryk enter for at søge)"
 
 #: templates/securesync/facility_edit.html:176
 msgid "Save facility"
-msgstr "Save facility"
+msgstr "Gem server"
 
 #: templates/securesync/facility_selection.html:5
 msgid "Select facility"
-msgstr "Select facility"
+msgstr "Vælg server"
 
 #: templates/securesync/facility_selection.html:15
 msgid "(this is the default)"
-msgstr "(this is the default)"
+msgstr "(det her er standard)"
 
 #: templates/securesync/facility_selection.html:15
 msgid "(set as the default facility)"
-msgstr "(set as the default facility)"
+msgstr "(vælg som standard server)"
 
 #: templates/securesync/facility_selection.html:20
 msgid "You currently have no facilities. Would you like to create a facility?"
-msgstr "You currently have no facilities. Would you like to create a facility?"
+msgstr ""
+"Du er i øjeblikket ikke tilknyttet en server. Vil du oprette en server?"
 
 #: templates/securesync/facility_selection.html:22
 msgid ""
 "There are currently no facilities available, please ask an administrator or "
 "teacher to set one up."
 msgstr ""
-"There are currently no facilities available, please ask an administrator or "
-"teacher to set one up."
+"Der er i øjeblikket ingen tilgængelige servere, spørg en administrator eller "
+"lærer om en ny server"
 
 #: templates/securesync/facility_selection.html:26
 msgid "Administer Facilities"
-msgstr "Administer Facilities"
+msgstr "Administrer servere"
 
 #. Translators: This will be a label in a form.
 #: templates/securesync/login.html:27
 msgid "Username: "
-msgstr "Username: "
+msgstr "Brugernavn: "
 
 #. Translators: This will be a label in a form.
 #: templates/securesync/login.html:33
 msgid "Password: "
-msgstr "Password: "
+msgstr "Adgangskode: "
 
 #: templates/securesync/register_public_key_client.html:7
 msgid "Register a Device"
-msgstr "Register a Device"
+msgstr "Registrer en enhed"
 
 #. Translators: Please do not edit the variable text: %(command)s
 #: templates/securesync/register_public_key_client.html:35
@@ -737,65 +731,65 @@ msgid ""
 "Sorry, there was an error during registration. Please make sure your device "
 "is fully up to date (run %(command)s and then stop/start the server).\" "
 msgstr ""
-"Sorry, there was an error during registration. Please make sure your device "
-"is fully up to date (run (run %(command)s and then stop/start the server). "
+"Beklager! Der var en fejl under registrering. Sørg venligst for at din enhed "
+"er opdateret. Kør (run %(command)s og stop/start serveren) "
 
 #: templates/securesync/register_public_key_client.html:36
 msgid "The error message was:"
-msgstr "The error message was:"
+msgstr "Fejlbeskeden var:"
 
 #: templates/securesync/register_public_key_client.html:40
 msgid "Congratulations, this device has now been registered."
-msgstr "Congratulations, this device has now been registered."
+msgstr "Tillykke! Din enhed er registreret."
 
 #: templates/securesync/register_public_key_client.html:44
 msgid "This device has already been registered."
-msgstr "This device has already been registered."
+msgstr "Enheden er allerede registreret."
 
 #: templates/securesync/register_public_key_client.html:48
 msgid ""
 "The device needs to have internet access when first being registered. Please "
 "ensure it is connected to the internet, and then"
 msgstr ""
-"The device needs to have internet access when first being registered. Please "
-"ensure it is connected to the internet, and then"
+"Din enhed skal have internetadgang under første registrering. Sørg for at "
+"have internetadgang og"
 
 #: templates/securesync/register_public_key_client.html:48
 #: templates/securesync/register_public_key_client.html:54
 msgid "refresh this page"
-msgstr "refresh this page"
+msgstr "opdater siden"
 
 #: templates/securesync/register_public_key_client.html:52
 msgid "If you have not created an organization and zone yet, please"
-msgstr "If you have not created an organization and zone yet, please"
+msgstr "Hvis du ikke allerede har oprettet en organisation og zone, venligst"
 
 #: templates/securesync/register_public_key_client.html:52
 msgid "login to the central server and create them"
-msgstr "login to the central server and create them"
+msgstr "log ind på serveren og opret dem. "
 
 #: templates/securesync/register_public_key_client.html:52
 msgid "(You will have to create an account there first)."
-msgstr "(You will have to create an account there first)."
+msgstr "(Du skal oprette en bruger der først)"
 
 #: templates/securesync/register_public_key_client.html:53
 msgid "If you already have an organization and a zone, please"
-msgstr "If you already have an organization and a zone, please"
+msgstr "Har du allerede en organisation og en zone,"
 
 #: templates/securesync/register_public_key_client.html:53
 msgid "login to the central server and register this device in a zone "
-msgstr "login to the central server and register this device in a zone "
+msgstr "log ind på serveren og registrer din enhed i en zone. "
 
 #: templates/securesync/register_public_key_client.html:53
 msgid "(this will open a new window)."
-msgstr "(this will open a new window)."
+msgstr "(dette vil åbne et nyt vindue)"
 
 #: templates/securesync/register_public_key_client.html:54
 msgid "Return here and"
-msgstr "Return here and"
+msgstr "Vend tilbage og"
 
 #: templates/securesync/register_public_key_client.html:54
 msgid "to complete the registration process."
-msgstr "to complete the registration process."
+msgstr "for at færdiggøre registreringen."
 
 #. Translators: Please ignore the html tags e.g. "Please login as one below, or <a href='%s'>go to home.</a>" is simply "Please login as one below, or go to home."
 #: utils/decorators.py:13
@@ -805,126 +799,126 @@ msgid ""
 "teacher or an admin. Please login as one below, or <a href='%s'>go to home.</"
 "a>"
 msgstr ""
-"To view the page you were trying to view, you need to be logged in as a "
-"teacher or an admin. Please login as one below, or <a href='%s'>go to home.</"
-"a>"
+"For at se siden, skal du være logget ind som enten lærer eller "
+"administrator. Log ind herunder eller <a href='%s'>gå til forsiden.</a>"
 
 #, fuzzy
 #~ msgid "Device registration"
-#~ msgstr "Device registration"
+#~ msgstr "Enheds registrering"
 
 #~ msgid "Math"
-#~ msgstr "Math"
+#~ msgstr "Matematik"
 
 #~ msgid "Science"
-#~ msgstr "Science"
+#~ msgstr "Videnskab"
 
 #~ msgid "Finance"
-#~ msgstr "Finance"
+#~ msgstr "Finans"
 
 #~ msgid "Economics"
-#~ msgstr "Economics"
+#~ msgstr "Økonomi"
 
 #~ msgid "Humanities"
-#~ msgstr "Humanities"
+#~ msgstr "Humaniora"
 
 #~ msgid "Test Prep"
-#~ msgstr "Test Prep"
+#~ msgstr "Forberedelse til test"
 
 #~ msgid "Password change successful"
-#~ msgstr "Password change successful"
+#~ msgstr "Adganskode ændret"
 
 #~ msgid "Your password was changed."
-#~ msgstr "Your password was changed."
+#~ msgstr "Din adgangskode er ændret"
 
 #~ msgid "Password change"
-#~ msgstr "Password change"
+#~ msgstr "Ændr adgangskode"
 
 #~ msgid ""
 #~ "Please enter your old password, for security's sake, and then enter your "
 #~ "new password twice so we can verify you typed it in correctly."
 #~ msgstr ""
-#~ "Please enter your old password, for security's sake, and then enter your "
-#~ "new password twice so we can verify you typed it in correctly."
+#~ "Venligst indtast din gamle adgangskode, og tast efterfølgende din nye "
+#~ "kode to gange for at være sikker på, at den er korrekt."
 
 #~ msgid "Old password:"
-#~ msgstr "Old password:"
+#~ msgstr "Gammel adgangskode:"
 
 #~ msgid "New password:"
-#~ msgstr "New password:"
+#~ msgstr "Ny adgangskode:"
 
 #~ msgid "Confirm password:"
-#~ msgstr "Confirm password:"
+#~ msgstr "Bekræft adgangskode:"
 
 #~ msgid "Change my password"
-#~ msgstr "Change my password"
+#~ msgstr "Ændr min adgangskode"
 
 #~ msgid "Password reset complete"
-#~ msgstr "Password reset complete"
+#~ msgstr "Adgangskode ændret"
 
 #~ msgid "Your password has been set.  You may go ahead and log in now."
-#~ msgstr "Your password has been set.  You may go ahead and log in now."
+#~ msgstr "Din adgangskode er oprettet, du kan nu logge ind."
 
 #~ msgid "Password reset"
-#~ msgstr "Password reset"
+#~ msgstr "Ændring af adgangskode "
 
 #~ msgid "Enter new password"
-#~ msgstr "Enter new password"
+#~ msgstr "Indtast ny adgangskode"
 
 #~ msgid ""
 #~ "Please enter your new password twice so we can verify you typed it in "
 #~ "correctly."
 #~ msgstr ""
-#~ "Please enter your new password twice so we can verify you typed it in "
-#~ "correctly."
+#~ "Venligst indtast din nye adgangskode to gange, så vi kan sikre os, at du "
+#~ "har tastet den korrekt."
 
 #~ msgid "Password reset unsuccessful"
-#~ msgstr "Password reset unsuccessful"
+#~ msgstr "Ændring af adgangskode ikke gennemført"
 
 #~ msgid ""
 #~ "The password reset link was invalid, possibly because it has already been "
 #~ "used.  Please request a new password reset."
 #~ msgstr ""
-#~ "The password reset link was invalid, possibly because it has already been "
-#~ "used.  Please request a new password reset."
+#~ "Linket til genskabelse af adgangskode virker ikke. Det er muligvis "
+#~ "allerede blevet brugt en gang. Anmod om ny adgangskode."
 
 #~ msgid "Password reset successful"
-#~ msgstr "Password reset successful"
+#~ msgstr "Adgangskode oprettet"
 
 #~ msgid ""
 #~ "We've e-mailed you instructions for setting your password to the e-mail "
 #~ "address you submitted. You should be receiving it shortly."
 #~ msgstr ""
-#~ "We've e-mailed you instructions for setting your password to the e-mail "
-#~ "address you submitted. You should be receiving it shortly."
+#~ "En email med instruktioner er sendt til den angivne email adresse. Du bør "
+#~ "modtage en email om kort tid."
 
 #~ msgid "You're receiving this e-mail because you requested a password reset"
-#~ msgstr "You're receiving this e-mail because you requested a password reset"
+#~ msgstr ""
+#~ "Du modtager denne email, da du har anmodet om genskabelse af adgangskode"
 
 #~ msgid "for your user account at %(site_name)s"
-#~ msgstr "for your user account at %(site_name)s"
+#~ msgstr "for din konto hos  %(site_name)s"
 
 #~ msgid "Please go to the following page and choose a new password:"
-#~ msgstr "Please go to the following page and choose a new password:"
+#~ msgstr "Venligst gå til følgende side og vælg en ny adgangskode:"
 
 #~ msgid "Your username, in case you've forgotten:"
-#~ msgstr "Your username, in case you've forgotten:"
+#~ msgstr "Dit brugernavn, i tilfælde af at du har glemt det:"
 
 #~ msgid "Thanks for using our site!"
-#~ msgstr "Thanks for using our site!"
+#~ msgstr "Mange tak for din brug af siden!"
 
 #~ msgid "The %(site_name)s team"
-#~ msgstr "The %(site_name)s team"
+#~ msgstr " %(site_name)s holdet "
 
 #~ msgid ""
 #~ "Forgotten your password? Enter your e-mail address below, and we'll e-"
 #~ "mail instructions for setting a new one."
 #~ msgstr ""
-#~ "Forgotten your password? Enter your e-mail address below, and we'll e-"
-#~ "mail instructions for setting a new one."
+#~ "Har du glemt din adgangskode? Indtast din email herunder og en mail vil "
+#~ "blive tilsendt med instruktioner til genskabelse"
 
 #~ msgid "E-mail address:"
-#~ msgstr "E-mail address:"
+#~ msgstr "Email addresse:"
 
 #~ msgid "Reset my password"
-#~ msgstr "Reset my password"
+#~ msgstr "Genskab min adgangskode"
