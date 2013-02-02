@@ -17,5 +17,5 @@ def languages(request):
 	return {
 		"DEFAULT_LANGUAGE": Settings.get("default_language") or "en",
         "language_choices": LanguagePack.objects.all(),
-        "current_language": request.session["django_language"]
+        "current_language": request.session.get("django_language"),
 	}
