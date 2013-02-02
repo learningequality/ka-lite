@@ -1,4 +1,6 @@
 from django.conf import settings
+from config.models import Settings
+from main.models import LanguagePack
 
 def custom(request):
     return {
@@ -9,3 +11,11 @@ def custom(request):
         "CONTENT_URL": settings.CONTENT_URL,
         "DATA_PATH": settings.DATA_PATH,
     }
+
+
+def languages(request):
+	return {
+		"DEFAULT_LANGUAGE": Settings.get("default_language") or "en",
+        "language_choices": LanguagePack.objects.all(),
+        "current_language": request.session["django_language"]
+	}

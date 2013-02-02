@@ -42,13 +42,18 @@ def generate_po(nodes, filename):
 	}
 
 	# Append titles & descriptions 
+	string_set = set()
 	for node in nodes:
 		for key in ["title", "description"]:
-			if not node.get(key) or node.get("kind") == "Separator":
+			value = node.get(key)
+			if not value or node.get("kind") == "Separator":
 				continue
+			if value in string_set:
+				continue
+			string_set.add(value)
 			entry = polib.POEntry(
-			    msgid= node.get(key),
-			    msgstr='',
+			    msgid= value,
+			    msgstr= value[::-1],
 			    msgctxt="%s %s" %(node["kind"], key)
 			)
 			po.append(entry)
@@ -101,7 +106,7 @@ def sitewide_po():
 
 
 decimals_for_bill()
-sitewide_po()
+# sitewide_po()
 
 
 
