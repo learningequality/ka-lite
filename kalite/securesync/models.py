@@ -563,8 +563,8 @@ def save_serialized_models(data):
             model = modelwrapper.object
             
             # only allow the importing of models that are subclasses of SyncedModel
-            if not isinstance(model, SyncedModel):
-                raise ValidationError("Cannot save model: %s is not a subclass of SyncedModel." % model.__class__)
+            if not hasattr(model, "verify"):
+                raise ValidationError("Cannot save model: %s does not have a verify method (not a subclass of SyncedModel?)" % model.__class__)
             
             # TODO(jamalex): more robust way to do this? (otherwise, it might barf about the id already existing)
             model._state.adding = False
