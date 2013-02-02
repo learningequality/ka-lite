@@ -1,5 +1,5 @@
 from django.conf import settings
-from config.models import Settings as config_settings
+from config.models import Settings
 from main.models import LanguagePack
 
 def custom(request):
@@ -15,7 +15,7 @@ def custom(request):
 
 def languages(request):
 	return {
-		"DEFAULT_LANGUAGE": config_settings.objects.get(name="default_language").get("default_language"),
+		"DEFAULT_LANGUAGE": Settings.get("default_language") or "en",
         "language_choices": LanguagePack.objects.all(),
         "current_language": request.session["django_language"]
 	}
