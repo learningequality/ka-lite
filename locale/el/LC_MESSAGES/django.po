@@ -1,0 +1,766 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-02-01 02:29+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: el\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Pootle 2.1.6\n"
+
+#: main/views.py:99
+msgid ""
+"This video was not found! You can download it by going to the Update page."
+msgstr ""
+
+#: main/views.py:101
+msgid ""
+"This video was not found! Please contact your teacher or an admin to have it "
+"downloaded."
+msgstr ""
+
+#: main/views.py:103
+msgid ""
+"This video was not found! You must login as an admin/teacher to download the "
+"video."
+msgstr ""
+
+#: main/views.py:105
+msgid ""
+"Note: You're logged in as an admin (not as a student/teacher), so your video "
+"progress and points won't be saved."
+msgstr ""
+
+#: main/views.py:107
+msgid ""
+"Friendly reminder: You are not currently logged in, so your video progress "
+"and points won't be saved."
+msgstr ""
+
+#: main/views.py:121
+msgid ""
+"Note: You're logged in as an admin (not as a student/teacher), so your "
+"exercise progress and points won't be saved."
+msgstr ""
+
+#: main/views.py:123
+msgid ""
+"Friendly reminder: You are not currently logged in, so your exercise "
+"progress and points won't be saved."
+msgstr ""
+
+#: securesync/forms.py:26
+#: securesync/forms.py:73
+msgid "Password"
+msgstr ""
+
+#: securesync/forms.py:44
+msgid ""
+"A user with this username at this facility already exists. Please choose a "
+"new username (or select a different facility) and try again."
+msgstr ""
+
+#: securesync/forms.py:92
+msgid ""
+"Username was not found for this facility. Did you type your username "
+"correctly, and choose the right facility?"
+msgstr ""
+
+#: securesync/forms.py:97
+msgid "The password did not match. Please try again."
+msgstr ""
+
+#: securesync/models.py:255
+#: securesync/models.py:281
+msgid "Name"
+msgstr ""
+
+#: securesync/models.py:255
+msgid ""
+"(This is the name that students/teachers will see when choosing their "
+"facility; it can be in the local language.)"
+msgstr ""
+
+#: securesync/models.py:256
+msgid "Description"
+msgstr ""
+
+#: securesync/models.py:257
+msgid "Address"
+msgstr ""
+
+#: securesync/models.py:257
+msgid "(Please provide as detailed an address as possible.)"
+msgstr ""
+
+#: securesync/models.py:259
+msgid "Latitude"
+msgstr ""
+
+#: securesync/models.py:260
+msgid "Longitude"
+msgstr ""
+
+#: securesync/models.py:261
+msgid "Zoom"
+msgstr ""
+
+#: securesync/models.py:262
+msgid "Contact Name"
+msgstr ""
+
+#: securesync/models.py:262
+msgid "(Who should we contact with any questions about this facility?)"
+msgstr ""
+
+#: securesync/models.py:263
+msgid "Contact Phone"
+msgstr ""
+
+#: securesync/models.py:264
+msgid "Contact Email"
+msgstr ""
+
+#: securesync/models.py:265
+msgid "User Count"
+msgstr ""
+
+#: securesync/models.py:265
+msgid "(How many potential users do you estimate there are at this facility?)"
+msgstr ""
+
+#. Translators: This is a label in a form.
+#: securesync/models.py:280
+#: securesync/models.py:289
+#: templates/securesync/facility_edit.html:5
+msgid "Facility"
+msgstr ""
+
+#. Translators: This is a label in a form.
+#: securesync/models.py:291
+msgid "(Group/class)"
+msgstr ""
+
+#: securesync/models.py:291
+msgid "(optional)"
+msgstr ""
+
+#. Translators: This is a label in a form.
+#: securesync/models.py:293
+msgid "Username"
+msgstr ""
+
+#. Translators: This is a label in a form.
+#: securesync/models.py:295
+msgid "First Name"
+msgstr ""
+
+#. Translators: This is a label in a form.
+#: securesync/models.py:297
+msgid "Last Name"
+msgstr ""
+
+#. Translators: This is a label in a form.
+#: securesync/models.py:299
+msgid "(whether this user should have teacher permissions)"
+msgstr ""
+
+#: securesync/views.py:39
+msgid "This path is only available on distributed servers."
+msgstr ""
+
+#: securesync/views.py:70
+msgid "To continue, you must first add a facility (e.g. for your school). "
+msgstr ""
+
+#: securesync/views.py:71
+msgid "Please use the form below to add a facility."
+msgstr ""
+
+#: securesync/views.py:74
+msgid ""
+"You must first have the administrator of this server log in below to add a "
+"facility."
+msgstr ""
+
+#: securesync/views.py:118
+msgid "Registration status: "
+msgstr ""
+
+#: securesync/views.py:128
+msgid ""
+"The device's public key has been successfully registered. You may now close "
+"this window."
+msgstr ""
+
+#. Translators: Do not change the text of '%(facility_name)s' because it is a variable, but you can change its position.
+#: securesync/views.py:159
+msgid "The facility '%(facility_name)s' has been successfully saved!"
+msgstr ""
+
+#: securesync/views.py:205
+msgid "You must add a facility before creating a user"
+msgstr ""
+
+#: securesync/views.py:254
+msgid "This mission is too important for me to allow you to jeopardize it."
+msgstr ""
+
+#: securesync/views.py:296
+msgid "You've been logged in! We hope you enjoy your time with KA Lite "
+msgstr ""
+
+#: securesync/views.py:297
+msgid "-- be sure to log out when you finish."
+msgstr ""
+
+#: securesync/views.py:301
+msgid ""
+"There was an error logging you in. Please correct any errors listed below, "
+"and try again."
+msgstr ""
+
+#: templates/404_distributed.html:5
+#: templates/404_distributed.html.py:8
+msgid "Page not found"
+msgstr ""
+
+#: templates/404_distributed.html:10
+msgid "Sorry, but the requested page could not be found."
+msgstr ""
+
+#: templates/500_distributed.html:5
+#: templates/500_distributed.html.py:8
+msgid "Error"
+msgstr ""
+
+#: templates/500_distributed.html:10
+msgid "Sorry, but there was an error while trying to load the page."
+msgstr ""
+
+#: templates/base.html:82
+msgid "Videos and Exercises"
+msgstr ""
+
+#. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
+#: templates/base_distributed.html:38
+msgid "Watch"
+msgstr ""
+
+#. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
+#: templates/base_distributed.html:40
+msgid "Practice"
+msgstr ""
+
+#. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
+#: templates/base_distributed.html:42
+msgid "Add Student"
+msgstr ""
+
+#. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
+#: templates/base_distributed.html:44
+msgid "Add Teacher"
+msgstr ""
+
+#. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
+#: templates/base_distributed.html:46
+msgid "Admin"
+msgstr ""
+
+#. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
+#: templates/base_distributed.html:48
+msgid "Update"
+msgstr ""
+
+#. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
+#: templates/base_distributed.html:50
+msgid "Coach"
+msgstr ""
+
+#. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
+#: templates/base_distributed.html:52
+msgid "Sign Up"
+msgstr ""
+
+#. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
+#: templates/base_distributed.html:54
+#: templates/securesync/login.html:7
+#: templates/securesync/login.html.py:14
+#: templates/securesync/login.html:36
+msgid "Login"
+msgstr ""
+
+#. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
+#: templates/base_distributed.html:58
+msgid "Register device"
+msgstr ""
+
+#. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
+#: templates/base_distributed.html:62
+msgid "Logout"
+msgstr ""
+
+#: templates/base_distributed.html:77
+msgid "Use this language as the default"
+msgstr ""
+
+#: templates/base_distributed.html:79
+msgid "(default language)"
+msgstr ""
+
+#. Translators: Return in this sense, means to go back.
+#: templates/exercise.html:85
+msgid "Return"
+msgstr ""
+
+#: templates/exercise.html:88
+msgid "Practicing"
+msgstr ""
+
+#: templates/exercise.html:108
+msgid "Your progress streak bar for this exercise"
+msgstr ""
+
+#: templates/exercise.html:116
+msgid "Answer"
+msgstr ""
+
+#: templates/exercise.html:122
+msgid "Correct! Next Question..."
+msgstr ""
+
+#: templates/exercise.html:129
+msgid "Need help?"
+msgstr ""
+
+#: templates/exercise.html:131
+msgid "I'd like a hint"
+msgstr ""
+
+#: templates/exercise.html:134
+msgid "Note: this will reset your streak and points for this exercise!"
+msgstr ""
+
+#: templates/exercise.html:139
+msgid "Stuck? Watch a video."
+msgstr ""
+
+#: templates/exercise.html:142
+msgid "Related videos:"
+msgstr ""
+
+#: templates/exercise.html:188
+msgid "Show scratchpad"
+msgstr ""
+
+#: templates/exercise.html:189
+msgid "Scratchpad not available"
+msgstr ""
+
+#: templates/homepage.html:97
+msgid "A free world-class education for anyone anywhere."
+msgstr ""
+
+#: templates/homepage.html:100
+msgid "Learn by watching videos!"
+msgstr ""
+
+#: templates/homepage.html:110
+msgid "Learn by doing exercises!"
+msgstr ""
+
+#: templates/homepage.html:111
+msgid ""
+"Practice your math skills from addition to calculus and everything in "
+"between."
+msgstr ""
+
+#: templates/homepage.html:120
+msgid ""
+"KA Lite is a light-weight web server for viewing and interacting with core "
+"Khan Academy content (videos and exercises) without needing an Internet "
+"connection."
+msgstr ""
+
+#: templates/knowledgemap.html:20
+msgid "Your Knowledge Map"
+msgstr ""
+
+#: templates/knowledgemap.html:27
+msgid "Back to topics"
+msgstr ""
+
+#: templates/topic.html:15
+msgid "Subtopics"
+msgstr ""
+
+#: templates/topic.html:27
+msgid "Videos"
+msgstr ""
+
+#: templates/topic.html:41
+msgid "Exercises"
+msgstr ""
+
+#. Translators: Example usage=> Exercise: Name of Exercise
+#: templates/video.html:65
+msgid "Exercise"
+msgstr ""
+
+#: templates/video.html:66
+msgid "Practice this concept"
+msgstr ""
+
+#: templates/video.html:70
+msgid "Points"
+msgstr ""
+
+#: templates/video_download.html:7
+msgid "Video Download"
+msgstr ""
+
+#: templates/video_download.html:226
+msgid ""
+"You are about to download new subtitles for all downloaded videos. This may "
+"take a long time."
+msgstr ""
+
+#: templates/video_download.html:235
+msgid "Please select a language first"
+msgstr ""
+
+#: templates/video_download.html:457
+msgid "Please select videos to download (below)"
+msgstr ""
+
+#: templates/video_download.html:458
+msgid "Download "
+msgstr ""
+
+#: templates/video_download.html:458
+msgid " new selected videos"
+msgstr ""
+
+#: templates/video_download.html:459
+msgid "Delete "
+msgstr ""
+
+#: templates/video_download.html:459
+msgid " selected videos"
+msgstr ""
+
+#: templates/video_download.html:463
+msgid "Download/update subtitles for existing videos"
+msgstr ""
+
+#: templates/video_download.html:473
+msgid "Get/Update All Subtitles"
+msgstr ""
+
+#: templates/video_download.html:474
+msgid "Get Missing Subtitles Only"
+msgstr ""
+
+#: templates/video_download.html:481
+msgid "Downloads will start soon... Please wait!"
+msgstr ""
+
+#: templates/video_download.html:488
+msgid "Downloading video:"
+msgstr ""
+
+#: templates/video_download.html:495
+msgid "Overall video download progress:"
+msgstr ""
+
+#: templates/video_download.html:497
+msgid "of"
+msgstr ""
+
+#: templates/video_download.html:503
+msgid "Video download error... click to retry"
+msgstr ""
+
+#: templates/video_download.html:510
+msgid "Subtitle download progress:"
+msgstr ""
+
+#: templates/video_download.html:512
+msgctxt "e.g. '5 of 9'"
+msgid "of"
+msgstr ""
+
+#: templates/video_download.html:522
+msgid "Cancel All Downloads"
+msgstr ""
+
+#: templates/video_download.html:524
+msgid " Loading topic tree... Please wait!"
+msgstr ""
+
+#: templates/admin/base.html:62
+msgid "Home"
+msgstr ""
+
+#: templates/admin/login.html:18
+msgid "Please correct the error below."
+msgid_plural "Please correct the errors below."
+msgstr[0] ""
+
+#: templates/admin/login.html:34
+msgid "Username:"
+msgstr ""
+
+#: templates/admin/login.html:38
+msgid "Password:"
+msgstr ""
+
+#: templates/admin/login.html:45
+msgid "Forgotten your password or username?"
+msgstr ""
+
+#: templates/admin/login.html:49
+msgid "Log in"
+msgstr ""
+
+#: templates/securesync/add_facility_user.html:8
+msgid "Add facility user"
+msgstr ""
+
+#. Translators: The sentence will be: Add a new student or teacher
+#: templates/securesync/add_facility_user.html:17
+msgid "Add a new"
+msgstr ""
+
+#: templates/securesync/add_facility_user.html:17
+msgid " teacher"
+msgstr ""
+
+#: templates/securesync/add_facility_user.html:17
+msgid " student"
+msgstr ""
+
+#: templates/securesync/add_facility_user.html:19
+msgid "Sign up for an account"
+msgstr ""
+
+#. Translators: This will be a label in a form.
+#: templates/securesync/add_facility_user.html:22
+#: templates/securesync/login.html:20
+msgid "Facility: "
+msgstr ""
+
+#: templates/securesync/add_facility_user.html:22
+#: templates/securesync/add_group.html:11
+msgid "(Select a different facility)"
+msgstr ""
+
+#: templates/securesync/add_facility_user.html:24
+msgid "Create user"
+msgstr ""
+
+#: templates/securesync/add_facility_user.html:30
+#: templates/securesync/add_group.html:8
+msgid "Add a new group"
+msgstr ""
+
+#: templates/securesync/add_group.html:5
+msgid "Add Group"
+msgstr ""
+
+#: templates/securesync/add_group.html:11
+msgid "Facility:"
+msgstr ""
+
+#: templates/securesync/add_group.html:15
+msgid "Create group"
+msgstr ""
+
+#: templates/securesync/facility_admin.html:5
+msgid "Select user facility"
+msgstr ""
+
+#: templates/securesync/facility_admin.html:36
+msgid "Facilities"
+msgstr ""
+
+#: templates/securesync/facility_admin.html:41
+msgid "Edit facility"
+msgstr ""
+
+#: templates/securesync/facility_admin.html:43
+msgid "Add student"
+msgstr ""
+
+#: templates/securesync/facility_admin.html:44
+msgid "Add teacher"
+msgstr ""
+
+#: templates/securesync/facility_admin.html:45
+msgid "Add group"
+msgstr ""
+
+#: templates/securesync/facility_admin.html:49
+#: templates/securesync/facility_edit.html:162
+msgid "Add a new Facility"
+msgstr ""
+
+#: templates/securesync/facility_admin.html:51
+msgid "You currently have no facilities. Would you like to"
+msgstr ""
+
+#: templates/securesync/facility_admin.html:51
+msgid "create a facility"
+msgstr ""
+
+#: templates/securesync/facility_edit.html:162
+msgid "Edit a facility"
+msgstr ""
+
+#: templates/securesync/facility_edit.html:163
+msgid ""
+"Please enter the following information about your facility. Please enter a "
+"detailed address, because knowing where you are in the world allows us to "
+"better plan for future deployments and partnerships."
+msgstr ""
+
+#: templates/securesync/facility_edit.html:165
+msgid ""
+"Please use this search box to locate your facility (and/or click on the map "
+"to select a spot), and then enter the additional information in the form "
+"below."
+msgstr ""
+
+#: templates/securesync/facility_edit.html:166
+msgid ""
+"(Knowing, as closely as possible, where you are in the world allows us to "
+"better plan for future deployments and partnerships)"
+msgstr ""
+
+#: templates/securesync/facility_edit.html:169
+msgid ""
+"Search for your facility's address or name to find its location on the map "
+"(enter to search)"
+msgstr ""
+
+#: templates/securesync/facility_edit.html:176
+msgid "Save facility"
+msgstr ""
+
+#: templates/securesync/facility_selection.html:5
+msgid "Select facility"
+msgstr ""
+
+#: templates/securesync/facility_selection.html:15
+msgid "(this is the default)"
+msgstr ""
+
+#: templates/securesync/facility_selection.html:15
+msgid "(set as the default facility)"
+msgstr ""
+
+#: templates/securesync/facility_selection.html:20
+msgid "You currently have no facilities. Would you like to create a facility?"
+msgstr ""
+
+#: templates/securesync/facility_selection.html:22
+msgid ""
+"There are currently no facilities available, please ask an administrator or "
+"teacher to set one up."
+msgstr ""
+
+#: templates/securesync/facility_selection.html:26
+msgid "Administer Facilities"
+msgstr ""
+
+#. Translators: This will be a label in a form.
+#: templates/securesync/login.html:27
+msgid "Username: "
+msgstr ""
+
+#. Translators: This will be a label in a form.
+#: templates/securesync/login.html:33
+msgid "Password: "
+msgstr ""
+
+#: templates/securesync/register_public_key_client.html:7
+msgid "Register a Device"
+msgstr ""
+
+#: templates/securesync/register_public_key_client.html:31
+msgid "Device registration"
+msgstr ""
+
+#. Translators: Please do not edit the variable text: %(command)s
+#: templates/securesync/register_public_key_client.html:35
+msgid ""
+"Sorry, there was an error during registration. Please make sure your device "
+"is fully up to date (run %(command)s and then stop/start the server).\" "
+msgstr ""
+
+#: templates/securesync/register_public_key_client.html:36
+msgid "The error message was:"
+msgstr ""
+
+#: templates/securesync/register_public_key_client.html:40
+msgid "Congratulations, this device has now been registered."
+msgstr ""
+
+#: templates/securesync/register_public_key_client.html:44
+msgid "This device has already been registered."
+msgstr ""
+
+#: templates/securesync/register_public_key_client.html:48
+msgid ""
+"The device needs to have internet access when first being registered. Please "
+"ensure it is connected to the internet, and then"
+msgstr ""
+
+#: templates/securesync/register_public_key_client.html:48
+#: templates/securesync/register_public_key_client.html:54
+msgid "refresh this page"
+msgstr ""
+
+#: templates/securesync/register_public_key_client.html:52
+msgid "If you have not created an organization and zone yet, please"
+msgstr ""
+
+#: templates/securesync/register_public_key_client.html:52
+msgid "login to the central server and create them"
+msgstr ""
+
+#: templates/securesync/register_public_key_client.html:52
+msgid "(You will have to create an account there first)."
+msgstr ""
+
+#: templates/securesync/register_public_key_client.html:53
+msgid "If you already have an organization and a zone, please"
+msgstr ""
+
+#: templates/securesync/register_public_key_client.html:53
+msgid "login to the central server and register this device in a zone "
+msgstr ""
+
+#: templates/securesync/register_public_key_client.html:53
+msgid "(this will open a new window)."
+msgstr ""
+
+#: templates/securesync/register_public_key_client.html:54
+msgid "Return here and"
+msgstr ""
+
+#: templates/securesync/register_public_key_client.html:54
+msgid "to complete the registration process."
+msgstr ""
+
+#. Translators: Please ignore the html tags e.g. "Please login as one below, or <a href='%s'>go to home.</a>" is simply "Please login as one below, or go to home."
+#: utils/decorators.py:13
+msgid ""
+"To view the page you were trying to view, you need to be logged in as a "
+"teacher or an admin. Please login as one below, or <a href='%s'>go to "
+"home.</a>"
+msgstr ""

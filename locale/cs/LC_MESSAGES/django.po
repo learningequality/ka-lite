@@ -1,0 +1,923 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-02-01 02:10+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: cs\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"X-Generator: Pootle 2.1.6\n"
+
+#: main/views.py:99
+msgid ""
+"This video was not found! You can download it by going to the Update page."
+msgstr "Video nebylo nalezeno. Lze ho stáhnout přechodem na stránku Update."
+
+#: main/views.py:101
+msgid ""
+"This video was not found! Please contact your teacher or an admin to have it "
+"downloaded."
+msgstr ""
+"Video nebylo nalezeno. Prosíme, obraťte se na svého učitele nebo správce pro "
+"stažení videa."
+
+#: main/views.py:103
+msgid ""
+"This video was not found! You must login as an admin/teacher to download the "
+"video."
+msgstr ""
+"Video nebylo nalezeno. Pro stažení tohoto videa se musíte přihlásit jako "
+"učitel nebo správce."
+
+#: main/views.py:105
+msgid ""
+"Note: You're logged in as an admin (not as a student/teacher), so your video "
+"progress and points won't be saved."
+msgstr ""
+"Pozn: Jste přihlášen/a jako správce (nikoli jako student/učitel), body "
+"nebudou uloženy."
+
+#: main/views.py:107
+msgid ""
+"Friendly reminder: You are not currently logged in, so your video progress "
+"and points won't be saved."
+msgstr ""
+"Přátelská připomínka:  Nyní nejste přihlášen/a, váš pokrok a body nebudou "
+"uloženy,"
+
+#: main/views.py:121
+msgid ""
+"Note: You're logged in as an admin (not as a student/teacher), so your "
+"exercise progress and points won't be saved."
+msgstr ""
+"Pozn: Jste přihlášen/a jako správce(nikoli jako student/učitel), váš pokrok "
+"a body nebudou uloženy,"
+
+#: main/views.py:123
+msgid ""
+"Friendly reminder: You are not currently logged in, so your exercise "
+"progress and points won't be saved."
+msgstr ""
+"Přátelská připomínka:  Nyní nejste přihlášen/a, váš pokrok a body nebudou "
+"uloženy,"
+
+#: securesync/forms.py:26
+#: securesync/forms.py:73
+#, fuzzy
+msgid "Password"
+msgstr "Heslo"
+
+#: securesync/forms.py:44
+msgid ""
+"A user with this username at this facility already exists. Please choose a "
+"new username (or select a different facility) and try again."
+msgstr ""
+"Uživatel s tímto jménem již existuje. Prosíme, zvolte nové uživ.jméno a "
+"zkuste to znovu."
+
+#: securesync/forms.py:92
+msgid ""
+"Username was not found for this facility. Did you type your username "
+"correctly, and choose the right facility?"
+msgstr ""
+"Uživatel nenalezen. Napsali jste jméno správně? Zvolili jste správné "
+"zařízení?"
+
+#: securesync/forms.py:97
+msgid "The password did not match. Please try again."
+msgstr "Heslo neodpovídá. Prosíme zkuste to znovu."
+
+#: securesync/models.py:255
+#: securesync/models.py:281
+msgid "Name"
+msgstr "Jméno"
+
+#: securesync/models.py:255
+msgid ""
+"(This is the name that students/teachers will see when choosing their "
+"facility; it can be in the local language.)"
+msgstr "Název zařízení"
+
+#: securesync/models.py:256
+msgid "Description"
+msgstr "Popis"
+
+#: securesync/models.py:257
+msgid "Address"
+msgstr "Adresa"
+
+#: securesync/models.py:257
+msgid "(Please provide as detailed an address as possible.)"
+msgstr "Adresa (co nejpodrobněji):"
+
+#: securesync/models.py:259
+msgid "Latitude"
+msgstr "Šířka"
+
+#: securesync/models.py:260
+msgid "Longitude"
+msgstr "Výška"
+
+#: securesync/models.py:261
+msgid "Zoom"
+msgstr "Přiblížení /zoom/"
+
+#: securesync/models.py:262
+msgid "Contact Name"
+msgstr "Kontakt - jméno:"
+
+#: securesync/models.py:262
+msgid "(Who should we contact with any questions about this facility?)"
+msgstr "Na koho se obrátit  s otázkami?"
+
+#: securesync/models.py:263
+msgid "Contact Phone"
+msgstr "Telefon."
+
+#: securesync/models.py:264
+msgid "Contact Email"
+msgstr "Email"
+
+#: securesync/models.py:265
+msgid "User Count"
+msgstr "Počet uživatelů:"
+
+#: securesync/models.py:265
+msgid "(How many potential users do you estimate there are at this facility?)"
+msgstr "Odhad počtu uživatelů"
+
+#. Translators: This is a label in a form.
+#: securesync/models.py:280
+#: securesync/models.py:289
+#: templates/securesync/facility_edit.html:5
+msgid "Facility"
+msgstr "Zařízení"
+
+#. Translators: This is a label in a form.
+#: securesync/models.py:291
+msgid "(Group/class)"
+msgstr "Třída / skupina"
+
+#: securesync/models.py:291
+msgid "(optional)"
+msgstr "(voletelné)"
+
+#. Translators: This is a label in a form.
+#: securesync/models.py:293
+msgid "Username"
+msgstr "Uživatelské jméno: "
+
+#. Translators: This is a label in a form.
+#: securesync/models.py:295
+msgid "First Name"
+msgstr "Křestní jméno:"
+
+#. Translators: This is a label in a form.
+#: securesync/models.py:297
+msgid "Last Name"
+msgstr "Příjmení:"
+
+#. Translators: This is a label in a form.
+#: securesync/models.py:299
+msgid "(whether this user should have teacher permissions)"
+msgstr "Má mít uživatel povolení učitele?"
+
+#: securesync/views.py:39
+msgid "This path is only available on distributed servers."
+msgstr "Tato cesta je povolena jen daným serverům."
+
+#: securesync/views.py:70
+msgid "To continue, you must first add a facility (e.g. for your school). "
+msgstr "Pro pokračování je nutné napřed zadat zařízení . "
+
+#: securesync/views.py:71
+msgid "Please use the form below to add a facility."
+msgstr ""
+
+#: securesync/views.py:74
+msgid ""
+"You must first have the administrator of this server log in below to add a "
+"facility."
+msgstr "Pro přidání zařízení se přihlašte jako administrátor."
+
+#: securesync/views.py:118
+msgid "Registration status: "
+msgstr "Registrační stav: "
+
+#: securesync/views.py:128
+msgid ""
+"The device's public key has been successfully registered. You may now close "
+"this window."
+msgstr "Úspěšně zaregistrováno. Nyní můžete toto okno zavřít."
+
+#. Translators: Do not change the text of '%(facility_name)s' because it is a variable, but you can change its position.
+#: securesync/views.py:159
+#, python-format
+msgid "The facility '%(facility_name)s' has been successfully saved!"
+msgstr "Zařízení '%(facility_name)s' bylo úspěšně uloženo."
+
+#: securesync/views.py:205
+msgid "You must add a facility before creating a user"
+msgstr "Přidejte zařízení před vytvořením nového uživatele."
+
+#: securesync/views.py:254
+msgid "This mission is too important for me to allow you to jeopardize it."
+msgstr "Tato mise je příliš důležitá, než aby byla ohrožena. "
+
+#: securesync/views.py:296
+msgid "You've been logged in! We hope you enjoy your time with KA Lite "
+msgstr "Jste přihlášen. Pěkně si to u nás užijte :-) ! "
+
+#: securesync/views.py:297
+msgid "-- be sure to log out when you finish."
+msgstr "-- odhlaste se před ukončením."
+
+#: securesync/views.py:301
+msgid ""
+"There was an error logging you in. Please correct any errors listed below, "
+"and try again."
+msgstr "Chyba při přihlašování. Opravte následující chyby a zkuste to znovu."
+
+#: templates/404_distributed.html:5
+#: templates/404_distributed.html.py:8
+msgid "Page not found"
+msgstr "Stránka nenalezena"
+
+#: templates/404_distributed.html:10
+msgid "Sorry, but the requested page could not be found."
+msgstr "Litujeme, ale stránku nelze nalézt."
+
+#: templates/500_distributed.html:5
+#: templates/500_distributed.html.py:8
+msgid "Error"
+msgstr "Chyba."
+
+#: templates/500_distributed.html:10
+msgid "Sorry, but there was an error while trying to load the page."
+msgstr "Litujeme, vznikla chyba při načítání stránky. "
+
+#: templates/base.html:82
+msgid "Videos and Exercises"
+msgstr "Videa a cvičení"
+
+#. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
+#: templates/base_distributed.html:38
+msgid "Watch"
+msgstr "Sledovat. "
+
+#. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
+#: templates/base_distributed.html:40
+msgid "Practice"
+msgstr "Cvičení"
+
+#. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
+#: templates/base_distributed.html:42
+msgid "Add Student"
+msgstr "Přidat studenta"
+
+#. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
+#: templates/base_distributed.html:44
+msgid "Add Teacher"
+msgstr "Přidat učitele"
+
+#. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
+#: templates/base_distributed.html:46
+msgid "Admin"
+msgstr "Admin"
+
+#. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
+#: templates/base_distributed.html:48
+msgid "Update"
+msgstr "Update"
+
+#. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
+#: templates/base_distributed.html:50
+msgid "Coach"
+msgstr "Učit "
+
+#. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
+#: templates/base_distributed.html:52
+msgid "Sign Up"
+msgstr "Přihlaste se"
+
+#. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
+#: templates/base_distributed.html:54
+#: templates/securesync/login.html:7
+#: templates/securesync/login.html.py:14
+#: templates/securesync/login.html:36
+msgid "Login"
+msgstr "Přihlášení"
+
+#. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
+#: templates/base_distributed.html:58
+msgid "Register device"
+msgstr "Registrace zařízení"
+
+#. Translators: this will appear in the navigation bar. Please try to keep it a short as possible.
+#: templates/base_distributed.html:62
+msgid "Logout"
+msgstr "Odhlášení"
+
+#: templates/base_distributed.html:77
+#, fuzzy
+msgid "Use this langauge as the default"
+msgstr "(default)"
+
+#: templates/base_distributed.html:79
+msgid "(default language)"
+msgstr ""
+
+#. Translators: Return in this sense, means to go back.
+#: templates/exercise.html:85
+msgid "Return"
+msgstr "Zpět"
+
+#: templates/exercise.html:88
+msgid "Practicing"
+msgstr "Procvičit"
+
+#: templates/exercise.html:108
+msgid "Your progress streak bar for this exercise"
+msgstr "Váš pokrok v tomto cvičení"
+
+#: templates/exercise.html:116
+msgid "Answer"
+msgstr "Odpověď"
+
+#: templates/exercise.html:122
+msgid "Correct! Next Question..."
+msgstr "Správně, další otázka..."
+
+#: templates/exercise.html:129
+msgid "Need help?"
+msgstr "Potřebujete poradit?"
+
+#: templates/exercise.html:131
+msgid "I'd like a hint"
+msgstr "Chci nápovědu."
+
+#: templates/exercise.html:134
+msgid "Note: this will reset your streak and points for this exercise!"
+msgstr "Pozn.: toto zresetuje Váš pokrok v tomto cvičení"
+
+#: templates/exercise.html:139
+msgid "Stuck? Watch a video."
+msgstr "Nevíte jak dál? Podívejte se na video."
+
+#: templates/exercise.html:142
+msgid "Related videos:"
+msgstr "Související videa:"
+
+#: templates/exercise.html:188
+msgid "Show scratchpad"
+msgstr "Zobrzit poznámkový blok"
+
+#: templates/exercise.html:189
+msgid "Scratchpad not available"
+msgstr "Poznámkový blok nedostupný."
+
+#: templates/homepage.html:97
+msgid "A free world-class education for anyone anywhere."
+msgstr "Kvalitní vzdělávání světové úrovně, všem a všude."
+
+#: templates/homepage.html:100
+msgid "Learn by watching videos!"
+msgstr "Učte se sledováním videí."
+
+#: templates/homepage.html:110
+msgid "Learn by doing exercises!"
+msgstr "Učte se pomocí cvičení"
+
+#: templates/homepage.html:111
+msgid ""
+"Practice your math skills from addition to calculus and everything in "
+"between."
+msgstr "Procvičte si matematiku od sčítání po integrály a vše mezi tím."
+
+#: templates/homepage.html:120
+msgid ""
+"KA Lite is a light-weight web server for viewing and interacting with core "
+"Khan Academy content (videos and exercises) without needing an Internet "
+"connection."
+msgstr ""
+"KA Lite je odlehčená verze Khan Academy pro studium bez připojení k "
+"internetu."
+
+#: templates/knowledgemap.html:20
+msgid "Your Knowledge Map"
+msgstr "Mapa znalostí"
+
+#: templates/knowledgemap.html:27
+msgid "Back to topics"
+msgstr "Zpět na témata"
+
+#: templates/topic.html:15
+msgid "Subtopics"
+msgstr "Podtémata"
+
+#: templates/topic.html:27
+msgid "Videos"
+msgstr "Videa"
+
+#: templates/topic.html:41
+msgid "Exercises"
+msgstr "Cvičení"
+
+#. Translators: Example usage=> Exercise: Name of Exercise
+#: templates/video.html:65
+msgid "Exercise"
+msgstr "Cvičení"
+
+#: templates/video.html:66
+msgid "Practice this concept"
+msgstr "Procvičte si tuto látku"
+
+#: templates/video.html:70
+msgid "Points"
+msgstr "Body"
+
+#: templates/video_download.html:7
+msgid "Video Download"
+msgstr "Video Download"
+
+#: templates/video_download.html:226
+msgid ""
+"You are about to download new subtitles for all downloaded videos. This may "
+"take a long time."
+msgstr "Download nových titulků pro všechna videa. Může trvat dlouho."
+
+#: templates/video_download.html:235
+msgid "Please select a language first"
+msgstr "Vyberte jazyk."
+
+#: templates/video_download.html:457
+msgid "Please select videos to download (below)"
+msgstr "Vyberte videa pro download"
+
+#: templates/video_download.html:458
+msgid "Download "
+msgstr "Download "
+
+#: templates/video_download.html:458
+msgid " new selected videos"
+msgstr " nová vybraná videa"
+
+#: templates/video_download.html:459
+msgid "Delete "
+msgstr "Smazat "
+
+#: templates/video_download.html:459
+msgid " selected videos"
+msgstr " vybraná videa"
+
+#: templates/video_download.html:463
+msgid "Download/update subtitles for existing videos"
+msgstr "Download/update titulků pro existující videa"
+
+#: templates/video_download.html:473
+msgid "Get/Update All Subtitles"
+msgstr "Get/Update všechny titulky"
+
+#: templates/video_download.html:474
+msgid "Get Missing Subtitles Only"
+msgstr "Pouze chybějící titulky"
+
+#: templates/video_download.html:481
+msgid "Downloads will start soon... Please wait!"
+msgstr "Download brzy začne, prosím počkejt."
+
+#: templates/video_download.html:488
+msgid "Downloading video:"
+msgstr "Downloading video:"
+
+#: templates/video_download.html:495
+msgid "Overall video download progress:"
+msgstr "Průběh video downloadu:"
+
+#: templates/video_download.html:497
+msgid "of"
+msgstr "of"
+
+#: templates/video_download.html:503
+msgid "Video download error... click to retry"
+msgstr "Chyba video downloadu ... klikněte pro další pokus"
+
+#: templates/video_download.html:510
+msgid "Subtitle download progress:"
+msgstr "Průběh downloadu titulků:"
+
+#: templates/video_download.html:512
+#, fuzzy
+msgctxt "e.g. '5 of 9'"
+msgid "of"
+msgstr "of"
+
+#: templates/video_download.html:522
+msgid "Cancel All Downloads"
+msgstr "Zrušit všechna stahování"
+
+#: templates/video_download.html:524
+msgid " Loading topic tree... Please wait!"
+msgstr " Načítání stromu témat .. vyčkejte prosím."
+
+#: templates/admin/base.html:62
+msgid "Home"
+msgstr "Domů"
+
+#: templates/admin/login.html:18
+msgid "Please correct the error below."
+msgid_plural "Please correct the errors below."
+msgstr[0] "Prosím opravte chybu níže:"
+msgstr[1] "Prosím opravte chyby níže:"
+
+#: templates/admin/login.html:34
+msgid "Username:"
+msgstr "Uživatelské jméno:"
+
+#: templates/admin/login.html:38
+msgid "Password:"
+msgstr "Heslo:"
+
+#: templates/admin/login.html:45
+msgid "Forgotten your password or username?"
+msgstr "Zapomenuté heslo nebo uživ.jméno?"
+
+#: templates/admin/login.html:49
+msgid "Log in"
+msgstr "Přihlášení"
+
+#: templates/securesync/add_facility_user.html:8
+msgid "Add facility user"
+msgstr "Přidat uživatele"
+
+#. Translators: The sentence will be: Add a new student or teacher
+#: templates/securesync/add_facility_user.html:17
+msgid "Add a new"
+msgstr "Přidání nového učitele /studenta"
+
+#: templates/securesync/add_facility_user.html:17
+msgid " teacher"
+msgstr " učitel"
+
+#: templates/securesync/add_facility_user.html:17
+msgid " student"
+msgstr " student"
+
+#: templates/securesync/add_facility_user.html:19
+msgid "Sign up for an account"
+msgstr "Přihlášení k účtu"
+
+#. Translators: This will be a label in a form.
+#: templates/securesync/add_facility_user.html:22
+#: templates/securesync/login.html:20
+msgid "Facility: "
+msgstr "Instituce: "
+
+#: templates/securesync/add_facility_user.html:22
+#: templates/securesync/add_group.html:11
+msgid "(Select a different facility)"
+msgstr "(Vyberte jinou instituci)"
+
+#: templates/securesync/add_facility_user.html:24
+msgid "Create user"
+msgstr "Vytvořit uživatele"
+
+#: templates/securesync/add_facility_user.html:30
+#: templates/securesync/add_group.html:8
+msgid "Add a new group"
+msgstr "Vytvořit novou skupinu"
+
+#: templates/securesync/add_group.html:5
+msgid "Add Group"
+msgstr "Přidat skupinu"
+
+#: templates/securesync/add_group.html:11
+msgid "Facility:"
+msgstr "Zařízení"
+
+#: templates/securesync/add_group.html:15
+msgid "Create group"
+msgstr "Vytvořit skupinu"
+
+#: templates/securesync/facility_admin.html:5
+msgid "Select user facility"
+msgstr "Vyberte uživatelské zařízení"
+
+#: templates/securesync/facility_admin.html:36
+msgid "Facilities"
+msgstr "Zařízení"
+
+#: templates/securesync/facility_admin.html:41
+msgid "Edit facility"
+msgstr "Úprava zařízení"
+
+#: templates/securesync/facility_admin.html:43
+msgid "Add student"
+msgstr "Přidat studenta"
+
+#: templates/securesync/facility_admin.html:44
+msgid "Add teacher"
+msgstr "Add teacher"
+
+#: templates/securesync/facility_admin.html:45
+msgid "Add group"
+msgstr "Přidat skupinu:"
+
+#: templates/securesync/facility_admin.html:49
+#: templates/securesync/facility_edit.html:162
+msgid "Add a new Facility"
+msgstr "Přidat novou instituci"
+
+#: templates/securesync/facility_admin.html:51
+msgid "You currently have no facilities. Would you like to"
+msgstr "Žádná instituce. Chcete"
+
+#: templates/securesync/facility_admin.html:51
+msgid "create a facility"
+msgstr "Vytvořit instituci"
+
+#: templates/securesync/facility_edit.html:162
+msgid "Edit a facility"
+msgstr "Upravit instituci"
+
+#: templates/securesync/facility_edit.html:163
+msgid ""
+"Please enter the following information about your facility. Please enter a "
+"detailed address, because knowing where you are in the world allows us to "
+"better plan for future deployments and partnerships."
+msgstr ""
+"Prosím, vložte následující info o zařízení. Adresa - umožní nám lépe "
+"plánovat do budoucna."
+
+#: templates/securesync/facility_edit.html:165
+msgid ""
+"Please use this search box to locate your facility (and/or click on the map "
+"to select a spot), and then enter the additional information in the form "
+"below."
+msgstr ""
+"Zde vyhledejte instituci (a/nebo klikněte na mapu pro výběr místa) poté "
+"vložte další informace do formuláře níže."
+
+#: templates/securesync/facility_edit.html:166
+msgid ""
+"(Knowing, as closely as possible, where you are in the world allows us to "
+"better plan for future deployments and partnerships)"
+msgstr "(Víme-lli odkud jste, můžeme lépe plánovat)"
+
+#: templates/securesync/facility_edit.html:169
+msgid ""
+"Search for your facility's address or name to find its location on the map "
+"(enter to search)"
+msgstr "Vyhledejte název/adresu  instituce pro pozici na mapě."
+
+#: templates/securesync/facility_edit.html:176
+msgid "Save facility"
+msgstr "Uložte instituci"
+
+#: templates/securesync/facility_selection.html:5
+msgid "Select facility"
+msgstr "Vyberte instituci"
+
+#: templates/securesync/facility_selection.html:15
+msgid "(this is the default)"
+msgstr "(default)"
+
+#: templates/securesync/facility_selection.html:15
+msgid "(set as the default facility)"
+msgstr "(nastavit jako defaultní instituci)"
+
+#: templates/securesync/facility_selection.html:20
+msgid "You currently have no facilities. Would you like to create a facility?"
+msgstr "Žádné instituce. Chcete vytvořit novou instituci?"
+
+#: templates/securesync/facility_selection.html:22
+msgid ""
+"There are currently no facilities available, please ask an administrator or "
+"teacher to set one up."
+msgstr "Žádné dostupné instituce. Požádejte správce / učitele o nastavení."
+
+#: templates/securesync/facility_selection.html:26
+msgid "Administer Facilities"
+msgstr "Admin institucí"
+
+#. Translators: This will be a label in a form.
+#: templates/securesync/login.html:27
+msgid "Username: "
+msgstr "Uživatelské jméno: "
+
+#. Translators: This will be a label in a form.
+#: templates/securesync/login.html:33
+msgid "Password: "
+msgstr "Heslo: "
+
+#: templates/securesync/register_public_key_client.html:7
+msgid "Register a Device"
+msgstr "Registrovat zařízení"
+
+#: templates/securesync/register_public_key_client.html:31
+#, fuzzy
+msgid "Device registration"
+msgstr "Registrace zařízení"
+
+#. Translators: Please do not edit the variable text: %(command)s
+#: templates/securesync/register_public_key_client.html:35
+#, fuzzy, python-format
+msgid ""
+"Sorry, there was an error during registration. Please make sure your device "
+"is fully up to date (run %(command)s and then stop/start the server).\" "
+msgstr ""
+"Chyba během registrace. Je Vaše zařízení aktualizováno? (spustit (run %"
+"(command)s a poté stop/start serveru). "
+
+#: templates/securesync/register_public_key_client.html:36
+msgid "The error message was:"
+msgstr "Chybová zpráva byla:"
+
+#: templates/securesync/register_public_key_client.html:40
+msgid "Congratulations, this device has now been registered."
+msgstr "Gratulujeme, zařízení je zaregistrováno.."
+
+#: templates/securesync/register_public_key_client.html:44
+msgid "This device has already been registered."
+msgstr "Toto zařízení již bylo registrováno."
+
+#: templates/securesync/register_public_key_client.html:48
+msgid ""
+"The device needs to have internet access when first being registered. Please "
+"ensure it is connected to the internet, and then"
+msgstr ""
+"Zařízení musí mít připojení k internetu při první registraci. Ujistěte se, "
+"že je připojeno a pak"
+
+#: templates/securesync/register_public_key_client.html:48
+#: templates/securesync/register_public_key_client.html:54
+msgid "refresh this page"
+msgstr "obnovte tuto stránku"
+
+#: templates/securesync/register_public_key_client.html:52
+msgid "If you have not created an organization and zone yet, please"
+msgstr "Pokud jste ještě nevytvořili organizaci / zónu, prosím"
+
+#: templates/securesync/register_public_key_client.html:52
+msgid "login to the central server and create them"
+msgstr "přihlaste se k centrálnímu serveru a vytvořte je."
+
+#: templates/securesync/register_public_key_client.html:52
+msgid "(You will have to create an account there first)."
+msgstr "(Napřed musíte vytvořit účet)."
+
+#: templates/securesync/register_public_key_client.html:53
+msgid "If you already have an organization and a zone, please"
+msgstr "Máte-li již organizaci/zónu, prosím"
+
+#: templates/securesync/register_public_key_client.html:53
+msgid "login to the central server and register this device in a zone "
+msgstr "přihlaste se na centrální server a zaregistrujte toto zařízení v zóně. "
+
+#: templates/securesync/register_public_key_client.html:53
+msgid "(this will open a new window)."
+msgstr "(toto otevře nové okno)"
+
+#: templates/securesync/register_public_key_client.html:54
+msgid "Return here and"
+msgstr "Vraťte se sem "
+
+#: templates/securesync/register_public_key_client.html:54
+msgid "to complete the registration process."
+msgstr "pro dokončení registrace."
+
+#. Translators: Please ignore the html tags e.g. "Please login as one below, or <a href='%s'>go to home.</a>" is simply "Please login as one below, or go to home."
+#: utils/decorators.py:13
+#, python-format
+msgid ""
+"To view the page you were trying to view, you need to be logged in as a "
+"teacher or an admin. Please login as one below, or <a href='%s'>go to "
+"home.</a>"
+msgstr ""
+"Pro zobrazení stránky musíte být přihlášen jako učitel / správce. Prosíme "
+"přihlaste se níže <a href='%s'>nebo se vraťte na domovskou stránku.</a>"
+
+#: templates/base_distributed.html:77
+msgid "Use this language as the default"
+msgstr ""
+
+#~ msgid "Math"
+#~ msgstr "Matematika"
+
+#~ msgid "Science"
+#~ msgstr "Vědy"
+
+#~ msgid "Finance"
+#~ msgstr "Finance"
+
+#~ msgid "Economics"
+#~ msgstr "Ekonomie"
+
+#~ msgid "Humanities"
+#~ msgstr "Humanitní"
+
+#~ msgid "Test Prep"
+#~ msgstr "Příprava na testy"
+
+#~ msgid "Password change successful"
+#~ msgstr "Úspěšná změna hesla"
+
+#~ msgid "Your password was changed."
+#~ msgstr "Vaše heslo bylo změněno."
+
+#~ msgid "Password change"
+#~ msgstr "Změna hesla."
+
+#~ msgid ""
+#~ "Please enter your old password, for security's sake, and then enter your "
+#~ "new password twice so we can verify you typed it in correctly."
+#~ msgstr "Vložte steré heslo a dvakrát nové heslo."
+
+#~ msgid "Old password:"
+#~ msgstr "Staré heslo:"
+
+#~ msgid "New password:"
+#~ msgstr "Nové heslo:"
+
+#~ msgid "Confirm password:"
+#~ msgstr "Potvrďte heslo:"
+
+#~ msgid "Change my password"
+#~ msgstr "Změňte moje heslo:"
+
+#~ msgid "Password reset complete"
+#~ msgstr "Heslo zresetováno"
+
+#~ msgid "Your password has been set.  You may go ahead and log in now."
+#~ msgstr "Vaše heslo bylo nastaveno. Nyní se přihlaste."
+
+#~ msgid "Password reset"
+#~ msgstr "Reset hesla."
+
+#~ msgid "Enter new password"
+#~ msgstr "Vložte nové heslo."
+
+#~ msgid ""
+#~ "Please enter your new password twice so we can verify you typed it in "
+#~ "correctly."
+#~ msgstr "Prosíme vložte nové heslo dvakrát."
+
+#~ msgid "Password reset unsuccessful"
+#~ msgstr "Neúspěšný reset hesla."
+
+#~ msgid ""
+#~ "The password reset link was invalid, possibly because it has already been "
+#~ "used.  Please request a new password reset."
+#~ msgstr ""
+#~ "Neplatný odkaz na reset hesla, možná již bylo použito. Znovu požádejte o "
+#~ "reset hesla."
+
+#~ msgid "Password reset successful"
+#~ msgstr "Úspěšný reset hesla"
+
+#~ msgid ""
+#~ "We've e-mailed you instructions for setting your password to the e-mail "
+#~ "address you submitted. You should be receiving it shortly."
+#~ msgstr ""
+#~ "Instrukce pro nastavení hesla byly zaslány na zadaný e-mail. Brzy je "
+#~ "dostanete."
+
+#~ msgid "You're receiving this e-mail because you requested a password reset"
+#~ msgstr "Tento e-mail dostáváte, protože jste požádali o změnu hesla."
+
+#~ msgid "for your user account at %(site_name)s"
+#~ msgstr "uživatelský účet v %(site_name)s"
+
+#~ msgid "Please go to the following page and choose a new password:"
+#~ msgstr "Na následující stránce vyberte nové heslo."
+
+#~ msgid "Your username, in case you've forgotten:"
+#~ msgstr "Vaše uživatelské jméno:"
+
+#~ msgid "Thanks for using our site!"
+#~ msgstr "Děkujeme za návštěvu!"
+
+#~ msgid "The %(site_name)s team"
+#~ msgstr "Název webu %(site_name)s Tým"
+
+#~ msgid ""
+#~ "Forgotten your password? Enter your e-mail address below, and we'll e-"
+#~ "mail instructions for setting a new one."
+#~ msgstr ""
+#~ "Zapomenuté heslo? Vložte Váš e-mail a zašleme instrukce pro nastavení "
+#~ "nového."
+
+#~ msgid "E-mail address:"
+#~ msgstr "E-mail :"
+
+#~ msgid "Reset my password"
+#~ msgstr "Reset hesla:"
