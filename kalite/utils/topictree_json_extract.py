@@ -29,17 +29,6 @@ def recurse_json(node):
 def generate_po(nodes, filename):
 	# Create po file 
 	po = polib.POFile()
-	po.metadata = {
-	    'Project-Id-Version': '1.0',
-	    'Report-Msgid-Bugs-To': 'you@example.com',
-	    'POT-Creation-Date': '2007-10-18 14:00+0100',
-	    'PO-Revision-Date': '2007-10-18 14:00+0100',
-	    'Last-Translator': 'you <you@example.com>',
-	    'Language-Team': 'English <yourteam@example.com>',
-	    'MIME-Version': '1.0',
-	    'Content-Type': 'text/plain; charset=utf-8',
-	    'Content-Transfer-Encoding': '8bit',
-	}
 
 	# Append titles & descriptions 
 	string_set = set()
@@ -53,8 +42,8 @@ def generate_po(nodes, filename):
 			string_set.add(value)
 			entry = polib.POEntry(
 			    msgid= value,
-			    msgstr= value[::-1],
-			    msgctxt="%s %s" %(node["kind"], key)
+			    msgstr= "",
+			    comment="%s %s" %(node["kind"], key)
 			)
 			po.append(entry)
 
