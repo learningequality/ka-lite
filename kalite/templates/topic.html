@@ -7,8 +7,8 @@
 {% block content %}
 
 <h1 class="title-header">
-    <div class="title">{% blocktrans %}{{title}}{%endblocktrans%}</div>
-    <div class="long-description" style="margin-top: 5px;">{% blocktrans %}{{description}}{%endblocktrans%}</div>
+    <div class="title">{{ title }}</div>
+    <div class="long-description" style="margin-top: 5px;">{{ description }}</div>
 </h1>
 
 {% if topics %}
@@ -16,7 +16,7 @@
 <ol>
     {% for subtopic in topics %}
     <li style="font-size: 15px; line-height: 23px; margin-left: 10px;">
-        <a href="{{ subtopic.id }}">{% trans subtopic.title %}</a>
+        <a href="{{ subtopic.id }}">{{ subtopic.title }}</a>
     </li>
     {% endfor %}
     <br/>
@@ -30,7 +30,7 @@
     <li style="font-size: 15px; line-height: 23px; margin-left: 10px;">
         <!--<a href="mplayer:///khan/videofiles/{{ video.youtube_id }}.ogv">{{ video.title }}</a>-->
         <span class="progress-circle" data-youtube-id="{{ video.youtube_id }}"></span>
-        <a href="v/{{ video.readable_id }}">{% trans video.title %}</a>
+        <a href="v/{{ video.readable_id }}">{{ video.title }}</a>
     </li>
     {% endfor %}
     <br/>
@@ -43,7 +43,7 @@
     {% for exercise in exercises %}
     <li style="font-size: 15px; line-height: 23px; margin-left: 10px;">
         <span class="progress-circle" data-exercise-id="{{ exercise.name }}"></span>
-        <a href="e/{{ exercise.name }}">{% trans exercise.display_name %}</a>
+        <a href="e/{{ exercise.name }}">{{ exercise.display_name }}</a>
     </li>
     {% endfor %}
     <br/>
