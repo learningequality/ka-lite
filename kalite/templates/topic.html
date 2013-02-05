@@ -7,8 +7,8 @@
 {% block content %}
 
 <h1 class="title-header">
-    <div class="title">{% blocktrans %}{{title}}{%endblocktrans%}</div>
-    <div class="long-description" style="margin-top: 5px;">{% blocktrans %}{{description}}{%endblocktrans%}</div>
+    <div class="title">{% trans title %}</div>
+    <div class="long-description" style="margin-top: 5px;">{% if description %}{% trans description %}{% endif %}</div>
 </h1>
 
 {% if topics %}
