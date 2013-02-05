@@ -83,3 +83,17 @@ class VideoFile(models.Model):
     class Meta:
         ordering = ["priority", "youtube_id"]
 
+
+class LanguagePack(models.Model):
+    lang_id = models.CharField(max_length=5, primary_key=True)
+    lang_version = models.CharField(max_length=5)
+    software_version = models.CharField(max_length=12)
+    lang_name = models.CharField(max_length=30)
+
+
+
+
+
+
+
+

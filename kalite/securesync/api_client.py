@@ -31,6 +31,8 @@ class SyncClient(object):
     def get(self, path, payload={}, *args, **kwargs):
         if self.session and self.session.client_nonce:
             payload["client_nonce"] = self.session.client_nonce
+        # add a random parameter to ensure the request is not cached
+        payload["_"] = uuid.uuid4().hex
         query = urllib.urlencode(payload)
         return requests.get(self.path_to_url(path) + "?" + query, *args, **kwargs)
         
@@ -147,9 +149,9 @@ class SyncClient(object):
                 self.counters_to_download[device] = 0
             elif server_counters[device] > client_counters[device]:
                 self.counters_to_download[device] = client_counters[device]
-
+                
         response = json.loads(self.post("device/download", {"devices": devices_to_download}).content)
-        download_results = save_serialized_models(response.get("devices", "[]"))
+        download_results = save_serialized_models(response.get("devices", "[]"), increment_counters=False)
         
         self.session.models_downloaded += download_results["saved_model_count"]
         
@@ -159,7 +161,7 @@ class SyncClient(object):
 
         if self.counters_to_download is None or self.counters_to_upload is None:
             self.sync_device_records()
-            
+
         response = json.loads(self.post("models/download", {"device_counters": self.counters_to_download}).content)
         download_results = save_serialized_models(response.get("models", "[]"))
         

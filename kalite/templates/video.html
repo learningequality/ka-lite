@@ -2,6 +2,8 @@
 
 {% load i18n %}
 
+{% block watch_active %}active{% endblock watch_active %}
+
 {% block headcss %}
     <link href="{{ MEDIA_URL }}video-js/video-js.min.css" rel="stylesheet" type="text/css">
 {% endblock headcss %}
@@ -12,13 +14,11 @@
     </script>
 {% endblock headjs %}
 
-{% block watch_selected %}selected{% endblock watch_selected %}
-
 {% block content %}
 <h2 class="title-header">
-    <span class="title">{{ video.title }}</span><br/>
+    <span class="title">{% trans video.title %}</span><br/>
     {% if video.description %}
-        <span class="long-description">{{ video.description }}</span>
+        <span class="long-description">{% trans video.description %}</span>
     {% endif %}
     {% if video.related_exercise %}
     <span style="float:right; margin-top: -17px; font-size: 14px;">
@@ -33,11 +33,11 @@
 </h2>
 <div class="clear"></div>
 {% if prev %}
-<div class="vidprev"><a href="../{{ prev.readable_id }}/">&lt; {{ prev.title }} <span class="progress-circle" data-youtube-id="{{ prev.youtube_id }}"></span></a></div>
+<div class="vidprev"><a href="../{{ prev.readable_id }}/">&lt; {% trans prev.title %} <span class="progress-circle" data-youtube-id="{{ prev.youtube_id }}"></span></a></div>
 {% endif %}
 
 {% if next %}
-<div class="vidnext"><a href="../{{ next.readable_id }}/"><span class="progress-circle" data-youtube-id="{{ next.youtube_id }}"></span> {{ next.title }} &gt;</a></div>
+<div class="vidnext"><a href="../{{ next.readable_id }}/"><span class="progress-circle" data-youtube-id="{{ next.youtube_id }}"></span> {% trans next.title %} &gt;</a></div>
 {% endif %}
 
 <div class="clear"></div>

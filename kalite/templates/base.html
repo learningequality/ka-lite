@@ -26,7 +26,7 @@
         {% block extrahead %}{% endblock extrahead %}
         {% block analytics %}{% endblock analytics %}
     </head>
-    
+    {% load i18n %}
     <body class="light {% block bodyclass %}{% endblock %}">
         <div id="outer-wrapper">
             <div id="page-container">
@@ -52,7 +52,7 @@
 
                             <div id="logo">
                                 <a id="logo-image-small" href="/" title="KA Lite Home" name="logo-image">
-                                    <img src="{{ MEDIA_URL }}images/ka-logo-small.png"/>
+                                    <img src="{{ MEDIA_URL }}images/ka-lite-logo.png"/>
                                 </a>
                             </div>
                             <div class="clear"></div>
@@ -80,6 +80,8 @@
         <footer id="footer" class="short">
             <div id="leaves">
                 <div class="inner">
+                    {% block langselect %}
+                    {% endblock langselect %}
                     <div id="copyright" class="tiny">
                         {% trans "Videos and Exercises" %} &copy; 2013 Khan Academy 
                         <a rel="license" id="creative-commons-link" {% if is_central %} href="http://creativecommons.org/licenses/by-nc-sa/2.0/" target="_blank"{% endif %}></a>

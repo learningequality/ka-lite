@@ -35,27 +35,27 @@
 
 <span class="dropdown topic-browser-dropdown">
     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it a short as possible.{% endcomment %}
-    <a href="{% url homepage %}" id="nav_watch" class="watch-navlink not-admin-only {% block watch_selected %}{% endblock watch_selected %}" title="Watch Videos">{% trans "Watch" %}</a>
+    <a href="{% url homepage %}" id="nav_watch" class="watch-navlink not-admin-only {% block watch_active %}{% endblock watch_active %}" title="Watch Videos">{% trans "Watch" %}</a>
     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it a short as possible.{% endcomment %}
-    <a href="{% url exercise_dashboard %}" id="nav_practice" class="practice-navlink not-admin-only {% block practice_selected %}{% endblock practice_selected %} title="Practice Lessons"">{% trans "Practice" %}</a>
+    <a href="{% url exercise_dashboard %}" id="nav_practice" class="practice-navlink not-admin-only {% block practice_active %}{% endblock practice_active %} title="Practice Lessons"">{% trans "Practice" %}</a>
     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it a short as possible.{% endcomment %}
-    <a href="{% url add_facility_student %}" id="nav_addstudent" class="admin-only {% block addstudent_selected %}{% endblock addstudent_selected %}" title="Add a student">{% trans "Add Student" %}</a>
+    <a href="{% url add_facility_student %}" id="nav_addstudent" class="admin-only {% block addstudent_active %}{% endblock addstudent_active %}" title="Add a student">{% trans "Add Student" %}</a>
     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it a short as possible.{% endcomment %}
-    <a href="{% url add_facility_teacher %}" id="nav_addteacher" class="admin-only {% block addteacher_selected %}{% endblock addteacher_selected %}" title="Add a teacher">{% trans "Add Teacher" %}</a>
+    <a href="{% url add_facility_teacher %}" id="nav_addteacher" class="admin-only {% block addteacher_active %}{% endblock addteacher_active %}" title="Add a teacher">{% trans "Add Teacher" %}</a>
     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it a short as possible.{% endcomment %}
-    <a href="/admin" id="nav_admin" class="django-user-only {% block admin_selected %}{% endblock admin_selected %}" title="Visit the admin panel">{% trans "Admin" %}</a>
+    <a href="/admin" id="nav_admin" class="django-user-only {% block admin_active %}{% endblock admin_active %}" title="Visit the admin panel">{% trans "Admin" %}</a>
     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it a short as possible.{% endcomment %}
-    <a href="{% url update %}" id="nav_update" class="admin-only {% block update_selected %}{% endblock update_selected %}" title="Update this server with new videos and subtitles">{% trans "Update" %}</a>
+    <a href="{% url update %}" id="nav_update" class="admin-only {% block update_active %}{% endblock update_active %}" title="Update this server with new videos and subtitles">{% trans "Update" %}</a>
     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it a short as possible.{% endcomment %}
-    <a href="{% url coach_reports %}" id="nav_coachreports" class="admin-only {% block coachreports_selected %}{% endblock coachreports_selected %}" title="Track the progress of your students">{% trans "Coach" %}</a>
+    <a href="{% url coach_reports %}" id="nav_coachreports" class="admin-only {% block coachreports_active %}{% endblock coachreports_active %}" title="Track the progress of your students">{% trans "Coach" %}</a>
     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it a short as possible.{% endcomment %}
-    <a href="{% url add_facility_student %}" id="nav_signup" class="not-logged-in-only {% block signup_selected %}{% endblock signup_selected %}" title="Register to start tracking your progress">{% trans "Sign Up" %}</a>
+    <a href="{% url add_facility_student %}" id="nav_signup" class="not-logged-in-only {% block signup_active %}{% endblock signup_active %}" title="Register to start tracking your progress">{% trans "Sign Up" %}</a>
     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it a short as possible.{% endcomment %}
-    <a href="{% url login %}" id="nav_login" class="not-logged-in-only {% block login_selected %}{% endblock login_selected %}" title="Login">{% trans "Login" %}</a>
+    <a href="{% url login %}" id="nav_login" class="not-logged-in-only {% block login_active %}{% endblock login_active %}" title="Login">{% trans "Login" %}</a>
 </span>
 <span class="dropdown topic-browser-dropdown not-registered-only">
     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it a short as possible.{% endcomment %}
-    <a href="{% url register_public_key %}" id="nav_registerdevice" class="admin-only {% block register_selected %}{% endblock register_selected %}" title="Register this device with the central server">{% trans "Register device" %}</a>
+    <a href="{% url register_public_key %}" id="nav_registerdevice" class="admin-only {% block register_active %}{% endblock register_active %}" title="Register this device with the central server">{% trans "Register device" %}</a>
 </span>
 <span class="dropdown topic-browser-dropdown logged-in-only">
     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it a short as possible.{% endcomment %}
@@ -63,3 +63,33 @@
 </span>
 
 {% endblock sitewide_navigation %}
+
+
+{% block langselect %}
+{% if language_choices %}
+    <form id="language-preferences">
+        <select id="language_selector"> 
+            {% for lang in language_choices %} 
+                <option value="{{ lang.lang_id }}" {% ifequal lang.lang_id current_language %}selected{% endifequal %}>{{ lang.lang_name }}</option>
+            {% endfor %}
+        </select>
+        {% ifnotequal current_language DEFAULT_LANGUAGE %}
+            <input type="checkbox" class="admin-only" id="make_default_language"/>
+            <label class="admin-only" for="make_default_language">{% trans "Use this language as the default" %}</label>
+        {% else %}
+            {% trans "(default language)" %}
+        {% endifnotequal %}
+    </form>
+
+    <script type="text/javascript">
+        // If new language is selected, redirect after adding django_language session key
+        $("#language_selector").change(function() {
+            window.location = "?set_language=" + $("#language_selector").val();
+        });
+        // If user is admin, they can set currently selected language as the default
+        $("#make_default_language").click(function() {
+            window.location = "?set_default_language=" + $("#language_selector").val();
+        });
+    </script>
+{% endif %}
+{% endblock langselect %}

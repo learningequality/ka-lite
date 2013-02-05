@@ -92,10 +92,10 @@ class SyncedModelManager(models.Manager):
 
 class SyncedModel(models.Model):
     id = models.CharField(primary_key=True, max_length=32, editable=False)
-    counter = models.IntegerField(editable=False)
+    counter = models.IntegerField()
     signature = models.CharField(max_length=360, blank=True, editable=False)
     signed_version = models.IntegerField(default=1, editable=False)
-    signed_by = models.ForeignKey("Device", blank=True, null=True, related_name="+", editable=False)
+    signed_by = models.ForeignKey("Device", blank=True, null=True, related_name="+")
     zone_fallback = models.ForeignKey("Zone", blank=True, null=True, related_name="+")
     deleted = models.BooleanField(default=False)
 
@@ -179,7 +179,7 @@ class SyncedModel(models.Model):
                 
         return "&".join(chunks)
 
-    def save(self, own_device=None, imported=False, *args, **kwargs):
+    def save(self, own_device=None, imported=False, increment_counters=True, *args, **kwargs):
         
         # we allow for the "own device" to be passed in so that a device can sign itself (before existing)
         own_device = own_device or Device.get_own_device()
@@ -202,7 +202,7 @@ class SyncedModel(models.Model):
         super(SyncedModel, self).save(*args, **kwargs)
         
         # for imported models, we want to keep track of the counter position we're at for that device
-        if imported:
+        if imported and increment_counters:
             self.signed_by.set_counter_position(self.counter)
 
     def get_uuid(self):
@@ -537,7 +537,7 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
         return serialized_models
 
 
-def save_serialized_models(data):
+def save_serialized_models(data, increment_counters=True):
     
     # if data is from a purgatory object, load it up
     if isinstance(data, ImportPurgatory):
@@ -563,8 +563,8 @@ def save_serialized_models(data):
             model = modelwrapper.object
             
             # only allow the importing of models that are subclasses of SyncedModel
-            if not isinstance(model, SyncedModel):
-                raise ValidationError("Cannot save model: %s is not a subclass of SyncedModel." % model.__class__)
+            if not hasattr(model, "verify"):
+                raise ValidationError("Cannot save model: %s does not have a verify method (not a subclass of SyncedModel?)" % model.__class__)
             
             # TODO(jamalex): more robust way to do this? (otherwise, it might barf about the id already existing)
             model._state.adding = False
@@ -573,7 +573,7 @@ def save_serialized_models(data):
             model.full_clean()
             
             # save the imported model (checking that the signature is valid in the process)
-            model.save(imported=True)
+            model.save(imported=True, increment_counters=increment_counters)
             
             # keep track of how many models have been successfully saved
             saved_model_count += 1
@@ -587,7 +587,7 @@ def save_serialized_models(data):
             # if the model is at least properly signed, try incrementing the counter for the signing device
             # (because otherwise we may never ask for additional models)
             try:
-                if model.verify():
+                if increment_counters and model.verify():
                     model.signed_by.set_counter_position(model.counter)
             except:
                 pass

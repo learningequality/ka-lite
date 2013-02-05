@@ -1,13 +1,13 @@
 {% extends "faq/base.html" %}
 
-{% block title %}{{ block.super }}: Question - {{ object.text|truncatewords:30}}{% endblock %}
+{% block title %}{{ block.super }}FAQ: {{ object.text|truncatewords:30}}{% endblock %}
 
 
 {% block content %}{{ block.super }}
 
-<span class="question-detail-question"><h3>{{ object.text }}</h3></span>
+<span class="question-detail-question"><h2>{{ object.text|safe }}{% if user.is_staff %}<a class="faq-change-links" target="_blank" href="/admin/faq/question/{{ question.pk }}/">(edit question)</a>{% endif %}</h2></span>
 
-<div class="question-detail-answer">{{ object.answer }}</div>
+<div class="answer">{{ object.answer|safe }}</div>
 
 </br>
 

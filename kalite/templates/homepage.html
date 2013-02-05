@@ -2,7 +2,7 @@
 
 {% load i18n %}
 
-{% block watch_selected %}selected{% endblock watch_selected %}
+{% block watch_active %}active{% endblock watch_active %}
 
 {% block headjs %}
 <script type='text/javascript' src='{{ MEDIA_URL }}js/underscore.js'></script>
@@ -100,7 +100,7 @@ a:hover, a:hover .suggested-action-title {
         <h2 class="suggested-action-title">{% trans "Learn by watching videos!" %}</h2>
         <p class="topic-list">
             {% for topic in topics %}
-            <a href="{{ topic.slug }}">{{ topic.title }}</a>
+            <a href="{{ topic.slug }}">{% trans topic.title %}</a>
             {% endfor %}
         </p>
     </div>

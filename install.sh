@@ -39,9 +39,11 @@ pyexec=`$SCRIPT_DIR/python.sh`
 cd `dirname "${BASH_SOURCE[0]}"`/kalite
 
 if [ -f "database/data.sqlite" ]; then
-    echo "----------------------------------------------------------------"
-    echo "Error: Database file already exists! If this is a new installation, you should delete the file kalite/database/data.sqlite and then re-run this script."
-    echo "----------------------------------------------------------------"
+    echo "-------------------------------------------------------------------"
+    echo "Error: Database file already exists! If this is a new installation,"
+    echo "you should delete the file kalite/database/data.sqlite and then"
+    echo "re-run this script. If the server is running, first run ./stop.sh"
+    echo "-------------------------------------------------------------------"
     exit 1
 fi
 

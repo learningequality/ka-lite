@@ -1,17 +1,25 @@
 {% extends base_template %}
-{% block faq_selected %}selected{% endblock faq_selected %}
+{% block faq_active %}active{% endblock faq_active %}
 {% block headcss %}
 <style>
 .question {
 	font-weight: bold;
+	font-size: 14px;
+	margin-top: 15px;
 }
 
-#id-topics {
+.answer {
+	margin-top: 7px;
+	margin-left: 10px;
+}
+
+#id-topics-list {
 	margin-left: 25px;
 }
 
 .topic-indented {
 	margin-left: 25px;
+	margin-bottom: 2px;
 }
 
 .question-detail-answer {
@@ -19,7 +27,16 @@
 	margin-top: -15px;
 }
 
+.topic-in-list {
+	margin-top: 14px;
+	margin-bottom: 5px;
 }
+
+.faq-change-links {
+	font-size: 14px;
+	margin-left: 5px;
+}
+
 </style>
 {% endblock headcss %}
 

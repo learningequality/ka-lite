@@ -1,7 +1,7 @@
 {% extends 'base_distributed.html' %}
-{% block addteacher_selected %}{% if teacher %}selected{% endif %}{% endblock addteacher_selected %}
-{% block addstudent_selected %}{% if not teacher %}selected{% endif %}{% endblock addstudent_selected %}
-{% block signup_selected %}{% if not request.admin %}selected{% endif %}{% endblock signup_selected %}
+{% block addteacher_active %}{% if teacher %}active{% endif %}{% endblock addteacher_active %}
+{% block addstudent_active %}{% if not teacher %}active{% endif %}{% endblock addstudent_active %}
+{% block signup_active %}{% if not request.admin %}active{% endif %}{% endblock signup_active %}
 
 {% load i18n %}
 
