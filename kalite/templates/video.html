@@ -69,13 +69,23 @@
     $(function() {
         $("#video-thumb").load(function() {
 
-            var width = $("#video-thumb").width();
-            var height = $("#video-thumb").height();
-            var ratio = width / height;
+            var original_width = $("#video-thumb").width();
+            var original_height = $("#video-thumb").height();
+            var ratio = original_width / original_height;
+            
+            var width = original_width - 40;
+            var height = width / ratio;
+            
+            var screen_height = screen.availHeight - 50;
+            
+            if (height > screen_height) {
+                height = screen_height * 0.9;
+                width = ratio * height;
+            }
             
             $("#video-thumb").hide();
 
-            _V_('id_' + videoData.youtube_id).width(width - 40).height((width - 40) / ratio);
+            _V_('id_' + videoData.youtube_id).width(width).height(height);
             
         });
     });
