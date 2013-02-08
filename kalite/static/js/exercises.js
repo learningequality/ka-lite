@@ -9,8 +9,8 @@ function updateStreakBar() {
 }
 
 function updateQuestionPoints(points) {
-    //Show points for correct question, or none if not answered yet.
-    $("#questionpoints").html(points ? (points + " points!") : "");
+    // show points for correct question, or none if not answered yet.
+    $("#questionpoints").html(points ? (points + " " + gettext("points") + "!") : "");
 }
 
 function updatePercentCompleted(correct) {

@@ -402,3 +402,7 @@ li .progress-circle {
     width: 200px;
     z-index: -10;
 }
+
+#answer_area .answer-buttons input.simple-button, #answer_area input.simple-button.full-width {
+    white-space: normal;
+}
