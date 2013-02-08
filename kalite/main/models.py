@@ -19,7 +19,7 @@ class VideoLog(SyncedModel):
         if not kwargs.get("imported", False):
             self.full_clean()
             already_complete = self.complete
-            self.complete = (self.points >= 100)
+            self.complete = (self.points >= 750)
             if not already_complete and self.complete:
                 self.completion_timestamp = datetime.now()
                 self.completion_counter = Device.get_own_device().get_counter()

@@ -92,7 +92,7 @@ class SyncedModelManager(models.Manager):
 
 class SyncedModel(models.Model):
     id = models.CharField(primary_key=True, max_length=32, editable=False)
-    counter = models.IntegerField()
+    counter = models.IntegerField(default=0)
     signature = models.CharField(max_length=360, blank=True, editable=False)
     signed_version = models.IntegerField(default=1, editable=False)
     signed_by = models.ForeignKey("Device", blank=True, null=True, related_name="+")

@@ -1,102 +1,370 @@
-var flashVars = {
-    srt: 1,
-    showswitchsubtitles: 1,
-    srtcolor: "eeeeee",
-    srtsize: 25,
-    srtbgcolor: "000000",
-    showstop: 1,
-    showvolume: 1,
-    showfullscreen: 1,
-    ondoubleclick: "fullscreen",
-    showiconplay: 1,
-    iconplaybgcolor: "cceaa9",
-    margin: 0,
-    buffermessage: "Loading... (_n_)",
-    videobgcolor: "000000"
+window.VideoPlayerState = {
+    UNSTARTED: -1,
+    ENDED: 0,
+    PLAYING: 1,
+    PAUSED: 2,
+    BUFFERING: 3,
+    VIDEO_CUED: 5
 };
 
-var objParams = {
-    movie: "/static/flvplayer/player_flv_maxi.swf",
-    allowFullScreen: "true",
-    allowScriptAccess: "always"
-};
+window.VideoPlayerModel = Backbone.Model.extend({
 
-function embedSwf(el, width, height, callback) {
-    swfobject.embedSWF(
-        "/static/flvplayer/player_flv_maxi.swf",
-        el,
-        width,
-        height,
-        "9", // flash version requested
-        "",
-        flashVars,
-        objParams,
-        {},
-        callback
-    );
-}
+    REQUIRED_PERCENT_FOR_FULL_POINTS: 0.95,
 
-function updatePoints() {
-    if (videoData.points) {
-        $(".points").text(videoData.points);
-        $(".points-container").show();
-    }
-}
+    defaults: {
+        percent_last_saved: 0.0,
+        seconds_watched_since_save: 0.0,
+        points: 0,
+        possible_points: 750,
+        youtube_id: "",
+        player_state: VideoPlayerState.UNSTARTED,
+        seconds_between_saves: 30,
+        percent_between_saves: 0.1
+    },
 
-$(function() {
+    initialize: function() {
+        _.bindAll(this);
 
-    doRequest("/api/get_video_logs", [videoData.youtube_id]).success(function(data) {
-        if (data.length === 0) {
+        this.pointsSaved = 0;
+
+        this.set({
+            wall_time_last_saved: new Date()
+        });
+
+        this.fetch();
+
+    },
+
+    fetch: function() {
+
+        var self = this;
+
+        doRequest("/api/get_video_logs", [this.get("youtube_id")]).success(function(data) {
+            if (data.length === 0) {
+                return;
+            }
+            self.set({
+                total_seconds_watched: data[0].total_seconds_watched,
+                points: data[0].points,
+                complete: data[0].complete
+            });
+            self.pointsSaved = data[0].points;
+        });
+    },
+
+    save: function() {
+
+        var self = this;
+
+        if (this.saving) {
             return;
         }
-        videoData.total_seconds_watched = data[0].total_seconds_watched;
-        videoData.points = data[0].points;
-        videoData.complete = data[0].complete;
-        updatePoints();
-    });
+
+        this.saving = true;
+
+        this._updateSecondsWatchedSinceSave();
+
+        var lastSavedBeforeError = this.get("wall_time_last_saved");
+
+        data = {
+            youtube_id: this.get("youtube_id"),
+            total_seconds_watched: Math.floor(this.get("total_seconds_watched")),
+            seconds_watched: this.get("seconds_watched_since_save"),
+            points: this.get("points")
+        }
+
+        var xhr = doRequest("/api/save_video_log", data)
+            .success(function(data) {
+                self.pointsSaved = data.points;
+                self.saving = false;
+            })
+            .error(function() {
+                self.set({ wall_time_last_saved: lastSavedBeforeError });
+                self.saving = false;
+            });
+
+        this.set({
+            wall_time_last_saved: new Date(),
+            percent_last_saved: this.getPercentWatched(),
+            seconds_watched_since_save: 0
+        });
+
+        return xhr;
+    },
+
+    getVideoPosition: function() {
+        if (!this.player || !this.player.currentTime) return 0;
+        return this.player.currentTime() || 0;
+    },
+
+    _updateSecondsWatchedSinceSave: function() {
+
+        var wallTimeCurrent = new Date();
+        var wallTimeDelta =
+            (wallTimeCurrent - this.get("wallTimeLastPoll")) / 1000.0;
+        this.set("wallTimeLastPoll", wallTimeCurrent);
+
+        var videoPositionCurrent = this.getVideoPosition();
+        var videoPositionDelta =
+             videoPositionCurrent - this.get("videoPositionLastPoll");
+        this.set("videoPositionLastPoll", videoPositionCurrent);
+
+        // Estimate the playback speed by taking the ratio of delta
+        // API-reported seconds to delta wall clock seconds, and clamp it
+        // between [0, 2].
+        var speedFactor = Math.max(0,
+            Math.min(2.0, videoPositionDelta / wallTimeDelta));
+
+        var secondsWatchedSinceLastPoll = wallTimeDelta * speedFactor;
+
+        var seconds_watched_since_save = this.get("seconds_watched_since_save");
+
+        if (secondsWatchedSinceLastPoll > 0) {
+            seconds_watched_since_save += secondsWatchedSinceLastPoll;
+            this.set("seconds_watched_since_save", seconds_watched_since_save);
+        }
+
+        return seconds_watched_since_save;
+
+    },
+
+    _updatePointsEstimate: function() {
+
+        var duration = this.getDuration();
+        if (duration === 0) return;
+
+        var secondsSinceSave = this.get("seconds_watched_since_save");
+        var percentSinceSave = Math.min(1.0, secondsSinceSave / duration);
+        var percentTotal = percentSinceSave +
+            (this.pointsSaved / this.get("possible_points"));
+        if (percentTotal > this.REQUIRED_PERCENT_FOR_FULL_POINTS) {
+            percentTotal = 1.0;
+        }
+
+        var estimate = Math.floor(this.get("possible_points") * percentTotal);
+
+        this.set({ points: estimate });
+    },
+
+    /**
+     * We want to save no more frequently than every certain percentage of the
+     * way through the video, and no more than every certain number of seconds.
+     */
+    _isAutoSaveIntervalExceeded: function() {
+        var secsPercent = this.getDuration() * this.get("percent_between_saves");
+        var interval = Math.max(secsPercent, this.get("seconds_between_saves"));
+        return this.get("seconds_watched_since_save") > interval;
+    },
+
+    updateAndSaveIfNeeded: function() {
+
+        this._updateSecondsWatchedSinceSave();
+
+        // Save after we hit certain intervals of video watching
+        if (this._isAutoSaveIntervalExceeded()) {
+            this.save();
+        } else {
+            // If we hit max video points for the first time, force save,
+            // since showing estimate might entice user to close the browser
+            // thinking they finished (and it not having actually saved).
+            var percent = this.getPercentWatched();
+            var last_percent = this.get("percent_last_saved");
+            var threshold = this.REQUIRED_PERCENT_FOR_FULL_POINTS;
+            if (last_percent < threshold && percent >= threshold) {
+                this.save();
+            } else {
+                this._updatePointsEstimate();
+            }
+        }
+    },
+
+    getPercentWatched: function() {
+
+        var duration = this.getDuration();
+        if (duration === 0) return 0;
+
+        return Math.min(1.0, this.getVideoPosition() / duration);
+    },
+
+    getDuration: function() {
+
+        if (!this.player || !this.player.duration) {
+            return 0;
+        }
+
+        var duration = this.player.duration() || this.get("duration") || 0;
+
+        return Math.max(0, duration);
+    },
+
+    setPlayerState: function(state) {
+
+        this._updateSecondsWatchedSinceSave();
+        this._updatePointsEstimate();
+
+        var oldState = this.get("player_state");
+
+        // set player_state attribute on the model, so we maintain current state
+        this.set({ player_state: state });
+
+        if (state === VideoPlayerState.ENDED) {
+            // save the points if the video has completed
+            this.save();
+        } else if (state === VideoPlayerState.PAUSED) {
+            // whenever video is paused, save points, unless only 1 sec watched
+            if (this.get("seconds_watched_since_save") > 1) {
+                this.save();
+            }
+        }
+
+    },
+
+    whenPointsIncrease: function(callback) {
+        callback = _.debounce(callback, 500);
+        this.bind("change:points", function() {
+            var old_points = this.previous("points");
+            var points = this.get("points");
+            if (points > old_points) {
+                callback(points);
+            }
+        });
+    }
 
 });
 
-function updateVideoStats(time, duration) {
-    if ((time * duration) === 0) {
-        return;
-    }
-    if (videoData.complete) {
-        return;
-    }
-    var video_time_elapsed = time - videoData.last_second_watched;
-    var current_wall_time = new Date();
-    var wall_time_elapsed = (current_wall_time - videoData.last_second_watched_walltime) / 1000;
-    videoData.last_second_watched_walltime = current_wall_time;
-    videoData.last_second_watched = time;
-    var new_seconds_watched = Math.min(video_time_elapsed, wall_time_elapsed);
-    if (new_seconds_watched <= 0) {
-        return;
-    }
-    videoData.seconds_watched_since_save += new_seconds_watched;
-    var points = Math.floor(100 * (videoData.total_seconds_watched / duration));
-    var force_save = false;
-    if (points > 95) {
-        points = 100;
-        force_save = true;
-    }
-    if (videoData.seconds_watched_since_save > 10 || force_save) {
-        videoData.total_seconds_watched += videoData.seconds_watched_since_save;
-        data = {
-            youtube_id: videoData.youtube_id,
-            total_seconds_watched: Math.floor(videoData.total_seconds_watched),
-            seconds_watched: Math.floor(videoData.seconds_watched_since_save),
-            points: points,
-        }
-        doRequest("/api/save_video_log", data).success(function(data) {
-            videoData.points = data.points;
-            updatePoints();
-        });
-        videoData.seconds_watched_since_save = 0;
-    }
-}
 
-// listen to callbacks from the FLV player to update stats
-window.VideoStats = {
-    cacheStats: updateVideoStats
-};
+window.VideoView = Backbone.View.extend({
+
+    _readyDeferred: null,
+
+    initialize: function() {
+
+        _.bindAll(this);
+
+        this._readyDeferred = new $.Deferred();
+
+        this.model = new VideoPlayerModel(this.options);
+
+        this.player = this.model.player = _V_(this.$("video").attr("id"));
+
+        this._beginIntervalUpdate();
+
+        this._initializeEventListeners();
+
+    },
+
+    _initializeEventListeners: function() {
+
+        var self = this;
+
+        this.model.whenPointsIncrease(this._update_points);
+
+        this.player
+            .addEvent("loadstart", function() {
+
+            })
+            .addEvent("loadedmetadata", function() {
+
+            })
+            .addEvent("loadeddata", function() {
+
+            })
+            .addEvent("loadedalldata", function() {
+
+            })
+            .addEvent("play", function() {
+                self.model.setPlayerState(VideoPlayerState.PLAYING);
+            })
+            .addEvent("pause", function() {
+                self.model.setPlayerState(VideoPlayerState.PAUSED);
+            })
+            // .addEvent("timeupdate", function() {
+
+            // })
+            .addEvent("ended", function() {
+                self.model.setPlayerState(VideoPlayerState.ENDED);
+            })
+            .addEvent("durationchange", function() {
+                self.model.set("duration", self.player.duration());
+            })
+            .addEvent("progress", function() {
+
+            })
+            .addEvent("resize", function() {
+
+            })
+            .addEvent("volumechange", function() {
+
+            })
+            .addEvent("error", function() {
+
+            })
+            .addEvent("fullscreenchange", function() {
+
+            });
+
+    },
+
+    _update_points: function(points) {
+        $(".points").text(points);
+        $(".points-container").toggle(points > 0);
+    },
+
+    setContainerSize: function(container_width, container_height) {
+
+        var container_ratio = container_width / container_height;
+
+        var width = container_width;
+        var height = container_height;
+
+        var ratio = this.model.get("width") / this.model.get("height");
+
+        if (container_ratio > ratio) {
+            width = container_height * ratio;
+        } else {
+            height = container_width / ratio;
+        }
+
+        this.player.width(width).height(height);
+
+    },
+
+    _beginIntervalUpdate: function() {
+        // Every 10 seconds, update the point estimate, and save if needed
+        if (this.intervalId) clearInterval(this.intervalId);
+        this.intervalId = setInterval(this.model.updateAndSaveIfNeeded, 10000);
+    },
+
+    /**
+     * Adds callback to be invoked when the player is fully loaded and ready.
+     */
+    whenReady: function(callback) {
+        this._readyDeferred.then(callback);
+    },
+
+    playerReady: function() {
+        this._readyDeferred.resolve();
+    },
+
+    play: function() {
+        if (this.model.player && this.model.player.playVideo) {
+            this.model.player.playVideo();
+        }
+    },
+
+    pause: function() {
+        if (this.model.player && this.model.player.pauseVideo) {
+            this.model.player.pauseVideo();
+        }
+    },
+
+    seekTo: function(seconds) {
+        this.model.player.seekTo(seconds);
+    },
+
+    close: function() {
+        if (this.intervalId) clearInterval(this.intervalId);
+        this.remove();
+    }
+
+});

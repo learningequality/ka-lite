@@ -17,9 +17,11 @@
         {% block headcss %}{% endblock headcss %}
         <link rel="shortcut icon" href="{{ MEDIA_URL }}images/favicon.ico">
         {% block jqueryjs %}
-        <script src="{{ MEDIA_URL }}js/jquery.js"></script>
+        <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.7.1.min.js"></script>
+        <script type="text/javascript" src="{{ MEDIA_URL }}js/underscore-min.js"></script>
+        <script type="text/javascript" src="{{ MEDIA_URL }}js/backbone-min.js"></script>
         {% endblock jqueryjs %}
-        <script src="{{ MEDIA_URL }}js/khan-lite.js"></script>
+        <script type="text/javascript" src="{{ MEDIA_URL }}js/khan-lite.js"></script>
         {% block headjs %}{% endblock headjs %}
         {% block basejs %}{% endblock basejs %}
         {% block extra_head %}{% endblock extra_head %}

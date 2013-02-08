@@ -42,78 +42,59 @@
 
 <div class="clear"></div>
 
-<div class="video-player">
-    <video id="id_{{ video.youtube_id }}" class="video-js vjs-default-skin" controls preload="auto" width="100%" height="600" poster="{{ CONTENT_URL }}{{ video.youtube_id }}.png" data-setup="{}">
+<div id="video-player">
+    <video id="video-element" class="video-js vjs-default-skin" controls preload="auto" width="100%" height="600" poster="{{ CONTENT_URL }}{{ video.youtube_id }}.png" data-setup="{}">
         <source src="{{ CONTENT_URL }}{{ video.youtube_id }}.mp4" type="video/mp4" />
         <track kind="captions" src="{{ CONTENT_URL }}{{ video.youtube_id }}.srt" srclang="en" label="On" />
     </video>
-    <img class="video-thumb" src="{{ CONTENT_URL }}{{ video.youtube_id }}.png" width="100%" style="position: absolute; left: -9999999px;">
+    <img class="video-thumb" src="{{ CONTENT_URL }}{{ video.youtube_id }}.png" style="position: absolute; left: -9999999px;">
 </div>
 
 {% endblock content %}
 
 {% block bodyjs %}
-<!-- <script src="{{ MEDIA_URL }}js/videoplayer.js"></script> -->
+<script src="{{ MEDIA_URL }}js/videoplayer.js"></script>
 
 <script>
 
-    var videoData = {
-        youtube_id: "{{ video.youtube_id }}",
-        points: 0,
-        total_seconds_watched: 0,
-        last_second_watched: 0,
-        last_second_watched_walltime: new Date(),
-        seconds_watched_since_save: 0
-    };
-
-    function constrain(ratio, container_width, container_height) {
-        var container_ratio = container_width / container_height;
-        var result = {
-            width: container_width,
-            height: container_height
-        };
-        if (container_ratio > ratio) {
-            result.width = container_height * ratio;
-        } else {
-            result.height = container_width / ratio;
-        }
-        return result;
-    }
-
-    $(function() {    
-
-        // $("video").bind("loadedmetadata", function() {
-        //     var original_width = $(this).prop("videoWidth");
-        //     var original_height = $(this).prop("videoHeight");
-        // });
-
-        $(".video-thumb").load(function() {
-
-            var original_width = $(".video-thumb").width();
-            var original_height = $(".video-thumb").height();
-            
-            var ratio = original_width / original_height;
-                    
-            $(window).resize(function() {
-                var available_width = $("article").width();
-                var available_height = $(window).height() * 0.9;
-                
-                var dimensions = constrain(ratio, available_width, available_height)
+$(function() {    
     
-                var player = _V_("id_" + videoData.youtube_id).width(dimensions.width).height(dimensions.height);
-                
-            });
-            
-            $(window).resize();
-            
-            // player
-            //     .addEvent("pause", function() {
-            //         console.log("pause");
-            //     })
-            //     .addEvent("play", function() {
-            //         console.log("play");
-            //     })
+    var initialize_video = _.once(function(width, height) {
+        
+        window.videoView = new VideoView({
+            youtube_id: "{{ video.youtube_id }}",
+            el: $("#video-player")
         });
+
+        var resize_video = _.throttle(function() {
+            var available_width = $("article").width();
+            var available_height = $(window).height() * 0.9;
+            videoView.setContainerSize(available_width, available_height);
+        }, 500);
+        
+        $(window).resize(resize_video);
+        
+        resize_video();
+        
     });
+
+    $("video").bind("loadedmetadata", function() {
+        
+        var width = $(this).prop("videoWidth");
+        var height = $(this).prop("videoHeight");
+        
+        initialize_video(width, height);
+        
+    });
+
+    $(".video-thumb").load(function() {
+
+        var width = $(".video-thumb").width();
+        var height = $(".video-thumb").height();
+        
+        initialize_video(width, height);
+                            
+    });
+});
 </script>
 {% endblock bodyjs %}
