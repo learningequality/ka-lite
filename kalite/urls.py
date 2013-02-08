@@ -21,6 +21,11 @@ urlpatterns += patterns('',
     }),
 )
 
+# Javascript translations
+urlpatterns += patterns('',
+    (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', {'packages': ('ka-lite.locale')}, 'i18n_javascript_catalog'),
+)
+
 if settings.CENTRAL_SERVER:
     
     from central.feeds import RssSiteNewsFeed, AtomSiteNewsFeed

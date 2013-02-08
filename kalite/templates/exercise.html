@@ -5,7 +5,7 @@
 {% block practice_active %}active{% endblock practice_active %}
 
 {% block headcss %}
-<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}khan-exercises/css/khan-exercise.css"></link>
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}js/khan-exercises/css/khan-exercise.css"></link>
 
 <style>
 .return-link {
@@ -20,7 +20,7 @@
 
 {% block headjs %}
 <script>
-    var urlBaseOverride = "{{ MEDIA_URL }}khan-exercises/";
+    var urlBaseOverride = "{{ MEDIA_URL }}js/khan-exercises/";
     // some dummy features on the Exercises object to make khan-exercises.js happy
     Exercises = {
         completeStack: {
@@ -31,8 +31,9 @@
     };
 </script>
 <script src="{{ MEDIA_URL }}js/underscore.js"></script>
-<script src="{{ MEDIA_URL }}khan-exercises/khan-exercise.js"></script>
-<script src="{{ MEDIA_URL }}khan-exercises/utils/jquery-ui.js"></script>
+<script type="text/javascript" src="/jsi18n/"></script>
+<script src="{{ MEDIA_URL }}js/khan-exercises/khan-exercise.js"></script>
+<script src="{{ MEDIA_URL }}js/khan-exercises/utils/jquery-ui.js"></script>
 <script>
     var exerciseData = {
         "description": "{{ exercise.description }}",
@@ -85,8 +86,8 @@
         <a class="return-link" href="{{ request.META.HTTP_REFERER }}">&#60; {% trans "Return" %}</a>
         {% endif %}
         <h2>
-            <span class="practice-exercise-topic-context">{% trans "Practicing" %}</span> {{ title }}
-            {% if exercise.description %}<br/><span class="practice-exercise-description">{{ exercise.description }}</span>{% endif %}
+            <span class="practice-exercise-topic-context">{% trans "Practicing" %}</span> {% trans title %}
+            {% if exercise.description %}<br/><span class="practice-exercise-description">{% trans exercise.description %}</span>{% endif %}
         </h2>
     </div>
     <div class="exercises-body">
@@ -118,7 +119,8 @@
                                         <div id="solutionarea" class="fancy-scrollbar"></div>
                                         <ul id="examples" style="display: none"></ul>
                                         <div class="answer-buttons">
-                                        <input type="button" class="simple-button green" id="check-answer-button" value="Check Answer"/>
+                                        {% trans "Check Answer" as check_btn %}
+                                        <input type="button" class="simple-button green" id="check-answer-button" value="{{ check_btn }}"/>
                                         {% trans "Correct! Next Question..." as next_btn %}
                                         <input type="button" class="simple-button green" id="next-question-button" style="display:none;" name="correctnextbutton" value="{{ next_btn }}"/>
                                         <span id="show-solution-button-container"></span>
@@ -146,15 +148,15 @@
                                                     {% if forloop.first %}
                                                     <li>
                                                         <div class="thumbnail">
-                                                            <a class="related-video" href="{{ video.path }}" title="{{ video.title }}" target="_blank">
+                                                            <a class="related-video" href="{{ video.path }}" title="{% trans video.title %}" target="_blank">
                                                                 <div class="thumb">
                                                                     <img class="thumbimage" src="{{ CONTENT_URL }}{{ video.youtube_id }}.png"/>
                                                                     <div class="thumbnail_label" style="margin-top: 68px; ">
                                                                         <div class="thumbnail_desc">
                                                                             <span class="progress-circle" data-youtube-id="{{ video.youtube_id }}"></span>
-                                                                            <span>{{ video.title }}</span>
+                                                                            <span>{% trans video.title %}</span>
                                                                         </div>
-                                                                        <div class="thumbnail_teaser" style="height: 0px; ">{{ video.description }}</div>
+                                                                        <div class="thumbnail_teaser" style="height: 0px; ">{% trans video.description %}</div>
                                                                     </div>
                                                                 </div>
                                                             </a>
@@ -162,10 +164,10 @@
                                                     </li>
                                                     {% else %}
                                                     <li>
-                                                        <a class="related-video related-video-inline" href="{{ video.path }}" title="{{ video.title }}" target="_blank">
+                                                        <a class="related-video related-video-inline" href="{{ video.path }}" title="{% trans video.title %}" target="_blank">
                                                             <span class="video-title">
                                                                 <span class="progress-circle" data-youtube-id="{{ video.youtube_id }}"></span>
-                                                                {{ video.title }}
+                                                                {% trans video.title %}
                                                             </span>
                                                         </a>
                                                     </li>
