@@ -536,7 +536,7 @@ var Khan = (function() {
 
                     var makeVisible = function() {
                         $("#scratchpad").show();
-                        $("#scratchpad-show").text(gettext("Hide scratchpad"));
+                        $("#scratchpad-show").text("Hide scratchpad");
 
                         // If pad has never been created or if it's empty
                         // because it was removed from the DOM, recreate a new
@@ -560,7 +560,7 @@ var Khan = (function() {
                     }
 
                     $("#scratchpad").hide();
-                    $("#scratchpad-show").text(gettext("Show scratchpad"));
+                    $("#scratchpad-show").text("Show scratchpad");
                 },
 
                 toggle: function() {
@@ -700,11 +700,7 @@ var Khan = (function() {
         },
 
         showSolutionButtonText: function() {
-            trans_1 = gettext("Show next step");
-            trans_2 = pgettext("An amount remaining; ex: there is something left", "left");
-            trans_3 = gettext("Show Solution");
-
-            return hintsUsed ? trans_1 + " (" + hints.length + " " + trans_2 + ")" : trans_3;
+            return hintsUsed ? "Show next step (" + hints.length + " left)" : "Show Solution";
         }
 
     };
@@ -889,14 +885,14 @@ var Khan = (function() {
         $("#check-answer-button")
             .removeAttr("disabled")
             .removeClass("buttonDisabled")
-            .val(gettext("Check Answer"));
+            .val("Check Answer");
     }
 
     function disableCheckAnswer() {
         $("#check-answer-button")
             .attr("disabled", "disabled")
             .addClass("buttonDisabled")
-            .val(gettext("Please wait..."));
+            .val("Please wait...");
     }
 
     function isExerciseLoaded(exerciseId) {
@@ -1851,8 +1847,8 @@ var Khan = (function() {
         hintsUsed = 0;
         attempts = 0;
         lastAction = (new Date).getTime();
-        trans_hint = gettext("I'd like a hint");
-        $("#hint").val(trans_hint);
+
+        $("#hint").val("I'd like a hint");
 
         $(Khan).trigger("newProblem");
 
@@ -2055,7 +2051,7 @@ var Khan = (function() {
             if (pass !== true) {
                 checkAnswerButton
                     .effect("shake", {times: 3, distance: 5}, 80)
-                    .val(gettext("Try Again"));
+                    .val("Try Again");
 
                 // Is this a message to be shown?
                 if (typeof pass === "string") {
@@ -2262,12 +2258,8 @@ var Khan = (function() {
 
                 hintsUsed += 1;
 
-                var trans_step = gettext("step");
-                var trans_extrahint = gettext("I'd like another hint");
-                var trans_left = pgettext("An amount remaining; ex: there is something left", "left");
-
-                var stepsLeft = hints.length + " " + trans_step + (hints.length === 1 ? "" : "s") + " " + trans_left;
-                $(this).val($(this).data("buttonText") || trans_extrahint + " (" + stepsLeft + ")");
+                var stepsLeft = hints.length + " step" + (hints.length === 1 ? "" : "s") + " left";
+                $(this).val($(this).data("buttonText") || "I'd like another hint (" + stepsLeft + ")");
 
                 var problem = $(hint).parent();
 
