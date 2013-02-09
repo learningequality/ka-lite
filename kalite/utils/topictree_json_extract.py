@@ -83,10 +83,10 @@ def decimals_for_bill():
 		node_info(arithmetic_prealgebra_node.get("children")[i], for_bill)
 	
 	#5th Level e.g. all children up until decimals 
-	for i in range(0, 5):
-		for_bill += recurse_json(arithmetic_prealgebra_node.get("children")[i])
+	# for i in range(0, 5):
+	for_bill += recurse_json(arithmetic_prealgebra_node.get("children")[0])
 
-	generate_po(for_bill, 'decimals.po')
+	generate_po(for_bill, 'demo.po')
 
 
 def sitewide_po():
