@@ -62,8 +62,10 @@ $(function() {
     var initialize_video = _.once(function(width, height) {
         
         window.videoView = new VideoView({
+            el: $("#video-player"),
             youtube_id: "{{ video.youtube_id }}",
-            el: $("#video-player")
+            width: width,
+            height: height
         });
 
         var resize_video = _.throttle(function() {
