@@ -1,0 +1,21 @@
+/*
+.vjs-default-skin .vjs-speed-button div { background: url('video-speed.png') no-repeat; width: 16px; height: 16px; margin: 0.2em auto 0; padding: 0; }
+*/
+.vjs-default-skin .vjs-speed-button div { background: none; line-height: 18px; margin-left: 7px;}
+.vjs-default-skin .vjs-speed-button { /*width: 3em;*/ text-align: center; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 1.1em; padding-left: 0px; height: 20px; }
+
+.vjs-default-skin .vjs-menu-button ul.vjs-menu-left {
+  position: absolute; width: 6em; bottom: 2em; max-height: 30em;
+  left: -4em; /* Width of menu - width of button / 2 */
+  overflow-x: hidden;
+}
+.vjs-default-skin .vjs-menu-button:focus ul.vjs-menu-left,
+.vjs-default-skin .vjs-menu-button:hover ul.vjs-menu-left { display: block; list-style: none; }
+
+.vjs-default-skin .vjs-menu-button ul.vjs-menu-right {
+  position: absolute; width: 6em; bottom: 2em; max-height: 30em;
+  left: 2em; /* Width of menu + left setting for vjs-menu-left */
+  overflow-x: hidden;
+}
+.vjs-default-skin .vjs-menu-button:focus ul.vjs-menu-right,
+.vjs-default-skin .vjs-menu-button:hover ul.vjs-menu-right { display: block; list-style: none; }
