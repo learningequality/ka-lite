@@ -28,7 +28,7 @@ if [ "$ifconfig_path" == ""  ]; then
 fi
 if [ $ifconfig_path ]; then
     echo "To access it from another connected computer, try the following address(es):"
-    for ip in `$ifconfig_path | grep 'inet' | grep -P '\d+\.\d+\.\d+\.\d+' | grep -v "127.0.0.1" | cut -d: -f2 | awk '{print $1}'`
+    for ip in `$ifconfig_path | grep 'inet' | grep -oE '^[^0-9]+[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | grep -v "127.0.0.1"`
     do
         echo http://$ip:8008/
     done
