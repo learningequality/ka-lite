@@ -212,6 +212,7 @@
     font-size: 13px;
     text-align: justify;
 }
+
 .subscribe-form{
     width: 170px;
     margin-left: 10px;
@@ -226,7 +227,7 @@
     width: 130px;
 }
 
-.subscribe-form input[type=text]{
+.subscribe-form input[type=email]{
     border: 1px;
     border-radius: 5px;
     border-color: #bbb;         /* Color: medium-light Grey */
@@ -525,10 +526,10 @@ article {
         <div class="cent-s-by-s subscribe-text">
             We’re constantly updating KA Lite and we’d love to let you know more when there are new developments.
         </div>
-        <div class="cent-s-by-s subscribe-form">
-            <form action="{% url add_subscription %}" method="POST">
-                <input type="text" name="email" placeholder="email address"><br/>
-                <input type="submit" value="Subscribe">
+        <div id="mc_embed_signup" class="cent-s-by-s subscribe-form">
+            <form action="http://adhocsync.us6.list-manage.com/subscribe/post?u=023b9af05922dfc7f47a4fffb&amp;id=97a379de16" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+                <input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
+                <input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button">
             </form>
         </div>
     </div>
