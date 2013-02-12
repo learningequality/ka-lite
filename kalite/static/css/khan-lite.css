@@ -54,7 +54,9 @@ footer.short .inner {
 }
 
 #logo-image-small img {
-    height: 49px;
+    height: 33px;
+    margin-top: 10px;
+    margin-left: 5px;
 }
 
 #nav-and-search {
