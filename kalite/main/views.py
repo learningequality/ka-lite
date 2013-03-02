@@ -203,6 +203,25 @@ def coach_reports(request, facility):
         } for user in users]
     return context
 
+@require_admin
+@facility_required
+@render_to("current_users.html")
+def user_list(request,facility):
+    groups = FacilityGroup.objects.filter(facility=facility)
+    user_list = get_object_or_404(FacilityGroup, pk=group).defer("facility","is_teacher","notes","password").facilityuser_set.order_by("first_name", "last_name")
+    paginator = Paginator(user_list, 25)
+    group = request.GET.get("group", "")
+    page = request.GET.get("page","")
+    try:
+        users = paginator.page(page)
+    except PageNotAnInteger:
+        users = paginator.page(1)
+    except EmptyPage:
+        users = paginator.page(paginator.num_pages)
+    context["users"] = users
+    context["groups"] = groups
+    return context
+
 def distributed_404_handler(request):
     return HttpResponseNotFound(render_to_string("404_distributed.html", {}, context_instance=RequestContext(request)))
 
