@@ -479,6 +479,30 @@ article {
     list-style-type: none;
 }
 
+.ka-on-social {
+    float: left;
+}
+
+.ka-on-social-container {
+    float: left;
+    margin-left: 70px;
+    margin-top: 2px;
+}
+
+.follow-us-text {
+    font-size: 16px;
+    margin-top: 6px;
+}
+
+.ka-on-twitter {
+    margin-top: 2px;
+    margin-left: -3px;
+}
+
+.ka-on-facebook {
+    margin-left: 5px;
+}
+
 </style>
 {% endblock headcss %}
 
@@ -632,10 +656,20 @@ article {
 
     <div id="press-col">
     </div>
+
+
 </div>
 {% endif %}
 
 {% endblock content %}
+
+{% block footerleft %}
+    <span class="ka-on-social-container">
+        <span class="ka-on-social follow-us-text">Follow us!</span> 
+        <a class="ka-on-social ka-on-facebook" href="https://www.facebook.com/kaliteproject"><img src="{{ STATIC_URL }}/images/ka-on-facebook-button.png"/></a>
+        <a class="ka-on-social ka-on-twitter" href="https://twitter.com/ka_lite"><img class="ka-on-twitter" src="{{ STATIC_URL }}/images/ka-on-twitter-button.png"/></a>
+    </span>
+{% endblock footerleft %}
 
 {% block bodyjs %}
 <script type="text/javascript" src="//assets.pinterest.com/js/pinit.js"></script>
