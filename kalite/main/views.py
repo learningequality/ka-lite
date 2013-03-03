@@ -208,10 +208,10 @@ def coach_reports(request, facility):
 @render_to("current_users.html")
 def user_list(request,facility):
     groups = FacilityGroup.objects.filter(facility=facility)
-    user_list = get_object_or_404(FacilityGroup, pk=group).defer("facility","is_teacher","notes","password").facilityuser_set.order_by("first_name", "last_name")
-    paginator = Paginator(user_list, 25)
     group = request.GET.get("group", "")
     page = request.GET.get("page","")
+    user_list = get_object_or_404(FacilityGroup, pk=group).defer("facility","is_teacher","notes","password").facilityuser_set.order_by("first_name", "last_name")
+    paginator = Paginator(user_list, 25)
     try:
         users = paginator.page(page)
     except PageNotAnInteger:
