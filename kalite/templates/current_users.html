@@ -5,7 +5,7 @@
 {% block currentusers_active %}active{% endblock currentusers_active %}
 
 {% block headcss %}
-<!-- <link rel='stylesheet' type='text/css' href='{{ MEDIA_URL }}css/current_users.css'> -->
+<link rel='stylesheet' type='text/css' href='{{ MEDIA_URL }}css/current_users.css'>
 {% endblock headcss %}
 
 {% block title %}Current Users{% endblock title %}
@@ -34,7 +34,7 @@
     <div class="pagination">
         <span class="step-links">
             {% if users.has_previous %}
-                <a href="?page={{ users.previous_page_number }}">{% trans "previous" %}</a>
+                <a href="{{ pageurls.prev_page }}">{% trans "previous" %}</a>
             {% endif %}
 
             <span class="current">
@@ -42,14 +42,13 @@
             </span>
 
             {% if users.has_next %}
-                <a href="?page={{ users.next_page_number }}">{% trans "next" %}</a>
+                <a href="{{ pageurls.next_page }}">{% trans "next" %}</a>
             {% endif %}
         </span>
     </div>
 
     {% if users %}
         <div style="clear: both;"></div>
-        <div id="displaygrid">
             <div style="clear: both;"></div>
             <div class="users">
                 <table>
@@ -95,7 +94,6 @@
                     </tbody>
                 </table>
                 <div style="clear: both;"></div>
-            </div>
         </div>
     {% else %}
         <div style="clear: both;"></div>
