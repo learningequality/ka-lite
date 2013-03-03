@@ -1,0 +1,130 @@
+{% extends 'base_distributed.html' %}
+
+{% load i18n %}
+
+{% block currentusers_active %}active{% endblock currentusers_active %}
+
+{% block headcss %}
+<!-- <link rel='stylesheet' type='text/css' href='{{ MEDIA_URL }}css/current_users.css'> -->
+{% endblock headcss %}
+
+{% block title %}Current Users{% endblock title %}
+
+{% block content %}
+<div id="content">
+    <div class="facility"><h2>{% blocktrans %}User List for {{ facility }}{% endblocktrans %} (<a href="?facility=select">{% trans "Change Facility" %}</a>)</h2></div>
+    <div id="selection-bar">
+    {% if groups %}
+        <div class="selection">
+            <div class="subtitle">{% trans "Select Group" %}</div><select id="group">
+            <option {% if not request.GET.group %}selected{% endif %}>----</option>
+                {% for group in groups %}
+                    <option value="{{ group.id }}" {% if request.GET.group == group.id %}selected{% endif %}>{{ group }}</option>
+                {% endfor %}
+            <option {% if request.GET.group == "Ungrouped" %}selected{% endif %}>Ungrouped</option>
+            </select>
+        </div>
+    {% else %}
+        <div class="selection">
+            <div class="subtitle">{% trans "No Groups at this Facility" %}</div>
+        </div>
+    {% endif %}
+    </div>
+
+    <div class="pagination">
+        <span class="step-links">
+            {% if users.has_previous %}
+                <a href="?page={{ users.previous_page_number }}">{% trans "previous" %}</a>
+            {% endif %}
+
+            <span class="current">
+                {% trans "Page" %} {{ users.number }} of {{ users.paginator.num_pages }}.
+            </span>
+
+            {% if users.has_next %}
+                <a href="?page={{ users.next_page_number }}">{% trans "next" %}</a>
+            {% endif %}
+        </span>
+    </div>
+
+    {% if users %}
+        <div style="clear: both;"></div>
+        <div id="displaygrid">
+            <div style="clear: both;"></div>
+            <div class="users">
+                <table>
+                    <tbody>
+                        <tr>
+                            <th class="headrowuser">
+                                {% trans "First Name" %}
+                            </th>
+                            <th class="headrowuser">
+                                {% trans "Last Name" %}
+                            </th>
+                            <th class="headrowuser">
+                                {% trans "Username" %}
+                            </th>
+                            <th class="headrowuser">
+                                {% trans "Group" %}
+                            </th>
+                        </tr>
+                        {% for user in users %}
+                            <tr>
+                                <td>
+                                    <span title="{{ user.first_name }}">
+                                        {{ user.first_name }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span title="{{ user.last_name }}">
+                                        {{ user.last_name }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span title="{{ user.username }}">
+                                        {{ user.username }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span title="{{ user.group }}">
+                                        {{ user.group }}
+                                    </span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div style="clear: both;"></div>
+            </div>
+        </div>
+    {% else %}
+        <div style="clear: both;"></div>
+        <p><div class="subtitle">{% trans "Please select a group above." %}</div></p>
+    {% endif %}
+</div> 
+
+<script>
+
+function setGetParam(name, val) {
+    var vars = {};
+    var parts = window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m, key, value) {
+        vars[key] = value;
+    });
+    if (val != "" && val != "----") {
+        vars[name] = val;
+    } else {
+        delete vars[name];
+    }
+    url = "?" + $.param(vars);
+    window.location.href = url;    
+}
+
+$(function() {
+
+    $("#group").change(function(){
+       setGetParam("group", $("#group option:selected").val()); 
+    });
+    
+});
+</script>
+{% endblock content %}

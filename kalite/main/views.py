@@ -13,14 +13,15 @@ from main import topicdata
 from django.contrib import messages
 from securesync.views import require_admin, facility_required
 from config.models import Settings
-from securesync.models import Facility, FacilityGroup
-from models import FacilityUser, VideoLog, ExerciseLog, VideoFile
+from securesync.models import Facility, FacilityUser,FacilityGroup
+from models import VideoLog, ExerciseLog, VideoFile
 from django.utils.safestring import mark_safe
 from config.models import Settings
 from securesync.api_client import SyncClient
 from django.contrib import messages
 from utils.jobs import force_job
 from django.utils.translation import ugettext as _
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
@@ -210,16 +211,25 @@ def user_list(request,facility):
     groups = FacilityGroup.objects.filter(facility=facility)
     group = request.GET.get("group", "")
     page = request.GET.get("page","")
-    user_list = get_object_or_404(FacilityGroup, pk=group).defer("facility","is_teacher","notes","password").facilityuser_set.order_by("first_name", "last_name")
-    paginator = Paginator(user_list, 25)
-    try:
-        users = paginator.page(page)
-    except PageNotAnInteger:
-        users = paginator.page(1)
-    except EmptyPage:
-        users = paginator.page(paginator.num_pages)
-    context["users"] = users
-    context["groups"] = groups
+    if group:
+        if group == "Ungrouped":
+            user_list = FacilityUser.objects.filter(facility=facility,group__isnull=True)
+        else:
+            user_list = get_object_or_404(FacilityGroup, pk=group).facilityuser_set.order_by("first_name", "last_name")
+        paginator = Paginator(user_list, 25)
+        try:
+            users = paginator.page(page)
+        except PageNotAnInteger:
+            users = paginator.page(1)
+        except EmptyPage:
+            users = paginator.page(paginator.num_pages)
+    else:
+        group = ''
+        users = []
+    context = {
+        "users": users,
+        "groups": groups,
+    }
     return context
 
 def distributed_404_handler(request):
