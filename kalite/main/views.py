@@ -22,7 +22,6 @@ from django.contrib import messages
 from utils.jobs import force_job
 from django.utils.translation import ugettext as _
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from urllib import urlencode
 
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
@@ -221,7 +220,7 @@ def user_list(request,facility):
             user_list = FacilityUser.objects.filter(facility=facility,group__isnull=True)
         else:
             user_list = get_object_or_404(FacilityGroup, pk=group).facilityuser_set.order_by("first_name", "last_name")
-        paginator = Paginator(user_list, 5)
+        paginator = Paginator(user_list, 25)
         try:
             users = paginator.page(page)
         except PageNotAnInteger:
@@ -232,14 +231,18 @@ def user_list(request,facility):
         group = ''
         users = []
     if users:
-        if users.has_previous:
+        if users.has_previous():
             prevGETParam = GETParam.copy()
-            prevGETParam.update({"page": users.previous_page_number()})
+            prevGETParam["page"] = users.previous_page_number()
             previous_page_url = "?" + prevGETParam.urlencode()
-        if users.has_next:
+        else:
+            previous_page_url = ""
+        if users.has_next():
             nextGETParam = GETParam.copy()
-            nextGETParam.update({"page": users.next_page_number()})
+            nextGETParam["page"] = users.next_page_number()
             next_page_url = "?" + nextGETParam.urlencode()
+        else:
+            next_page_url = ""
     context = {
         "facility": facility,
         "users": users,

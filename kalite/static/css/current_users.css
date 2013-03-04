@@ -1,6 +1,5 @@
 
 .selection {
-    float: left;
     padding: 0 10px 10px 0;
     
 }
@@ -43,3 +42,11 @@ th.headrowuser {
     font-weight: bold;
 }
 
+span.step-links {
+    font-weight: bold;
+}
+
+span.step-links > a {
+    background-color: #EEEEEE;
+    border: 1px solid grey;
+}
