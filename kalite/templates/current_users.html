@@ -162,7 +162,7 @@ $(function() {
             if(!confirm("{% trans 'You are about to move selected users to another group.' %}")) {
                 return;
             }
-            doRequest("/api/move_to_group", {users: users, group: group}).success(location.reload());
+            doRequest("/api/move_to_group", {users: users, group: group}).success(function() {location.reload()});
         } else if (users.length==0) {
             alert("{% trans 'Please select users first' %}");
         } else {
@@ -179,7 +179,7 @@ $(function() {
             if(!confirm("{% trans 'You are about to remove selected users from their current group.' %}")) {
                 return;
             }
-            doRequest("/api/remove_from_group", {users: users}).success(location.reload());
+            doRequest("/api/remove_from_group", {users: users}).success(function() {location.reload()});
         } else {
             alert("{% trans 'Please select users first' %}");
         }
@@ -194,7 +194,7 @@ $(function() {
             if(!confirm("{% trans 'You are about to delete selected users, they will be permanently deleted.' %}")) {
                 return;
             }
-            doRequest("/api/delete_users", {users: users}).success(location.reload());
+            doRequest("/api/delete_users", {users: users}).success(function() {location.reload()});
         } else {
             alert("{% trans 'Please select users first' %}");
         }
