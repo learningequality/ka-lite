@@ -10,6 +10,7 @@ from main import topicdata
 from utils.jobs import force_job, job_status
 from utils.videos import delete_downloaded_files
 from models import FacilityUser, VideoLog, ExerciseLog, VideoFile
+from securesync.models import FacilityGroup
 from config.models import Settings
 from utils.decorators import require_admin
 from utils.general import break_into_chunks
@@ -232,6 +233,30 @@ def cancel_downloads(request):
     force_job("videodownload", stop=True)
     force_job("subtitledownload", stop=True)
 
+    return JsonResponse({}) 
+    
+    
+@require_admin
+def remove_from_group(request):
+    users = simplejson.loads(request.raw_post_data or "{}").get("users", "")
+    users_to_remove = FacilityUser.objects.filter(username__in=users)
+    users_to_remove.update(group=None)
+    return JsonResponse({})
+    
+@require_admin
+def move_to_group(request):
+    users = simplejson.loads(request.raw_post_data or "{}").get("users", [])
+    group = simplejson.loads(request.raw_post_data or "{}").get("group", "")
+    group_update = FacilityGroup.objects.get(pk=group)
+    users_to_move = FacilityUser.objects.filter(username__in=users)
+    users_to_move.update(group=group_update)
+    return JsonResponse({})
+    
+@require_admin
+def delete_users(request):
+    users = simplejson.loads(request.raw_post_data or "{}").get("users", [])
+    users_to_delete = FacilityUser.objects.filter(username__in=users)
+    users_to_delete.delete()
     return JsonResponse({})
 
 def convert_topic_tree(node, level=0, statusdict=None):

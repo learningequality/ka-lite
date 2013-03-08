@@ -7,7 +7,7 @@
 
 To read more about the motivation behind this project, read ["Introducing KA Lite, an offline version of Khan Academy"](http://jamiealexandre.com/blog/2012/12/12/ka-lite-offline-khan-academy/).
 
-To install KA Lite on Linux, OSX, or Windows, view the [installation guide](https://sites.google.com/site/kalitewiki/deployment).
+To install KA Lite on Linux, OSX, or Windows, view the [installation guide](https://sites.google.com/site/kalitewiki/installation).
 
 Bug reports should be filed on the [GitHub issue tracker](https://github.com/jamalex/ka-lite/issues).
 

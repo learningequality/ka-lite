@@ -1,0 +1,52 @@
+
+.selection {
+    padding: 0 10px 10px 0;
+    
+}
+
+.users table {
+    width: 100%;
+}
+
+th, td {
+    border: 1px solid black;
+    padding: 2px;
+}
+
+.users th {
+    text-align: left;
+    
+}
+
+td.status {
+    height: 27px;
+    background-color: #EEE;
+    /*width: 80px;*/
+}
+
+th.username {
+    height: 27px;
+    border: 1px solid black;
+    /*border-right: none;*/
+    padding-left: 5px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+th.headrow {
+    font-weight: bold;
+    background-color: white;
+}
+
+th.headrowuser {
+    font-weight: bold;
+}
+
+span.step-links {
+    font-weight: bold;
+}
+
+span.step-links > a {
+    background-color: #EEEEEE;
+    border: 1px solid grey;
+}

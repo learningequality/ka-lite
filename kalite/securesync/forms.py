@@ -1,6 +1,7 @@
 from django import forms
 from models import RegisteredDevicePublicKey, Zone, FacilityUser, Facility, FacilityGroup
 from django.utils.translation import ugettext_lazy as _
+import re
 
 
 class RegisteredDevicePublicKeyForm(forms.ModelForm):
@@ -67,6 +68,15 @@ class FacilityGroupForm(forms.ModelForm):
     class Meta:
         model = FacilityGroup
         fields = ("name",)
+        
+    def clean(self):
+        name = self.cleaned_data.get("name")
+        ungrouped = re.compile("[uU]+ngroup")
+        
+        if ungrouped.match(name):
+            raise forms.ValidationError(_("This group name is reserved. Please choose one without 'ungroup' in the title."))
+
+        return self.cleaned_data
     
 
 class LoginForm(forms.ModelForm):

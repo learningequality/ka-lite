@@ -23,4 +23,7 @@ urlpatterns = patterns('main.api_views',
     url(r'^get_subtitle_download_list$', 'get_subtitle_download_list'),
     url(r'^cancel_downloads$', 'cancel_downloads'),
     url(r'^delete_videos$', 'delete_videos'),
+    url(r'^remove_from_group$', 'remove_from_group'),
+    url(r'^move_to_group$', 'move_to_group'),
+    url(r'^delete_users$', 'delete_users'),
 )

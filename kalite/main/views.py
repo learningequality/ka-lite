@@ -13,14 +13,15 @@ from main import topicdata
 from django.contrib import messages
 from securesync.views import require_admin, facility_required
 from config.models import Settings
-from securesync.models import Facility, FacilityGroup
-from models import FacilityUser, VideoLog, ExerciseLog, VideoFile
+from securesync.models import Facility, FacilityUser,FacilityGroup
+from models import VideoLog, ExerciseLog, VideoFile
 from django.utils.safestring import mark_safe
 from config.models import Settings
 from securesync.api_client import SyncClient
 from django.contrib import messages
 from utils.jobs import force_job
 from django.utils.translation import ugettext as _
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
@@ -76,6 +77,9 @@ def check_setup_status(handler):
                 messages.warning(request, mark_safe("Please <a href='%s'>create a facility</a> now. Users will not be able to sign up for accounts until you have made a facility." % reverse("add_facility")))
         return handler(request, *args, **kwargs)
     return wrapper_fn
+    
+    
+
 
 @render_to("topic.html")
 def topic_handler(request, topic):
@@ -201,6 +205,51 @@ def coach_reports(request, facility):
             "username": user.username,
             "exercise_logs": [get_object_or_None(ExerciseLog, user=user, exercise_id=ex["name"]) for ex in exercises],
         } for user in users]
+    return context
+
+@require_admin
+@facility_required
+@render_to("current_users.html")
+def user_list(request,facility):
+    groups = FacilityGroup.objects.filter(facility=facility)
+    group = request.GET.get("group", "")
+    page = request.GET.get("page","")
+    GETParam = request.GET.copy()
+    if group:
+        if group == "Ungrouped":
+            user_list = FacilityUser.objects.filter(facility=facility,group__isnull=True)
+        else:
+            user_list = get_object_or_404(FacilityGroup, pk=group).facilityuser_set.order_by("first_name", "last_name")
+        paginator = Paginator(user_list, 25)
+        try:
+            users = paginator.page(page)
+        except PageNotAnInteger:
+            users = paginator.page(1)
+        except EmptyPage:
+            users = paginator.page(paginator.num_pages)
+    else:
+        group = ''
+        users = []
+    if users:
+        if users.has_previous():
+            prevGETParam = GETParam.copy()
+            prevGETParam["page"] = users.previous_page_number()
+            previous_page_url = "?" + prevGETParam.urlencode()
+        else:
+            previous_page_url = ""
+        if users.has_next():
+            nextGETParam = GETParam.copy()
+            nextGETParam["page"] = users.next_page_number()
+            next_page_url = "?" + nextGETParam.urlencode()
+        else:
+            next_page_url = ""
+    context = {
+        "facility": facility,
+        "users": users,
+        "groups": groups,
+    }
+    if users:
+        context["pageurls"] = {"next_page": next_page_url, "prev_page": previous_page_url}
     return context
 
 def distributed_404_handler(request):

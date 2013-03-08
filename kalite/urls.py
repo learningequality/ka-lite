@@ -60,6 +60,7 @@ else:
         url(r'^coachreports/$', 'coach_reports', {}, 'coach_reports'),
         url(r'^$', 'homepage', {}, 'homepage'),
         url(r'^update/$', 'update', {}, 'update'),
+        url(r'^userlist/$', 'user_list', {}, 'user_list'),
         url(r'^api/', include('main.api_urls')),
         
         # the following pattern is a catch-all, so keep it last:
