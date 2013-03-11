@@ -47,43 +47,39 @@ def map_dubbed_ids(path_to_xlsx, sheet_name):
 	worksheet = spreadsheet.sheet_by_name(sheet_name)
 	ncolumns = worksheet.ncols - 1
 	nrows = worksheet.nrows - 1
-	categories = worksheet.row_values(5)
 	language_column_start = 11
-	data_row_start = 5
+	language_row = 5
+	row_data_begins = 6
+	english_mapping_col = 9
+	all_categories = worksheet.row_values(5)
+	all_categories_string = " ".join(all_categories)
+	print "Path to Spreadsheet: %s\nSheet Name: %s\n# Columns: %d\n# Rows: %d\nAll Categories: %s" % (path_to_xlsx, sheet_name, ncolumns, nrows, all_categories_string)
 
 	# List of Languages
 	languages = [] 
 	for i in range(language_column_start, ncolumns):
-		languages.append(worksheet.cell_value(data_row_start, i))
+		languages.append(worksheet.cell_value(language_row, i))
+	# print "All languages: %s\nLength: %d" % ((", ".join(languages)), len(languages))
 	
 	# List of language codes
 	coded_categories = []
-	for i in range(0, len(languages)-1):
-		coded_categories.append(language_codes[languages[i]])
+	for lang in languages:
+		coded_categories.append(language_codes[lang])
+	# print "Language codes: %s\nLength: %d" % ((", ".join(coded_categories)), len(coded_categories))
 	
 	# Create parent level by indexing through all languages
 	final_map = {}
 	for code in coded_categories:
 		final_map[code] = {}
+	# print "Final map keys length %s..." % (len(final_map.keys()))
 
 	# Create second level
+	n = 0
 	for key, value in final_map.iteritems():
-		for i in range(6, nrows):
-			# value[worksheet.cell_value(i, 9)] = {
-			# 	# "serial": worksheet.cell_value(i, 0),
-			# 	# "date_added": worksheet.cell_value(i, 1),
-			# 	# "date_created": worksheet.cell_value(i, 2),
-			# 	# "english_title": worksheet.cell_value(i, 3),
-			# 	# "english_subject": worksheet.cell_value(i, 4),
-			# 	# "english_topic": worksheet.cell_value(i, 5),
-			# 	# "english_subtopic": worksheet.cell_value(i, 6),
-			# 	# "english_tutorial": worksheet.cell_value(i, 7),
-			# 	# "titled_id": worksheet.cell_value(i, 8),
-			# 	# "english_youtubeids": worksheet.cell_value(i, 9),
-			# 	# "professsionally_subtitled": worksheet.cell_value(i, 10),
-			# 	# "dubbed_youtubeid": worksheet.cell_value(i, categories.index(key))
-			# 	"english_title": worksheet.cell_value(i, 3),
-			# 	"dubbed_youtubeid": worksheet.cell_value(i, categories.index(key))
-			# }
-			value[worksheet.cell_value(i, coded_categories.index(key)+11)] = worksheet.cell_value(i, 9)
+		# print "Extracting %d. %s..." % (n, key)
+		n += 1
+		for i in range(row_data_begins, nrows):
+			value[worksheet.cell_value(i, coded_categories.index(key)+language_column_start)] = worksheet.cell_value(i, english_mapping_col)
+	
+	print "\nSuccessfully extracted language mapping data from spreadsheet.\n" 
 	return final_map
