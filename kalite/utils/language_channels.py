@@ -5,9 +5,34 @@ This script returns
 import optparse
 import logging
 
+def update_all_language_channels_json():
+	"""
+	References a built in YouTube KA Language Channel Dictionary to write
+	new JSON files for each major YouTube API request. 
+	"""
 
+def update_language_channel_json(channel_id):
+	"""
+	Takes a YouTube Channel ID and rewrites the related JSON files according to API responses. 
+	"""
+
+def create_inclusive_csvs(filename):
+	"""
+	Creates a set of CSV files summarizing video stats for every KA Language Channel
+	"""
+
+def create_specific_csvs(filename, channel_ids):
+	"""
+	Creates a set of CSV files summarizing video stats for specific Language Channels
+	"""
+
+def video_ids_set(channel_ids=None):
+	"""
+	Returns a set of all video IDs in the specified language channels. Returns all video IDs if left empty.
+	"""
 
 def setup_logging():
+	"""Sets log messages to display in the console"""
 	logging.basicConfig(level=logging.INFO,
 		format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
@@ -32,7 +57,7 @@ def main():
 
 	options, args = parser.parse_args()
 
-	if options.quiet:
+	if not options.quiet:
 		setup_logging() 
 
 	if options.update:
