@@ -160,8 +160,8 @@ def videos_in_playlists(user_id):
 
 def create_dubbed_csv(spreadsheet_json):
 	# CSV stuff
-	f = codecs.open("dubbed_videos_test.csv", "wt")
-	s = codecs.open("summary_statistics_test.csv", "wt")
+	f = codecs.open("dubbed_videos.csv", "wt")
+	s = codecs.open("summary_statistics.csv", "wt")
 	dubbed_csv = csv.writer(f)
 	summary_statistics = csv.writer(s)
 	dubbed_csv.writerow(["Channel Name", "Language Code", "YouTube ID", "URL", "Playlist ID", "Playlist Title", "English Video ID", "Average Rating", "Number of Ratings", "Favorite Count", "View Count"])
