@@ -30,7 +30,6 @@
 {% endblock headjs %}
 {% block headcss %}
 <style type="text/css">
-/**** Landing Page Specific Style by Pratik Pramanik ****/
 
 /*** Layout ***/
 .row{
@@ -52,10 +51,6 @@
 /*** Layout END ***/
 
 /** Content Section Containers **/
-/* Relevant to screenshot Section*/
-#screenshot_sec{
-    /*hi*/
-}
 
 /* Relevant to Motivation Section */
 #motivation_sec{
@@ -178,6 +173,7 @@
     /*Size*/
     padding-left: 10px;
     padding-right: 10px;
+    min-width: 600px;
     /*width: 60%;*/
     
     /*Layout*//*
@@ -207,7 +203,7 @@
     margin-left: 3px;
 }
 .subscribe-text{
-    width: 230px;
+    width: 195px;
     margin-top: 0px;
     padding: 0 5px 0 8px;
     line-height: 21px;
@@ -374,7 +370,6 @@ article {
     display: block;
 }
 
-/* Jamie added */
 
 #screenshot {
     width: 100%;
@@ -387,6 +382,7 @@ article {
 
 #screenshot_sec {
     height: 275px;
+    width: 420px;
     border: 1px solid #d5deb9;
     border-top-width: 4px;
     border-bottom-width: 4px;
@@ -503,14 +499,17 @@ article {
     margin-left: 5px;
 }
 
+.carousel-class {
+    overflow: hidden;
+    height: 100%;
+}
+
 </style>
 {% endblock headcss %}
 
 {% block content %}
           
-<!--This part of the Landing created by Pratik Bose Pramanik. Contact him if things look bad. -->
-
-<div id="inner-content"> <!-- start content probably don't need this -->
+<div id="inner-content">
 
 <!--First Content Row-->
 <div class="screenshotrow">
@@ -550,7 +549,7 @@ article {
         <div class="cent-s-by-s subscribe-title"><h1>SUBSCRIBE<br/></h1><h2>FOR UPDATES</h2></div>
         <div class="exclamation cent-s-by-s greenword">!</div>
         <div class="cent-s-by-s subscribe-text">
-            We’re constantly updating KA Lite and we’d love to let you know more when there are new developments.
+            We’re constantly updating KA Lite, and would love to let you know about new developments.
         </div>
         <div id="mc_embed_signup" class="cent-s-by-s subscribe-form">
             <form action="http://adhocsync.us6.list-manage.com/subscribe/post?u=023b9af05922dfc7f47a4fffb&amp;id=97a379de16" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
@@ -581,7 +580,7 @@ article {
             <script src="//platform.linkedin.com/in.js" type="text/javascript"> </script> <script type="IN/Share" data-url="kalite.adhocsync.com" data-counter="top"></script>
 
             <!-- Pinterest -->
-            <a data-pin-config="above" href="//pinterest.com/pin/create/button/?url=http%3A%2F%2Fkalite.adhocsync.com%2F&media=http%3A%2F%2Fkalite.adhocsync.com%2Fstatic%2Fimages%2Flanding-page%2Fcoach-reports-cropped.png&description=KA%20Lite%20is%20an%20offline%20version%20of%20Khan%20Academy%20that%20runs%20on%20almost%20anything!%20For%20the%2065%25%20of%20the%20world%20with%20no%20internet%20access!" data-pin-do="buttonPin" ><img src="//assets.pinterest.com/images/pidgets/pin_it_button.png" /></a>
+            <!--<a data-pin-config="above" href="//pinterest.com/pin/create/button/?url=http%3A%2F%2Fkalite.adhocsync.com%2F&media=http%3A%2F%2Fkalite.adhocsync.com%2Fstatic%2Fimages%2Flanding-page%2Fcoach-reports-cropped.png&description=KA%20Lite%20is%20an%20offline%20version%20of%20Khan%20Academy%20that%20runs%20on%20almost%20anything!%20For%20the%2065%25%20of%20the%20world%20with%20no%20internet%20access!" data-pin-do="buttonPin" ><img src="//assets.pinterest.com/images/pidgets/pin_it_button.png" /></a>-->
             
         </div>
     </div>
@@ -599,7 +598,7 @@ article {
                 Ready to get started? 
             </div>
             <div class="button-section">
-                <a href="{% url get_started %}">
+                <a href="https://sites.google.com/site/kalitewiki/installation">
                     <button id="get-started-button">
                         Install now!
                     </button>
