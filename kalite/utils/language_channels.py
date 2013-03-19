@@ -24,12 +24,9 @@ def update_all_language_channels_json():
 
 
 def update_language_channel_json(channel_id):
-	"""
-	Takes a YouTube Channel ID and rewrites the related JSON files according to API responses. 
-	"""
+	"""Takes a YouTube Channel ID and rewrites the related JSON files according to API responses."""
 	uploads_json = channel_uploads(channel_id)
 	playlists_json, playlist_ids_list = playlist_ids(channel_id)
-	# pdb.set_trace()
 	playlist_videos_json = {}
 	for pl_id in playlist_ids_list:
 		playlist_videos_json[pl_id] = playlist_videos(pl_id)
@@ -122,20 +119,41 @@ def make_request(url):
 	return response
 
 def create_inclusive_csv(filename):
-	"""
-	Creates a CSV file summarizing video stats for every KA Language Channel.
-	"""
+	"""Creates a CSV file summarizing video stats for every KA Language Channel."""
 
 def create_specific_csv(filename, channel_ids):
-	"""
-	Creates a CSV file summarizing video stats for specific Language Channels.
-	"""
+	"""Creates a CSV file summarizing video stats for specific Language Channels."""
 
 def video_ids_set(channel_ids=None):
 	"""
 	Returns a set of all video IDs in the specified language channels. 
 	Returns all video IDs if left empty.
 	"""
+	video_ids = set()       
+	if channel_ids:
+		logging.info("Set of video IDs for %s" % ", ".join(channel_ids))
+		for channel_id in channel_ids:
+			video_ids.update(extract_ids(channel_id))
+	else:
+		logging.info("Set of all language channel Video IDs")
+		channel_list = language_channels_dictionary().keys()
+		for channel_id in channel_list:
+			video_ids.update(extract_ids(channel_id))
+	return video_ids
+
+def extract_ids(channel_id):
+	"""Returns a set of video IDs that have been uploaded or included in playlists of the channel"""
+	video_ids = set()
+	data = json.load(open('youtube_data/%s.json' % channel_id))
+	# Extract uploaded video IDs 
+	for entry in data["video_uploads"]:
+		video_ids.add(entry["id"]["$t"].replace("http://gdata.youtube.com/feeds/api/videos/", ""))
+	# Extract playlist video IDs
+	for playlist_id in data["playlist_videos"]:
+		for video in data["playlist_videos"][playlist_id]:
+			video_ids.add(video["media$group"]["yt$videoid"]["$t"])
+	return video_ids
+
 
 def language_channels_dictionary():
 	"""
@@ -213,15 +231,14 @@ def main():
 		default=False)
 
 	parser.add_option("-l", "--language-channel", action="append", dest="language_channels",
-		help="Languages to update and write to CSV (if CSV flag is added). Default is all.",
+		help="Languages to update and write to CSV (if CSV flag is added). Default is all. For multiple, input individually, e.g. -l 'KhanAcademyRussian' -l 'KhanAcademyDansk'",
 		default=[])
 
 	parser.add_option("--csv", action="store_true", dest="generate_csv",
 		help="Write CSV files summarizing statistics for videos on language channels.")
 
 	parser.add_option("-q", "--quiet", action="store_true", dest="quiet",
-		help="Suppress output to file. Default is to write to both console and file.",
-		default=False)
+		help="Suppress output.")
 
 	options, args = parser.parse_args()
 
@@ -242,10 +259,10 @@ def main():
 		else:
 			# TODO
 			create_specific_csvs(options.generate_csv.value, options.language_channels)
-	logging.info("Done.")
-	#TODO
 	return video_ids_set(options.language_channels)
+
 
 
 if __name__ == '__main__':
 	main()
+	logging.info("Done.")
