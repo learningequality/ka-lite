@@ -18,7 +18,7 @@ if [ `id -u` -eq 0 ]; then
 fi
 
 current_dir=`dirname "${BASH_SOURCE[0]}"`
-if [ ! `id -u` -eq `stat -c "%u" $current_dir` ]; then
+if [ ! `id -u` -eq `stat -f "%u" $current_dir` ]; then
 	echo "-------------------------------------------------------------------"
 	echo "You are not the owner of this directory!"
 	echo "Please copy all files to a directory that you own and then" 
