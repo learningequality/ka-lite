@@ -110,6 +110,7 @@
 }
 #get-started-button:hover{
     color: #DBE6E0;             /* Color: Moon */
+    cursor: auto;
 }
 
 /* Relevant to contribute section */
@@ -156,6 +157,7 @@
 }*/
 #contribute_sec button:hover{
     color: #DBE6E0;      /* Color: Moon */
+    cursor: auto;
 }
 .contribute-button-subtitle{
     font-size: 10px;
@@ -180,6 +182,7 @@
     position: relative;
     left: 20%;*/
 }
+
 #subscribe_sec .cent-s-by-s{
     float: left;
 }
@@ -197,6 +200,32 @@
 .subscribe-title h2{
     font-size: 24px;
 }
+
+.email-title h1{
+    color: #78AB46;             /* Color: Pea Green */
+    font-weight: bold;
+    line-height: normal;
+    margin-top: 2px;
+    margin-bottom: 6px;
+    text-align: center;
+    font-size: 30px;
+    margin-left: 3px;
+}
+
+
+
+.email-title h2{
+    font-weight: bold;
+    line-height: normal;
+    margin-bottom: 2px;
+    text-align: center;
+    font-size: 15px;
+     margin-left: 3px;
+}
+
+
+
+
 .exclamation{
     font-size: 6.2em;
     margin-top: 20px; /* not a perfect way to do it.... */
@@ -234,6 +263,7 @@
     padding-left: 3px;
     font-size: 12px;
     margin-bottom: 5px;
+    width: 123px;
     
     /*font*/
     color: #555;                /* Color: Medium Grey */
@@ -548,15 +578,21 @@ article {
     <div id="subscribe_sec" class="col onecol share-subscribe-section">
         <div class="cent-s-by-s subscribe-title"><h1>SUBSCRIBE<br/></h1><h2>FOR UPDATES</h2></div>
         <div class="exclamation cent-s-by-s greenword">!</div>
-        <div class="cent-s-by-s subscribe-text">
+ <!--        <div class="cent-s-by-s subscribe-text">
             We’re constantly updating KA Lite, and would love to let you know about new developments.
-        </div>
+        </div> -->
         <div id="mc_embed_signup" class="cent-s-by-s subscribe-form">
             <form action="http://adhocsync.us6.list-manage.com/subscribe/post?u=023b9af05922dfc7f47a4fffb&amp;id=97a379de16" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
                 <input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
                 <input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button">
             </form>
         </div>
+
+        <div class="cent-s-by-s email-title">
+            <h1>Contact us<br/></h1>
+            <h2><a href="mailto:info@learningequality.org">info@learningequality.org</a></h2>
+        </div>
+
     </div>
 
     <div id="share_sec" class="col social_media_sharing share-subscribe-section">
@@ -600,19 +636,19 @@ article {
             <div class="button-section">
                 <a href="https://sites.google.com/site/kalitewiki/installation">
                     <button id="get-started-button">
-                        Install now!
+                       Install now!
                     </button>
                 </a>
             </div>
         </div>
         <div class="mini-action-section">
             <div class="action-text">
-                Want deployment advice?
+                Tell us about your needs
             </div>
             <div class="button-section">
                 <a href="https://docs.google.com/spreadsheet/viewform?formkey=dEhEOWRNVDBzWTdsUnFQYWlCWnZoWWc6MQ">
                     <button id="get-started-button">
-                        Contact us
+                        Deployment
                     </button>
                 </a>
             </div>
