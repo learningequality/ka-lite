@@ -27,7 +27,7 @@ if [ ! `id -u` -eq `stat -c "%u" $current_dir` ]; then
 	exit 1
 fi
 
-if [ ! -w `dirname "${BASH_SOURCE[0]}"`/kalite ]; then
+if [ ! -w $current_dir/kalite ]; then
 	echo "-------------------------------------------------------------------"
 	echo "You do not have permission to write to this directory!"
 	echo "-------------------------------------------------------------------"
@@ -36,7 +36,7 @@ fi
 
 SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
 pyexec=`$SCRIPT_DIR/python.sh`
-cd `dirname "${BASH_SOURCE[0]}"`/kalite
+cd $current_dir/kalite
 
 if [ -f "database/data.sqlite" ]; then
     echo "-------------------------------------------------------------------"
