@@ -18,7 +18,16 @@ if [ `id -u` -eq 0 ]; then
 fi
 
 current_dir=`dirname "${BASH_SOURCE[0]}"`
-if [ ! `id -u` -eq `stat -f "%u" $current_dir` ]; then
+
+# Platform-dependent use of stat (mac vs. non-mac)
+if `uname -a | grep -q inux`; then
+        current_dir_owner=`stat -c "%u" $current_dir`
+else
+        current_dir_owner=`stat -f "%u" $current_dir`
+fi
+ 
+# Check to see if the current user is the owner of the install directory
+if [ ! `id -u` -eq $current_dir_owner ]; then
 	echo "-------------------------------------------------------------------"
 	echo "You are not the owner of this directory!"
 	echo "Please copy all files to a directory that you own and then" 
