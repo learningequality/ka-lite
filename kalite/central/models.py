@@ -59,7 +59,7 @@ class OrganizationInvitation(models.Model):
 
     def send(self, request):
         to_email = self.email_to_invite
-        sender = 'kalite@adhocsync.com'
+        sender = 'kalite@learningequality.org'
         context = {
             'organization': self.organization,
             'invited_by': self.invited_by

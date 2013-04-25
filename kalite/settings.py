@@ -114,13 +114,13 @@ INSTALLED_APPS = (
 if DEBUG or CENTRAL_SERVER:
     INSTALLED_APPS += ("django_extensions",)
 
-CENTRAL_SERVER_HOST = "https://kalite.adhocsync.com/"
+CENTRAL_SERVER_HOST = "https://kalite.learningequality.org/"
 
 CENTRAL_SERVER = hasattr(local_settings, "CENTRAL_SERVER") and local_settings.CENTRAL_SERVER or False
 
 if CENTRAL_SERVER:
     ACCOUNT_ACTIVATION_DAYS = 7
-    DEFAULT_FROM_EMAIL = "kalite@adhocsync.com"
+    DEFAULT_FROM_EMAIL = "kalite@learningequality.org"
     INSTALLED_APPS += ("postmark", "kalite.registration", "central")
     EMAIL_BACKEND = "postmark.backends.PostmarkBackend"
     AUTH_PROFILE_MODULE = 'central.UserProfile'
