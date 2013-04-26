@@ -2,9 +2,19 @@ import json
 import os
 import logging
 
-def get_or_set_settings(cursor, name, value, dtype, comment):
+
+def get_local_or_not( name, value ):
+    """Get """
+    
+    return get_or_set_from_db(name=name, value=value, cursor=None, dtype=None, comment=None)
+
+
+def get_or_set_from_db(cursor, name, value, dtype=None, comment=None):
     """Gets the settings from the localsettings, database, or 
        pushes them to the database and uses the value provided. """
+    
+    # Default: returned value is the same as that passed in
+    set_value = value
     
     # First check from globals
     if name in globals():
@@ -16,7 +26,7 @@ def get_or_set_settings(cursor, name, value, dtype, comment):
     #    logging.debug('[1]: found value for %s in local settings'%name)
     
     # Now we need to go to the database
-    else:
+    elif cursor:
         db_value = cursor.execute("SELECT value FROM config_settings WHERE Name='%s'"%(name)).fetchall()
         
         # Third: get it from the database
@@ -28,24 +38,14 @@ def get_or_set_settings(cursor, name, value, dtype, comment):
         else:
             logging.debug('[2]: had to insert the value for %s into the database.'%(name))
             cursor.execute("INSERT INTO config_settings(Name,Value,DataType) values(?,?,?)",(name,value,dtype))
-            set_value = value
     
+    else:
+        logging.debug('[3]: using passed in value')
+        
     return set_value
     
 ##########
 
-# Static settings, required for setting dynamic settings
-PROJECT_PATH = os.path.dirname(os.path.realpath(__file__))
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": PROJECT_PATH + "/database/data.sqlite",
-        "OPTIONS": {
-            "timeout": 60,
-        },
-    }
-}
 
 # Local settings will be put into the "global" space
 #   within this file :)
@@ -54,6 +54,21 @@ try:
     import local_settings
 except ImportError:
     local_settings = {}
+    
+    
+# Static settings, required for setting dynamic settings
+PROJECT_PATH = get_local_or_not("PROJECT_PATH", os.path.dirname(os.path.realpath(__file__)))
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": get_local_or_not("DATABASE_PATH", PROJECT_PATH + "/database/data.sqlite"),
+        "OPTIONS": {
+            "timeout": 60,
+        },
+    }
+}
+
 
 # Dynamic settings, configurable in the db
 # 
@@ -68,32 +83,32 @@ except Exception as e:
     cursor = None
 
 # Debug stuff
-DEBUG          = get_or_set_settings(cursor, 'DEBUG',          0, 'INTEGER', "Print out debug errors/info to website?")
+DEBUG          = get_or_set_from_db(cursor, 'DEBUG',          0, 'INTEGER', "Print out debug errors/info to website?")
 
 # Set up logging
 logging.getLogger().setLevel(logging.DEBUG*DEBUG + logging.INFO*(1-DEBUG))
 
-TEMPLATE_DEBUG = get_or_set_settings(cursor, 'TEMPLATE_DEBUG', 0, 'INTEGER', "Print out template debug errors/info to website?")
+TEMPLATE_DEBUG = get_or_set_from_db(cursor, 'TEMPLATE_DEBUG', 0, 'INTEGER', "Print out template debug errors/info to website?")
 
 # Paths & urls
-DATA_PATH      = get_or_set_settings(cursor, 'DATA_PATH', os.path.realpath(PROJECT_PATH + "/static/data/")+"/", 'TEXT', "Local file path to exercises")
-CONTENT_ROOT   = get_or_set_settings(cursor, 'CONTENT_ROOT', os.path.realpath(PROJECT_PATH + "/../content/")+"/", 'TEXT', "Local file path to videos")
-CONTENT_URL    = get_or_set_settings(cursor, 'CONTENT_URL', "/content/", 'TEXT', "URL endpoint to videos")
-MEDIA_ROOT     = get_or_set_settings(cursor, 'MEDIA_ROOT', os.path.realpath(PROJECT_PATH + "/static/")+"/", 'TEXT', "?")
-MEDIA_URL      = get_or_set_settings(cursor, 'MEDIA_URL', "/static/", 'TEXT', "?")
-STATIC_URL     = get_or_set_settings(cursor, 'STATIC_URL', "/static/", 'TEXT', "?")
-TEMPLATE_DIRS  = (get_or_set_settings(cursor, 'TEMPLATE_DIRS', os.path.realpath(PROJECT_PATH + "/templates"), 'TEXT', "?"))
+DATA_PATH      = get_or_set_from_db(cursor, 'DATA_PATH', os.path.realpath(PROJECT_PATH + "/static/data/")+"/", 'TEXT', "Local file path to exercises")
+CONTENT_ROOT   = get_or_set_from_db(cursor, 'CONTENT_ROOT', os.path.realpath(PROJECT_PATH + "/../content/")+"/", 'TEXT', "Local file path to videos")
+CONTENT_URL    = get_or_set_from_db(cursor, 'CONTENT_URL', "/content/", 'TEXT', "URL endpoint to videos")
+MEDIA_ROOT     = get_or_set_from_db(cursor, 'MEDIA_ROOT', os.path.realpath(PROJECT_PATH + "/static/")+"/", 'TEXT', "?")
+MEDIA_URL      = get_or_set_from_db(cursor, 'MEDIA_URL', "/static/", 'TEXT', "?")
+STATIC_URL     = get_or_set_from_db(cursor, 'STATIC_URL', "/static/", 'TEXT', "?")
+TEMPLATE_DIRS  = (get_or_set_from_db(cursor, 'TEMPLATE_DIRS', os.path.realpath(PROJECT_PATH + "/templates"), 'TEXT', "?"))
 
 # Server & API stuff
-CENTRAL_SERVER_HOST = get_or_set_settings(cursor, 'CENTRAL_SERVER_HOST', "https://kalite.adhocsync.com/", 'TEXT', "?")
-INTERNAL_IPS   = (get_or_set_settings(cursor, 'INTERNAL_IPS',   "127.0.0.1", 'TEXT', ""))
+CENTRAL_SERVER_HOST = get_or_set_from_db(cursor, 'CENTRAL_SERVER_HOST', "https://kalite.adhocsync.com/", 'TEXT', "?")
+INTERNAL_IPS   = (get_or_set_from_db(cursor, 'INTERNAL_IPS',   "127.0.0.1", 'TEXT', ""))
 
 
 # Internationalization
-TIME_ZONE      = get_or_set_settings(cursor, 'TIME_ZONE', "America/Los_Angeles", 'TEXT', "Local time zone for this installation. Choices can be found here: http://en.wikipedia.org/wiki/List_of_tz_zones_by_name")
-LANGUAGE_CODE  = get_or_set_settings(cursor, 'LANGUAGE_CODE', 'en-us', 'TEXT', "Language code for this installation. All choices can be found here: http://www.i18nguy.com/unicode/language-identifiers.html")
-USE_I18N       = get_or_set_settings(cursor, 'USE_I18N', 1, 'INTEGER', "If you set this to False, Django will make some optimizations so as not to load the internationalization machinery.")
-USE_L10N       = get_or_set_settings(cursor, 'USE_L10N', 1, 'INTEGER', "If you set this to False, Django will not format dates, numbers and calendars according to the current locale")
+TIME_ZONE      = get_or_set_from_db(cursor, 'TIME_ZONE', "America/Los_Angeles", 'TEXT', "Local time zone for this installation. Choices can be found here: http://en.wikipedia.org/wiki/List_of_tz_zones_by_name")
+LANGUAGE_CODE  = get_or_set_from_db(cursor, 'LANGUAGE_CODE', 'en-us', 'TEXT', "Language code for this installation. All choices can be found here: http://www.i18nguy.com/unicode/language-identifiers.html")
+USE_I18N       = get_or_set_from_db(cursor, 'USE_I18N', 1, 'INTEGER', "If you set this to False, Django will make some optimizations so as not to load the internationalization machinery.")
+USE_L10N       = get_or_set_from_db(cursor, 'USE_L10N', 1, 'INTEGER', "If you set this to False, Django will not format dates, numbers and calendars according to the current locale")
 
 try:
     if conn:
@@ -105,20 +120,24 @@ except Exception as e:
 
 # Other static settings that are not going through the database
 #
-LOCALE_PATHS = (os.path.realpath(PROJECT_PATH + "/../locale"),)
 
-CENTRAL_SERVER = hasattr(local_settings, "CENTRAL_SERVER") and local_settings.CENTRAL_SERVER or False
+#
+# Ones that can deal with local_settings
+CENTRAL_SERVER = get_local_or_not("CENTRAL_SERVER", False)
+
+
+# Make this unique, and don't share it with anybody.
+SECRET_KEY = get_local_or_not("SECRET_KEY", "8qq-!fa$92i=s1gjjitd&%s@4%ka9lj+=@n7a&fzjpwu%3kd#u")
+
+# Ones that are not set up for local_settings.py
+#
+LOCALE_PATHS = (os.path.realpath(PROJECT_PATH + "/../locale"),)
 
 ADMINS = (
     ("Jamie Alexandre", "jamalex@gmail.com"),
 )
 
 MANAGERS = ADMINS
-
-
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = hasattr(local_settings, "SECRET_KEY") and local_settings.SECRET_KEY \
-    or "8qq-!fa$92i=s1gjjitd&%s@4%ka9lj+=@n7a&fzjpwu%3kd#u"
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
@@ -167,8 +186,6 @@ INSTALLED_APPS = (
 
 if DEBUG or CENTRAL_SERVER:
     INSTALLED_APPS += ("django_extensions",)
-
-CENTRAL_SERVER = hasattr(local_settings, "CENTRAL_SERVER") and local_settings.CENTRAL_SERVER or False
 
 if CENTRAL_SERVER:
     ACCOUNT_ACTIVATION_DAYS = 7
