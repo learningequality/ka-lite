@@ -1,28 +1,41 @@
 import json
 import os
+import logging
 
-try:
-    from local_settings import *
-    import local_settings
-except ImportError:
-    local_settings = {}
+def get_or_set_settings(cursor, name, value, dtype, comment):
+    """Gets the settings from the localsettings, database, or 
+       pushes them to the database and uses the value provided. """
+    
+    # First check from globals
+    if name in globals():
+        logging.debug('[0]: found value for %s in globals'%name)
+        set_value = globals()[name]
+    
+    # Second, check from local settings
+    #elif name in globals()['local_settings']:       
+    #    logging.debug('[1]: found value for %s in local settings'%name)
+    
+    # Now we need to go to the database
+    else:
+        db_value = cursor.execute("SELECT value FROM config_settings WHERE Name='%s'"%(name)).fetchall()
+        
+        # Third: get it from the database
+        if len(db_value)==1:
+            logging.debug('[1]: found the value for %s in the database.'%(name))
+            set_value = db_value[0][0]
+            
+        # Fourth: push it to the database, and use the provided value
+        else:
+            logging.debug('[2]: had to insert the value for %s into the database.'%(name))
+            cursor.execute("INSERT INTO config_settings(Name,Value,DataType) values(?,?,?)",(name,value,dtype))
+            set_value = value
+    
+    return set_value
+    
+##########
 
-DEBUG = hasattr(local_settings, "DEBUG") and local_settings.DEBUG or False
-TEMPLATE_DEBUG = hasattr(local_settings, "TEMPLATE_DEBUG") and local_settings.TEMPLATE_DEBUG or DEBUG
-
-INTERNAL_IPS = ("127.0.0.1",)
-
-CENTRAL_SERVER = hasattr(local_settings, "CENTRAL_SERVER") and local_settings.CENTRAL_SERVER or False
-
-ADMINS = (
-    ("Jamie Alexandre", "jamalex@gmail.com"),
-)
-
-MANAGERS = ADMINS
-
+# Static settings, required for setting dynamic settings
 PROJECT_PATH = os.path.dirname(os.path.realpath(__file__))
-
-LOCALE_PATHS = (PROJECT_PATH + "/../locale",)
 
 DATABASES = {
     "default": {
@@ -34,31 +47,74 @@ DATABASES = {
     }
 }
 
-DATA_PATH = PROJECT_PATH + "/static/data/"
+# Local settings will be put into the "global" space
+#   within this file :)
+try:
+    from local_settings import *
+    import local_settings
+except ImportError:
+    local_settings = {}
 
-CONTENT_ROOT = PROJECT_PATH + "/../content/"
-CONTENT_URL = "/content/"
+# Dynamic settings, configurable in the db
+# 
+# First we validate that they're there.  If not, we add them with defaults.
+    #(cursor.execute('SELECT * FROM settings')
+try:
+    import sqlite3
+    conn = sqlite3.connect(DATABASES["default"]["NAME"])
+    cursor = conn.cursor()
+except Exception as e:
+    logging.warn("Failed to connect to database (%s);\nwill read default settings from settings.py"%e)
+    cursor = None
 
-# Local time zone for this installation. Choices can be found here:
-# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-TIME_ZONE = "America/Los_Angeles"
+# Debug stuff
+DEBUG          = get_or_set_settings(cursor, 'DEBUG',          0, 'INTEGER', "Print out debug errors/info to website?")
 
-# Language code for this installation. All choices can be found here:
-# http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = hasattr(local_settings, "LANGUAGE_CODE") and local_settings.LANGUAGE_CODE or "en-us"
+# Set up logging
+logging.getLogger().setLevel(logging.DEBUG*DEBUG + logging.INFO*(1-DEBUG))
 
-# If you set this to False, Django will make some optimizations so as not
-# to load the internationalization machinery.
-USE_I18N = True
+TEMPLATE_DEBUG = get_or_set_settings(cursor, 'TEMPLATE_DEBUG', 0, 'INTEGER', "Print out template debug errors/info to website?")
 
-# If you set this to False, Django will not format dates, numbers and
-# calendars according to the current locale
-USE_L10N = False
+# Paths & urls
+DATA_PATH      = get_or_set_settings(cursor, 'DATA_PATH', os.path.realpath(PROJECT_PATH + "/static/data/")+"/", 'TEXT', "Local file path to exercises")
+CONTENT_ROOT   = get_or_set_settings(cursor, 'CONTENT_ROOT', os.path.realpath(PROJECT_PATH + "/../content/")+"/", 'TEXT', "Local file path to videos")
+CONTENT_URL    = get_or_set_settings(cursor, 'CONTENT_URL', "/content/", 'TEXT', "URL endpoint to videos")
+MEDIA_ROOT     = get_or_set_settings(cursor, 'MEDIA_ROOT', os.path.realpath(PROJECT_PATH + "/static/")+"/", 'TEXT', "?")
+MEDIA_URL      = get_or_set_settings(cursor, 'MEDIA_URL', "/static/", 'TEXT', "?")
+STATIC_URL     = get_or_set_settings(cursor, 'STATIC_URL', "/static/", 'TEXT', "?")
+TEMPLATE_DIRS  = (get_or_set_settings(cursor, 'TEMPLATE_DIRS', os.path.realpath(PROJECT_PATH + "/templates"), 'TEXT', "?"))
 
-MEDIA_ROOT = PROJECT_PATH + "/static/"
-MEDIA_URL = "/static/"
+# Server & API stuff
+CENTRAL_SERVER_HOST = get_or_set_settings(cursor, 'CENTRAL_SERVER_HOST', "https://kalite.adhocsync.com/", 'TEXT', "?")
+INTERNAL_IPS   = (get_or_set_settings(cursor, 'INTERNAL_IPS',   "127.0.0.1", 'TEXT', ""))
 
-STATIC_URL = "/static/"
+
+# Internationalization
+TIME_ZONE      = get_or_set_settings(cursor, 'TIME_ZONE', "America/Los_Angeles", 'TEXT', "Local time zone for this installation. Choices can be found here: http://en.wikipedia.org/wiki/List_of_tz_zones_by_name")
+LANGUAGE_CODE  = get_or_set_settings(cursor, 'LANGUAGE_CODE', 'en-us', 'TEXT', "Language code for this installation. All choices can be found here: http://www.i18nguy.com/unicode/language-identifiers.html")
+USE_I18N       = get_or_set_settings(cursor, 'USE_I18N', 1, 'INTEGER', "If you set this to False, Django will make some optimizations so as not to load the internationalization machinery.")
+USE_L10N       = get_or_set_settings(cursor, 'USE_L10N', 1, 'INTEGER', "If you set this to False, Django will not format dates, numbers and calendars according to the current locale")
+
+try:
+    if conn:
+        conn.commit()
+except Exception as e:
+    logging.warn("Failed to push settings to the database: %s"%e)
+
+
+
+# Other static settings that are not going through the database
+#
+LOCALE_PATHS = (os.path.realpath(PROJECT_PATH + "/../locale"),)
+
+CENTRAL_SERVER = hasattr(local_settings, "CENTRAL_SERVER") and local_settings.CENTRAL_SERVER or False
+
+ADMINS = (
+    ("Jamie Alexandre", "jamalex@gmail.com"),
+)
+
+MANAGERS = ADMINS
+
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = hasattr(local_settings, "SECRET_KEY") and local_settings.SECRET_KEY \
@@ -93,8 +149,6 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = "kalite.urls"
 
-TEMPLATE_DIRS = (PROJECT_PATH + "/templates",)
-
 INSTALLED_APPS = (
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -114,13 +168,11 @@ INSTALLED_APPS = (
 if DEBUG or CENTRAL_SERVER:
     INSTALLED_APPS += ("django_extensions",)
 
-CENTRAL_SERVER_HOST = "https://kalite.learningequality.org/"
-
 CENTRAL_SERVER = hasattr(local_settings, "CENTRAL_SERVER") and local_settings.CENTRAL_SERVER or False
 
 if CENTRAL_SERVER:
     ACCOUNT_ACTIVATION_DAYS = 7
-    DEFAULT_FROM_EMAIL = "kalite@learningequality.org"
+    DEFAULT_FROM_EMAIL = "kalite@adhocsync.com"
     INSTALLED_APPS += ("postmark", "kalite.registration", "central")
     EMAIL_BACKEND = "postmark.backends.PostmarkBackend"
     AUTH_PROFILE_MODULE = 'central.UserProfile'
