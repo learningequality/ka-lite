@@ -7,8 +7,7 @@ from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
-import settings
-from settings import slug_key, title_key
+from settings import slug_key, title_key, DATABASES
 from main import topicdata
 from django.contrib import messages
 from securesync.views import require_admin, facility_required
@@ -22,6 +21,8 @@ from django.contrib import messages
 from utils.jobs import force_job
 from django.utils.translation import ugettext as _
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from utils.topic_tools import count_existing_videos
+
 
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
@@ -63,6 +64,7 @@ def splat_handler(request, splat):
     # return HttpResponseNotFound("No valid item found at this address!")
     raise Http404
 
+
 def check_setup_status(handler):
     def wrapper_fn(request, *args, **kwargs):
         client = SyncClient()
@@ -78,14 +80,17 @@ def check_setup_status(handler):
         return handler(request, *args, **kwargs)
     return wrapper_fn
     
-    
-
 
 @render_to("topic.html")
 def topic_handler(request, topic):
-    videos = filter(lambda node: node["kind"] == "Video", topic["children"])
-    exercises = filter(lambda node: node["kind"] == "Exercise" and node["live"], topic["children"])
-    topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"] and "Video" in node["contains"], topic["children"])
+    videos = topicdata.get_videos(topic)#filter(lambda node: node["kind"] == "Video", topic["children"])
+    exercises = topicdata.get_exercises(topic)#filter(lambda node: node["kind"] == "Exercise" and node["live"], topic["children"])
+    topics = topicdata.get_live_topics(topic)#filter(lambda node: node["kind"] == "Topic" and not node["hide"] and "Video" in node["contains"], topic["children"])
+
+    # Get video counts if they'll be used
+    #if len(videos)==0 and len(exercises)==0 and not "nvideos" in topic:
+    topic['nvideos'] = count_existing_videos(topic=topic, db_name=DATABASES["default"]["NAME"])
+        
     context = {
         "topic": topic,
         "title": topic[title_key["Topic"]],
@@ -95,7 +100,9 @@ def topic_handler(request, topic):
         "topics": topics,
     }
     return context
-    
+
+
+
 @render_to("video.html")
 def video_handler(request, video, prev=None, next=None):
     if not VideoFile.objects.filter(pk=video['youtube_id']).exists():
@@ -109,9 +116,11 @@ def video_handler(request, video, prev=None, next=None):
         messages.warning(request, _("Note: You're logged in as an admin (not as a student/teacher), so your video progress and points won't be saved."))
     elif not request.is_logged_in:
         messages.warning(request, _("Friendly reminder: You are not currently logged in, so your video progress and points won't be saved."))
+        
     context = {
         "video": video,
         "title": video[title_key["Video"]],
+        "exists": VideoFile.objects.filter(pk=video['youtube_id']).exists(),
         "prev": prev,
         "next": next,
     }
@@ -151,9 +160,36 @@ def homepage(request):
         "title": "Home",
         "topics": topics,
         "registered": Settings.get("registered"),
+        "server_type":"local",
     }
     return context
         
+
+#@facility_required
+@render_to("help.html")
+def help(request):
+#    facilities = Facility.objects.all()
+#    groups = FacilityGroup.objects.all()
+#    if request.method == 'POST' and request.is_admin:
+#        form = FacilityGroupForm(data=request.POST)
+#        if form.is_valid():
+#            form.instance.facility = facility
+#            form.save()
+#            return HttpResponseRedirect(reverse("add_facility_student") + "?facility=" + facility.pk + "&group=" + form.instance.pk)
+#    elif request.method =='POST' and not request.is_admin:
+#        messages.error(request, _("This mission is too important for me to allow you to jeopardize it."))
+#        return HttpResponseRedirect(reverse("login"))
+#    else:
+#    form = FacilityGroupForm()
+    client = SyncClient()
+    if client.test_connection() == "successss":
+        return HttpResponseRedirect("http://espn.go.com/")
+    else:
+        return {
+            "title": "Help",
+        }
+
+
 @require_admin
 @render_to("video_download.html")
 def update(request):

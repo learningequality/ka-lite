@@ -135,6 +135,7 @@
                                         <span id="hint-remainder">{% trans "Note: this will reset your streak and points for this exercise!" %}</span>
                                     </div>
 
+                                                    {% if related_videos %}
                                     <div class="info-box related-video-box">
                                         <div id="related-video-content">
                                             <span class="info-box-header">{% trans "Stuck? Watch a video." %}</span>
@@ -142,7 +143,6 @@
                                             <div id="related-video-list">
                                                 <span class="related-content-title">{% trans "Related videos:" %}</span>
                                                 <ul class="related-video-list">
-                                                    {% if related_videos %}
                                                     {% for video in related_videos %}
                                                     {% if forloop.first %}
                                                     <li>
@@ -172,11 +172,11 @@
                                                     </li>
                                                     {% endif %}
                                                     {% endfor %}
-                                                    {% endif %}
                                                 </ul>
                                             </div>
                                             <div class="clear"></div>
                                         </div>
+                                                    {% endif %}
                                     </div>
                                 </form>
                             </div></div>
