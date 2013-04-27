@@ -21,7 +21,7 @@ from django.contrib import messages
 from utils.jobs import force_job
 from django.utils.translation import ugettext as _
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from utils.topic_tools import count_existing_videos
+from utils.topic_tools import get_video_counts
 
 
 def splat_handler(request, splat):
@@ -89,7 +89,7 @@ def topic_handler(request, topic):
 
     # Get video counts if they'll be used
     #if len(videos)==0 and len(exercises)==0 and not "nvideos" in topic:
-    topic['nvideos'] = count_existing_videos(topic=topic, db_name=DATABASES["default"]["NAME"])
+    (topic['nvideos_local'],topic['nvideos_known']) = get_video_counts(topic=topic, db_name=DATABASES["default"]["NAME"])
         
     context = {
         "topic": topic,

@@ -16,7 +16,7 @@
 <ol>
     {% for subtopic in topics %}
     <li style="font-size: 15px; line-height: 23px; margin-left: 10px;">
-        [{{subtopic.nvideos}} video{% if subtopic.nvideos != 1 %}s{% endif %}] <a href="{{ subtopic.id }}">{% trans subtopic.title %}</a>
+        <span style="float:left">[</span><span style="width:50px;float:left;text-align:right"> {{subtopic.nvideos_local}}/{{subtopic.nvideos_known}}</span> <span>&nbsp;video{% if subtopic.nvideos_known != 1 %}s{% endif %}] </span><span><a href="{{ subtopic.id }}">{% trans subtopic.title %}</a></span>
     </li>
     {% endfor %}
     <br/>
