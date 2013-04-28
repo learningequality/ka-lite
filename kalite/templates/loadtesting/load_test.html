@@ -38,7 +38,7 @@
             #infobar .status {
                 float: left;
                 width: 20%;
-                margin-left: 5px;
+                margin-left: 15px;
             }
             
         </style>
@@ -55,16 +55,8 @@
                     _.bindAll(this);
                     $(window).resize(this._resize);
                     this.$el.load(this._pageLoaded);
-                    this._bindReadyStateChange();
+                    this._loadEvents = [];
                     this.render();
-                },
-                
-                _bindReadyStateChange: function() {
-                    this.el.contentDocument.addEventListener("onreadystatechange", this._readyStateChange);
-                },
-                
-                _readyStateChange: function() {
-                    console.log(arguments);
                 },
                 
                 render: function() {
@@ -75,21 +67,28 @@
                     this.$el.height($(window).height() - 40);
                 },
                 
-                goto: function(url) {
+                whenLoaded: function(callback) {
+                    if (_.isFunction(callback)) {
+                        this._loadEvents.push(callback);
+                    }
+                },
+                
+                goto: function(url, callback) {
                     this.startTimer();
+                    this.whenLoaded(callback);
                     this.$el.attr("src", url);
                 },
                 
-                click: function(selector, index) {
+                click: function(selector, callback) {
                     selector = selector || "a[href!='']";
                     var matches = this.$(selector);
                     if (matches.length === 0) {
+                        callback();
                         return;
                     }
-                    if (index === undefined || index >= matches.length) {
-                        index = Math.floor(Math.random() * matches.length);
-                    }
                     this.startTimer();
+                    this.whenLoaded(callback);
+                    var index = Math.floor(Math.random() * matches.length);
                     matches[index].click();
                 },
                 
@@ -100,8 +99,9 @@
                     });
                 },
                 
-                submitForm: function() {
+                submitForm: function(callback) {
                     this.startTimer();
+                    this.whenLoaded(callback);
                     this.$("article form").submit();
                 },
                 
@@ -125,25 +125,49 @@
                             status: "error",
                             url: ""
                         });
+                        this._triggerLoadEvents("error", null);
                         return;
                     }
                     this.$ = this.el.contentWindow.$;
+                    this.window = this.el.contentWindow;
                     this.$("a[href!='']").click(this.startTimer);
+                    this._triggerLoadEvents(null, this.model.get("url"));
+                },
+                
+                _triggerLoadEvents: function(err, data) {
+                    var self = this;
+
+                    _.each(this._loadEvents, function(load_callback) {
+                        _.defer(function() {
+                            load_callback(err, data);
+                        });
+                    });
+                    
+                    this._loadEvents = [];
+                    
+                },
+                
+                watchVideo: function() {
+                    
                 },
                 
                 runSequence: function(tasks, input, callback) {
                     var self = this;
                     var index = 0;
-                    function runNext(result) {
+                    function runNext(err, result) {
                         if (index >= tasks.length) {
-                            callback(input);
+                            if (_.isFunction(callback)) {
+                                callback(err, result);
+                            }
                             return;
                         }
                         var task = tasks[index];
                         index++;
-                        task.call(self, result, runNext);
+                        setTimeout(function() {
+                            task.call(self, result, runNext);
+                        }, this.model.get("clickDelay"));
                     }
-                    runNext(input);
+                    runNext(null, input);
                 }
                 
             });
@@ -170,11 +194,41 @@
                 }
                 
             });
+
+            var video_sequence = [
+                function(input, callback) {
+                    this.goto("/", callback);
+                },
+                function(input, callback) {
+                    this.click(".topic-link:first", callback);
+                },
+                function(input, callback) {
+                    this.click(".topic-link:first", callback);
+                },
+                function(input, callback) {
+                    this.click(".topic-link:first", callback);
+                },
+                function(input, callback) {
+                    this.click(".topic-link", callback);
+                },
+                function(input, callback) {
+                    this.click(".video-link", callback);
+                },
+                function(input, callback) {
+                    this.window.videoView.play();
+                }
+            ]
             
             $(function() {
-                window.puppet = new PuppetView({model: new PuppetModel(), el: $("#puppet")});
-                window.infobar = new InfoBarView({model: puppet.model, el: $("#infobar")});
+                window.model = new PuppetModel({
+                    clickDelay: 1000
+                });
+                window.puppet = new PuppetView({model: model, el: $("#puppet")});
+                window.infobar = new InfoBarView({model: model, el: $("#infobar")});
                 puppet.goto(window.location.hash.slice(1) || "/");
+                
+                // puppet.runSequence(video_sequence);
+                
             });
         
         </script>
