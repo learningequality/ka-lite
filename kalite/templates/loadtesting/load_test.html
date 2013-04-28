@@ -1,0 +1,191 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+    <!--[if lt IE 9]>
+          <script src="{{ MEDIA_URL }}js/html5shiv.js"></script>
+    <![endif]-->
+
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="shortcut icon" href="{{ MEDIA_URL }}images/favicon.ico">
+        {% block jqueryjs %}
+        <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.7.1.min.js"></script>
+        <script type="text/javascript" src="{{ MEDIA_URL }}js/underscore-min.js"></script>
+        <script type="text/javascript" src="{{ MEDIA_URL }}js/backbone-min.js"></script>
+        {% endblock jqueryjs %}
+        
+        <style>
+            html, body {
+                height: 100%;
+                width: 100%;
+                margin: 0;
+                overflow: hidden;
+            }
+        
+            #puppet {
+                position: absolute;
+                top: 40px;
+                width: 100%;
+                border: none;
+            }
+            
+            #infobar .url {
+                float: left;
+                width: 40%;
+                margin-left: 5px;
+                overflow: hidden;
+            }
+            
+            #infobar .status {
+                float: left;
+                width: 20%;
+                margin-left: 5px;
+            }
+            
+        </style>
+        
+        <script>
+        
+            var PuppetModel = Backbone.Model.extend({
+                
+            });
+            
+            var PuppetView = Backbone.View.extend({
+                
+                initialize: function() {
+                    _.bindAll(this);
+                    $(window).resize(this._resize);
+                    this.$el.load(this._pageLoaded);
+                    this._bindReadyStateChange();
+                    this.render();
+                },
+                
+                _bindReadyStateChange: function() {
+                    this.el.contentDocument.addEventListener("onreadystatechange", this._readyStateChange);
+                },
+                
+                _readyStateChange: function() {
+                    console.log(arguments);
+                },
+                
+                render: function() {
+                    this._resize();
+                },
+                
+                _resize: function() {
+                    this.$el.height($(window).height() - 40);
+                },
+                
+                goto: function(url) {
+                    this.startTimer();
+                    this.$el.attr("src", url);
+                },
+                
+                click: function(selector, index) {
+                    selector = selector || "a[href!='']";
+                    var matches = this.$(selector);
+                    if (matches.length === 0) {
+                        return;
+                    }
+                    if (index === undefined || index >= matches.length) {
+                        index = Math.floor(Math.random() * matches.length);
+                    }
+                    this.startTimer();
+                    matches[index].click();
+                },
+                
+                fillForm: function(values) {
+                    var self = this;
+                    _.each(values, function(val, key) {
+                        self.$("form [name='" + key + "'], form #id_" + key).val(val);                        
+                    });
+                },
+                
+                submitForm: function() {
+                    this.startTimer();
+                    this.$("article form").submit();
+                },
+                
+                startTimer: function() {
+                    this.model.set({
+                        startTime: new Date(),
+                        status: "loading",
+                        loadTime: null
+                    });
+                },
+                
+                _pageLoaded: function() {
+                    this.model.set("loadTime", (new Date()) - this.model.get("startTime"));
+                    try {
+                        this.model.set({
+                            status: "complete",
+                            url: this.el.contentDocument.location.pathname
+                        });
+                    } catch(e) {
+                        this.model.set({
+                            status: "error",
+                            url: ""
+                        });
+                        return;
+                    }
+                    this.$ = this.el.contentWindow.$;
+                    this.$("a[href!='']").click(this.startTimer);
+                },
+                
+                runSequence: function(tasks, input, callback) {
+                    var self = this;
+                    var index = 0;
+                    function runNext(result) {
+                        if (index >= tasks.length) {
+                            callback(input);
+                            return;
+                        }
+                        var task = tasks[index];
+                        index++;
+                        task.call(self, result, runNext);
+                    }
+                    runNext(input);
+                }
+                
+            });
+
+            var InfoBarView = Backbone.View.extend({
+                
+                initialize: function() {
+                    _.bindAll(this);
+                    this.model.bind("change:url", this._updateURL);
+                    this.model.bind("change:status", this._updateStatus);
+                },
+                
+                _updateURL: function() {
+                    this.$(".url").text(this.model.get("url"));
+                    window.location.hash = this.model.get("url");
+                },
+
+                _updateStatus: function() {
+                    this.$(".status").text(this.model.get("status"));
+                    var loadTime = this.model.get("loadTime");
+                    if (loadTime) {
+                        this.$(".status").text(this.$(".status").text() + ": " + loadTime + "ms");
+                    }
+                }
+                
+            });
+            
+            $(function() {
+                window.puppet = new PuppetView({model: new PuppetModel(), el: $("#puppet")});
+                window.infobar = new InfoBarView({model: puppet.model, el: $("#infobar")});
+                puppet.goto(window.location.hash.slice(1) || "/");
+            });
+        
+        </script>
+        
+    </head>
+    <body>
+        <div id="infobar">
+            <div class="url"></div>
+            <div class="status"></div>
+        </div>
+        <iframe id="puppet"></iframe>
+    </body>
+</html>
+
