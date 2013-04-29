@@ -41,9 +41,19 @@
                 margin-left: 15px;
             }
             
+            #infobar .errorcount {
+                color: red;
+                float: left;
+                width: 20%;
+                margin-left: 15px;                
+            }
+            
         </style>
         
         <script>
+        
+            var fastInterval = 1000;
+            var slowInterval = 10000;
         
             var PuppetModel = Backbone.Model.extend({
                 
@@ -125,6 +135,8 @@
                             status: "error",
                             url: ""
                         });
+                        this.model.set("errorCount", (this.model.get("errorCount") || 0) + 1);
+                        this.model.set("clickDelay", slowInterval);
                         this._triggerLoadEvents("error", null);
                         return;
                     }
@@ -132,6 +144,7 @@
                     this.window = this.el.contentWindow;
                     this.$("a[href!='']").click(this.startTimer);
                     this._triggerLoadEvents(null, this.model.get("url"));
+                    this.model.set("clickDelay", fastInterval);
                 },
                 
                 _triggerLoadEvents: function(err, data) {
@@ -147,15 +160,20 @@
                     
                 },
                 
-                watchVideo: function() {
-                    
+                watchVideo: function(callback) {
+                    this.runSequence(video_sequence, null, callback);
+                },
+                
+                login: function(callback) {
+                    this.runSequence(login_sequence, null, callback);
                 },
                 
                 runSequence: function(tasks, input, callback) {
                     var self = this;
                     var index = 0;
                     function runNext(err, result) {
-                        if (index >= tasks.length) {
+                        // if there was an error, or we reach the end, call the overall callback
+                        if (err || index >= tasks.length) {
                             if (_.isFunction(callback)) {
                                 callback(err, result);
                             }
@@ -178,6 +196,7 @@
                     _.bindAll(this);
                     this.model.bind("change:url", this._updateURL);
                     this.model.bind("change:status", this._updateStatus);
+                    this.model.bind("change:errorCount", this._updateErrorCount);
                 },
                 
                 _updateURL: function() {
@@ -191,6 +210,15 @@
                     if (loadTime) {
                         this.$(".status").text(this.$(".status").text() + ": " + loadTime + "ms");
                     }
+                },
+                
+                _updateErrorCount: function() {
+                    var errortext = "";
+                    var errorCount = this.model.get("errorCount");
+                    if (errorCount) {
+                        errortext = "Errors: " + errorCount;
+                    }
+                    this.$(".errorcount").text(errortext)
                 }
                 
             });
@@ -200,13 +228,13 @@
                     this.goto("/", callback);
                 },
                 function(input, callback) {
-                    this.click(".topic-link:first", callback);
+                    this.click(".topic-link", callback);
                 },
                 function(input, callback) {
-                    this.click(".topic-link:first", callback);
+                    this.click(".topic-link", callback);
                 },
                 function(input, callback) {
-                    this.click(".topic-link:first", callback);
+                    this.click(".topic-link", callback);
                 },
                 function(input, callback) {
                     this.click(".topic-link", callback);
@@ -215,20 +243,44 @@
                     this.click(".video-link", callback);
                 },
                 function(input, callback) {
-                    this.window.videoView.play();
+                    try {
+                        this.window.videoView.play();
+                        this.window.videoView.player.addEvent("pause", callback);
+                        this.window.videoView.player.addEvent("error", callback);
+                    } catch(e) {
+                        callback(e, null);
+                    }
+                }
+            ]
+            
+            var login_sequence = [
+                function(input, callback) {
+                    this.goto("/securesync/login/", callback);
+                },
+                function(input, callback) {
+                    this.$("#id_facility option")[1].selected = true;
+                    this.fillForm({
+                        username: "student",
+                        password: "student",
+                    });
+                    this.submitForm(callback);
                 }
             ]
             
             $(function() {
                 window.model = new PuppetModel({
-                    clickDelay: 1000
+                    clickDelay: fastInterval
                 });
                 window.puppet = new PuppetView({model: model, el: $("#puppet")});
                 window.infobar = new InfoBarView({model: model, el: $("#infobar")});
                 puppet.goto(window.location.hash.slice(1) || "/");
                 
-                // puppet.runSequence(video_sequence);
+                function watchVideos() {
+                    puppet.watchVideo(watchVideos);
+                }
                 
+                puppet.login(watchVideos);
+                        
             });
         
         </script>
@@ -238,6 +290,7 @@
         <div id="infobar">
             <div class="url"></div>
             <div class="status"></div>
+            <div class="errorcount"></div>
         </div>
         <iframe id="puppet"></iframe>
     </body>
