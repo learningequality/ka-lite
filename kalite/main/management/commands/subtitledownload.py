@@ -12,6 +12,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         
         language = Settings.get("subtitle_language")
+        download_path = Settings.get("CONTENT_PATH")
         
         while True: # loop until the method is aborted
             
@@ -31,7 +32,7 @@ class Command(BaseCommand):
             
             self.stdout.write("Downloading subtitles for video '%s'...\n" % video.youtube_id)
             try:
-                download_subtitles(video.youtube_id, language)
+                download_subtitles(video.youtube_id, language, download_path)
                 self.stdout.write("Download is complete!\n")
                 video.subtitles_downloaded = True
                 video.subtitle_download_in_progress = False

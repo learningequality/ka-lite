@@ -1,4 +1,5 @@
 from django.db import models
+from utils import convert
 
 class Settings(models.Model):
     name = models.CharField(max_length=30, primary_key=True)
@@ -14,16 +15,14 @@ class Settings(models.Model):
     def get(name, default=""):
         try:
             setting = Settings.objects.get(name=name)
-            if setting.datatype == "int":
-                return int(setting.value)
-            if setting.datatype == "float":
-                return float(setting.value)
-            if setting.datatype == "bool":
-                return bool(setting.value)
-            return setting.value
+            import logging
+            logging.debug("Setting: name [%s] type [%s] value [%s]"%(name, setting.datatype, setting.value))
+#            if name=="CENTRAL_SERVER":
+#                import pdb; pdb.set_trace()
+            return convert.convert_value(setting.value, setting.datatype)
         except Settings.DoesNotExist:
             return default
-        
+    
     class Meta:
         verbose_name = "Settings"
         verbose_name_plural = "Settings"

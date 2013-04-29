@@ -4,10 +4,6 @@ PROJECT_PATH = os.path.dirname(os.path.realpath(__file__)) + "/../"
 
 sys.path = [PROJECT_PATH] + sys.path
 
-import settings
-
-download_path = settings.CONTENT_ROOT
-
 headers = {
     "X-api-username": "",
     "X-apikey": "",
@@ -40,7 +36,7 @@ def get_subtitles(youtube_id, language, format="json"):
         # return the subtitle text, replacing empty subtitle lines with spaces to make the FLV player happy
         return (r.text or "").replace("\n\n\n", "\n   \n\n").replace("\r\n\r\n\r\n", "\r\n   \r\n\r\n")
 
-def download_subtitles(youtube_id, language):
+def download_subtitles(youtube_id, language, download_path):
     
     subtitles = get_subtitles(youtube_id, language, format="srt")
     

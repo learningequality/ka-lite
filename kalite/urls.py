@@ -1,7 +1,7 @@
 from django.http import HttpResponseRedirect
 from django.conf.urls.defaults import patterns, include, url
 import securesync.urls
-from kalite import settings
+from config.models import Settings
 
 from django.contrib import admin
 admin.autodiscover()
@@ -13,11 +13,11 @@ urlpatterns = patterns('',
 )
 
 urlpatterns += patterns('',
-    url(r'^' + settings.CONTENT_URL[1:] + '(?P<path>.*)$', 'django.views.static.serve', {
-        'document_root': settings.CONTENT_ROOT,
+    url(r'^' + Settings.get("CONTENT_URL")[1:] + '(?P<path>.*)$', 'django.views.static.serve', {
+        'document_root': Settings.get("CONTENT_ROOT"),
     }),
-    url(r'^' + settings.MEDIA_URL[1:] + '(?P<path>.*)$', 'django.views.static.serve', {
-        'document_root': settings.MEDIA_ROOT,
+    url(r'^' + Settings.get("MEDIA_URL")[1:] + '(?P<path>.*)$', 'django.views.static.serve', {
+        'document_root': Settings.get("MEDIA_ROOT"),
     }),
 )
 
@@ -26,7 +26,7 @@ urlpatterns += patterns('',
     (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', {'packages': ('ka-lite.locale')}, 'i18n_javascript_catalog'),
 )
 
-if settings.CENTRAL_SERVER:
+if Settings.get("CENTRAL_SERVER"):
     
     from central.feeds import RssSiteNewsFeed, AtomSiteNewsFeed
 

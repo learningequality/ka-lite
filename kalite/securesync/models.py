@@ -10,7 +10,6 @@ import crypto
 import datetime
 import uuid
 import zlib
-import settings
 from pbkdf2 import crypt
 from django.utils.translation import ugettext_lazy as _
 
@@ -20,8 +19,16 @@ _always_hash_fields = ["signed_version", "id"]
 
 json_serializer = serializers.get_serializer("json")()
 
-# ROOT_UUID_NAMESPACE = uuid.uuid5(uuid.NAMESPACE_URL, settings.CENTRAL_SERVER_HOST)
+# ROOT_UUID_NAMESPACE = uuid.uuid5(uuid.NAMESPACE_URL, Settings.get("CENTRAL_SERVER")_HOST)
 ROOT_UUID_NAMESPACE = uuid.uuid5(uuid.NAMESPACE_URL, "https://kalite.learningequality.org/")
+
+
+syncing_models = []
+def add_syncing_models(models):
+    for model in models:
+        if model not in syncing_models:
+            syncing_models.append(model)
+
 
 
 class SyncSession(models.Model):
@@ -116,7 +123,7 @@ class SyncedModel(models.Model):
             # but it's a model class that requires trusted signatures, verification fails
             if self.requires_trusted_signature:
                 return False
-            if settings.CENTRAL_SERVER:
+            if Settings.get("CENTRAL_SERVER"):
                 # if it's not in a zone at all (or its DeviceZone was revoked), verification fails
                 if not self.signed_by.get_zone():
                     return False
@@ -409,7 +416,7 @@ class Device(SyncedModel):
         own_device.save(own_device=own_device)
         metadata = own_device.get_metadata()
         metadata.is_own_device = True
-        metadata.is_trusted = settings.CENTRAL_SERVER
+        metadata.is_trusted = Settings.get("CENTRAL_SERVER")
         metadata.save()
         return own_device
 
@@ -457,7 +464,7 @@ class Device(SyncedModel):
         return uuid.uuid5(ROOT_UUID_NAMESPACE, str(self.public_key)).hex
 
 
-settings.add_syncing_models([Facility, FacilityGroup, FacilityUser, SyncedLog])
+add_syncing_models([Facility, FacilityGroup, FacilityUser, SyncedLog])
 
 
 class ImportPurgatory(models.Model):
@@ -499,7 +506,7 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
         instances_remaining = False
                 
         # loop through all the model classes marked as syncable
-        for Model in settings.syncing_models:
+        for Model in syncing_models:
             
             # loop through each of the devices of interest
             for device_id, counter in device_counters.items():

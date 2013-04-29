@@ -2,9 +2,9 @@ from models import *
 
 import re, json, requests, urllib, urllib2, uuid
 from django.core import serializers
+from config.models import Settings
 
 import crypto
-import settings
 import kalite
 
 class SyncClient(object):
@@ -12,7 +12,7 @@ class SyncClient(object):
     counters_to_download = None
     counters_to_upload = None
     
-    def __init__(self, host=settings.CENTRAL_SERVER_HOST, require_trusted=True):
+    def __init__(self, host=Settings.get("CENTRAL_SERVER_HOST"), require_trusted=True):
         url = urllib2.urlparse.urlparse(host)
         self.url = "%s://%s" % (url.scheme, url.netloc)
         self.require_trusted = require_trusted

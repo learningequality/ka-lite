@@ -15,8 +15,6 @@ from securesync.forms import FacilityForm
 from django.contrib import messages
 import requests
 
-import settings
-
 
 @render_to("central/homepage.html")
 def homepage(request):

@@ -17,7 +17,6 @@ from annoying.functions import get_object_or_None
 from config.models import Settings
 
 import crypto
-import settings
 from securesync.models import SyncSession, Device, RegisteredDevicePublicKey, Zone, Facility, FacilityGroup
 from securesync.api_client import SyncClient
 from utils.jobs import force_job
@@ -27,7 +26,7 @@ from django.utils.translation import ugettext as _
 
 def central_server_only(handler):
     def wrapper_fn(*args, **kwargs):
-        if not settings.CENTRAL_SERVER:
+        if not Settings.get("CENTRAL_SERVER"):
             return HttpResponseNotFound("This path is only available on the central server.")
         return handler(*args, **kwargs)
     return wrapper_fn
@@ -35,14 +34,14 @@ def central_server_only(handler):
 
 def distributed_server_only(handler):
     def wrapper_fn(*args, **kwargs):
-        if settings.CENTRAL_SERVER:
+        if Settings.get("CENTRAL_SERVER"):
             return HttpResponseNotFound(_("This path is only available on distributed servers."))
         return handler(*args, **kwargs)
     return wrapper_fn
 
 
 def register_public_key(request):
-    if settings.CENTRAL_SERVER:
+    if Settings.get("CENTRAL_SERVER"):
         return register_public_key_server(request)
     else:
         return register_public_key_client(request)

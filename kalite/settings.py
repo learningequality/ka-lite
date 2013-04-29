@@ -34,7 +34,8 @@ def get_or_set_from_db(cursor, name, value, dtype=None, comment=None):
         # Third: get it from the database
         if len(db_value)==1:
             logging.debug('[r1]: found the value for %s in the database.'%(name))
-            set_value = db_value[0][0]
+            from kalite.utils import convert
+            set_value = convert.convert_value(db_value[0][0], dtype)
         else:
             logging.debug('[r2]: did not find value for %sin DB; using passed in value'%(name))
 
@@ -95,12 +96,12 @@ except Exception as e:
     cursor = None
 
 # Debug stuff
-DEBUG          = get_or_set_from_db(cursor, 'DEBUG',          0, 'INTEGER', "Print out debug errors/info to website?")
+DEBUG          = get_or_set_from_db(cursor, 'DEBUG',          False, 'bool', "Print out debug errors/info to website?")
 
 # Set up logging
 logging.getLogger().setLevel(logging.DEBUG*DEBUG + logging.INFO*(1-DEBUG))
 
-TEMPLATE_DEBUG = get_or_set_from_db(cursor, 'TEMPLATE_DEBUG', 0, 'INTEGER', "Print out template debug errors/info to website?")
+TEMPLATE_DEBUG = get_or_set_from_db(cursor, 'TEMPLATE_DEBUG', False, 'bool', "Print out template debug errors/info to website?")
 
 # Paths & urls
 DATA_PATH      = get_or_set_from_db(cursor, 'DATA_PATH', os.path.realpath(PROJECT_PATH + "/static/data/")+"/", 'TEXT', "Local file path to exercises")
@@ -112,7 +113,7 @@ STATIC_URL     = get_or_set_from_db(cursor, 'STATIC_URL', "/static/", 'TEXT', "?
 TEMPLATE_DIRS  = (get_or_set_from_db(cursor, 'TEMPLATE_DIRS', os.path.realpath(PROJECT_PATH + "/templates"), 'TEXT', "?"))
 
 # Server & API stuff
-CENTRAL_SERVER = get_or_set_from_db(cursor, "CENTRAL_SERVER", 0, 'INTEGER', "Whether or not this install is a 'central server'")
+CENTRAL_SERVER = get_or_set_from_db(cursor, "CENTRAL_SERVER", False, 'bool', "Whether or not this install is a 'central server'")
 CENTRAL_SERVER_HOST = get_or_set_from_db(cursor, 'CENTRAL_SERVER_HOST', "https://kalite.adhocsync.com/", 'TEXT', "API location")
 INTERNAL_IPS   = (get_or_set_from_db(cursor, 'INTERNAL_IPS',   "127.0.0.1", 'TEXT', ""))
 
@@ -120,8 +121,8 @@ INTERNAL_IPS   = (get_or_set_from_db(cursor, 'INTERNAL_IPS',   "127.0.0.1", 'TEX
 # Internationalization
 TIME_ZONE      = get_or_set_from_db(cursor, 'TIME_ZONE', "America/Los_Angeles", 'TEXT', "Local time zone for this installation. Choices can be found here: http://en.wikipedia.org/wiki/List_of_tz_zones_by_name")
 LANGUAGE_CODE  = get_or_set_from_db(cursor, 'LANGUAGE_CODE', 'en-us', 'TEXT', "Language code for this installation. All choices can be found here: http://www.i18nguy.com/unicode/language-identifiers.html")
-USE_I18N       = get_or_set_from_db(cursor, 'USE_I18N', 1, 'INTEGER', "If you set this to False, Django will make some optimizations so as not to load the internationalization machinery.")
-USE_L10N       = get_or_set_from_db(cursor, 'USE_L10N', 1, 'INTEGER', "If you set this to False, Django will not format dates, numbers and calendars according to the current locale")
+USE_I18N       = get_or_set_from_db(cursor, 'USE_I18N', True, 'bool', "If you set this to False, Django will make some optimizations so as not to load the internationalization machinery.")
+USE_L10N       = get_or_set_from_db(cursor, 'USE_L10N', True, 'bool', "If you set this to False, Django will not format dates, numbers and calendars according to the current locale")
 
 try:
     if conn:
@@ -222,21 +223,3 @@ try:
     from local_settings import *
 except ImportError:
     pass
-
-syncing_models = []
-def add_syncing_models(models):
-    for model in models:
-        if model not in syncing_models:
-            syncing_models.append(model)
-
-slug_key = {
-    "Topic": "id",
-    "Video": "readable_id",
-    "Exercise": "name",
-}
-
-title_key = {
-    "Topic": "title",
-    "Video": "title",
-    "Exercise": "display_name",
-}

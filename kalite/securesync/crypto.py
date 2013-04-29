@@ -1,7 +1,6 @@
 # see crypto_notes.txt in this directory for more info about key formats, etc
 
 import base64, hashlib, sys, re
-from kalite import settings
 from config.models import Settings
 import rsa as PYRSA
 

@@ -4,8 +4,7 @@ from django.http import HttpResponse, HttpResponseNotAllowed
 from django.utils import simplejson
 from django.db.models import Q
 from annoying.functions import get_object_or_None
-import settings
-from settings import slug_key, title_key
+from utils.topics import slug_key, title_key
 from main import topicdata
 from utils.jobs import force_job, job_status
 from utils.videos import delete_downloaded_files
@@ -126,6 +125,10 @@ def _get_exercise_log_dict(request, user, exercise_id):
 
 @require_admin
 def start_video_download(request):
+    """Grabs youtube IDs from the request.  
+    Updates the database that they need to be downloaded.
+    Then starts the 'videodownload' job"""
+    
     youtube_ids = OrderedSet(simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", []))
     
     video_files_to_create = [id for id in youtube_ids if not get_object_or_None(VideoFile, youtube_id=id)]
