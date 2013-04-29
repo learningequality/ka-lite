@@ -8,7 +8,6 @@ from main.models import VideoLog, ExerciseLog
 from config.models import Settings
 
 import crypto
-import settings
 from models import *
 
 
