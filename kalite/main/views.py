@@ -7,7 +7,6 @@ from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
-import settings
 from settings import slug_key, title_key
 from main import topicdata
 from django.contrib import messages
@@ -190,7 +189,7 @@ def coach_reports(request, facility):
     topic = request.GET.get("topic", "")
     group = request.GET.get("group", "")
     if group and topic and re.match("^[\w\-]+$", topic):
-        exercises = json.loads(open("%stopicdata/%s.json" % (settings.DATA_PATH, topic)).read())
+        exercises = json.loads(open("%stopicdata/%s.json" % (Settings.get("DATA_PATH"), topic)).read())
         exercises = sorted(exercises, key=lambda e: (e["h_position"], e["v_position"]))
         context["exercises"] = [{
             "display_name": ex["display_name"],

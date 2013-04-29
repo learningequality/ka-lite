@@ -38,7 +38,7 @@ class Command(BaseCommand):
             
             videos = VideoFile.objects.filter(flagged_for_download=True, download_in_progress=False)
             if videos.count() == 0:
-                self.stdout.write("Nothing to download; aborting.\n")
+                self.stdout.write("Nothing to download; aborting2.\n")
                 return
 
             video = videos[0]

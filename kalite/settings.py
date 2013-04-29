@@ -13,34 +13,46 @@ def get_or_set_from_db(cursor, name, value, dtype=None, comment=None):
     """Gets the settings from the localsettings, database, or 
        pushes them to the database and uses the value provided. """
     
+    select_cmd = "SELECT value FROM config_settings WHERE Name='%s'"%(name)
+    
     # Default: returned value is the same as that passed in
     set_value = value
     
-    # First check from globals
+    # GET: First check from globals
     if name in globals():
-        logging.debug('[0]: found value for %s in globals'%name)
+        logging.debug('[r0]: found value for %s in globals'%name)
         set_value = globals()[name]
     
     # Second, check from local settings
     #elif name in globals()['local_settings']:       
     #    logging.debug('[1]: found value for %s in local settings'%name)
     
-    # Now we need to go to the database
+    # Try to get from the database
     elif cursor:
-        db_value = cursor.execute("SELECT value FROM config_settings WHERE Name='%s'"%(name)).fetchall()
+        db_value = cursor.execute(select_cmd).fetchall()
         
         # Third: get it from the database
         if len(db_value)==1:
-            logging.debug('[1]: found the value for %s in the database.'%(name))
+            logging.debug('[r1]: found the value for %s in the database.'%(name))
             set_value = db_value[0][0]
-            
-        # Fourth: push it to the database, and use the provided value
         else:
-            logging.debug('[2]: had to insert the value for %s into the database.'%(name))
-            cursor.execute("INSERT INTO config_settings(Name,Value,DataType) values(?,?,?)",(name,value,dtype))
-    
+            logging.debug('[r2]: did not find value for %sin DB; using passed in value'%(name))
+
     else:
-        logging.debug('[3]: using passed in value')
+        logging.debug('[r3]: no DB; using passed in value for %s'%(name) )
+
+    
+    # SET: make sure it gets set in the database
+    if cursor:
+        db_value = cursor.execute(select_cmd).fetchall()
+        if len(db_value)==1 and db_value[0][0] != set_value:
+            logging.debug("[w1]: updating value for %s in the database"%(name))
+            cursor.execute("UPDATE config_settings set Value=? WHERE name=?",(set_value,name))
+            
+        elif len(db_value)==0:
+            logging.debug('[w2]: had to insert the value for %s into the database.'%(name))
+            cursor.execute("INSERT INTO config_settings(Name,Value,DataType) values(?,?,?)",(name,set_value,dtype))
+    
         
     return set_value
     
@@ -100,7 +112,8 @@ STATIC_URL     = get_or_set_from_db(cursor, 'STATIC_URL', "/static/", 'TEXT', "?
 TEMPLATE_DIRS  = (get_or_set_from_db(cursor, 'TEMPLATE_DIRS', os.path.realpath(PROJECT_PATH + "/templates"), 'TEXT', "?"))
 
 # Server & API stuff
-CENTRAL_SERVER_HOST = get_or_set_from_db(cursor, 'CENTRAL_SERVER_HOST', "https://kalite.adhocsync.com/", 'TEXT', "?")
+CENTRAL_SERVER = get_or_set_from_db(cursor, "CENTRAL_SERVER", 0, 'INTEGER', "Whether or not this install is a 'central server'")
+CENTRAL_SERVER_HOST = get_or_set_from_db(cursor, 'CENTRAL_SERVER_HOST', "https://kalite.adhocsync.com/", 'TEXT', "API location")
 INTERNAL_IPS   = (get_or_set_from_db(cursor, 'INTERNAL_IPS',   "127.0.0.1", 'TEXT', ""))
 
 
@@ -123,7 +136,6 @@ except Exception as e:
 
 #
 # Ones that can deal with local_settings
-CENTRAL_SERVER = get_local_or_not("CENTRAL_SERVER", False)
 
 
 # Make this unique, and don't share it with anybody.

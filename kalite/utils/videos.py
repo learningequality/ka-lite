@@ -4,11 +4,11 @@ PROJECT_PATH = os.path.dirname(os.path.realpath(__file__)) + "/../"
 
 sys.path = [PROJECT_PATH] + sys.path
 
-import settings
+from config.models import Settings
 
-download_path = settings.CONTENT_ROOT
+download_path = Settings.get("CONTENT_ROOT")
 
-data_path = settings.DATA_PATH
+data_path = Settings.get("DATA_PATH")
 
 download_url = "http://s3.amazonaws.com/KA-youtube-converted/%s/%s"
 
