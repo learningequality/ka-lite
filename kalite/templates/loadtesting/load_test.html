@@ -96,10 +96,18 @@
                         callback();
                         return;
                     }
-                    this.startTimer();
-                    this.whenLoaded(callback);
                     var index = Math.floor(Math.random() * matches.length);
-                    $(matches[index]).click();
+                    var $match = matches.eq(index)
+                    
+                    // it seems that using jQuery to "click" links does not follow them
+                    if ($match.prop("tagName").toLowerCase() === "a" && $match.attr("href")) {
+                        this.goto($match.attr("href"));
+                    } else {
+                        this.startTimer();
+                        this.whenLoaded(callback);
+                    }
+                    // click it no matter what, in case it has any side effects
+                    $match.click();
                 },
                 
                 fillForm: function(values) {
