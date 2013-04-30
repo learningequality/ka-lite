@@ -101,7 +101,7 @@
                     
                     // it seems that using jQuery to "click" links does not follow them
                     if ($match.prop("tagName").toLowerCase() === "a" && $match.attr("href")) {
-                        this.goto($match.attr("href"));
+                        this.goto(this.model.get("url") + $match.attr("href"), callback);
                     } else {
                         this.startTimer();
                         this.whenLoaded(callback);
