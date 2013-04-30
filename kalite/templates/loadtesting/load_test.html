@@ -99,7 +99,7 @@
                     this.startTimer();
                     this.whenLoaded(callback);
                     var index = Math.floor(Math.random() * matches.length);
-                    matches[index].click();
+                    $(matches[index]).click();
                 },
                 
                 fillForm: function(values) {
