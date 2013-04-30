@@ -84,6 +84,16 @@ a:hover, a:hover .suggested-action-title {
 </style>
 {% endblock headcss %}
 
+{% block headjs %}
+{% if settings.AUTO_LOAD_TEST %}
+<script>
+if (window.parent.frames.length === 0) {
+    window.location = "/loadtesting/";
+}
+</script>
+{% endif %}
+{% endblock headjs %}
+
 {% block content %}
 <div class="front-page">
     
