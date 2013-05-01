@@ -1,4 +1,4 @@
-import re, json, sys
+import re, json, sys, logging
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
@@ -90,10 +90,12 @@ def topic_handler(request, topic):
 
     # Get video counts if they'll be used
     #if len(videos)==0 and len(exercises)==0 and not "nvideos" in topic:
-    import pdb; pdb.set_trace()
     if not hasattr(topic, 'nvideos_local'):
+        logging.debug("COMPUTED video counts")
         (topic['nvideos_local'],topic['nvideos_known']) = get_video_counts(topic=topic, db_name=settings.DATABASES["default"]["NAME"])
-    
+    else:
+        logging.debug("USED cached video counts")
+            
     context = {
         "topic": topic,
         "title": topic[title_key["Topic"]],
@@ -120,7 +122,7 @@ def video_handler(request, video, prev=None, next=None):
     context = {
         "video": video,
         "title": video[title_key["Video"]],
-        "exists": VideoFile.objects.filter(pk=video['youtube_id']).exists(),
+        "video_exists": VideoFile.objects.filter(pk=video['youtube_id']).exists(),
         "prev": prev,
         "next": next,
     }

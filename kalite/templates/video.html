@@ -46,7 +46,7 @@
 <div class="clear"></div>
 
 <div id="video-player">
-+{% if exists %}
+{% if video_exists %}
 
     <video id="video-element" class="video-js vjs-default-skin" controls preload="auto" width="100%" height="600" poster="{{ CONTENT_URL }}{{ video.youtube_id }}.png" data-setup="{}">
         <source src="{{ CONTENT_URL }}{{ video.youtube_id }}.mp4" type="video/mp4" />
