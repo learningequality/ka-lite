@@ -1,5 +1,6 @@
 import json
 import os
+import logging
 
 try:
     from local_settings import *
@@ -8,6 +9,8 @@ except ImportError:
     local_settings = {}
 
 DEBUG = hasattr(local_settings, "DEBUG") and local_settings.DEBUG or False
+logging.getLogger().setLevel(logging.DEBUG*DEBUG + logging.INFO*(1-DEBUG))
+
 TEMPLATE_DEBUG = hasattr(local_settings, "TEMPLATE_DEBUG") and local_settings.TEMPLATE_DEBUG or DEBUG
 
 INTERNAL_IPS = ("127.0.0.1",)

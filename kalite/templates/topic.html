@@ -16,7 +16,8 @@
 <ol>
     {% for subtopic in topics %}
     <li style="font-size: 15px; line-height: 23px; margin-left: 10px;">
-        <a class="topic-link" href="{{ subtopic.id }}">{% trans subtopic.title %}</a>
+        {% comment %}This is DUMMY DISPLAY; looking for help to make this GOOD and to remove the INLINE STYLING {% endcomment %} 
+        <span style="float:left">[</span><span style="width:50px;float:left;text-align:right"> {{subtopic.nvideos_local}}/{{subtopic.nvideos_known}}</span> <span>&nbsp;video{% if subtopic.nvideos_known != 1 %}s{% endif %}] </span><span><a href="{{ subtopic.id }}">{% trans subtopic.title %}</a></span>
     </li>
     {% endfor %}
     <br/>
@@ -30,7 +31,8 @@
     <li style="font-size: 15px; line-height: 23px; margin-left: 10px;">
         <!--<a href="mplayer:///khan/videofiles/{{ video.youtube_id }}.ogv">{{ video.title }}</a>-->
         <span class="progress-circle" data-youtube-id="{{ video.youtube_id }}"></span>
-        <a class="video-link" href="v/{{ video.readable_id }}">{% trans video.title %}</a>
+        {% comment %}This is DUMMY DISPLAY; looking for help to make this GOOD and to remove the INLINE STYLING {% endcomment %} 
+        [{% if video.on_disk %} YES!!{% endif %} ]<a href="v/{{ video.readable_id }}">{% trans video.title %}</a>
     </li>
     {% endfor %}
     <br/>

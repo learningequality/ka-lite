@@ -46,12 +46,14 @@
 <div class="clear"></div>
 
 <div id="video-player">
++{% if exists %}
+
     <video id="video-element" class="video-js vjs-default-skin" controls preload="auto" width="100%" height="600" poster="{{ CONTENT_URL }}{{ video.youtube_id }}.png" data-setup="{}">
         <source src="{{ CONTENT_URL }}{{ video.youtube_id }}.mp4" type="video/mp4" />
         <track kind="captions" src="{{ CONTENT_URL }}{{ video.youtube_id }}.srt" srclang="en" label="On" />
     </video>
     <img class="video-thumb" src="{{ CONTENT_URL }}{{ video.youtube_id }}.png" style="position: absolute; left: -9999999px;">
-</div>
+{% endif %}</div>
 
 {% endblock content %}
 

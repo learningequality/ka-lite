@@ -22,6 +22,7 @@ from django.contrib import messages
 from utils.jobs import force_job
 from django.utils.translation import ugettext as _
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from utils.topic_tools import get_video_counts
 
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
@@ -83,9 +84,16 @@ def check_setup_status(handler):
 
 @render_to("topic.html")
 def topic_handler(request, topic):
-    videos = filter(lambda node: node["kind"] == "Video", topic["children"])
-    exercises = filter(lambda node: node["kind"] == "Exercise" and node["live"], topic["children"])
-    topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"] and "Video" in node["contains"], topic["children"])
+    videos    = topicdata.get_videos(topic)
+    exercises = topicdata.get_exercises(topic)
+    topics    = topicdata.get_live_topics(topic)
+
+    # Get video counts if they'll be used
+    #if len(videos)==0 and len(exercises)==0 and not "nvideos" in topic:
+    import pdb; pdb.set_trace()
+    if not hasattr(topic, 'nvideos_local'):
+        (topic['nvideos_local'],topic['nvideos_known']) = get_video_counts(topic=topic, db_name=settings.DATABASES["default"]["NAME"])
+    
     context = {
         "topic": topic,
         "title": topic[title_key["Topic"]],
@@ -112,6 +120,7 @@ def video_handler(request, video, prev=None, next=None):
     context = {
         "video": video,
         "title": video[title_key["Video"]],
+        "exists": VideoFile.objects.filter(pk=video['youtube_id']).exists(),
         "prev": prev,
         "next": next,
     }
