@@ -92,7 +92,8 @@ def topic_handler(request, topic):
     #if len(videos)==0 and len(exercises)==0 and not "nvideos" in topic:
     if not hasattr(topic, 'nvideos_local'):
         logging.debug("COMPUTED video counts")
-        (topic['nvideos_local'],topic['nvideos_known']) = get_video_counts(topic=topic, db_name=settings.DATABASES["default"]["NAME"])
+        (topic['nvideos_local'],topic['nvideos_known']) = get_video_counts(topic=topic, videos_path=settings.CONTENT_ROOT)#db_name=settings.DATABASES["default"]["NAME"])
+#        (topic['nvideos_local'],topic['nvideos_known']) = get_video_counts(topic=topic, db_name=settings.DATABASES["default"]["NAME"])
     else:
         logging.debug("USED cached video counts")
             
