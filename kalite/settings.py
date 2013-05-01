@@ -14,8 +14,15 @@ INTERNAL_IPS = ("127.0.0.1",)
 
 CENTRAL_SERVER = hasattr(local_settings, "CENTRAL_SERVER") and local_settings.CENTRAL_SERVER or False
 
+# info about the central server(s)
+CENTRAL_SERVER_DOMAIN = "adhocsync.com"
+CENTRAL_SERVER_HOST   = "kalite.%s"%CENTRAL_SERVER_DOMAIN
+CENTRAL_FROM_EMAIL    = "kalite@%s"%CENTRAL_SERVER_DOMAIN
+CENTRAL_ADMIN_EMAIL   = "info@learningequality.org"#"kalite@%s"%CENTRAL_SERVER_DOMAIN
+CENTRAL_WIKI_URL      = "http://kalitewiki.learningequality.org/"#http://%kalitewiki.s/%CENTRAL_SERVER_DOMAIN   
+
 ADMINS = (
-    ("Jamie Alexandre", "jamalex@gmail.com"),
+    ("KA Lite Team", CENTRAL_ADMIN_EMAIL),
 )
 
 MANAGERS = ADMINS
@@ -114,13 +121,9 @@ INSTALLED_APPS = (
 if DEBUG or CENTRAL_SERVER:
     INSTALLED_APPS += ("django_extensions",)
 
-CENTRAL_SERVER_HOST = "https://kalite.adhocsync.com/"
-
-CENTRAL_SERVER = hasattr(local_settings, "CENTRAL_SERVER") and local_settings.CENTRAL_SERVER or False
-
 if CENTRAL_SERVER:
     ACCOUNT_ACTIVATION_DAYS = 7
-    DEFAULT_FROM_EMAIL = "kalite@adhocsync.com"
+    DEFAULT_FROM_EMAIL = CENTRAL_FROM_EMAIL
     INSTALLED_APPS += ("postmark", "kalite.registration", "central")
     EMAIL_BACKEND = "postmark.backends.PostmarkBackend"
     AUTH_PROFILE_MODULE = 'central.UserProfile'

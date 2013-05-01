@@ -13,8 +13,8 @@ from django.views.decorators.csrf import csrf_exempt
 from securesync.models import Facility
 from securesync.forms import FacilityForm
 from django.contrib import messages
-import requests
 
+import requests
 import settings
 
 
@@ -57,7 +57,9 @@ def homepage(request):
 @render_to("central/landing_page.html")
 def landing_page(request):
     feed = FeedListing.objects.order_by('-posted_date')[:5]
-    return {"feed": feed}
+    return {"feed": feed,
+            "central_server_host": settings.CENTRAL_SERVER_HOST,
+            "wiki_url": settings.CENTRAL_WIKI_URL}
 
 
 @csrf_exempt # because we want the front page to cache properly
