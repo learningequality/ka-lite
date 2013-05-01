@@ -6,6 +6,14 @@
 
 {% block content %}
 
+{% block headcss %}
+<style>
+a.video-available {}
+a.video-unavailable,
+a:hover.video-unavailable { text-decoration: line-through; }
+</style>
+{% endblock headcss %}
+
 <h1 class="title-header">
     <div class="title">{% trans title %}</div>
     <div class="long-description" style="margin-top: 5px;">{% if description %}{% trans description %}{% endif %}</div>
@@ -32,7 +40,7 @@
         <!--<a href="mplayer:///khan/videofiles/{{ video.youtube_id }}.ogv">{{ video.title }}</a>-->
         <span class="progress-circle" data-youtube-id="{{ video.youtube_id }}"></span>
         {% comment %}This is DUMMY DISPLAY; looking for help to make this GOOD and to remove the INLINE STYLING {% endcomment %} 
-        [{% if video.on_disk %} YES!!{% endif %} ]<a href="v/{{ video.readable_id }}">{% trans video.title %}</a>
+        <a href="v/{{ video.readable_id }}" class="video-{% if not video.on_disk %}un{% endif %}available">{% trans video.title %}</a>
     </li>
     {% endfor %}
     <br/>
