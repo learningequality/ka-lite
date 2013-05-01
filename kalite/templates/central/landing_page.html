@@ -586,7 +586,7 @@ article {
 
         <div class="cent-s-by-s email-title">
             <h1>Contact us</h1>
-            <a class="email-address" href="mailto:info@learningequality.org">info@learningequality.org</a>
+            <a class="email-address" href="mailto:{{ central_contact_email }}">{{ central_contact_email }}</a>
         </div>
 
     </div>
@@ -602,15 +602,15 @@ article {
             <img src="/static/images/social-fb-t.png" width="101" height="62" alt="FB and twitter" usemap="#socialmap">
             <map name="socialmap">
                 <area shape="rect" coords="0,0,50,62" alt="Facebook" href="http://www.facebook.com/share.php?u=http://bit.ly/RnZgUp">
-                <area shape="rect" coords="51,0,101,62" alt="Twitter" href="https://twitter.com/intent/tweet?text=KA+Lite%2C+an+offline+version+of+Khan+Academy+for+rural+schools&url=http%3A%2F%2F{% central_server_host %}%2F">
+                <area shape="rect" coords="51,0,101,62" alt="Twitter" href="https://twitter.com/intent/tweet?text=KA+Lite%2C+an+offline+version+of+Khan+Academy+for+rural+schools&url=http%3A%2F%2F{{ central_server_host }}%2F">
             </map>
 
             <!-- G+ -->
-            <div class="g-plus" data-action="share" data-annotation="vertical-bubble" data-height="60" data-href="http://{% central_server_host %}/"></div>
+            <div class="g-plus" data-action="share" data-annotation="vertical-bubble" data-height="60" data-href="http://{{ central_server_host }}/"></div>
 
             <!-- LinkedIN -->
 
-            <script src="//platform.linkedin.com/in.js" type="text/javascript"> </script> <script type="IN/Share" data-url="{% central_server_host %}" data-counter="top"></script>
+            <script src="//platform.linkedin.com/in.js" type="text/javascript"> </script> <script type="IN/Share" data-url="{{ central_server_host }}" data-counter="top"></script>
         </div>
     </div>
 
@@ -628,7 +628,7 @@ article {
             </div>
             <div class="button-section">
 
-                <a href="{% wiki_url %}installation">
+                <a href="{{ wiki_url }}installation">
 
                     <button id="get-started-button">
                        Install now!
@@ -659,7 +659,7 @@ article {
         </div>
         <div class="button-section">
 
-            <a href="{% wiki_url %}contribute" target="_blank"><button id="contribute-button">Contribute</button></a>
+            <a href="{{ wiki_url }}contribute" target="_blank"><button id="contribute-button">Contribute</button></a>
         </div>
     </div>
 

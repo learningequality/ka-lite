@@ -7,6 +7,11 @@ try:
 except ImportError:
     local_settings = {}
 
+def localor(setting_name, default_val):
+    """Returns local_settings version if it exists (and is non-empty), otherwise uses default value"""
+    return hasattr(local_settings, setting_name) and getattr(local_settings, setting_name) or default_val
+    
+    
 DEBUG = hasattr(local_settings, "DEBUG") and local_settings.DEBUG or False
 TEMPLATE_DEBUG = hasattr(local_settings, "TEMPLATE_DEBUG") and local_settings.TEMPLATE_DEBUG or DEBUG
 
@@ -15,11 +20,12 @@ INTERNAL_IPS = ("127.0.0.1",)
 CENTRAL_SERVER = hasattr(local_settings, "CENTRAL_SERVER") and local_settings.CENTRAL_SERVER or False
 
 # info about the central server(s)
-CENTRAL_SERVER_DOMAIN = "adhocsync.com"
-CENTRAL_SERVER_HOST   = "kalite.%s"%CENTRAL_SERVER_DOMAIN
-CENTRAL_FROM_EMAIL    = "kalite@%s"%CENTRAL_SERVER_DOMAIN
-CENTRAL_ADMIN_EMAIL   = "info@learningequality.org"#"kalite@%s"%CENTRAL_SERVER_DOMAIN
-CENTRAL_WIKI_URL      = "http://kalitewiki.learningequality.org/"#http://%kalitewiki.s/%CENTRAL_SERVER_DOMAIN   
+CENTRAL_SERVER_DOMAIN = localor("CENTRAL_SERVER_DOMAIN", "adhocsync.com")
+CENTRAL_SERVER_HOST   = localor("CENTRAL_SERVER_HOST",   "kalite.%s"%CENTRAL_SERVER_DOMAIN)
+CENTRAL_FROM_EMAIL    = localor("CENTRAL_FROM_EMAIL",    "kalite@%s"%CENTRAL_SERVER_DOMAIN)
+CENTRAL_ADMIN_EMAIL   = localor("CENTRAL_ADMIN_EMAIL",   "info@learningequality.org")#"kalite@%s"%CENTRAL_SERVER_DOMAIN
+CENTRAL_CONTACT_EMAIL = localor("CENTRAL_CONTACT_EMAIL", "info@learningequality.org")#"kalite@%s"%CENTRAL_SERVER_DOMAIN
+CENTRAL_WIKI_URL      = localor("CENTRAL_WIKI_URL",      "http://kalitewiki.learningequality.org/")#http://%kalitewiki.s/%CENTRAL_SERVER_DOMAIN   
 
 ADMINS = (
     ("KA Lite Team", CENTRAL_ADMIN_EMAIL),

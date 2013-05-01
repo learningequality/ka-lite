@@ -59,6 +59,7 @@ def landing_page(request):
     feed = FeedListing.objects.order_by('-posted_date')[:5]
     return {"feed": feed,
             "central_server_host": settings.CENTRAL_SERVER_HOST,
+            "central_contact_email": settings.CENTRAL_CONTACT_EMAIL,
             "wiki_url": settings.CENTRAL_WIKI_URL}
 
 
