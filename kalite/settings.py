@@ -34,7 +34,7 @@ DATABASES      = localor("DATABASES", {
             "timeout": 60,
         },
     }
-}
+})
 
 DATA_PATH      = localor("DATA_PATH", PROJECT_PATH + "/static/data/")
 
