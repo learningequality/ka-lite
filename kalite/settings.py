@@ -1,5 +1,6 @@
 import json
 import os
+import logging
 
 try:
     from local_settings import *
@@ -14,11 +15,14 @@ def localor(setting_name, default_val):
 DEBUG          = localor("DEBUG", False)
 TEMPLATE_DEBUG = localor("TEMPLATE_DEBUG", False)
 
+logging.getLogger().setLevel(logging.DEBUG*DEBUG + logging.INFO*(1-DEBUG))
+    
 INTERNAL_IPS   = localor("INTERNAL_IPS", ("127.0.0.1",))
 
 CENTRAL_SERVER = localor("CENTRAL_SERVER", False)
 
 # info about the central server(s)
+SECURESYNC_PROTOCOL   = localor("SECURESYNC_PROTOCOL",   "https")
 CENTRAL_SERVER_DOMAIN = localor("CENTRAL_SERVER_DOMAIN", "adhocsync.com")
 CENTRAL_SERVER_HOST   = localor("CENTRAL_SERVER_HOST",   "kalite.%s"%CENTRAL_SERVER_DOMAIN)
 CENTRAL_FROM_EMAIL    = localor("CENTRAL_FROM_EMAIL",    "kalite@%s"%CENTRAL_SERVER_DOMAIN)

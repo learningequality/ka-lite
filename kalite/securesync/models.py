@@ -20,7 +20,7 @@ _always_hash_fields = ["signed_version", "id"]
 
 json_serializer = serializers.get_serializer("json")()
 
-ROOT_UUID_NAMESPACE = uuid.uuid5(uuid.NAMESPACE_URL, "https://%s/"%settings.CENTRAL_SERVER_HOST)
+ROOT_UUID_NAMESPACE = uuid.uuid5(uuid.NAMESPACE_URL, "%s://%s/"%(settings.SECURESYNC_PROTOCOL,settings.CENTRAL_SERVER_HOST))
 
 
 class SyncSession(models.Model):
