@@ -208,12 +208,6 @@ def central_facility_edit(request, org_id=None, zone_id=None, id=None):
         "zone_id": zone_id,
     }
 
-
-@render_to("central/getting_started.html")
-def get_started(request):
-    return {}
-
-
 @render_to("central/glossary.html")
 def glossary(request):
     return {}

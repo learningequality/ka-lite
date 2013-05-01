@@ -42,7 +42,6 @@ if settings.CENTRAL_SERVER:
         url(r'^organization/(?P<org_id>\w+)/zone/(?P<zone_id>\w+)/facility/new/$', 'central_facility_edit', {"id": "new"}, 'central_facility_add'),
         url(r'^organization/(?P<org_id>\w+)/zone/(?P<zone_id>\w+)/facility/(?P<id>\w+)/$', 'central_facility_edit', {}, 'central_facility_edit'),
         url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'), 
-        url(r'^getstarted/$','get_started', {}, 'get_started'),
         url(r'^glossary/$', 'glossary', {}, 'glossary'),
         url(r'^addsubscription/$', 'add_subscription', {}, 'add_subscription'),
         url(r'^feeds/rss/$', RssSiteNewsFeed(), {}, 'rss_feed'),
