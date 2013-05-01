@@ -61,6 +61,7 @@ else:
         url(r'^update/$', 'update', {}, 'update'),
         url(r'^userlist/$', 'user_list', {}, 'user_list'),
         url(r'^api/', include('main.api_urls')),
+        url(r'^loadtesting/', include('loadtesting.urls')),
         
         # the following pattern is a catch-all, so keep it last:
         url(r'^(?P<splat>.+)/$', 'splat_handler', {}, 'splat_handler'),

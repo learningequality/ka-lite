@@ -110,6 +110,7 @@
 }
 #get-started-button:hover{
     color: #DBE6E0;             /* Color: Moon */
+    cursor: auto;
 }
 
 /* Relevant to contribute section */
@@ -156,6 +157,7 @@
 }*/
 #contribute_sec button:hover{
     color: #DBE6E0;      /* Color: Moon */
+    cursor: auto;
 }
 .contribute-button-subtitle{
     font-size: 10px;
@@ -180,6 +182,7 @@
     position: relative;
     left: 20%;*/
 }
+
 #subscribe_sec .cent-s-by-s{
     float: left;
 }
@@ -197,12 +200,34 @@
 .subscribe-title h2{
     font-size: 24px;
 }
-.exclamation{
+
+.email-title {
+    font-weight: bold;
+    line-height: normal;
+    text-align: center;
+    width: 222px;
+}
+
+.email-title h1 {
+    color: #78AB46;             /* Color: Pea Green */
+    margin-top: 2px;
+    margin-bottom: 6px;
+    font-size: 30px;
+}
+
+.email-title a {
+    margin-bottom: 2px;
+    font-size: 13px;
+    margin-left: 4px;
+}
+
+.exclamation {
     font-size: 6.2em;
     margin-top: 20px; /* not a perfect way to do it.... */
     margin-left: 3px;
 }
-.subscribe-text{
+
+.subscribe-text {
     width: 195px;
     margin-top: 0px;
     padding: 0 5px 0 8px;
@@ -211,12 +236,12 @@
     text-align: justify;
 }
 
-.subscribe-form{
+.subscribe-form {
     width: 170px;
     margin-left: 10px;
     margin-top: 5px;
 }
-.subscribe-form form{
+.subscribe-form form {
     padding: 1px;
 }
 
@@ -225,7 +250,7 @@
     width: 130px;
 }
 
-.subscribe-form input[type=email]{
+.subscribe-form input[type=email] {
     border: 1px;
     border-radius: 5px;
     border-color: #bbb;         /* Color: medium-light Grey */
@@ -234,13 +259,14 @@
     padding-left: 3px;
     font-size: 12px;
     margin-bottom: 5px;
+    width: 123px;
     
     /*font*/
     color: #555;                /* Color: Medium Grey */
     font-style: oblique;
 }
 
-.subscribe-form input[type=submit]{
+.subscribe-form input[type=submit] {
     background: #78AB46;        /* Color: Pea Green */
     color: white;
     border-width: 1px;
@@ -248,41 +274,41 @@
     border-radius: 5px;
     font-size: 14px;
 }
-.subscribe-form input[type=submit]:hover{
+.subscribe-form input[type=submit]:hover {
     color: #DBE6E0;      /* Color: Moon */
 }
 
 /* Relevant to share section */
-#share_sec{
+#share_sec {
     /*width: 37%;*/
     border-color: #DBE6E0;      /* Color: Moon */
     border-style: solid;
 }
-#share_sec div{
+#share_sec div {
     float: left;
 }
-#share-text{
+#share-text {
     margin-top: 5px;
     width: 24%;
 }
-.share-title{
+.share-title {
     font-size: 22px;
 }
-#share-block{
+#share-block {
     margin-left: 15px;
     /*margin-top: 10px;*/
 }
 
 /* Relevant to donate section */
-#donate_sec{
+#donate_sec {
     display: none;
     width: 25%;
     margin-left: 10px;
 }
-#donate_sec div{
+#donate_sec div {
     float: left;
 }
-#donate-text{
+#donate-text {
     margin-top: 4px;
     line-height: 14px;
     font-size: 12px;
@@ -290,7 +316,7 @@
     width: 65%;
 }
 /*button stuff*/
-#donate-button{
+#donate-button {
     background: #78AB46;        /* Color: Pea Green */
     border-width: 1px;
     border-color: #9CBA7F;      /* Color: Mint Candy */
@@ -302,21 +328,21 @@
     /* Text */
     /*text-align: center;*/
 }
-#donate_sec button{
+#donate_sec button {
     color: white;
     line-height: 14px;
     font-size: 14px;
     margin-left: 10px;
     margin-top: 20px;
 }
-#donate_sec button:hover{
+#donate_sec button:hover {
     color: #DBE6E0;             /* Color: Moon */
     line-height: 14px;
 }
 /** Content END **/
 
 /* RSS Feed relevant stuff */
-#bottom_content{
+#bottom_content {
     margin: 25px auto;
     min-height: 70px;
     width: 860px;
@@ -324,16 +350,16 @@
 
     border-top: 1px dashed #DBE6E0; /* Color: Moon */
 }
-#rss-logo{
+#rss-logo {
     float: left;
     margin-left: 10px;
 }
-#rss-feed{
+#rss-feed {
     float: left;
     min-width: 400px;
     margin-left: 10px;
 }
-#rss-feed h2{
+#rss-feed h2 {
     font-size: 22px;
 }
 .rss-entry {
@@ -548,15 +574,21 @@ article {
     <div id="subscribe_sec" class="col onecol share-subscribe-section">
         <div class="cent-s-by-s subscribe-title"><h1>SUBSCRIBE<br/></h1><h2>FOR UPDATES</h2></div>
         <div class="exclamation cent-s-by-s greenword">!</div>
-        <div class="cent-s-by-s subscribe-text">
+ <!--        <div class="cent-s-by-s subscribe-text">
             We’re constantly updating KA Lite, and would love to let you know about new developments.
-        </div>
+        </div> -->
         <div id="mc_embed_signup" class="cent-s-by-s subscribe-form">
             <form action="http://adhocsync.us6.list-manage.com/subscribe/post?u=023b9af05922dfc7f47a4fffb&amp;id=97a379de16" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
                 <input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
                 <input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button">
             </form>
         </div>
+
+        <div class="cent-s-by-s email-title">
+            <h1>Contact us</h1>
+            <a class="email-address" href="mailto:info@learningequality.org">info@learningequality.org</a>
+        </div>
+
     </div>
 
     <div id="share_sec" class="col social_media_sharing share-subscribe-section">
@@ -577,11 +609,8 @@ article {
             <div class="g-plus" data-action="share" data-annotation="vertical-bubble" data-height="60" data-href="http://{% central_server_host %}/"></div>
 
             <!-- LinkedIN -->
-            <script src="//platform.linkedin.com/in.js" type="text/javascript"> </script> <script type="IN/Share" data-url="{% central_server_host %}" data-counter="top"></script>
 
-            <!-- Pinterest -->
-            <!--<a data-pin-config="above" href="//pinterest.com/pin/create/button/?url=http%3A%2F%2F{% central_server_host %}%2F&media=http%3A%2F%2F{% central_server_host %}%2Fstatic%2Fimages%2Flanding-page%2Fcoach-reports-cropped.png&description=KA%20Lite%20is%20an%20offline%20version%20of%20Khan%20Academy%20that%20runs%20on%20almost%20anything!%20For%20the%2065%25%20of%20the%20world%20with%20no%20internet%20access!" data-pin-do="buttonPin" ><img src="//assets.pinterest.com/images/pidgets/pin_it_button.png" /></a>-->
-            
+            <script src="//platform.linkedin.com/in.js" type="text/javascript"> </script> <script type="IN/Share" data-url="{% central_server_host %}" data-counter="top"></script>
         </div>
     </div>
 
@@ -598,21 +627,23 @@ article {
                 Ready to get started? 
             </div>
             <div class="button-section">
+
                 <a href="{% wiki_url %}installation">
+
                     <button id="get-started-button">
-                        Install now!
+                       Install now!
                     </button>
                 </a>
             </div>
         </div>
         <div class="mini-action-section">
             <div class="action-text">
-                Want deployment advice?
+                Tell us about your needs
             </div>
             <div class="button-section">
                 <a href="https://docs.google.com/spreadsheet/viewform?formkey=dEhEOWRNVDBzWTdsUnFQYWlCWnZoWWc6MQ">
                     <button id="get-started-button">
-                        Contact us
+                        Deployment
                     </button>
                 </a>
             </div>
@@ -627,6 +658,7 @@ article {
             Develop, translate, or seed!
         </div>
         <div class="button-section">
+
             <a href="{% wiki_url %}contribute" target="_blank"><button id="contribute-button">Contribute</button></a>
         </div>
     </div>
@@ -669,7 +701,3 @@ article {
         <a class="ka-on-social ka-on-twitter" href="https://twitter.com/ka_lite"><img class="ka-on-twitter" src="{{ STATIC_URL }}/images/ka-on-twitter-button.png"/></a>
     </span>
 {% endblock footerleft %}
-
-{% block bodyjs %}
-<script type="text/javascript" src="//assets.pinterest.com/js/pinit.js"></script>
-{% endblock %}

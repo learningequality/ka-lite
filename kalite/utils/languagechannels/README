@@ -1,0 +1,17 @@
+Module that indexes Khan Language Channels. 
+
+In the directory:
+
+known_channels.json:
+	A dictionary mapping known language channels to their language codes.
+	It should be modified if new language channels are added. 
+
+utils.py: 
+	writes video stats data from YouTube API to JSON files contained in 
+	the youtube_data directory. Can also return sets of videos IDs for 
+	one or more of the channels. 
+
+youtube_data/
+	Holds one JSON file per language channel. Acts as a sort of cache 
+	so that data storing and data reporting can happen independent of 
+	one another. 
