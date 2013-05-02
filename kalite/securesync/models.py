@@ -632,4 +632,3 @@ class SyncingModels:
 
 
 SyncingModels.add_syncing_models([Facility, FacilityGroup, FacilityUser, SyncedLog])
-
