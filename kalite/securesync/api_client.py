@@ -123,7 +123,7 @@ class SyncClient(object):
         return json.loads(r.content or "{}").get("device_counters", {})
         
     def get_client_device_counters(self):
-        return get_device_counters(self.session.client_device.get_zone())
+        return Device.get_device_counters(self.session.client_device.get_zone())
 
     def sync_device_records(self):
         
@@ -151,7 +151,7 @@ class SyncClient(object):
                 self.counters_to_download[device] = client_counters[device]
                 
         response = json.loads(self.post("device/download", {"devices": devices_to_download}).content)
-        download_results = save_serialized_models(response.get("devices", "[]"), increment_counters=False)
+        download_results = SyncingModels.save_serialized_models(response.get("devices", "[]"), increment_counters=False)
         
         self.session.models_downloaded += download_results["saved_model_count"]
         
@@ -163,7 +163,7 @@ class SyncClient(object):
             self.sync_device_records()
 
         response = json.loads(self.post("models/download", {"device_counters": self.counters_to_download}).content)
-        download_results = save_serialized_models(response.get("models", "[]"))
+        download_results = SyncingModels.save_serialized_models(response.get("models", "[]"))
         
         self.session.models_downloaded += download_results["saved_model_count"]
         
