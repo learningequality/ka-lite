@@ -167,7 +167,7 @@ def device_download(data, session):
 def device_upload(data, session):
     # TODO(jamalex): check that the uploaded devices belong to the client device's zone and whatnot
     # (although it will only save zones from here if centrally signed, and devices if registered in a zone)
-    result = save_serialized_models(data.get("devices", "[]"))
+    result = SyncingModels.save_serialized_models(data.get("devices", "[]"))
     session.models_uploaded += result["saved_model_count"]
     return JsonResponse(result)
         
@@ -185,7 +185,7 @@ def device_counters(data, session):
 def upload_models(data, session):
     if "models" not in data:
         return JsonResponse({"error": "Must provide models."}, status=500)
-    result = save_serialized_models(data["models"])
+    result = SyncingModels.save_serialized_models(data["models"])
     session.models_uploaded += result["saved_model_count"]
     return JsonResponse(result)
 
@@ -195,7 +195,7 @@ def upload_models(data, session):
 def download_models(data, session):
     if "device_counters" not in data:
         return JsonResponse({"error": "Must provide device counters."}, status=500)
-    result = get_serialized_models(data["device_counters"], zone=session.client_device.get_zone(), include_count=True)
+    result = SyncingModels.get_serialized_models(data["device_counters"], zone=session.client_device.get_zone(), include_count=True)
     session.models_downloaded += result["count"]
     return JsonResponse({
         "models": result["models"]
