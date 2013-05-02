@@ -11,15 +11,13 @@ Setting up KA Lite testing servers
 `CENTRAL_SERVER=True`
 
 3. Run `kalite/manage.py runserver 8001, then exit`
-4. Run `kalite/manage.py migrate`
+4. Run `kalite/manage.py syncdb --migrate`
 5. Run `kalite/manage.py runserver 8001`
 
 
 ### Testing Central Server Registration
 0. Follow the steps above for "Testing Central Server" 
-1. Run `kalite/manage.py schemamigration registration --initialize`
-2. Run `kalite/manage.py migration registration`
-3. Enable sending email via http:
+1. Enable sending email via http:
     1. Install httplib2 python module from (https://code.google.com/p/httplib2/downloads/list)
     2. Register for an account at (http://postmarkapp.com)
     3. At (http://postmarkapp.com), add a signature email for test email address (that you have control of)
@@ -49,5 +47,5 @@ Setting up KA Lite testing servers
 `CENTRAL_SERVER_HOST   = "127.0.0.1:8001"`  
 `SECURESYNC_PROTOCOL   = "http"`  
 
-4. Browse to LOCAL on url (http://localhost:8011)
+4. Browse to LOCAL on url (http://localhost:8008)
 5. Browse to CENTRAL on url (http://127.0.0.1:8001)
