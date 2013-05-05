@@ -57,7 +57,7 @@
 </script>
 {% endblock headscript %}
 
-{% block title %}Coach Reports{% endblock title %}
+{% block title %}{% trans "Coach Reports" %}{% endblock title %}
 
 {% block content %}
 <div id="content">
@@ -88,7 +88,7 @@
         </div>
     {% endif %}
         <div class="selection">
-            <div class="subtitle">{% trans "Display Options" %}</div><select id="disp_options" onchange="val=$('#disp_options option:selected')[0].value; $(val).each( function() { $(this)[0].style.display=($(this)[0].style.display=='block')?'none':'block'; })">
+            <div class="subtitle">{% trans "Display Options" %}</div><select id="disp_options">
                 <option selected>----</option>
                 <option onselect="alert('selected!')" value="div.legend">legend</option>
                 <option onselect="alert('selected!')" value=".attempts">attempts</option>
@@ -181,6 +181,10 @@ function setGetParam(name, val) {
     window.location.href = url;    
 }
 
+function toggleVisible(tag) { 
+    tag.style.display = (tag.style.display!='none' && tag.style.display!='')?'none':'block';
+}
+
 $(function() {
 
     $("#topic").change(function(){
@@ -191,6 +195,15 @@ $(function() {
        setGetParam("group", $("#group option:selected").val()); 
     });
     
+    // Selector to toggle visible elements is stored in each option value
+    $("#disp_options").change(function(){
+        selector = $("#disp_options option:selected")[0].value; 
+       
+        $(selector).each( function() { 
+            toggleVisible($(this)[0]);
+        });
+    });
+        
     $(window).resize(function() {
         $('.headrowuser').height($('.headrow.data').height()+1);
     }).resize();
