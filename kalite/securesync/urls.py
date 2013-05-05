@@ -5,6 +5,7 @@ import views
 urlpatterns = patterns('securesync.api_views',
     url(r'^api/register$', 'register_device', {}, 'register_device'),
     url(r'^api/test$', 'test_connection', {}, 'test_connection'),
+    url(r'^api/IPtest$', 'get_client_IP', {}, 'get_client_IP'),
     url(r'^api/session/create$', 'create_session', {}, 'create_session'),
     url(r'^api/session/destroy$', 'destroy_session', {}, 'destroy_session'),
     url(r'^api/device/counters$', 'device_counters', {}, 'device_counters'),
