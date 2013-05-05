@@ -1,0 +1,376 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+    <!--[if lt IE 9]>
+          <script src="{{ MEDIA_URL }}js/html5shiv.js"></script>
+    <![endif]-->
+
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="shortcut icon" href="{{ MEDIA_URL }}images/favicon.ico">
+        {% block jqueryjs %}
+        <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.7.1.min.js"></script>
+        <script type="text/javascript" src="{{ MEDIA_URL }}js/underscore-min.js"></script>
+        <script type="text/javascript" src="{{ MEDIA_URL }}js/backbone-min.js"></script>
+        {% endblock jqueryjs %}
+        
+        <style>
+            html, body {
+                height: 100%;
+                width: 100%;
+                margin: 0;
+                overflow: hidden;
+            }
+        
+            #puppet {
+                position: absolute;
+                top: 40px;
+                width: 100%;
+                border: none;
+            }
+            
+            #infobar .url {
+                float: left;
+                width: 40%;
+                margin-left: 5px;
+                overflow: hidden;
+            }
+            
+            #infobar .status {
+                float: left;
+                width: 20%;
+                margin-left: 15px;
+            }
+            
+            #infobar .errorcount {
+                color: red;
+                float: left;
+                width: 20%;
+                margin-left: 15px;                
+            }
+            
+        </style>
+        
+        <script>
+        
+            var fastInterval = 1000;
+            var slowInterval = 10000;
+        
+            var PuppetModel = Backbone.Model.extend({
+                
+            });
+            
+            var PuppetView = Backbone.View.extend({
+                
+                initialize: function() {
+                    _.bindAll(this);
+                    $(window).resize(this._resize);
+                    this.$el.load(this._pageLoaded);
+                    this._loadEvents = [];
+                    this.render();
+                },
+                
+                render: function() {
+                    this._resize();
+                },
+                
+                _resize: function() {
+                    this.$el.height($(window).height() - 40);
+                },
+                
+                whenLoaded: function(callback) {
+                    if (_.isFunction(callback)) {
+                        this._loadEvents.push(callback);
+                    }
+                },
+                
+                goto: function(url, callback) {
+                    this.startTimer();
+                    this.whenLoaded(callback);
+                    this.$el.attr("src", url);
+                },
+                
+                click: function(selector, callback) {
+                    var matches = this.$(selector);
+                    var index = Math.floor(Math.random() * matches.length);
+                    this.detClick(selector, index, callback);
+                },
+                
+                detClick: function(selector, index, callback) {
+                    selector = selector || "a[href!='']";
+                    var matches = this.$(selector);
+                    if (matches.length === 0) {
+                        callback();
+                        return;
+                    };
+                    var $match = matches.eq(index)
+                    
+                    // it seems that using jQuery to "click" links does not follow them
+                    if ($match.prop("tagName").toLowerCase() === "a" && $match.attr("href")) {
+                        this.goto(this.model.get("url") + $match.attr("href"), callback);
+                    } else {
+                        this.startTimer();
+                        this.whenLoaded(callback);
+                    }
+                    // click it no matter what, in case it has any side effects
+                    $match.click();
+                },
+                
+                fillForm: function(values) {
+                    var self = this;
+                    _.each(values, function(val, key) {
+                        self.$("form [name='" + key + "'], form #id_" + key).val(val);                        
+                    });
+                },
+                
+                submitForm: function(callback) {
+                    this.startTimer();
+                    this.whenLoaded(callback);
+                    this.$("article form").submit();
+                },
+                
+                startTimer: function() {
+                    this.model.set({
+                        startTime: new Date(),
+                        status: "loading",
+                        loadTime: null
+                    });
+                },
+                
+                _pageLoaded: function() {
+                    this.model.set("loadTime", (new Date()) - this.model.get("startTime"));
+                    try {
+                        this.model.set({
+                            status: "complete",
+                            url: this.el.contentDocument.location.pathname
+                        });
+                    } catch(e) {
+                        this.model.set({
+                            status: "error",
+                            url: ""
+                        });
+                        this.model.set("errorCount", (this.model.get("errorCount") || 0) + 1);
+                        this.model.set("clickDelay", slowInterval);
+                        this._triggerLoadEvents("error", null);
+                        return;
+                    }
+                    this.$ = this.el.contentWindow.$;
+                    this.window = this.el.contentWindow;
+                    this.$("a[href!='']").click(this.startTimer);
+                    this._triggerLoadEvents(null, this.model.get("url"));
+                    this.model.set("clickDelay", fastInterval);
+                },
+                
+                _triggerLoadEvents: function(err, data) {
+                    var self = this;
+
+                    _.each(this._loadEvents, function(load_callback) {
+                        _.defer(function() {
+                            load_callback(err, data);
+                        });
+                    });
+                    
+                    this._loadEvents = [];
+                    
+                },
+                
+                watchVideo: function(callback) {
+                    this.runSequence(video_sequence, null, callback);
+                },
+                
+                watchExercise: function(callback) {
+                    this.runSequence(exercise_sequence, null, callback);
+                },
+                
+                login: function(callback) {
+                    this.runSequence(login_sequence, null, callback);
+                },
+                
+                runSequence: function(tasks, input, callback) {
+                    var self = this;
+                    var index = 0;
+                    function runNext(err, result) {
+                        // if there was an error, or we reach the end, call the overall callback
+                        if (err || index >= tasks.length) {
+                            if (_.isFunction(callback)) {
+                                callback(err, result);
+                            }
+                            return;
+                        }
+                        var task = tasks[index];
+                        index++;
+                        setTimeout(function() {
+                            task.call(self, result, runNext);
+                        }, this.model.get("clickDelay"));
+                    }
+                    runNext(null, input);
+                }
+                
+            });
+
+            var InfoBarView = Backbone.View.extend({
+                
+                initialize: function() {
+                    _.bindAll(this);
+                    this.model.bind("change:url", this._updateURL);
+                    this.model.bind("change:status", this._updateStatus);
+                    this.model.bind("change:errorCount", this._updateErrorCount);
+                },
+                
+                _updateURL: function() {
+                    this.$(".url").text(this.model.get("url"));
+                    window.location.hash = this.model.get("url");
+                },
+
+                _updateStatus: function() {
+                    this.$(".status").text(this.model.get("status"));
+                    var loadTime = this.model.get("loadTime");
+                    if (loadTime) {
+                        this.$(".status").text(this.$(".status").text() + ": " + loadTime + "ms");
+                    }
+                },
+                
+                _updateErrorCount: function() {
+                    var errortext = "";
+                    var errorCount = this.model.get("errorCount");
+                    if (errorCount) {
+                        errortext = "Errors: " + errorCount;
+                    }
+                    this.$(".errorcount").text(errortext)
+                }
+                
+            });
+
+            var video_sequence = [
+                function(input, callback) {
+                    this.goto("/", callback);
+                },
+                function(input, callback) {
+                    this.click(".topic-link", callback);
+                },
+                function(input, callback) {
+                    this.click(".topic-link", callback);
+                },
+                function(input, callback) {
+                    this.click(".topic-link", callback);
+                },
+                function(input, callback) {
+                    this.click(".topic-link", callback);
+                },
+                function(input, callback) {
+                    this.click(".video-link", callback);
+                },
+                function(input, callback) {
+                    try {
+                        this.window.videoView.play();
+                        this.window.videoView.player.addEvent("pause", callback);
+                        this.window.videoView.player.addEvent("error", callback);
+                    } catch(e) {
+                        callback(e, null);
+                    }
+                }
+            ]
+            
+            var exercise_sequence = [
+                function(input, callback) {
+                    this.goto("/math/arithmetic/fractions/understanding_fractions/e/recognizing_fractions_0.5/", callback);
+                },
+                function(input, callback) {
+                    this.$("#solutionarea input").val(100).keypress()
+                    this.click("#check-answer-button");
+                    callback()
+                },
+                function(input, callback) {
+                    this.$("#solutionarea input").val(100).keypress()
+                    this.click("#check-answer-button");
+                    callback()
+                },
+                function(input, callback) {
+                    this.$("#solutionarea input").val(100).keypress()
+                    this.click("#check-answer-button");
+                    callback()
+                },
+                function(input, callback) {
+                    this.$("#solutionarea input").val(100).keypress()
+                    this.click("#check-answer-button");
+                    callback()
+                },
+                function(input, callback) {
+                    this.$("#solutionarea input").val(100).keypress()
+                    this.click("#check-answer-button");
+                    callback()
+                },
+                function(input, callback) {
+                    this.$("#solutionarea input").val(100).keypress()
+                    this.click("#check-answer-button");
+                    callback()
+                },
+                function(input, callback) {
+                    this.$("#solutionarea input").val(100).keypress()
+                    this.click("#check-answer-button");
+                    callback()
+                },
+                function(input, callback) {
+                    this.$("#solutionarea input").val(100).keypress()
+                    this.click("#check-answer-button");
+                    callback()
+                },
+                function(input, callback) {
+                    this.$("#solutionarea input").val(100).keypress()
+                    this.click("#check-answer-button");
+                    callback()
+                },
+                function(input, callback) {
+                    this.$("#solutionarea input").val(100).keypress()
+                    this.click("#check-answer-button");
+                    callback()
+                }
+            ]
+            
+            var login_sequence = [
+                function(input, callback) {
+                    this.goto("/securesync/login/", callback);
+                },
+                function(input, callback) {
+                    this.$("#id_facility option")[1].selected = true;
+                    this.fillForm({
+                        username: "student",
+                        password: "student",
+                    });
+                    this.submitForm(callback);
+                }
+            ]
+            
+            $(function() {
+                window.model = new PuppetModel({
+                    clickDelay: fastInterval
+                });
+                window.puppet = new PuppetView({model: model, el: $("#puppet")});
+                window.infobar = new InfoBarView({model: model, el: $("#infobar")});
+                puppet.goto(window.location.hash.slice(1) || "/");
+                
+                function watchVideos() {
+                    if(Math.random()<0.9){
+                        puppet.watchVideo(watchVideos);
+                    } else {
+                        puppet.watchExercise(watchVideos);
+                    }
+                    
+                }
+                
+                puppet.login(watchVideos);
+                        
+            });
+        
+        </script>
+        
+    </head>
+    <body>
+        <div id="infobar">
+            <div class="url"></div>
+            <div class="status"></div>
+            <div class="errorcount"></div>
+        </div>
+        <iframe id="puppet"></iframe>
+    </body>
+</html>
+

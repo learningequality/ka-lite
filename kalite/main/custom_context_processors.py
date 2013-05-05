@@ -10,6 +10,7 @@ def custom(request):
         "CONTENT_ROOT": settings.CONTENT_ROOT,
         "CONTENT_URL": settings.CONTENT_URL,
         "DATA_PATH": settings.DATA_PATH,
+        "settings": settings,
     }
 
 
