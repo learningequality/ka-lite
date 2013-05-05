@@ -6,7 +6,56 @@
 
 {% block headcss %}
 <link rel='stylesheet' type='text/css' href='{{ MEDIA_URL }}css/coach_reports.css'>
+<style>
+#legend a {
+    height:12px;
+    margin:0px;
+    padding:0px;
+}   
+.attempts, .streak_progress {
+    float:left; 
+    margin:0px 5px 0px 0px;
+    padding:0px;
+    height:12px;
+    text-align:center;
+    vertical-align:middle;
+    display:none;
+}
+#legend {
+    float:right;
+    vertical-align:middle;
+    margin:12px 45px 2px 15px;
+}
+.legend {
+    float:left;
+    width:150px;
+    height:20px;
+    text-align:center;
+    vertical-align:middle;
+    border-style:solid;
+    border-width: 1px;
+    padding:2px;
+    margin-right: 2px;
+    display:none
+}
+.legend div {
+    float:left;
+    width:50px;
+    height:21px;
+}
+#selection-bar {
+    overflow:hide;
+}
+#disp_options {
+    float:right;
+}
+</style>
 {% endblock headcss %}
+{% block headscript %}
+<script>
+
+</script>
+{% endblock headscript %}
 
 {% block title %}Coach Reports{% endblock title %}
 
@@ -38,7 +87,21 @@
             </select>
         </div>
     {% endif %}
+        <div class="selection">
+            <div class="subtitle">{% trans "Display Options" %}</div><select id="disp_options" onchange="val=$('#disp_options option:selected')[0].value; $(val).each( function() { $(this)[0].style.display=($(this)[0].style.display=='block')?'none':'block'; })">
+                <option selected>----</option>
+                <option onselect="alert('selected!')" value="div.legend">legend</option>
+                <option onselect="alert('selected!')" value=".attempts">attempts</option>
+                <option onselect="alert('selected!')" value=".streak_progress">streak progress</option>
+            </select>
+        </div>
+        <div id="legend">
+            <div class="legend"><div class="partial"></div>{% trans "Partially Complete" %}</div>
+            <div class="legend"><div class="complete"></div>{% trans "Completed" %}</div>
+            <div class="legend"><div class="struggle"></div>{% trans "Struggling" %}</div>
+        </div>
     </div>
+    
 
     {% if students %}
         <div style="clear: both;"></div>
@@ -80,14 +143,14 @@
                                 {% for log in student.exercise_logs %}
                                     {% if log %}
                                         {% if log.struggling %}
-                                            <td class="status data struggle" title="{% trans "Struggling" %}"></td>
+                                            <td class="status data struggle" title="{% trans "Struggling" %}"><div class="attempts">{{log.attempts}}</div><div class="streak_progress">{{log.streak_progress}}%</div></td>
                                         {% elif log.complete %}
-                                            <td class="status data complete" title="{% trans "Complete" %}"></td>
+                                            <td class="status data complete" title="{% trans "Complete" %}"><div class="attempts">{{log.attempts}}</div></td>
                                         {% else %}
-                                            <td class="status data partial" title="{% trans "Attempted" %}"></td>
+                                            <td class="status data partial" title="{% trans "Attempted" %}"><div class="attempts">{{log.attempts}}</div><div class="streak_progress">{{log.streak_progress}}%</div></td>
                                         {% endif %}
                                     {% else %}
-                                        <td class="status data" title="{% trans "Not Attempted" %}"></td>
+                                        <td class="status data" title="{% trans "Not Attempted" %}">{{log.attempts}}</td>
                                     {% endif %}
                                 {% endfor %}
                             </tr>

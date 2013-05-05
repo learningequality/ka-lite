@@ -45,7 +45,7 @@ th, td {
     font-weight: bold;
 }
 
-td.status {
+.status {
     height: 27px;
     background-color: #EEE;
     /*width: 80px;*/
@@ -70,15 +70,15 @@ th.headrowuser {
     font-weight: bold;
 }
 
-td.complete {
+.complete {
     background-color: #2F942F;
 }
 
-td.partial {
+.partial {
     background-color: #94BE48;
 }
 
-td.struggle {
+.struggle {
     background-color: #CA4D4D;
 }
 

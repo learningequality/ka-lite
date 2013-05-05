@@ -20,11 +20,17 @@ proficiency = [random.random() * 0.8 for i in range(10)] + [random.random() for 
 topics = ["multiplication-division", "factors-multiples"]
 
 class Command(BaseCommand):
-    help = "Generate fake user data"
+    args = "<existing facility name>"
+    help = "Generate fake user data (will create a facility and 2 classes)"
 
     def handle(self, *args, **options):
-        facility = Facility(name="Wilson Elementary")
-        facility.save()
+
+        if len(args) >= 1:
+            facility=Facility.get(name=args[0])
+        else:
+            facility = Facility(name="Wilson Elementary")
+            facility.save()
+            
         group1 = FacilityGroup(facility=facility, name="Class 4E")
         group1.full_clean()
         group1.save()
