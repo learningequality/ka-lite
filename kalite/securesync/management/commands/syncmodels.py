@@ -40,10 +40,12 @@ class Command(BaseCommand):
             results = client.sync_models()
             
             # display counts for this block of models being transferred
-            self.stdout_writeln("\tUploaded: %d (%d failed)" % (
+            self.stdout_writeln("\s: %d (%d failed)" % (
+                _("Uploaded"),
                 results["upload_results"]["saved_model_count"],
                 results["upload_results"]["unsaved_model_count"]))
-            self.stdout_writeln("\tDownloaded: %d (%d failed)" % (
+            self.stdout_writeln("\t%s: %d (%d failed)" % (
+                _("Downloaded"),
                 results["download_results"]["saved_model_count"],
                 results["download_results"]["unsaved_model_count"]))
             
