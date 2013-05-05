@@ -61,6 +61,7 @@
 
 {% block content %}
 <div id="content">
+{{request.GET.print}}abc
     <div class="facility"><h2>{% blocktrans %}Coach Reports for {{ facility }}{% endblocktrans %} (<a href="?facility=select">{% trans "Change Facility" %}</a>)</h2></div>
     <div id="selection-bar">
     {% if groups %}
