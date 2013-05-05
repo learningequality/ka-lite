@@ -29,7 +29,6 @@ class Command(BaseCommand):
         
         self.stdout_writeln(_("Initiating SyncSession")+"...")
         result = client.start_session()
-        self.stdout_writeln(client.session.client_device.pk)
         if result != "success":
             self.stderr_writeln(_("Unable to initiate session")+": %s" % result.content)
             return

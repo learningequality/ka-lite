@@ -8,6 +8,9 @@ import settings
 import kalite
 
 class SyncClient(object):
+    """ This is for the distributed server, for establishing a client session with
+    the central server.  Over that session, syncing can occur in multiple requests"""
+     
     session = None
     counters_to_download = None
     counters_to_upload = None
