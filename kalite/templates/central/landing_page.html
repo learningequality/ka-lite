@@ -2,7 +2,12 @@
 
 {% block home_active %}active{% endblock home_active %}
 
-{% block title %}Home{% endblock %}
+{% load i18n %}
+
+{% block titletag %}
+<title>{% trans "KA Lite, an offline version of Khan Academy" %}</title>
+{% endblock %}
+
 {% block jqueryjs %}
 <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.8.3.min.js"></script> 
 {% endblock jqueryjs %}
@@ -568,7 +573,57 @@ article {
     </div>
 </div>
 
-<!-- Second Content Row - Subscribe and Share -->
+
+<!-- Second Content Row  - Get Started and Contribute -->
+<div id="get-started-contribute" class="row">
+    <div id="get_started_sec" class="floatleft">
+        <h2>
+            Do you know somewhere that KA Lite could be useful?
+        </h2>
+        <div class="mini-action-section">
+            <div class="action-text">
+                Ready to get started? 
+            </div>
+            <div class="button-section">
+
+                <a href="/install/">
+
+                    <button id="get-started-button">
+                       Install now!
+                    </button>
+                </a>
+            </div>
+        </div>
+        <div class="mini-action-section">
+            <div class="action-text">
+                Tell us about your needs
+            </div>
+            <div class="button-section">
+                <a href="https://docs.google.com/spreadsheet/viewform?formkey=dEhEOWRNVDBzWTdsUnFQYWlCWnZoWWc6MQ">
+                    <button id="get-started-button">
+                        Deployment
+                    </button>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div id="contribute_sec" class="floatleft">
+        <h2>
+            Want to contribute?
+        </h2>
+        <div class="action-text">
+            Develop, translate, or seed!
+        </div>
+        <div class="button-section">
+
+            <a href="{{ wiki_url }}contribute" target="_blank"><button id="contribute-button">Contribute</button></a>
+        </div>
+    </div>
+
+</div>
+
+<!-- Third Content Row - Subscribe and Share -->
 <div class="row subscriberow">
 
     <div id="subscribe_sec" class="col onecol share-subscribe-section">
@@ -616,54 +671,6 @@ article {
 
 </div>
 
-<!-- Third Content Row  - Get Started and Contribute -->
-<div id="get-started-contribute" class="row">
-    <div id="get_started_sec" class="floatleft">
-        <h2>
-            Do you know somewhere that KA Lite could be useful?
-        </h2>
-        <div class="mini-action-section">
-            <div class="action-text">
-                Ready to get started? 
-            </div>
-            <div class="button-section">
-
-                <a href="{{ wiki_url }}installation">
-
-                    <button id="get-started-button">
-                       Install now!
-                    </button>
-                </a>
-            </div>
-        </div>
-        <div class="mini-action-section">
-            <div class="action-text">
-                Tell us about your needs
-            </div>
-            <div class="button-section">
-                <a href="https://docs.google.com/spreadsheet/viewform?formkey=dEhEOWRNVDBzWTdsUnFQYWlCWnZoWWc6MQ">
-                    <button id="get-started-button">
-                        Deployment
-                    </button>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div id="contribute_sec" class="floatleft">
-        <h2>
-            Want to contribute?
-        </h2>
-        <div class="action-text">
-            Develop, translate, or seed!
-        </div>
-        <div class="button-section">
-
-            <a href="{{ wiki_url }}contribute" target="_blank"><button id="contribute-button">Contribute</button></a>
-        </div>
-    </div>
-
-</div>
 
 </div> <!--end promo content-->
 
