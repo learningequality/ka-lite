@@ -155,6 +155,14 @@ def homepage(request):
     return context
         
 @require_admin
+@render_to("admin_distributed.html")
+def easy_admin(request):
+    context = {
+        "wiki_url": settings.CENTRAL_WIKI_URL
+    }
+    return context
+    
+@require_admin
 @render_to("video_download.html")
 def update(request):
     call_command("videoscan")

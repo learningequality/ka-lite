@@ -1,0 +1,52 @@
+{% extends 'base_distributed.html' %}
+
+{% load i18n %}
+
+{% block easyadmin_active %}active{% endblock easyadmin_active %}
+
+{% block headcss %}
+<style>
+
+div.help {
+    margin-top:25px;
+}
+ul {
+    margin-left:20px;
+}
+
+.warn {
+    font-weight:bold;
+    color:#f00;
+}
+</style>
+{% endblock headcss %}
+
+{% block title %}{% trans "Administration Panel" %}{% endblock title %}
+
+{% block content %}
+<div id="content">
+  {% trans "This page can help you administer your installation of KA Lite" %}
+  
+   <div id="offline_help" class="help">
+        <h2>{% trans "(Offline) Management Tools" %}</h2>
+        <ul>
+            <li><a href="/userlist/">User management</a> - {%trans "Contains latest FAQ for troubleshooting" %}</li>
+        </ul>
+    </div>
+  
+   <div id="online_help" class="help">
+        <h2>{% trans "Online help documents" %}</h2>
+        <ul>
+            <li><a href="{{wiki_url}}">KA Lite Wiki</a> -  {%trans "Contains latest information deploying, using, and administering KA Lite" %}</li>
+            <li><a href="{{central_url}}faq">FAQ</a> -  {%trans "Contains latest FAQ for troubleshooting" %}</li>
+        </ul>
+    </div>
+
+   <div id="advanced_help" class="help">
+        <h2>{% trans "Advanced User Tools" %}</h2>
+        <ul>
+            <li><a href="/admin/">Django admin</a> - {%trans "Database of information stored in your KA Lite installation" %} <span class="warn">({% trans "Warning: changing database values can break your KA Lite installation!" %})</span></li>
+        </ul>
+    </div>
+</div>
+{% endblock content %}
