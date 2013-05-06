@@ -240,10 +240,13 @@ class RegistrationProfile(models.Model):
             not). Consult the documentation for the Django sites
             framework for details regarding these objects' interfaces.
 
+        ``central_server_host``
+            String containing the hostname of the KA Lite central server
         """
         ctx_dict = { 'activation_key': self.activation_key,
                      'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS,
-                     'site': site }
+                     'site': site,
+                     'central_server_host': settings.CENTRAL_SERVER_HOST }
         subject = render_to_string('registration/activation_email_subject.txt',
                                    ctx_dict)
         # Email subject *must not* contain newlines

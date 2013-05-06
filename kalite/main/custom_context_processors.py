@@ -4,7 +4,7 @@ from main.models import LanguagePack
 
 def custom(request):
     return {
-        "central_server_host": settings.CENTRAL_SERVER_HOST,
+        "central_server_host": "%s://%s/"%(settings.SECURESYNC_PROTOCOL,settings.CENTRAL_SERVER_HOST),
         "is_central": settings.CENTRAL_SERVER,
         "base_template": settings.CENTRAL_SERVER and "base_central.html" or "base_distributed.html",
         "CONTENT_ROOT": settings.CONTENT_ROOT,
