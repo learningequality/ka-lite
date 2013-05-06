@@ -159,7 +159,8 @@ def homepage(request):
 def easy_admin(request):
     
     context = {
-        "wiki_url" : settings.CENTRAL_WIKI_URL
+        "wiki_url" : settings.CENTRAL_WIKI_URL,
+        "central_server_host" : settings.CENTRAL_SERVER_HOST,
     }
     return context
     
