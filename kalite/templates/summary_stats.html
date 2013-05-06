@@ -1,0 +1,67 @@
+{% extends 'base_distributed.html' %}
+
+{% load i18n %}
+
+{% block easyadmin_active %}active{% endblock easyadmin_active %}
+
+{% block headcss %}
+<style>
+div.stats { margin-top:40px;; }
+div.stat_name { font-size:18pt;margin-bottom:5px; }
+div.stat { display:block }
+div.stat {clear:left}
+div.stat_head,.stat_val { float:left}
+div.stat_head { width:200px; margin-right: 25px; }
+</style>
+{% endblock headcss %}
+
+{% block title %}{% trans "Administration Panel" %}{% endblock title %}
+
+{% block content %}
+<div id="content">
+   <div id="video_stats" class="stats" style="margin-top:0px">
+        <div class="stat_name">{% trans "Video Stats" %}:</div>
+        <div class="stat">
+            <div class="stat_head">{% trans "Total video views" %}:</div>
+            <div class="stat_val">{{ video_stats.total_video_views }}</div>
+        </div>
+        <div class="stat">
+            <div class="stat_head">{% trans "Total video viewing time" %}:</div>
+            <div class="stat_val">{{ video_stats.total_video_time }} {% trans "seconds" %}</div>
+        </div>
+        <div class="stat">
+            <div class="stat_head">{% trans "Total video points" %}:</div>
+            <div class="stat_val">{{ video_stats.total_video_points }} {% trans "points" %}</div>
+        </div>
+    </div>
+    <div id="exercise_stats" class="stats">
+        <div class="stat_name">{% trans "Exercise Stats" %}:</div>
+       <div class="stat">
+           <div class="stat_head">{% trans "Total exercise attempts" %}:</div>
+           <div class="stat_val">{{ exercise_stats.total_exercise_attempts }} {% trans "attempts" %}</div>
+        </div>
+        <div class="stat">
+           <div class="stat_head">{% trans "Total exercise points" %}:</div>
+           <div class="stat_val">{{ exercise_stats.total_exercise_points }} {% trans "points" %}</div>
+        </div>
+        <div class="stat">
+           <div class="stat_head">{% trans "Total exercise status" %}:</div>
+           <div class="stat_val">{{ exercise_stats.total_exercise_status.struggling }} {% trans "struggling" %}, {{ exercise_stats.total_exercise_status.inprog }} {% trans "in-progress" %}, {{ exercise_stats.total_exercise_status.completed }} {% trans "completed" %}
+        </div>
+    </div>
+    <div id="user_stats" class="stats">
+        <div class="stat_name">{% trans "User Stats" %}:</div>
+        <div class="stat">
+            <div class="stat_head">{% trans "Total users" %}:</div>
+            <div class="stat_val">{{ user_stats.total_users }}</div>
+        </div>
+    <div id="group_stats" class="stats">
+        <div class="stat_name">{% trans "Group Stats" %}:</div>
+        <div class="stat">
+            <div class="stat_head">{% trans "Total groups" %}:</div>
+            <div class="stat_val">{{ group_stats.total_groups }}</div>
+        </div>
+   </div>
+</div>
+{% endblock content %}
+

@@ -157,10 +157,113 @@ def homepage(request):
 @require_admin
 @render_to("admin_distributed.html")
 def easy_admin(request):
+    
     context = {
-        "wiki_url": settings.CENTRAL_WIKI_URL
+        "wiki_url" : settings.CENTRAL_WIKI_URL
     }
     return context
+    
+@require_admin
+@render_to("summary_stats.html")
+def summary_stats(request):
+    # TODO (bcipolli): allow specific stats to be requested (more efficient)
+    
+    context = {
+        "video_stats" : get_stats(("total_video_views","total_video_time","total_video_points")),
+        "exercise_stats": get_stats(("total_exercise_attempts","total_exercise_points","total_exercise_status")),
+        "user_stats": get_stats(("total_users",)),
+        "group_stats": get_stats(("total_groups",)),
+    }
+    return context
+    
+    
+def get_stats(stat_names):
+    """Given a list of stat names, return a dictionary of stat values.
+    For efficiency purposes, best to request all related stats together.
+    In low-memory conditions should group requests by common source (video, exercise, user, group), but otherwise separate
+    
+Available stats:
+    video:    total_video_views, total_video_time, total_video_points
+    exercise: total_exercise_attempts, total_exercise_points, total_exercise_status
+    users:    total_users
+    groups:   total_groups
+    """
+    
+    all_vlogs = None
+    all_elogs = None
+    all_users = None
+    all_groups = None
+    
+    val = {}
+    for stat_name in stat_names:
+    
+        # Total time from videos
+        if stat_name=="total_video_views":
+            if not all_vlogs: all_vlogs = VideoLog.objects.all()
+            
+            val[stat_name] = all_vlogs.count()
+
+        # Total time from videos
+        elif stat_name=="total_video_time":
+            if not all_vlogs: all_vlogs = VideoLog.objects.all()
+            
+            total_time = 0
+            for vlog in all_vlogs:
+                total_time += vlog.total_seconds_watched
+            val[stat_name] = total_time
+
+        elif stat_name=="total_video_points":
+            if not all_vlogs: all_vlogs = VideoLog.objects.all()
+            
+            total_vpoints = 0
+            for vlog in all_vlogs:
+                total_vpoints += vlog.points
+            val[stat_name] = total_vpoints
+        
+        
+        
+        elif stat_name=="total_exercise_attempts":
+            if not all_elogs: all_elogs = ExerciseLog.objects.all()
+            
+            total_eattempts = 0
+            for elog in all_elogs:
+                total_eattempts += elog.attempts
+            val[stat_name] = total_eattempts
+            
+        elif stat_name=="total_exercise_points":
+            if not all_elogs: all_elogs = ExerciseLog.objects.all()
+            
+            total_epoints = 0
+            for elog in all_elogs:
+                total_epoints += elog.points
+            val[stat_name] = total_epoints
+
+        elif stat_name=="total_exercise_status":
+            if not all_elogs: all_elogs = ExerciseLog.objects.all()
+            
+            total_estatus = {"struggling":0, "inprog":0, "completed":0}
+            for elog in all_elogs:
+                total_estatus["struggling"] += elog.struggling
+                total_estatus["inprog"]     += elog.complete
+                total_estatus["completed"]  += not elog.struggling and not elog.complete
+            val[stat_name] = total_estatus
+        
+        
+        
+        elif stat_name=="total_users":
+            if not all_users: all_users = FacilityUser.objects.all()
+            val[stat_name] = all_users.count()
+            
+            
+            
+        elif stat_name=="total_groups":
+            if not all_groups: all_groups = FacilityGroup.objects.all()
+            val[stat_name] = all_groups.count()
+
+        else:
+            raise Exception("Unknown stat requested: %s"%stat_name)
+        
+    return val
     
 @require_admin
 @render_to("video_download.html")
