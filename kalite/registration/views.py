@@ -3,6 +3,9 @@ Views which allow users to create and activate accounts.
 
 """
 
+from central.forms import OrganizationForm
+from central.models import Organization
+from securesync.models import Zone
 
 from django.shortcuts import redirect
 from django.shortcuts import render_to_response
@@ -189,16 +192,39 @@ def register(request, backend, success_url=None, form_class=None,
 
     if request.method == 'POST':
         form = form_class(data=request.POST, files=request.FILES)
-        if form.is_valid():
+        org_form = OrganizationForm(data=request.POST, instance=Organization())
+        
+        # Could register
+        if form.is_valid() and org_form.is_valid():
             form.cleaned_data['username'] = form.cleaned_data['email']
+
+            # TODO (bcipolli): should do all this in one transaction,
+            #   so that if any one part fails, it all rolls back.
+
+            # Create the user
             new_user = backend.register(request, **form.cleaned_data)
+            
+            # Add an org.  Must create org before adding user.
+            org_form.instance.owner=new_user
+            org_form.save()
+            org = org_form.instance
+            org.users.add(new_user)
+            
+            # Now add a zone, and link to the org
+            zone = Zone(name=org_form.instance.name + " Default Zone")
+            zone.save()
+            org.zones.add(zone)
+            org.save()
+            
             if success_url is None:
                 to, args, kwargs = backend.post_registration_redirect(request, new_user)
                 return redirect(to, *args, **kwargs)
             else:
                 return redirect(success_url)
+                
     else:
         form = form_class()
+        org_form = OrganizationForm()
     
     if extra_context is None:
         extra_context = {}
@@ -207,7 +233,7 @@ def register(request, backend, success_url=None, form_class=None,
         context[key] = callable(value) and value() or value
 
     return render_to_response(template_name,
-                              { 'form': form },
+                              { 'form': form, "org_form" : org_form},
                               context_instance=context)
 
 def logout_view(request):

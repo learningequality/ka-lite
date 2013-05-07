@@ -5,7 +5,7 @@
 {% block headcss %}
 <style>
 label {
-    width: 130px;
+    width: 350px;
     display: block;
     float: left;
     text-align: right;
@@ -52,6 +52,20 @@ label {
       {{ form.email }}
       {% if form.email.errors %}
         <div class="errorlist">{{ form.email.errors.as_text }}</div>
+      {% endif %}
+    </p>
+    <p>
+      <label for="id_org_name">Organization Name:<br/>(optional)</label>
+      {{ org_form.name }}
+      {% if org_form.name.errors %}
+        <div class="errorlist">{{ org_form.name.errors.as_text }}</div>
+      {% endif %}
+    </p>
+    <p>
+      <label for="id_org_website">Organization URL:<br/>(optional)</label>
+      {{ org_form.url }}
+      {% if org_form.url.errors %}
+        <div class="errorlist">{{ org_form.url.errors.as_text }}</div>
       {% endif %}
     </p>
     <p>
