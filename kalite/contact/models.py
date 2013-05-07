@@ -48,6 +48,10 @@ class Deployment(models.Model):
         return "Inquiry from %s @ %s on %s (%s)"%(self.contact.name, self.contact.org_name, self.contact.contact_date, self.contact.email)
 
 
+    def __unicode__(self):
+        return "Inquiry from %s @ %s on %s (%s)"%(self.contact.name, self.contact.org_name, self.contact.contact_date, self.contact.email)
+
+
 class Support(models.Model):
     SUPPORT_TYPES = (('installation', 'Installation'),
                      ('setup',        'Post-install setup'),

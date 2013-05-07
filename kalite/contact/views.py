@@ -25,9 +25,12 @@ def contact_wizard(request):
         deployment_form = DeploymentForm(prefix="df", data=request.POST)
         support_form = SupportForm(prefix="sf", data=request.POST)
         info_form = InfoForm(prefix="if", data=request.POST)
+
         if contact_form.is_valid():
+            # Point to authenticated user
             if request.user.is_authenticated():
                 contact_form.instance.user = request.user
+            # Map over the field at the bottom of the form to the hidden form element (laziness!)
             contact_form.instance.cc_email = request.POST["hack_cc_email"]
                 
             # Deployment
