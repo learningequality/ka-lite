@@ -4,8 +4,9 @@ from models import Contact, Deployment, Support, Info
 from central.models import Organization
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse,HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from utils.mailchimp import mailchimp_subscribe
 
 import settings
 
@@ -14,6 +15,15 @@ def contact_thankyou(request):
     return {
     }
 
+
+def contact_subscribe(request):
+    
+    email = getattr(request,request.method)['email']
+    if not email:
+        raise Exception("Email not specified")
+    return HttpResponse(mailchimp_subscribe(email))
+    
+    
 @render_to("contact/contact_wizard.html")
 def contact_wizard(request, type=""):
     """Contact form consists of a contact main portion, and three possible contact types (deployment, support, info).

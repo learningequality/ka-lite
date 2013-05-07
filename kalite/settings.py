@@ -32,7 +32,7 @@ CENTRAL_CONTACT_EMAIL = local_or_("CENTRAL_CONTACT_EMAIL", "info@learningequalit
 CENTRAL_DEPLOYMENT_EMAIL = local_or_("CENTRAL_DEPLOYMENT_EMAIL", "deployments@learningequality.org")
 CENTRAL_SUPPORT_EMAIL    = local_or_("CENTRAL_SUPPORT_EMAIL",    "support@learningequality.org")
 CENTRAL_INFO_EMAIL       = local_or_("CENTRAL_INFO_EMAIL",       "info@learningequality.org")
-
+CENTRAL_SUBSCRIBE_URL    = local_or_("CENTRAL_SUBSCRIBE_URL",    "http://adhocsync.us6.list-manage.com/subscribe/post?u=023b9af05922dfc7f47a4fffb&amp;id=97a379de16")
 CENTRAL_WIKI_URL      = local_or_("CENTRAL_WIKI_URL",      "http://kalitewiki.learningequality.org/")#http://%kalitewiki.s/%CENTRAL_SERVER_DOMAIN   
 
 ADMINS         = local_or_("ADMINS", ( ("KA Lite Team", CENTRAL_ADMIN_EMAIL), ) )
