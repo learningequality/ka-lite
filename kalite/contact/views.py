@@ -25,10 +25,10 @@ def contact_wizard(request):
         deployment_form = DeploymentForm(prefix="df", data=request.POST)
         support_form = SupportForm(prefix="sf", data=request.POST)
         info_form = InfoForm(prefix="if", data=request.POST)
-
         if contact_form.is_valid():
             if request.user.is_authenticated():
                 contact_form.instance.user = request.user
+            contact_form.instance.cc_email = request.POST["hack_cc_email"]
                 
             # Deployment
             if contact_form.cleaned_data["type"]  ==Contact.CONTACT_TYPE_DEPLOYMENT:
@@ -92,8 +92,13 @@ def handle_contact(request, contact_form, details_form, list_email, email_templa
         subject = '[KA Lite] %s'%render_to_string('contact/%s_subject.txt'%email_template_prefix, context)
         body = render_to_string('contact/%s_body.txt'%email_template_prefix, context)
 
+        if contact_form.instance.cc_email:
+            cc_email = [contact_form.instance.email]
+        else:
+            cc_email = []
+            
         email = EmailMessage(subject=subject, body=body, from_email=settings.CENTRAL_FROM_EMAIL,
-                    to=[list_email], headers = {'Reply-To': contact_form.instance.email})
+                    to=[list_email], cc=cc_email, headers = {'Reply-To': contact_form.instance.email})
         email.send()
         return HttpResponseRedirect(reverse("contact_thankyou"))
 

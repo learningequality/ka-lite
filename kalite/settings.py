@@ -132,7 +132,7 @@ INSTALLED_APPS = (
 )
 
 if DEBUG or CENTRAL_SERVER:
-    INSTALLED_APPS += ("django_extensions",)
+    INSTALLED_APPS += ("django_extensions","django_snippets")
 
 
 if CENTRAL_SERVER:
