@@ -27,10 +27,11 @@ article {
 {% block sitewide_navigation %}
 	<span class="dropdown topic-browser-dropdown">
         <a href="/" id="nav_home" class="{% block home_active %}{% endblock home_active %}">Home</a>
-        <a href="/faq/" id="nav_faq" class="{% block faq_active %}{% endblock faq_active %}">FAQ</a>
         <!--a href="/wiki/" id="nav_wiki" class="{% block wiki_active %}{% endblock wiki_active %}">Wiki</a-->
         <a href="/wiki/installation" id="nav_install" class="{% block install_active %}{% endblock install_active %}">Install</a>
+        <a href="/faq/" id="nav_faq" class="{% block faq_active %}{% endblock faq_active %}">FAQ</a>
         <a href="/contact/" id="nav_contact" class="{% block contact_active %}{% endblock contact_active %}">Contact</a>
+        <a href="/about/" id="nav_aboutus" class="{% block aboutus_active %}{% endblock aboutus_active %}">About Us</a>
     {% if user.is_authenticated %}
         {% if user.is_superuser %}
         <a href="/admin/" id="nav_admin" class="{% block admin_active %}{% endblock admin_active %}">Admin</a>

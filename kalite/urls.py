@@ -9,7 +9,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 
-def redirect_to(self, url, wurl):
+def redirect_to(self, url, wurl=""):
     return HttpResponseRedirect(url + wurl)
     
 urlpatterns = patterns('',
@@ -56,6 +56,7 @@ if settings.CENTRAL_SERVER:
         url(r'^contact/', include('contact.urls')),
         url(r'^install/$', 'install_wizard', {}, 'install_wizard'),
         url(r'^wiki/(?P<wurl>\w+)/$', redirect_to, {'url': settings.CENTRAL_WIKI_URL}),
+        url(r'^about/$', redirect_to, { 'url': 'http://learningequality.org/' }),
     )
     
     handler404 = 'main.views.central_404_handler'
