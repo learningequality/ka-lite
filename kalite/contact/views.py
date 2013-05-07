@@ -1,6 +1,6 @@
 from annoying.decorators import render_to
-from forms  import ContactForm, DeploymentForm, SupportForm, InfoForm
-from models import Contact, Deployment, Support, Info
+from forms  import ContactForm, DeploymentForm, SupportForm, InfoForm, ContributeForm
+from models import Contact, Deployment, Support, Info, Contribute
 from central.models import Organization
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
@@ -34,6 +34,7 @@ def contact_wizard(request, type=""):
         contact_form = ContactForm(prefix="cf", data=request.POST)
         deployment_form = DeploymentForm(prefix="df", data=request.POST)
         support_form = SupportForm(prefix="sf", data=request.POST)
+        contribute_form = ContributeForm(prefix="rf", data=request.POST)
         info_form = InfoForm(prefix="if", data=request.POST)
 
         if contact_form.is_valid():
@@ -58,6 +59,16 @@ def contact_wizard(request, type=""):
                 if info_form.is_valid():
                     return handle_contact(request, contact_form, info_form, settings.CENTRAL_INFO_EMAIL, "info")
 
+            # Contribute
+            elif contact_form.cleaned_data["type"]==Contact.CONTACT_TYPE_CONTRIBUTE:
+                if contribute_form.is_valid():
+                    # Send development inquiries to the development list
+                    if contribute_form.cleaned_data["type"]==Contribute.CONTRIBUTE_TYPE_DEVELOPMENT:
+                        return handle_contact(request, contact_form, contribute_form, settings.CENTRAL_DEV_EMAIL, "contribute")
+                    # Everything else must go to the info list
+                    else:
+                       return handle_contact(request, contact_form, contribute_form, settings.CENTRAL_INFO_EMAIL, "contribute")
+            
             else:
                 raise Exception("Unknown contact type: %s"%(contact_form.cleaned_data["type"]))
     
@@ -67,6 +78,7 @@ def contact_wizard(request, type=""):
         deployment_form = DeploymentForm(prefix="df")
         support_form = SupportForm(prefix="sf")
         info_form = InfoForm(prefix="if")
+        contribute_form = ContributeForm(prefix="rf")
         
         # Use the user's information, if available
         if request.user.is_authenticated():
@@ -86,6 +98,7 @@ def contact_wizard(request, type=""):
         "wiki_url": settings.CENTRAL_WIKI_URL,
         'deployment_form' : deployment_form,
         'support_form' : support_form,
+        'contribute_form' : contribute_form,
         'info_form' : info_form,
         'contact_form' : contact_form,
     }

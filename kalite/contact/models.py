@@ -68,11 +68,16 @@ class Support(models.Model):
 
 
 class Contribute(models.Model):
-    CONTRIBUTE_TYPES = (('development', 'Code Development'),
-                        ('funding',     'Funding'),
-                        ('translation', 'Translation'),
-                        ('testing',     'Testing'),
-                        ('other',       'Other'))
+    CONTRIBUTE_TYPE_DEVELOPMENT='development'
+    CONTRIBUTE_TYPE_FUNDING    ='funding'
+    CONTRIBUTE_TYPE_TRANSLATION='translation'
+    CONTRIBUTE_TYPE_TESTING    ='testing'
+    CONTRIBUTE_TYPE_OTHER      ='other'
+    CONTRIBUTE_TYPES = ((CONTRIBUTE_TYPE_DEVELOPMENT, 'Code Development'),
+                        (CONTRIBUTE_TYPE_FUNDING,     'Funding'),
+                        (CONTRIBUTE_TYPE_TRANSLATION, 'Translation'),
+                        (CONTRIBUTE_TYPE_TESTING,     'Testing'),
+                        (CONTRIBUTE_TYPE_OTHER,       'Other'))
 
     contact  = models.ForeignKey(Contact)
     type     = models.CharField(max_length=15, choices=CONTRIBUTE_TYPES, verbose_name="Type of contribution:")
