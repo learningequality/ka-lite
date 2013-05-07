@@ -18,13 +18,6 @@ import requests
 import settings
 
 
-@render_to("central/contact_wizard.html")
-def contact_wizard(request):
-    return {
-        "central_contact_email": settings.CENTRAL_CONTACT_EMAIL,
-        "wiki_url": settings.CENTRAL_WIKI_URL
-        }
-
 @render_to("central/install_wizard.html")
 def install_wizard(request):
     return {

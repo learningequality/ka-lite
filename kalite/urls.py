@@ -47,7 +47,7 @@ if settings.CENTRAL_SERVER:
         url(r'^feeds/rss/$', RssSiteNewsFeed(), {}, 'rss_feed'),
         url(r'^feeds/atom/$', AtomSiteNewsFeed(), {}, 'atom_feed'),
         url(r'^faq/', include('faq.urls')),
-        url(r'^contact/$', 'contact_wizard', {}, 'contact_wizard'),
+        url(r'^contact/', include('contact.urls')),
         url(r'^install/$', 'install_wizard', {}, 'install_wizard'),
     )
     

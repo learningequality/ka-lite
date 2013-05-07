@@ -124,6 +124,7 @@ INSTALLED_APPS = (
     "main",
     "faq",
     "loadtesting",
+    "contact",
 )
 
 if DEBUG or CENTRAL_SERVER:
