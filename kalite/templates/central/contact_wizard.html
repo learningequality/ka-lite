@@ -1,0 +1,121 @@
+{% extends "base_central.html" %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Contact Us!" %}{% endblock %}
+
+{% block contact_active %}active{% endblock contact_active %}
+
+
+{% block headcss %}
+<style>
+label {
+    width: 59px;
+    display: block;
+    float: left;
+    text-align: right;
+    padding-right: 10px;
+    font-weight: bold;
+}
+input {
+	margin-bottom: 15px;
+}
+.submit {
+    margin-left: 71px;
+}
+.form_label { float:left }
+.form_values { float:left }
+.form_section { clear:left }
+</style>
+{% endblock headcss %}
+
+{% block content %}
+
+<h1>Contact us!</h1>
+
+<p><a href="mailto:{{ central_contact_email }}">{{ central_contact_email }}</a></p>
+
+{% if form.errors %}
+<p class="contact_error">Incorrect user name or password:</p>
+{% endif %}
+<form method="post" action="?next={{ next|default:"/" }}">
+{% csrf_token %}
+<div class="form_section" id="deployment_section">
+    <div class="form_label">{% trans "Name" %}</div>
+    <div class="form_values">
+        <div><input type="text" name="name">{% trans "Deployment Partnerships" %}</input></div>
+        <div><input type="radio" name="contact_type">{% trans "Installation Support" %}</input></div>
+        <div><input type="radio" name="contact_type">{% trans "General Questions" %}</input></div>
+    </div>
+</div>
+<div class="form_section">
+    <div class="form_label">{% trans "What would you like to contact us about?" %}</div>
+    <div class="form_values">
+        <div><input type="radio" name="contact_type" id="ct_deployment">{% trans "Deployment Partnerships" %}</input></div>
+        <div><input type="radio" name="contact_type" id="ct_support">{% trans "Installation Support" %}</input></div>
+        <div><input type="radio" name="contact_type" id="ct_info">{% trans "General Questions" %}</input></div>
+    </div>
+</div>
+<div class="form_section" id="deployment_section">
+    <div class="form_label">{% trans "Select your issue" %}</div>
+    <div class="form_values">
+        <div><input type="radio" name="contact_type">{% trans "Deployment Partnerships" %}</input></div>
+        <div><input type="radio" name="contact_type">{% trans "Installation Support" %}</input></div>
+        <div><input type="radio" name="contact_type">{% trans "General Questions" %}</input></div>
+    </div>
+</div>
+<div id="deployment_section">deployment</div>
+<div id="support_section">support</div>
+<div id="info_section">info</div>
+
+<div class="form_section">
+    <div class="label">{% trans "test" %}</div>
+</div>
+<dl>
+<dt>
+	<label for="id_username">
+		Email:
+	</label>
+	{% if form.username.errors %} 
+	<span class="errors">
+		{{ form.email.errors.as_text }}
+	</span>{% endif %}
+</dt>
+<dd>
+	{{ form.username }}
+</dd>
+<dt>
+	<label for="id_password">
+		Password:
+	</label>
+	{% if form.password1.errors %} 
+	<span class="errors">
+		{{ form.password1.errors.as_text }}
+	</span>{% endif %}
+</dt>
+<dd>
+	{{ form.password }}
+</dd>
+<dt>
+	<input type="submit" class="submit" value="Log in" />
+</dt>
+</dl>
+</form>
+<script>
+function toggle_on_contact_div(nm) { 
+    $("#deployment_section")[0].style.display = "none";
+    $("#support_section")[0].style.display    = "none";
+    $("#info_section")[0].style.display       = "none";
+    $("#"+nm+"_section")[0].style.display     = "block";
+}
+
+$(function() {
+
+    $("#ct_deployment").change(function(){ toggle_on_contact_div("deployment") });
+    $("#ct_support").change(   function(){ toggle_on_contact_div("support") });
+    $("#ct_info").change(      function(){ toggle_on_contact_div("info") });
+    
+});</script>
+<p>If you've forgotten your password, you can <a href="/accounts/password/reset/">reset it here</a>.</p>
+
+{% endblock %}

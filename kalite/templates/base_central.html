@@ -16,7 +16,7 @@ ul {
 article {
     padding: 30px;
 }
-#nav_signup, #nav_login, #nav_admin, #nav_faq, #nav_install {
+#nav_signup, #nav_login, #nav_admin, #nav_faq, #nav_wiki, #nav_install {
     display: block;
 }
 </style>
@@ -28,7 +28,9 @@ article {
 	<span class="dropdown topic-browser-dropdown">
         <a href="/" id="nav_home" class="{% block home_active %}{% endblock home_active %}">Home</a>
         <a href="/faq/" id="nav_faq" class="{% block faq_active %}{% endblock faq_active %}">FAQ</a>
+        <!--a href="{{wiki_url}}" id="nav_wiki" class="{% block wiki_active %}{% endblock wiki_active %}">Wiki</a-->
         <a href="/install/" id="nav_install" class="{% block install_active %}{% endblock install_active %}">Install</a>
+        <a href="/contact/" id="nav_contact" class="{% block contact_active %}{% endblock contact_active %}">Contact</a>
     {% if user.is_authenticated %}
         {% if user.is_superuser %}
         <a href="/admin/" id="nav_admin" class="{% block admin_active %}{% endblock admin_active %}">Admin</a>
