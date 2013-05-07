@@ -4,6 +4,6 @@ import views
 
 
 urlpatterns = patterns('contact.views',
-    url(r'^$', 'contact_wizard',   {}, 'contact_wizard'),
     url(r'^thanks/?$', 'contact_thankyou', {}, 'contact_thankyou'),
+    url(r'^(?P<type>\w*)$', 'contact_wizard',   {}, 'contact_wizard'),
 )

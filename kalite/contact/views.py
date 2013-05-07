@@ -15,7 +15,7 @@ def contact_thankyou(request):
     }
 
 @render_to("contact/contact_wizard.html")
-def contact_wizard(request):
+def contact_wizard(request, type=""):
     """Contact form consists of a contact main portion, and three possible contact types (deployment, support, info).
     Here, we handle all the forms and save them into their parts."""
     
@@ -52,6 +52,7 @@ def contact_wizard(request):
                 raise Exception("Unknown contact type: %s"%(contact_form.cleaned_data["type"]))
     
     # A GET request.  Create empty forms, fill in user details if available
+    #   Auto-select the type, if relevant
     else:
         deployment_form = DeploymentForm(prefix="df")
         support_form = SupportForm(prefix="sf")
@@ -66,9 +67,9 @@ def contact_wizard(request):
             else:
                 org = Organization()
             
-            contact_form = ContactForm(prefix="cf", instance=Contact(user=request.user, name="%s %s"%(request.user.first_name, request.user.last_name), email=request.user.email, org_name=org.name, org_url=org.url))
+            contact_form = ContactForm(prefix="cf", instance=Contact(type=type, user=request.user, name="%s %s"%(request.user.first_name, request.user.last_name), email=request.user.email, org_name=org.name, org_url=org.url))
         else:
-            contact_form = ContactForm(prefix="cf")
+            contact_form = ContactForm(prefix="cf", instance=Contact(type=type))
 
     return {
         "central_contact_email": settings.CENTRAL_CONTACT_EMAIL,
