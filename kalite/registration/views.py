@@ -195,6 +195,10 @@ def register(request, backend, success_url=None, form_class=None,
         org_form = OrganizationForm(data=request.POST, instance=Organization())
         
         # Could register
+#        if form.is_valid() and not org_form.is_valid() and org_form.errors.has_key('name'):
+#            org_form.data = org_form.data.copy()
+#            org_form['name'] = "%s %s's Personal Installation" % (form.cleaned_data['first_name'], form.cleaned_data['last_name'])
+            
         if form.is_valid() and org_form.is_valid():
             form.cleaned_data['username'] = form.cleaned_data['email']
 
