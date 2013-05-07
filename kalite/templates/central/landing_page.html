@@ -45,7 +45,7 @@
     margin: 0 auto;
     overflow: hidden;
 }
-.col, .floatleft{
+.floatleft{
     float: left;
 }
 .sharing {
@@ -67,7 +67,8 @@
     
     /*Sizing*/
     padding: 15px 10px 6px 25px;
-    float:left
+    margin-left:-25px;
+    float:left;
 }
 button {     min-width: 175px; }
 .greenword{
@@ -76,18 +77,16 @@ button {     min-width: 175px; }
 
 /* Get Started section */
 #get-started-contribute {
-    xmargin: 0px auto;
-    xheight: 120px;
-    border:0px solid;
-    width: 420px;
+    margin-left:45px;
+    height:100%;
+    width: 440px;
 }
 #get_started_sec {
-    xmargin-top: 25px;
 
     /* Size */
     /*padding-left: 10px;*/
     /*padding-right: 30px;*/
-    width: 200px;
+    width: 230px;
     height: auto;
     border-right: 1px;
     border-color: #DBE6E0;      /* Color: Moon */
@@ -113,8 +112,7 @@ button {     min-width: 175px; }
     /*width: 45%;*/
     margin-left: 25px;
     /*border-right: 1px;*/      /* Uncomment when donate is back */
-
-    width: 25%;
+    width:165px;
     height: auto;
     text-align: center;
 }
@@ -188,6 +186,8 @@ button {     min-width: 175px; }
     line-height: normal;
     margin-bottom: 2px;
     text-align: center;
+    white-space: nowrap;
+	overflow: hidden;
 }
 .subscribe-title h1{
     font-size: 30px;
@@ -529,6 +529,32 @@ article {
     height: 100%;
 }
 
+.social-footer {
+    width:50%;
+    margin-top:3px;
+}
+
+#revolution {
+    text-align:center;
+    width:100%;
+    margin-top:35px;
+}
+#subscribe_blob {
+    width:170px;
+    margin-left:-5px;
+}   
+#mce-EMAIL {
+    width:80px;
+    margin-right:3px;
+} 
+#mc-embedded-subscribe {
+    width:78px;
+}
+#subscribe_exclamation_point {
+    font-size:104px;
+    padding-top:11px;
+    margin-right:-13px
+}
 </style>
 {% endblock headcss %}
 
@@ -537,7 +563,7 @@ article {
 <div id="inner-content">
 
 <!--First Content Row-->
-<div id="leftcol" class="screenshotrow col floatleft" style="margin-left:-25px">
+<div id="leftcol" class="col floatleft screenshotrow">
 
     <!-- Motivation -->
     <div id="motivation_sec" class="col" >
@@ -563,7 +589,7 @@ article {
 
 
 <!-- Second Content Row  - Get Started and Contribute -->
-<div id="get-started-contribute" class="col" style="width:440px;height;100%;margin:0 0 0 45px;">
+<div id="get-started-contribute" class="floatleft">
     <div id="content" class="floatleft">
         <h2>
             Features:
@@ -575,12 +601,12 @@ article {
             <li class="motivation_text">Students can earn points, teacher can view coach reports.</li>
             <li class="motivation_text">Choose which videos to download, and languages for subtitles.</li>
         </ul>
-        <div style="text-align:center;width:100%;margin-top:35px;">
+        <div id="revolution">
             <h2>Be a part of the revolution!</h2>
         </div>
     </div>
     
-    <div id="get_started_sec" class="floatleft" style="width:230px">
+    <div id="get_started_sec" class="floatleft">
         <div class="mini-action-section">
             <div class="action-text">Ready to get started?</div>
             <div class="button-section">
@@ -602,7 +628,7 @@ article {
         </div>
     </div>
 
-    <div id="contribute_sec" class="floatleft" style="width:165px">
+    <div id="contribute_sec" class="floatleft">
         <div class="mini-action-section">
             <div class="action-text">Tell us about your needs</div>
             <div class="button-section">
@@ -613,18 +639,18 @@ article {
         </div>
 
         <div id="subscribe_sec" class="sharing share-subscribe-section">
-            <div class="sharing" style="width:180px;">
-                <div class="cent-s-by-s subscribe-title" style="float:left; clear:left">
+            <div id="subscribe_blob">
+                <div class="cent-s-by-s subscribe-title floatleft">
                     <h1>SUBSCRIBE<br/></h1><h2>FOR UPDATES</h2>
                 </div>
-                <div id="mc_embed_signup" class="cent-s-by-s subscribe-form" style="width:180px;margin-right:0px;padding-right:0px;">
+                <div id="mc_embed_signup" class="cent-s-by-s subscribe-form">
                     <form action="/contact/subscribe/" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>{% csrf_token %}
-                        <div class="floatleft"><input style="width:85px;float:left;margin:0px 3px 0px 0px;" type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required></div>
-                        <div class="floatleft"><input style="width:78px;float:left" type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
+                        <div class="floatleft"><input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required></div>
+                        <div class="floatleft"><input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
                     </form>
                 </div>
             </div>
-            <div class="exclamation cent-s-by-s greenword" style="font-size:104px;padding-top:11px;margin-right:-13px">!</div>
+            <div id="subscribe_exclamation_point" class="exclamation cent-s-by-s greenword">!</div>
         </div>
     </div>
 </div>
@@ -656,7 +682,7 @@ article {
 {% endblock content %}
 
 {% block footerleft %}
-<div class="floatleft" style="width:50%;margin-top:3px;">
+<div class="floatleft social-footer">
     <div class="sharing"><span class="ka-on-social follow-us-text">Follow us!</div> 
     
     <div id="share-block">

@@ -46,11 +46,17 @@ class MultiSelectField(models.Field):
         elif isinstance(value, list):
             return ",".join(value)
 
+    def value_to_string(self, obj):
+        value = self._get_val_from_obj(obj)
+        return self.get_db_prep_value(value)
+
     def to_python(self, value):
         if isinstance(value, list):
             return value
+        elif value==None:
+            return ''
         return value.split(",")
-
+    
     def contribute_to_class(self, cls, name):
         super(MultiSelectField, self).contribute_to_class(cls, name)
         if self.choices:
