@@ -29,6 +29,10 @@ CENTRAL_SERVER_HOST   = local_or_("CENTRAL_SERVER_HOST",   "kalite.%s"%CENTRAL_S
 CENTRAL_FROM_EMAIL    = local_or_("CENTRAL_FROM_EMAIL",    "kalite@%s"%CENTRAL_SERVER_DOMAIN)
 CENTRAL_ADMIN_EMAIL   = local_or_("CENTRAL_ADMIN_EMAIL",   "info@learningequality.org")#"kalite@%s"%CENTRAL_SERVER_DOMAIN
 CENTRAL_CONTACT_EMAIL = local_or_("CENTRAL_CONTACT_EMAIL", "info@learningequality.org")#"kalite@%s"%CENTRAL_SERVER_DOMAIN
+CENTRAL_DEPLOYMENT_EMAIL = local_or_("CENTRAL_DEPLOYMENT_EMAIL", "deployments@learningequality.org")
+CENTRAL_SUPPORT_EMAIL    = local_or_("CENTRAL_SUPPORT_EMAIL",    "support@learningequality.org")
+CENTRAL_INFO_EMAIL       = local_or_("CENTRAL_INFO_EMAIL",       "info@learningequality.org")
+
 CENTRAL_WIKI_URL      = local_or_("CENTRAL_WIKI_URL",      "http://kalitewiki.learningequality.org/")#http://%kalitewiki.s/%CENTRAL_SERVER_DOMAIN   
 
 ADMINS         = local_or_("ADMINS", ( ("KA Lite Team", CENTRAL_ADMIN_EMAIL), ) )

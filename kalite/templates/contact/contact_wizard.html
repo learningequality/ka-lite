@@ -10,12 +10,13 @@
 {% block headcss %}
 <style>
 label {
-    width: 59px;
+    width:200px;
     display: block;
     float: left;
-    text-align: right;
+    text-align: left;
     padding-right: 10px;
     font-weight: bold;
+    clear:left;
 }
 input {
 	margin-bottom: 15px;
@@ -25,7 +26,9 @@ input {
 }
 .form_label { float:left }
 .form_values { float:left }
-.form_section { clear:left }
+.form-section { clear:left;}
+
+#depl_section, #supp_section, #info_section { display:none; margin-top:25px }
 </style>
 {% endblock headcss %}
 
@@ -33,89 +36,39 @@ input {
 
 <h1>Contact us!</h1>
 
-<p><a href="mailto:{{ central_contact_email }}">{{ central_contact_email }}</a></p>
+<p>Please fill out the form below, so we can respond to your inquiry as quickly as possible.  
 
-{% if form.errors %}
-<p class="contact_error">Incorrect user name or password:</p>
-{% endif %}
 <form method="post" action="?next={{ next|default:"/" }}">
 {% csrf_token %}
-<div class="form_section" id="deployment_section">
-    <div class="form_label">{% trans "Name" %}</div>
-    <div class="form_values">
-        <div><input type="text" name="name">{% trans "Deployment Partnerships" %}</input></div>
-        <div><input type="radio" name="contact_type">{% trans "Installation Support" %}</input></div>
-        <div><input type="radio" name="contact_type">{% trans "General Questions" %}</input></div>
-    </div>
+<div class="form-section" id="contact_section">
+{{ contact_form.as_p }}
 </div>
-<div class="form_section">
-    <div class="form_label">{% trans "What would you like to contact us about?" %}</div>
-    <div class="form_values">
-        <div><input type="radio" name="contact_type" id="ct_deployment">{% trans "Deployment Partnerships" %}</input></div>
-        <div><input type="radio" name="contact_type" id="ct_support">{% trans "Installation Support" %}</input></div>
-        <div><input type="radio" name="contact_type" id="ct_info">{% trans "General Questions" %}</input></div>
-    </div>
+<div class="form-section" id="depl_section">
+{{ deployment_form.as_p }}
 </div>
-<div class="form_section" id="deployment_section">
-    <div class="form_label">{% trans "Select your issue" %}</div>
-    <div class="form_values">
-        <div><input type="radio" name="contact_type">{% trans "Deployment Partnerships" %}</input></div>
-        <div><input type="radio" name="contact_type">{% trans "Installation Support" %}</input></div>
-        <div><input type="radio" name="contact_type">{% trans "General Questions" %}</input></div>
-    </div>
+<div class="form-section" id="supp_section">
+{{ support_form.as_p }}
 </div>
-<div id="deployment_section">deployment</div>
-<div id="support_section">support</div>
-<div id="info_section">info</div>
-
-<div class="form_section">
-    <div class="label">{% trans "test" %}</div>
+<div class="form-section" id="info_section">
+{{ info_form.as_p }}
 </div>
-<dl>
-<dt>
-	<label for="id_username">
-		Email:
-	</label>
-	{% if form.username.errors %} 
-	<span class="errors">
-		{{ form.email.errors.as_text }}
-	</span>{% endif %}
-</dt>
-<dd>
-	{{ form.username }}
-</dd>
-<dt>
-	<label for="id_password">
-		Password:
-	</label>
-	{% if form.password1.errors %} 
-	<span class="errors">
-		{{ form.password1.errors.as_text }}
-	</span>{% endif %}
-</dt>
-<dd>
-	{{ form.password }}
-</dd>
-<dt>
-	<input type="submit" class="submit" value="Log in" />
-</dt>
-</dl>
+<div class="form-section">
+	<input type="submit" class="submit" value="Contact us!" />
+</div>
 </form>
 <script>
 function toggle_on_contact_div(nm) { 
-    $("#deployment_section")[0].style.display = "none";
-    $("#support_section")[0].style.display    = "none";
-    $("#info_section")[0].style.display       = "none";
-    $("#"+nm+"_section")[0].style.display     = "block";
+    $("#depl_section").hide()
+    $("#supp_section").hide()
+    $("#info_section").hide()
+    $("#"+nm+"_section").show()
 }
 
 $(function() {
+    $("#id_cf-type").change(function()   { toggle_on_contact_div($("#id_cf-type").val()) });
+    $("#id_cf-type").ready(function()   { toggle_on_contact_div($("#id_cf-type").val()) });
+});
+</script>
 
-    $("#ct_deployment").change(function(){ toggle_on_contact_div("deployment") });
-    $("#ct_support").change(   function(){ toggle_on_contact_div("support") });
-    $("#ct_info").change(      function(){ toggle_on_contact_div("info") });
-    
-});</script>
-<p>If you've forgotten your password, you can <a href="/accounts/password/reset/">reset it here</a>.</p>
-
+<p>If you are unable to submit this form, you can also contact us through email: <a href="mailto:{{ central_contact_email }}">{{ central_contact_email }}</a></p>
 {% endblock %}

@@ -1,12 +1,12 @@
-from django.forms import ModelForm
+from django.forms import ModelForm, ChoiceField, RadioSelect
 from contact.models import Contact, Deployment, Support, Info
 
 
 class ContactForm(ModelForm):
+#    type = ChoiceField(choices=Contact.CONTACT_TYPES, widget=RadioSelect())
     class Meta:
         model = Contact
-        fields = ('type', 'name', 'email', 'org_name', 'org_url','user')
-        hidden = ('user')
+        fields = ('name', 'email', 'org_name', 'org_url', 'type')
         
 class DeploymentForm(ModelForm):
     class Meta:

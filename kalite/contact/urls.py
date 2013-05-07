@@ -5,5 +5,5 @@ import views
 
 urlpatterns = patterns('contact.views',
     url(r'^$', 'contact_wizard',   {}, 'contact_wizard'),
-    url(r'^$', 'contact_thankyou', {}, 'contact_thankyou'),
+    url(r'^thanks/?$', 'contact_thankyou', {}, 'contact_thankyou'),
 )

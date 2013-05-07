@@ -1,8 +1,11 @@
 {% load humanize %}
-Hello there! You were just invited by {% if invited_by.first_name and invited_by.last_name %}{{ invited_by.first_name }} {{ invited_by.last_name }}{% else %}{{ invited_by.username }}{% endif %} to become an administrator for '{{ organization }}'' on KA Lite. 
+Please respond to the following general inquiry:
 
-Visit http://{{ central_server_host }}{% url auth_login %} to log in to KA Lite and there will be a message waiting for you to confirm your administratorship for {{ organization }}! 
+From: {{ contact.name }}
+Email: {{ contact.email }}
+Organization: {{ contact.org_name }}
+{% if contact.org_url %}Organization URL: {{contact.org_url }}{% endif %}
 
-Best regards, 
+Details:
+{{ details.issue|safe }}
 
-The KA Lite Team 
