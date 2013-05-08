@@ -76,7 +76,19 @@ class SyncClient(object):
             "client_version": kalite.VERSION,
             "client_os": kalite.OS,
         })
-        data = json.loads(r.content)
+        
+        # Happens if the server has an error
+        raw_data = r.content
+        try:
+            data = json.loads(raw_data)
+        except ValueError as e:
+            import re
+            z = re.search(r'exception_value">([^<]+)<', str(raw_data), re.MULTILINE)
+            if z:
+                raise Exception("Could not load JSON\n; server error="%z.group(1))
+            else:
+                raise Exception("Could not load JSON\n; raw content="+r.content)
+            
         if data.get("error", ""):
             raise Exception(data.get("error", ""))
         signature = data.get("signature", "")
@@ -187,7 +199,8 @@ class SyncClient(object):
             response = self.post("models/upload", {"models": SyncingModels.get_serialized_models(self.counters_to_upload)})
             upload_results = json.loads(response.content)
             self.session.models_uploaded += upload_results["saved_model_count"]
-            self.session.errors += download_results.has_key("error")
+            self.session.errors += upload_results.has_key("error")
+            self.session.errors += upload_results.has_key("exceptions")
         except Exception as e:
             upload_results["error"] = e
             self.session.errors += 1

@@ -70,7 +70,7 @@ class Command(BaseCommand):
                 if download_results.has_key("error"):
                     self.stderr_writeln("%s: %s"%(_("Download error"),download_results["error"]))
                 if upload_results.has_key("exceptions"):
-                    self.stderr_writeln("%s: %s"%(_("Upload exceptions"),upload_results["exceptions"][:100]))
+                    self.stderr_writeln("%s: %s"%(_("Upload exceptions"),upload_results["exceptions"][:200]))
 
             # stop when nothing is being transferred anymore
             if success_count == 0 and (fail_count == 0 or failure_tries >= max_retries):
@@ -86,8 +86,6 @@ class Command(BaseCommand):
             self.stderr_writeln("Completed with %d errors."%client.session.errors)
         if failure_tries >= max_retries:
             self.stderr_writeln("%s (%d)."%("Failed to upload all models (stopped after failed attempts)",failure_tries))
-            if upload_results.has_key("exceptions"):
-                self.stderr_writeln("Upload exceptions: %s"%upload_results["exceptions"])
             
         self.stdout_writeln(_("Checking purgatory once more, to try saving any unsaved models")+"...")
         call_command("retrypurgatory")
