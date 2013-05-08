@@ -147,13 +147,6 @@ if not CENTRAL_SERVER:
         "main.custom_context_processors.languages",
     )
 
-
-syncing_models = []
-def add_syncing_models(models):
-    for model in models:
-        if model not in syncing_models:
-            syncing_models.append(model)
-
 slug_key = {
     "Topic": "id",
     "Video": "readable_id",

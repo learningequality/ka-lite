@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from securesync.models import ImportPurgatory, save_serialized_models
+from securesync.models import ImportPurgatory, SyncingModels
 
 class Command(BaseCommand):
     help = "Retry importing the models that are floating in purgatory."
@@ -15,7 +15,7 @@ class Command(BaseCommand):
         for purgatory in purgatories:
             self.stdout.write("Attempting to save %d models (attempt #%d)...\n" %
                 (purgatory.model_count, purgatory.retry_attempts))
-            unsaved = save_serialized_models(purgatory)["unsaved_model_count"]
+            unsaved = SyncingModels.save_serialized_models(purgatory)["unsaved_model_count"]
             if unsaved:
                 self.stdout.write("\t%d models still did not save. :(\n" % unsaved)
             else:
