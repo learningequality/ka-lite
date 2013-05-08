@@ -27,15 +27,31 @@ proficiency = [random.random() * 0.8 for i in range(10)] + [random.random() for 
 topics = ["multiplication-division", "factors-multiples"]
 
 class Command(BaseCommand):
+    args = "<data_type=[Facility,FacilityUsers,FacilityGroups,default=Exercises,Videos]>"
+
     help = "Generate fake user data"
 
     def handle(self, *args, **options):
         logging.getLogger().setLevel(logging.INFO)
-
-        (fu,_,_) = Command.generateFakeFacilityUsers()
-#        Command.generateFakeExerciseLogs(facilityusers=fu)
-        Command.generateFakeVideoLogs(facilityusers=fu)
         
+        generate_type = "exercise" if len(args)<=0 else args[0].lower()
+            
+        if "facility" == generate_type:
+            Command.generateFakeFacilities()
+        elif "facilityusers" == generate_type:
+            Command.generateFakeFacilityUsers()
+        elif "facilitygroups" == generate_type:
+            Command.generateFakeFacilityGroups()
+        else:
+            (fu,_,_) = Command.generateFakeFacilityUsers()
+            if "exercises" == generate_type:
+                Command.generateFakeExerciseLogs(facilityusers=fu)
+            elif "videos" == generate_type:
+                Command.generateFakeVideoLogs(facilityusers=fu)
+            else:
+                raise Exception("Unknown data type to generate: %s"%generate_type)
+                
+                
     @staticmethod
     def generateFakeFacilities(names=("Wilson Elementary",)):
         """Add the given fake facilities"""
