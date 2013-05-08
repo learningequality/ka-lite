@@ -1,4 +1,4 @@
-from models import *
+from models import * #includes SyncingModels
 
 import re, json, requests, urllib, urllib2, uuid
 from django.core import serializers
@@ -154,24 +154,44 @@ class SyncClient(object):
         download_results = SyncingModels.save_serialized_models(response.get("devices", "[]"), increment_counters=False)
         
         self.session.models_downloaded += download_results["saved_model_count"]
-        
+        self.session.errors += download_results.has_key("error")
+
         # TODO(jamalex): upload local devices as well? only needed once we have P2P syncing
         
     def sync_models(self):
-
+        
         if self.counters_to_download is None or self.counters_to_upload is None:
             self.sync_device_records()
 
-        response = json.loads(self.post("models/download", {"device_counters": self.counters_to_download}).content)
-        download_results = SyncingModels.save_serialized_models(response.get("models", "[]"))
-        
-        self.session.models_downloaded += download_results["saved_model_count"]
-        
-        response = self.post("models/upload", {"models": get_serialized_models(self.counters_to_upload)})
-        upload_results = json.loads(response.content)
-        
-        self.session.models_uploaded += upload_results["saved_model_count"]
-        
+        # Download (but prepare for errors--both thrown and unthrown!)
+        download_results = {
+            "saved_model_count" : 0,
+            "unsaved_model_count" : 0,
+        }
+        try:
+            response = json.loads(self.post("models/download", {"device_counters": self.counters_to_download}).content)
+            download_results = SyncingModels.save_serialized_models(response.get("models", "[]"))
+            self.session.models_downloaded += download_results["saved_model_count"]
+            self.session.errors += download_results.has_key("error")
+            self.session.errors += download_results.has_key("exceptions")
+        except Exception as e:
+            download_results["error"] = e
+            self.session.errors += 1
+
+        # Upload (but prepare for errors--both thrown and unthrown!)
+        upload_results = {
+            "saved_model_count" : 0,
+            "unsaved_model_count" : 0,
+        }
+        try:
+            response = self.post("models/upload", {"models": SyncingModels.get_serialized_models(self.counters_to_upload)})
+            upload_results = json.loads(response.content)
+            self.session.models_uploaded += upload_results["saved_model_count"]
+            self.session.errors += download_results.has_key("error")
+        except Exception as e:
+            upload_results["error"] = e
+            self.session.errors += 1
+                
         self.counters_to_download = None
         self.counters_to_upload = None
         

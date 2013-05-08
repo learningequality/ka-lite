@@ -36,6 +36,7 @@ class SyncSession(models.Model):
     timestamp = models.DateTimeField(auto_now=True)
     models_uploaded = models.IntegerField(default=0)
     models_downloaded = models.IntegerField(default=0)
+    errors = models.IntegerField(default=0)
     closed = models.BooleanField(default=False)
     
     def _hashable_representation(self):
@@ -491,6 +492,7 @@ class SyncingModels:
 
     def get_syncing_models():
         return syncing_models
+
         
     @staticmethod
     def get_serialized_models(device_counters=None, limit=100, zone=None, include_count=False):
@@ -559,7 +561,8 @@ class SyncingModels:
 
     @staticmethod
     def save_serialized_models(data, increment_counters=True):
-    
+        """Returns a dictionary of the # of saved models, # unsaved, and any exceptions during saving"""
+        
         # if data is from a purgatory object, load it up
         if isinstance(data, ImportPurgatory):
             purgatory = data
@@ -624,11 +627,14 @@ class SyncingModels:
             purgatory.save()
         elif purgatory: # everything saved properly this time, so we can eliminate the purgatory instance
             purgatory.delete()
-    
-        return {
-            "unsaved_model_count": len(unsaved_models),
-            "saved_model_count": saved_model_count,
-        }
 
+        out_dict = {
+            "unsaved_model_count": len(unsaved_models),
+            "saved_model_count": saved_model_count
+        }
+        if exceptions:
+            out_dict["exceptions"] = exceptions
+
+        return out_dict
 
 SyncingModels.add_syncing_models([Facility, FacilityGroup, FacilityUser, SyncedLog])

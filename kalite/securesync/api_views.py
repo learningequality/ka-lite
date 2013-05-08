@@ -9,7 +9,7 @@ from config.models import Settings
 
 import crypto
 import settings
-from models import *
+from models import * # includes SyncingModels
 
 
 class JsonResponse(HttpResponse):
@@ -169,6 +169,7 @@ def device_upload(data, session):
     # (although it will only save zones from here if centrally signed, and devices if registered in a zone)
     result = SyncingModels.save_serialized_models(data.get("devices", "[]"))
     session.models_uploaded += result["saved_model_count"]
+    session.errors += result.has_key("error")
     return JsonResponse(result)
         
 @csrf_exempt
@@ -187,6 +188,7 @@ def upload_models(data, session):
         return JsonResponse({"error": "Must provide models."}, status=500)
     result = SyncingModels.save_serialized_models(data["models"])
     session.models_uploaded += result["saved_model_count"]
+    session.errors += result.has_key("error")
     return JsonResponse(result)
 
 @csrf_exempt
@@ -197,6 +199,7 @@ def download_models(data, session):
         return JsonResponse({"error": "Must provide device counters."}, status=500)
     result = SyncingModels.get_serialized_models(data["device_counters"], zone=session.client_device.get_zone(), include_count=True)
     session.models_downloaded += result["count"]
+    session.errors += result.has_key("error")
     return JsonResponse({
         "models": result["models"]
     })
