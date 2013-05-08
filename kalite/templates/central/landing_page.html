@@ -77,7 +77,7 @@ button {     min-width: 175px; }
 
 /* Get Started section */
 #get-started-contribute {
-    margin-left:45px;
+    margin-left:35px;
     height:100%;
     width: 440px;
 }
@@ -537,7 +537,8 @@ article {
 #revolution {
     text-align:center;
     width:100%;
-    margin-top:35px;
+    float:left;
+    padding-top:45px;
 }
 #subscribe_blob {
     width:170px;
@@ -554,6 +555,12 @@ article {
     font-size:104px;
     padding-top:11px;
     margin-right:-13px
+}
+#features {
+    margin-left:35px;
+    margin-top:10px;
+    white-space: nowrap;
+    overflow:hidden
 }
 </style>
 {% endblock headcss %}
@@ -590,7 +597,7 @@ article {
 
 <!-- Second Content Row  - Get Started and Contribute -->
 <div id="get-started-contribute" class="floatleft">
-    <div id="content" class="floatleft">
+    <div id="features" class="floatleft">
         <h2>
             Features:
         </h2>
@@ -601,9 +608,10 @@ article {
             <li class="motivation_text">Students can earn points, teacher can view coach reports.</li>
             <li class="motivation_text">Choose which videos to download, and languages for subtitles.</li>
         </ul>
-        <div id="revolution">
-            <h2>Be a part of the revolution!</h2>
-        </div>
+    </div>
+    
+    <div id="revolution">
+        <h2>Be a part of the revolution!</h2>
     </div>
     
     <div id="get_started_sec" class="floatleft">

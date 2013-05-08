@@ -9,6 +9,13 @@
 
 {% block headcss %}
 <style>
+.form-section p {
+    border:0px solid;
+    xheight:25px;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+}
+
 label {
     width:200px;
     display: block;
@@ -23,8 +30,9 @@ label {
     font-weight:normal;
 }
 textarea { width:400px; height:150px}
-input {
-	margin-bottom: 15px;
+input[type=text], select {
+	xmargin-bottom: 15px;
+	width:200px;
 }
 .helptext { left:0px; }
 
@@ -84,9 +92,11 @@ input {
 <div class="form-section toggle-section" id="info_section">
 {{ info_form.as_p }}
 </div>
+
 <div class="form-section">
-    <div><input type="checkbox" name="hack_cc_email"/>Please send a copy of this support request to the email address above.</div>
-	<div><input type="submit" class="submit" value="Contact us!" /></div>
+    <div>
+      <p><input type="checkbox" name="hack_cc_email"/>Please send a copy of this support request to the email address above.</p></div>
+	<div><p><input type="submit" class="submit" value="Contact us!" /></p></div>
 </div>
 </form>
 <script>
