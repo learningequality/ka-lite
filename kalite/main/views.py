@@ -22,6 +22,7 @@ from django.contrib import messages
 from utils.jobs import force_job
 from django.utils.translation import ugettext as _
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+import topicdata
 
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
@@ -190,8 +191,7 @@ def coach_reports(request, facility):
     topic = request.GET.get("topic", "")
     group = request.GET.get("group", "")
     if group and topic and re.match("^[\w\-]+$", topic):
-        exercises = json.loads(open("%stopicdata/%s.json" % (settings.DATA_PATH, topic)).read())
-        exercises = sorted(exercises, key=lambda e: (e["h_position"], e["v_position"]))
+        exercises = get_topic_videos(topic)
         context["exercises"] = [{
             "display_name": ex["display_name"],
             "description": ex["description"],
@@ -204,6 +204,7 @@ def coach_reports(request, facility):
             "last_name": user.last_name,
             "username": user.username,
             "exercise_logs": [get_object_or_None(ExerciseLog, user=user, exercise_id=ex["name"]) for ex in exercises],
+            "video_logs": [get_object_or_None(VideoLog, user=user, youtube_id=v["youtube_id"]) for v in videos],
         } for user in users]
     return context
 
