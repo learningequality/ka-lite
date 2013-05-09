@@ -10,6 +10,7 @@ from django.template.loader import render_to_string
 from django.utils.hashcompat import sha_constructor
 from django.utils.translation import ugettext_lazy as _
 from django.template import RequestContext
+from django.http import HttpRequest
 
 SHA1_RE = re.compile('^[a-f0-9]{40}$')
 
@@ -248,13 +249,13 @@ class RegistrationProfile(models.Model):
                  'site': site }
         subject = render_to_string('registration/activation_email_subject.txt',
                                    dict, 
-                                   context_instance=RequestContext(request))
+                                   context_instance=RequestContext(HttpRequest()))
         # Email subject *must not* contain newlines
         subject = ''.join(subject.splitlines())
         
         message = render_to_string('registration/activation_email.txt',
                                    dict, 
-                                   context_instance=RequestContext(request))
+                                   context_instance=RequestContext(HttpRequest()))
         
         self.user.email_user(subject, message, settings.DEFAULT_FROM_EMAIL)
     
