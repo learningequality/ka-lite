@@ -18,6 +18,7 @@ from config.models import Settings
 
 import crypto
 import settings
+from main.models import UserLog
 from securesync.models import SyncSession, Device, RegisteredDevicePublicKey, Zone, Facility, FacilityGroup
 from securesync.api_client import SyncClient
 from utils.jobs import force_job
@@ -293,7 +294,10 @@ def login(request):
         # try logging in as a facility user
         form = LoginForm(data=request.POST, request=request, initial={"facility": facility_id})
         if form.is_valid():
-            request.session["facility_user"] = form.get_user()
+            user = form.get_user()
+            
+            UserLog.update_user_activity(user, activity_type="login") # Success! Log the event
+            request.session["facility_user"] = user
             messages.success(request, _("You've been logged in! We hope you enjoy your time with KA Lite ") +
                                         _("-- be sure to log out when you finish."))
             return HttpResponseRedirect(form.non_field_errors() or request.next or "/")
@@ -313,6 +317,7 @@ def login(request):
 @distributed_server_only
 def logout(request):
     if "facility_user" in request.session:
+        UserLog.update_user_activity(request.session["facility_user"], activity_type="logout")
         del request.session["facility_user"]
     auth_logout(request)
     next = request.GET.get("next", "/")
