@@ -141,7 +141,7 @@ class UserLog(SyncedModel):
         
         else:
             if not cur_user_log_entry:
-                logging.warn("%s: Had to create a user log entry, but activity_type='%s'! @ "%(user.username,activity_type,update_time))
+                logging.warn("%s: Had to create a user log entry, but activity_type='%s'! @ %s"%(user.username,activity_type,update_time))
                 cur_user_log_entry = UserLog(user=user, login_time=update_time, last_activity_time=update_time)
                 cur_user_log_entry.save()
                 

@@ -1,14 +1,16 @@
-from django.core.management.base import BaseCommand, CommandError
-from securesync.models import Facility, FacilityUser, FacilityGroup
-import securesync
-from main.models import ExerciseLog, VideoLog
 import random
 import json
-from math import exp, sqrt
-from main import topicdata
 import logging
+import datetime
+from math import exp, sqrt
+
+from django.core.management.base import BaseCommand, CommandError
 
 import settings
+import securesync
+from securesync.models import Facility, FacilityUser, FacilityGroup
+from main.models import ExerciseLog, VideoLog, UserLog
+from main import topicdata
 from utils.topic_tools import get_videos_for_topic
 
 
@@ -34,7 +36,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         logging.getLogger().setLevel(logging.INFO)
         
-        generate_type = "exercise" if len(args)<=0 else args[0].lower()
+        generate_type = "exercises" if len(args)<=0 else args[0].lower()
             
         if "facility" == generate_type:
             Command.generateFakeFacilities()
@@ -130,8 +132,8 @@ class Command(BaseCommand):
             exercises_a = [random.random() for i in range(len(exercises))]
             exercises_b = [float(i) / len(exercises) for i in range(len(exercises))]
             
-            for i, user in enumerate(facilityusers):
-                for j, exercise in enumerate(exercises):
+            for j, exercise in enumerate(exercises):
+                for i, user in enumerate(facilityusers):
                     sig = sigmoid(proficiency[i], exercises_a[j], exercises_b[j])
                     if random.random() < 0.05 * (1-sig) and j > 2:
                         break
@@ -143,10 +145,12 @@ class Command(BaseCommand):
                     points   = attempts * 10 * sig
                     
                     logging.info("Creating exercise log: %-12s: %-25s (%d points, %d attempts, %d%% streak)"%(user.first_name, exercise["name"],  int(points), int(attempts), int(streak_progress)))
-                    log = ExerciseLog(user=user, exercise_id=exercise["name"], attempts=int(attempts), streak_progress=int(streak_progress), points=int(points))
-                    log.full_clean()
-                    log.save()
-
+                    start_time = datetime.datetime.now() - datetime.timedelta(seconds=sqrt(random.random()*(1-sig))*250) # the better you are (higher sig), the faster you are!
+                    UserLog.update_user_activity(user, activity_type="login", update_time=start_time)
+                    elog = ExerciseLog(user=user, exercise_id=exercise["name"], attempts=int(attempts), streak_progress=int(streak_progress), points=int(points))
+                    elog.full_clean(); elog.save()
+                    UserLog.update_user_activity(user, activity_type="logout")
+                    
             
     @staticmethod
     def generateFakeVideoLogs(topics=topics,facilityusers=None):
@@ -160,8 +164,8 @@ class Command(BaseCommand):
             videos_a = [random.random() for i in range(len(videos))]
             videos_b = [float(i) / len(videos) for i in range(len(videos))]
 
-            for i, user in enumerate(facilityusers):
-                for j, video in enumerate(videos):
+            for j, video in enumerate(videos):
+                for i, user in enumerate(facilityusers):
                     sig = sigmoid(proficiency[i], videos_a[j], videos_b[j])
                     if random.random() > sig:
                         continue
@@ -171,7 +175,9 @@ class Command(BaseCommand):
                     points   = total_seconds_watched/10*10
 
                     logging.info("Creating video log: %-12s: %-45s (%4.1f%% watched, %d points)%s"%(user.first_name, video["title"],  100*total_seconds_watched/video["duration"], int(points)," COMPLETE!" if int(total_seconds_watched)==video["duration"] else ""))
-                    log = VideoLog(user=user, youtube_id=video["youtube_id"], total_seconds_watched=int(total_seconds_watched), points=int(points))
-                    log.full_clean()
-                    log.save()
+                    start_time = datetime.datetime.now()-datetime.timedelta(seconds=total_seconds_watched)
+                    UserLog.update_user_activity(user, activity_type="login", update_time=start_time)
+                    vlog = VideoLog(user=user, youtube_id=video["youtube_id"], total_seconds_watched=int(total_seconds_watched), points=int(points))
+                    vlog.full_clean(); vlog.save()
+                    UserLog.update_user_activity(user, activity_type="logout")
             
