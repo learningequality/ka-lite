@@ -109,9 +109,9 @@ class UserLog(SyncedModel):
 
     def __unicode__(self):
         if self.logout_time:
-            return "%s: logged in for %s seconds"%(self.username,self.total_time)
+            return "%s: logged in @ %s; for %s seconds"%(self.user.username,self.login_time, self.total_time)
         else:
-            return "%s: logged in at %s; last active %s"%(self.username, self.login_time, self.last_activity_time)
+            return "%s: logged in @ %s; last active @ %s"%(self.user.username, self.login_time, self.last_activity_time)
             
     @staticmethod
     def update_user_activity(user, activity_type="update", update_time=None):
