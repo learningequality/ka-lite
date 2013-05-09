@@ -10,8 +10,6 @@ from django.template.loader import render_to_string
 from django.utils.hashcompat import sha_constructor
 from django.utils.translation import ugettext_lazy as _
 
-import main.custom_context_processors as ccp
-
 SHA1_RE = re.compile('^[a-f0-9]{40}$')
 
 
@@ -244,17 +242,18 @@ class RegistrationProfile(models.Model):
         ``central_server_host``
             String containing the hostname of the KA Lite central server
         """
-        ctx_dict = ccp.custom(None)
-        ctx_dict.update({ 'activation_key': self.activation_key,
-                     'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS,
-                     'site': site })
+        dict = { 'activation_key': self.activation_key,
+                 'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS,
+                 'site': site }
         subject = render_to_string('registration/activation_email_subject.txt',
-                                   ctx_dict)
+                                   dict, 
+                                   context_instance=RequestContext(request))
         # Email subject *must not* contain newlines
         subject = ''.join(subject.splitlines())
         
         message = render_to_string('registration/activation_email.txt',
-                                   ctx_dict)
+                                   dict, 
+                                   context_instance=RequestContext(request))
         
         self.user.email_user(subject, message, settings.DEFAULT_FROM_EMAIL)
     

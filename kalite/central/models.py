@@ -4,7 +4,6 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 import settings
-import main.custom_context_processors as ccp
 
 def get_or_create_user_profile(user):
     return UserProfile.objects.get_or_create(user=user)[0]
@@ -62,19 +61,18 @@ class OrganizationInvitation(models.Model):
     def send(self, request):
         to_email = self.email_to_invite
         sender = settings.CENTRAL_FROM_EMAIL
-        context = ccp.custom(None)
-        context.update({
+        dict = {
             'organization': self.organization,
             'invited_by': self.invited_by,
-        })
+        }
         # Invite an existing user
         if User.objects.filter(email=to_email).count() > 0:
-            subject = render_to_string('central/org_invite_email_subject.txt', context)
-            body = render_to_string('central/org_invite_email.txt', context)
+            subject = render_to_string('central/org_invite_email_subject.txt', dict, context_instance=RequestContext(request))
+            body = render_to_string('central/org_invite_email.txt', dict, context_instance=RequestContext(request))
         # Invite an unregistered user
         else:
-            subject = render_to_string('central/central_invite_email_subject.txt', context)
-            body = render_to_string('central/central_invite_email.txt', context)
+            subject = render_to_string('central/central_invite_email_subject.txt', dict, context_instance=RequestContext(request))
+            body = render_to_string('central/central_invite_email.txt', dict, context_instance=RequestContext(request))
         send_mail(subject, body, sender, [to_email], fail_silently=False)
 
 
