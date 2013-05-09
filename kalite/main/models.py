@@ -1,7 +1,7 @@
 import uuid
 import logging
 
-from annoying.functions import get_object_or_None
+from annoying.functions import get_object_or_None, isnumeric
 from datetime import datetime
 
 from django.db import models
@@ -33,8 +33,9 @@ class VideoLog(SyncedModel):
                 self.completion_timestamp = datetime.now()
                 self.completion_counter = Device.get_own_device().get_counter()
 
-            # Mark user log
-            UserLog.update_user_activity(self.user, activity_type="video", update_time=(self.completion_timestamp or datetime.now()))
+            # Tell logins that they are still active.
+            #   TODO(bcipolli): Could log video information in the future.
+            UserLog.update_user_activity(self.user, activity_type="login", update_time=(self.completion_timestamp or datetime.now()))
 
         super(VideoLog, self).save(*args, **kwargs)
     
@@ -73,8 +74,9 @@ class ExerciseLog(SyncedModel):
                 self.completion_counter = Device.get_own_device().get_counter()
                 self.attempts_before_completion = self.attempts
                 
-            # Mark user log
-            UserLog.update_user_activity(self.user, activity_type="exercise", update_time=(self.completion_timestamp or datetime.now()))
+            # Tell logins that they are still active.
+            #   TODO(bcipolli): Could log exercise information in the future.
+            UserLog.update_user_activity(self.user, activity_type="login", update_time=(self.completion_timestamp or datetime.now()))
              
         super(ExerciseLog, self).save(*args, **kwargs)
 
@@ -88,16 +90,18 @@ class ExerciseLog(SyncedModel):
 
 
 class UserLog(SyncedModel):
+    KNOWN_TYPES={"login": 1}
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
-    login_time = models.DateTimeField(blank=False, null=False)
-    last_activity_time = models.DateTimeField(blank=False, null=False)
-    logout_time = models.DateTimeField(blank=True, null=True)
+    activity_type = models.IntegerField(blank=False, null=False)
+    start_time = models.DateTimeField(blank=False, null=False)
+    last_active_time = models.DateTimeField(blank=False, null=False)
+    end_time = models.DateTimeField(blank=True, null=True)
     total_time = models.IntegerField(blank=True, null=True)
     
     def save(self, *args, **kwargs):
-        if self.logout_time:
+        if self.end_time:
             self.full_clean()
-            self.total_time = (self.logout_time-self.login_time).total_seconds()
+            self.total_time = (self.end_time-self.start_time).total_seconds()
             if self.total_time<0:
                 import pdb; pdb.set_trace()
             logging.info("%s: total learning time: %d seconds"%(self.user.username,self.total_time)) 
@@ -108,52 +112,86 @@ class UserLog(SyncedModel):
 #        return uuid.uuid5(namespace, str(self.exercise_id)).hex
 
     def __unicode__(self):
-        if self.logout_time:
-            return "%s: logged in @ %s; for %s seconds"%(self.user.username,self.login_time, self.total_time)
+        if self.end_time:
+            return "%s: logged in @ %s; for %s seconds"%(self.user.username,self.start_time, self.total_time)
         else:
-            return "%s: logged in @ %s; last active @ %s"%(self.user.username, self.login_time, self.last_activity_time)
+            return "%s: logged in @ %s; last active @ %s"%(self.user.username, self.start_time, self.last_active_time)
+    
+    @staticmethod
+    def get_activity_int(activity_type):
+        """Helper function converts from string or int to the underlying int"""
+        if activity_type.__class__.__name__=="str":
+            if activity_type in UserLog.KNOWN_TYPES:
+                return UserLog.KNOWN_TYPES[activity_type]
+            else:
+                raise Exception("Unrecognized activity type: %s"%activity_type)
+        elif isnumeric(activity_type):
+            return int(activity_type)
+        else:
+            raise Exception("Cannot convert requested activity_type to int")
+            
             
     @staticmethod
-    def update_user_activity(user, activity_type="update", update_time=None):
-        if not user:
-            raise Exception("user is None?")
-        if not update_time:
-            update_time = datetime.now()
-                    
-        cur_user_log_entry = get_object_or_None(UserLog, user=user, logout_time=None)
+    def begin_user_activity(user, activity_type="login", start_time=None):
+        activity_type = UserLog.get_activity_int(activity_type)
+        if not start_time: start_time = datetime.now()
+        if not user:       raise Exception("user is None?")
+    
+        cur_user_log_entry = get_object_or_None(UserLog, user=user, end_time=None)
 
-        if activity_type=="login":
-            logging.info("%s: Logging LOGIN activity @ %s"%(user.username,update_time))
-            
-            # Seems we're logging in without logging out of the previous.
-            #   Best thing to do is simulate a login
-            #   at the previous last update time. 
-            #
-            # Note: this can be a recursive call
-            if cur_user_log_entry:
-                logging.warn("%s: Logging LOGOUT activity on a login @ %s"%(user.username,update_time))
-                cur_user_log_entry.logout_time = cur_user_log_entry.last_activity_time
-                cur_user_log_entry.save()
-            
-            # Create a new entry
-            cur_user_log_entry = UserLog(user=user, login_time=update_time, last_activity_time=update_time)
-            cur_user_log_entry.save()
+        logging.info("%s: BEGIN activity(%d) @ %s"%(user.username, activity_type, start_time))
         
-        else:
-            if not cur_user_log_entry:
-                logging.warn("%s: Had to create a user log entry, but activity_type='%s'! @ %s"%(user.username,activity_type,update_time))
-                cur_user_log_entry = UserLog(user=user, login_time=update_time, last_activity_time=update_time)
-                cur_user_log_entry.save()
-                
-            if activity_type=="logout":
-                logging.info("%s: Logging LOGOUT activity @ %s"%(user.username, update_time))
-                cur_user_log_entry.logout_time = update_time
-                cur_user_log_entry.save()
+        # Seems we're logging in without logging out of the previous.
+        #   Best thing to do is simulate a login
+        #   at the previous last update time. 
+        #
+        # Note: this can be a recursive call
+        if cur_user_log_entry:
+            logging.warn("%s: END activity on a begin @ %s"%(user.username,start_time))
+            cur_user_log_entry.end_user_activity(activity_type, end_time=cur_user_log_entry.last_active_time)
         
-            else: # can accept any other type of activity
-                logging.info("%s: Logging UPDATE activity (%s) @ %s"%(user.username,activity_type,update_time))
-                cur_user_log_entry.last_activity_time = update_time
-                cur_user_log_entry.save()
+        # Create a new entry
+        cur_user_log_entry = UserLog(user=user, activity_type=activity_type, start_time=start_time, last_active_time=start_time)
+        cur_user_log_entry.save()
+        
+        return cur_user_log_entry
+    
+    
+    @staticmethod
+    def update_user_activity(user, activity_type="login", update_time=None):
+        activity_type = UserLog.get_activity_int(activity_type)
+        if not update_time: update_time = datetime.now()
+        if not user:        raise Exception("user is None?")
+
+        cur_user_log_entry = get_object_or_None(UserLog, user=user, end_time=None)
+
+        # No unstopped starts.  Start should have been called first!
+        if not cur_user_log_entry:
+            logging.warn("%s: Had to create a user log entry, but UPDATING('%d')! @ %s"%(user.username,activity_type,update_time))
+            cur_user_log_entry = UserLog.begin_user_activity(user=user, activity_type=activity_type, start_time=update_time)
+            
+        logging.info("%s: UPDATE activity (%d) @ %s"%(user.username,activity_type,update_time))
+        cur_user_log_entry.last_active_time = update_time
+        cur_user_log_entry.save()
+
+
+    @staticmethod
+    def end_user_activity(user,    activity_type="login", end_time=None):
+        activity_type = UserLog.get_activity_int(activity_type)
+        if not end_time:   end_time = datetime.now()
+        if not user:       raise Exception("user is None?")
+                    
+        cur_user_log_entry = get_object_or_None(UserLog, user=user, end_time=None)
+
+        # No unstopped starts.  Start should have been called first!
+        if not cur_user_log_entry:
+            logging.warn("%s: Had to create a user log entry, but STOPPING('%d')! @ %s"%(user.username,activity_type,end_time))
+            cur_user_log_entry = UserLog.begin_user_activity(user=user, activity_type=activity_type, start_time=end_time)
+
+        logging.info("%s: Logging LOGOUT activity @ %s"%(user.username, end_time))
+        cur_user_log_entry.end_time = end_time
+        cur_user_log_entry.save()
+
             
 settings.add_syncing_models([VideoLog, ExerciseLog, UserLog])
 

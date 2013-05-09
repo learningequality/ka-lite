@@ -146,10 +146,10 @@ class Command(BaseCommand):
                     
                     logging.info("Creating exercise log: %-12s: %-25s (%d points, %d attempts, %d%% streak)"%(user.first_name, exercise["name"],  int(points), int(attempts), int(streak_progress)))
                     start_time = datetime.datetime.now() - datetime.timedelta(seconds=sqrt(random.random()*(1-sig))*250) # the better you are (higher sig), the faster you are!
-                    UserLog.update_user_activity(user, activity_type="login", update_time=start_time)
+                    UserLog.begin_user_activity(user, activity_type="login", start_time=start_time)
                     elog = ExerciseLog(user=user, exercise_id=exercise["name"], attempts=int(attempts), streak_progress=int(streak_progress), points=int(points))
                     elog.full_clean(); elog.save()
-                    UserLog.update_user_activity(user, activity_type="logout")
+                    UserLog.end_user_activity(user, activity_type="login")
                     
             
     @staticmethod
@@ -176,8 +176,8 @@ class Command(BaseCommand):
 
                     logging.info("Creating video log: %-12s: %-45s (%4.1f%% watched, %d points)%s"%(user.first_name, video["title"],  100*total_seconds_watched/video["duration"], int(points)," COMPLETE!" if int(total_seconds_watched)==video["duration"] else ""))
                     start_time = datetime.datetime.now()-datetime.timedelta(seconds=total_seconds_watched)
-                    UserLog.update_user_activity(user, activity_type="login", update_time=start_time)
+                    UserLog.begin_user_activity(user, activity_type="login", start_time=start_time)
                     vlog = VideoLog(user=user, youtube_id=video["youtube_id"], total_seconds_watched=int(total_seconds_watched), points=int(points))
                     vlog.full_clean(); vlog.save()
-                    UserLog.update_user_activity(user, activity_type="logout")
+                    UserLog.end_user_activity(user, activity_type="login")
             

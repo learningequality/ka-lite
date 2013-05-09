@@ -296,7 +296,7 @@ def login(request):
         if form.is_valid():
             user = form.get_user()
             
-            UserLog.update_user_activity(user, activity_type="login") # Success! Log the event
+            UserLog.begin_user_activity(user, activity_type="login") # Success! Log the event
             request.session["facility_user"] = user
             messages.success(request, _("You've been logged in! We hope you enjoy your time with KA Lite ") +
                                         _("-- be sure to log out when you finish."))
@@ -317,7 +317,7 @@ def login(request):
 @distributed_server_only
 def logout(request):
     if "facility_user" in request.session:
-        UserLog.update_user_activity(request.session["facility_user"], activity_type="logout")
+        UserLog.end_user_activity(request.session["facility_user"], activity_type="login")
         del request.session["facility_user"]
     auth_logout(request)
     next = request.GET.get("next", "/")
