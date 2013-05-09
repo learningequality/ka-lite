@@ -51,4 +51,4 @@ Setting up KA Lite testing servers
 
 4. on LOCAL, run `kalite/manage.py runserver 8009` to start the server.
 5. Browse to LOCAL on url (http://localhost:8009)
-5. Browse to CENTRAL on url (http://127.0.0.1:8001)
+6. Browse to CENTRAL on url (http://127.0.0.1:8001)

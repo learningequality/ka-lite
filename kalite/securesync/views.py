@@ -112,7 +112,7 @@ def register_public_key_client(request):
             "unregistered": True,
             "registration_url": client.path_to_url(
                 "/securesync/register/?" + urllib.quote(crypto.get_own_key().get_public_key_string())),
-            "login_url":client.path_to_url("/login/")
+            "login_url": client.path_to_url("/accounts/login/")
         }
     error_msg = reg_response.get("error", "")
     if error_msg:
