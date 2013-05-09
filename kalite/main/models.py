@@ -148,7 +148,7 @@ class UserLog(SyncedModel):
         # Note: this can be a recursive call
         if cur_user_log_entry:
             logging.warn("%s: END activity on a begin @ %s"%(user.username,start_time))
-            cur_user_log_entry.end_user_activity(activity_type, end_time=cur_user_log_entry.last_active_time)
+            UserLog.end_user_activity(user=user, activity_type=activity_type, end_time=cur_user_log_entry.last_active_time)
         
         # Create a new entry
         cur_user_log_entry = UserLog(user=user, activity_type=activity_type, start_time=start_time, last_active_time=start_time)
