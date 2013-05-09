@@ -3,6 +3,7 @@ from securesync.models import Zone
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
+import settings
 
 def get_or_create_user_profile(user):
     return UserProfile.objects.get_or_create(user=user)[0]
@@ -59,10 +60,11 @@ class OrganizationInvitation(models.Model):
 
     def send(self, request):
         to_email = self.email_to_invite
-        sender = 'kalite@adhocsync.com'
+        sender = settings.CENTRAL_FROM_EMAIL
         context = {
             'organization': self.organization,
-            'invited_by': self.invited_by
+            'invited_by': self.invited_by,
+            'central_server_host': settings.CENTRAL_SERVER_HOST
         }
         if User.objects.filter(email=to_email).count() > 0:
             subject = render_to_string('central/org_invite_email_subject.txt', context)

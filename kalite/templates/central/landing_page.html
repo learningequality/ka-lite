@@ -2,7 +2,12 @@
 
 {% block home_active %}active{% endblock home_active %}
 
-{% block title %}Home{% endblock %}
+{% load i18n %}
+
+{% block titletag %}
+<title>{% trans "KA Lite, an offline version of Khan Academy" %}</title>
+{% endblock %}
+
 {% block jqueryjs %}
 <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.8.3.min.js"></script> 
 {% endblock jqueryjs %}
@@ -32,65 +37,56 @@
 <style type="text/css">
 
 /*** Layout ***/
+#footer { height:75px; border:0px solid}
+/*#container {height: 720px ;border: 1px solid yellow; }
+.push, #end-of-page-spacer { border:0px solid; display:none }*/
 .row{
     width: 100%;
     margin: 0 auto;
     overflow: hidden;
 }
-.col, .floatleft{
+.floatleft{
     float: left;
 }
-.subscriberow{
-    min-height: 100px;
+.sharing {
+    float:left;
 }
-.screenshotrow{
-    /*Width works out to be 1038px*/
-    min-height: 285px;
-    min-width: 700px;
-}
-/*** Layout END ***/
 
 /** Content Section Containers **/
 
 /* Relevant to Motivation Section */
-#motivation_sec{
+#leftcol{
     /*Border*/
     border-top: 4px;
     border-bottom: 4px;
     border-right: 1px;
-    border-top-right-radius: 15px;
-    border-bottom-right-radius: 15px;
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
     border-color: #d5deb9;      /* Color: (Unoffical) Khan Grey Green*/
     border-style: solid;
     
     /*Sizing*/
-    padding: 15px;
-    padding-right: 10px;
-    padding-bottom: 6px;
-    padding-left: 25px;
+    padding: 15px 10px 6px 25px;
+    margin-left:-25px;
+    float:left;
 }
+button {     min-width: 175px; }
 .greenword{
     color: #78AB46;             /* Color: Pea Green */
-}
-.onecol-spacer-left,
-.onecol-spacer-right {
-    width: 20%;
-    visibility: hidden;
 }
 
 /* Get Started section */
 #get-started-contribute {
-    margin: 25px auto;
-    height: auto;
-    width: 100%;
+    margin-left:35px;
+    height:100%;
+    width: 440px;
 }
 #get_started_sec {
-    padding-bottom: 15px;
 
     /* Size */
     /*padding-left: 10px;*/
     /*padding-right: 30px;*/
-    width: 65%;
+    width: 230px;
     height: auto;
     border-right: 1px;
     border-color: #DBE6E0;      /* Color: Moon */
@@ -103,8 +99,6 @@
     border-width: 1px;
     border-color: #9CBA7F;      /* Color: Mint Candy */
     border-radius: 5px;
-    width: 50%;
-    min-width: 160px;
     height: 50px;
     font-size: 24px;
 }
@@ -116,10 +110,9 @@
 /* Relevant to contribute section */
 #contribute_sec{
     /*width: 45%;*/
-    margin-left: 30px;
+    margin-left: 25px;
     /*border-right: 1px;*/      /* Uncomment when donate is back */
-
-    width: 25%;
+    width:165px;
     height: auto;
     text-align: center;
 }
@@ -193,6 +186,8 @@
     line-height: normal;
     margin-bottom: 2px;
     text-align: center;
+    white-space: nowrap;
+	overflow: hidden;
 }
 .subscribe-title h1{
     font-size: 30px;
@@ -238,16 +233,16 @@
 
 .subscribe-form {
     width: 170px;
-    margin-left: 10px;
-    margin-top: 5px;
 }
 .subscribe-form form {
     padding: 1px;
 }
 
+.subscribe-form input.button { height:22px}
+.subscribe-form input.email { height: 19px}
 .subscribe-form input {
-    height: 22px;
-    width: 130px;
+    xheight: 22px;
+    vertical-align:bottom;
 }
 
 .subscribe-form input[type=email] {
@@ -409,16 +404,12 @@ article {
 #screenshot_sec {
     height: 275px;
     width: 420px;
-    border: 1px solid #d5deb9;
-    border-top-width: 4px;
-    border-bottom-width: 4px;
-    border-left-width: 2px;
 }
 
-#motivation_sec {
+#leftcol {
     border-left: 1px solid #d5deb9;
     width: 445px;
-    min-height: 254px;
+    /*min-height: 254px;*/
 }
 
 .share-subscribe-section {
@@ -429,6 +420,13 @@ article {
 #inner-content {
     width: 950px;
     margin: 0 auto;
+    height:auto;
+}
+
+#motivation_sec {
+    width:100%;
+    border-bottom: 1px solid #d5deb9;
+    margin-bottom:20px;
 }
 
 #motivation_sec h1 {
@@ -478,9 +476,9 @@ article {
 
 /* Dylan's extra, apart from what I changed above (sorry... rush to launch) */
 .mini-action-section {
-    width: 48%;
+    width: 100%;
     float: left;
-    margin-right: 10px;
+    margin-top:20px;
     text-align: center;
 }
 
@@ -514,6 +512,7 @@ article {
 .follow-us-text {
     font-size: 16px;
     margin-top: 6px;
+    text-align:center;
 }
 
 .ka-on-twitter {
@@ -530,6 +529,39 @@ article {
     height: 100%;
 }
 
+.social-footer {
+    width:50%;
+    margin-top:3px;
+}
+
+#revolution {
+    text-align:center;
+    width:100%;
+    float:left;
+    padding-top:45px;
+}
+#subscribe_blob {
+    width:170px;
+    margin-left:-5px;
+}   
+#mce-EMAIL {
+    width:80px;
+    margin-right:3px;
+} 
+#mc-embedded-subscribe {
+    width:78px;
+}
+#subscribe_exclamation_point {
+    font-size:104px;
+    padding-top:11px;
+    margin-right:-13px
+}
+#features {
+    margin-left:35px;
+    margin-top:10px;
+    white-space: nowrap;
+    overflow:hidden
+}
 </style>
 {% endblock headcss %}
 
@@ -538,7 +570,15 @@ article {
 <div id="inner-content">
 
 <!--First Content Row-->
-<div class="screenshotrow">
+<div id="leftcol" class="col floatleft screenshotrow">
+
+    <!-- Motivation -->
+    <div id="motivation_sec" class="col" >
+        <h1>Only 35% of the world has internet.<br/>100% of the world needs education.</h1>
+        <p class="motivation_text">KA Lite is an offline version of <a href="http://www.khanacademy.org/" target="_blank">Khan Academy</a> that runs on almost anything.
+        </p>
+    </div>
+
     <!-- screenshot or Image Carousel -->
     <div id="screenshot_sec" class="col twocol">
         <div id="button-sec">
@@ -552,12 +592,15 @@ article {
             <li class="carousel-pic"><img src="{{ MEDIA_URL }}images/landing-page/coach-reports-cropped.png"></li>
         </ul>
     </div>
-    <!-- Motivation -->
-    <div id="motivation_sec" class="col twocol">
-        <h1>Only 35% of the world has internet.<br/>100% of the world needs education.</h1>
-        <p class="motivation_text">KA Lite is an offline version of <a href="http://www.khanacademy.org/" target="_blank">Khan Academy</a> that runs on almost anything.
-            
-            </p>
+</div>
+
+
+<!-- Second Content Row  - Get Started and Contribute -->
+<div id="get-started-contribute" class="floatleft">
+    <div id="features" class="floatleft">
+        <h2>
+            Features:
+        </h2>
         <ul>
             <li class="motivation_text">Bringing the online education revolution to rural communities.</li>
             <li class="motivation_text">Synchronize and manage your organization's deployments centrally.</li>
@@ -566,103 +609,60 @@ article {
             <li class="motivation_text">Choose which videos to download, and languages for subtitles.</li>
         </ul>
     </div>
-</div>
-
-<!-- Second Content Row - Subscribe and Share -->
-<div class="row subscriberow">
-
-    <div id="subscribe_sec" class="col onecol share-subscribe-section">
-        <div class="cent-s-by-s subscribe-title"><h1>SUBSCRIBE<br/></h1><h2>FOR UPDATES</h2></div>
-        <div class="exclamation cent-s-by-s greenword">!</div>
- <!--        <div class="cent-s-by-s subscribe-text">
-            We’re constantly updating KA Lite, and would love to let you know about new developments.
-        </div> -->
-        <div id="mc_embed_signup" class="cent-s-by-s subscribe-form">
-            <form action="http://adhocsync.us6.list-manage.com/subscribe/post?u=023b9af05922dfc7f47a4fffb&amp;id=97a379de16" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
-                <input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
-                <input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button">
-            </form>
-        </div>
-
-        <div class="cent-s-by-s email-title">
-            <h1>Contact us</h1>
-            <a class="email-address" href="mailto:info@learningequality.org">info@learningequality.org</a>
-        </div>
-
+    
+    <div id="revolution">
+        <h2>Be a part of the revolution!</h2>
     </div>
-
-    <div id="share_sec" class="col social_media_sharing share-subscribe-section">
-        <!--<div class="cent-s-by-s subscribe-title"><h1>SHARING<br/></h1><h2>IS CARING</h2></div>
-        <div class="exclamation cent-s-by-s greenword">!</div>-->
-        <!--<div id="share-text">
-            <span class="greenword share-title">SHARE</span>
-        </div>-->
-        <div id="share-block">
-            <!-- FB and Twitter -->
-            <img src="/static/images/social-fb-t.png" width="101" height="62" alt="FB and twitter" usemap="#socialmap">
-            <map name="socialmap">
-                <area shape="rect" coords="0,0,50,62" alt="Facebook" href="http://www.facebook.com/share.php?u=http://bit.ly/RnZgUp">
-                <area shape="rect" coords="51,0,101,62" alt="Twitter" href="https://twitter.com/intent/tweet?text=KA+Lite%2C+an+offline+version+of+Khan+Academy+for+rural+schools&url=http%3A%2F%2Fkalite.adhocsync.com%2F">
-            </map>
-
-            <!-- G+ -->
-            <div class="g-plus" data-action="share" data-annotation="vertical-bubble" data-height="60" data-href="http://kalite.adhocsync.com/"></div>
-
-            <!-- LinkedIN -->
-            <script src="//platform.linkedin.com/in.js" type="text/javascript"> </script> <script type="IN/Share" data-url="kalite.adhocsync.com" data-counter="top"></script>
-            
-        </div>
-    </div>
-
-</div>
-
-<!-- Third Content Row  - Get Started and Contribute -->
-<div id="get-started-contribute" class="row">
+    
     <div id="get_started_sec" class="floatleft">
-        <h2>
-            Do you know somewhere that KA Lite could be useful?
-        </h2>
         <div class="mini-action-section">
-            <div class="action-text">
-                Ready to get started? 
-            </div>
+            <div class="action-text">Ready to get started?</div>
             <div class="button-section">
-                <a href="http://kalitewiki.learningequality.org/installation">
-                    <button id="get-started-button">
-                       Install now!
-                    </button>
+
+                <a href="/install/">
+
+                    <button id="get-started-button">Install now!</button>
                 </a>
             </div>
         </div>
         <div class="mini-action-section">
-            <div class="action-text">
-                Tell us about your needs
-            </div>
+            <div class="action-text">Develop, translate, or seed!</div>
             <div class="button-section">
-                <a href="https://docs.google.com/spreadsheet/viewform?formkey=dEhEOWRNVDBzWTdsUnFQYWlCWnZoWWc6MQ">
-                    <button id="get-started-button">
-                        Deployment
-                    </button>
+    
+            <a href="{{ wiki_url }}contribute" target="_blank">
+                    <button id="contribute-button">Contribute</button>
                 </a>
             </div>
         </div>
     </div>
 
     <div id="contribute_sec" class="floatleft">
-        <h2>
-            Want to contribute?
-        </h2>
-        <div class="action-text">
-            Develop, translate, or seed!
+        <div class="mini-action-section">
+            <div class="action-text">Tell us about your needs</div>
+            <div class="button-section">
+                <a href="/contact/">
+                    <button id="get-started-button">Contact Us!</button>
+                </a>
+            </div>
         </div>
-        <div class="button-section">
-            <a href="http://kalitewiki.learningequality.org/contribute" target="_blank"><button id="contribute-button">Contribute</button></a>
+
+        <div id="subscribe_sec" class="sharing share-subscribe-section">
+            <div id="subscribe_blob">
+                <div class="cent-s-by-s subscribe-title floatleft">
+                    <h1>SUBSCRIBE<br/></h1><h2>FOR UPDATES</h2>
+                </div>
+                <div id="mc_embed_signup" class="cent-s-by-s subscribe-form">
+                    <form action="/contact/subscribe/" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>{% csrf_token %}
+                        <div class="floatleft"><input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required></div>
+                        <div class="floatleft"><input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
+                    </form>
+                </div>
+            </div>
+            <div id="subscribe_exclamation_point" class="exclamation cent-s-by-s greenword">!</div>
         </div>
     </div>
-
 </div>
 
-</div> <!--end promo content-->
 
 {% if feed %}
 <div id="bottom_content" class="row">  
@@ -684,17 +684,32 @@ article {
 
     <div id="press-col">
     </div>
-
-
 </div>
 {% endif %}
 
 {% endblock content %}
 
 {% block footerleft %}
-    <span class="ka-on-social-container">
-        <span class="ka-on-social follow-us-text">Follow us!</span> 
-        <a class="ka-on-social ka-on-facebook" href="https://www.facebook.com/kaliteproject"><img src="{{ STATIC_URL }}/images/ka-on-facebook-button.png"/></a>
-        <a class="ka-on-social ka-on-twitter" href="https://twitter.com/ka_lite"><img class="ka-on-twitter" src="{{ STATIC_URL }}/images/ka-on-twitter-button.png"/></a>
-    </span>
+<div class="floatleft social-footer">
+    <div class="sharing"><span class="ka-on-social follow-us-text">Follow us!</div> 
+    
+    <div id="share-block">
+        <div class="sharing">
+            <!-- FB and Twitter -->
+            <img src="/static/images/social-fb-t.png" width="101" height="62" alt="FB and twitter" usemap="#socialmap">
+            <map name="socialmap">
+                <area shape="rect" coords="0,0,50,62" alt="Facebook" href="http://www.facebook.com/share.php?u=http://bit.ly/RnZgUp">
+                <area shape="rect" coords="51,0,101,62" alt="Twitter" href="https://twitter.com/intent/tweet?text=KA+Lite%2C+an+offline+version+of+Khan+Academy+for+rural+schools&url=http%3A%2F%2Fkalite.adhocsync.com%2F">
+            </map>
+        </div>
+
+        <!-- G+ -->
+        <div class="sharing g-plus" data-action="share" data-annotation="vertical-bubble" data-height="60" data-href="http://kalite.adhocsync.com/"></div>
+
+        <!-- LinkedIN -->
+        <div class="sharing">
+            <script src="//platform.linkedin.com/in.js" type="text/javascript"> </script> <script type="IN/Share" data-url="kalite.adhocsync.com" data-counter="top"></script>
+        </div>
+    </div>
+</div>
 {% endblock footerleft %}
