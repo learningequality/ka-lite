@@ -347,14 +347,14 @@ window.VideoView = Backbone.View.extend({
     },
 
     play: function() {
-        if (this.model.player && this.model.player.playVideo) {
-            this.model.player.playVideo();
+        if (this.model.player && this.model.player.play) {
+            this.model.player.play();
         }
     },
 
     pause: function() {
-        if (this.model.player && this.model.player.pauseVideo) {
-            this.model.player.pauseVideo();
+        if (this.model.player && this.model.player.pause) {
+            this.model.player.pause();
         }
     },
 
