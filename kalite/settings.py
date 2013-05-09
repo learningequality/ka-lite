@@ -134,7 +134,7 @@ if CENTRAL_SERVER:
     ACCOUNT_ACTIVATION_DAYS = local_or_("ACCOUNT_ACTIVATION_DAYS", 7)
     DEFAULT_FROM_EMAIL      = local_or_("DEFAULT_FROM_EMAIL", CENTRAL_FROM_EMAIL)
     INSTALLED_APPS         += ("postmark", "kalite.registration", "central")
-    EMAIL_BACKEND           = "postmark.backends.PostmarkBackend"
+    EMAIL_BACKEND           = local_or_("EMAIL_BACKEND", "postmark.backends.PostmarkBackend")
     AUTH_PROFILE_MODULE     = 'central.UserProfile'
 
 if not CENTRAL_SERVER:
