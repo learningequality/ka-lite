@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from securesync.models import Facility, FacilityUser, FacilityGroup
+from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceMetadata
 import securesync
 from main.models import ExerciseLog, VideoLog
 import random
@@ -34,7 +34,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         logging.getLogger().setLevel(logging.INFO)
         
-        generate_type = "exercise" if len(args)<=0 else args[0].lower()
+        generate_type = "exercises" if len(args)<=0 else args[0].lower()
             
         if "facility" == generate_type:
             Command.generateFakeFacilities()
@@ -56,7 +56,9 @@ class Command(BaseCommand):
     def generateFakeFacilities(names=("Wilson Elementary",)):
         """Add the given fake facilities"""
         facilities = [];
+        postfix = " @ %s"%DeviceMetadata.objects.filter(is_own_device=True)[0].device.name
         for name in names:
+            name += postfix
             try:
                 facilities.append(Facility.objects.get(name=name))
                 logging.info("Retrieved facility '%s'"%name)
