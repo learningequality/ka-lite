@@ -29,7 +29,7 @@ topics = ["multiplication-division", "factors-multiples"]
 class Command(BaseCommand):
     args = "<data_type=[Facility,FacilityUsers,FacilityGroups,default=Exercises,Videos]>"
 
-    help = "Generate fake user data"
+    help = "Generate fake user data.  Can be re-run to generate extra exercise and video data."
 
     def handle(self, *args, **options):
         logging.getLogger().setLevel(logging.INFO)
@@ -49,25 +49,26 @@ class Command(BaseCommand):
             elif "videos" == generate_type:
                 Command.generateFakeVideoLogs(facilityusers=fu)
             else:
-                raise Exception("Unknown data type to generate: %s"%generate_type)
+                raise Exception("Unknown data type to generate: %s" % generate_type)
                 
                 
     @staticmethod
     def generateFakeFacilities(names=("Wilson Elementary",)):
         """Add the given fake facilities"""
         facilities = [];
-        postfix = " @ %s"%DeviceMetadata.objects.filter(is_own_device=True)[0].device.name
+        postfix = " @ %s" % DeviceMetadata.objects.filter(is_own_device=True)[0].device.name
         for name in names:
             name += postfix
             try:
                 facilities.append(Facility.objects.get(name=name))
-                logging.info("Retrieved facility '%s'"%name)
+                logging.info("Retrieved facility '%s'" % name)
             except Facility.DoesNotExist as e:
                 facilities.append(Facility(name=name))
                 facilities[-1].save()
-                logging.info("Created facility '%s'"%name)
+                logging.info("Created facility '%s'" % name)
             
         return facilities
+    
     
     @staticmethod
     def generateFakeFacilityGroups(names=("Class 4E", "Class 5B"), facilities=None):
@@ -81,12 +82,12 @@ class Command(BaseCommand):
             for name in names:
                 try:
                     groups.append(FacilityGroup.objects.get(facility=facility, name=name))
-                    logging.info("Retrieved facility group '%s'"%name)
+                    logging.info("Retrieved facility group '%s'" % name)
                 except FacilityGroup.DoesNotExist as e:
                     groups.append(FacilityGroup(facility=facility, name=name))
                     groups[-1].full_clean()
                     groups[-1].save()
-                    logging.info("Created facility group '%s'"%name)
+                    logging.info("Created facility group '%s'" % name)
             
         return (groups,facilities)
             
@@ -107,13 +108,13 @@ class Command(BaseCommand):
                 for i in range(0,users_per_group):
                     try:
                         facilityusers.append(FacilityUser.objects.get(facility=facility, username=usernames[cur_usernum], first_name=firstnames[cur_usernum], last_name=lastnames[cur_usernum], group=group))
-                        logging.info("Retrieved facility user '%s/%s'"%(facility.name,usernames[cur_usernum]))
+                        logging.info("Retrieved facility user '%s/%s'" % (facility.name,usernames[cur_usernum]))
                     except FacilityUser.DoesNotExist as e:
                         facilityusers.append(FacilityUser(facility=facility, username=usernames[cur_usernum], first_name=firstnames[cur_usernum], last_name=lastnames[cur_usernum], group=group))
                         facilityusers[-1].set_password("blah")
                         facilityusers[-1].full_clean()
                         facilityusers[-1].save()
-                        logging.info("Created facility user '%s/%s'"%(facility.name,usernames[cur_usernum]))
+                        logging.info("Created facility user '%s/%s'" % (facility.name,usernames[cur_usernum]))
                     cur_usernum += 1
 
         return (facilityusers,groups,facilities)
@@ -144,7 +145,7 @@ class Command(BaseCommand):
                     streak_progress = max(10, 10*min(10, round(attempts * sqrt(random.random() * sig)))) # should be in increments of 10
                     points   = attempts * 10 * sig
                     
-                    logging.info("Creating exercise log: %-12s: %-25s (%d points, %d attempts, %d%% streak)"%(user.first_name, exercise["name"],  int(points), int(attempts), int(streak_progress)))
+                    logging.info("Creating exercise log: %-12s: %-25s (%d points, %d attempts, %d%% streak)" % (user.first_name, exercise["name"],  int(points), int(attempts), int(streak_progress)))
                     log = ExerciseLog(user=user, exercise_id=exercise["name"], attempts=int(attempts), streak_progress=int(streak_progress), points=int(points))
                     log.full_clean()
                     log.save()
@@ -172,7 +173,7 @@ class Command(BaseCommand):
                     total_seconds_watched = video["duration"] if p_complete>=random.random() else video["duration"]*sqrt(random.random()*sig)
                     points   = total_seconds_watched/10*10
 
-                    logging.info("Creating video log: %-12s: %-45s (%4.1f%% watched, %d points)%s"%(user.first_name, video["title"],  100*total_seconds_watched/video["duration"], int(points)," COMPLETE!" if int(total_seconds_watched)==video["duration"] else ""))
+                    logging.info("Creating video log: %-12s: %-45s (%4.1f%% watched, %d points)%s" % (user.first_name, video["title"],  100*total_seconds_watched/video["duration"], int(points)," COMPLETE!" if int(total_seconds_watched)==video["duration"] else ""))
                     log = VideoLog(user=user, youtube_id=video["youtube_id"], total_seconds_watched=int(total_seconds_watched), points=int(points))
                     log.full_clean()
                     log.save()
