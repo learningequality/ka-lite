@@ -52,44 +52,44 @@ def generate_fake_facility_groups(names=("Class 4E", "Class 5B"), facilities=Non
     if not facilities:
         facilities = generate_fake_facilities()
         
-    groups = [];
+    facility_groups = [];
     for facility in facilities:
         for name in names:
             try:
-                group = FacilityGroup.objects.get(facility=facility, name=name)
+                facility_group = FacilityGroup.objects.get(facility=facility, name=name)
                 logging.info("Retrieved facility group '%s'" % name)
             except FacilityGroup.DoesNotExist as e:
-                group = FacilityGroup(facility=facility, name=name)
-                group.full_clean()
-                group.save()
+                facility_group = FacilityGroup(facility=facility, name=name)
+                facility_group.full_clean()
+                facility_group.save()
                 logging.info("Created facility group '%s'" % name)
             
-            groups.append(group)
+            facility_groups.append(facility_group)
         
-    return (groups,facilities)
+    return (facility_groups,facilities)
         
         
-def generate_fake_facility_users(usernames=usernames,firstnames=firstnames,lastnames=lastnames,facilities=None,groups=None, password=None):
+def generate_fake_facility_users(usernames=usernames,firstnames=firstnames,lastnames=lastnames,facilities=None,facility_groups=None, password="blah"):
     """Add the given fake facility users to each of the given fake facilities.
     If no facilities are given, they are created."""
 
-    if not groups:
-        (groups,facilities) = generate_fake_facility_groups(facilities=facilities)
+    if not facility_groups:
+        (facility_groups,facilities) = generate_fake_facility_groups(facilities=facilities)
                
     facility_users = []
     
     cur_usernum = 0
-    users_per_group = len(usernames)/len(groups)
+    users_per_group = len(usernames)/len(facility_groups)
     
     for facility in facilities:
-        for group in groups:
+        for facility_group in facility_groups:
             for i in range(0,users_per_group):
                 try:
-                    facility_user = FacilityUser.objects.get(facility=facility, username=usernames[cur_usernum], first_name=firstnames[cur_usernum], last_name=lastnames[cur_usernum], group=group)
+                    facility_user = FacilityUser.objects.get(facility=facility, username=usernames[cur_usernum], first_name=firstnames[cur_usernum], last_name=lastnames[cur_usernum], group=facility_group)
                     logging.info("Retrieved facility user '%s/%s'" % (facility.name,usernames[cur_usernum]))
                 except FacilityUser.DoesNotExist as e:
-                    facility_user = FacilityUser(facility=facility, username=usernames[cur_usernum], first_name=firstnames[cur_usernum], last_name=lastnames[cur_usernum], group=group)
-                    facility_user.set_password("blah")
+                    facility_user = FacilityUser(facility=facility, username=usernames[cur_usernum], first_name=firstnames[cur_usernum], last_name=lastnames[cur_usernum], group=facility_group)
+                    facility_user.set_password(password) # set same password for every user
                     facility_user.full_clean()
                     facility_user.save()
                     logging.info("Created facility user '%s/%s'" % (facility.name,usernames[cur_usernum]))
@@ -99,7 +99,7 @@ def generate_fake_facility_users(usernames=usernames,firstnames=firstnames,lastn
                                  # could also randomize to add more users, as this function
                                  # seems to be generic, but really is not.
 
-    return (facility_users,groups,facilities)
+    return (facility_users,facility_groups,facilities)
     
 
 def generate_fake_exercise_logs(topics=topics,facility_users=None):
@@ -110,6 +110,8 @@ def generate_fake_exercise_logs(topics=topics,facility_users=None):
     if not facility_users:
         (facility_users,_,_) = generate_fake_facility_users()
         
+    exercise_logs = []
+    
     for topic in topics:
         exercises = json.load(open("./static/data/topicdata/" + topic + ".json","r"))
         exercises = sorted(exercises, key = lambda k: (k["h_position"], k["v_position"]))
@@ -130,11 +132,16 @@ def generate_fake_exercise_logs(topics=topics,facility_users=None):
                 streak_progress = max(10, 10*min(10, round(attempts * sqrt(random.random() * sig)))) # should be in increments of 10
                 points   = attempts * 10 * sig
                 
+                # Always create new
                 logging.info("Creating exercise log: %-12s: %-25s (%d points, %d attempts, %d%% streak)" % (user.first_name, exercise["name"],  int(points), int(attempts), int(streak_progress)))
                 log = ExerciseLog(user=user, exercise_id=exercise["name"], attempts=int(attempts), streak_progress=int(streak_progress), points=int(points))
                 log.full_clean()
                 log.save()
+                
+                exercise_logs.append(log)
 
+        return exercise_logs
+        
         
 def generate_fake_video_logs(topics=topics,facility_users=None):
     """Add video logs for the given topics, for each of the given users.
@@ -144,6 +151,8 @@ def generate_fake_video_logs(topics=topics,facility_users=None):
     if not facility_users:
         (facility_users,_,_) = generate_fake_facility_users()
         
+    video_logs = []
+    
     for topic in topics:
         videos = get_videos_for_topic(topic_id=topic)
         
@@ -166,43 +175,40 @@ def generate_fake_video_logs(topics=topics,facility_users=None):
                 log.full_clean()
                 log.save()
         
+                video_logs.append(log)
 
-def generate_fake_data(generate_type):
-    """Generate fake data from one of the following types:
-    facility
-    facility_users
-    facilitygroups
-    exercises
-    videos"""
-    
-    if "facility" == generate_type:
-        generate_fake_facilities()
-    elif "facility_users" == generate_type:
-        generate_fake_facility_users()
-    elif "facilitygroups" == generate_type:
-        generate_fake_facility_groups()
-    else:
-        # exercises and videos both require users to exist
-        (fu,_,_) = generate_fake_facility_users()
-        if "exercises" == generate_type:
-            generate_fake_exercise_logs(facility_users=fu)
-        elif "videos" == generate_type:
-            generate_fake_video_logs(facility_users=fu)
-        else:
-            raise Exception("Unknown data type to generate: %s" % generate_type)
-
-
+        return video_logs
+        
+        
 class Command(BaseCommand):
-    args = "<data_type=[Facility,facility_users,FacilityGroups,default=Exercises,Videos]>"
+    args = "<data_type=[facility,facility_users,facility_groups,default=exercises,videos]>"
 
     help = "Generate fake user data.  Can be re-run to generate extra exercise and video data."
 
     def handle(self, *args, **options):
         logging.getLogger().setLevel(logging.INFO)
         
+        # First arg is the type of data to generate
         generate_type = "exercises" if len(args)<=0 else args[0].lower()
-        
-        generate_fake_data(generate_type)
-
                 
+        if "facility" == generate_type or "facilities" == generate_type: 
+            generate_fake_facilities()
+    
+        elif "facility_groups" == generate_type: 
+            generate_fake_facility_groups()
+    
+        elif "facility_users" == generate_type:
+            generate_fake_facility_users() # default password
+        
+        elif "exercises" == generate_type:
+            (facility_users,_,_) = generate_fake_facility_users() # default password
+            generate_fake_exercise_logs(facility_users=facility_users)
+            
+        elif "videos" == generate_type:
+            (facility_users,_,_) = generate_fake_facility_users() # default password
+            generate_fake_video_logs(facility_users=facility_users)
+            
+        else:
+            raise Exception("Unknown data type to generate: %s" % generate_type)
+
                 
