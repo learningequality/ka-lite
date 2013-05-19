@@ -8,19 +8,18 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^images/(.+)$', lambda request, path: HttpResponseRedirect('/static/images/' + path)),
     url(r'^securesync/', include(securesync.urls)),
 )
 
 urlpatterns += patterns('',
+    url(r'^' + settings.STATIC_URL[1:] + '(?P<path>.*)$', 'django.views.static.serve', {
+        'document_root': settings.STATIC_ROOT,
+    }),
     url(r'^' + settings.CONTENT_URL[1:] + '(?P<path>.*)$', 'django.views.static.serve', {
         'document_root': settings.CONTENT_ROOT,
     }),
-    url(r'^' + settings.MEDIA_URL[1:] + '(?P<path>.*)$', 'django.views.static.serve', {
-        'document_root': settings.MEDIA_ROOT,
-    }),
 )
-
+        
 # Javascript translations
 urlpatterns += patterns('',
     (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', {'packages': ('ka-lite.locale')}, 'i18n_javascript_catalog'),

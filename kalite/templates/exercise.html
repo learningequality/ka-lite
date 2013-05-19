@@ -1,11 +1,12 @@
 {% extends 'base_distributed.html' %}
 
 {% load i18n %}
+{% load staticfiles %}
 
 {% block practice_active %}active{% endblock practice_active %}
 
 {% block headcss %}
-<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}js/khan-exercises/css/khan-exercise.css"></link>
+<link rel="stylesheet" type="text/css" href="{% static "js/khan-exercises/css/khan-exercise.css" %}"></link>
 
 <style>
 .return-link {
@@ -20,7 +21,7 @@
 
 {% block headjs %}
 <script>
-    var urlBaseOverride = "{{ MEDIA_URL }}js/khan-exercises/";
+    var urlBaseOverride = "{% static "js/khan-exercises/" %}";
     // some dummy features on the Exercises object to make khan-exercises.js happy
     Exercises = {
         completeStack: {
@@ -31,8 +32,8 @@
     };
 </script>
 <script type="text/javascript" src="/jsi18n/"></script>
-<script src="{{ MEDIA_URL }}js/khan-exercises/khan-exercise.js"></script>
-<script src="{{ MEDIA_URL }}js/khan-exercises/utils/jquery-ui.js"></script>
+<script src="{% static "js/khan-exercises/khan-exercise.js" %}"></script>
+<script src="{% static "js/khan-exercises/utils/jquery-ui.js" %}"></script>
 <script>
     var exerciseData = {
         "description": "{{ exercise.description }}",
@@ -49,7 +50,7 @@
         "points": 0
     };    
 </script>
-<script src="{{ MEDIA_URL }}js/exercises.js"></script>
+<script src="{% static "js/exercises.js" %}"></script>
 
 <script>
     $(function(){
