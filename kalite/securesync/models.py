@@ -10,6 +10,7 @@ import crypto
 import datetime
 import uuid
 import zlib
+import random
 import settings
 from pbkdf2 import crypt
 from django.utils.translation import ugettext_lazy as _
@@ -244,11 +245,81 @@ class SyncedModel(models.Model):
 class Zone(SyncedModel):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
-
+    private_key = models.TextField(max_length=500)
+    public_key = models.TextField(max_length=500)
+    
+    key = None
+    
+    def save(self):
+        # Auto-generate keys, if necessary
+        if not self.private_key:
+            key = crypto.Key()
+            self.private_key = key.get_private_key_string()
+            self.public_key  = key.get_public_key_string()
+        elif not self.public_key:
+            self.public_key = self.get_key().get_public_key_string()
+        
+        super(Device, self).save(*args, **kwargs)
+        
+        
+    def get_key(self):
+        if self.key:
+            return key
+        elif self.private_key:
+            key = crytpo.key(private_key_string = self.private_key, public_key_string = self.public_key)
+        else:
+            # Cannot create a key here; otherwise we run the risk
+            #   of changing the key (if it's generated here and not saved)
+            raise Exception('No key set for this object.')
+            
+            
+    def generate_install_certificate(self, string_to_sign=None):
+        """Generates an install certificate by signing a string with
+        the zone's private key.
+        If no string is given, then one will be generated"""
+        
+        if not string_to_sign:
+            string_to_sign = "%f" % random.random()
+        
+        return self.get_key().sign(string_to_sign)
+        
+        
     requires_trusted_signature = True
     
     def __unicode__(self):
         return self.name
+
+class ZoneOustandingInstallCertificates(SyncedModel):
+    """In order to auto-register with a zone, the zone can provide
+    an "installation certificate"; if a valid installation certificate
+    is provided by a device, the zone accepts the request to join,
+    and the certificate is removed from the list of outstanding certs."""
+    
+    zone = models.ForeignKey(Zone, verbose_name=_("Zone"))
+    install_certificate = models.CharField(max_length=500)
+    
+    def save(self):
+        if not self.install_certificate:
+            self.install_certificate = zone.generate_install_certificate()
+        
+        super(Device, self).save(*args, **kwargs)
+    
+    
+    def validate(self, install_certificate):
+        """Check that the given certificate is recognized, but don't actually use it."""
+        
+        try:
+            ZoneOustandingInstallCertificates.get(install_certificate=install_certificate)
+            return True
+        except NotFoundException as e:
+            return False
+            
+            
+    def use(self, install_certificate):
+        """Use the given install certificate: validate it, and remove it from the database.
+        If the certificate was invalid/unrecognized, then the method with raise an Exception"""
+        
+        ZoneOutstandingInstallCertificates.delete(install_certificate=install_certificate)
         
 
 class Facility(SyncedModel):
