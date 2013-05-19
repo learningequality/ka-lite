@@ -6,7 +6,7 @@ from annoying.decorators import render_to
 from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
 from central.forms import OrganizationForm, ZoneForm, OrganizationInvitationForm
 from securesync.api_client import SyncClient
-from securesync.models import Zone, SyncSession
+from securesync.models import Zone, ZoneOutstandingInstallCertificate, SyncSession
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
@@ -20,9 +20,33 @@ import settings
 
 @render_to("central/install_wizard.html")
 def install_wizard(request):
+    # get a list of all the organizations this user helps administer    
+    organizations = get_or_create_user_profile(request.user).get_organizations()
+    zones = organizations[0].zones.all()
+    install_certificates = []
+
+    #organization_id = request.GET.get("organization", "")
+    zone_id = request.GET.get("zone", "")
+    num_certificates = request.GET.get("num_certificates",1)
+    
+    # Selected; offer certificates
+    if zone_id:
+        zone = Zone.objects.get(id=zone_id)
+        for i in range(int(num_certificates)):
+            cert = ZoneOutstandingInstallCertificate(zone=zone)
+            cert.save()
+            cert.full_clean()
+            install_certificates.append(cert)
+
+    if request.method == "POST":
+        form = GetInstallCertificatesForm(data=request.POST)
+        if form.is_valid():
+            form.save()
+            
     return {
-        "central_contact_email": settings.CENTRAL_CONTACT_EMAIL,
-        "wiki_url": settings.CENTRAL_WIKI_URL
+        "organizations":organizations,
+        "zones":zones,
+        "install_certificates": "install_certificates"        
         }
     
 @render_to("central/homepage.html")

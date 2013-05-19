@@ -27,47 +27,63 @@ input {
 
 {% block content %}
 
-<h1>Log in</h1>
+        <div class="selection">
+            <div class="subtitle">{% trans "Select Organization" %}</div><select id="organization">
+            <option {% if not request.GET.organization %}selected{% endif %}>----</option>
+                {% for org in organizations %}
+                    <option value="{{ org.id }}" {% if request.GET.organization == org.id %}selected{% endif %}>{{ org }} : {{org.id}}</option>
+                {% endfor %}
+            </select>
+        </div>
 
-<p>Please note that this is the central server; you cannot log in here using your local server's account information.</p>
+        <div class="selection">
+            <div class="subtitle">{% trans "Select Zone" %}</div><select id="zone">
+                <option {% if not request.GET.zone %}selected{% endif %}>----</option>
+                {% for zone in zones %}
+                    <option value="{{ zone.id }}"{% if request.GET.zone == zone.id %}selected{% endif %}>{{ zone }}</option>
+                {% endfor %}
+            </select>
+        </div>
 
-<p>If you do not have an account on the central server, you can <a href="/accounts/register/">sign up here</a>.</p>
 
-{% if form.errors %}
-<p class="login_error">Incorrect user name or password:</p>
-{% endif %}
-<form method="post" action="?next={{ next|default:"/" }}">{% csrf_token %}
-<dl>
-<dt>
-	<label for="id_username">
-		Email:
-	</label>
-	{% if form.username.errors %} 
-	<span class="errors">
-		{{ form.email.errors.as_text }}
-	</span>{% endif %}
-</dt>
-<dd>
-	{{ form.username }}
-</dd>
-<dt>
-	<label for="id_password">
-		Password:
-	</label>
-	{% if form.password1.errors %} 
-	<span class="errors">
-		{{ form.password1.errors.as_text }}
-	</span>{% endif %}
-</dt>
-<dd>
-	{{ form.password }}
-</dd>
-<dt>
-	<input type="submit" class="submit" value="Log in" />
-</dt>
-</dl>
-</form>
+        <div class="selection">
+            <div class="subtitle">{% trans "Select # Certificates" %}</div><select id="num_certificates">
+                <option {% if not request.GET.num_certificates %}selected{% endif %}>1</option>
+                {% for n in sequence %}
+                    <option value="{{ n }}"{% if request.GET.num_certificates == n %}selected{% endif %}>{{ n }}</option>
+                {% endfor %}
+            </select>
+        </div>
+<script>
 
-<p>If you've forgotten your password, you can <a href="/accounts/password/reset/">reset it here</a>.</p>
+function setGetParam(name, val) {
+    var vars = {};
+    var parts = window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m, key, value) {
+        vars[key] = value;
+    });
+    if (val != "" && val != "----") {
+        vars[name] = val;
+    } else {
+        delete vars[name];
+    }
+    url = "?" + $.param(vars);
+    window.location.href = url;    
+}
 
+$(function() {
+
+    $("#organization").change(function(){
+       setGetParam("organization", $("#organization option:selected").val()); 
+    });
+    
+    $("#zone").change(function(){
+       setGetParam("zone", $("#zone option:selected").val()); 
+    });
+    
+    $("#num_certificates").change(function(){
+       setGetParam("num_certificates", $("#num_certificates option:selected").val()); 
+    });
+    
+});
+</script>
 {% endblock %}

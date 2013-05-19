@@ -29,6 +29,11 @@ class ZoneAdmin(admin.ModelAdmin):
 admin.site.register(Zone, ZoneAdmin)
 
 
+class ZoneOutstandingInstallCertificateAdmin(admin.ModelAdmin):
+    list_display = ("zone", "install_certificate")
+admin.site.register(ZoneOutstandingInstallCertificate, ZoneOutstandingInstallCertificateAdmin)
+    
+    
 class FacilityAdmin(admin.ModelAdmin):
     list_display = ("name", "address",)
 admin.site.register(Facility, FacilityAdmin)

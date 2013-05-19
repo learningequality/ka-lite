@@ -250,7 +250,7 @@ class Zone(SyncedModel):
     
     key = None
     
-    def save(self):
+    def save(self, *args, **kwargs):
         # Auto-generate keys, if necessary
         if not self.private_key:
             key = crypto.Key()
@@ -259,14 +259,26 @@ class Zone(SyncedModel):
         elif not self.public_key:
             self.public_key = self.get_key().get_public_key_string()
         
-        super(Device, self).save(*args, **kwargs)
+        super(SyncedModel, self).save(*args, **kwargs)
         
         
     def get_key(self):
+
+        # We have a cryptographic key object (from previous run); return it
         if self.key:
-            return key
+            return self.key
+
+        # We have key strings, but no key object.  create one!
         elif self.private_key:
-            key = crytpo.key(private_key_string = self.private_key, public_key_string = self.public_key)
+            # For back-compatibility, where zones didn't have keys
+            if self.private_key=="dummy_key":
+                self.private_key = None
+                self.public_key = None
+                self.save()
+                
+            self.key = crypto.Key(private_key_string = self.private_key, public_key_string = self.public_key)
+            return self.key
+
         else:
             # Cannot create a key here; otherwise we run the risk
             #   of changing the key (if it's generated here and not saved)
@@ -289,7 +301,7 @@ class Zone(SyncedModel):
     def __unicode__(self):
         return self.name
 
-class ZoneOustandingInstallCertificates(SyncedModel):
+class ZoneOutstandingInstallCertificate(SyncedModel):
     """In order to auto-register with a zone, the zone can provide
     an "installation certificate"; if a valid installation certificate
     is provided by a device, the zone accepts the request to join,
@@ -298,18 +310,18 @@ class ZoneOustandingInstallCertificates(SyncedModel):
     zone = models.ForeignKey(Zone, verbose_name=_("Zone"))
     install_certificate = models.CharField(max_length=500)
     
-    def save(self):
+    def save(self, *args, **kwargs):
         if not self.install_certificate:
-            self.install_certificate = zone.generate_install_certificate()
+            self.install_certificate = self.zone.generate_install_certificate()
         
-        super(Device, self).save(*args, **kwargs)
+        super(SyncedModel, self).save(*args, **kwargs)
     
     
     def validate(self, install_certificate):
         """Check that the given certificate is recognized, but don't actually use it."""
         
         try:
-            ZoneOustandingInstallCertificates.get(install_certificate=install_certificate)
+            ZoneOutstandingInstallCertificate.get(install_certificate=install_certificate)
             return True
         except NotFoundException as e:
             return False
