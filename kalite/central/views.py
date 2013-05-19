@@ -17,7 +17,6 @@ import requests
 
 import settings
 
-
 @render_to("central/homepage.html")
 def homepage(request):
     

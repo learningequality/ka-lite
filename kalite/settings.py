@@ -57,11 +57,18 @@ USE_I18N       = localor("USE_I18N", True)
 # calendars according to the current locale
 USE_L10N       = localor("USE_L10N", False)
 
-MEDIA_ROOT     = localor("MEDIA_ROOT", PROJECT_PATH + "/static/")
-MEDIA_URL      = localor("MEDIA_URL", "/static/")
-STATIC_URL     = localor("STATIC_URL", "/static/")
-
-# Make this unique, and don't share it with anybody.
+MEDIA_URL       = localor("MEDIA_URL", "/media/")
+MEDIA_ROOT      = localor("MEDIA_ROOT", PROJECT_PATH + "/media/") # not currently used
+STATIC_URL      = localor("STATIC_URL", "/static/")
+if DEBUG: # jedi mind-trick on django to serve up static files in debug/release,
+          #   while still following the semantics of django STATIC_ROOT/STATIC_URL
+    STATIC_ROOT      = ""#PROJECT_PATH + "/static/"
+    STATICFILES_DIRS = ( PROJECT_PATH + "/static/", )
+else:
+    STATIC_ROOT     = localor("STATIC_ROOT", PROJECT_PATH + "/static/")
+    
+ 
+ # Make this unique, and don't share it with anybody.
 SECRET_KEY     = localor("SECRET_KEY", "8qq-!fa$92i=s1gjjitd&%s@4%ka9lj+=@n7a&fzjpwu%3kd#u")
 
 TEMPLATE_DIRS  = localor("TEMPLATE_DIRS", (PROJECT_PATH + "/templates",))
@@ -103,6 +110,7 @@ INSTALLED_APPS = (
     "django.contrib.admin",
     "django.contrib.humanize",
     "django.contrib.messages",
+    "django.contrib.staticfiles",
     "south",
     "chronograph",
     "django_cherrypy_wsgiserver",
