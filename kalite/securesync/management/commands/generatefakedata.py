@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceMetadata
+from securesync.models import Facility, FacilityUser, FacilityGroup, Device, DeviceMetadata
 import securesync
 from main.models import ExerciseLog, VideoLog
 import random
@@ -30,9 +30,8 @@ def sigmoid(theta, a, b):
 def generate_fake_facilities(names=("Wilson Elementary",)):
     """Add the given fake facilities"""
     facilities = [];
-    postfix = " @ %s" % DeviceMetadata.objects.filter(is_own_device=True)[0].device.name
+    
     for name in names:
-        name += postfix
         try:
             facility = Facility.objects.get(name=name)
             logging.info("Retrieved facility '%s'" % name)
