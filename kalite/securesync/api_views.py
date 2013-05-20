@@ -76,10 +76,29 @@ def register_device(request):
                 "code": "device_already_registered",
             }, status=500)            
         except Device.DoesNotExist:
-            return JsonResponse({
-                "error": "Device registration with public key not found; login and register first?",
-                "code": "public_key_unregistered",
-            }, status=500)
+            if "install_certificate" in data and data["install_certificate"]:
+                try:
+                    cert = oneOutstandingInstallCertificate.objects.get(install_certificate=data["install_certificate"])
+                    zone = cert.zone
+
+                    registration = RegisteredDevicePublicKey(public_key=client_device.public_key, zone=zone)
+                    registration.save()
+                    registration.full_clean()
+                    
+                    cert.use()  # succeeded, so mark the invitation as used
+                    
+                except Exception as e:
+                    #import pdb; pdb.set_trace()
+                    import logging; logging.debug("\t%s (%s)", e.message, data["install_certificate"])
+                    return JsonResponse({
+                        "error": e.message,
+                        "code": "?",
+                    }, status=500)
+            else:                
+                return JsonResponse({
+                    "error": "Device registration with public key not found; login and register first?",
+                    "code": "public_key_unregistered",
+                }, status=500)
     
     client_device.signed_by = client_device
     

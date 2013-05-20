@@ -130,6 +130,7 @@ INSTALLED_APPS = (
     "faq",
     "loadtesting",
     "contact",
+    "kalite",
 )
 
 if DEBUG or CENTRAL_SERVER:

@@ -3,10 +3,10 @@ from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from annoying.decorators import render_to
-from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
+from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription, ZoneOutstandingInstallCertificate
 from central.forms import OrganizationForm, ZoneForm, OrganizationInvitationForm
 from securesync.api_client import SyncClient
-from securesync.models import Zone, ZoneOutstandingInstallCertificate, SyncSession
+from securesync.models import Zone, SyncSession
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
@@ -20,33 +20,75 @@ import settings
 
 @render_to("central/install_wizard.html")
 def install_wizard(request):
-    # get a list of all the organizations this user helps administer    
+
+    # When not authenticated, just point them to their options (including logging in!)
+    if not request.user.is_authenticated():
+        return {
+            "wiki_url": settings.CENTRAL_WIKI_URL,
+        }
+
+
+    # Get all data
+    organization_id = request["organization"] if "organization" in request else request.GET.get("organization",None)
+    zone_id = request["zone"] if "zone" in request else request.GET.get("zone", None)
+    num_certificates = request["num_certificates"] if "num_certificates" in request else request.GET.get("num_certificates", 1)
+
+    # get a list of all the organizations this user helps administer,
+    #   then choose the selected organization (if possible)
     organizations = get_or_create_user_profile(request.user).get_organizations()
-    zones = organizations[0].zones.all()
-    install_certificates = []
+    if organization_id:
+        organization = organizations[int(organization_id)]
+    elif len(organizations)==1:
+        organization = organizations[0]
+    else:
+        organization = None
 
-    #organization_id = request.GET.get("organization", "")
-    zone_id = request.GET.get("zone", "")
-    num_certificates = request.GET.get("num_certificates",1)
+    # If an organization is selected, get the list of zones
+    if not organization:
+        zones = []
+        zone = None
+    else:
+        zones = organization.zones.all()
     
-    # Selected; offer certificates
-    if zone_id:
-        zone = Zone.objects.get(id=zone_id)
-        for i in range(int(num_certificates)):
-            cert = ZoneOutstandingInstallCertificate(zone=zone)
-            cert.save()
-            cert.full_clean()
-            install_certificates.append(cert)
+        # If a zone is selected grab it
+        if zone_id:
+            zone = Zone.objects.get(id=zone_id)
+        elif len(zones)==1:
+            zone = zones[0]
+        else:
+            zone = None
+                
 
+    # Generate install certificates
+    err = ""
+    install_certificates = []
     if request.method == "POST":
-        form = GetInstallCertificatesForm(data=request.POST)
-        if form.is_valid():
-            form.save()
-            
+#        organization_id = 
+        # This is just for demo purposes;
+        #   in the future, certificates are only generated
+        #   when the form is submitted.
+        if not organization: 
+            err = "post without organization"
+        elif not zone: 
+            err = "post without zone"
+        else:
+            # If a zone exists, grab the certificates!
+            for i in range(int(num_certificates)):
+                cert = zone.zoneoutstandinginstallcertificate_set.create()
+#                cert = ZoneOutstandingInstallCertificate(zone=zone)
+                #import pdb; pdb.set_trace()
+#                cert.save()
+#                cert.full_clean()
+                install_certificates.append(cert.install_certificate)
+
     return {
-        "organizations":organizations,
-        "zones":zones,
-        "install_certificates": "install_certificates"        
+        "organizations": organizations,
+        "selected_organization": organization,
+        "zones": zones,
+        "selected_zone": zone,
+        "install_certificates": install_certificates,
+        "num_certificates": num_certificates,  
+        "error": err, 
         }
     
 @render_to("central/homepage.html")
@@ -60,7 +102,8 @@ def homepage(request):
     organizations = get_or_create_user_profile(request.user).get_organizations()
     
     # add invitation forms to each of the organizations
-    for org in organizations:
+#        import pdb; pdb.set_trace()
+    for pk,org in organizations.items():
         org.form = OrganizationInvitationForm(initial={"invited_by": request.user})
     
     # handle a submitted invitation form
@@ -75,7 +118,7 @@ def homepage(request):
             form.save()
             return HttpResponseRedirect(reverse("homepage"))
         else: # we need to inject the form into the correct organization, so errors are displayed inline
-            for org in organizations:
+            for pk,org in organizations.items():
                 if org.pk == int(request.POST.get("organization")):
                     org.form = form
                     

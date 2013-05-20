@@ -1,19 +1,20 @@
+import crypto
+import datetime
+import uuid
+import zlib
 from annoying.functions import get_object_or_None
+from pbkdf2 import crypt
+
+from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User, check_password
 from django.core import serializers
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models, transaction
 from django.db.models import Q
 from django.utils.text import compress_string
-from config.models import Settings
-import crypto
-import datetime
-import uuid
-import zlib
-import random
+
 import settings
-from pbkdf2 import crypt
-from django.utils.translation import ugettext_lazy as _
+from config.models import Settings
 
 
 _unhashable_fields = ["signature", "signed_by"]
@@ -245,94 +246,12 @@ class SyncedModel(models.Model):
 class Zone(SyncedModel):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
-    private_key = models.TextField(max_length=500)
-    public_key = models.TextField(max_length=500)
-    
-    key = None
-    
-    def save(self, *args, **kwargs):
-        # Auto-generate keys, if necessary
-        if not self.private_key:
-            key = crypto.Key()
-            self.private_key = key.get_private_key_string()
-            self.public_key  = key.get_public_key_string()
-        elif not self.public_key:
-            self.public_key = self.get_key().get_public_key_string()
-        
-        super(SyncedModel, self).save(*args, **kwargs)
-        
-        
-    def get_key(self):
 
-        # We have a cryptographic key object (from previous run); return it
-        if self.key:
-            return self.key
-
-        # We have key strings, but no key object.  create one!
-        elif self.private_key:
-            # For back-compatibility, where zones didn't have keys
-            if self.private_key=="dummy_key":
-                self.private_key = None
-                self.public_key = None
-                self.save()
-                
-            self.key = crypto.Key(private_key_string = self.private_key, public_key_string = self.public_key)
-            return self.key
-
-        else:
-            # Cannot create a key here; otherwise we run the risk
-            #   of changing the key (if it's generated here and not saved)
-            raise Exception('No key set for this object.')
-            
-            
-    def generate_install_certificate(self, string_to_sign=None):
-        """Generates an install certificate by signing a string with
-        the zone's private key.
-        If no string is given, then one will be generated"""
-        
-        if not string_to_sign:
-            string_to_sign = "%f" % random.random()
-        
-        return self.get_key().sign(string_to_sign)
-        
-        
     requires_trusted_signature = True
     
     def __unicode__(self):
         return self.name
 
-class ZoneOutstandingInstallCertificate(SyncedModel):
-    """In order to auto-register with a zone, the zone can provide
-    an "installation certificate"; if a valid installation certificate
-    is provided by a device, the zone accepts the request to join,
-    and the certificate is removed from the list of outstanding certs."""
-    
-    zone = models.ForeignKey(Zone, verbose_name=_("Zone"))
-    install_certificate = models.CharField(max_length=500)
-    
-    def save(self, *args, **kwargs):
-        if not self.install_certificate:
-            self.install_certificate = self.zone.generate_install_certificate()
-        
-        super(SyncedModel, self).save(*args, **kwargs)
-    
-    
-    def validate(self, install_certificate):
-        """Check that the given certificate is recognized, but don't actually use it."""
-        
-        try:
-            ZoneOutstandingInstallCertificate.get(install_certificate=install_certificate)
-            return True
-        except NotFoundException as e:
-            return False
-            
-            
-    def use(self, install_certificate):
-        """Use the given install certificate: validate it, and remove it from the database.
-        If the certificate was invalid/unrecognized, then the method with raise an Exception"""
-        
-        ZoneOutstandingInstallCertificates.delete(install_certificate=install_certificate)
-        
 
 class Facility(SyncedModel):
     name = models.CharField(verbose_name=_("Name"), help_text=_("(This is the name that students/teachers will see when choosing their facility; it can be in the local language.)"), max_length=100)

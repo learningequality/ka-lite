@@ -25,3 +25,9 @@ admin.site.register(FeedListing, FeedListingAdmin)
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display = ("email", "timestamp", "ip",)
 admin.site.register(Subscription, SubscriptionAdmin)
+
+
+class ZoneOutstandingInstallCertificateAdmin(admin.ModelAdmin):
+    list_display = ("zone", "install_certificate")
+admin.site.register(ZoneOutstandingInstallCertificate, ZoneOutstandingInstallCertificateAdmin)
+    

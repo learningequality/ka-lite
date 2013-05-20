@@ -1,10 +1,16 @@
+import random
+
 from django.db import models
-from securesync.models import Zone
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.template import RequestContext
+from django.utils.translation import ugettext_lazy as _
+
 import settings
+from securesync import crypto
+from securesync.models import Zone
+
 
 def get_or_create_user_profile(user):
     return UserProfile.objects.get_or_create(user=user)[0]
@@ -48,7 +54,10 @@ class UserProfile(models.Model):
         return self.user.username
 
     def get_organizations(self):
-        return list(self.user.organization_set.all())
+        orgs = {} # no dictionary comprehensions, so have to loop
+        for org in self.user.organization_set.all():
+            orgs[org.pk] = org
+        return orgs
 
     
 class OrganizationInvitation(models.Model):
@@ -98,3 +107,103 @@ class Subscription(models.Model):
     email = models.EmailField()
     timestamp = models.DateTimeField(auto_now_add=True)
     ip = models.CharField(max_length=100, blank=True)
+
+
+
+
+class ZoneKey(models.Model):
+    """Zones should have keys, but for back compat, they can't.
+    So, let's define a one-to-one table, to store zone keys."""
+    zone = models.ForeignKey(Zone, verbose_name=_("Zone"))
+    private_key = models.TextField(max_length=500)
+    public_key = models.TextField(max_length=500)
+    
+    key = None
+    
+    def save(self, *args, **kwargs):
+        # Auto-generate keys, if necessary
+        if not self.private_key:
+            key = crypto.Key()
+            self.private_key = key.get_private_key_string()
+            self.public_key  = key.get_public_key_string()
+        elif not self.public_key:
+            self.public_key = self.get_key().get_public_key_string()
+        
+        super(ZoneKey, self).save(*args, **kwargs)
+        
+        
+    def get_key(self):
+
+        # We have a cryptographic key object (from previous run); return it
+        if self.key:
+            return self.key
+
+        # We have key strings, but no key object.  create one!
+        elif self.private_key:
+            # For back-compatibility, where zones didn't have keys
+            if self.private_key=="dummy_key":
+                self.private_key = None
+                self.public_key = None
+                self.save()
+                
+            self.key = crypto.Key(private_key_string = self.private_key, public_key_string = self.public_key)
+            return self.key
+
+        else:
+            # Cannot create a key here; otherwise we run the risk
+            #   of changing the key (if it's generated here and not saved)
+            raise Exception('No key set for this object.')
+            
+            
+    def generate_install_certificate(self, string_to_sign=None):
+        """Generates an install certificate by signing a string with
+        the zone's private key.
+        If no string is given, then one will be generated"""
+        
+        # Should have something more intelligent here
+        if not string_to_sign:
+            string_to_sign = "%f" % random.random()
+        
+        return self.get_key().sign(string_to_sign)
+        
+        
+class ZoneOutstandingInstallCertificate(models.Model):
+    """In order to auto-register with a zone, the zone can provide
+    an "installation certificate"; if a valid installation certificate
+    is provided by a device, the zone accepts the request to join,
+    and the certificate is removed from the list of outstanding certs."""
+    
+    zone = models.ForeignKey(Zone, verbose_name=_("Zone"))
+    install_certificate = models.CharField(max_length=500)
+    
+    def save(self, *args, **kwargs):
+        # Generate the certificate
+        if not self.install_certificate:
+            try:
+                zone_key = ZoneKey.objects.get(zone=self.zone)
+            except ZoneKey.DoesNotExist:
+                # generate the zone key
+                zone_key = ZoneKey(zone=self.zone)
+                zone_key.save()
+                zone_key.full_clean()
+                
+            self.install_certificate = zone_key.generate_install_certificate()
+        
+        super(ZoneOutstandingInstallCertificate, self).save(*args, **kwargs)
+    
+    @staticmethod
+    def validate(self, install_certificate):
+        """Check that the given certificate is recognized, but don't actually use it."""
+        
+        try:
+            ZoneOutstandingInstallCertificate.get(install_certificate=install_certificate)
+            return True
+        except NotFoundException as e:
+            return False
+            
+                
+    def use(self):
+        """Use the given install certificate: validate it, and remove it from the database.
+        If the certificate was invalid/unrecognized, then the method with raise an Exception"""
+        
+        self.delete()

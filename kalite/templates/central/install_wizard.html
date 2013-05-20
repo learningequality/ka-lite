@@ -1,6 +1,7 @@
 {% extends "base_central.html" %}
 
 {% load i18n %}
+{% load my_filters %}
 
 {% block title %}{% trans "Installation" %}{% endblock %}
 
@@ -22,38 +23,89 @@ input {
 .submit {
     margin-left: 71px;
 }
+ol li {
+    list-style-type: decimal;
+    margin-left:15px;
+}
+span.title {
+    text-decoration: underline;
+}
+ol li ol li {
+    list-style-type: lower-alpha;
+    margin-left:25px;
+}
+
 </style>
 {% endblock headcss %}
 
 {% block content %}
-
-        <div class="selection">
-            <div class="subtitle">{% trans "Select Organization" %}</div><select id="organization">
-            <option {% if not request.GET.organization %}selected{% endif %}>----</option>
-                {% for org in organizations %}
-                    <option value="{{ org.id }}" {% if request.GET.organization == org.id %}selected{% endif %}>{{ org }} : {{org.id}}</option>
-                {% endfor %}
+{% if not request.user.is_authenticated %}
+<div>
+    There are three methods for installing KA Lite:
+    <ol>
+        <li><b>Recommended </b><span class="title">Registered User Install</span>
+            <ol>
+                <li><a href="{% url registration_register %}">Register for an account</a> with KA Lite, then <a href="{% url auth_login %}">login</a>.</li>
+                <li>Return to this page to download your preconfigured copy of KA Lite!</li>
+            </ol>
+        </li>
+        <li><span class="title">Windows Installer</span>
+            <ol>
+                <li><a href="">Download our Windows Installer</a>, and walk through the installation wizard.</li>
+                <li>Follow our <a href="{{ wiki_url }}/installation/">post-install setup instructions</a>.</li>
+            </ol>
+        </li>
+        <li><span class="title">Github Installation</span>
+            <ol>
+                <li>Follow our <a href="{{ wiki_url }}/installation/">github installation.</li>
+                <li>Follow our <a href="{{ wiki_url }}/installation/">post-install setup instructions</a>.</li>
+            </ol>
+        </li>
+    </ol>
+</div>
+{% else %}
+    <form method="post" class="basic-form">
+    {% csrf_token %}
+        <div class="selection" id="select_organization">
+            <div class="subtitle">{% trans "Select Organization" %}</div>
+            <select name="organization" id="organization">
+                <option {% if not selected_organization %}selected{% endif %}>----</option>
+                    {% for pk,org in organizations.items %}
+                    <option value="{{ pk }}" {% if selected_organization.id == org.id %}selected{% endif %}>{{ org }} : {{org.id}}</option>
+                    {% endfor %}
             </select>
         </div>
 
-        <div class="selection">
-            <div class="subtitle">{% trans "Select Zone" %}</div><select id="zone">
-                <option {% if not request.GET.zone %}selected{% endif %}>----</option>
+        <div class="selection" id="select_zone">
+            <div class="subtitle">{% trans "Select Zone" %}</div>
+            <select name="zone" id="zone">
+                <option {% if not selected_zone %}selected{% endif %}>----</option>
                 {% for zone in zones %}
-                    <option value="{{ zone.id }}"{% if request.GET.zone == zone.id %}selected{% endif %}>{{ zone }}</option>
+                <option value="{{ zone.id }}"{% if selected_zone.id == zone.id %}selected{% endif %}>{{ zone }}</option>
                 {% endfor %}
             </select>
         </div>
 
 
-        <div class="selection">
-            <div class="subtitle">{% trans "Select # Certificates" %}</div><select id="num_certificates">
-                <option {% if not request.GET.num_certificates %}selected{% endif %}>1</option>
-                {% for n in sequence %}
-                    <option value="{{ n }}"{% if request.GET.num_certificates == n %}selected{% endif %}>{{ n }}</option>
+        <div class="selection" id="select_num_certificates">
+            <div class="subtitle">{% trans "Select # Certificates" %}</div>
+            <select name="num_certificates" id="num_certificates">
+                {% mkrange 1 50 as some_range %}
+                {% for n in some_range %}
+                <option value="{{ n }}"{% if num_certificates == n|stringformat:"d" %}selected{% endif %}>{{ n }}</option>
                 {% endfor %}
             </select>
         </div>
+        
+        <div class="selection" id="submit">
+            <div class="subtitle"></div>
+            <input type="submit" value="{% trans "Download now!"%}" />
+        </div>
+    </form>
+        <div>
+        install_certificates = {{ install_certificates }}
+        </div>
+    
 <script>
 
 function setGetParam(name, val) {
@@ -71,7 +123,7 @@ function setGetParam(name, val) {
 }
 
 $(function() {
-
+    // When selected, refresh the page
     $("#organization").change(function(){
        setGetParam("organization", $("#organization option:selected").val()); 
     });
@@ -86,4 +138,5 @@ $(function() {
     
 });
 </script>
+{% endif %}
 {% endblock %}

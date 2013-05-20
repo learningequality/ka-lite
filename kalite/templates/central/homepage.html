@@ -156,7 +156,7 @@
 	{% endfor %}
 	<div id="organizations">
 			{% if organizations %}
-				{% for org in organizations %}
+				{% for pk,org in organizations.items %}
 					<div class="organization">
 						<div class="title-bar">
 							<div class="title-contents">
