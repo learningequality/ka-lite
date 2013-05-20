@@ -25,7 +25,7 @@ label {
 {% block content %}
 
   {% if form.non_field_errors %}
-  <div class="errorlist">Please correct the errors below: {{ form.non_field_errors }}</div>
+  <div class="errorlist">Please correct the errors below:<br/>{{ form.non_field_errors }}</div>
   {% endif %}
 
   <h1>Create an account</h1>

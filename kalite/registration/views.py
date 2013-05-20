@@ -10,6 +10,9 @@ from django.template import RequestContext
 from django.contrib import messages
 from django.contrib.auth import logout
 
+from django.db import IntegrityError
+from django.utils.translation import ugettext as _
+
 from registration.backends import get_backend
 
 def complete(request, *args, **kwargs):
@@ -191,12 +194,19 @@ def register(request, backend, success_url=None, form_class=None,
         form = form_class(data=request.POST, files=request.FILES)
         if form.is_valid():
             form.cleaned_data['username'] = form.cleaned_data['email']
-            new_user = backend.register(request, **form.cleaned_data)
-            if success_url is None:
-                to, args, kwargs = backend.post_registration_redirect(request, new_user)
-                return redirect(to, *args, **kwargs)
-            else:
-                return redirect(success_url)
+            try:
+                new_user = backend.register(request, **form.cleaned_data)
+                if success_url is None:
+                    to, args, kwargs = backend.post_registration_redirect(request, new_user)
+                    return redirect(to, *args, **kwargs)
+                else:
+                    return redirect(success_url)
+            except IntegrityError, e:
+                if e.message=='column username is not unique':
+                    #import pdb; pdb.set_trace()
+                    form._errors['__all__'] = _("An account with this email address has already been created.  Please login at the link above.")
+                else:
+                    raise e
     else:
         form = form_class()
     
