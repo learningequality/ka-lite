@@ -42,7 +42,7 @@ def install_wizard(request):
     if organization_id:
         organization = organizations[int(organization_id)]
     elif len(organizations)==1:
-        organization = organizations[0]
+        organization = organizations[organizations.keys()[0]]
     else:
         organization = None
 
