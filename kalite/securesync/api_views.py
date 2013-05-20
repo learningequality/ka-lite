@@ -224,6 +224,12 @@ def download_models(data, session):
 def test_connection(request):
     return HttpResponse("OK")
 
+def get_client_IP(request):
+    from socket import gethostname, gethostbyname 
+    ip = gethostbyname(gethostname()) 
+    return 
+
+
 def status(request):
     data = {
         "is_logged_in": request.is_logged_in,

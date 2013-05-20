@@ -45,6 +45,13 @@ class SyncClient(object):
             return "connection_error"
         except Exception as e:
             return "error (%s)" % e
+    
+    def get_my_outside_IP(self):
+        if self.test_connection() != "success":
+            return None
+        else:
+            return self.get("IPtest", timeout=5)
+            
             
     def register(self):
         own_device = Device.get_own_device()
