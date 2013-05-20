@@ -1,22 +1,23 @@
 import re, json
+import requests
+from annoying.decorators import render_to
+
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseNotAllowed
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
-from annoying.decorators import render_to
+from django.core.urlresolvers import reverse
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib import messages
+from django.utils.translation import ugettext as _
+
+import settings
 from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
 from central.forms import OrganizationForm, ZoneForm, OrganizationInvitationForm
 from securesync.api_client import SyncClient
 from securesync.models import Zone, SyncSession
-from django.core.urlresolvers import reverse
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
 from securesync.models import Facility
 from securesync.forms import FacilityForm
-from django.contrib import messages
-
-import requests
-import settings
-
 
 @render_to("central/homepage.html")
 def homepage(request):
@@ -49,6 +50,7 @@ def homepage(request):
                     org.form = form
                     
     return {
+        "title": _("Account administration"),
         "organizations": organizations,
         "invitations": OrganizationInvitation.objects.filter(email_to_invite=request.user.email)
     }

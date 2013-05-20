@@ -1,11 +1,12 @@
 {% extends 'base_distributed.html' %}
 
 {% load i18n %}
+{% load staticfiles %}
 
 {% block coachreports_active %}active{% endblock coachreports_active %}
 
 {% block headcss %}
-<link rel='stylesheet' type='text/css' href='{{ MEDIA_URL }}css/coach_reports.css'>
+<link rel='stylesheet' type='text/css' href='{% static "css/coach_reports.css" %}'>
 {% endblock headcss %}
 
 {% block title %}Coach Reports{% endblock title %}
