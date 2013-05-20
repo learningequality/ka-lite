@@ -1,21 +1,24 @@
 import re, json
+import os, shutil
+import requests
+from zipfile import ZipFile, ZIP_DEFLATED
+from annoying.decorators import render_to
+
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseNotAllowed
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
-from annoying.decorators import render_to
+from django.core.urlresolvers import reverse
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib import messages
+
+import settings
 from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription, ZoneOutstandingInstallCertificate
 from central.forms import OrganizationForm, ZoneForm, OrganizationInvitationForm
 from securesync.api_client import SyncClient
 from securesync.models import Zone, SyncSession
-from django.core.urlresolvers import reverse
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
 from securesync.models import Facility
 from securesync.forms import FacilityForm
-from django.contrib import messages
-
-import requests
-import settings
 
 
 @render_to("central/install_wizard.html")
@@ -60,7 +63,7 @@ def install_wizard(request):
                 
 
     # Generate install certificates
-    err = ""
+    errors = []
     install_certificates = []
     if request.method == "POST":
 #        organization_id = 
@@ -68,18 +71,55 @@ def install_wizard(request):
         #   in the future, certificates are only generated
         #   when the form is submitted.
         if not organization: 
-            err = "post without organization"
+            errors += "post without organization"
         elif not zone: 
-            err = "post without zone"
+            errors += "post without zone"
         else:
-            # If a zone exists, grab the certificates!
+        
+            # Create the new certificates
             for i in range(int(num_certificates)):
                 cert = zone.zoneoutstandinginstallcertificate_set.create()
-#                cert = ZoneOutstandingInstallCertificate(zone=zone)
-                #import pdb; pdb.set_trace()
-#                cert.save()
-#                cert.full_clean()
                 install_certificates.append(cert.install_certificate)
+            
+            # Create the local_settings file
+            loc_sets = os.tmpnam()
+            fh = open(loc_sets, "w")
+            fh.write("INSTALL_CERTIFICATES=%s\n" % str(install_certificates))
+            fh.close()
+            
+            # Create the manifest file
+            from django.core import serializers
+            from itertools import chain
+            ozs = get_or_create_user_profile(request.user).user.organization_set.all()
+            combined = list(chain(ozs, zones))
+            
+            man_file = os.tmpnam()
+            fh = open(man_file, "w")
+            fh.write(serializers.serialize("json", combined))
+            fh.close()
+            
+            # Append into a zip
+            kalite_dummy_zip = settings.MEDIA_ROOT + "zip/kalite-dummy.zip"
+            kalite_full_zip = settings.MEDIA_ROOT + "zip/kalite-full.zip"
+            if settings.DEBUG and os.path.isfile(kalite_dummy_zip):
+                kalite_zip = kalite_dummy_zip # for debug purposes ONLY
+            elif os.path.isfile(kalite_full_zip):
+                kalite_zip = kalite_full_zip 
+            else:
+                raise Exception("Must have a kalite-full.zip file in %s" % (settings.MEDIA_ROOT+"zip/"))
+            
+            fil = os.tmpnam()
+            shutil.copy(kalite_zip, fil) # duplicate the archive
+            zfile = ZipFile(fil, "a", ZIP_DEFLATED)
+            zfile.write(loc_sets, arcname="kalite/local_settings.py")
+            zfile.write(man_file, arcname="kalite/manifest/models.json")
+            zfile.close()
+                        
+            # Return that zip!
+            filename = "KALite-%s.zip" % zone.name
+            response = HttpResponse(open(fil,"r"), content_type='application/zip')
+            response['Content-Disposition'] = 'attachment; filename="%s"' % filename
+            return response
 
     return {
         "organizations": organizations,
@@ -88,7 +128,7 @@ def install_wizard(request):
         "selected_zone": zone,
         "install_certificates": install_certificates,
         "num_certificates": num_certificates,  
-        "error": err, 
+        "errors": errors, 
         }
     
 @render_to("central/homepage.html")

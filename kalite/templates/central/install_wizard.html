@@ -35,77 +35,124 @@ ol li ol li {
     margin-left:25px;
 }
 
+.instructions {
+    margin-bottom: 25px;
+}
+.subtitle{
+    float:left;
+    width:120px;
+}
+.select {
+    float:left;
+}
+.selection {
+    width:100%;
+    line-height: 25px;
+    height:25px;
+}
+
 </style>
 {% endblock headcss %}
 
 {% block content %}
-{% if not request.user.is_authenticated %}
-<div>
-    There are three methods for installing KA Lite:
-    <ol>
-        <li><b>Recommended </b><span class="title">Registered User Install</span>
-            <ol>
-                <li><a href="{% url registration_register %}">Register for an account</a> with KA Lite, then <a href="{% url auth_login %}">login</a>.</li>
-                <li>Return to this page to download your preconfigured copy of KA Lite!</li>
-            </ol>
-        </li>
-        <li><span class="title">Windows Installer</span>
-            <ol>
-                <li><a href="">Download our Windows Installer</a>, and walk through the installation wizard.</li>
-                <li>Follow our <a href="{{ wiki_url }}/installation/">post-install setup instructions</a>.</li>
-            </ol>
-        </li>
-        <li><span class="title">Github Installation</span>
-            <ol>
-                <li>Follow our <a href="{{ wiki_url }}/installation/">github installation.</li>
-                <li>Follow our <a href="{{ wiki_url }}/installation/">post-install setup instructions</a>.</li>
-            </ol>
-        </li>
-    </ol>
-</div>
-{% else %}
-    <form method="post" class="basic-form">
-    {% csrf_token %}
-        <div class="selection" id="select_organization">
-            <div class="subtitle">{% trans "Select Organization" %}</div>
-            <select name="organization" id="organization">
-                <option {% if not selected_organization %}selected{% endif %}>----</option>
-                    {% for pk,org in organizations.items %}
-                    <option value="{{ pk }}" {% if selected_organization.id == org.id %}selected{% endif %}>{{ org }} : {{org.id}}</option>
-                    {% endfor %}
-            </select>
-        </div>
-
-        <div class="selection" id="select_zone">
-            <div class="subtitle">{% trans "Select Zone" %}</div>
-            <select name="zone" id="zone">
-                <option {% if not selected_zone %}selected{% endif %}>----</option>
-                {% for zone in zones %}
-                <option value="{{ zone.id }}"{% if selected_zone.id == zone.id %}selected{% endif %}>{{ zone }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-
-        <div class="selection" id="select_num_certificates">
-            <div class="subtitle">{% trans "Select # Certificates" %}</div>
-            <select name="num_certificates" id="num_certificates">
-                {% mkrange 1 50 as some_range %}
-                {% for n in some_range %}
-                <option value="{{ n }}"{% if num_certificates == n|stringformat:"d" %}selected{% endif %}>{{ n }}</option>
-                {% endfor %}
-            </select>
-        </div>
+    {% comment "Header instructions" %}{% endcomment %}
+    <div class="instructions">
+        <h1>Installation Instructions</h1>
+        {% if not request.user.is_authenticated %}
+        There are three methods for installing KA Lite:
+        <ol>
+            <li><b>Recommended </b><span class="title">Registered User Install</span>
+                <ol>
+                    <li><a href="{% url registration_register %}">Register for an account</a> with KA Lite, then <a href="{% url auth_login %}">login</a>.</li>
+                    <li>Return to this page to download your preconfigured copy of KA Lite!</li>
+                </ol>
+            </li>
+            <li><span class="title">Windows Installer</span>
+                <ol>
+                    <li><a href="">Download our Windows Installer</a>, and walk through the installation wizard.</li>
+                    <li>Follow our <a href="{{ wiki_url }}/installation/">post-install setup instructions</a>.</li>
+                </ol>
+            </li>
+            <li><span class="title">Github Installation</span>
+                <ol>
+                    <li>Follow our <a href="{{ wiki_url }}/installation/">github installation.</li>
+                    <li>Follow our <a href="{{ wiki_url }}/installation/">post-install setup instructions</a>.</li>
+                </ol>
+            </li>
+        </ol>
+        {% else %}
+        <ol>
+            <li>Select the organization and zone you'd like to install KA Lite devices for.</li>
+            <li>Select the MAXIMUM number of devices you'd like to install.</li>
+            <li>Click "Download KA Lite!"</li>
+            <li>Save the zip file</li>
+            <li>Copy to the device you'd like to install KA Lite on, and unzip.</li>
+            <li>Run the installation script.</li>
+        </ol>
+        {% endif %}
+    </div>
+    
+    {% comment "Form for downloading KALite is accessible only to authenticatd users" %}{% endcomment %}
+    {% if request.user.is_authenticated %}
+    <div class="install-form">
+        <h2>Installation Form</h2>
+        <div class="errors">{% for err in errors %}{{ err }}{% endfor %}</div>
+        <form method="post" class="basic-form">
+        {% csrf_token %}
+            <div class="selection" id="select_organization">
+                <div class="subtitle">{% trans "Select Organization" %}</div>
+                <div class="select">
+                    <select name="organization" id="organization">
+                        <option {% if not selected_organization %}selected{% endif %}>----</option>
+                            {% for pk,org in organizations.items %}
+                            <option value="{{ pk }}" {% if selected_organization.id == org.id %}selected{% endif %}>{{ org }} : {{org.id}}</option>
+                            {% endfor %}
+                    </select>
+                </div>
+            </div>
         
-        <div class="selection" id="submit">
-            <div class="subtitle"></div>
-            <input type="submit" value="{% trans "Download now!"%}" />
-        </div>
-    </form>
+            {% if selected_organization %}
+            <div class="selection" id="select_zone">
+                <div class="subtitle">{% trans "Select Zone" %}</div>
+                <div class="select">
+                    <select name="zone" id="zone">
+                        <option {% if not selected_zone %}selected{% endif %}>----</option>
+                        {% for zone in zones %}
+                        <option value="{{ zone.id }}"{% if selected_zone.id == zone.id %}selected{% endif %}>{{ zone }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if selected_organization and selected_zone %}
+            <div class="selection" id="select_num_certificates">
+                <div class="subtitle">{% trans "Select # Certificates" %}</div>
+                <div class="select">
+                    <select name="num_certificates" id="num_certificates">
+                        {% mkrange 1 50 as some_range %}
+                        {% for n in some_range %}
+                        <option value="{{ n }}"{% if num_certificates == n|stringformat:"d" %}selected{% endif %}>{{ n }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+                
+            <div class="selection" id="submit">
+                <div class="subtitle"></div>
+                <div class="select">
+                    <input type="submit" value="{% trans "Download now!"%}" />
+                </div>
+            </div>
+            {% endif %}
+        </form>
+    {% comment "Output install certificates for viewing, in debug mode only %}{% endcomment %}
+    {% if debug %}
         <div>
         install_certificates = {{ install_certificates }}
         </div>
-    
+    </div>
+    {% endif %}
 <script>
 
 function setGetParam(name, val) {
