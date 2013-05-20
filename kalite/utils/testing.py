@@ -13,7 +13,11 @@ from django.test import TestCase, LiveServerTestCase
 
 import settings
 
-
+def add_to_local_settings(var, val):
+    fh = open(settings.PROJECT_PATH + "/local_settings.py","a")
+    fh.write("\n%s = %s" % (var,str(val)))
+    fh.close()
+        
 def create_test_user(username, password, email):
     """Create a test user.
     Taken from http://stackoverflow.com/questions/3495114/how-to-create-admin-user-in-django-tests-py"""

@@ -51,39 +51,78 @@ class SyncClient(object):
             return "error (%s)" % e
             
     def register(self):
-        own_device = Device.get_own_device()
-        certs = settings.INSTALL_CERTIFICATES if len(settings.INSTALL_CERTIFICATES)>0 else ["__dummy__"]
-
-        # Try certificates until we find one that worked!
-        for cert in certs:
-            import logging; logging.debug("\t%s",cert)
-            r = self.post("register", {
-                "client_device": json_serializer.serialize([own_device], ensure_ascii=False),
-                "install_certificate": cert if cert!="__dummy__" else None
-            })
-            
-            if r.status_code == 200:
-                break;
+        """Register this device with a zone."""
         
-        # Failed to register with any certificate
-        if r.status_code != 200:
-#            return json.loads(r.content)
-            raise Exception(r.content)
-        else:
-            logging.info("Registerd with install certificate %s" % cert)
-            
-        models = serializers.deserialize("json", r.content)
+        # Get the required model data by registering (online and offline options available)
+        try:
+            if self.test_connection()=="success":
+                certs = settings.INSTALL_CERTIFICATES if len(settings.INSTALL_CERTIFICATES)>0 else []
+                models_json = self.register_online(certs=certs)
+            elif getattr(settings, "INSTALL_CERTIFICATES", None):
+                models_json = self.register_offline(settings.INSTALL_CERTIFICATES)
+            else:
+                return { "code": "offline_with_no_install_certificates" }
+        except Exception as e:
+            # Some of our exceptions are actually json blobs from the server.
+            #   Try loading them to pass on that error info.
+            try:
+                return json.loads(e.message)
+            except:
+                return { "err", e.message }
+        
+        # If we got here, we've successfully registered, and 
+        #   have the model data necessary for completing registration!
         for model in models:
             if not model.object.verify():
                 logging.info("Failed to verify model!")
                 import pdb; pdb.set_trace()
+                
             # save the imported model, and mark the returned Device as trusted
             if isinstance(model.object, Device):
                 model.object.save(is_trusted=True, imported=True)
             else:
                 model.object.save(imported=True)
+        
+        # If that all completes successfully, then we've registered!  Woot!
         return {"code": "registered"}
-#        return json.loads(r.content)
+#        return json.loads(r.content)    
+
+    def register_offline(self, certs):
+        """Register this device with a zone, using offline data"""
+
+        raise NotImplementedError()
+        
+    def register_online(self, certs=[]):
+        """Register this device with a zone, through the central server directly"""
+        
+        own_device = Device.get_own_device()
+
+        if not certs or len(certs)==0:
+            r = self.post("register", {
+                "client_device": json_serializer.serialize([own_device], ensure_ascii=False),
+                "install_certificate": cert
+            })
+        
+        # Try certificates until we find one that worked!
+        else:
+            for cert in certs:
+                import logging; logging.debug("\t%s",cert)
+                r = self.post("register", {
+                    "client_device": json_serializer.serialize([own_device], ensure_ascii=False),
+                    "install_certificate": cert
+                })
+            
+                if r.status_code == 200:
+                    logging.info("Registered with install certificate %s" % cert)
+                    break;
+
+        # Failed to register with any certificate
+        if r.status_code != 200:
+            raise Exception(r.content)
+
+        # When we register, we should receive the model information we require.
+        return serializers.deserialize("json", r.content)
+        
     
     def start_session(self):
         if self.session:

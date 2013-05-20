@@ -41,9 +41,12 @@ def require_sync_session(handler):
 
 @csrf_exempt
 def register_device(request):
-    data = simplejson.loads(request.raw_post_data or "{}")
+    """Receives the client device info from the distributed server.
+    Tries to register either because the device has been pre-registered,
+    or because it has a valid INSTALL_CERTIFICATE."""
     
     # attempt to load the client device data from the request data
+    data = simplejson.loads(request.raw_post_data or "{}")
     if "client_device" not in data:
         return JsonResponse({"error": "Serialized client device must be provided."}, status=500)
     try:
@@ -54,6 +57,8 @@ def register_device(request):
             "error": "Could not decode the client device model: %r" % e,
             "code": "client_device_corrupted",
         }, status=500)
+
+    # Validate the loaded data
     if not isinstance(client_device, Device):
         return JsonResponse({
             "error": "Client device must be an instance of the 'Device' model.",
@@ -64,34 +69,41 @@ def register_device(request):
             "error": "Client device must be self-signed with a signature matching its own public key.",
             "code": "client_device_invalid_signature",
         }, status=500)
-        
-    # we have a valid self-signed Device, so now check if its public key has been registered
-    try:
-        registration = RegisteredDevicePublicKey.objects.get(public_key=client_device.public_key)
-    except RegisteredDevicePublicKey.DoesNotExist:
-        try:
-            device = Device.objects.get(public_key=client_device.public_key)
+    
+    from django.db import transaction
+    with transaction.atomic():
+        # Check if the install certificate exists
+        if "install_certificate" in data:
             return JsonResponse({
-                "error": "This device has already been registered",
-                "code": "device_already_registered",
-            }, status=500)            
-        except Device.DoesNotExist:
-            return JsonResponse({
-                "error": "Device registration with public key not found; login and register first?",
-                "code": "public_key_unregistered",
+                "error": "install certificates NYI",
+                "code": "NYI"
             }, status=500)
+            
+        # Check if its public key has been registered
+        else:
+            try:
+                registration = RegisteredDevicePublicKey.objects.get(public_key=client_device.public_key)
+                zone = registration.zone
+                registration.delete()
+            except RegisteredDevicePublicKey.DoesNotExist:
+                try:
+                    device = Device.objects.get(public_key=client_device.public_key)
+                    return JsonResponse({
+                        "error": "This device has already been registered",
+                        "code": "device_already_registered",
+                    }, status=500)            
+                except Device.DoesNotExist:
+                    return JsonResponse({
+                        "error": "Device registration with public key not found; login and register first?",
+                        "code": "public_key_unregistered",
+                    }, status=500)
     
-    client_device.signed_by = client_device
+
+        client_device.signed_by = client_device  # the device checks out; let's save it!
+        client_device.save(imported=True)
     
-    # the device checks out; let's save it!
-    client_device.save(imported=True)
-    
-    # create the DeviceZone for the new device
-    device_zone = DeviceZone(device=client_device, zone=registration.zone)
-    device_zone.save()
-    
-    # delete the RegisteredDevicePublicKey, now that we've initialized the device and put it in its zone
-    registration.delete()
+        device_zone = DeviceZone(device=client_device, zone=registration.zone)
+        device_zone.save()     # create the DeviceZone for the new device
     
     # return our local (server) Device, its Zone, and the newly created DeviceZone, to the client
     return JsonResponse(
