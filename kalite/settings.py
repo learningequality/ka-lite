@@ -137,7 +137,7 @@ if CENTRAL_SERVER:
     EMAIL_BACKEND           = local_or_("EMAIL_BACKEND", "postmark.backends.PostmarkBackend")
     AUTH_PROFILE_MODULE     = 'central.UserProfile'
 
-if not CENTRAL_SERVER:
+else:
     MIDDLEWARE_CLASSES += (
         "securesync.middleware.DBCheck",
         "securesync.middleware.AuthFlags",
@@ -146,7 +146,7 @@ if not CENTRAL_SERVER:
     TEMPLATE_CONTEXT_PROCESSORS += (
         "main.custom_context_processors.languages",
     )
-
+    INSTALL_CERTIFICATES = local_or_("INSTALL_CERTIFICATES", [])
 
 syncing_models = []
 def add_syncing_models(models):

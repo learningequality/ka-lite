@@ -6,6 +6,7 @@ from django.core import serializers
 import crypto
 import settings
 import kalite
+import logging
 
 class SyncClient(object):
     session = None
@@ -48,21 +49,38 @@ class SyncClient(object):
             
     def register(self):
         own_device = Device.get_own_device()
-        r = self.post("register", {
-            "client_device": json_serializer.serialize([own_device], ensure_ascii=False)
-        })
-        if r.status_code == 200:
-            models = serializers.deserialize("json", r.content)
-            for model in models:
-                if not model.object.verify():
-                    continue
-                # save the imported model, and mark the returned Device as trusted
-                if isinstance(model.object, Device):
-                    model.object.save(is_trusted=True, imported=True)
-                else:
-                    model.object.save(imported=True)
-            return {"code": "registered"}
-        return json.loads(r.content)
+        certs = settings.INSTALL_CERTIFICATES if len(settings.INSTALL_CERTIFICATES)>0 else ["__dummy__"]
+
+        # Try certificates until we find one that worked!
+        for cert in certs:
+            import logging; logging.debug("\t%s",cert)
+            r = self.post("register", {
+                "client_device": json_serializer.serialize([own_device], ensure_ascii=False),
+                "install_certificate": cert if cert!="__dummy__" else None
+            })
+            
+            if r.status_code == 200:
+                break;
+        
+        # Failed to register with any certificate
+        if r.status_code != 200:
+#            return json.loads(r.content)
+            raise Exception(r.content)
+        else:
+            logging.info("Registerd with install certificate %s" % cert)
+            
+        models = serializers.deserialize("json", r.content)
+        for model in models:
+            if not model.object.verify():
+                logging.info("Failed to verify model!")
+                import pdb; pdb.set_trace()
+            # save the imported model, and mark the returned Device as trusted
+            if isinstance(model.object, Device):
+                model.object.save(is_trusted=True, imported=True)
+            else:
+                model.object.save(imported=True)
+        return {"code": "registered"}
+#        return json.loads(r.content)
     
     def start_session(self):
         if self.session:

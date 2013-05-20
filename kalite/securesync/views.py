@@ -92,6 +92,7 @@ def set_as_registered():
 @require_admin
 @render_to("securesync/register_public_key_client.html")
 def register_public_key_client(request):
+    import pdb; pdb.set_trace()
     if Device.get_own_device().get_zone():
         set_as_registered()   
         return {"already_registered": True}
