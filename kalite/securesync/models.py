@@ -252,6 +252,15 @@ class Zone(SyncedModel):
     def __unicode__(self):
         return self.name
 
+    @staticmethod
+    def get_next_device_counter(self):
+        """Device counters are distributed across devices and install certificates.
+        Keep track of the latest"""
+        
+        #from central.models import ZoneOutstandingInstallCertificate
+        return max(DeviceMetadata.objects.all().aggregate(Max('device_counter')), 
+                   ZoneOutstandingInstallCertificate.objects.all().aggregate(Max('device_counter')))
+        
 
 class Facility(SyncedModel):
     name = models.CharField(verbose_name=_("Name"), help_text=_("(This is the name that students/teachers will see when choosing their facility; it can be in the local language.)"), max_length=100)
@@ -417,8 +426,10 @@ class Device(SyncedModel):
 
     @transaction.commit_on_success
     def increment_and_get_counter(self):
+        """Device sets own counter (in metadata), and returns it (for update)"""
+        
         metadata = self.get_metadata()
-        if not metadata.device.id:
+        if not metadata.device.id: 
             return 0
         metadata.counter_position += 1
         metadata.save()

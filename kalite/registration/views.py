@@ -3,18 +3,19 @@ Views which allow users to create and activate accounts.
 
 """
 
-from central.forms import OrganizationForm
-from central.models import Organization
-from securesync.models import Zone
-
 from django.shortcuts import redirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib import messages
 from django.contrib.auth import logout
-
-from registration.backends import get_backend
+from django.db import IntegrityError
+from django.utils.translation import ugettext as _
 from django.http import HttpResponse
+
+from central.forms import OrganizationForm
+from central.models import Organization
+from securesync.models import Zone
+from registration.backends import get_backend
 from utils.mailchimp import mailchimp_subscribe
 
 
@@ -209,32 +210,41 @@ def register(request, backend, success_url=None, form_class=None,
             #   so that if any one part fails, it all rolls back.
 
             # Create the user
-            new_user = backend.register(request, **form.cleaned_data)
+            try:
+                new_user = backend.register(request, **form.cleaned_data)
             
-            # Add an org.  Must create org before adding user.
-            org_form.instance.owner=new_user
-            org_form.save()
-            org = org_form.instance
-            org.users.add(new_user)
-            
-            # Now add a zone, and link to the org
-            zone = Zone(name=org_form.instance.name + " Default Zone")
-            zone.save()
-            org.zones.add(zone)
-            org.save()
-            
-            # Finally, try and subscribe the user to the mailing list
-            # (silently)
-            if request.POST.has_key("email_subscribe") and request.POST["email_subscribe"]=="on":
-                pass #return HttpResponse(mailchimp_subscribe(form.cleaned_data['email']))
-            
-            # send a response            
-            if success_url is None:
-                to, args, kwargs = backend.post_registration_redirect(request, new_user)
-                return redirect(to, *args, **kwargs)
-            else:
-                return redirect(success_url)
+                # Add an org.  Must create org before adding user.
+                org_form.instance.owner=new_user
+                org_form.save()
+                org = org_form.instance
+                org.users.add(new_user)
+        
+                # Now add a zone, and link to the org
+                zone = Zone(name=org_form.instance.name + " Default Zone")
+                zone.save()
+                org.zones.add(zone)
+                org.save()
+        
+                # Finally, try and subscribe the user to the mailing list
+                # (silently)
+                if request.POST.has_key("email_subscribe") and request.POST["email_subscribe"]=="on":
+                    pass #return HttpResponse(mailchimp_subscribe(form.cleaned_data['email']))
+        
+                # send a response            
+                if success_url is None:
+                    to, args, kwargs = backend.post_registration_redirect(request, new_user)
+                    return redirect(to, *args, **kwargs)
+                else:
+                    return redirect(success_url)
                 
+            except IntegrityError, e:
+                if e.message=='column username is not unique':
+                    #import pdb; pdb.set_trace()
+                    form._errors['__all__'] = _("An account with this email address has already been created.  Please login at the link above.")
+                else:
+                    raise e
+
+    # Request method was GET        
     else:
         form = form_class()
         org_form = OrganizationForm()

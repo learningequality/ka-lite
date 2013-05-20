@@ -1,11 +1,13 @@
 import random
+import datetime
 
-from django.db import models
+from django.db import models, transaction
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
+from django.db.models import Max
 
 import settings
 from securesync import crypto
@@ -174,8 +176,14 @@ class ZoneOutstandingInstallCertificate(models.Model):
     and the certificate is removed from the list of outstanding certs."""
     
     zone = models.ForeignKey(Zone, verbose_name=_("Zone"))
+    device_counter = models.IntegerField()
     install_certificate = models.CharField(max_length=500)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    expiration_date = models.DateTimeField()
     
+    
+#    @transaction.atomic
+    @transaction.commit_on_success
     def save(self, *args, **kwargs):
         # Generate the certificate
         if not self.install_certificate:
@@ -188,7 +196,20 @@ class ZoneOutstandingInstallCertificate(models.Model):
                 zone_key.full_clean()
                 
             self.install_certificate = zone_key.generate_install_certificate()
+            
+        # Expire in one year, if not specified
+        if not self.expiration_date:
+            if not self.creation_date:
+                self.creation_date = datetime.datetime.now()
+            self.expiration_date = self.creation_date + datetime.timedelta(years=1)
         
+        # Device counter is the next one available.
+        if not self.device_counter: 
+            # danger! danger! race/concurrency conditions! 
+            # added transaction decorator, but ... who knows if that protects enough :(
+            # Generates a "SELECT MAX..." statement
+            self.device_counter = 1+Zone.get_next_device_counter()
+            
         super(ZoneOutstandingInstallCertificate, self).save(*args, **kwargs)
     
     @staticmethod
