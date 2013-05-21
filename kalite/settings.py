@@ -9,7 +9,7 @@ except ImportError:
     local_settings = {}
 
 DEBUG          = getattr(local_settings, "DEBUG", False)
-TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", "DEBUG")
+TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
 
 # Set logging level based on the value of DEBUG (evaluates to 0 if False, 1 if True)
 logging.getLogger().setLevel(logging.DEBUG*DEBUG + logging.INFO*(1-DEBUG))
