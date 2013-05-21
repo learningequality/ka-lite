@@ -1,5 +1,7 @@
 {% extends "registration/base.html" %}
 
+{% load i18n %}
+
 {% block title %}Log in{% endblock %}
 
 {% block register_active %}{% endblock register_active %}
@@ -33,7 +35,14 @@ input {
 <p>If you do not have an account on the central server, you can <a href="/accounts/register/">sign up here</a>.</p>
 
 {% if form.errors %}
-<p class="login_error">Incorrect user name or password:</p>
+  {% if debug %}
+    <p class="login_error">Debug-only info: {{ form.non_field_errors }}</p>
+  {% endif %}
+  {% if "inactive" in form.non_field_errors.0 %}
+<p class="login_error">{% trans "This account has not been activated." %}</p>
+  {% else %}
+<p class="login_error">{% trans "Incorrect user name or password." %}</p>
+  {% endif %}
 {% endif %}
 <form method="post" action="?next={{ next|default:"/" }}">{% csrf_token %}
 <dl>
