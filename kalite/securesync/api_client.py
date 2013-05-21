@@ -14,6 +14,9 @@ import model_sync
 from models import *
 
 
+json_serializer = serializers.get_serializer("json")()
+
+
 class SyncClient(object):
     session = None
     counters_to_download = None

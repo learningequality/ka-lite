@@ -1,17 +1,23 @@
-import re, json, uuid
+import re
+import json
+import uuid
+
 from django.core import serializers
 from django.http import HttpResponse
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.gzip import gzip_page
-from main.models import VideoLog, ExerciseLog
-from config.models import Settings
+from django.core import serializers
 
 import crypto
 import settings
 import model_sync
+from main.models import VideoLog, ExerciseLog
+from config.models import Settings
 from models import * # includes model_sync
-from model_sync import json_serializer
+
+
+json_serializer = serializers.get_serializer("json")()
 
 
 class JsonResponse(HttpResponse):
