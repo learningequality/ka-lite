@@ -6,8 +6,6 @@ from annoying.functions import get_object_or_None
 from django.core.exceptions import ValidationError
 from django.core import serializers
 
-from models import * # not "good", but safe.  I think we only need: Device, ImportPurgatory
-
 
 _syncing_models = [] # all models we want to sync
 _json_serializer = serializers.get_serializer("json")()
@@ -26,6 +24,7 @@ def get_syncing_models():
 
     
 def get_serialized_models(device_counters=None, limit=100, zone=None, include_count=False):
+    from models import Device # cannot be top-level, otherwise inter-dependency of this and models fouls things up
 
     # use the current device's zone if one was not specified
     if not zone:
@@ -94,6 +93,8 @@ def save_serialized_models(data, increment_counters=True):
     
     Returns a dictionary of the # of saved models, # unsaved, and any exceptions during saving"""
     
+    from models import ImportPurgatory # cannot be top-level, otherwise inter-dependency of this and models fouls things up
+
     # if data is from a purgatory object, load it up
     if isinstance(data, ImportPurgatory):
         purgatory = data
