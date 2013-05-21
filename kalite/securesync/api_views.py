@@ -11,6 +11,7 @@ import crypto
 import settings
 import model_sync
 from models import * # includes model_sync
+from model_sync import json_serializer
 
 
 class JsonResponse(HttpResponse):
@@ -121,7 +122,7 @@ def create_session(request):
             client_device = Device.objects.get(pk=data["client_device"])
             session.client_device = client_device
         except Device.DoesNotExist:
-             return JsonResponse({"error": "Client device matching id could not be found."}, status=500)
+             return JsonResponse({"error": "Client device matching id could not be found. (id=%s)" % data["client_device"]}, status=500)
         session.server_nonce = uuid.uuid4().hex
         session.server_device = Device.get_own_device()
         session.ip = request.META.get("HTTP_X_FORWARDED_FOR", request.META.get('REMOTE_ADDR', ""))

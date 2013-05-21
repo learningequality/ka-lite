@@ -13,7 +13,7 @@ _syncing_models = [] # all models we want to sync
 _json_serializer = serializers.get_serializer("json")()
 
 
-def add_syncing_models(cls, models):
+def add_syncing_models(models):
     """When sync is run, these models will be sync'd"""
     for model in models:
         if model in _syncing_models:
