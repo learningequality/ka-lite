@@ -2,7 +2,8 @@ import uuid
 from django.db import models
 from django.db.models import Sum, Avg
 
-from securesync.models import SyncedModel, SyncingModels, FacilityUser, Device
+from securesync import model_sync
+from securesync.models import SyncedModel, FacilityUser, Device
 from datetime import datetime
 
 class VideoLog(SyncedModel):
@@ -66,7 +67,7 @@ class ExerciseLog(SyncedModel):
     def get_points_for_user(user):
         return ExerciseLog.objects.filter(user=user).aggregate(Sum("points")).get("points__sum", 0) or 0
 
-SyncingModels.add_syncing_models([VideoLog, ExerciseLog])
+model_sync.add_syncing_models([VideoLog, ExerciseLog])
 
 class VideoFile(models.Model):
     youtube_id = models.CharField(max_length=20, primary_key=True)
