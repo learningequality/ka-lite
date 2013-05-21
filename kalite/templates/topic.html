@@ -9,10 +9,21 @@
 {% block headcss %}
 <style>
 a.video-available {}
-a.video-unavailable,
-a:hover.video-unavailable { text-decoration: line-through; }
+a.video-unavailable{
+    color: grey;
+    }
+
 </style>
 {% endblock headcss %}
+
+
+{% block bodyjs %}
+<script type="text/javascript">
+$('.video-unavailable').removeAttr("href"); 
+$('a.video-unavailable').attr('title','This video is not downloaded');
+</script>
+{% endblock bodyjs %}
+
 
 <h1 class="title-header">
     <div class="title">{% trans title %}</div>
