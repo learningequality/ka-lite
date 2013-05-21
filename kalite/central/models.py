@@ -62,7 +62,6 @@ class OrganizationInvitation(models.Model):
     def send(self, request):
         to_email = self.email_to_invite
         sender = settings.CENTRAL_FROM_EMAIL
-        import pdb; pdb.set_trace()
         cdict = {
             'organization': self.organization,
             'invited_by': self.invited_by,
