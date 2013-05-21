@@ -20,7 +20,7 @@ a.video-unavailable{
 {% block bodyjs %}
 <script type="text/javascript">
 $('.video-unavailable').removeAttr("href"); 
-$('a.video-unavailable').attr('title','This video is not downloaded');
+$('a.video-unavailable').attr('title', ' {% trans "This video is not downloaded" %}');
 </script>
 {% endblock bodyjs %}
 
