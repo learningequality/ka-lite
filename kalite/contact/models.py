@@ -7,14 +7,14 @@ class Contact(models.Model):
     CONTACT_TYPE_SUPPORT    = 'support'
     CONTACT_TYPE_CONTRIBUTE = 'contribute'
     CONTACT_TYPE_INFO       = 'info'
-    CONTACT_TYPES = ((CONTACT_TYPE_DEPLOYMENT, 'Deployment'),
+    CONTACT_TYPES = ((CONTACT_TYPE_DEPLOYMENT, 'New Deployment'),
                      (CONTACT_TYPE_SUPPORT, 'Support'),
                      (CONTACT_TYPE_CONTRIBUTE,"Contribute"),
                      (CONTACT_TYPE_INFO, 'General Inquiries'))
     user      = models.ForeignKey(User, blank=True, null=True)
-    name      = models.CharField(verbose_name="Contact Name", max_length=100)
+    name      = models.CharField(verbose_name="Your Name", max_length=100)
     type      = models.CharField(verbose_name="Reason for Contact", max_length=12, choices=CONTACT_TYPES)
-    email     = models.EmailField(verbose_name="Contact Email", max_length=100)
+    email     = models.EmailField(verbose_name="Your Email", max_length=100)
     org_name  = models.CharField(verbose_name="Organization Name", max_length=100, blank=True)
     org_url   = models.URLField(verbose_name="Organization URL", blank=True)
     contact_date= models.DateField(auto_now_add=True)
