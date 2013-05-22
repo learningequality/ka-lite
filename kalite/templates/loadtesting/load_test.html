@@ -90,13 +90,18 @@
                 },
                 
                 click: function(selector, callback) {
+                    var matches = this.$(selector);
+                    var index = Math.floor(Math.random() * matches.length);
+                    this.detClick(selector, index, callback);
+                },
+                
+                detClick: function(selector, index, callback) {
                     selector = selector || "a[href!='']";
                     var matches = this.$(selector);
                     if (matches.length === 0) {
                         callback();
                         return;
-                    }
-                    var index = Math.floor(Math.random() * matches.length);
+                    };
                     var $match = matches.eq(index)
                     
                     // it seems that using jQuery to "click" links does not follow them
@@ -170,6 +175,10 @@
                 
                 watchVideo: function(callback) {
                     this.runSequence(video_sequence, null, callback);
+                },
+                
+                watchExercise: function(callback) {
+                    this.runSequence(exercise_sequence, null, callback);
                 },
                 
                 login: function(callback) {
@@ -261,6 +270,62 @@
                 }
             ]
             
+            var exercise_sequence = [
+                function(input, callback) {
+                    this.goto("/math/arithmetic/fractions/understanding_fractions/e/recognizing_fractions_0.5/", callback);
+                },
+                function(input, callback) {
+                    this.$("#solutionarea input").val(100).keypress()
+                    this.click("#check-answer-button");
+                    callback()
+                },
+                function(input, callback) {
+                    this.$("#solutionarea input").val(100).keypress()
+                    this.click("#check-answer-button");
+                    callback()
+                },
+                function(input, callback) {
+                    this.$("#solutionarea input").val(100).keypress()
+                    this.click("#check-answer-button");
+                    callback()
+                },
+                function(input, callback) {
+                    this.$("#solutionarea input").val(100).keypress()
+                    this.click("#check-answer-button");
+                    callback()
+                },
+                function(input, callback) {
+                    this.$("#solutionarea input").val(100).keypress()
+                    this.click("#check-answer-button");
+                    callback()
+                },
+                function(input, callback) {
+                    this.$("#solutionarea input").val(100).keypress()
+                    this.click("#check-answer-button");
+                    callback()
+                },
+                function(input, callback) {
+                    this.$("#solutionarea input").val(100).keypress()
+                    this.click("#check-answer-button");
+                    callback()
+                },
+                function(input, callback) {
+                    this.$("#solutionarea input").val(100).keypress()
+                    this.click("#check-answer-button");
+                    callback()
+                },
+                function(input, callback) {
+                    this.$("#solutionarea input").val(100).keypress()
+                    this.click("#check-answer-button");
+                    callback()
+                },
+                function(input, callback) {
+                    this.$("#solutionarea input").val(100).keypress()
+                    this.click("#check-answer-button");
+                    callback()
+                }
+            ]
+            
             var login_sequence = [
                 function(input, callback) {
                     this.goto("/securesync/login/", callback);
@@ -284,7 +349,12 @@
                 puppet.goto(window.location.hash.slice(1) || "/");
                 
                 function watchVideos() {
-                    puppet.watchVideo(watchVideos);
+                    if(Math.random()<0.9){
+                        puppet.watchVideo(watchVideos);
+                    } else {
+                        puppet.watchExercise(watchVideos);
+                    }
+                    
                 }
                 
                 puppet.login(watchVideos);
