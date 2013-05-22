@@ -3,6 +3,7 @@ from securesync.models import Zone
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
+from django.template import RequestContext
 import settings
 
 def get_or_create_user_profile(user):
@@ -61,17 +62,18 @@ class OrganizationInvitation(models.Model):
     def send(self, request):
         to_email = self.email_to_invite
         sender = settings.CENTRAL_FROM_EMAIL
-        context = {
+        cdict = {
             'organization': self.organization,
             'invited_by': self.invited_by,
-            'central_server_host': settings.CENTRAL_SERVER_HOST
         }
+        # Invite an existing user
         if User.objects.filter(email=to_email).count() > 0:
-            subject = render_to_string('central/org_invite_email_subject.txt', context)
-            body = render_to_string('central/org_invite_email.txt', context)
+            subject = render_to_string('central/org_invite_email_subject.txt', cdict, context_instance=RequestContext(request))
+            body = render_to_string('central/org_invite_email.txt', cdict, context_instance=RequestContext(request))
+        # Invite an unregistered user
         else:
-            subject = render_to_string('central/central_invite_email_subject.txt', context)
-            body = render_to_string('central/central_invite_email.txt', context)
+            subject = render_to_string('central/central_invite_email_subject.txt', cdict, context_instance=RequestContext(request))
+            body = render_to_string('central/central_invite_email.txt', cdict, context_instance=RequestContext(request))
         send_mail(subject, body, sender, [to_email], fail_silently=False)
 
 
