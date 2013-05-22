@@ -2,14 +2,25 @@
 
 {% block title %}Sign up{% endblock %}
 
+{% block install_active %}active{% endblock install_active %}
+
 {% block headcss %}
 <style>
-.form-section { width:75%; clear:left; }
-.form-label label { width:150px; text-align:left}
+.form-section { width:75%; clear:left; font-size:10pt; line-height:25px; border:0px solid}
+.form-label label { width:150px; text-align:right; }
 .form-element { float:left; ;margin:0 }
 .errorlisty { float:left; ;margin-left:25px; color:red}
 .submit {
     margin-left: 71px;
+}
+#show-org-details {
+    padding:15px 0px 15px 135px;
+}
+input[type=text], input[type=password] {
+    width:150px;
+}
+.form-block {
+    padding-bottom:15px;
 }
 .errorlist {
     /*position: relative;*/
@@ -30,6 +41,7 @@
   
   <form method="post" action="" class="wide basic-form">
 	{% csrf_token %}
+<div class="form-block">
     <input type="hidden" name="username"/>
     <div class="form-section">
         <div class="form-label"><label for="id_first_name">First Name:</label></div>
@@ -60,7 +72,7 @@
       {% endif %}
     </div>
     <div class="form-section">
-        <div class="form-label"><span style="margin-left:25px"><a href="#" onclick="$('#org_details').toggle()">Add details of your organization</a></span></div>
+        <div class="form-label"><span id="show-org-details"><a href="#" onclick="$('#org_details').toggle()">Add details of your organization</a></span></div>
     </div>
     <div class="form-section" id="org_details">
         <div class="form-section">
@@ -99,6 +111,8 @@
           {% endif %}
         </div>
     </div>
+</div>
+<div class="form-block">
     <div class="form-section">
       <div class="form-label"><label for="id_password1">Password:</label></div>
       <div class="form-element">{{ form.password1 }}</div>
@@ -113,6 +127,8 @@
         <div class="errorlisty">{{ form.password2.errors.as_text }}</div>
       {% endif %}
     </div>
+</div>
+<div class="form-block">
     <div class="form-section">
       <div class="form-label"><label for="id_tos1"></label></div>
       <div class="form-element"><input type="checkbox" name="email_subscribe">
@@ -134,15 +150,17 @@
       <div class="form-element">{{ form.tos2 }}
       I acknowledge having read the <a href="http://www.khanacademy.org/about/api-tos" target="_blank">
       Khan Academy API terms of service</a>, and that KA Lite uses this API.
+    </div>
+</div>
+<div class="form-block">
       {% if form.tos2.errors %}
         <div class="errorlisty">{{ form.tos2.errors.as_text }}</div>
       {% endif %}
-    </div>
     <div class="form-section">
         <div class="submit"><input class="submit" type="submit" value="Register &rarr;"></div>
     </div>
-  </form>
-  
+</div>
+</form>
 {% endblock %}
 
 {% block content-related %}

@@ -1,3 +1,5 @@
+.gitignore
+*migration*
 *.pyc
 *.sublime-*
 notes.txt

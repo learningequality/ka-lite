@@ -25,18 +25,21 @@ input {
 }
 ol li {
     list-style-type: decimal;
-    margin-left:15px;
 }
 span.title {
-    text-decoration: underline;
+    text-decoration: underlsine;
+    font-weight: bold;
+    font-size:12pt;
 }
 ol li ol li {
     list-style-type: lower-alpha;
     margin-left:25px;
 }
 
-.instructions {
-    margin-bottom: 25px;
+.instructions ol {
+    margin-bottom: 5px;
+    font-size:10pt;
+    margin-left:20px;
 }
 .subtitle{
     float:left;
@@ -50,7 +53,15 @@ ol li ol li {
     line-height: 25px;
     height:25px;
 }
+.recommended, .not-recommended { 
+    font-weight: bold;
+    font-size:9pt;
+}
 
+.instructions dl {
+    margin-bottom: 20px;
+    margin-left: 25px;
+}
 </style>
 {% endblock headcss %}
 
@@ -59,36 +70,53 @@ ol li ol li {
     <div class="instructions">
         <h1>Installation Instructions</h1>
         {% if not request.user.is_authenticated %}
-        There are three methods for installing KA Lite:
-        <ol>
-            <li><b>Recommended </b><span class="title">Registered User Install</span>
-                <ol>
-                    <li><a href="{% url registration_register %}">Register for an account</a> with KA Lite, then <a href="{% url auth_login %}">login</a>.</li>
-                    <li>Return to this page to download your preconfigured copy of KA Lite!</li>
-                </ol>
-            </li>
-            <li><span class="title">Windows Installer</span>
-                <ol>
-                    <li><a href="">Download our Windows Installer</a>, and walk through the installation wizard.</li>
-                    <li>Follow our <a href="{{ wiki_url }}/installation/">post-install setup instructions</a>.</li>
-                </ol>
-            </li>
-            <li><span class="title">Github Installation</span>
-                <ol>
-                    <li>Follow our <a href="{{ wiki_url }}/installation/">github installation.</li>
-                    <li>Follow our <a href="{{ wiki_url }}/installation/">post-install setup instructions</a>.</li>
-                </ol>
-            </li>
-        </ol>
+        <p>There are three ways for installing KA Lite.  Choose the one best for you!</p>
+        <p>
+            <ol>
+                <li><span class="title">Registered User Install</span> <span class="recommended">(Recommended!) </span>
+                    <ol>
+                        <li><a href="{% url registration_register %}">Register for an account</a> with KA Lite, then <a href="{% url auth_login %}">login</a>.</li>
+                        <li>Return to this page to download your preconfigured copy of KA Lite!</li>
+                        <li>Unzip the zip file and <a href="{{ wiki_url }}installation/">run the installation</a>.</li>
+                    </ol>
+                    <dl>
+                        <dd>Advantages: fully offline install, no post-install setup required!</dd>
+                        <dd>Disadvantages: If you don't have <a href="{{ wiki_url }}installation/">python, you must install yourself</a>.</dd>
+                    </dl>
+                </li>
+                <li><span class="title">Windows Installer</span> <span class="recommended">(Recommended!) </span>
+                    <ol>
+                        <li><a href="https://dl.dropboxusercontent.com/u/1080765/KALiteSetup.exe">Download our Windows Installer</a>, and walk through the installation wizard.</li>
+                        <li>Follow our <a href="{{ wiki_url }}using-ka-lite/deployment/screencasts/">post-install setup instructions</a>.</li>
+                    </ol>
+                    <dl>
+                        <dd>Advantages: Helpful UI! Installs all necessary components</dd>
+                        <dd>Disadvantages: Windows only. <a href="{{ wiki_url }}using-ka-lite/deployment/screencasts">Post-install setup</a> required.</dd>
+                    </dl>
+                </li>
+                <li><span class="title">Github Installation</span> <span class="not-recommended">(Not Recommended) </span>
+                    <ol>
+                        <li>Follow our <a href="{{ wiki_url }}installation/">github installation instructions</a> for your platform.</li>
+                        <li>Follow our <a href="{{ wiki_url }}using-ka-lite/deployment/screencasts/">post-install setup instructions</a>.</li>
+                    </ol>
+                    <dl>
+                        <dd>Advantages: Easy to get software updates.</dd>
+                        <dd>Disadvantages: If you don't have <a href="{{ wiki_url }}installation/">python or git, you must install yourself</a>.  <a href="{{ wiki_url }}using-ka-lite/deployment/screencasts">Post-install setup</a> required.</dd>
+                    </dl>
+                </li>
+            </ol>
+        </p>
         {% else %}
-        <ol>
-            <li>Select the organization and zone you'd like to install KA Lite devices for.</li>
-            <li>Select the MAXIMUM number of devices you'd like to install.</li>
-            <li>Click "Download KA Lite!"</li>
-            <li>Save the zip file</li>
-            <li>Copy to the device you'd like to install KA Lite on, and unzip.</li>
-            <li>Run the installation script.</li>
-        </ol>
+        <p>
+            <ol>
+                <li>Select the organization and zone you'd like to install KA Lite devices for.</li>
+                <li>Select the MAXIMUM number of devices you'd like to install.</li>
+                <li>Click "Download KA Lite!"</li>
+                <li>Save the zip file</li>
+                <li>Copy to the device you'd like to install KA Lite on, and unzip.</li>
+                <li>Run the installation script.</li>
+            </ol>
+        </p>
         {% endif %}
     </div>
     
