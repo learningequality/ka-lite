@@ -209,8 +209,8 @@ def register(request, backend, success_url=None, form_class=None,
             # TODO (bcipolli): should do all this in one transaction,
             #   so that if any one part fails, it all rolls back.
 
-            # Create the user
             try:
+                # Create the user
                 new_user = backend.register(request, **form.cleaned_data)
             
                 # Add an org.  Must create org before adding user.
@@ -218,13 +218,13 @@ def register(request, backend, success_url=None, form_class=None,
                 org_form.save()
                 org = org_form.instance
                 org.users.add(new_user)
-        
+
                 # Now add a zone, and link to the org
                 zone = Zone(name=org_form.instance.name + " Default Zone")
                 zone.save()
                 org.zones.add(zone)
                 org.save()
-        
+
                 # Finally, try and subscribe the user to the mailing list
                 # (silently)
                 if request.POST.has_key("email_subscribe") and request.POST["email_subscribe"]=="on":
