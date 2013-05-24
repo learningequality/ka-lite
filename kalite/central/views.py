@@ -1,3 +1,4 @@
+import logging
 import re, json
 import os, shutil
 import requests
@@ -66,7 +67,7 @@ def install_wizard(request):
     errors = []
     install_certificates = []
     if request.method == "POST":
-#        organization_id = 
+
         # This is just for demo purposes;
         #   in the future, certificates are only generated
         #   when the form is submitted.
@@ -108,16 +109,20 @@ def install_wizard(request):
             else:
                 raise Exception("Must have a kalite-full.zip file in %s" % (settings.MEDIA_ROOT+"zip/"))
             
-            fil = os.tmpnam()
-            shutil.copy(kalite_zip, fil) # duplicate the archive
-            zfile = ZipFile(fil, "a", ZIP_DEFLATED)
+            tmpfile = os.tmpnam()
+            shutil.copy(kalite_zip, tmpfile) # duplicate the archive
+            zfile = ZipFile(tmpfile, "a", ZIP_DEFLATED)
             zfile.write(loc_sets, arcname="kalite/local_settings.py")
             zfile.write(man_file, arcname="kalite/manifest/models.json")
             zfile.close()
-                        
+            
+            #raise Exception("E")
+            #import pdb; pdb.set_trace()
             # Return that zip!
             filename = "KALite-%s.zip" % zone.name
-            response = HttpResponse(open(fil,"r"), content_type='application/zip')
+            fstream = open(tmpfile,"rb")
+            #import pdb; pdb.set_trace()
+            response = HttpResponse(content=fstream, mimetype='application/zip', content_type='application/zip')
             response['Content-Disposition'] = 'attachment; filename="%s"' % filename
             return response
 
@@ -129,7 +134,7 @@ def install_wizard(request):
         "install_certificates": install_certificates,
         "num_certificates": num_certificates,  
         "errors": errors, 
-        }
+    }
     
 @render_to("central/homepage.html")
 def homepage(request):

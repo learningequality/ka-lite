@@ -11,7 +11,7 @@ import crypto
 import settings
 import kalite
 from models import *
-from model_sync import json_serializer
+#from model_sync import json_serializer
 
 
 class SyncClient(object):

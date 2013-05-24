@@ -9,129 +9,110 @@
 
 {% block headcss %}
 <style>
-label {
-    width: 59px;
-    display: block;
+.form-label {
     float: left;
-    text-align: right;
-    padding-right: 10px;
-    font-weight: bold;
+    width:200px;
+    text-align:right;
+    margin-right:15px;
 }
-input {
-	margin-bottom: 15px;
+.form-selection {
+    float: left;
 }
-.submit {
-    margin-left: 71px;
+.form-section {
+    width: 100%;
+    text-align:left;
+    float: left;
+    margin-bottom:15px;
 }
-ol li {
-    list-style-type: decimal;
-}
-span.title {
-    text-decoration: underlsine;
-    font-weight: bold;
+
+#instructions {
     font-size:12pt;
 }
-ol li ol li {
-    list-style-type: lower-alpha;
-    margin-left:25px;
+ul {
+    margin-top:5px;
+}
+#user-registration-info,
+#internet-info,
+#instructions div,
+#platform-section,
+#submit-section,
+#internet-section,
+#install-form {
+    display:none;
 }
 
-.instructions ol {
-    margin-bottom: 5px;
-    font-size:10pt;
-    margin-left:20px;
-}
-.subtitle{
-    float:left;
-    width:120px;
-}
-.select {
-    float:left;
-}
-.selection {
-    width:100%;
-    line-height: 25px;
-    height:25px;
-}
-.recommended, .not-recommended { 
-    font-weight: bold;
-    font-size:9pt;
+#internet-info,
+#user-registration-info {
+    font-weight:bold;
+    color:red;
 }
 
-.instructions dl {
-    margin-bottom: 20px;
-    margin-left: 25px;
-}
 </style>
 {% endblock headcss %}
 
 {% block content %}
     {% comment "Header instructions" %}{% endcomment %}
     <div class="instructions">
-        <h1>Installation Instructions</h1>
-        {% if not request.user.is_authenticated %}
-        <p>There are three ways for installing KA Lite.  Choose the one best for you!</p>
-        <p>
-            <ol>
-                <li><span class="title">Registered User Install</span> <span class="recommended">(Recommended!) </span>
-                    <ol>
-                        <li><a href="{% url registration_register %}">Register for an account</a> with KA Lite, then <a href="{% url auth_login %}">login</a>.</li>
-                        <li>Return to this page to download your preconfigured copy of KA Lite!</li>
-                        <li>Unzip the zip file and <a href="{{ wiki_url }}installation/">run the installation</a>.</li>
-                    </ol>
-                    <dl>
-                        <dd>Advantages: fully offline install, no post-install setup required!</dd>
-                        <dd>Disadvantages: If you don't have <a href="{{ wiki_url }}installation/">python, you must install yourself</a>.</dd>
-                    </dl>
-                </li>
-                <li><span class="title">Windows Installer</span> <span class="recommended">(Recommended!) </span>
-                    <ol>
-                        <li><a href="https://dl.dropboxusercontent.com/u/1080765/KALiteSetup.exe">Download our Windows Installer</a>, and walk through the installation wizard.</li>
-                        <li>Follow our <a href="{{ wiki_url }}using-ka-lite/deployment/screencasts/">post-install setup instructions</a>.</li>
-                    </ol>
-                    <dl>
-                        <dd>Advantages: Helpful UI! Installs all necessary components</dd>
-                        <dd>Disadvantages: Windows only. <a href="{{ wiki_url }}using-ka-lite/deployment/screencasts">Post-install setup</a> required.</dd>
-                    </dl>
-                </li>
-                <li><span class="title">Github Installation</span> <span class="not-recommended">(Not Recommended) </span>
-                    <ol>
-                        <li>Follow our <a href="{{ wiki_url }}installation/">github installation instructions</a> for your platform.</li>
-                        <li>Follow our <a href="{{ wiki_url }}using-ka-lite/deployment/screencasts/">post-install setup instructions</a>.</li>
-                    </ol>
-                    <dl>
-                        <dd>Advantages: Easy to get software updates.</dd>
-                        <dd>Disadvantages: If you don't have <a href="{{ wiki_url }}installation/">python or git, you must install yourself</a>.  <a href="{{ wiki_url }}using-ka-lite/deployment/screencasts">Post-install setup</a> required.</dd>
-                    </dl>
-                </li>
-            </ol>
-        </p>
-        {% else %}
-        <p>
-            <ol>
-                <li>Select the organization and zone you'd like to install KA Lite devices for.</li>
-                <li>Select the MAXIMUM number of devices you'd like to install.</li>
-                <li>Click "Download KA Lite!"</li>
-                <li>Save the zip file</li>
-                <li>Copy to the device you'd like to install KA Lite on, and unzip.</li>
-                <li>Run the installation script.</li>
-            </ol>
-        </p>
-        {% endif %}
-    </div>
-    
-    {% comment "Form for downloading KALite is accessible only to authenticatd users" %}{% endcomment %}
-    {% if request.user.is_authenticated %}
-    <div class="install-form">
-        <h2>Installation Form</h2>
-        <div class="errors">{% for err in errors %}{{ err }}{% endfor %}</div>
+        <h1>Installation</h1>
+        
         <form method="post" class="basic-form">
         {% csrf_token %}
-            <div class="selection" id="select_organization">
-                <div class="subtitle">{% trans "Select Organization" %}</div>
-                <div class="select">
+
+        <p>
+        <div class="form-section" id="deployment-section">
+            <div class="form-label">I would like to deploy:</div>
+            <div class="form-selection">
+                <select id="server_option">
+                    <option value="__empty__">----</option>
+                    <option value="single">A single, stand-alone KA Lite server</option>
+                    <option value="multi"> Multiple KA Lite servers that share student data across them</option>
+                </select>
+                <div id="user-registration-info">
+                    You must have an account with us in order to do this.<br/>
+                    Please <a href="{% url registration_register %}">register</a> for an account or <a href="{% url auth_login %}">log in</a>, then revisit this page.
+                </div>
+            </div>
+        </div> 
+
+        <div class="form-section" id="internet-section">
+            <div class="form-label">Internet access at server:</div>
+            <div class="form-selection">
+                <select id="internet_option">
+                    <option value="__empty__">----</option>
+                    <option value="never">Servers will never have internet access</option>
+                    <option value="some">At least one server will have occasional internet access</option>
+                    <option value="all">All servers will have occasional internet access</option>
+                </select>
+                <div id="internet-info">
+                    KA Lite currently does not support this scenario.<br/>
+                    Please <a href="{% url contact_wizard "deployments" %}">contact us</a>, to let us know of your interest [or subscribe to our newsletter]!
+                </div>
+            </div>
+        </div>        
+        
+        <div class="form-section" id="platform-section">
+            <div class="form-label">Server operating system:</div>
+            <div class="form-selection">
+                <select id="platform_option">
+                    <option value="__empty__">----</option>
+                    <option value="windows">Windows</option>
+                    <option value="mac">Mac</option>
+                    <option value="linux">Linux</option>
+                </select>
+                <span id="platform_info"></span>
+            </div>
+        </div>        
+        
+
+    {% comment "Form for downloading KALite is accessible only to authenticatd users" %}{% endcomment %}
+    {% if request.user.is_authenticated %}
+    <div id="install-form">
+        <div class="errors">{% for err in errors %}{{ err }}{% endfor %}</div>
+            <div class="form-section" id="select_organization">
+                <div class="form-label">{% trans "Select Organization" %}</div>
+                <div class="form-selection">
                     <select name="organization" id="organization">
-                        <option {% if not selected_organization %}selected{% endif %}>----</option>
+                        <option value="__empty__" {% if not selected_organization %}selected{% endif %}>----</option>
                             {% for pk,org in organizations.items %}
                             <option value="{{ pk }}" {% if selected_organization.id == org.id %}selected{% endif %}>{{ org }} : {{org.id}}</option>
                             {% endfor %}
@@ -140,11 +121,11 @@ ol li ol li {
             </div>
         
             {% if selected_organization %}
-            <div class="selection" id="select_zone">
-                <div class="subtitle">{% trans "Select Zone" %}</div>
-                <div class="select">
+            <div class="form-section" id="select_zone">
+                <div class="form-label">{% trans "Select Zone" %}</div>
+                <div class="form-selection">
                     <select name="zone" id="zone">
-                        <option {% if not selected_zone %}selected{% endif %}>----</option>
+                        <option value="__empty__" {% if not selected_zone %}selected{% endif %}>----</option>
                         {% for zone in zones %}
                         <option value="{{ zone.id }}"{% if selected_zone.id == zone.id %}selected{% endif %}>{{ zone }}</option>
                         {% endfor %}
@@ -154,9 +135,9 @@ ol li ol li {
             {% endif %}
 
             {% if selected_organization and selected_zone %}
-            <div class="selection" id="select_num_certificates">
-                <div class="subtitle">{% trans "Select # Certificates" %}</div>
-                <div class="select">
+            <div class="form-section" id="select_num_certificates">
+                <div class="form-label">{% trans "Select # Certificates" %}</div>
+                <div class="form-selection">
                     <select name="num_certificates" id="num_certificates">
                         {% mkrange 1 50 as some_range %}
                         {% for n in some_range %}
@@ -165,53 +146,172 @@ ol li ol li {
                     </select>
                 </div>
             </div>
-                
-            <div class="selection" id="submit">
-                <div class="subtitle"></div>
-                <div class="select">
-                    <input type="submit" value="{% trans "Download now!"%}" />
-                </div>
-            </div>
             {% endif %}
-        </form>
-    {% comment "Output install certificates for viewing, in debug mode only %}{% endcomment %}
-    {% if debug %}
-        <div>
-        install_certificates = {{ install_certificates }}
         </div>
     </div>
     {% endif %}
-<script>
+    
+        <div class="form-section" id="submit-section">
+            <div class="form-label">&nbsp;</div>
+            <div class="form-selection">
+                <input type="submit" value="{% trans "Download now!"%}" />
+            </div>
+        </div>
+    </form>
+    
+    <div id="instructions">
+        <div id="windows-instructions">
+            Windows installation instructions:
+            <ul>
+                <li>Click "download" to download the Windows installer</li>
+                <li>When the download completes, copy the file to your server(s).
+                <li>From the server(s), run the Windows installer.</li>
+            </ul>                
+        </div>
+        <div id="linux-instructions">
+            Linux installation instructions:
+            <ul>
+                <li>Click "download" to download  the KA Lite zip file.</li>
+                <li>When the download completes, copy the file to your server(s).</li>
+                <li>From the server(s), unzip the zip file.</li>
+                <li>From the server(s), run the install.sh script inside the ka-lite folder</li>
+            </ul>                
+        </div>
+        <div id="mac-instructions">
+            Mac installation instructions:
+            <ul>
+                <li>Click "download" to download  the KA Lite zip file.</li>
+                <li>When the download completes, copy the file to your server(s).</li>
+                <li>From the server(s), unzip the zip file.</li>
+                <li>From the server(s), run the install.sh script inside the ka-lite folder</li>
+            </ul>                
+        </div>
+    </div>
+ <script>
 
-function setGetParam(name, val) {
+function qparts(name) {
     var vars = {};
+
     var parts = window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m, key, value) {
         vars[key] = value;
     });
-    if (val != "" && val != "----") {
+    
+    if (name) {
+        return vars[name];
+    }
+    else
+        return vars;
+}
+function setGetParam(name, val) {
+    var vars = qparts();
+    
+    vars["server_option"] = $("#server_option option:selected").val();
+    vars["internet_option"] = $("#internet_option option:selected").val();
+    vars["platform_option"] = $("#platform_option option:selected").val();
+
+    if (vars[name] == val || (typeof val === "undefined") || val=="__empty__") {
+       return;
+    }
+        
+    if (val != "" && val != "__empty__") {
         vars[name] = val;
     } else {
         delete vars[name];
     }
     url = "?" + $.param(vars);
-    window.location.href = url;    
+
+    window.location.href = url;
+}
+
+function select_instructions(platform) {
+    $("#instructions div").each(function(idx){
+        $(this).hide();
+    })
+    $("#"+ platform + "-instructions").show()
 }
 
 $(function() {
+    // Show a section, and alert user
+    user_logged_in = {{ user.is_authenticated|lower }};
+
+    // Deployment option
+    $("#server_option").change(function(){
+        if ($("#server_option option:selected").val() == "multi") {
+            if (!user_logged_in) {
+                $("#user-registration-info").show();
+                $("#internet-section").hide();
+                $("#platform-section").hide();
+                $("#install-form").hide();
+                $("#submit-section").hide();
+                $("#instructions").hide();
+            }
+            else {
+                $("#user-registration-info").hide();
+                $("#internet-section").show();
+                $("#platform-section").hide();
+                $("#install-form").hide();
+                $("#submit-section").hide();
+                $("#instructions").hide();
+            }
+        }
+        else if ($("#server_option option:selected").val() == "single") {
+            $("#user-registration-info").hide()
+            $("#internet-section").hide();
+            $("#platform-section").show();
+            $("#install-form").hide();
+            $("#submit-section").show();
+            $("#instructions").hide();
+        }
+    }).val(qparts("server_option")).change();
+    
+    // Internet access options
+    $("#internet_option").change(function(){
+        // illegal
+        if ($("#internet_option option:selected").val() == "__empty__") {
+        }
+        else if ($("#internet_option option:selected").val() != "all") {
+            $("#internet-info").show()
+            $("#platform-section").hide();
+            $("#install-form").hide();
+            $("#submit-section").hide();
+            $("#instructions").hide();
+        }
+        // legal
+        else {
+            $("#internet-info").hide()
+            $("#platform-section").show();
+            $("#install-form").hide();
+            $("#submit-section").hide();
+            $("#instructions").hide();
+        }
+    }).val(qparts("internet_option")).change();
+
+        
+    // Platform options
+    $("#platform_option").change(function(){
+        select_instructions($("#platform_option option:selected").val());
+        if ($("#server_option option:selected").val()=="single")
+            $("#instructions").show();
+        else if ($("#server_option option:selected").val()=="multi")
+            $("#install-form").show();
+    }).val(qparts("platform_option")).change();
+    
+    
     // When selected, refresh the page
     $("#organization").change(function(){
        setGetParam("organization", $("#organization option:selected").val()); 
-    });
+    }).val("{{selected_organization.id}}").change();
     
     $("#zone").change(function(){
        setGetParam("zone", $("#zone option:selected").val()); 
-    });
+    }).val("{{selected_zone.id}}").change();
     
     $("#num_certificates").change(function(){
        setGetParam("num_certificates", $("#num_certificates option:selected").val()); 
-    });
-    
+        $("#submit-section").show();
+        $("#instructions").show();
+    }).val("{{num_certificates}}").change();
 });
+
 </script>
-{% endif %}
 {% endblock %}

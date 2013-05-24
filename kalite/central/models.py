@@ -7,7 +7,6 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
-from django.db.models import Max
 
 import settings
 from securesync import crypto
@@ -201,7 +200,7 @@ class ZoneOutstandingInstallCertificate(models.Model):
         if not self.expiration_date:
             if not self.creation_date:
                 self.creation_date = datetime.datetime.now()
-            self.expiration_date = self.creation_date + datetime.timedelta(years=1)
+            self.expiration_date = self.creation_date + datetime.timedelta(days=365)
         
         # Device counter is the next one available.
         if not self.device_counter: 

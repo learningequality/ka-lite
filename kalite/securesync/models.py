@@ -12,6 +12,7 @@ from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models, transaction
 from django.db.models import Q
 from django.utils.text import compress_string
+from django.db.models import Max
 
 import settings
 from config.models import Settings
@@ -253,13 +254,15 @@ class Zone(SyncedModel):
         return self.name
 
     @staticmethod
-    def get_next_device_counter(self):
+    def get_next_device_counter():
         """Device counters are distributed across devices and install certificates.
         Keep track of the latest"""
         
+        from central.models import ZoneOutstandingInstallCertificate
         #from central.models import ZoneOutstandingInstallCertificate
-        return max(DeviceMetadata.objects.all().aggregate(Max('device_counter')), 
-                   ZoneOutstandingInstallCertificate.objects.all().aggregate(Max('device_counter')))
+        #import pdb; pdb.set_trace()
+        return max(DeviceMetadata.objects.all().aggregate(Max('counter_position'))["counter_position__max"], 
+                   ZoneOutstandingInstallCertificate.objects.all().aggregate(Max('device_counter'))["device_counter__max"])
         
 
 class Facility(SyncedModel):
