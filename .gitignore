@@ -1,4 +1,5 @@
-*migrations*
+.gitignore
+*migration*
 *.pyc
 *.sublime-*
 notes.txt
@@ -24,4 +25,3 @@ content/*.png
 content/*.mp4
 content/*.json
 content/*.srt
-*migrations*
