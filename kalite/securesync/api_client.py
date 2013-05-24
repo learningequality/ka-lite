@@ -1,13 +1,26 @@
-from models import *
+import re
+import json
+import requests
+import urllib
+import urllib2
+import uuid
 
-import re, json, requests, urllib, urllib2, uuid
 from django.core import serializers
 
 import crypto
 import settings
 import kalite
+from models import *
+from model_sync import json_serializer
+
 
 class SyncClient(object):
+    """ This is for the distributed server, for establishing a client session with
+    the central server.  Over that session, syncing can occur in multiple requests.
+    
+    Note that in the future, this object may be used to sync 
+    between two distributed servers (i.e. peer-to-peer sync)!"""
+     
     session = None
     counters_to_download = None
     counters_to_upload = None
