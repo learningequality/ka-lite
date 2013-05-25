@@ -28,8 +28,12 @@ def lexec(cmd, input=None, silent=False):
 
 
 def get_open_ports(port_range=(50000, 65000), num_ports=1):
-    (_,stdout,_) = lexec("nmap 127.0.0.1 -p%d-%d" % port_range, silent=True)
-
+    try:
+        (_,stdout,_) = lexec("nmap 127.0.0.1 -p%d-%d" % port_range, silent=True)
+    except:
+        # If nmap doesn't exist, this will fail
+        stdout = ""
+        
     #Nmap scan report for localhost.localdomain (127.0.0.1)
     #Host is up (0.00056s latency).
     #Not shown: 999 closed ports
@@ -151,12 +155,15 @@ class KaLiteProject(object):
         self.git_repo = git_repo
         self.base_dir = base_dir
 
-        self.setup_project(server_types)
-        
-        
-    def setup_project(self, server_types):
+
+
+    def setup_project(self, server_types, port_range=(50000, 65000), open_ports=None, port_map=None):
         """Sets up the branch directories, points to a directory for local and central"""
     
+        assert port_range or open_ports or port_map, "Must pass either port_range or ports"
+        assert not open_ports or len(open_ports)>=1, "Must pass in at least 1 port"
+        assert not port_map or (hasattr(port_map,"keys") and len(port_map.keys)>=1), "Must pass in at least 1 port, as a dictionary on port_map"
+        
         self.user_dir   = self.base_dir + "/" + self.git_user
         self.branch_dir = self.user_dir + "/" + self.repo_branch
 
@@ -167,18 +174,21 @@ class KaLiteProject(object):
             logging.debug("Creating branch directory: %s" % self.branch_dir)
             os.makedirs(self.branch_dir)
 
-        # get 
-        open_ports = get_open_ports(num_ports=2) 
-        ports      = { "central": open_ports[0], "local": open_ports[1] }
-        
+        # get ports as a numeric list
+        if not port_map:
+            if not open_ports:
+                open_ports = get_open_ports(num_ports=2)
+            port_map = { "central": open_ports[0], "local": open_ports[1] }
+        import pdb; pdb.set_trace()
+
         # Setting up these servers, but they don't actually exist!
         # ... until we create them, that is! :D 
         self.servers = {}
         for server_type in server_types:
             self.servers[server_type] = KaLiteServer(repo_dir=self.branch_dir+"/"+server_type, 
                                                      server_type=server_type, 
-                                                     port=ports[server_type], 
-                                                     central_server_port=ports["central"])
+                                                     port=port_map[server_type], 
+                                                     central_server_port=port_map["central"])
         
 
 
@@ -371,10 +381,13 @@ class KaLiteSnapshotProject(KaLiteProject):
             server.start_server()
 
 
-def usage():
+def usage(usage_err=None):
+    if usage_err:
+        logging.info("ERROR: %s" % usage_err)
+    
     logging.info("Usage:")
 #    logging.info("\t%s <git_username> <git_branch>", sys.argv[0])
-    logging.info("\t%s <git_username> <git_branch> [central or local]", sys.argv[0])
+    logging.info("\t%s <git_username> <git_branch> [central or local] [port_range (50-60) or port_list(50,51)", sys.argv[0])
 #    logging.info("\t%s <git_username> <git_branch> [repository_name]")
     exit()
 
@@ -383,12 +396,26 @@ if __name__=="__main__":
     logging.getLogger().setLevel(logging.INFO)
 
     # Get command-line args
-    git_user     = sys.argv[1]    if len(sys.argv)>1 else usage()
-    repo_branch  = sys.argv[2]    if len(sys.argv)>2 else usage()
-    server_types = [sys.argv[3],] if len(sys.argv)>3 else ["central", "local"]
-    git_repo     = sys.argv[4]    if len(sys.argv)>4 else "ka-lite"
+    git_user     = sys.argv[1]    if len(sys.argv)>1 else usage("Specify a git account")
+    repo_branch  = sys.argv[2]    if len(sys.argv)>2 else usage("Specify a repo branch")
+    server_types = sys.argv[3]    if len(sys.argv)>3 else "central,local"
+    ports        = sys.argv[4]    if len(sys.argv)>4 else "50000-65000"
+    git_repo     = sys.argv[5]    if len(sys.argv)>5 else "ka-lite"
 
-    kap = KaLiteSnapshotProject(git_user=git_user, repo_branch=repo_branch, server_types=server_types, git_repo=git_repo, base_dir="/home/ubuntu/ka-lite")
+    # Parse the server types
+    server_types = server_types.split(",")
+
+    # Parse the ports
+    if -1 != ports.find("-"): # port range
+        setup_args = { "port_range": map(int,ports.split("-"))}
+    elif -1 != ports.find(","): # specific ports
+        setup_args = { "open_ports": map(int,ports.split(","))}
+    else:
+        usage("Could not parse port specification: '%s'" % ports)
+	
+    # Run the project
+    kap = KaLiteSnapshotProject(git_user=git_user, repo_branch=repo_branch, git_repo=git_repo, base_dir="/home/ubuntu/ka-lite")
+    kap.setup_project(server_types=server_types, **setup_args)
     kap.emit_header()
     kap.mount()
     
