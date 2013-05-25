@@ -1,5 +1,6 @@
 import logging
 import os
+import pickle
 import shutil
 import socket
 import sys
@@ -53,7 +54,7 @@ def get_open_ports(port_range=(50000, 65000), num_ports=1):
         # All ports were OK; get out!
         break
     
-    return range(port, port+num_ports+1)
+    return range(port, port+num_ports)
     
     
 class KaLiteServer(object):
@@ -145,7 +146,7 @@ class KaLiteServer(object):
         self.create_local_settings_file()
         self.install_server()
 
-
+    
 
 class KaLiteProject(object):
 
@@ -175,12 +176,18 @@ class KaLiteProject(object):
             os.makedirs(self.branch_dir)
 
         # get ports as a numeric list
+        port_keys = set(server_types).union({"central"})
         if not port_map:
             if not open_ports:
-                open_ports = get_open_ports(num_ports=2)
-            port_map = { "central": open_ports[0], "local": open_ports[1] }
+                open_ports = get_open_ports(num_ports=2) # system call
+            port_map = dict()
+            for st in port_keys:
+                p = self.__class__.get_ports_from_map([self.port_map_key(st),])
+                port_map[st] = p[0] if p[0] else open_ports.pop()
         import pdb; pdb.set_trace()
-
+        self.__class__.set_ports_to_map(dict(zip([self.port_map_key(st) for st in port_map.keys()], port_map.values())))
+        self.__class__.save_port_map()
+        
         # Setting up these servers, but they don't actually exist!
         # ... until we create them, that is! :D 
         self.servers = {}
@@ -190,7 +197,8 @@ class KaLiteProject(object):
                                                      port=port_map[server_type], 
                                                      central_server_port=port_map["central"])
         
-
+    def port_map_key(self, server_type):
+        return "%s/%s.git:%s %s" % (self.git_user, self.git_repo, self.repo_branch, server_type)
 
     def emit_header(self):
         # Emit an informative header
@@ -216,6 +224,48 @@ class KaLiteProject(object):
         logging.info("")
 
 
+
+
+
+    port_map_file = os.path.dirname(os.path.realpath(__file__)) + "/port_map.pkl"
+    port_map = None
+    
+    @classmethod
+    def load_port_map(cls, port_map_file=None):
+        if not port_map_file:
+            port_map_file = cls.port_map_file
+        fp = open(port_map_file, 'r')
+        cls.port_map = pickle.load(fp)
+        fp.close()
+        import pdb; pdb.set_trace()
+        return cls.port_map
+    
+    @classmethod
+    def save_port_map(cls, port_map_file=None):
+        if not port_map_file:
+            port_map_file = cls.port_map_file 
+        fp = open(port_map_file, 'w')
+        pickle.dump(cls.port_map, fp)
+        fp.close()
+        
+    @classmethod
+    def get_ports_from_map(cls, port_keys):
+        if not cls.port_map:
+            if os.path.exists(cls.port_map_file):
+                cls.port_map = cls.load_port_map(cls.port_map_file)
+            else:
+                cls.port_map = dict()
+        return [cls.port_map[pk] if pk in cls.port_map.keys() else None for pk in port_keys]
+        
+    @classmethod
+    def set_ports_to_map(cls, port_map):
+        if not cls.port_map:
+            if os.path.exists(cls.port_map_file):
+                cls.port_map = cls.load_port_map(cls.port_map_file)
+            else:
+                cls.port_map = dict()
+        cls.port_map = dict(cls.port_map.items() + port_map.items())
+    
 
 class KaLiteRepoProject(KaLiteProject):
     def __init__(self, *args, **kwargs):
@@ -381,6 +431,28 @@ class KaLiteSnapshotProject(KaLiteProject):
             server.start_server()
 
 
+
+
+def parse_ports(port):
+    """Returns a dict describing the port content"""
+
+    # Port range specified.  
+    #  Either get the port from a previous port map, or 
+    #  allow the app to randomly choose.
+    if -1 != ports.find("-"): # port range
+        # default output
+        setup_args = { "port_range": map(int,ports.split("-"))}
+
+    # Select specific ports
+    elif -1 != ports.find(","): # specific ports
+        setup_args = { "open_ports": map(int,ports.split(","))}
+
+    else:
+        setup_args = None
+
+    return setup_args
+
+
 def usage(usage_err=None):
     if usage_err:
         logging.info("ERROR: %s" % usage_err)
@@ -402,20 +474,22 @@ if __name__=="__main__":
     ports        = sys.argv[4]    if len(sys.argv)>4 else "50000-65000"
     git_repo     = sys.argv[5]    if len(sys.argv)>5 else "ka-lite"
 
-    # Parse the server types
+    # Parse the server types and ports
     server_types = server_types.split(",")
+    port_arg     = parse_ports(ports)
 
-    # Parse the ports
-    if -1 != ports.find("-"): # port range
-        setup_args = { "port_range": map(int,ports.split("-"))}
-    elif -1 != ports.find(","): # specific ports
-        setup_args = { "open_ports": map(int,ports.split(","))}
-    else:
+    # Check/clean up ports
+    if not port_arg:
         usage("Could not parse port specification: '%s'" % ports)
+    # Gave a list of ports; match them to the list of server types
+    if hasattr(port_arg, "open_ports"):
+        if len(server_types) != len(port_arg["open_ports"]):
+            usage("Port list and server type list must have the same length.")
+        port_arg = { "port_map": dict(zip(server_types, port_arg["open_ports"])) }
 	
     # Run the project
     kap = KaLiteSnapshotProject(git_user=git_user, repo_branch=repo_branch, git_repo=git_repo, base_dir="/home/ubuntu/ka-lite")
-    kap.setup_project(server_types=server_types, **setup_args)
+    kap.setup_project(server_types=server_types, **port_arg)
     kap.emit_header()
     kap.mount()
     
