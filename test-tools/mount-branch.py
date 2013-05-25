@@ -27,7 +27,7 @@ def lexec(cmd, input=None, silent=False):
 
 
 
-def get_open_ports(port_range=(9000, 9999), num_ports=1):
+def get_open_ports(port_range=(50000, 65000), num_ports=1):
     (_,stdout,_) = lexec("nmap 127.0.0.1 -p%d-%d" % port_range, silent=True)
 
     #Nmap scan report for localhost.localdomain (127.0.0.1)
@@ -328,7 +328,7 @@ class KaLiteSnapshotProject(KaLiteProject):
         if os.path.exists(self.snapshot_dir):
             logging.info("Using existing snapshot: %s" % self.snapshot_dir)
         else:
-            logging.info("Downloading repo snapshot to %s from %s" % (server.snapshot_file, self.snapshot_url))
+            logging.info("Downloading repo snapshot to %s from %s" % (self.snapshot_file, self.snapshot_url))
             urllib.urlretrieve(self.snapshot_url, self.snapshot_file)
     
             logging.info("Unpacking snapshot to %s" % self.snapshot_dir)
