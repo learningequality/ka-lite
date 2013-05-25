@@ -127,12 +127,12 @@ if __name__=="__main__":
     ka_internal_port = 8024
     
     d = Docker("ka-lite-installed", ports_to_open=[ka_internal_port])
-    print d.port_map
+    print "Port map: ", d.port_map
     
-    print d.run_command("cd /ka-lite/kalite", wait_time=0.1)
-    print d.run_command("ls -l")
-#    print d.run_command("python manage.py syncdb --migrate", wait_time=10)
-#    print d.run_command("python manage.py runserver %d" % ka_internal_port, wait_time=10)
+    print d.run_command("cd /ka-lite/kalite", wait_time=0.1) # commands with no output must wait
+#    print d.run_command("ls -l")
+    print d.run_command("python manage.py syncdb --migrate") # commands with output can wait for time or for output to stop
+#    print d.stream_command("python manage.py runserver %d" % ka_internal_port, wait_time=10)
     
     d.close()
     
