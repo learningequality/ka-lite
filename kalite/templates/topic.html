@@ -8,11 +8,25 @@
 
 {% block headcss %}
 <style>
-a.video-available {}
-a.video-unavailable{
-    color: grey;
-    }
-
+.long-description {
+    margin-top: 5px;
+}
+li {
+   font-size: 15px;
+   line-height: 23px;
+   margin-left: 10px;
+}
+a.video-available {
+}
+.video-unavailable,
+.topic-unavailable,
+a:active.topic-unavailable,
+a:hover.topic-unavailable,
+a:link.topic-unavailable,
+a:visited.topic-unavailable {
+    color: #bbb;
+    text-decoration: none;
+}
 </style>
 {% endblock headcss %}
 
@@ -20,23 +34,23 @@ a.video-unavailable{
 {% block bodyjs %}
 <script type="text/javascript">
 $('.video-unavailable').removeAttr("href"); 
-$('a.video-unavailable').attr('title', '{% trans "This video is not downloaded" %}');
+//$('.topic-unavailable').removeAttr("href"); 
+$('a.video-unavailable').attr('title', '{% trans "This video is not downloaded." %}');
 </script>
 {% endblock bodyjs %}
 
 
 <h1 class="title-header">
     <div class="title">{% trans title %}</div>
-    <div class="long-description" style="margin-top: 5px;">{% if description %}{% trans description %}{% endif %}</div>
+    <div class="long-description">{% if description %}{% trans description %}{% endif %}</div>
 </h1>
 
 {% if topics %}
 <h2>{% trans "Subtopics" %}</h2>
 <ol>
     {% for subtopic in topics %}
-    <li style="font-size: 15px; line-height: 23px; margin-left: 10px;">
-        {% comment %}This is DUMMY DISPLAY; looking for help to make this GOOD and to remove the INLINE STYLING {% endcomment %} 
-        <span style="float:left">[</span><span style="width:50px;float:left;text-align:right"> {{subtopic.nvideos_local}}/{{subtopic.nvideos_known}}</span> <span>&nbsp;video{% if subtopic.nvideos_known != 1 %}s{% endif %}] </span><span><a href="{{ subtopic.id }}">{% trans subtopic.title %}</a></span>
+    <li>
+        <span><a href="{{ subtopic.id }}" class="topic-{% if subtopic.nvideos_local == 0 %}un{% endif %}available" title="{{subtopic.nvideos_local}}/{{subtopic.nvideos_known}} {% trans "video(s) are downloaded." %}">{% trans subtopic.title %}</a></span>
     </li>
     {% endfor %}
     <br/>
@@ -47,10 +61,9 @@ $('a.video-unavailable').attr('title', '{% trans "This video is not downloaded" 
 <h2>{% trans "Videos" %}</h2>
 <ol>
     {% for video in videos %}
-    <li style="font-size: 15px; line-height: 23px; margin-left: 10px;">
+    <li>
         <!--<a href="mplayer:///khan/videofiles/{{ video.youtube_id }}.ogv">{{ video.title }}</a>-->
         <span class="progress-circle" data-youtube-id="{{ video.youtube_id }}"></span>
-        {% comment %}This is DUMMY DISPLAY; looking for help to make this GOOD and to remove the INLINE STYLING {% endcomment %} 
         <a href="v/{{ video.readable_id }}" class="video-{% if not video.on_disk %}un{% endif %}available">{% trans video.title %}</a>
     </li>
     {% endfor %}
@@ -62,7 +75,7 @@ $('a.video-unavailable').attr('title', '{% trans "This video is not downloaded" 
 <h2>{% trans "Exercises" %}</h2>
 <ol>
     {% for exercise in exercises %}
-    <li style="font-size: 15px; line-height: 23px; margin-left: 10px;">
+    <li>
         <span class="progress-circle" data-exercise-id="{{ exercise.name }}"></span>
         <a class="exercise-link" href="e/{{ exercise.name }}">{% trans exercise.display_name %}</a>
     </li>
