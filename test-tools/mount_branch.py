@@ -184,7 +184,6 @@ class KaLiteProject(object):
             for st in port_keys:
                 p = self.__class__.get_ports_from_map([self.port_map_key(st),])
                 port_map[st] = p[0] if p[0] else open_ports.pop()
-        import pdb; pdb.set_trace()
         self.__class__.set_ports_to_map(dict(zip([self.port_map_key(st) for st in port_map.keys()], port_map.values())))
         self.__class__.save_port_map()
         
@@ -234,20 +233,25 @@ class KaLiteProject(object):
     def load_port_map(cls, port_map_file=None):
         if not port_map_file:
             port_map_file = cls.port_map_file
-        fp = open(port_map_file, 'r')
-        cls.port_map = pickle.load(fp)
-        fp.close()
-        import pdb; pdb.set_trace()
+        try:
+            fp = open(port_map_file, 'r')
+            cls.port_map = pickle.load(fp)
+            fp.close()
+        except Exception as e:
+            raise e
         return cls.port_map
     
     @classmethod
     def save_port_map(cls, port_map_file=None):
         if not port_map_file:
             port_map_file = cls.port_map_file 
-        fp = open(port_map_file, 'w')
-        pickle.dump(cls.port_map, fp)
-        fp.close()
-        
+        try:
+            fp = open(port_map_file, 'w')
+            pickle.dump(cls.port_map, fp)
+            fp.close()
+        except Exception as e:
+            logging.warn("Failed to save port map: %s" % e.message)
+
     @classmethod
     def get_ports_from_map(cls, port_keys):
         if not cls.port_map:
@@ -433,7 +437,7 @@ class KaLiteSnapshotProject(KaLiteProject):
 
 
 
-def parse_ports(port):
+def parse_ports(ports):
     """Returns a dict describing the port content"""
 
     # Port range specified.  
