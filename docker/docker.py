@@ -1,6 +1,7 @@
 import logging
 import socket
 import subprocess
+import sys
 import time
 
 class Docker(object):
@@ -54,14 +55,16 @@ class Docker(object):
     
     def stream_command(self, cmd, wait_time=1, wait_step=0.1):
         self.run_command(cmd=cmd, block_for_output=False, wait_time=0)
-        self.stream_stdout(wait_time=wait_time, wait_step=wait_step)
+        return self.stream_stdout(wait_time=wait_time, wait_step=wait_step)
         
+       
     def stream_stdout(self, wait_time=1, wait_step=0.1):
         all_out = ""
         try:
             for i in range(int(round(wait_time/wait_step))):
                 strout = self.read_stdout(wait_time=wait_step).strip()
                 print strout,
+                sys.stdout.flush()
                 all_out += strout
         except Exception as e:
             self.close()
