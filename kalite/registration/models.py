@@ -247,7 +247,7 @@ class RegistrationProfile(models.Model):
         """
         cdict = { 'activation_key': self.activation_key,
                  'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS,
-                 'central_server_host': site.domain, # for central server actions, determine DYNAMICALLY to be safe
+                 'central_server_host': getattr(site, "domain", settings.CENTRAL_SERVER_HOST),
                  'site': site }
         subject = render_to_string('registration/activation_email_subject.txt',
                                    cdict)

@@ -1,3 +1,5 @@
+*migrations*
+*.prof
 *.pyc
 *.sublime-*
 notes.txt

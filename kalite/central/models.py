@@ -65,7 +65,7 @@ class OrganizationInvitation(models.Model):
         cdict = {
             'organization': self.organization,
             'invited_by': self.invited_by,
-            'central_server_host': request.META['HTTP_HOST'], # for central server actions, determine DYNAMICALLY to be safe
+            'central_server_host': request.META.get('HTTP_HOST', settings.CENTRAL_SERVER_HOST), # for central server actions, determine DYNAMICALLY to be safe
 
         }
         # Invite an existing user
