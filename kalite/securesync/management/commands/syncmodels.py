@@ -1,8 +1,8 @@
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
+
 from securesync.api_client import SyncClient
 
-from django.utils.translation import ugettext as _
 
 class Command(BaseCommand):
     args = "<target server host (protocol://domain:port)>"
@@ -13,7 +13,7 @@ class Command(BaseCommand):
         
     def handle(self, *args, **options):
 
-        self.stdout_writeln(_("Checking purgatory for unsaved models")+"...")
+        self.stdout_writeln(("Checking purgatory for unsaved models")+"...")
         call_command("retrypurgatory")
 
         kwargs = {}
@@ -24,27 +24,27 @@ class Command(BaseCommand):
         
         
         if client.test_connection() != "success":
-            self.stderr_writeln(_("KA Lite host is currently unreachable")+": %s" % client.url)
+            self.stderr_writeln(("KA Lite host is currently unreachable")+": %s" % client.url)
             return
         
-        self.stdout_writeln(_("Initiating SyncSession")+"...")
+        self.stdout_writeln(("Initiating SyncSession")+"...")
         result = client.start_session()
         if result != "success":
-            self.stderr_writeln(_("Unable to initiate session")+": %s" % result.content)
+            self.stderr_writeln(("Unable to initiate session")+": %s" % result.content)
             return
                 
-        self.stdout_writeln(_("Syncing models")+"...")
+        self.stdout_writeln(("Syncing models")+"...")
         
         while True:
             results = client.sync_models()
             
             # display counts for this block of models being transferred
             self.stdout_writeln("\s: %d (%d failed)" % (
-                _("Uploaded"),
+                ("Uploaded"),
                 results["upload_results"]["saved_model_count"],
                 results["upload_results"]["unsaved_model_count"]))
             self.stdout_writeln("\t%s: %d (%d failed)" % (
-                _("Downloaded"),
+                ("Downloaded"),
                 results["download_results"]["saved_model_count"],
                 results["download_results"]["unsaved_model_count"]))
             
@@ -59,9 +59,9 @@ class Command(BaseCommand):
                 break
         
         self.stdout_writeln("%s... (%s: %d, %s: %d)" % 
-            (_("Closing session"), _("Total uploaded"), client.session.models_uploaded, _("Total downloaded"), client.session.models_downloaded))
+            (("Closing session"), ("Total uploaded"), client.session.models_uploaded, ("Total downloaded"), client.session.models_downloaded))
 
-        self.stdout_writeln(_("Checking purgatory once more, to try saving any unsaved models")+"...")
+        self.stdout_writeln(("Checking purgatory once more, to try saving any unsaved models")+"...")
         call_command("retrypurgatory")
         
         client.close_session()

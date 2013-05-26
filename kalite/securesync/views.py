@@ -1,4 +1,7 @@
 import re, json, uuid, urllib
+from annoying.decorators import render_to
+from annoying.functions import get_object_or_None   
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.serializers import json, serialize
@@ -9,21 +12,18 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect, ge
 from django.template import RequestContext
 from django.utils import simplejson
 from django.utils.html import strip_tags
-from annoying.decorators import render_to
-from forms import RegisteredDevicePublicKeyForm, FacilityUserForm, FacilityTeacherForm, LoginForm, FacilityForm, FacilityGroupForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout   
-from annoying.functions import get_object_or_None   
-from config.models import Settings
+from django.utils.translation import ugettext as _
 
 import crypto
 import settings
+from forms import RegisteredDevicePublicKeyForm, FacilityUserForm, FacilityTeacherForm, LoginForm, FacilityForm, FacilityGroupForm
+from config.models import Settings
 from securesync.models import SyncSession, Device, RegisteredDevicePublicKey, Zone, Facility, FacilityGroup
 from securesync.api_client import SyncClient
 from utils.jobs import force_job
 from utils.decorators import require_admin
-
-from django.utils.translation import ugettext as _
 
 def central_server_only(handler):
     def wrapper_fn(*args, **kwargs):

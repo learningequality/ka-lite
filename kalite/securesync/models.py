@@ -1,18 +1,20 @@
+import datetime
+import uuid
+import zlib
+import settings
 from annoying.functions import get_object_or_None
+from pbkdf2 import crypt
+
 from django.contrib.auth.models import User, check_password
 from django.core import serializers
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models, transaction
 from django.db.models import Q
 from django.utils.text import compress_string
-from config.models import Settings
-import crypto
-import datetime
-import uuid
-import zlib
-import settings
-from pbkdf2 import crypt
 from django.utils.translation import ugettext_lazy as _
+
+import crypto
+from config.models import Settings
 
 
 _unhashable_fields = ["signature", "signed_by"]

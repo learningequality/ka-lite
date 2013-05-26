@@ -8,8 +8,8 @@ from django.db import models
 from django.db import transaction
 from django.template.loader import render_to_string
 from django.utils.hashcompat import sha_constructor
-from django.utils.translation import ugettext_lazy as _
 from django.template import RequestContext
+from django.utils.translation import ugettext_lazy as _
 
 import settings
 

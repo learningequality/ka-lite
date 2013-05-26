@@ -1,7 +1,8 @@
-from django import forms
-from models import RegisteredDevicePublicKey, Zone, FacilityUser, Facility, FacilityGroup
-from django.utils.translation import ugettext_lazy as _
 import re
+
+from django import forms
+
+from models import RegisteredDevicePublicKey, Zone, FacilityUser, Facility, FacilityGroup
 
 
 class RegisteredDevicePublicKeyForm(forms.ModelForm):
