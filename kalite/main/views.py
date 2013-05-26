@@ -1,27 +1,30 @@
 import re, json, sys, logging
+from annoying.decorators import render_to
+from annoying.functions import get_object_or_None
+
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
-from annoying.decorators import render_to
-from annoying.functions import get_object_or_None
+from django.contrib import messages
+from django.utils.safestring import mark_safe
+from django.contrib import messages
+from django.utils.translation import ugettext as _
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 import settings
 from settings import slug_key, title_key
 from main import topicdata
-from django.contrib import messages
 from securesync.views import require_admin, facility_required
 from config.models import Settings
 from securesync.models import Facility, FacilityUser,FacilityGroup
 from models import VideoLog, ExerciseLog, VideoFile
-from django.utils.safestring import mark_safe
 from config.models import Settings
 from securesync.api_client import SyncClient
-from django.contrib import messages
+from utils import topic_tools
 from utils.jobs import force_job
-from django.utils.translation import ugettext as _
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from utils.topic_tools import get_video_counts
 
 def splat_handler(request, splat):
@@ -89,11 +92,9 @@ def topic_handler(request, topic):
     topics    = topicdata.get_live_topics(topic)
 
     # Get video counts if they'll be used
-    #if len(videos)==0 and len(exercises)==0 and not "nvideos" in topic:
-    if not hasattr(topic, 'nvideos_local'):
+    if not 'nvideos_local' in topic:
         logging.debug("COMPUTED video counts")
-        (topic['nvideos_local'],topic['nvideos_known']) = get_video_counts(topic=topic, videos_path=settings.CONTENT_ROOT)#db_name=settings.DATABASES["default"]["NAME"])
-#        (topic['nvideos_local'],topic['nvideos_known']) = get_video_counts(topic=topic, db_name=settings.DATABASES["default"]["NAME"])
+        (topic,_,_) = get_video_counts(topic=topic, videos_path=settings.CONTENT_ROOT) 
     else:
         logging.debug("USED cached video counts")
             
@@ -109,7 +110,20 @@ def topic_handler(request, topic):
     
 @render_to("video.html")
 def video_handler(request, video, prev=None, next=None):
-    if not VideoFile.objects.filter(pk=video['youtube_id']).exists():
+    video_exists = VideoFile.objects.filter(pk=video['youtube_id']).exists()
+    
+    # If the video REALLY exists, but it's not in the DB, then trigger the update call
+    #   It should not take long for the db to be updated (assuming that crontab is running
+    #   in the background), so just let them start watching the video and assume
+    #   progress will be recorded.
+    #
+    #  The small probability that progress will not be reported
+    #    is better than not offering the video to the student at all.
+    if not video_exists and topic_tools.is_video_on_disk(video['youtube_id']):
+        force_job("videoscan")
+        video_exists = True # 
+        
+    if not video_exists:
         if request.is_admin:
             messages.warning(request, _("This video was not found! You can download it by going to the Update page."))
         elif request.is_logged_in:
@@ -123,7 +137,7 @@ def video_handler(request, video, prev=None, next=None):
     context = {
         "video": video,
         "title": video[title_key["Video"]],
-        "video_exists": VideoFile.objects.filter(pk=video['youtube_id']).exists(),
+        "video_exists": video_exists,#VideoFile.objects.filter(pk=video['youtube_id']).exists(),
         "prev": prev,
         "next": next,
     }

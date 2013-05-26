@@ -29,10 +29,10 @@ def print_videos(youtube_id):
     for node in find_videos_by_youtube_id(youtube_id):
         print " > ".join(node["path"].split("/")[1:-3] + [node["title"]])
         
-def get_downloaded_youtube_ids(videos_path="../../content/"):
+def get_downloaded_youtube_ids(videos_path="../content/"):
     return [path.split("/")[-1].split(".")[0] for path in glob.glob(videos_path + "*.mp4")]
 
-def is_video_on_disk(youtube_id, videos_path="../../content/"):
+def is_video_on_disk(youtube_id, videos_path="../content/"):
     return os.path.isfile(videos_path+youtube_id+".mp4")
 
 def get_video_counts(topic, videos_path=None, db_name=None):
@@ -49,7 +49,7 @@ db_name: name of database to connect to (Old method)
     """
 
     if videos_path:
-        logging.debug("Using videos path")
+        logging.debug("Using videos path = %s" % videos_path)
     elif db_name:
         logging.warn("Using old database method.  Inefficient and hacky!")
     else:
@@ -72,7 +72,7 @@ db_name: name of database to connect to (Old method)
         #              if first child is a leaf, THEY'RE ALL LEAVES
         if "children" in topic["children"][0]:
             for child in topic["children"]:
-                (child['nvideos_local'], child['nvideos_known']) = get_video_counts(topic=child, videos_path=videos_path, db_name=db_name)
+                (child,_,_) = get_video_counts(topic=child, videos_path=videos_path, db_name=db_name)
                 nvideos_local += child['nvideos_local']
                 nvideos_known += child['nvideos_known']
                 
@@ -115,5 +115,7 @@ db_name: name of database to connect to (Old method)
 
                 nvideos_local = len(found_videos)
                 nvideos_known = len(videos)
-                
-    return (nvideos_local, nvideos_known)
+        
+    topic['nvideos_local'] = nvideos_local
+    topic['nvideos_known'] = nvideos_known
+    return (topic, nvideos_local, nvideos_known)
