@@ -12,9 +12,10 @@
         {% block titletag %}
         <title>{% block title %}{{ title }}{% endblock title %} | KA Lite</title>
         {% endblock %}
-        <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/bootstrap/bootstrap.css"></link>
-        <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/bootstrap/responsive.css"></link>
-        <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/style_bootstrap.css"></link>
+        <link rel="stylesheet/less" type="text/css" href="{{ MEDIA_URL }}css/bootstrap/bootstrap.less"></link>
+        <link rel="stylesheet/less" type="text/css" href="{{ MEDIA_URL }}css/bootstrap/responsive.less"></link>
+        <link rel="stylesheet/less" type="text/css" href="{{ MEDIA_URL }}css/style.less"></link>
+
         {% block basecss %}{% endblock basecss %}
         {% block headcss %}{% endblock headcss %}
 
@@ -24,6 +25,7 @@
         <script type="text/javascript" src="{{ MEDIA_URL }}js/underscore-min.js"></script>
         <script type="text/javascript" src="{{ MEDIA_URL }}js/backbone-min.js"></script>
         {% endblock jqueryjs %}
+        <script type="text/javascript" src="{{ MEDIA_URL }}js/less.js"></script>
         <script type="text/javascript" src="{{ MEDIA_URL }}js/khan-lite.js"></script>
         {% block headjs %}{% endblock headjs %}
         {% block basejs %}{% endblock basejs %}
@@ -33,8 +35,8 @@
     </head>
     <body>
 
-        <div class="container">
+
             {% block content %}{% endblock content %}
-        </div> <!-- /container -->
+       
     </body>
 </html>

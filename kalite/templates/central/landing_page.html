@@ -15,11 +15,13 @@
 {% endblock headcss %}
 
 {% block content %}
-          
-    <div class="row-fluid">
-      <div class="span4">LOGO</div>
-      <div class="span4 offset4">
-        <ul id="horizontal-menu">
+<div class="container">
+  
+
+    <div class="row-fluid header-wrapper">
+      <div class="span2 header-logo"><img src="/static/images/horizontal-logo-small.png" alt=""></div>
+      <div class="span10">
+        <ul class="horizontal-menu">
             <li>HOME</li>
             <li>FAQ</li>
             <li>SIGNUP</li>
@@ -28,7 +30,7 @@
       </div>
     </div>
 
-    <div class="row-fluid">
+    <div class="row-fluid content-box">
         <div class="span6">
             <img src="http://www.50states.com/images/us_map.gif" alt="">
         </div>
@@ -38,20 +40,26 @@
     </div>
 
     <div class="row-fluid">
-        <div class="span4 box">
-            <img src="http://application.denofgeek.com/pics/film/tash03.jpg" alt="">
-            <p>Do you see any Teletubbies in here?</p>
-            <button>YEAH</button>
+        <div class="span4">
+            <div class="box">
+                <img src="http://application.denofgeek.com/pics/film/tash03.jpg" alt="">
+                <p>Do you see any Teletubbies in here?</p>
+                <button>YEAH</button>
+            </div>
         </div>
-        <div class="span4 box">
-            <img src="http://application.denofgeek.com/pics/film/tash03.jpg" alt="">
-            <p>Do you see any Teletubbies in here?</p>
-            <button>YEAH</button>
+        <div class="span4">
+            <div class="box">
+                <img src="http://application.denofgeek.com/pics/film/tash03.jpg" alt="">
+                <p>Do you see any Teletubbies in here?</p>
+                <button>YEAH</button>
+            </div>
         </div>
-        <div class="span4 box">
-            <img src="http://application.denofgeek.com/pics/film/tash03.jpg" alt="">
-            <p>Do you see any Teletubbies in here?</p>
-            <button>YEAH</button>
+        <div class="span4">
+            <div class="box">
+                <img src="http://application.denofgeek.com/pics/film/tash03.jpg" alt="">
+                <p>Do you see any Teletubbies in here?</p>
+                <button>YEAH</button>
+            </div>
         </div>
     </div>
     <div class="row-fluid">
@@ -85,6 +93,6 @@
 
         </div>
     </div>
-
+</div>
 {% endblock content %}
 
