@@ -1,112 +1,100 @@
 body {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 12px;
-    margin: 0;
-    color: #444;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  margin: 0;
+  color: #444;
 }
-
 div#map-container {
-    position: relative;
-    top: 0;
-    left: 0;
-    height: 100%;
-    overflow: hidden;
-    background: #000;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    line-height: 11px;
-    min-height: 1100px;
-    min-width: 1000px;
+  position: relative;
+  top: 0;
+  left: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  line-height: 11px;
+  min-height: 1100px;
+  min-width: 1000px;
 }
-
-a.topic-button {
-    display: block;
-    position: absolute;
-    left: 20px;
-    top: 20px;
-    width: 150px;
-    height: 30px;
-    line-height: 30px;
-    background: #777;
-    text-align: center;
-    border: 1px #333 solid;
-    z-index: 5;
-    font-size: 15px;
-    color: white;
-}
-
-a.topic-button:visited {
-    color: white;
-}
-
 div.zoom-select {
-    background: #ccc;
+  background: #ccc;
 }
-
 div#sidebar {
-    position: relative;
-    float: left;
-    top: 0;
-    left: 0;
-    width: 350px;
-    max-height: 100%;
-    min-height: 100%;
+  position: relative;
+  float: left;
+  top: 0;
+  left: 0;
+  width: 350px;
+  max-height: 100%;
+  min-height: 100%;
 }
-
 div#controls {
-    position: absolute;
-    top: 0;
-    width: 330px;
-    min-height: 115px;
-    padding: 10px;
+  position: absolute;
+  top: 0;
+  width: 330px;
+  min-height: 115px;
+  padding: 10px;
 }
-
 div#info {
-    position: absolute;
-    top: 125px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    width: 100%;
-    bottom: 0;
+  position: absolute;
+  top: 125px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
+  bottom: 0;
 }
-
 div#map {
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
 }
-
 div.exercise {
-    position: absolute;
-    font-family: "Lucida Grande", Arial, sans-serif;
-    font-size: 9px;
-    text-align: center;
-    line-height: normal;
-    color: #fff;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+  position: absolute;
+  font-family: "Lucida Grande", Arial, sans-serif;
+  font-size: 9px;
+  text-align: center;
+  line-height: normal;
+  color: #fff;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
-
 div.exercise-label {
-    background-color: rgba(0, 0, 0, 0.8);
+  background-color: rgba(0, 0, 0, 0.8);
 }
-
 div.exercise-selected {
-    background: #6495ed
+  background: #6495ed;
 }
-
+a.topic-button {
+  display: block;
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  width: 150px;
+  height: 30px;
+  line-height: 30px;
+  background: #777;
+  text-align: center;
+  border: 1px #333 solid;
+  z-index: 5;
+  font-size: 15px;
+  color: white;
+}
+a.topic-button:visited {
+  color: white;
+}
 p#ex-title {
-    font-size: 16px;
-    font-weight: bold;
-    margin-top: 0;
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 0;
 }
