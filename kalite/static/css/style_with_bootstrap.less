@@ -1,20 +1,30 @@
 body {
   background: url(/static/images/light-page-bg.png) repeat-x;
+}
+.container{
+  max-width: @container-max-width; //Change to choose the max width
+  margin: 0 auto;
+}
 
+p{
+  .normal_text_font
 }
 
 /* Header */
 .header-logo{
   padding-top: 10px;
 }
+
 .horizontal-menu {
   padding-top: 20px;
-  
+  text-align: right;
   li{
     display: inline;
     list-style-type: none;
-    padding-right: 20px;
-
+    padding-right:20px;
+    a{
+      color:black;
+    }
   }
 }
 
@@ -22,22 +32,77 @@ body {
 .content-box{
   background-color: rgb(255, 255, 255);
   background-image: none;
-
-  padding: 20px;
-
   border-top-color: rgb(198, 209, 173);
   border-top-style: solid;
   border-top-width: 1px;
+  padding: 20px;
 }
+
 .box{
+  margin-left: auto;
+  margin-right: auto;
   background-color: #dae4cb;
   text-align: center;
-  width:260px;
-
+  max-width:316px;
+  padding:20px;
+  margin-top: 10px;
 
   img{
-    width: 60%;
-    height:60%;
-    padding:20px;
+    width: 170px;
+    height:170px;
+  }
+  p{
+    font-size: 16px;
+  }
+}
+
+.motto{
+  h1{
+    font-family: "MuseoSans500", sans-serif;
+    font-size: 25px;
+    font-weight: normal;
+    line-height: 32.5px;
+  }
+}
+
+ul.motivation_box{
+  .normal_text_font;
+  .border-radius(15px); // Mixin defined in the bootstrap folder
+  background-color: #d4dec0;
+  max-width:418px;
+  padding-top: 10px;
+  padding-bottom: 10px;  
+  line-height: 22px;
+}
+
+button{
+  &.green{
+    .green_button(190px,5px, 14px, 10px, 20px); //.green_button(@width,@border_radius, @font_size, @paddingv, @paddingh)
+  }
+  &.small_green{
+    .green_button(100%,2px, 12px, 5px, 20px); //.green_button(@width,@border_radius, @font_size, @paddingv, @paddingh)
+    margin-top: 5px;
+  }
+}
+input.email{
+  width:100%;
+  padding:0;
+}
+/* Footer */
+div.footer_title{
+  font-size: 18px;
+  font-weight:bold;
+  padding-left: 40px; //Webkit padding start: to correct later;
+}
+.news_list{
+  margin-top: 15px;
+  ul{
+    list-style: none;
+
+    li{
+      border-bottom: 1px #d9e6e2 dotted;
+      line-height: 30px;
+
+    }
   }
 }

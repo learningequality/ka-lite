@@ -1,0 +1,40 @@
+body {
+  background: url(/static/images/light-page-bg.png) repeat-x;
+}
+/* Header */
+.header-logo {
+  padding-top: 10px;
+}
+.horizontal-menu {
+  padding-top: 20px;
+}
+.horizontal-menu li {
+  display: inline;
+  list-style-type: none;
+  padding-right: 20px;
+}
+/* Content */
+.content-box {
+  background-color: #ffffff;
+  background-image: none;
+  border-top-color: #c6d1ad;
+  border-top-style: solid;
+  border-top-width: 1px;
+  padding: 20px;
+}
+.box {
+  background-color: #dae4cb;
+  text-align: center;
+  width: 260px;
+}
+.box img {
+  width: 60%;
+  height: 60%;
+  padding: 20px;
+}
+.motto h1 {
+  font-family: "MuseoSans500", sans-serif;
+  font-size: 25px;
+  font-weight: normal;
+  line-height: 32.5px;
+}
