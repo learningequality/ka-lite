@@ -150,24 +150,27 @@ class KaLiteServer(object):
 
 class KaLiteProject(object):
 
-    def __init__(self, git_user, repo_branch, server_types=["central","local"], git_repo="ka-lite", base_dir=os.path.dirname(os.path.realpath(__file__))):
+    def __init__(self, git_user, repo_branch, git_repo="ka-lite", base_dir=os.path.dirname(os.path.realpath(__file__))):
         self.git_user = git_user
         self.repo_branch = repo_branch
         self.git_repo = git_repo
         self.base_dir = base_dir
 
+        self.user_dir   = self.base_dir + "/" + self.git_user
+        self.branch_dir = self.user_dir + "/" + self.repo_branch
 
 
+
+    def get_repo_dir(self, server_type):
+        return self.branch_dir+"/"+server_type
+                                                             
     def setup_project(self, server_types, port_range=(50000, 65000), open_ports=None, port_map=None):
         """Sets up the branch directories, points to a directory for local and central"""
     
         assert port_range or open_ports or port_map, "Must pass either port_range or ports"
         assert not open_ports or len(open_ports)>=1, "Must pass in at least 1 port"
-        assert not port_map or (hasattr(port_map,"keys") and len(port_map.keys)>=1), "Must pass in at least 1 port, as a dictionary on port_map"
+        assert not port_map or (hasattr(port_map,"keys") and len(port_map.keys())>=1), "Must pass in at least 1 port, as a dictionary on port_map"
         
-        self.user_dir   = self.base_dir + "/" + self.git_user
-        self.branch_dir = self.user_dir + "/" + self.repo_branch
-
         # Create the branch directory
         if os.path.exists(self.branch_dir):
             logging.debug("Using branch directory: %s" % self.branch_dir)
@@ -176,10 +179,10 @@ class KaLiteProject(object):
             os.makedirs(self.branch_dir)
 
         # get ports as a numeric list
-        port_keys = set(server_types).union({"central"})
+        port_keys = set(server_types).union({"central"}) # must have a central server port
         if not port_map:
             if not open_ports:
-                open_ports = get_open_ports(num_ports=2) # system call
+                open_ports = get_open_ports(port_range=port_range, num_ports=2) # system call
             port_map = dict()
             for st in port_keys:
                 p = self.__class__.get_ports_from_map([self.port_map_key(st),])
@@ -191,11 +194,18 @@ class KaLiteProject(object):
         # ... until we create them, that is! :D 
         self.servers = {}
         for server_type in server_types:
-            self.servers[server_type] = KaLiteServer(repo_dir=self.branch_dir+"/"+server_type, 
+            self.servers[server_type] = KaLiteServer(repo_dir=self.get_repo_dir(server_type), 
                                                      server_type=server_type, 
                                                      port=port_map[server_type], 
                                                      central_server_port=port_map["central"])
+    
+    def mount_project(self, server_types, port_range=(50000, 65000), open_ports=None, port_map=None):
+        """Convenience function to set up the project, then to mount it."""
+        self.setup_project(server_types, port_range, open_ports, port_map)
+        self.emit_header()
+        self.mount()
         
+                
     def port_map_key(self, server_type):
         return "%s/%s.git:%s %s" % (self.git_user, self.git_repo, self.repo_branch, server_type)
 
@@ -204,15 +214,11 @@ class KaLiteProject(object):
         logging.info("*"*50)
         logging.info("*")
         logging.info("* Setting up %s/%s.git:%s" % (self.git_user, self.git_repo, self.repo_branch))
-        if "central" in self.servers:
-            logging.info("* \tCentral server path: %s" % self.servers["central"].repo_dir)
-        if "local" in self.servers:
-            logging.info("* \tLocal server path: %s" % self.servers["local"].repo_dir)
+        for key in self.servers.keys():
+            logging.info("* \t%s server path: %s" % (key, self.servers[key].repo_dir))
         logging.info("*")
-        if "central" in self.servers:
-            logging.info("* \tCentral server URL: http://%s:%d/" % (socket.getfqdn(), self.servers["central"].port))
-        if "local" in self.servers:
-            logging.info("* \tLocal server URL: http://%s:%d/" % (socket.getfqdn(), self.servers["local"].port))
+        for key in self.servers.keys():
+            logging.info("* \t%s server URL: http://%s:%d/" % (key, socket.getfqdn(), self.servers[key].port))
         logging.info("*")
         logging.info("* Admin info (both servers):")
         logging.info("* \tusername: %s" % self.servers[self.servers.keys()[0]].admin_user["username"])
@@ -280,7 +286,7 @@ class KaLiteRepoProject(KaLiteProject):
         """Set up the specified user's repo as a remote; return the directory it's set up in!"""
     
         if self.git_repo != "ka-lite":
-            raise NotImplementedException("Only ka-lite repo has been implemented!")
+            raise NotImplementedError("Only ka-lite repo has been implemented!")
         
         logging.debug("Setting up %s %s %s" % (self.git_user, self.repo_branch, self.git_repo))
     
@@ -363,7 +369,7 @@ class KaLiteSnapshotProject(KaLiteProject):
         Return the directory it's set up in!"""
     
         if self.git_repo != "ka-lite":
-            raise NotImplementedException("Only ka-lite repo has been implemented!")
+            raise NotImplementedError("Only ka-lite repo has been implemented (repo=%s specified)!" % self.git_repo)
         
         logging.debug("Setting up %s %s %s" % (self.git_user, self.repo_branch, self.git_repo))
     
@@ -493,9 +499,7 @@ if __name__=="__main__":
 	
     # Run the project
     kap = KaLiteSnapshotProject(git_user=git_user, repo_branch=repo_branch, git_repo=git_repo, base_dir="/home/ubuntu/ka-lite")
-    kap.setup_project(server_types=server_types, **port_arg)
-    kap.emit_header()
-    kap.mount()
+    kap.mount_project(server_types=server_types, **port_arg)
     
     # When in debug mode, there's a lot of output--so output again!
     if logging.getLogger().level>=logging.DEBUG:
