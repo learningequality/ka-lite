@@ -31,28 +31,32 @@ p{
 /* Content */
 .content-box{
   background-color: rgb(255, 255, 255);
- 
   border-top: 1px solid rgb(198, 209, 173);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(rgb(198, 209, 173)), to(transparent));
-  background-image: -webkit-linear-gradient(rgb(198, 209, 173), transparent);
-  background-image:
-      -moz-linear-gradient(rgb(198, 209, 173), transparent),
-      -moz-linear-gradient(rgb(198, 209, 173), transparent)
-  ;
-  background-image:
-      -o-linear-gradient(rgb(198, 209, 173), transparent),
-      -o-linear-gradient(rgb(198, 209, 173), transparent)
-  ;
-  background-image: 
-      linear-gradient(rgb(198, 209, 173), transparent),
-      linear-gradient(rgb(198, 209, 173), transparent)
-  ;
-  -moz-background-size:1px 100%;
-  background-size:1px 100%;
-  background-position:0 0, 100% 0;
-  background-repeat:no-repeat;
+  padding:20px;
+}
+/* Large desktop */
 
-  padding: 20px;
+@media (min-width: @container-max-width){
+  .content-box { 
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(rgb(198, 209, 173)), to(transparent));
+    background-image: -webkit-linear-gradient(rgb(198, 209, 173), transparent);
+    background-image:
+        -moz-linear-gradient(rgb(198, 209, 173), transparent),
+        -moz-linear-gradient(rgb(198, 209, 173), transparent)
+    ;
+    background-image:
+        -o-linear-gradient(rgb(198, 209, 173), transparent),
+        -o-linear-gradient(rgb(198, 209, 173), transparent)
+    ;
+    background-image: 
+        linear-gradient(rgb(198, 209, 173), transparent),
+        linear-gradient(rgb(198, 209, 173), transparent)
+    ;
+    -moz-background-size:1px 100%;
+    background-size:1px 100%;
+    background-position:0 0, 100% 0;
+    background-repeat:no-repeat;
+  }
 }
 
 .box{
