@@ -6,18 +6,29 @@ import time
 
 class Docker(object):
     docker_id_length = 12
-    port_in=5000 
-    port_out=4000
     
     def __init__(self, docker_instance, ports_to_open=[]):
-        ports_to_open += [self.__class__.port_in, self.__class__.port_out]
-
+    
+        # Dynamically choose port_in and port_out, and add to ports_to_open
+        self.port_in = None
+        self.port_out = None
+        for i in range(4000, 65535):
+            if i not in ports_to_open:
+                if not self.port_in:
+                    self.port_in = i
+                    ports_to_open += [self.port_in,]
+                elif not self.port_out:
+                    self.port_out = i
+                    ports_to_open += [self.port_out,]
+                    break
+        assert self.port_in and self.port_out
+        
         # Build the docker command; add all desired open ports        
         docker_cmd  = ["docker", "run", "-i", "-t"]
         for p in ports_to_open:
             docker_cmd += ["-p", str(p)]
         docker_cmd += [docker_instance, "/bin/bash"]
-        docker_cmd += ["-c", """hostname; nc -l %d | /bin/bash 2>&1 | nc -l %d""" % (self.__class__.port_in, self.__class__.port_out)]
+        docker_cmd += ["-c", """hostname; nc -l %d | /bin/bash 2>&1 | nc -l %d""" % (self.port_in, self.port_out)]
         
         # start the docker, and listen for commands over TCP
         self.p = subprocess.Popen(docker_cmd, shell=False, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
@@ -31,10 +42,10 @@ class Docker(object):
             self.port_map[p] = subprocess.Popen(["docker", "port", self.ID, str(p)], shell=False, stdin=subprocess.PIPE, stdout=subprocess.PIPE).communicate()[0].strip()
 
         # open a socket to write in commands
-        self.s_in = socket.create_connection(("localhost", self.port_map[self.__class__.port_in]))
+        self.s_in = socket.create_connection(("localhost", self.port_map[self.port_in]))
 
         # open a socket to read out responses
-        self.s_out = socket.create_connection(("localhost",  self.port_map[self.__class__.port_out]))
+        self.s_out = socket.create_connection(("localhost",  self.port_map[self.port_out]))
         self.s_out.setblocking(0)
 
     def run_command(self, cmd, block_for_output=None, wait_time=None):
@@ -85,7 +96,7 @@ class Docker(object):
             time.sleep(wait_time)
             return self.s_out.recv(bytes)
         except Exception as e:
-            if hasattr(e, 'errno') and e.errno==11 and hasattr(e, 'strerror') and e.strerror=="Resource temporarily unavailable":
+            if getattr(e, 'errno', None)==11 and getattr(e, 'strerror', None)=="Resource temporarily unavailable":
                 return ""
             else:
                 self.close()
