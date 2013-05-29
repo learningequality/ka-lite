@@ -52,7 +52,7 @@ class KaLiteServer(object):
             local_settings_file = self.repo_dir+"/kalite/local_settings.py"
             
         # First, set up localsettings
-        logging.info("Creating local_settings.py")
+        logging.info("Creating local_settings.py @ %s" % local_settings_file)
         local_settings = open(local_settings_file,"w")
 
         local_settings.write("DEBUG = True\n")
@@ -95,7 +95,8 @@ class KaLiteServer(object):
         lexec(self.pyexec() + " kalite/manage.py syncdb --migrate", input="no\n")
         lexec(self.pyexec() + " kalite/manage.py shell", input="from django.contrib.auth.models import User; User.objects.create_superuser('%s', '%s', '%s')" % (self.admin_user["username"], self.admin_user["email"], self.admin_user["password"]))
         lexec(self.pyexec() + " kalite/manage.py initdevice '%s' 'central_server_port=%d'" % (self.server_type, self.central_server_port))
-    
+        lexec("echo Done!")
+        
         os.chdir(cwd)
     
     
@@ -413,8 +414,8 @@ class KaLiteDockerProjectWrapper(KaLiteProject):
     def get_repo_dir(self, branch_name):
         assert False
         
-    def get_docker_name(self):
-        return self.git_user + "/" + self.git_repo + ".git:" + self.repo_branch + " " + self.server_type
+    def get_docker_name(self, server_type):
+        return self.git_user + "/" + self.git_repo + ".git:" + self.repo_branch + " " + server_type
 
 
     def setup_project(self, server_types):
@@ -426,7 +427,8 @@ class KaLiteDockerProjectWrapper(KaLiteProject):
         self.dockers = {}
         for server_type in server_types:
             logging.debug("Creating docker for server_type=%s" % server_type)
-            self.dockers[server_type] = Docker(image_name=self.image_name, ports_to_open=[self.docker_port,])
+#            self.dockers[server_type] = Docker(image_name=self.image_name, ports_to_open=[self.docker_port,])
+            self.dockers[server_type] = PersistentDocker(container_name=self.get_docker_name(server_type), image_name=self.image_name, ports_to_open=[self.docker_port,])
             self.dockers[server_type].run_command("cd /playground", wait_time=0.1)
             self.dockers[server_type].stream_command("git pull origin mount-branch", wait_time=3)
 
@@ -435,7 +437,7 @@ class KaLiteDockerProjectWrapper(KaLiteProject):
         for server_type,docker in self.dockers.items():
             import pdb; pdb.set_trace()
             docker.run_command("export PYTHONPATH=${PYTHONPATH}:/playground", wait_time=0.1)
-            docker.stream_command("python /playground/test_tools/mount_branch_on_docker.py %s %s %s %d %s" % (self.git_user, self.repo_branch, server_type, self.docker_port, self.git_repo), wait_time=20)
+            docker.stream_command("python /playground/test_tools/mount_branch_on_docker.py %s %s %s %d %s" % (self.git_user, self.repo_branch, server_type, self.docker_port, self.git_repo), wait_time=75)
             
     
 
@@ -520,10 +522,9 @@ class KaLiteDockerRepoProject(KaLiteRepoProject):
 
         # Set up central and local servers, in turn
         for key,server in self.servers.items():
+            logging.debug("Setting up server %s on docker %s" % (key, "(NYI)")
             self.setup_repo(server)
-#            server.create_local_settings_file(local_settings_file=
-            server.install_server()
-#            self.setup_server(server) # must intervene
+            server.setup_server() # must intervene
             server.start_server() # must intervene
 
 

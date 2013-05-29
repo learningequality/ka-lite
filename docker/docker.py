@@ -262,17 +262,15 @@ class PersistentDocker(Docker):
         self.attach_docker_ports(ports_to_open)
 
 
-
-#    def __del__(self):
-        #if self.p:
-        #    self.p.close()
+    def __del__(self):
+        """ Don't kill the docker"""
         
-#        if self.s_in:
-#            self.s_in.close()
-#            self.s_in = None
-#        if self.s_out:
-#            self.s_out.close()
-#            self.s_out = None
+        if self.s_in:
+            self.s_in.close()
+            self.s_in = None
+        if self.s_out:
+            self.s_out.close()
+            self.s_out = None
         
         
 if __name__=="__main__":
