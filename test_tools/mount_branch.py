@@ -550,24 +550,28 @@ def parse_ports(ports):
 
 def usage(usage_err=None):
     if usage_err:
-        logging.info("ERROR: %s" % usage_err)
+       sys.stderr.write("ERROR: %s\n\n" % usage_err)
     
-    logging.info("Usage:")
-#    logging.info("\t%s <git_username> <git_branch>", sys.argv[0])
-    logging.info("\t%s <git_username> <git_branch> [central or local] [port_range (50-60) or port_list(50,51)", sys.argv[0])
-#    logging.info("\t%s <git_username> <git_branch> [repository_name]")
-    exit()
+    sys.stderr.write("%s <mount_method [merge,snapshot,docker]> <git_username> <git_branch> [server_type] [port_info]\n" % sys.argv[0])
+    sys.stderr.write("\tMounts a KA-Lite git branch at a public URL, using either git merge, dowloading a git snapshot, or mounting within a docker.\n")
+    sys.stderr.write("\n")
+    sys.stderr.write("Optional args:\n")
+    sys.stderr.write("\tserver_type: central or local\n")
+    sys.stderr.write("\tport info: a port range (e.g. 50-60) or port list (e.g. 50,51)\n")
+    sys.stderr.write("\n")
+    sys.exit(1)
 
 
 if __name__=="__main__":
     logging.getLogger().setLevel(logging.DEBUG)
 
     # Get command-line args
-    git_user     = sys.argv[1]    if len(sys.argv)>1 else usage("Specify a git account")
-    repo_branch  = sys.argv[2]    if len(sys.argv)>2 else usage("Specify a repo branch")
-    server_types = sys.argv[3]    if len(sys.argv)>3 else "central,local"
-    ports        = sys.argv[4]    if len(sys.argv)>4 else "50000-65000"
-    git_repo     = sys.argv[5]    if len(sys.argv)>5 else "ka-lite"
+    method       = sys.argv[1]    if len(sys.argv)>1 else usage("Specify a mount method")
+    git_user     = sys.argv[2]    if len(sys.argv)>2 else usage("Specify a git account")
+    repo_branch  = sys.argv[3]    if len(sys.argv)>3 else usage("Specify a repo branch")
+    server_types = sys.argv[4]    if len(sys.argv)>4 else "central,local"
+    ports        = sys.argv[5]    if len(sys.argv)>5 else "50000-65000"
+    git_repo     = sys.argv[6]    if len(sys.argv)>6 else "ka-lite"
 
     # Parse the server types and ports
     server_types = server_types.split(",")
@@ -583,20 +587,28 @@ if __name__=="__main__":
         port_arg = { "port_map": dict(zip(server_types, port_arg["open_ports"])) }
 	
     # Run the project
-#    kap = KaLiteRepoProject(git_user=git_user, repo_branch=repo_branch, git_repo=git_repo, base_dir="/home/ubuntu/ka-lite")
-#    kap.mount_project(server_types=server_types)
+    if method == "merge":
+        kap = KaLiteRepoProject(git_user=git_user, repo_branch=repo_branch, git_repo=git_repo, base_dir="/home/ubuntu/ka-lite")
+        kap.mount_project(server_types=server_types)
 
-#    kap = KaLiteSnapshotProject(git_user=git_user, repo_branch=repo_branch, git_repo=git_repo, base_dir="/home/ubuntu/ka-lite")
-#    kap.mount_project(server_types=server_types)
+    elif method == "snapshot":
+        kap = KaLiteSnapshotProject(git_user=git_user, repo_branch=repo_branch, git_repo=git_repo, base_dir="/home/ubuntu/ka-lite")
+        kap.mount_project(server_types=server_types)
 
-    kap = KaLiteDockerProjectWrapper(git_user=git_user, repo_branch=repo_branch, git_repo=git_repo, image_name="ka-lite-testing")
-    kap.setup_project(server_types=server_types)
-    kap.mount(wait_time=60)
+    elif method == "docker":
+        kap = KaLiteDockerProjectWrapper(git_user=git_user, repo_branch=repo_branch, git_repo=git_repo, image_name="ka-lite-testing")
+        kap.setup_project(server_types=server_types)
+        kap.mount(wait_time=60)
 
+        kap.emit_header()
+
+        # Don't exit!!
+        logging.warning("Dockers STOP after exiting this script.  For now, putting debug HALT so that we can control program exit. :(")
+        import pdb; pdb.set_trace()
     
+    else:
+        usage("Unknown mount method: '%s'" % method)
+        
     # When in debug mode, there's a lot of output--so output again!
     if logging.getLogger().level>=logging.DEBUG:
         kap.emit_header()
-
-    logging.warning("Dockers STOP after exiting this script.  For now, putting debug HALT so that we can control program exit. :(")
-    import pdb; pdb.set_trace()
