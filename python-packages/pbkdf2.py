@@ -69,6 +69,18 @@ except ImportError:
         # hashlib not available.  Use the old sha module.
         import sha as SHA1
 
+def pbkdf2(word, salt, iterations):
+    return PBKDF2(word, salt, iterations).read(24)
+
+# Added (jamalex) to use M2Crypto's PBKDF2 for crypt, if available, for efficiency
+try:
+    import M2Crypto.EVP
+    def pbkdf2_m2crypto(word, salt, iterations):
+        return M2Crypto.EVP.pbkdf2(word, str(salt), iterations, 24)
+except:
+    # if not available, just use the pure Python implementation
+    pbkdf2_m2crypto = pbkdf2
+    
 #
 # Python 2.1 thru 3.2 compatibility
 #
@@ -227,7 +239,7 @@ class PBKDF2(object):
             del self.__buf
             self.closed = True
 
-def crypt(word, salt=None, iterations=None):
+def crypt(word, salt=None, iterations=None, use_m2crypto=True):
     """PBKDF2-based unix crypt(3) replacement.
 
     The number of iterations specified in the salt overrides the 'iterations'
@@ -278,7 +290,12 @@ def crypt(word, salt=None, iterations=None):
         salt = "$p5k2$$" + salt
     else:
         salt = "$p5k2$%x$%s" % (iterations, salt)
-    rawhash = PBKDF2(word, salt, iterations).read(24)
+
+    if use_m2crypto:
+        rawhash = pbkdf2_m2crypto(word, salt, iterations)
+    else:
+        rawhash = pbkdf2(word, salt, iterations)
+
     return salt + "$" + b64encode(rawhash, "./")
 
 # Add crypt as a static method of the PBKDF2 class
