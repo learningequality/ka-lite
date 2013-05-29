@@ -34,7 +34,7 @@ class KaLiteServer(object):
         cwd = os.getcwd()
         os.chdir(self.repo_dir)
     
-        lexec(self.pyexec() + " kalite/manage.py runcherrypyserver host=%s port=%d threads=50 daemonize=true pidfile=kalite/runcherrypyserver.pid" % (self.host, self.port))
+        lexec(self.pyexec() + " kalite/manage.py runcherrypyserver host=%s port=%d threads=50 daemonize=true pidfile=kalite/runcherrypyserver.pid" % (host, self.port))
     
         os.chdir(cwd)
 
@@ -494,8 +494,8 @@ class KaLiteDockerRepoProject(KaLiteRepoProject):
         os.chdir(server.repo_dir)
     
         logging.info("Adding remote %s/%s.git to %s" % (self.git_user, self.git_repo, server.repo_dir))
-        remote_url = "git://github.com/%s/%s.git" % self.git_user, self.git_repo
-        lexec("git remote add %s git://github.com/%s/%s.git" % (self.git_user, remote_url));
+        remote_url = "git://github.com/%s/%s.git" % (self.git_user, self.git_repo)
+        lexec("git remote add %s git://github.com/%s/%s.git" % (self.git_user, self.git_user, remote_url));
         if not remote_url in lexec("git remote -v")[1]:
             raise Exception("Failed to add remote to git (%s)" % remote_url)
     

@@ -13,7 +13,7 @@ def lexec(cmd, input=None, silent=False):
     (cmd_stdout,cmd_stderr) = p.communicate(input=input)
     if p.returncode:
         if not silent:
-            logging.warning("\t\tERROR: %s" % cmd_stderr)
+            logging.warning("\t\tERROR: return_code=%d, stderr=%s, stdout=%s" % (p.returncode, cmd_stderr, cmd_stdout))
     elif not silent:
         logging.debug("\t\tOutput: %s" % cmd_stdout)
         
