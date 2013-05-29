@@ -435,7 +435,7 @@ class KaLiteDockerProjectWrapper(KaLiteProject):
         for server_type,docker in self.dockers.items():
             import pdb; pdb.set_trace()
             docker.run_command("export PYTHONPATH=${PYTHONPATH}:/playground", wait_time=0.1)
-            docker.run_command("python /playground/test_tools/mount_branch_on_docker.py %s %s %s %d %s" % (self.git_user, self.repo_branch, server_type, self.docker_port, self.git_repo))
+            docker.stream_command("python /playground/test_tools/mount_branch_on_docker.py %s %s %s %d %s" % (self.git_user, self.repo_branch, server_type, self.docker_port, self.git_repo), wait_time=20)
             
     
 
@@ -495,7 +495,7 @@ class KaLiteDockerRepoProject(KaLiteRepoProject):
     
         logging.info("Adding remote %s/%s.git to %s" % (self.git_user, self.git_repo, server.repo_dir))
         remote_url = "git://github.com/%s/%s.git" % (self.git_user, self.git_repo)
-        lexec("git remote add %s git://github.com/%s/%s.git" % (self.git_user, self.git_user, remote_url));
+        lexec("git remote add %s %s" % (self.git_user, self.git_user, remote_url));
         if not remote_url in lexec("git remote -v")[1]:
             raise Exception("Failed to add remote to git (%s)" % remote_url)
     
@@ -594,3 +594,5 @@ if __name__=="__main__":
     # When in debug mode, there's a lot of output--so output again!
     if logging.getLogger().level>=logging.DEBUG:
         kap.emit_header()
+
+    import pdb; pdb.set_trace()
