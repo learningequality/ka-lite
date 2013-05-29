@@ -73,7 +73,7 @@ def pbkdf2(word, salt, iterations):
     return PBKDF2(word, salt, iterations).read(24)
 
 # Added (jamalex) to use M2Crypto's PBKDF2 for crypt, if available, for efficiency
-# TODO(jamalex): add tests, removing the "use_m2crypto" arg, as per discussion at:
+# TODO(jamalex): add tests, as per discussion at:
 # https://github.com/learningequality/ka-lite/pull/84
 try:
     import M2Crypto.EVP
@@ -241,7 +241,7 @@ class PBKDF2(object):
             del self.__buf
             self.closed = True
 
-def crypt(word, salt=None, iterations=None, use_m2crypto=True):
+def crypt(word, salt=None, iterations=None):
     """PBKDF2-based unix crypt(3) replacement.
 
     The number of iterations specified in the salt overrides the 'iterations'
@@ -293,10 +293,7 @@ def crypt(word, salt=None, iterations=None, use_m2crypto=True):
     else:
         salt = "$p5k2$%x$%s" % (iterations, salt)
 
-    if use_m2crypto:
-        rawhash = pbkdf2_m2crypto(word, salt, iterations)
-    else:
-        rawhash = pbkdf2(word, salt, iterations)
+    rawhash = pbkdf2(word, salt, iterations)
 
     return salt + "$" + b64encode(rawhash, "./")
 
