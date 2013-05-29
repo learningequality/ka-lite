@@ -495,7 +495,7 @@ class KaLiteDockerRepoProject(KaLiteRepoProject):
     
         logging.info("Adding remote %s/%s.git to %s" % (self.git_user, self.git_repo, server.repo_dir))
         remote_url = "git://github.com/%s/%s.git" % (self.git_user, self.git_repo)
-        lexec("git remote add %s %s" % (self.git_user, self.git_user, remote_url));
+        lexec("git remote add %s %s" % (self.git_user, remote_url));
         if not remote_url in lexec("git remote -v")[1]:
             raise Exception("Failed to add remote to git (%s)" % remote_url)
     
