@@ -1,6 +1,7 @@
 import logging
 import os
 import pickle
+import re
 import socket
 import subprocess
 import sys
@@ -12,11 +13,13 @@ class Docker(object):
     
     def __init__(self, image_name, ports_to_open=[]):
         self.port_map = None
+        self.s_in = None
+        self.s_out = None
         
         [self.port_in, self.port_out, ports_to_open] = self.get_internal_ports(ports_to_open)
         assert self.port_in and self.port_out
         
-        self.attach_to_docker(image_name)
+        self.attach_to_docker(image_name, ports_to_open)
         self.attach_docker_ports(ports_to_open)
         
 
@@ -33,6 +36,12 @@ class Docker(object):
 
         # read the ID
         self.ID = self.p.stdout.read(self.__class__.docker_id_length)
+        if not re.search(r"^[0-9a-zA-Z]{12}$", self.ID):
+            if self.ID[0:6] == "Image ":
+                raise Exception("Failed to get docker ID (may be invalid image name (%s); partial error message: %s" % (image_name, self.ID))
+            else:
+                raise Exception("Failed to get docker ID; partial error message: %s" % self.ID)
+            
         logging.debug("Docker ID: %s" % self.ID)
         
 
@@ -41,7 +50,8 @@ class Docker(object):
         if not self.port_map:
             self.port_map = dict()
             for p in ports_to_open:
-                self.port_map[p] = subprocess.Popen(["docker", "port", self.ID, str(p)], shell=False, stdin=subprocess.PIPE, stdout=subprocess.PIPE).communicate()[0].strip()
+                self.port_map[p] = int(subprocess.Popen(["docker", "port", self.ID, str(p)], shell=False, stdin=subprocess.PIPE, stdout=subprocess.PIPE).communicate()[0].strip())
+                logging.debug("Mapped docker internal port %d to external port %d" % (p, self.port_map[p]))
 
 
     def attach_docker_ports(self, ports_to_open):
@@ -80,7 +90,6 @@ class Docker(object):
 
         assert not block_for_output or not wait_time, "Either run async or, if blocking, don't specify a wait time"""
         
-        logging.debug(cmd.strip() + "\n")
         self.write_stdin(cmd.strip() + "\n")
         if block_for_output:
             return self.wait_for_read()
@@ -217,7 +226,9 @@ class PersistentDocker(Docker):
         
     def __init__(self, container_name, image_name, ports_to_open=[]):
         self.port_map = None
-
+        self.s_in = None
+        self.s_out = None
+        
         self.container_name = container_name
         self.image_name = image_name
 

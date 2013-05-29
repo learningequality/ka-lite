@@ -8,9 +8,10 @@ import subprocess
 import urllib
 from zipfile import ZipFile
 
+from docker.docker import Docker, PersistentDocker
 from utils.testing import lexec, get_open_ports
 
-    
+
 class KaLiteServer(object):
     admin_user = { 
         "username": "admin", 
@@ -18,6 +19,7 @@ class KaLiteServer(object):
         "password": "pass",
     }
     _pyexec = None
+    lexec = None
     
     def __init__(self, repo_dir, server_type, port, central_server_port=None):
         self.repo_dir = repo_dir
@@ -27,12 +29,12 @@ class KaLiteServer(object):
         
         self.admin_user = self.__class__.admin_user
         
-    def start_server(self):
-        """ """        
+    def start_server(self, host="0.0.0.0"):
+        """By default, run remotely"""        
         cwd = os.getcwd()
         os.chdir(self.repo_dir)
     
-        lexec(self.pyexec() + " kalite/manage.py runcherrypyserver host=0.0.0.0 port=%d threads=50 daemonize=true pidfile=kalite/runcherrypyserver.pid" % self.port)
+        lexec(self.pyexec() + " kalite/manage.py runcherrypyserver host=%s port=%d threads=50 daemonize=true pidfile=kalite/runcherrypyserver.pid" % (self.host, self.port))
     
         os.chdir(cwd)
 
@@ -44,12 +46,14 @@ class KaLiteServer(object):
             self.__class__._pyexec = pyexec[:-1]
         return self.__class__._pyexec
         
-        
-    def create_local_settings_file(self):
+    def create_local_settings_file(self, local_settings_file=None):
     
+        if not local_settings_file:
+            local_settings_file = self.repo_dir+"/kalite/local_settings.py"
+            
         # First, set up localsettings
         logging.info("Creating local_settings.py")
-        local_settings = open(self.repo_dir+"/kalite/local_settings.py","w")
+        local_settings = open(local_settings_file,"w")
 
         local_settings.write("DEBUG = True\n")
         local_settings.write("TEMPLATE_DEBUG = True\n")
@@ -124,6 +128,7 @@ class KaLiteProject(object):
         assert port_range or open_ports or port_map, "Must pass either port_range or ports"
         assert not open_ports or len(open_ports)>=1, "Must pass in at least 1 port"
         assert not port_map or (hasattr(port_map,"keys") and len(port_map.keys())>=1), "Must pass in at least 1 port, as a dictionary on port_map"
+        assert hasattr(server_types, "pop"), "Server_types must be a list."
         
         # Create the branch directory
         if os.path.exists(self.branch_dir):
@@ -395,6 +400,136 @@ class KaLiteSnapshotProject(KaLiteProject):
             server.start_server()
 
 
+class KaLiteDockerProjectWrapper(KaLiteProject):
+    """Calls into the docker to do all the work."""
+
+    def __init__(self, image_name="ka-lite-installed", **kwargs):
+        super(KaLiteDockerProjectWrapper, self).__init__(**kwargs)
+        
+        self.image_name = image_name
+        self.docker_port = 8000 # hard-coded for now; could be a parameter somewhere.  But this value doesn't really matter.
+            
+    def get_repo_dir(self, branch_name):
+        assert False
+        
+    def get_docker_name(self):
+        return self.git_user + "/" + self.git_repo + ".git:" + self.repo_branch + " " + self.server_type
+
+
+    def setup_project(self, server_types):
+        """Sets up the branch directories, points to a directory for local and central"""
+    
+        assert hasattr(server_types, "pop"), "Server_types must be a list."
+
+        # Create dockers        
+        self.dockers = {}
+        for server_type in server_types:
+            logging.debug("Creating docker for server_type=%s" % server_type)
+            self.dockers[server_type] = Docker(image_name=self.image_name, ports_to_open=[self.docker_port,])
+            self.dockers[server_type].run_command("cd /playground", wait_time=0.1)
+            self.dockers[server_type].stream_command("git pull origin mount-branch", wait_time=3)
+
+
+    def mount(self):
+        for server_type,docker in self.dockers.items():
+            import pdb; pdb.set_trace()
+            docker.run_command("python /playground/test_tools/mount_branch_on_docker.py %s %s %s %d %s" % (self.git_user, self.repo_branch, server_type, self.docker_port, self.git_repo))
+            
+    
+
+    def emit_header(self):
+        # Emit an informative header
+        logging.info("*"*50)
+        logging.info("*")
+        logging.info("* Setting up %s/%s.git:%s" % (self.git_user, self.git_repo, self.repo_branch))
+        for key,docker in self.dockers.items():
+            logging.info("* \t%s container ID: %s" % (key, docker.ID))
+        logging.info("*")
+        for key,docker in self.dockers.items():
+            logging.info("* \t%s server URL: http://%s:%d/" % (key, socket.getfqdn(), docker.port_map[self.docker_port]))
+        logging.info("*")
+#        logging.info("* Admin info (both servers):")
+#        logging.info("* \tusername: %s" % self.servers[self.servers.keys()[0]].admin_user["username"])
+#        logging.info("* \tpassword: %s" % self.servers[self.servers.keys()[0]].admin_user["password"])
+#        logging.info("* \temail: %s"    % self.servers[self.servers.keys()[0]].admin_user["email"])
+#        logging.info("*")
+        logging.info("*"*50)
+        logging.info("")
+
+    
+            
+            
+    def mount_project(self, server_types):
+        """Convenience function to set up the project, then to mount it."""
+        self.setup_project(server_types)
+        self.emit_header()
+        self.mount()
+        
+
+
+class KaLiteDockerRepoProject(KaLiteRepoProject):
+    """This is what gets called, once we're in the docker"""
+    
+    def __init__(self, *args, **kwargs):
+        super(KaLiteDockerRepoProject,self).__init__(*args, **kwargs)
+        self.user_dir = '/'
+        self.base_dir = '/'
+        
+    def get_repo_dir(self, branch_name):
+        return '/ka-lite'
+        
+    def setup_repo(self, server):
+        """Set up the specified user's repo as a remote; return the directory it's set up in!"""
+        
+        if self.docker:
+            self.docker.run_command("cd playground/test_tools", wait_time=0.1)
+            self.docker.stream_command("git pull origin mount-branch", wait_time=5)
+            self.docker.stream_command("python mount_branch_on_docker.py %s %s %s %s" % (self.git_user, self.git_repo, self.repo_name, self.server_type))
+             
+        else:
+            if self.git_repo != "ka-lite":
+                raise NotImplementedError("Only ka-lite repo has been implemented!")
+        
+            logging.debug("Setting up %s %s %s" % (self.git_user, self.repo_branch, self.git_repo))
+        
+    #        self.docker.run_command("/playground/test_tools/mount_docker_branch.sh %s %s %s" % (self.git_user, self.git_repo, self.repo_branch))
+        
+            # Add the remote        
+            os.chdir(server.repo_dir)
+        
+            logging.info("Adding remote %s/%s.git to %s" % (self.git_user, self.git_repo, server.repo_dir))
+            remote_url = "git://github.com/%s/%s.git" % self.git_user, self.git_repo
+            lexec("git remote add %s git://github.com/%s/%s.git" % (self.git_user, remote_url));
+            if not remote_url in lexec("git remote -v")[1]:
+                raise Exception("Failed to add remote to git (%s)" % remote_url)
+        
+            # Merge in the remote branch
+            lexec("git fetch %s" % self.git_user)
+            lexec("git merge %s/%s" % (self.git_user, self.repo_branch))
+        
+        """
+        self.docker.run_command("cd %s" % server.repo_dir, wait_time=0.1)
+        logging.info("Adding remote %s/%s.git to %s" % (self.git_user, self.git_repo, server.repo_dir))
+        remote_url = "git://github.com/%s/%s.git" % self.git_user, self.git_repo
+        self.docker.run_command("git remote add %s git://github.com/%s/%s.git" % (self.git_user, remote_url) , wait_time=0.5);
+        if not remote_url in self.docker.run_command("git remote -v"):
+            raise Exception("Failed to add remote to git (%s)" % remote_url)
+        
+        # Merge in the remote branch
+        self.docker.stream_command("git fetch %s" % self.git_user, wait_time=3)
+        self.docker.run_command("git merge %s/%s" % (self.git_user, self.repo_branch), wait_time=3)
+        """
+    
+    def mount(self):
+        if not self.docker:
+            # Set up central and local servers, in turn
+            for key,server in self.servers.items():
+                self.setup_repo(server)
+    #            server.create_local_settings_file(local_settings_file=
+                server.install_server()
+    #            self.setup_server(server) # must intervene
+                server.start_server() # must intervene
+
 
 
 def parse_ports(ports):
@@ -429,7 +564,7 @@ def usage(usage_err=None):
 
 
 if __name__=="__main__":
-    logging.getLogger().setLevel(logging.INFO)
+    logging.getLogger().setLevel(logging.DEBUG)
 
     # Get command-line args
     git_user     = sys.argv[1]    if len(sys.argv)>1 else usage("Specify a git account")
@@ -452,8 +587,13 @@ if __name__=="__main__":
         port_arg = { "port_map": dict(zip(server_types, port_arg["open_ports"])) }
 	
     # Run the project
-    kap = KaLiteSnapshotProject(git_user=git_user, repo_branch=repo_branch, git_repo=git_repo, base_dir="/home/ubuntu/ka-lite")
-    kap.mount_project(server_types=server_types, **port_arg)
+#    kap = KaLiteRepoProject(git_user=git_user, repo_branch=repo_branch, git_repo=git_repo, base_dir="/home/ubuntu/ka-lite")
+
+#    kap = KaLiteSnapshotProject(git_user=git_user, repo_branch=repo_branch, git_repo=git_repo, base_dir="/home/ubuntu/ka-lite")
+
+    kap = KaLiteDockerProjectWrapper(git_user=git_user, repo_branch=repo_branch, git_repo=git_repo, image_name="ka-lite-testing")
+    kap.mount_project(server_types=server_types)
+
     
     # When in debug mode, there's a lot of output--so output again!
     if logging.getLogger().level>=logging.DEBUG:
