@@ -1,7 +1,7 @@
 import logging
 import sys
 
-from mount_branch import KaLiteDockerRepoProject(KaLiteRepoProject):
+from mount_branch import KaLiteDockerRepoProject
 
 
 if __name__=="__main__":
@@ -15,9 +15,11 @@ if __name__=="__main__":
     git_repo     = sys.argv[5]    if len(sys.argv)>5 else "ka-lite"
 
     # Parse the server types and ports
-    port_arg     = int(port)
+    port_arg     = {'port_map': { server_type: int(port) } }
+    if server_type != "central": # must set a dummy central server port
+        port_arg["port_map"]["central"] = 50000 # must set this properly, to have secure-sync work
     
-    kap = KaLiteDockerRepoProject(server_type=server_type, git_user=git_user, repo_branch=repo_branch, git_repo=git_repo, )
+    kap = KaLiteDockerRepoProject(git_user=git_user, repo_branch=repo_branch, git_repo=git_repo, )
     kap.mount_project([server_type,], **port_arg)
     
     # When in debug mode, there's a lot of output--so output again!

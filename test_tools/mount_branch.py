@@ -128,6 +128,7 @@ class KaLiteProject(object):
         assert port_range or open_ports or port_map, "Must pass either port_range or ports"
         assert not open_ports or len(open_ports)>=1, "Must pass in at least 1 port"
         assert not port_map or (hasattr(port_map,"keys") and len(port_map.keys())>=1), "Must pass in at least 1 port, as a dictionary on port_map"
+        assert not port_map or "central" in port_map.keys(), "Port_map must contain central server key"
         assert hasattr(server_types, "pop"), "Server_types must be a list."
         
         # Create the branch directory
@@ -433,6 +434,7 @@ class KaLiteDockerProjectWrapper(KaLiteProject):
     def mount(self):
         for server_type,docker in self.dockers.items():
             import pdb; pdb.set_trace()
+            docker.run_command("export PYTHONPATH=${PYTHONPATH}:/playground", wait_time=0.1)
             docker.run_command("python /playground/test_tools/mount_branch_on_docker.py %s %s %s %d %s" % (self.git_user, self.repo_branch, server_type, self.docker_port, self.git_repo))
             
     
@@ -481,31 +483,25 @@ class KaLiteDockerRepoProject(KaLiteRepoProject):
     def setup_repo(self, server):
         """Set up the specified user's repo as a remote; return the directory it's set up in!"""
         
-        if self.docker:
-            self.docker.run_command("cd playground/test_tools", wait_time=0.1)
-            self.docker.stream_command("git pull origin mount-branch", wait_time=5)
-            self.docker.stream_command("python mount_branch_on_docker.py %s %s %s %s" % (self.git_user, self.git_repo, self.repo_name, self.server_type))
-             
-        else:
-            if self.git_repo != "ka-lite":
-                raise NotImplementedError("Only ka-lite repo has been implemented!")
-        
-            logging.debug("Setting up %s %s %s" % (self.git_user, self.repo_branch, self.git_repo))
-        
-    #        self.docker.run_command("/playground/test_tools/mount_docker_branch.sh %s %s %s" % (self.git_user, self.git_repo, self.repo_branch))
-        
-            # Add the remote        
-            os.chdir(server.repo_dir)
-        
-            logging.info("Adding remote %s/%s.git to %s" % (self.git_user, self.git_repo, server.repo_dir))
-            remote_url = "git://github.com/%s/%s.git" % self.git_user, self.git_repo
-            lexec("git remote add %s git://github.com/%s/%s.git" % (self.git_user, remote_url));
-            if not remote_url in lexec("git remote -v")[1]:
-                raise Exception("Failed to add remote to git (%s)" % remote_url)
-        
-            # Merge in the remote branch
-            lexec("git fetch %s" % self.git_user)
-            lexec("git merge %s/%s" % (self.git_user, self.repo_branch))
+        if self.git_repo != "ka-lite":
+            raise NotImplementedError("Only ka-lite repo has been implemented!")
+    
+        logging.debug("Setting up %s %s %s" % (self.git_user, self.repo_branch, self.git_repo))
+    
+#        self.docker.run_command("/playground/test_tools/mount_docker_branch.sh %s %s %s" % (self.git_user, self.git_repo, self.repo_branch))
+    
+        # Add the remote        
+        os.chdir(server.repo_dir)
+    
+        logging.info("Adding remote %s/%s.git to %s" % (self.git_user, self.git_repo, server.repo_dir))
+        remote_url = "git://github.com/%s/%s.git" % self.git_user, self.git_repo
+        lexec("git remote add %s git://github.com/%s/%s.git" % (self.git_user, remote_url));
+        if not remote_url in lexec("git remote -v")[1]:
+            raise Exception("Failed to add remote to git (%s)" % remote_url)
+    
+        # Merge in the remote branch
+        lexec("git fetch %s" % self.git_user)
+        lexec("git merge %s/%s" % (self.git_user, self.repo_branch))
         
         """
         self.docker.run_command("cd %s" % server.repo_dir, wait_time=0.1)
@@ -521,14 +517,14 @@ class KaLiteDockerRepoProject(KaLiteRepoProject):
         """
     
     def mount(self):
-        if not self.docker:
-            # Set up central and local servers, in turn
-            for key,server in self.servers.items():
-                self.setup_repo(server)
-    #            server.create_local_settings_file(local_settings_file=
-                server.install_server()
-    #            self.setup_server(server) # must intervene
-                server.start_server() # must intervene
+
+        # Set up central and local servers, in turn
+        for key,server in self.servers.items():
+            self.setup_repo(server)
+#            server.create_local_settings_file(local_settings_file=
+            server.install_server()
+#            self.setup_server(server) # must intervene
+            server.start_server() # must intervene
 
 
 
