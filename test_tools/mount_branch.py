@@ -430,14 +430,13 @@ class KaLiteDockerProjectWrapper(KaLiteProject):
 #            self.dockers[server_type] = Docker(image_name=self.image_name, ports_to_open=[self.docker_port,])
             self.dockers[server_type] = PersistentDocker(container_name=self.get_docker_name(server_type), image_name=self.image_name, ports_to_open=[self.docker_port,])
             self.dockers[server_type].run_command("cd /playground", wait_time=0.1)
-            self.dockers[server_type].stream_command("git pull origin mount-branch", wait_time=3)
+            self.dockers[server_type].stream_command("git pull", wait_time=3)
 
 
-    def mount(self):
+    def mount(self, wait_time=90):
         for server_type,docker in self.dockers.items():
-            import pdb; pdb.set_trace()
             docker.run_command("export PYTHONPATH=${PYTHONPATH}:/playground", wait_time=0.1)
-            docker.stream_command("python /playground/test_tools/mount_branch_on_docker.py %s %s %s %d %s" % (self.git_user, self.repo_branch, server_type, self.docker_port, self.git_repo), wait_time=75)
+            docker.stream_command("python /playground/test_tools/mount_branch_on_docker.py %s %s %s %d %s" % (self.git_user, self.repo_branch, server_type, self.docker_port, self.git_repo), wait_time=wait_time)
             
     
 
@@ -585,15 +584,19 @@ if __name__=="__main__":
 	
     # Run the project
 #    kap = KaLiteRepoProject(git_user=git_user, repo_branch=repo_branch, git_repo=git_repo, base_dir="/home/ubuntu/ka-lite")
+#    kap.mount_project(server_types=server_types)
 
 #    kap = KaLiteSnapshotProject(git_user=git_user, repo_branch=repo_branch, git_repo=git_repo, base_dir="/home/ubuntu/ka-lite")
+#    kap.mount_project(server_types=server_types)
 
     kap = KaLiteDockerProjectWrapper(git_user=git_user, repo_branch=repo_branch, git_repo=git_repo, image_name="ka-lite-testing")
-    kap.mount_project(server_types=server_types)
+    kap.setup_project(server_types=server_types)
+    kap.mount(wait_time=60)
 
     
     # When in debug mode, there's a lot of output--so output again!
     if logging.getLogger().level>=logging.DEBUG:
         kap.emit_header()
 
+    logging.warning("Dockers STOP after exiting this script.  For now, putting debug HALT so that we can control program exit. :(")
     import pdb; pdb.set_trace()

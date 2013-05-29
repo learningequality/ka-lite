@@ -97,19 +97,27 @@ class Docker(object):
             return self.read_stdout(wait_time=wait_time)
     
     
-    def stream_command(self, cmd, wait_time=1, wait_step=0.1):
+    def stream_command(self, cmd, wait_time=1, wait_step=0.1, alert_step=5):
         self.run_command(cmd=cmd, block_for_output=False, wait_time=0)
         return self.stream_stdout(wait_time=wait_time, wait_step=wait_step)
         
        
-    def stream_stdout(self, wait_time=1, wait_step=0.1):
+    def stream_stdout(self, wait_time=1, wait_step=0.1, alert_step=5):
         all_out = ""
+        wait_steps = int(round(wait_time/wait_step))
+        alert_every = int(round(alert_step/wait_step))
+        
         try:
-            for i in range(int(round(wait_time/wait_step))):
+            for i in range(wait_steps):
                 strout = self.read_stdout(wait_time=wait_step).strip()
                 print strout,
                 sys.stdout.flush()
                 all_out += strout
+                # alert user every 10s of progress
+                if i>0 and i%alert_every == 0:
+                    print "[%ds of %ds elapsed]" % (int(i*wait_step),wait_time),
+                    sys.stdout.flush()
+                
         except Exception as e:
             self.close()
             raise e     
@@ -298,7 +306,7 @@ if __name__=="__main__":
         print "Port map: ", d.port_map
     
         print d.run_command("cd /ka-lite/kalite", wait_time=0.1) # commands with no output must wait
-        print d.run_command("python manage.py syncdb --migrate") # commands with output can wait for time or for output to stop
+        print d.stream_command("python manage.py syncdb --migrate", wait_time=11) # commands with output can wait for time or for output to stop
     
         #d.close()
     
