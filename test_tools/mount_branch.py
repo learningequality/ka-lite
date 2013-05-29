@@ -522,7 +522,7 @@ class KaLiteDockerRepoProject(KaLiteRepoProject):
 
         # Set up central and local servers, in turn
         for key,server in self.servers.items():
-            logging.debug("Setting up server %s on docker %s" % (key, "(NYI)")
+            logging.debug("Setting up server %s on docker %s" % (key, "(NYI)"))
             self.setup_repo(server)
             server.setup_server() # must intervene
             server.start_server() # must intervene
