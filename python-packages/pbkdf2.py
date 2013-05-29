@@ -73,6 +73,8 @@ def pbkdf2(word, salt, iterations):
     return PBKDF2(word, salt, iterations).read(24)
 
 # Added (jamalex) to use M2Crypto's PBKDF2 for crypt, if available, for efficiency
+# TODO(jamalex): add tests, removing the "use_m2crypto" arg, as per discussion at:
+# https://github.com/learningequality/ka-lite/pull/84
 try:
     import M2Crypto.EVP
     def pbkdf2_m2crypto(word, salt, iterations):

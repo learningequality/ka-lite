@@ -315,10 +315,7 @@ class FacilityUser(SyncedModel):
             return self.password == crypt(raw_password, self.password)
 
     def set_password(self, raw_password):
-        if self.is_teacher:
-            iterations = 2000
-        else:
-            iterations = 1000
+        iterations = 2000 if self.is_teacher else 1000
         self.password = crypt(raw_password, iterations=Settings.get("password_hash_iterations", iterations))
 
     def get_name(self):
