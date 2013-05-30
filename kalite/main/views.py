@@ -22,7 +22,9 @@ from django.contrib import messages
 from utils.jobs import force_job
 from django.utils.translation import ugettext as _
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.views.decorators.cache import cache_control
 
+@cache_control(public=True)
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
     current_node = topicdata.TOPICS
@@ -81,6 +83,7 @@ def check_setup_status(handler):
     
 
 
+@cache_control(public=True)
 @render_to("topic.html")
 def topic_handler(request, topic):
     videos = filter(lambda node: node["kind"] == "Video", topic["children"])
