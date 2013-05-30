@@ -1,4 +1,4 @@
-import re, json, sys
+import re, json, sys, logging
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
@@ -23,8 +23,11 @@ from utils.jobs import force_job
 from django.utils.translation import ugettext as _
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.decorators.cache import cache_control
+from django.views.decorators.cache import cache_page
 
-@cache_control(public=True)
+CACHE_TIME=None # cache forever
+
+
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
     current_node = topicdata.TOPICS
@@ -83,22 +86,31 @@ def check_setup_status(handler):
     
 
 
+@cache_page(CACHE_TIME)
 @cache_control(public=True)
 @render_to("topic.html")
 def topic_handler(request, topic):
+#    logging.warn("\n\n\nCreating content!!!\n\n\n")
     videos = filter(lambda node: node["kind"] == "Video", topic["children"])
     exercises = filter(lambda node: node["kind"] == "Exercise" and node["live"], topic["children"])
     topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"] and "Video" in node["contains"], topic["children"])
+    
+    my_topics = []
+    for t in topics:
+        my_topics.append({ 'title': t['title'], 'id': t['id'] })
+        
     context = {
         "topic": topic,
         "title": topic[title_key["Topic"]],
         "description": re.sub(r'<[^>]*?>', '', topic["description"] or ""),
         "videos": videos,
         "exercises": exercises,
-        "topics": topics,
+        "topics": my_topics,
     }
     return context
     
+@cache_page(CACHE_TIME)
+@cache_control(public=True)
 @render_to("video.html")
 def video_handler(request, video, prev=None, next=None):
     if not VideoFile.objects.filter(pk=video['youtube_id']).exists():
@@ -120,6 +132,9 @@ def video_handler(request, video, prev=None, next=None):
     }
     return context
     
+
+@cache_page(CACHE_TIME)
+@cache_control(public=True)
 @render_to("exercise.html")
 def exercise_handler(request, exercise):
     related_videos = [topicdata.NODE_CACHE["Video"][key] for key in exercise["related_video_readable_ids"]]
@@ -137,6 +152,8 @@ def exercise_handler(request, exercise):
     }
     return context
 
+@cache_page(CACHE_TIME)
+@cache_control(public=True)
 @render_to("knowledgemap.html")
 def exercise_dashboard(request):
     paths = dict((key, val["path"]) for key, val in topicdata.NODE_CACHE["Exercise"].items())
@@ -147,12 +164,19 @@ def exercise_dashboard(request):
     return context
     
 @check_setup_status
+@cache_page(CACHE_TIME)
+@cache_control(public=True)
 @render_to("homepage.html")
 def homepage(request):
     topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"], topicdata.TOPICS["children"])
+    
+    my_topics = []
+    for t in topics:
+        my_topics.append({ 'title': t['title'], 'slug': t['slug'] })
+
     context = {
         "title": "Home",
-        "topics": topics,
+        "topics": my_topics,
         "registered": Settings.get("registered"),
     }
     return context

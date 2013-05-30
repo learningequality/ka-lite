@@ -104,6 +104,7 @@ INSTALLED_APPS = (
     "django.contrib.messages",
     "south",
     "chronograph",
+    "crawler",
     "django_cherrypy_wsgiserver",
     "securesync",
     "config",
@@ -130,6 +131,7 @@ if not CENTRAL_SERVER:
         "securesync.middleware.DBCheck",
         "securesync.middleware.AuthFlags",
         "main.middleware.SessionLanguage",
+        'main.middleware.ProfileMiddleware',
     )
     TEMPLATE_CONTEXT_PROCESSORS += (
         "main.custom_context_processors.languages",

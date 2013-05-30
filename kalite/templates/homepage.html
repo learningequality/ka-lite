@@ -93,7 +93,7 @@ a:hover, a:hover .suggested-action-title {
         <h2 class="suggested-action-title">{% trans "Learn by watching videos!" %}</h2>
         <p class="topic-list">
             {% for topic in topics %}
-            <a href="{{ topic.slug }}">{% trans topic.title %}</a>
+            <a href="{{ topic.slug }}/">{% trans topic.title %}</a>
             {% endfor %}
         </p>
     </div>

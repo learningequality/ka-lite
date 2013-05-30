@@ -150,6 +150,7 @@ class FileBasedCache(BaseCache):
         return os.path.join(self._dir, path)
 
     def _get_num_entries(self):
+        return 0
         count = 0
         for _,_,files in os.walk(self._dir):
             count += len(files)

@@ -14,6 +14,7 @@ DATABASES = {
         },
     }
 }
+"""
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
@@ -25,6 +26,7 @@ CACHES = {
     }
 }
 """
+
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
@@ -35,3 +37,5 @@ CACHES = {
         }
     }
 }
+"""
+
