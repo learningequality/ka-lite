@@ -1,27 +1,30 @@
 body {
   background: url(/static/images/light-page-bg.png) repeat-x;
 }
+
 .container{
-  max-width: @container-max-width; //Change to choose the max width
+  max-width: @container-max-width; // Puts a hard limit on the width of the layout 
   margin: 0 auto;
 }
 
 p{
-  .normal_text_font
+  .normal-text-font; // Resets the font of all the text (definition in mixins.less)
 }
 
 /* Header */
-.header-logo{
+.header__logo{
   padding-top: 10px;
 }
 
-.horizontal-menu {
+.header__horizontal-menu {
   padding-top: 20px;
   text-align: right;
+
   li{
     display: inline;
     list-style-type: none;
     padding-right:20px;
+
     a{
       color:black;
     }
@@ -29,66 +32,62 @@ p{
 }
 
 /* Content */
-.content-box{
+.content{ // Green to white gradient border - TODO: Test on all the browsers
   background-color: rgb(255, 255, 255);
   border-top: 1px solid rgb(198, 209, 173);
-  padding:20px;
-}
-/* Large desktop */
 
-@media (min-width: @container-max-width){
-  .content-box { 
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(rgb(198, 209, 173)), to(transparent));
-    background-image: -webkit-linear-gradient(rgb(198, 209, 173), transparent);
-    background-image:
-        -moz-linear-gradient(rgb(198, 209, 173), transparent),
-        -moz-linear-gradient(rgb(198, 209, 173), transparent)
-    ;
-    background-image:
-        -o-linear-gradient(rgb(198, 209, 173), transparent),
-        -o-linear-gradient(rgb(198, 209, 173), transparent)
-    ;
-    background-image: 
-        linear-gradient(rgb(198, 209, 173), transparent),
-        linear-gradient(rgb(198, 209, 173), transparent)
-    ;
-    -moz-background-size:1px 100%;
-    background-size:1px 100%;
-    background-position:0 0, 100% 0;
-    background-repeat:no-repeat;
-  }
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(rgb(198, 209, 173)), to(transparent));
+  background-image: -webkit-linear-gradient(rgb(198, 209, 173), transparent);
+  background-image:
+      -moz-linear-gradient(rgb(198, 209, 173), transparent),
+      -moz-linear-gradient(rgb(198, 209, 173), transparent)
+  ;
+  background-image:
+      -o-linear-gradient(rgb(198, 209, 173), transparent),
+      -o-linear-gradient(rgb(198, 209, 173), transparent)
+  ;
+  background-image: 
+      linear-gradient(rgb(198, 209, 173), transparent),
+      linear-gradient(rgb(198, 209, 173), transparent)
+  ;
+  -moz-background-size:1px 100%;
+  background-size:1px 100%;
+  background-position:0 0, 100% 0;
+  background-repeat:no-repeat;
 }
 
-.box{
-  //rgb(198, 209, 173)
+.content__map-container,.content__motto-container{
+  padding:10px;
+}
+
+.content__box{
   margin-left: auto;
   margin-right: auto;
   background-color: #dae4cb;
   text-align: center;
   max-width:316px;
-  padding:20px;
+  padding:10px;
   margin-top: 10px;
 
   img{
     width: 170px;
     height:170px;
   }
+
   p{
     font-size: 16px;
   }
 }
 
-.motto{
-  h1{
+.content__motto-container h1{
     font-family: "MuseoSans500", sans-serif;
     font-size: 25px;
     font-weight: normal;
     line-height: 32.5px;
-  }
 }
 
-ul.motivation_box{
-  .normal_text_font;
+.content__motto-container__motivation-box{
+  .normal-text-font;
   .border-radius(15px); // Mixin defined in the bootstrap folder
   background-color: #d4dec0;
   max-width:418px;
@@ -98,33 +97,43 @@ ul.motivation_box{
 }
 
 button{
+
   &.green{
     .green_button(190px,5px, 14px, 10px, 20px); //.green_button(@width,@border_radius, @font_size, @paddingv, @paddingh)
   }
-  &.small_green{
+
+  &.green--small{
     .green_button(100%,2px, 12px, 5px, 20px); //.green_button(@width,@border_radius, @font_size, @paddingv, @paddingh)
-    margin-top: 5px;
   }
 }
-input.email{
+
+/* Footer */
+.footer{
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.footer__email{
+  padding-bottom: 20px;
+}
+
+input.footer__email__input{
   width:100%;
   padding:0;
 }
-/* Footer */
-div.footer_title{
+
+.footer__title{
   font-size: 18px;
   font-weight:bold;
   padding-left: 40px; //Webkit padding start: to correct later;
 }
-.news_list{
+
+.footer__news-list{
   margin-top: 15px;
-  ul{
-    list-style: none;
 
     li{
       border-bottom: 1px #d9e6e2 dotted;
+      list-style: none;
       line-height: 30px;
-
-    }
   }
 }
