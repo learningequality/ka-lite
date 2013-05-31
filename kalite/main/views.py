@@ -61,12 +61,13 @@ def splat_handler(request, splat):
             current_node = match
     if current_node["kind"] == "Topic":
         return topic_handler(request, current_node)
-    if current_node["kind"] == "Video":
+    elif current_node["kind"] == "Video":
         return video_handler(request, video=current_node, prev=prev, next=next)
-    if current_node["kind"] == "Exercise":
+    elif current_node["kind"] == "Exercise":
         return exercise_handler(request, current_node)
-    # return HttpResponseNotFound("No valid item found at this address!")
-    raise Http404
+    else:
+        # return HttpResponseNotFound("No valid item found at this address!")
+        raise Http404
 
 def check_setup_status(handler):
     def wrapper_fn(request, *args, **kwargs):
@@ -155,7 +156,7 @@ def exercise_handler(request, exercise):
 @cache_control(public=True)
 @render_to("knowledgemap.html")
 def exercise_dashboard(request):
-    paths = dict((key, val["path"]) for key, val in topicdata.NODE_CACHE["Exercise"].items())
+    paths = dict((key, "/topics" + val["path"]) for key, val in topicdata.NODE_CACHE["Exercise"].items())
     context = {
         "title": "Knowledge map",
         "exercise_paths": json.dumps(paths),

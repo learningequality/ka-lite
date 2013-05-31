@@ -28,7 +28,7 @@
         <span class="progress-circle" data-exercise-id="{{ video.related_exercise.slug }}"></span>
         {% comment %}Translators: Example usage=> Exercise: Name of Exercise {% endcomment %}
         {% trans "Exercise" as exercise %}
-        <a href="{{ video.related_exercise.path }}/" class="simple-button green" title="{{ exercise }}: '{{ video.related_exercise.title }}'">{% trans "Practice this concept" %}</a>
+        <a href="/topics{{ video.related_exercise.path }}" class="simple-button green" title="{{ exercise }}: '{{ video.related_exercise.title }}'">{% trans "Practice this concept" %}</a>
     </span>
     {% endif %}
     <div class="clear"></div>
