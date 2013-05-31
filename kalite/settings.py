@@ -85,11 +85,16 @@ MIDDLEWARE_CLASSES = (
     "django.contrib.sessions.middleware.SessionMiddleware",
     'django.middleware.locale.LocaleMiddleware',
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "main.middleware.GetNextParam",
 )
+
+USE_CSRF = getattr(local_settings, "USE_CSRF", True)
+assert not CENTRAL_SERVER or USE_CSRF, "Central server must have USE_CSRF enabled."
+
+if USE_CSRF:
+     MIDDLEWARE_CLASSES += ("django.middleware.csrf.CsrfViewMiddleware",)
 
 ROOT_URLCONF = "kalite.urls"
 
