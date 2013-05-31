@@ -138,6 +138,23 @@ if not CENTRAL_SERVER:
     )
 
 
+
+CACHE_TIME=getattr(local_settings, "CACHE_TIME", 0) # by default, cache forever
+
+# Cache is activated in every case, 
+#   EXCEPT: if CACHE_TIME=0
+if CACHE_TIME is None or CACHE_TIME:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+            'LOCATION': getattr(local_settings, "CACHE_LOCATION", '/var/tmp/django_cache'), # this is kind of OS-specific, so dangerous.
+            'TIMEOUT': 60,
+            'OPTIONS': {
+                'MAX_ENTRIES': 1000
+            }
+        }
+    }
+
 # import these one extra time to overwrite any settings not explicitly looking for local settings
 try:
     from local_settings import *

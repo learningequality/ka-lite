@@ -1,31 +1,31 @@
 import re, json, sys, logging
+from annoying.decorators import render_to
+from annoying.functions import get_object_or_None
+
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
-from annoying.decorators import render_to
-from annoying.functions import get_object_or_None
-import settings
-from settings import slug_key, title_key
-from main import topicdata
 from django.contrib import messages
-from securesync.views import require_admin, facility_required
-from config.models import Settings
-from securesync.models import Facility, FacilityUser,FacilityGroup
-from models import VideoLog, ExerciseLog, VideoFile
 from django.utils.safestring import mark_safe
-from config.models import Settings
-from securesync.api_client import SyncClient
 from django.contrib import messages
-from utils.jobs import force_job
 from django.utils.translation import ugettext as _
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.decorators.cache import cache_control
 from django.views.decorators.cache import cache_page
 
-CACHE_TIME=None # cache forever
+import settings
+from settings import slug_key, title_key
+from main import topicdata
+from securesync.views import require_admin, facility_required
+from config.models import Settings
+from securesync.models import Facility, FacilityUser,FacilityGroup
+from models import VideoLog, ExerciseLog, VideoFile
+from config.models import Settings
+from securesync.api_client import SyncClient
+from utils.jobs import force_job
 
 
 def splat_handler(request, splat):
@@ -86,11 +86,10 @@ def check_setup_status(handler):
     
 
 
-@cache_page(CACHE_TIME)
+@cache_page(settings.CACHE_TIME)
 @cache_control(public=True)
 @render_to("topic.html")
 def topic_handler(request, topic):
-#    logging.warn("\n\n\nCreating content!!!\n\n\n")
     videos = filter(lambda node: node["kind"] == "Video", topic["children"])
     exercises = filter(lambda node: node["kind"] == "Exercise" and node["live"], topic["children"])
     topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"] and "Video" in node["contains"], topic["children"])
@@ -109,7 +108,7 @@ def topic_handler(request, topic):
     }
     return context
     
-@cache_page(CACHE_TIME)
+@cache_page(settings.CACHE_TIME)
 @cache_control(public=True)
 @render_to("video.html")
 def video_handler(request, video, prev=None, next=None):
@@ -133,7 +132,7 @@ def video_handler(request, video, prev=None, next=None):
     return context
     
 
-@cache_page(CACHE_TIME)
+@cache_page(settings.CACHE_TIME)
 @cache_control(public=True)
 @render_to("exercise.html")
 def exercise_handler(request, exercise):
@@ -152,7 +151,7 @@ def exercise_handler(request, exercise):
     }
     return context
 
-@cache_page(CACHE_TIME)
+@cache_page(settings.CACHE_TIME)
 @cache_control(public=True)
 @render_to("knowledgemap.html")
 def exercise_dashboard(request):
@@ -164,7 +163,7 @@ def exercise_dashboard(request):
     return context
     
 @check_setup_status
-@cache_page(CACHE_TIME)
+@cache_page(settings.CACHE_TIME)
 @cache_control(public=True)
 @render_to("homepage.html")
 def homepage(request):
