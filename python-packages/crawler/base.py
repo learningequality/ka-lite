@@ -2,6 +2,7 @@ from HTMLParser import HTMLParseError
 import logging
 import os
 import urlparse
+import urllib
 
 from django.conf import settings
 from django.db import transaction
@@ -11,18 +12,30 @@ from django.test.utils import setup_test_environment, teardown_test_environment
 
 from crawler import signals as test_signals
 from crawler.plugins.base import Plugin
+from utils import caching # kalite function
 
 
 import urllib
 class Client(object):
-    def __init__(self, REMOTE_ADDR='127.0.0.1'):
-        self.ra = '127.0.0.1:8008'
-        self.dc = DjangoClient("127.0.0.1")
+    def __init__(self, REMOTE_ADDR='127.0.0.1', REMOTE_PORT=8008):
+        self.ra = "%s:%d" % (REMOTE_ADDR, REMOTE_PORT)
+        self.dc = DjangoClient(REMOTE_ADDR)
     
+    # Implement cached-page-only crawling
     def get(self, base_url, *args, **kwargs):
-        if "/static/" not in base_url and "/admin/" not in base_url and "/securesync/" not in base_url and "/api/" not in base_url and "/coachreports/" not in base_url and "/update/" not in base_url and "/" == base_url[-1]:
-            print "http://"+self.ra+base_url
-        return self.dc.get(base_url)
+
+        full_url = "http://"+self.ra+base_url
+
+        # force the cache, only if it doesn't already exist
+        if not caching.has_cache_key(path=base_url):
+            urllib.urlopen(full_url).close() 
+        
+        # Only follow objects that are cacheable
+        if caching.has_cache_key(path=base_url):
+            print full_url
+            return self.dc.get(base_url) # return what's expected
+        else:
+            return None
 
 
 #Used for less useful debug output.
@@ -73,6 +86,8 @@ class Crawler(object):
         self.ascend = ascend
 
         auth = kwargs.get('auth')
+        remote_addr = kwargs.get("remote_host", "127.0.0.1")
+        remote_port = int(kwargs.get("remote_port", "8008"))
 
         if output_dir:
             assert os.path.isdir(output_dir)
@@ -85,7 +100,7 @@ class Crawler(object):
         self.not_crawled = [(0, 'START',self.base_url)]
         self.crawled = {}
 
-        self.c = Client(REMOTE_ADDR='127.0.0.1')
+        self.c = Client(REMOTE_ADDR=remote_addr, REMOTE_PORT=remote_port)
 
         if auth:
             printable_auth = ', '.join(
@@ -148,7 +163,9 @@ class Crawler(object):
         test_signals.pre_request.send(self, url=to_url, request_dict=request_dict)
 
         resp = self.c.get(url_path, request_dict, follow=False)
-
+        if not resp:
+            return None
+            
         test_signals.post_request.send(self, url=to_url, response=resp)
 
         if resp.status_code in (301, 302):
@@ -199,6 +216,12 @@ class Crawler(object):
                 resp, returned_urls = self.get_url(from_url, to_url)
             except HTMLParseError, e:
                 LOG.error("%s: unable to parse invalid HTML: %s", to_url, e)
+            except TypeError as e:
+                if getattr(e, 'message',"") == "'NoneType' object is not iterable":
+                    LOG.info("%s: not a cacheable page" % to_url)
+                    continue
+                else:
+                    raise e
             except Exception, e:
                 LOG.exception("%s had unhandled exception: %s", to_url, e)
                 continue

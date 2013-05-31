@@ -31,6 +31,6 @@ class URLConf(Plugin):
             LOG.debug("These admin pages were not crawled: %s", "\n\t".join(sorted(admin_patterns)))
 
         if normal_patterns:
-            LOG.info("These patterns were not matched during the crawl: %s", "\n\t".join(sorted(normal_patterns)))
+            LOG.info("These patterns were not matched during the crawl:\n %s", "\n\t".join(sorted(normal_patterns)))
 
 PLUGIN = URLConf

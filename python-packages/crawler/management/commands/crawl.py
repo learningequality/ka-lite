@@ -17,8 +17,8 @@ class LogStatsHandler(logging.Handler):
 
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
-        make_option('-p', '--pdb', action='store_true', dest='pdb', default=False,
-            help='Pass -p to drop into pdb on an error'),
+        make_option('-b', '--pdb', action='store_true', dest='pdb', default=False,
+            help='Pass -b to drop into pdb on an error'),
         make_option('-d', '--depth', action='store', dest='depth', default=3,
             help='Specify the depth to crawl.'),
         make_option('-s', '--safe', action='store_true', dest='html', default=False,
@@ -33,8 +33,14 @@ class Command(BaseCommand):
             help='If specified, store plugin output in the provided directory'),
         make_option('--no-parent', action='store_true', dest="no_parent", default=False,
             help='Do not crawl URLs which do not start with your base URL'),
-        make_option('-a', "--auth", action='store', dest='auth', default=None,
-            help='Authenticate (login:user,password:secret) before crawl')
+        make_option('-u', "--auth", action='store', dest='auth', default=None,
+            help='Authenticate (login:user,password:secret) before crawl'),
+            
+        # INFO(bcipolli): added for django (and changed url options above to accommodate)
+        make_option('-a', "--remote-addr", action='store', dest='remote_addr', default="127.0.0.1",
+            help='Remote address (hostname); default=localhost (127.0.0.1)'),
+        make_option('-p', "--remote-port", action='store', dest='remote_port', default="8008",
+            help='Remote port; default=8008'),
     )
 
     help = "Displays all of the url matching routes for the project."
@@ -101,6 +107,8 @@ class Command(BaseCommand):
             output_dir=options.get("output_dir"),
             ascend=not options.get("no_parent"),
             auth=auth,
+            remote_addr=options.get("remote_addr"),
+            remote_port=options.get("remote_port"),
         )
 
         # Load plugins:
