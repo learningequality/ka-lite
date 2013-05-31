@@ -5,8 +5,7 @@
 {% block basejs %}
 <script type="text/javascript">
 
-    
-    var csrftoken = "{% if use_csrf %}{{ csrf_token }}{% endif %}";
+    var csrftoken = getCookie("csrftoken") || "";
     
     function toggle_state(state, status){
         $("." + (status ? "not-" : "") + state + "-only").hide(); 
