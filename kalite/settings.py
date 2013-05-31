@@ -148,9 +148,9 @@ if CACHE_TIME is None or CACHE_TIME:
         'default': {
             'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
             'LOCATION': getattr(local_settings, "CACHE_LOCATION", '/var/tmp/django_cache'), # this is kind of OS-specific, so dangerous.
-            'TIMEOUT': 60,
+            'TIMEOUT': CACHE_TIME, # should be consistent
             'OPTIONS': {
-                'MAX_ENTRIES': 1000
+                'MAX_ENTRIES': 1000 # should we change this?
             }
         }
     }
