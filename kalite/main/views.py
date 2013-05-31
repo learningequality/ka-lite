@@ -68,6 +68,7 @@ def splat_handler(request, splat):
     # return HttpResponseNotFound("No valid item found at this address!")
     raise Http404
 
+
 def check_setup_status(handler):
     def wrapper_fn(request, *args, **kwargs):
         client = SyncClient()
@@ -83,11 +84,8 @@ def check_setup_status(handler):
         return handler(request, *args, **kwargs)
     return wrapper_fn
     
-    
-
 
 @cache_page(settings.CACHE_TIME)
-@cache_control(public=True)
 @render_to("topic.html")
 def topic_handler(request, topic):
     videos = filter(lambda node: node["kind"] == "Video", topic["children"])
@@ -108,8 +106,8 @@ def topic_handler(request, topic):
     }
     return context
     
+
 @cache_page(settings.CACHE_TIME)
-@cache_control(public=True)
 @render_to("video.html")
 def video_handler(request, video, prev=None, next=None):
     if not VideoFile.objects.filter(pk=video['youtube_id']).exists():
@@ -133,7 +131,6 @@ def video_handler(request, video, prev=None, next=None):
     
 
 @cache_page(settings.CACHE_TIME)
-@cache_control(public=True)
 @render_to("exercise.html")
 def exercise_handler(request, exercise):
     related_videos = [topicdata.NODE_CACHE["Video"][key] for key in exercise["related_video_readable_ids"]]
@@ -152,7 +149,6 @@ def exercise_handler(request, exercise):
     return context
 
 @cache_page(settings.CACHE_TIME)
-@cache_control(public=True)
 @render_to("knowledgemap.html")
 def exercise_dashboard(request):
     paths = dict((key, val["path"]) for key, val in topicdata.NODE_CACHE["Exercise"].items())
@@ -164,7 +160,6 @@ def exercise_dashboard(request):
     
 @check_setup_status
 @cache_page(settings.CACHE_TIME)
-@cache_control(public=True)
 @render_to("homepage.html")
 def homepage(request):
     topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"], topicdata.TOPICS["children"])
