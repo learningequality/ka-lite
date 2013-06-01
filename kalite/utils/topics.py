@@ -151,3 +151,23 @@ def fixup_topictree():
     with open(data_path + "topics.json", "w") as fp:
         fp.write(json.dumps(TOPICS, indent=2))
     
+
+
+
+def create_youtube_id_to_slug_map():
+    """Go through all videos, and make a map of youtube_id to slug, for fast look-up later"""
+
+    map_file = data_path + "youtube_to_slug_map.json"
+
+    if not os.path.exists(map_file):
+        NODE_CACHE = json.loads(open(data_path + "nodecache.json").read())
+        ID2SLUG_MAP = dict()
+
+        # Make a map from youtube ID to video slug
+        for v in NODE_CACHE['Video'].values():
+            ID2SLUG_MAP[v['youtube_id']] = v['slug']
+        
+        # Save the map!
+        with open(map_file, "w") as fp:
+            fp.write(json.dumps(ID2SLUG_MAP, indent=2))
+
