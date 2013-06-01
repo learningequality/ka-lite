@@ -9,12 +9,12 @@ import hotshot, hotshot.stats
 import tempfile
 import StringIO
 
+from config.models import Settings
 from django.contrib import messages
 from django.http import HttpResponseRedirect
-from django.conf import settings
 
-import settings
-from config.models import Settings
+
+from django.conf import settings
 
 words_re = re.compile( r'\s+' )
 
@@ -129,7 +129,7 @@ class GetNextParam:
 # TODO(dylan): new class that handles finding and setting the language for the session
 class SessionLanguage:
     def process_request(self, request):
-        if "django_language" not in request.session:
+        if request.user.is_authenticated() and "django_language" not in request.session:
             request.session["django_language"] = Settings.get("default_language") or settings.LANGUAGE_CODE
         if request.GET.get("set_language"):
             request.session["django_language"] = request.GET.get("set_language")
