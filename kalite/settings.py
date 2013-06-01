@@ -1,6 +1,8 @@
 import json
 import os
 
+from utils.cache_key import make_key 
+
 try:
     from local_settings import *
     import local_settings
@@ -58,7 +60,7 @@ USE_L10N = False
 MEDIA_ROOT = PROJECT_PATH + "/static/"
 MEDIA_URL = "/static/"
 
-STATIC_URL = "/static/"
+STATIC_URL = "/dummy/" # not used
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = hasattr(local_settings, "SECRET_KEY") and local_settings.SECRET_KEY \
@@ -156,9 +158,12 @@ if CACHE_TIME is None or CACHE_TIME:
             'TIMEOUT': CACHE_TIME, # should be consistent
             'OPTIONS': {
                 'MAX_ENTRIES': 1000 # should we change this?
-            }
+            },
+#            'KEY_FUNCTION': make_key,
         }
     }
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 # import these one extra time to overwrite any settings not explicitly looking for local settings
 try:
