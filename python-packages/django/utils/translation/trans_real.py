@@ -427,7 +427,16 @@ def get_language_from_request(request, check_path=False):
                     _accepted[normalized] = lang
                     return lang
 
-    return settings.LANGUAGE_CODE
+    # run settings.LANGUAGE_CODE through same gauntlet as above
+    lang_code = settings.LANGUAGE_CODE
+
+    if lang_code and lang_code not in supported:
+        lang_code = lang_code.split('-')[0] # e.g. if fr-ca is not supported fallback to fr
+
+    if lang_code and lang_code in supported and check_for_language(lang_code):
+        return lang_code
+    else:
+        raise Exception("No language code could be determined; even fall-back on settings.LANGUAGE_CODE (%s) failed!" % settings.LANGUAGE_CODE)
 
 dot_re = re.compile(r'\S')
 def blankout(src, char):
