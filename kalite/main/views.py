@@ -31,12 +31,16 @@ from utils.jobs import force_job
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
     current_node = topicdata.TOPICS
-    seeking = "Topic"
+    seeking = "Topic" # search for topics, until we find videos or exercise
     for slug in slugs:
+        # towards the end of the url, we switch from seeking a topic node
+        #   to the particular type of node in the tree
         if slug == "v":
             seeking = "Video"
         elif slug == "e":
             seeking = "Exercise"
+            
+        # match each step in the topics hierarchy, with the url slug.
         else:
             children = [child for child in current_node['children'] if child['kind'] == seeking]
             if not children:
@@ -97,7 +101,7 @@ def topic_handler(request, topic):
     
     my_topics = []
     for t in topics:
-        my_topics.append({ 'title': t['title'], 'id': t['id'] })
+        my_topics.append({ 'title': t['title'], 'path': t['path'] })
         
     context = {
         "topic": topic,
@@ -156,7 +160,7 @@ def exercise_handler(request, exercise):
 @cache_control(public=True)
 @render_to("knowledgemap.html")
 def exercise_dashboard(request):
-    paths = dict((key, "/topics" + val["path"]) for key, val in topicdata.NODE_CACHE["Exercise"].items())
+    paths = dict((key, val["path"]) for key, val in topicdata.NODE_CACHE["Exercise"].items())
     context = {
         "title": "Knowledge map",
         "exercise_paths": json.dumps(paths),
@@ -172,7 +176,7 @@ def homepage(request):
     
     my_topics = []
     for t in topics:
-        my_topics.append({ 'title': t['title'], 'slug': t['slug'] })
+        my_topics.append({ 'title': t['title'], 'path': t['path'] })
 
     context = {
         "title": "Home",

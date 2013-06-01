@@ -7,17 +7,3 @@ EXERCISE_TOPICS = json.loads(open(settings.DATA_PATH + "maplayout_data.json").re
 LANGUAGE_LOOKUP = json.loads(open(settings.DATA_PATH + "languages.json").read())
 LANGUAGE_LIST = json.loads(open(settings.DATA_PATH + "listedlanguages.json").read())
 
-# Any None value will break translation code.  
-#   Rather than check, just guarantee that no values are none!
-for v in NODE_CACHE['Video'].values():
-    if v['description'] is None:
-        v['description'] = ""
-
-# 
-for v in NODE_CACHE['Video'].values():
-    v['path'] = "/topics" + v['path']
-    
-# 
-for e in NODE_CACHE['Exercise'].values():
-    e['path'] = "/topics" + e['path']
-    

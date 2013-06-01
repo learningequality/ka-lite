@@ -97,7 +97,8 @@ class Command(BaseCommand):
             if caching.has_cache_key(path=path):
                 print "\t%s" % path
                 caching.expire_page(path=path)
-        
+            else:
+                print "skipping %s" % path
         else:
             print "Clearing videos:"
             for v in topicdata.NODE_CACHE['Video'].values():
