@@ -146,7 +146,7 @@ if not CENTRAL_SERVER:
 
 
 
-CACHE_TIME=getattr(local_settings, "CACHE_TIME", 0) # by default, cache forever
+CACHE_TIME=getattr(local_settings, "CACHE_TIME", int(60*60*24*365*1000)) # by default, cache for 1000 years
 
 # Cache is activated in every case, 
 #   EXCEPT: if CACHE_TIME=0
@@ -159,7 +159,6 @@ if CACHE_TIME is None or CACHE_TIME:
             'OPTIONS': {
                 'MAX_ENTRIES': 1000 # should we change this?
             },
-#            'KEY_FUNCTION': make_key,
         }
     }
 
