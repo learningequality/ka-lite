@@ -63,13 +63,9 @@ def get_video_page_path(video_id=None, video_slug=None):
 
     try:
         if not video_slug:
-            def filt(v):
-                return v['youtube_id'] == video_id
-            video = filter(filt, topicdata.NODE_CACHE["Video"].values())[0]
-        else:
-            video = topicdata.NODE_CACHE["Video"]
+            video_slug = topicdata.ID2SLUG_MAP[video_id]
         
-        return video['path']
+        return topicdata.NODE_CACHE["Video"][video_slug]['path']
     except:
         return None
     
