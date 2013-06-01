@@ -12,3 +12,12 @@ LANGUAGE_LIST = json.loads(open(settings.DATA_PATH + "listedlanguages.json").rea
 for v in NODE_CACHE['Video'].values():
     if v['description'] is None:
         v['description'] = ""
+
+# 
+for v in NODE_CACHE['Video'].values():
+    v['path'] = "/topics" + v['path']
+    
+# 
+for e in NODE_CACHE['Exercise'].values():
+    e['path'] = "/topics" + e['path']
+    

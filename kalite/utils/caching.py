@@ -69,7 +69,7 @@ def get_video_page_path(video_id=None, video_slug=None):
         else:
             video = topicdata.NODE_CACHE["Video"]
         
-        return "/topics" + video['path']
+        return video['path']
     except:
         return None
     

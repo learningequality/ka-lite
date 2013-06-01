@@ -62,13 +62,11 @@ class Command(BaseCommand):
 
             print "Generating videos:"
             for v in topicdata.NODE_CACHE['Video'].values():
-                video_path = u'/topics'+v['path']
-                self.create_cache(force=force, path=video_path)
+                self.create_cache(force=force, path=v['path'])
                  
             print "Generating exercises:"
             for e in topicdata.NODE_CACHE['Exercise'].values():
-                exercise_path = '/topics'+e['path']
-                self.create_cache(force=force, path=exercise_path)
+                self.create_cache(force=force, path=e['path'])
 
                 
                 
@@ -83,13 +81,11 @@ class Command(BaseCommand):
         else:
             print "Cached videos:"
             for v in topicdata.NODE_CACHE['Video'].values():
-                video_path = u'/topics'+v['path']
-                self.show_cache(path=video_path)
+                self.show_cache(path=v['path'])
                 
             print "Cached exercises:"
             for e in topicdata.NODE_CACHE['Exercise'].values():
-                exercise_path = '/topics'+e['path']
-                self.show_cache(path=exercise_path)
+                self.show_cache(path=e['path'])
 
        
                 
@@ -105,10 +101,8 @@ class Command(BaseCommand):
         else:
             print "Clearing videos:"
             for v in topicdata.NODE_CACHE['Video'].values():
-                video_path = u'/topics'+v['path']
-                self.clear_cache(path=video_path)
+                self.clear_cache(path=v['path'])
                 
             print "Clearing exercises:"
             for e in topicdata.NODE_CACHE['Exercise'].values():
-                exercise_path = '/topics'+e['path']
-                self.clear_cache(path=exercise_path)
+                self.clear_cache(path=e['path'])

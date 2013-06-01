@@ -147,7 +147,7 @@
                                                     {% if forloop.first %}
                                                     <li>
                                                         <div class="thumbnail">
-                                                            <a class="related-video" href="/topics{{ video.path }}" title="{% trans video.title %}" target="_blank">
+                                                            <a class="related-video" href="{{ video.path }}" title="{% trans video.title %}" target="_blank">
                                                                 <div class="thumb">
                                                                     <img class="thumbimage" src="{{ CONTENT_URL }}{{ video.youtube_id }}.png"/>
                                                                     <div class="thumbnail_label" style="margin-top: 68px; ">
@@ -163,7 +163,7 @@
                                                     </li>
                                                     {% else %}
                                                     <li>
-                                                        <a class="related-video related-video-inline" href="/topics{{ video.path }}" title="{% trans video.title %}" target="_blank">
+                                                        <a class="related-video related-video-inline" href="{{ video.path }}" title="{% trans video.title %}" target="_blank">
                                                             <span class="video-title">
                                                                 <span class="progress-circle" data-youtube-id="{{ video.youtube_id }}"></span>
                                                                 {% trans video.title %}

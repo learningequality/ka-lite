@@ -30,7 +30,7 @@ class SimpleTest(LiveServerTestCase):
         n_videos = len(topicdata.NODE_CACHE['Video'])
         video_slug = topicdata.NODE_CACHE['Video'].keys()[random.randint(0,n_videos-1)]
         youtube_id = topicdata.NODE_CACHE['Video'][video_slug]['youtube_id']
-        video_path = "/topics" + topicdata.NODE_CACHE['Video'][video_slug]['path']
+        video_path = topicdata.NODE_CACHE['Video'][video_slug]['path']
 
         # Clean the cache for this item
         caching.expire_page(path=video_path)
@@ -53,7 +53,7 @@ class SimpleTest(LiveServerTestCase):
         n_videos = len(topicdata.NODE_CACHE['Video'])
         video_slug = topicdata.NODE_CACHE['Video'].keys()[random.randint(0,n_videos-1)]
         youtube_id = topicdata.NODE_CACHE['Video'][video_slug]['youtube_id']
-        video_path = "/topics" + topicdata.NODE_CACHE['Video'][video_slug]['path']
+        video_path = topicdata.NODE_CACHE['Video'][video_slug]['path']
 
         # Clean the cache for this item
         caching.expire_page(path=video_path)
