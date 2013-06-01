@@ -8,22 +8,20 @@ import sys
 import random
 import requests
 import urllib
+import unittest
 
 from django.test import TestCase, LiveServerTestCase
 from django.core.management import call_command
 from django.test.client import Client
 
+import settings
 from utils import caching
 from kalite.main import topicdata
 
 
 class SimpleTest(LiveServerTestCase):
-    def test_basic_addition(self):
-        """
-        Tests that 1 + 1 always equals 2.
-        """
-        self.assertEqual(1 + 1, 2)
 
+    @unittest.skipIf(settings.CACHE_TIME==0, "Test only relevant when caching is enabled")
     def test_cache_invalidation(self):
 
         # Get a random youtube id
@@ -47,6 +45,7 @@ class SimpleTest(LiveServerTestCase):
         self.assertTrue(not caching.has_cache_key(path=video_path))
 
     
+    @unittest.skipIf(settings.CACHE_TIME==0, "Test only relevant when caching is enabled")
     def test_cache_across_clients(self):
 
         # Get a random youtube id
