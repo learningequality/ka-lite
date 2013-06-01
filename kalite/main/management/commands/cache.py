@@ -19,9 +19,9 @@ class Command(BaseCommand):
         cmd = sys.argv[2]
         if cmd in ["create", "recreate", "refresh"]:
             self.create_cache(force=(cmd in ["recreate", "refresh"]))
-        elif cmd in ["show"]:
+        elif cmd in ["show", "check"]:
             self.show_cache()
-        elif cmd in ["clear"]:
+        elif cmd in ["clear", "delete"]:
             self.clear_cache()
         else:
             raise NotImplementedError("Unknown option: %s" % cmd)
@@ -40,21 +40,18 @@ class Command(BaseCommand):
             if force:
                 if caching.has_cache_key(path=path):
                     caching.expire_page(path=path)
-                    print "[Redo] ",
+                    print "[Redo]\t%s" % path
                 else:
-                    print "[Miss] ",
+                    print "[Miss]\t%s" % path
                 caching.create_cache(path=path)
                     
             else:
-                if caching.has_cache_key(path=path):
-                    print "[Hit!] ",
-                else:
+                if not caching.has_cache_key(path=path):
                     caching.create_cache(path=path)
-                    print "[Miss] ",
+                    print "[Miss]\t%s" % path
                 
-            if caching.has_cache_key(path=path):
-                print "\t%s" % path
-            else: # should never get here!
+            if not caching.has_cache_key(path=path):
+                # should never get here!
                 print "%s%s" % ("?"*10, path)
         
         # Recursive call
