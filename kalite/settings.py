@@ -19,7 +19,7 @@ INTERNAL_IPS   = getattr(local_settings, "INTERNAL_IPS", ("127.0.0.1",))
 CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
 
 AUTO_LOAD_TEST = getattr(local_settings, "AUTO_LOAD_TEST", False)
-assert not AUTO_LOAD_TEST or (DEBUG and CENTRAL_SERVER)
+assert not AUTO_LOAD_TEST or (DEBUG and CENTRAL_SERVER), "AUTO_LOAD_TEST only on local server, when debugging"
 
 # info about the central server(s)
 SECURESYNC_PROTOCOL   = getattr(local_settings, "SECURESYNC_PROTOCOL",   "https")
@@ -124,8 +124,6 @@ INSTALLED_APPS = (
     "faq",
 )
 
-if CENTRAL_SERVER:
-    INSTALLED_APPS += ("central",)
 if DEBUG or CENTRAL_SERVER:
     INSTALLED_APPS += ("django_extensions",)
 if AUTO_LOAD_TEST:
