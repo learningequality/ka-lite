@@ -20,13 +20,14 @@ An example: i18n middleware would need to distinguish caches by the
 import hashlib
 import re
 import time
+import logging
 
 from django.conf import settings
 from django.core.cache import get_cache
 from django.utils.encoding import smart_str, iri_to_uri, force_unicode
 from django.utils.http import http_date
 from django.utils.timezone import get_current_timezone_name
-from django.utils.translation import get_language
+from django.utils.translation import get_language_from_request
 
 cc_delim_re = re.compile(r'\s*,\s*')
 
@@ -163,7 +164,15 @@ def _i18n_cache_key_suffix(request, cache_key):
         # first check if LocaleMiddleware or another middleware added
         # LANGUAGE_CODE to request, then fall back to the active language
         # which in turn can also fall back to settings.LANGUAGE_CODE
-        cache_key += '.%s' % getattr(request, 'LANGUAGE_CODE', get_language())
+        
+        # CHANGED(bcipolli)
+        # The existing django logic here is completely different than the 
+        #   django translations pathway, which uses the more nuanced
+        #   get_language_from_request.  For consistency and good interaction,
+        #   cache should be using THAT.  
+        cache_key += '.%s' % get_language_from_request(request)
+        #cache_key += '.%s' % getattr(request, 'LANGUAGE_CODE', get_language())
+        
     if settings.USE_TZ:
         # The datetime module doesn't restrict the output of tzname().
         # Windows is known to use non-standard, locale-dependant names.
@@ -208,8 +217,10 @@ def get_cache_key(request, key_prefix=None, method='GET', cache=None):
     if cache is None:
         cache = get_cache(settings.CACHE_MIDDLEWARE_ALIAS)
     headerlist = cache.get(cache_key, None)
+    
     if headerlist is not None:
-        return _generate_cache_key(request, method, headerlist, key_prefix)
+        cache_key = _generate_cache_key(request, method, headerlist, key_prefix)
+        return cache_key
     else:
         return None
 

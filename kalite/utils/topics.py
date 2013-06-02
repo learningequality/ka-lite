@@ -107,3 +107,67 @@ def download_topictree():
     with open(data_path + "nodecache.json", "w") as fp:
         fp.write(json.dumps(node_cache, indent=2))
 
+    
+def fixup_topictree():
+    # Fix up node cache
+    def fixup_node_cache(node_cache):
+    
+        # A static set of node types
+        for type in ["Topic", "Video", "Exercise"]:
+            for n in node_cache[type].values(): # all keys
+                for attr in ["path", "topic_page_url"]: # some set of attributes to update
+                    if (attr in n) and (n[attr]) and (not n[attr][0:8] == "/topics/"):
+                        n[attr] = "/topics" + n[attr] # prepend /topics
+
+        return node_cache # changed in-place anyway, no need to return
+
+    #
+    def fixup_topic_cache(topics):
+        def recursive_set_path(topic):
+            # Base case
+            if "path" in topic and topic["path"] and (not topic["path"][0:8] == "/topics/"):
+                topic["path"] = "/topics" + topic["path"]
+            
+            # Recursive cases
+            if "related_exercise" in topic and topic["related_exercise"]:
+                recursive_set_path(topic["related_exercise"])
+                
+            if "children" in topic and topic["children"]:
+                for c in topic["children"]:
+                    recursive_set_path(c)
+        
+        recursive_set_path(topics)        
+        return topics # changed in-place anyway, no need to return
+
+    # Load, fix up, and dump node_cache
+    NODE_CACHE = json.loads(open(data_path + "nodecache.json").read())
+    fixup_node_cache(NODE_CACHE)
+    with open(data_path + "nodecache.json", "w") as fp:
+        fp.write(json.dumps(NODE_CACHE, indent=2))
+    
+    # Load, fix up, and dump topics
+    TOPICS = json.loads(open(data_path + "topics.json").read())
+    fixup_topic_cache(TOPICS)
+    with open(data_path + "topics.json", "w") as fp:
+        fp.write(json.dumps(TOPICS, indent=2))
+    
+
+
+
+def create_youtube_id_to_slug_map():
+    """Go through all videos, and make a map of youtube_id to slug, for fast look-up later"""
+
+    map_file = data_path + "youtube_to_slug_map.json"
+
+    if not os.path.exists(map_file):
+        NODE_CACHE = json.loads(open(data_path + "nodecache.json").read())
+        ID2SLUG_MAP = dict()
+
+        # Make a map from youtube ID to video slug
+        for v in NODE_CACHE['Video'].values():
+            ID2SLUG_MAP[v['youtube_id']] = v['slug']
+        
+        # Save the map!
+        with open(map_file, "w") as fp:
+            fp.write(json.dumps(ID2SLUG_MAP, indent=2))
+

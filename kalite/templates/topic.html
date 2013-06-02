@@ -50,7 +50,7 @@ $('a.video-unavailable').attr('title', '{% trans "This video is not downloaded."
 <ol>
     {% for subtopic in topics %}
     <li>
-        <span><a href="{{ subtopic.id }}" class="topic-{% if subtopic.nvideos_local == 0 %}un{% endif %}available" title="{{subtopic.nvideos_local}}/{{subtopic.nvideos_known}} {% trans "video(s) are downloaded." %}">{% trans subtopic.title %}</a></span>
+        <span><a href="{{ subtopic.path }}" class="topic-{% if subtopic.nvideos_local == 0 %}un{% endif %}available" title="{{subtopic.nvideos_local}}/{{subtopic.nvideos_known}} {% trans "video(s) are downloaded." %}">{% trans subtopic.title %}</a></span>
     </li>
     {% endfor %}
     <br/>
@@ -64,7 +64,7 @@ $('a.video-unavailable').attr('title', '{% trans "This video is not downloaded."
     <li>
         <!--<a href="mplayer:///khan/videofiles/{{ video.youtube_id }}.ogv">{{ video.title }}</a>-->
         <span class="progress-circle" data-youtube-id="{{ video.youtube_id }}"></span>
-        <a href="v/{{ video.readable_id }}" class="video-{% if not video.on_disk %}un{% endif %}available">{% trans video.title %}</a>
+        <a href="v/{{ video.readable_id }}/" class="video-{% if not video.on_disk %}un{% endif %}available">{% trans video.title %}</a>
     </li>
     {% endfor %}
     <br/>
@@ -77,7 +77,7 @@ $('a.video-unavailable').attr('title', '{% trans "This video is not downloaded."
     {% for exercise in exercises %}
     <li>
         <span class="progress-circle" data-exercise-id="{{ exercise.name }}"></span>
-        <a class="exercise-link" href="e/{{ exercise.name }}">{% trans exercise.display_name %}</a>
+        <a class="exercise-link" href="e/{{ exercise.name }}/">{% trans exercise.display_name %}</a>
     </li>
     {% endfor %}
     <br/>

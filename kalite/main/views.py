@@ -13,6 +13,8 @@ from django.utils.safestring import mark_safe
 from django.contrib import messages
 from django.utils.translation import ugettext as _
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.views.decorators.cache import cache_control
+from django.views.decorators.cache import cache_page
 
 import settings
 from settings import slug_key, title_key
@@ -25,17 +27,20 @@ from config.models import Settings
 from securesync.api_client import SyncClient
 from utils import topic_tools
 from utils.jobs import force_job
-from utils.topic_tools import get_video_counts
 
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
     current_node = topicdata.TOPICS
-    seeking = "Topic"
+    seeking = "Topic" # search for topics, until we find videos or exercise
     for slug in slugs:
+        # towards the end of the url, we switch from seeking a topic node
+        #   to the particular type of node in the tree
         if slug == "v":
             seeking = "Video"
         elif slug == "e":
             seeking = "Exercise"
+            
+        # match each step in the topics hierarchy, with the url slug.
         else:
             children = [child for child in current_node['children'] if child['kind'] == seeking]
             if not children:
@@ -60,12 +65,14 @@ def splat_handler(request, splat):
             current_node = match
     if current_node["kind"] == "Topic":
         return topic_handler(request, current_node)
-    if current_node["kind"] == "Video":
+    elif current_node["kind"] == "Video":
         return video_handler(request, video=current_node, prev=prev, next=next)
-    if current_node["kind"] == "Exercise":
+    elif current_node["kind"] == "Exercise":
         return exercise_handler(request, current_node)
-    # return HttpResponseNotFound("No valid item found at this address!")
-    raise Http404
+    else:
+        # return HttpResponseNotFound("No valid item found at this address!")
+        raise Http404
+
 
 def check_setup_status(handler):
     def wrapper_fn(request, *args, **kwargs):
@@ -82,32 +89,33 @@ def check_setup_status(handler):
         return handler(request, *args, **kwargs)
     return wrapper_fn
     
-    
 
-
+@cache_page(settings.CACHE_TIME)
 @render_to("topic.html")
 def topic_handler(request, topic):
     videos    = topicdata.get_videos(topic)
     exercises = topicdata.get_exercises(topic)
     topics    = topicdata.get_live_topics(topic)
 
-    # Get video counts if they'll be used
+    # Get video counts if they'll be used,
+    #   on-demand only.
     if not 'nvideos_local' in topic:
-        logging.debug("COMPUTED video counts")
-        (topic,_,_) = get_video_counts(topic=topic, videos_path=settings.CONTENT_ROOT) 
-    else:
-        logging.debug("USED cached video counts")
+        (topic,_,_) = topic_tools.get_video_counts(topic=topic, videos_path=settings.CONTENT_ROOT) 
             
+    my_topics = [dict((k, t[k]) for k in ('title', 'path', 'nvideos_local', 'nvideos_known')) for t in topics]
+
     context = {
         "topic": topic,
         "title": topic[title_key["Topic"]],
         "description": re.sub(r'<[^>]*?>', '', topic["description"] or ""),
         "videos": videos,
         "exercises": exercises,
-        "topics": topics,
+        "topics": my_topics,
     }
     return context
     
+
+@cache_page(settings.CACHE_TIME)
 @render_to("video.html")
 def video_handler(request, video, prev=None, next=None):
     video_exists = VideoFile.objects.filter(pk=video['youtube_id']).exists()
@@ -143,6 +151,8 @@ def video_handler(request, video, prev=None, next=None):
     }
     return context
     
+
+@cache_page(settings.CACHE_TIME)
 @render_to("exercise.html")
 def exercise_handler(request, exercise):
     related_videos = [topicdata.NODE_CACHE["Video"][key] for key in exercise["related_video_readable_ids"]]
@@ -160,6 +170,7 @@ def exercise_handler(request, exercise):
     }
     return context
 
+@cache_page(settings.CACHE_TIME)
 @render_to("knowledgemap.html")
 def exercise_dashboard(request):
     paths = dict((key, val["path"]) for key, val in topicdata.NODE_CACHE["Exercise"].items())
@@ -170,12 +181,17 @@ def exercise_dashboard(request):
     return context
     
 @check_setup_status
+@cache_page(settings.CACHE_TIME)
 @render_to("homepage.html")
 def homepage(request):
     topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"], topicdata.TOPICS["children"])
+
+    # indexed by integer
+    my_topics = [dict([(k, t[k]) for k in ('title', 'path')]) for t in topics]
+
     context = {
         "title": "Home",
-        "topics": topics,
+        "topics": my_topics,
         "registered": Settings.get("registered"),
     }
     return context

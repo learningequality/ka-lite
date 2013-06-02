@@ -68,7 +68,7 @@ USE_L10N       = getattr(local_settings, "USE_L10N", False)
 
 MEDIA_ROOT     = getattr(local_settings, "MEDIA_ROOT", PROJECT_PATH + "/static/")
 MEDIA_URL      = getattr(local_settings, "MEDIA_URL", "/static/")
-STATIC_URL     = getattr(local_settings, "STATIC_URL", "/static/")
+STATIC_URL     = getattr(local_settings, "STATIC_URL", "/dummy/")
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY     = getattr(local_settings, "SECRET_KEY", "8qq-!fa$92i=s1gjjitd&%s@4%ka9lj+=@n7a&fzjpwu%3kd#u")
@@ -97,10 +97,10 @@ MIDDLEWARE_CLASSES = (
     "django.contrib.sessions.middleware.SessionMiddleware",
     'django.middleware.locale.LocaleMiddleware',
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "main.middleware.GetNextParam",
+    "django.middleware.csrf.CsrfViewMiddleware",
 )
 
 ROOT_URLCONF = "kalite.urls"
@@ -138,11 +138,30 @@ if not CENTRAL_SERVER:
         "securesync.middleware.DBCheck",
         "securesync.middleware.AuthFlags",
         "main.middleware.SessionLanguage",
+        'main.middleware.ProfileMiddleware',
     )
     TEMPLATE_CONTEXT_PROCESSORS += (
         "main.custom_context_processors.languages",
     )
 
+
+CACHE_TIME=getattr(local_settings, "CACHE_TIME", int(60*60*24*365*1000)) # by default, cache for 1000 years
+
+# Cache is activated in every case, 
+#   EXCEPT: if CACHE_TIME=0
+if CACHE_TIME is None or CACHE_TIME:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+            'LOCATION': getattr(local_settings, "CACHE_LOCATION", '/var/tmp/django_cache'), # this is kind of OS-specific, so dangerous.
+            'TIMEOUT': CACHE_TIME, # should be consistent
+            'OPTIONS': {
+                'MAX_ENTRIES': 1000 # should we change this?
+            },
+        }
+    }
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 syncing_models = []
 def add_syncing_models(models):

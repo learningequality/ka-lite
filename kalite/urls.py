@@ -64,7 +64,7 @@ else:
         url(r'^loadtesting/', include('loadtesting.urls')),
         
         # the following pattern is a catch-all, so keep it last:
-        url(r'^(?P<splat>.+)/$', 'splat_handler', {}, 'splat_handler'),
+        url(r'^topics/(?P<splat>.+)/$', 'splat_handler', {}, 'splat_handler'),
     )
     
     handler404 = 'main.views.distributed_404_handler'

@@ -84,6 +84,7 @@ def callback_percent_proxy(callback, start_percent=0, end_percent=100):
     return inner_fn
 
 def download_video(youtube_id, format="mp4", callback=None):
+    """Downloads the video file to disk (note: this does NOT invalidate any of the cached html files in KA Lite)"""
     
     _mkdir(download_path)
     
