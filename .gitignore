@@ -1,3 +1,6 @@
+*migrations*
+kalite-*.zip
+tmp/
 *.pyc
 *.sublime-*
 notes.txt
