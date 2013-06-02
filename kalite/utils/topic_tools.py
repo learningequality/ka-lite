@@ -35,7 +35,33 @@ def get_downloaded_youtube_ids(videos_path="../content/"):
 def is_video_on_disk(youtube_id, videos_path="../content/"):
     return os.path.isfile(videos_path+youtube_id+".mp4")
 
-def get_video_counts(topic, videos_path=None, db_name=None):
+
+_vid_last_updated = 0
+_vid_last_count = 0
+
+def video_counts_need_update(videos_path="../content/"):
+    global _vid_last_count
+    global _vid_last_updated
+    
+    files = os.listdir(videos_path)
+
+    vid_count = len(files)
+    if len(files):
+        vid_last_updated = os.path.getmtime(sorted([videos_path+f for f in files], key=os.path.getmtime, reverse=True)[0])
+    else:
+        vid_last_updated = 0
+    need_update = (vid_count != _vid_last_count) or (vid_last_updated != _vid_last_updated)
+    
+    if need_update:
+        import pdb; pdb.set_trace()
+
+    _vid_last_count   = vid_count
+    _vid_last_updated = vid_last_updated
+    
+    return need_update
+    
+    
+def get_video_counts(topic, videos_path=None, db_name=None, force=False):
     """ Uses the (json) topic tree to query the django database for which video files exist
     
 Returns the original topic dictionary, with two properties added to each NON-LEAF node:
@@ -47,15 +73,7 @@ And the following property for leaf nodes:
 videos_path: the path to video files (Preferred method)
 db_name: name of database to connect to (Old method) 
     """
-
-    if videos_path:
-        logging.debug("Using videos path = %s" % videos_path)
-    elif db_name:
-        logging.warn("Using old database method.  Inefficient and hacky!")
-    else:
-        raise NotImplementedException("Programming error: must specify vidoes_path or db_name")
-        
-
+    assert videos_path or db_name and not videos_path and db_name, "One, but not both, of videos_path and db_name"
 
     nvideos_local = 0
     nvideos_known = 0

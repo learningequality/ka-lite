@@ -99,7 +99,9 @@ def topic_handler(request, topic):
 
     # Get video counts if they'll be used,
     #   on-demand only.
-    if not 'nvideos_local' in topic:
+    #
+    # Check in this order so that the initial counts are always updated
+    if topic_tools.video_counts_need_update() or not 'nvideos_local' in topic:
         (topic,_,_) = topic_tools.get_video_counts(topic=topic, videos_path=settings.CONTENT_ROOT) 
             
     my_topics = [dict((k, t[k]) for k in ('title', 'path', 'nvideos_local', 'nvideos_known')) for t in topics]

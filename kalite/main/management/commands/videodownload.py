@@ -30,6 +30,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         
+        handled_video_ids = []
+        
         while True: # loop until the method is aborted
             
             if VideoFile.objects.filter(download_in_progress=True).count() > 0:
@@ -49,6 +51,7 @@ class Command(BaseCommand):
                 self.stdout.write("Download cancelled; aborting.\n")
                 return
             
+            caching.invalidate_cached_topic_hierarchy(video_id=video.youtube_id)
             video.download_in_progress = True
             video.percent_complete = 0
             video.save()
@@ -63,5 +66,8 @@ class Command(BaseCommand):
                 video.save()
                 force_job("videodownload", "Download Videos")
                 return
-
-            caching.invalidate_cached_video_page(video_id=video.youtube_id)
+            
+            handled_video_ids.append(video.youtube_id)
+            
+            # Expire, but don't regenerate until the very end, for efficiency.
+            caching.invalidate_cached_topic_hierarchy(video_id=video.youtube_id)

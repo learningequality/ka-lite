@@ -80,3 +80,15 @@ def invalidate_cached_video_page(video_id=None, video_slug=None, video_path=None
                     
     # Clean the cache for this item
     expire_page(path=video_path)
+    
+def invalidate_cached_topic_hierarchy(video_id=None, video_slug=None, video_path=None):
+    assert (video_id or video_path or video_slug) and not (video_id and video_slug and video_path), "One arg, not two" 
+
+    if not video_path:
+        video_path = get_video_page_path(video_id=video_id, video_slug=video_slug)
+
+    #HACK(bcipolli): Skip / (which doesn't use this info) and /topics/ (which doesn't exist) 
+    cur_path = "/topics/" #HACK(bcipolli)
+    for dir in video_path.split("/")[2:]: #HACK(bcipolli)
+        cur_path = cur_path + dir + "/"
+        expire_page(path=cur_path)
