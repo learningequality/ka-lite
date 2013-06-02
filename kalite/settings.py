@@ -1,8 +1,6 @@
 import json
 import os
 
-from utils.cache_key import make_key 
-
 try:
     from local_settings import *
     import local_settings
@@ -106,7 +104,6 @@ INSTALLED_APPS = (
     "django.contrib.messages",
     "south",
     "chronograph",
-    "crawler",
     "django_cherrypy_wsgiserver",
     "securesync",
     "config",
