@@ -51,7 +51,6 @@ class Command(BaseCommand):
                 self.stdout.write("Download cancelled; aborting.\n")
                 return
             
-            caching.invalidate_cached_topic_hierarchy(video_id=video.youtube_id)
             video.download_in_progress = True
             video.percent_complete = 0
             video.save()

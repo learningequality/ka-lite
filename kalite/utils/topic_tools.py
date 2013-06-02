@@ -52,9 +52,6 @@ def video_counts_need_update(videos_path="../content/"):
         vid_last_updated = 0
     need_update = (vid_count != _vid_last_count) or (vid_last_updated != _vid_last_updated)
     
-    if need_update:
-        import pdb; pdb.set_trace()
-
     _vid_last_count   = vid_count
     _vid_last_updated = vid_last_updated
     
@@ -116,7 +113,6 @@ db_name: name of database to connect to (Old method)
                     query = """SELECT youtube_id FROM main_videofile WHERE %s"""%(str[4:])
             
                     # do a query to look for any of them
-                    #import pdb; pdb.set_trace()
                     import sqlite3
                     conn = sqlite3.connect(db_name)
                     cursor = conn.cursor()
@@ -126,7 +122,7 @@ db_name: name of database to connect to (Old method)
                 
                 
                 for fv_id in found_videos:
-                    logging.debug('\t\tYoutube ID: %s'%fv_id[0])
+                    #logging.debug('\t\tYoutube ID: %s'%fv_id[0])
                     topic_vid = find_videos_by_youtube_id(fv_id[0], node=topic)
                     if len(topic_vid)==1:
                         topic_vid[0]['on_disk'] = True
