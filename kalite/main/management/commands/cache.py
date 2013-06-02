@@ -56,15 +56,10 @@ class Command(BaseCommand):
         
         # Recursive call
         else:
-
-            print "Generating videos:"
-            for v in topicdata.NODE_CACHE['Video'].values():
-                self.create_cache(force=force, path=v['path'])
-                 
-            print "Generating exercises:"
-            for e in topicdata.NODE_CACHE['Exercise'].values():
-                self.create_cache(force=force, path=e['path'])
-
+            for type in ['Video', 'Exercise', 'Topic']:
+                print "Generating %ss:" % type
+                for n in topicdata.NODE_CACHE[type].values():
+                    self.create_cache(path=n['path'])
                 
                 
     def show_cache(self, path=None):
@@ -76,15 +71,11 @@ class Command(BaseCommand):
                 print "\t%s" % path
         
         else:
-            print "Cached videos:"
-            for v in topicdata.NODE_CACHE['Video'].values():
-                self.show_cache(path=v['path'])
-                
-            print "Cached exercises:"
-            for e in topicdata.NODE_CACHE['Exercise'].values():
-                self.show_cache(path=e['path'])
+            for type in ['Video', 'Exercise', 'Topic']:
+                print "Cached %ss:" % type
+                for n in topicdata.NODE_CACHE[type].values():
+                    self.show_cache(path=n['path'])
 
-       
                 
     def clear_cache(self, path=None):
         """Go through each cacheable page, and show which are cached and which are NOT"""
@@ -97,10 +88,8 @@ class Command(BaseCommand):
             else:
                 print "skipping %s" % path
         else:
-            print "Clearing videos:"
-            for v in topicdata.NODE_CACHE['Video'].values():
-                self.clear_cache(path=v['path'])
+            for type in ['Video', 'Exercise', 'Topic']:
+                print "Clearing %ss:" % type
+                for n in topicdata.NODE_CACHE[type].values():
+                    self.clear_cache(path=n['path'])
                 
-            print "Clearing exercises:"
-            for e in topicdata.NODE_CACHE['Exercise'].values():
-                self.clear_cache(path=e['path'])
