@@ -9,6 +9,8 @@ from django.core.serializers import base
 from django.db import models, DEFAULT_DB_ALIAS
 from django.utils.encoding import smart_unicode, is_protected_type
 
+from django.core.serializers.base import version_diff
+
 class Serializer(base.Serializer):
     """
     Serializes a QuerySet to basic Python objects.
@@ -75,6 +77,9 @@ def Deserializer(object_list, **options):
     stream or a string) to the constructor
     """
     db = options.pop('using', DEFAULT_DB_ALIAS)
+    client_version = options.pop("client_version", None)
+    server_version = options.pop("server_version", None)
+    
     models.get_apps()
     for d in object_list:
         # Look up the model and starting build a dict of data for it.
@@ -87,8 +92,15 @@ def Deserializer(object_list, **options):
             if isinstance(field_value, str):
                 field_value = smart_unicode(field_value, options.get("encoding", settings.DEFAULT_CHARSET), strings_only=True)
 
-            field = Model._meta.get_field(field_name)
-
+            # Skip fields of weird versions
+            try:
+                field = Model._meta.get_field(field_name)
+            except FieldDoesNotExist as fdne:
+                if version_diff(client_version, server_version)>0:
+                    continue
+                else:
+                    raise fdne
+                    
             # Handle M2M relations
             if field.rel and isinstance(field.rel, models.ManyToManyRel):
                 if hasattr(field.rel.to._default_manager, 'get_by_natural_key'):
