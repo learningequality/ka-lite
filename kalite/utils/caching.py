@@ -6,6 +6,7 @@ from django.utils import translation
 from django.test.client import Client
 
 import settings
+from utils import topic_tools, urls
 
 # all code based on Django snippet at:
 #   http://djangosnippets.org/snippets/936/
@@ -80,7 +81,8 @@ def invalidate_cached_video_page(video_id=None, video_slug=None, video_path=None
                     
     # Clean the cache for this item
     expire_page(path=video_path)
-    
+
+
 def invalidate_cached_topic_hierarchy(video_id=None, video_slug=None, video_path=None):
     assert (video_id or video_path or video_slug) and not (video_id and video_slug and video_path), "One arg, not two" 
 
@@ -88,7 +90,20 @@ def invalidate_cached_topic_hierarchy(video_id=None, video_slug=None, video_path
         video_path = get_video_page_path(video_id=video_id, video_slug=video_slug)
 
     #HACK(bcipolli): Skip / (which doesn't use this info) and /topics/ (which doesn't exist) 
-    cur_path = "/topics/" #HACK(bcipolli)
-    for dir in video_path.split("/")[2:]: #HACK(bcipolli)
-        cur_path = cur_path + dir + "/"
-        expire_page(path=cur_path)
+    for path in urls.generate_all_paths(path=video_path, base_path="/topics/"):
+        expire_page(path=path)
+
+
+def regenereate_cached_topic_hierarchies(video_ids):
+
+    paths_to_regenerate = set() # unique set
+    for video_id in video_ids:
+        video_path = get_video_page_path(video_id=video_id)
+
+        #HACK(bcipolli): Skip / (which doesn't use this info) and /topics/ (which doesn't exist) 
+        paths_to_regenerate = paths_to_regenerate.union(urls.generate_all_paths(path=video_path, base_path="/topics/"))
+
+    # Now, regenerate any page.
+    for path in paths_to_regenerate:
+        create_cache(path=path, force=True)
+

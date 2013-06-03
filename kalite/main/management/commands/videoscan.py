@@ -1,22 +1,27 @@
 import time, glob
-from django.core.management.base import BaseCommand, CommandError
 from annoying.functions import get_object_or_None
+
+from django.core.management.base import BaseCommand, CommandError
+
+import settings
 from main.models import VideoFile
 from utils.videos import download_video
 from utils.jobs import force_job
 from utils.general import break_into_chunks
+from utils import caching
 
-import settings
 
 class Command(BaseCommand):
     help = "Sync up the database's version of what videos have been downloaded with the actual folder contents"
 
     def handle(self, *args, **options):
-
+        touched_video_ids = []
+        
         # delete VideoFile objects that are not marked as in progress, but are neither 0% nor 100% done; they're broken
         for vf in VideoFile.objects.filter(download_in_progress=False, percent_complete__gt=0, percent_complete__lt=100):
             vf.delete()
             caching.invalidate_cached_video_page(video_id=vf.youtube_id)
+            touched_video_ids.append(vf.youtube_id)
 
         files = glob.glob(settings.CONTENT_ROOT + "*.mp4")
         subtitle_files = glob.glob(settings.CONTENT_ROOT + "*.srt")
@@ -39,6 +44,7 @@ class Command(BaseCommand):
             video_files_needing_model_update.update(percent_complete=100, flagged_for_download=False)
             for vf in video_files_needing_model_update:
                 caching.invalidate_cached_video_page(video_id=vf.youtube_id)
+                touched_video_ids.append(vf.youtube_id)
         if count:
             self.stdout.write("Updated %d VideoFile models (to mark them as complete, since the files exist)\n" % count)
         
@@ -48,6 +54,7 @@ class Command(BaseCommand):
             VideoFile.objects.bulk_create([VideoFile(youtube_id=youtube_id, percent_complete=100) for youtube_id in video_ids_needing_model_creation])
             for vid in video_ids_needing_model_creation:
                 caching.invalidate_cached_video_page(video_id=vid)
+                touched_video_ids.append(vid)
             self.stdout.write("Created %d VideoFile models (to mark them as complete, since the files exist)\n" % count)
         
         count = 0
@@ -58,6 +65,7 @@ class Command(BaseCommand):
             video_files_needing_model_deletion.delete()
             for vf in video_files_needing_model_deletion:
                 caching.invalidate_cached_video_page(video_id=vf.youtube_id)
+                touched_video_ids.append(vf.youtube_id)
         if count:
             self.stdout.write("Deleted %d VideoFile models (because the videos didn't exist in the filesystem)\n" % count)
 
@@ -68,6 +76,11 @@ class Command(BaseCommand):
             video_files_needing_model_update.update(subtitles_downloaded=True)
             for vf in video_files_needing_model_update:
                 caching.invalidate_cached_video_page(video_id=vf.youtube_id)
+                touched_video_ids.append(vf.youtube_id)
+                    
         if count:
             self.stdout.write("Updated %d VideoFile models (marked them as having subtitles)\n" % count)
         
+        # Regenerate all pages, efficiently
+        if settings.CACHE_TIME:
+            caching.regenereate_cached_topic_hierarchies(touched_video_ids)
