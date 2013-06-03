@@ -5,16 +5,13 @@ import urllib
 import urllib2
 import uuid
 
-from django.core import serializers
 
 import crypto
 import settings
 import kalite
 import model_sync
 from models import *
-
-
-json_serializer = serializers.get_serializer("json")()
+from utils import serializers
 
 
 class SyncClient(object):
@@ -59,10 +56,10 @@ class SyncClient(object):
     def register(self):
         own_device = Device.get_own_device()
         r = self.post("register", {
-            "client_device": json_serializer.serialize([own_device], ensure_ascii=False)
+            "client_device": serializers.serialize("json", [own_device], self.session.client_version, ensure_ascii=False)
         })
         if r.status_code == 200:
-            models = serializers.deserialize("json", r.content)
+            models = serializers.deserialize("json", r.content, self.session.client_version)
             for model in models:
                 if not model.object.verify():
                     continue
@@ -101,7 +98,7 @@ class SyncClient(object):
         if data.get("error", ""):
             raise Exception(data.get("error", ""))
         signature = data.get("signature", "")
-        session = serializers.deserialize("json", data["session"]).next().object
+        session = serializers.deserialize("json", data["session"], kalite.VERSION).next().object
         if not session.verify_server_signature(signature):
             raise Exception("Signature did not match.")
         if session.client_nonce != self.session.client_nonce:

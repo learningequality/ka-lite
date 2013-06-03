@@ -31,7 +31,7 @@ class SyncSession(models.Model):
     timestamp = models.DateTimeField(auto_now=True)
     models_uploaded = models.IntegerField(default=0)
     models_downloaded = models.IntegerField(default=0)
-    errors = models.IntegerField(default=0)
+    errors = models.IntegerField(default=0); errors.version="0.9.4" # kalite version
     closed = models.BooleanField(default=False)
     
     def _hashable_representation(self):
@@ -352,6 +352,7 @@ class Device(SyncedModel):
     name = models.CharField(max_length=100, blank=True)
     description = models.TextField(blank=True)
     public_key = models.CharField(max_length=500, db_index=True)
+    version = models.CharField(max_length=len("10.10.100"), default="0.9.2", blank=True); version.version="0.9.4" # default comes from knowing when this feature was implemented!
 
     objects = DeviceManager()
     
@@ -395,7 +396,7 @@ class Device(SyncedModel):
     def get_own_device():
         devices = DeviceMetadata.objects.filter(is_own_device=True)
         if devices.count() == 0:
-            own_device = Device.initialize_own_device()
+            own_device = Device.initialize_own_device(version=version.VERSION) # why don't we need name or description here?
         else:
             own_device = devices[0].device
         return own_device

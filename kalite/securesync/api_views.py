@@ -2,12 +2,10 @@ import re
 import json
 import uuid
 
-from django.core import serializers
 from django.http import HttpResponse
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.gzip import gzip_page
-from django.core import serializers
 
 import crypto
 import settings
@@ -15,10 +13,7 @@ import model_sync
 from main.models import VideoLog, ExerciseLog
 from config.models import Settings
 from models import * # includes model_sync
-
-
-json_serializer = serializers.get_serializer("json")()
-
+from utils import serializers
 
 class JsonResponse(HttpResponse):
     def __init__(self, content, *args, **kwargs):
@@ -103,8 +98,8 @@ def register_device(request):
     
     # return our local (server) Device, its Zone, and the newly created DeviceZone, to the client
     return JsonResponse(
-        json_serializer.serialize(
-            [Device.get_own_device(), registration.zone, device_zone], ensure_ascii=False
+        serializers.serialize("json",
+            [Device.get_own_device(), registration.zone, device_zone], client_device.client_version, ensure_ascii=False
         )
     )
 
@@ -148,9 +143,9 @@ def create_session(request):
             return JsonResponse({"error": "Signature did not match."}, status=500)
         session.verified = True
         session.save()
-        
+
     return JsonResponse({
-        "session": json_serializer.serialize([session], ensure_ascii=False),
+        "session": serializers.serialize("json", [session], session.client_version, ensure_ascii=False ),
         "signature": session.sign(),
     })
     
@@ -168,7 +163,7 @@ def device_download(data, session):
     devicezones = list(DeviceZone.objects.filter(zone=zone, device__in=data["devices"]))
     devices = [devicezone.device for devicezone in devicezones]
     session.models_downloaded += len(devices) + len(devicezones)
-    return JsonResponse({"devices": json_serializer.serialize(devices + devicezones, ensure_ascii=False)})
+    return JsonResponse({"devices": serializers.serialize("json", devices + devicezones, session.client_version, ensure_ascii=False)})
 
 @csrf_exempt
 @require_sync_session
