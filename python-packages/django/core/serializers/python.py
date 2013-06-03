@@ -95,7 +95,7 @@ def Deserializer(object_list, **options):
             # Skip fields of weird versions
             try:
                 field = Model._meta.get_field(field_name)
-            except FieldDoesNotExist as fdne:
+            except models.FieldDoesNotExist as fdne:
                 if version_diff(client_version, server_version)>0:
                     continue
                 else:

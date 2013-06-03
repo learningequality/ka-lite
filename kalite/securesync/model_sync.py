@@ -6,6 +6,8 @@ from annoying.functions import get_object_or_None
 from django.core.exceptions import ValidationError
 from django.core import serializers
 
+import version
+
 
 _syncing_models = [] # all models we want to sync
 _json_serializer = serializers.get_serializer("json")()
@@ -23,7 +25,7 @@ def get_syncing_models():
     return _syncing_models
 
     
-def get_serialized_models(device_counters=None, limit=100, zone=None, include_count=False):
+def get_serialized_models(device_counters=None, limit=100, zone=None, include_count=False, client_version=None):
     from models import Device # cannot be top-level, otherwise inter-dependency of this and models fouls things up
 
     # use the current device's zone if one was not specified
@@ -80,7 +82,7 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
         boost += limit
 
     # serialize the models we found
-    serialized_models = _json_serializer.serialize(models, ensure_ascii=False)
+    serialized_models = _json_serializer.serialize(models, ensure_ascii=False, client_version=client_version)
     
     if include_count:
         return {"models": serialized_models, "count": len(models)}
@@ -88,7 +90,7 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
         return serialized_models
 
 
-def save_serialized_models(data, increment_counters=True):
+def save_serialized_models(data, increment_counters=True, client_version=None):
     """Unserializes models in data and saves them to the django database.
     
     Returns a dictionary of the # of saved models, # unsaved, and any exceptions during saving"""
@@ -104,55 +106,59 @@ def save_serialized_models(data, increment_counters=True):
 
     # deserialize the models, either from text or a list of dictionaries
     if isinstance(data, str) or isinstance(data, unicode):
-        models = serializers.deserialize("json", data)
+        models = serializers.deserialize("json", data, client_version=client_version, server_version=version.VERSION)
     else:
-        models = serializers.deserialize("python", data)
+        models = serializers.deserialize("python", data, client_version=client_version, server_version=version.VERSION)
 
     # try importing each of the models in turn
     unsaved_models = []
     exceptions = ""
     saved_model_count = 0
-    for modelwrapper in models:
-        try:
-        
-            # extract the model from the deserialization wrapper
-            model = modelwrapper.object
-        
-            # only allow the importing of models that are subclasses of SyncedModel
-            if not hasattr(model, "verify"):
-                raise ValidationError("Cannot save model: %s does not have a verify method (not a subclass of SyncedModel?)" % model.__class__)
-        
-            # TODO(jamalex): more robust way to do this? (otherwise, it might barf about the id already existing)
-            model._state.adding = False
-        
-            # verify that all fields are valid, and that foreign keys can be resolved
-            model.full_clean()
-        
-            # save the imported model (checking that the signature is valid in the process)
-            model.save(imported=True, increment_counters=increment_counters)
-        
-            # keep track of how many models have been successfully saved
-            saved_model_count += 1
-        
-        except ValidationError as e: # the model could not be saved
-        
-            # keep a running list of models and exceptions, to be stored in purgatory
-            exceptions += "%s: %s\n" % (model.pk, e)
-            unsaved_models.append(model)
-        
-            # if the model is at least properly signed, try incrementing the counter for the signing device
-            # (because otherwise we may never ask for additional models)
+    try:
+        for modelwrapper in models:
             try:
-                if increment_counters and model.verify():
-                    model.signed_by.set_counter_position(model.counter)
-            except:
-                pass
+        
+                # extract the model from the deserialization wrapper
+                model = modelwrapper.object
+        
+                # only allow the importing of models that are subclasses of SyncedModel
+                if not hasattr(model, "verify"):
+                    raise ValidationError("Cannot save model: %s does not have a verify method (not a subclass of SyncedModel?)" % model.__class__)
+        
+                # TODO(jamalex): more robust way to do this? (otherwise, it might barf about the id already existing)
+                model._state.adding = False
+        
+                # verify that all fields are valid, and that foreign keys can be resolved
+                model.full_clean()
+        
+                # save the imported model (checking that the signature is valid in the process)
+                model.save(imported=True, increment_counters=increment_counters)
+        
+                # keep track of how many models have been successfully saved
+                saved_model_count += 1
+        
+            except ValidationError as e: # the model could not be saved
+        
+                # keep a running list of models and exceptions, to be stored in purgatory
+                exceptions += "%s: %s\n" % (model.pk, e)
+                unsaved_models.append(model)
+        
+                # if the model is at least properly signed, try incrementing the counter for the signing device
+                # (because otherwise we may never ask for additional models)
+                try:
+                    if increment_counters and model.verify():
+                        model.signed_by.set_counter_position(model.counter)
+                except:
+                    pass
+        
+    except Exception as e:
+        exceptions += str(e)
         
     # deal with any models that didn't validate properly; throw them into purgatory so we can try again later    
     if unsaved_models:
         if not purgatory:
             purgatory = ImportPurgatory()
-        purgatory.serialized_models = _json_serializer.serialize(unsaved_models, ensure_ascii=False)
+        purgatory.serialized_models = _json_serializer.serialize(unsaved_models, ensure_ascii=False, client_version=client_version, server_version=version.VERSION)
         purgatory.exceptions = exceptions
         purgatory.model_count = len(unsaved_models)
         purgatory.retry_attempts += 1

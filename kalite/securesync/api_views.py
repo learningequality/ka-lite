@@ -170,7 +170,11 @@ def device_download(data, session):
 def device_upload(data, session):
     # TODO(jamalex): check that the uploaded devices belong to the client device's zone and whatnot
     # (although it will only save zones from here if centrally signed, and devices if registered in a zone)
-    result = model_sync.save_serialized_models(data.get("devices", "[]"))
+    try:
+        result = model_sync.save_serialized_models(data.get("devices", "[]"), client_version=session.client_version)
+    except Exception as e:
+        result = { "error": e.message, "saved_model_count": 0 }
+        
     session.models_uploaded += result["saved_model_count"]
     session.errors += result.has_key("error")
     return JsonResponse(result)
@@ -188,8 +192,12 @@ def device_counters(data, session):
 @require_sync_session
 def upload_models(data, session):
     if "models" not in data:
-        return JsonResponse({"error": "Must provide models."}, status=500)
-    result = model_sync.save_serialized_models(data["models"])
+        return JsonResponse({"error": "Must provide models.", "saved_model_count": 0}, status=500)
+    try:
+        result = model_sync.save_serialized_models(data["models"], client_version=session.client_version)
+    except Exception as e:
+        result = { "error": e.message, "saved_model_count": 0 }
+
     session.models_uploaded += result["saved_model_count"]
     session.errors += result.has_key("error")
     return JsonResponse(result)
@@ -199,14 +207,16 @@ def upload_models(data, session):
 @require_sync_session
 def download_models(data, session):
     if "device_counters" not in data:
-        return JsonResponse({"error": "Must provide device counters."}, status=500)
-    result = model_sync.get_serialized_models(data["device_counters"], zone=session.client_device.get_zone(), include_count=True)
+        return JsonResponse({"error": "Must provide device counters.", "count": 0}, status=500)
+    try:
+        result = model_sync.get_serialized_models(data["device_counters"], zone=session.client_device.get_zone(), include_count=True, client_version=session.client_version)
+    except Exception as e:
+        result = { "error": e.message, "count": 0 }
+
     session.models_downloaded += result["count"]
     session.errors += result.has_key("error")
-    return JsonResponse({
-        "models": result["models"]
-    })
-    
+    return JsonResponse(result)
+            
 @csrf_exempt
 def test_connection(request):
     return HttpResponse("OK")

@@ -202,7 +202,7 @@ class SyncClient(object):
             "unsaved_model_count" : 0,
         }
         try:
-            response = self.post("models/upload", {"models": model_sync.get_serialized_models(self.counters_to_upload)})
+            response = self.post("models/upload", {"models": model_sync.get_serialized_models(self.counters_to_upload, client_version=self.session.client_version)})
             upload_results = json.loads(response.content)
             self.session.models_uploaded += upload_results["saved_model_count"]
             self.session.errors += upload_results.has_key("error")
