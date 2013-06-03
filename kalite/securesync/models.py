@@ -12,7 +12,7 @@ from config.models import Settings
 import crypto
 import model_sync
 import settings
-
+import kalite
 
 
 # Note: this MUST be hard-coded for backwards-compatibility reasons.
@@ -396,7 +396,7 @@ class Device(SyncedModel):
     def get_own_device():
         devices = DeviceMetadata.objects.filter(is_own_device=True)
         if devices.count() == 0:
-            own_device = Device.initialize_own_device(version=version.VERSION) # why don't we need name or description here?
+            own_device = Device.initialize_own_device(version=kalite.VERSION) # why don't we need name or description here?
         else:
             own_device = devices[0].device
         return own_device
