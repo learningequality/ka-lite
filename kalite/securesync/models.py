@@ -437,9 +437,22 @@ class Device(SyncedModel):
     get_zone.short_description = "Zone"
 
     def verify(self):
-        if self.signed_by_id != self.id:
-            return False
-        return self.get_key().verify(self._hashable_representation(), self.signature)
+        # BUGFIX(bcipolli): previous code only allowed self-signing,
+        #   but other code (e.g. save below) allows signing by trusted sources.
+        #   Somehow I hit this (had a device sync'd that was signed by the central server),
+        #   and indeed the _hashable_representation was signed by the self.signature.
+        #
+        #   So, indeed, this all works.
+        #
+        # self-signed (implicitly trusted)
+        if self.signed_by_id == self.id:
+            return self.get_key().verify(self._hashable_representation(), self.signature)
+        # signed by an explicitly trusted source
+        elif self.signed_by.get_metadata().is_trusted:
+            return self.signed_by.get_key().verify(self._hashable_representation(), self.signature)
+        # There's no trusted sources left; can't verify!
+        else:
+            return false
 
     def save(self, is_trusted=False, *args, **kwargs):
         # TODO(jamalex): uncomment out the following, but allow for devices created on old versions somehow
