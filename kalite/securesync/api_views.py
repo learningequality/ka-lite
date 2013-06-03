@@ -16,7 +16,7 @@ from main.models import VideoLog, ExerciseLog
 from config.models import Settings
 from models import * # includes model_sync
 
-_json_serializer = serializers.get_serializer("json")()
+#_json_serializer = serializers.get_serializer("json")()
 
 class JsonResponse(HttpResponse):
     def __init__(self, content, *args, **kwargs):
@@ -101,9 +101,7 @@ def register_device(request):
     
     # return our local (server) Device, its Zone, and the newly created DeviceZone, to the client
     return JsonResponse(
-        _json_serializer.serialize("json",
-            [Device.get_own_device(), registration.zone, device_zone], client_version=client_device.version, ensure_ascii=False
-        )
+        serializers.serialize("json", [Device.get_own_device(), registration.zone, device_zone], client_version=client_device.version, ensure_ascii=False)
     )
 
 @csrf_exempt
@@ -148,7 +146,7 @@ def create_session(request):
         session.save()
 
     return JsonResponse({
-        "session": _json_serializer.serialize("json", [session], client_version=session.client_version, ensure_ascii=False ),
+        "session": serializers.serialize("json", [session], client_version=session.client_version, ensure_ascii=False ),
         "signature": session.sign(),
     })
     
@@ -166,7 +164,7 @@ def device_download(data, session):
     devicezones = list(DeviceZone.objects.filter(zone=zone, device__in=data["devices"]))
     devices = [devicezone.device for devicezone in devicezones]
     session.models_downloaded += len(devices) + len(devicezones)
-    return JsonResponse({"devices": _json_serializer.serialize("json", devices + devicezones, client_version=session.client_version, ensure_ascii=False)})
+    return JsonResponse({"devices": serializers.serialize("json", devices + devicezones, client_version=session.client_version, ensure_ascii=False)})
 
 @csrf_exempt
 @require_sync_session

@@ -13,7 +13,7 @@ import kalite
 import model_sync
 from models import *
 
-_json_serializer = serializers.get_serializer("json")()
+#_json_serializer = serializers.get_serializer("json")()
 
 class SyncClient(object):
     session = None
@@ -57,10 +57,10 @@ class SyncClient(object):
     def register(self):
         own_device = Device.get_own_device()
         r = self.post("register", {
-            "client_device": _json_serializer.serialize([own_device], client_version=None, ensure_ascii=False)
+            "client_device": serializers.serialize("json", [own_device], client_version=None, ensure_ascii=False)
         })
         if r.status_code == 200:
-            models = serializers.deserialize("json", r.content, client_version=self.session.client_version, server_version=own_device.version)
+            models = serializers.deserialize("json", r.content, client_version=None, server_version=own_device.version)
             for model in models:
                 if not model.object.verify():
                     continue

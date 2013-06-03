@@ -10,7 +10,7 @@ import version
 
 
 _syncing_models = [] # all models we want to sync
-_json_serializer = serializers.get_serializer("json")()
+#_json_serializer = serializers.get_serializer("json")()
 
 
 def add_syncing_models(models):
@@ -82,7 +82,7 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
         boost += limit
 
     # serialize the models we found
-    serialized_models = _json_serializer.serialize(models, ensure_ascii=False, client_version=client_version)
+    serialized_models = serializers.serialize("json", models, ensure_ascii=False, client_version=client_version)
     
     if include_count:
         return {"models": serialized_models, "count": len(models)}
@@ -158,7 +158,7 @@ def save_serialized_models(data, increment_counters=True, client_version=None):
     if unsaved_models:
         if not purgatory:
             purgatory = ImportPurgatory()
-        purgatory.serialized_models = _json_serializer.serialize(unsaved_models, ensure_ascii=False, client_version=client_version, server_version=version.VERSION)
+        purgatory.serialized_models = serializers.serialize("json", unsaved_models, ensure_ascii=False, client_version=client_version)
         purgatory.exceptions = exceptions
         purgatory.model_count = len(unsaved_models)
         purgatory.retry_attempts += 1
