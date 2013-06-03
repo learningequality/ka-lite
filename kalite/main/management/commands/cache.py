@@ -5,17 +5,27 @@ import sys
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import translation
 
-from kalite.main.models import VideoFile
-from kalite.utils.videos import download_video, DownloadCancelled
+import settings
+from main import topicdata
+from main.models import VideoFile
+from utils.videos import download_video, DownloadCancelled
 from utils.jobs import force_job
 from utils import caching
-from kalite.main import topicdata
-        
 
 class Command(BaseCommand):
     help = "Manipulate the cache (create, show, clear)"
     
+    def command_error(self, msg):
+        print "Error: %s" % msg
+        exit(1)
+        
     def handle(self, *args, **options):
+        if not getattr(settings, "CACHES", None):
+            self.command_error("caching is turned off (CACHES is None)")
+        elif not getattr(settings, "CACHE_TIME", None):
+            self.command_error(msg="caching is turned off (CACHE_TIME is zero or none)")
+        
+        
         cmd = sys.argv[2]
         if cmd in ["create", "recreate", "refresh"]:
             self.create_cache(force=(cmd in ["recreate", "refresh"]))
@@ -24,7 +34,7 @@ class Command(BaseCommand):
         elif cmd in ["clear", "delete"]:
             self.clear_cache()
         else:
-            raise NotImplementedError("Unknown option: %s" % cmd)
+            command_error("Unknown option: %s" % cmd)
         
         
         
