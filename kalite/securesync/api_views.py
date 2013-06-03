@@ -53,7 +53,7 @@ def register_device(request):
     if "client_device" not in data:
         return JsonResponse({"error": "Serialized client device must be provided."}, status=500)
     try:
-        models = _json_serializer.deserialize("json", data["client_device"], client_version=None, server_version=version.VERSION)
+        models = serializers.deserialize("json", data["client_device"], client_version=None, server_version=version.VERSION)
         client_device = models.next().object
     except Exception as e:
         return JsonResponse({

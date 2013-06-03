@@ -60,7 +60,7 @@ class SyncClient(object):
             "client_device": _json_serializer.serialize([own_device], client_version=None, ensure_ascii=False)
         })
         if r.status_code == 200:
-            models = _json_serializer.deserialize(r.content, client_version=self.session.client_version, server_version=own_device.version)
+            models = serializers.deserialize("json", r.content, client_version=self.session.client_version, server_version=own_device.version)
             for model in models:
                 if not model.object.verify():
                     continue
@@ -99,7 +99,7 @@ class SyncClient(object):
         if data.get("error", ""):
             raise Exception(data.get("error", ""))
         signature = data.get("signature", "")
-        session = _json_serializer.deserialize(data["session"], server_version=kalite.VERSION).next().object
+        session = serializers.deserialize("json", data["session"], server_version=kalite.VERSION).next().object
         if not session.verify_server_signature(signature):
             raise Exception("Signature did not match.")
         if session.client_nonce != self.session.client_nonce:
