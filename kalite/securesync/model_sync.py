@@ -17,7 +17,7 @@ def add_syncing_models(models):
     """When sync is run, these models will be sync'd"""
     for model in models:
         if model in _syncing_models:
-            logging.warn("We are already syncing model %s" % model.__class__)
+            logging.warn("We are already syncing model %s"  str(model))
         else:
             _syncing_models.append(model)
 

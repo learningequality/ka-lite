@@ -191,7 +191,7 @@ def device_counters(data, session):
 
 @csrf_exempt
 @require_sync_session
-def upload_models(data, session):
+def model_upload(data, session):
     if "models" not in data:
         return JsonResponse({"error": "Must provide models.", "saved_model_count": 0}, status=500)
     try:
@@ -206,7 +206,7 @@ def upload_models(data, session):
 @csrf_exempt
 @gzip_page
 @require_sync_session
-def download_models(data, session):
+def model_download(data, session):
     if "device_counters" not in data:
         return JsonResponse({"error": "Must provide device counters.", "count": 0}, status=500)
     try:
