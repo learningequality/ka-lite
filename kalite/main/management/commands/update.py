@@ -1,10 +1,12 @@
 import git
 import os
 import glob
+import platform
 import shutil
 import sys
 import subprocess
 import tempfile
+import zipfile
 
 from optparse import make_option
 from zipfile import ZipFile, ZIP_DEFLATED
@@ -14,6 +16,18 @@ from django.core.management.base import BaseCommand, CommandError
 import settings
 settings.DEBUG = False
 
+def fixBadZipfile(zipFile):  
+    f = open(zipFile, 'r+b')  
+    data = f.read()  
+    pos = data.find('\x50\x4b\x05\x06') # End of central directory signature  
+    if (pos > 0):  
+        #("Trancating file at location " + str(pos + 22)+ ".")  
+        f.seek(pos + 22)   # size of 'ZIP end of central directory record' 
+        f.truncate()  
+        f.close()  
+    else:  
+        raise Exception("# raise error, file is truncated  ")
+         
 def call_outside_command_with_output(kalite_location, command, *args, **kwargs):
     
     # build the command
@@ -22,10 +36,11 @@ def call_outside_command_with_output(kalite_location, command, *args, **kwargs):
         cmd += (arg,)
     for key,val in kwargs.items():
         key = key.replace("_","-")
+        prefix = "--" if command != "runcherrypyserver" else ""
         if isinstance(val,bool):
-            cmd += ("--%s" % key,)
+            cmd += ("%s%s" % (prefix,key),)
         else:
-            cmd += ("--%s=%s" % (key,val),)
+            cmd += ("%s%s=%s" % (prefix,key,str(val)),)
 
     if settings.DEBUG:
         print cmd
@@ -73,10 +88,17 @@ class Command(BaseCommand):
 
     def command_error(self, msg):
         print msg
-        import pdb; pdb.set_trace()
+        if settings.DEBUG:
+            import pdb; pdb.set_trace()
         exit(1)
         
     def handle(self, *args, **options):
+    
+        # Callback for "weak" test--checks at least that the django project compiles (local_settings is OK)
+        if len(args)==1 and args[0]== "test":
+            print "Success!"
+            exit(0)
+            
         if options.get("repo", None):
             self.update_via_git(options.get("repo"))
             
@@ -85,6 +107,10 @@ class Command(BaseCommand):
                 self.command_error("Specified zip file does not exist: %s" % options.get("zip_file"))
             self.update_via_zip(options.get("zip_file"))
             
+        # Without params, default to same as before (git)
+        elif not args and not options:
+            self.update_via_git(options.get("repo"))
+        
         else:
             self.command_error("Please specify a zip file.")
             
@@ -117,6 +143,9 @@ class Command(BaseCommand):
 
 
     def update_via_zip(self, zip_file):
+        if not os.path.exists(zip_file):
+            self.command_error("Zip file doesn't exist")
+            
         print "Updating via zip file: %s" % zip_file
 
         self.current_dir = os.path.realpath(settings.PROJECT_PATH + "/../")
@@ -130,15 +159,18 @@ class Command(BaseCommand):
         # Work
         self.extract_files(zip_file)
         self.copy_in_data()
-        self.move_video_files()
         self.update_local_settings()
+        self.move_video_files()
         
-        # Validation
-        self.test_server()
-        
-        # Confirm
-        self.confirm_move()
-        self.start_server()
+        # Validation & confirmation
+        if platform.system()=="Windows":
+            self.test_server_weak()
+            self.confirm_move()
+        else:
+            self.test_server_full()
+            self.confirm_move()
+            self.start_server()
+
         self.print_footer()
         
     
@@ -175,7 +207,9 @@ class Command(BaseCommand):
             elif dest_dir=="2":
                 dest_dir = tempfile.mkdtemp()
                 working_dir = dest_dir
-            if os.path.exists(dest_dir):
+            else:
+                working_dir = tempfile.mkdtemp()
+            if os.path.exists(dest_dir):# and dest_dir != self.current_dir:
                 ans = ""
                 while ans not in ["y","n"]:
                     ans = raw_input("*\tDestination directory exists; replace? [y/n]: ").strip().lower()
@@ -224,8 +258,13 @@ class Command(BaseCommand):
                         
         if not os.path.exists(self.working_dir):
             os.mkdir(self.working_dir)
+        
+        if not zipfile.is_zipfile(zip_file):
+            self.command_error("bad zip file")
+
+        zip = ZipFile(zip_file, "r")
             
-        zip = ZipFile(open(zip_file, "r"))
+            
         nfiles = len(zip.namelist())
         for fi,afile in enumerate(zip.namelist()):
             
@@ -249,7 +288,7 @@ class Command(BaseCommand):
         # Copy over data
         if settings.DATABASES['default']['ENGINE']!='django.db.backends.sqlite3':
             raise NotImplementedError("No code for doing a SQL-SQL transfer.")
-        print "* Copying over database to new location"
+        print "* Copying over database to the server update location"
         shutil.copy(settings.DATABASES['default']['NAME'], os.path.realpath(self.working_dir + "/kalite/database/data.sqlite"))
         
         # Run the syncdb
@@ -305,13 +344,18 @@ class Command(BaseCommand):
         print "* Updating local settings"
                 
         # Include the old local_settings.py
-        fh = open(settings.PROJECT_PATH + "/local_settings.py", "r")
-        cur_ls = fh.read()
-        fh.close()
-    
+        cur_ls_file = settings.PROJECT_PATH + "/local_settings.py"
+        if os.path.exists(cur_ls_file):
+            fh = open(cur_ls_file, "r")
+            cur_ls = fh.read()
+            fh.close()
+        else:
+            cur_ls = ""
+            
         # Read any new
-        if os.path.exists(self.working_dir + "/kalite/local_settings.py"):    
-            fh = open(self.working_dir + "/kalite/local_settings.py", "r")
+        new_ls_file = self.working_dir + "/kalite/local_settings.py"
+        if os.path.exists(new_ls_file):    
+            fh = open(new_ls_file, "r")
             new_ls = fh.read()
             fh.close()
         else:
@@ -322,33 +366,43 @@ class Command(BaseCommand):
         fh.write(cur_ls + "\n" + new_ls)
         fh.close()
     
-    
-    def test_server(self):
+    def test_server_weak(self):
+#        out = call_outside_command_with_output(self.working_dir, "runcherrypyserver", host="0.0.0.0", port=8008, threads=1)
+        print "* Testing the new server (simple)"
+
+        out = call_outside_command_with_output(self.working_dir, "update", "test")
+        if 0 != out[0].find("Success!"):
+            self.command_error(out[1] if out[1] else out[0])
+            
+            
+    def test_server_full(self):
         """Stop the old server.  Start the new server."""
         
-        print "* Testing the new server"
+        print "* Testing the new server (full)"
         
         # Stop the old server
         stop_cmd = self.get_shell_script("serverstop*", location=self.current_dir + "/kalite/")
-        p = subprocess.Popen([stop_cmd], shell=True, cwd=os.path.split(stop_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out = p.communicate()
-        if out[1]:
-            self.command_error(out[1])
+        if stop_cmd:
+            p = subprocess.Popen([stop_cmd], shell=False, cwd=os.path.split(stop_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            out = p.communicate()
+            if out[1]:
+                command_error(out[1])
 
         
         # Start the server to validate
         start_cmd = self.get_shell_script("serverstart*", location=self.working_dir + "/kalite/")
-        p = subprocess.Popen([start_cmd], shell=True, cwd=os.path.split(start_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p = subprocess.Popen([start_cmd], shell=False, cwd=os.path.split(start_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out = p.communicate()
         if out[1]:
-            self.command_error(out[1])
+            command_error(out[1])
         
         # Stop the server
         stop_cmd = self.get_shell_script("serverstop*", location=self.working_dir + "/kalite/")
-        p = subprocess.Popen([stop_cmd], shell=True, cwd=os.path.split(stop_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out = p.communicate()
-        if out[1]:
-            self.command_error(out[1])
+        if stop_cmd:
+            p = subprocess.Popen([stop_cmd], shell=False, cwd=os.path.split(stop_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            out = p.communicate()
+            if out[1]:
+                command_error(out[1])
 
     
     def confirm_move(self):
@@ -379,8 +433,8 @@ class Command(BaseCommand):
         print "* Starting the server"
          
         # Start the server to validate
-        start_cmd = self.get_shell_script("serverstart*", location=self.dest_dir + "/kalite/")
-        p = subprocess.Popen([start_cmd], shell=True, cwd=os.path.split(start_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        start_cmd = self.get_shell_script("serverstart*", location=self.current_dir + "/kalite/")
+        p = subprocess.Popen([start_cmd], shell=False, cwd=os.path.split(start_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out = p.communicate()
         if out[1]:
             self.command_error(out[1])
@@ -401,15 +455,19 @@ class Command(BaseCommand):
     def get_shell_script(self, cmd_glob, location=None):
         if not location:
             location = self.working_dir + '/kalite'
+        if platform.system() == "Windows":
+            cmd_glob += ".bat"
+        else:
+            cmd_glob += ".sh"
             
         # Find the command
         cmd = glob.glob(location + "/" + cmd_glob)
         if len(cmd) > 1:
             self.command_error("Multiple commands found (%s)?  Should choose based on platform, but ... how to do in Python?  Contact us to implement this!" % cmd_glob)
-        elif len(cmd)==0:
-            self.command_error("No command found? (%s)" % cmd_glob)
-        cmd = cmd[0]
-        
+        elif len(cmd)==1:
+            cmd = cmd[0]
+        else:
+            cmd = None#self.command_error("No command found? (%s)" % cmd_glob)
         return cmd
         
 
