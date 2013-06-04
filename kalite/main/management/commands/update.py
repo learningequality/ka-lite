@@ -249,7 +249,7 @@ class Command(BaseCommand):
         # Copy over data
         if settings.DATABASES['default']['ENGINE']!='django.db.backends.sqlite3':
             raise NotImplementedError("No code for doing a SQL-SQL transfer.")
-        print "* Copying over database to %s" % self.working_dir
+        print "* Copying over database to new location"
         shutil.copy(settings.DATABASES['default']['NAME'], os.path.realpath(self.working_dir + "/kalite/database/data.sqlite"))
         
         # Run the syncdb
@@ -333,7 +333,7 @@ class Command(BaseCommand):
         p = subprocess.Popen([stop_cmd], shell=True, cwd=os.path.split(stop_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out = p.communicate()
         if out[1]:
-            command_error(out[1])
+            self.command_error(out[1])
 
         
         # Start the server to validate
@@ -341,14 +341,14 @@ class Command(BaseCommand):
         p = subprocess.Popen([start_cmd], shell=True, cwd=os.path.split(start_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out = p.communicate()
         if out[1]:
-            command_error(out[1])
+            self.command_error(out[1])
         
         # Stop the server
         stop_cmd = self.get_shell_script("serverstop*", location=self.working_dir + "/kalite/")
         p = subprocess.Popen([stop_cmd], shell=True, cwd=os.path.split(stop_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out = p.communicate()
         if out[1]:
-            command_error(out[1])
+            self.command_error(out[1])
 
     
     def confirm_move(self):
@@ -379,11 +379,11 @@ class Command(BaseCommand):
         print "* Starting the server"
          
         # Start the server to validate
-        start_cmd = self.get_shell_script("serverstart*", location=self.working_dir + "/kalite/")
+        start_cmd = self.get_shell_script("serverstart*", location=self.dest_dir + "/kalite/")
         p = subprocess.Popen([start_cmd], shell=True, cwd=os.path.split(start_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out = p.communicate()
         if out[1]:
-            command_error(out[1])
+            self.command_error(out[1])
         
         str = "The server should now be accessible locally at"
         idx = out[0].find(str)
@@ -405,9 +405,9 @@ class Command(BaseCommand):
         # Find the command
         cmd = glob.glob(location + "/" + cmd_glob)
         if len(cmd) > 1:
-            raise Exception("Multiple commands found (%s)?  Should choose based on platform, but ... how to do in Python?  Contact us to implement this!" % cmd_glob)
+            self.command_error("Multiple commands found (%s)?  Should choose based on platform, but ... how to do in Python?  Contact us to implement this!" % cmd_glob)
         elif len(cmd)==0:
-            raise Exception("No command found? (%s)" % cmd_glob)
+            self.command_error("No command found? (%s)" % cmd_glob)
         cmd = cmd[0]
         
         return cmd
