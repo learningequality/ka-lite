@@ -325,7 +325,8 @@ class Command(BaseCommand):
         
         # Move over videos
         if self.move_videos=="y":
-            video_files = glob.glob(settings.CONTENT_ROOT + '*')
+            import pdb; pdb.set_trace()
+            video_files = set(glob.glob(settings.CONTENT_ROOT + '*')) - set((settings.CONTENT_ROOT + "note.txt",)) 
             print "* Moving over %d files (videos and thumbnails)" % len(video_files)
             if not os.path.exists(self.working_dir + "/content/"):
                 os.mkdir(self.working_dir + "/content/")
