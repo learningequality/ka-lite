@@ -19,6 +19,8 @@ def file_in_platform(file_path, platform):
     ext = os.path.splitext(file_path)[1]
     if platform=="windows":
         return ext not in [".sh",]
+    elif platform=="all":
+        return True
     else:
         return ext not in [".vbs", ".bat"]
         
@@ -167,9 +169,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         options['platform'] = options['platform'].lower()
         
-        if options['platform'] not in ["test","linux","macos","darwin","windows"]:
+        if options['platform'] not in ["all","linux","macos","darwin","windows"]:
             raise Exception("Unrecognized platform: %s; will include ALL files." % options['platform'])
-            
             
         # Step 1: recursively add all static files
         kalite_base = os.path.realpath(settings.PROJECT_PATH + "/../")
