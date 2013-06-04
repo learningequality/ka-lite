@@ -1,6 +1,7 @@
 import logging
 import os
 import shutil
+import platform
 from optparse import make_option
 from zipfile import ZipFile, ZIP_DEFLATED
 
@@ -18,6 +19,8 @@ def file_in_platform(file_path, platform):
     ext = os.path.splitext(file_path)[1]
     if platform=="windows":
         return ext not in [".sh",]
+    elif platform=="all":
+        return True
     else:
         return ext not in [".vbs", ".bat"]
         
@@ -109,9 +112,10 @@ def create_local_settings_file(location, server_type="local", locale=None):
         ls = open(fil,"w") # just in case fil is not unique, somehow...
         
     # duplicate local_settings when packaging from a local server
-    else:
+    elif os.path.exists(location):
         shutil.copy(location, fil) 
-        ls = open(fil,"a") #append, to keep those settings, but override SOME
+
+    ls = open(fil,"a") #append, to keep those settings, but override SOME
         
     ls.write("\n") # never trust the previous file ended with a newline!
     ls.write("CENTRAL_SERVER = %s\n" % (server_type=="central"))
@@ -139,7 +143,7 @@ class Command(BaseCommand):
         make_option('-p', '--platform',
             action='store',
             dest='platform',
-            default=None,
+            default=platform.system(),
             help='OS PLATFORM to package for',
             metavar="PLATFORM"),
         make_option('-l', '--locale',
@@ -163,18 +167,17 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-
-        if options['platform'] not in [None,"test","linux","macos","windows"]:
-            logging.warn("Unrecognized platform: %s; will include ALL files." % options['platform'])
-            options['platform'] = None
-            
+        options['platform'] = options['platform'].lower()
+        
+        if options['platform'] not in ["all","linux","macos","darwin","windows"]:
+            raise Exception("Unrecognized platform: %s; will include ALL files." % options['platform'])
             
         # Step 1: recursively add all static files
         kalite_base = os.path.realpath(settings.PROJECT_PATH + "/../")
         files_dict = recursively_add_files(dirpath=kalite_base, locale=options["locale"], server_type=options['server_type'], platform=options['platform'])
 
         # Step 2: Generate and add all dynamic content (database json info, server)
-        ls_file = create_local_settings_file(location=kalite_base+"/kalite/local_settings.py", server_type=options['server_type'], locale=options['locale'])
+        ls_file = create_local_settings_file(location=os.path.realpath(kalite_base+"/kalite/local_settings.py"), server_type=options['server_type'], locale=options['locale'])
         files_dict[ls_file] = { "dest_path": "kalite/local_settings.py" }
         
         # Step 3: Decorate
