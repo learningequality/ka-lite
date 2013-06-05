@@ -203,7 +203,6 @@ def register(request, backend, success_url=None, form_class=None,
                     return redirect(success_url)
             except IntegrityError, e:
                 if e.message=='column username is not unique':
-                    #import pdb; pdb.set_trace()
                     form._errors['__all__'] = _("An account with this email address has already been created.  Please login at the link above.")
                 else:
                     raise e
