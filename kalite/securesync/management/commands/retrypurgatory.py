@@ -2,7 +2,8 @@ import json
 
 from django.core.management.base import BaseCommand, CommandError
 
-from securesync.models import ImportPurgatory, SyncingModels
+from securesync.models import ImportPurgatory
+from securesync import model_sync
 
 
 class Command(BaseCommand):
@@ -25,7 +26,7 @@ class Command(BaseCommand):
                  purgatory.model_count, ("models"), 
                  ("attempt"), purgatory.retry_attempts))
                  
-            unsaved = SyncingModels.save_serialized_models(purgatory)["unsaved_model_count"]
+            unsaved = model_sync.save_serialized_models(purgatory)["unsaved_model_count"]
             if not unsaved:
                 self.stdout_writeln("\t%s :)"%(("All models were saved successfully!")))
             else:

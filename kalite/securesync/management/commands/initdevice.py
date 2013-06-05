@@ -2,6 +2,7 @@ import os
 
 from django.core.management.base import BaseCommand, CommandError
 
+import kalite
 import settings
 from securesync.models import Device, DeviceMetadata, Zone
 
@@ -34,8 +35,8 @@ class Command(BaseCommand):
             description = args[1]
         else:
             description = ""
-            
-        Device.initialize_own_device(name=name, description=description)
+
+        Device.initialize_own_device(name=name, description=description, version=kalite.VERSION)
         self.stdout.write("Device '%s'%s has been successfully initialized.\n"
             % (name, description and (" ('%s')" % description) or ""))
         

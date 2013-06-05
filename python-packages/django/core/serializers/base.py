@@ -7,6 +7,28 @@ from StringIO import StringIO
 from django.db import models
 from django.utils.encoding import smart_unicode
 
+
+def version_diff(v1, v2):
+    """Diff is the integer difference between the most leftward part of the versions that differ.
+    If the versions are identical, the method returns zero."""
+    
+    
+    #
+    if v1 is None or v2 is None:
+        return 0
+        
+    v1_parts = v1.split(".")
+    v2_parts = v2.split(".")
+    if len(v1_parts) != len(v2_parts):
+        raise Exception("versions must have the same number of components (periods)")
+    
+    for v1p,v2p in zip(v1_parts,v2_parts):
+        cur_diff = int(v1p)-int(v2p)
+        if cur_diff:
+            return cur_diff
+    
+    return 0
+
 class SerializerDoesNotExist(KeyError):
     """The requested serializer was not found."""
     pass
@@ -37,7 +59,8 @@ class Serializer(object):
         self.stream = options.pop("stream", StringIO())
         self.selected_fields = options.pop("fields", None)
         self.use_natural_keys = options.pop("use_natural_keys", False)
-
+        client_version = options.pop("client_version", None)
+        
         self.start_serialization()
         for obj in queryset:
             self.start_object(obj)
@@ -45,7 +68,7 @@ class Serializer(object):
             # This is to avoid local_fields problems for proxy models. Refs #17717.
             concrete_model = obj._meta.concrete_model
             for field in concrete_model._meta.local_fields:
-                if field.serialize:
+                if field.serialize and version_diff(client_version, getattr(field, "version", None))>=0:
                     if field.rel is None:
                         if self.selected_fields is None or field.attname in self.selected_fields:
                             self.handle_field(obj, field)
@@ -53,7 +76,7 @@ class Serializer(object):
                         if self.selected_fields is None or field.attname[:-3] in self.selected_fields:
                             self.handle_fk_field(obj, field)
             for field in concrete_model._meta.many_to_many:
-                if field.serialize:
+                if field.serialize and version_diff(client_version, getattr(field, "version", None))>=0:
                     if self.selected_fields is None or field.attname in self.selected_fields:
                         self.handle_m2m_field(obj, field)
             self.end_object(obj)

@@ -5,9 +5,9 @@ from django.core import serializers
 
 json_serializer = serializers.get_serializer("json")()
 
-                "client_device": json_serializer.serialize([own_device], ensure_ascii=False),
-        return serializers.deserialize("json", r.content)
-
+#                "client_device": json_serializer.serialize([own_device], ensure_ascii=False),
+#        return serializers.deserialize("json", r.content)
+#
 
 def dump_zone_for_offline_install(zone_name, out_file=None):
     zone = Zone.objects.get(name=zone_name)

@@ -23,7 +23,7 @@ from config.models import Settings
 from config.utils import set_as_registered
 from securesync.models import SyncSession, Device, RegisteredDevicePublicKey, Zone, Facility, FacilityGroup
 from securesync.api_client import SyncClient
-from utils.decorators import require_admin
+from kalite.utils.decorators import require_admin
 
 
 def central_server_only(handler):
