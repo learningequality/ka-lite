@@ -44,7 +44,7 @@ def select_package_dirs(dirnames, key_base, **kwargs):
             in_dirs = {kwargs['locale']}
 
     else:
-        in_dirs = set(dirnames) - {'loadtesting', 'tests', 'test', 'testing','tmp'} # can't exclude 'loadtesting'
+        in_dirs = set(dirnames) - {'loadtesting', 'tests', 'test', 'testing','tmp', 'selenium', 'werkzeug', 'postmark'}
         if "server_type" in kwargs and kwargs['server_type']!="central":
             in_dirs -= {"central", "landing-page"}
 
