@@ -59,9 +59,7 @@ class Command(BaseCommand):
             else:
                 self.stderr.write("Error generating new zone: %s\n" % out[1])
                 exit(1)
-                
-        import pdb; pdb.set_trace()
-          
+                          
         # Try to do offline install
         all_zones = Zone.objects.all()
         if len(all_zones)!=1:
