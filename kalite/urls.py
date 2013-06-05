@@ -9,7 +9,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 
-def redirect_to(self, base_url, path ):
+def redirect_to(self, base_url, path="" ):
     """Redirects to a path within a given (off-site) website."""
     return HttpResponseRedirect(base_url + path)
 
