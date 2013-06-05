@@ -1,6 +1,7 @@
 import json
 import os
 import logging
+import sys
 
 try:
     from local_settings import *
@@ -145,7 +146,11 @@ if not CENTRAL_SERVER:
     )
 
 
-CACHE_TIME=getattr(local_settings, "CACHE_TIME", int(60*60*24*365*1000)) # by default, cache for 1000 years
+# by default, cache for maximum possible
+#   note: caching for 1000 years was too large a value,
+#   was interpreted as negative on some platforms.
+#   This is safer!
+CACHE_TIME=getattr(local_settings, "CACHE_TIME", sys.maxint) 
 
 # Cache is activated in every case, 
 #   EXCEPT: if CACHE_TIME=0
