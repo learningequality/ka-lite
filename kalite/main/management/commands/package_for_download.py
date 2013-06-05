@@ -45,8 +45,10 @@ def select_package_dirs(dirnames, key_base, **kwargs):
 
     else:
         in_dirs = set(dirnames) - {'loadtesting', 'tests', 'test', 'testing','tmp', 'selenium', 'werkzeug', 'postmark'}
-        if "server_type" in kwargs and kwargs['server_type']!="central":
+        if kwargs.get('server_type')!="central":# and base_name=="kalite":
             in_dirs -= {"central", "landing-page"}
+            if base_name=="kalite" or base_name=="templates":
+                in_dirs -= {"contact", "faq", "registration"}
 
     return in_dirs
     
