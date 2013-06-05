@@ -14,6 +14,8 @@ from securesync.models import Zone
 
 
 def get_or_create_user_profile(user):
+    assert user.is_anonymous(), "Should not be calling get_or_create_user_profile with an anonymous user."
+    
     return UserProfile.objects.get_or_create(user=user)[0]
 
 class Organization(models.Model):
@@ -75,6 +77,8 @@ class OrganizationInvitation(models.Model):
         cdict = {
             'organization': self.organization,
             'invited_by': self.invited_by,
+            'central_server_host': request.META.get('HTTP_HOST', settings.CENTRAL_SERVER_HOST), # for central server actions, determine DYNAMICALLY to be safe
+
         }
         # Invite an existing user
         if User.objects.filter(email=to_email).count() > 0:
@@ -109,121 +113,3 @@ class Subscription(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     ip = models.CharField(max_length=100, blank=True)
 
-
-
-
-class ZoneKey(models.Model):
-    """Zones should have keys, but for back compat, they can't.
-    So, let's define a one-to-one table, to store zone keys."""
-    zone = models.ForeignKey(Zone, verbose_name=_("Zone"))
-    private_key = models.TextField(max_length=500)
-    public_key = models.TextField(max_length=500)
-    
-    key = None
-    
-    def save(self, *args, **kwargs):
-        # Auto-generate keys, if necessary
-        if not self.private_key:
-            key = crypto.Key()
-            self.private_key = key.get_private_key_string()
-            self.public_key  = key.get_public_key_string()
-        elif not self.public_key:
-            self.public_key = self.get_key().get_public_key_string()
-        
-        super(ZoneKey, self).save(*args, **kwargs)
-        
-        
-    def get_key(self):
-
-        # We have a cryptographic key object (from previous run); return it
-        if self.key:
-            return self.key
-
-        # We have key strings, but no key object.  create one!
-        elif self.private_key:
-            # For back-compatibility, where zones didn't have keys
-            if self.private_key=="dummy_key":
-                self.private_key = None
-                self.public_key = None
-                self.save()
-                
-            self.key = crypto.Key(private_key_string = self.private_key, public_key_string = self.public_key)
-            return self.key
-
-        else:
-            # Cannot create a key here; otherwise we run the risk
-            #   of changing the key (if it's generated here and not saved)
-            raise Exception('No key set for this object.')
-            
-            
-    def generate_install_certificate(self, string_to_sign=None):
-        """Generates an install certificate by signing a string with
-        the zone's private key.
-        If no string is given, then one will be generated"""
-        
-        # Should have something more intelligent here
-        if not string_to_sign:
-            string_to_sign = "%f" % random.random()
-        
-        return self.get_key().sign(string_to_sign)
-        
-        
-class ZoneOutstandingInstallCertificate(models.Model):
-    """In order to auto-register with a zone, the zone can provide
-    an "installation certificate"; if a valid installation certificate
-    is provided by a device, the zone accepts the request to join,
-    and the certificate is removed from the list of outstanding certs."""
-    
-    zone = models.ForeignKey(Zone, verbose_name=_("Zone"))
-    device_counter = models.IntegerField()
-    install_certificate = models.CharField(max_length=500)
-    creation_date = models.DateTimeField(auto_now_add=True)
-    expiration_date = models.DateTimeField()
-    
-    
-#    @transaction.atomic
-    @transaction.commit_on_success
-    def save(self, *args, **kwargs):
-        # Generate the certificate
-        if not self.install_certificate:
-            try:
-                zone_key = ZoneKey.objects.get(zone=self.zone)
-            except ZoneKey.DoesNotExist:
-                # generate the zone key
-                zone_key = ZoneKey(zone=self.zone)
-                zone_key.save()
-                zone_key.full_clean()
-                
-            self.install_certificate = zone_key.generate_install_certificate()
-            
-        # Expire in one year, if not specified
-        if not self.expiration_date:
-            if not self.creation_date:
-                self.creation_date = datetime.datetime.now()
-            self.expiration_date = self.creation_date + datetime.timedelta(days=365)
-        
-        # Device counter is the next one available.
-        if not self.device_counter: 
-            # danger! danger! race/concurrency conditions! 
-            # added transaction decorator, but ... who knows if that protects enough :(
-            # Generates a "SELECT MAX..." statement
-            self.device_counter = 1+Zone.get_next_device_counter()
-            
-        super(ZoneOutstandingInstallCertificate, self).save(*args, **kwargs)
-    
-    @staticmethod
-    def validate(self, install_certificate):
-        """Check that the given certificate is recognized, but don't actually use it."""
-        
-        try:
-            ZoneOutstandingInstallCertificate.get(install_certificate=install_certificate)
-            return True
-        except NotFoundException as e:
-            return False
-            
-                
-    def use(self):
-        """Use the given install certificate: validate it, and remove it from the database.
-        If the certificate was invalid/unrecognized, then the method with raise an Exception"""
-        
-        self.delete()

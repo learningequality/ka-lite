@@ -1,22 +1,33 @@
+import json
+
 from django.core.management.base import BaseCommand, CommandError
-from securesync.models import ImportPurgatory, save_serialized_models
+
+from securesync.models import ImportPurgatory
+from securesync import model_sync
+
 
 class Command(BaseCommand):
     help = "Retry importing the models that are floating in purgatory."
 
+    def stdout_writeln(self, str):  self.stdout.write("%s\n"%str)
+    def stderr_writeln(self, str):  self.stderr.write("%s\n"%str)
+    
     def handle(self, *args, **options):
         
         purgatories = ImportPurgatory.objects.all()
 
         if not purgatories:
-            self.stdout.write("Purgatory is model-free! Congrats!\n")
+            self.stdout_writeln(("Purgatory is model-free! Congrats!"))
             return
 
         for purgatory in purgatories:
-            self.stdout.write("Attempting to save %d models (attempt #%d)...\n" %
-                (purgatory.model_count, purgatory.retry_attempts))
-            unsaved = save_serialized_models(purgatory)["unsaved_model_count"]
-            if unsaved:
-                self.stdout.write("\t%d models still did not save. :(\n" % unsaved)
+            self.stdout_writeln("%s (%d %s, %s #%d)..." %
+                (("Attempting to save models"), 
+                 purgatory.model_count, ("models"), 
+                 ("attempt"), purgatory.retry_attempts))
+                 
+            unsaved = model_sync.save_serialized_models(purgatory)["unsaved_model_count"]
+            if not unsaved:
+                self.stdout_writeln("\t%s :)"%(("All models were saved successfully!")))
             else:
-                self.stdout.write("\tAll models were saved successfully! :)\n")
+                self.stderr_writeln("\t%d %s :(" % (unsaved,("models still did not save.  Check 'exceptions' field in 'input purgatory' for failure details.")))

@@ -1,5 +1,5 @@
-.gitignore
-*migration*
+*migrations*
+*.prof
 *.pyc
 *.sublime-*
 notes.txt

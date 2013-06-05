@@ -1,19 +1,20 @@
 {% extends 'base_distributed.html' %}
 
 {% load i18n %}
+{% load staticfiles %}
 
 {% block practice_active %}active{% endblock practice_active %}
 
 {% block headjs %}
-<script type='text/javascript' src='{{ MEDIA_URL }}js/khan-exercises/utils/raphael.js'></script>
-<script type='text/javascript' src='{{ MEDIA_URL }}js/kmap-editor.js'></script>
+<script type='text/javascript' src='{% static "js/khan-exercises/utils/raphael.js" %}'></script>
+<script type='text/javascript' src='{% static "js/kmap-editor.js" %}'></script>
 <script>
     var exercise_paths = {{ exercise_paths|safe }};
 </script>
 {% endblock headjs %}
 
 {% block headcss %}
-<link rel='stylesheet' type='text/css' href='{{ MEDIA_URL }}css/kmap_editor.css'>
+<link rel='stylesheet' type='text/css' href='{% static "css/kmap_editor.css" %}'>
 {% endblock headcss %}
 
 {% block title %}{% trans "Your Knowledge Map" %}{% endblock title %}

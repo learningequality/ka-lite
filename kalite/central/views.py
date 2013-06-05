@@ -12,9 +12,10 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
+from django.utils.translation import ugettext as _
 
 import settings
-from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription, ZoneOutstandingInstallCertificate
+from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
 from central.forms import OrganizationForm, ZoneForm, OrganizationInvitationForm
 from securesync.api_client import SyncClient
 from securesync.models import Zone, SyncSession
@@ -36,10 +37,10 @@ def install_wizard(request):
     organization_id = request["organization"] if "organization" in request else request.GET.get("organization",None)
     zone_id = request["zone"] if "zone" in request else request.GET.get("zone", None)
     num_certificates = request["num_certificates"] if "num_certificates" in request else request.GET.get("num_certificates", 1)
-
+    
     # get a list of all the organizations this user helps administer,
     #   then choose the selected organization (if possible)
-    organizations = get_or_create_user_profile(request.user).get_organizations()
+    organizations = [] if request.user.is_anonymous() else get_or_create_user_profile(request.user).get_organizations()
     if organization_id:
         organization = organizations[int(organization_id)]
     elif len(organizations)==1:
@@ -76,54 +77,40 @@ def install_wizard(request):
         elif not zone: 
             errors += "post without zone"
         else:
-        
-            # Create the new certificates
-            for i in range(int(num_certificates)):
-                cert = zone.zoneoutstandinginstallcertificate_set.create()
-                install_certificates.append(cert.install_certificate)
+            # Generate certificates (into the db)
+            zone.generate_install_certificates(num_certificates=num_certificates)
             
-            # Create the local_settings file
-            loc_sets = os.tmpnam()
-            fh = open(loc_sets, "w")
-            fh.write("INSTALL_CERTIFICATES=%s\n" % str(install_certificates))
-            fh.close()
+            # Stream out the relevant offline install data
+            #man_file = os.tmpnam()
+            #fh = open(man_file, "w")
+            #fh.write(serializers.serialize("json", combined))
+            #fh.close()
             
-            # Create the manifest file
-            from django.core import serializers
-            from itertools import chain
-            ozs = get_or_create_user_profile(request.user).user.organization_set.all()
-            combined = list(chain(ozs, zones))
+            # Make sure the correct base zip is created, based on platform and locale
+            #kalite_dummy_zip = settings.MEDIA_ROOT + "zip/kalite-dummy.zip"
+            #kalite_full_zip = settings.MEDIA_ROOT + "zip/kalite-full.zip"
+            #if settings.DEBUG and os.path.isfile(kalite_dummy_zip):
+            #    kalite_zip = kalite_dummy_zip # for debug purposes ONLY
+            #elif os.path.isfile(kalite_full_zip):
+            #    kalite_zip = kalite_full_zip 
+            #else:
+            #    raise Exception("Must have a kalite-full.zip file in %s" % (settings.MEDIA_ROOT+"zip/"))
             
-            man_file = os.tmpnam()
-            fh = open(man_file, "w")
-            fh.write(serializers.serialize("json", combined))
-            fh.close()
+            # Append into the zip, on disk
+            #tmpfile = os.tmpnam()
+            #shutil.copy(kalite_zip, tmpfile) # duplicate the archive
+            #zfile = ZipFile(tmpfile, "a", ZIP_DEFLATED)
+            #zfile.write(loc_sets, arcname="kalite/local_settings.py")
+            #zfile.write(man_file, arcname="kalite/manifest/models.json")
+            #zfile.close()
             
-            # Append into a zip
-            kalite_dummy_zip = settings.MEDIA_ROOT + "zip/kalite-dummy.zip"
-            kalite_full_zip = settings.MEDIA_ROOT + "zip/kalite-full.zip"
-            if settings.DEBUG and os.path.isfile(kalite_dummy_zip):
-                kalite_zip = kalite_dummy_zip # for debug purposes ONLY
-            elif os.path.isfile(kalite_full_zip):
-                kalite_zip = kalite_full_zip 
-            else:
-                raise Exception("Must have a kalite-full.zip file in %s" % (settings.MEDIA_ROOT+"zip/"))
-            
-            tmpfile = os.tmpnam()
-            shutil.copy(kalite_zip, tmpfile) # duplicate the archive
-            zfile = ZipFile(tmpfile, "a", ZIP_DEFLATED)
-            zfile.write(loc_sets, arcname="kalite/local_settings.py")
-            zfile.write(man_file, arcname="kalite/manifest/models.json")
-            zfile.close()
-            
-            #raise Exception("E")
+            # Stream that zip back to the user.
+            #filename = "KALite-%s.zip" % zone.name
+            #fstream = open(tmpfile,"rb")
             #import pdb; pdb.set_trace()
-            # Return that zip!
-            filename = "KALite-%s.zip" % zone.name
-            fstream = open(tmpfile,"rb")
-            #import pdb; pdb.set_trace()
-            response = HttpResponse(content=fstream, mimetype='application/zip', content_type='application/zip')
-            response['Content-Disposition'] = 'attachment; filename="%s"' % filename
+            #response = HttpResponse(content=fstream, mimetype='application/zip', content_type='application/zip')
+            #response['Content-Disposition'] = 'attachment; filename="%s"' % filename
+            response = HttpResponse(content="Coming soon!")
             return response
 
     return {
@@ -166,8 +153,9 @@ def homepage(request):
             for pk,org in organizations.items():
                 if org.pk == int(request.POST.get("organization")):
                     org.form = form
-                    
+
     return {
+        "title": _("Account administration"),
         "organizations": organizations,
         "invitations": OrganizationInvitation.objects.filter(email_to_invite=request.user.email)
     }
@@ -348,4 +336,5 @@ def crypto_login(request):
         return HttpResponse("Unable to establish a session with KA Lite server at %s" % host)
     return HttpResponseRedirect("%ssecuresync/cryptologin/?client_nonce=%s" % (host, client.session.client_nonce))
 
+    
     

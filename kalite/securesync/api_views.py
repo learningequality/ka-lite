@@ -1,15 +1,23 @@
-import re, json, uuid
-from django.core import serializers
+import re
+import json
+import uuid
+import logging; 
+
+from django.db import transaction
 from django.http import HttpResponse
 from django.utils import simplejson
+from django.core import serializers
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.gzip import gzip_page
-from main.models import VideoLog, ExerciseLog
-from config.models import Settings
 
+import kalite
 import crypto
 import settings
+import model_sync
 from models import *
+from main.models import VideoLog, ExerciseLog
+from config.models import Settings
+from main.models import VideoLog, ExerciseLog
 
 
 class JsonResponse(HttpResponse):
@@ -41,19 +49,24 @@ def require_sync_session(handler):
 
 @csrf_exempt
 def register_device(request):
-    data = simplejson.loads(request.raw_post_data or "{}")
+    """Receives the client device info from the distributed server.
+    Tries to register either because the device has been pre-registered,
+    or because it has a valid INSTALL_CERTIFICATE."""
     
     # attempt to load the client device data from the request data
+    data = simplejson.loads(request.raw_post_data or "{}")
     if "client_device" not in data:
         return JsonResponse({"error": "Serialized client device must be provided."}, status=500)
     try:
-        models = serializers.deserialize("json", data["client_device"])
+        models = serializers.deserialize("json", data["client_device"], client_version=None, server_version=kalite.VERSION)
         client_device = models.next().object
     except Exception as e:
         return JsonResponse({
             "error": "Could not decode the client device model: %r" % e,
             "code": "client_device_corrupted",
         }, status=500)
+
+    # Validate the loaded data
     if not isinstance(client_device, Device):
         return JsonResponse({
             "error": "Client device must be an instance of the 'Device' model.",
@@ -64,59 +77,34 @@ def register_device(request):
             "error": "Client device must be self-signed with a signature matching its own public key.",
             "code": "client_device_invalid_signature",
         }, status=500)
-        
-    # we have a valid self-signed Device, so now check if its public key has been registered
-    try:
-        registration = RegisteredDevicePublicKey.objects.get(public_key=client_device.public_key)
-    except RegisteredDevicePublicKey.DoesNotExist:
+    
+        # Check if its public key has been registered
         try:
-            device = Device.objects.get(public_key=client_device.public_key)
-            return JsonResponse({
-                "error": "This device has already been registered",
-                "code": "device_already_registered",
-            }, status=500)            
-        except Device.DoesNotExist:
-            if "install_certificate" in data and data["install_certificate"]:
-                try:
-                    cert = oneOutstandingInstallCertificate.objects.get(install_certificate=data["install_certificate"])
-                    zone = cert.zone
-
-                    registration = RegisteredDevicePublicKey(public_key=client_device.public_key, zone=zone)
-                    registration.save()
-                    registration.full_clean()
-                    
-                    cert.use()  # succeeded, so mark the invitation as used
-                    
-                except Exception as e:
-                    #import pdb; pdb.set_trace()
-                    import logging; logging.debug("\t%s (%s)", e.message, data["install_certificate"])
-                    return JsonResponse({
-                        "error": e.message,
-                        "code": "?",
-                    }, status=500)
-            else:                
+            registration = RegisteredDevicePublicKey.objects.get(public_key=client_device.public_key)
+            zone = registration.zone
+            registration.delete()
+        except RegisteredDevicePublicKey.DoesNotExist:
+            try:
+                device = Device.objects.get(public_key=client_device.public_key)
+                return JsonResponse({
+                    "error": "This device has already been registered",
+                    "code": "device_already_registered",
+                }, status=500)            
+            except Device.DoesNotExist:
                 return JsonResponse({
                     "error": "Device registration with public key not found; login and register first?",
                     "code": "public_key_unregistered",
                 }, status=500)
+
+        client_device.signed_by = client_device  # the device checks out; let's save it!
+        client_device.save(imported=True)
     
-    client_device.signed_by = client_device
-    
-    # the device checks out; let's save it!
-    client_device.save(imported=True)
-    
-    # create the DeviceZone for the new device
-    device_zone = DeviceZone(device=client_device, zone=registration.zone)
-    device_zone.save()
-    
-    # delete the RegisteredDevicePublicKey, now that we've initialized the device and put it in its zone
-    registration.delete()
+        device_zone = DeviceZone(device=client_device, zone=registration.zone)
+        device_zone.save()     # create the DeviceZone for the new device
     
     # return our local (server) Device, its Zone, and the newly created DeviceZone, to the client
     return JsonResponse(
-        json_serializer.serialize(
-            [Device.get_own_device(), registration.zone, device_zone], ensure_ascii=False
-        )
+        serializers.serialize("json", [Device.get_own_device(), registration.zone, device_zone], client_version=client_device.version, ensure_ascii=False)
     )
 
 @csrf_exempt
@@ -139,7 +127,7 @@ def create_session(request):
             client_device = Device.objects.get(pk=data["client_device"])
             session.client_device = client_device
         except Device.DoesNotExist:
-             return JsonResponse({"error": "Client device matching id could not be found."}, status=500)
+             return JsonResponse({"error": "Client device matching id could not be found. (id=%s)" % data["client_device"]}, status=500)
         session.server_nonce = uuid.uuid4().hex
         session.server_device = Device.get_own_device()
         session.ip = request.META.get("HTTP_X_FORWARDED_FOR", request.META.get('REMOTE_ADDR', ""))
@@ -159,9 +147,9 @@ def create_session(request):
             return JsonResponse({"error": "Signature did not match."}, status=500)
         session.verified = True
         session.save()
-        
+
     return JsonResponse({
-        "session": json_serializer.serialize([session], ensure_ascii=False),
+        "session": serializers.serialize("json", [session], client_version=session.client_version, ensure_ascii=False ),
         "signature": session.sign(),
     })
     
@@ -179,56 +167,63 @@ def device_download(data, session):
     devicezones = list(DeviceZone.objects.filter(zone=zone, device__in=data["devices"]))
     devices = [devicezone.device for devicezone in devicezones]
     session.models_downloaded += len(devices) + len(devicezones)
-    return JsonResponse({"devices": json_serializer.serialize(devices + devicezones, ensure_ascii=False)})
+    return JsonResponse({"devices": serializers.serialize("json", devices + devicezones, client_version=session.client_version, ensure_ascii=False)})
 
 @csrf_exempt
 @require_sync_session
 def device_upload(data, session):
     # TODO(jamalex): check that the uploaded devices belong to the client device's zone and whatnot
     # (although it will only save zones from here if centrally signed, and devices if registered in a zone)
-    result = save_serialized_models(data.get("devices", "[]"))
+    try:
+        result = model_sync.save_serialized_models(data.get("devices", "[]"), client_version=session.client_version)
+    except Exception as e:
+        result = { "error": e.message, "saved_model_count": 0 }
+        
     session.models_uploaded += result["saved_model_count"]
+    session.errors += result.has_key("error")
     return JsonResponse(result)
         
 @csrf_exempt
 @gzip_page
 @require_sync_session
 def device_counters(data, session):
-    device_counters = get_device_counters(session.client_device.get_zone())
+    device_counters = Device.get_device_counters(session.client_device.get_zone())
     return JsonResponse({
         "device_counters": device_counters,
     })
 
 @csrf_exempt
 @require_sync_session
-def upload_models(data, session):
+def model_upload(data, session):
     if "models" not in data:
-        return JsonResponse({"error": "Must provide models."}, status=500)
-    result = save_serialized_models(data["models"])
+        return JsonResponse({"error": "Must provide models.", "saved_model_count": 0}, status=500)
+    try:
+        result = model_sync.save_serialized_models(data["models"], client_version=session.client_version)
+    except Exception as e:
+        result = { "error": e.message, "saved_model_count": 0 }
+
     session.models_uploaded += result["saved_model_count"]
+    session.errors += result.has_key("error")
     return JsonResponse(result)
 
 @csrf_exempt
 @gzip_page
 @require_sync_session
-def download_models(data, session):
+def model_download(data, session):
     if "device_counters" not in data:
-        return JsonResponse({"error": "Must provide device counters."}, status=500)
-    result = get_serialized_models(data["device_counters"], zone=session.client_device.get_zone(), include_count=True)
+        return JsonResponse({"error": "Must provide device counters.", "count": 0}, status=500)
+    try:
+        result = model_sync.get_serialized_models(data["device_counters"], zone=session.client_device.get_zone(), include_count=True, client_version=session.client_version)
+    except Exception as e:
+        result = { "error": e.message, "count": 0 }
+
     session.models_downloaded += result["count"]
-    return JsonResponse({
-        "models": result["models"]
-    })
-    
+    session.errors += result.has_key("error")
+    return JsonResponse(result)
+            
 @csrf_exempt
 def test_connection(request):
     return HttpResponse("OK")
-
-def get_client_IP(request):
-    from socket import gethostname, gethostbyname 
-    ip = gethostbyname(gethostname()) 
-    return 
-
 
 def status(request):
     data = {

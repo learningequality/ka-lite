@@ -122,3 +122,4 @@ def _load_serializers():
         for format in settings.SERIALIZATION_MODULES:
             register_serializer(format, settings.SERIALIZATION_MODULES[format], serializers)
     _serializers = serializers
+

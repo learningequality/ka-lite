@@ -1,0 +1,3 @@
+* Django serializers, for robustness when client/server/model versions are different
+    * django.core.serializers.base.py: added version_diff function, code to Serialize to skip serializing fields with a version greater than the client version
+    * django.core.serializers.python: added code to Deserialize to ignore errors in deserializing fields when the remote server has a newer version than the local server
