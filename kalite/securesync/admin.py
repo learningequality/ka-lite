@@ -23,16 +23,13 @@ class DeviceMetadataAdmin(admin.ModelAdmin):
     list_display = ("device", "is_trusted", "is_own_device", "counter_position",)
 admin.site.register(DeviceMetadata, DeviceMetadataAdmin)
 
-
 class ZoneAdmin(admin.ModelAdmin):
     list_display = ("name", "description","is_neutered")
     def is_neutered(self, obj):
-        import pdb; pdb.set_trace()
         try:
             return ZoneKey.objects.get(zone=obj).private_key==""
         except ZoneKey.DoesNotExist:
             return False
-            
 admin.site.register(Zone, ZoneAdmin)
 
 class ZoneKeyAdmin(admin.ModelAdmin):
