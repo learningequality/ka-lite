@@ -56,9 +56,16 @@ class SyncClient(object):
             
     def register(self):
         own_device = Device.get_own_device()
+        # Start by telling the central server your true age
         r = self.post("register", {
-            "client_device": serializers.serialize("json", [own_device], client_version=None, ensure_ascii=False)
+            "client_device": serializers.serialize("json", [own_device], client_version=own_device.version, ensure_ascii=False)
         })
+        # If they don't understand, then they're an older version.
+        # So just lie about your age, baby!
+        if r.status_code == 500 and -1 != r.content.find("Device has no field named 'version'"):
+            r = self.post("register", {
+                "client_device": serializers.serialize("json", [own_device], client_version="0.9.2", ensure_ascii=False)
+            })
         if r.status_code == 200:
             models = serializers.deserialize("json", r.content, client_version=None, server_version=own_device.version)
             for model in models:
