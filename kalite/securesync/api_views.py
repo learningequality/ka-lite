@@ -14,6 +14,7 @@ from models import *
 from main.models import VideoLog, ExerciseLog
 from config.models import Settings
 
+json_serializer = serializers.get_serializer("json")()
 
 class JsonResponse(HttpResponse):
     def __init__(self, content, *args, **kwargs):

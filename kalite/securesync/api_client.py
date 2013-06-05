@@ -1,12 +1,15 @@
-from models import *
-
+import logging
 import re, json, requests, urllib, urllib2, uuid
+
 from django.core import serializers
 
 import crypto
 import settings
 import kalite
-import logging
+from models import *
+
+json_serializer = serializers.get_serializer("json")()
+
 
 class SyncClient(object):
     """ This is for the distributed server, for establishing a client session with
