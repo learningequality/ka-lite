@@ -6,7 +6,7 @@ import kalite
 import settings
 from securesync.models import Device, DeviceMetadata, Zone
 from securesync.utils import load_zone_for_offline_install
-            
+from kalite.utils.django_utils import call_command_with_output            
 
 def get_host_name():
     name = ""
@@ -27,7 +27,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if DeviceMetadata.objects.filter(is_own_device=True).count() > 0:
             self.stderr.write("Error: This device has already been initialized; aborting.\n")
-            return
+            exit(1)
             
         name        = args[0] if (len(args) >= 1 and args[0]) else get_host_name()
         description = args[1] if (len(args) >= 2 and args[1]) else ""
@@ -43,31 +43,42 @@ class Command(BaseCommand):
         self.stdout.write("Device '%s'%s has been successfully initialized.\n"
             % (name, description and (" ('%s')" % description) or ""))
         
-        # Import data
+        # Import a zone (for machines sharing zones)
         if obj_file:
             try:
                 load_zone_for_offline_install(in_file=obj_file)
+                self.stdout.write("Successfully imported zone information from %s\n" % obj_file)
             except Exception as e:
                 self.stderr.write("Error importing objects: %s\n" % str(e)) 
                 exit(1)       
-        
+        # Generate a zone (for stand-alone machines)
+        else:
+            out = call_command_with_output("generate_zone", "default zone")
+            if not out[1] or -1 != out[1].:
+                self.stdout.write("Successfully generated a stand-alone zone.") 
+            else:
+                self.stderr.write("Error generating new zone: %s\n" % out[1])
+                exit(1)
+                
+        import pdb; pdb.set_trace()
+          
         # Try to do offline install
         all_zones = Zone.objects.all()
-        if len(all_zones)>1:
-            self.stderr.write("There should never be more than one zone in the database at this time!\n")
+        if len(all_zones)!=1:
+            self.stderr.write("There should always be exactly one zone in the database at this time!\n")
             exit(1)
             
-        elif len(all_zones)==1:
-            try:
-                zone = all_zones[0]
-                cert = zone.register_offline(device = Device.get_own_device())
-                if cert:
-                    self.stdout.write("Successfully registered (offline) to zone %s, using certificate '%s'\n" % (zone.name, cert))
+        try:
+            zone = all_zones[0]
+            cert = zone.register_offline(device = Device.get_own_device())
+            if cert:
+                self.stdout.write("Successfully registered (offline) to zone %s, using certificate '%s'\n" % (zone.name, cert))
+                if os.path.exists(obj_file):
                     os.remove(obj_file)
-                else:
-                    self.stderr.write("Failed to register (offline) to zone %s; bad data in file? (%s)\n" % (zone.name, obj_file))
-                    exit(1)
-            except Exception as e:
-                self.stderr.write("Error completing offline registration: %s\n" % str(e))
+            else:
+                self.stderr.write("Failed to register (offline) to zone %s; bad data in file? (%s)\n" % (zone.name, obj_file))
                 exit(1)
-                        
+        except Exception as e:
+            self.stderr.write("Error completing offline registration: %s\n" % str(e))
+            exit(1)
+                    

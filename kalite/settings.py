@@ -12,8 +12,9 @@ DEBUG          = getattr(local_settings, "DEBUG", False)
 TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
 
 # Set logging level based on the value of DEBUG (evaluates to 0 if False, 1 if True)
+logging.basicConfig()
 logging.getLogger().setLevel(logging.DEBUG*DEBUG + logging.INFO*(1-DEBUG))
-    
+
 INTERNAL_IPS   = getattr(local_settings, "INTERNAL_IPS", ("127.0.0.1",))
 
 CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
@@ -69,7 +70,7 @@ USE_L10N       = getattr(local_settings, "USE_L10N", False)
 MEDIA_URL       = getattr(local_settings, "MEDIA_URL", "/media/")
 MEDIA_ROOT      = getattr(local_settings, "MEDIA_ROOT", PROJECT_PATH + "/media/") # not currently used
 STATIC_URL      = getattr(local_settings, "STATIC_URL", "/static/")
-if False and DEBUG: # jedi mind-trick on django to serve up static files in debug/release,
+if DEBUG: # jedi mind-trick on django to serve up static files in debug/release,
           #   while still following the semantics of django STATIC_ROOT/STATIC_URL
     STATIC_ROOT      = "" # this should point to a directory where we can collect and shove all files.
                           #    since we have no intention of doing so, set it to None.
