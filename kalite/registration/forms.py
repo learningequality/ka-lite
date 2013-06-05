@@ -41,18 +41,24 @@ class RegistrationForm(forms.Form):
     tos2 = forms.BooleanField(required=False)
     
 
-    def validate_email(self):
+    def clean_email(self, email=None):
         """
         Validate that the supplied email address is unique for the
         site.
         
         """
-                
-        if User.objects.filter(email=self.cleaned_data['email']):
+        if not email:
+            email = self.cleaned_data.get('email')
+        if not email:
+            raise forms.ValidationError(("You must specify an email address."))
+        elif User.objects.filter(email=email.lower()):
             raise forms.ValidationError(("This email address is already in use. Please supply a different email address."))
+        elif User.objects.filter(email=email):
+            raise forms.ValidationError(("This email address is already in use. Please supply a different email address."))
+        return email
 
         
-    def validate_password(self):
+    def clean_password(self): # NOT CALLED AUTOMATICALLY!
         """
         Verifiy that the values entered into the two password fields
         match. Note that an error here will end up in
@@ -61,28 +67,29 @@ class RegistrationForm(forms.Form):
         
         """
         if 'password1' in self.cleaned_data and 'password2' in self.cleaned_data:
-            if self.cleaned_data['password1'] != self.cleaned_data['password2']:
+            if self.cleaned_data.get('password1') != self.cleaned_data.get('password2'):
                 raise forms.ValidationError(("The two password fields didn't match."))
         
-    def validate_tos1(self):
-        if not self.cleaned_data['tos1']:
+    def clean_tos1(self):
+        if not self.cleaned_data.get('tos1'):
             raise forms.ValidationError(("You must acknowledge having read these terms."))
-
-    def validate_tos2(self):
-        if not self.cleaned_data['tos2']:
+        return self.cleaned_data.get('tos1')
+        
+    def clean_tos2(self):
+        if not self.cleaned_data.get('tos2'):
             raise forms.ValidationError(("You must acknowledge having read these terms."))
+        return self.cleaned_data.get('tos2')
 
             
     def clean(self):
         #Help docs @ https://docs.djangoproject.com/en/dev/ref/forms/validation/
-
+        import pdb; pdb.set_trace()
         cleaned_data = super(RegistrationForm, self).clean()
-        cleaned_data['email'] = cleaned_data['email'].lower() # always lcase it
-        cleaned_data['username'] = cleaned_data['email']
-
-        self.validate_email()
-        self.validate_password()
-        self.validate_tos1()
-        self.validate_tos2()
-
+        self.clean_email()
+        self.clean_password()
+        if cleaned_data.get("email"):
+            cleaned_data['email'] = cleaned_data.get('email').lower() # always lcase it
+            cleaned_data['username'] = cleaned_data.get('email')
+        else:
+            cleaned_data['username'] = None
         return cleaned_data
