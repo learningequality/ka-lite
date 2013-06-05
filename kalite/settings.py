@@ -123,20 +123,20 @@ INSTALLED_APPS = (
     "django_cherrypy_wsgiserver",
     "securesync",
     "config",
-    "main",
-    "faq",
-    "loadtesting",
-    "contact",
 )
-
-if DEBUG or CENTRAL_SERVER:
-    INSTALLED_APPS += ("django_extensions","django_snippets")
-
 
 if CENTRAL_SERVER:
     ACCOUNT_ACTIVATION_DAYS = getattr(local_settings, "ACCOUNT_ACTIVATION_DAYS", 7)
     DEFAULT_FROM_EMAIL      = getattr(local_settings, "DEFAULT_FROM_EMAIL", CENTRAL_FROM_EMAIL)
-    INSTALLED_APPS         += ("postmark", "kalite.registration", "central")
+    INSTALLED_APPS         += (
+        "django_extensions",
+        "django_snippets",
+        "postmark", 
+        "central", 
+        "contact",
+        "faq", 
+        "kalite.registration", 
+    )
     EMAIL_BACKEND           = getattr(local_settings, "EMAIL_BACKEND", "postmark.backends.PostmarkBackend")
     AUTH_PROFILE_MODULE     = 'central.UserProfile'
 
@@ -149,6 +149,15 @@ if not CENTRAL_SERVER:
     TEMPLATE_CONTEXT_PROCESSORS += (
         "main.custom_context_processors.languages",
     )
+    INSTALLED_APPS += ( "main", )
+
+    if DEBUG:
+        INSTALLED_APPS += (
+            "loadtesting",
+            "django_extensions",
+            "django_snippets",
+        )
+
 
 
 syncing_models = []
