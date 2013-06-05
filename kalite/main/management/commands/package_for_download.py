@@ -44,8 +44,10 @@ def select_package_dirs(dirnames, key_base, **kwargs):
             in_dirs = {kwargs['locale']}
 
     else:
-        in_dirs = set(dirnames) - {'loadtesting', 'tests', 'test', 'testing','tmp', 'selenium', 'werkzeug', 'postmark'}
-        if kwargs.get('server_type')!="central":# and base_name=="kalite":
+        # can't exclude 'test', which eliminates the Django test client (used in caching)
+        #   as well as all the Khan academy tests 
+        in_dirs = set(dirnames) - {'loadtesting', 'tests', 'testing','tmp', 'selenium', 'werkzeug', 'postmark'}
+        if "server_type" in kwargs and kwargs['server_type']!="central":
             in_dirs -= {"central", "landing-page"}
             if base_name=="kalite" or base_name=="templates":
                 in_dirs -= {"contact", "faq", "registration"}
