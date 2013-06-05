@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 
+import settings
 from securesync.models import Zone, ZoneInstallCertificate
 
 
@@ -12,6 +13,10 @@ class Command(BaseCommand):
         exit(1)
         
     def handle(self, *args, **options):
+        if settings.CENTRAL_SERVER:
+            self.stderr.write("Error: you shouldn't be trying to generate a zone on a central server instance!")
+            exit(1)
+        
         if Zone.objects.all().count() > 0:
             self.stderr.write("Error: This device already has a zone; aborting!\n")
             exit(1)

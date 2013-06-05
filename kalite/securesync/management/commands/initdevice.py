@@ -43,6 +43,15 @@ class Command(BaseCommand):
         self.stdout.write("Device '%s'%s has been successfully initialized.\n"
             % (name, description and (" ('%s')" % description) or ""))
         
+        # Get ready to import a zone
+        if settings.CENTRAL_SERVER:
+            if obj_file:
+                self.stderr.write("Error: should not specify any zone information when installing a central server!")
+                exit(1)
+            else:
+                exit(0) # done.
+                
+        # Now we're definitely not central server, so ... go for it!
         # Import a zone (for machines sharing zones)
         if obj_file:
             try:
@@ -54,7 +63,7 @@ class Command(BaseCommand):
         # Generate a zone (for stand-alone machines)
         else:
             out = call_command_with_output("generate_zone", "default zone")
-            if not out[1] or -1 != out[1].:
+            if not out[1]:
                 self.stdout.write("Successfully generated a stand-alone zone.") 
             else:
                 self.stderr.write("Error generating new zone: %s\n" % out[1])
