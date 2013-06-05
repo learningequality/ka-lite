@@ -91,12 +91,12 @@ def register_device(request):
         if device_zone:
             remote_cert = models.next().object
             try:
-                local_cert = ZoneOutstandingInstallCertificate.objects.get(install_certificate=remote_cert)
+                local_cert = ZoneInstallCertificate.objects.get(install_certificate=remote_cert)
                 zone = local_cert.zone
 
                 local_certcert.use()  # succeeded, so mark the invitation as used
 
-            except ZoneOutstandingInstallCertificate.DoesNotExist:
+            except ZoneInstallCertificate.DoesNotExist:
                 logging.debug("\t%s (%s)", e.message, remote_cert)
                 return JsonResponse({
                     "error": "Certificate %s for zone %s is not recognized." % (remote_cert, device_zone.zone),

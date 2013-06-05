@@ -268,7 +268,7 @@ class Zone(SyncedModel):
         #   integrating with the install UI
         num_certificates = 5 # sure, why not?
         for i in range(num_certificates):
-            cert = self.zoneoutstandinginstallcertificate_set.create()
+            cert = self.zoneinstallcertificate_set.create()
             logging.debug("Created install certificate: Zone=%s; Cert=%s" % (self.name, cert.install_certificate))
             
             
@@ -362,6 +362,67 @@ class ZoneKey(SyncedModel):
         
         return self.get_key().sign(string_to_sign)
         
+
+        
+class ZoneInstallCertificate(models.Model):
+    """In order to auto-register with a zone, the zone can provide
+    an "installation certificate"; if a valid installation certificate
+    is provided by a device, the zone accepts the request to join,
+    and the certificate is removed from the list of outstanding certs."""
+    
+    zone = models.ForeignKey(Zone, verbose_name="Zone Certificate")
+#    device_counter = models.IntegerField()
+    install_certificate = models.CharField(max_length=500)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    expiration_date = models.DateTimeField()
+    
+    
+#    @transaction.atomic
+    @transaction.commit_on_success
+    def save(self, *args, **kwargs):
+        # Generate the certificate
+        if not self.install_certificate:
+            try:
+                zone_key = ZoneKey.objects.get(zone=self.zone)
+            except ZoneKey.DoesNotExist:
+                # generate the zone key
+                zone_key = ZoneKey(zone=self.zone)
+                zone_key.save()
+                zone_key.full_clean()
+                
+            self.install_certificate = zone_key.generate_install_certificate()
+            
+        # Expire in one year, if not specified
+        if not self.expiration_date:
+            if not self.creation_date:
+                self.creation_date = datetime.datetime.now()
+            self.expiration_date = self.creation_date + datetime.timedelta(days=365) # no "years" nor "month" keywords
+        
+#        # Device counter is the next one available.
+#        if not self.device_counter: 
+#            # danger! danger! race/concurrency conditions! 
+#            # added transaction decorator, but ... who knows if that protects enough :(
+#            # Generates a "SELECT MAX..." statement
+#            self.device_counter = 1+Zone.get_next_device_counter()
+            
+        super(ZoneInstallCertificate, self).save(*args, **kwargs)
+    
+    @staticmethod
+    def validate(self, install_certificate):
+        """Check that the given certificate is recognized, but don't actually use it."""
+        
+        try:
+            ZoneInstallCertificate.get(install_certificate=install_certificate)
+            return True
+        except NotFoundException as e:
+            return False
+            
+                
+    def use(self):
+        """Use the given install certificate: validate it, and remove it from the database.
+        If the certificate was invalid/unrecognized, then the method with raise an Exception"""
+        
+        self.delete()
         
 class Facility(SyncedModel):
     name = models.CharField(verbose_name=_("Name"), help_text=_("(This is the name that students/teachers will see when choosing their facility; it can be in the local language.)"), max_length=100)
