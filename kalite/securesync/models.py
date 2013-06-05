@@ -266,24 +266,29 @@ class Zone(SyncedModel):
         # Create some install certs
         # TODO(bcipolli): remove this code when
         #   integrating with the install UI
-        num_certificates = 5 # sure, why not?
-        for i in range(num_certificates):
-            cert = self.zoneinstallcertificate_set.create()
-            logging.debug("Created install certificate: Zone=%s; Cert=%s" % (self.name, cert.install_certificate))
+        if settings.CENTRAL_SERVER:
+            num_certificates = 5 # sure, why not?
+            for i in range(num_certificates):
+                cert = self.zoneinstallcertificate_set.create()
+                logging.debug("Created install certificate: Zone=%s; Cert=%s" % (self.name, cert.value))
             
             
-    def register_offline(device, user_certificates):
+    def register_offline(self, device, signed_values=None):
         """Registers in an offline context by verifying the given certificates
         with the zone's public key"""
         
-        if not hasattr(user_certificates,"pop"):
-            user_certificates = [user_certificates]
-            
+        if signed_values:
+            if hasattr(user_certificates,"pop"):
+                user_certificates = [ZoneInstallCertificate.objects.get(sv) for sv in signed_values]
+            else:
+                user_certificates = [ZoneInstallCertificate.objects.get(signed_values)]
+        else:
+            user_certificates = ZoneInstallCertificate.objects.filter(zone=self.id)
+
         for cert in user_certificates:
-            if self.zonekey.get_key().verify(cert):
+            if cert.verify():
                 set_as_registered()
-                return cert
-        
+                return cert.value
         return None
     
        
@@ -300,14 +305,13 @@ class ZoneKey(SyncedModel):
     that requires one.  Note that right now, that is when
     a ZoneInstallCertificate is requested."""
     
-    zone = models.ForeignKey(Zone, verbose_name="Zone")
+    zone = models.ForeignKey(Zone, verbose_name="Zone", unique=True)
     private_key = models.TextField(max_length=500)
     public_key = models.TextField(max_length=500)
     
     key = None
     
     def save(self, *args, **kwargs):
-
         # This happens on the local server side
         if self.public_key:
             assert self.private_key or not settings.CENTRAL_SERVER, "public_key should only be set alone in distributed servers."
@@ -360,7 +364,7 @@ class ZoneKey(SyncedModel):
         if not string_to_sign:
             string_to_sign = "%f" % random.random()
         
-        return self.get_key().sign(string_to_sign)
+        return (string_to_sign, self.get_key().sign(string_to_sign))
         
 
         
@@ -372,7 +376,8 @@ class ZoneInstallCertificate(models.Model):
     
     zone = models.ForeignKey(Zone, verbose_name="Zone Certificate")
 #    device_counter = models.IntegerField()
-    install_certificate = models.CharField(max_length=500)
+    value = models.CharField(max_length=50),
+    signed_value = models.CharField(max_length=500)
     creation_date = models.DateTimeField(auto_now_add=True)
     expiration_date = models.DateTimeField()
     
@@ -381,7 +386,7 @@ class ZoneInstallCertificate(models.Model):
     @transaction.commit_on_success
     def save(self, *args, **kwargs):
         # Generate the certificate
-        if not self.install_certificate:
+        if not self.signed_value:
             try:
                 zone_key = ZoneKey.objects.get(zone=self.zone)
             except ZoneKey.DoesNotExist:
@@ -390,7 +395,13 @@ class ZoneInstallCertificate(models.Model):
                 zone_key.save()
                 zone_key.full_clean()
                 
-            self.install_certificate = zone_key.generate_install_certificate()
+            (self.value, self.signed_value) = zone_key.generate_install_certificate()
+
+        # Make sure we don't get duplicate certificates
+        else:
+            cert_ids = set([cert.id for cert in ZoneInstallCertificate.objects.filter(zone=self.id,  value=self.value)]).union(set(self.id))
+            if len(cert_ids) != 1:
+                raise Exception("Cannot double-add install certificates.")
             
         # Expire in one year, if not specified
         if not self.expiration_date:
@@ -406,16 +417,15 @@ class ZoneInstallCertificate(models.Model):
 #            self.device_counter = 1+Zone.get_next_device_counter()
             
         super(ZoneInstallCertificate, self).save(*args, **kwargs)
-    
-    @staticmethod
-    def validate(self, install_certificate):
+
+
+    def validate(self):
         """Check that the given certificate is recognized, but don't actually use it."""
         
-        try:
-            ZoneInstallCertificate.get(install_certificate=install_certificate)
-            return True
-        except NotFoundException as e:
-            return False
+        zonekey = ZoneKey.objects.get(zone=self.zone)
+        key = zonekey.get_key()
+        
+        return key.verify(self.value, self.signed_value)
             
                 
     def use(self):

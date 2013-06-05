@@ -151,7 +151,7 @@ else:
     TEMPLATE_CONTEXT_PROCESSORS += (
         "main.custom_context_processors.languages",
     )
-    INSTALL_CERTIFICATES = local_or_("INSTALL_CERTIFICATES", [])
+    INSTALL_CERTIFICATES = getattr(local_settings, "INSTALL_CERTIFICATES", [])
 
 
 slug_key = {

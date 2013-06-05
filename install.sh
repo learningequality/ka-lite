@@ -113,7 +113,7 @@ if [ "$name" ]; then
 fi
 echo -n "Please enter a one-line description for this server (or, press Enter to leave blank): "
 read -e description
-$pyexec manage.py initdevice "$hostname" "$description"
+$pyexec manage.py initdevice "$hostname" "$description" "zone_data.json"
 
 initd_available=`command -v update-rc.d`
 if [ $initd_available ]; then

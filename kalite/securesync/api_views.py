@@ -78,51 +78,23 @@ def register_device(request):
             "code": "client_device_invalid_signature",
         }, status=500)
     
-    # Complete the registration in a single database step
-    with transaction.atomic():
-        
-        # Check if the install certificate exists
-        try:
-            device_zone = models.next().object
-        except Zone.DoesNotExist:
-            import pdb; pdb.set_trace()
-            device_zone = None
-            
-        if device_zone:
-            remote_cert = models.next().object
-            try:
-                local_cert = ZoneInstallCertificate.objects.get(install_certificate=remote_cert)
-                zone = local_cert.zone
-
-                local_certcert.use()  # succeeded, so mark the invitation as used
-
-            except ZoneInstallCertificate.DoesNotExist:
-                logging.debug("\t%s (%s)", e.message, remote_cert)
-                return JsonResponse({
-                    "error": "Certificate %s for zone %s is not recognized." % (remote_cert, device_zone.zone),
-                    "code": "certificate_not_found",
-                }, status=500)
-            
-            
         # Check if its public key has been registered
-        else:
+        try:
+            registration = RegisteredDevicePublicKey.objects.get(public_key=client_device.public_key)
+            zone = registration.zone
+            registration.delete()
+        except RegisteredDevicePublicKey.DoesNotExist:
             try:
-                registration = RegisteredDevicePublicKey.objects.get(public_key=client_device.public_key)
-                zone = registration.zone
-                registration.delete()
-            except RegisteredDevicePublicKey.DoesNotExist:
-                try:
-                    device = Device.objects.get(public_key=client_device.public_key)
-                    return JsonResponse({
-                        "error": "This device has already been registered",
-                        "code": "device_already_registered",
-                    }, status=500)            
-                except Device.DoesNotExist:
-                    return JsonResponse({
-                        "error": "Device registration with public key not found; login and register first?",
-                        "code": "public_key_unregistered",
-                    }, status=500)
-    
+                device = Device.objects.get(public_key=client_device.public_key)
+                return JsonResponse({
+                    "error": "This device has already been registered",
+                    "code": "device_already_registered",
+                }, status=500)            
+            except Device.DoesNotExist:
+                return JsonResponse({
+                    "error": "Device registration with public key not found; login and register first?",
+                    "code": "public_key_unregistered",
+                }, status=500)
 
         client_device.signed_by = client_device  # the device checks out; let's save it!
         client_device.save(imported=True)
