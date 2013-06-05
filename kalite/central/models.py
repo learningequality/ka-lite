@@ -14,7 +14,8 @@ from securesync.models import Zone
 
 
 def get_or_create_user_profile(user):
-    assert user.is_anonymous(), "Should not be calling get_or_create_user_profile with an anonymous user."
+    assert not user.is_anonymous(), "Should not be calling get_or_create_user_profile with an anonymous user."
+    assert user.is_authenticated(), "Should not be calling get_or_create_user_profile with an anonymous user."
     
     return UserProfile.objects.get_or_create(user=user)[0]
 
