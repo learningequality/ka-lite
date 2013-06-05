@@ -69,7 +69,7 @@ USE_L10N       = getattr(local_settings, "USE_L10N", False)
 MEDIA_URL       = getattr(local_settings, "MEDIA_URL", "/media/")
 MEDIA_ROOT      = getattr(local_settings, "MEDIA_ROOT", PROJECT_PATH + "/media/") # not currently used
 STATIC_URL      = getattr(local_settings, "STATIC_URL", "/static/")
-if DEBUG: # jedi mind-trick on django to serve up static files in debug/release,
+if False and DEBUG: # jedi mind-trick on django to serve up static files in debug/release,
           #   while still following the semantics of django STATIC_ROOT/STATIC_URL
     STATIC_ROOT      = "" # this should point to a directory where we can collect and shove all files.
                           #    since we have no intention of doing so, set it to None.

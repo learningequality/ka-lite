@@ -36,7 +36,7 @@ class Command(BaseCommand):
         # Validate params
         if obj_file and not os.path.exists(obj_file):
             self.stderr.write("Could not find specified object file: %s" % obj_file)
-            return 1
+            exit(1)
 
         # Create the device            
         Device.initialize_own_device(name=name, description=description, version=kalite.VERSION)
@@ -49,23 +49,25 @@ class Command(BaseCommand):
                 load_zone_for_offline_install(in_file=obj_file)
             except Exception as e:
                 self.stderr.write("Error importing objects: %s\n" % str(e)) 
-                return 1       
+                exit(1)       
         
         # Try to do offline install
         all_zones = Zone.objects.all()
         if len(all_zones)>1:
             self.stderr.write("There should never be more than one zone in the database at this time!\n")
-            return 1
+            exit(1)
             
         elif len(all_zones)==1:
             try:
                 zone = all_zones[0]
                 cert = zone.register_offline(device = Device.get_own_device())
                 if cert:
-                    self.stdout.write("Successfully registered (offline) to zone %s, using certificate %s\n" % (zone.name, cert))
+                    self.stdout.write("Successfully registered (offline) to zone %s, using certificate '%s'\n" % (zone.name, cert))
+                    os.remove(obj_file)
                 else:
-                    self.stderr.write("Failed to register (offline) to zone %s\n" % zone.name)
+                    self.stderr.write("Failed to register (offline) to zone %s; bad data in file? (%s)\n" % (zone.name, obj_file))
+                    exit(1)
             except Exception as e:
                 self.stderr.write("Error completing offline registration: %s\n" % str(e))
-                return 1
+                exit(1)
                         

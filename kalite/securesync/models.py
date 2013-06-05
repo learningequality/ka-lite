@@ -272,10 +272,14 @@ class Zone(SyncedModel):
                 cert = self.zoneinstallcertificate_set.create()
                 logging.debug("Created install certificate: Zone=%s; Cert=%s" % (self.name, cert.raw_value))
             
-            
+    
+    @transaction.commit_on_success
     def register_offline(self, device, signed_values=None):
         """Registers in an offline context by verifying the given certificates
         with the zone's public key"""
+        
+        if device.is_registered():
+            raise Exception("Device is already registered!")
         
         if signed_values:
             if hasattr(user_certificates,"pop"):
@@ -287,7 +291,17 @@ class Zone(SyncedModel):
 
         for cert in user_certificates:
             if cert.verify():
+                # Things we have to do, in order to register
+                dz = DeviceZone(device=device, zone=self)
+                dz.save()
                 set_as_registered()
+
+                # Things we'd like to do, in order to facilitate user registrations:
+                #    Create a default facility.
+                if len(Facility.objects.all())==0:
+                    facility = Facility(name="default facility")
+                    facility.save()
+
                 return cert.raw_value
         return None
     
@@ -353,19 +367,6 @@ class ZoneKey(SyncedModel):
             # Cannot create a key here; otherwise we run the risk
             #   of changing the key (if it's generated here and not saved)
             raise Exception('No key set for this object.')
-            
-            
-    def generate_install_certificate(self, string_to_sign=None):
-        """Generates an install certificate by signing a string with
-        the zone's private key.
-        If no string is given, then one will be generated"""
-        
-        # Should have something more intelligent here
-        if not string_to_sign:
-            string_to_sign = "%f" % random.random()
-        
-        return (string_to_sign, self.get_key().sign(string_to_sign))
-        
 
         
 class ZoneInstallCertificate(models.Model):
@@ -380,48 +381,46 @@ class ZoneInstallCertificate(models.Model):
     expiration_date = models.DateTimeField()
     
     
-#    @transaction.atomic
     @transaction.commit_on_success
     def save(self, *args, **kwargs):
-        # Generate the certificate
-        if not self.signed_value:
-            try:
-                zone_key = ZoneKey.objects.get(zone=self.zone)
-            except ZoneKey.DoesNotExist:
-                # generate the zone key
-                zone_key = ZoneKey(zone=self.zone)
-                zone_key.save()
-                zone_key.full_clean()
-                
-            (self.raw_value, self.signed_value) = zone_key.generate_install_certificate()
 
-        # Make sure we don't get duplicate certificates
-        else:
-            cert_ids = set([cert.id for cert in ZoneInstallCertificate.objects.filter(zone=self.id,  raw_value=self.raw_value)]).union(set(self.id))
-            if len(cert_ids) != 1:
-                raise Exception("Cannot double-add install certificates.")
-            
-        # Expire in one year, if not specified
-        if not self.expiration_date:
-            self.expiration_date = datetime.datetime.now() + datetime.timedelta(days=365) # no "years" nor "month" keywords
+        # Generate the certificate
+        if not self.raw_value:
+            self.raw_value = "%f" % random.random()
+            self.signed_value = ""
         
-#        # Device counter is the next one available.
-#        if not self.device_counter: 
-#            # danger! danger! race/concurrency conditions! 
-#            # added transaction decorator, but ... who knows if that protects enough :(
-#            # Generates a "SELECT MAX..." statement
-#            self.device_counter = 1+Zone.get_next_device_counter()
+        if not self.signed_value:
+            self.signed_value = self.get_key().sign(self.raw_value)
+        
+        # Make sure we don't get duplicate certificates
+        cert_ids = set([cert.id for cert in ZoneInstallCertificate.objects.filter(zone=self.id,  raw_value=self.raw_value)]).union(set((self.id,)))
+        if len(cert_ids) != 1:
+            raise Exception("Cannot double-add install certificates.")
+        
+        # Expire in one year, if not specified
+        #   Note: no "years" nor "month" keywords, so set in days
+        if not self.expiration_date:
+            self.expiration_date = datetime.datetime.now() + datetime.timedelta(days=365) 
             
         super(ZoneInstallCertificate, self).save(*args, **kwargs)
 
 
-    def validate(self):
+    def get_key(self):
+        if not getattr(self, "zonekey", None):
+            try:
+                self.zonekey = ZoneKey.objects.get(zone=self.zone)
+            except ZoneKey.DoesNotExist:
+                # generate the zone key
+                self.zonekey = ZoneKey(zone=self.zone)
+                self.zonekey.save()
+                self.zonekey.full_clean()
+        return self.zonekey.get_key()
+    
+    
+    def verify(self):
         """Check that the given certificate is recognized, but don't actually use it."""
         
-        zonekey = ZoneKey.objects.get(zone=self.zone)
-        key = zonekey.get_key()
-        
-        return key.verify(self.raw_value, self.signed_value)
+        return self.get_key().verify(self.raw_value, self.signed_value)
             
                 
     def use(self):
@@ -429,7 +428,8 @@ class ZoneInstallCertificate(models.Model):
         If the certificate was invalid/unrecognized, then the method with raise an Exception"""
         
         self.delete()
-        
+
+
 class Facility(SyncedModel):
     name = models.CharField(verbose_name=_("Name"), help_text=_("(This is the name that students/teachers will see when choosing their facility; it can be in the local language.)"), max_length=100)
     description = models.TextField(blank=True, verbose_name=_("Description"))
@@ -554,6 +554,9 @@ class Device(SyncedModel):
         fields = ["signed_version", "name", "description", "public_key"]
         return super(Device, self)._hashable_representation(fields=fields)
 
+    def is_registered(self):
+        return self.get_zone() is not None
+        
     def get_metadata(self):        
         try:
             return self.devicemetadata

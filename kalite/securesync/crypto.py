@@ -63,7 +63,6 @@ class Key(object):
             
     def verify(self, message, signature):
         # assume we're dealing with a base64 encoded signature, but pass on through if not
-        import pdb; pdb.set_trace()
         try:
             signature = decode_base64(signature)
         except:

@@ -90,7 +90,7 @@ def facility_required(handler):
 def register_public_key_client(request):
     # When successfully registered, the zone information is syncd
     #   and the local device's zone is marked
-    if Device.get_own_device().get_zone():
+    if Device.get_own_device().is_registered():
         set_as_registered()   
         return {"already_registered": True}
 
