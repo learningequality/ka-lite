@@ -270,7 +270,7 @@ class Zone(SyncedModel):
             num_certificates = 5 # sure, why not?
             for i in range(num_certificates):
                 cert = self.zoneinstallcertificate_set.create()
-                logging.debug("Created install certificate: Zone=%s; Cert=%s" % (self.name, cert.value))
+                logging.debug("Created install certificate: Zone=%s; Cert=%s" % (self.name, cert.raw_value))
             
             
     def register_offline(self, device, signed_values=None):
@@ -279,16 +279,16 @@ class Zone(SyncedModel):
         
         if signed_values:
             if hasattr(user_certificates,"pop"):
-                user_certificates = [ZoneInstallCertificate.objects.get(sv) for sv in signed_values]
+                user_certificates = [ZoneInstallCertificate.objects.get(signed_value=sv) for sv in signed_values]
             else:
-                user_certificates = [ZoneInstallCertificate.objects.get(signed_values)]
+                user_certificates = [ZoneInstallCertificate.objects.get(signed_value=signed_values)]
         else:
             user_certificates = ZoneInstallCertificate.objects.filter(zone=self.id)
 
         for cert in user_certificates:
             if cert.verify():
                 set_as_registered()
-                return cert.value
+                return cert.raw_value
         return None
     
        
@@ -306,7 +306,7 @@ class ZoneKey(SyncedModel):
     a ZoneInstallCertificate is requested."""
     
     zone = models.ForeignKey(Zone, verbose_name="Zone", unique=True)
-    private_key = models.TextField(max_length=500)
+    private_key = models.TextField(max_length=500, blank=True) # distributed server
     public_key = models.TextField(max_length=500)
     
     key = None
@@ -375,10 +375,8 @@ class ZoneInstallCertificate(models.Model):
     and the certificate is removed from the list of outstanding certs."""
     
     zone = models.ForeignKey(Zone, verbose_name="Zone Certificate")
-#    device_counter = models.IntegerField()
-    value = models.CharField(max_length=50),
-    signed_value = models.CharField(max_length=500)
-    creation_date = models.DateTimeField(auto_now_add=True)
+    raw_value = models.CharField(max_length=50, blank=False)
+    signed_value = models.CharField(max_length=500, blank=False)
     expiration_date = models.DateTimeField()
     
     
@@ -395,19 +393,17 @@ class ZoneInstallCertificate(models.Model):
                 zone_key.save()
                 zone_key.full_clean()
                 
-            (self.value, self.signed_value) = zone_key.generate_install_certificate()
+            (self.raw_value, self.signed_value) = zone_key.generate_install_certificate()
 
         # Make sure we don't get duplicate certificates
         else:
-            cert_ids = set([cert.id for cert in ZoneInstallCertificate.objects.filter(zone=self.id,  value=self.value)]).union(set(self.id))
+            cert_ids = set([cert.id for cert in ZoneInstallCertificate.objects.filter(zone=self.id,  raw_value=self.raw_value)]).union(set(self.id))
             if len(cert_ids) != 1:
                 raise Exception("Cannot double-add install certificates.")
             
         # Expire in one year, if not specified
         if not self.expiration_date:
-            if not self.creation_date:
-                self.creation_date = datetime.datetime.now()
-            self.expiration_date = self.creation_date + datetime.timedelta(days=365) # no "years" nor "month" keywords
+            self.expiration_date = datetime.datetime.now() + datetime.timedelta(days=365) # no "years" nor "month" keywords
         
 #        # Device counter is the next one available.
 #        if not self.device_counter: 
@@ -425,7 +421,7 @@ class ZoneInstallCertificate(models.Model):
         zonekey = ZoneKey.objects.get(zone=self.zone)
         key = zonekey.get_key()
         
-        return key.verify(self.value, self.signed_value)
+        return key.verify(self.raw_value, self.signed_value)
             
                 
     def use(self):

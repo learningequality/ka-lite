@@ -49,17 +49,6 @@ def homepage(request):
                 if org.pk == int(request.POST.get("organization")):
                     org.form = form
 
-    # Lazy man's way of generating test data                    
-    """from securesync.utils import dump_zone_for_offline_install
-    from securesync.models import ZoneInstallCertificate
-    for org in organizations:
-        for zone in org.get_zones():
-            certs = ZoneInstallCertificate.objects.filter(zone=zone.id)
-            if certs:
-                dump_zone_for_offline_install(zone_id=zone.id, out_file="zone_data.json")
-                break
-    """
-                        
     return {
         "title": _("Account administration"),
         "organizations": organizations,
