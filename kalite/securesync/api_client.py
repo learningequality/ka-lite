@@ -64,14 +64,14 @@ class SyncClient(object):
         
         # Get the required model data by registering (online and offline options available)
         try:
-            models = self.register_online(certs=certs)
+            models = self.register_online()
         except Exception as e:
             # Some of our exceptions are actually json blobs from the server.
             #   Try loading them to pass on that error info.
             try:
                 return json.loads(e.message)
             except:
-                return { "err", e.message }
+                return { "code": "unexpected_exception", "error": e.message }
         
         # If we got here, we've successfully registered, and 
         #   have the model data necessary for completing registration!
