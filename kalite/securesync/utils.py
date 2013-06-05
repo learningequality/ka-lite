@@ -9,15 +9,14 @@ json_serializer = serializers.get_serializer("json")()
 #        return serializers.deserialize("json", r.content)
 #
 
-def dump_zone_for_offline_install(zone_name, out_file=None):
-    zone = Zone.objects.get(name=zone_name)
-    zone_key = zone.zone_key
+def dump_zone_for_offline_install(zone_id, out_file=None):
+    zone = Zone.objects.get(id=zone_id)
+    zone_key = ZoneKey.objects.get(zone=zone_id)
     
     objects_json = json_serializer.serialize([zone, zone_key], ensure_ascii=False)
     
     if out_file:
-        with open(out_file, "w") as fh:
-            fh.write(objects_json)
+        with open(out_file, "w") as fh:  fh.write(objects_json)
     
     return objects_json
     

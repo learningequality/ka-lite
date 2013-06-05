@@ -48,7 +48,11 @@ def homepage(request):
             for org in organizations:
                 if org.pk == int(request.POST.get("organization")):
                     org.form = form
-                    
+
+    # Lazy man's way of generating test data                    
+#    from securesync.utils import dump_zone_for_offline_install
+#    dump_zone_for_offline_install(zone_id=organizations[0].get_zones()[0].id, out_file="zone_data_2.json")
+
     return {
         "title": _("Account administration"),
         "organizations": organizations,
