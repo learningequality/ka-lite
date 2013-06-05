@@ -25,8 +25,23 @@ admin.site.register(DeviceMetadata, DeviceMetadataAdmin)
 
 
 class ZoneAdmin(admin.ModelAdmin):
-    list_display = ("name", "description",)
+    list_display = ("name", "description","is_neutered")
+    def is_neutered(self, obj):
+        import pdb; pdb.set_trace()
+        try:
+            return ZoneKey.objects.get(zone=obj).private_key==""
+        except ZoneKey.DoesNotExist:
+            return False
+            
 admin.site.register(Zone, ZoneAdmin)
+
+class ZoneKeyAdmin(admin.ModelAdmin):
+    list_display = ("zone", "public_key", "private_key")
+admin.site.register(ZoneKey, ZoneKeyAdmin)
+
+class ZoneInstallCertificateAdmin(admin.ModelAdmin):
+    list_display = ("zone", "raw_value", "signed_value", "expiration_date")
+admin.site.register(ZoneInstallCertificate, ZoneInstallCertificateAdmin)
 
 
 class FacilityAdmin(admin.ModelAdmin):
