@@ -153,9 +153,8 @@ if not CENTRAL_SERVER:
 
     if DEBUG:
         INSTALLED_APPS += (
-            "loadtesting",
             "django_extensions",
-            "django_snippets",
+            "loadtesting",
         )
 
 

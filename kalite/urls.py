@@ -9,9 +9,10 @@ from django.contrib import admin
 admin.autodiscover()
 
 
-def redirect_to(self, url, wurl=""):
-    return HttpResponseRedirect(url + wurl)
-    
+def redirect_to(self, base_url, path ):
+    """Redirects to a path within a given (off-site) website."""
+    return HttpResponseRedirect(base_url + path)
+
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^images/(.+)$', lambda request, path: HttpResponseRedirect('/static/images/' + path)),
@@ -55,8 +56,8 @@ if settings.CENTRAL_SERVER:
         url(r'^faq/', include('faq.urls')),
         url(r'^contact/', include('contact.urls')),
         url(r'^install/$', 'install_wizard', {}, 'install_wizard'),
-        url(r'^wiki/(?P<wurl>\w+)/$', redirect_to, {'url': settings.CENTRAL_WIKI_URL}),
-        url(r'^about/$', redirect_to, { 'url': 'http://learningequality.org/' }),
+        url(r'^wiki/(?P<path>\w+)/$', redirect_to, {'base_url': settings.CENTRAL_WIKI_URL}),
+        url(r'^about/$', redirect_to, { 'base_url': 'http://learningequality.org/' }),
     )
     
     handler404 = 'main.views.central_404_handler'
