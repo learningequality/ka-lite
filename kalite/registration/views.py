@@ -3,14 +3,17 @@ Views which allow users to create and activate accounts.
 
 """
 
+import copy
 
 from django.shortcuts import redirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib import messages
 from django.contrib.auth import logout
+from django.contrib.auth import views as auth_views
 
 from registration.backends import get_backend
+
 
 def complete(request, *args, **kwargs):
     messages.success(request, "Congratulations! Your account is now active. To get started, "
@@ -190,7 +193,7 @@ def register(request, backend, success_url=None, form_class=None,
     if request.method == 'POST':
         form = form_class(data=request.POST, files=request.FILES)
         if form.is_valid():
-            form.cleaned_data['username'] = form.cleaned_data['email']
+            form.clean()
             new_user = backend.register(request, **form.cleaned_data)
             if success_url is None:
                 to, args, kwargs = backend.post_registration_redirect(request, new_user)
@@ -210,6 +213,32 @@ def register(request, backend, success_url=None, form_class=None,
                               { 'form': form },
                               context_instance=context)
 
+def login_view(request, *args, **kwargs):
+    """Force lowercase of the username.
+    
+    Since we don't want things to change to the user (if something fails),
+    we should try the new way first, then fall back to the old way"""
+
+    # Try the the lcased way
+    old_POST = request.POST
+    request.POST = copy.deepcopy(request.POST)
+    if "username" in request.POST:
+        request.POST['username'] = request.POST['username'].lower()
+    template_response = auth_views.login(request, *args, **kwargs)
+
+    # Try the original way    
+    # If we have a login error, try logging in with lcased version
+    template_data = getattr(template_response, 'context_data', {})
+    template_form = template_data.get('form', {})
+    template_errors = getattr(template_form, 'errors', {})
+    if template_errors:
+        request.POST = old_POST
+        template_response = auth_views.login(request, *args, **kwargs)
+
+    # Return the logged in version, or failed to login using lcased version
+    return template_response    
+
+    
 def logout_view(request):
     logout(request)
     return redirect("homepage")
