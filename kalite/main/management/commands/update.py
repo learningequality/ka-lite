@@ -422,10 +422,21 @@ class Command(BaseCommand):
         if os.path.exists(self.dest_dir):
             tempdir = tempfile.mkdtemp()
             shutil.move(self.dest_dir, tempdir)
-            print "*\tOld install moved to temp location (%s); OS will delete for you soon!" % tempdir
+            try:
+                shutil.move(self.dest_dir, tempdir)
+                print "*\tOld install moved to temp location (%s); OS will delete for you soon!" % tempdir
+
+                # Move to the final destination
+                shutil.move(self.working_dir, self.dest_dir)
+            except Exception as e:
+                print "Failed to move: %s" % str(e)
+                print "* Trying to move contents into dest_dir"
+                import pdb; pdb.set_trace()
+                for obj in os.listdir(self.working_dir):
+                    shutil.move(obj, self.dest_dir)
+                os.remove(self.working_dir)
+                
         
-        # Move to the final destination
-        shutil.move(self.working_dir, self.dest_dir)
 
 
     def start_server(self):
