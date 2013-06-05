@@ -83,7 +83,6 @@ class RegistrationForm(forms.Form):
             
     def clean(self):
         #Help docs @ https://docs.djangoproject.com/en/dev/ref/forms/validation/
-        import pdb; pdb.set_trace()
         cleaned_data = super(RegistrationForm, self).clean()
         self.clean_email()
         self.clean_password()
