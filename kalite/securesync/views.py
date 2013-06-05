@@ -20,9 +20,9 @@ import crypto
 import settings
 from forms import RegisteredDevicePublicKeyForm, FacilityUserForm, FacilityTeacherForm, LoginForm, FacilityForm, FacilityGroupForm
 from config.models import Settings
+from config.utils import set_as_registered
 from securesync.models import SyncSession, Device, RegisteredDevicePublicKey, Zone, Facility, FacilityGroup
 from securesync.api_client import SyncClient
-from utils.jobs import force_job
 from utils.decorators import require_admin
 
 
@@ -83,11 +83,6 @@ def facility_required(handler):
             return facility_selection(request)
     
     return inner_fn
-
-
-def set_as_registered():
-    force_job("syncmodels", "Secure Sync", "HOURLY")
-    Settings.set("registered", True)
 
 
 @require_admin

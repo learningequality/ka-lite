@@ -1,15 +1,18 @@
 import re, json, uuid
+import logging; 
+
 from django.core import serializers
+from django.db import transaction
 from django.http import HttpResponse
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.gzip import gzip_page
-from main.models import VideoLog, ExerciseLog
-from config.models import Settings
 
 import crypto
 import settings
 from models import *
+from main.models import VideoLog, ExerciseLog
+from config.models import Settings
 
 
 class JsonResponse(HttpResponse):
@@ -70,14 +73,31 @@ def register_device(request):
             "code": "client_device_invalid_signature",
         }, status=500)
     
-    from django.db import transaction
+    # Complete the registration in a single database step
     with transaction.atomic():
+        
         # Check if the install certificate exists
-        if "install_certificate" in data:
-            return JsonResponse({
-                "error": "install certificates NYI",
-                "code": "NYI"
-            }, status=500)
+        try:
+            device_zone = models.next().object
+        except Zone.DoesNotExist:
+            import pdb; pdb.set_trace()
+            device_zone = None
+            
+        if device_zone:
+            remote_cert = models.next().object
+            try:
+                local_cert = ZoneOutstandingInstallCertificate.objects.get(install_certificate=remote_cert)
+                zone = local_cert.zone
+
+                local_certcert.use()  # succeeded, so mark the invitation as used
+
+            except ZoneOutstandingInstallCertificate.DoesNotExist:
+                logging.debug("\t%s (%s)", e.message, remote_cert)
+                return JsonResponse({
+                    "error": "Certificate %s for zone %s is not recognized." % (remote_cert, device_zone.zone),
+                    "code": "certificate_not_found",
+                }, status=500)
+            
             
         # Check if its public key has been registered
         else:

@@ -1,7 +1,7 @@
 import datetime
+import logging
 import uuid
 import zlib
-import settings
 from annoying.functions import get_object_or_None
 from pbkdf2 import crypt
 
@@ -13,8 +13,11 @@ from django.db.models import Q
 from django.utils.text import compress_string
 from django.utils.translation import ugettext_lazy as _
 
+import settings
 import crypto
+from config.utils import set_as_registered
 from config.models import Settings
+
 
 
 _unhashable_fields = ["signature", "signed_by"]
@@ -249,10 +252,109 @@ class Zone(SyncedModel):
 
     requires_trusted_signature = True
     
+    def save(self, *args, **kwargs):
+        super(Zone, self).save(*args, **kwargs)
+        
+        # Create some install certs
+        # TODO(bcipolli): remove this code when
+        #   integrating with the install UI
+        num_certificates = 5 # sure, why not?
+        for i in range(num_certificates):
+            cert = self.zoneoutstandinginstallcertificate_set.create()
+            logging.debug("Created install certificate: Zone=%s; Cert=%s" % (self.name, cert.install_certificate))
+            
+            
+    def register_offline(device, user_certificates):
+        """Registers in an offline context by verifying the given certificates
+        with the zone's public key"""
+        
+        if not hasattr(user_certificates,"pop"):
+            user_certificates = [user_certificates]
+            
+        for cert in user_certificates:
+            if self.zonekey.get_key().verify(cert):
+                set_as_registered()
+                return cert
+        
+        return None
+    
+       
     def __unicode__(self):
         return self.name
         
 
+
+class ZoneKey(SyncedModel):
+    """Zones should have keys, but for back compat, they can't.
+    So, let's define a one-to-one table, to store zone keys.
+    
+    ZoneKey gets created on the fly, whenever something happens
+    that requires one.  Note that right now, that is when
+    a ZoneInstallCertificate is requested."""
+    
+    zone = models.ForeignKey(Zone, verbose_name="Zone")
+    private_key = models.TextField(max_length=500)
+    public_key = models.TextField(max_length=500)
+    
+    key = None
+    
+    def save(self, *args, **kwargs):
+
+        # This happens on the local server side
+        if self.public_key:
+            assert self.private_key or not settings.CENTRAL_SERVER, "public_key should only be set alone in distributed servers."
+            
+        # Auto-generate keys, if necessary
+        elif not self.private_key:
+            key = crypto.Key()
+            self.private_key = key.get_private_key_string()
+            self.public_key  = key.get_public_key_string()
+            
+        else:# self.public_key:
+            self.public_key = self.get_key().get_public_key_string()
+        
+        super(ZoneKey, self).save(*args, **kwargs)
+        
+        
+    def get_key(self):
+
+        # We have a cryptographic key object (from previous run); return it
+        if self.key:
+            return self.key
+
+        # We have key strings, but no key object.  create one!
+        elif self.private_key:
+            # For back-compatibility, where zones didn't have keys
+            if self.private_key=="dummy_key":
+                self.private_key = None
+                self.public_key = None
+                self.save()
+                
+            self.key = crypto.Key(private_key_string = self.private_key, public_key_string = self.public_key)
+            return self.key
+
+        elif self.public_key:
+            self.key = crypto.Key(public_key_string = self.public_key)
+            return self.key
+            
+        else:  
+            # Cannot create a key here; otherwise we run the risk
+            #   of changing the key (if it's generated here and not saved)
+            raise Exception('No key set for this object.')
+            
+            
+    def generate_install_certificate(self, string_to_sign=None):
+        """Generates an install certificate by signing a string with
+        the zone's private key.
+        If no string is given, then one will be generated"""
+        
+        # Should have something more intelligent here
+        if not string_to_sign:
+            string_to_sign = "%f" % random.random()
+        
+        return self.get_key().sign(string_to_sign)
+        
+        
 class Facility(SyncedModel):
     name = models.CharField(verbose_name=_("Name"), help_text=_("(This is the name that students/teachers will see when choosing their facility; it can be in the local language.)"), max_length=100)
     description = models.TextField(blank=True, verbose_name=_("Description"))

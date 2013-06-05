@@ -1,10 +1,16 @@
-from django.db import models
-from securesync.models import Zone
+import random
+import datetime
+
+from django.db import models, transaction
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.template import RequestContext
+
 import settings
+from securesync import crypto
+from securesync.models import Zone, ZoneKey
+
 
 def get_or_create_user_profile(user):
     return UserProfile.objects.get_or_create(user=user)[0]
@@ -100,3 +106,67 @@ class Subscription(models.Model):
     email = models.EmailField()
     timestamp = models.DateTimeField(auto_now_add=True)
     ip = models.CharField(max_length=100, blank=True)
+
+
+
+        
+        
+class ZoneOutstandingInstallCertificate(models.Model):
+    """In order to auto-register with a zone, the zone can provide
+    an "installation certificate"; if a valid installation certificate
+    is provided by a device, the zone accepts the request to join,
+    and the certificate is removed from the list of outstanding certs."""
+    
+    zone = models.ForeignKey(Zone, verbose_name="Zone Certificate")
+#    device_counter = models.IntegerField()
+    install_certificate = models.CharField(max_length=500)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    expiration_date = models.DateTimeField()
+    
+    
+#    @transaction.atomic
+    @transaction.commit_on_success
+    def save(self, *args, **kwargs):
+        # Generate the certificate
+        if not self.install_certificate:
+            try:
+                zone_key = ZoneKey.objects.get(zone=self.zone)
+            except ZoneKey.DoesNotExist:
+                # generate the zone key
+                zone_key = ZoneKey(zone=self.zone)
+                zone_key.save()
+                zone_key.full_clean()
+                
+            self.install_certificate = zone_key.generate_install_certificate()
+            
+        # Expire in one year, if not specified
+        if not self.expiration_date:
+            if not self.creation_date:
+                self.creation_date = datetime.datetime.now()
+            self.expiration_date = self.creation_date + datetime.timedelta(days=365) # no "years" nor "month" keywords
+        
+#        # Device counter is the next one available.
+#        if not self.device_counter: 
+#            # danger! danger! race/concurrency conditions! 
+#            # added transaction decorator, but ... who knows if that protects enough :(
+#            # Generates a "SELECT MAX..." statement
+#            self.device_counter = 1+Zone.get_next_device_counter()
+            
+        super(ZoneOutstandingInstallCertificate, self).save(*args, **kwargs)
+    
+    @staticmethod
+    def validate(self, install_certificate):
+        """Check that the given certificate is recognized, but don't actually use it."""
+        
+        try:
+            ZoneOutstandingInstallCertificate.get(install_certificate=install_certificate)
+            return True
+        except NotFoundException as e:
+            return False
+            
+                
+    def use(self):
+        """Use the given install certificate: validate it, and remove it from the database.
+        If the certificate was invalid/unrecognized, then the method with raise an Exception"""
+        
+        self.delete()
