@@ -2,8 +2,10 @@ import logging
 import re, json
 import os, shutil
 import requests
+import tempfile
 from zipfile import ZipFile, ZIP_DEFLATED
 from annoying.decorators import render_to
+from annoying.functions import get_object_or_None
 
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseNotAllowed
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
@@ -14,6 +16,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
 from django.utils.translation import ugettext as _
 
+import kalite
 import settings
 from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
 from central.forms import OrganizationForm, ZoneForm, OrganizationInvitationForm
@@ -21,107 +24,112 @@ from securesync.api_client import SyncClient
 from securesync.models import Zone, SyncSession
 from securesync.models import Facility
 from securesync.forms import FacilityForm
+from utils.django_utils import call_command_with_output
+
+
+def get_request_var(request, var_name, default_val="__empty__"):
+    return  request.POST.get(var_name, request.GET.get(var_name, default_val))
 
 
 @render_to("central/install_wizard.html")
 def install_wizard(request):
 
-    # When not authenticated, just point them to their options (including logging in!)
-    if not request.user.is_authenticated():
-        return {
-            "wiki_url": settings.CENTRAL_WIKI_URL,
-        }
-
-
-    # Get all data
-    organization_id = request["organization"] if "organization" in request else request.GET.get("organization",None)
-    zone_id = request["zone"] if "zone" in request else request.GET.get("zone", None)
-    num_certificates = request["num_certificates"] if "num_certificates" in request else request.GET.get("num_certificates", 1)
     
     # get a list of all the organizations this user helps administer,
     #   then choose the selected organization (if possible)
-    organizations = [] if request.user.is_anonymous() else get_or_create_user_profile(request.user).get_organizations()
-    if organization_id:
-        organization = organizations[int(organization_id)]
-    elif len(organizations)==1:
-        organization = organizations[organizations.keys()[0]]
-    else:
+    if request.user.is_anonymous():
+        organizations = []
         organization = None
-
-    # If an organization is selected, get the list of zones
-    if not organization:
+        organization_id = None
         zones = []
         zone = None
+        zoneid = None
+        num_certificates = 1
+        
     else:
-        zones = organization.zones.all()
-    
-        # If a zone is selected grab it
-        if zone_id:
-            zone = Zone.objects.get(id=zone_id)
-        elif len(zones)==1:
-            zone = zones[0]
+        # Get all data
+        organization_id = get_request_var(request, "organization", None)
+        zone_id = get_request_var(request, "zone", None)
+        num_certificates = int(get_request_var(request, "num_certificates", 1))
+        
+        if organization_id:
+            organizations = request.user.organization_set.filter(id=organization_id)
+            organization = organizations[0]
         else:
+            organizations = request.user.organization_set.all()
+            if len(organizations) == 1:
+                organization_id = organizations[0].id
+                organization = organizations[0]
+            else:
+                organization = None
+        
+        # If a zone is selected grab it
+        if organization_id and len(organizations)==1:
+            zones = organizations[0].zones.all()
+            zone = get_object_or_None(Zone, id=zone_id)
+            zone = zone or (zones[0] if len(zones)==1 else None)              
+        else:
+            zones = []
             zone = None
-                
+            
 
     # Generate install certificates
-    errors = []
-    install_certificates = []
     if request.method == "POST":
-
+        platform = get_request_var(request, "platform", "all")
+        locale = get_request_var(request, "locale", "en")
+        server_type = get_request_var(request, "server-type", "local")
+        
+        # assume server_type local for now, to shorten name.
+        base_archive_name = "kalite-%s-%s-%s.zip" % (platform, locale, kalite.VERSION) 
+        base_archive_path = settings.STATIC_ROOT+ "/zip/" + base_archive_name
+        
         # This is just for demo purposes;
         #   in the future, certificates are only generated
         #   when the form is submitted.
-        if not organization: 
-            errors += "post without organization"
-        elif not zone: 
-            errors += "post without zone"
-        else:
+        
             # Generate certificates (into the db)
+        if zone:
             zone.generate_install_certificates(num_certificates=num_certificates)
             
             # Stream out the relevant offline install data
-            #man_file = os.tmpnam()
-            #fh = open(man_file, "w")
-            #fh.write(serializers.serialize("json", combined))
-            #fh.close()
+            from securesync.utils import dump_zone_for_offline_install
+            models_json_file = tempfile.mkstemp()[1]
+            dump_zone_for_offline_install(zone_id=zone.id, out_file=models_json_file)
             
-            # Make sure the correct base zip is created, based on platform and locale
-            #kalite_dummy_zip = settings.MEDIA_ROOT + "zip/kalite-dummy.zip"
-            #kalite_full_zip = settings.MEDIA_ROOT + "zip/kalite-full.zip"
-            #if settings.DEBUG and os.path.isfile(kalite_dummy_zip):
-            #    kalite_zip = kalite_dummy_zip # for debug purposes ONLY
-            #elif os.path.isfile(kalite_full_zip):
-            #    kalite_zip = kalite_full_zip 
-            #else:
-            #    raise Exception("Must have a kalite-full.zip file in %s" % (settings.MEDIA_ROOT+"zip/"))
+        # Make sure the correct base zip is created, based on platform and locale
+        if not os.path.exists(base_archive_path):
+            if not os.path.exists(os.path.split(base_archive_path)[0]):
+                os.mkdir(os.path.split(base_archive_path)[0])
+#            try:
+            out = call_command_with_output("package_for_download", platform=platform, locale=locale, server_type=server_type, file=base_archive_path)
+#            except Exception as e:
+#                if not os.path.exists(base_archive_path):
+#                    import pdb; pdb.set_trace()
+                    
+        # Append into the zip, on disk
+        zip_file = tempfile.mkstemp()[1]
+        shutil.copy(base_archive_path, zip_file) # duplicate the archive
+        with ZipFile(zip_file, "a", ZIP_DEFLATED) as zh:
+            if zone:
+                zh.write(models_json_file, arcname="kalite/static/data/zone_data.json")
             
-            # Append into the zip, on disk
-            #tmpfile = os.tmpnam()
-            #shutil.copy(kalite_zip, tmpfile) # duplicate the archive
-            #zfile = ZipFile(tmpfile, "a", ZIP_DEFLATED)
-            #zfile.write(loc_sets, arcname="kalite/local_settings.py")
-            #zfile.write(man_file, arcname="kalite/manifest/models.json")
-            #zfile.close()
-            
-            # Stream that zip back to the user.
-            #filename = "KALite-%s.zip" % zone.name
-            #fstream = open(tmpfile,"rb")
-            #import pdb; pdb.set_trace()
-            #response = HttpResponse(content=fstream, mimetype='application/zip', content_type='application/zip')
-            #response['Content-Disposition'] = 'attachment; filename="%s"' % filename
-            response = HttpResponse(content="Coming soon!")
-            return response
+        # Stream that zip back to the user.
+        user_facing_filename = "%s-%s.zip" % (os.path.splitext(base_archive_name)[0], zone.name if zone else "zonefree")
+        zh = open(zip_file,"rb")
+        response = HttpResponse(content=zh, mimetype='application/zip', content_type='application/zip')
+        response['Content-Disposition'] = 'attachment; filename="%s"' % user_facing_filename
+        return response
 
-    return {
-        "organizations": organizations,
-        "selected_organization": organization,
-        "zones": zones,
-        "selected_zone": zone,
-        "install_certificates": install_certificates,
-        "num_certificates": num_certificates,  
-        "errors": errors, 
-    }
+    else: # GET
+        print "\n\n\n%s\n\n\n" % str(organization)
+        return {
+            "organizations": organizations,
+            "selected_organization": organization,
+            "zones": zones,
+            "selected_zone": zone,
+            "num_certificates": num_certificates,  
+            "internet": get_request_var(request, "internet") 
+        }
     
 @render_to("central/homepage.html")
 def homepage(request):
@@ -134,7 +142,6 @@ def homepage(request):
     organizations = get_or_create_user_profile(request.user).get_organizations()
     
     # add invitation forms to each of the organizations
-#        import pdb; pdb.set_trace()
     for pk,org in organizations.items():
         org.form = OrganizationInvitationForm(initial={"invited_by": request.user})
     

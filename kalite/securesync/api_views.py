@@ -78,30 +78,30 @@ def register_device(request):
             "code": "client_device_invalid_signature",
         }, status=500)
     
-        # Check if its public key has been registered
+    # Check if its public key has been registered
+    try:
+        registration = RegisteredDevicePublicKey.objects.get(public_key=client_device.public_key)
+        zone = registration.zone
+        registration.delete()
+    except RegisteredDevicePublicKey.DoesNotExist:
         try:
-            registration = RegisteredDevicePublicKey.objects.get(public_key=client_device.public_key)
-            zone = registration.zone
-            registration.delete()
-        except RegisteredDevicePublicKey.DoesNotExist:
-            try:
-                device = Device.objects.get(public_key=client_device.public_key)
-                return JsonResponse({
-                    "error": "This device has already been registered",
-                    "code": "device_already_registered",
-                }, status=500)            
-            except Device.DoesNotExist:
-                return JsonResponse({
-                    "error": "Device registration with public key not found; login and register first?",
-                    "code": "public_key_unregistered",
-                }, status=500)
+            device = Device.objects.get(public_key=client_device.public_key)
+            return JsonResponse({
+                "error": "This device has already been registered",
+                "code": "device_already_registered",
+            }, status=500)            
+        except Device.DoesNotExist:
+            return JsonResponse({
+                "error": "Device registration with public key not found; login and register first?",
+                "code": "public_key_unregistered",
+            }, status=500)
 
-        client_device.signed_by = client_device  # the device checks out; let's save it!
-        client_device.save(imported=True)
-    
-        device_zone = DeviceZone(device=client_device, zone=registration.zone)
-        device_zone.save()     # create the DeviceZone for the new device
-    
+    client_device.signed_by = client_device  # the device checks out; let's save it!
+    client_device.save(imported=True)
+
+    device_zone = DeviceZone(device=client_device, zone=registration.zone)
+    device_zone.save()     # create the DeviceZone for the new device
+
     # return our local (server) Device, its Zone, and the newly created DeviceZone, to the client
     return JsonResponse(
         serializers.serialize("json", [Device.get_own_device(), registration.zone, device_zone], client_version=client_device.version, ensure_ascii=False)

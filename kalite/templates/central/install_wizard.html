@@ -24,7 +24,9 @@
     float: left;
     margin-bottom:15px;
 }
-
+select { 
+    width:200px;
+}
 #instructions {
     font-size:12pt;
 }
@@ -55,17 +57,18 @@ ul {
     <div class="instructions">
         <h1>Installation</h1>
         
-        <form method="post" class="basic-form">
+        <form name="test" method="post" class="basic-form">
         {% csrf_token %}
 
         <p>
         <div class="form-section" id="deployment-section">
             <div class="form-label">I would like to deploy:</div>
             <div class="form-selection">
-                <select id="server_option">
+                <select name="server" id="server">
                     <option value="__empty__">----</option>
-                    <option value="single">A single, stand-alone KA Lite server</option>
-                    <option value="multi"> Multiple KA Lite servers that share student data across them</option>
+                    <option value="single">A single server (stand-alone)</option>
+                    <option value="multi-independent"> Multiple independent servers</option>
+                    <option value="multi-sharing"> Multiple servers sharing student data</option>
                 </select>
                 <div id="user-registration-info">
                     You must have an account with us in order to do this.<br/>
@@ -77,7 +80,7 @@ ul {
         <div class="form-section" id="internet-section">
             <div class="form-label">Internet access at server:</div>
             <div class="form-selection">
-                <select id="internet_option">
+                <select name="internet" id="internet">
                     <option value="__empty__">----</option>
                     <option value="never">Servers will never have internet access</option>
                     <option value="some">At least one server will have occasional internet access</option>
@@ -93,13 +96,23 @@ ul {
         <div class="form-section" id="platform-section">
             <div class="form-label">Server operating system:</div>
             <div class="form-selection">
-                <select id="platform_option">
+                <select name="platform" id="platform">
                     <option value="__empty__">----</option>
                     <option value="windows">Windows</option>
-                    <option value="mac">Mac</option>
+                    <option value="darwin">Mac</option>
                     <option value="linux">Linux</option>
                 </select>
                 <span id="platform_info"></span>
+            </div>
+        </div>        
+        
+        <div class="form-section" id="locale-section" style="display:none">
+            <div class="form-label">Server operating system:</div>
+            <div class="form-selection">
+                <select name="locale" id="locale">
+                    <option value="en">English</option>
+                </select>
+                <span id="locale_info"></span>
             </div>
         </div>        
         
@@ -113,8 +126,8 @@ ul {
                 <div class="form-selection">
                     <select name="organization" id="organization">
                         <option value="__empty__" {% if not selected_organization %}selected{% endif %}>----</option>
-                            {% for pk,org in organizations.items %}
-                            <option value="{{ pk }}" {% if selected_organization.id == org.id %}selected{% endif %}>{{ org }} : {{org.id}}</option>
+                            {% for org in organizations %}
+                            <option value="{{ org.id }}" {% if selected_organization.id == org.id %}selected{% endif %}>{{ org }} : {{org.id}}</option>
                             {% endfor %}
                     </select>
                 </div>
@@ -136,7 +149,7 @@ ul {
 
             {% if selected_organization and selected_zone %}
             <div class="form-section" id="select_num_certificates">
-                <div class="form-label">{% trans "Select # Certificates" %}</div>
+                <div class="form-label"># of desired installs<br/>(download can be reused)</div>
                 <div class="form-selection">
                     <select name="num_certificates" id="num_certificates">
                         {% mkrange 1 50 as some_range %}
@@ -205,9 +218,9 @@ function qparts(name) {
 function setGetParam(name, val) {
     var vars = qparts();
     
-    vars["server_option"] = $("#server_option option:selected").val();
-    vars["internet_option"] = $("#internet_option option:selected").val();
-    vars["platform_option"] = $("#platform_option option:selected").val();
+    vars["server"] = $("#server option:selected").val();
+    vars["internet"] = $("#internet option:selected").val();
+    vars["platform"] = $("#platform option:selected").val();
 
     if (vars[name] == val || (typeof val === "undefined") || val=="__empty__") {
        return;
@@ -235,8 +248,25 @@ $(function() {
     user_logged_in = {{ user.is_authenticated|lower }};
 
     // Deployment option
-    $("#server_option").change(function(){
-        if ($("#server_option option:selected").val() == "multi") {
+    $("#server").change(function(){
+        var server_option = $("#server option:selected").val();
+        if (server_option == "single") {
+            $("#user-registration-info").hide();
+            $("#internet-section").hide();
+            $("#platform-section").show();
+            $("#install-form").hide();
+            $("#submit-section").show();
+            $("#instructions").hide();
+        }
+        else if (server_option == "__empty__") {// if ($("#server_option option:selected").val() == "single") {
+            $("#user-registration-info").hide();
+            $("#internet-section").hide();
+            $("#platform-section").hide();
+            $("#install-form").hide();
+            $("#submit-section").hide();
+            $("#instructions").hide();
+        }
+        else {            
             if (!user_logged_in) {
                 $("#user-registration-info").show();
                 $("#internet-section").hide();
@@ -254,22 +284,16 @@ $(function() {
                 $("#instructions").hide();
             }
         }
-        else if ($("#server_option option:selected").val() == "single") {
-            $("#user-registration-info").hide()
-            $("#internet-section").hide();
-            $("#platform-section").show();
-            $("#install-form").hide();
-            $("#submit-section").show();
-            $("#instructions").hide();
-        }
-    }).val(qparts("server_option")).change();
+        
+        prep_download_if_ready()
+    });//.val(qparts("server")).change();
     
     // Internet access options
-    $("#internet_option").change(function(){
+    $("#internet").change(function(){
         // illegal
-        if ($("#internet_option option:selected").val() == "__empty__") {
+        if ($("#internet option:selected").val() == "__empty__") {
         }
-        else if ($("#internet_option option:selected").val() != "all") {
+        else if ($("#internet option:selected").val() != "all") {
             $("#internet-info").show()
             $("#platform-section").hide();
             $("#install-form").hide();
@@ -284,34 +308,55 @@ $(function() {
             $("#submit-section").hide();
             $("#instructions").hide();
         }
-    }).val(qparts("internet_option")).change();
+
+        prep_download_if_ready()
+    });//.val("{{ internet }}").change();
 
         
     // Platform options
-    $("#platform_option").change(function(){
-        select_instructions($("#platform_option option:selected").val());
-        if ($("#server_option option:selected").val()=="single")
-            $("#instructions").show();
-        else if ($("#server_option option:selected").val()=="multi")
+    $("#platform").change(function(){
+        select_instructions($("#platform option:selected").val());
+        if ($("#server option:selected").val()!="single")
             $("#install-form").show();
-    }).val(qparts("platform_option")).change();
+        //else //if ($("#server_option option:selected").val()=="single")
+
+        prep_download_if_ready()
+    });//.val(qparts("platform")).change();
     
     
     // When selected, refresh the page
     $("#organization").change(function(){
        setGetParam("organization", $("#organization option:selected").val()); 
+        prep_download_if_ready()
     }).val("{{selected_organization.id}}").change();
     
     $("#zone").change(function(){
        setGetParam("zone", $("#zone option:selected").val()); 
+        prep_download_if_ready()
     }).val("{{selected_zone.id}}").change();
     
     $("#num_certificates").change(function(){
        setGetParam("num_certificates", $("#num_certificates option:selected").val()); 
-        $("#submit-section").show();
-        $("#instructions").show();
+        prep_download_if_ready()
     }).val("{{num_certificates}}").change();
+    
 });
 
+function valof(name) {
+    return $("#" + name + " option:selected").val()
+}
+function prep_download_if_ready() {
+    if (  (valof("server") == "single" && valof("platform") != "__empty__")
+           || (valof("server") != "single" && valof("organization") != "__empty__"
+            && valof("zone") != "__empty__" && valof("num_certificates") != "__empty__") ) {
+            
+        $("#submit-section").show();
+        $("#instructions").show();
+    }
+    else {
+        $("#submit-section").hide();
+        $("#instructions").hide();
+    }    
+}
 </script>
 {% endblock %}
