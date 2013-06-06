@@ -7,14 +7,14 @@ import sys
 import subprocess
 import tempfile
 import zipfile
-
 from optparse import make_option
 from zipfile import ZipFile, ZIP_DEFLATED
 
+from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
-settings.DEBUG = False
+
 
 def fixBadZipfile(zipFile):  
     f = open(zipFile, 'r+b')  
@@ -57,7 +57,8 @@ def call_outside_command_with_output(kalite_location, command, *args, **kwargs):
             print out[1]
         else:
             print out[0]
-        
+#        if out[1]:
+#            import pdb; pdb.set_trace()
     return out + (1 if out[1] else 0,)
         
     
@@ -93,14 +94,14 @@ class Command(BaseCommand):
         exit(1)
         
     def handle(self, *args, **options):
-    
+
         # Callback for "weak" test--checks at least that the django project compiles (local_settings is OK)
         if len(args)==1 and args[0]== "test":
             print "Success!"
             exit(0)
             
         if options.get("repo", None):
-            self.update_via_git(options.get("repo"))
+            self.update_via_git(options.get("repo", "."))
             
         elif options.get("zip_file", None):
             if not os.path.exists(options.get("zip_file")):
@@ -108,7 +109,7 @@ class Command(BaseCommand):
             self.update_via_zip(options.get("zip_file"))
             
         # Without params, default to same as before (git)
-        elif not args and not options:
+        elif not args:
             self.update_via_git(options.get("repo"))
         
         else:
@@ -248,9 +249,10 @@ class Command(BaseCommand):
         """Extract all files to a temp location"""
         
         print "*"
+        print "* temp location == %s" % self.working_dir
         print "* Extracting all files to a temporary location; please wait...",
         sys.stdout.flush()
-
+    
         # Speedup debug by not extracting
         if settings.DEBUG and os.path.exists(self.working_dir):
             print ""
@@ -295,10 +297,10 @@ class Command(BaseCommand):
         print "* Syncing database...",
         out = call_outside_command_with_output(self.working_dir, "migrate", delete_ghost_migrations=True)
         out = call_outside_command_with_output(self.working_dir, "syncdb", migrate=True)
-        if out[2] or out[1]:
-            self.command_error("\n\tError syncing data[%d]: %s" % (out[2], out[1] if out[1] else out[0]))
-        else:
-            print ""
+        #if out[2] or out[1]:
+        #    self.command_error("\n\tError syncing data[%d]: %s" % (out[2], out[1] if out[1] else out[0]))
+        #else:
+        print ""
             
         # Run the migration
         print "* Migrating app schemas...",
@@ -325,8 +327,10 @@ class Command(BaseCommand):
         
         # Move over videos
         if self.move_videos=="y":
-            import pdb; pdb.set_trace()
-            video_files = set(glob.glob(settings.CONTENT_ROOT + '*')) - set((settings.CONTENT_ROOT + "note.txt",)) 
+            if os.path.exists(settings.CONTENT_ROOT):
+                video_files = set(glob.glob(settings.CONTENT_ROOT + '*')) - set((settings.CONTENT_ROOT + "note.txt",)) 
+            else:
+                video_files = {}
             print "* Moving over %d files (videos and thumbnails)" % len(video_files)
             if not os.path.exists(self.working_dir + "/content/"):
                 os.mkdir(self.working_dir + "/content/")
@@ -413,7 +417,7 @@ class Command(BaseCommand):
         if self.dest_dir == self.current_dir:
             ans = ""
             while ans.lower() not in ["y","n"]:
-                ans = raw_input("* Server setup verified; complete by moving to final destination? [y/n]: ").strip()
+                ans = raw_input("* Server setup verified; complete by moving to the final destination? [y/n]: ").strip()
             if ans=="n":
                 print "**** Aborting update; new server (with content) can be found at %s" % self.working_dir  
                 exit()
@@ -421,24 +425,43 @@ class Command(BaseCommand):
         # OK, don't actually kill it--just move it   
         if os.path.exists(self.dest_dir):
             tempdir = tempfile.mkdtemp()
-            shutil.move(self.dest_dir, tempdir)
+            print "* Moving old directory to a temporary location..."
             try:
                 shutil.move(self.dest_dir, tempdir)
-                print "*\tOld install moved to temp location (%s); OS will delete for you soon!" % tempdir
 
                 # Move to the final destination
+                print "* Moving new installation to final position."
                 shutil.move(self.working_dir, self.dest_dir)
-            except Exception as e:
-                print "Failed to move: %s" % str(e)
-                print "* Trying to move contents into dest_dir"
-                import pdb; pdb.set_trace()
-                for obj in os.listdir(self.working_dir):
-                    shutil.move(obj, self.dest_dir)
-                os.remove(self.working_dir)
                 
-        
-
-
+            except Exception as e:
+                print "***** ERROR: Failed to move: %s to %s:" % (self.dest_dir, tempdir)
+                print "*****        '%s'" % str(e)
+                print "***** Trying to copy contents into dest_dir"
+                import pdb; pdb.set_trace()
+                copy_success = 0
+                for root, dirs, files in os.walk(self.working_dir):
+                    if 0==root.find(self.working_dir):
+                        relpath = root[len(self.working_dir):]
+                    else:
+                        relpath = root[1:]
+                        
+                    for d in dirs:
+                        drelpath = relpath + "/" + d
+                        if not os.path.exists(self.dest_dir + drelpath):
+                            print "Created directory %s%s" % (self.dest_dir, drelpath)
+                            os.mkdir(self.dest_dir + drelpath)
+                            
+                    for f in files:
+                        try:
+                            frelpath = "/" + relpath + "/" + f
+                            shutil.copyfile(self.working_dir + frelpath, self.dest_dir + frelpath)
+                            copy_success += 1#print "copied %s%s to %s%s" % (self.working_dir, frelpath, self.dest_dir, frelpath)
+                        except:
+                            print "**** failed to copy %s%s" % (self.working_dir, frelpath)
+                print "* Successfully copied %d files into final directory" % copy_success
+                #os.remove(self.working_dir)
+ 
+ 
     def start_server(self):
         """ """
         
@@ -481,7 +504,3 @@ class Command(BaseCommand):
         else:
             cmd = None#self.command_error("No command found? (%s)" % cmd_glob)
         return cmd
-        
-
-    
-    
