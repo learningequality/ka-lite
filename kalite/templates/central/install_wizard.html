@@ -9,6 +9,10 @@
 
 {% block headcss %}
 <style>
+#python-instructions {
+    margin-top:25px;
+}
+
 .form-label {
     float: left;
     width:200px;
@@ -178,7 +182,9 @@ ul {
             <ul>
                 <li>Click "download" to download the Windows installer</li>
                 <li>When the download completes, copy the file to your server(s).
-                <li>From the server(s), run the Windows installer.</li>
+                <li>From the server(s), unzip the zip file.</li>
+                <li>From the server(s), double-click the install.bat script (inside the ka-lite folder).</li>
+                <li>After installation completes, double-click the start.bat script (inside the ka-lite folder) .</li>
             </ul>                
         </div>
         <div id="linux-instructions">
@@ -187,18 +193,28 @@ ul {
                 <li>Click "download" to download  the KA Lite zip file.</li>
                 <li>When the download completes, copy the file to your server(s).</li>
                 <li>From the server(s), unzip the zip file.</li>
-                <li>From the server(s), run the install.sh script inside the ka-lite folder</li>
-            </ul>                
+                <li>From the server(s), run the install.sh script (inside the ka-lite folder).</li>
+                <li>From the server(s), run the start.sh script (inside the ka-lite folder).</li>
+            </ul>
         </div>
-        <div id="mac-instructions">
+        <div id="darwin-instructions">
             Mac installation instructions:
             <ul>
                 <li>Click "download" to download  the KA Lite zip file.</li>
                 <li>When the download completes, copy the file to your server(s).</li>
                 <li>From the server(s), unzip the zip file.</li>
-                <li>From the server(s), run the install.sh script inside the ka-lite folder</li>
-            </ul>                
+                <li>From the server(s), run the install.sh script (inside the ka-lite folder).</li>
+                <li>From the server(s), run the start.sh script (inside the ka-lite folder).</li>
+            </ul>
         </div>
+        <div id="python-instructions">
+            Python - this is the program that runs KA Lite; please install as well!
+            <ul>
+                <li><a target="_new" href="http://www.python.org/getit/releases/2.7.5/#download">Download Python</a>.</li>
+                <li>Copy the Python installer over to your server.</li>
+                <li>Install Python</li>
+                <li>Make sure to add Python to your PATH (<a target="_new" href="https://www.google.com/search?q=add+python+to+path+tutorial+windows">Windows</a>, <a target="_new" href="https://www.google.com/search?q=add+python+to+path+tutorial+linux">Linux</a>, <a target="_new" href="https://www.google.com/search?q=add+python+to+path+tutorial+mac">MacOS</a>)</li>
+
     </div>
  <script>
 
@@ -241,6 +257,7 @@ function select_instructions(platform) {
         $(this).hide();
     })
     $("#"+ platform + "-instructions").show()
+    $("#python-instructions").show()
 }
 
 $(function() {
