@@ -69,7 +69,7 @@ def file_in_ok_set(file_path):
     
     name = os.path.split(file_path)[1]
     ext = os.path.splitext(file_path)[1]
-    return (ext not in [".pyc",".sqlite",".zip"]) and (name not in ["local_settings.py", ".gitignore", "tests.py", "faq",".DS_Store"])
+    return (ext not in [".pyc",".sqlite",".zip",'.xlsx',]) and (name not in ["local_settings.py", ".gitignore", "tests.py", "faq",".DS_Store"])
 
 
 def recursively_add_files(dirpath, files_dict=dict(), key_base="", **kwargs):
