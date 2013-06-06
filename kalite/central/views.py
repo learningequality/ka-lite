@@ -110,6 +110,13 @@ def install_wizard(request):
             except: pass
 
 
+@render_to("central/install_wizard.html")
+def install_wizard(request):
+    return {
+        "central_contact_email": settings.CENTRAL_CONTACT_EMAIL,
+        "wiki_url": settings.CENTRAL_WIKI_URL
+        }
+    
 @render_to("central/homepage.html")
 def homepage(request):
     
