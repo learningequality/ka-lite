@@ -62,13 +62,20 @@ class Command(BaseCommand):
                 exit(1)       
         # Generate a zone (for stand-alone machines)
         else:
-            out = call_command_with_output("generate_zone", "default zone")
+            out = call_command_with_output("generate_zone", "%Device s's self-generated zone")
             if not out[1]:
                 self.stdout.write("Successfully generated a stand-alone zone.\n") 
             else:
                 self.stderr.write("Error generating new zone: %s\n" % out[1])
                 exit(1)
-                          
+                
+            # Need a certificate to register offline, so force the creation of one now.
+            zone = Zone.objects.all()[0]
+            self.stdout.write("Generating a zone installation certificate.\n")
+            cert = ZoneInstallCertificate(zone=zone, raw_value="my local zone certificate")
+            cert.save()
+
+
         # Try to do offline install
         all_zones = Zone.objects.all()
         if len(all_zones)!=1:

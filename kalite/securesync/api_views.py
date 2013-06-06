@@ -107,10 +107,9 @@ def register_device(request):
     device_zone = DeviceZone(device=client_device, zone=zone)
     device_zone.save()     # create the DeviceZone for the new device
 
-    import pdb; pdb.set_trace()
     # return our local (server) Device, its Zone, and the newly created DeviceZone, to the client
     return JsonResponse(
-        serializers.serialize("json", [Device.get_own_device(), zone, device_zone], client_version=client_device.version, ensure_ascii=False)
+        serializers.serialize("json", [Device.get_own_device(), zone, device_zone, ], client_version=client_device.version, ensure_ascii=False)
     )
 
 
@@ -119,6 +118,7 @@ def register_self_registered_device(client_device, serialized_models):
     
     try:
         client_zone = serialized_models.next().object
+        client_zone_key = serialized_models.next().object # neutered or not.
         client_zone_install_certificate = serialized_models.next().object
 
         # A recognized zone
@@ -142,23 +142,23 @@ def register_self_registered_device(client_device, serialized_models):
                 
         # An unrecognized zone
         else:
-            return (None, JsonResponse({
-                "error": "Auto-register on self-generated zone NYI",
-                "code": "client_device_NYI",
-            }, status=500))
-
             # TODO(bcipolli): full_clean should make sure to 
             #   throw an exception if the zone is deemed unsafe
-            client_zone.full_clean() 
             client_zone.save()
-            server_zone = get_object_or_None(Zone, id=client_zone.id)
-        
+            client_zone.full_clean()
+            client_zone_key.save()
+            client_zone_key.full_clean()
+            
             if not client_zone_install_certificate.verify():
                 return (None, JsonResponse({
                     "error": "Client device sent self-generated install certificate, but that certificate did not self-validate.",
                     "code": "client_device_invalid_certificate_self",
                 }, status=500))
 
+            # Retrieve the zone from our own database, 
+            #   don't settle for the client copy!
+            server_zone = get_object_or_None(Zone, id=client_zone.id)
+        
         # we got through!  we got the zone, either recognized it or added it,
         #   and validated the certificate!
         json_response = None

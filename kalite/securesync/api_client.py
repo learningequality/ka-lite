@@ -80,13 +80,12 @@ class SyncClient(object):
         
         # If we got here, we've successfully registered, and 
         #   have the model data necessary for completing registration!
-        import pdb; pdb.set_trace()
         for model in models:
             # BUG(bcipolli)
             # Shouldn't we care when things fail to verify??
             if not model.object.verify():
                 logging.warn("\n\n\nFailed to verify model: %s!\n\n\n" % str(model.object))
-                import pdb; pdb.set_trace()
+                
             # save the imported model, and mark the returned Device as trusted
             if isinstance(model.object, Device):
                 model.object.save(is_trusted=True, imported=True)
@@ -100,20 +99,20 @@ class SyncClient(object):
     def register_confirm_self_registration(self):
         own_device = Device.get_own_device()
         own_zone = DeviceZone.objects.get(device=own_device).zone
-        install_certs = []
-        try:
-            install_certs = ZoneInstallCertificate.objects.filter(zone=own_zone)
-        except:
+        own_zone_key = ZoneKey.objects.get(zone=own_zone)# get_object_or_None(ZoneKey, zone=own_zone) # or should I raise if not found?
+        install_certs = ZoneInstallCertificate.objects.filter(zone=own_zone)
+        if not install_certs:
             try:
                 install_certs = own_zone.generate_install_certificates(num_certificates=1)
             except:
                 pass
+
         if not install_certs:
             raise Exception("You shouldn't ask to self-register with the central server, when you don't have any install certificates to validate yourself with!")                
 
         # For now, just try with one certificate
         r = self.post("register", {
-            "client_device": serializers.serialize("json", [own_device, own_zone, install_certs[0]], ensure_ascii=False),
+            "client_device": serializers.serialize("json", [own_device, own_zone, own_zone_key, install_certs[0]], ensure_ascii=False),
         })
     
         # Failed to register with any certificate
@@ -210,7 +209,11 @@ class SyncClient(object):
             # This happens when a device points to a new central server,
             #   either because it changed, or because it self-registered.
             if not recursive_retry and 0 == data["error"].find("Client device matching id could not be found."):
-                self.register(prove_self=True)
+                resp = self.register(prove_self=True)
+                if resp.get("error", "") != "":
+                    raise Exception("Error [code=%s]: %s" % (resp.get("code",""), resp.get("error","")))
+                elif resp.get("code","") != "registered":
+                    raise Exception("Unexpected code: '%s'" % resp.get("code",""))
                 return self.validate_me_on_server(recursive_retry=True)
             raise Exception(data.get("error", ""))
 
