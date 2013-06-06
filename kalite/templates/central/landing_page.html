@@ -1,40 +1,32 @@
 {% extends 'base_central_bootstrap.html' %}
 
-{% block home_active %}active{% endblock home_active %}
-
 {% block title %}Home{% endblock %}
+
 {% block jqueryjs %}
 <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.8.3.min.js"></script> 
 {% endblock jqueryjs %}
 
-{% block headjs %}
-{% endblock headjs %}
-
-{% block headcss %}
-
-{% endblock headcss %}
+{% block navigation-menu %}
+    <ul class="header__horizontal-menu">
+        <li><a href="/">Home</a></li>
+        <li><a href="/faq/">FAQ</a></li>
+    {% if user.is_authenticated %}
+        {% if user.is_superuser %}
+        <li><a href="/admin/" >Admin</a></li>
+        {% endif %}
+        <li><a href="/accounts/logout/">{{ user.username }} &nbsp; (Logout)</a></li>
+    {% else %}
+        <li><a href="/accounts/register/">Sign Up</a></li>
+        <li><a href="/accounts/login/">Login</a></li>
+    {% endif %}
+    </ul>
+{% endblock navigation-menu %}
 
 {% block content %}
-<div class="container">
-    <div class="row-fluid">
-      <div class="span2 header__logo"><img src="/static/images/horizontal-logo-small.png" alt=""></div>
-      <div class="span6 offset4">
-        <ul class="header__horizontal-menu">
-            <li><a href="">HOME</a></li>
-            <li><a href="">FAQ</a></li>
-            <li><a href="">SIGNUP</a></li>
-            <li><a href="">LOGIN</a></li>
-        </ul>
-      </div>
-    </div>
-
     <div class="row-fluid content">
-        <div class="span6 content__map-container">
-            <img src="/static/images/landing-page/map.png" alt="">       
-        </div>
-        <div class="span6">
+        <div class="span12">
             <div class="content__motto-container">
-                <h1>Only 35% of the world has internet.<br/>100% of the world needs education.</h1>
+                <h1>Only 35% of the world has internet. 100% of the world needs education.</h1>
                 <p>
                     KA Lite is an offline version of <a href="http://www.khanacademy.org/" target="_blank">Khan Academy</a> that runs on almost anything.
                 </p>
@@ -47,36 +39,48 @@
                 </ul>
             </div>
         </div>
+
     </div>
 
-    <div class="row-fluid">
+    <div class="row-fluid content__box-container">
+
         <div class="span4">
             <div class="content__box">
                 <img src="/static/images/landing-page/install.png" alt="">
                 <p>Ready to get started</p>
-                <button type="button" name="" value="" class="green">Install Now!</button>
+                <a href="/installation">
+                     <button type="button" name="" value="" class="green">Install Now!</button>
+                </a> 
+                <br> 
             </div>
         </div>
         <div class="span4">
             <div class="content__box">
                 <img src="/static/images/landing-page/contact.png" alt="">
                 <p>Want deployment advice?</p>
-                <button type="button" name="" value="" class="green">Contact Us</button>
+                <a href="https://docs.google.com/spreadsheet/viewform?formkey=dEhEOWRNVDBzWTdsUnFQYWlCWnZoWWc6MQ">
+                    <button type="button" name="" value="" class="green">Contact Us</button>
+                </a>
             </div>
         </div>
         <div class="span4">
             <div class="content__box">
                 <img src="/static/images/landing-page/contribute.png" alt="">
                 <p>Want to contribute</p>
-                <button type="button" name="" value="" class="green">Get Involved</button>
+                <a href="/contribute">
+                    <button type="button" name="" value="" class="green">Get Involved</button>
+                </a>
             </div>
         </div>
+
     </div>
+{% endblock content %}
 
-    <div class="row-fluid">
-        <div class="span8 footer">
+{% block footer %}
+<div class="row-fluid footer">
+        <div class="span8 footer__rss">
 
-            <div class="footer__title">Read More!</div>
+            <h2>Read More</h2>
                 <ul class="footer__news-list">
                     <li><a href="">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sit, necessitatibus, a, praesentium dignissimos</a></li>
                     <li><a href="">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sit, necessitatibu</a></li>
@@ -87,11 +91,32 @@
         </div>
         <div class="span4">    
             <h2>Share</h2>
-            <img src="/static/images/landing-page/share-links.png" alt="">
-            <div class="row-fluid">
+                    <ul class="list-icons">
+                        <li>
+                            <a href="" class="symbol">&#xe227;</a>       
+                        </li>
+                        <li>
+                            <a href="" class="symbol">&#xe286;</a>      
+                        </li>
+                         <li>
+                            <a href="" class="symbol">&#xe239;</a>      
+                        </li>
+                         <li>
+                            <a href="" class="symbol">&#xe252;</a>      
+                        </li>
+                    </ul>
+            <div class="row-fluid footer__second-line">
                 <div class="span6">
                     <h2>Follow</h2>
-                    <img src="/static/images/landing-page/follow-links.png" alt="">
+                    <ul class="list-icons">
+                        <li>
+                            <a href="" class="symbol">&#xe227;</a>       
+                        </li>
+                        <li>
+                            <a href="" class="symbol">&#xe286;</a>      
+                        </li>
+                    </ul>
+
                 </div>
                 <div class="span6 footer__email">
                     <h2>Email Updates</h2>
@@ -103,6 +128,4 @@
 
         </div>
     </div>
-</div>
-{% endblock content %}
-
+{% endblock footer %}

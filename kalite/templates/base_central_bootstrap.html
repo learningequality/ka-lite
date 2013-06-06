@@ -3,15 +3,14 @@
 
 <html>
     <head>
-    <!--[if lt IE 9]>
-          <script src="{{ MEDIA_URL }}js/html5shiv.js"></script>
-    <![endif]-->
+        <!--[if lt IE 9]>
+              <script src="{{ MEDIA_URL }}js/html5shiv.js"></script>
+        <![endif]-->
 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-        {% block titletag %}
-        <title>{% block title %}{{ title }}{% endblock title %} | KA Lite</title>
-        {% endblock %}
+        <title>{% block title %}{{ title }}{% endblock title %} | KA Lite, an offline version of Khan Academy</title>
+
         <link rel="stylesheet/less" type="text/css" href="{{ MEDIA_URL }}css/bootstrap/bootstrap.less"></link>
         <link rel="stylesheet/less" type="text/css" href="{{ MEDIA_URL }}css/bootstrap/responsive.less"></link>
         <link rel="stylesheet/less" type="text/css" href="{{ MEDIA_URL }}css/style.less"></link>
@@ -39,8 +38,18 @@
     </head>
     <body>
 
+    <div class="container">
+        <div class="row-fluid">
+          <div class="span2 header__logo"><img src="/static/images/horizontal-logo-small.png" alt=""></div>
+          <div class="span6 offset4">
+            {% block navigation-menu %}{% endblock navigation-menu %}
+          </div>
+        </div>
 
-            {% block content %}{% endblock content %}
+    {% block content %}{% endblock content %}
        
+    {% block footer %}{% endblock footer %}
+</div>
+    
     </body>
 </html>
