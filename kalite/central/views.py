@@ -121,7 +121,6 @@ def install_wizard(request):
         return response
 
     else: # GET
-        print "\n\n\n%s\n\n\n" % str(organization)
         return {
             "organizations": organizations,
             "selected_organization": organization,
