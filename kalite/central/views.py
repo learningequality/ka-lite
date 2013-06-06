@@ -56,7 +56,7 @@ def install_wizard(request):
         
         if organization_id:
             organizations = request.user.organization_set.filter(id=organization_id)
-            organization = organizations[0]
+            organization = organizations[0] if organizations else None
         else:
             organizations = request.user.organization_set.all()
             if len(organizations) == 1:
@@ -89,14 +89,14 @@ def install_wizard(request):
         #   in the future, certificates are only generated
         #   when the form is submitted.
         
-            # Generate certificates (into the db)
+        # Generate NEW certificates (into the db), as to keep enough for everybody
         if zone:
-            zone.generate_install_certificates(num_certificates=num_certificates)
-            
+            certs = zone.generate_install_certificates(num_certificates=num_certificates)
+
             # Stream out the relevant offline install data
             from securesync.utils import dump_zone_for_offline_install
             models_json_file = tempfile.mkstemp()[1]
-            dump_zone_for_offline_install(zone_id=zone.id, out_file=models_json_file)
+            dump_zone_for_offline_install(zone_id=zone.id, out_file=models_json_file, certs=certs)
             
         # Make sure the correct base zip is created, based on platform and locale
         if not os.path.exists(base_archive_path):
@@ -351,7 +351,6 @@ def crypto_login(request):
     if not client.session or not client.session.client_nonce:
         return HttpResponse("Unable to establish a session with KA Lite server at %s" % host)
     return HttpResponseRedirect("%ssecuresync/cryptologin/?client_nonce=%s" % (host, client.session.client_nonce))
-
 
 def central_404_handler(request):
     return HttpResponseNotFound(render_to_string("404_central.html", {}, context_instance=RequestContext(request)))

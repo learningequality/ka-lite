@@ -52,6 +52,8 @@ urlpatterns += patterns('central.views',
     url(r'^feeds/rss/$', RssSiteNewsFeed(), {}, 'rss_feed'),
     url(r'^feeds/atom/$', AtomSiteNewsFeed(), {}, 'atom_feed'),
     url(r'^faq/', include('faq.urls')),
+    url(r'^contact/', include('contact.urls')),
+    url(r'^install/$', 'install_wizard', {}, 'install_wizard'),
     url(r'^wiki/(?P<wurl>\w+)/$', redirect_to, {'url': settings.CENTRAL_WIKI_URL}),
     url(r'^about/$', redirect_to, { 'url': 'http://learningequality.org/' }),
 )
