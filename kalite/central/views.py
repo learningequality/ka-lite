@@ -1,5 +1,6 @@
 import logging
 import re, json
+<<<<<<< HEAD
 import os, shutil
 import requests
 import tempfile
@@ -18,6 +19,13 @@ from django.utils.translation import ugettext as _
 
 import kalite
 import settings
+=======
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseServerError
+from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
+from django.template import RequestContext
+from django.template.loader import render_to_string
+from annoying.decorators import render_to
+>>>>>>> origin/api_url
 from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
 from central.forms import OrganizationForm, ZoneForm, OrganizationInvitationForm
 from securesync.api_client import SyncClient
@@ -350,5 +358,9 @@ def crypto_login(request):
         return HttpResponse("Unable to establish a session with KA Lite server at %s" % host)
     return HttpResponseRedirect("%ssecuresync/cryptologin/?client_nonce=%s" % (host, client.session.client_nonce))
 
+
+def central_404_handler(request):
+    return HttpResponseNotFound(render_to_string("404_central.html", {}, context_instance=RequestContext(request)))
     
-    
+def central_500_handler(request):
+    return HttpResponseServerError(render_to_string("500_central.html", {}, context_instance=RequestContext(request)))
