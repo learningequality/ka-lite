@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 import kalite
 import settings
-from securesync.models import Device, DeviceMetadata, Zone
+from securesync.models import Device, DeviceMetadata, Zone, ZoneInstallCertificate
 from securesync.utils import load_zone_for_offline_install
 from kalite.utils.django_utils import call_command_with_output            
 
