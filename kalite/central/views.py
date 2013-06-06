@@ -1,6 +1,5 @@
 import logging
 import re, json
-<<<<<<< HEAD
 import os, shutil
 import requests
 import tempfile
@@ -8,7 +7,7 @@ from zipfile import ZipFile, ZIP_DEFLATED
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseNotAllowed
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
@@ -16,16 +15,11 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
 from django.utils.translation import ugettext as _
+from django.template.loader import render_to_string
+from annoying.decorators import render_to
 
 import kalite
 import settings
-=======
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseServerError
-from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
-from django.template import RequestContext
-from django.template.loader import render_to_string
-from annoying.decorators import render_to
->>>>>>> origin/api_url
 from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
 from central.forms import OrganizationForm, ZoneForm, OrganizationInvitationForm
 from securesync.api_client import SyncClient
