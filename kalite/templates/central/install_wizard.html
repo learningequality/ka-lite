@@ -353,7 +353,7 @@ $(function() {
     }).val("{{selected_zone.id}}").change();
     
     $("#num_certificates").change(function(){
-       setGetParam("num_certificates", $("#num_certificates option:selected").val()); 
+//       setGetParam("num_certificates", $("#num_certificates option:selected").val()); 
         prep_download_if_ready()
     }).val("{{num_certificates}}").change();
     

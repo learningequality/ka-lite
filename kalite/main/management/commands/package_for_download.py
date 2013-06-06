@@ -57,6 +57,10 @@ def decorate_file_dict(files_dict):
     
     Would be used in the future for creating a manifest file, describing all known files.
     """
+    for file,fdict in files_dict.items():
+        if "dest_path" not in fdict:
+            raise Exception("Must always set 'dest_path'; failed for file %s" % file)
+        
     return files_dict
 
 def file_in_ok_set(file_path):
@@ -104,7 +108,7 @@ def recursively_add_files(dirpath, files_dict=dict(), key_base="", **kwargs):
     
     return files_dict
 
-def create_local_settings_file(location, server_type="local", locale=None):
+def create_local_settings_file(location, server_type="local", locale=None, central_server=None):
     """Create an appropriate local_settings file for the installable server."""
     
     fil = tempfile.mkstemp()[1]
@@ -116,12 +120,20 @@ def create_local_settings_file(location, server_type="local", locale=None):
     elif os.path.exists(location):
         shutil.copy(location, fil) 
 
+    # Can steal it
+    central_server = central_server or server.CENTRAL_SERVER_HOST
+        
     with open(fil,"a") as ls: #append, to keep those settings, but override SOME
         ls.write("\n") # never trust the previous file ended with a newline!
+        if settings.DEBUG:
+            ls.write("DEBUG = %s\n" % str(settings.DEBUG)) # need to make sure that production clients never see this.
         ls.write("CENTRAL_SERVER = %s\n" % (server_type=="central"))
         if locale:
             ls.write("LANGUAGE_CODE = '%s'\n" % locale)
-
+        if central_server:
+            ls.write("CENTRAL_SERVER_HOST = '%s'\n" % central_server)
+            ls.write("CENTRAL_SERVER_DOMAIN = '%s'\n" % central_server)
+            ls.write("SECURESYNC_PROTOCOL = '%s'\n" % "http" if settings.DEBUG else "https") # need to make DEBUG is set properly
     return fil
     
 def create_default_archive_filename(options=dict()):
@@ -156,6 +168,11 @@ class Command(BaseCommand):
             dest='server_type',
             default="local",
             help='KA Lite server type'),
+        make_option('-c', '--central-server',
+            action='store',
+            dest='central_server',
+            default=None,
+            help='hostname (with port) of central server'),
 
         make_option('-f', '--file',
             action='store',
@@ -173,35 +190,39 @@ class Command(BaseCommand):
             raise Exception(msg)
         
     def handle(self, *args, **options):
-        try:
-            options['platform'] = options.get('platform','').lower()
+    #try:
+        options['platform'] = options.get('platform','').lower()
+    
+        if options['platform'] not in ["all","linux","macos","darwin","windows"]:
+            self.command_error("Unrecognized platform: %s; will include ALL files." % options['platform'])
         
-            if options['platform'] not in ["all","linux","macos","darwin","windows"]:
-                self.command_error("Unrecognized platform: %s; will include ALL files." % options['platform'])
-            
-            # Step 1: recursively add all static files
-            kalite_base = os.path.realpath(settings.PROJECT_PATH + "/../")
-            files_dict = recursively_add_files(dirpath=kalite_base, locale=options["locale"], server_type=options['server_type'], platform=options['platform'])
+        # Step 1: recursively add all static files
+        kalite_base = os.path.realpath(settings.PROJECT_PATH + "/../")
+        files_dict = recursively_add_files(dirpath=kalite_base, locale=options["locale"], server_type=options['server_type'], platform=options['platform'])
 
-            # Step 2: Generate and add all dynamic content (database json info, server)
-            ls_file = create_local_settings_file(location=os.path.realpath(kalite_base+"/kalite/local_settings.py"), server_type=options['server_type'], locale=options['locale'])
-            files_dict[ls_file] = { "dest_path": "kalite/local_settings.py" }
-        
-            # Step 3: Decorate
-            files_dict = decorate_file_dict(files_dict)
-        
-            # Step 4: package into a zip file
-            fil = tempfile.mkstemp()[1]
-            with ZipFile(fil, "w", ZIP_DEFLATED) as zfile:
-                for srcpath,fdict in files_dict.items():
-                    if options['verbosity']>=1:
-                        print "Adding to zip: %s" % srcpath
+        # Step 2: Generate and add all dynamic content (database json info, server)
+        ls_loc = os.path.realpath(kalite_base+"/kalite/local_settings.py")
+        ls_file = create_local_settings_file(location=ls_loc, server_type=options['server_type'], locale=options['locale'], central_server=options['central_server'])
+        files_dict[ls_file] = { "dest_path": "kalite/local_settings.py" }
+    
+        # Step 3: Decorate
+        files_dict = decorate_file_dict(files_dict)
+    
+        # Step 4: package into a zip file
+        fil = tempfile.mkstemp()[1]
+        with ZipFile(fil, "w", ZIP_DEFLATED) as zfile:
+            for srcpath,fdict in files_dict.items():
+                if options['verbosity']>=1:
+                    print "Adding to zip: %s" % srcpath
+                try:
                     zfile.write(srcpath, arcname=fdict["dest_path"])
-
-            # Step 5: output
-            if options['file']=="__default__":
-                options['file'] = create_default_archive_filename(options)
-            shutil.move(fil, options['file']) # move the archive
-        except Exception as e:
-            raise e
-            self.command_error(str(e))
+                except Exception as e:
+                    self.stderr.write("Failed to write %s to %s: %s\n" % (str(srcpath), str(fdict["dest_path"]), str(e)))
+                     
+        # Step 5: output
+        if options['file']=="__default__":
+            options['file'] = create_default_archive_filename(options)
+        shutil.move(fil, options['file']) # move the archive
+        #except Exception as e:
+        #    raise e
+        #    self.command_error(str(e))
