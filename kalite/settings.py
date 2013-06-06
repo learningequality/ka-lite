@@ -80,8 +80,7 @@ MEDIA_URL       = getattr(local_settings, "MEDIA_URL", "/media/")
 MEDIA_ROOT      = getattr(local_settings, "MEDIA_ROOT", PROJECT_PATH + "/media/") # not currently used
 STATIC_URL      = getattr(local_settings, "STATIC_URL", "/static/")
 STATIC_ROOT     = getattr(local_settings, "STATIC_ROOT", PROJECT_PATH + "/static/")
-    
- 
+
  # Make this unique, and don't share it with anybody.
 SECRET_KEY     = getattr(local_settings, "SECRET_KEY", "8qq-!fa$92i=s1gjjitd&%s@4%ka9lj+=@n7a&fzjpwu%3kd#u")
 
