@@ -19,6 +19,9 @@ INTERNAL_IPS   = getattr(local_settings, "INTERNAL_IPS", ("127.0.0.1",))
 
 CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
 
+AUTO_LOAD_TEST = getattr(local_settings, "AUTO_LOAD_TEST", False)
+assert not AUTO_LOAD_TEST or (DEBUG and CENTRAL_SERVER), "AUTO_LOAD_TEST only on local server, when debugging"
+
 # info about the central server(s)
 SECURESYNC_PROTOCOL   = getattr(local_settings, "SECURESYNC_PROTOCOL",   "https")
 CENTRAL_SERVER_DOMAIN = getattr(local_settings, "CENTRAL_SERVER_DOMAIN", "adhocsync.com")
@@ -134,20 +137,19 @@ INSTALLED_APPS = (
     "securesync",
     "config",
     "main",
-    "faq",
-    "loadtesting",
-    "contact",
     "kalite",
 )
 
 if DEBUG or CENTRAL_SERVER:
     INSTALLED_APPS += ("django_extensions","django_snippets")
 
+if AUTO_LOAD_TEST:
+    INSTALLED_APPS += ("loadtesting",)
 
 if CENTRAL_SERVER:
     ACCOUNT_ACTIVATION_DAYS = getattr(local_settings, "ACCOUNT_ACTIVATION_DAYS", 7)
     DEFAULT_FROM_EMAIL      = getattr(local_settings, "DEFAULT_FROM_EMAIL", CENTRAL_FROM_EMAIL)
-    INSTALLED_APPS         += ("postmark", "kalite.registration", "central")
+    INSTALLED_APPS         += ("postmark", "kalite.registration", "central", "faq", "contact",)
     EMAIL_BACKEND           = getattr(local_settings, "EMAIL_BACKEND", "postmark.backends.PostmarkBackend")
     AUTH_PROFILE_MODULE     = 'central.UserProfile'
 
