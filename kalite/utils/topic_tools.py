@@ -43,6 +43,9 @@ def video_counts_need_update(videos_path="../content/"):
     global _vid_last_count
     global _vid_last_updated
     
+    if not os.path.exists(videos_path):
+        return False
+        
     files = os.listdir(videos_path)
 
     vid_count = len(files)
