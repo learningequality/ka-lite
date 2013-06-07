@@ -437,7 +437,6 @@ class Command(BaseCommand):
                 print "***** ERROR: Failed to move: %s to %s:" % (self.dest_dir, tempdir)
                 print "*****        '%s'" % str(e)
                 print "***** Trying to copy contents into dest_dir"
-                import pdb; pdb.set_trace()
                 copy_success = 0
                 for root, dirs, files in os.walk(self.working_dir):
                     if 0==root.find(self.working_dir):
