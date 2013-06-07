@@ -54,7 +54,8 @@ def install_wizard(request):
         zone_id = get_request_var(request, "zone", None)
         num_certificates = int(get_request_var(request, "num_certificates", 1))
         
-        if organization_id:
+        organization = None
+        if organization_id and organization_id != "__empty__":
             organizations = request.user.organization_set.filter(id=organization_id)
             organization = organizations[0] if organizations else None
         else:
@@ -62,17 +63,15 @@ def install_wizard(request):
             if len(organizations) == 1:
                 organization_id = organizations[0].id
                 organization = organizations[0]
-            else:
-                organization = None
         
         # If a zone is selected grab it
+        zones = []
+        zone = None
         if organization_id and len(organizations)==1:
             zones = organizations[0].zones.all()
-            zone = get_object_or_None(Zone, id=zone_id)
+            if zone_id and zone_id != "__empty__": 
+                zone = get_object_or_None(Zone, id=zone_id)
             zone = zone or (zones[0] if len(zones)==1 else None)              
-        else:
-            zones = []
-            zone = None
             
 
     # Generate install certificates
