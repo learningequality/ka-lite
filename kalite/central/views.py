@@ -1,13 +1,11 @@
 import logging
 import re, json
-import os, shutil
 import requests
-import tempfile
-from zipfile import ZipFile, ZIP_DEFLATED
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
+from decorator.decorator import decorator
 
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseForbidden, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
@@ -26,8 +24,7 @@ from securesync.api_client import SyncClient
 from securesync.models import Zone, SyncSession
 from securesync.models import Facility
 from securesync.forms import FacilityForm
-from utils.django_utils import call_command_with_output
-
+from utils.packaging import package_offline_install_zip
 
 def get_request_var(request, var_name, default_val="__empty__"):
     return  request.POST.get(var_name, request.GET.get(var_name, default_val))
@@ -80,55 +77,10 @@ def install_wizard(request):
         locale = get_request_var(request, "locale", "en")
         server_type = get_request_var(request, "server-type", "local")
         
-        # assume server_type local for now, to shorten name.
-        base_archive_name = "kalite-%s-%s-%s.zip" % (platform, locale, kalite.VERSION) 
-        base_archive_path = settings.STATIC_ROOT+ "/zip/" + base_archive_name
+        return HttpResponseRedirect("/download/kalite/%s/%s/%s/%d/" % (platform, locale, zone.name if zone else "_", num_certificates))#
+        #download_kalite(request, { "platform":platform, "locale":locale, "server_type": server_type, zone=zone)
+
         
-        # This is just for demo purposes;
-        #   in the future, certificates are only generated
-        #   when the form is submitted.
-        
-        # Generate NEW certificates (into the db), as to keep enough for everybody
-        if zone:
-            certs = zone.generate_install_certificates(num_certificates=num_certificates)
-
-            # Stream out the relevant offline install data
-            from securesync.utils import dump_zone_for_offline_install
-            models_json_file = tempfile.mkstemp()[1]
-            dump_zone_for_offline_install(zone_id=zone.id, out_file=models_json_file, certs=certs)
-            
-        # Make sure the correct base zip is created, based on platform and locale
-        if not os.path.exists(base_archive_path):
-            if not os.path.exists(os.path.split(base_archive_path)[0]):
-                os.mkdir(os.path.split(base_archive_path)[0])
-
-            central_server = request.get_host() or getattr(settings, CENTRAL_SERVER_HOST, "")
-            out = call_command_with_output("package_for_download", platform=platform, locale=locale, server_type=server_type, central_server=central_server, file=base_archive_path)
-            if out[1] or out[2]:
-                raise Exception("Failed to create zip file(%d): %s" % (out[2], out[1]))
-                                
-        # Append into the zip, on disk
-        # TODO(bcipolli) the zip_file should be a read/writable self-disappearing temp file;
-        #  not via mkstemp()
-        zip_file = tempfile.mkstemp()[1]
-        shutil.copy(base_archive_path, zip_file) # duplicate the archive
-        if settings.DEBUG: # avoid "caching" "problem" in DEBUG mode
-            try: os.remove(base_archive_path)# clean up
-            except: pass
-
-        with ZipFile(zip_file, "a", ZIP_DEFLATED) as zh:
-            if zone:
-                zh.write(models_json_file, arcname="kalite/static/data/zone_data.json")
-                try: os.remove(models_json_file)# clean up
-                except: pass
-                
-        # Stream that zip back to the user.
-        user_facing_filename = "%s-%s.zip" % (os.path.splitext(base_archive_name)[0], zone.name if zone else "zonefree")
-        zh = open(zip_file,"rb")
-        response = HttpResponse(content=zh, mimetype='application/zip', content_type='application/zip')
-        response['Content-Disposition'] = 'attachment; filename="%s"' % user_facing_filename
-        return response
-
     else: # GET
         return {
             "organizations": organizations,
@@ -138,7 +90,54 @@ def install_wizard(request):
             "num_certificates": num_certificates,  
             "internet": get_request_var(request, "internet") 
         }
+
+
+@decorator
+def args_from_url(f, request, args, argnames=None):
+    """Turns a URL into a set of [unnamed] argments"""
+
+    # Split and scrub values    
+    args = args.split('/')
+    for i in range(len(args)):
+        if args[i] == "_":
+            args[i] = None
+            
+    # Return a dict or list
+    if argnames:
+        if len(args)<len(argnames):
+            args = tuple(args) + ((None,)*(len(argnames)-len(args)))
+        args = dict(zip(argnames, args))
+
+    return f(request, args)
+
+@args_from_url
+def download_kalite(request, args, argnames=None):
+
+    # Parse args
+    zone = get_object_or_None(Zone, id=args['zone_id']) if args['zone_id'] else None
+    n_certs = int(args['n_certs']) if args['n_certs'] else 1
+    platform = args['platform']
+    locale = args['locale']
+    central_server = request.get_host() or getattr(settings, CENTRAL_SERVER_HOST, "")
     
+    # Make sure this user has permission to admin this zone
+    if zone and not request.user.is_authenticated():
+        return HttpResponseForbidden("Requires authentication")
+    elif zone:
+        zone_org = Organization.from_zone(zone)
+        if not zone_org or not zone_org[0].id in [org for org in get_or_create_user_profile(request.user).get_organizations()]:
+            return HttpResponseForbidden("Requires authentication")
+    
+    zip_file = package_offline_install_zip(platform, locale, zone=zone, num_certificates=n_certs, central_server=central_server)
+
+    # Stream that zip back to the user."
+    user_facing_filename = "kalite-%s-%s-%s-%s.zip" % (platform, locale, kalite.VERSION, zone.name if zone else "zonefree")
+    zh = open(zip_file,"rb")
+    response = HttpResponse(content=zh, mimetype='application/zip', content_type='application/zip')
+    response['Content-Disposition'] = 'attachment; filename="%s"' % user_facing_filename
+    return response
+
+
 @render_to("central/homepage.html")
 def homepage(request):
     
@@ -159,7 +158,7 @@ def homepage(request):
         if form.is_valid():
             # ensure that the current user is a member of the organization to which someone is being invited
             if not form.instance.organization.is_member(request.user):
-                return HttpResponseNotAllowed("Unfortunately for you, you do not have permission to do that.")
+                return HttpResponseForbidden("Unfortunately for you, you do not have permission to do that.")
             # send the invitation email, and save the invitation record
             form.instance.send(request)
             form.save()
@@ -198,7 +197,7 @@ def org_invite_action(request, invite_id):
     invite = OrganizationInvitation.objects.get(pk=invite_id)
     org = invite.organization
     if request.user.email != invite.email_to_invite:
-        return HttpResponseNotAllowed("It's not nice to force your way into groups.")
+        return HttpResponseForbidden("It's not nice to force your way into groups.")
     if request.method == "POST":
         data = request.POST
         if data.get("join"):
@@ -215,11 +214,11 @@ def delete_admin(request, org_id, user_id):
     org = Organization.objects.get(pk=org_id)
     admin = org.users.get(pk=user_id)
     if not org.is_member(request.user):
-        return HttpResponseNotAllowed("Nice try, but you have to be an admin for an org to delete someone from it.")
+        return HttpResponseForbidden("Nice try, but you have to be an admin for an org to delete someone from it.")
     if org.owner == admin:
-        return HttpResponseNotAllowed("The owner of an organization cannot be removed.")
+        return HttpResponseForbidden("The owner of an organization cannot be removed.")
     if request.user == admin:
-        return HttpResponseNotAllowed("Your personal views are your own, but in this case " +
+        return HttpResponseForbidden("Your personal views are your own, but in this case " +
             "you are not allowed to delete yourself.")
     deletion = DeletionRecord(organization=org, deleter=request.user, deleted_user=admin)
     deletion.save()
@@ -232,7 +231,7 @@ def delete_admin(request, org_id, user_id):
 def delete_invite(request, org_id, invite_id):
     org = Organization.objects.get(pk=org_id)
     if not org.is_member(request.user):
-        return HttpResponseNotAllowed("Nice try, but you have to be an admin for an org to delete its invitations.")
+        return HttpResponseForbidden("Nice try, but you have to be an admin for an org to delete its invitations.")
     invite = OrganizationInvitation.objects.get(pk=invite_id)
     deletion = DeletionRecord(organization=org, deleter=request.user, deleted_invite=invite)
     deletion.save()
@@ -247,7 +246,7 @@ def organization_form(request, id=None):
     if id != "new":
         org = get_object_or_404(Organization, pk=id)
         if not org.is_member(request.user):
-            return HttpResponseNotAllowed("You do not have permissions for this organization.")
+            return HttpResponseForbidden("You do not have permissions for this organization.")
     else:
         org = None
     if request.method == 'POST':
@@ -274,11 +273,11 @@ def organization_form(request, id=None):
 def zone_form(request, org_id=None, id=None):
     org = get_object_or_404(Organization, pk=org_id)
     if not org.is_member(request.user):
-        return HttpResponseNotAllowed("You do not have permissions for this organization.")
+        return HttpResponseForbidden("You do not have permissions for this organization.")
     if id != "new":
         zone = get_object_or_404(Zone, pk=id)
         if org.zones.filter(pk=zone.pk).count() == 0:
-            return HttpResponseNotAllowed("This organization does not have permissions for this zone.")
+            return HttpResponseForbidden("This organization does not have permissions for this zone.")
     else:
         zone = None
     if request.method == "POST":
@@ -309,12 +308,12 @@ def central_facility_admin(request, org_id=None, zone_id=None):
 def central_facility_edit(request, org_id=None, zone_id=None, id=None):
     org = get_object_or_404(Organization, pk=org_id)
     if not org.is_member(request.user):
-        return HttpResponseNotAllowed("You do not have permissions for this organization.")
+        return HttpResponseForbidden("You do not have permissions for this organization.")
     zone = org.zones.get(pk=zone_id)
     if id != "new":
         facil = get_object_or_404(Facility, pk=id)
         if not facil.in_zone(zone):
-            return HttpResponseNotAllowed("This facility does not belong to this zone.")
+            return HttpResponseForbidden("This facility does not belong to this zone.")
     else:
         facil = None
     if request.method == "POST":
@@ -338,7 +337,7 @@ def glossary(request):
 @login_required
 def crypto_login(request):
     if not request.user.is_superuser:
-        return HttpResponseNotAllowed()
+        return HttpResponseForbidden()
     ip = request.GET.get("ip", "")
     if not ip:
         return HttpResponseNotFound("Please specify an IP (as a GET param).")

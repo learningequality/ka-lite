@@ -50,7 +50,14 @@ class Organization(models.Model):
             self.owner = owner
         super(Organization, self).save(*args, **kwargs)
 
-
+    @classmethod
+    def from_zone(cls, zone):
+        """Given a zone, figure out which organization is the parent."""
+    
+        return Organization.objects.filter(zones__pk=zone.pk)
+               
+        
+        
 class UserProfile(models.Model):  
     user = models.OneToOneField(User)
 
