@@ -427,7 +427,15 @@ def get_language_from_request(request, check_path=False):
                     _accepted[normalized] = lang
                     return lang
 
+    # DJANGO_CHANGE(bcipolli):
     # run settings.LANGUAGE_CODE through same gauntlet as above
+    # Otherwise, if we try to default to a sub-language (en-us), but only 
+    # the base language is installed (en), we'll get different behavior
+    # based on client (some of which hit this fallback) IF the sub-language
+    # is not installed.
+    #
+    # Since apps can't necessarily control that, we want the same fall-back
+    # on LANGUAGE_CODE as for everything else.
     lang_code = settings.LANGUAGE_CODE
 
     if lang_code and lang_code not in supported:

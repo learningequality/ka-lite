@@ -147,7 +147,7 @@ if not CENTRAL_SERVER:
 #   note: caching for 1000 years was too large a value,
 #   was interpreted as negative on some platforms.
 #   This is safer!
-CACHE_TIME=getattr(local_settings, "CACHE_TIME", sys.maxint) 
+CACHE_TIME = getattr(local_settings, "CACHE_TIME", sys.maxint) 
 
 # Cache is activated in every case, 
 #   EXCEPT: if CACHE_TIME=0

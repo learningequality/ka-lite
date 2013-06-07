@@ -165,7 +165,7 @@ def _i18n_cache_key_suffix(request, cache_key):
         # LANGUAGE_CODE to request, then fall back to the active language
         # which in turn can also fall back to settings.LANGUAGE_CODE
         
-        # CHANGED(bcipolli)
+        # DJANGO_CHANGE(bcipolli)
         # The existing django logic here is completely different than the 
         #   django translations pathway, which uses the more nuanced
         #   get_language_from_request.  For consistency and good interaction,
