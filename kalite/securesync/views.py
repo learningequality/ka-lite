@@ -1,4 +1,7 @@
 import re, json, uuid, urllib
+from annoying.decorators import render_to
+from annoying.functions import get_object_or_None   
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.serializers import json, serialize
@@ -9,21 +12,19 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect, ge
 from django.template import RequestContext
 from django.utils import simplejson
 from django.utils.html import strip_tags
-from annoying.decorators import render_to
-from forms import RegisteredDevicePublicKeyForm, FacilityUserForm, FacilityTeacherForm, LoginForm, FacilityForm, FacilityGroupForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout   
-from annoying.functions import get_object_or_None   
-from config.models import Settings
+from django.utils.translation import ugettext as _
 
 import crypto
 import settings
+from forms import RegisteredDevicePublicKeyForm, FacilityUserForm, FacilityTeacherForm, LoginForm, FacilityForm, FacilityGroupForm
+from config.models import Settings
+from config.utils import set_as_registered
 from securesync.models import SyncSession, Device, RegisteredDevicePublicKey, Zone, Facility, FacilityGroup
 from securesync.api_client import SyncClient
-from utils.jobs import force_job
-from utils.decorators import require_admin
+from kalite.utils.decorators import require_admin
 
-from django.utils.translation import ugettext as _
 
 def central_server_only(handler):
     def wrapper_fn(*args, **kwargs):
@@ -84,39 +85,53 @@ def facility_required(handler):
     return inner_fn
 
 
-def set_as_registered():
-    force_job("syncmodels", "Secure Sync", "HOURLY")
-    Settings.set("registered", True)
-
-
 @require_admin
 @render_to("securesync/register_public_key_client.html")
 def register_public_key_client(request):
-    if Device.get_own_device().get_zone():
+    # When successfully registered, the zone information is syncd
+    #   and the local device's zone is marked
+    if Device.get_own_device().is_registered():
         set_as_registered()   
         return {"already_registered": True}
+
+    # Not registered, but we may be able to register
+    #   offline or online
     client = SyncClient()
-    if client.test_connection() != "success":
-        return {"no_internet": True}
     reg_response = client.register()
     reg_status = reg_response.get("code")
+    
+    # We could register! woot!
     if reg_status == "registered":
         set_as_registered()
         return {"newly_registered": True}
-    if reg_status == "device_already_registered":
+    
+    # We didn't need to register; this device was already registered!  
+    elif reg_status == "device_already_registered":
         set_as_registered()
         return {"already_registered": True}
-    if reg_status == "public_key_unregistered":
+    
+    # The public key of this device is unrecognized (and no install certificate
+    #   to smooth things over)
+    elif reg_status == "public_key_unregistered":
         return {
             "unregistered": True,
             "registration_url": client.path_to_url(
                 "/securesync/register/?" + urllib.quote(crypto.get_own_key().get_public_key_string())),
             "login_url": client.path_to_url("/accounts/login/")
         }
-    error_msg = reg_response.get("error", "")
-    if error_msg:
-        return {"error_msg": error_msg}
-    return HttpResponse(_("Registration status: ") + reg_status)
+    
+    # We weren't online, and have no offline methods for registering  
+    elif reg_status == "offline_with_no_install_certificates":
+        return {"no_internet": True}
+        
+    # An error occurred
+    elif reg_response.get("error", None):
+        return {"error_msg": reg_response.get("error") }
+        
+    # An unexpected error type; bubble it up to the user?
+    else:
+        return HttpResponse(_("Registration status: ") + reg_status)
+
 
 @central_server_only
 @login_required

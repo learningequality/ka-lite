@@ -18,7 +18,105 @@ from securesync.api_client import SyncClient
 from securesync.models import Zone, SyncSession
 from securesync.models import Facility
 from securesync.forms import FacilityForm
+from utils.django_utils import call_command_with_output
 
+
+def get_request_var(request, var_name, default_val="__empty__"):
+    return  request.POST.get(var_name, request.GET.get(var_name, default_val))
+
+
+@render_to("central/install_wizard.html")
+def install_wizard(request):
+
+    
+    # get a list of all the organizations this user helps administer,
+    #   then choose the selected organization (if possible)
+    if request.user.is_anonymous():
+        organizations = []
+        organization = None
+        organization_id = None
+        zones = []
+        zone = None
+        zoneid = None
+        num_certificates = 1
+        
+    else:
+        # Get all data
+        organization_id = get_request_var(request, "organization", None)
+        zone_id = get_request_var(request, "zone", None)
+        num_certificates = int(get_request_var(request, "num_certificates", 1))
+        
+        if organization_id:
+            organizations = request.user.organization_set.filter(id=organization_id)
+            organization = organizations[0] if organizations else None
+        else:
+            organizations = request.user.organization_set.all()
+            if len(organizations) == 1:
+                organization_id = organizations[0].id
+                organization = organizations[0]
+            else:
+                organization = None
+        
+        # If a zone is selected grab it
+        if organization_id and len(organizations)==1:
+            zones = organizations[0].zones.all()
+            zone = get_object_or_None(Zone, id=zone_id)
+            zone = zone or (zones[0] if len(zones)==1 else None)              
+        else:
+            zones = []
+            zone = None
+            
+
+    # Generate install certificates
+    if request.method == "POST":
+        platform = get_request_var(request, "platform", "all")
+        locale = get_request_var(request, "locale", "en")
+        server_type = get_request_var(request, "server-type", "local")
+        
+        # assume server_type local for now, to shorten name.
+        base_archive_name = "kalite-%s-%s-%s.zip" % (platform, locale, kalite.VERSION) 
+        base_archive_path = settings.STATIC_ROOT+ "/zip/" + base_archive_name
+        
+        # This is just for demo purposes;
+        #   in the future, certificates are only generated
+        #   when the form is submitted.
+        
+        # Generate NEW certificates (into the db), as to keep enough for everybody
+        if zone:
+            certs = zone.generate_install_certificates(num_certificates=num_certificates)
+
+            # Stream out the relevant offline install data
+            from securesync.utils import dump_zone_for_offline_install
+            models_json_file = tempfile.mkstemp()[1]
+            dump_zone_for_offline_install(zone_id=zone.id, out_file=models_json_file, certs=certs)
+            
+        # Make sure the correct base zip is created, based on platform and locale
+        if not os.path.exists(base_archive_path):
+            if not os.path.exists(os.path.split(base_archive_path)[0]):
+                os.mkdir(os.path.split(base_archive_path)[0])
+
+            central_server = request.get_host() or getattr(settings, CENTRAL_SERVER_HOST, "")
+            out = call_command_with_output("package_for_download", platform=platform, locale=locale, server_type=server_type, central_server=central_server, file=base_archive_path)
+            if out[1] or out[2]:
+                raise Exception("Failed to create zip file(%d): %s" % (out[2], out[1]))
+                                
+        # Append into the zip, on disk
+        # TODO(bcipolli) the zip_file should be a read/writable self-disappearing temp file;
+        #  not via mkstemp()
+        zip_file = tempfile.mkstemp()[1]
+        shutil.copy(base_archive_path, zip_file) # duplicate the archive
+        if settings.DEBUG: # avoid "caching" "problem" in DEBUG mode
+            try: os.remove(base_archive_path)# clean up
+            except: pass
+
+
+@render_to("central/install_wizard.html")
+def install_wizard(request):
+    return {
+        "central_contact_email": settings.CENTRAL_CONTACT_EMAIL,
+        "wiki_url": settings.CENTRAL_WIKI_URL
+        }
+    
 @render_to("central/homepage.html")
 def homepage(request):
     
@@ -48,7 +146,7 @@ def homepage(request):
             for org in organizations:
                 if org.pk == int(request.POST.get("organization")):
                     org.form = form
-                    
+
     return {
         "title": _("Account administration"),
         "organizations": organizations,

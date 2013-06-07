@@ -1,10 +1,16 @@
-from django.db import models
-from securesync.models import Zone
+import random
+import datetime
+
+from django.db import models, transaction
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.template import RequestContext
+
 import settings
+from securesync import crypto
+from securesync.models import Zone, ZoneKey
+
 
 def get_or_create_user_profile(user):
     return UserProfile.objects.get_or_create(user=user)[0]
@@ -62,11 +68,10 @@ class OrganizationInvitation(models.Model):
     def send(self, request):
         to_email = self.email_to_invite
         sender = settings.CENTRAL_FROM_EMAIL
-        import pdb; pdb.set_trace()
         cdict = {
             'organization': self.organization,
             'invited_by': self.invited_by,
-            'central_server_host': request.META['HTTP_HOST'], # for central server actions, determine DYNAMICALLY to be safe
+            'central_server_host': request.META.get('HTTP_HOST', settings.CENTRAL_SERVER_HOST), # for central server actions, determine DYNAMICALLY to be safe
 
         }
         # Invite an existing user

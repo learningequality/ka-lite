@@ -1,0 +1,12 @@
+{% load humanize %}
+Great!  Someone wants to contribute to KA Lite!  Please respond to the following contribution inquiry ASAP:
+
+From: {{ contact.name }}
+Email: {{ contact.email }}
+Organization: {{ contact.org_name }}
+{% if contact.org_url %}Organization URL: {{contact.org_url }}{% endif %}
+
+Issue Type: {{ details.type }}
+Details:
+{{ details.issue|safe }}
+

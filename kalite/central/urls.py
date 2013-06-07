@@ -1,9 +1,13 @@
 from django.http import HttpResponseRedirect
 from django.conf.urls.defaults import patterns, include, url
+from django.contrib import admin
+
 import securesync.urls
 from kalite import settings
 
-from django.contrib import admin
+def redirect_to(self, base_url, path=""):
+    return HttpResponseRedirect(base_url + path)
+    
 admin.autodiscover()
 
 urlpatterns = patterns('',
@@ -15,8 +19,8 @@ urlpatterns += patterns('',
     url(r'^' + settings.STATIC_URL[1:] + '(?P<path>.*)$', 'django.views.static.serve', {
         'document_root': settings.STATIC_ROOT,
     }),
-    url(r'^' + settings.MEDIA_ROOT[1:] + '(?P<path>.*)$', 'django.views.static.serve', {
-        'document_root': settings.MEDIA_ROOT,
+    url(r'^' + settings.MEDIA_URL[1:] + '(?P<path>.*)$', 'django.views.static.serve', {
+        'document_root': settings.MEDIA_URL,
     }),
     url(r'^' + settings.CONTENT_URL[1:] + '(?P<path>.*)$', 'django.views.static.serve', {
         'document_root': settings.CONTENT_ROOT,
@@ -48,8 +52,12 @@ urlpatterns += patterns('central.views',
     url(r'^feeds/rss/$', RssSiteNewsFeed(), {}, 'rss_feed'),
     url(r'^feeds/atom/$', AtomSiteNewsFeed(), {}, 'atom_feed'),
     url(r'^faq/', include('faq.urls')),
+    url(r'^contact/', include('contact.urls')),
+    url(r'^install/$', 'install_wizard', {}, 'install_wizard'),
+    url(r'^wiki/(?P<path>\w+)/$', redirect_to, {'base_url': settings.CENTRAL_WIKI_URL}),
+    url(r'^about/$', redirect_to, { 'base_url': 'http://learningequality.org/' }),
 )
 
-handler404 = 'main.views.central_404_handler'
-handler500 = 'main.views.central_500_handler'
+handler404 = 'central.views.central_404_handler'
+handler500 = 'central.views.central_500_handler'
 
