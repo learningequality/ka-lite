@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+import tempfile
 
 try:
     from local_settings import *
@@ -91,6 +92,10 @@ MIDDLEWARE_CLASSES = (
     "main.middleware.GetNextParam",
     "django.middleware.csrf.CsrfViewMiddleware",
 )
+if DEBUG:
+    MIDDLEWARE_CLASSES += (
+        'django_snippets.profiling_middleware.ProfileMiddleware', # add ?prof to URL, to see performance stats
+    )
 
 ROOT_URLCONF = "kalite.urls"
 
@@ -131,7 +136,6 @@ if not CENTRAL_SERVER:
         "securesync.middleware.DBCheck",
         "securesync.middleware.AuthFlags",
         "main.middleware.SessionLanguage",
-        'main.middleware.ProfileMiddleware',
     )
     TEMPLATE_CONTEXT_PROCESSORS += (
         "main.custom_context_processors.languages",
@@ -147,11 +151,11 @@ CACHE_TIME=getattr(local_settings, "CACHE_TIME", sys.maxint)
 
 # Cache is activated in every case, 
 #   EXCEPT: if CACHE_TIME=0
-if CACHE_TIME is None or CACHE_TIME:
+if CACHE_TIME or CACHE_TIME is None: # None can mean infinite caching to some functions
     CACHES = {
         'default': {
             'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-            'LOCATION': getattr(local_settings, "CACHE_LOCATION", '/var/tmp/django_cache'), # this is kind of OS-specific, so dangerous.
+            'LOCATION': getattr(local_settings, "CACHE_LOCATION", tempfile.gettempdir()), # this is kind of OS-specific, so dangerous.
             'TIMEOUT': CACHE_TIME, # should be consistent
             'OPTIONS': {
                 'MAX_ENTRIES': 1000 # should we change this?

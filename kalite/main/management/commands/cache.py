@@ -1,6 +1,7 @@
 import time
 import logging
 import sys
+from decorator.decorator import decorator
 
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import translation
@@ -13,13 +14,22 @@ from utils.jobs import force_job
 from utils import caching
 
 class Command(BaseCommand):
-    help = "Manipulate the cache (create, show, clear)"
     
+    def usage(self, argname):
+        return """cache <command>
+    View / manipulate the HTML cache. Pass one arg:
+        
+    create - generate any pages that haven't been cached already
+    refresh - regenerate all pages
+    show - show a list of urls that are currently in the cache
+    clear - remove all items from the cache"""
+
     def command_error(self, msg):
         print "Error: %s" % msg
         exit(1)
         
     def handle(self, *args, **options):
+
         if not getattr(settings, "CACHES", None):
             self.command_error("caching is turned off (CACHES is None)")
         elif not getattr(settings, "CACHE_TIME", None):
@@ -35,11 +45,18 @@ class Command(BaseCommand):
             self.clear_cache()
         else:
             command_error("Unknown option: %s" % cmd)
-        
-        
-        
 
-    def create_cache(self, force=False, path=None):
+
+    @decorator
+    def for_all_nodes(f, **kwargs):
+        import pdb; pdb.set_trace()     
+        for type in ['Video', 'Exercise', 'Topic']:
+            self.stdout.write("%ss:\n" % type)
+            for n in topicdata.NODE_CACHE[type].values():
+                f(path=n['path'])
+                
+    @for_all_nodes
+    def create_cache(self, **kwargs):
         """Go through each cacheable page, and either:
         (a) Cache each page that is not
         or
@@ -64,27 +81,14 @@ class Command(BaseCommand):
                 # should never get here!
                 print "%s%s" % ("?"*10, path)
         
-        # Recursive call
-        else:
-            for type in ['Video', 'Exercise', 'Topic']:
-                print "Generating %ss:" % type
-                for n in topicdata.NODE_CACHE[type].values():
-                    self.create_cache(path=n['path'])
-                
-                
-    def show_cache(self, path=None):
+    @for_all_nodes(**kwargs) 
+    def show_cache(self, **kwargs):
         """Go through each cacheable page, and show which are cached and which are NOT"""
         
         # Base case
         if path:
             if caching.has_cache_key(path=path):
                 print "\t%s" % path
-        
-        else:
-            for type in ['Video', 'Exercise', 'Topic']:
-                print "Cached %ss:" % type
-                for n in topicdata.NODE_CACHE[type].values():
-                    self.show_cache(path=n['path'])
 
                 
     def clear_cache(self, path=None):
