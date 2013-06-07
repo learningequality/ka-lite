@@ -13,7 +13,11 @@ from django.test import TestCase, LiveServerTestCase
 
 import settings
 
-
+def add_to_local_settings(var, val):
+    fh = open(settings.PROJECT_PATH + "/local_settings.py","a")
+    fh.write("\n%s = %s" % (var,str(val)))
+    fh.close()
+        
 def create_test_user(username, password, email):
     """Create a test user.
     Taken from http://stackoverflow.com/questions/3495114/how-to-create-admin-user-in-django-tests-py"""
@@ -68,8 +72,15 @@ def wait_for_page_change(browser, source_url, max_retries=10):
     return browser.current_url != source_url
     
     
-    
+
 class KALiteTestCase(LiveServerTestCase):
+    def reverse(self, url_name):
+        """Given a URL name, returns the full central URL to that URL"""
+
+        return self.live_server_url + reverse(url_name)
+
+    
+class BrowserTestCase(KALiteTestCase):
     """
     A base test case for Selenium, providing helper methods for generating
     clients and logging in profiles.
@@ -128,19 +139,19 @@ class KALiteTestCase(LiveServerTestCase):
         return output
 
    
-class KALiteCentralTestCase(KALiteTestCase):
+class KALiteCentralBrowserTestCase(BrowserTestCase):
     """Base class for central server test cases"""
+    pass
     
-    def reverse(self, url_name):
-        """Given a URL name, returns the full central URL to that URL"""
+    
+class KALiteLocalBrowserTestCase(BrowserTestCase):
+    pass
 
-        return self.live_server_url + reverse(url_name)
+class KALiteEcosystemTestCase(KALiteTestCase):
+    def setUp(self):
+        import pdb; pdb.set_trace()
     
-    
-class KALiteLocalTestCase(KALiteTestCase):
-    def reverse(self, url_name, central_url=False):
-        if not central_url:
-            return self.live_server_url + reverse(url_name)
-        else:
-            raise NotImplementedError()
-            #return "http://" + settings.CENTRAL_SERVER_HOST + reverse('central.urls', url_name)
+    def tearDown(self):
+        import pdb; pdb.set_trace()
+        
+        

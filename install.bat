@@ -64,7 +64,15 @@ echo.
 
 set /p name=Please enter a name for this server (or, press Enter to use the default): 
 set /p description=Please enter a description for this server (or, press Enter to leave blank): 
-python manage.py initdevice "%name%" "%description%"
+
+rem Look for an offline installation file
+set offline_install_file=static\data\zone_data.json
+if not exist "%offline_install_file%" (
+    set offline_install_file=
+)
+
+python manage.py initdevice "%name%" "%description%" "%offline_install_file%"
+
 
 :choice
 echo.

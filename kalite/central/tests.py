@@ -15,10 +15,10 @@ from selenium.webdriver.common.keys import Keys
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 
-from utils.testing import KALiteCentralTestCase
+from utils.testing import KALiteCentralBrowserTestCase
 
 
-class SuperUserTest(KALiteCentralTestCase):
+class SuperUserTest(KALiteCentralBrowserTestCase):
     """Log in the super user"""
 
     def test_superuser_login(self):
@@ -44,9 +44,10 @@ class SuperUserTest(KALiteCentralTestCase):
         self.assertIn("Account administration", self.browser.title, "Check account admin page title")
 
 
-class OrgUserTest(KALiteCentralTestCase):
+class OrgUserTest(KALiteCentralBrowserTestCase):
     user_email = "test_user@nowhere.com"
     password   = "password"
+    org_name = "test org"
 
     def test_user_register(self):
         """Tests that a user can register"""
@@ -61,8 +62,10 @@ class OrgUserTest(KALiteCentralTestCase):
         self.browser_send_keys("Firstname" + Keys.TAB) # first name
         self.browser_send_keys("Lastname" + Keys.TAB) # last name
         self.browser_send_keys(self.user_email + Keys.TAB) #email
+        self.browser_send_keys(self.org_name + Keys.TAB) #email
         self.browser_send_keys(self.password + Keys.TAB) #password
         self.browser_send_keys(self.password + Keys.TAB) #password (again)
+        self.browser_send_keys(Keys.TAB) #
         self.browser_send_keys(Keys.SPACE + Keys.TAB) # checkbox 1
         self.browser_send_keys(Keys.SPACE + Keys.TAB) # checkbox 2
 
