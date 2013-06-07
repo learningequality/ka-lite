@@ -161,8 +161,9 @@ class SyncClient(object):
                 d = Device.objects.get(id=device_id)
             except:
                 continue
-            dm = d.get_metadata()
-            dm.counter_position = self.counters_to_download[device_id]
+            dm = d.get_metadata() 
+            if not dm.counter_position: # this would be nonzero if the device sync'd models
+                dm.counter_position = self.counters_to_download[device_id]
             dm.save()
         
         self.session.models_downloaded += download_results["saved_model_count"]
