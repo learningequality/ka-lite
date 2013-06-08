@@ -19,6 +19,7 @@ from django_snippets._mkdir import _mkdir
 
 import settings
 from kalite.utils.django_utils import call_command_with_output
+from playground.test_tools.mount_branch import KaLiteSelfZipProject
 
 
 def x_only(f, cond, msg):
@@ -179,25 +180,45 @@ class KALiteLocalBrowserTestCase(BrowserTestCase):
 
 class KALiteEcosystemTestCase(KALiteTestCase):
 
-    def setUp(self):
-        # Make sure the setup is 2 local, 1 central
-        server1 = {'zip_filename': tempfile.mkstemp(), 'type': 'local'}
-        server2 = {'zip_filename': tempfile.mkstemp(), 'type': 'local' if settings.CENTRAL_SERVER else 'central' }
+    def __init__(self, *args, **kwargs):
+        self.log = logging.getLogger( "KALiteEcosystemTestCase" )
+        self.zip_file = "foo.zip" #        zip_file = tempfile.mkstemp()
 
-#        out = call_command_with_output("package_for_download", platform=platform.system(), locale='en', server_type=server1['type'], file=server1['zip_filename'])
-        out = call_command_with_output("package_for_download", platform=platform.system(), locale='en', server_type=server2['type'], file=server2['zip_filename'])
-
-        from main.management.commands.package_for_download import recursively_add_files
-        files_dict = recursively_add_files(settings.PROJECT_PATH+"/../")
-        import pdb; pdb.set_trace()
-        server1_dir = tempfile.mkdtemp()
-        server2_dir = tempfile.mkdtemp()
-        for src_path,props in files_dict.items():
-            dest_path = server1_dir+props['dest_path']
-            _mkdir(os.path.split(dest_path)[0])
-            shutil.copyfile(src_path, dest_path)
+        self.base_dir = "foo" #            base_dir = tempfile.mkdtemp()
         
-        #import pdb; pdb.set_trace()
+        return super(KALiteEcosystemTestCase, self).__init__(*args, **kwargs)
+
+    def setup_ports(self):        
+        self.port = int(self.live_server_url.split(":")[2])
+
+        assert os.environ.get("DJANGO_LIVE_TEST_SERVER_ADDRESS",""), "This testcase can only be run running under the liveserver django test option.  For KA Lite, this should be set up by our TestRunner (which is set up in settings.py)"
+        self.open_ports = [int(p) for p in os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'].split(":")[1].split("-")]
+        if len(self.open_ports) != 2:
+            raise Exception("Unable to parse ports. Use a simple range (8000-8080)")
+        self.open_ports = set(range(self.open_ports[0], self.open_ports[1]+1)) - {self.port,}
+
+
+    def setUp(self):
+        """Package two servers just like this one, and mount."""
+        
+        self.setup_ports()
+
+        # Make sure the setup is 2 local, 1 central
+        # First is for this server, 2 and 3 are for the others
+        server_types = ["central" if settings.CENTRAL_SERVER else "local", 'local' if settings.CENTRAL_SERVER else 'central', 'local2']
+        
+        self.log.info("Setting up ecosystem: your server [%s], plus %s servers" % (server_types[0], str(server_types[1:])))
+        
+        if not os.path.exists(self.zip_file):
+            self.log.info("Creating zip package for your server; please wait.")
+            out = call_command_with_output("package_for_download", platform=platform.system(), locale='en', file=self.zip_file)
+            self.log.info("Completed zip package for your server.")
+        
+        self.log.info("Installing two servers; please wait.")
+        kap = KaLiteSelfZipProject(base_dir=self.base_dir, zip_file=self.zip_file)
+        kap.mount_project(server_types=server_types[1:], open_ports=self.open_ports, port_map={server_types[0]: self.port})
+
+        
         
     
     def tearDown(self):

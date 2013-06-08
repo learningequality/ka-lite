@@ -133,12 +133,8 @@ INSTALLED_APPS = (
     "django_cherrypy_wsgiserver",
     "securesync",
     "config",
-    "main",
-    "faq",
-    "loadtesting",
-    "contact",
-    "playground",
     "kalite",
+    "main",
 )
 
 TEST_RUNNER = 'kalite.testrunner.KALiteTestRunner'
@@ -150,7 +146,7 @@ if DEBUG or CENTRAL_SERVER:
 if CENTRAL_SERVER:
     ACCOUNT_ACTIVATION_DAYS = getattr(local_settings, "ACCOUNT_ACTIVATION_DAYS", 7)
     DEFAULT_FROM_EMAIL      = getattr(local_settings, "DEFAULT_FROM_EMAIL", CENTRAL_FROM_EMAIL)
-    INSTALLED_APPS         += ("postmark", "kalite.registration", "central")
+    INSTALLED_APPS         += ("postmark", "kalite.registration", "central", "faq", "contact")
     EMAIL_BACKEND           = getattr(local_settings, "EMAIL_BACKEND", "postmark.backends.PostmarkBackend")
     AUTH_PROFILE_MODULE     = 'central.UserProfile'
 
@@ -163,7 +159,9 @@ else:
     TEMPLATE_CONTEXT_PROCESSORS += (
         "main.custom_context_processors.languages",
     )
-    INSTALL_CERTIFICATES = getattr(local_settings, "INSTALL_CERTIFICATES", [])
+    INSTALLED_APPS += ("main",)
+    if DEBUG:
+        INSTALLED_APPS += ("loadtesting",)
 
 
 slug_key = {
