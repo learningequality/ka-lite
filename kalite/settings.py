@@ -38,9 +38,10 @@ ADMINS         = getattr(local_settings, "ADMINS", ( ("KA Lite Team", CENTRAL_AD
 
 MANAGERS       = getattr(local_settings, "MANAGERS", ADMINS)
 
-PROJECT_PATH   = getattr(local_settings, "PROJECT_PATH", os.path.dirname(os.path.realpath(__file__)))
+PROJECT_PATH   = os.path.realpath(getattr(local_settings, "PROJECT_PATH", os.path.dirname(os.path.realpath(__file__)))) + "/"
 
 LOCALE_PATHS   = getattr(local_settings, "LOCALE_PATHS", (PROJECT_PATH + "/../locale",))
+LOCALE_PATHS   = tuple([os.path.realpath(lp) + "/" for lp in LOCALE_PATHS])
 
 DATABASES      = getattr(local_settings, "DATABASES", {
     "default": {
@@ -52,9 +53,9 @@ DATABASES      = getattr(local_settings, "DATABASES", {
     }
 })
 
-DATA_PATH      = getattr(local_settings, "DATA_PATH", PROJECT_PATH + "/static/data/")
+DATA_PATH      = os.path.realpath(getattr(local_settings, "DATA_PATH", PROJECT_PATH + "/static/data/")) + "/"
 
-CONTENT_ROOT   = getattr(local_settings, "CONTENT_ROOT", PROJECT_PATH + "/../content/")
+CONTENT_ROOT   = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", PROJECT_PATH + "/../content/")) + "/"
 CONTENT_URL    = getattr(local_settings, "CONTENT_URL", "/content/")
 
 # Local time zone for this installation. Choices can be found here:
@@ -89,7 +90,7 @@ else:
 SECRET_KEY     = getattr(local_settings, "SECRET_KEY", "8qq-!fa$92i=s1gjjitd&%s@4%ka9lj+=@n7a&fzjpwu%3kd#u")
 
 TEMPLATE_DIRS  = getattr(local_settings, "TEMPLATE_DIRS", (PROJECT_PATH + "/templates",))
-
+TEMPLATE_DIRS  = tuple([os.path.realpath(td) + "/" for td in TEMPLATE_DIRS])
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
