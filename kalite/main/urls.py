@@ -38,7 +38,6 @@ urlpatterns += patterns('main.views',
 )
 
 # Only import if module is available
-import pdb; pdb.set_trace()
 if settings.DEBUG and hasattr(kalite, 'tests'):
     urlpatterns += patterns('main.views',
         url(r'^loadtesting/', include('kalite.tests.loadtesting.urls')),
