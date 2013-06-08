@@ -38,11 +38,17 @@ class FacilityUserForm(forms.ModelForm):
         }
 
     def clean(self):
-        username = self.cleaned_data.get('username')
         facility = self.cleaned_data.get('facility')
+        username = self.cleaned_data.get('username')
+        self.cleaned_data["username"] = username.lower() #lcase it, but validate both to avoid collision
         
+        # Now validate again, as lowercase
+        if FacilityUser.objects.filter(username=username.lower(), facility=facility).count() > 0:
+            raise forms.ValidationError(_("A user with this username at this facility already exists. Please choose a new username (or select a different facility) and try again."))
+
         if FacilityUser.objects.filter(username=username, facility=facility).count() > 0:
             raise forms.ValidationError(_("A user with this username at this facility already exists. Please choose a new username (or select a different facility) and try again."))
+
 
         return self.cleaned_data
 
@@ -97,9 +103,15 @@ class LoginForm(forms.ModelForm):
         password = self.cleaned_data.get('password')
 
         try:
-            self.user_cache = FacilityUser.objects.get(username=username, facility=facility)
+            self.user_cache = FacilityUser.objects.get(username=username.lower(), facility=facility)
+            username = username.lower()
+            self.cleaned_data['username'] = username
         except FacilityUser.DoesNotExist as e:
-            raise forms.ValidationError(_("Username was not found for this facility. Did you type your username correctly, and choose the right facility?"))
+            # now try again, with lcased username        
+            try:
+                self.user_cache = FacilityUser.objects.get(username=username, facility=facility)
+            except FacilityUser.DoesNotExist as e:
+                raise forms.ValidationError(_("Username was not found for this facility. Did you type your username correctly, and choose the right facility?"))
         
         if not self.user_cache.check_password(password):
             self.user_cache = None
