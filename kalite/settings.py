@@ -12,8 +12,8 @@ DEBUG          = getattr(local_settings, "DEBUG", False)
 TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
 
 # Set logging level based on the value of DEBUG (evaluates to 0 if False, 1 if True)
-logging.basicConfig()
-logging.getLogger().setLevel(logging.DEBUG*DEBUG + logging.INFO*(1-DEBUG))
+logging.basicConfig(format='%(levelname)s:%(message)s')
+logging.getLogger("kalite").setLevel(logging.DEBUG*DEBUG + logging.INFO*(1-DEBUG))
 
 INTERNAL_IPS   = getattr(local_settings, "INTERNAL_IPS", ("127.0.0.1",))
 

@@ -1,3 +1,4 @@
+import copy
 import decorator
 import logging
 import time
@@ -19,7 +20,7 @@ from django_snippets._mkdir import _mkdir
 
 import settings
 from kalite.utils.django_utils import call_command_with_output
-from playground.test_tools.mount_branch import KaLiteSelfZipProject
+from playground.test_tools.mount_branch import KaLiteServer, KaLiteSelfZipProject
 
 
 def x_only(f, cond, msg):
@@ -49,7 +50,7 @@ def add_to_local_settings(var, val):
     fh.write("\n%s = %s" % (var,str(val)))
     fh.close()
         
-def create_test_user(username, password, email):
+def create_test_admin(username="admin", password="pass", email="admin@example.com"):
     """Create a test user.
     Taken from http://stackoverflow.com/questions/3495114/how-to-create-admin-user-in-django-tests-py"""
     
@@ -105,6 +106,10 @@ def wait_for_page_change(browser, source_url, max_retries=10):
     
 
 class KALiteTestCase(LiveServerTestCase):
+    def __init__(self, *args, **kwargs):
+        #create_test_admin()
+        return super(KALiteTestCase, self).__init__(*args, **kwargs)
+        
     def reverse(self, url_name):
         """Given a URL name, returns the full central URL to that URL"""
 
@@ -178,14 +183,21 @@ class KALiteCentralBrowserTestCase(BrowserTestCase):
 class KALiteLocalBrowserTestCase(BrowserTestCase):
     pass
 
+
 class KALiteEcosystemTestCase(KALiteTestCase):
-
-    def __init__(self, *args, **kwargs):
-        self.log = logging.getLogger( "KALiteEcosystemTestCase" )
-        self.zip_file = "foo.zip" #        zip_file = tempfile.mkstemp()
-
-        self.base_dir = "foo" #            base_dir = tempfile.mkdtemp()
+    """A testcase involving an "ecosystem" of KA Lite servers: 1 central server and two distributed servers
+    on the same zone.
+    
+    Subclasses could look at more complex scenarios."""
+    
+    # TODO(bcipolli) move setup and teardown code to class (not instance);
+    #   not sure how to tear down in this case, though...............
         
+    def __init__(self, *args, **kwargs):
+        self.log = logging.getLogger("kalite")
+        self.zip_file = tempfile.mkstemp()[1]
+        self.base_dir = tempfile.mkdtemp()
+                
         return super(KALiteEcosystemTestCase, self).__init__(*args, **kwargs)
 
     def setup_ports(self):        
@@ -198,7 +210,7 @@ class KALiteEcosystemTestCase(KALiteTestCase):
         self.open_ports = set(range(self.open_ports[0], self.open_ports[1]+1)) - {self.port,}
 
 
-    def setUp(self):
+    def setUp(self, *args, **kwargs):
         """Package two servers just like this one, and mount."""
         
         self.setup_ports()
@@ -206,22 +218,30 @@ class KALiteEcosystemTestCase(KALiteTestCase):
         # Make sure the setup is 2 local, 1 central
         # First is for this server, 2 and 3 are for the others
         server_types = ["central" if settings.CENTRAL_SERVER else "local", 'local' if settings.CENTRAL_SERVER else 'central', 'local2']
-        
-        self.log.info("Setting up ecosystem: your server [%s], plus %s servers" % (server_types[0], str(server_types[1:])))
-        
-        if not os.path.exists(self.zip_file):
-            self.log.info("Creating zip package for your server; please wait.")
-            out = call_command_with_output("package_for_download", platform=platform.system(), locale='en', file=self.zip_file)
-            self.log.info("Completed zip package for your server.")
-        
-        self.log.info("Installing two servers; please wait.")
-        kap = KaLiteSelfZipProject(base_dir=self.base_dir, zip_file=self.zip_file)
-        kap.mount_project(server_types=server_types[1:], open_ports=self.open_ports, port_map={server_types[0]: self.port})
 
+        self.log.info("Setting up ecosystem: your server [%s; port %d], plus %s servers" % (server_types[0], self.port, str(server_types[1:])))
+
+
+        # Create a zip file 
+        self.log.info("Creating zip package for your server; please wait.")
+        out = call_command_with_output("package_for_download", platform=platform.system(), locale='en', file=self.zip_file)
+        self.log.info("Completed zip package for your server.")
         
+        # Copy, install, and start the servers
+        self.log.info("Installing two servers; please wait.")
+        kap = KaLiteSelfZipProject(base_dir=self.base_dir, zip_file=self.zip_file, persistent_ports=False)
+        kap.mount_project(server_types=server_types[1:], host="127.0.0.1", open_ports=self.open_ports, port_map={server_types[0]: self.port})
+
+        # Save all servers to be accessible
+        own_server = KaLiteServer(base_dir=settings.PROJECT_PATH+"/../", server_type=server_types[0], port=self.port, central_server_host="127.0.0.1", central_server_port = kap.port_map['central'])
+        self.servers = copy.copy(kap.servers)
+        self.servers[server_types[0]] = own_server
+        
+        return super(KALiteEcosystemTestCase, self).setUp(*args, **kwargs)
         
     
     def tearDown(self):
-        import pdb; pdb.set_trace()
-        
+        self.log.info("Tearing down ecosystem test servers")
+        shutil.rmtree(self.base_dir)
+        os.remove(self.zip_file)
         
