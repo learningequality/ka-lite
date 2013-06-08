@@ -1,5 +1,7 @@
 from django.http import HttpResponseRedirect
 from django.conf.urls.defaults import patterns, include, url
+
+import kalite
 import securesync.urls
 from kalite import settings
 
@@ -33,8 +35,16 @@ urlpatterns += patterns('main.views',
     url(r'^update/$', 'update', {}, 'update'),
     url(r'^userlist/$', 'user_list', {}, 'user_list'),
     url(r'^api/', include('main.api_urls')),
-    url(r'^loadtesting/', include('loadtesting.urls')),
-    
+)
+
+# Only import if module is available
+import pdb; pdb.set_trace()
+if settings.DEBUG and hasattr(kalite, 'tests'):
+    urlpatterns += patterns('main.views',
+        url(r'^loadtesting/', include('kalite.tests.loadtesting.urls')),
+    ) 
+   
+urlpatterns += patterns('main.views',
     # the following pattern is a catch-all, so keep it last:
     url(r'^(?P<splat>.+)/$', 'splat_handler', {}, 'splat_handler'),
 )

@@ -1,4 +1,10 @@
-import testrunner
+# testing isn't always available; just ignore if not
+try:
+    import testrunner
+    import tests.loadtesting
+except:
+    pass
+    
 import version
 VERSION = version.VERSION
 

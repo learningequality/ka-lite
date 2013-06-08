@@ -161,8 +161,8 @@ else:
         "main.custom_context_processors.languages",
     )
     INSTALLED_APPS += ("main",)
-    if DEBUG:
-        INSTALLED_APPS += ("loadtesting",)
+#    if DEBUG:
+#        INSTALLED_APPS += ("loadtesting",)
 
 
 slug_key = {
