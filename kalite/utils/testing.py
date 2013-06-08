@@ -1,7 +1,12 @@
+import decorator
 import logging
 import time
 import os
+import shutil
 import sys
+import platform
+import tempfile
+import unittest
 from selenium import webdriver
 from StringIO import StringIO
 
@@ -10,9 +15,34 @@ from django.test.client import Client
 from django.core.urlresolvers import reverse
 from django.core.management import call_command
 from django.test import TestCase, LiveServerTestCase
+from django_snippets._mkdir import _mkdir
 
 import settings
+from kalite.utils.django_utils import call_command_with_output
 
+
+def x_only(f, cond, msg):
+    """Decorator"""
+
+    if f.__class__.__name__ == "type":
+        @unittest.skipIf(cond, msg)
+        class wrapped_class(f):
+            pass
+        return wrapped_class
+        
+    else:
+        @unittest.skipIf(cond, msg)
+        def wrapped_fn(*args, **kwargs):
+            return f(*args, **kwargs)
+        return wrapped_fn
+
+def main_only(f):
+    return x_only(f, settings.CENTRAL_SERVER, "Distributed server test")
+
+def central_only(f):
+    return x_only(f, not settings.CENTRAL_SERVER, "Central server test")
+    
+         
 def add_to_local_settings(var, val):
     fh = open(settings.PROJECT_PATH + "/local_settings.py","a")
     fh.write("\n%s = %s" % (var,str(val)))
@@ -148,8 +178,27 @@ class KALiteLocalBrowserTestCase(BrowserTestCase):
     pass
 
 class KALiteEcosystemTestCase(KALiteTestCase):
+
     def setUp(self):
+        # Make sure the setup is 2 local, 1 central
+        server1 = {'zip_filename': tempfile.mkstemp(), 'type': 'local'}
+        server2 = {'zip_filename': tempfile.mkstemp(), 'type': 'local' if settings.CENTRAL_SERVER else 'central' }
+
+#        out = call_command_with_output("package_for_download", platform=platform.system(), locale='en', server_type=server1['type'], file=server1['zip_filename'])
+        out = call_command_with_output("package_for_download", platform=platform.system(), locale='en', server_type=server2['type'], file=server2['zip_filename'])
+
+        from main.management.commands.package_for_download import recursively_add_files
+        files_dict = recursively_add_files(settings.PROJECT_PATH+"/../")
         import pdb; pdb.set_trace()
+        server1_dir = tempfile.mkdtemp()
+        server2_dir = tempfile.mkdtemp()
+        for src_path,props in files_dict.items():
+            dest_path = server1_dir+props['dest_path']
+            _mkdir(os.path.split(dest_path)[0])
+            shutil.copyfile(src_path, dest_path)
+        
+        #import pdb; pdb.set_trace()
+        
     
     def tearDown(self):
         import pdb; pdb.set_trace()

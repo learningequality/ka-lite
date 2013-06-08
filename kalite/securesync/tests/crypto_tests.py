@@ -3,57 +3,10 @@ import unittest
 
 
 from django.test import TestCase
-
-import crypto
-from securesync.models import Facility, FacilityUser, FacilityGroup
 from kalite.utils.django_utils import call_command_with_output
 
-
-class ChangeLocalUserPassword(unittest.TestCase):
-    def setUp(self):
-        self.facility = Facility(name="Test Facility")
-        self.facility.save()
-        self.group = FacilityGroup(facility=self.facility, name="Test Class")
-        self.group.full_clean()
-        self.group.save()
-        self.user = FacilityUser(facility=self.facility, username="testuser", first_name="Firstname", last_name="Lastname", group=self.group)
-        self.user.clear_text_password = "testpass" # not used anywhere but by us, for testing purposes
-        self.user.set_password(self.user.clear_text_password)
-        self.user.full_clean()
-        self.user.save()
-    
-    
-    def test_change_password(self):
-        
-        # Now, re-retrieve the user, to check.
-        (out,err,val) = call_command_with_output("changelocalpassword", self.user.username, noinput=True)
-        self.assertEquals(err, "", "no output on stderr")
-        self.assertNotEquals(out, "", "some output on stderr")
-        self.assertEquals(val, 0, "Exit code is zero")
-        
-        match = re.match(r"^.*Generated new password for user '([^']+)': '([^']+)'", out.replace("\n",""), re.MULTILINE)
-        self.assertFalse(match is None, "could not parse stdout")
-
-        user = FacilityUser.objects.get(facility=self.facility, username=self.user.username)
-        self.assertEquals(user.username, match.groups()[0], "Username reported correctly")
-
-        self.assertTrue(user.check_password(match.groups()[1]), "New password works")
-        self.assertFalse(user.check_password(self.user.clear_text_password), "NOT the old password")
-        
-
-    def test_no_user(self):
-        fake_username = self.user.username + "xxxxx"
-        
-        #with self.assertRaises(FacilityUser.DoesNotExist):
-        (out,err,val) = call_command_with_output("changelocalpassword", fake_username, noinput=True)
-
-        self.assertNotIn("Generated new password for user", out, "Did not set password")
-        self.assertNotEquals(err, "", "some output on stderr")
-
-        match = re.match(r"^.*Error: user '([^']+)' does not exist$", err.replace("\n",""), re.M)
-        self.assertFalse(match is None, "could not parse stderr")
-        self.assertEquals(match.groups()[0], fake_username, "Verify printed fake username")
-        self.assertNotEquals(val, 0, "Verify exit code is non-zero")
+from securesync import crypto
+from securesync.models import Facility, FacilityUser, FacilityGroup
 
 @unittest.skipIf(not crypto.M2CRYPTO_EXISTS, "Skipping M2Crypto tests as it does not appear to be installed.")
 class TestM2Crypto(unittest.TestCase):

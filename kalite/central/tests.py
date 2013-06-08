@@ -7,7 +7,6 @@ These require a test server to be running, and multiple ports
 """
 
 import logging
-#import selenium
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
@@ -15,9 +14,11 @@ from selenium.webdriver.common.keys import Keys
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 
-from utils.testing import KALiteCentralBrowserTestCase
+import settings
+from utils.testing import central_only, KALiteCentralBrowserTestCase
 
 
+@central_only
 class SuperUserTest(KALiteCentralBrowserTestCase):
     """Log in the super user"""
 
@@ -44,7 +45,8 @@ class SuperUserTest(KALiteCentralBrowserTestCase):
         self.assertIn("Account administration", self.browser.title, "Check account admin page title")
 
 
-class OrgUserTest(KALiteCentralBrowserTestCase):
+@central_only
+class OrgUserRegistrationTest(KALiteCentralBrowserTestCase):
     user_email = "test_user@nowhere.com"
     password   = "password"
     org_name = "test org"

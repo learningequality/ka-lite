@@ -1,3 +1,4 @@
+import testrunner
 import version
 VERSION = version.VERSION
 

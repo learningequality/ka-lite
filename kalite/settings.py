@@ -137,7 +137,11 @@ INSTALLED_APPS = (
     "faq",
     "loadtesting",
     "contact",
+    "playground",
+    "kalite",
 )
+
+TEST_RUNNER = 'kalite.testrunner.KALiteTestRunner'
 
 if DEBUG or CENTRAL_SERVER:
     INSTALLED_APPS += ("django_extensions","django_snippets")
