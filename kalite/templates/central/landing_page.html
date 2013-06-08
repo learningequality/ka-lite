@@ -88,15 +88,6 @@
                     <li><a href="">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sit, necessitatibus, a, praesentium dignissimos</a></li>
                     <li><a href="">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sit, necessitatibus, a, praesentium dignissimos</a></li>
                 </ul>
-                 {% for entry in feed %}
-            <div class="rss-entry"><span class="rss-title"><a href="{{ entry.url }}" target="_blank" title="{{ entry.description }}">{{entry.title}}</a></span> 
-                {% if entry.description|length >= 1000 %}
-                    <p>{{ entry.description|slice:":500" }}<a href="{{ entry.url }}" target="_blank" title="{{ entry.description }}">...</a></p>
-                {% else %}
-                    <p>{{ entry.description }}</p>
-                {% endif %}
-            </div>
-        {% endfor %}
         </div>
         <div class="span4">    
             <h2>Share</h2>

@@ -1,0 +1,213 @@
+body {
+ //background: url(/static/images/light-page-bg.png) repeat-x;
+background: rgb(225,233,203);
+}
+a:hover{
+  text-decoration: none;
+}
+.container{
+  max-width: @container-max-width; // Puts a hard limit on the width of the layout 
+  margin: 0 auto;
+  background-image: url(/static/images/bg-header.png);
+  background-repeat: no-repeat;
+}
+
+p{
+  .normal-text-font; // Resets the font of all the text (definition in mixins.less)
+}
+
+/* Header */
+.header__logo{
+  padding-top: 20px;
+}
+
+.header__horizontal-menu {
+  padding-top: 20px;
+  text-align: right;
+  font-family: MuseoSans500, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  text-transform: uppercase;
+  li{
+    display: inline;
+    list-style-type: none;
+    padding-right:20px;
+
+    a, a:hover{
+      color:black;
+      text-decoration: none;
+    }
+  }
+}
+
+/* Content */
+.content{ // Green to white gradient border - TODO: Test on all the browsers
+  background-color: rgb(255, 255, 255);
+  border-top: 3px solid @dark-green;
+/*
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(rgb(198, 209, 173)), to(transparent));
+  background-image: -webkit-linear-gradient(rgb(198, 209, 173), transparent);
+  background-image:
+      -moz-linear-gradient(rgb(198, 209, 173), transparent),
+      -moz-linear-gradient(rgb(198, 209, 173), transparent)
+  ;
+  background-image:
+      -o-linear-gradient(rgb(198, 209, 173), transparent),
+      -o-linear-gradient(rgb(198, 209, 173), transparent)
+  ;
+  background-image: 
+      linear-gradient(rgb(198, 209, 173), transparent),
+      linear-gradient(rgb(198, 209, 173), transparent)
+  ;
+  -moz-background-size:1px 100%;
+  background-size:1px 100%;
+  background-position:0 0, 100% 0;
+  background-repeat:no-repeat;*/
+}
+
+.content__map-container,.content__motto-container{
+  padding:10px;
+}
+
+.content__box-container{
+  background-color: rgb(211,211,211);
+ // border-top: 3px solid rgb(194,194,194);
+
+}
+.center { float: none; margin-left: auto; margin-right: auto; }
+
+.content__box{
+  text-align: center;
+  background-color: #dae4cb;
+  max-width: 300px;
+  padding:10px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  .center;
+  border-top: 3px solid @dark-green;
+
+  img{
+    width: 170px;
+    height:170px;
+  }
+
+  p{
+    font-size: 16px;
+  }
+}
+
+.content__motto-container{
+
+  padding-left: 25px;
+  padding-top: 12px;
+  h1{
+    font-size: 25px;
+    font-weight: normal;
+    
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+  p{
+    color:rgb(151,151,151);
+    font-size: 17px;
+  }
+
+}
+
+.content__motto-container__motivation-box{
+  .normal-text-font;
+  padding-bottom: 10px;  
+  line-height: 28px;
+  padding-left:21px;
+
+}
+
+button{
+
+  &.green{
+    .green_button(190px,5px, 14px, 10px, 20px); //.green_button(@width,@border_radius, @font_size, @paddingv, @paddingh)
+  }
+
+  &.green--small{
+    .green_button(100%,2px, 12px, 5px, 20px); //.green_button(@width,@border_radius, @font_size, @paddingv, @paddingh)
+  }
+}
+
+/* Footer */
+.footer{
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background-color: rgb(80,80,80);
+
+  height: 100%;
+  //border-top: 3px rgb(61,61,61) solid;
+}
+
+.footer__email{
+  padding-bottom: 10px;
+  padding-right: 15px;
+}
+
+input.footer__email__input{
+  width:100%;
+  padding:0;
+}
+
+.footer h2{
+  font-size: 22px;
+  font-family: 'Helvetica Neue: ;', Helvetica, Arial, sans-serif;
+  font-weight: normal;
+  color:white;  
+}
+.footer__rss{
+  padding-left: 40px;
+}
+.footer__news-list{
+  margin-top: 15px;
+  padding-left: 0px;
+    li{
+      border-bottom: 1px rgb(126,126,126) solid;
+      list-style: none;
+      line-height: 30px;
+      a{  
+        color:rgb(194,194,194);
+      }
+      
+  }
+}
+.footer__second-line{
+  padding-top: 30px;
+}
+.symbol, a.symbol:before {
+    font-family: 'Mono Social Icons Font';
+    -webkit-text-rendering: optimizeLegibility;
+    -moz-text-rendering: optimizeLegibility;
+    -ms-text-rendering: optimizeLegibility;
+    -o-text-rendering: optimizeLegibility;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-font-smoothing: antialiased;
+    -ms-font-smoothing: antialiased;
+    -o-font-smoothing: antialiased;
+    font-smoothing: antialiased;
+}
+
+a.symbol:before {
+    content: attr(title);
+    font-size: 130%;
+}
+
+
+.list-icons{
+  margin: 0; //Oh webkit
+  font-size: 45px;
+  line-height: 10px;
+  padding: 0px;
+    li{
+    display: inline;
+    list-style-type: none;
+  
+    a, a:hover{
+      color:white;
+      text-decoration: none;
+    }
+  }
+}
