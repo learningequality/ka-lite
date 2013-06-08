@@ -2,8 +2,9 @@ import logging
 import os
 import shutil
 import platform
+import tempfile
 from optparse import make_option
-from zipfile import ZipFile, ZIP_DEFLATED
+from zipfile import ZipInfo, ZipFile, ZIP_DEFLATED
 
 from django.core.management.base import BaseCommand, CommandError
 from django.core.management import call_command
@@ -69,7 +70,7 @@ def file_in_ok_set(file_path):
     
     name = os.path.split(file_path)[1]
     ext = os.path.splitext(file_path)[1]
-    return (ext not in [".pyc",".sqlite",".zip"]) and (name not in ["local_settings.py", ".gitignore", "tests.py", "faq",".DS_Store"])
+    return (ext not in [".pyc",".sqlite",".zip",'.xlsx',]) and (name not in ["local_settings.py", ".gitignore", "tests.py", "faq",".DS_Store"])
 
 
 def recursively_add_files(dirpath, files_dict=dict(), key_base="", **kwargs):
@@ -110,7 +111,7 @@ def recursively_add_files(dirpath, files_dict=dict(), key_base="", **kwargs):
 def create_local_settings_file(location, server_type="local", locale=None):
     """Create an appropriate local_settings file for the installable server."""
     
-    fil = os.tmpnam()
+    fil = tempfile.mkstemp()[1]
     
     if settings.CENTRAL_SERVER: 
         ls = open(fil,"w") # just in case fil is not unique, somehow...
@@ -164,7 +165,7 @@ class Command(BaseCommand):
 
         make_option('-f', '--file',
             action='store',
-            dest='out_file',
+            dest='file',
             default="__default__",
             help='FILE to save zip to',
             metavar="FILE"),
@@ -188,15 +189,20 @@ class Command(BaseCommand):
         files_dict = decorate_file_dict(files_dict)
         
         # Step 4: package into a zip file
-        fil = os.tmpnam()
-        zfile = ZipFile(fil, "w", ZIP_DEFLATED)
-        for srcpath,fdict in files_dict.items():
-            if options['verbosity']>=1:
-                print "Adding to zip: %s" % srcpath
-            zfile.write(srcpath, arcname=fdict["dest_path"])
-        zfile.close()
+        fil = tempfile.mkstemp()[1]
+        with ZipFile(fil, "w", ZIP_DEFLATED) as zfile:
+            for srcpath,fdict in files_dict.items():
+                if options['verbosity']>=1:
+                    print "Adding to zip: %s" % srcpath
+                if os.path.splitext(fdict["dest_path"])[1] != ".sh":
+                    zfile.write(srcpath, arcname=fdict["dest_path"])
+                else:
+                    info = ZipInfo(fdict["dest_path"])
+                    info.external_attr = 0755 << 16L # give full access to included file
+                    with open(srcpath, "r") as fh:
+                        zfile.writestr(info, fh.read())
 
         # Step 5: output
-        if options['out_file']=="__default__":
-            options['out_file'] = create_default_archive_filename(options)
-        shutil.move(fil, options['out_file']) # move the archive
+        if options['file']=="__default__":
+            options['file'] = create_default_archive_filename(options)
+        shutil.move(fil, options['file']) # move the archive
