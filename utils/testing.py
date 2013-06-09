@@ -7,7 +7,7 @@ def lexec(cmd, input=None, silent=False):
     if not silent:
         logging.info("\t%s" % cmd)
     
-    cmd = cmd.split(" ") #TODO(bcipolli): do this properly lol
+    cmd = cmd.strip().split(" ") #TODO(bcipolli): do this properly lol
 
     p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     (cmd_stdout,cmd_stderr) = p.communicate(input=input)

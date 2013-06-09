@@ -8,11 +8,17 @@ import subprocess
 import urllib
 from zipfile import ZipFile
 
-from docker.docker import Docker, PersistentDocker
-from utils.testing import lexec, get_open_ports
+from playground.docker.docker import Docker, PersistentDocker
+from playground.utils.testing import lexec, get_open_ports
 
 
 class KaLiteServer(object):
+    """Basic object encapuslating our server:
+    * can install itself
+    * can create its own local_settings file based on object settings
+    * can start itself (via cherrypy)
+    """
+    
     admin_user = { 
         "username": "admin", 
         "email": "admin@example.com", 
@@ -21,44 +27,50 @@ class KaLiteServer(object):
     _pyexec = None
     lexec = None
     
-    def __init__(self, repo_dir, server_type, port, central_server_port=None):
-        self.repo_dir = repo_dir
+    def __init__(self, base_dir, server_type, port, hostname="localhost", central_server_port=None, central_server_host=None):
+        self.log = logging.getLogger("kalite")
+        self.base_dir = os.path.realpath(base_dir) # make into absolute path
         self.server_type = server_type
         self.port = port
-        self.central_server_port = port if (central_server_port is None and server_type=="central") else central_server_port
+        self.hostname = hostname
+        
+        self.central_server_host = central_server_host if central_server_host else hostname
+        self.central_server_port = central_server_port if central_server_port else port
         
         self.admin_user = self.__class__.admin_user
         
-    def start_server(self, host="0.0.0.0"):
-        """By default, run remotely"""        
+    def start_server(self):
+        """By default, run allowing external access."""        
         cwd = os.getcwd()
-        os.chdir(self.repo_dir)
+        os.chdir(self.base_dir)
     
-        lexec(self.pyexec() + " kalite/manage.py runcherrypyserver host=%s port=%d threads=50 daemonize=true pidfile=kalite/runcherrypyserver.pid" % (host, self.port))
+        lexec(self.pyexec() + " kalite/manage.py runcherrypyserver host=%s port=%d threads=50 daemonize=true pidfile=kalite/runcherrypyserver.pid" % (self.hostname, self.port))
     
         os.chdir(cwd)
 
 
     def pyexec(self):
-        # Grab python, for all!
+        """Return the path to the python executable"""
+        
         if not self.__class__._pyexec:   
-            (_,pyexec,_) = lexec("bash " + self.repo_dir+"/python.sh", silent=True)
+            (_,pyexec,_) = lexec("bash " + self.base_dir+"/python.sh", silent=True)
             self.__class__._pyexec = pyexec[:-1]
         return self.__class__._pyexec
-        
+
+
     def create_local_settings_file(self, local_settings_file=None):
     
         if not local_settings_file:
-            local_settings_file = self.repo_dir+"/kalite/local_settings.py"
+            local_settings_file = self.base_dir+"/kalite/local_settings.py"
             
         # First, set up localsettings
-        logging.info("Creating local_settings.py @ %s" % local_settings_file)
+        self.log.info("Creating local_settings.py @ %s" % local_settings_file)
         local_settings = open(local_settings_file,"w")
 
         local_settings.write("DEBUG = True\n")
         local_settings.write("TEMPLATE_DEBUG = True\n")
 
-        hostname = socket.getfqdn()
+        
     
         if self.server_type=="central":
             local_settings.write("CENTRAL_SERVER = True\n")
@@ -74,31 +86,46 @@ class KaLiteServer(object):
             local_settings.write("CENTRAL_INFO_EMAIL       = 'ben@learningequality.org'\n")
 
             # These should disappear
-            local_settings.write("CENTRAL_SERVER_DOMAIN = '%s:%d'\n" % (hostname,self.central_server_port))
-            local_settings.write("CENTRAL_SERVER_HOST = '%s:%d'\n" % (hostname,self.central_server_port))
+            local_settings.write("CENTRAL_SERVER_DOMAIN = '%s:%d'\n" % (self.hostname, self.port))
+            local_settings.write("CENTRAL_SERVER_HOST = '%s:%d'\n" % (self.hostname, self.port))
         else:
-            local_settings.write("CENTRAL_SERVER_DOMAIN = '%s:%d'\n" % (hostname,self.central_server_port))
-            local_settings.write("CENTRAL_SERVER_HOST = '%s:%d'\n" % (hostname,self.central_server_port))
+            local_settings.write("CENTRAL_SERVER_DOMAIN = '%s:%d'\n" % (self.central_server_host, self.central_server_port))
+            local_settings.write("CENTRAL_SERVER_HOST = '%s:%d'\n" % (self.central_server_host, self.central_server_port))
             local_settings.write("SECURESYNC_PROTOCOL = 'http'\n")
     
         local_settings.close()
 
 
-    def install_server(self):
-        # Then, make sure to run the installation
-        logging.info("Creating the database and admin user")
+    def call_command(self, command, params_string="", input=None):
+        """Poor man's version of call_command"""
+        
         cwd = os.getcwd()
-        os.chdir(self.repo_dir)
-        if os.path.exists('kalite/database/data.sqlite'):
-            os.remove('kalite/database/data.sqlite')
-
-        lexec(self.pyexec() + " kalite/manage.py syncdb --migrate", input="no\n")
-        lexec(self.pyexec() + " kalite/manage.py shell", input="from django.contrib.auth.models import User; User.objects.create_superuser('%s', '%s', '%s')" % (self.admin_user["username"], self.admin_user["email"], self.admin_user["password"]))
-        lexec(self.pyexec() + " kalite/manage.py initdevice '%s' 'central_server_port=%d'" % (self.server_type, self.central_server_port))
-        lexec("echo Done!")
+        os.chdir(self.base_dir + "/kalite")
+        
+        cmd = self.pyexec() + " manage.py " + command + (" " + params_string if params_string else "")
+        self.log.debug("Running '%s'" % cmd)
+        out = lexec(cmd, input=input)
         
         os.chdir(cwd)
+        return out
     
+    
+    def install_server(self):
+        # Then, make sure to run the installation
+        self.log.info("Creating the database and admin user")
+
+        if os.path.exists(self.base_dir + '/kalite/database/data.sqlite'):
+            os.remove(self.base_dir + '/kalite/database/data.sqlite')
+
+        # TODO(bcipolli) 
+        # we should check these status codes
+        self.call_command("syncdb", "--migrate", input="no\n")
+        self.call_command("shell", input="from django.contrib.auth.models import User; User.objects.create_superuser('%s', '%s', '%s')" % (self.admin_user["username"], self.admin_user["email"], self.admin_user["password"]))
+
+        if os.path.exists(self.base_dir + "/kalite/static/data/zone_data.json"):
+            self.call_command("initdevice '%s' 'central_server_port=%d'" % (self.server_type, self.central_server_port))
+        else:
+            self.call_command("initdevice '%s' 'central_server_port=%d'" % (self.server_type, self.central_server_port))
     
     def setup_server(self):
         # Always destroy/rewrite the local settings
@@ -108,91 +135,94 @@ class KaLiteServer(object):
     
 
 class KaLiteProject(object):
+    """Encapsulates a basic KA Lite project, with multiple servers (of any configuration)"""
 
-    def __init__(self, git_user, repo_branch, git_repo="ka-lite", base_dir=os.path.dirname(os.path.realpath(__file__))):
-        self.git_user = git_user
-        self.repo_branch = repo_branch
-        self.git_repo = git_repo
-        self.base_dir = base_dir
-
-        self.user_dir   = self.base_dir + "/" + self.git_user
-        self.branch_dir = self.user_dir + "/" + self.repo_branch
-
-
-
-    def get_repo_dir(self, server_type):
-        return self.branch_dir+"/"+server_type
-                                                             
-    def setup_project(self, server_types, port_range=(50000, 65000), open_ports=None, port_map=None):
-        """Sets up the branch directories, points to a directory for local and central"""
-    
-        assert port_range or open_ports or port_map, "Must pass either port_range or ports"
-        assert not open_ports or len(open_ports)>=1, "Must pass in at least 1 port"
-        assert not port_map or (hasattr(port_map,"keys") and len(port_map.keys())>=1), "Must pass in at least 1 port, as a dictionary on port_map"
-        assert not port_map or "central" in port_map.keys(), "Port_map must contain central server key"
-        assert hasattr(server_types, "pop"), "Server_types must be a list."
+    def __init__(self, base_dir, persistent_ports=True):
+        self.base_dir = os.path.realpath(base_dir) # make into an absolute path
+        self.persistent_ports = persistent_ports
+        self.log = logging.getLogger("kalite")
         
-        # Create the branch directory
-        if os.path.exists(self.branch_dir):
-            logging.debug("Using branch directory: %s" % self.branch_dir)
-        else:
-            logging.debug("Creating branch directory: %s" % self.branch_dir)
-            os.makedirs(self.branch_dir)
+    def get_base_dir(self, server_type):
+        return "%s/%s" % (self.base_dir, server_type)
+    
 
+    def complete_port_map(self, port_keys, port_range=(50000, 65000), open_ports=None, port_map=None):
+        assert port_range or open_ports or port_map, "Must pass either port_range or ports"
+    
+        if not port_map:
+            port_map = dict()
+
+        # Build/complete the port map
+        missing_keys = set(port_keys) - set(port_map.keys())
+        if missing_keys:
+            # Grab ports from open ports, which can be defined, or come from a port range.
+            if not open_ports:
+                open_ports = get_open_ports(port_range=port_range, num_ports=len(missing_keys)) # system call
+            
+            for pk in missing_keys:   
+                # Get the key from our persistent dict     
+                p = self.__class__.get_ports_from_map([self.port_map_key(pk),]) if self.persistent_ports else None
+                # If not found, pop it off the open ports list
+                port_map[pk] = p[0] if p else open_ports.pop()
+                
+            # Save results to our persistent dict
+            if self.persistent_ports:
+                self.__class__.set_ports_to_map(dict(zip([self.port_map_key(pk) for pk in port_map.keys()], port_map.values())))
+                self.__class__.save_port_map()
+
+        return port_map
+        
+
+    def setup_project(self, server_types, host="localhost", port_range=(50000, 65000), open_ports=None, port_map=None):
+        """ """
+                
         # get ports as a numeric list
         port_keys = set(server_types).union({"central"}) # must have a central server port
-        if not port_map:
-            if not open_ports:
-                open_ports = get_open_ports(port_range=port_range, num_ports=2) # system call
-            port_map = dict()
-            for st in port_keys:
-                p = self.__class__.get_ports_from_map([self.port_map_key(st),])
-                port_map[st] = p[0] if p[0] else open_ports.pop()
-        self.__class__.set_ports_to_map(dict(zip([self.port_map_key(st) for st in port_map.keys()], port_map.values())))
-        self.__class__.save_port_map()
+        port_map = self.complete_port_map(port_keys=port_keys, port_range=port_range, open_ports=open_ports, port_map=port_map)   
         
         # Setting up these servers, but they don't actually exist!
         # ... until we create them, that is! :D 
         self.servers = {}
         for server_type in server_types:
-            self.servers[server_type] = KaLiteServer(repo_dir=self.get_repo_dir(server_type), 
+            self.servers[server_type] = KaLiteServer(base_dir=self.get_base_dir(server_type), 
                                                      server_type=server_type, 
                                                      port=port_map[server_type], 
-                                                     central_server_port=port_map["central"])
-    
-    def mount_project(self, server_types, port_range=(50000, 65000), open_ports=None, port_map=None):
+                                                     hostname=host,
+                                                     central_server_port=port_map["central"],
+                                                     central_server_host=host)
+        self.port_map = port_map
+        
+    def mount_project(self, *args, **kwargs):
         """Convenience function to set up the project, then to mount it."""
-        self.setup_project(server_types, port_range, open_ports, port_map)
+        self.setup_project(*args, **kwargs)
         self.emit_header()
         self.mount()
         
-                
-    def port_map_key(self, server_type):
-        return "%s/%s.git:%s %s" % (self.git_user, self.git_repo, self.repo_branch, server_type)
-
+ 
     def emit_header(self):
         # Emit an informative header
-        logging.info("*"*50)
-        logging.info("*")
-        logging.info("* Setting up %s/%s.git:%s" % (self.git_user, self.git_repo, self.repo_branch))
-        for key in self.servers.keys():
-            logging.info("* \t%s server path: %s" % (key, self.servers[key].repo_dir))
-        logging.info("*")
-        for key in self.servers.keys():
-            logging.info("* \t%s server URL: http://%s:%d/" % (key, socket.getfqdn(), self.servers[key].port))
-        logging.info("*")
-        logging.info("* Admin info (both servers):")
-        logging.info("* \tusername: %s" % self.servers[self.servers.keys()[0]].admin_user["username"])
-        logging.info("* \tpassword: %s" % self.servers[self.servers.keys()[0]].admin_user["password"])
-        logging.info("* \temail: %s"    % self.servers[self.servers.keys()[0]].admin_user["email"])
-        logging.info("*")
-        logging.info("*"*50)
-        logging.info("")
+        self.log.info("*"*50)
+        self.log.info("*")
+        for key,server in self.servers.items():
+            self.log.info("* \t%s server path: %s" % (key, server.base_dir))
+        self.log.info("*")
+        for key,server in self.servers.items():
+            self.log.info("* \t%s server URL: http://%s:%d/" % (key, server.hostname, server.port))
+        self.log.info("*")
+        self.log.info("* Admin info (both servers):")
+        self.log.info("* \tusername: %s" % self.servers[self.servers.keys()[0]].admin_user["username"])
+        self.log.info("* \tpassword: %s" % self.servers[self.servers.keys()[0]].admin_user["password"])
+        self.log.info("* \temail: %s"    % self.servers[self.servers.keys()[0]].admin_user["email"])
+        self.log.info("*")
+        self.log.info("*"*50)
+        self.log.info("")
+        
+        
+    def port_map_key(self, server_type):
+        return "%s/%s" % (self.base_dir, server_type)
 
-
-
-
-
+    ## variables and class methods for persisting associations
+    ## between KA Lite projects and particular ports
     port_map_file = os.path.dirname(os.path.realpath(__file__)) + "/port_map.pkl"
     port_map = None
     
@@ -217,7 +247,7 @@ class KaLiteProject(object):
             pickle.dump(cls.port_map, fp)
             fp.close()
         except Exception as e:
-            logging.warn("Failed to save port map: %s" % e.message)
+            self.log.warn("Failed to save port map: %s" % e.message)
 
     @classmethod
     def get_ports_from_map(cls, port_keys):
@@ -237,26 +267,126 @@ class KaLiteProject(object):
                 cls.port_map = dict()
         cls.port_map = dict(cls.port_map.items() + port_map.items())
     
-
-class KaLiteRepoProject(KaLiteProject):
-    def __init__(self, *args, **kwargs):
-        super(KaLiteRepoProject, self).__init__(*args, **kwargs)
+    
 
 
+class KaLiteSelfZipProject(KaLiteProject):
+    """Encapsulates a KA Lite project, running from a zip generated from KA Lite's "package" function"""
+    
+    def __init__(self, zip_file, *args, **kwargs):
+        super(KaLiteSelfZipProject, self).__init__(*args, **kwargs)
+        self.zip_file = zip_file
+
+    def unpack_zip(self, server, force_create=True):
+        
+        """Set up the specified user's repo as a snapshot--no git history.
+        Return the directory it's set up in!"""
+    
+        self.log.debug("Setting up %s" % (self.zip_file))
+    
+        # Create the branch directory
+        if os.path.exists(self.base_dir):
+            self.log.info("Mounting KA Lite project to an existing dir: %s" % self.base_dir)
+        else:
+            self.log.info("Creating new project dir: %s" % self.base_dir)
+            
+        if os.path.exists(server.base_dir):
+            self.log.info("Removing server base_dir: %s" % server.base_dir)
+            shutil.rmtree(server.base_dir)
+        self.log.info("Creating server base dir: %s" % server.base_dir)
+        os.makedirs(server.base_dir)
+
+        self.log.info("Unpacking self-packed zip to %s" % server.base_dir)
+        ZipFile(self.zip_file).extractall(server.base_dir)
+
+    
+    def mount(self):
+
+        # Set up central and local servers, in turn
+        #
+        # Do this through numeric iteration, so that we
+        #   are guaranteed to move the snapshot on the last iteration, 
+        #   which is important to save disk space
+        #
+        for key,server in self.servers.items():
+            self.unpack_zip(server)
+            server.setup_server()
+            server.start_server()
+                
+
+class KaLiteGitProject(KaLiteProject):
+    """Encapsulates a KA Lite project, running through a git repository"""
+    
+    def __init__(self, git_user, repo_branch, git_repo="ka-lite", base_dir=os.path.dirname(os.path.realpath(__file__))):
+        super(KaLiteGitProject, self).__init__(base_dir)
+        
+        self.git_user = git_user
+        self.repo_branch = repo_branch
+        self.git_repo = git_repo
+
+        self.user_dir   = self.base_dir + "/" + self.git_user
+        self.branch_dir = self.user_dir + "/" + self.repo_branch
+
+
+
+    def get_repo_dir(self, server_type):
+        return self.branch_dir+"/"+server_type
+                                                             
+    def setup_project(self, *args, **kwargs):#server_types, port_range=(50000, 65000), open_ports=None, port_map=None):
+        """Sets up the branch directories, points to a directory for local and central"""
+    
+        # Create the branch directory
+        if os.path.exists(self.branch_dir):
+            self.log.debug("Using branch directory: %s" % self.branch_dir)
+        else:
+            self.log.debug("Creating branch directory: %s" % self.branch_dir)
+            os.makedirs(self.branch_dir)
+            
+        super(KaLiteGitProject, self).setup_project(*args, **kwargs)
+        #server_types, port_range, open_ports, port_map)
+            
+                
+    def port_map_key(self, server_type):
+        return "%s/%s.git:%s %s" % (self.git_user, self.git_repo, self.repo_branch, server_type)
+
+    def emit_header(self):
+        # Emit an informative header
+        self.log.info("*"*50)
+        self.log.info("*")
+        self.log.info("* Setting up %s/%s.git:%s" % (self.git_user, self.git_repo, self.repo_branch))
+        for key,server in self.servers.items():
+            self.log.info("* \t%s server path: %s" % (key, server.base_dir))
+        self.log.info("*")
+        for key,server in self.servers.items():
+            self.log.info("* \t%s server URL: http://%s:%d/" % (key, server.hostname, server.port))
+        self.log.info("*")
+        self.log.info("* Admin info (both servers):")
+        self.log.info("* \tusername: %s" % self.servers[self.servers.keys()[0]].admin_user["username"])
+        self.log.info("* \tpassword: %s" % self.servers[self.servers.keys()[0]].admin_user["password"])
+        self.log.info("* \temail: %s"    % self.servers[self.servers.keys()[0]].admin_user["email"])
+        self.log.info("*")
+        self.log.info("*"*50)
+        self.log.info("")
+
+
+
+class KaLiteRepoProject(KaLiteGitProject):
+    """Encapsulates a KA Lite project, running through a live git repository"""
+    
     def setup_repo(self, server):
         """Set up the specified user's repo as a remote; return the directory it's set up in!"""
     
         if self.git_repo != "ka-lite":
             raise NotImplementedError("Only ka-lite repo has been implemented!")
         
-        logging.debug("Setting up %s %s %s" % (self.git_user, self.repo_branch, self.git_repo))
+        self.log.debug("Setting up %s %s %s" % (self.git_user, self.repo_branch, self.git_repo))
     
         # Create the branch directory
         self.branch_dir = os.path.realpath(server.repo_dir + "/..")
         if os.path.exists(self.branch_dir):
-            logging.info("Mounting git to existing branch dir: %s" % self.branch_dir)
+            self.log.info("Mounting git to existing branch dir: %s" % self.branch_dir)
         else:
-            logging.info("Creating branch dir")
+            self.log.info("Creating branch dir")
             os.makedirs(self.branch_dir)
 
 
@@ -269,13 +399,13 @@ class KaLiteRepoProject(KaLiteProject):
             # It contains the desired repo; good enough. 
             # TODO(bcipolli): really should check if the repo is ORIGIN
             if -1 != stdout.find("%s/%s.git" % (self.git_user, self.git_repo)):
-                logging.warn("Not touching existing git repository @ %s" % self.repo_dir)
+                self.log.warn("Not touching existing git repository @ %s" % self.repo_dir)
                 return server.repo_dir
     #        else:
     #            raise Exception(stderr)
             os.chdir(self.branch_dir) # return to branch dir
         
-        logging.info("Cloning %s/%s.git to %s" % (self.git_user, self.git_repo, server.repo_dir))
+        self.log.info("Cloning %s/%s.git to %s" % (self.git_user, self.git_repo, server.repo_dir))
         lexec("git clone git@github.com:%s/%s.git %s" % (self.git_user, self.git_repo, os.path.basename(server.repo_dir)))
 
 
@@ -293,10 +423,10 @@ class KaLiteRepoProject(KaLiteProject):
     
         # Branch doesn't exist; create it
         if -1 == stdout.find("%s\n" % self.repo_branch): # note: this is a CRAPPY match!
-            logging.info("Connecting to branch %s" % self.repo_branch)
+            self.log.info("Connecting to branch %s" % self.repo_branch)
             lexec("git checkout -t origin/%s" % self.repo_branch)
         else:
-            logging.info("Changing to branch %s" % self.repo_branch)
+            self.log.info("Changing to branch %s" % self.repo_branch)
             lexec("git checkout %s" % self.repo_branch)
             lexec("git pull origin %s" % self.repo_branch)
         
@@ -316,9 +446,12 @@ class KaLiteRepoProject(KaLiteProject):
 
 
 
-class KaLiteSnapshotProject(KaLiteProject):
+class KaLiteGitSnapshotProject(KaLiteGitProject):
+    """Encapsulates a KA Lite project, using a snapshot of a git repository,
+    downloaded from the git website."""
+    
     def __init__(self, *args, **kwargs):
-        super(KaLiteSnapshotProject, self).__init__(*args, **kwargs)
+        super(KaLiteGitSnapshotProject, self).__init__(*args, **kwargs)
 
         self.snapshot_url = None
         self.snapshot_file = None
@@ -332,13 +465,13 @@ class KaLiteSnapshotProject(KaLiteProject):
         if self.git_repo != "ka-lite":
             raise NotImplementedError("Only ka-lite repo has been implemented (repo=%s specified)!" % self.git_repo)
         
-        logging.debug("Setting up %s %s %s" % (self.git_user, self.repo_branch, self.git_repo))
+        self.log.debug("Setting up %s %s %s" % (self.git_user, self.repo_branch, self.git_repo))
     
         # Create the branch directory
         if os.path.exists(self.branch_dir):
-            logging.info("Mounting git to existing branch dir: %s" % self.branch_dir)
+            self.log.info("Mounting git to existing branch dir: %s" % self.branch_dir)
         else:
-            logging.info("Creating branch dir")
+            self.log.info("Creating branch dir")
             os.makedirs(self.branch_dir)
 
 
@@ -357,12 +490,12 @@ class KaLiteSnapshotProject(KaLiteProject):
 
         # Create the snapshot        
         if os.path.exists(self.snapshot_dir):
-            logging.info("Using existing snapshot: %s" % self.snapshot_dir)
+            self.log.info("Using existing snapshot: %s" % self.snapshot_dir)
         else:
-            logging.info("Downloading repo snapshot to %s from %s" % (self.snapshot_file, self.snapshot_url))
+            self.log.info("Downloading repo snapshot to %s from %s" % (self.snapshot_file, self.snapshot_url))
             urllib.urlretrieve(self.snapshot_url, self.snapshot_file)
     
-            logging.info("Unpacking snapshot to %s" % self.snapshot_dir)
+            self.log.info("Unpacking snapshot to %s" % self.snapshot_dir)
             ZipFile(self.snapshot_file).extractall(self.branch_dir)
 
             # remove zip file
@@ -370,18 +503,18 @@ class KaLiteSnapshotProject(KaLiteProject):
             
         # Always redo the server.
         if os.path.exists(server.repo_dir):# and force_create:
-            logging.info("Removing old snapshot directory: %s" % server.repo_dir)
+            self.log.info("Removing old snapshot directory: %s" % server.repo_dir)
             shutil.rmtree(server.repo_dir)
 
         # Now use the snapshot to create the server directory
 #        if os.path.exists(server.repo_dir):
-#            logging.info("Leaving existing repo: %s" % server.repo_dir)
+#            self.log.info("Leaving existing repo: %s" % server.repo_dir)
 #        else:
         if move_snapshot:
-            logging.info("Moving snapshot to %s" % server.repo_dir)
+            self.log.info("Moving snapshot to %s" % server.repo_dir)
             shutil.move(self.snapshot_dir, server.repo_dir)
         else:
-            logging.info("Copying snapshot to %s" % server.repo_dir)
+            self.log.info("Copying snapshot to %s" % server.repo_dir)
             shutil.copytree(self.snapshot_dir, server.repo_dir)
 
     
@@ -402,8 +535,9 @@ class KaLiteSnapshotProject(KaLiteProject):
             server.start_server()
 
 
-class KaLiteDockerProjectWrapper(KaLiteProject):
-    """Calls into the docker to do all the work."""
+class KaLiteDockerProjectWrapper(KaLiteGitProject):
+    """Encapsulates a KA Lite project running on git, but through a docker.
+    Calls into the docker to do all the work."""
 
     def __init__(self, image_name="ka-lite-installed", **kwargs):
         super(KaLiteDockerProjectWrapper, self).__init__(**kwargs)
@@ -426,7 +560,7 @@ class KaLiteDockerProjectWrapper(KaLiteProject):
         # Create dockers        
         self.dockers = {}
         for server_type in server_types:
-            logging.debug("Creating docker for server_type=%s" % server_type)
+            self.log.debug("Creating docker for server_type=%s" % server_type)
 #            self.dockers[server_type] = Docker(image_name=self.image_name, ports_to_open=[self.docker_port,])
             self.dockers[server_type] = PersistentDocker(container_name=self.get_docker_name(server_type), image_name=self.image_name, ports_to_open=[self.docker_port,])
             self.dockers[server_type].run_command("cd /playground", wait_time=0.1)
@@ -442,22 +576,22 @@ class KaLiteDockerProjectWrapper(KaLiteProject):
 
     def emit_header(self):
         # Emit an informative header
-        logging.info("*"*50)
-        logging.info("*")
-        logging.info("* Setting up %s/%s.git:%s" % (self.git_user, self.git_repo, self.repo_branch))
+        self.log.info("*"*50)
+        self.log.info("*")
+        self.log.info("* Setting up %s/%s.git:%s" % (self.git_user, self.git_repo, self.repo_branch))
         for key,docker in self.dockers.items():
-            logging.info("* \t%s container ID: %s" % (key, docker.ID))
-        logging.info("*")
+            self.log.info("* \t%s container ID: %s" % (key, docker.ID))
+        self.log.info("*")
         for key,docker in self.dockers.items():
-            logging.info("* \t%s server URL: http://%s:%d/" % (key, socket.getfqdn(), docker.port_map[self.docker_port]))
-        logging.info("*")
-#        logging.info("* Admin info (both servers):")
-#        logging.info("* \tusername: %s" % self.servers[self.servers.keys()[0]].admin_user["username"])
-#        logging.info("* \tpassword: %s" % self.servers[self.servers.keys()[0]].admin_user["password"])
-#        logging.info("* \temail: %s"    % self.servers[self.servers.keys()[0]].admin_user["email"])
-#        logging.info("*")
-        logging.info("*"*50)
-        logging.info("")
+            self.log.info("* \t%s server URL: http://%s:%d/" % (key, socket.getfqdn(), docker.port_map[self.docker_port]))
+        self.log.info("*")
+#        self.log.info("* Admin info (both servers):")
+#        self.log.info("* \tusername: %s" % self.servers[self.servers.keys()[0]].admin_user["username"])
+#        self.log.info("* \tpassword: %s" % self.servers[self.servers.keys()[0]].admin_user["password"])
+#        self.log.info("* \temail: %s"    % self.servers[self.servers.keys()[0]].admin_user["email"])
+#        self.log.info("*")
+        self.log.info("*"*50)
+        self.log.info("")
 
     
             
@@ -487,14 +621,14 @@ class KaLiteDockerRepoProject(KaLiteRepoProject):
         if self.git_repo != "ka-lite":
             raise NotImplementedError("Only ka-lite repo has been implemented!")
     
-        logging.debug("Setting up %s %s %s" % (self.git_user, self.repo_branch, self.git_repo))
+        self.log.debug("Setting up %s %s %s" % (self.git_user, self.repo_branch, self.git_repo))
     
 #        self.docker.run_command("/playground/test_tools/mount_docker_branch.sh %s %s %s" % (self.git_user, self.git_repo, self.repo_branch))
     
         # Add the remote        
         os.chdir(server.repo_dir)
     
-        logging.info("Adding remote %s/%s.git to %s" % (self.git_user, self.git_repo, server.repo_dir))
+        self.log.info("Adding remote %s/%s.git to %s" % (self.git_user, self.git_repo, server.repo_dir))
         remote_url = "git://github.com/%s/%s.git" % (self.git_user, self.git_repo)
         lexec("git remote add %s %s" % (self.git_user, remote_url));
         if not remote_url in lexec("git remote -v")[1]:
@@ -506,7 +640,7 @@ class KaLiteDockerRepoProject(KaLiteRepoProject):
         
         """
         self.docker.run_command("cd %s" % server.repo_dir, wait_time=0.1)
-        logging.info("Adding remote %s/%s.git to %s" % (self.git_user, self.git_repo, server.repo_dir))
+        self.log.info("Adding remote %s/%s.git to %s" % (self.git_user, self.git_repo, server.repo_dir))
         remote_url = "git://github.com/%s/%s.git" % self.git_user, self.git_repo
         self.docker.run_command("git remote add %s git://github.com/%s/%s.git" % (self.git_user, remote_url) , wait_time=0.5);
         if not remote_url in self.docker.run_command("git remote -v"):
@@ -521,7 +655,7 @@ class KaLiteDockerRepoProject(KaLiteRepoProject):
 
         # Set up central and local servers, in turn
         for key,server in self.servers.items():
-            logging.debug("Setting up server %s on docker %s" % (key, "(NYI)"))
+            self.log.debug("Setting up server %s on docker %s" % (key, "(NYI)"))
             self.setup_repo(server)
             server.setup_server() # must intervene
             server.start_server() # must intervene
@@ -563,7 +697,7 @@ def usage(usage_err=None):
 
 
 if __name__=="__main__":
-    logging.getLogger().setLevel(logging.DEBUG)
+    logging.getLogger("kalite").setLevel(logging.DEBUG)
 
     # Get command-line args
     method       = sys.argv[1]    if len(sys.argv)>1 else usage("Specify a mount method")
@@ -589,15 +723,15 @@ if __name__=="__main__":
     # Run the project
     if method == "merge":
         kap = KaLiteRepoProject(git_user=git_user, repo_branch=repo_branch, git_repo=git_repo, base_dir="/home/ubuntu/ka-lite")
-        kap.mount_project(server_types=server_types)
+        kap.mount_project(server_types=server_types, host="playground.learningequality.org")
 
     elif method == "snapshot":
-        kap = KaLiteSnapshotProject(git_user=git_user, repo_branch=repo_branch, git_repo=git_repo, base_dir="/home/ubuntu/ka-lite")
-        kap.mount_project(server_types=server_types)
+        kap = KaLiteGitSnapshotProject(git_user=git_user, repo_branch=repo_branch, git_repo=git_repo, base_dir="/home/ubuntu/ka-lite")
+        kap.mount_project(server_types=server_types, host="playground.learningequality.org")
 
     elif method == "docker":
         kap = KaLiteDockerProjectWrapper(git_user=git_user, repo_branch=repo_branch, git_repo=git_repo, image_name="ka-lite-testing")
-        kap.setup_project(server_types=server_types)
+        kap.setup_project(server_types=server_types, host="playground.learningequality.org")
         kap.mount(wait_time=60)
 
         kap.emit_header()
