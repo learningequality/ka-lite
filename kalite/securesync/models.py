@@ -299,7 +299,7 @@ class Zone(SyncedModel):
                 # Things we'd like to do, in order to facilitate user registrations:
                 #    Create a default facility.
                 if len(Facility.objects.all())==0:
-                    facility = Facility(name="default facility")
+                    facility = Facility(name="Facility for device [%s]" % device.name)
                     facility.save()
 
                 return cert.raw_value
