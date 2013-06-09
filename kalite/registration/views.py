@@ -17,6 +17,9 @@ from django.db import IntegrityError
 from django.utils.translation import ugettext as _
 
 from registration.backends import get_backend
+from django.http import HttpResponse
+from utils.mailchimp import mailchimp_subscribe
+
 
 def complete(request, *args, **kwargs):
     messages.success(request, "Congratulations! Your account is now active. To get started, "
@@ -223,6 +226,11 @@ def register(request, backend, success_url=None, form_class=None,
                 zone.save()
                 org.zones.add(zone)
                 org.save()
+            
+                # Finally, try and subscribe the user to the mailing list
+                # (silently)
+                if request.POST.has_key("email_subscribe") and request.POST["email_subscribe"]=="on":
+                    pass #return HttpResponse(mailchimp_subscribe(form.cleaned_data['email']))
             
                 if success_url is None:
                     to, args, kwargs = backend.post_registration_redirect(request, new_user)

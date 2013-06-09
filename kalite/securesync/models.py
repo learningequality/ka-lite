@@ -511,6 +511,18 @@ class DeviceZone(SyncedModel):
             
     requires_trusted_signature = True
 
+    def save(self, *args, **kwargs):
+        """Self-registering offline devices create their own;
+        all devices that register online receive one.
+        
+        TODO(bcipolli): we should just send our DeviceZone.  This is for later.. oops!"""
+        
+        existing_dz = DeviceZone.objects.filter(zone=self.zone, device=self.device)
+        if existing_dz and existing_dz[0].pk != self.pk:
+            pass # this happens when we self-registered offline.
+        else:
+            super(DeviceZone,self).save(*args,**kwargs)
+
     def __unicode__(self):
         return "Device: %s, assigned to Zone: %s" % (self.device, self.zone)
 

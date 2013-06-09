@@ -1,0 +1,115 @@
+{% extends "base_central.html" %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Contact Us!" %}{% endblock %}
+
+{% block contact_active %}active{% endblock contact_active %}
+
+
+{% block headcss %}
+<style>
+.form-section p {
+    border:0px solid;
+    xheight:25px;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+}
+
+label {
+    width:150px;
+    display: block;
+    float: left;
+    text-align: right;
+    padding-right: 20px;
+    font-weight: bold;
+    clear:left;
+}
+#deployment_section ul, #deployment_section li, #deployment_section li label {
+    list-style:none;
+    font-weight:normal;
+}
+textarea { width:400px; height:150px}
+input[type=text], select {
+	xmargin-bottom: 15px;
+	width:250px;
+}
+.helptext { left:0px; }
+
+#deployment_section label {
+    width:100%;
+    clear:left;
+}
+.submit {
+    margin-left: 71px;
+}
+.form_label { float:left }
+.form_values { float:left }
+.form-section { clear:left;}
+
+.toggle-section { display:none; margin-top:25px }
+</style>
+{% endblock headcss %}
+
+{% block content %}
+
+<h1>Contact us!</h1>
+
+<p>Please fill out the form below, so we can respond to your inquiry as quickly as possible.  
+
+<form method="post" action="?next={{ next|default:"/" }}">
+{% csrf_token %}
+
+<div class="form-section" id="contact_section">
+{{ contact_form.as_p }}
+</div>
+
+<div class="form-section toggle-section" id="deployment_section">
+    <h2>Deployment Scenario</h2>
+    <p>The more you tell us about your deployment scenario (how you would be using KA Lite), the better advice we can give about getting set up.</p>
+
+    {{ deployment_form.as_p }}
+</div>
+
+<div class="form-section toggle-section" id="support_section">
+    <p>Thanks for your interest in KA Lite!  We are happy to offer support!  Due to an overwhelming response to KA Lite, it may take some time to respond.</p>
+    <p>Please check our available documentation to see if your questions might be answered.
+        <ul>
+          <li><a href="/faq/">FAQ</a> - Answers to our most frequently asked questions</li>
+          <li><a href="https://groups.google.com/a/learningequality.org/forum/?hl=en&fromgroups#!forum/support">Support Google Group</a> - search previously submitted questions, and our answers.</li>
+          <li><a href="/wiki/">KA Lite User's manual</a> - Our wiki contains the latest documentation on installing, setting up, and using KA Lite!</li>
+        </ul>
+    </p>
+    
+    {{ support_form.as_p }}
+</div>
+
+<div class="form-section toggle-section" id="contribute_section">
+<p>Thanks so much for considering contributing to this project!</p>
+<p>Please find some <a href="/wiki/contribute/">basic information about making contributions on our wiki</a>.</p>
+{{ contribute_form.as_p }}
+</div>
+<div class="form-section toggle-section" id="info_section">
+{{ info_form.as_p }}
+</div>
+
+<div class="form-section">
+    <div>
+      <p><input type="checkbox" name="hack_cc_email"/>Please send a copy of this contact request to my email address above.</p></div>
+	<div><p><input type="submit" class="submit" value="Contact us!" /></p></div>
+</div>
+</form>
+<script>
+function toggle_on_contact_div(nm) { 
+    $(".toggle-section").hide()
+    $("#"+nm+"_section").show()
+}
+
+$(function() {
+    $("#id_cf-type").change(function()   { toggle_on_contact_div($("#id_cf-type").val()) });
+    $("#id_cf-type").ready(function()   { toggle_on_contact_div($("#id_cf-type").val()) });
+});
+</script>
+
+<p>Note: if you are unable to submit this form, contact us through email: <a href="mailto:{{ central_contact_email }}">{{ central_contact_email }}</a></p>
+{% endblock %}

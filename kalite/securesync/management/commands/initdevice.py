@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 import kalite
 import settings
-from securesync.models import Device, DeviceMetadata, Zone
+from securesync.models import Device, DeviceMetadata, Zone, ZoneInstallCertificate
 from securesync.utils import load_zone_for_offline_install
 from kalite.utils.django_utils import call_command_with_output            
 
@@ -62,13 +62,20 @@ class Command(BaseCommand):
                 exit(1)       
         # Generate a zone (for stand-alone machines)
         else:
-            out = call_command_with_output("generate_zone", "default zone")
+            out = call_command_with_output("generate_zone", "%Device s's self-generated zone")
             if not out[1]:
-                self.stdout.write("Successfully generated a stand-alone zone.") 
+                self.stdout.write("Successfully generated a stand-alone zone.\n") 
             else:
                 self.stderr.write("Error generating new zone: %s\n" % out[1])
                 exit(1)
-                          
+                
+            # Need a certificate to register offline, so force the creation of one now.
+            zone = Zone.objects.all()[0]
+            self.stdout.write("Generating a zone installation certificate.\n")
+            cert = ZoneInstallCertificate(zone=zone, raw_value="my local zone certificate")
+            cert.save()
+
+
         # Try to do offline install
         all_zones = Zone.objects.all()
         if len(all_zones)!=1:
@@ -80,7 +87,7 @@ class Command(BaseCommand):
             cert = zone.register_offline(device = Device.get_own_device())
             if cert:
                 self.stdout.write("Successfully registered (offline) to zone %s, using certificate '%s'\n" % (zone.name, cert))
-                if os.path.exists(obj_file):
+                if obj_file and os.path.exists(obj_file):
                     os.remove(obj_file)
             else:
                 self.stderr.write("Failed to register (offline) to zone %s; bad data in file? (%s)\n" % (zone.name, obj_file))

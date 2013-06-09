@@ -14,7 +14,6 @@ class ZoneForm(ModelForm):
 		model = Zone
 		fields = ('name', 'description')
 
-
 class OrganizationInvitationForm(ModelForm):
 	class Meta:
 		model = OrganizationInvitation
