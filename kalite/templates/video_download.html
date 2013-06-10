@@ -117,7 +117,6 @@ ul.dynatree-container li, .ui-widget-content {
 <script src="{{ MEDIA_URL }}js/jquery.dynatree.min.js"></script>
 
 <script type="text/javascript">
-
     window.downloading_videos = [];
     window.download_index = 0;
     window.download_subtitle_index = 0;
@@ -128,6 +127,9 @@ ul.dynatree-container li, .ui-widget-content {
     $(function() {
         
         setTimeout(function() {
+            // Only show online help if ... we're online!
+            $("#download-help-link").toggle({{ am_i_online|lower }})
+                
             doRequest("/api/get_topic_tree", {}).success(function(treeData) {
                 
                 $("#content_tree").dynatree({
@@ -144,6 +146,7 @@ ul.dynatree-container li, .ui-widget-content {
                         $("#download-videos").hide();
                         $("#delete-videos").hide();
                         $("#download-legend-unselected").toggle(newVideoCount + oldVideoCount == 0);
+                        $("#download-help-link").toggle(newVideoCount + oldVideoCount == 0);
                         
                         if (newVideoCount > 0) {
                             $(".new-video-count").text(newVideoCount);
@@ -454,7 +457,13 @@ ul.dynatree-container li, .ui-widget-content {
 {% block content %}
 
 <div class="download-actions vertical-shadow">
-    <h2 id="download-legend-unselected" class="button_text">{% trans "Please select videos to download (below)" %}</h2>
+    <h2 id="download-legend-unselected" class="button_text">
+        {% trans "Please select videos to download (below)" %}
+    </h2>
+    <a id="download-help-link" target="_new" href="http://{{ central_server_host }}/faq/installation/bittorrent/">
+        How to bulk-download videos
+    </a>
+    
     <button id="download-videos" type="button">{% trans "Download " %}<span class="new-video-count">0</span>{% trans " new selected videos" %}</button>
     <button id="delete-videos" type="button">{% trans "Delete " %}<span class="old-video-count">0</span>{% trans " selected videos" %}</button>
 </div>

@@ -22,6 +22,7 @@ from django.contrib import messages
 from utils.jobs import force_job
 from django.utils.translation import ugettext as _
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from utils.internet import am_i_online
 
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
@@ -170,6 +171,7 @@ def update(request):
     context = {
         "languages": languages,
         "default_language": default_language,
+        "am_i_online": am_i_online(settings.CENTRAL_WIKI_URL), 
     }
     return context
 
