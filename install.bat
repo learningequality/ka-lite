@@ -73,6 +73,8 @@ if not exist "%offline_install_file%" (
 
 python manage.py initdevice "%name%" "%description%" "%offline_install_file%"
 
+rem Try to sync immediately; the device will have its own zone, or have imported one.
+python manage.py syncmodels
 
 :choice
 echo.
