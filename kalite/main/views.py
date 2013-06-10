@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 import settings
-from settings import slug_key, title_key
+from utils.topics import slug_key, title_key
 from main import topicdata
 from django.contrib import messages
 from securesync.views import require_admin, facility_required
