@@ -84,8 +84,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.media",
     "django.contrib.messages.context_processors.messages",
     "django.core.context_processors.request",
-    "main.custom_context_processors.custom",
+    "%s.custom_context_processors.custom" % ("central" if CENTRAL_SERVER else "main"),
 )
+
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
