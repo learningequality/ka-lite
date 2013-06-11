@@ -50,5 +50,5 @@ urlpatterns += patterns('main.views',
     url(r'^(?P<splat>.+)/$', 'splat_handler', {}, 'splat_handler'),
 )
 
- handler404 = 'main.views.central_404_handler'
-handler500 = 'main.views.central_500_handler'
+handler404 = 'main.views.distributed_404_handler'
+handler500 = 'main.views.distributed_500_handler'
