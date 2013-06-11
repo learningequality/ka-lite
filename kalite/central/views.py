@@ -13,8 +13,8 @@ from django.views.decorators.csrf import csrf_exempt
 from securesync.models import Facility
 from securesync.forms import FacilityForm
 from django.contrib import messages
-import requests
 
+import requests
 import settings
 
 
@@ -57,7 +57,9 @@ def homepage(request):
 @render_to("central/landing_page.html")
 def landing_page(request):
     feed = FeedListing.objects.order_by('-posted_date')[:5]
-    return {"feed": feed}
+    return {"feed": feed,
+            "central_contact_email": settings.CENTRAL_CONTACT_EMAIL,
+            "wiki_url": settings.CENTRAL_WIKI_URL}
 
 
 @csrf_exempt # because we want the front page to cache properly
@@ -205,12 +207,6 @@ def central_facility_edit(request, org_id=None, zone_id=None, id=None):
         "form": form,
         "zone_id": zone_id,
     }
-
-
-@render_to("central/getting_started.html")
-def get_started(request):
-    return {}
-
 
 @render_to("central/glossary.html")
 def glossary(request):
