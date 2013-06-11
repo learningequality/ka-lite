@@ -23,7 +23,12 @@
 {% block content %}
 
   {% if form.non_field_errors %}
-  <div class="errorlisty">Please correct the errors below: {{ form.non_field_errors }}</div>
+  <div class="errorlisty">
+      Please correct the errors below:
+      <br/>
+       {{ form.non_field_errors }}
+       <br/>
+   </div>
   {% endif %}
 
   <h1>Create an account</h1>
