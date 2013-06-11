@@ -262,9 +262,3 @@ def distributed_500_handler(request):
         "value": str(value),
     }
     return HttpResponseServerError(render_to_string("500_distributed.html", context, context_instance=RequestContext(request)))
-    
-def central_404_handler(request):
-    return HttpResponseNotFound(render_to_string("404_central.html", {}, context_instance=RequestContext(request)))
-    
-def central_500_handler(request):
-    return HttpResponseServerError(render_to_string("500_central.html", {}, context_instance=RequestContext(request)))
