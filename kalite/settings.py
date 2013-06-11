@@ -164,15 +164,3 @@ def add_syncing_models(models):
     for model in models:
         if model not in syncing_models:
             syncing_models.append(model)
-
-slug_key = {
-    "Topic": "id",
-    "Video": "readable_id",
-    "Exercise": "name",
-}
-
-title_key = {
-    "Topic": "title",
-    "Video": "title",
-    "Exercise": "display_name",
-}
