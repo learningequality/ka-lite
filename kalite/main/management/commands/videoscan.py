@@ -14,9 +14,11 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         # delete VideoFile objects that are not marked as in progress, but are neither 0% nor 100% done; they're broken
-        for vf in VideoFile.objects.filter(download_in_progress=False, percent_complete__gt=0, percent_complete__lt=100):
-            vf.delete()
-            caching.invalidate_cached_video_page(video_id=vf.youtube_id)
+        video_files_to_delete = VideoFile.objects.filter(download_in_progress=False, percent_complete__gt=0, percent_complete__lt=100)
+        youtube_ids_to_delete = [d["youtube_id"] for d in video_files_to_delete.values("youtube_id")]
+        video_files_to_delete.delete()
+        for youtube_id in youtube_ids_to_delete:
+            caching.invalidate_cached_video_page(video_id=youtube_id)
 
         files = glob.glob(settings.CONTENT_ROOT + "*.mp4")
         subtitle_files = glob.glob(settings.CONTENT_ROOT + "*.srt")

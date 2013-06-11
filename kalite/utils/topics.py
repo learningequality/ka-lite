@@ -101,55 +101,62 @@ def download_topictree():
     recurse_nodes(topics)
     recurse_nodes_to_add_related_exercise(topics)
     
+    fixup_topic_cache_paths(topics)
     with open(data_path + "topics.json", "w") as fp:
         fp.write(json.dumps(topics, indent=2))
     
+    fixup_node_cache_paths(node_cache)
     with open(data_path + "nodecache.json", "w") as fp:
         fp.write(json.dumps(node_cache, indent=2))
 
     
-def fixup_topictree():
-    # Fix up node cache
-    def fixup_node_cache(node_cache):
-    
-        # A static set of node types
-        for type in ["Topic", "Video", "Exercise"]:
-            for n in node_cache[type].values(): # all keys
-                for attr in ["path", "topic_page_url"]: # some set of attributes to update
-                    if (attr in n) and (n[attr]) and (not n[attr][0:8] == "/topics/"):
-                        n[attr] = "/topics" + n[attr] # prepend /topics
+def fixup_node_cache_paths(node_cache):
 
-        return node_cache # changed in-place anyway, no need to return
+    # A static set of node types
+    for type in ["Topic", "Video", "Exercise"]:
+        for n in node_cache[type].values(): # all keys
+            for attr in ["path", "topic_page_url"]: # some set of attributes to update
+                # don't apply fixup twice, and don't apply to root
+                if n.get(attr,"") and not n[attr].startswith("/topics/"):# and n[attr] != "/": 
+                    n[attr] = "/topics" + n[attr] # prepend /topics
 
-    #
-    def fixup_topic_cache(topics):
-        def recursive_set_path(topic):
-            # Base case
-            if "path" in topic and topic["path"] and (not topic["path"][0:8] == "/topics/"):
-                topic["path"] = "/topics" + topic["path"]
-            
-            # Recursive cases
-            if "related_exercise" in topic and topic["related_exercise"]:
-                recursive_set_path(topic["related_exercise"])
-                
-            if "children" in topic and topic["children"]:
-                for c in topic["children"]:
-                    recursive_set_path(c)
+    return node_cache # changed in-place anyway, no need to return
+
+#
+def fixup_topic_cache_paths(topics):
+    def recursive_set_path(topic):
+        # Base case
+        # don't apply fixup twice, and don't apply to root
+        if topic.get("path","") and not topic["path"].startswith("/topics/"):# and topic["path"] != "/":
+            topic["path"] = "/topics" + topic["path"]
         
-        recursive_set_path(topics)        
-        return topics # changed in-place anyway, no need to return
+        # Recursive cases
+        if "related_exercise" in topic and topic["related_exercise"]:
+            recursive_set_path(topic["related_exercise"])
+            
+        if "children" in topic and topic["children"]:
+            for c in topic["children"]:
+                recursive_set_path(c)
+    
+    recursive_set_path(topics)        
+    return topics # changed in-place anyway, no need to return
+
+def fixup_topictree_paths():
+    """We use different paths (URLS) than Khan Academy; 
+    ours all start with /topics.  This function makes that change.
+    """
 
     # Load, fix up, and dump node_cache
-    NODE_CACHE = json.loads(open(data_path + "nodecache.json").read())
-    fixup_node_cache(NODE_CACHE)
+    node_cache = json.loads(open(data_path + "nodecache.json").read())
+    fixup_node_cache_paths(node_cache)
     with open(data_path + "nodecache.json", "w") as fp:
-        fp.write(json.dumps(NODE_CACHE, indent=2))
+        fp.write(json.dumps(node_cache, indent=2))
     
     # Load, fix up, and dump topics
-    TOPICS = json.loads(open(data_path + "topics.json").read())
-    fixup_topic_cache(TOPICS)
+    topics = json.loads(open(data_path + "topics.json").read())
+    fixup_topic_cache_paths(topics)
     with open(data_path + "topics.json", "w") as fp:
-        fp.write(json.dumps(TOPICS, indent=2))
+        fp.write(json.dumps(topics, indent=2))
     
 
 
