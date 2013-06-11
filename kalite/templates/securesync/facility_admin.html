@@ -39,11 +39,9 @@
             {% for facility in facilities %}
             <div class="facility-title">
                 <h2><div id="facility-name">{{ facility }}</div><a class="facility-action simple-button" href="{{ facility.id }}/">{% trans "Edit facility" %}</a>
-                {% if not is_central %}    
                     <a class="facility-action simple-button" href="{% url add_facility_student %}?facility={{facility.id}}">{% trans "Add student" %}</a> 
                     <a class="facility-action simple-button" href="{% url add_facility_teacher %}?facility={{facility.id}}">{% trans "Add teacher" %}</a>
                     <a class="facility-action simple-button" href="{% url add_group %}?facility={{facility.id}}">{% trans "Add group" %}</a></h2>
-                {% endif %}
             </div>
             {% endfor %}
             <p><a id="add-facility-button" href="new/">{% trans "Add a new Facility" %}</a><p>
