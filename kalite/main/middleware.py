@@ -1,7 +1,9 @@
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 
+import settings
 from config.models import Settings
+
 
 class GetNextParam:
     def process_request(self, request):

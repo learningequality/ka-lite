@@ -17,6 +17,7 @@ from django.test.client import Client
 import settings
 from utils import caching
 from kalite.main import topicdata
+from utils.django_utils import call_command_with_output
 
 
 class CachingTest(LiveServerTestCase):
@@ -75,6 +76,3 @@ class CachingTest(LiveServerTestCase):
         self.assertTrue(caching.has_cache_key(path=video_path), "expect: Cache key exists after requestsget")
         caching.expire_page(path=video_path) # clean cache
         self.assertTrue(not caching.has_cache_key(path=video_path), "expect: No cache key after expiring the page")
-
-    
-    

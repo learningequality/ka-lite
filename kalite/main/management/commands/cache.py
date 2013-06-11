@@ -25,6 +25,7 @@ class Command(BaseCommand):
     show - show a list of urls that are currently in the cache
     clear - remove all items from the cache"""
 
+
     def handle(self, *args, **options):
 
         if not getattr(settings, "CACHES", None):
@@ -32,9 +33,9 @@ class Command(BaseCommand):
         elif not getattr(settings, "CACHE_TIME", None):
             raise CommandError("caching is turned off (CACHE_TIME is zero or none)")
         elif len(args)<1:
-            raise CommandError("no cache command specified.")
-            
+            raise CommandError("No command specified.")        
         cmd = args[0].lower()
+
         if cmd in ["create", "recreate", "refresh"]:
             self.create_cache(force=(cmd in ["recreate", "refresh"]))
         elif cmd in ["show", "check"]:
@@ -43,6 +44,7 @@ class Command(BaseCommand):
             self.clear_cache()
         else:
             raise CommandError("Unknown option: %s" % cmd)
+
 
     def create_cache(self, force=False):
         for node_type in ['Topic', 'Video', 'Exercise']:

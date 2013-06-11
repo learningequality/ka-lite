@@ -167,7 +167,7 @@ if CACHE_TIME or CACHE_TIME is None: # None can mean infinite caching to some fu
             'LOCATION': getattr(local_settings, "CACHE_LOCATION", tempfile.gettempdir()), # this is kind of OS-specific, so dangerous.
             'TIMEOUT': CACHE_TIME, # should be consistent
             'OPTIONS': {
-                'MAX_ENTRIES': 1000 # should we change this?
+                'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
             },
         }
     }
