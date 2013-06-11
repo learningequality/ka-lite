@@ -15,18 +15,15 @@ from utils import caching
 class Command(BaseCommand):
     help = "Manipulate the cache (create, show, clear)"
     
-    def command_error(self, msg):
-        print "Error: %s" % msg
-        exit(1)
-        
     def handle(self, *args, **options):
         if not getattr(settings, "CACHES", None):
-            self.command_error("caching is turned off (CACHES is None)")
+            raise CommandError("caching is turned off (CACHES is None)")
         elif not getattr(settings, "CACHE_TIME", None):
-            self.command_error(msg="caching is turned off (CACHE_TIME is zero or none)")
+            raise CommandError(msg="caching is turned off (CACHE_TIME is zero or none)")
+        elif len(args)<1:
+            raise CommandError("No command specified.")        
         
-        
-        cmd = sys.argv[2]
+        cmd = args[0]
         if cmd in ["create", "recreate", "refresh"]:
             self.create_cache(force=(cmd in ["recreate", "refresh"]))
         elif cmd in ["show", "check"]:
@@ -34,7 +31,7 @@ class Command(BaseCommand):
         elif cmd in ["clear", "delete"]:
             self.clear_cache()
         else:
-            command_error("Unknown option: %s" % cmd)
+            raise CommandError("Unknown option: %s" % cmd)
         
         
         
@@ -96,7 +93,7 @@ class Command(BaseCommand):
                 print "\t%s" % path
                 caching.expire_page(path=path)
             else:
-                print "skipping %s" % path
+                pass #print "skipping %s" % path
         else:
             for type in ['Video', 'Exercise', 'Topic']:
                 print "Clearing %ss:" % type

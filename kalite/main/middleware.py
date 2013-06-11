@@ -9,6 +9,7 @@ import hotshot, hotshot.stats
 import tempfile
 import StringIO
 
+import settings
 from config.models import Settings
 from django.contrib import messages
 from django.http import HttpResponseRedirect

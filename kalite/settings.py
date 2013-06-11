@@ -154,7 +154,7 @@ if CACHE_TIME is None or CACHE_TIME:
             'LOCATION': getattr(local_settings, "CACHE_LOCATION", '/var/tmp/django_cache'), # this is kind of OS-specific, so dangerous.
             'TIMEOUT': CACHE_TIME, # should be consistent
             'OPTIONS': {
-                'MAX_ENTRIES': 1000 # should we change this?
+                'MAX_ENTRIES': 6 # should we change this?
             },
         }
     }
