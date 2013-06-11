@@ -89,6 +89,10 @@ def get_system_username():
         # (a very restricted chroot environment, for example).
         # UnicodeDecodeError - preventive treatment for non-latin Windows.
         return u''
+    except:
+        # This is just the default;
+        # we should never error just because we can't find the default!
+        return u''
 
 
 def get_default_username(check_db=True):
