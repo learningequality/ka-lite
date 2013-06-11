@@ -18,6 +18,23 @@ ul {
     font-weight:bold;
     color:#f00;
 }
+.floatleft {
+    float: left;
+}
+.link-div {
+    width: 250px;
+    float: left
+}
+.link { 
+    padding-left: 25px;
+    width: 120px;
+}
+.description {
+    width: 100%;
+}
+td.title { 
+    padding-top: 25px;
+}
 </style>
 {% endblock headcss %}
 
@@ -25,29 +42,52 @@ ul {
 
 {% block content %}
 <div id="content">
-  {% trans "This page can help you administer your installation of KA Lite" %}
+  {% trans "This page can help you administer your installation of KA Lite." %}
   
-   <div id="offline_help" class="help">
-        <h2>{% trans "(Offline) Management Tools" %}</h2>
-        <ul>
-            <li><a href="/userlist/">{% trans "User management" %}</a> - {%trans "Add/move/delete users across groups" %}</li>
-            <li><a href="/stats/">{% trans "Summary stats" %}</a> - {%trans "Summary stats for this installation" %}</li>
-        </ul>
-    </div>
-  
-   <div id="online_help" class="help">
-        <h2>{% trans "Online help documents" %}</h2>
-        <ul>
-            <li><a href="{{wiki_url}}">KA Lite Wiki</a> -  {%trans "Contains latest information deploying, using, and administering KA Lite" %}</li>
-            <li><a href="http://{{central_server_host}}/faq">FAQ</a> -  {%trans "Contains latest FAQ for troubleshooting" %}</li>
-        </ul>
-    </div>
+    <table>
+        <tr>
+            <td class="title" colspan="2">
+                <h2>{% trans "(Offline) Management Tools" %}</h2>
+            </td.
+        </tr>
+        <tr>
+            <td class="link"><a href="{% url user_list %}">{% trans "User management" %}</a></td>
+            <td class="desc">{%trans "Add/move/delete users across groups" %}</td>
+        </tr>
+        <tr>
+            <td class="link"><a href="{% url summary_stats %}">{% trans "Summary stats" %}</a></td>
+            <td class="desc">{%trans "Summary stats for this installation" %}</td>
+        </tr>
+        
+        <tr>
+            <td class="title" colspan="2">
+                <h2>{% trans "(Online) help documents" %}</h2>
+            </td>
+        </tr>
+        <tr>
+            <td class="link"><a href="{{wiki_url}}">KA Lite Wiki</a></td>
+            <td class="desc"> {%trans "Contains the latest information setting up and using KA Lite." %}</td>
+        </tr>
+        <tr>
+            <td class="link"><a href="http://{{central_server_host}}/faq">FAQ</a></td>
+            <td class="desc">{%trans "Contains the latest FAQ for troubleshooting" %}</td>
+        </tr>
 
-   <div id="advanced_help" class="help">
-        <h2>{% trans "Advanced User Tools" %}</h2>
-        <ul>
-            <li><a href="/admin/">Django admin</a> - {%trans "Database of information stored in your KA Lite installation" %} <span class="warn">({% trans "Warning: changing database values can break your KA Lite installation!" %})</span></li>
-        </ul>
-    </div>
+        <tr>
+            <td class="title" colspan="2">
+                <h2>{% trans "Advanced User Tools" %}</h2>
+            </td>
+        </tr>
+        <tr>
+            <td class="link"><a href="{% url admin:index %}">Django admin</a></td>
+            <td class="desc">{%trans "Database of information stored in your KA Lite installation" %}</td>
+        </tr>
+        <tr>
+            <td class="link">&nbsp;</td>
+            <td class="desc">
+                <span class="warn">({% trans "Warning: changing database values can break your KA Lite installation!" %})</span>
+            </td>
+        </tr>
+    </table>
 </div>
 {% endblock content %}
