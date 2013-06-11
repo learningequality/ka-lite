@@ -69,6 +69,20 @@ except ImportError:
         # hashlib not available.  Use the old sha module.
         import sha as SHA1
 
+
+# Added (jamalex) to use M2Crypto's PBKDF2 for crypt, if available, for efficiency
+# TODO(jamalex): add tests, as per discussion at:
+# https://github.com/learningequality/ka-lite/pull/84
+try:
+    import M2Crypto.EVP
+    def pbkdf2(word, salt, iterations):
+        return M2Crypto.EVP.pbkdf2(word, str(salt), iterations, 24)
+except:
+    # if not available, just use the pure Python implementation
+    def pbkdf2(word, salt, iterations):
+        return PBKDF2(word, salt, iterations).read(24)
+
+    
 #
 # Python 2.1 thru 3.2 compatibility
 #
@@ -278,7 +292,9 @@ def crypt(word, salt=None, iterations=None):
         salt = "$p5k2$$" + salt
     else:
         salt = "$p5k2$%x$%s" % (iterations, salt)
-    rawhash = PBKDF2(word, salt, iterations).read(24)
+
+    rawhash = pbkdf2(word, salt, iterations)
+
     return salt + "$" + b64encode(rawhash, "./")
 
 # Add crypt as a static method of the PBKDF2 class
