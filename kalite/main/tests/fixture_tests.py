@@ -21,9 +21,9 @@ class FixtureTestCases(TestCase):
         cur_dir = os.path.split(__file__)[0]
         
         fixture_file = cur_dir + "/main_fixture.json"
-        out = call_command("loaddata", fixture_file)
+        out = call_command("loaddata", fixture_file, "Just make sure that loaddata doesn't throw an error, for now")
 
 
     def test_dumpdata(self):
         out = call_command("dumpdata", "main")
-        self.assertEqual(out, None)
+        self.assertEqual(out, None, "Just make sure that dumpdata doesn't throw an error, for now")
