@@ -5,7 +5,7 @@ from django.utils import simplejson
 from django.db.models import Q
 from annoying.functions import get_object_or_None
 import settings
-from settings import slug_key, title_key
+from utils.topics import slug_key, title_key
 from main import topicdata
 from utils.jobs import force_job, job_status
 from utils.videos import delete_downloaded_files

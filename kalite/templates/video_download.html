@@ -110,6 +110,16 @@ ul.dynatree-container li, .ui-widget-content {
     margin-top: 15px;
 }
 
+{% if am_i_online %}
+#download-help-link {
+    /* nothing yet! */
+}
+{% else %}
+#server-is-offline {
+    font-weight:bold;
+    color:red;
+}
+{% endif %}
 </style>
 {% endblock headcss %}
 {% block headjs %}
@@ -117,7 +127,6 @@ ul.dynatree-container li, .ui-widget-content {
 <script src="{{ MEDIA_URL }}js/jquery.dynatree.min.js"></script>
 
 <script type="text/javascript">
-
     window.downloading_videos = [];
     window.download_index = 0;
     window.download_subtitle_index = 0;
@@ -143,7 +152,8 @@ ul.dynatree-container li, .ui-widget-content {
                         
                         $("#download-videos").hide();
                         $("#delete-videos").hide();
-                        $("#download-legend-unselected").toggle(newVideoCount + oldVideoCount == 0);
+                        $("#download-legend-unselected").toggle( (newVideoCount + oldVideoCount) == 0);
+                        $("#help-info").toggle( (newVideoCount + oldVideoCount) == 0);
                         
                         if (newVideoCount > 0) {
                             $(".new-video-count").text(newVideoCount);
@@ -454,7 +464,21 @@ ul.dynatree-container li, .ui-widget-content {
 {% block content %}
 
 <div class="download-actions vertical-shadow">
-    <h2 id="download-legend-unselected" class="button_text">{% trans "Please select videos to download (below)" %}</h2>
+    <h2 id="download-legend-unselected" class="button_text">
+        {% trans "Please select videos to download (below)" %}
+    </h2>
+    <div id="help-info">
+        {% if am_i_online %}
+        <a id="download-help-link" target="_new" href="http://{{ central_server_host }}/faq/installation/bittorrent/">
+            {% trans "Q: How do I bulk-download videos?" %}
+        </a>
+        {% else %}
+        <span id="server-is-offline">
+            {% trans "Warning: no internet connection detected." %}
+        </span>
+        {% endif %}
+    </div>
+    
     <button id="download-videos" type="button">{% trans "Download " %}<span class="new-video-count">0</span>{% trans " new selected videos" %}</button>
     <button id="delete-videos" type="button">{% trans "Delete " %}<span class="old-video-count">0</span>{% trans " selected videos" %}</button>
 </div>
@@ -522,5 +546,4 @@ ul.dynatree-container li, .ui-widget-content {
 <button id="cancel-download" type="button">{% trans "Cancel All Downloads" %}</button>
 
 <div id="content_tree"><br/><h2>{% trans " Loading topic tree... Please wait!" %}</h2></div>
-
 {% endblock content %}

@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 import settings
-from settings import slug_key, title_key
+from utils.topics import slug_key, title_key
 from main import topicdata
 from django.contrib import messages
 from securesync.views import require_admin, facility_required
@@ -22,6 +22,7 @@ from django.contrib import messages
 from utils.jobs import force_job
 from django.utils.translation import ugettext as _
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from utils.internet import am_i_online
 
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
@@ -282,6 +283,7 @@ def update(request):
     context = {
         "languages": languages,
         "default_language": default_language,
+        "am_i_online": am_i_online("http://%s%s" % (settings.CENTRAL_SERVER_HOST, reverse("test_connection")), expected_val="OK", allow_redirects=False), 
     }
     return context
 

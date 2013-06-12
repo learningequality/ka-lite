@@ -68,7 +68,7 @@ USE_L10N       = getattr(local_settings, "USE_L10N", False)
 
 MEDIA_ROOT     = getattr(local_settings, "MEDIA_ROOT", PROJECT_PATH + "/static/")
 MEDIA_URL      = getattr(local_settings, "MEDIA_URL", "/static/")
-STATIC_URL     = getattr(local_settings, "STATIC_URL", "/static/")
+STATIC_URL     = getattr(local_settings, "STATIC_URL", "/dummy/")
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY     = getattr(local_settings, "SECRET_KEY", "8qq-!fa$92i=s1gjjitd&%s@4%ka9lj+=@n7a&fzjpwu%3kd#u")
@@ -143,21 +143,10 @@ if not CENTRAL_SERVER:
         "main.custom_context_processors.languages",
     )
 
+TEST_RUNNER = 'kalite.utils.testrunner.KALiteTestRunner'
 
 syncing_models = []
 def add_syncing_models(models):
     for model in models:
         if model not in syncing_models:
             syncing_models.append(model)
-
-slug_key = {
-    "Topic": "id",
-    "Video": "readable_id",
-    "Exercise": "name",
-}
-
-title_key = {
-    "Topic": "title",
-    "Video": "title",
-    "Exercise": "display_name",
-}
