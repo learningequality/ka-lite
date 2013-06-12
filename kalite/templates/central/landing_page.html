@@ -81,28 +81,26 @@
         <div class="span8 footer__rss">
 
             <h2>Read More</h2>
-                <ul class="footer__news-list">
-                    <li><a href="">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sit, necessitatibus, a, praesentium dignissimos</a></li>
-                    <li><a href="">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sit, necessitatibu</a></li>
-                    <li><a href="">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sit, necessitatibus, a, praesentium dignissimos</a></li>
-                    <li><a href="">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sit, necessitatibus, a, praesentium dignissimos</a></li>
-                    <li><a href="">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sit, necessitatibus, a, praesentium dignissimos</a></li>
-                </ul>
+            <ul class="footer__news-list">
+                {% for entry in feed %}
+                    <li><a href="{{ entry.url }}">{{entry.title}}</a></li>
+                {% endfor %}
+            </ul> 
         </div>
         <div class="span4">    
             <h2>Share</h2>
                     <ul class="list-icons">
                         <li>
-                            <a href="" class="symbol">&#xe227;</a>       
+                            <a  href="http://www.facebook.com/sharer.php?u=http://adhocsync.com/" class="symbol">&#xe227;</a>       
                         </li>
                         <li>
-                            <a href="" class="symbol">&#xe286;</a>      
+                            <a href="http://twitter.com/share?text=An%20Awesome%20Link&url=http://adhocsync.com/" class="symbol">&#xe286;</a>      
                         </li>
                          <li>
-                            <a href="" class="symbol">&#xe239;</a>      
+                            <a href="https://plus.google.com/share?url=http://adhocsync.com/" class="symbol">&#xe239;</a>      
                         </li>
                          <li>
-                            <a href="" class="symbol">&#xe252;</a>      
+                            <a href="http://www.linkedin.com/shareArticle?mini=true&url=http://adhocsync.com/&title=Awesome%20link!" class="symbol">&#xe252;</a>      
                         </li>
                     </ul>
             <div class="row-fluid footer__second-line">
@@ -110,10 +108,10 @@
                     <h2>Follow</h2>
                     <ul class="list-icons">
                         <li>
-                            <a href="" class="symbol">&#xe227;</a>       
+                            <a href="https://www.facebook.com/kaliteproject" class="symbol">&#xe227;</a>       
                         </li>
                         <li>
-                            <a href="" class="symbol">&#xe286;</a>      
+                            <a href="https://twitter.com/ka_lite" class="symbol">&#xe286;</a>      
                         </li>
                     </ul>
 

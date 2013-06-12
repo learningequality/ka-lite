@@ -9,7 +9,7 @@ p{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;}
 .content__map-container,.content__motto-container{padding:10px;}
 .content__box-container{background-color:#d3d3d3;}
 .center{float:none;margin-left:auto;margin-right:auto;}
-.content__box{text-align:center;background-color:#dae4cb;max-width:300px;padding:10px;margin-top:15px;margin-bottom:15px;float:none;margin-left:auto;margin-right:auto;border-top:3px solid #c6d1ad;}.content__box img{width:170px;height:170px;}
+.content__box{text-align:center;background-color:#dae4cb;max-width:300px;padding:10px;margin-top:15px;margin-bottom:15px;float:none;margin-left:auto;margin-right:auto;border-top:3px solid #c6d1ad;}.content__box img{height:170px;}
 .content__box p{font-size:16px;}
 .content__motto-container{padding-left:25px;padding-top:12px;}.content__motto-container h1{font-size:25px;font-weight:normal;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;}
 .content__motto-container p{color:#979797;font-size:17px;}
