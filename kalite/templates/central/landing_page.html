@@ -670,7 +670,7 @@ article {
 {% if feed %}
 <div id="bottom_content" class="row">  
     <div id="rss-logo">
-        <a href="{% url rss_feed %}"><img class="rss-feed-icon" src="{{ STATIC_URL }}images/rssfeed.jpg"/></a>
+        <a href="{% url rss_feed %}"><img class="rss-feed-icon" src="{{ MEDIA_URL }}images/rssfeed.jpg"/></a>
     </div>
     <div id="rss-feed">
         <h2>Read more!</h2>
@@ -697,7 +697,7 @@ article {
 {% block footerleft %}
     <span class="ka-on-social-container">
         <span class="ka-on-social follow-us-text">Follow us!</span> 
-        <a class="ka-on-social ka-on-facebook" href="https://www.facebook.com/kaliteproject"><img src="{{ STATIC_URL }}/images/ka-on-facebook-button.png"/></a>
-        <a class="ka-on-social ka-on-twitter" href="https://twitter.com/ka_lite"><img class="ka-on-twitter" src="{{ STATIC_URL }}/images/ka-on-twitter-button.png"/></a>
+        <a class="ka-on-social ka-on-facebook" href="https://www.facebook.com/kaliteproject"><img src="{{ MEDIA_URL }}/images/ka-on-facebook-button.png"/></a>
+        <a class="ka-on-social ka-on-twitter" href="https://twitter.com/ka_lite"><img class="ka-on-twitter" src="{{ MEDIA_URL }}/images/ka-on-twitter-button.png"/></a>
     </span>
 {% endblock footerleft %}
