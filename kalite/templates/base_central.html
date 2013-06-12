@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block titletag %}
+<title>{% block title %}{{ title }}{% endblock title %} | KA Lite, an offline version of Khan Academy</title>
+{% endblock %}
+
+{% block basecss %}
+<style type="text/css">
+ul {
+    list-style: disc outside none;
+    margin-left: 20px;
+    font-size: 14px;
+}
+article {
+    padding: 30px;
+}
+#nav_signup, #nav_login, #nav_admin, #nav_faq {
+    display: block;
+}
+</style>
+{% endblock basecss %}
+
+{% block analytics %}{% include 'analytics.html' %}{% endblock analytics %}
+
+{% block sitewide_navigation %}
+	<span class="dropdown topic-browser-dropdown">
+        <a href="/" id="nav_home" class="{% block home_active %}{% endblock home_active %}">Home</a>
+        <a href="/faq/" id="nav_faq" class="{% block faq_active %}{% endblock faq_active %}">FAQ</a>
+    {% if user.is_authenticated %}
+        {% if user.is_superuser %}
+        <a href="/admin/" id="nav_admin" class="{% block admin_active %}{% endblock admin_active %}">Admin</a>
+        {% endif %}
+        <a href="/accounts/logout/">{{ user.username }} &nbsp; (Logout)</a>
+    {% else %}
+        <a href="/accounts/register/" id="nav_signup" class="{% block register_active %}{% endblock register_active %}">Sign Up</a>
+        <a href="/accounts/login/" id="nav_login" class="{% block login_active %}{% endblock login_active %}">Login</a>
+    {% endif %}
+    </span>
+{% endblock sitewide_navigation %}
+
