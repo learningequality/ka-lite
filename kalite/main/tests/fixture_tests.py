@@ -10,6 +10,7 @@ import unittest
 
 from django.test import TestCase
 from django.core.management import call_command
+from django.db import DatabaseError
 
 import settings
 
@@ -25,5 +26,12 @@ class FixtureTestCases(TestCase):
 
 
     def test_dumpdata(self):
-        out = call_command("dumpdata", "main")
-        self.assertEqual(out, None, "Just make sure that dumpdata doesn't throw an error, for now")
+        
+        # 
+        self.assertEqual(call_command("dumpdata", "main"), None, "call_command always returns none.  We're just making sure it doesn't raise an Exception")
+        
+        # Kill the data
+        # Dumpdata should fail when we've taken down the main app"
+        call_command("migrate", "main", "zero")
+        with self.assertRaises(DatabaseError):
+            call_command("dumpdata", "main")
