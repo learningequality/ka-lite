@@ -22,7 +22,7 @@ from django.contrib import messages
 from utils.jobs import force_job
 from django.utils.translation import ugettext as _
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from utils.internet import am_i_online
+from utils.videos import video_connection_is_available
 
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
@@ -283,7 +283,7 @@ def update(request):
     context = {
         "languages": languages,
         "default_language": default_language,
-        "am_i_online": am_i_online("http://%s%s" % (settings.CENTRAL_SERVER_HOST, reverse("test_connection")), expected_val="OK", allow_redirects=False), 
+        "am_i_online": video_connection_is_available(),
     }
     return context
 
