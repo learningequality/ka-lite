@@ -8,6 +8,7 @@ from django.core.urlresolvers import reverse
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 import settings
+import utils
 from utils.topics import slug_key, title_key
 from main import topicdata
 from django.contrib import messages
@@ -23,6 +24,7 @@ from utils.jobs import force_job
 from django.utils.translation import ugettext as _
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from utils.videos import video_connection_is_available
+from utils.internet import am_i_online
 
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
@@ -162,6 +164,7 @@ def easy_admin(request):
     context = {
         "wiki_url" : settings.CENTRAL_WIKI_URL,
         "central_server_host" : settings.CENTRAL_SERVER_HOST,
+        "am_i_online": am_i_online(settings.CENTRAL_WIKI_URL, allow_redirects=False), 
     }
     return context
     
