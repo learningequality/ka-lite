@@ -1,0 +1,1 @@
+from main.tests.fixture_tests import *

@@ -143,6 +143,7 @@ if not CENTRAL_SERVER:
         "main.custom_context_processors.languages",
     )
 
+TEST_RUNNER = 'kalite.utils.testrunner.KALiteTestRunner'
 
 syncing_models = []
 def add_syncing_models(models):
