@@ -171,7 +171,7 @@ def update(request):
     context = {
         "languages": languages,
         "default_language": default_language,
-        "am_i_online": am_i_online("http://%s/" % settings.CENTRAL_SERVER_HOST), 
+        "am_i_online": am_i_online("http://%s%s" % (settings.CENTRAL_SERVER_HOST, reverse("test_connection")), expected_val="OK", allow_redirects=False), 
     }
     return context
 
