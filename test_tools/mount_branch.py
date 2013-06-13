@@ -3,12 +3,12 @@ import os
 import pickle
 import shutil
 import socket
-import string
 import sys
 import subprocess
 import urllib
 from zipfile import ZipFile
 
+import playground
 from playground.docker.docker import Docker, PersistentDocker
 from playground.utils.testing import lexec, get_open_ports
 
@@ -108,13 +108,14 @@ class KaLiteServer(object):
         out = lexec(cmd, input=input)
         
         os.chdir(cwd)
-        
+
         return {
             "stdout": out[1],
             "stderr": out[2],
             "exit_code": out[0],
         }
-    
+        
+
     def shell_plus(self, commands):
 
         if hasattr(commands,"isupper"):
@@ -132,12 +133,13 @@ class KaLiteServer(object):
                     'stderr': None,
                     'exit_code': 0,
                 }
-        return out
-        
+        return out        
+    
+
     def install_server(self):
+        import pdb; pdb.set_trace()
         # Then, make sure to run the installation
         self.log.info("Creating the database and admin user")
-
         if os.path.exists(self.base_dir + '/kalite/database/data.sqlite'):
             os.remove(self.base_dir + '/kalite/database/data.sqlite')
 
@@ -152,7 +154,26 @@ class KaLiteServer(object):
         else:
             self.call_command("initdevice '%s' 'central_server_port=%d'" % (self.server_type, self.central_server_port))
     
+    
+    def update_server(self, file=None):
+        if file:
+            self.call_command("update", "--file='%s'" % file)
+        else:
+            self.call_command("update")
+        
+        
+    def is_installed(self):
+        if not os.path.exists(self.base_dir + '/kalite/database/data.sqlite'):
+            return false
+        else:
+            try:
+                self.call_command("syncdb", "--migrate", input="no\n")
+                return True
+            except:
+                return False
+                
     def setup_server(self):
+        import pdb; pdb.set_trace()
         # Always destroy/rewrite the local settings
         self.create_local_settings_file()
         self.install_server()
@@ -188,7 +209,7 @@ class KaLiteProject(object):
                 # Get the key from our persistent dict     
                 p = self.__class__.get_ports_from_map([self.port_map_key(pk),]) if self.persistent_ports else None
                 # If not found, pop it off the open ports list
-                port_map[pk] = p[0] if p else open_ports.pop()
+                port_map[pk] = p[0] if (p and p[0]) else open_ports.pop()
                 
             # Save results to our persistent dict
             if self.persistent_ports:
@@ -200,7 +221,7 @@ class KaLiteProject(object):
 
     def setup_project(self, server_types, host="localhost", port_range=(50000, 65000), open_ports=None, port_map=None):
         """ """
-                
+        
         # get ports as a numeric list
         port_keys = set(server_types).union({"central"}) # must have a central server port
         port_map = self.complete_port_map(port_keys=port_keys, port_range=port_range, open_ports=open_ports, port_map=port_map)   
@@ -216,7 +237,8 @@ class KaLiteProject(object):
                                                      central_server_port=port_map["central"],
                                                      central_server_host=host)
         self.port_map = port_map
-        
+
+
     def mount_project(self, *args, **kwargs):
         """Convenience function to set up the project, then to mount it."""
         self.setup_project(*args, **kwargs)
@@ -334,8 +356,11 @@ class KaLiteSelfZipProject(KaLiteProject):
         #   which is important to save disk space
         #
         for key,server in self.servers.items():
-            self.unpack_zip(server)
-            server.setup_server()
+            if not server.is_installed():
+                self.unpack_zip(server)
+                server.setup_server()
+            else:
+                server.update_server(file=self.zip_file)
             server.start_server()
                 
 
@@ -353,7 +378,9 @@ class KaLiteGitProject(KaLiteProject):
         self.branch_dir = self.user_dir + "/" + self.repo_branch
 
 
-
+    def get_base_dir(self, server_type):
+        return self.get_repo_dir(server_type)
+        
     def get_repo_dir(self, server_type):
         return self.branch_dir+"/"+server_type
                                                              
@@ -407,7 +434,7 @@ class KaLiteRepoProject(KaLiteGitProject):
         self.log.debug("Setting up %s %s %s" % (self.git_user, self.repo_branch, self.git_repo))
     
         # Create the branch directory
-        self.branch_dir = os.path.realpath(server.repo_dir + "/..")
+        self.branch_dir = os.path.realpath(server.base_dir + "/..")
         if os.path.exists(self.branch_dir):
             self.log.info("Mounting git to existing branch dir: %s" % self.branch_dir)
         else:
@@ -418,27 +445,27 @@ class KaLiteRepoProject(KaLiteGitProject):
         # clone the git repository
         os.chdir(self.branch_dir)
         # Directory exists, maybe it's already set up? 
-        if os.path.exists(server.repo_dir):
-            os.chdir(server.repo_dir)
+        if os.path.exists(server.base_dir):
+            os.chdir(server.base_dir)
             (_,stdout,stderr) = lexec("git remote -v")
             # It contains the desired repo; good enough. 
             # TODO(bcipolli): really should check if the repo is ORIGIN
             if -1 != stdout.find("%s/%s.git" % (self.git_user, self.git_repo)):
                 self.log.warn("Not touching existing git repository @ %s" % self.repo_dir)
-                return server.repo_dir
+                return server.base_dir
     #        else:
     #            raise Exception(stderr)
             os.chdir(self.branch_dir) # return to branch dir
         
-        self.log.info("Cloning %s/%s.git to %s" % (self.git_user, self.git_repo, server.repo_dir))
-        lexec("git clone git@github.com:%s/%s.git %s" % (self.git_user, self.git_repo, os.path.basename(server.repo_dir)))
+        self.log.info("Cloning %s/%s.git to %s" % (self.git_user, self.git_repo, server.base_dir))
+        lexec("git clone git@github.com:%s/%s.git %s" % (self.git_user, self.git_repo, os.path.basename(server.base_dir)))
 
 
             
     def select_branch(self, server):
-        if server.repo_dir:
+        if server.base_dir:
             cwd = os.getcwd()
-            os.chdir(server.repo_dir)
+            os.chdir(server.base_dir)
     
         # Get the current list of branches
         lexec("git fetch")
@@ -464,9 +491,12 @@ class KaLiteRepoProject(KaLiteGitProject):
 
         # Set up central and local servers, in turn
         for key,server in self.servers.items():
-            self.setup_repo(server)
-            self.select_branch(server)
-            server.setup_server()
+            if not server.is_installed():
+                self.setup_repo(server)
+                self.select_branch(server)
+                server.setup_server()
+            else:
+                server.update_server()
             server.start_server()
 
 
@@ -478,9 +508,9 @@ class KaLiteGitSnapshotProject(KaLiteGitProject):
     def __init__(self, *args, **kwargs):
         super(KaLiteGitSnapshotProject, self).__init__(*args, **kwargs)
 
-        self.snapshot_url = None
-        self.snapshot_file = None
-        self.snapshot_dir = None
+        self.snapshot_url  = "https://github.com/%s/%s/archive/%s.zip" % (self.git_user, self.git_repo, self.repo_branch)
+        self.snapshot_file = self.branch_dir + "/%s.zip" % self.repo_branch
+        self.snapshot_dir  = self.branch_dir + "/%s-%s" % (self.git_repo, self.repo_branch)
 
 
     def setup_repo_snapshot(self, server, force_create=False, move_snapshot=False):
@@ -505,9 +535,6 @@ class KaLiteGitSnapshotProject(KaLiteGitProject):
         # Create a snapshot if we haven't before
         if not self.snapshot_dir:
             force_create = True
-            self.snapshot_url  = "https://github.com/%s/%s/archive/%s.zip" % (self.git_user, self.git_repo, self.repo_branch)
-            self.snapshot_file = self.branch_dir + "/%s.zip" % self.repo_branch
-            self.snapshot_dir  = self.branch_dir + "/%s-%s" % (self.git_repo, self.repo_branch)
 
         # Need to take a new snapshot
         if os.path.exists(self.snapshot_dir) and force_create:
@@ -527,20 +554,20 @@ class KaLiteGitSnapshotProject(KaLiteGitProject):
             os.remove(self.snapshot_file)
             
         # Always redo the server.
-        if os.path.exists(server.repo_dir):# and force_create:
-            self.log.info("Removing old snapshot directory: %s" % server.repo_dir)
-            shutil.rmtree(server.repo_dir)
+        if os.path.exists(server.base_dir):# and force_create:
+            self.log.info("Removing old snapshot directory: %s" % server.base_dir)
+            shutil.rmtree(server.base_dir)
 
         # Now use the snapshot to create the server directory
-#        if os.path.exists(server.repo_dir):
-#            self.log.info("Leaving existing repo: %s" % server.repo_dir)
+#        if os.path.exists(server.base_dir):
+#            self.log.info("Leaving existing repo: %s" % server.base_dir)
 #        else:
         if move_snapshot:
-            self.log.info("Moving snapshot to %s" % server.repo_dir)
-            shutil.move(self.snapshot_dir, server.repo_dir)
+            self.log.info("Moving snapshot to %s" % server.base_dir)
+            shutil.move(self.snapshot_dir, server.base_dir)
         else:
-            self.log.info("Copying snapshot to %s" % server.repo_dir)
-            shutil.copytree(self.snapshot_dir, server.repo_dir)
+            self.log.info("Copying snapshot to %s" % server.base_dir)
+            shutil.copytree(self.snapshot_dir, server.base_dir)
 
     
     def mount(self):
@@ -555,9 +582,19 @@ class KaLiteGitSnapshotProject(KaLiteGitProject):
         for i in range(nkeys):#key,server in self.servers.items():
             key = self.servers.keys()[i]
             server = self.servers[key]
-            self.setup_repo_snapshot(server, move_snapshot=(i==nkeys-1))
-            server.setup_server()
+            
+            if not server.is_installed():
+                self.setup_repo_snapshot(server, move_snapshot=(i==nkeys-1))
+                server.setup_server()
+            else:
+                # Need to get a zip file
+                if not os.path.exists(self.snapshot_file):
+                    self.log.info("Downloading repo snapshot to %s from %s" % (self.snapshot_file, self.snapshot_url))
+                    urllib.urlretrieve(self.snapshot_url, self.snapshot_file)
+                server.update_server(file=self.snapshot_file)
             server.start_server()
+            
+        # Could remove snapshot file & dir here
 
 
 class KaLiteDockerProjectWrapper(KaLiteGitProject):
@@ -596,9 +633,14 @@ class KaLiteDockerProjectWrapper(KaLiteGitProject):
         for server_type,docker in self.dockers.items():
             docker.run_command("export PYTHONPATH=${PYTHONPATH}:/playground", wait_time=0.1)
             docker.stream_command("python /playground/test_tools/mount_branch_on_docker.py %s %s %s %d %s" % (self.git_user, self.repo_branch, server_type, self.docker_port, self.git_repo), wait_time=wait_time)
-            
-    
 
+
+    def mount_project(self, wait_time=90, *args, **kwargs):
+        self.setup_project(self, *args, **kwargs)
+        self.emit_header()
+        self.mount(wait_time)
+            
+                
     def emit_header(self):
         # Emit an informative header
         self.log.info("*"*50)
@@ -651,9 +693,9 @@ class KaLiteDockerRepoProject(KaLiteRepoProject):
 #        self.docker.run_command("/playground/test_tools/mount_docker_branch.sh %s %s %s" % (self.git_user, self.git_repo, self.repo_branch))
     
         # Add the remote        
-        os.chdir(server.repo_dir)
+        os.chdir(server.base_dir)
     
-        self.log.info("Adding remote %s/%s.git to %s" % (self.git_user, self.git_repo, server.repo_dir))
+        self.log.info("Adding remote %s/%s.git to %s" % (self.git_user, self.git_repo, server.base_dir))
         remote_url = "git://github.com/%s/%s.git" % (self.git_user, self.git_repo)
         lexec("git remote add %s %s" % (self.git_user, remote_url));
         if not remote_url in lexec("git remote -v")[1]:
@@ -664,8 +706,8 @@ class KaLiteDockerRepoProject(KaLiteRepoProject):
         lexec("git merge %s/%s" % (self.git_user, self.repo_branch))
         
         """
-        self.docker.run_command("cd %s" % server.repo_dir, wait_time=0.1)
-        self.log.info("Adding remote %s/%s.git to %s" % (self.git_user, self.git_repo, server.repo_dir))
+        self.docker.run_command("cd %s" % server.base_dir, wait_time=0.1)
+        self.log.info("Adding remote %s/%s.git to %s" % (self.git_user, self.git_repo, server.base_dir))
         remote_url = "git://github.com/%s/%s.git" % self.git_user, self.git_repo
         self.docker.run_command("git remote add %s git://github.com/%s/%s.git" % (self.git_user, remote_url) , wait_time=0.5);
         if not remote_url in self.docker.run_command("git remote -v"):
@@ -744,30 +786,30 @@ if __name__=="__main__":
         if len(server_types) != len(port_arg["open_ports"]):
             usage("Port list and server type list must have the same length.")
         port_arg = { "port_map": dict(zip(server_types, port_arg["open_ports"])) }
-	
+
+
     # Run the project
     if method == "merge":
         kap = KaLiteRepoProject(git_user=git_user, repo_branch=repo_branch, git_repo=git_repo, base_dir="/home/ubuntu/ka-lite")
-        kap.mount_project(server_types=server_types, host="playground.learningequality.org")
 
     elif method == "snapshot":
         kap = KaLiteGitSnapshotProject(git_user=git_user, repo_branch=repo_branch, git_repo=git_repo, base_dir="/home/ubuntu/ka-lite")
-        kap.mount_project(server_types=server_types, host="playground.learningequality.org")
 
     elif method == "docker":
         kap = KaLiteDockerProjectWrapper(git_user=git_user, repo_branch=repo_branch, git_repo=git_repo, image_name="ka-lite-testing")
-        kap.setup_project(server_types=server_types, host="playground.learningequality.org")
-        kap.mount(wait_time=60)
-
-        kap.emit_header()
-
-        # Don't exit!!
-        logging.warning("Dockers STOP after exiting this script.  For now, putting debug HALT so that we can control program exit. :(")
-        import pdb; pdb.set_trace()
-    
     else:
         usage("Unknown mount method: '%s'" % method)
         
+
+    kap.mount_project(server_types=server_types, host="playground.learningequality.org")
+
+
     # When in debug mode, there's a lot of output--so output again!
     if logging.getLogger().level>=logging.DEBUG:
         kap.emit_header()
+
+
+    if method == "docker":
+        # Don't exit!!
+        logging.warning("Dockers STOP after exiting this script.  For now, putting debug HALT so that we can control program exit. :(")
+        import pdb; pdb.set_trace()
