@@ -99,7 +99,7 @@ class Command(BaseCommand):
             self.update_via_zip(options.get("zip_file"), options.get("interactive"))
             
         # Without params, if we detect a git repo, try git
-        elif false and os.path.exists(settings.PROJECT_PATH + "/../.git"):
+        elif False and os.path.exists(settings.PROJECT_PATH + "/../.git"):
             self.update_via_git(options.get("repo"))
         
         # No params, no git repo: try to get a file online.
