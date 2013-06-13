@@ -87,40 +87,37 @@ class Command(BaseCommand):
         if len(args)==1 and args[0]== "test":
             print "Success!"
             exit(0)
-            
+        
+        # Specified a repo
         if options.get("repo", None):
             self.update_via_git(options.get("repo", "."))
-            
+        
+        # Specified a file
         elif options.get("zip_file", None):
             if not os.path.exists(options.get("zip_file")):
                 raise CommandError("Specified zip file does not exist: %s" % options.get("zip_file"))
             self.update_via_zip(options.get("zip_file"), options.get("interactive"))
             
-        # Without params, default to same as before (git)
-        elif not args:
+        # Without params, if we detect a git repo, try git
+        elif false and os.path.exists(settings.PROJECT_PATH + "/../.git"):
             self.update_via_git(options.get("repo"))
         
+        # No params, no git repo: try to get a file online.
         else:
-            raise CommandError("Please specify a zip file.")
-            
-            """# Search for a zip
-            files = ()
-            for search_path in [settings.PROJECT_PATH+"/../", settings.PROJECT_PATH]:
-                files += tuple(glob.glob('*.zip'))
-            
-            if len(files)==0:
-                self.update_via_git()
-            elif len(files)==1:
-                self.update_via_zip(files[0])
-            else:
-                for f in files:
-                    try:
-                        self.update_via_zip(f)
-                        break
-                    except:
-                        import pdb; pdb.set_trace()
-                        continue"""
-        
+            zip_file = tempname.tmpsname()[1]
+            for url in ["https://github.com/learningequality/ka-lite/archive/master.zip",
+                        "http://%s/download/kalite/%s/%s/" % (settings.CENTRAL_SERVER_HOST, options["platform"], options["locale"])]:
+                self.log.info("Downloading repo snapshot to %s from %s" % (url))
+                try:
+                    urllib.urlretrieve(url, zip_file)
+                    print "success @ %s" % url
+                    break;
+                except:
+                    continue        
+
+            self.update_via_zip(zip_file, options.get("interactive"))
+
+
         self.stdout.write("Update is complete!\n")
         
                 
