@@ -77,7 +77,7 @@ def setup_test_env(browser_type="Firefox", test_user="test", test_password="test
     global browser
         
     # Add the test user
-    admin_user = create_test_user(username=test_user, password=test_password, email=test_email)
+    admin_user = create_test_admin(username=test_user, password=test_password, email=test_email)
     
     # Launch the browser
     if not persistent_browser or (persistent_browser and not browser):

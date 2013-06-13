@@ -77,16 +77,9 @@ USE_L10N       = getattr(local_settings, "USE_L10N", False)
 MEDIA_URL       = getattr(local_settings, "MEDIA_URL", "/media/")
 MEDIA_ROOT      = getattr(local_settings, "MEDIA_ROOT", PROJECT_PATH + "/media/") # not currently used
 STATIC_URL      = getattr(local_settings, "STATIC_URL", "/static/")
-if DEBUG: # jedi mind-trick on django to serve up static files in debug/release,
-          #   while still following the semantics of django STATIC_ROOT/STATIC_URL
-    STATIC_ROOT      = "" # this should point to a directory where we can collect and shove all files.
-                          #    since we have no intention of doing so, set it to None.
-    STATICFILES_DIRS = ( getattr(local_settings, "STATIC_ROOT", PROJECT_PATH + "/static/"), )
-else:
-    STATIC_ROOT     = getattr(local_settings, "STATIC_ROOT", PROJECT_PATH + "/static/")
-    
+STATIC_ROOT     = getattr(local_settings, "STATIC_ROOT", PROJECT_PATH + "/static/")
  
- # Make this unique, and don't share it with anybody.
+# Make this unique, and don't share it with anybody.
 SECRET_KEY     = getattr(local_settings, "SECRET_KEY", "8qq-!fa$92i=s1gjjitd&%s@4%ka9lj+=@n7a&fzjpwu%3kd#u")
 
 TEMPLATE_DIRS  = getattr(local_settings, "TEMPLATE_DIRS", (PROJECT_PATH + "/templates",))
@@ -135,11 +128,7 @@ INSTALLED_APPS = (
     "securesync",
     "config",
     "kalite",
-    "main",
 )
-
-if DEBUG:
-    TEST_RUNNER = 'kalite.testrunner.KALiteTestRunner'
 
 if DEBUG or CENTRAL_SERVER:
     INSTALLED_APPS += ("django_extensions","django_snippets")
@@ -162,3 +151,5 @@ else:
         "main.custom_context_processors.languages",
     )
     INSTALLED_APPS += ("main",)
+
+TEST_RUNNER = 'kalite.utils.testrunner.KALiteTestRunner'
