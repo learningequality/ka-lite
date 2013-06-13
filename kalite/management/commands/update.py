@@ -125,7 +125,7 @@ class Command(BaseCommand):
     def update_via_git(self, repo="."):
         print "Updating via git repo: %s" % repo
         self.stdout.write(git.Repo(repo).git.pull() + "\n")
-        call_command("syncdb", migrate=True)
+        call_command("syncdb", migrate=True, merge=True)
 
 
     def update_via_zip(self, zip_file, interactive=True):
@@ -295,8 +295,8 @@ class Command(BaseCommand):
         
         # Run the syncdb
         print "* Syncing database...",
-        out = call_outside_command_with_output(self.working_dir, "migrate", delete_ghost_migrations=True)
-        out = call_outside_command_with_output(self.working_dir, "syncdb", migrate=True)
+        out = call_outside_command_with_output(self.working_dir, "migrate", delete_ghost_migrations=True, merge=True)
+        out = call_outside_command_with_output(self.working_dir, "syncdb", migrate=True, merge=True)
         #if out[2] or out[1]:
         #    raise CommandError("\n\tError syncing data[%d]: %s" % (out[2], out[1] if out[1] else out[0]))
         #else:
