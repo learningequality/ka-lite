@@ -162,18 +162,3 @@ else:
         "main.custom_context_processors.languages",
     )
     INSTALLED_APPS += ("main",)
-#    if DEBUG:
-#        INSTALLED_APPS += ("loadtesting",)
-
-
-slug_key = {
-    "Topic": "id",
-    "Video": "readable_id",
-    "Exercise": "name",
-}
-
-title_key = {
-    "Topic": "title",
-    "Video": "title",
-    "Exercise": "display_name",
-}
