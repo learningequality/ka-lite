@@ -1,6 +1,7 @@
 import git
 import os
 import glob
+import stat
 import platform
 import shutil
 import sys
@@ -16,18 +17,6 @@ from django.core.management.base import BaseCommand, CommandError
 import settings
 
 
-def fixBadZipfile(zipFile):  
-    f = open(zipFile, 'r+b')  
-    data = f.read()  
-    pos = data.find('\x50\x4b\x05\x06') # End of central directory signature  
-    if (pos > 0):  
-        #("Trancating file at location " + str(pos + 22)+ ".")  
-        f.seek(pos + 22)   # size of 'ZIP end of central directory record' 
-        f.truncate()  
-        f.close()  
-    else:  
-        raise Exception("# raise error, file is truncated  ")
-         
 def call_outside_command_with_output(kalite_location, command, *args, **kwargs):
     
     # build the command
@@ -84,55 +73,51 @@ class Command(BaseCommand):
             default=8008,
             help='PORT where we can test KA Lite',
             metavar="PORT"),
+        make_option('-i', '--interactive',
+            action="store_true",
+            dest="interactive",
+            default=False,
+            help="Display interactive prompts"),
         )
 
 
-    def command_error(self, msg):
-        print msg
-        if settings.DEBUG:
-            import pdb; pdb.set_trace()
-        exit(1)
-        
     def handle(self, *args, **options):
 
         # Callback for "weak" test--checks at least that the django project compiles (local_settings is OK)
         if len(args)==1 and args[0]== "test":
             print "Success!"
             exit(0)
-            
+        
+        # Specified a repo
         if options.get("repo", None):
             self.update_via_git(options.get("repo", "."))
-            
+        
+        # Specified a file
         elif options.get("zip_file", None):
             if not os.path.exists(options.get("zip_file")):
-                self.command_error("Specified zip file does not exist: %s" % options.get("zip_file"))
-            self.update_via_zip(options.get("zip_file"))
+                raise CommandError("Specified zip file does not exist: %s" % options.get("zip_file"))
+            self.update_via_zip(options.get("zip_file"), options.get("interactive"))
             
-        # Without params, default to same as before (git)
-        elif not args:
+        # Without params, if we detect a git repo, try git
+        elif false and os.path.exists(settings.PROJECT_PATH + "/../.git"):
             self.update_via_git(options.get("repo"))
         
+        # No params, no git repo: try to get a file online.
         else:
-            self.command_error("Please specify a zip file.")
-            
-            """# Search for a zip
-            files = ()
-            for search_path in [settings.PROJECT_PATH+"/../", settings.PROJECT_PATH]:
-                files += tuple(glob.glob('*.zip'))
-            
-            if len(files)==0:
-                self.update_via_git()
-            elif len(files)==1:
-                self.update_via_zip(files[0])
-            else:
-                for f in files:
-                    try:
-                        self.update_via_zip(f)
-                        break
-                    except:
-                        import pdb; pdb.set_trace()
-                        continue"""
-        
+            zip_file = tempname.tmpsname()[1]
+            for url in ["https://github.com/learningequality/ka-lite/archive/master.zip",
+                        "http://%s/download/kalite/%s/%s/" % (settings.CENTRAL_SERVER_HOST, options["platform"], options["locale"])]:
+                self.log.info("Downloading repo snapshot to %s from %s" % (url))
+                try:
+                    urllib.urlretrieve(url, zip_file)
+                    print "success @ %s" % url
+                    break;
+                except:
+                    continue        
+
+            self.update_via_zip(zip_file, options.get("interactive"))
+
+
         self.stdout.write("Update is complete!\n")
         
                 
@@ -143,9 +128,9 @@ class Command(BaseCommand):
         call_command("syncdb", migrate=True)
 
 
-    def update_via_zip(self, zip_file):
+    def update_via_zip(self, zip_file, interactive=True):
         if not os.path.exists(zip_file):
-            self.command_error("Zip file doesn't exist")
+            raise CommandError("Zip file doesn't exist")
             
         print "Updating via zip file: %s" % zip_file
 
@@ -154,8 +139,8 @@ class Command(BaseCommand):
         
         # Prep
         self.print_header()
-        self.prompt_dest_dir()
-        self.prompt_move_videos()
+        self.get_dest_dir(interactive)
+        self.get_move_videos(interactive)
         
         # Work
         self.extract_files(zip_file)
@@ -166,10 +151,10 @@ class Command(BaseCommand):
         # Validation & confirmation
         if platform.system()=="Windows":
             self.test_server_weak()
-            self.confirm_move()
+            self.move_to_final(interactive)
         else:
             self.test_server_full()
-            self.confirm_move()
+            self.move-to_final(interactive)
             self.start_server()
 
         self.print_footer()
@@ -185,17 +170,19 @@ class Command(BaseCommand):
         print "*\tCurrent install directory: %s" % self.current_dir
 
 
-    def prompt_dest_dir(self):
+    def get_dest_dir(self, interactive=True):
         """Prompt for a destination, providing some easy options"""
         
-        print "*"
-        print "* Where would you like to install your KA Lite ugrade to?"
-        print "*\t0 : replace the current installation (%s)" % self.current_dir
-        print "*\t1 : %s" % self.neighbor_dir
-        print "*\tOr any other path"
-        print "*"
+        if interactive:
+            print "*"
+            print "* Where would you like to install your KA Lite ugrade to?"
+            print "*\t0 : replace the current installation (%s)" % self.current_dir
+            print "*\t1 : %s" % self.neighbor_dir
+            print "*\tOr any other path"
+            print "*"
 
-        dest_dir = ""
+        dest_dir = "" if interactive else self.current_dir
+        working_dir = "" if interactive else tempfile.mkdtemp()
         while not dest_dir:
             dest_dir=raw_input("*\tEnter a number, or path: ").strip()
             
@@ -223,7 +210,7 @@ class Command(BaseCommand):
         self.working_dir = working_dir
         
         
-    def prompt_move_videos(self):
+    def get_move_videos(self, interactive=True):
         """See whether the user wants to move video files, or to keep them in the existing location.
         
         Note that we have some meaningful cases where we don't need to prompt the user to set this."""
@@ -232,7 +219,7 @@ class Command(BaseCommand):
         if not self.videos_inside_install:
             self.move_videos = "n" # videos exist outside of this install, continue that way
         
-        elif self.dest_dir == self.current_dir:
+        elif self.dest_dir == self.current_dir or not interactive:
             self.move_videos = "y" # You HAVE to move videos
 
         # Ask if we want to move videos
@@ -254,18 +241,17 @@ class Command(BaseCommand):
         sys.stdout.flush()
     
         # Speedup debug by not extracting
-        if settings.DEBUG and os.path.exists(self.working_dir):
-            print ""
+        if settings.DEBUG and os.path.exists(self.working_dir + "/install.sh"):
+            print "** NOTE ** NOT EXTRACTING IN DEBUG MODE"
             return
                         
         if not os.path.exists(self.working_dir):
             os.mkdir(self.working_dir)
         
         if not zipfile.is_zipfile(zip_file):
-            self.command_error("bad zip file")
+            raise CommandError("bad zip file")
 
         zip = ZipFile(zip_file, "r")
-            
             
         nfiles = len(zip.namelist())
         for fi,afile in enumerate(zip.namelist()):
@@ -277,13 +263,27 @@ class Command(BaseCommand):
                 sys.stdout.flush()
                     
             zip.extract(afile, path=self.working_dir)
-            
             # If it's a unix script, give permissions to execute
-            if os.path.splitext(os.path.split(afile)[1])[1] == ".sh":
-                os.chmod(self.working_dir + "/" + afile, 0755)
+#            if os.path.splitext(os.path.split(afile)[1])[1] == ".sh":
+#                os.chmod(self.working_dir + "/" + afile, 0755)
+            # We need to be able to run scripts, so set perms properly
+            if os.path.splitext(afile)[1] == ".sh":
+                os.chmod(os.path.realpath(self.working_dir + "/" + afile), 0777)    
+                print "\tChanging perms on script %s" % os.path.realpath(self.working_dir + "/" + afile)
+            
         print ""
         
-    
+        if not os.path.exists(self.working_dir + "/kalite/"):
+            subdirs = os.listdir(self.working_dir)
+            if len(subdirs)!=1:
+                raise CommandError("Expected %s to exist, but it doesn't.  Unknown failure in extraction; exiting." % (self.working_dir + "/kalite/"))
+
+            # Must be a download from git directly.
+            else:
+                self.working_dir += "/" + subdirs[0] + "/"
+                print "Note: found a git-based package.  Updating working dir to %s" % self.working_dir
+        
+
     def copy_in_data(self):
         """Copy over sqlite3 database, then run syncdb"""
         
@@ -298,7 +298,7 @@ class Command(BaseCommand):
         out = call_outside_command_with_output(self.working_dir, "migrate", delete_ghost_migrations=True)
         out = call_outside_command_with_output(self.working_dir, "syncdb", migrate=True)
         #if out[2] or out[1]:
-        #    self.command_error("\n\tError syncing data[%d]: %s" % (out[2], out[1] if out[1] else out[0]))
+        #    raise CommandError("\n\tError syncing data[%d]: %s" % (out[2], out[1] if out[1] else out[0]))
         #else:
         print ""
             
@@ -317,7 +317,7 @@ class Command(BaseCommand):
                 print "(none)",
             
             else:
-                self.command_error("\n\tError migrating app %s [%d]: %s" % (app, out[2], out[1] if out[1] else out[0]))    
+                raise CommandError("\n\tError migrating app %s [%d]: %s" % (app, out[2], out[1] if out[1] else out[0]))    
         print ""
             
             
@@ -377,7 +377,7 @@ class Command(BaseCommand):
 
         out = call_outside_command_with_output(self.working_dir, "update", "test")
         if 0 != out[0].find("Success!"):
-            self.command_error(out[1] if out[1] else out[0])
+            raise CommandError(out[1] if out[1] else out[0])
             
             
     def test_server_full(self):
@@ -388,34 +388,43 @@ class Command(BaseCommand):
         # Stop the old server
         stop_cmd = self.get_shell_script("serverstop*", location=self.current_dir + "/kalite/")
         if stop_cmd:
-            p = subprocess.Popen([stop_cmd], shell=False, cwd=os.path.split(stop_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            out = p.communicate()
-            if out[1]:
-                command_error(out[1])
-
+            try:
+                p = subprocess.Popen([stop_cmd], shell=False, cwd=os.path.split(stop_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                out = p.communicate()
+                if out[1]:
+                    raise CommandError(out[1])
+            except Exception as e:
+                print "Failed stopping the old server: %s" % str(e)
+                
         
         # Start the server to validate
         start_cmd = self.get_shell_script("serverstart*", location=self.working_dir + "/kalite/")
-        p = subprocess.Popen([start_cmd], shell=False, cwd=os.path.split(start_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out = p.communicate()
-        if out[1]:
-            command_error(out[1])
+        try:
+            p = subprocess.Popen([start_cmd], shell=False, cwd=os.path.split(start_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            out = p.communicate()
+            if out[1]:
+                raise CommandError(out[1])
+        except Exception as e:
+            print "Failed starting the new server: %s" % str(e)
         
         # Stop the server
         stop_cmd = self.get_shell_script("serverstop*", location=self.working_dir + "/kalite/")
         if stop_cmd:
-            p = subprocess.Popen([stop_cmd], shell=False, cwd=os.path.split(stop_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            out = p.communicate()
-            if out[1]:
-                command_error(out[1])
+            try:
+                p = subprocess.Popen([stop_cmd], shell=False, cwd=os.path.split(stop_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                out = p.communicate()
+                if out[1]:
+                    raise CommandError(out[1])
+            except Exception as e:
+                print "Failed stopping the new server: %s" % str(e)
 
     
-    def confirm_move(self):
+    def move_to_final(self, interactive=True):
         """Confirm the move to the new location"""
         
         # Double-check if destroying old install
         if self.dest_dir == self.current_dir:
-            ans = ""
+            ans = "" if interactive else "y"
             while ans.lower() not in ["y","n"]:
                 ans = raw_input("* Server setup verified; complete by moving to the final destination? [y/n]: ").strip()
             if ans=="n":
@@ -471,7 +480,7 @@ class Command(BaseCommand):
         p = subprocess.Popen([start_cmd], shell=False, cwd=os.path.split(start_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out = p.communicate()
         if out[1]:
-            self.command_error(out[1])
+            raise CommandError(out[1])
         
         str = "The server should now be accessible locally at"
         idx = out[0].find(str)
@@ -497,9 +506,9 @@ class Command(BaseCommand):
         # Find the command
         cmd = glob.glob(location + "/" + cmd_glob)
         if len(cmd) > 1:
-            self.command_error("Multiple commands found (%s)?  Should choose based on platform, but ... how to do in Python?  Contact us to implement this!" % cmd_glob)
+            raise CommandError("Multiple commands found (%s)?  Should choose based on platform, but ... how to do in Python?  Contact us to implement this!" % cmd_glob)
         elif len(cmd)==1:
             cmd = cmd[0]
         else:
-            cmd = None#self.command_error("No command found? (%s)" % cmd_glob)
+            cmd = None#raise CommandError("No command found? (%s)" % cmd_glob)
         return cmd
