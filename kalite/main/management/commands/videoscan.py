@@ -23,7 +23,7 @@ class Command(BaseCommand):
         video_files_to_delete.delete()
         for youtube_id in youtube_ids_to_delete:
             caching.invalidate_cached_video_page(video_id=youtube_id)
-            touched_video_ids.append(vf.youtube_id)
+            touched_video_ids.append(youtube_id)
 
         files = glob.glob(settings.CONTENT_ROOT + "*.mp4")
         subtitle_files = glob.glob(settings.CONTENT_ROOT + "*.srt")
