@@ -9,8 +9,8 @@ python_packages_dir = script_dir + "/../python-packages/"
 sys.path = sys.path + [ python_packages_dir]
 
 # Import the server
-from django_cherrypy_wsgiserver import cherrypyserver
+from django_cherrypy_wsgiserver.cherrypyserver import stop_server
 
 # Call stop!
 pid_file = os.path.realpath(script_dir + "/runcherrypyserver.pid")
-cherrypyserver.stop_server(pid_file)
+stop_server(pid_file)
