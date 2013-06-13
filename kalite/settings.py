@@ -2,6 +2,13 @@ import json
 import os
 import logging
 
+# suppress warnings here.
+try:
+    import warnings
+    warnings.simplefilter("ignore") # any other filter was ineffecual or threw an error
+except:
+    pass
+
 try:
     from local_settings import *
     import local_settings

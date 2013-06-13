@@ -154,7 +154,7 @@ class Command(BaseCommand):
             self.move_to_final(interactive)
         else:
             self.test_server_full()
-            self.move-to_final(interactive)
+            self.move_to_final(interactive)
             self.start_server()
 
         self.print_footer()
