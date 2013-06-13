@@ -3,6 +3,7 @@ import os
 import pickle
 import shutil
 import socket
+import string
 import sys
 import subprocess
 import urllib
@@ -107,9 +108,32 @@ class KaLiteServer(object):
         out = lexec(cmd, input=input)
         
         os.chdir(cwd)
+        
+        return {
+            "stdout": out[1],
+            "stderr": out[2],
+            "exit_code": out[0],
+        }
+    
+    def shell_plus(self, commands):
+
+        if hasattr(commands,"isupper"):
+            commands = [commands]
+
+        # Run shell plus
+        out = self.call_command("shell_plus", "--quiet-load", input=string.join(commands, "\n"))
+        
+        # Parse the output cleanly, in the case where we succeed, for easier manipulation
+        if not out['exit_code']:
+            cmdout = out['stdout'].replace("\x1b[?1034h","").split("\n>>> ")
+            if len(cmdout)>1 and not cmdout[-1]: # markers of successful parse
+                 return {
+                    'stdout': string.join(cmdout[1:-1],"\n"),
+                    'stderr': None,
+                    'exit_code': 0,
+                }
         return out
-    
-    
+        
     def install_server(self):
         # Then, make sure to run the installation
         self.log.info("Creating the database and admin user")
@@ -122,8 +146,9 @@ class KaLiteServer(object):
         self.call_command("syncdb", "--migrate", input="no\n")
         self.call_command("shell", input="from django.contrib.auth.models import User; User.objects.create_superuser('%s', '%s', '%s')" % (self.admin_user["username"], self.admin_user["email"], self.admin_user["password"]))
 
-        if os.path.exists(self.base_dir + "/kalite/static/data/zone_data.json"):
-            self.call_command("initdevice '%s' 'central_server_port=%d'" % (self.server_type, self.central_server_port))
+        zone_json = self.base_dir + "/kalite/static/data/zone_data.json"
+        if os.path.exists(zone_json):
+            self.call_command("initdevice '%s' 'central_server_port=%d' %s" % (self.server_type, self.central_server_port, zone_json))
         else:
             self.call_command("initdevice '%s' 'central_server_port=%d'" % (self.server_type, self.central_server_port))
     
