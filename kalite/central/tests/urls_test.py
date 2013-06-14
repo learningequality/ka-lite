@@ -31,7 +31,6 @@ class UrlTestCases(TestCase):
         
         
     def test_urls(self):
-#        import pdb; pdb.set_trace()
         self.validate_url('/')
         self.validate_url('/accounts/login/')
         self.validate_url('/accounts/register/')

@@ -16,9 +16,6 @@ urlpatterns = patterns('',
 )
 
 urlpatterns += patterns('',
-    url(r'^%s(?P<path>.*)$' % settings.CONTENT_URL[1:], 'django.views.static.serve', {
-        'document_root': settings.CONTENT_ROOT,
-    }),
     url(r'^%s(?P<path>.*)$' % settings.MEDIA_URL[1:], 'django.views.static.serve', {
         'document_root': settings.MEDIA_ROOT,
     }),
@@ -53,6 +50,6 @@ urlpatterns += patterns('central.views',
     url(r'^faq/', include('faq.urls')),
 )   
    
-handler404 = 'central.views.central_404_handler'
-handler500 = 'central.views.central_500_handler'
+handler404 = 'central.views.handler_404'
+handler500 = 'central.views.handler_500'
 

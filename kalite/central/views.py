@@ -232,9 +232,9 @@ def crypto_login(request):
 
 
 
-def central_404_handler(request):
-    return HttpResponseNotFound(render_to_string("central/404_central.html", {}, context_instance=RequestContext(request)))
+def handler_404(request):
+    return HttpResponseNotFound(render_to_string("central/404.html", {}, context_instance=RequestContext(request)))
     
-def central_500_handler(request):
-    return HttpResponseServerError(render_to_string("central/500_central.html", {}, context_instance=RequestContext(request)))
+def handler_500(request):
+    return HttpResponseServerError(render_to_string("central/500.html", {}, context_instance=RequestContext(request)))
     

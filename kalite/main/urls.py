@@ -40,7 +40,7 @@ urlpatterns += patterns('main.views',
     url(r'^api/', include('main.api_urls')),
 )
 
-if getattr(settings, "AUTO_LOAD_TEST", None):
+if "loadtesting" in settings.INSTALLED_APPS:
     urlpatterns += patterns('main.views',
         url(r'^loadtesting/', include('loadtesting.urls')),
     )
@@ -50,5 +50,5 @@ urlpatterns += patterns('main.views',
     url(r'^(?P<splat>.+)/$', 'splat_handler', {}, 'splat_handler'),
 )
 
-handler404 = 'main.views.distributed_404_handler'
-handler500 = 'main.views.distributed_500_handler'
+handler404 = 'main.views.handler_404'
+handler500 = 'main.views.handler_500'

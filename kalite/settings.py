@@ -137,8 +137,9 @@ if CENTRAL_SERVER:
 
 else:
     INSTALLED_APPS     += ("main"),
-
-    if DEBUG:
+    
+    # Include optionally installed apps
+    if os.path.exists(PROJECT_PATH + "/loadtesting/"):
         INSTALLED_APPS     += ("loadtesting"),
 
     MIDDLEWARE_CLASSES += (
