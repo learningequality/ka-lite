@@ -1,4 +1,4 @@
-{% extends 'base_central_bootstrap.html' %}
+{% extends 'central/base.html' %}
 
 {% block title %}Home{% endblock %}
 
@@ -6,22 +6,8 @@
 <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.8.3.min.js"></script> 
 {% endblock jqueryjs %}
 
-{% block navigation-menu %}
-    <ul class="header__horizontal-menu">
-        <li><a href="/">Home</a></li>
-        <li><a href="/faq/">FAQ</a></li>
-    {% if user.is_authenticated %}
-        {% if user.is_superuser %}
-        <li><a href="/admin/" >Admin</a></li>
-        {% endif %}
-        <li><a href="/accounts/logout/">{{ user.username }} &nbsp; (Logout)</a></li>
-    {% else %}
-        <li><a href="/accounts/register/">Sign Up</a></li>
-        <li><a href="/accounts/login/">Login</a></li>
-    {% endif %}
-    </ul>
-{% endblock navigation-menu %}
-
+{% block analytics %}{% include 'analytics.html' %}{% endblock analytics %}
+  
 {% block content %}
     <div class="row-fluid content">
         <div class="span12">
