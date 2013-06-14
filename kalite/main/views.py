@@ -252,19 +252,14 @@ def user_list(request,facility):
         context["pageurls"] = {"next_page": next_page_url, "prev_page": previous_page_url}
     return context
 
-def distributed_404_handler(request):
-    return HttpResponseNotFound(render_to_string("404_distributed.html", {}, context_instance=RequestContext(request)))
 
-def distributed_500_handler(request):
+def handler_404(request):
+    return HttpResponseNotFound(render_to_string("404.html", {}, context_instance=RequestContext(request)))
+
+def handler_500(request):
     errortype, value, tb = sys.exc_info()
     context = {
         "errortype": errortype.__name__,
         "value": str(value),
     }
-    return HttpResponseServerError(render_to_string("500_distributed.html", context, context_instance=RequestContext(request)))
-    
-def central_404_handler(request):
-    return HttpResponseNotFound(render_to_string("404_central.html", {}, context_instance=RequestContext(request)))
-    
-def central_500_handler(request):
-    return HttpResponseServerError(render_to_string("500_central.html", {}, context_instance=RequestContext(request)))
+    return HttpResponseServerError(render_to_string("500.html", context, context_instance=RequestContext(request)))
