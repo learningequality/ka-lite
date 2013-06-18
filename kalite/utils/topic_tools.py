@@ -30,3 +30,36 @@ def print_videos(youtube_id):
         
 def get_downloaded_youtube_ids():
     return [path.split("/")[-1].split(".")[0] for path in glob.glob("../../content/*.mp4")]
+    
+    
+def get_videos_for_topic(topic_id=None, topics=None):
+    """Gets all video nodes under the topic ID.  
+    If topid ID is None, returns all videos under the topics node. """
+    
+    if topics is None:
+        topics = topicdata.TOPICS
+
+
+    # Found the topic!
+    if topics.get("id",None) and (topics.get("id")==topic_id or topic_id is None):
+        videos = filter(lambda node: node["kind"] == "Video", topics["children"])
+
+        # Recursive case: traverse children
+        if topics.get("children",None):
+            for topic in topics.get("children",[]):
+                videos += get_videos_for_topic(topics=topic)
+
+        return videos
+        
+    # Didn't find the topic, but it has children to check...
+    elif topics.get("children",None):
+        videos = []
+        for topic in topics.get("children"):
+            videos += get_videos_for_topic(topic_id, topic)
+                
+        return videos   
+    
+    # Didn't find the topic, and no children... 
+    else:
+        return []
+        
