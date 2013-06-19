@@ -27,13 +27,13 @@ urlpatterns += patterns('',
 )
 
 if settings.CENTRAL_SERVER:
-    
+
     from central.feeds import RssSiteNewsFeed, AtomSiteNewsFeed
 
     urlpatterns += patterns('central.views',
-        url(r'^$', 'homepage', {}, 'homepage'), 
-        url(r'^delete_admin/(?P<org_id>\w+)/(?P<user_id>\w+)/$', 'delete_admin', {}, 'delete_admin'), 
-        url(r'^delete_invite/(?P<org_id>\w+)/(?P<invite_id>\w+)/$', 'delete_invite', {}, 'delete_invite'), 
+        url(r'^$', 'homepage', {}, 'homepage'),
+        url(r'^delete_admin/(?P<org_id>\w+)/(?P<user_id>\w+)/$', 'delete_admin', {}, 'delete_admin'),
+        url(r'^delete_invite/(?P<org_id>\w+)/(?P<invite_id>\w+)/$', 'delete_invite', {}, 'delete_invite'),
         url(r'^accounts/', include('registration.urls')),
         url(r'^organization/(?P<id>\w+)/$', 'organization_form', {}, 'organization_form'),
         url(r'^organization/(?P<org_id>\w+)/zone/(?P<id>\w+)/$', 'zone_form', {}, 'zone_form'),
@@ -41,7 +41,7 @@ if settings.CENTRAL_SERVER:
         url(r'^organization/(?P<org_id>\w+)/zone/(?P<zone_id>\w+)/facility/$', 'central_facility_admin', {}, 'central_facility_admin'),
         url(r'^organization/(?P<org_id>\w+)/zone/(?P<zone_id>\w+)/facility/new/$', 'central_facility_edit', {"id": "new"}, 'central_facility_add'),
         url(r'^organization/(?P<org_id>\w+)/zone/(?P<zone_id>\w+)/facility/(?P<id>\w+)/$', 'central_facility_edit', {}, 'central_facility_edit'),
-        url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'), 
+        url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'),
         url(r'^getstarted/$','get_started', {}, 'get_started'),
         url(r'^glossary/$', 'glossary', {}, 'glossary'),
         url(r'^addsubscription/$', 'add_subscription', {}, 'add_subscription'),
@@ -49,12 +49,12 @@ if settings.CENTRAL_SERVER:
         url(r'^feeds/atom/$', AtomSiteNewsFeed(), {}, 'atom_feed'),
         url(r'^faq/', include('faq.urls')),
     )
-    
+
     handler404 = 'main.views.central_404_handler'
     handler500 = 'main.views.central_500_handler'
 
 else:
-    
+
     urlpatterns += patterns('main.views',
         url(r'^exercisedashboard/$', 'exercise_dashboard', {}, 'exercise_dashboard'),
         url(r'^coachreports/$', 'coach_reports', {}, 'coach_reports'),
@@ -62,10 +62,10 @@ else:
         url(r'^update/$', 'update', {}, 'update'),
         url(r'^userlist/$', 'user_list', {}, 'user_list'),
         url(r'^api/', include('main.api_urls')),
-        
+
         # the following pattern is a catch-all, so keep it last:
-        url(r'^topics/(?P<splat>.+)/$', 'splat_handler', {}, 'splat_handler'),
+        url(r'^(?P<splat>.+)/$', 'splat_handler', {}, 'splat_handler'),
     )
-    
+
     handler404 = 'main.views.distributed_404_handler'
     handler500 = 'main.views.distributed_500_handler'
