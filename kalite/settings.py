@@ -1,5 +1,7 @@
 import json
 import os
+import sys
+import tempfile
 
 try:
     from local_settings import *
@@ -58,7 +60,7 @@ USE_L10N = False
 MEDIA_ROOT = PROJECT_PATH + "/static/"
 MEDIA_URL = "/static/"
 
-STATIC_URL = "/static/"
+STATIC_URL = "/dummy/" # not used
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = hasattr(local_settings, "SECRET_KEY") and local_settings.SECRET_KEY \
@@ -85,11 +87,15 @@ MIDDLEWARE_CLASSES = (
     "django.contrib.sessions.middleware.SessionMiddleware",
     'django.middleware.locale.LocaleMiddleware',
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "main.middleware.GetNextParam",
+    "django.middleware.csrf.CsrfViewMiddleware",
 )
+if DEBUG:
+    MIDDLEWARE_CLASSES += (
+        'django_snippets.profiling_middleware.ProfileMiddleware', # add ?prof to URL, to see performance stats
+    )
 
 ROOT_URLCONF = "kalite.urls"
 
@@ -135,6 +141,31 @@ if not CENTRAL_SERVER:
         "main.custom_context_processors.languages",
     )
 
+
+
+# by default, cache for maximum possible
+#   note: caching for 1000 years was too large a value
+#   sys.maxint also can be too large (causes ValueError)
+#   
+#   but the combination is golden, of course! :D
+
+CACHE_TIME = getattr(local_settings, "CACHE_TIME", min(60*60*24*365*1000, sys.maxint)) 
+
+# Cache is activated in every case, 
+#   EXCEPT: if CACHE_TIME=0
+if CACHE_TIME or CACHE_TIME is None: # None can mean infinite caching to some functions
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+            'LOCATION': getattr(local_settings, "CACHE_LOCATION", tempfile.gettempdir()), # this is kind of OS-specific, so dangerous.
+            'TIMEOUT': CACHE_TIME, # should be consistent
+            'OPTIONS': {
+                'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
+            },
+        }
+    }
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 # import these one extra time to overwrite any settings not explicitly looking for local settings
 try:
