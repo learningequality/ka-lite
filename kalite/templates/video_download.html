@@ -114,11 +114,6 @@ ul.dynatree-container li, .ui-widget-content {
 #download-help-link {
     /* nothing yet! */
 }
-{% else %}
-#server-is-offline {
-    font-weight:bold;
-    color:red;
-}
 {% endif %}
 </style>
 {% endblock headcss %}
@@ -152,8 +147,8 @@ ul.dynatree-container li, .ui-widget-content {
                         
                         $("#download-videos").hide();
                         $("#delete-videos").hide();
-                        $("#download-legend-unselected").toggle( (newVideoCount + oldVideoCount) == 0);
-                        $("#help-info").toggle( (newVideoCount + oldVideoCount) == 0);
+                        $("#download-legend-unselected").toggle((newVideoCount + oldVideoCount) == 0);
+                        $("#help-info").toggle((newVideoCount + oldVideoCount) == 0);
                         
                         if (newVideoCount > 0) {
                             $(".new-video-count").text(newVideoCount);
@@ -472,10 +467,6 @@ ul.dynatree-container li, .ui-widget-content {
         <a id="download-help-link" target="_new" href="http://{{ central_server_host }}/faq/installation/bittorrent/">
             {% trans "Q: How do I bulk-download videos?" %}
         </a>
-        {% else %}
-        <span id="server-is-offline">
-            {% trans "Warning: no internet connection detected." %}
-        </span>
         {% endif %}
     </div>
     
