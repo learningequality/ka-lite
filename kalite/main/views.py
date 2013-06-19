@@ -26,6 +26,8 @@ from models import VideoLog, ExerciseLog, VideoFile
 from config.models import Settings
 from securesync.api_client import SyncClient
 from utils.jobs import force_job
+from utils.videos import video_connection_is_available
+
 
 
 def splat_handler(request, splat):
@@ -193,9 +195,15 @@ def update(request):
         language_list.append(default_language)
     languages = [{"id": key, "name": language_lookup[key]} for key in language_list]
     languages = sorted(languages, key=lambda k: k["name"])
+    
+    am_i_online = video_connection_is_available()
+    if not am_i_online:
+        messages.warning(request, _("No internet connection was detected.  You must be online to download videos or subtitles."))
+
     context = {
         "languages": languages,
         "default_language": default_language,
+        "am_i_online": am_i_online,
     }
     return context
 
