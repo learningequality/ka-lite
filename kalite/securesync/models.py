@@ -20,7 +20,7 @@ _always_hash_fields = ["signed_version", "id"]
 
 json_serializer = serializers.get_serializer("json")()
 
-# ROOT_UUID_NAMESPACE = uuid.uuid5(uuid.NAMESPACE_URL, settings.CENTRAL_SERVER_HOST)
+# Note: this MUST be hard-coded for backwards-compatibility reasons.
 ROOT_UUID_NAMESPACE = uuid.uuid5(uuid.NAMESPACE_URL, "https://kalite.adhocsync.com/")
 
 
@@ -315,7 +315,8 @@ class FacilityUser(SyncedModel):
             return self.password == crypt(raw_password, self.password)
 
     def set_password(self, raw_password):
-        self.password = crypt(raw_password, iterations=Settings.get("password_hash_iterations", 2000))
+        iterations = 2000 if self.is_teacher else 1000
+        self.password = crypt(raw_password, iterations=Settings.get("password_hash_iterations", iterations))
 
     def get_name(self):
         if self.first_name and self.last_name:
