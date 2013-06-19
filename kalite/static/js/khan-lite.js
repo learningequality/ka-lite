@@ -40,6 +40,37 @@ function doRequest(url, data) {
     });
 }
 
+
+// Generic functions for client-side message passing
+//   through our Django-based server-side API
+
+function show_message(msg_class, msg_text, msg_id) {
+    // This function is generic--can be called with server-side messages,
+    //    or to display purely client-side messages.
+    // msg_class includes error, warning, and success
+    
+    msg_html = "<div class='message " + msg_class + "'";
+    if (msg_id) {
+        msg_html += " id='" + msg_id + "'"
+    }
+    msg_html += ">" + msg_text + "</div>"
+    alert(msg_html)
+    $("#message_container").append(msg_html);
+    return $("#message_container");
+}
+
+function clear_message(msg_id) {
+    // Clear a single message, by ID
+    $("#" + msg_id).remove();
+    return $("#message_container");
+}
+
+function clear_messages() {
+    // Clear all messages
+    $("#message_container .message").remove();
+    return $("#message_container");
+}
+
 $(function() {
 
     // load progress data for all videos linked on page, and render progress circles

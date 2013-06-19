@@ -1,4 +1,6 @@
 import re, json, uuid
+import cgi
+
 from django.core import serializers
 from django.http import HttpResponse
 from django.utils import simplejson
@@ -8,6 +10,7 @@ from django.contrib import messages
 from main.models import VideoLog, ExerciseLog
 from config.models import Settings
 from django.contrib.messages.api import get_messages
+from django.template.defaultfilters import safe
 
 import crypto
 import settings
@@ -208,12 +211,12 @@ def test_connection(request):
     return HttpResponse("OK")
 
 def status(request):
-    # Build a dictionary of messages to pass to the user.
+    # Build a list of messages to pass to the user.
     #   Iterating over the messages removes them from the
     #   session storage, thus they only appear once.
-    message_dict = []
+    message_dict = [] 
     for message in  get_messages(request):
-        message_dict.append({ "tags": message.tags, "text": str(message) })
+        message_dict.append({ "tags": message.tags, "text": safe(cgi.escape(str(message))) }) # make sure to be careful.
         
     data = {
         "is_logged_in": request.is_logged_in,
