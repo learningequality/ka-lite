@@ -64,7 +64,7 @@ $('a.video-unavailable').attr('title', '{% trans "This video is not downloaded."
     <li>
         <!--<a href="mplayer:///khan/videofiles/{{ video.youtube_id }}.ogv">{{ video.title }}</a>-->
         <span class="progress-circle" data-youtube-id="{{ video.youtube_id }}"></span>
-        <a href="v/{{ video.readable_id }}/" class="video-{% if not video.on_disk %}un{% endif %}available">{% trans video.title %}</a>
+        <a class="video-{% if not video.on_disk %}un{% endif %}available" href="v/{{ video.readable_id }}/">{% trans video.title %}</a>
     </li>
     {% endfor %}
     <br/>

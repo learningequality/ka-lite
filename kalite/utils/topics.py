@@ -31,23 +31,23 @@ kind_blacklist = [None, "Separator", "CustomStack", "Scratchpad"]
 slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res"]
 
 def download_topictree():
-    
+
     topics = json.loads(requests.get("http://www.khanacademy.org/api/v1/topictree").content)
 
     node_cache = {}
-    
+
     related_exercise = {}
 
     def recurse_nodes(node, path=""):
 
         kind = node["kind"]
-        
+
         keys_to_delete = []
-        
+
         for key in node:
             if key not in attribute_whitelists[kind]:
                 keys_to_delete.append(key)
-        
+
         for key in keys_to_delete:
             del node[key]
 
@@ -56,7 +56,7 @@ def download_topictree():
             node["slug"] = ""
         node["title"] = node[title_key[kind]]
         node["path"] = path + kind_slugs[kind] + node["slug"] + "/"
-        
+
         node_cache[kind] = node_cache.get(kind, {})
         node_copy = copy.copy(node)
         if "children" in node_copy:
@@ -83,13 +83,13 @@ def download_topictree():
                 children_to_delete.append(i)
                 continue
             kinds = kinds.union(recurse_nodes(child, node["path"]))
-        
+
         for i in reversed(children_to_delete):
-            del node["children"][i]    
-        
+            del node["children"][i]
+
         if kind=="Topic":
             node["contains"] = list(kinds)
-        
+
         return kinds
 
     def recurse_nodes_to_add_related_exercise(node):
@@ -97,67 +97,16 @@ def download_topictree():
             node["related_exercise"] = related_exercise.get(node["slug"], None)
         for child in node.get("children", []):
             recurse_nodes_to_add_related_exercise(child)
-            
+
     recurse_nodes(topics)
     recurse_nodes_to_add_related_exercise(topics)
-    
-    fixup_topic_cache_paths(topics)
+
     with open(data_path + "topics.json", "w") as fp:
         fp.write(json.dumps(topics, indent=2))
-    
-    fixup_node_cache_paths(node_cache)
+
     with open(data_path + "nodecache.json", "w") as fp:
         fp.write(json.dumps(node_cache, indent=2))
 
-    
-def fixup_node_cache_paths(node_cache):
-
-    # A static set of node types
-    for type in ["Topic", "Video", "Exercise"]:
-        for n in node_cache[type].values(): # all keys
-            for attr in ["path", "topic_page_url"]: # some set of attributes to update
-                # don't apply fixup twice, and don't apply to root
-                if n.get(attr,"") and not n[attr].startswith("/topics/"):# and n[attr] != "/": 
-                    n[attr] = "/topics" + n[attr] # prepend /topics
-
-    return node_cache # changed in-place anyway, no need to return
-
-#
-def fixup_topic_cache_paths(topics):
-    def recursive_set_path(topic):
-        # Base case
-        # don't apply fixup twice, and don't apply to root
-        if topic.get("path","") and not topic["path"].startswith("/topics/"):# and topic["path"] != "/":
-            topic["path"] = "/topics" + topic["path"]
-        
-        # Recursive cases
-        if "related_exercise" in topic and topic["related_exercise"]:
-            recursive_set_path(topic["related_exercise"])
-            
-        if "children" in topic and topic["children"]:
-            for c in topic["children"]:
-                recursive_set_path(c)
-    
-    recursive_set_path(topics)        
-    return topics # changed in-place anyway, no need to return
-
-def fixup_topictree_paths():
-    """We use different paths (URLS) than Khan Academy; 
-    ours all start with /topics.  This function makes that change.
-    """
-
-    # Load, fix up, and dump node_cache
-    node_cache = json.loads(open(data_path + "nodecache.json").read())
-    fixup_node_cache_paths(node_cache)
-    with open(data_path + "nodecache.json", "w") as fp:
-        fp.write(json.dumps(node_cache, indent=2))
-    
-    # Load, fix up, and dump topics
-    topics = json.loads(open(data_path + "topics.json").read())
-    fixup_topic_cache_paths(topics)
-    with open(data_path + "topics.json", "w") as fp:
-        fp.write(json.dumps(topics, indent=2))
-    
 
 
 
@@ -173,7 +122,7 @@ def create_youtube_id_to_slug_map():
         # Make a map from youtube ID to video slug
         for v in NODE_CACHE['Video'].values():
             ID2SLUG_MAP[v['youtube_id']] = v['slug']
-        
+
         # Save the map!
         with open(map_file, "w") as fp:
             fp.write(json.dumps(ID2SLUG_MAP, indent=2))
