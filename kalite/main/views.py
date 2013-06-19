@@ -10,7 +10,6 @@ from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.utils.safestring import mark_safe
-from django.contrib import messages
 from django.utils.translation import ugettext as _
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.decorators.cache import cache_control

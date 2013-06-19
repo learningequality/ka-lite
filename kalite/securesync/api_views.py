@@ -4,8 +4,10 @@ from django.http import HttpResponse
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.gzip import gzip_page
+from django.contrib import messages
 from main.models import VideoLog, ExerciseLog
 from config.models import Settings
+from django.contrib.messages.api import get_messages
 
 import crypto
 import settings
@@ -206,12 +208,20 @@ def test_connection(request):
     return HttpResponse("OK")
 
 def status(request):
+    # Build a dictionary of messages to pass to the user.
+    #   Iterating over the messages removes them from the
+    #   session storage, thus they only appear once.
+    message_dict = []
+    for message in  get_messages(request):
+        message_dict.append({ "tags": message.tags, "text": str(message) })
+        
     data = {
         "is_logged_in": request.is_logged_in,
         "registered": bool(Settings.get("registered")),
         "is_admin": request.is_admin,
         "is_django_user": request.is_django_user,
         "points": 0,
+        "messages": message_dict,
     }
     if "facility_user" in request.session:
         user = request.session["facility_user"]
@@ -221,4 +231,5 @@ def status(request):
     if request.user.is_authenticated():
         data["is_logged_in"] = True
         data["username"] = request.user.username
+    
     return JsonResponse(data)
