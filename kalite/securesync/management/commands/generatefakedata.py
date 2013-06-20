@@ -5,6 +5,7 @@ import random
 import json
 from math import exp
 from main import topicdata
+import settings
 
 def sigmoid(theta, a, b):
     return 1.0 / (1.0 + exp(b - a * theta))
@@ -18,6 +19,8 @@ usernames = [firstname[0].lower() + lastname.lower() for firstname, lastname in 
 proficiency = [random.random() * 0.8 for i in range(10)] + [random.random() for i in range(10)]
 
 topics = ["multiplication-division", "factors-multiples"]
+
+hashed_blah = "$p5k2$7d0$gTQ4yyg2$cixFA2fd5QUfmKLPWZYIVxoZwymFajCK"
 
 class Command(BaseCommand):
     help = "Generate fake user data"
@@ -35,12 +38,18 @@ class Command(BaseCommand):
         
         for i in range(0,10):
             newuser1 = FacilityUser(facility=facility, username=usernames[i], first_name=firstnames[i], last_name=lastnames[i], group=group1)
-            newuser1.set_password("blah")
+            if settings.DEBUG:
+                newuser1.set_password(hashed_password = hashed_blah)#"blah")
+            else:
+                newuser1.set_password("blah")
             newuser1.full_clean()
             newuser1.save()
             facilityusers.append(newuser1)
             newuser2 = FacilityUser(facility=facility, username=usernames[i+10], first_name=firstnames[i+10], last_name=lastnames[i+10], group=group2)
-            newuser2.set_password("blah")
+            if settings.DEBUG:
+                newuser2.set_password(hashed_password = hashed_blah)#"blah")
+            else:
+                newuser2.set_password("blah")
             newuser2.full_clean()
             newuser2.save()
             facilityusers.append(newuser2)

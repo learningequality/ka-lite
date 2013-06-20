@@ -27,7 +27,7 @@ class UrlTestCases(TestCase):
         resp = Client().get(url)
         self.assertEquals(resp.status_code, status_code, "%s (check status code=%d != %d)" % (url, status_code, resp.status_code))
         if find_str is not None:
-            self.assertNotEqual(-1, resp.content.find(find_str), "%s (check content)" % url)
+            self.assertTrue(find_str in resp.content, "%s (check content)" % url)
         
         
     def test_urls(self):
