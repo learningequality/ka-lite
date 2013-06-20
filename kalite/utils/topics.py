@@ -31,23 +31,23 @@ kind_blacklist = [None, "Separator", "CustomStack", "Scratchpad"]
 slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res"]
 
 def download_topictree():
-    
+
     topics = json.loads(requests.get("http://www.khanacademy.org/api/v1/topictree").content)
 
     node_cache = {}
-    
+
     related_exercise = {}
 
     def recurse_nodes(node, path=""):
 
         kind = node["kind"]
-        
+
         keys_to_delete = []
-        
+
         for key in node:
             if key not in attribute_whitelists[kind]:
                 keys_to_delete.append(key)
-        
+
         for key in keys_to_delete:
             del node[key]
 
@@ -56,7 +56,7 @@ def download_topictree():
             node["slug"] = ""
         node["title"] = node[title_key[kind]]
         node["path"] = path + kind_slugs[kind] + node["slug"] + "/"
-        
+
         node_cache[kind] = node_cache.get(kind, {})
         node_copy = copy.copy(node)
         if "children" in node_copy:
@@ -83,13 +83,13 @@ def download_topictree():
                 children_to_delete.append(i)
                 continue
             kinds = kinds.union(recurse_nodes(child, node["path"]))
-        
+
         for i in reversed(children_to_delete):
-            del node["children"][i]    
-        
+            del node["children"][i]
+
         if kind=="Topic":
             node["contains"] = list(kinds)
-        
+
         return kinds
 
     def recurse_nodes_to_add_related_exercise(node):
@@ -97,13 +97,33 @@ def download_topictree():
             node["related_exercise"] = related_exercise.get(node["slug"], None)
         for child in node.get("children", []):
             recurse_nodes_to_add_related_exercise(child)
-            
+
     recurse_nodes(topics)
     recurse_nodes_to_add_related_exercise(topics)
-    
+
     with open(data_path + "topics.json", "w") as fp:
         fp.write(json.dumps(topics, indent=2))
-    
+
     with open(data_path + "nodecache.json", "w") as fp:
         fp.write(json.dumps(node_cache, indent=2))
+
+
+
+
+def create_youtube_id_to_slug_map():
+    """Go through all videos, and make a map of youtube_id to slug, for fast look-up later"""
+
+    map_file = data_path + "youtube_to_slug_map.json"
+
+    if not os.path.exists(map_file):
+        NODE_CACHE = json.loads(open(data_path + "nodecache.json").read())
+        ID2SLUG_MAP = dict()
+
+        # Make a map from youtube ID to video slug
+        for v in NODE_CACHE['Video'].values():
+            ID2SLUG_MAP[v['youtube_id']] = v['slug']
+
+        # Save the map!
+        with open(map_file, "w") as fp:
+            fp.write(json.dumps(ID2SLUG_MAP, indent=2))
 
