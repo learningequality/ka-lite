@@ -11,7 +11,7 @@ from django.template import RequestContext
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth import views as auth_views
-
+from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.utils.translation import ugettext as _
 

@@ -41,19 +41,17 @@ class RegistrationForm(forms.Form):
     tos2 = forms.BooleanField(required=False)
     
 
-    def clean_email(self, email=None):
+    def clean_email(self):
         """
         Validate that the supplied email address is unique for the
         site.
         
         """
-        if not email:
-            email = self.cleaned_data.get('email')
+        email = self.cleaned_data.get('email')
+        
         if not email:
             raise forms.ValidationError(("You must specify an email address."))
-        elif User.objects.filter(email=email.lower()):
-            raise forms.ValidationError(("This email address is already in use. Please supply a different email address."))
-        elif User.objects.filter(email=email):
+        elif User.objects.filter(email=email.lower()) or User.objects.filter(email=email):
             raise forms.ValidationError(("This email address is already in use. Please supply a different email address."))
         return email
 
@@ -87,7 +85,6 @@ class RegistrationForm(forms.Form):
         self.clean_email()
         self.clean_password()
         if cleaned_data.get("email"):
-            cleaned_data['email'] = cleaned_data.get('email').lower() # always lcase it
             cleaned_data['username'] = cleaned_data.get('email')
         else:
             cleaned_data['username'] = None
