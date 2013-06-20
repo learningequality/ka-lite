@@ -6,6 +6,7 @@ from django.core import serializers
 import crypto
 import settings
 import kalite
+from utils.internet import am_i_online
 
 class SyncClient(object):
     session = None

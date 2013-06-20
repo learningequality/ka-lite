@@ -14,24 +14,33 @@
 <div id="content">
     <div class="facility"><h2>{% blocktrans %}User List for {{ facility }}{% endblocktrans %} (<a href="?facility=select">{% trans "Change Facility" %}</a>)</h2></div>
     <div id="selection-bar">
-    {% if groups %}
         <div class="selection">
-            <div class="subtitle">{% trans "Select Group to Display" %}</div><select id="group">
+            <div class="subtitle">
+                {% if groups %}
+                {% trans "Select Group to Display" %}
+                {% else %}
+                <div class="subtitle">{% trans "No Groups at this Facility" %}
+                {% endif %}
+                <a style="margin-left: 10px" href="{% url add_group %}?next={% url user_list %}">({% trans "Add a group" %})</a>
+            </div>
+            <select id="group">
             <option {% if not request.GET.group %}selected{% endif %}>----</option>
-                {% for group in groups %}
-                    <option value="{{ group.id }}" {% if request.GET.group == group.id %}selected{% endif %}>{{ group }}</option>
-                {% endfor %}
+            {% for group in groups %}
+            <option value="{{ group.id }}" {% if request.GET.group == group.id %}selected{% endif %}>{{ group }}</option>
+            {% endfor %}
             <option {% if request.GET.group == "Ungrouped" %}selected{% endif %}>Ungrouped</option>
             </select>
         </div>
-    {% else %}
-        <div class="selection">
-            <div class="subtitle">{% trans "No Groups at this Facility" %}</div>
-        </div>
-    {% endif %}
     </div>
 
-    {% if users %}
+    {% if not users %}
+        <div style="clear: both;"></div>
+        {% if not groups %}
+        <p><div class="subtitle">{% trans "Please select a group above." %}</div></p>
+        {% else %}
+        <p><div class="subtitle">{% trans "No users.  Please select another group above." %}</div></p>
+        {% endif %}
+    {% else %}
     <div class="selection">
         <div class="subtitle">{% trans "Select Action" %}</div>
         <button id="movegroup">{% trans "Move Users to Group" %}</button>
@@ -109,9 +118,6 @@
                 </table>
                 <div style="clear: both;"></div>
         </div>
-    {% else %}
-        <div style="clear: both;"></div>
-        <p><div class="subtitle">{% trans "Please select a group above." %}</div></p>
     {% endif %}
 </div> 
 <script>

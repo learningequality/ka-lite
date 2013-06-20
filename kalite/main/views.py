@@ -9,13 +9,15 @@ from django.template.loader import render_to_string
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.contrib import messages
-from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext as _
+from django.db.models import Sum
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.decorators.cache import cache_control
 from django.views.decorators.cache import cache_page
+from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext as _
 
 import settings
+import utils
 from utils.topics import slug_key, title_key
 from main import topicdata
 from securesync.views import require_admin, facility_required
@@ -25,6 +27,8 @@ from models import VideoLog, ExerciseLog, VideoFile
 from config.models import Settings
 from securesync.api_client import SyncClient
 from utils.jobs import force_job
+from utils.videos import video_connection_is_available
+from utils.internet import am_i_online
 
 
 def splat_handler(request, splat):
@@ -180,6 +184,81 @@ def homepage(request):
     return context
         
 @require_admin
+@render_to("admin_distributed.html")
+def easy_admin(request):
+    
+    context = {
+        "wiki_url" : settings.CENTRAL_WIKI_URL,
+        "central_server_host" : settings.CENTRAL_SERVER_HOST,
+        "am_i_online": am_i_online(settings.CENTRAL_WIKI_URL, allow_redirects=False), 
+    }
+    return context
+    
+@require_admin
+@render_to("summary_stats.html")
+def summary_stats(request):
+    # TODO (bcipolli): allow specific stats to be requested (more efficient)
+    
+    context = {
+        "video_stats" : get_stats(("total_video_views","total_video_time","total_video_points")),
+        "exercise_stats": get_stats(("total_exercise_attempts","total_exercise_points","total_exercise_status")),
+        "user_stats": get_stats(("total_users",)),
+        "group_stats": get_stats(("total_groups",)),
+    }
+    return context
+    
+    
+def get_stats(stat_names):
+    """Given a list of stat names, return a dictionary of stat values.
+    For efficiency purposes, best to request all related stats together.
+    In low-memory conditions should group requests by common source (video, exercise, user, group), but otherwise separate
+    
+Available stats:
+    video:    total_video_views, total_video_time, total_video_points
+    exercise: total_exercise_attempts, total_exercise_points, total_exercise_status
+    users:    total_users
+    groups:   total_groups
+    """
+    
+    val = {}
+    for stat_name in stat_names:
+    
+        # Total time from videos
+        if stat_name == "total_video_views":
+            val[stat_name] = VideoLog.objects.count()
+
+        # Total time from videos
+        elif stat_name == "total_video_time":
+            val[stat_name] = VideoLog.objects.aggregate(Sum("total_seconds_watched"))['total_seconds_watched__sum'] or 0
+
+        elif stat_name == "total_video_points":
+            val[stat_name] = VideoLog.objects.aggregate(Sum("points"))['points__sum'] or 0
+        
+        elif stat_name == "total_exercise_attempts":
+            val[stat_name] = ExerciseLog.objects.aggregate(Sum("attempts"))['attempts__sum'] or 0
+            
+        elif stat_name == "total_exercise_points":
+            val[stat_name] = ExerciseLog.objects.aggregate(Sum("points"))['points__sum'] or 0
+            
+        elif stat_name == "total_exercise_status":
+            val[stat_name] = {
+                "struggling": ExerciseLog.objects.aggregate(Sum("struggling"))['struggling__sum'] or 0,
+                "completed": ExerciseLog.objects.aggregate(Sum("complete"))['complete__sum'] or 0,
+            }
+            val[stat_name]["inprog"] = ExerciseLog.objects.count() - sum([stat for stat in val[stat_name].values()])
+
+        elif stat_name == "total_users":
+            val[stat_name] = FacilityUser.objects.count()
+
+        elif stat_name == "total_groups":
+            val[stat_name] = FacilityGroup.objects.count()
+
+        else:
+            raise Exception("Unknown stat requested: %s" % stat_name)
+        
+    return val
+    
+@require_admin
 @render_to("video_download.html")
 def update(request):
     call_command("videoscan")
@@ -192,9 +271,15 @@ def update(request):
         language_list.append(default_language)
     languages = [{"id": key, "name": language_lookup[key]} for key in language_list]
     languages = sorted(languages, key=lambda k: k["name"])
+    
+    am_i_online = video_connection_is_available()
+    if not am_i_online:
+        messages.warning(request, _("No internet connection was detected.  You must be online to download videos or subtitles."))
+
     context = {
         "languages": languages,
         "default_language": default_language,
+        "am_i_online": am_i_online,
     }
     return context
 
