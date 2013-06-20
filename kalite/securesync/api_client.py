@@ -6,13 +6,14 @@ from django.core import serializers
 import crypto
 import settings
 import kalite
+from utils.internet import am_i_online
 
 class SyncClient(object):
     session = None
     counters_to_download = None
     counters_to_upload = None
     
-    def __init__(self, host=settings.CENTRAL_SERVER_HOST, require_trusted=True):
+    def __init__(self, host="%s://%s/"%(settings.SECURESYNC_PROTOCOL,settings.CENTRAL_SERVER_HOST), require_trusted=True):
         url = urllib2.urlparse.urlparse(host)
         self.url = "%s://%s" % (url.scheme, url.netloc)
         self.require_trusted = require_trusted

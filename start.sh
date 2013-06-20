@@ -8,9 +8,9 @@ if [ -f "database/data.sqlite" ] ; then
 	mv static/videos/* ../content > /dev/null 2> /dev/null
 
 	echo
-	./cronstart.sh
+	source cronstart.sh
 	echo
-	./serverstart.sh
+	source serverstart.sh
 else
 	echo "Please run install.sh first!"
 fi

@@ -84,6 +84,16 @@ a:hover, a:hover .suggested-action-title {
 </style>
 {% endblock headcss %}
 
+{% block headjs %}
+{% if settings.AUTO_LOAD_TEST %}
+<script>
+if (window.parent.frames.length === 0) {
+    window.location = "/loadtesting/";
+}
+</script>
+{% endif %}
+{% endblock headjs %}
+
 {% block content %}
 <div class="front-page">
     
@@ -93,7 +103,7 @@ a:hover, a:hover .suggested-action-title {
         <h2 class="suggested-action-title">{% trans "Learn by watching videos!" %}</h2>
         <p class="topic-list">
             {% for topic in topics %}
-            <a href="{{ topic.slug }}">{% trans topic.title %}</a>
+            <a class="topic-link" href="{{ topic.path }}">{% trans topic.title %}</a>
             {% endfor %}
         </p>
     </div>

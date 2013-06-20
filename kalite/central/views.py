@@ -1,5 +1,5 @@
 import re, json
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseNotAllowed
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from annoying.decorators import render_to
@@ -13,8 +13,9 @@ from django.views.decorators.csrf import csrf_exempt
 from securesync.models import Facility
 from securesync.forms import FacilityForm
 from django.contrib import messages
-import requests
+from django.template.loader import render_to_string
 
+import requests
 import settings
 
 
@@ -57,7 +58,9 @@ def homepage(request):
 @render_to("central/landing_page.html")
 def landing_page(request):
     feed = FeedListing.objects.order_by('-posted_date')[:5]
-    return {"feed": feed}
+    return {"feed": feed,
+            "central_contact_email": settings.CENTRAL_CONTACT_EMAIL,
+            "wiki_url": settings.CENTRAL_WIKI_URL}
 
 
 @csrf_exempt # because we want the front page to cache properly
@@ -206,12 +209,6 @@ def central_facility_edit(request, org_id=None, zone_id=None, id=None):
         "zone_id": zone_id,
     }
 
-
-@render_to("central/getting_started.html")
-def get_started(request):
-    return {}
-
-
 @render_to("central/glossary.html")
 def glossary(request):
     return {}
@@ -233,4 +230,11 @@ def crypto_login(request):
         return HttpResponse("Unable to establish a session with KA Lite server at %s" % host)
     return HttpResponseRedirect("%ssecuresync/cryptologin/?client_nonce=%s" % (host, client.session.client_nonce))
 
+
+
+def handler_404(request):
+    return HttpResponseNotFound(render_to_string("central/404.html", {}, context_instance=RequestContext(request)))
+    
+def handler_500(request):
+    return HttpResponseServerError(render_to_string("central/500.html", {}, context_instance=RequestContext(request)))
     

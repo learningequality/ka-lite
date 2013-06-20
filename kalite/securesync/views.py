@@ -111,6 +111,7 @@ def register_public_key_client(request):
             "unregistered": True,
             "registration_url": client.path_to_url(
                 "/securesync/register/?" + urllib.quote(crypto.get_own_key().get_public_key_string())),
+            "login_url": client.path_to_url("/accounts/login/")
         }
     error_msg = reg_response.get("error", "")
     if error_msg:
@@ -287,7 +288,7 @@ def login(request):
         user = authenticate(username=username, password=password)
         if user:
             auth_login(request, user)
-            return HttpResponseRedirect(request.next or "/")
+            return HttpResponseRedirect(request.next or reverse("easy_admin"))
         
         # try logging in as a facility user
         form = LoginForm(data=request.POST, request=request, initial={"facility": facility_id})
@@ -295,7 +296,7 @@ def login(request):
             request.session["facility_user"] = form.get_user()
             messages.success(request, _("You've been logged in! We hope you enjoy your time with KA Lite ") +
                                         _("-- be sure to log out when you finish."))
-            return HttpResponseRedirect(form.non_field_errors() or request.next or "/")
+            return HttpResponseRedirect(form.non_field_errors() or request.next or reverse("coach_reports") if form.get_user().is_teacher else reverse("homepage"))
         else:
             messages.error(request, strip_tags(form.non_field_errors()) or
                 _("There was an error logging you in. Please correct any errors listed below, and try again."))
