@@ -7,6 +7,7 @@ These require a test server to be running, and multiple ports
 """
 
 import logging
+import re
 import unittest
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
@@ -16,7 +17,10 @@ from django.test import TestCase
 from django.core.urlresolvers import reverse
 
 import settings
+from kalite.utils.django_utils import call_command_with_output
+from securesync.models import Facility, FacilityGroup, FacilityUser
 from utils.testing import main_only, KALiteLocalBrowserTestCase, add_to_local_settings
+
 
 @main_only
 class DeviceUnregisteredTest(KALiteLocalBrowserTestCase):
@@ -53,9 +57,6 @@ class DeviceUnregisteredTest(KALiteLocalBrowserTestCase):
         self.browser_send_keys(self.admin_user.password)
         self.browser_send_keys(Keys.TAB)
         self.browser_send_keys(Keys.RETURN)
-        
-#        import pdb; pdb.set_trace()       
-        
 
     
 @main_only

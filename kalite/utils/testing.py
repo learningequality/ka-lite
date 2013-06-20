@@ -30,7 +30,7 @@ def x_only(f, cond, msg):
         @unittest.skipIf(cond, msg)
         class wrapped_class(f):
             pass
-        return wrapped_class
+        return f
         
     else:
         @unittest.skipIf(cond, msg)

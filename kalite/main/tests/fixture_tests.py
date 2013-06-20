@@ -35,3 +35,4 @@ class FixtureTestCases(TestCase):
         call_command("migrate", "main", "zero")
         with self.assertRaises(DatabaseError):
             call_command("dumpdata", "main")
+        call_command("migrate", "main")

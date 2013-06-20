@@ -13,6 +13,7 @@ import settings
 import kalite
 import model_sync
 from models import *
+from kalite.utils.internet import am_i_online
 
 
 class SyncClient(object):

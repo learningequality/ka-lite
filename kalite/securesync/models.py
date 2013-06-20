@@ -493,9 +493,17 @@ class FacilityUser(SyncedModel):
             # use PBKDF2 password checking
             return self.password == crypt(raw_password, self.password)
 
-    def set_password(self, raw_password):
-        iterations = 2000 if self.is_teacher else 1000
-        self.password = crypt(raw_password, iterations=Settings.get("password_hash_iterations", iterations))
+    def set_password(self, raw_password=None, hashed_password=None):
+        """Set a password with the raw password string, or the pre-hashed password."""
+        
+        assert hashed_password is None or settings.DEBUG, "Only use hashed_password in debug mode."
+        assert raw_password is not None or hashed_password is not None, "Must be passing in raw or hashed password"
+        assert not (raw_password is not None and hashed_password is not None), "Must be specifying only one--not both."
+                 
+        if hashed_password:
+            self.password = hashed_password
+        else:       
+            self.password = crypt(raw_password, iterations=Settings.get("password_hash_iterations", 2000 if self.is_teacher else 1000))
 
     def get_name(self):
         if self.first_name and self.last_name:
