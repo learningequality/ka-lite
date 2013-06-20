@@ -14,6 +14,7 @@ from django.views.decorators.csrf import csrf_exempt
 from securesync.models import Facility
 from securesync.forms import FacilityForm
 from django.contrib import messages
+from django.template.loader import render_to_string
 
 import requests
 import settings
@@ -231,8 +232,9 @@ def crypto_login(request):
 
 
 
-def central_404_handler(request):
-    return HttpResponseNotFound(render_to_string("404_central.html", {}, context_instance=RequestContext(request)))
+def handler_404(request):
+    return HttpResponseNotFound(render_to_string("central/404.html", {}, context_instance=RequestContext(request)))
     
-def central_500_handler(request):
-    return HttpResponseServerError(render_to_string("500_central.html", {}, context_instance=RequestContext(request)))
+def handler_500(request):
+    return HttpResponseServerError(render_to_string("central/500.html", {}, context_instance=RequestContext(request)))
+    

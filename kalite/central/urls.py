@@ -1,13 +1,17 @@
 from django.http import HttpResponseRedirect
 from django.conf.urls.defaults import patterns, include, url
+from django.contrib import admin
+
 import securesync.urls
 from kalite import settings
+from feeds import RssSiteNewsFeed, AtomSiteNewsFeed
 
-from django.contrib import admin
+
 admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^images/(.+)$', lambda request, path: HttpResponseRedirect('/static/images/' + path)),
     url(r'^securesync/', include(securesync.urls)),
 )
 
@@ -16,19 +20,17 @@ urlpatterns += patterns('',
         'document_root': settings.STATIC_ROOT,
     }),
     url(r'^' + settings.MEDIA_URL[1:] + '(?P<path>.*)$', 'django.views.static.serve', {
-        'document_root': settings.MEDIA_URL,
+        'document_root': settings.MEDIA_ROOT,
     }),
     url(r'^' + settings.CONTENT_URL[1:] + '(?P<path>.*)$', 'django.views.static.serve', {
         'document_root': settings.CONTENT_ROOT,
     }),
 )
-        
+   
 # Javascript translations
 urlpatterns += patterns('',
     (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', {'packages': ('ka-lite.locale')}, 'i18n_javascript_catalog'),
 )
-
-from feeds import RssSiteNewsFeed, AtomSiteNewsFeed
 
 urlpatterns += patterns('central.views',
     url(r'^$', 'homepage', {}, 'homepage'), 
@@ -42,7 +44,6 @@ urlpatterns += patterns('central.views',
     url(r'^organization/(?P<org_id>\w+)/zone/(?P<zone_id>\w+)/facility/new/$', 'central_facility_edit', {"id": "new"}, 'central_facility_add'),
     url(r'^organization/(?P<org_id>\w+)/zone/(?P<zone_id>\w+)/facility/(?P<id>\w+)/$', 'central_facility_edit', {}, 'central_facility_edit'),
     url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'), 
-#    url(r'^getstarted/$','get_started', {}, 'get_started'),
     url(r'^glossary/$', 'glossary', {}, 'glossary'),
     url(r'^addsubscription/$', 'add_subscription', {}, 'add_subscription'),
     url(r'^feeds/rss/$', RssSiteNewsFeed(), {}, 'rss_feed'),
@@ -50,6 +51,6 @@ urlpatterns += patterns('central.views',
     url(r'^faq/', include('faq.urls')),
 )
 
-handler404 = 'central.views.central_404_handler'
-handler500 = 'central.views.central_500_handler'
+handler404 = 'central.views.handler_404'
+handler500 = 'central.views.handler_500'
 

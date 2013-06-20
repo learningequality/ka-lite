@@ -1,9 +1,11 @@
 from django.http import HttpResponseRedirect
 from django.conf.urls.defaults import patterns, include, url
+from django.contrib import admin
+
 import securesync.urls
 from kalite import settings
 
-from django.contrib import admin
+
 admin.autodiscover()
 
 urlpatterns = patterns('',
@@ -13,13 +15,13 @@ urlpatterns = patterns('',
 )
 
 urlpatterns += patterns('',
-    url(r'^' + settings.CONTENT_URL[1:] + '(?P<path>.*)$', 'django.views.static.serve', {
+    url(r'^%s(?P<path>.*)$' % settings.CONTENT_URL[1:], 'django.views.static.serve', {
         'document_root': settings.CONTENT_ROOT,
     }),
-    url(r'^' + settings.MEDIA_URL[1:] + '(?P<path>.*)$', 'django.views.static.serve', {
-        'document_root': settings.MEDIA_URL,
+    url(r'^%s(?P<path>.*)$' % settings.MEDIA_URL[1:], 'django.views.static.serve', {
+        'document_root': settings.MEDIA_ROOT,
     }),
-    url(r'^' + settings.STATIC_URL[1:] + '(?P<path>.*)$', 'django.views.static.serve', {
+    url(r'^%s(?P<path>.*)$' % settings.STATIC_URL[1:], 'django.views.static.serve', {
         'document_root': settings.STATIC_ROOT,
     }),
 )
@@ -32,15 +34,23 @@ urlpatterns += patterns('',
 urlpatterns += patterns('main.views',
     url(r'^exercisedashboard/$', 'exercise_dashboard', {}, 'exercise_dashboard'),
     url(r'^coachreports/$', 'coach_reports', {}, 'coach_reports'),
+    url(r'^easyadmin/$', 'easy_admin', {}, 'easy_admin'),
+    url(r'^stats/$', 'summary_stats', {}, 'summary_stats'),
     url(r'^$', 'homepage', {}, 'homepage'),
     url(r'^update/$', 'update', {}, 'update'),
     url(r'^userlist/$', 'user_list', {}, 'user_list'),
     url(r'^api/', include('main.api_urls')),
-    url(r'^loadtesting/', include('loadtesting.urls')),
+)
+
+if "loadtesting" in settings.INSTALLED_APPS:
+    urlpatterns += patterns('main.views',
+        url(r'^loadtesting/', include('loadtesting.urls')),
+    )
     
+urlpatterns += patterns('main.views',
     # the following pattern is a catch-all, so keep it last:
     url(r'^(?P<splat>.+)/$', 'splat_handler', {}, 'splat_handler'),
 )
 
-handler404 = 'main.views.distributed_404_handler'
-handler500 = 'main.views.distributed_500_handler'
+handler404 = 'main.views.handler_404'
+handler500 = 'main.views.handler_500'

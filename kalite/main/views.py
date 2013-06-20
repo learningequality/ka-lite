@@ -1,37 +1,50 @@
-import re, json, sys
+import re, json, sys, logging
+from annoying.decorators import render_to
+from annoying.functions import get_object_or_None
+
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
-from annoying.decorators import render_to
-from annoying.functions import get_object_or_None
-import settings
-from settings import slug_key, title_key
-from main import topicdata
 from django.contrib import messages
+from django.db.models import Sum
+from django.contrib import messages
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.views.decorators.cache import cache_control
+from django.views.decorators.cache import cache_page
+from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext as _
+
+import settings
+import utils
+from utils.topics import slug_key, title_key
+from main import topicdata
 from securesync.views import require_admin, facility_required
 from config.models import Settings
 from securesync.models import Facility, FacilityUser,FacilityGroup
 from models import VideoLog, ExerciseLog, VideoFile
-from django.utils.safestring import mark_safe
 from config.models import Settings
 from securesync.api_client import SyncClient
-from django.contrib import messages
 from utils.jobs import force_job
-from django.utils.translation import ugettext as _
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from utils.videos import video_connection_is_available
+from utils.internet import am_i_online
+
 
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
     current_node = topicdata.TOPICS
-    seeking = "Topic"
+    seeking = "Topic" # search for topics, until we find videos or exercise
     for slug in slugs:
+        # towards the end of the url, we switch from seeking a topic node
+        #   to the particular type of node in the tree
         if slug == "v":
             seeking = "Video"
         elif slug == "e":
             seeking = "Exercise"
+            
+        # match each step in the topics hierarchy, with the url slug.
         else:
             children = [child for child in current_node['children'] if child['kind'] == seeking]
             if not children:
@@ -56,12 +69,14 @@ def splat_handler(request, splat):
             current_node = match
     if current_node["kind"] == "Topic":
         return topic_handler(request, current_node)
-    if current_node["kind"] == "Video":
+    elif current_node["kind"] == "Video":
         return video_handler(request, video=current_node, prev=prev, next=next)
-    if current_node["kind"] == "Exercise":
+    elif current_node["kind"] == "Exercise":
         return exercise_handler(request, current_node)
-    # return HttpResponseNotFound("No valid item found at this address!")
-    raise Http404
+    else:
+        # return HttpResponseNotFound("No valid item found at this address!")
+        raise Http404
+
 
 def check_setup_status(handler):
     def wrapper_fn(request, *args, **kwargs):
@@ -78,24 +93,30 @@ def check_setup_status(handler):
         return handler(request, *args, **kwargs)
     return wrapper_fn
     
-    
 
-
+@cache_page(settings.CACHE_TIME)
 @render_to("topic.html")
 def topic_handler(request, topic):
     videos = filter(lambda node: node["kind"] == "Video", topic["children"])
     exercises = filter(lambda node: node["kind"] == "Exercise" and node["live"], topic["children"])
     topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"] and "Video" in node["contains"], topic["children"])
+    
+    my_topics = []
+    for t in topics:
+        my_topics.append({ 'title': t['title'], 'path': t['path'] })
+        
     context = {
         "topic": topic,
         "title": topic[title_key["Topic"]],
         "description": re.sub(r'<[^>]*?>', '', topic["description"] or ""),
         "videos": videos,
         "exercises": exercises,
-        "topics": topics,
+        "topics": my_topics,
     }
     return context
     
+
+@cache_page(settings.CACHE_TIME)
 @render_to("video.html")
 def video_handler(request, video, prev=None, next=None):
     if not VideoFile.objects.filter(pk=video['youtube_id']).exists():
@@ -117,6 +138,8 @@ def video_handler(request, video, prev=None, next=None):
     }
     return context
     
+
+@cache_page(settings.CACHE_TIME)
 @render_to("exercise.html")
 def exercise_handler(request, exercise):
     related_videos = [topicdata.NODE_CACHE["Video"][key] for key in exercise["related_video_readable_ids"]]
@@ -134,6 +157,7 @@ def exercise_handler(request, exercise):
     }
     return context
 
+@cache_page(settings.CACHE_TIME)
 @render_to("knowledgemap.html")
 def exercise_dashboard(request):
     paths = dict((key, val["path"]) for key, val in topicdata.NODE_CACHE["Exercise"].items())
@@ -144,16 +168,97 @@ def exercise_dashboard(request):
     return context
     
 @check_setup_status
+@cache_page(settings.CACHE_TIME)
 @render_to("homepage.html")
 def homepage(request):
     topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"], topicdata.TOPICS["children"])
+    
+    my_topics = []
+    for t in topics:
+        my_topics.append({ 'title': t['title'], 'path': t['path'] })
+
     context = {
         "title": "Home",
-        "topics": topics,
+        "topics": my_topics,
         "registered": Settings.get("registered"),
     }
     return context
         
+@require_admin
+@render_to("admin_distributed.html")
+def easy_admin(request):
+    
+    context = {
+        "wiki_url" : settings.CENTRAL_WIKI_URL,
+        "central_server_host" : settings.CENTRAL_SERVER_HOST,
+        "am_i_online": am_i_online(settings.CENTRAL_WIKI_URL, allow_redirects=False), 
+    }
+    return context
+    
+@require_admin
+@render_to("summary_stats.html")
+def summary_stats(request):
+    # TODO (bcipolli): allow specific stats to be requested (more efficient)
+    
+    context = {
+        "video_stats" : get_stats(("total_video_views","total_video_time","total_video_points")),
+        "exercise_stats": get_stats(("total_exercise_attempts","total_exercise_points","total_exercise_status")),
+        "user_stats": get_stats(("total_users",)),
+        "group_stats": get_stats(("total_groups",)),
+    }
+    return context
+    
+    
+def get_stats(stat_names):
+    """Given a list of stat names, return a dictionary of stat values.
+    For efficiency purposes, best to request all related stats together.
+    In low-memory conditions should group requests by common source (video, exercise, user, group), but otherwise separate
+    
+Available stats:
+    video:    total_video_views, total_video_time, total_video_points
+    exercise: total_exercise_attempts, total_exercise_points, total_exercise_status
+    users:    total_users
+    groups:   total_groups
+    """
+    
+    val = {}
+    for stat_name in stat_names:
+    
+        # Total time from videos
+        if stat_name == "total_video_views":
+            val[stat_name] = VideoLog.objects.count()
+
+        # Total time from videos
+        elif stat_name == "total_video_time":
+            val[stat_name] = VideoLog.objects.aggregate(Sum("total_seconds_watched"))['total_seconds_watched__sum'] or 0
+
+        elif stat_name == "total_video_points":
+            val[stat_name] = VideoLog.objects.aggregate(Sum("points"))['points__sum'] or 0
+        
+        elif stat_name == "total_exercise_attempts":
+            val[stat_name] = ExerciseLog.objects.aggregate(Sum("attempts"))['attempts__sum'] or 0
+            
+        elif stat_name == "total_exercise_points":
+            val[stat_name] = ExerciseLog.objects.aggregate(Sum("points"))['points__sum'] or 0
+            
+        elif stat_name == "total_exercise_status":
+            val[stat_name] = {
+                "struggling": ExerciseLog.objects.aggregate(Sum("struggling"))['struggling__sum'] or 0,
+                "completed": ExerciseLog.objects.aggregate(Sum("complete"))['complete__sum'] or 0,
+            }
+            val[stat_name]["inprog"] = ExerciseLog.objects.count() - sum([stat for stat in val[stat_name].values()])
+
+        elif stat_name == "total_users":
+            val[stat_name] = FacilityUser.objects.count()
+
+        elif stat_name == "total_groups":
+            val[stat_name] = FacilityGroup.objects.count()
+
+        else:
+            raise Exception("Unknown stat requested: %s" % stat_name)
+        
+    return val
+    
 @require_admin
 @render_to("video_download.html")
 def update(request):
@@ -167,9 +272,15 @@ def update(request):
         language_list.append(default_language)
     languages = [{"id": key, "name": language_lookup[key]} for key in language_list]
     languages = sorted(languages, key=lambda k: k["name"])
+    
+    am_i_online = video_connection_is_available()
+    if not am_i_online:
+        messages.warning(request, _("No internet connection was detected.  You must be online to download videos or subtitles."))
+
     context = {
         "languages": languages,
         "default_language": default_language,
+        "am_i_online": am_i_online,
     }
     return context
 
@@ -252,13 +363,14 @@ def user_list(request,facility):
         context["pageurls"] = {"next_page": next_page_url, "prev_page": previous_page_url}
     return context
 
-def distributed_404_handler(request):
-    return HttpResponseNotFound(render_to_string("404_distributed.html", {}, context_instance=RequestContext(request)))
 
-def distributed_500_handler(request):
+def handler_404(request):
+    return HttpResponseNotFound(render_to_string("404.html", {}, context_instance=RequestContext(request)))
+
+def handler_500(request):
     errortype, value, tb = sys.exc_info()
     context = {
         "errortype": errortype.__name__,
         "value": str(value),
     }
-    return HttpResponseServerError(render_to_string("500_distributed.html", context, context_instance=RequestContext(request)))
+    return HttpResponseServerError(render_to_string("500.html", context, context_instance=RequestContext(request)))

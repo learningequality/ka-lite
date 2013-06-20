@@ -104,7 +104,7 @@ if (window.parent.frames.length === 0) {
         <h2 class="suggested-action-title">{% trans "Learn by watching videos!" %}</h2>
         <p class="topic-list">
             {% for topic in topics %}
-            <a class="topic-link" href="{{ topic.slug }}">{% trans topic.title %}</a>
+            <a class="topic-link" href="{{ topic.path }}">{% trans topic.title %}</a>
             {% endfor %}
         </p>
     </div>
