@@ -54,7 +54,6 @@ function show_message(msg_class, msg_text, msg_id) {
         msg_html += " id='" + msg_id + "'"
     }
     msg_html += ">" + msg_text + "</div>"
-    alert(msg_html)
     $("#message_container").append(msg_html);
     return $("#message_container");
 }

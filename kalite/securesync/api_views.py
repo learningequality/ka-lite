@@ -10,7 +10,7 @@ from django.contrib import messages
 from main.models import VideoLog, ExerciseLog
 from config.models import Settings
 from django.contrib.messages.api import get_messages
-from django.template.defaultfilters import safe
+from django.utils.safestring import SafeString, mark_safe
 
 import crypto
 import settings
@@ -214,9 +214,12 @@ def status(request):
     # Build a list of messages to pass to the user.
     #   Iterating over the messages removes them from the
     #   session storage, thus they only appear once.
-    message_dict = [] 
+    message_dict = []
     for message in  get_messages(request):
-        message_dict.append({ "tags": message.tags, "text": safe(cgi.escape(str(message))) }) # make sure to be careful.
+        # Make sure to escape strings not marked as safe.
+        # Note: this duplicates a bit of Django template logic.
+        msg_txt = message.message if isinstance(message.message, SafeString) else cgi.escape(str(message.message))
+        message_dict.append({ "tags": message.tags, "text": msg_txt }) 
         
     data = {
         "is_logged_in": request.is_logged_in,
