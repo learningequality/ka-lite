@@ -1,0 +1,1 @@
+[{"pk": 1, "model": "central.organization", "fields": {"name": "org", "url": "", "country": "", "number": "", "zones": ["f7a1ce2d04e950c097d9b91a94eb5b54"], "address": "", "owner": 1, "users": [1], "description": ""}}, {"pk": 1, "model": "central.userprofile", "fields": {"user": 1}}]
