@@ -52,11 +52,11 @@ td.title {
         </tr>
         <tr>
             <td class="link"><a href="{% url user_list %}">{% trans "User management" %}</a></td>
-            <td class="desc">{%trans "Add/move/delete users across groups" %}</td>
+            <td class="desc">{% trans "Add/move/delete users across groups" %}</td>
         </tr>
         <tr>
             <td class="link"><a href="{% url summary_stats %}">{% trans "Summary stats" %}</a></td>
-            <td class="desc">{%trans "Summary stats for this installation" %}</td>
+            <td class="desc">{% trans "Summary stats for this installation" %}</td>
         </tr>
         
         {% if am_i_online %}
@@ -67,14 +67,15 @@ td.title {
         </tr>
         <tr>
             <td class="link"><a href="{{wiki_url}}">KA Lite Wiki</a></td>
-            <td class="desc"> {%trans "Contains the latest information setting up and using KA Lite." %}</td>
+            <td class="desc"> {% trans "Contains the latest information setting up and using KA Lite." %}</td>
         </tr>
         <tr>
             <td class="link"><a href="http://{{central_server_host}}/faq">FAQ</a></td>
-            <td class="desc">{%trans "Contains the latest FAQ for troubleshooting" %}</td>
+            <td class="desc">{% trans "Contains the latest FAQ for troubleshooting" %}</td>
         </tr>
         {% endif %}
 
+        {% if user.is_superuser %}{% comment "Django-admins only" %}{% endcomment %}
         <tr>
             <td class="title" colspan="2">
                 <h2>{% trans "Advanced User Tools" %}</h2>
@@ -82,7 +83,7 @@ td.title {
         </tr>
         <tr>
             <td class="link"><a href="{% url admin:index %}">Django admin</a></td>
-            <td class="desc">{%trans "Database of information stored in your KA Lite installation" %}</td>
+            <td class="desc">{% trans "Database of information stored in your KA Lite installation" %}</td>
         </tr>
         <tr>
             <td class="link">&nbsp;</td>
@@ -90,6 +91,7 @@ td.title {
                 <span class="warn">({% trans "Warning: changing database values can break your KA Lite installation!" %})</span>
             </td>
         </tr>
+        {% endif %}
     </table>
 </div>
 {% endblock content %}

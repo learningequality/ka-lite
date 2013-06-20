@@ -25,6 +25,7 @@ from django.utils.translation import ugettext as _
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from utils.videos import video_connection_is_available
 from utils.internet import am_i_online
+from django.db.models import Sum
 
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
@@ -194,79 +195,41 @@ Available stats:
     groups:   total_groups
     """
     
-    all_vlogs = None
-    all_elogs = None
-    all_users = None
-    all_groups = None
-    
     val = {}
     for stat_name in stat_names:
     
         # Total time from videos
-        if stat_name=="total_video_views":
-            if not all_vlogs: all_vlogs = VideoLog.objects.all()
-            
-            val[stat_name] = all_vlogs.count()
+        if stat_name == "total_video_views":
+            val[stat_name] = VideoLog.objects.all().count()
 
         # Total time from videos
-        elif stat_name=="total_video_time":
-            if not all_vlogs: all_vlogs = VideoLog.objects.all()
-            
-            total_time = 0
-            for vlog in all_vlogs:
-                total_time += vlog.total_seconds_watched
-            val[stat_name] = total_time
+        elif stat_name == "total_video_time":
+            val[stat_name] = VideoLog.objects.aggregate(Sum("total_seconds_watched"))['total_seconds_watched__sum'] or 0
 
-        elif stat_name=="total_video_points":
-            if not all_vlogs: all_vlogs = VideoLog.objects.all()
-            
-            total_vpoints = 0
-            for vlog in all_vlogs:
-                total_vpoints += vlog.points
-            val[stat_name] = total_vpoints
+        elif stat_name == "total_video_points":
+            val[stat_name] = VideoLog.objects.aggregate(Sum("points"))['points__sum'] or 0
         
-        
-        
-        elif stat_name=="total_exercise_attempts":
-            if not all_elogs: all_elogs = ExerciseLog.objects.all()
+        elif stat_name == "total_exercise_attempts":
+            val[stat_name] = ExerciseLog.objects.aggregate(Sum("attempts"))['attempts__sum'] or 0
             
-            total_eattempts = 0
-            for elog in all_elogs:
-                total_eattempts += elog.attempts
-            val[stat_name] = total_eattempts
+        elif stat_name == "total_exercise_points":
+            val[stat_name] = ExerciseLog.objects.aggregate(Sum("points"))['points__sum'] or 0
             
-        elif stat_name=="total_exercise_points":
-            if not all_elogs: all_elogs = ExerciseLog.objects.all()
-            
-            total_epoints = 0
-            for elog in all_elogs:
-                total_epoints += elog.points
-            val[stat_name] = total_epoints
+        elif stat_name == "total_exercise_status":
+            val[stat_name] = {
+                "struggling": ExerciseLog.objects.aggregate(Sum("struggling"))['struggling__sum'] or 0,
+                "completed": ExerciseLog.objects.aggregate(Sum("complete"))['complete__sum'] or 0,
+            }
+            val[stat_name]["inprog"] = ExerciseLog.objects.all().count() - sum([stat for stat in val[stat_name].values()])
 
-        elif stat_name=="total_exercise_status":
-            if not all_elogs: all_elogs = ExerciseLog.objects.all()
-            
-            total_estatus = {"struggling":0, "inprog":0, "completed":0}
-            for elog in all_elogs:
-                total_estatus["struggling"] += elog.struggling
-                total_estatus["inprog"]     += elog.complete
-                total_estatus["completed"]  += not elog.struggling and not elog.complete
-            val[stat_name] = total_estatus
-        
-        
-        
-        elif stat_name=="total_users":
-            if not all_users: all_users = FacilityUser.objects.all()
-            val[stat_name] = all_users.count()
-            
-            
-            
-        elif stat_name=="total_groups":
-            if not all_groups: all_groups = FacilityGroup.objects.all()
-            val[stat_name] = all_groups.count()
+        elif stat_name == "total_users":
+            val[stat_name] = FacilityUser.objects.all().count()
+
+        elif stat_name == "total_groups":
+            val[stat_name] = FacilityGroup.objects.all().count()
 
         else:
-            raise Exception("Unknown stat requested: %s"%stat_name)
+            raise Exception("Unknown stat requested: %s" % stat_name)
         
     return val
     

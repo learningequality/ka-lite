@@ -6,12 +6,27 @@
 
 {% block headcss %}
 <style>
-div.stats { margin-top:40px;; }
-div.stat_name { font-size:18pt;margin-bottom:5px; }
-div.stat { display:block }
-div.stat { clear:left}
-div.stat_head,.stat_val { float:left}
-div.stat_head { width:200px; margin-right: 25px; }
+    .stats {
+        margin-top:40px;
+    }
+    .stat_name {
+        font-size:18pt;
+        margin-bottom:5px;
+    }
+    .stat {
+        display:block;
+        clear:left;
+    }
+    .stat_head,.stat_val {
+        float:left;
+    }
+    .stat_head {
+        width:200px;
+        margin-right: 25px;
+    }
+    #video_stats {
+        margin-top:0px;
+    }
 </style>
 {% endblock headcss %}
 
@@ -19,7 +34,7 @@ div.stat_head { width:200px; margin-right: 25px; }
 
 {% block content %}
 <div id="content">
-   <div id="video_stats" class="stats" style="margin-top:0px">
+   <div id="video_stats" class="stats" >
         <div class="stat_name">{% trans "Video Stats" %}:</div>
         <div class="stat">
             <div class="stat_head">{% trans "Total video views" %}:</div>
