@@ -3,13 +3,13 @@ import json, requests, copy, os
 data_path = os.path.dirname(os.path.realpath(__file__)) + "/../static/data/"
 
 attribute_whitelists = {
-    "Topic": ["kind", "hide", "description", "id", "topic_page_url", "title", "extended_slug", "children"],
+    "Topic": ["kind", "hide", "description", "id", "topic_page_url", "title", "extended_slug", "children", "node_slug"],
     "Video": ["kind", "description", "title", "duration", "keywords", "youtube_id", "download_urls", "readable_id"],
-    "Exercise": ["kind", "description", "related_video_readable_ids", "display_name", "live", "name", "seconds_per_fast_problem", "prerequisites"]
+    "Exercise": ["kind", "description", "related_video_readable_ids", "display_name", "live", "name", "seconds_per_fast_problem", "prerequisites", "v_position", "h_position"]
 }
 
 slug_key = {
-    "Topic": "id",
+    "Topic": "node_slug",
     "Video": "readable_id",
     "Exercise": "name",
 }
@@ -26,7 +26,7 @@ kind_slugs = {
     "Topic": ""
 }
 
-kind_blacklist = [None, "Separator", "CustomStack", "Scratchpad"]
+kind_blacklist = [None, "Separator", "CustomStack", "Scratchpad", "Article"]
 
 slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res"]
 
@@ -51,9 +51,12 @@ def download_topictree():
         for key in keys_to_delete:
             del node[key]
 
-        node["slug"] = node[slug_key[kind]]
-        if node["slug"]=="root":
-            node["slug"] = ""
+        try:
+            node["slug"] = node[slug_key[kind]]
+            if node["slug"]=="root":
+                node["slug"] = ""
+        except KeyError:
+            print node.keys()
         node["title"] = node[title_key[kind]]
         node["path"] = path + kind_slugs[kind] + node["slug"] + "/"
         

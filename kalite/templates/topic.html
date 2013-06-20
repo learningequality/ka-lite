@@ -16,7 +16,7 @@
 <ol>
     {% for subtopic in topics %}
     <li style="font-size: 15px; line-height: 23px; margin-left: 10px;">
-        <a class="topic-link" href="{{ subtopic.id }}">{% trans subtopic.title %}</a>
+        <a class="topic-link" href="{{ subtopic.node_slug }}">{% trans subtopic.title %}</a>
     </li>
     {% endfor %}
     <br/>
