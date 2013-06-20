@@ -1,5 +1,5 @@
 import re, json
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseNotAllowed
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from annoying.decorators import render_to
@@ -13,6 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 from securesync.models import Facility
 from securesync.forms import FacilityForm
 from django.contrib import messages
+from django.template.loader import render_to_string
 
 import requests
 import settings
@@ -236,4 +237,11 @@ def crypto_login(request):
         return HttpResponse("Unable to establish a session with KA Lite server at %s" % host)
     return HttpResponseRedirect("%ssecuresync/cryptologin/?client_nonce=%s" % (host, client.session.client_nonce))
 
+
+
+def handler_404(request):
+    return HttpResponseNotFound(render_to_string("central/404.html", {}, context_instance=RequestContext(request)))
+    
+def handler_500(request):
+    return HttpResponseServerError(render_to_string("central/500.html", {}, context_instance=RequestContext(request)))
     

@@ -1,4 +1,5 @@
 import sys, os, re, json, urllib, glob
+import utils.internet
 
 PROJECT_PATH = os.path.dirname(os.path.realpath(__file__)) + "/../"
 
@@ -10,7 +11,8 @@ download_path = settings.CONTENT_ROOT
 
 data_path = settings.DATA_PATH
 
-download_url = "http://s3.amazonaws.com/KA-youtube-converted/%s/%s"
+download_base_url = "http://s3.amazonaws.com/KA-youtube-converted/" # need this url as a test url for connectivity
+download_url = download_base_url + "%s/%s"
 
 import socket
 socket.setdefaulttimeout(20)
@@ -20,6 +22,10 @@ class DownloadCancelled(Exception):
         return "Download has been cancelled"
 
 
+def video_connection_is_available():
+    # In danger of failing, if amazon redirects us
+    return utils.internet.am_i_online(download_base_url, allow_redirects=False)
+    
 def get_video_ids(topic_tree):
     if topic_tree["kind"] == "Video":
         return [topic_tree["youtube_id"]]
@@ -84,6 +90,7 @@ def callback_percent_proxy(callback, start_percent=0, end_percent=100):
     return inner_fn
 
 def download_video(youtube_id, format="mp4", callback=None):
+    """Downloads the video file to disk (note: this does NOT invalidate any of the cached html files in KA Lite)"""
     
     _mkdir(download_path)
     
