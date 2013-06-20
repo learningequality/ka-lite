@@ -226,7 +226,7 @@ Available stats:
     
         # Total time from videos
         if stat_name == "total_video_views":
-            val[stat_name] = VideoLog.objects.all().count()
+            val[stat_name] = VideoLog.objects.count()
 
         # Total time from videos
         elif stat_name == "total_video_time":
@@ -246,13 +246,13 @@ Available stats:
                 "struggling": ExerciseLog.objects.aggregate(Sum("struggling"))['struggling__sum'] or 0,
                 "completed": ExerciseLog.objects.aggregate(Sum("complete"))['complete__sum'] or 0,
             }
-            val[stat_name]["inprog"] = ExerciseLog.objects.all().count() - sum([stat for stat in val[stat_name].values()])
+            val[stat_name]["inprog"] = ExerciseLog.objects.count() - sum([stat for stat in val[stat_name].values()])
 
         elif stat_name == "total_users":
-            val[stat_name] = FacilityUser.objects.all().count()
+            val[stat_name] = FacilityUser.objects.count()
 
         elif stat_name == "total_groups":
-            val[stat_name] = FacilityGroup.objects.all().count()
+            val[stat_name] = FacilityGroup.objects.count()
 
         else:
             raise Exception("Unknown stat requested: %s" % stat_name)
