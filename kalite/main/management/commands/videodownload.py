@@ -3,7 +3,7 @@ from django.core.management.base import BaseCommand, CommandError
 from kalite.main.models import VideoFile
 from kalite.utils.videos import download_video, DownloadCancelled
 from utils.jobs import force_job
-
+from utils import caching
 
 def download_progress_callback(self, videofile):
     def inner_fn(percent):
@@ -63,3 +63,5 @@ class Command(BaseCommand):
                 video.save()
                 force_job("videodownload", "Download Videos")
                 return
+
+            caching.invalidate_cached_video_page(video_id=video.youtube_id)

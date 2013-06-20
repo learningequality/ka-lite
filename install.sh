@@ -54,7 +54,7 @@ if [ ! -w $current_dir/kalite ]; then
 fi
 
 SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
-pyexec=`$SCRIPT_DIR/python.sh`
+pyexec=`"$SCRIPT_DIR"/python.sh`
 cd $current_dir/kalite
 
 if [ -f "database/data.sqlite" ]; then

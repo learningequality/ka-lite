@@ -16,7 +16,7 @@
 <ol>
     {% for subtopic in topics %}
     <li style="font-size: 15px; line-height: 23px; margin-left: 10px;">
-        <a class="topic-link" href="{{ subtopic.id }}">{% trans subtopic.title %}</a>
+        <a class="topic-link" href="{{ subtopic.path }}">{% trans subtopic.title %}</a>
     </li>
     {% endfor %}
     <br/>
@@ -30,7 +30,7 @@
     <li style="font-size: 15px; line-height: 23px; margin-left: 10px;">
         <!--<a href="mplayer:///khan/videofiles/{{ video.youtube_id }}.ogv">{{ video.title }}</a>-->
         <span class="progress-circle" data-youtube-id="{{ video.youtube_id }}"></span>
-        <a class="video-link" href="v/{{ video.readable_id }}">{% trans video.title %}</a>
+        <a class="video-link" href="v/{{ video.readable_id }}/">{% trans video.title %}</a>
     </li>
     {% endfor %}
     <br/>
@@ -43,7 +43,7 @@
     {% for exercise in exercises %}
     <li style="font-size: 15px; line-height: 23px; margin-left: 10px;">
         <span class="progress-circle" data-exercise-id="{{ exercise.name }}"></span>
-        <a class="exercise-link" href="e/{{ exercise.name }}">{% trans exercise.display_name %}</a>
+        <a class="exercise-link" href="e/{{ exercise.name }}/">{% trans exercise.display_name %}</a>
     </li>
     {% endfor %}
     <br/>

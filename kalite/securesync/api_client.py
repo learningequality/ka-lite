@@ -12,8 +12,8 @@ import settings
 import kalite
 import model_sync
 from models import *
+from utils.internet import am_i_online
 
-#_json_serializer = serializers.get_serializer("json")()
 
 class SyncClient(object):
     session = None
