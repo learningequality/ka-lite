@@ -23,16 +23,16 @@ def am_i_online(url, expected_val=None, search_string=None, timeout=5, allow_red
         elif not allow_redirects and response.url != url:
             return False
         
-        
+        # Check the output, if expected values are specified
         if expected_val is not None:
             return expected_val == response.text
         elif search_string:
-            return -1 != response.text.find(search_string) 
+            return search_string in response.text
         
         return True
         
     except Exception as e:
-        logging.getLogger("kalite").debug("am_i_online: %s" % str(e))
+        logging.getLogger("kalite").debug("am_i_online: %s" % e)
         return False
 
 
