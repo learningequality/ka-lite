@@ -11,7 +11,7 @@ download_path = settings.CONTENT_ROOT
 
 data_path = settings.DATA_PATH
 
-download_base_url ="http://s3.amazonaws.com/KA-youtube-converted/" # need this url as a test url for connectivity
+download_base_url = "http://s3.amazonaws.com/KA-youtube-converted/" # need this url as a test url for connectivity
 download_url = download_base_url + "%s/%s"
 
 import socket
