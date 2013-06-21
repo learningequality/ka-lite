@@ -19,14 +19,17 @@ from django.core.urlresolvers import reverse
 import settings
 from kalite.utils.django_utils import call_command_with_output
 from securesync.models import Facility, FacilityGroup, FacilityUser
-from utils.testing import main_only, KALiteLocalBrowserTestCase, add_to_local_settings
+from utils.testing import main_only, KALiteLocalBrowserTestCase
 
 
 @main_only
 class DeviceUnregisteredTest(KALiteLocalBrowserTestCase):
-    """Validate all the steps of registering a device."""
+    """Validate all the steps of registering a device.
+    
+    Currently, only testing that the device is not registered works.
+    """
 
-    def test_device_registration(self):
+    def test_device_unregistered(self):
         """
         Tests that a device is initially unregistered, and that it can
         be registered through automatic means.
@@ -58,33 +61,13 @@ class DeviceUnregisteredTest(KALiteLocalBrowserTestCase):
         self.browser_send_keys(Keys.TAB)
         self.browser_send_keys(Keys.RETURN)
 
-    
-@main_only
-class DeviceAutoregisterTest(KALiteLocalBrowserTestCase):
-    """"""
-    
-    def setUp(self):
-        add_to_local_settings("INSTALL_CERTIFICATES", ["dummy_certificate"])
-        super(DeviceAutoregisterTest,self).setUp()
-    
-    def tearDown(self):
-        #import pdb; pdb.set_trace()
-        #pass
-        super(DeviceAutoregisterTest,self).tearDown()
-        
-    @unittest.skipIf(settings.CENTRAL_SERVER, "")
-    def test_device_registration(self):
-        """
-        Tests that a device is initially unregistered, and that it can
-        be registered through automatic means.
-        """
-
-        home_url = self.reverse("homepage")
-
 
 @main_only
 class ChangeLocalUserPassword(unittest.TestCase):
+    """Tests for the changelocalpassword command"""
+    
     def setUp(self):
+        """Create a new facility and facility user"""
         self.facility = Facility(name="Test Facility")
         self.facility.save()
         self.group = FacilityGroup(facility=self.facility, name="Test Class")
@@ -98,6 +81,7 @@ class ChangeLocalUserPassword(unittest.TestCase):
     
     
     def test_change_password(self):
+        """Change the password on an existing user."""
         
         # Now, re-retrieve the user, to check.
         (out,err,val) = call_command_with_output("changelocalpassword", self.user.username, noinput=True)
@@ -116,6 +100,8 @@ class ChangeLocalUserPassword(unittest.TestCase):
         
 
     def test_no_user(self):
+        """Change the password on a non-existing user"""
+        
         fake_username = self.user.username + "xxxxx"
         
         #with self.assertRaises(FacilityUser.DoesNotExist):
