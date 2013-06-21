@@ -29,7 +29,7 @@ from config.models import Settings
 from securesync.api_client import SyncClient
 from utils.jobs import force_job
 from utils.videos import video_connection_is_available
-from utils.internet import am_i_online
+from utils.internet import am_i_online, is_loopback_connection
 
 
 def splat_handler(request, splat):
@@ -135,6 +135,7 @@ def video_handler(request, video, prev=None, next=None):
         "title": video[title_key["Video"]],
         "prev": prev,
         "next": next,
+        "use_mplayer": settings.USE_MPLAYER and is_loopback_connection(request),
     }
     return context
     

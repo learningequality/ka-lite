@@ -180,6 +180,9 @@ if CACHE_TIME or CACHE_TIME is None: # None can mean infinite caching to some fu
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
+# enable this to use a background mplayer instance instead of playing the video in the browser, on loopback connections
+USE_MPLAYER = False
+
 # import these one extra time to overwrite any settings not explicitly looking for local settings
 try:
     from local_settings import *

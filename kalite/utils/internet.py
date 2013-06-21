@@ -3,6 +3,7 @@ For functions mucking with internet access
 """
 import logging
 import requests
+import socket
 
 def am_i_online(url, expected_val=None, search_string=None, timeout=5, allow_redirects=True):
     """Test whether we are online or not.
@@ -36,5 +37,15 @@ def am_i_online(url, expected_val=None, search_string=None, timeout=5, allow_red
         return False
 
 
+def is_loopback_connection(request):
+    """ Test whether the IP making the request is the same as the IP serving the request. """
+    try:
+        host = request.META.get("HTTP_HOST", "127.0.0.1")
+        host_ip = socket.gethostbyaddr(host.split(":")[0])[2][0]
+        return request.META.get("REMOTE_ADDR") in ["127.0.0.1", host_ip]
+    except:
+        return False
+
 if __name__=="__main__":
     print am_i_online()
+    

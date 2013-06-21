@@ -32,6 +32,24 @@ class VideoLog(SyncedModel):
     @staticmethod
     def get_points_for_user(user):
         return VideoLog.objects.filter(user=user).aggregate(Sum("points")).get("points__sum", 0) or 0
+        
+    @staticmethod
+    def update_video_log(facility_user, youtube_id, seconds_watched, points=0, new_points=0):
+        if not facility_user or not youtube_id:
+            raise Exception("Updating a video log requires both a facility user and a YouTube ID!")
+        videolog = VideoLog()
+        videolog.user = facility_user
+        videolog.youtube_id = youtube_id
+        old_videolog = videolog.get_existing_instance() or VideoLog()
+        videolog.total_seconds_watched = old_videolog.total_seconds_watched + seconds_watched
+        videolog.points = min(max((old_videolog.points or 0) + new_points, points), 750)
+        videolog.full_clean()
+        videolog.save()
+        return {
+            "points": videolog.points,
+            "complete": videolog.complete,
+        }
+
 
 class ExerciseLog(SyncedModel):
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)

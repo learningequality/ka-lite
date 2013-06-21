@@ -26,4 +26,6 @@ urlpatterns = patterns('main.api_views',
     url(r'^remove_from_group$', 'remove_from_group'),
     url(r'^move_to_group$', 'move_to_group'),
     url(r'^delete_users$', 'delete_users'),
+    
+    url(r'^launch_mplayer$', 'launch_mplayer'),
 )

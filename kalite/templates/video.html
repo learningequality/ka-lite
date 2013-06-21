@@ -18,6 +18,7 @@
 {% endblock headjs %}
 
 {% block content %}
+
 <h2 class="title-header">
     <span class="title">{% trans video.title %}</span><br/>
     {% if video.description %}
@@ -45,13 +46,28 @@
 
 <div class="clear"></div>
 
-<div id="video-player">
-    <video id="video-element" class="video-js vjs-default-skin" controls preload="auto" width="100%" height="600" poster="{{ CONTENT_URL }}{{ video.youtube_id }}.png" data-setup="{}">
-        <source src="{{ CONTENT_URL }}{{ video.youtube_id }}.mp4" type="video/mp4" />
-        <track kind="captions" src="{{ CONTENT_URL }}{{ video.youtube_id }}.srt" srclang="en" label="On" />
-    </video>
-    <img class="video-thumb" src="{{ CONTENT_URL }}{{ video.youtube_id }}.png" style="position: absolute; left: -9999999px;">
-</div>
+{% if use_mplayer %}
+
+    <h2 id="video-player">
+        <a href="" id="launch_mplayer">
+            <img class="video-thumb" src="{{ CONTENT_URL }}{{ video.youtube_id }}.png" style="width: 100%;" title="Click to play!">
+            <br/><br/>
+            Launch video in mplayer!
+        </a>
+    </h2>
+
+{% else %}
+
+    <div id="video-player">
+        <video id="video-element" class="video-js vjs-default-skin" controls preload="auto" width="100%" height="600" poster="{{ CONTENT_URL }}{{ video.youtube_id }}.png" data-setup="{}">
+            <source src="{{ CONTENT_URL }}{{ video.youtube_id }}.mp4" type="video/mp4" />
+            <track kind="captions" src="{{ CONTENT_URL }}{{ video.youtube_id }}.srt" srclang="en" label="On" />
+        </video>
+        <img class="video-thumb" src="{{ CONTENT_URL }}{{ video.youtube_id }}.png" style="position: absolute; left: -9999999px;">
+    </div>
+
+{% endif %}
+
 
 {% endblock content %}
 
@@ -100,6 +116,18 @@ $(function() {
         initialize_video(width, height);
                             
     });
+
+    $("#launch_mplayer").click(function() {
+        // launch mplayer in the background to play the video
+        doRequest("/api/launch_mplayer?youtube_id={{ video.youtube_id }}");
+        // after mplayer closes and focus returns to the website, refresh the points
+        $(window).focus(function() {
+            $(window).unbind("focus");
+            videoView.model.fetch();
+        });
+        return false;
+    });
+
 });
 </script>
 {% endblock bodyjs %}
