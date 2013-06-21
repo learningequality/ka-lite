@@ -75,7 +75,7 @@ def get_all_leaves(leaf_type, topic_node=topicdata.TOPICS):
     return leaves
     
 def get_topic_leaves(leaf_type, topic_id=None, path=None):
-    """Given a topic (identified by topic_id or path), return all ancestor exercises"""
+    """Given a topic (identified by topic_id or path), return all descendant exercises"""
     assert (topic_id or path) and not (topic_id and path), "Specify topic_id or path, not both."
     
     if not path:

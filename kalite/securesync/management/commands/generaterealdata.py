@@ -12,6 +12,13 @@
 #     - unchallenged (13%): high speed_of_learning, low effort_level
 #     - struggling   (13%): low speed_of_learning, high effort_level
 #     - inactive     (13%): no learning whatsoever
+#
+#
+# TODO(bcipolli): 
+# The parameters for the fake users are saved, and reused if the same user is randomly
+#   "regenerated here.
+# Perhaps worth having the ability to target only particular existing users to further
+#   generate data?
 """
 
 import datetime
@@ -31,9 +38,9 @@ import settings
 from utils.topic_tools import get_topic_videos, get_topic_exercises
 
 
-firstnames = ["Vuzy","Liz","Ben","Richard","Kwame","Jamie","Alison","Nadia","Zenab","Guan","Dylan","Vicky","Melanie","Michelle","Yamira","Elena","Thomas","Jorge","Lucille","Arnold","Rachel","Daphne","Sofia"]
+firstnames = ["Vuzy", "Liz", "Ben", "Richard", "Kwame", "Jamie", "Alison", "Nadia", "Zenab", "Guan", "Dylan", "Vicky", "Melanie", "Michelle", "Yamira", "Elena", "Thomas", "Jorge", "Lucille", "Arnold", "Rachel", "Daphne", "Sofia"]
 
-lastnames = ["Awolowo","Clement","Smith","Ramirez","Hussein","Wong","St. Love","Franklin","Lopez","Brown","Paterson","De Soto","Khan","Mench","Merkel","Roschenko","Picard","Jones","French","Karnowski","Boyle","Burke","Tan"]
+lastnames = ["Awolowo", "Clement", "Smith", "Ramirez", "Hussein", "Wong", "St. Love", "Franklin", "Lopez", "Brown", "Paterson", "De Soto", "Khan", "Mench", "Merkel", "Roschenko", "Picard", "Jones", "French", "Karnowski", "Boyle", "Burke", "Tan"]
 
 # We want to show some users that have a correlation between effort and mastery, some that show mastery without too much effort (unchallenged), and some that show little mastery with a lot of effort
 # Each 4-uple represents: (mean,std of gaussian, min/max values)
@@ -113,7 +120,7 @@ def generate_fake_facility_groups(names=("Class 4E", "Class 5B"), facilities=Non
 
             facility_groups.append(facility_group)
 
-    return (facility_groups,facilities)
+    return (facility_groups, facilities)
 
 
 def generate_fake_facility_users(nusers=20, facilities=None, facility_groups=None, password="blah"):
@@ -130,7 +137,7 @@ def generate_fake_facility_users(nusers=20, facilities=None, facility_groups=Non
 
     for facility in facilities:
         for facility_group in facility_groups:
-            for i in range(0,users_per_group):
+            for i in range(0, users_per_group):
                 user_data = {
                     "first_name": random.choice(firstnames),
                     "last_name":  random.choice(lastnames),
@@ -141,7 +148,7 @@ def generate_fake_facility_users(nusers=20, facilities=None, facility_groups=Non
                     facility_user = FacilityUser.objects.get(facility=facility, username=user_data["username"])
                     facility_user.group = facility_group
                     facility_user.save()
-                    logging.info("Retrieved facility user '%s/%s'" % (facility.name,user_data["username"]))
+                    logging.info("Retrieved facility user '%s/%s'" % (facility.name, user_data["username"]))
                 except FacilityUser.DoesNotExist as e:
                     notes = json.dumps(sample_user_settings())
 
@@ -163,13 +170,13 @@ def generate_fake_facility_users(nusers=20, facilities=None, facility_groups=Non
                                  # could also randomize to add more users, as this function
                                  # seems to be generic, but really is not.
 
-    return (facility_users,facility_groups,facilities)
+    return (facility_users, facility_groups, facilities)
 
 
 
 def probability_of(qty, user_settings):
     """Share some probabilities across exercise and video logs"""
-    if qty in ["exercise","video"]:
+    if qty in ["exercise", "video"]:
         return sqrt(user_settings["effort_level"]*3*user_settings["time_in_program"])
     if qty == "completed":
         return (0.33*user_settings["effort_level"] + 0.66*user_settings["speed_of_learning"]) * 2 * user_settings["time_in_program"]
@@ -273,6 +280,7 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
                     completion_timestamp=date_completed,
                     completion_counter=(date_completed-start_date).total_seconds())
                 log.full_clean()
+                # TODO(bcipolli): bulk saving of logs
                 log.save()
 
                 exercise_logs.append(log)
@@ -390,6 +398,7 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
                     completion_counter=(date_completed-start_date).total_seconds(),
                 )
                 log.full_clean()
+                # TODO(bcipolli): bulk saving of logs
                 log.save()
 
                 video_logs.append(log)
