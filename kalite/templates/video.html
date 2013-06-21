@@ -1,19 +1,20 @@
 {% extends 'base_distributed.html' %}
 
 {% load i18n %}
+{% load static %}{% get_static_prefix as STATIC_URL %}
 
 {% block watch_active %}active{% endblock watch_active %}
 
 {% block headcss %}
-    <link href="{{ MEDIA_URL }}video-js/video-js.min.css" rel="stylesheet" type="text/css">
-    <link href="{{ MEDIA_URL }}video-js/video-speed.css" rel="stylesheet" type="text/css">
+    <link href="{{ STATIC_URL }}video-js/video-js.min.css" rel="stylesheet" type="text/css">
+    <link href="{{ STATIC_URL }}video-js/video-speed.css" rel="stylesheet" type="text/css">
 {% endblock headcss %}
 
 {% block headjs %}
-    <script src="{{ MEDIA_URL }}video-js/video.min.js"></script>
-    <script src="{{ MEDIA_URL }}video-js/video-speed.js"></script>
+    <script src="{{ STATIC_URL }}video-js/video.min.js"></script>
+    <script src="{{ STATIC_URL }}video-js/video-speed.js"></script>
     <script>
-        _V_.options.flash.swf = "{{ MEDIA_URL }}video-js/video-js.swf";
+        _V_.options.flash.swf = "{{ STATIC_URL }}video-js/video-js.swf";
     </script>
 {% endblock headjs %}
 
@@ -56,7 +57,7 @@
 {% endblock content %}
 
 {% block bodyjs %}
-<script src="{{ MEDIA_URL }}js/videoplayer.js"></script>
+<script src="{{ STATIC_URL }}js/videoplayer.js"></script>
 
 <script>
 

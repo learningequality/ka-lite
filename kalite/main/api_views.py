@@ -15,12 +15,7 @@ from config.models import Settings
 from utils.decorators import require_admin
 from utils.general import break_into_chunks
 from utils.orderedset import OrderedSet
-
-class JsonResponse(HttpResponse):
-    def __init__(self, content, *args, **kwargs):
-        if not isinstance(content, str) and not isinstance(content, unicode):
-            content = simplejson.dumps(content, ensure_ascii=False)
-        super(JsonResponse, self).__init__(content, content_type='application/json', *args, **kwargs)
+from utils.internet import JsonResponse
 
 
 def save_video_log(request):
@@ -259,7 +254,7 @@ def delete_users(request):
     users_to_delete.delete()
     return JsonResponse({})
 
-def convert_topic_tree(node, level=0, statusdict=None):
+def annotate_topic_tree(node, level=0, statusdict=None):
     if node["kind"] == "Topic":
         if "Video" not in node["contains"]:
             return None
@@ -267,7 +262,7 @@ def convert_topic_tree(node, level=0, statusdict=None):
         unstarted = True
         complete = True
         for child_node in node["children"]:
-            child = convert_topic_tree(child_node, level=level+1, statusdict=statusdict)
+            child = annotate_topic_tree(child_node, level=level+1, statusdict=statusdict)
             if child:
                 if child["addClass"] == "unstarted":
                     complete = False
@@ -308,7 +303,7 @@ def convert_topic_tree(node, level=0, statusdict=None):
 
 def get_annotated_topic_tree():
     statusdict = dict(VideoFile.objects.values_list("youtube_id", "percent_complete"))
-    return convert_topic_tree(topicdata.TOPICS, statusdict=statusdict)
+    return annotate_topic_tree(topicdata.TOPICS, statusdict=statusdict)
 
 @require_admin
 def get_topic_tree(request):

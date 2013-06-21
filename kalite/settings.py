@@ -69,10 +69,10 @@ USE_I18N       = getattr(local_settings, "USE_I18N", True)
 # calendars according to the current locale
 USE_L10N       = getattr(local_settings, "USE_L10N", False)
 
-MEDIA_URL      = getattr(local_settings, "MEDIA_URL", "/static/")
-MEDIA_ROOT     = getattr(local_settings, "MEDIA_ROOT", PROJECT_PATH + "/static/")
-STATIC_URL     = getattr(local_settings, "STATIC_URL", "/dummy/")
-STATIC_ROOT    = getattr(local_settings, "STATIC_ROOT", PROJECT_PATH + "/dummy/")
+MEDIA_URL      = getattr(local_settings, "MEDIA_URL", "/media/")
+MEDIA_ROOT     = getattr(local_settings, "MEDIA_ROOT", PROJECT_PATH + "/media/")
+STATIC_URL     = getattr(local_settings, "STATIC_URL", "/static/")
+STATIC_ROOT    = getattr(local_settings, "STATIC_ROOT", PROJECT_PATH + "/static/")
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY     = getattr(local_settings, "SECRET_KEY", "8qq-!fa$92i=s1gjjitd&%s@4%ka9lj+=@n7a&fzjpwu%3kd#u")
@@ -124,6 +124,7 @@ INSTALLED_APPS = (
     "south",
     "chronograph",
     "django_cherrypy_wsgiserver",
+    "kalite",
     "securesync",
     "config",
     "main", # in order for securesync to work, this needs to be here.
@@ -136,12 +137,12 @@ if DEBUG or CENTRAL_SERVER:
 if CENTRAL_SERVER:
     ACCOUNT_ACTIVATION_DAYS = getattr(local_settings, "ACCOUNT_ACTIVATION_DAYS", 7)
     DEFAULT_FROM_EMAIL      = getattr(local_settings, "DEFAULT_FROM_EMAIL", CENTRAL_FROM_EMAIL)
-    INSTALLED_APPS         += ("postmark", "kalite.registration", "central", "faq",
-)
+    INSTALLED_APPS         += ("postmark", "kalite.registration", "central", "faq",)
     EMAIL_BACKEND           = getattr(local_settings, "EMAIL_BACKEND", "postmark.backends.PostmarkBackend")
     AUTH_PROFILE_MODULE     = 'central.UserProfile'
 
 else:
+    INSTALLED_APPS         += ("coachreports",)
     # Include optionally installed apps
     if os.path.exists(PROJECT_PATH + "/loadtesting/"):
         INSTALLED_APPS     += ("loadtesting"),
