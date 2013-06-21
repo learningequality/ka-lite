@@ -1,3 +1,9 @@
+"""
+Contains test wrappers and helper functions for 
+automated of KA Lite using selenium
+for automated browser-based testing.
+"""
+
 import copy
 import decorator
 import logging
@@ -23,14 +29,17 @@ from kalite.utils.django_utils import call_command_with_output
 
 
 def x_only(f, cond, msg):
-    """Decorator"""
+    """Decorator to label test classes or instance methods as x_only,
+    x = "main" or "central"
+    """
 
+    # For classes
     if f.__class__.__name__ == "type":
         @unittest.skipIf(cond, msg)
-        class wrapped_class(f):
-            pass
-        return f
-        
+        def wrapper_fn(f):
+            return f
+    
+    # For functions:
     else:
         @unittest.skipIf(cond, msg)
         def wrapped_fn(*args, **kwargs):
@@ -38,16 +47,13 @@ def x_only(f, cond, msg):
         return wrapped_fn
 
 def main_only(f):
+    """Run the test only on the 'main' app/distributed server"""
     return x_only(f, settings.CENTRAL_SERVER, "Distributed server test")
 
 def central_only(f):
+    """Run the test only on the 'central' app/central server"""
     return x_only(f, not settings.CENTRAL_SERVER, "Central server test")
     
-         
-def add_to_local_settings(var, val):
-    fh = open(settings.PROJECT_PATH + "/local_settings.py","a")
-    fh.write("\n%s = %s" % (var,str(val)))
-    fh.close()
         
 def create_test_admin(username="admin", password="pass", email="admin@example.com"):
     """Create a test user.
@@ -67,7 +73,7 @@ def create_test_admin(username="admin", password="pass", email="admin@example.co
     return test_admin
     
     
-browser = None
+browser = None # persistent browser
 def setup_test_env(browser_type="Firefox", test_user="test", test_password="test", test_email="test@learningequality.org", persistent_browser=False):
     """Create a django superuser, and connect to the specified browser.
     peristent_browser: keep a static handle to the browser, rather than 
@@ -105,6 +111,8 @@ def wait_for_page_change(browser, source_url, wait_time=0.1, max_retries=50):
     
 
 class KALiteTestCase(LiveServerTestCase):
+    """The base class for KA Lite test cases."""
+    
     def __init__(self, *args, **kwargs):
         #create_test_admin()
         return super(KALiteTestCase, self).__init__(*args, **kwargs)
@@ -125,19 +133,30 @@ class BrowserTestCase(KALiteTestCase):
         super(BrowserTestCase, self).__init__(*args, **kwargs)
         
     def setUp(self):
-        if not self.persistent_browser:
-            for browser_type in ["Firefox", "Chrome", "Ie", "Opera"]:
-                (self.browser,self.admin_user) = setup_test_env(browser_type=browser_type)
-                break
-        else:
+        """Create a browser to use for test cases.  Try a bunch of different browsers; hopefully one of them works!"""
+        
+        # Can use already launched browser.
+        if self.persistent_browser:
             (self.browser,self.admin_user) = setup_test_env(persistent_browser=self.persistent_browser)
+            
+        # Must create a new browser to use
+        else:
+            for browser_type in ["Firefox", "Chrome", "Ie", "Opera"]:
+                try:
+                    (self.browser,self.admin_user) = setup_test_env(browser_type=browser_type)
+                    break
+                except Exception as e:
+                    settings.LOG.debug("Could not create browser %s through selenium: %s" % (browser_type, e))
+                    
         
     def tearDown(self):
         if not self.persistent_browser:
             self.browser.quit()
         
-    def wait_for_page_change(self, source_url, max_retries=10):
-        return wait_for_page_change(self.browser, source_url, max_retries)
+    def wait_for_page_change(self, source_url, wait_time=0.1, max_retries=50):
+        """When testing, we have to make sure that the page has loaded before testing the resulting page."""
+         
+        return wait_for_page_change(self.browser, source_url, wait_time=wait_time, max_retries=max_retries)
     
     def browser_activate_element(self, elem=None, id=None, name=None, tag_name=None):
         """Given the identifier to a page element, make it active.
@@ -182,11 +201,16 @@ class BrowserTestCase(KALiteTestCase):
 
    
 class KALiteCentralBrowserTestCase(BrowserTestCase):
-    """Base class for central server test cases"""
+    """Base class for central server test cases.
+    They will have different functions in here, for sure.
+    """
     pass
     
     
 class KALiteLocalBrowserTestCase(BrowserTestCase):
+    """Base class for main server test cases.
+    They will have different functions in here, for sure.
+    """
     pass
 
 

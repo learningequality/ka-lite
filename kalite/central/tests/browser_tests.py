@@ -83,6 +83,3 @@ class OrgUserRegistrationTest(KALiteCentralBrowserTestCase):
         self.assertTrue(self.wait_for_page_change(register_url), "RETURN causes page to change")
         self.assertIn(reverse("registration_complete"), self.browser.current_url, "Register browses to thank you page" )
         self.assertIn("Registration complete", self.browser.title, "Check registration complete title")
-
-
-        # Part 2: Login
