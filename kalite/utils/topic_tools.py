@@ -1,5 +1,11 @@
+"""
+"""
 import glob
+from functools import partial
+
+import settings
 from main import topicdata
+
 
 def find_videos_by_youtube_id(youtube_id, node=topicdata.TOPICS):
     videos = []
@@ -30,3 +36,69 @@ def print_videos(youtube_id):
         
 def get_downloaded_youtube_ids():
     return [path.split("/")[-1].split(".")[0] for path in glob.glob("../../content/*.mp4")]
+    
+    
+
+def get_topic_by_path(path):
+    """Given a topic path, return the corresponding topic node in the topic hierarchy"""
+    # Make sure the root fits
+    root_node = topicdata.TOPICS
+    if not path.startswith(root_node["path"]):
+        return None
+        
+    # split into parts (remove trailing slash first)
+    parts = path[len(root_node["path"]):-1].split("/")
+    cur_node = root_node
+    for part in parts:
+        cur_node = filter(partial(lambda n,p: n["id"]==p, p=part), cur_node["children"])
+        if cur_node:
+            cur_node = cur_node[0]
+        else:
+            break;
+            
+    assert not cur_node or cur_node["path"] == path, "Either didn't find it, or found the right thing."
+
+    return cur_node 
+
+
+def get_all_leaves(leaf_type, topic_node=topicdata.TOPICS):
+    leaves = []
+    
+    # base case
+    if not "children" in topic_node:
+        if topic_node['kind'] == leaf_type:
+            leaves.append(topic_node)
+            print topic_node
+    else:
+        for child in topic_node["children"]:
+            leaves += get_all_leaves(topic_node=child, leaf_type=leaf_type)
+    
+    return leaves
+    
+def get_topic_leaves(leaf_type, topic_id=None, path=None):
+    """Given a topic (identified by topic_id or path), return all ancestor exercises"""
+    assert (topic_id or path) and not (topic_id and path), "Specify topic_id or path, not both."
+    
+    if not path:
+        topic_node = filter(partial(lambda node,name: node['id']==name, name=topic_id), topicdata.NODE_CACHE['Topic'].values())
+        if not topic_node:
+            return []
+        path = topic_node[0]['path']
+
+    # More efficient way
+    topic_node = get_topic_by_path(path)
+    exercises = get_all_leaves(topic_node=topic_node, leaf_type=leaf_type)
+
+    # Brute force way
+    #exercises = []
+    #for ex in topicdata.NODE_CACHE['Exercise'].values():
+    #    if ex['path'].startswith(path):
+    #        exercises.append(ex)
+    return exercises
+
+def get_topic_exercises(*args, **kwargs):
+    return get_topic_leaves(leaf_type='Exercise', *args, **kwargs)
+    
+def get_topic_videos(*args, **kwargs):
+    return get_topic_leaves(leaf_type='Video', *args, **kwargs)
+    

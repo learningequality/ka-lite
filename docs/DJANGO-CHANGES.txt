@@ -1,3 +1,22 @@
+python-packages/django/templates/base.py
+    Purpose of the change: to enable "repeatblock", 
+    a template tag with the ability to repeat a block multiple times on a page.
+    --- a/python-packages/django/template/base.py
+    +++ b/python-packages/django/template/base.py
+    @@ -230,11 +230,14 @@ class Parser(object):
+             self.filters = {}
+             for lib in builtins:
+                 self.add_library(lib)
+    +        self.root_nodelist = []
+ 
+         def parse(self, parse_until=None):
+             if parse_until is None:
+                 parse_until = []
+             nodelist = self.create_nodelist()
+    +        #if self.root_nodelist is None:
+    +        self.root_nodelist.append(nodelist)
+
+
 python-packages/django/utils/cache.py:168 
 requires package additions:
 import logging

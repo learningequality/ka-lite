@@ -19,13 +19,17 @@
             toggle_state("registered", data.registered);
             toggle_state("django-user", data.is_django_user);
             toggle_state("admin", data.is_admin);
-            if (data.is_logged_in){
-                $('#logged-in-name').text(data.username + " (Logout)");
-                if (data.points!=0){
-                    $('#sitepoints').text("Points: " + data.points);
+            if (data.is_logged_in) {
+                if (data.is_admin) {
+                    $('#logged-in-name').text(data.username + " (Logout)");
+                }
+                else {
+                    $('#logged-in-name').text(data.username);
+                    if (data.points!=0) {
+                        $('#sitepoints').text("Points: " + data.points);
+                    }
                 }
             }
-
         });        
     });
 </script>
@@ -59,7 +63,8 @@
 </span>
 <span class="dropdown topic-browser-dropdown logged-in-only">
     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it a short as possible.{% endcomment %}
-    <a href="{% url logout %}" id="logged-in-name" title="Logout">&nbsp;{% trans "Logout" %}</a>
+    <a href="{% url student_view %}" id="logged-in-name" class="not-admin-only {% block selfreports_active %}{% endblock selfreports_active %}"></a>
+    <a href="{% url logout %}" id="logout" title="Logout">&nbsp;{% trans "Logout" %}</a>
 </span>
 
 {% endblock sitewide_navigation %}

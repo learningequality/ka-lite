@@ -1,0 +1,332 @@
+{% extends 'base_distributed.html' %}
+
+{% load i18n %}
+{% load static %}
+{% get_static_prefix as STATIC_URL %}
+
+{% block coachreports_active %}active{% endblock coachreports_active %}
+
+{% block headcss %}{{ block.super }}
+<link rel='stylesheet' type='text/css' href='{{ STATIC_URL }}css/coachreports/tabular_view.css' />
+<style>
+#legend a {
+    height:12px;
+    margin:0px;
+    padding:0px;
+}   
+
+.student-name, .attempts, .streak_progress, .points, .total_seconds_watched {
+    float:left; 
+    display:none;
+    overflow:hidden;
+    white-space:nowrap;
+    width:100%;
+    margin:0px 5px 0px 0px;
+    padding:0px;
+    text-align:right;
+    vertical-align:middle;
+}
+.student-name {
+    float:none;
+    text-align:left;
+    display:block;
+}
+#legend {
+    float:right;
+    vertical-align:middle;
+    margin:12px 25px 2px 10px;
+}
+.legend {
+    float:right;
+    width:120px;
+    height:20px;
+    text-align:center;
+    vertical-align:middle;
+    white-space:nowrap;
+    overflow:hidden;
+    border-style:solid;
+    border-width: 1px;
+    padding:2px;
+    margin-right: 2px;
+/*display:none;*/
+    
+}
+.legend div {
+    float:left;
+    width:35px;
+    height:21px;
+}
+#selection-bar {
+    overflow:hide;
+}
+#disp_options {
+    float:right;
+}
+</style>
+{% endblock headcss %}
+{% block headscript %}
+<script>
+
+</script>
+{% endblock headscript %}
+
+{% block title %}{% trans "Coach Reports" %}{% endblock title %}
+
+{% block content %}
+<div id="content">
+    <div class="facility"><h2>{% blocktrans %}Coach Reports for {{ facility }}{% endblocktrans %} (<a href="?facility=select">{% trans "Change Facility" %}</a>)</h2></div>
+    {% block selection_bar %}
+
+    <div id="selection-bar">
+    {% comment %}Select the coach report type{% endcomment %}
+    {% if report_types %}
+        <div class="selection">
+            <div class="subtitle">{% trans "Select Report" %}</div><select id="report_type">
+                <option {% if not request_report_type %}selected{% endif %}>----</option>
+                {% for report_type in report_types %}
+                    <option value="{{ report_type }}" {% if report_type == request_report_type %}selected{% endif %}>{{ report_type }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    {% else %}
+        <div class="selection">
+            <div class="subtitle">{% trans "No Groups at this Facility" %}</div>
+        </div>
+    {% endif %}
+    {% if groups %}
+        <div class="selection">
+            <div class="subtitle">{% trans "Select Group" %}</div><select id="group">
+            <option {% if not request.GET.group_id %}selected{% endif %}>----</option>
+                {% for group in groups %}
+                    <option value="{{ group.id }}" {% if request.GET.group_id == group.id %}selected{% endif %}>{{ group }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    {% else %}
+        <div class="selection">
+            <div class="subtitle">{% trans "No Groups at this Facility" %}</div>
+        </div>
+    {% endif %}
+    {% if users and request_report_type == "student" %}
+        <div class="selection">
+            <div class="subtitle">{% trans "Select Student" %}</div><select id="student">
+                <option {% if not request.GET.user_id %}selected{% endif %}>----</option>
+                {% for user in users %}
+                    <option value="{{ user.pk }}"{% if request.GET.user_id == user.pk %}selected{% endif %}>{{ user.last_name }} {{ user.first_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    {% elif topics and groups %}
+        <div class="selection">
+            <div class="subtitle">{% trans "Select Topic" %}</div><select id="topic">
+                <option {% if not request.GET.topic %}selected{% endif %}>----</option>
+                {% for topic in topics %}
+                    
+                    <option value="{{ topic.id }}"{% if request.GET.topic == topic.id %}selected{% endif %}>{{ topic.standalone_title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    {% endif %}
+        <div class="selection" style="display:none">
+            <div class="subtitle">{% trans "Display Options" %}</div><select id="disp_options">
+                <option selected>----</option>
+                {% if exercises %}
+                <option value=".attempts">attempts</option>
+                <option value=".points">points</option>
+                <option value=".streak_progress">streak progress</option>
+                {% endif %}
+                {% if videos %}
+                <option value=".points">points</option>
+                <option value=".total_seconds_watched">total seconds</option>
+                {% endif %}
+            </select>
+        </div>
+        <div id="legend">
+            <div class="legend"><div class="partial"></div>{% trans "In Progress" %}</div>
+            <div class="legend"><div class="complete"></div>{% trans "Completed" %}</div>
+            <div class="legend"><div class="struggle"></div>{% trans "Struggling" %}</div>
+        </div>
+    </div>
+    {% endblock selection_bar %}
+    {% if students %}
+        {% block students_header %}
+        <div style="clear: both;"></div>
+        <div id="displaygrid">
+            <div style="clear: both;"></div>
+            <div class="users">
+                <table>
+                    <tbody>
+                        <tr>
+                            <th class="headrowuser">
+                                {% trans "Student" %}
+                            </th>
+                        </tr>
+                        {% for student in students %}
+                            <tr>
+                                <th class="username">
+                                    <span title="{{ student.first_name }} {{ student.last_name }} ({{ student.username }})">
+                                        <div class="student-name"><a href="{% url student_view %}?user_id={{ student.id }}">{{ student.first_name }} {{ student.last_name }}</a></div>
+                                    </span>
+                                </th>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div style="clear: both;"></div>
+            </div>
+            {% endblock students_header %}
+        {%if request_report_type == "exercise" and exercises %}
+        {% block exercise_data %}
+            <div class="userstatus">
+                <table>
+                    <tbody>
+                        <tr>
+                            {% for exercise in exercises %}
+                                <th class="headrow data">
+                                    <a href="{{ exercise.path }}"><span title='"{{ exercise.display_name }}"{% if exercise.description %} ({{ exercise.description }}){% endif %}'>{{ exercise.name }}</span></a>
+                                </th>
+                            {% endfor %}
+                        </tr>
+                        {% for student in students %}
+                            <tr>
+                                {% for log in student.exercise_logs %}
+                                    {% if not log %}
+                                        <td class="status data" title="{% trans "Not Attempted" %}">
+                                    {% elif log.struggling %}
+                                        <td class="status data struggle" title="{% trans "Struggling" %}">
+                                    {% elif log.complete %}
+                                        <td class="status data complete" title="{% trans "Complete" %}">
+                                    {% else %}
+                                        <td class="status data partial" title="{% trans "Attempted" %}">
+                                    {% endif %}
+                                    {% if not log %}
+                                            &nbsp;
+                                    {% else %}
+                                            <div class="attempts">{{log.attempts}} {% trans "attempts" %}</div>
+                                            <div class="points">{{log.points}} {% trans "points" %}</div>
+                                            <div class="streak_progress">{% if not log.complete %}{{log.streak_progress}}% {% trans "streak" %}{% else %}&nbsp;{% endif %}</div>
+                                    {% endif %}
+                                        </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endblock exercise_data %}
+
+    {% elif request_report_type == "video" and videos %}
+        {% block video_data %}
+            <div class="userstatus">
+                <table>
+                    <tbody>
+                        <tr>
+                            {% for video in videos %}
+                                <th class="headrow data">
+                                    <a href="{{ video.path }}"><span title='"{{ video.title }}"{% if video.description %} ({{ video.description }}){% endif %}'>{{ video.title }}</span></a>
+                                </th>
+                            {% endfor %}
+                        </tr>
+                        {% for student in students %}
+                            <tr>
+                                {% for log in student.video_logs %}
+                                    {% if not log %}
+                                        <td class="status data" title="{% trans "Not Viewed" %}">
+                                            &nbsp;
+                                    {% elif not log.complete %}
+                                        <td class="status data partial" title="{% trans "Viewing" %}">
+                                            <div class="total_seconds_watched">100%</div>
+                                    {% else %}
+                                        <td class="status data complete" title="{% trans "Viewed" %}">
+                                            <div class="total_seconds_watched">{{ log.total_seconds_watched }} {% trans "secs" %}</div>
+                                    {% endif %}
+                                    {% if log %}
+                                            <div class="points">{{ log.points }} {% trans "points" %}</div>
+                                        </td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endblock video_data %}
+        {% endif %}
+    {% else %}
+        <div style="clear: both;"></div>
+        <p><div class="subtitle">{% trans "Please select a group and topic above." %}</div></p>
+    {% endif %}
+</div> 
+
+<script>
+
+function setGetParam(name, val) {
+    var vars = {};
+    var parts = window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m, key, value) {
+        vars[key] = value;
+    });
+    if (val != "" && val != "----") {
+        vars[name] = val;
+    } else {
+        delete vars[name];
+    }
+    url = "?" + $.param(vars);
+    window.location.href = url;    
+}
+
+
+$(function() {
+
+    $("#report_type").change(function(){
+        window.location.href="{% url old_coach_report %}"+$("#report_type option:selected").val()+window.location.search;
+    });
+
+    $("#student").change(function(){
+        setGetParam("user_id", $("#student option:selected").val());
+    });
+
+    $("#topic").change(function(){
+        setGetParam("topic", $("#topic option:selected").val());
+    });
+
+    $("#group").change(function(){
+       setGetParam("group_id", $("#group option:selected").val()); 
+    });
+    
+    // Selector to toggle visible elements is stored in each option value
+    cell_height = 27;
+    $("#disp_options").change(function(){
+        selector = $("#disp_options option:selected").val(); 
+
+        // adjust the cell height
+        cell_height += 50*Math.pow(-1, 0+$(selector).is(":visible"));
+        
+        // adjust view in data cells
+        $(selector).each(function () {
+            $(this).toggle()
+        });
+        $(selector).each(function () {
+            $(this).height(20);
+            $(this).parent().height(cell_height);
+        });
+
+        // Adjust student name cell heights
+        $("th.username").each(function () {
+            $(this).height(cell_height);
+        });
+        
+        
+    });
+        
+    $(window).resize(function() {
+        $('.headrowuser').height($('.headrow.data').height()+1);
+    }).resize();
+    
+    
+});
+</script>
+{% endblock content %}
+
+  
