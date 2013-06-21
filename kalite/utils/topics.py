@@ -69,6 +69,8 @@ def download_topictree():
         kinds = set([kind])
 
         if kind == "Exercise":
+            related_video_readable_ids = [vid["readable_id"] for vid in json.loads(requests.get("http://www.khanacademy.org/api/v1/exercises/%s/videos" % node["name"]).content)]
+            node["related_video_readable_ids"] = related_video_readable_ids
             exercise = {
                 "slug": node[slug_key[kind]],
                 "title": node[title_key[kind]],
