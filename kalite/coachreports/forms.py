@@ -1,9 +1,9 @@
 from django import forms
 
-from securesync.models import Zone
-
 
 class DataForm(forms.Form):
+    """Form that represents the schema for data API requests"""
+    
     # who?
     facility_id = forms.CharField(max_length=40),
     group_id = forms.CharField(max_length=40),
@@ -15,12 +15,3 @@ class DataForm(forms.Form):
     # what?
     xaxis = forms.CharField(max_length=40),
     yaxis = forms.CharField(max_length=40),
-
-
-class FriendlyForm(forms.Form):
-    # who?
-    facility_ids = forms.CharField(max_length=40),
-    group_ids = forms.CharField(max_length=40),
-    user_ids = forms.CharField(),
-
-    exercise_ids = forms.CharField()

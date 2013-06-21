@@ -1,4 +1,5 @@
 function drawChart(chart_div, dataTable, options) {
+    // Used for Google visualizations
     options["legend"] = 'none';
     options["tooltip"] = { isHtml: 'true', trigger: 'selection' };
     var chart = new google.visualization.ScatterChart($(chart_div)[0]);
@@ -6,26 +7,9 @@ function drawChart(chart_div, dataTable, options) {
     chart.draw(dataTable, options);
 }
 
-function bySortedValue(obj, callback, context) {
-    var tuples = [];
-
-    for (var key in obj) tuples.push([key, obj[key]]);
-
-    tuples.sort(function(a, b) { return a[1] < b[1] ? 1 : a[1] > b[1] ? -1 : 0 });
-
-    return tuples;
-}
-
-function tablifyThis(tuples, urlpath, descriptor) {
-    var table = "<table class='detail'>";
-    for (var i in tuples.slice(0,3)) {
-        table += "<tr><td><a href='" + urlpath + tuples[i][0] + "'>" + tuples[i][0] + "</a></td>" + "<td class='data'>" + tuples[i][1] + descriptor +"</td>";
-    }
-    table += "</table>";
-    return table;
-}
-
 function obj2num(row, stat, json) {
+    // This takes a stat--either a number or a dictionary of numbers--
+    //    and turns it into a single number or an array of numbers.
     var type = stat2type(stat)
     var xdata = (type=="number") ? 0 : new Date();
 
@@ -38,6 +22,8 @@ function obj2num(row, stat, json) {
                 case "ex:attempts":
                     xdata += row[d]/json['exercises'].length;
                     break;
+                    
+                // Special case for timestamps, where we want a time series, not a single value.
                 case "ex:completion_timestamp":
                     if (row[d] != null && xdata > (new Date(row[d]))) {
                         xdata = new Date(row[d]);
@@ -53,6 +39,7 @@ function obj2num(row, stat, json) {
 }
 
 function json2dataTable(json, xaxis, yaxis) {
+    // Given a dictionary, create a data table, one row at a time.
     var dataTable = new google.visualization.DataTable();
 
     // 2 data rows and a tooltip.
@@ -68,7 +55,30 @@ function json2dataTable(json, xaxis, yaxis) {
     return dataTable;
   }
 
+
+function bySortedValue(obj, callback, context) {
+    // I guess this sorts values?
+    var tuples = [];
+
+    for (var key in obj) tuples.push([key, obj[key]]);
+
+    tuples.sort(function(a, b) { return a[1] < b[1] ? 1 : a[1] > b[1] ? -1 : 0 });
+
+    return tuples;
+}
+
+function tablifyThis(tuples, urlpath, descriptor) {
+    // I guess this generates small tables?
+    var table = "<table class='detail'>";
+    for (var i in tuples.slice(0,3)) {
+        table += "<tr><td><a href='" + urlpath + tuples[i][0] + "'>" + tuples[i][0] + "</a></td>" + "<td class='data'>" + tuples[i][1] + descriptor +"</td>";
+    }
+    table += "</table>";
+    return table;
+}
+
 function user2tooltip2(json, user, xaxis, yaxis) {
+    // A test tooltip; currently unused (but could become useful again later)
     var html = "<div class='tooltip'>";
     html += "<div class='cleardiv'>" + json["users"][user] + "</div>";
     html += "<a target='_new' href='" + setGetParam(generate_current_link(), "user_id", user).replace("scatter", "student") + "'>more details</a>";
@@ -78,6 +88,7 @@ function user2tooltip2(json, user, xaxis, yaxis) {
 }
 
 function user2tooltip(json, user, xaxis, yaxis) {
+    // Creating a HTML blob for the tooltip that shows when a user's is clicked.
     var axes = [xaxis];
     var exercises = json['exercises'];
     var videos = json['videos'];
@@ -140,6 +151,7 @@ function user2tooltip(json, user, xaxis, yaxis) {
 }
 
 function drawJsonChart(chart_div, json, xaxis, yaxis) {
+    // The main function, required by our Google Visualization interface
     var options = {
       title: stat2name(xaxis) + ' vs. ' + stat2name(yaxis) + ' comparison',
       hAxis: {title: stat2name(xaxis) },

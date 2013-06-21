@@ -280,7 +280,7 @@ function setGetParam(name, val) {
 $(function() {
 
     $("#report_type").change(function(){
-        window.location.href="{% url old_coach_report %}"+$("#report_type option:selected").val()+window.location.search;
+        window.location.href="{% url tabular_view %}"+$("#report_type option:selected").val()+window.location.search;
     });
 
     $("#student").change(function(){

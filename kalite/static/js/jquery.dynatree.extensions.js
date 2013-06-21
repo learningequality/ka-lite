@@ -1,3 +1,6 @@
+// Extensions to the JQuery dynatree package, allowing for generic call-back registration
+//   and to interface easily with getting/setting selected paths.
+
 // open and close the topic tree, and call `display_selected_topics` when closed
 window.toggle_tree_callbacks = [];
 window.last_paths = [];

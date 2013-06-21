@@ -14,13 +14,13 @@ from django.utils import simplejson
 
 from main.models import VideoLog, ExerciseLog, VideoFile
 from securesync.models import Facility, FacilityUser,FacilityGroup, DeviceZone, Device
-from utils.decorators import require_admin
 from utils.topics import slug_key, title_key
 from securesync.views import facility_required
 #from shared.views import group_report_context
 from coachreports.forms import DataForm
 from main import topicdata
 from config.models import Settings
+from utils.internet import StatusException, JsonResponse
 from utils.topic_tools import get_topic_by_path
 
 
@@ -39,22 +39,13 @@ stats_dict = [
 ]
 
 
-class JsonResponse(HttpResponse):
-    def __init__(self, content, *args, **kwargs):
-        if not isinstance(content, str) and not isinstance(content, unicode):
-            content = simplejson.dumps(content, ensure_ascii=False)
-        super(JsonResponse, self).__init__(content, content_type='application/json', *args, **kwargs)
-
-
-class StatusException(Exception):
-    def __init__(self, message, status_code):
-        super(StatusException, self).__init__(message)
-        self.args = (status_code,)
-        self.status_code = status_code
-
-
 def get_data_form(request, *args, **kwargs):
-    """Request objects get priority over keyword args"""
+    """Get the basic data form, by combining information from
+    keyword arguments and the request.REQUEST object.
+    Along the way, check permissions to make sure whatever's being requested is OK.
+    
+    Request objects get priority over keyword args.
+    """
     assert not args, "all non-request args should be keyword args"
 
     # Pull the form parameters out of the request or
@@ -228,11 +219,44 @@ def compute_data(types, who, where):
     }
 
 
+def convert_topic_tree_for_dynatree(node, level=0):
+    """Converts topic tree from standard dictionary nodes 
+    to dictionary nodes usable by the dynatree app"""
+    
+    if node["kind"] == "Topic":
+        if "Exercise" not in node["contains"]:
+            return None
+        children = []
+        for child_node in node["children"]:
+            child = convert_topic_tree_for_dynatree(child_node, level=level+1)
+            if child:
+                children.append(child)
+                
+        return {
+            "title": node["title"],
+            "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
+            "isFolder": True,
+            "key": node["path"],
+            "children": children,
+            "expand": level < 1,
+        }
+    return None
+
+
+####### view endpoints #######
+
+def get_topic_tree(request, topic_path):
+    return JsonResponse(convert_topic_tree_for_dynatree(get_topic_by_path(topic_path)));
+
 
 @csrf_exempt
 def api_data(request, xaxis="", yaxis=""):
-#    if request.method != "POST":
-#        return HttpResponseForbidden("%s request not allowed." % request.method)
+    """Request contains information about what data are requested (who, what, and how).
+    
+    Response should be a JSON object
+    * data contains the data, structred by user and then datatype
+    * the rest of the data is metadata, useful for displaying detailed info about data.
+    """
 
     # Get the request form
     form = get_data_form(request, xaxis=xaxis, yaxis=yaxis)#(data=request.REQUEST)
@@ -282,36 +306,4 @@ def api_data(request, xaxis="", yaxis=""):
 
     except Exception as e:
         return HttpResponseServerError(str(e))
-
-
-@csrf_exempt
-def api_friendly_names(request):
-    """api_data returns raw data with identifiers.  This endpoint is a generic endpoint
-    for mapping IDs to friendly names."""
-
-
-    return None
-
-
-def convert_topic_tree(node, level=0):
-    if node["kind"] == "Topic":
-        if "Exercise" not in node["contains"]:
-            return None
-        children = []
-        for child_node in node["children"]:
-            child = convert_topic_tree(child_node, level=level+1)
-            if child:
-                children.append(child)
-        return {
-            "title": node["title"],
-            "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
-            "isFolder": True,
-            "key": node["path"],
-            "children": children,
-            "expand": level < 1,
-        }
-    return None
-
-def get_topic_tree(request, topic_path="/topics/math/"):
-    return JsonResponse(convert_topic_tree(get_topic_by_path(topic_path)));
 

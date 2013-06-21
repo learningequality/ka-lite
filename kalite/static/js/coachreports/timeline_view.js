@@ -1,5 +1,5 @@
 function drawChart_timeline(chart_div, dataTable, options) {
-//    options["legend"] = 'none';
+    // Used for Google visualizations
     options["tooltip"] = { isHtml: 'true', trigger: 'selection' };
     var chart = new google.visualization.LineChart($(chart_div)[0]);
 
@@ -7,6 +7,7 @@ function drawChart_timeline(chart_div, dataTable, options) {
 }
 
 function json2dataTable_timeline(json, xaxis, yaxis) {
+    // Given a dictionary, create a data table, one row at a time.
     var dataTable = new google.visualization.DataTable();
 
     nusers = Object.keys(json['data']).length;
@@ -72,9 +73,8 @@ function json2dataTable_timeline(json, xaxis, yaxis) {
   }
 
 function user2tooltip_timeline(json, uid, xaxis, yaxis) {
-//    var href = get_current_href();
+    // A very simple tooltip that seems not to be used.
     var html = "<div class='tooltip'>" + json["users"][uid] + "</div>";
-//    html += window.location.href.replace("<a href='/coachreports/student/?user_id=" + uid + "&
     return html;
 }
 
@@ -89,6 +89,7 @@ function drawJsonChart_timeline(chart_div, json, xaxis, yaxis) {
 }
 
 function drawJsonChart(chart_div, json, xaxis, yaxis) {
+    // Main interface
     return drawJsonChart_timeline(chart_div, json, xaxis, yaxis);
 }
 

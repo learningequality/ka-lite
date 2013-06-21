@@ -1,6 +1,7 @@
 import json
 import requests
 import datetime
+import re, settings
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 from functools import partial
@@ -12,43 +13,21 @@ from django.template import RequestContext
 from django.template.loader import render_to_string
 
 from coachreports.forms import DataForm
-from coachreports.api_views import StatusException, get_data_form, stats_dict
+from coachreports.api_views import get_data_form, stats_dict
 from main import topicdata
 from main.models import VideoLog, ExerciseLog, VideoFile
 from securesync.models import Facility, FacilityUser,FacilityGroup, DeviceZone, Device
 from securesync.views import facility_required
-from utils.decorators import require_login
-from utils.topic_tools import get_topic_exercises, get_topic_videos
+from utils.decorators import require_login, require_admin
+from utils.internet import StatusException
+from utils.topic_tools import get_topic_exercises, get_topic_videos, get_all_midlevel_topics
 
-
-def get_api_data(request, form=None, form_data=None):
-    api_url = "http%s://%s%s" % ("s" if request.is_secure() else "", request.get_host(), reverse("coachreports.api_views.api_data"))
-
-    if not form_data:
-        if not form:
-            form = get_data_form(request)
-        form_data = form.data
-
-    # Make the api request on the server-side,
-    #   this is a good way to test the API while under development
-    #   (rather than calling the function directly)
-    response = requests.post(api_url, data=form_data)
-    if response.status_code != 200:
-        raise StatusException(message=response.text, status_code=response.status_code)
-
-    data = json.loads(response.text)
-    return data
-
-
-#@require_admin
-@require_login
-@facility_required
-@render_to("coachreports/scatter_view.html")
-def scatter_view(request, facility, xaxis="", yaxis=""):
-    return scatter_view_context(request, facility=facility, xaxis=xaxis, yaxis=yaxis)
 
 def get_accessible_objects_from_request(request, facility):
-
+    """Given a request, get all the facility/group/user objects relevant to the request,
+    subject to the permissions of the user type.
+    """
+    
     # Options to select.  Note that this depends on the user.
     if request.user.is_superuser:
         groups = FacilityGroup.objects.filter(facility=facility)
@@ -71,8 +50,10 @@ def get_accessible_objects_from_request(request, facility):
     return (groups, facilities)
 
 
-def scatter_view_context(request, facility, topic_path=[], *args, **kwargs):
-
+def plotting_metadata_context(request, facility, topic_path=[], *args, **kwargs):
+    """Basic context for any plot: get the data form, a dictionary of stat definitions,
+    and the full gamut of facility/group objects relevant to the request."""
+    
     # Get the form, and retrieve the API data
     form = get_data_form(request, facility=facility, topic_path=topic_path, *args, **kwargs)
 
@@ -85,21 +66,37 @@ def scatter_view_context(request, facility, topic_path=[], *args, **kwargs):
         "facilities": facilities,
     }
 
+####### view end-points ####
 
-@require_login
+@require_admin
 @facility_required
 @render_to("coachreports/timeline_view.html")
 def timeline_view(request, facility, xaxis="", yaxis=""):
-    return scatter_view_context(request, facility=facility, xaxis=xaxis, yaxis=yaxis)
+    """timeline view (line plot, xaxis is time-related): just send metadata; data will be requested via AJAX"""
+    return plotting_metadata_context(request, facility=facility, xaxis=xaxis, yaxis=yaxis)
+
+
+@require_admin
+@facility_required
+@render_to("coachreports/scatter_view.html")
+def scatter_view(request, facility, xaxis="", yaxis=""):
+    """Scatter view (scatter plot): just send metadata; data will be requested via AJAX"""
+    return plotting_metadata_context(request, facility=facility, xaxis=xaxis, yaxis=yaxis)
+
 
 @require_login
 @facility_required
 @render_to("coachreports/student_view.html")
 def student_view(request, facility, xaxis="pct_mastery", yaxis="ex:attempts"):
+    """student view: data generated on the back-end.
+    
+    Student view lists a by-topic-summary of their activity logs.
+    """
+    
     user = get_object_or_None(FacilityUser, id=request.REQUEST.get("user_id"))
     user = user or request.session.get("facility_user",None)
 
-    topics = get_all_topics() # piss poor topics
+    topics = get_all_midlevel_topics()
     topic_ids = [t['id'] for t in topics]
     topics = filter(partial(lambda n,ids: n['id'] in ids, ids=topic_ids), topicdata.NODE_CACHE['Topic'].values()) # real data, like paths
 
@@ -142,7 +139,7 @@ def student_view(request, facility, xaxis="pct_mastery", yaxis="ex:attempts"):
         }
         any_data = any_data or n_exercises_touched>0 or n_videos_touched>0
 
-    context = scatter_view_context(request, facility)
+    context = plotting_metadata_context(request, facility)
     return {
         "form": context["form"],
         "groups": context["groups"],
@@ -173,30 +170,22 @@ def student_view(request, facility, xaxis="pct_mastery", yaxis="ex:attempts"):
     }
 
 
-@require_login
+@require_admin
 @facility_required
 @render_to("coachreports/landing_page.html")
 def landing_page(request, facility):
-    return scatter_view_context(request, facility=facility)
+    """Landing page needs plotting context in order to generate the navbar"""
+    return plotting_metadata_context(request, facility=facility)
 
 
-@render_to("coachreports/test.html")
-def test(request):
-    return {}
-
-def get_all_topics():
-    topics = topicdata.EXERCISE_TOPICS["topics"].values()
-    topics = sorted(topics, key = lambda k: (k["y"], k["x"]))
-    return topics
-
+@require_admin
 @facility_required
 @render_to("coachreports/tabular_view.html")
-def old_coach_report(request, facility, report_type="exercise"):
-    import re, settings
-    from utils.topic_tools import get_topic_videos, get_topic_exercises
-
+def tabular_view(request, facility, report_type="exercise"):
+    """Tabular view also gets data server-side."""
+    
     # Get a list of topics (sorted) and groups
-    topics = get_all_topics()
+    topics = get_all_midlevel_topics()
     groups = FacilityGroup.objects.filter(facility=facility)
     context = {
         "report_types": ("exercise","video"),
@@ -221,7 +210,7 @@ def old_coach_report(request, facility, report_type="exercise"):
     # Get type-specific information
     if report_type=="exercise":
         # Fill in exercises
-        exercises = get_topic_exercises(topic_id)
+        exercises = get_topic_exercises(topic_id=topic_id)
         context["exercises"] = exercises
 
         # More code, but much faster
@@ -274,4 +263,3 @@ def old_coach_report(request, facility, report_type="exercise"):
         return HttpResponseNotFound(render_to_string("404_distributed.html", {}, context_instance=RequestContext(request)))
 
     return context
-

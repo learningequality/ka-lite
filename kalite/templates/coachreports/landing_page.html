@@ -61,7 +61,7 @@ ul.other li {
         <div class="clearfix">
             <div class="separate">
                 <div class="vertical-shadow suggested-action">
-                    <a class="changeable-link" href="{% url old_coach_report %}?{% block topic_paths %}{% for path in form.topic_path %}topic_path={{ path }}&{% endfor %}{% endblock topic_paths %}">
+                    <a class="changeable-link" href="{% url tabular_view %}?{% block topic_paths %}{% for path in form.topic_path %}topic_path={{ path }}&{% endfor %}{% endblock topic_paths %}">
                         <h2 class="suggested-action-title">{% trans "Explore class engagement" %}</h2>
                         <div class="suggested-action-image-link" style="background-image: url({{ STATIC_URL }}images/coachreports/coach-report-table.png);"></div>
                     </a>
@@ -88,7 +88,7 @@ ul.other li {
         <div class="clearfix">
             <div class="separate">
                 <ul class="other"> Also try:
-                <li><a class="changeable-link" href="{% url old_coach_report report_type='video'%}?{% repeatblock topic_paths %}">Engagement with videos</a></li>
+                <li><a class="changeable-link" href="{% url tabular_view report_type='video'%}?{% repeatblock topic_paths %}">Engagement with videos</a></li>
                 </ul>
             </div>
             <div class="separate">
