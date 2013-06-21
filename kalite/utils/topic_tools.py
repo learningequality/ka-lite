@@ -68,7 +68,6 @@ def get_all_leaves(leaf_type, topic_node=topicdata.TOPICS):
     if not "children" in topic_node:
         if topic_node['kind'] == leaf_type:
             leaves.append(topic_node)
-            print topic_node
     else:
         for child in topic_node["children"]:
             leaves += get_all_leaves(topic_node=child, leaf_type=leaf_type)
@@ -97,8 +96,38 @@ def get_topic_leaves(leaf_type, topic_id=None, path=None):
     return exercises
 
 def get_topic_exercises(*args, **kwargs):
+    """Get all exercises for a particular set of topics"""
     return get_topic_leaves(leaf_type='Exercise', *args, **kwargs)
     
 def get_topic_videos(*args, **kwargs):
+    """Get all videos for a particular set of topics"""
     return get_topic_leaves(leaf_type='Video', *args, **kwargs)
+
+
+def get_related_exercises(videos):
+    """Given a set of videos, get all of their related exercises."""
+    related_exercises = []
+    for video in videos:
+        if "related_exercise" in video:
+            related_exercises.append(video['related_exercise'])
+    return related_exercises
+
+def get_related_videos(exercises, topics=None, possible_videos=None):
+    """Given a set of exercises, get all of the videos that say they're related.
     
+    possible_videos: list of videos to consider.
+    topics: if not possible_videos, then get the possible videos from a list of topics.
+    """
+    related_videos = []
+
+    if not possible_videos:
+        possible_videos = []
+        for topic in (topics or topicdata.NODE_CACHE['Topic'].values()):
+            possible_videos += get_topic_videos(topic_id=topic['id'])
+            
+    # Get exercises from videos
+    exercise_ids = [ex["id"] if "id" in ex else ex['name'] for ex in exercises]
+    for video in videos:
+        if "related_exercise" in video and video["related_exercise"]['id'] in exercise_ids:
+            related_videos.append(video)
+    return related_videos
