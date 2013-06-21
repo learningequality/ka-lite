@@ -10,7 +10,6 @@ from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.db.models import Sum
-from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.decorators.cache import cache_control
 from django.views.decorators.cache import cache_page
