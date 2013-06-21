@@ -64,10 +64,8 @@ class OrgUserRegistrationTest(KALiteCentralBrowserTestCase):
         self.browser_send_keys("Firstname" + Keys.TAB) # first name
         self.browser_send_keys("Lastname" + Keys.TAB) # last name
         self.browser_send_keys(self.user_email + Keys.TAB) #email
-        self.browser_send_keys(self.org_name + Keys.TAB) #email
         self.browser_send_keys(self.password + Keys.TAB) #password
         self.browser_send_keys(self.password + Keys.TAB) #password (again)
-        self.browser_send_keys(Keys.TAB) #
         self.browser_send_keys(Keys.SPACE + Keys.TAB) # checkbox 1
         self.browser_send_keys(Keys.SPACE + Keys.TAB) # checkbox 2
 

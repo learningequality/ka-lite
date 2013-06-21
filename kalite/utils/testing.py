@@ -91,13 +91,13 @@ def setup_test_env(browser_type="Firefox", test_user="test", test_password="test
             
 
 
-def wait_for_page_change(browser, source_url, max_retries=10):
+def wait_for_page_change(browser, source_url, wait_time=0.1, max_retries=50):
     """Given a selenium browser, wait until the browser has completed.
     Code taken from: https://github.com/dragoon/django-selenium/blob/master/django_selenium/testcases.py"""
 
     for i in range(max_retries):
         if browser.current_url == source_url:
-            time.sleep(100)
+            time.sleep(wait_time)
         else:
             break;
 
