@@ -2,6 +2,7 @@ from django.http import HttpResponseRedirect
 from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
 
+import control_panel.urls
 import securesync.urls
 from kalite import settings
 
@@ -31,23 +32,36 @@ urlpatterns += patterns('',
     (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', {'packages': ('ka-lite.locale')}, 'i18n_javascript_catalog'),
 )
 
+# Teaching / admin patterns
 urlpatterns += patterns('main.views',
-    url(r'^exercisedashboard/$', 'exercise_dashboard', {}, 'exercise_dashboard'),
+    # For teachers
     url(r'^coachreports/$', 'coach_reports', {}, 'coach_reports'),
     url(r'^easyadmin/$', 'easy_admin', {}, 'easy_admin'),
     url(r'^stats/$', 'summary_stats', {}, 'summary_stats'),
-    url(r'^$', 'homepage', {}, 'homepage'),
+
+    # For admins
     url(r'^update/$', 'update', {}, 'update'),
     url(r'^userlist/$', 'user_list', {}, 'user_list'),
-    url(r'^api/', include('main.api_urls')),
+
+    # Management: Zone, facility, device
+    url(r'^management/zone/$', 'zone_discovery', {}, 'zone_discovery'), # only one zone, so make an easy way to access it
+    url(r'^management/device/$', 'device_discovery', {}, 'device_discovery'), # only one device, so make an easy way to access it
+    url(r'^management/(?P<org_id>\s{0})', include(control_panel.urls)), # no org_id, but parameter needed for reverse url look-up
 )
 
+# Testing
 if "loadtesting" in settings.INSTALLED_APPS:
     urlpatterns += patterns('main.views',
         url(r'^loadtesting/', include('loadtesting.urls')),
     )
     
+# Front-end
 urlpatterns += patterns('main.views',
+    url(r'^$', 'homepage', {}, 'homepage'),
+    url(r'^exercisedashboard/$', 'exercise_dashboard', {}, 'exercise_dashboard'),
+
+    url(r'^api/', include('main.api_urls')),
+
     # the following pattern is a catch-all, so keep it last:
     url(r'^(?P<splat>.+)/$', 'splat_handler', {}, 'splat_handler'),
 )

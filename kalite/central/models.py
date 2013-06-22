@@ -1,12 +1,23 @@
-from django.db import models
-from securesync.models import Zone
+import collections
+import random
+import datetime
+
+from django.db import models, transaction
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.template import RequestContext
+from django.utils.translation import ugettext_lazy as _
+
 import settings
+from securesync import crypto
+from securesync.models import Zone
+
 
 def get_or_create_user_profile(user):
+    assert not user.is_anonymous(), "Should not be calling get_or_create_user_profile with an anonymous user."
+    assert user.is_authenticated(), "Should not be calling get_or_create_user_profile with an anonymous user."
+    
     return UserProfile.objects.get_or_create(user=user)[0]
 
 class Organization(models.Model):
@@ -20,6 +31,8 @@ class Organization(models.Model):
     zones = models.ManyToManyField(Zone)
     owner = models.ForeignKey(User, related_name="owned_organizations")
 
+    dummy_name = "Headless Zones"
+    
     def get_zones(self):
         return list(self.zones.all())
 
@@ -38,9 +51,45 @@ class Organization(models.Model):
     def save(self, owner=None, *args, **kwargs):
         if not self.owner_id:
             self.owner = owner
+            
+        # Make org unique by name, for dummy name only.
+        if self.name==Organization.dummy_name:
+            dummy_orgs = Organization.objects.filter(name=Organization.dummy_name)
+            if len(dummy_orgs)>0 and self.pk not in [d.pk for d in dummy_orgs]:
+                raise Exception("Cannot add more than one dummy org!")
+                
         super(Organization, self).save(*args, **kwargs)
 
-
+    @classmethod
+    def from_zone(cls, zone):
+        """Given a zone, figure out which organization is the parent."""
+    
+        return Organization.objects.filter(zones__pk=zone.pk)
+    
+    @classmethod
+    def get_dummy_organization(cls, user):
+        assert user.is_superuser, "only super-users can call this method!"
+        
+        orgs = cls.objects.filter(name=cls.dummy_name)
+        if not orgs:
+            org = Organization(name=cls.dummy_name, owner=user)
+            org.save()
+            return org
+        else:
+            assert len(orgs)==1, "Cannot have multiple dummy organizations"
+            return orgs[0]
+        
+    @classmethod
+    def update_dummy_organization(cls, user):
+        assert user.is_superuser, "only super-users can call this method!"
+        dummy_org = Organization.get_dummy_organization(user)
+        headless_zones = Zone.get_headless_zones()
+        if headless_zones:
+            for zone in headless_zones:
+                dummy_org.zones.add(zone)
+            dummy_org.save()
+        return dummy_org
+            
 class UserProfile(models.Model):  
     user = models.OneToOneField(User)
 
@@ -48,7 +97,18 @@ class UserProfile(models.Model):
         return self.user.username
 
     def get_organizations(self):
-        return list(self.user.organization_set.all())
+        orgs = collections.OrderedDict() # no dictionary comprehensions, so have to loop
+        for org in self.user.organization_set.all():
+            orgs[org.pk] = org
+        
+        # Add a dummy organization for superusers, containing
+        #   any headless zones
+        if self.user.is_superuser:
+            dummy_org = Organization.update_dummy_organization(self.user)
+            if dummy_org.zones:
+                orgs[dummy_org.pk] = dummy_org
+
+        return orgs
 
     
 class OrganizationInvitation(models.Model):
@@ -65,6 +125,8 @@ class OrganizationInvitation(models.Model):
         cdict = {
             'organization': self.organization,
             'invited_by': self.invited_by,
+            'central_server_host': request.META.get('HTTP_HOST', settings.CENTRAL_SERVER_HOST), # for central server actions, determine DYNAMICALLY to be safe
+
         }
         # Invite an existing user
         if User.objects.filter(email=to_email).count() > 0:
@@ -98,3 +160,4 @@ class Subscription(models.Model):
     email = models.EmailField()
     timestamp = models.DateTimeField(auto_now_add=True)
     ip = models.CharField(max_length=100, blank=True)
+

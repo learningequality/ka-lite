@@ -1,18 +1,20 @@
+import crypto
+import datetime
+import uuid
+import zlib
+import settings
 from annoying.functions import get_object_or_None
+from pbkdf2 import crypt
+
 from django.contrib.auth.models import User, check_password
 from django.core import serializers
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models, transaction
 from django.db.models import Q
 from django.utils.text import compress_string
-from config.models import Settings
-import crypto
-import datetime
-import uuid
-import zlib
-import settings
-from pbkdf2 import crypt
 from django.utils.translation import ugettext_lazy as _
+
+from config.models import Settings
 
 
 _unhashable_fields = ["signature", "signed_by"]
@@ -250,6 +252,20 @@ class Zone(SyncedModel):
     def __unicode__(self):
         return self.name
         
+    @classmethod
+    def get_headless_zones(cls):
+        # Must import inline (not in header) to avoid import loop
+        from central.models import Organization
+        
+        all_zones = Zone.objects.all()
+        headless_zones = []
+        for zone in all_zones:
+            orgs = Organization.objects.filter(zones__in=[zone])
+            if not orgs:
+                headless_zones.append(zone)
+                
+        return headless_zones
+
 
 class Facility(SyncedModel):
     name = models.CharField(verbose_name=_("Name"), help_text=_("(This is the name that students/teachers will see when choosing their facility; it can be in the local language.)"), max_length=100)
@@ -274,7 +290,20 @@ class Facility(SyncedModel):
 
     def is_default(self):
         return self.id == Settings.get("default_facility")
+        
+        
+    @classmethod
+    def from_zone(cls, zone):
+        """Our best approximation of how to map facilities to zones"""
 
+        facilities = set(Facility.objects.filter(zone_fallback=zone))
+
+        for device_zone in DeviceZone.objects.filter(zone=zone):
+            device = device_zone.device
+            facilities = facilities.union(set(Facility.objects.filter(signed_by=device)))
+
+        return facilities
+               
 
 class FacilityGroup(SyncedModel):
     facility = models.ForeignKey(Facility, verbose_name=_("Facility"))

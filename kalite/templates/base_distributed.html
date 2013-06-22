@@ -19,7 +19,7 @@
     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it a short as possible.{% endcomment %}
     <a href="{% url add_facility_teacher %}" id="nav_addteacher" class="admin-only {% block addteacher_active %}{% endblock addteacher_active %}" title="Add a teacher">{% trans "Add Teacher" %}</a>
     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it a short as possible.{% endcomment %}
-    <a href="{% url easy_admin %}" id="nav_admin" class="admin-only {% block easyadmin_active %}{% endblock easyadmin_active %}" title="Visit the admin panel">{% trans "Admin" %}</a>
+    <a href="{% url easy_admin %}" id="nav_admin" class="admin-only {% block easyadmin_active %}{% endblock easyadmin_active %}{% block control_panel_active %}{% endblock control_panel_active %}" title="Visit the admin panel">{% trans "Admin" %}</a>
     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it a short as possible.{% endcomment %}
     <a href="{% url update %}" id="nav_update" class="admin-only {% block update_active %}{% endblock update_active %}" title="Update this server with new videos and subtitles">{% trans "Update" %}</a>
     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it a short as possible.{% endcomment %}

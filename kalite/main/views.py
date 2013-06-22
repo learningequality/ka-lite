@@ -9,26 +9,29 @@ from django.template.loader import render_to_string
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.contrib import messages
+from django.utils.safestring import mark_safe
 from django.db.models import Sum
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.contrib import messages
+from django.utils.translation import ugettext as _
 from django.views.decorators.cache import cache_control
 from django.views.decorators.cache import cache_page
-from django.utils.safestring import mark_safe
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.utils.translation import ugettext as _
 
 import settings
-import utils
-from utils.topics import slug_key, title_key
 from main import topicdata
-from securesync.views import require_admin, facility_required
-from config.models import Settings
-from securesync.models import Facility, FacilityUser,FacilityGroup
-from models import VideoLog, ExerciseLog, VideoFile
+from main.models import VideoLog, ExerciseLog, VideoFile
 from config.models import Settings
 from securesync.api_client import SyncClient
+from securesync.models import Facility, FacilityUser,FacilityGroup, DeviceZone, Device
+from securesync.views import facility_required
+from control_panel.views import facility_users_context, group_report_context
+from utils import topic_tools
 from utils.jobs import force_job
+from utils.decorators import require_admin
 from utils.videos import video_connection_is_available
 from utils.internet import am_i_online
+from utils.topics import slug_key, title_key
 
 
 def splat_handler(request, splat):
@@ -191,6 +194,7 @@ def easy_admin(request):
         "wiki_url" : settings.CENTRAL_WIKI_URL,
         "central_server_host" : settings.CENTRAL_SERVER_HOST,
         "am_i_online": am_i_online(settings.CENTRAL_WIKI_URL, allow_redirects=False), 
+        "in_a_zone":  Device.get_own_device().get_zone() is not None,
     }
     return context
     
@@ -287,81 +291,43 @@ def update(request):
 @facility_required
 @render_to("coach_reports.html")
 def coach_reports(request, facility):
-    topics = topicdata.EXERCISE_TOPICS["topics"].values()
-    topics = sorted(topics, key = lambda k: (k["y"], k["x"]))
-    groups = FacilityGroup.objects.filter(facility=facility)
-    paths = dict((key, val["path"]) for key, val in topicdata.NODE_CACHE["Exercise"].items())
-    context = {
-        "facility": facility,
-        "groups": groups,
-        "topics": topics,
-        "exercise_paths": json.dumps(paths),
-    }
-    topic = request.GET.get("topic", "")
-    group = request.GET.get("group", "")
-    if group and topic and re.match("^[\w\-]+$", topic):
-        exercises = json.loads(open("%stopicdata/%s.json" % (settings.DATA_PATH, topic)).read())
-        exercises = sorted(exercises, key=lambda e: (e["h_position"], e["v_position"]))
-        context["exercises"] = [{
-            "display_name": ex["display_name"],
-            "description": ex["description"],
-            "short_display_name": ex["short_display_name"],
-            "path": topicdata.NODE_CACHE["Exercise"][ex["name"]]["path"],
-        } for ex in exercises]
-        users = get_object_or_404(FacilityGroup, pk=group).facilityuser_set.order_by("first_name", "last_name")
-        context["students"] = [{
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-            "username": user.username,
-            "exercise_logs": [get_object_or_None(ExerciseLog, user=user, exercise_id=ex["name"]) for ex in exercises],
-        } for user in users]
-    return context
+    return group_report_context(
+        facility_id=facility.id, 
+        group_id=request.REQUEST.get("group", ""), 
+        topic_id=request.REQUEST.get("topic", ""), 
+    )
 
 @require_admin
 @facility_required
 @render_to("current_users.html")
 def user_list(request,facility):
-    groups = FacilityGroup.objects.filter(facility=facility)
-    group = request.GET.get("group", "")
-    page = request.GET.get("page","")
-    GETParam = request.GET.copy()
-    if group:
-        if group == "Ungrouped":
-            user_list = FacilityUser.objects.filter(facility=facility,group__isnull=True)
-        else:
-            user_list = get_object_or_404(FacilityGroup, pk=group).facilityuser_set.order_by("first_name", "last_name")
-        paginator = Paginator(user_list, 25)
-        try:
-            users = paginator.page(page)
-        except PageNotAnInteger:
-            users = paginator.page(1)
-        except EmptyPage:
-            users = paginator.page(paginator.num_pages)
-    else:
-        group = ''
-        users = []
-    if users:
-        if users.has_previous():
-            prevGETParam = GETParam.copy()
-            prevGETParam["page"] = users.previous_page_number()
-            previous_page_url = "?" + prevGETParam.urlencode()
-        else:
-            previous_page_url = ""
-        if users.has_next():
-            nextGETParam = GETParam.copy()
-            nextGETParam["page"] = users.next_page_number()
-            next_page_url = "?" + nextGETParam.urlencode()
-        else:
-            next_page_url = ""
-    context = {
-        "facility": facility,
-        "users": users,
-        "groups": groups,
-    }
-    if users:
-        context["pageurls"] = {"next_page": next_page_url, "prev_page": previous_page_url}
-    return context
+    return facility_users_context(
+        request=request,
+        facility_id=facility.id, 
+        group_id=request.REQUEST.get("group",""),
+        page=request.REQUEST.get("page","1"),
+    )
 
+
+@require_admin
+def zone_discovery(request):
+    """Dummy view to generate a helpful dynamic redirect to interface with 'control_panel' app"""
+    device = Device.get_own_device()
+    zone = device.get_zone()
+    if zone:
+        return HttpResponseRedirect(reverse("zone_management", kwargs={"org_id": "", "zone_id": zone.pk}))
+    else:
+        raise Http404(_("This device is not on any zone."))
+        
+@require_admin
+def device_discovery(request):
+    """Dummy view to generate a helpful dynamic redirect to interface with 'control_panel' app"""
+    device = Device.get_own_device()
+    zone = device.get_zone()
+    if zone:
+        return HttpResponseRedirect(reverse("device_management", kwargs={"org_id": "", "zone_id": zone.pk, "device_id": device.pk}))
+    else:
+        raise Http404(_("This device is not on any zone."))
 
 def handler_404(request):
     return HttpResponseNotFound(render_to_string("404.html", {}, context_instance=RequestContext(request)))

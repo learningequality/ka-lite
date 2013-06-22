@@ -1,0 +1,14 @@
+{% extends "control_panel/base_management.html" %}
+
+{% block title %}{{ group.name }} - User Management{% endblock title %}
+
+{% block headcss %}
+{{ block.super }}
+<link rel='stylesheet' type='text/css' href='/static/css/current_users.css'>
+{% endblock headcss %}
+
+
+{% block inner_content %}
+<div id="content">
+    {% include "user_list_body.html" %}
+{% endblock inner_content %}

@@ -1,4 +1,7 @@
 import re, json, uuid, urllib
+from annoying.decorators import render_to
+from annoying.functions import get_object_or_None   
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.serializers import json, serialize
@@ -9,79 +12,25 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect, ge
 from django.template import RequestContext
 from django.utils import simplejson
 from django.utils.html import strip_tags
-from annoying.decorators import render_to
-from forms import RegisteredDevicePublicKeyForm, FacilityUserForm, FacilityTeacherForm, LoginForm, FacilityForm, FacilityGroupForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout   
-from annoying.functions import get_object_or_None   
-from config.models import Settings
+from django.utils.translation import ugettext as _
 
 import crypto
 import settings
+from forms import RegisteredDevicePublicKeyForm, FacilityUserForm, FacilityTeacherForm, LoginForm, FacilityForm, FacilityGroupForm
+from config.models import Settings
+from config.utils import set_as_registered
 from securesync.models import SyncSession, Device, RegisteredDevicePublicKey, Zone, Facility, FacilityGroup
 from securesync.api_client import SyncClient
-from utils.jobs import force_job
-from utils.decorators import require_admin
+from kalite.utils.decorators import require_admin, central_server_only, distributed_server_only, facility_required, facility_from_request
 
-from django.utils.translation import ugettext as _
-
-def central_server_only(handler):
-    def wrapper_fn(*args, **kwargs):
-        if not settings.CENTRAL_SERVER:
-            return HttpResponseNotFound("This path is only available on the central server.")
-        return handler(*args, **kwargs)
-    return wrapper_fn
-
-
-def distributed_server_only(handler):
-    def wrapper_fn(*args, **kwargs):
-        if settings.CENTRAL_SERVER:
-            return HttpResponseNotFound(_("This path is only available on distributed servers."))
-        return handler(*args, **kwargs)
-    return wrapper_fn
-
-
+    
 def register_public_key(request):
     if settings.CENTRAL_SERVER:
         return register_public_key_server(request)
     else:
         return register_public_key_client(request)
-
-
-def get_facility_from_request(request):
-    if "facility" in request.GET:
-        facility = get_object_or_None(Facility, pk=request.GET["facility"])
-        if "set_default" in request.GET and request.is_admin and facility:
-            Settings.set("default_facility", facility.id)
-    elif "facility_user" in request.session:
-        facility = request.session["facility_user"].facility
-    elif Facility.objects.count() == 1:
-        facility = Facility.objects.all()[0]
-    else:
-        facility = get_object_or_None(Facility, pk=Settings.get("default_facility"))
-    return facility
-
-
-def facility_required(handler):
-    def inner_fn(request, *args, **kwargs):
-        
-        if Facility.objects.count() == 0:
-            if request.is_admin:
-                messages.error(request, _("To continue, you must first add a facility (e.g. for your school). ") \
-                    + _("Please use the form below to add a facility."))
-            else:
-                messages.error(request,
-                    _("You must first have the administrator of this server log in below to add a facility."))
-            return HttpResponseRedirect(reverse("add_facility"))
-        else:
-            facility = get_facility_from_request(request)
-        
-        if facility:
-            return handler(request, facility, *args, **kwargs)
-        else:
-            return facility_selection(request)
-    
-    return inner_fn
 
 
 def set_as_registered():
@@ -127,7 +76,7 @@ def register_public_key_server(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("The device's public key has been successfully registered. You may now close this window."))
-            return HttpResponseRedirect(reverse("homepage"))
+            return HttpResponseRedirect(reverse("zone_management"))
     else:
         form = RegisteredDevicePublicKeyForm(request.user)
     return {
@@ -185,6 +134,7 @@ def add_facility_student(request):
     return add_facility_user(request, is_teacher=False)
 
 
+@distributed_server_only
 @render_to("securesync/add_facility_user.html")
 @facility_required
 def add_facility_user(request, facility, is_teacher):
@@ -264,11 +214,10 @@ def add_group(request, facility):
 
 
 @distributed_server_only
+@facility_from_request
 @render_to("securesync/login.html")
-def login(request):
+def login(request, facility):
     facilities = Facility.objects.all()
-    
-    facility = get_facility_from_request(request)
     facility_id = facility and facility.id or None
     
     if request.method == 'POST':

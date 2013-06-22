@@ -2,6 +2,7 @@ from django.http import HttpResponseRedirect
 from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
 
+import control_panel.urls
 import securesync.urls
 from kalite import settings
 from feeds import RssSiteNewsFeed, AtomSiteNewsFeed
@@ -34,13 +35,14 @@ urlpatterns += patterns('central.views',
     url(r'^delete_admin/(?P<org_id>\w+)/(?P<user_id>\w+)/$', 'delete_admin', {}, 'delete_admin'), 
     url(r'^delete_invite/(?P<org_id>\w+)/(?P<invite_id>\w+)/$', 'delete_invite', {}, 'delete_invite'), 
     url(r'^accounts/', include('registration.urls')),
-
-    url(r'^organization/(?P<id>\w+)/$', 'organization_form', {}, 'organization_form'),
-    url(r'^organization/(?P<org_id>\w+)/zone/(?P<id>\w+)/$', 'zone_form', {}, 'zone_form'),
+    
+    # Organization
+    url(r'^organization/$', 'org_management', {}, 'org_management'),
+    url(r'^organization/(?P<org_id>\w+)/$', 'organization_form', {}, 'organization_form'),
     url(r'^organization/invite_action/(?P<invite_id>\w+)/$', 'org_invite_action', {}, 'org_invite_action'),
-    url(r'^organization/(?P<org_id>\w+)/zone/(?P<zone_id>\w+)/facility/$', 'central_facility_admin', {}, 'central_facility_admin'),
-    url(r'^organization/(?P<org_id>\w+)/zone/(?P<zone_id>\w+)/facility/new/$', 'central_facility_edit', {"id": "new"}, 'central_facility_add'),
-    url(r'^organization/(?P<org_id>\w+)/zone/(?P<zone_id>\w+)/facility/(?P<id>\w+)/$', 'central_facility_edit', {}, 'central_facility_edit'),
+
+    # Zone, facility, device
+    url(r'^organization/(?P<org_id>\w+)/', include(control_panel.urls)),
 
     url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'), 
     url(r'^glossary/$', 'glossary', {}, 'glossary'),

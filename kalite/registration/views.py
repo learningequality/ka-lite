@@ -2,24 +2,27 @@
 Views which allow users to create and activate accounts.
 
 """
-
-
+from django.contrib import messages
+from django.contrib.auth import logout, REDIRECT_FIELD_NAME
+from django.contrib.auth import views as auth_views
+from django.core.urlresolvers import reverse
+from django.db import IntegrityError
 from django.shortcuts import redirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.contrib import messages
-from django.contrib.auth import logout
-
-from django.db import IntegrityError
 from django.utils.translation import ugettext as _
 
 from registration.backends import get_backend
+from kalite.utils.decorators import central_server_only
 
+@central_server_only
 def complete(request, *args, **kwargs):
     messages.success(request, "Congratulations! Your account is now active. To get started, "
         + "login to the central server below, to administer organizations and zones.")
     return redirect("auth_login")
 
+
+@central_server_only
 def activate(request, backend,
              template_name='registration/activate.html',
              success_url=None, extra_context=None, **kwargs):
@@ -100,7 +103,7 @@ def activate(request, backend,
                               kwargs,
                               context_instance=context)
 
-
+@central_server_only
 def register(request, backend, success_url=None, form_class=None,
              disallowed_url='registration_disallowed',
              template_name='registration/registration_form.html',
@@ -220,6 +223,29 @@ def register(request, backend, success_url=None, form_class=None,
                               { 'form': form },
                               context_instance=context)
 
+
+@central_server_only
+def login_view(request, *args, **kwargs):
+    """Force lowercase of the username.
+    
+    Since we don't want things to change to the user (if something fails),
+    we should try the new way first, then fall back to the old way"""
+
+    extra_context = { 
+        "redirect": { 
+            "name": REDIRECT_FIELD_NAME, 
+            "url": request.REQUEST.get("next", reverse('org_management')),
+        }
+    }
+    kwargs["extra_context"] = extra_context
+
+    template_response = auth_views.login(request, *args, **kwargs)
+    
+    # Return the logged in version, or failed to login using lcased version
+    return template_response    
+
+
+@central_server_only
 def logout_view(request):
     logout(request)
-    return redirect("homepage")
+    return redirect("landing_page")

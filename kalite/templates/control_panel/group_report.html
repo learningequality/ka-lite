@@ -1,0 +1,15 @@
+{% extends "control_panel/base_management_printable.html" %}
+
+{% block title %}{{ group.name }} - Group Report{% endblock title %}
+
+{% block headcss %}
+{{ block.super }}
+<link rel='stylesheet' type='text/css' href='/static/css/coach_reports.css'>
+{% endblock headcss %}
+
+
+{% block inner_content %}
+<div id="group_container">
+    {% include "coach_reports_body.html" %}
+</div>
+{% endblock inner_content %}

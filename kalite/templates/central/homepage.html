@@ -2,260 +2,706 @@
 
 {% block home_active %}active{% endblock home_active %}
 
+{% block title %}Home{% endblock %}
+{% block jqueryjs %}
+<script type="text/javascript" src="/js/jquery-1.8.3.min.js"></script> 
+{% endblock jqueryjs %}
 {% block headjs %}
-	<script>
-		// makes correct link submit form for removing admin & revoking invites
-		$(function() {
-			$('.remove-admin-submit, .remove-invite-submit').click(function(ev) {
-				$(ev.srcElement).parents('form').submit();
-				return false;
-			});
-
-			$('.glossary-link').wrap('<a href="{% url glossary %}"></a>');
-		});
-	    
-	</script>
+<script type="text/javascript" src="/js/simple.carousel.js"></script> 
+<script type="text/javascript">
+    $(function() {
+        $(".carousel-class").simplecarousel({
+            next: $('#next-button'),
+            prev: $('#prev-button'),
+            slidespeed: 700,
+            auto: 6000,
+            width: 420,
+            height: 337
+        });
+    });
+</script>
+<script type="text/javascript">
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
 {% endblock headjs %}
-
 {% block headcss %}
+<style type="text/css">
 
-	<style>
-	body {
-		min-height: 500px;
-	}
+/*** Layout ***/
+.row{
+    width: 100%;
+    margin: 0 auto;
+    overflow: hidden;
+}
+.col, .floatleft{
+    float: left;
+}
+.subscriberow{
+    min-height: 100px;
+}
+.screenshotrow{
+    /*Width works out to be 1038px*/
+    min-height: 285px;
+    min-width: 700px;
+}
+/*** Layout END ***/
 
-	ul, li {
-	    list-style: none;
-	    margin-left: 15px;
-	}
+/** Content Section Containers **/
 
-	h1.title {
-		font-size: 30px;
-	}
+/* Relevant to Motivation Section */
+#motivation_sec{
+    /*Border*/
+    border-top: 4px;
+    border-bottom: 4px;
+    border-right: 1px;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+    border-color: #d5deb9;      /* Color: (Unoffical) Khan Grey Green*/
+    border-style: solid;
+    
+    /*Sizing*/
+    padding: 15px;
+    padding-right: 10px;
+    padding-bottom: 6px;
+    padding-left: 25px;
+}
+.greenword{
+    color: #78AB46;             /* Color: Pea Green */
+}
+.onecol-spacer-left,
+.onecol-spacer-right {
+    width: 20%;
+    visibility: hidden;
+}
 
-	h2, h3, h4 {
-		margin-bottom: 5px;
-	}
+/* Get Started section */
+#get-started-contribute {
+    margin: 25px auto;
+    height: auto;
+    width: 100%;
+}
+#get_started_sec {
+    padding-bottom: 15px;
 
-	.title-bar {
-		margin-bottom: .7em;
-		padding-bottom: 5px;
-		border-bottom: 1px dotted gray;
-		width: 100%;
+    /* Size */
+    /*padding-left: 10px;*/
+    /*padding-right: 30px;*/
+    width: 65%;
+    height: auto;
+    border-right: 1px;
+    border-color: #DBE6E0;      /* Color: Moon */
+    border-style: solid;
+    text-align: center;
+}
+#get-started-button{
+    background: #78AB46;        /* Color: Pea Green */
+    color: white;
+    border-width: 1px;
+    border-color: #9CBA7F;      /* Color: Mint Candy */
+    border-radius: 5px;
+    width: 50%;
+    min-width: 160px;
+    height: 50px;
+    font-size: 24px;
+}
+#get-started-button:hover{
+    color: #DBE6E0;             /* Color: Moon */
+    cursor: auto;
+}
 
-	}
+/* Relevant to contribute section */
+#contribute_sec{
+    /*width: 45%;*/
+    margin-left: 30px;
+    /*border-right: 1px;*/      /* Uncomment when donate is back */
 
-	.title-bar > a {
-		position: relative;
-		top: 2px;
-	}
+    width: 25%;
+    height: auto;
+    text-align: center;
+}
+#contribute_sec div{
+    float: left;
+}
+.action-text{
+    font-weight: bold;
+    float: left;
+    line-height: 21px;
+    font-size: 13px;
+    width: 100%;
+    /*margin-right: 30px;*/
+    text-align: center;
+    /*margin-left: 50px;*/
+}
+/*button stuff*/
+#contribute-button{
+    background: #78AB46;        /* Color: Pea Green */
+    border-width: 1px;
+    border-color: #9CBA7F;      /* Color: Mint Candy */
+    border-radius: 5px;
+    width: 150px;
+    padding: 10px;
+    padding-top: 12px;
+    font-size: 24px;
+    color: white;
+}
+/*#contribute_sec button{
+    color: white;
+    line-height: 16px;
+    font-size: 24px;
+    margin-left: 20px;
+    margin-top: 5px;
+}*/
+#contribute_sec button:hover{
+    color: #DBE6E0;      /* Color: Moon */
+    cursor: auto;
+}
+.contribute-button-subtitle{
+    font-size: 10px;
+}
 
-	.title-contents {
-		padding: 10px 0px 0px 20px;
-	}
+/* Relevant to subscription section */
+.subscriberow{
+    margin-top: 10px;
+    margin-left: 7px;
+}
+#subscribe_sec{
+    border-color: #DBE6E0;      /* Color: Moon */
+    border-style: solid;
+    
+    /*Size*/
+    padding-left: 10px;
+    padding-right: 10px;
+    min-width: 600px;
+    /*width: 60%;*/
+    
+    /*Layout*//*
+    position: relative;
+    left: 20%;*/
+}
 
-	.nudge-left {
-		margin-left: 5px;
-	}
+#subscribe_sec .cent-s-by-s{
+    float: left;
+}
+.subscribe-title h1,
+.subscribe-title h2{
+    color: #78AB46;             /* Color: Pea Green */
+    font-weight: bold;
+    line-height: normal;
+    margin-bottom: 2px;
+    text-align: center;
+}
+.subscribe-title h1{
+    font-size: 30px;
+}
+.subscribe-title h2{
+    font-size: 24px;
+}
 
-	h2.title {
-		float: left;
-		margin-right: 5px;
-	}
+.email-title {
+    font-weight: bold;
+    line-height: normal;
+    text-align: center;
+    width: 222px;
+}
 
-	.floatleft {
-		float:left;
-	}
+.email-title h1 {
+    color: #78AB46;             /* Color: Pea Green */
+    margin-top: 2px;
+    margin-bottom: 6px;
+    font-size: 30px;
+}
 
-	h2.title {
-		font-size: 25px;
-	}
+.email-title a {
+    margin-bottom: 2px;
+    font-size: 13px;
+    margin-left: 4px;
+}
 
-	h4.title {
-		font-weight: bold;
-	}
+.exclamation {
+    font-size: 6.2em;
+    margin-top: 20px; /* not a perfect way to do it.... */
+    margin-left: 3px;
+}
 
-	#container .h3 !important{
-		border-bottom: none;
-	}
+.subscribe-text {
+    width: 195px;
+    margin-top: 0px;
+    padding: 0 5px 0 8px;
+    line-height: 21px;
+    font-size: 13px;
+    text-align: justify;
+}
+
+.subscribe-form {
+    width: 170px;
+    margin-left: 10px;
+    margin-top: 5px;
+}
+.subscribe-form form {
+    padding: 1px;
+}
+
+.subscribe-form input {
+    height: 22px;
+    width: 130px;
+}
+
+.subscribe-form input[type=email] {
+    border: 1px;
+    border-radius: 5px;
+    border-color: #bbb;         /* Color: medium-light Grey */
+    border-style: solid;
+    padding: 1px;
+    padding-left: 3px;
+    font-size: 12px;
+    margin-bottom: 5px;
+    width: 123px;
+    
+    /*font*/
+    color: #555;                /* Color: Medium Grey */
+    font-style: oblique;
+}
+
+.subscribe-form input[type=submit] {
+    background: #78AB46;        /* Color: Pea Green */
+    color: white;
+    border-width: 1px;
+    border-color: #9CBA7F;      /* Color: Mint Candy */
+    border-radius: 5px;
+    font-size: 14px;
+}
+.subscribe-form input[type=submit]:hover {
+    color: #DBE6E0;      /* Color: Moon */
+}
+
+/* Relevant to share section */
+#share_sec {
+    /*width: 37%;*/
+    border-color: #DBE6E0;      /* Color: Moon */
+    border-style: solid;
+}
+#share_sec div {
+    float: left;
+}
+#share-text {
+    margin-top: 5px;
+    width: 24%;
+}
+.share-title {
+    font-size: 22px;
+}
+#share-block {
+    margin-left: 15px;
+    /*margin-top: 10px;*/
+}
+
+/* Relevant to donate section */
+#donate_sec {
+    display: none;
+    width: 25%;
+    margin-left: 10px;
+}
+#donate_sec div {
+    float: left;
+}
+#donate-text {
+    margin-top: 4px;
+    line-height: 14px;
+    font-size: 12px;
+    text-align: justify;
+    width: 65%;
+}
+/*button stuff*/
+#donate-button {
+    background: #78AB46;        /* Color: Pea Green */
+    border-width: 1px;
+    border-color: #9CBA7F;      /* Color: Mint Candy */
+    border-radius: 5px;
+    padding: 10px;
+    padding-top: 12px;
+    width: 80px;
+
+    /* Text */
+    /*text-align: center;*/
+}
+#donate_sec button {
+    color: white;
+    line-height: 14px;
+    font-size: 14px;
+    margin-left: 10px;
+    margin-top: 20px;
+}
+#donate_sec button:hover {
+    color: #DBE6E0;             /* Color: Moon */
+    line-height: 14px;
+}
+/** Content END **/
+
+/* RSS Feed relevant stuff */
+#bottom_content {
+    margin: 25px auto;
+    min-height: 70px;
+    width: 860px;
+    padding-top: 25px;
+
+    border-top: 1px dashed #DBE6E0; /* Color: Moon */
+}
+#rss-logo {
+    float: left;
+    margin-left: 10px;
+}
+#rss-feed {
+    float: left;
+    min-width: 400px;
+    margin-left: 10px;
+}
+#rss-feed h2 {
+    font-size: 22px;
+}
+.rss-entry {
+    margin-bottom: 10px;
+}
+.rss-title{
+    display: block;
+    font-size: 16px;
+    color: #333;
+    padding-bottom: 1px;
+    margin-bottom: 0;
+    border-bottom: 1px dotted #DBE6E0; /* Color: Moon */
+}
+.rss-entry p{
+    margin: 1px 0;
+    font-size: 
+}
+
+/*** Landing Page END */
+
+/* Pre-Fully internal stylesheet CSS*/
+ul {
+    list-style: disc outside none;
+    margin-left: 20px;
+    font-size: 14px;
+}
+#logo-image-small img {
+    width: auto;
+}
+article {
+    padding: 30px;
+}
+#nav_signup, #nav_login, #nav_admin {
+    display: block;
+}
 
 
-	#last {
-		margin-top: 25px;
-	}
+#screenshot {
+    width: 100%;
+    height: 100%;
+}
 
-	.organization, .org-invite {
-		width: 90%;
-		margin: 20px 0px;
-		border: 1px dotted gray;
-		border-radius: 5px;
-		background-color: #F8F8F8;
-	}
+.screenshotrow img {
+    height: 274px;
+}
 
-	#invite-text > p {
-		margin: 15px 0 10px 15px;
-		padding: 0;
-	}
+#screenshot_sec {
+    height: 275px;
+    width: 420px;
+    border: 1px solid #d5deb9;
+    border-top-width: 4px;
+    border-bottom-width: 4px;
+    border-left-width: 2px;
+}
 
-	#invite-text > .inputs {
-		margin: 0px 0 10px 15px;
-	}
+#motivation_sec {
+    border-left: 1px solid #d5deb9;
+    width: 445px;
+    min-height: 254px;
+}
 
-	.organization > li {
-		list-style-type: none;
-		margin: 0px;
-		padding: 0px;
-	}
+.share-subscribe-section {
+    margin-top: 25px;
+    min-width: 300px;
+}
 
-	#new-zone {
-		margin-top: 10px;
-	}
+#inner-content {
+    width: 950px;
+    margin: 0 auto;
+}
 
-	.zones, .members {
-		min-width: 300px;
-		float: left;
-		padding: 6px 0px 10px 20px;
-	}
+#motivation_sec h1 {
+    line-height: 1.3em;
+}
 
-	#form-label {
-		float: left;
-		margin-top: 3px;
-		margin-right: 5px;
-	}
+.motivation_text {
+    font-size: 13px;
+}
 
-	.clearfix {
-		width: 100%;
-		clear: both; 
-	}
+.rss-feed-icon {
+    margin-top: -5px;
+}
 
-	#invited-tag {
-		color: gray;
-	}
+/* override just for front-page style */
+.message {
+    width: 912px;
+    margin-left: 44px;
+}
 
-	</style>
+#next-button, #prev-button {
+    background-image: url(/images/landing-page/arrows.png);
+    background-repeat: no-repeat;
+    margin-top: -25px;
+    width: 39px;
+    height: 40px;
+    position: absolute;
+}
 
+#next-button {
+    right: -20px;
+    background-position: left -40px;
+    width: 40px;
+}
+
+#prev-button {
+    left: -20px;
+    background-position: left top;
+    width: 40px;
+}
+
+#button-sec {
+    position: absolute;
+    margin-top: 145px;
+    width: 422px;
+}
+
+/* Dylan's extra, apart from what I changed above (sorry... rush to launch) */
+.mini-action-section {
+    width: 48%;
+    float: left;
+    margin-right: 10px;
+    text-align: center;
+}
+
+.button-section, #get_started_sec > h2, #contribute_sec > h2 {
+    /*margin-left: 40px;*/
+    width: 100%;
+}
+
+.button-section button {
+    margin-top: 10px;
+}
+
+#left-bump {
+    margin-left: 85px;
+}
+
+.carousel-pic {
+    list-style-type: none;
+}
+
+.ka-on-social {
+    float: left;
+}
+
+.ka-on-social-container {
+    float: left;
+    margin-left: 70px;
+    margin-top: 2px;
+}
+
+.follow-us-text {
+    font-size: 16px;
+    margin-top: 6px;
+}
+
+.ka-on-twitter {
+    margin-top: 2px;
+    margin-left: -3px;
+}
+
+.ka-on-facebook {
+    margin-left: 5px;
+}
+
+.carousel-class {
+    overflow: hidden;
+    height: 100%;
+}
+
+</style>
 {% endblock headcss %}
 
 {% block content %}
+          
+<div id="inner-content">
 
-<div id="org_container">
-	<h1 class="title">My Organizations<span class="glossary-link nudge-left" title="An Organization is an entity responsible for administering zones."></span></h2>
-	{% for invite in invitations %}
-		<div class="org-invite">
-			<form method="post" action="{% url org_invite_action invite_id=invite.pk %}"> 
-				{% csrf_token %}
-				<div id="invite-text">
-					<p>You have been invited by <a href="mailto:{{invite.invited_by.email}}">{% firstof invite.invited_by.get_full_name invite.invited_by.username %}</a> to help administer "<span style="font-weight:bold">{{ invite.organization }}</span>". Please click below to join the organization or to decline this invitation.</p> 
-					<div class="inputs">
-						<input type="submit" name="join" value="Join">
-						<input type="submit" name="decline" value="Decline">
-					</div>
-				</div>
-			</form>
-		</div>
-	{% endfor %}
-	<div id="organizations">
-			{% if organizations %}
-				{% for org in organizations %}
-					<div class="organization">
-						<div class="title-bar">
-							<div class="title-contents">
-								<h2 class="title">
-									{{ org.name }}
-								</h2>
-								<a href="{% url organization_form id=org.id %}">
-									(Edit)
-								</a>
-							<div class="clearfix"></div>
-						</div>
-						</div>
-						<div class="zones">
-							<h4 class="title floatleft">Affiliated Zones</h4><span class="glossary-link nudge-left" title="A Zone is the area in which multiple devices may connect to share content with each other."></span>
-							<div class="clearfix"></div>
-							{% for zone in org.get_zones %}
-								<h4 class="floatleft">
-									{{ zone.name }}
-								</h4>
-								<div class="nudge-left floatleft">
-									<a href="{% url zone_form org_id=org.id id=zone.id %}">
-										(Edit Zone)
-									</a>
-									<a href="{% url central_facility_admin org_id=org.id zone_id=zone.id %}">
-										(Manage Facilities)
-									</a>
-								</div>
-								<div class="clearfix"></div>
-							{% endfor %}
-							<div class="clearfix"></div>
-							<form method="link" action="{% url zone_form org_id=org.id id='new' %}">
-								<input class="add" type="submit" value="Create a new zone">
-							</form>
-						</div>
-						<div class="members">
-							<h4 class="title floatleft">Organization Admins</h4><span class="glossary-link nudge-left" title="An Organization Admin is a user responsible for overseeing an organization."></span>
-							<div class="clearfix"></div>
-							{% for member in org.get_members %}
-								<h4 title="{{member.email }}" class="floatleft">
-									{% firstof member.get_full_name member.username %}
-								</h4>
-								<div class="nudge-left floatleft">
-									{% if org.owner == member and member == request.user %}
-										(You are the owner)
-									{% elif member == request.user %}
-										(You)
-									{% elif org.owner == member %}
-										(Owner)
-									{% else %}
-										<form method="post" action="{% url delete_admin org_id=org.id user_id=member.id %}">
-												{% csrf_token %}
-												(<a href="" class="remove-admin-submit">Remove Admin</a>)
-										</form>
-									{% endif %}
-								</div>
-								<div class="clearfix"></div>
-							{% endfor %}
-							{% for invite in org.invitations.all %}
-								<h4 id="invited-tag" class="floatleft">
-									{{ invite.email_to_invite }} (invited)
-								</h4>
-								<div class="nudge-left floatleft">
-									<form method="post" action="{% url delete_invite org_id=org.id invite_id=invite.pk %}">
-										{% csrf_token %}
-										<a href="" class="remove-invite-submit">(Revoke Invite)</a>
-									</form>
-								</div>
-								<div class="clearfix"></div>
-							{% endfor %}
-							<div class="add">
-								<form method="post">
-									{% csrf_token %}
-									<input type="hidden" name="organization" value="{{ org.pk }}">
-									{{ org.form.invited_by }}
-									<h4 id="form-label">Add Admin: </h4><input type="text" placeholder="example@email.com" name="email_to_invite">
-									<input type="submit" value="Send invite!">
-									{% for error in org.form.non_field_errors %}
-										<div class="errors">{{ error }}</div>
-									{% endfor %}
-								</form>
-							</div>
-					</div>
-					<div class="clearfix"></div>
-					</div>
-				{% endfor %}
-				<div id="last">
-					<form method="link" action="/organization/new/">
-						<input type="submit" value="Create a new organization">
-					</form>
-				</div>
-			{% else %}
-				<h2>You currently have no organizations. Would you like to <a href="/organization/new/">create a new organization</a>?</h2>
-				<h2>To join an existing organization, contact one of its administrators to have them add you.</h2>
-			{% endif %}
-	</div>
+<!--First Content Row-->
+<div class="screenshotrow">
+    <!-- screenshot or Image Carousel -->
+    <div id="screenshot_sec" class="col twocol">
+        <div id="button-sec">
+            <span id="prev-button"></span>
+            <span id="next-button"></span>
+        </div>
+        <ul class="carousel-class">
+            <li class="carousel-pic"><img src="/static/images/landing-page/exercises-cropped.png"></li>
+            <li class="carousel-pic"><img src="/static/images/landing-page/subtitle-mashup.png"></li>
+            <li class="carousel-pic"><img src="/static/images/landing-page/vid-down-cropped.png"></li>
+            <li class="carousel-pic"><img src="/static/images/landing-page/coach-reports-cropped.png"></li>
+        </ul>
+    </div>
+    <!-- Motivation -->
+    <div id="motivation_sec" class="col twocol">
+        <h1>Only 35% of the world has internet.<br/>100% of the world needs education.</h1>
+        <p class="motivation_text">KA Lite is an offline version of <a href="http://www.khanacademy.org/" target="_blank">Khan Academy</a> that runs on almost anything.
+            
+            </p>
+        <ul>
+            <li class="motivation_text">Bringing the online education revolution to rural communities.</li>
+            <li class="motivation_text">Synchronize and manage your organization's deployments centrally.</li>
+            <li class="motivation_text">Quick installation, minimal system requirements, and simple to use.</li>
+            <li class="motivation_text">Students can earn points, teacher can view coach reports.</li>
+            <li class="motivation_text">Choose which videos to download, and languages for subtitles.</li>
+        </ul>
+    </div>
 </div>
 
-<div>	
-	<p>After creating an organization and adding a zone to it, above, you're ready to follow the <a href="https://github.com/learningequality/ka-lite/blob/master/INSTALL.md" target="_blank">installation instructions</a> on the server where you'll be running KA Lite.</p>
+<!-- Second Content Row - Subscribe and Share -->
+<div class="row subscriberow">
+
+    <div id="subscribe_sec" class="col onecol share-subscribe-section">
+        <div class="cent-s-by-s subscribe-title"><h1>SUBSCRIBE<br/></h1><h2>FOR UPDATES</h2></div>
+        <div class="exclamation cent-s-by-s greenword">!</div>
+ <!--        <div class="cent-s-by-s subscribe-text">
+            We’re constantly updating KA Lite, and would love to let you know about new developments.
+        </div> -->
+        <div id="mc_embed_signup" class="cent-s-by-s subscribe-form">
+            <form action="http://adhocsync.us6.list-manage.com/subscribe/post?u=023b9af05922dfc7f47a4fffb&amp;id=97a379de16" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+                <input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
+                <input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button">
+            </form>
+        </div>
+
+        <div class="cent-s-by-s email-title">
+            <h1>Contact us</h1>
+            <a class="email-address" href="mailto:{{ central_contact_email }}">{{ central_contact_email }}</a>
+        </div>
+
+    </div>
+
+    <div id="share_sec" class="col social_media_sharing share-subscribe-section">
+        <!--<div class="cent-s-by-s subscribe-title"><h1>SHARING<br/></h1><h2>IS CARING</h2></div>
+        <div class="exclamation cent-s-by-s greenword">!</div>-->
+        <!--<div id="share-text">
+            <span class="greenword share-title">SHARE</span>
+        </div>-->
+        <div id="share-block">
+            <!-- FB and Twitter -->
+            <img src="/static/images/social-fb-t.png" width="101" height="62" alt="FB and twitter" usemap="#socialmap">
+            <map name="socialmap">
+                <area shape="rect" coords="0,0,50,62" alt="Facebook" href="http://www.facebook.com/share.php?u=http://bit.ly/RnZgUp">
+                <area shape="rect" coords="51,0,101,62" alt="Twitter" href="https://twitter.com/intent/tweet?text=KA+Lite%2C+an+offline+version+of+Khan+Academy+for+rural+schools&url=http%3A%2F%2F{{ central_server_host }}%2F">
+            </map>
+
+            <!-- G+ -->
+            <div class="g-plus" data-action="share" data-annotation="vertical-bubble" data-height="60" data-href="http://{{ central_server_host }}/"></div>
+
+            <!-- LinkedIN -->
+
+            <script src="//platform.linkedin.com/in.js" type="text/javascript"> </script> <script type="IN/Share" data-url="http://{{ central_server_host }}/" data-counter="top"></script>
+        </div>
+    </div>
+
 </div>
+
+<!-- Third Content Row  - Get Started and Contribute -->
+<div id="get-started-contribute" class="row">
+    <div id="get_started_sec" class="floatleft">
+        <h2>
+            Do you know somewhere that KA Lite could be useful?
+        </h2>
+        <div class="mini-action-section">
+            <div class="action-text">
+                Ready to get started? 
+            </div>
+            <div class="button-section">
+
+                <a href="{{ wiki_url }}installation">
+
+                    <button id="get-started-button">
+                       Install now!
+                    </button>
+                </a>
+            </div>
+        </div>
+        <div class="mini-action-section">
+            <div class="action-text">
+                Tell us about your needs
+            </div>
+            <div class="button-section">
+                <a href="https://docs.google.com/spreadsheet/viewform?formkey=dEhEOWRNVDBzWTdsUnFQYWlCWnZoWWc6MQ">
+                    <button id="get-started-button">
+                        Deployment
+                    </button>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div id="contribute_sec" class="floatleft">
+        <h2>
+            Want to contribute?
+        </h2>
+        <div class="action-text">
+            Develop, translate, or seed!
+        </div>
+        <div class="button-section">
+
+            <a href="{{ wiki_url }}contribute" target="_blank"><button id="contribute-button">Contribute</button></a>
+        </div>
+    </div>
+
+</div>
+
+</div> <!--end promo content-->
+
+{% if feed %}
+<div id="bottom_content" class="row">  
+    <div id="rss-logo">
+
+
+        <a href="{% url rss_feed %}"><img class="rss-feed-icon" src="/static/images/rssfeed.jpg"/></a>
+    </div>
+    <div id="rss-feed">
+        <h2>Read more!</h2>
+        {% for entry in feed %}
+            <div class="rss-entry"><span class="rss-title"><a href="{{ entry.url }}" target="_blank" title="{{ entry.description }}">{{entry.title}}</a></span> 
+                {% if entry.description|length >= 1000 %}
+                    <p>{{ entry.description|slice:":500" }}<a href="{{ entry.url }}" target="_blank" title="{{ entry.description }}">...</a></p>
+                {% else %}
+                    <p>{{ entry.description }}</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <div id="press-col">
+    </div>
+
+
+</div>
+{% endif %}
 
 {% endblock content %}
+
+{% block footerleft %}
+    <span class="ka-on-social-container">
+        <span class="ka-on-social follow-us-text">Follow us!</span> 
+
+
+      <a class="ka-on-social ka-on-facebook" href="https://www.facebook.com/kaliteproject"><img src="/static/images/ka-on-facebook-button.png" /></a>
+        <a class="ka-on-social ka-on-twitter" href="https://twitter.com/ka_lite"><img class="ka-on-twitter" src="/static/images/ka-on-twitter-button.png"/></a>
+    </span>
+{% endblock footerleft %}
