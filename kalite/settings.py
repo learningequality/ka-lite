@@ -19,6 +19,9 @@ logging.getLogger("kalite").setLevel(logging.DEBUG*DEBUG + logging.INFO*(1-DEBUG
     
 INTERNAL_IPS   = getattr(local_settings, "INTERNAL_IPS", ("127.0.0.1",))
 
+# TODO(jamalex): currently this only has an effect on Linux/OSX
+PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 8008)
+
 CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
 
 # info about the central server(s)
@@ -180,7 +183,16 @@ if CACHE_TIME or CACHE_TIME is None: # None can mean infinite caching to some fu
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
-TEST_RUNNER = 'kalite.utils.testrunner.KALiteTestRunner'
+# This setting is required for AJAX-based messaging to work in Django 1.4,
+#   due to this bug: https://code.djangoproject.com/ticket/19387
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
+# import these one extra time to overwrite any settings not explicitly looking for local settings
+try:
+    from local_settings import *
+except ImportError:
+    pass
+
 
 syncing_models = []
 def add_syncing_models(models):
