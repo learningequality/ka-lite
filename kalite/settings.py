@@ -1,8 +1,8 @@
 import json
 import os
+import logging
 import sys
 import tempfile
-import logging
 
 try:
     from local_settings import *
@@ -193,7 +193,6 @@ try:
 except ImportError:
     pass
 
-TEST_RUNNER = 'kalite.utils.testrunner.KALiteTestRunner'
 
 syncing_models = []
 def add_syncing_models(models):
