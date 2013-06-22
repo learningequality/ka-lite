@@ -6,7 +6,7 @@ from django.utils import translation
 from django.test.client import Client
 
 import settings
-from utils import topic_tools, urls
+from utils import topic_tools, internet
 
 # all code based on Django snippet at:
 #   http://djangosnippets.org/snippets/936/
@@ -90,7 +90,7 @@ def invalidate_cached_topic_hierarchy(video_id=None, video_slug=None, video_path
         video_path = get_video_page_path(video_id=video_id, video_slug=video_slug)
 
     #HACK(bcipolli): Skip / (which doesn't use this info) and /topics/ (which doesn't exist) 
-    for path in urls.generate_all_paths(path=video_path, base_path="/topics/"):
+    for path in internet.generate_all_paths(path=video_path, base_path="/topics/"):
         expire_page(path=path)
 
 
@@ -101,7 +101,7 @@ def regenereate_cached_topic_hierarchies(video_ids):
         video_path = get_video_page_path(video_id=video_id)
 
         #HACK(bcipolli): Skip / (which doesn't use this info) and /topics/ (which doesn't exist) 
-        paths_to_regenerate = paths_to_regenerate.union(urls.generate_all_paths(path=video_path, base_path="/topics/"))
+        paths_to_regenerate = paths_to_regenerate.union(internet.generate_all_paths(path=video_path, base_path="/topics/"))
 
     # Now, regenerate any page.
     for path in paths_to_regenerate:

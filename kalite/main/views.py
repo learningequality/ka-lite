@@ -101,8 +101,7 @@ def topic_handler(request, topic):
     exercises = topicdata.get_exercises(topic)
     topics    = topicdata.get_live_topics(topic)
 
-    # Get video counts if they'll be used,
-    #   on-demand only.
+    # Get video counts if they'll be used, on-demand only.
     #
     # Check in this order so that the initial counts are always updated
     if topic_tools.video_counts_need_update() or not 'nvideos_local' in topic:
@@ -126,16 +125,12 @@ def topic_handler(request, topic):
 def video_handler(request, video, prev=None, next=None):
     video_exists = VideoFile.objects.filter(pk=video['youtube_id']).exists()
     
-    # If the video REALLY exists, but it's not in the DB, then trigger the update call
-    #   It should not take long for the db to be updated (assuming that crontab is running
-    #   in the background), so just let them start watching the video and assume
-    #   progress will be recorded.
-    #
-    #  The small probability that progress will not be reported
-    #    is better than not offering the video to the student at all.
+    # If we detect that a video exists, but it's not on disk, then 
+    #   force the database to update.  No race condition here for saving
+    #   progress in a VideoLog: it is not dependent on VideoFile.
     if not video_exists and topic_tools.is_video_on_disk(video['youtube_id']):
         force_job("videoscan")
-        video_exists = True # 
+        video_exists = True
         
     if not video_exists:
         if request.is_admin:
@@ -151,7 +146,7 @@ def video_handler(request, video, prev=None, next=None):
     context = {
         "video": video,
         "title": video[title_key["Video"]],
-        "video_exists": video_exists,#VideoFile.objects.filter(pk=video['youtube_id']).exists(),
+        "video_exists": video_exists,
         "prev": prev,
         "next": next,
     }
@@ -190,6 +185,7 @@ def exercise_dashboard(request):
 @cache_page(settings.CACHE_TIME)
 @render_to("homepage.html")
 def homepage(request):
+    # TODO(bcipolli): video counts on the distributed server homepage
     topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"], topicdata.TOPICS["children"])
 
     # indexed by integer

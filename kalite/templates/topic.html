@@ -34,7 +34,8 @@ a:visited.topic-unavailable {
 {% block bodyjs %}
 <script type="text/javascript">
 $('.video-unavailable').removeAttr("href"); 
-//$('.topic-unavailable').removeAttr("href"); 
+
+// TODO(bcipolli): use javascript to translate here
 $('a.video-unavailable').attr('title', '{% trans "This video is not downloaded." %}');
 </script>
 {% endblock bodyjs %}
@@ -64,7 +65,7 @@ $('a.video-unavailable').attr('title', '{% trans "This video is not downloaded."
     <li>
         <!--<a href="mplayer:///khan/videofiles/{{ video.youtube_id }}.ogv">{{ video.title }}</a>-->
         <span class="progress-circle" data-youtube-id="{{ video.youtube_id }}"></span>
-        <a class="video-{% if not video.on_disk %}un{% endif %}available" href="v/{{ video.readable_id }}/">{% trans video.title %}</a>
+        <a class="video-link video-{% if not video.on_disk %}un{% endif %}available" href="v/{{ video.readable_id }}/">{% trans video.title %}</a>
     </li>
     {% endfor %}
     <br/>

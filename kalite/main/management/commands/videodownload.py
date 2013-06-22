@@ -73,10 +73,10 @@ class Command(BaseCommand):
             handled_video_ids.append(video.youtube_id)
             
             # Expire, but don't regenerate until the very end, for efficiency.
-            if settings.CACHE_TIME:
+            if hasattr(settings, "CACHES"):
                 caching.invalidate_cached_topic_hierarchy(video_id=video.youtube_id)
     
         # Regenerate all pages, efficiently
-        if settings.CACHE_TIME:
+        if hasattr(settings, "CACHES"):
             caching.regenereate_cached_topic_hierarchies(handled_video_ids)
         

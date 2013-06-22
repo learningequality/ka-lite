@@ -84,5 +84,5 @@ class Command(BaseCommand):
             self.stdout.write("Updated %d VideoFile models (marked them as having subtitles)\n" % count)
         
         # Regenerate all pages, efficiently
-        if settings.CACHE_TIME:
-            caching.regenereate_cached_topic_hierarchies(touched_video_ids)
+        if hasattr(settings, "CACHES"):
+            caching.regenerate_cached_topic_hierarchies(touched_video_ids)
