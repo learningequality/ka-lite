@@ -17,38 +17,49 @@
     width: 80%;
 }
 .separate {
-    padding: 5px;
-    width: 30%;
-    margin: 0 auto;
-    display: inline-block;
-    text-align: left;
+
+    display: block;
+    margin-bottom: 0;
+    position: relative;
+    max-width: 320px;
+    float: left;
+    padding-bottom: 10px;
+    margin-left: 30px;
+    min-height: 225px;
 }
 
 .wrapit {
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
+    max-width: 1280px;
+/*    margin-left: auto;
+    margin-right: auto;*/
     text-align: center;
 }
 
-table {
-    width:100%;
-    border: 0px solid green;
+.suggested-action-image-link{
+    max-width: 280px;
 }
-td {
-    width: 50%;
-    border: 0px solid green;
+
+.suggested-action-title{
+    height: 35px;
+    padding-bottom: 8px;
 }
-td.links {
-    text-align: center;
-}
-ul.other {
+
+
+.other {
+    margin-top: 10px;
     font-size:18px;
+    float:left;
 }
-ul.other li {
+
+
+.changeable-link{
+    clear:both;
     font-size: 16px;
-    margin-left: 0px;
+    float:left;
+
 }
+
+
 </style>
 {% endblock headcss %}
 
@@ -66,6 +77,8 @@ ul.other li {
                         <div class="suggested-action-image-link" style="background-image: url({{ STATIC_URL }}images/coachreports/coach-report-table.png);"></div>
                     </a>
                 </div>
+                <span class="other"> Also try:</span>
+                <a class="changeable-link" style="display:block" href="{% url tabular_view report_type='video'%}?{% repeatblock topic_paths %}">{% trans "Engagement with videos" %}</a>
             </div>
             <div class="separate">
                 <div class="vertical-shadow suggested-action">
@@ -74,32 +87,18 @@ ul.other li {
                         <div class="suggested-action-image-link" style="background-image: url({{ STATIC_URL }}images/coachreports/coach-report-scatter.png);"></div>
                     </a>
                 </div>
+                <span class="other"> Also try:</span>
+                <a class="changeable-link" style="display:block" href="{% url scatter_view xaxis='ex:attempts' yaxis='ex:points' %}?{% repeatblock topic_paths %}">{% trans "Practice effectiveness (attempts vs. points)" %}</a>
             </div>
             <div class="separate">
                 <div class="vertical-shadow suggested-action">
                     <a class="changeable-link" href="{% url timeline_view xaxis='ex:completed_timestamp' yaxis='pct_mastery' %}?{% repeatblock topic_paths %}">
                         <h2 class="suggested-action-title">{% trans "Explore student mastery over time" %}</h2>
-                        <div class="suggested-action-image-link" style="background-image: url({{ STATIC_URL }}images/coachreports/coach-report-timeline.png);"></div>
+                        <div class="suggested-action-image-link" style="background-image: url({% static "images/coachreports/coach-report-timeline.png" %});"></div>
                     </a>
                 </div>
-            </div>
-        </div>
-        
-        <div class="clearfix">
-            <div class="separate">
-                <ul class="other"> Also try:
-                <li><a class="changeable-link" href="{% url tabular_view report_type='video'%}?{% repeatblock topic_paths %}">Engagement with videos</a></li>
-                </ul>
-            </div>
-            <div class="separate">
-                <ul class="other">Also try:
-                    <li><a class="changeable-link" href="{% url scatter_view xaxis='ex:attempts' yaxis='ex:points' %}?{% repeatblock topic_paths %}">Practice effectiveness (attempts vs. points)</a></li>
-                </ul>
-            </div>
-            <div class="separate">
-                <ul class="other">Also try:
-                    <li><a class="changeable-link" href="{% url timeline_view xaxis='6_months' yaxis='pct_mastery' %}?{% repeatblock topic_paths %}">Mastery over the past 6 months</a></li>
-                </ul>
+                <span class="other"> Also try:</span>
+                <a class="changeable-link" style="display:block" href="{% url timeline_view xaxis='6_months' yaxis='pct_mastery' %}?{% repeatblock topic_paths %}">{% trans "Mastery over the past 6 months" %}</a>
             </div>
         </div>
     </div>
