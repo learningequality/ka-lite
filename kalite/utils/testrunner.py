@@ -9,6 +9,15 @@ from django.test.simple import DjangoTestSuiteRunner
 
 from kalite import settings
 
+# Purge all .pyc files using the clean_pyc django extension.
+# This prevents issues when py's have been renamed or moved but
+#   the orphan pyc's are discovered and run during testing
+# pyc's are not tracked by git, so orphans can happen when an older
+#   older branch has been checked out
+print "Purging pyc files"
+from django.core.management import call_command
+call_command('clean_pyc', verbosity=2)
+
 class KALiteTestRunner(DjangoTestSuiteRunner):
     """Forces us to start in liveserver mode, and only includes relevant apps to test"""
     
