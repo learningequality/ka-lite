@@ -1,1 +1,109 @@
-[{"relative_url": "/exercise/recognizing_rays_lines_and_line_segments", "guaranteed_file_name": "recognizing_rays_lines_and_line_segments.html", "file_name": null, "author_name": "Omar Rizwan", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/recognizing_rays_lines_and_line_segments", "v_position": -22, "h_position": 25, "node_slug": "e/recognizing_rays_lines_and_line_segments", "progress_key": "e205328272", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/segments-and-angles-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/recognizing_rays_lines_and_line_segments.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Recog lines", "covers": [], "display_name": "Recognizing rays lines and line segments", "kind": "Exercise", "sha1": "e0e47562d61afa51df1f95d5d4a89cf48e59d108", "name": "recognizing_rays_lines_and_line_segments", "seconds_per_fast_problem": 4.0, "prerequisites": ["area_of_a_circle", "area_of_triangles_1"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/recognizing_rays_lines_and_line_segments_256.png"}, {"relative_url": "/exercise/measuring_segments", "guaranteed_file_name": "measuring_segments.html", "file_name": null, "author_name": "Ben Eater", "creation_date": "2012-04-03T21:56:15Z", "ka_url": "http://www.khanacademy.org/exercise/measuring_segments", "v_position": -23, "h_position": 26, "node_slug": "e/measuring_segments", "progress_key": "e701990088", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/segments-and-angles-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/measuring_segments.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Meas segmnt", "covers": [], "display_name": "Measuring segments", "kind": "Exercise", "sha1": "6c6dffa8019102ce4c2e30b41c9f367b4c508191", "name": "measuring_segments", "seconds_per_fast_problem": 5.0, "prerequisites": ["recognizing_rays_lines_and_line_segments"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/measuring_segments_256.png"}, {"relative_url": "/exercise/congruent_segments", "guaranteed_file_name": "congruent_segments.html", "file_name": null, "author_name": "Ben Eater", "creation_date": "2012-04-03T21:56:35Z", "ka_url": "http://www.khanacademy.org/exercise/congruent_segments", "v_position": -22, "h_position": 26, "node_slug": "e/congruent_segments", "progress_key": "e701911238", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/segments-and-angles-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/congruent_segments.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Congr sgmt", "covers": [], "display_name": "Congruent segments", "kind": "Exercise", "sha1": "e23c7b2595dd9b7ef66630b03309ba4c53eedaeb", "name": "congruent_segments", "seconds_per_fast_problem": 5.0, "prerequisites": ["recognizing_rays_lines_and_line_segments"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/congruent_segments_256.png"}, {"relative_url": "/exercise/points_lines_and_planes", "guaranteed_file_name": "points_lines_and_planes.html", "file_name": null, "author_name": "Ben Eater", "creation_date": "2012-04-18T05:49:47Z", "ka_url": "http://www.khanacademy.org/exercise/points_lines_and_planes", "v_position": -24, "h_position": 26, "node_slug": "e/points_lines_and_planes", "progress_key": "e729626121", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/segments-and-angles-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/points_lines_and_planes.png", "custom_stacks": [], "description": "", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "PtsLinPlane", "covers": [], "display_name": "Points lines and planes", "kind": "Exercise", "sha1": "3d523739feea2ff798530bd5b2292743e26fb64c", "name": "points_lines_and_planes", "seconds_per_fast_problem": 6.0, "prerequisites": ["recognizing_rays_lines_and_line_segments"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/points_lines_and_planes_256.png"}, {"relative_url": "/exercise/segment_addition", "guaranteed_file_name": "segment_addition.html", "file_name": null, "author_name": "Ben Eater", "creation_date": "2012-04-03T21:56:58Z", "ka_url": "http://www.khanacademy.org/exercise/segment_addition", "v_position": -23, "h_position": 27, "node_slug": "e/segment_addition", "progress_key": "e701927254", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/segments-and-angles-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/segment_addition.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Segmnt addn", "covers": [], "display_name": "Segment addition", "kind": "Exercise", "sha1": "8634eb8043a92215a7dc97763807c54ac22da01f", "name": "segment_addition", "seconds_per_fast_problem": 27.0, "prerequisites": ["measuring_segments", "congruent_segments"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/segment_addition_256.png"}, {"relative_url": "/exercise/midpoint_of_a_segment", "guaranteed_file_name": "midpoint_of_a_segment.html", "file_name": null, "author_name": "Ben Eater", "creation_date": "2012-04-03T21:57:15Z", "ka_url": "http://www.khanacademy.org/exercise/midpoint_of_a_segment", "v_position": -22, "h_position": 27, "node_slug": "e/midpoint_of_a_segment", "progress_key": "e701941563", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/segments-and-angles-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/midpoint_of_a_segment.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Midpt segmt", "covers": [], "display_name": "Midpoint of a segment", "kind": "Exercise", "sha1": "a0a9f870e7fad3179ccc527640acbca934ba6f3d", "name": "midpoint_of_a_segment", "seconds_per_fast_problem": 27.0, "prerequisites": ["measuring_segments", "congruent_segments"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/midpoint_of_a_segment_256.png"}, {"relative_url": "/exercise/measuring_angles", "guaranteed_file_name": "measuring_angles.html", "file_name": null, "author_name": "Omar Rizwan", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/measuring_angles", "v_position": -21, "h_position": 26, "node_slug": "e/measuring_angles", "progress_key": "e196064396", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/segments-and-angles-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/measuring_angles.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Meas Angles", "covers": [], "display_name": "Measuring angles", "kind": "Exercise", "sha1": "f19ea5dd7ac609d64a439aaf0afc13f4146f7480", "name": "measuring_angles", "seconds_per_fast_problem": 12.0, "prerequisites": ["recognizing_rays_lines_and_line_segments"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/measuring_angles_256.png"}, {"relative_url": "/exercise/angle_types", "guaranteed_file_name": "angle_types.html", "file_name": null, "author_name": "Ben Alpert", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/angle_types", "v_position": -20, "h_position": 26, "node_slug": "e/angle_types", "progress_key": "e47757395", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/segments-and-angles-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/angle_types.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Angle Types", "covers": [], "display_name": "Angle types", "kind": "Exercise", "sha1": "be9f1214374872362d43bdcf7146b27d76bde85d", "name": "angle_types", "seconds_per_fast_problem": 4.0, "prerequisites": ["recognizing_rays_lines_and_line_segments"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/angle_types_256.png"}, {"relative_url": "/exercise/exploring_angle_pairs_1", "guaranteed_file_name": "exploring_angle_pairs_1.html", "file_name": "exploring_angle_pairs_1.html", "author_name": "Mark Wittels", "creation_date": "2012-06-12T23:25:12Z", "ka_url": "http://www.khanacademy.org/exercise/exploring_angle_pairs_1", "v_position": -21, "h_position": 27, "node_slug": "e/exploring_angle_pairs_1", "progress_key": "e840016557", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/segments-and-angles-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/exploring_angle_pairs_1.png", "custom_stacks": [], "description": "Find vertical angles, adjacent angles, and linearly paired angles.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Angle pairs", "covers": [], "display_name": "Exploring angle pairs", "kind": "Exercise", "sha1": "ccb288d746605f1fd494930f312f569d2a3dcd7d", "name": "exploring_angle_pairs_1", "seconds_per_fast_problem": 10.0, "prerequisites": ["measuring_angles", "angle_types"], "pretty_display_name": "Exploring angle pairs", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/exploring_angle_pairs_1_256.png"}, {"relative_url": "/exercise/complementary_and_supplementary_angles", "guaranteed_file_name": "complementary_and_supplementary_angles.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/complementary_and_supplementary_angles", "v_position": -20, "h_position": 27, "node_slug": "e/complementary_and_supplementary_angles", "progress_key": "e47799044", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/segments-and-angles-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/complementary_and_supplementary_angles.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "CompSuppAng", "covers": ["complementary_angles", "supplementary_angles"], "display_name": "Complementary and supplementary angles", "kind": "Exercise", "sha1": "6d189b5449e37e6da6f44ef9bef2eb1c7a66ee29", "name": "complementary_and_supplementary_angles", "seconds_per_fast_problem": 8.0, "prerequisites": ["measuring_angles", "angle_types"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/complementary_and_supplementary_angles_256.png"}, {"relative_url": "/exercise/vertical_angles", "guaranteed_file_name": "vertical_angles.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-09-23T05:06:13Z", "ka_url": "http://www.khanacademy.org/exercise/vertical_angles", "v_position": -21, "h_position": 28, "node_slug": "e/vertical_angles", "progress_key": "e265340597", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/segments-and-angles-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/vertical_angles.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Vert angles", "covers": [], "display_name": "Vertical angles", "kind": "Exercise", "sha1": "c18534b2fed80cee47368c50ff58212372e752f6", "name": "vertical_angles", "seconds_per_fast_problem": 4.0, "prerequisites": ["exploring_angle_pairs_1", "complementary_and_supplementary_angles"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/vertical_angles_256.png"}, {"relative_url": "/exercise/vertical_angles_2", "guaranteed_file_name": "vertical_angles_2.html", "file_name": null, "author_name": "Matt Wahl", "creation_date": "2011-12-02T06:41:54Z", "ka_url": "http://www.khanacademy.org/exercise/vertical_angles_2", "v_position": -20, "h_position": 28, "node_slug": "e/vertical_angles_2", "progress_key": "e415276545", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/segments-and-angles-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/vertical_angles_2.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Vert ang. 2", "covers": ["vertical_angles"], "display_name": "Vertical angles 2", "kind": "Exercise", "sha1": "f4a3c928bc356e3d39c8d19a472d974801915aed", "name": "vertical_angles_2", "seconds_per_fast_problem": 22.0, "prerequisites": ["exploring_angle_pairs_1", "complementary_and_supplementary_angles"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/vertical_angles_2_256.png"}, {"relative_url": "/exercise/angle_addition_postulate", "guaranteed_file_name": "angle_addition_postulate.html", "file_name": null, "author_name": "Ben Alpert", "creation_date": "2012-04-18T05:50:57Z", "ka_url": "http://www.khanacademy.org/exercise/angle_addition_postulate", "v_position": -21, "h_position": 29, "node_slug": "e/angle_addition_postulate", "progress_key": "e729494328", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/segments-and-angles-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/angle_addition_postulate.png", "custom_stacks": [], "description": "", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "AngAddPstlt", "covers": [], "display_name": "Angle addition postulate", "kind": "Exercise", "sha1": "26355654da7487582da234992ec7dc43c1a3bf8d", "name": "angle_addition_postulate", "seconds_per_fast_problem": 37.0, "prerequisites": ["vertical_angles", "vertical_angles_2"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/angle_addition_postulate_256.png"}]
+[
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -23, 
+    "path": "/math/geometry/segments-and-angles/intro_euclid/e/measuring_segments/", 
+    "display_name": "Measuring segments", 
+    "title": "Measuring segments", 
+    "live": true, 
+    "seconds_per_fast_problem": 5.0, 
+    "description": null, 
+    "h_position": 26, 
+    "slug": "measuring_segments", 
+    "kind": "Exercise", 
+    "name": "measuring_segments", 
+    "prerequisites": [
+      "recognizing_rays_lines_and_line_segments"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -24, 
+    "path": "/math/geometry/segments-and-angles/intro_euclid/e/points_lines_and_planes/", 
+    "display_name": "Points, lines, and planes", 
+    "title": "Points, lines, and planes", 
+    "live": true, 
+    "seconds_per_fast_problem": 6.0, 
+    "description": "", 
+    "h_position": 26, 
+    "slug": "points_lines_and_planes", 
+    "kind": "Exercise", 
+    "name": "points_lines_and_planes", 
+    "prerequisites": [
+      "recognizing_rays_lines_and_line_segments"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "lines--line-segments--and-rays"
+    ], 
+    "v_position": -22, 
+    "path": "/math/geometry/segments-and-angles/intro_euclid/e/recognizing_rays_lines_and_line_segments/", 
+    "display_name": "Recognizing rays lines and line segments", 
+    "title": "Recognizing rays lines and line segments", 
+    "live": true, 
+    "seconds_per_fast_problem": 4.0, 
+    "description": null, 
+    "h_position": 25, 
+    "slug": "recognizing_rays_lines_and_line_segments", 
+    "kind": "Exercise", 
+    "name": "recognizing_rays_lines_and_line_segments", 
+    "prerequisites": [
+      "area_of_a_circle", 
+      "area_of_triangles_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -22, 
+    "path": "/math/geometry/segments-and-angles/intro_euclid/e/congruent_segments/", 
+    "display_name": "Congruent segments", 
+    "title": "Congruent segments", 
+    "live": true, 
+    "seconds_per_fast_problem": 5.0, 
+    "description": null, 
+    "h_position": 26, 
+    "slug": "congruent_segments", 
+    "kind": "Exercise", 
+    "name": "congruent_segments", 
+    "prerequisites": [
+      "recognizing_rays_lines_and_line_segments"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -23, 
+    "path": "/math/geometry/segments-and-angles/intro_euclid/e/segment_addition/", 
+    "display_name": "Segment addition", 
+    "title": "Segment addition", 
+    "live": true, 
+    "seconds_per_fast_problem": 28.0, 
+    "description": null, 
+    "h_position": 27, 
+    "slug": "segment_addition", 
+    "kind": "Exercise", 
+    "name": "segment_addition", 
+    "prerequisites": [
+      "measuring_segments", 
+      "congruent_segments"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -22, 
+    "path": "/math/geometry/segments-and-angles/intro_euclid/e/midpoint_of_a_segment/", 
+    "display_name": "Midpoint of a segment", 
+    "title": "Midpoint of a segment", 
+    "live": true, 
+    "seconds_per_fast_problem": 28.0, 
+    "description": null, 
+    "h_position": 27, 
+    "slug": "midpoint_of_a_segment", 
+    "kind": "Exercise", 
+    "name": "midpoint_of_a_segment", 
+    "prerequisites": [
+      "measuring_segments", 
+      "congruent_segments"
+    ]
+  }
+]

@@ -1,1 +1,296 @@
-[{"relative_url": "/exercise/new_definitions_1", "guaranteed_file_name": "new_definitions_1.html", "file_name": "", "author_name": "Ben Alpert", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/new_definitions_1", "v_position": 1, "h_position": 38, "node_slug": "e/new_definitions_1", "progress_key": "e23890537", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/algebra-functions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/new_definitions_1.png", "custom_stacks": [], "description": "Given the definition of a new operator, evaluate an expression that contains that operator.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "New Def. 1", "covers": [], "display_name": "New operator definitions 1", "kind": "Exercise", "sha1": "5e58216eb6f1329841cf0c99dd7698fc4307d5dd", "name": "new_definitions_1", "seconds_per_fast_problem": 13.0, "prerequisites": ["interpreting_linear_equations"], "pretty_display_name": "New operator definitions 1", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/new_definitions_1_256.png"}, {"relative_url": "/exercise/new_definitions_2", "guaranteed_file_name": "new_definitions_2.html", "file_name": "", "author_name": "Ben Alpert", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/new_definitions_2", "v_position": 1, "h_position": 39, "node_slug": "e/new_definitions_2", "progress_key": "e23890539", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/algebra-functions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/new_definitions_2.png", "custom_stacks": [], "description": "Given the definition of 2 new operators, evaluate an expression that contains that operator.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "New Def. 2", "covers": ["new_definitions_1"], "display_name": "New operator definitions 2", "kind": "Exercise", "sha1": "882939222957c2ba65a8d80299478b9ca806a767", "name": "new_definitions_2", "seconds_per_fast_problem": 29.0, "prerequisites": ["new_definitions_1"], "pretty_display_name": "New operator definitions 2", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/new_definitions_2_256.png"}, {"relative_url": "/exercise/direct_and_inverse_variation", "guaranteed_file_name": "direct_and_inverse_variation.html", "file_name": "", "author_name": "Omar Rizwan", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/direct_and_inverse_variation", "v_position": 2, "h_position": 38, "node_slug": "e/direct_and_inverse_variation", "progress_key": "e23890555", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/algebra-functions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/direct_and_inverse_variation.png", "custom_stacks": [], "description": "Select a function that indicates direct or inverse variation between two variables.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Dir/Inv Var", "covers": [], "display_name": "Direct and inverse variation", "kind": "Exercise", "sha1": "697da437fb7a960ece54bbadfc9caf34ee89be6d", "name": "direct_and_inverse_variation", "seconds_per_fast_problem": 9.0, "prerequisites": ["interpreting_linear_equations"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/direct_and_inverse_variation_256.png"}, {"relative_url": "/exercise/functions_1", "guaranteed_file_name": "functions_1.html", "file_name": "", "author_name": "Omar Rizwan", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/functions_1", "v_position": -1, "h_position": 38, "node_slug": "e/functions_1", "progress_key": "e3030", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/algebra-functions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/functions_1.png", "custom_stacks": [], "description": "Find the value of a function for a given x based on a graph.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Functions 1", "covers": [], "display_name": "Understanding function notation", "kind": "Exercise", "sha1": "9ef85ee47a62e8cd7dc3b4c2a31e1ce49a32d846", "name": "functions_1", "seconds_per_fast_problem": 6.0, "prerequisites": ["interpreting_linear_equations"], "pretty_display_name": "Understanding function notation", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/functions_1_256.png"}, {"relative_url": "/exercise/functions_2", "guaranteed_file_name": "functions_2.html", "file_name": "", "author_name": "Omar Rizwan", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/functions_2", "v_position": -2, "h_position": 39, "node_slug": "e/functions_2", "progress_key": "e3035", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/algebra-functions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/functions_2.png", "custom_stacks": [], "description": "Find the value of a function for a given x based on a graph, and perform operations with that value.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Functions 2", "covers": ["functions_1"], "display_name": "Evaluating expressions with function notation", "kind": "Exercise", "sha1": "d4c341b8711cd677c25e84c582d95de997d8c0eb", "name": "functions_2", "seconds_per_fast_problem": 27.0, "prerequisites": ["functions_1"], "pretty_display_name": "Evaluating expressions with function notation", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/functions_2_256.png"}, {"relative_url": "/exercise/functions_3", "guaranteed_file_name": "functions_3.html", "file_name": "", "author_name": "Omar Rizwan", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/functions_3", "v_position": -2, "h_position": 40, "node_slug": "e/functions_3", "progress_key": "e47887257", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/algebra-functions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/functions_3.png", "custom_stacks": [], "description": "Find the function of a function.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Functions 3", "covers": [], "display_name": "Evaluating composite functions", "kind": "Exercise", "sha1": "7b46f8b74d11cc6f039cf9bd20fc7ea7e630b860", "name": "functions_3", "seconds_per_fast_problem": 48.0, "prerequisites": ["functions_2"], "pretty_display_name": "Evaluating composite functions", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/functions_3_256.png"}, {"relative_url": "/exercise/domain_and_range_0.5", "guaranteed_file_name": "domain_and_range_0.5.html", "file_name": "", "author_name": "Eric Sumner", "creation_date": "2011-11-11T01:20:20Z", "ka_url": "http://www.khanacademy.org/exercise/domain_and_range_0.5", "v_position": 0, "h_position": 39, "node_slug": "e/domain_and_range_0.5", "progress_key": "e371794641", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/algebra-functions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/domain_and_range_0.5.png", "custom_stacks": [], "description": "Given the graph of a function, determine its domain or range.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Domai Range", "covers": [], "display_name": "Domain and range", "kind": "Exercise", "sha1": "62f2b61d6f3dfd92ee960fb5bbb78ff02dc2aa3d", "name": "domain_and_range_0.5", "seconds_per_fast_problem": 9.0, "prerequisites": ["functions_1"], "pretty_display_name": "Domain and range", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/domain_and_range_0.5_256.png"}, {"relative_url": "/exercise/domain_of_a_function", "guaranteed_file_name": "domain_of_a_function.html", "file_name": "", "author_name": "Jeff Ruberg", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/domain_of_a_function", "v_position": -1, "h_position": 40, "node_slug": "e/domain_of_a_function", "progress_key": "e2025", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/algebra-functions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/domain_of_a_function.png", "custom_stacks": [], "description": "Given the equation of a function, determine the domain.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Domain fx.", "covers": [], "display_name": "Domain of a function", "kind": "Exercise", "sha1": "922b14e57a1b23bbad1992f8650a830899e82b07", "name": "domain_of_a_function", "seconds_per_fast_problem": 10.0, "prerequisites": ["functions_2", "domain_and_range_0.5"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/domain_of_a_function_256.png"}, {"relative_url": "/exercise/range_of_a_function", "guaranteed_file_name": "range_of_a_function.html", "file_name": "", "author_name": "Ben Alpert", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/range_of_a_function", "v_position": 1, "h_position": 40, "node_slug": "e/range_of_a_function", "progress_key": "e47889342", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/algebra-functions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/range_of_a_function.png", "custom_stacks": [], "description": "Given the equation of a quadratic function, determine the range.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Range of fn", "covers": [], "display_name": "Range of a function", "kind": "Exercise", "sha1": "cb6a766aa59c7874494d72212855a738895fa687", "name": "range_of_a_function", "seconds_per_fast_problem": 10.0, "prerequisites": ["functions_2", "domain_and_range_0.5"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/range_of_a_function_256.png"}, {"relative_url": "/exercise/inverses_of_functions", "guaranteed_file_name": "inverses_of_functions.html", "file_name": "", "author_name": "Jeff Ruberg", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/inverses_of_functions", "v_position": -1, "h_position": 41, "node_slug": "e/inverses_of_functions", "progress_key": "e4089220", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/algebra-functions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/inverses_of_functions.png", "custom_stacks": [], "description": "Determine the inverse of a function based on the equation and graph.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Inverse fx", "covers": [], "display_name": "Inverses of functions", "kind": "Exercise", "sha1": "1ae524da6f7e6d4acfeee7d7e2e8bcc9db2af2d2", "name": "inverses_of_functions", "seconds_per_fast_problem": 11.0, "prerequisites": ["domain_of_a_function", "range_of_a_function"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/inverses_of_functions_256.png"}, {"relative_url": "/exercise/shifting_and_reflecting_functions", "guaranteed_file_name": "shifting_and_reflecting_functions.html", "file_name": "", "author_name": "Peter Kuperman", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/shifting_and_reflecting_functions", "v_position": 1, "h_position": 41, "node_slug": "e/shifting_and_reflecting_functions", "progress_key": "e3813824", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/algebra-functions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/shifting_and_reflecting_functions.png", "custom_stacks": [], "description": "Determine the equation for one graphed function in terms of another.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Shif/Ref fx", "covers": [], "display_name": "Shifting and reflecting functions", "kind": "Exercise", "sha1": "c818042c841f8c61c3873afa2a1dadef083c4042", "name": "shifting_and_reflecting_functions", "seconds_per_fast_problem": 15.0, "prerequisites": ["domain_of_a_function", "functions_3", "range_of_a_function"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/shifting_and_reflecting_functions_256.png"}, {"relative_url": "/exercise/even_and_odd_functions", "guaranteed_file_name": "even_and_odd_functions.html", "file_name": "", "author_name": "Jeff Ruberg", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/even_and_odd_functions", "v_position": -3, "h_position": 40, "node_slug": "e/even_and_odd_functions", "progress_key": "e3803992", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/algebra-functions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/even_and_odd_functions.png", "custom_stacks": [], "description": "Determine if a graphed function is even, odd, or neither.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Even/Odd fx", "covers": [], "display_name": "Even and odd functions", "kind": "Exercise", "sha1": "ca2228d234d07f2302b0dc6c9646708ae0d08e33", "name": "even_and_odd_functions", "seconds_per_fast_problem": 4.0, "prerequisites": ["functions_2"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/even_and_odd_functions_256.png"}, {"relative_url": "/exercise/views_of_a_function", "guaranteed_file_name": "views_of_a_function.html", "file_name": "views_of_a_function.html", "author_name": "Emily Eisenberg", "creation_date": "2012-08-10T23:46:13Z", "ka_url": "http://www.khanacademy.org/exercise/views_of_a_function", "v_position": -4, "h_position": 40, "node_slug": "e/views_of_a_function", "progress_key": "e957104859", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/algebra-functions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/views_of_a_function.png", "custom_stacks": [], "description": "Representing functions in multiple ways", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "views of fn", "covers": [], "display_name": "Views of a function", "kind": "Exercise", "sha1": "9382c945a3dd3297d571ae1c5d6a700c992ef7eb", "name": "views_of_a_function", "seconds_per_fast_problem": 37.0, "prerequisites": ["functions_2"], "pretty_display_name": "Views of a function", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/views_of_a_function_256.png"}]
+[
+  {
+    "related_video_readable_ids": [
+      "functions--part-4", 
+      "functions-part-2", 
+      "introduction-to-functions", 
+      "functions--part-iii"
+    ], 
+    "v_position": -1, 
+    "path": "/math/algebra/algebra-functions/relationships_functions/e/functions_1/", 
+    "display_name": "Understanding function notation", 
+    "title": "Understanding function notation", 
+    "live": true, 
+    "seconds_per_fast_problem": 8.0, 
+    "description": "", 
+    "h_position": 38, 
+    "slug": "functions_1", 
+    "kind": "Exercise", 
+    "name": "functions_1", 
+    "prerequisites": [
+      "interpreting_linear_equations"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -3, 
+    "path": "/math/algebra/algebra-functions/relationships_functions/e/recognizing_functions/", 
+    "display_name": "Recognizing functions", 
+    "title": "Recognizing functions", 
+    "live": true, 
+    "seconds_per_fast_problem": 5.0, 
+    "description": "Determine if different relationships are functions or not.", 
+    "h_position": 41, 
+    "slug": "recognizing_functions", 
+    "kind": "Exercise", 
+    "name": "recognizing_functions", 
+    "prerequisites": [
+      "views_of_a_function"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -3, 
+    "path": "/math/algebra/algebra-functions/relationships_functions/e/recog-func-2/", 
+    "display_name": "Recognizing functions 2", 
+    "title": "Recognizing functions 2", 
+    "live": true, 
+    "seconds_per_fast_problem": 4.0, 
+    "description": "", 
+    "h_position": 42, 
+    "slug": "recog-func-2", 
+    "kind": "Exercise", 
+    "name": "recog-func-2", 
+    "prerequisites": [
+      "recognizing_functions"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "domain-of-a-function"
+    ], 
+    "v_position": -1, 
+    "path": "/math/algebra/algebra-functions/domain_and_range/e/domain_of_a_function/", 
+    "display_name": "Domain of a function", 
+    "title": "Domain of a function", 
+    "live": true, 
+    "seconds_per_fast_problem": 10.0, 
+    "description": "Given the equation of a function, determine the domain.", 
+    "h_position": 40, 
+    "slug": "domain_of_a_function", 
+    "kind": "Exercise", 
+    "name": "domain_of_a_function", 
+    "prerequisites": [
+      "functions_2", 
+      "domain_and_range_0.5"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "domain-and-range-1", 
+      "domain-and-range-of-a-function"
+    ], 
+    "v_position": 1, 
+    "path": "/math/algebra/algebra-functions/domain_and_range/e/range_of_a_function/", 
+    "display_name": "Range of a function", 
+    "title": "Range of a function", 
+    "live": true, 
+    "seconds_per_fast_problem": 10.0, 
+    "description": "Given the equation of a quadratic function, determine the range.", 
+    "h_position": 40, 
+    "slug": "range_of_a_function", 
+    "kind": "Exercise", 
+    "name": "range_of_a_function", 
+    "prerequisites": [
+      "functions_2", 
+      "domain_and_range_0.5"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "domain-and-range-1", 
+      "domain-and-range-2", 
+      "domain-and-range-of-a-function"
+    ], 
+    "v_position": 0, 
+    "path": "/math/algebra/algebra-functions/domain_and_range/e/domain_and_range_0.5/", 
+    "display_name": "Domain and range", 
+    "title": "Domain and range", 
+    "live": true, 
+    "seconds_per_fast_problem": 8.0, 
+    "description": "Given the graph of a function, determine its domain or range.", 
+    "h_position": 39, 
+    "slug": "domain_and_range_0.5", 
+    "kind": "Exercise", 
+    "name": "domain_and_range_0.5", 
+    "prerequisites": [
+      "functions_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -5, 
+    "path": "/math/algebra/algebra-functions/analyzing-functions-algebra/e/comparing-features-of-functions-1/", 
+    "display_name": "Comparing features of functions 1", 
+    "title": "Comparing features of functions 1", 
+    "live": true, 
+    "seconds_per_fast_problem": 4.0, 
+    "description": "", 
+    "h_position": 42, 
+    "slug": "comparing-features-of-functions-1", 
+    "kind": "Exercise", 
+    "name": "comparing-features-of-functions-1", 
+    "prerequisites": [
+      "recog-features-func-2"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": 10, 
+    "path": "/math/algebra/algebra-functions/linear-nonlinear-functions-tut/e/linear-non-linear-functions/", 
+    "display_name": "Linear and nonlinear functions", 
+    "title": "Linear and nonlinear functions", 
+    "live": true, 
+    "seconds_per_fast_problem": 4.0, 
+    "description": "", 
+    "h_position": 40, 
+    "slug": "linear-non-linear-functions", 
+    "kind": "Exercise", 
+    "name": "linear-non-linear-functions", 
+    "prerequisites": [
+      "plugging_in_values"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "direct-and-inverse-variation", 
+      "recognizing-direct-and-inverse-variation", 
+      "direct-variation-models", 
+      "direct-variation-1"
+    ], 
+    "v_position": 2, 
+    "path": "/math/algebra/algebra-functions/direct_inverse_variation/e/direct_and_inverse_variation/", 
+    "display_name": "Direct and inverse variation", 
+    "title": "Direct and inverse variation", 
+    "live": true, 
+    "seconds_per_fast_problem": 9.0, 
+    "description": "Select a function that indicates direct or inverse variation between two variables.", 
+    "h_position": 38, 
+    "slug": "direct_and_inverse_variation", 
+    "kind": "Exercise", 
+    "name": "direct_and_inverse_variation", 
+    "prerequisites": [
+      "interpreting_linear_equations"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -3, 
+    "path": "/math/algebra/algebra-functions/graphing_functions/e/views_of_a_function/", 
+    "display_name": "Views of a function", 
+    "title": "Views of a function", 
+    "live": true, 
+    "seconds_per_fast_problem": 31.0, 
+    "description": "Representing functions in multiple ways", 
+    "h_position": 40, 
+    "slug": "views_of_a_function", 
+    "kind": "Exercise", 
+    "name": "views_of_a_function", 
+    "prerequisites": [
+      "functions_2"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "functions-part-2", 
+      "functions--part-iii", 
+      "functions--part-4"
+    ], 
+    "v_position": -2, 
+    "path": "/math/algebra/algebra-functions/eval-function-expressions/e/functions_2/", 
+    "display_name": "Evaluating expressions with function notation", 
+    "title": "Evaluating expressions with function notation", 
+    "live": true, 
+    "seconds_per_fast_problem": 26.0, 
+    "description": "Find the value of a function for a given x based on a graph, and perform operations with that value.", 
+    "h_position": 39, 
+    "slug": "functions_2", 
+    "kind": "Exercise", 
+    "name": "functions_2", 
+    "prerequisites": [
+      "functions_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "functions--part-4", 
+      "functions-part-2", 
+      "functions--part-iii"
+    ], 
+    "v_position": -2, 
+    "path": "/math/algebra/algebra-functions/eval-function-expressions/e/functions_3/", 
+    "display_name": "Evaluating composite functions", 
+    "title": "Evaluating composite functions", 
+    "live": true, 
+    "seconds_per_fast_problem": 44.0, 
+    "description": "Find the function of a function.", 
+    "h_position": 40, 
+    "slug": "functions_3", 
+    "kind": "Exercise", 
+    "name": "functions_3", 
+    "prerequisites": [
+      "functions_2"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "introduction-to-function-inverses", 
+      "function-inverse-example-1", 
+      "function-inverses-example-2", 
+      "function-inverses-example-3"
+    ], 
+    "v_position": -1, 
+    "path": "/math/algebra/algebra-functions/function_inverses/e/inverses_of_functions/", 
+    "display_name": "Inverses of functions", 
+    "title": "Inverses of functions", 
+    "live": true, 
+    "seconds_per_fast_problem": 11.0, 
+    "description": "Determine the inverse of a function based on the equation and graph.", 
+    "h_position": 41, 
+    "slug": "inverses_of_functions", 
+    "kind": "Exercise", 
+    "name": "inverses_of_functions", 
+    "prerequisites": [
+      "domain_of_a_function", 
+      "range_of_a_function"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "new-operator-definitions"
+    ], 
+    "v_position": 1, 
+    "path": "/math/algebra/algebra-functions/new_operators/e/new_definitions_1/", 
+    "display_name": "New operator definitions 1", 
+    "title": "New operator definitions 1", 
+    "live": true, 
+    "seconds_per_fast_problem": 12.0, 
+    "description": "Given the definition of a new operator, evaluate an expression that contains that operator.", 
+    "h_position": 38, 
+    "slug": "new_definitions_1", 
+    "kind": "Exercise", 
+    "name": "new_definitions_1", 
+    "prerequisites": [
+      "interpreting_linear_equations"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "new-operator-definitions"
+    ], 
+    "v_position": 1, 
+    "path": "/math/algebra/algebra-functions/new_operators/e/new_definitions_2/", 
+    "display_name": "New operator definitions 2", 
+    "title": "New operator definitions 2", 
+    "live": true, 
+    "seconds_per_fast_problem": 27.0, 
+    "description": "Given the definition of 2 new operators, evaluate an expression that contains that operator.", 
+    "h_position": 39, 
+    "slug": "new_definitions_2", 
+    "kind": "Exercise", 
+    "name": "new_definitions_2", 
+    "prerequisites": [
+      "new_definitions_1"
+    ]
+  }
+]

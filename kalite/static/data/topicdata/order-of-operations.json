@@ -1,1 +1,68 @@
-[{"relative_url": "/exercise/properties_of_numbers_1", "guaranteed_file_name": "properties_of_numbers_1.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/properties_of_numbers_1", "v_position": -5, "h_position": 13, "node_slug": "e/properties_of_numbers_1", "progress_key": "e237877395", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/order-of-operations-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/properties_of_numbers_1.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "# Props 1", "covers": [], "display_name": "Properties of numbers 1", "kind": "Exercise", "sha1": "49dca2958fbe353aa3150231f81ad6a6030b9d61", "name": "properties_of_numbers_1", "seconds_per_fast_problem": 5.0, "prerequisites": ["multiplying_and_dividing_negative_numbers"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/properties_of_numbers_1_256.png"}, {"relative_url": "/exercise/properties_of_numbers_2", "guaranteed_file_name": "properties_of_numbers_2.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/properties_of_numbers_2", "v_position": -5, "h_position": 14, "node_slug": "e/properties_of_numbers_2", "progress_key": "e237892055", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/order-of-operations-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/properties_of_numbers_2.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "# Props 2", "covers": [], "display_name": "Properties of numbers 2", "kind": "Exercise", "sha1": "d589773cc302b1424cd4f750ca95fc9325c13180", "name": "properties_of_numbers_2", "seconds_per_fast_problem": 6.0, "prerequisites": ["properties_of_numbers_1"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/properties_of_numbers_2_256.png"}, {"relative_url": "/exercise/distributive_property", "guaranteed_file_name": "distributive_property.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-09-19T21:38:56Z", "ka_url": "http://www.khanacademy.org/exercise/distributive_property", "v_position": -3, "h_position": 14, "node_slug": "e/distributive_property", "progress_key": "e257483380", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/order-of-operations-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/distributive_property.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Distrib Pro", "covers": [], "display_name": "Distributive property", "kind": "Exercise", "sha1": "734d2303f1ebfd15e7469cf4d21d010cffa3328c", "name": "distributive_property", "seconds_per_fast_problem": 7.0, "prerequisites": ["multiplying_and_dividing_negative_numbers"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/distributive_property_256.png"}, {"relative_url": "/exercise/order_of_operations", "guaranteed_file_name": "order_of_operations.html", "file_name": null, "author_name": "Omar Rizwan", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/order_of_operations", "v_position": -4, "h_position": 15, "node_slug": "e/order_of_operations", "progress_key": "e2011", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/order-of-operations-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/order_of_operations.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Order Ops.", "covers": [], "display_name": "Order of operations", "kind": "Exercise", "sha1": "d5e13b84e8c1243d0ccc1931e5227598f86b4fe6", "name": "order_of_operations", "seconds_per_fast_problem": 7.0, "prerequisites": ["properties_of_numbers_2", "number_properties_terminology_1", "distributive_property"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/order_of_operations_256.png"}, {"relative_url": "/exercise/number_properties_terminology_1", "guaranteed_file_name": "number_properties_terminology_1.html", "file_name": null, "author_name": "Christopher Kirby", "creation_date": "2012-01-13T08:21:58Z", "ka_url": "http://www.khanacademy.org/exercise/number_properties_terminology_1", "v_position": -4, "h_position": 14, "node_slug": "e/number_properties_terminology_1", "progress_key": "e497964483", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/order-of-operations-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/number_properties_terminology_1.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "# prop term", "covers": [], "display_name": "Number properties terminology 1", "kind": "Exercise", "sha1": "eda2dc8b5a2db9bc0ec95f66632e153285de8bb0", "name": "number_properties_terminology_1", "seconds_per_fast_problem": 5.0, "prerequisites": ["multiplying_and_dividing_negative_numbers"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/number_properties_terminology_1_256.png"}]
+[
+  {
+    "related_video_readable_ids": [
+      "commutative-law-of-addition", 
+      "commutative-law-of-multiplication", 
+      "associative-law-of-addition", 
+      "associative-law-of-multiplication"
+    ], 
+    "v_position": -5, 
+    "path": "/math/arithmetic/order-of-operations/arithmetic_properties/e/properties_of_numbers_1/", 
+    "display_name": "Properties of numbers 1", 
+    "title": "Properties of numbers 1", 
+    "live": true, 
+    "seconds_per_fast_problem": 5.0, 
+    "description": null, 
+    "h_position": 13, 
+    "slug": "properties_of_numbers_1", 
+    "kind": "Exercise", 
+    "name": "properties_of_numbers_1", 
+    "prerequisites": [
+      "multiplying_and_dividing_negative_numbers"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "commutative-law-of-addition", 
+      "associative-law-of-addition", 
+      "the-distributive-property"
+    ], 
+    "v_position": -4, 
+    "path": "/math/arithmetic/order-of-operations/arithmetic_properties/e/number_properties_terminology_1/", 
+    "display_name": "Number properties terminology 1", 
+    "title": "Number properties terminology 1", 
+    "live": true, 
+    "seconds_per_fast_problem": 5.0, 
+    "description": null, 
+    "h_position": 14, 
+    "slug": "number_properties_terminology_1", 
+    "kind": "Exercise", 
+    "name": "number_properties_terminology_1", 
+    "prerequisites": [
+      "multiplying_and_dividing_negative_numbers"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "inverse-property-of-multiplication", 
+      "inverse-property-of-addition", 
+      "identity-property-of-0", 
+      "identity-property-of-1--second-example", 
+      "identity-property-of-1"
+    ], 
+    "v_position": -5, 
+    "path": "/math/arithmetic/order-of-operations/arithmetic_properties/e/properties_of_numbers_2/", 
+    "display_name": "Properties of numbers 2", 
+    "title": "Properties of numbers 2", 
+    "live": true, 
+    "seconds_per_fast_problem": 6.0, 
+    "description": null, 
+    "h_position": 14, 
+    "slug": "properties_of_numbers_2", 
+    "kind": "Exercise", 
+    "name": "properties_of_numbers_2", 
+    "prerequisites": [
+      "properties_of_numbers_1"
+    ]
+  }
+]

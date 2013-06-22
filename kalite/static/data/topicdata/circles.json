@@ -1,1 +1,95 @@
-[{"relative_url": "/exercise/inscribed_angles_1", "guaranteed_file_name": "inscribed_angles_1.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-10-25T00:35:11Z", "ka_url": "http://www.khanacademy.org/exercise/inscribed_angles_1", "v_position": -22, "h_position": 42, "node_slug": "e/inscribed_angles_1", "progress_key": "e333650286", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/circles-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/inscribed_angles_1.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Insc angle1", "covers": [], "display_name": "Inscribed angles 1", "kind": "Exercise", "sha1": "f63a327181f8e511372a77c735c4685ab33964b9", "name": "inscribed_angles_1", "seconds_per_fast_problem": 7.0, "prerequisites": ["circles_and_arcs"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/inscribed_angles_1_256.png"}, {"relative_url": "/exercise/inscribed_angles_2", "guaranteed_file_name": "inscribed_angles_2.html", "file_name": null, "author_name": "Ben Komalo", "creation_date": "2011-10-25T00:38:00Z", "ka_url": "http://www.khanacademy.org/exercise/inscribed_angles_2", "v_position": -22, "h_position": 43, "node_slug": "e/inscribed_angles_2", "progress_key": "e333654687", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/circles-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/inscribed_angles_2.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Insc angle2", "covers": [], "display_name": "Inscribed angles 2", "kind": "Exercise", "sha1": "c53009c4ba865f17583d0b44f62353c7e16158c5", "name": "inscribed_angles_2", "seconds_per_fast_problem": 6.0, "prerequisites": ["inscribed_angles_1"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/inscribed_angles_2_256.png"}, {"relative_url": "/exercise/inscribed_angles_3", "guaranteed_file_name": "inscribed_angles_3.html", "file_name": null, "author_name": "Ben Komalo", "creation_date": "2011-10-25T00:38:39Z", "ka_url": "http://www.khanacademy.org/exercise/inscribed_angles_3", "v_position": -22, "h_position": 44, "node_slug": "e/inscribed_angles_3", "progress_key": "e333632921", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/circles-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/inscribed_angles_3.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Insc angle3", "covers": [], "display_name": "Inscribed angles 3", "kind": "Exercise", "sha1": "4b4f51d88a7d84cf9339e024334d79a2a7db7069", "name": "inscribed_angles_3", "seconds_per_fast_problem": 6.0, "prerequisites": ["inscribed_angles_2"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/inscribed_angles_3_256.png"}, {"relative_url": "/exercise/graphing_circles", "guaranteed_file_name": "graphing_circles.html", "file_name": "", "author_name": "Ben Eater", "creation_date": "2012-10-10T23:23:10Z", "ka_url": "http://www.khanacademy.org/exercise/graphing_circles", "v_position": -21, "h_position": 42, "node_slug": "e/graphing_circles", "progress_key": "e1080859355", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/circles-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/graphing_circles.png", "custom_stacks": [], "description": "Graph circles from equations in standard form", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Grph Circle", "covers": [], "display_name": "Graphing circles", "kind": "Exercise", "sha1": "5a3750df130ab734a440c11493efd6c0453d8f1e", "name": "graphing_circles", "seconds_per_fast_problem": 11.0, "prerequisites": ["circles_and_arcs"], "pretty_display_name": "Graphing circles", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/graphing_circles_256.png"}, {"relative_url": "/exercise/graphing_circles_2", "guaranteed_file_name": "graphing_circles_2.html", "file_name": "", "author_name": "Ben Eater", "creation_date": "2012-10-10T23:23:33Z", "ka_url": "http://www.khanacademy.org/exercise/graphing_circles_2", "v_position": -21, "h_position": 43, "node_slug": "e/graphing_circles_2", "progress_key": "e1080890293", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/circles-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/graphing_circles_2.png", "custom_stacks": [], "description": "Graph circles from equations in general form", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Gph Circle2", "covers": [], "display_name": "Graphing circles 2", "kind": "Exercise", "sha1": "86d50897661ef8623dde32bcd1e611fe69f067e5", "name": "graphing_circles_2", "seconds_per_fast_problem": 22.0, "prerequisites": ["graphing_circles"], "pretty_display_name": "Graphing circles 2", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/graphing_circles_2_256.png"}]
+[
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -20, 
+    "path": "/math/geometry/circles/e/circles_and_arcs/", 
+    "display_name": "Circles and arcs", 
+    "title": "Circles and arcs", 
+    "live": true, 
+    "seconds_per_fast_problem": 32.0, 
+    "description": "Relate the length of an arc to the circumference of a whole circle.", 
+    "h_position": 37, 
+    "slug": "circles_and_arcs", 
+    "kind": "Exercise", 
+    "name": "circles_and_arcs", 
+    "prerequisites": [
+      "area_of_parallelograms", 
+      "areas_of_trapezoids_rhombi_and_kites"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -19, 
+    "path": "/math/geometry/circles/e/areas_of_circles_and_sectors/", 
+    "display_name": "Areas of circles and sectors", 
+    "title": "Areas of circles and sectors", 
+    "live": true, 
+    "seconds_per_fast_problem": 29.0, 
+    "description": "Relate the area of a sector to the area of a whole circle.", 
+    "h_position": 37, 
+    "slug": "areas_of_circles_and_sectors", 
+    "kind": "Exercise", 
+    "name": "areas_of_circles_and_sectors", 
+    "prerequisites": [
+      "area_of_parallelograms", 
+      "areas_of_trapezoids_rhombi_and_kites"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "inscribed-and-central-angles"
+    ], 
+    "v_position": -22, 
+    "path": "/math/geometry/circles/e/inscribed_angles_1/", 
+    "display_name": "Inscribed angles 1", 
+    "title": "Inscribed angles 1", 
+    "live": true, 
+    "seconds_per_fast_problem": 7.0, 
+    "description": null, 
+    "h_position": 42, 
+    "slug": "inscribed_angles_1", 
+    "kind": "Exercise", 
+    "name": "inscribed_angles_1", 
+    "prerequisites": [
+      "circles_and_arcs"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "inscribed-and-central-angles"
+    ], 
+    "v_position": -22, 
+    "path": "/math/geometry/circles/e/inscribed_angles_2/", 
+    "display_name": "Inscribed angles 2", 
+    "title": "Inscribed angles 2", 
+    "live": true, 
+    "seconds_per_fast_problem": 6.0, 
+    "description": null, 
+    "h_position": 43, 
+    "slug": "inscribed_angles_2", 
+    "kind": "Exercise", 
+    "name": "inscribed_angles_2", 
+    "prerequisites": [
+      "inscribed_angles_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "inscribed-and-central-angles"
+    ], 
+    "v_position": -22, 
+    "path": "/math/geometry/circles/e/inscribed_angles_3/", 
+    "display_name": "Inscribed angles 3", 
+    "title": "Inscribed angles 3", 
+    "live": true, 
+    "seconds_per_fast_problem": 6.0, 
+    "description": null, 
+    "h_position": 44, 
+    "slug": "inscribed_angles_3", 
+    "kind": "Exercise", 
+    "name": "inscribed_angles_3", 
+    "prerequisites": [
+      "inscribed_angles_2"
+    ]
+  }
+]
