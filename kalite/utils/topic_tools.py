@@ -102,15 +102,10 @@ def get_video_counts(topic, videos_path, force=False):
             videos = topicdata.get_videos(topic)
             if len(videos) > 0:
             
-                found_videos = []
                 for video in videos:
                     # Mark all videos as not found
                     video["on_disk"] = is_video_on_disk(video["youtube_id"], videos_path)
-                    
-                    # Find the video on disk
-                    if video["on_disk"]:
-                        found_videos.append((video["youtube_id"],))
-                        nvideos_local += 1
+                    nvideos_local += int(video["on_disk"]) # add 1 if video["on_disk"]
                 nvideos_known = len(videos)
         
     topic["nvideos_local"] = nvideos_local
