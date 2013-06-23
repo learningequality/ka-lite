@@ -1,9 +1,13 @@
 import time
+
 from django.core.management.base import BaseCommand, CommandError
+
+import settings
 from kalite.main.models import VideoFile
 from kalite.utils.videos import download_video, DownloadCancelled
 from utils.jobs import force_job
 from utils import caching
+
 
 def download_progress_callback(self, videofile):
     def inner_fn(percent):
@@ -30,16 +34,18 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         
+        handled_video_ids = []
+        
         while True: # loop until the method is aborted
             
             if VideoFile.objects.filter(download_in_progress=True).count() > 0:
                 self.stderr.write("Another download is still in progress; aborting.\n")
-                return
+                break
             
             videos = VideoFile.objects.filter(flagged_for_download=True, download_in_progress=False)
             if videos.count() == 0:
                 self.stdout.write("Nothing to download; aborting.\n")
-                return
+                break
 
             video = videos[0]
             
@@ -47,7 +53,7 @@ class Command(BaseCommand):
                 video.download_in_progress = False
                 video.save()
                 self.stdout.write("Download cancelled; aborting.\n")
-                return
+                break
             
             video.download_in_progress = True
             video.percent_complete = 0
@@ -61,7 +67,16 @@ class Command(BaseCommand):
                 self.stderr.write("Error in downloading: %s\n" % e)
                 video.download_in_progress = False
                 video.save()
-                force_job("videodownload", "Download Videos")
-                return
-
-            caching.invalidate_cached_video_page(video_id=video.youtube_id)
+                force_job("videodownload", "Download Videos") # infinite recursive call? :(
+                break
+            
+            handled_video_ids.append(video.youtube_id)
+            
+            # Expire, but don't regenerate until the very end, for efficiency.
+            if hasattr(settings, "CACHES"):
+                caching.invalidate_cached_topic_hierarchy(video_id=video.youtube_id)
+    
+        # Regenerate all pages, efficiently
+        if hasattr(settings, "CACHES"):
+            caching.regenereate_cached_topic_hierarchies(handled_video_ids)
+        
