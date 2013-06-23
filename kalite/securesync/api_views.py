@@ -10,7 +10,7 @@ from django.contrib import messages
 from main.models import VideoLog, ExerciseLog
 from config.models import Settings
 from django.contrib.messages.api import get_messages
-from django.utils.safestring import SafeString, mark_safe
+from django.utils.safestring import SafeString, SafeUnicode, mark_safe
 
 import crypto
 import settings
@@ -234,7 +234,10 @@ def status(request):
     for message in  get_messages(request):
         # Make sure to escape strings not marked as safe.
         # Note: this duplicates a bit of Django template logic.
-        msg_txt = message.message if isinstance(message.message, SafeString) else cgi.escape(str(message.message))
+        msg_txt = message.message
+        if not (isinstance(message.message, SafeString) or isinstance(message.message, SafeUnicode)):
+            cgi.escape(str(message.message))
+
         message_dicts.append({
             "tags": message.tags, 
             "text": msg_txt,
