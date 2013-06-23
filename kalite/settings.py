@@ -2,6 +2,7 @@ import json
 import os
 import logging
 import sys
+import time
 import tempfile
 
 try:
@@ -159,13 +160,14 @@ else:
     )
 
 
-# by default, cache for maximum possible
-#   note: caching for 1000 years was too large a value
-#   sys.maxint also can be too large (causes ValueError)
-#   
-#   but the combination is golden, of course! :D
-
-CACHE_TIME = getattr(local_settings, "CACHE_TIME", min(60*60*24*365*1000, sys.maxint)) 
+# By default, cache for maximum possible time.
+#   Note: caching for 100 years can be too large a value
+#   sys.maxint also can be too large (causes ValueError), since it's added to the current time.
+#   Caching for the lesser of (100 years) or (5 years less than the max int) should work.
+_5_years = 5 * 365 * 24 * 60 * 60
+_100_years = 100 * 365 * 24 * 60 * 60
+_max_cache_time = min(_100_years, sys.maxint - time.time() - _5_years)
+CACHE_TIME = getattr(local_settings, "CACHE_TIME", _max_cache_time)
 
 # Cache is activated in every case, 
 #   EXCEPT: if CACHE_TIME=0
