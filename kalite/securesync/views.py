@@ -10,7 +10,7 @@ from django.template import RequestContext
 from django.utils import simplejson
 from django.utils.html import strip_tags
 from annoying.decorators import render_to
-from forms import RegisteredDevicePublicKeyForm, FacilityUserForm, FacilityTeacherForm, LoginForm, FacilityForm, FacilityGroupForm
+from forms import RegisteredDevicePublicKeyForm, FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout   
 from annoying.functions import get_object_or_None   
@@ -18,7 +18,7 @@ from config.models import Settings
 
 import crypto
 import settings
-from securesync.models import SyncSession, Device, RegisteredDevicePublicKey, Zone, Facility, FacilityGroup
+from securesync.models import SyncSession, Device, RegisteredDevicePublicKey, Zone, Facility, FacilityGroup, FacilityUser
 from securesync.api_client import SyncClient
 from utils.jobs import force_job
 from utils.decorators import require_admin
@@ -188,38 +188,48 @@ def add_facility_student(request):
 @render_to("securesync/add_facility_user.html")
 @facility_required
 def add_facility_user(request, facility, is_teacher):
-    if is_teacher:
-        Form = FacilityTeacherForm
-    else:
-        Form = FacilityUserForm
-    if request.method == "POST":
-        form = Form(request, data=request.POST, initial={"facility": facility})
+    """Different codepaths for the following:
+    * Django admin/teacher creates user, teacher
+    * Student creates self
+
+    Each has it's own message and redirect.
+    """
+    
+    # Data submitted to create the user.
+    if request.method == "POST": # now, teachers and students can belong to a group, so all use the same form.
+        form = FacilityUserForm(request, data=request.POST, initial={"facility": facility})
         if form.is_valid():
             form.instance.set_password(form.cleaned_data["password"])
             form.instance.is_teacher = is_teacher
             form.save()
+
+            # Admins create users while logged in.
             if request.is_logged_in:
-                return HttpResponseRedirect(reverse("homepage"))
+                assert request.is_admin, "Regular users can't create users while logged in."
+                messages.success(request, _("You successfully created the user."))
+                return HttpResponseRedirect(request.META.get("PATH_INFO", reverse("homepage"))) # allow them to add more of the same thing.
             else:
-                return HttpResponseRedirect(reverse("login") + "?facility=" + facility.pk)
-    elif Facility.objects.count() == 0:
-        messages.error(request, _("You must add a facility before creating a user"))
-        return HttpResponseRedirect(reverse("add_facility"))
+                messages.success(request, _("You successfully registered."))
+                return HttpResponseRedirect("%s?facility=%s" % (reverse("login"), form.data["facility"]))
+    
+    # For GET requests          
     else:
-        if is_teacher:
-            form = Form(request, initial={"facility": facility})
+        if Facility.objects.count() == 0:
+            messages.error(request, _("You must add a facility before creating a user"))
+            return HttpResponseRedirect(reverse("add_facility"))
+        elif is_teacher:
+            form = FacilityUserForm(request, initial={"facility": facility})
         else:
-            form = Form(request, initial={"facility": facility, "group": request.GET.get("group", None)})
+            form = FacilityUserForm(request, initial={"facility": facility, "group": request.GET.get("group", None)})
+
+    # Across POST and GET requests                
     if not is_teacher:
         form.fields["group"].queryset = FacilityGroup.objects.filter(facility=facility)
-    if Facility.objects.count() == 1:
-        singlefacility = True
-    else:
-        singlefacility = False
+
     return {
         "form": form,
         "facility": facility,
-        "singlefacility": singlefacility,
+        "singlefacility": (Facility.objects.count() == 1),
         "teacher": is_teacher,
     }
 
