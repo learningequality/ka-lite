@@ -229,7 +229,7 @@ class User(models.Model):
 
     Username and password are required. Other fields are optional.
     """
-    username = models.CharField(_('username'), max_length=75, unique=True,
+    username = models.CharField(_('username'), max_length=75, unique=True, # tweaked for KA Lite (use email for username)
         help_text=_('Required. 75 characters or fewer. Letters, numbers and '
                     '@/./+/-/_ characters'))
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
