@@ -236,7 +236,7 @@ def status(request):
         # Note: this duplicates a bit of Django template logic.
         msg_txt = message.message
         if not (isinstance(message.message, SafeString) or isinstance(message.message, SafeUnicode)):
-            cgi.escape(str(message.message))
+            msg_txt = cgi.escape(str(msg_txt))
 
         message_dicts.append({
             "tags": message.tags, 
