@@ -14,6 +14,7 @@ from django.contrib.auth import views as auth_views
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.utils.translation import ugettext as _
+from django.contrib.auth.models import User
 
 from registration.backends import get_backend
 
@@ -207,7 +208,6 @@ def register(request, backend, success_url=None, form_class=None,
                     return redirect(success_url)
             except IntegrityError as e:
                 if e.message=='column username is not unique':
-                    #import pdb; pdb.set_trace()
                     form._errors['__all__'] = _("An account with this email address has already been created.  Please login at the link above.")
                 else:
                     raise e
@@ -229,25 +229,16 @@ def login_view(request, *args, **kwargs):
     
     Since we don't want things to change to the user (if something fails),
     we should try the new way first, then fall back to the old way"""
-
-    # Try the the lcased way
-    old_POST = request.POST
-    request.POST = copy.deepcopy(request.POST)
-    if "username" in request.POST:
-        request.POST['username'] = request.POST['username'].lower()
-    template_response = auth_views.login(request, *args, **kwargs)
-
-    # Try the original way    
-    # If we have a login error, try logging in with lcased version
-    template_data = getattr(template_response, 'context_data', {})
-    template_form = template_data.get('form', {})
-    template_errors = getattr(template_form, 'errors', {})
-    if template_errors:
-        request.POST = old_POST
-        template_response = auth_views.login(request, *args, **kwargs)
-
-    # Return the logged in version, or failed to login using lcased version
-    return template_response    
+    if request.method=="POST":
+        users = User.objects.filter(username__iexact=request.POST["username"])
+        nusers = users.count()
+    
+        # Coerce
+        if nusers == 1 and users[0].username != request.POST["username"]:
+            request.POST = copy.deepcopy(request.POST)
+            request.POST['username'] = request.POST['username'].lower()
+    
+    return auth_views.login(request, *args, **kwargs)
 
     
 def logout_view(request):
