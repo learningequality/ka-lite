@@ -9,6 +9,9 @@ from feeds import RssSiteNewsFeed, AtomSiteNewsFeed
 
 admin.autodiscover()
 
+def redirect_to(self, base_url, path=""):
+    return HttpResponseRedirect(base_url + path)
+    
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^images/(.+)$', lambda request, path: HttpResponseRedirect('/static/images/' + path)),
