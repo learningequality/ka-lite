@@ -4,7 +4,7 @@ import cgi
 from django.core import serializers
 from django.http import HttpResponse
 from django.utils import simplejson
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.gzip import gzip_page
 from django.contrib import messages
 from main.models import VideoLog, ExerciseLog
@@ -212,6 +212,9 @@ def test_connection(request):
     return HttpResponse("OK")
 
 
+# On pages with no forms, we want to ensure that the CSRF cookie is set, so that AJAX POST
+# requests will be possible. Since `status` is always loaded, it's a good place for this.
+@ensure_csrf_cookie
 @distributed_server_only
 def status(request):
     """In order to promote (efficient) caching on (low-powered)
