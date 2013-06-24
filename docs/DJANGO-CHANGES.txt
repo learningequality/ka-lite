@@ -1,3 +1,7 @@
+#	modified:   ../python-packages/django/contrib/auth/forms.py
+#	modified:   ../python-packages/django/contrib/auth/models.py
+    Changed each to modify username length from 30 to 75 (matching email addresses)
+
 python-packages/django/utils/cache.py:168 
 requires package additions:
 import logging
