@@ -18,8 +18,10 @@ import settings
 from utils import caching
 from kalite.main import topicdata
 from utils.django_utils import call_command_with_output
+from utils.testing import distributed_only
 
 
+@distributed_only
 class CachingTest(LiveServerTestCase):
 
     @unittest.skipIf(settings.CACHE_TIME==0, "Test only relevant when caching is enabled")

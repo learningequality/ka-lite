@@ -19,10 +19,10 @@ from django.core.urlresolvers import reverse
 import settings
 from kalite.utils.django_utils import call_command_with_output
 from securesync.models import Facility, FacilityGroup, FacilityUser
-from utils.testing import main_only, KALiteLocalBrowserTestCase
+from utils.testing import distributed_only, KALiteLocalBrowserTestCase
 
 
-@main_only
+@distributed_only
 class DeviceUnregisteredTest(KALiteLocalBrowserTestCase):
     """Validate all the steps of registering a device.
     
@@ -62,7 +62,7 @@ class DeviceUnregisteredTest(KALiteLocalBrowserTestCase):
         self.browser_send_keys(Keys.RETURN)
 
 
-@main_only
+@distributed_only
 class ChangeLocalUserPassword(unittest.TestCase):
     """Tests for the changelocalpassword command"""
     

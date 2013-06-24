@@ -8,6 +8,7 @@ import copy
 import decorator
 import logging
 import time
+import types
 import os
 import shutil
 import sys
@@ -33,26 +34,27 @@ def x_only(f, cond, msg):
     x = "main" or "central"
     """
 
-    # For classes
-    if f.__class__.__name__ == "type":
-        @unittest.skipIf(cond, msg)
-        def wrapper_fn(f):
-            return f
-    
-    # For functions:
+    # taken from unittest.skip
+    if isinstance(f, (type, types.ClassType)):
+        if not cond:
+            f.__unittest_skip__ = True
+            f.__unittest_skip_why__ = msg
+        return f
+        
     else:
         @unittest.skipIf(cond, msg)
         def wrapped_fn(*args, **kwargs):
             return f(*args, **kwargs)
         return wrapped_fn
 
-def main_only(f):
-    """Run the test only on the 'main' app/distributed server"""
-    return x_only(f, settings.CENTRAL_SERVER, "Distributed server test")
+
+def distributed_only(f):
+    """Run the test only on the distributed server"""
+    return x_only(f, not settings.CENTRAL_SERVER, "Distributed server test")
 
 def central_only(f):
-    """Run the test only on the 'central' app/central server"""
-    return x_only(f, not settings.CENTRAL_SERVER, "Central server test")
+    """Run the test only on the central server"""
+    return x_only(f, settings.CENTRAL_SERVER, "Central server test")
     
         
 def create_test_admin(username="admin", password="pass", email="admin@example.com"):
@@ -175,29 +177,6 @@ class BrowserTestCase(KALiteTestCase):
     def browser_send_keys(self, keys):
         """Convenience method to send keys to active_element in the browser"""
         self.browser.switch_to_active_element().send_keys(keys)
-    
-    def capture_stdout(self, cmdargs):
-        """Captures output to stdout when a particular test command is run.
-        cmdargs: first arg is the function, all other args are positional args.
-           there should be a better way to do this, but I'm not sure what it is yet."""
-        
-        # Parse out function and args
-        fn = cmdargs[0]
-        args = cmdargs[1:]
-        
-        # Save old stdout stream.  Save stdout string.  Restore old stdout stream
-        saved_stdout = sys.stdout
-        try:
-            out = StringIO()
-            sys.stdout = out
-            fn(args)
-            output = out.getvalue().strip()
-        except Exception as e:
-            output = e.message
-        finally:
-            sys.stdout = saved_stdout        
-
-        return output
 
    
 class KALiteCentralBrowserTestCase(BrowserTestCase):
