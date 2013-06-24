@@ -79,8 +79,7 @@ def install_wizard(request):
         locale = get_request_var(request, "locale", "en")
         server_type = get_request_var(request, "server-type", "local")
         
-        return HttpResponseRedirect("/download/kalite/%s/%s/%s/%d/" % (platform, locale, zone.name if zone else "_", num_certificates))#
-        #download_kalite(request, { "platform":platform, "locale":locale, "server_type": server_type, zone=zone)
+        return HttpResponseRedirect("/download/kalite/%s/%s/%s/%d/" % (platform, locale, zone.id if zone else "_", num_certificates))#
 
         
     else: # GET

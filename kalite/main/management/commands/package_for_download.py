@@ -37,21 +37,27 @@ def select_package_dirs(dirnames, key_base, **kwargs):
     based on the "key-base", which is essentially the relative path from the ka-lite project"""
     base_name = os.path.split(key_base)[1]
 
+    # Starting point
     if key_base=="":
-        in_dirs = {'docs', 'kalite', 'locale', 'python-packages'}
+        return {'docs', 'kalite', 'locale', 'python-packages'}
         
     # ONLY include files for the particular locale
     elif (base_name=="locale" or base_name=="localflavor") and "locale" in kwargs and kwargs['locale']:
-            in_dirs = {kwargs['locale']}
+        return { kwargs['locale'], }
 
-    else:
-        # can't exclude 'test', which eliminates the Django test client (used in caching)
-        #   as well as all the Khan academy tests 
-        in_dirs = set(dirnames) - {'loadtesting', 'testrunner', 'tests', 'testing','tmp', 'selenium', 'werkzeug', 'postmark'}
-        if "server_type" in kwargs and kwargs['server_type']!="central":
-            in_dirs -= {"central", "landing-page"}
-            if base_name=="kalite" or base_name=="templates":
-                in_dirs -= {"contact", "faq", "registration"}
+    in_dirs = set(dirnames) 
+
+    # Skip test files.
+    # Note: can't exclude 'test', which eliminates the Django test client (used in caching)
+    #   as well as all the Khan academy tests 
+    test_dirs = {"loadtesting", "tests", "testing","tmp", "selenium", "werkzeug", "playground"}
+    in_dirs -= test_dirs
+    
+    # Exclude particular files for local installs
+    if kwargs.get("server_type") != "central":
+        in_dirs -= {"central", "landing-page", "postmark"}
+        if base_name=="kalite" or base_name=="templates":
+            in_dirs -= {"contact", "faq", "registration"}
 
     return in_dirs
     
