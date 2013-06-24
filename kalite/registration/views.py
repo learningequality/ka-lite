@@ -2,14 +2,13 @@
 Views which allow users to create and activate accounts.
 
 """
-
 import copy
 
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.models import User
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.shortcuts import render_to_response
@@ -109,6 +108,7 @@ def activate(request, backend,
                               context_instance=context)
 
 
+@transaction.commit_on_success
 def register(request, backend, success_url=None, form_class=None,
              disallowed_url='registration_disallowed',
              template_name='registration/registration_form.html',
@@ -212,7 +212,7 @@ def register(request, backend, success_url=None, form_class=None,
                 new_user = backend.register(request, **form.cleaned_data)
             
                 # Add an org.  Must create org before adding user.
-                org_form.instance.owner=new_user
+                org_form.instance.owner = new_user
                 org_form.save()
                 org = org_form.instance
                 org.users.add(new_user)
@@ -226,9 +226,12 @@ def register(request, backend, success_url=None, form_class=None,
                 # Finally, try and subscribe the user to the mailing list
                 # (silently)
                 if request.POST.has_key("email_subscribe") and request.POST["email_subscribe"]=="on":
-                    pass #return HttpResponse(mailchimp_subscribe(form.cleaned_data['email']))
-        
-                # send a response            
+                    # Don't want to muck with mailchimp during testing (though I did validate this)
+                    if settings.DEBUG:
+                        return HttpResponse("We'll subscribe you via mailchimp when we're in RELEASE mode, %s, we swear!" % form.cleaned_data['email'])
+                    else:
+                        return HttpResponse(mailchimp_subscribe(form.cleaned_data['email']))
+            
                 if success_url is None:
                     to, args, kwargs = backend.post_registration_redirect(request, new_user)
                     return redirect(to, *args, **kwargs)

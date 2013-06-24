@@ -18,7 +18,7 @@ TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
 logging.basicConfig(format='%(levelname)s:%(message)s')
 LOG = getattr(local_settings, "LOG", logging.getLogger("kalite"))
 LOG.setLevel(logging.DEBUG*DEBUG + logging.INFO*(1-DEBUG))
-    
+
 INTERNAL_IPS   = getattr(local_settings, "INTERNAL_IPS", ("127.0.0.1",))
 
 # TODO(jamalex): currently this only has an effect on Linux/OSX
@@ -38,8 +38,6 @@ CENTRAL_DEV_EMAIL     = getattr(local_settings, "CENTRAL_DEV_EMAIL",        "dev
 CENTRAL_INFO_EMAIL    = getattr(local_settings, "CENTRAL_INFO_EMAIL",       "info@learningequality.org")
 CENTRAL_CONTACT_EMAIL = getattr(local_settings, "CENTRAL_CONTACT_EMAIL", "info@learningequality.org")#"kalite@%s"%CENTRAL_SERVER_DOMAIN
 CENTRAL_ADMIN_EMAIL   = getattr(local_settings, "CENTRAL_ADMIN_EMAIL",   "errors@learningequality.org")#"kalite@%s"%CENTRAL_SERVER_DOMAIN
-CENTRAL_FROM_EMAIL    = getattr(local_settings, "CENTRAL_FROM_EMAIL",    "kalite@%s"%CENTRAL_SERVER_DOMAIN)
-CENTRAL_CONTACT_EMAIL = getattr(local_settings, "CENTRAL_CONTACT_EMAIL", "info@learningequality.org")#"kalite@%s"%CENTRAL_SERVER_DOMAIN    
 
 CENTRAL_SUBSCRIBE_URL    = getattr(local_settings, "CENTRAL_SUBSCRIBE_URL",    "http://adhocsync.us6.list-manage.com/subscribe/post?u=023b9af05922dfc7f47a4fffb&amp;id=97a379de16")
 
@@ -121,10 +119,6 @@ MIDDLEWARE_CLASSES = (
     "main.middleware.GetNextParam",
     "django.middleware.csrf.CsrfViewMiddleware",
 )
-if DEBUG:
-    MIDDLEWARE_CLASSES += (
-        'django_snippets.profiling_middleware.ProfileMiddleware', # add ?prof to URL, to see performance stats
-    )
 
 ROOT_URLCONF = "kalite.urls"
 
@@ -145,8 +139,10 @@ INSTALLED_APPS = (
     "main", # in order for securesync to work, this needs to be here.
 )
 
-if DEBUG or CENTRAL_SERVER:
-    INSTALLED_APPS += ("django_extensions","django_snippets")
+if DEBUG:
+    # add ?prof to URL, to see performance stats
+    MIDDLEWARE_CLASSES += ('django_snippets.profiling_middleware.ProfileMiddleware',)
+    INSTALLED_APPS += ("django_snippets",)
 
 if CENTRAL_SERVER:
     ACCOUNT_ACTIVATION_DAYS = getattr(local_settings, "ACCOUNT_ACTIVATION_DAYS", 7)
@@ -154,6 +150,14 @@ if CENTRAL_SERVER:
     INSTALLED_APPS         += ("postmark", "kalite.registration", "central", "faq", "contact",)
     EMAIL_BACKEND           = getattr(local_settings, "EMAIL_BACKEND", "postmark.backends.PostmarkBackend")
     AUTH_PROFILE_MODULE     = 'central.UserProfile'
+    INSTALLED_APPS         += (
+        "django_extensions",
+        "postmark", 
+        "central", 
+        "contact",
+        "faq", 
+        "kalite.registration", 
+    )
 
 else:
     # Include optionally installed apps
@@ -165,6 +169,8 @@ else:
         "securesync.middleware.AuthFlags",
         "main.middleware.SessionLanguage",
     )
+    TEMPLATE_CONTEXT_PROCESSORS += ("main.custom_context_processors.languages",)
+    INSTALL_CERTIFICATES = getattr(local_settings, "INSTALL_CERTIFICATES", [])
 
 
 # By default, cache for maximum possible time.

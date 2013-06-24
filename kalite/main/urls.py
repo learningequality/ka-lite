@@ -36,6 +36,7 @@ urlpatterns += patterns('main.views',
     url(r'^coachreports/$', 'coach_reports', {}, 'coach_reports'),
     url(r'^easyadmin/$', 'easy_admin', {}, 'easy_admin'),
     url(r'^stats/$', 'summary_stats', {}, 'summary_stats'),
+
     url(r'^$', 'homepage', {}, 'homepage'),
     url(r'^update/$', 'update', {}, 'update'),
     url(r'^userlist/$', 'user_list', {}, 'user_list'),

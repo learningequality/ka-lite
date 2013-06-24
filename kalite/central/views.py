@@ -3,19 +3,18 @@ import re, json
 import requests
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
+from annoying.decorators import render_to
 from decorator.decorator import decorator
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseForbidden, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
-from django.views.decorators.csrf import csrf_exempt
 from django.utils.translation import ugettext as _
-from django.template.loader import render_to_string
-from annoying.decorators import render_to
+from django.views.decorators.csrf import csrf_exempt
 
 import kalite
 import settings

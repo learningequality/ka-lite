@@ -27,14 +27,24 @@ input[type=text], input[type=password] {
     margin-top: -20px;
     margin-bottom: 0;
 }
-#org_details { display:none }
+
+/* hackish way to show org details, if there are any errors or content */
+#org_details { display:none } /* default: off */
+{% for prop in org_form %}{% if prop.errors or prop.value %}
+#org_details { display:block } /* dynamically override if we find an error */
+{% endif %}{% endfor %}
 </style>
 {% endblock headcss %}
 
 {% block content %}
 
   {% if form.non_field_errors %}
-  <div class="errorlist">Please correct the errors below: {{ form.non_field_errors }}</div>
+  <div class="errorlist">
+      Please correct the errors below:
+      <br/>
+       {{ form.non_field_errors }}
+       <br/>
+   </div>
   {% endif %}
 
   <h1>Create an account</h1>

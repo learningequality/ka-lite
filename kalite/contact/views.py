@@ -1,23 +1,25 @@
 from annoying.decorators import render_to
-from forms  import ContactForm, DeploymentForm, SupportForm, InfoForm, ContributeForm
-from models import Contact, Deployment, Support, Info, Contribute
-from central.models import Organization
+
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.http import HttpResponse,HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from utils.mailchimp import mailchimp_subscribe
 
 import settings
+from forms  import ContactForm, DeploymentForm, SupportForm, InfoForm, ContributeForm
+from models import *
+from central.models import Organization
+from utils.mailchimp import mailchimp_subscribe
+
 
 @render_to("contact/contact_thankyou.html")
 def contact_thankyou(request):
+    # Currently, just a static html page
     return {
     }
 
 
 def contact_subscribe(request):
-    
     email = getattr(request,request.method)['email']
     if not email:
         raise Exception("Email not specified")
@@ -45,25 +47,25 @@ def contact_wizard(request, type=""):
             contact_form.instance.cc_email = request.POST["hack_cc_email"]
                 
             # Deployment
-            if contact_form.cleaned_data["type"]  ==Contact.CONTACT_TYPE_DEPLOYMENT:
+            if contact_form.cleaned_data["type"] == CONTACT_TYPE_DEPLOYMENT:
                 if deployment_form.is_valid():
                     return handle_contact(request, contact_form, deployment_form, settings.CENTRAL_DEPLOYMENT_EMAIL, "deployment")
 
             # Support
-            elif contact_form.cleaned_data["type"]==Contact.CONTACT_TYPE_SUPPORT:
+            elif contact_form.cleaned_data["type"] == CONTACT_TYPE_SUPPORT:
                 if support_form.is_valid():
                     return handle_contact(request, contact_form, support_form, settings.CENTRAL_SUPPORT_EMAIL, "support")
                     
             # Info
-            elif contact_form.cleaned_data["type"]==Contact.CONTACT_TYPE_INFO:
+            elif contact_form.cleaned_data["type"] == CONTACT_TYPE_INFO:
                 if info_form.is_valid():
                     return handle_contact(request, contact_form, info_form, settings.CENTRAL_INFO_EMAIL, "info")
 
             # Contribute
-            elif contact_form.cleaned_data["type"]==Contact.CONTACT_TYPE_CONTRIBUTE:
+            elif contact_form.cleaned_data["type"] == CONTACT_TYPE_CONTRIBUTE:
                 if contribute_form.is_valid():
                     # Send development inquiries to the development list
-                    if contribute_form.cleaned_data["type"]==Contribute.CONTRIBUTE_TYPE_DEVELOPMENT:
+                    if contribute_form.cleaned_data["type"] == CONTRIBUTE_TYPE_DEVELOPMENT:
                         return handle_contact(request, contact_form, contribute_form, settings.CENTRAL_DEV_EMAIL, "contribute")
                     # Everything else must go to the info list
                     else:

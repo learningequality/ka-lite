@@ -4,12 +4,14 @@ import re
 import uuid
 
 from django.contrib import messages
+from django.contrib.messages.api import get_messages
 from django.core import serializers
 from django.db import transaction
 from django.http import HttpResponse
 from django.contrib.messages.api import get_messages
 from django.utils.safestring import SafeString, SafeUnicode, mark_safe
 from django.utils import simplejson
+from django.utils.safestring import SafeString, SafeUnicode, mark_safe
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.gzip import gzip_page
 
@@ -20,6 +22,7 @@ import model_sync
 from config.models import Settings
 from models import *
 from main.models import VideoLog, ExerciseLog
+from securesync.models import *
 from securesync.views import distributed_server_only
 
 
