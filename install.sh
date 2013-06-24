@@ -122,6 +122,10 @@ fi
 
 $pyexec manage.py initdevice "$hostname" "$description" "$offline_install_file"
 
+# Sync--we have a zone already.
+$pyexec manage.py syncmodels
+
+
 initd_available=`command -v update-rc.d`
 if [ $initd_available ]; then
     while true
