@@ -1,8 +1,9 @@
 import json
 import os
-import sys
-import tempfile
 import logging
+import sys
+import time
+import tempfile
 
 try:
     from local_settings import *
@@ -15,10 +16,13 @@ TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
 
 # Set logging level based on the value of DEBUG (evaluates to 0 if False, 1 if True)
 logging.basicConfig(format='%(levelname)s:%(message)s')
-logging.getLogger("kalite").setLevel(logging.DEBUG*DEBUG + logging.INFO*(1-DEBUG))
-logging.getLogger("kalite").setLevel(logging.DEBUG*DEBUG + logging.INFO*(1-DEBUG))
-
+LOG = getattr(local_settings, "LOG", logging.getLogger("kalite"))
+LOG.setLevel(logging.DEBUG*DEBUG + logging.INFO*(1-DEBUG))
+    
 INTERNAL_IPS   = getattr(local_settings, "INTERNAL_IPS", ("127.0.0.1",))
+
+# TODO(jamalex): currently this only has an effect on Linux/OSX
+PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 8008)
 
 CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
 
@@ -154,8 +158,8 @@ if CENTRAL_SERVER:
 
 else:
     # Include optionally installed apps
-    if os.path.exists(PROJECT_PATH + "/loadtesting/"):
-        INSTALLED_APPS     += ("loadtesting"),
+    if os.path.exists(PROJECT_PATH + "/tests/loadtesting/"):
+        INSTALLED_APPS     += ("kalite.tests.loadtesting"),
 
     MIDDLEWARE_CLASSES += (
         "securesync.middleware.DBCheck",
@@ -164,13 +168,14 @@ else:
     )
 
 
-# by default, cache for maximum possible
-#   note: caching for 1000 years was too large a value
-#   sys.maxint also can be too large (causes ValueError)
-#   
-#   but the combination is golden, of course! :D
-
-CACHE_TIME = getattr(local_settings, "CACHE_TIME", min(60*60*24*365*1000, sys.maxint)) 
+# By default, cache for maximum possible time.
+#   Note: caching for 100 years can be too large a value
+#   sys.maxint also can be too large (causes ValueError), since it's added to the current time.
+#   Caching for the lesser of (100 years) or (5 years less than the max int) should work.
+_5_years = 5 * 365 * 24 * 60 * 60
+_100_years = 100 * 365 * 24 * 60 * 60
+_max_cache_time = min(_100_years, sys.maxint - time.time() - _5_years)
+CACHE_TIME = getattr(local_settings, "CACHE_TIME", _max_cache_time)
 
 # Cache is activated in every case, 
 #   EXCEPT: if CACHE_TIME=0
@@ -187,5 +192,8 @@ if CACHE_TIME or CACHE_TIME is None: # None can mean infinite caching to some fu
     }
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+# This setting is required for AJAX-based messaging to work in Django 1.4,
+#   due to this bug: https://code.djangoproject.com/ticket/19387
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 TEST_RUNNER = 'kalite.utils.testrunner.KALiteTestRunner'

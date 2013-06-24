@@ -3,22 +3,25 @@ Views which allow users to create and activate accounts.
 
 """
 
-from central.forms import OrganizationForm
-from central.models import Organization
-from securesync.models import Zone
+import copy
 
+from django.contrib import messages
+from django.contrib.auth import logout
+from django.contrib.auth import views as auth_views
+from django.contrib.auth.models import User
+from django.db import IntegrityError
+from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.contrib import messages
-from django.contrib.auth import logout
-
-from django.db import IntegrityError
 from django.utils.translation import ugettext as _
 
+from central.forms import OrganizationForm
+from central.models import Organization
 from registration.backends import get_backend
-from django.http import HttpResponse
+from securesync.models import Zone
 from utils.mailchimp import mailchimp_subscribe
+
 
 
 def complete(request, *args, **kwargs):
@@ -201,16 +204,10 @@ def register(request, backend, success_url=None, form_class=None,
         org_form = OrganizationForm(data=request.POST, instance=Organization())
         
         # Could register
-#        if form.is_valid() and not org_form.is_valid() and org_form.errors.has_key('name'):
-#            org_form.data = org_form.data.copy()
-#            org_form['name'] = "%s %s's Personal Installation" % (form.cleaned_data['first_name'], form.cleaned_data['last_name'])
-            
         if form.is_valid() and org_form.is_valid():
-            form.cleaned_data['username'] = form.cleaned_data['email']
-
+            assert form.cleaned_data.get("username") == form.cleaned_data.get("email"), "Should be set equal in the call to clean()"
             # TODO (bcipolli): should do all this in one transaction,
             #   so that if any one part fails, it all rolls back.
-
             try:
                 # Create the user
                 new_user = backend.register(request, **form.cleaned_data)
@@ -237,8 +234,8 @@ def register(request, backend, success_url=None, form_class=None,
                     return redirect(to, *args, **kwargs)
                 else:
                     return redirect(success_url)
-                
-            except IntegrityError, e:
+
+            except IntegrityError as e:
                 if e.message=='column username is not unique':
                     form._errors['__all__'] = _("An account with this email address has already been created.  Please login at the link above.")
                 else:
@@ -259,6 +256,23 @@ def register(request, backend, success_url=None, form_class=None,
                               { 'form': form, "org_form" : org_form},
                               context_instance=context)
 
+def login_view(request, *args, **kwargs):
+    """Force lowercase of the username.
+    
+    Since we don't want things to change to the user (if something fails),
+    we should try the new way first, then fall back to the old way"""
+    if request.method=="POST":
+        users = User.objects.filter(username__iexact=request.POST["username"])
+        nusers = users.count()
+    
+        # Coerce
+        if nusers == 1 and users[0].username != request.POST["username"]:
+            request.POST = copy.deepcopy(request.POST)
+            request.POST['username'] = request.POST['username'].lower()
+    
+    return auth_views.login(request, *args, **kwargs)
+
+    
 def logout_view(request):
     logout(request)
     return redirect("homepage")

@@ -288,14 +288,9 @@ def login(request):
     
     if request.method == 'POST':
         
-        # log out any Django user
-        if request.user.is_authenticated():
-            auth_logout(request)
-        
-        # log out a facility user
-        if "facility_user" in request.session:
-            del request.session["facility_user"]
-        
+        # log out any Django user or facility user
+        logout(request)
+
         username = request.POST.get("username", "")
         password = request.POST.get("password", "")
         

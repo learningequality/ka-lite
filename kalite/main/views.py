@@ -10,7 +10,6 @@ from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.db.models import Sum
-from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.decorators.cache import cache_control
 from django.views.decorators.cache import cache_page
@@ -27,10 +26,10 @@ from securesync.models import Facility, FacilityUser,FacilityGroup
 from models import VideoLog, ExerciseLog, VideoFile
 from config.models import Settings
 from securesync.api_client import SyncClient
+from utils import topic_tools
 from utils.jobs import force_job
 from utils.videos import video_connection_is_available
 from utils.internet import am_i_online
-
 
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
@@ -97,14 +96,18 @@ def check_setup_status(handler):
 @cache_page(settings.CACHE_TIME)
 @render_to("topic.html")
 def topic_handler(request, topic):
-    videos = filter(lambda node: node["kind"] == "Video", topic["children"])
-    exercises = filter(lambda node: node["kind"] == "Exercise" and node["live"], topic["children"])
-    topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"] and "Video" in node["contains"], topic["children"])
-    
-    my_topics = []
-    for t in topics:
-        my_topics.append({ 'title': t['title'], 'path': t['path'] })
-        
+    videos    = topicdata.get_videos(topic)
+    exercises = topicdata.get_exercises(topic)
+    topics    = topicdata.get_live_topics(topic)
+
+    # Get video counts if they'll be used, on-demand only.
+    #
+    # Check in this order so that the initial counts are always updated
+    if topic_tools.video_counts_need_update() or not 'nvideos_local' in topic:
+        (topic,_,_) = topic_tools.get_video_counts(topic=topic, videos_path=settings.CONTENT_ROOT) 
+            
+    my_topics = [dict((k, t[k]) for k in ('title', 'path', 'nvideos_local', 'nvideos_known')) for t in topics]
+
     context = {
         "topic": topic,
         "title": topic[title_key["Topic"]],
@@ -119,7 +122,16 @@ def topic_handler(request, topic):
 @cache_page(settings.CACHE_TIME)
 @render_to("video.html")
 def video_handler(request, video, prev=None, next=None):
-    if not VideoFile.objects.filter(pk=video['youtube_id']).exists():
+    video_exists = VideoFile.objects.filter(pk=video['youtube_id']).exists()
+    
+    # If we detect that a video exists, but it's not on disk, then 
+    #   force the database to update.  No race condition here for saving
+    #   progress in a VideoLog: it is not dependent on VideoFile.
+    if not video_exists and topic_tools.is_video_on_disk(video['youtube_id']):
+        force_job("videoscan")
+        video_exists = True
+        
+    if not video_exists:
         if request.is_admin:
             messages.warning(request, _("This video was not found! You can download it by going to the Update page."))
         elif request.is_logged_in:
@@ -133,6 +145,7 @@ def video_handler(request, video, prev=None, next=None):
     context = {
         "video": video,
         "title": video[title_key["Video"]],
+        "video_exists": video_exists,
         "prev": prev,
         "next": next,
     }
@@ -171,11 +184,11 @@ def exercise_dashboard(request):
 @cache_page(settings.CACHE_TIME)
 @render_to("homepage.html")
 def homepage(request):
+    # TODO(bcipolli): video counts on the distributed server homepage
     topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"], topicdata.TOPICS["children"])
-    
-    my_topics = []
-    for t in topics:
-        my_topics.append({ 'title': t['title'], 'path': t['path'] })
+
+    # indexed by integer
+    my_topics = [dict([(k, t[k]) for k in ('title', 'path')]) for t in topics]
 
     context = {
         "title": "Home",

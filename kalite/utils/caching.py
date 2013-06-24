@@ -6,6 +6,8 @@ from django.utils import translation
 from django.test.client import Client
 
 import settings
+from main import topicdata
+from utils import topic_tools, internet
 
 # all code based on Django snippet at:
 #   http://djangosnippets.org/snippets/936/
@@ -80,3 +82,28 @@ def invalidate_cached_video_page(video_id=None, video_slug=None, video_path=None
                     
     # Clean the cache for this item
     expire_page(path=video_path)
+
+
+def invalidate_cached_topic_hierarchy(video_id=None, video_slug=None, video_path=None):
+    """Given a video file, recurse backwards up the hierarchy and invaliate all pages"""
+    assert (video_id or video_path or video_slug) and not (video_id and video_slug and video_path), "One arg, not two" 
+
+    if not video_path:
+        video_path = get_video_page_path(video_id=video_id, video_slug=video_slug)
+
+    for path in internet.generate_all_paths(path=video_path, base_path=topicdata.TOPICS['path']): # start at the root
+        expire_page(path=path)
+
+
+def regenereate_cached_topic_hierarchies(video_ids):
+    """Same as above, but on a list of videos"""
+    paths_to_regenerate = set() # unique set
+    for video_id in video_ids:
+        video_path = get_video_page_path(video_id=video_id)
+
+        paths_to_regenerate = paths_to_regenerate.union(internet.generate_all_paths(path=video_path, base_path=topicdata.TOPICS['path'])) # start at the root
+
+    # Now, regenerate any page.
+    for path in paths_to_regenerate:
+        create_cache(path=path, force=True)
+
