@@ -28,7 +28,7 @@
 <script>
 {% if request.is_admin %}
 {% trans "Add a new group" as add_new_group %}
-$('#id_group').parent().find(".helptext").html('(<a href="{% url add_group %}?facility={{facility.id}}">{{add_new_group}}</a>)');
+$('#id_group').parent().find(".helptext").html('(<a href="{% url add_group %}?facility={{facility.id}}&prev={{cur_url|urlencode:''}}">{{add_new_group}}</a>)');
 {% endif %}
 {% if not request.is_admin %}
 $('#id_is_teacher').parent().hide();

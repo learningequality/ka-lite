@@ -12,6 +12,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from annoying.functions import get_object_or_None
 from config.models import Settings
+from django.utils.translation import ugettext as _
 
 import crypto
 import settings
@@ -19,8 +20,8 @@ from securesync.models import SyncSession, Device, Facility, FacilityGroup
 from securesync.api_client import SyncClient
 from utils.jobs import force_job
 from utils.decorators import require_admin
+from utils.internet import set_query_params
 
-from django.utils.translation import ugettext as _
 
 
 def central_server_only(handler):
@@ -74,7 +75,10 @@ def facility_required(handler):
                     request,
                     _("You must first have the administrator of this server log in below to add a facility.")
                 )
-            return HttpResponseRedirect(reverse("add_facility"))
+                redir_url = reverse("add_facility")
+                redir_url = set_query_params(redir_url, {"prev": request.META.get("HTTP_REFERER", "")})
+                return HttpResponseRedirect(redir_url)
+
         else:
             facility = get_facility_from_request(request)
 
@@ -217,23 +221,23 @@ def add_facility_user(request, facility, is_teacher):
 
     # For GET requests
     else:
-        if Facility.objects.count() == 0:
-            messages.error(request, _("You must add a facility before creating a user"))
-            return HttpResponseRedirect(reverse("add_facility"))
-        elif is_teacher:
-            form = FacilityUserForm(request, initial={"facility": facility})
-        else:
-            form = FacilityUserForm(request, initial={"facility": facility, "group": request.GET.get("group", None)})
+        form = FacilityUserForm(
+            request,
+            initial={
+                "facility": facility,
+                "group": request.GET.get("group", None)
+            }
+        )
 
     # Across POST and GET requests
-    if not is_teacher:
-        form.fields["group"].queryset = FacilityGroup.objects.filter(facility=facility)
+    form.fields["group"].queryset = FacilityGroup.objects.filter(facility=facility)
 
     return {
         "form": form,
         "facility": facility,
         "singlefacility": (Facility.objects.count() == 1),
         "teacher": is_teacher,
+        "cur_url": request.path,
     }
 
 
@@ -262,7 +266,11 @@ def add_group(request, facility):
         if form.is_valid():
             form.instance.facility = facility
             form.save()
-            return HttpResponseRedirect(reverse("add_facility_student") + "?facility=" + facility.pk + "&group=" + form.instance.pk)
+
+            redir_url = request.GET.get("prev") or reverse("add_facility_student")
+            redir_url = set_query_params(redir_url, {"facility": facility.pk, "group": form.instance.pk})
+            return HttpResponseRedirect(redir_url)
+
     elif request.method == 'POST' and not request.is_admin:
         messages.error(request, _("This mission is too important for me to allow you to jeopardize it."))
         return HttpResponseRedirect(reverse("login"))
