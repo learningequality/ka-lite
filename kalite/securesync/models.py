@@ -1,3 +1,10 @@
+"""
+Note: this module should not depend on central, 
+so we can exclude shipping central server code
+to distributed servers.
+"""
+
+import crypto
 import datetime
 import logging
 import random
@@ -12,12 +19,7 @@ from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models, transaction
 from django.db.models import Q
 from django.utils.text import compress_string
-from django.utils.translation import ugettext_lazy as _
-
-from django.contrib.auth.models import check_password
-from django.core.exceptions import ValidationError, ObjectDoesNotExist
-from django.db import models, transaction
-from django.db.models import Q
+from django.db.models import Max
 from django.utils.translation import ugettext_lazy as _
 
 import kalite
@@ -260,19 +262,16 @@ class Zone(SyncedModel):
 
     requires_trusted_signature = True
     
-    def save(self, *args, **kwargs):
-        super(Zone, self).save(*args, **kwargs)
+    def generate_install_certificates(self, num_certificates=5):
         
-        # Create some install certs
-        # TODO(bcipolli): remove this code when
-        #   integrating with the install UI
+        certs = []
         if settings.CENTRAL_SERVER:
-            num_certificates = 5 # sure, why not?
             for i in range(num_certificates):
                 cert = self.zoneinstallcertificate_set.create()
+                certs.append(cert)
                 logging.debug("Created install certificate: Zone=%s; Cert=%s" % (self.name, cert.raw_value))
-            
-    
+        return certs            
+        
     @transaction.commit_on_success
     def register_offline(self, device, signed_values=None):
         """Registers in an offline context by verifying the given certificates
@@ -304,11 +303,9 @@ class Zone(SyncedModel):
 
                 return cert.raw_value
         return None
-    
-       
+        
     def __unicode__(self):
         return self.name
-        
 
 
 class ZoneKey(SyncedModel):
@@ -370,10 +367,10 @@ class ZoneKey(SyncedModel):
 
         
 class ZoneInstallCertificate(models.Model):
-    """In order to auto-register with a zone, the zone can provide
-    an "installation certificate"; if a valid installation certificate
-    is provided by a device, the zone accepts the request to join,
-    and the certificate is removed from the list of outstanding certs."""
+    """Install certificates are used to validate the addition of a 
+    device to a zone during an offline install, with some guarantee
+    that if the device ever comes online, the central server will approve the addition.
+    """
     
     zone = models.ForeignKey(Zone, verbose_name="Zone Certificate")
     raw_value = models.CharField(max_length=50, blank=False)
@@ -619,8 +616,10 @@ class Device(SyncedModel):
 
     @transaction.commit_on_success
     def increment_and_get_counter(self):
+        """Device sets own counter (in metadata), and returns it (for update)"""
+        
         metadata = self.get_metadata()
-        if not metadata.device.id:
+        if not metadata.device.id: 
             return 0
         metadata.counter_position += 1
         metadata.save()

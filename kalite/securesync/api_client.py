@@ -13,7 +13,6 @@ import settings
 import kalite
 import model_sync
 from models import *
-from kalite.utils.internet import am_i_online
 
 
 class SyncClient(object):
@@ -60,7 +59,7 @@ class SyncClient(object):
             return "connection_error"
         except Exception as e:
             return "error (%s)" % e
-    
+
 
     def register(self, prove_self=False):
         """Register this device with a zone."""

@@ -4,7 +4,7 @@ from django.contrib.sites.models import Site
 from django.utils.translation import ugettext_lazy as _
 
 from registration.models import RegistrationProfile
-
+from django.contrib.sites.models import Site
 
 class RegistrationAdmin(admin.ModelAdmin):
     actions = ['activate_users', 'resend_activation_email']

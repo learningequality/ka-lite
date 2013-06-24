@@ -86,6 +86,7 @@ def register_device(request):
     (zone,json_response) = register_self_registered_device(client_device, models)
     if json_response:
         return json_response
+        
     elif not zone: # old code-path
         try:
             registration = RegisteredDevicePublicKey.objects.get(public_key=client_device.public_key)

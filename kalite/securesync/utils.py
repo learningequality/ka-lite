@@ -25,7 +25,8 @@ def dump_zone_for_offline_install(zone_id, out_file=None,certs=[],num_certs=None
     # Create the json representation
     objects_json = json_serializer.serialize((zone, zone_key) + tuple(certs), ensure_ascii=False)
     if out_file:
-        with open(out_file, "w") as fh:  fh.write(objects_json)
+        with open(out_file, "w") as fh:
+            fh.write(objects_json)
     
     return objects_json
     

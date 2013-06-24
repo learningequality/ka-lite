@@ -2,10 +2,8 @@ from django.http import HttpResponseRedirect
 from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
 
-
-import kalite
 import securesync.urls
-from kalite import settings
+import settings
 
 
 admin.autodiscover()

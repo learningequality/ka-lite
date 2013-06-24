@@ -1,6 +1,7 @@
 {% extends "base_central.html" %}
 
 {% load i18n %}
+{% load my_filters %}
 
 {% block title %}{% trans "Installation" %}{% endblock %}
 
@@ -8,66 +9,371 @@
 
 {% block headcss %}
 <style>
-label {
-    width: 59px;
-    display: block;
+#python-instructions {
+    margin-top:25px;
+}
+
+.form-label {
     float: left;
-    text-align: right;
-    padding-right: 10px;
-    font-weight: bold;
+    width:200px;
+    text-align:right;
+    margin-right:15px;
 }
-input {
-	margin-bottom: 15px;
+.form-selection {
+    float: left;
 }
-.submit {
-    margin-left: 71px;
+.form-section {
+    width: 100%;
+    text-align:left;
+    float: left;
+    margin-bottom:15px;
 }
+select { 
+    width:200px;
+}
+#instructions {
+    font-size:12pt;
+}
+ul {
+    margin-top:5px;
+}
+#user-registration-info,
+#internet-info,
+#instructions div,
+#platform-section,
+#submit-section,
+#internet-section,
+#install-form {
+    display:none;
+}
+
+#internet-info,
+#user-registration-info {
+    font-weight:bold;
+    color:red;
+}
+
 </style>
 {% endblock headcss %}
 
 {% block content %}
+    {% comment "Header instructions" %}{% endcomment %}
+    <div class="instructions">
+        <h1>Installation</h1>
+        
+        <form name="test" method="post" class="basic-form">
+        {% csrf_token %}
 
-<h1>Log in</h1>
+        <p>
+        <div class="form-section" id="deployment-section">
+            <div class="form-label">I would like to deploy:</div>
+            <div class="form-selection">
+                <select name="server" id="server">
+                    <option value="__empty__">----</option>
+                    <option value="single">A single server (stand-alone)</option>
+                    <option value="multi-independent"> Multiple independent servers</option>
+                    <option value="multi-sharing"> Multiple servers sharing student data</option>
+                </select>
+                <div id="user-registration-info">
+                    You must have an account with us in order to do this.<br/>
+                    Please <a href="{% url registration_register %}">register</a> for an account or <a href="{% url auth_login %}">log in</a>, then revisit this page.
+                </div>
+            </div>
+        </div> 
 
-<p>Please note that this is the central server; you cannot log in here using your local server's account information.</p>
+        <div class="form-section" id="internet-section">
+            <div class="form-label">Internet access at server:</div>
+            <div class="form-selection">
+                <select name="internet" id="internet">
+                    <option value="__empty__">----</option>
+                    <option value="never">Servers will never have internet access</option>
+                    <option value="some">At least one server will have occasional internet access</option>
+                    <option value="all">All servers will have occasional internet access</option>
+                </select>
+                <div id="internet-info">
+                    KA Lite currently does not support this scenario.<br/>
+                    Please <a href="{% url contact_wizard "deployments" %}">contact us</a>, to let us know of your interest [or subscribe to our newsletter]!
+                </div>
+            </div>
+        </div>        
+        
+        <div class="form-section" id="platform-section">
+            <div class="form-label">Server operating system:</div>
+            <div class="form-selection">
+                <select name="platform" id="platform">
+                    <option value="__empty__">----</option>
+                    <option value="windows">Windows</option>
+                    <option value="darwin">Mac</option>
+                    <option value="linux">Linux</option>
+                </select>
+                <span id="platform_info"></span>
+            </div>
+        </div>        
+        
+        <div class="form-section" id="locale-section" style="display:none">
+            <div class="form-label">Server operating system:</div>
+            <div class="form-selection">
+                <select name="locale" id="locale">
+                    <option value="en">English</option>
+                </select>
+                <span id="locale_info"></span>
+            </div>
+        </div>        
+        
 
-<p>If you do not have an account on the central server, you can <a href="/accounts/register/">sign up here</a>.</p>
+    {% comment "Form for downloading KALite is accessible only to authenticatd users" %}{% endcomment %}
+    {% if request.user.is_authenticated %}
+    <div id="install-form">
+        <div class="errors">{% for err in errors %}{{ err }}{% endfor %}</div>
+            <div class="form-section" id="select_organization">
+                <div class="form-label">{% trans "Select Organization" %}</div>
+                <div class="form-selection">
+                    <select name="organization" id="organization">
+                        <option value="__empty__" {% if not selected_organization %}selected{% endif %}>----</option>
+                            {% for org in organizations %}
+                            <option value="{{ org.id }}" {% if selected_organization.id == org.id %}selected{% endif %}>{{ org }} : {{org.id}}</option>
+                            {% endfor %}
+                    </select>
+                </div>
+            </div>
+        
+            {% if selected_organization %}
+            <div class="form-section" id="select_zone">
+                <div class="form-label">{% trans "Select Zone" %}</div>
+                <div class="form-selection">
+                    <select name="zone" id="zone">
+                        <option value="__empty__" {% if not selected_zone %}selected{% endif %}>----</option>
+                        {% for zone in zones %}
+                        <option value="{{ zone.id }}"{% if selected_zone.id == zone.id %}selected{% endif %}>{{ zone }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            {% endif %}
 
-{% if form.errors %}
-<p class="login_error">Incorrect user name or password:</p>
-{% endif %}
-<form method="post" action="?next={{ next|default:"/" }}">{% csrf_token %}
-<dl>
-<dt>
-	<label for="id_username">
-		Email:
-	</label>
-	{% if form.username.errors %} 
-	<span class="errors">
-		{{ form.email.errors.as_text }}
-	</span>{% endif %}
-</dt>
-<dd>
-	{{ form.username }}
-</dd>
-<dt>
-	<label for="id_password">
-		Password:
-	</label>
-	{% if form.password1.errors %} 
-	<span class="errors">
-		{{ form.password1.errors.as_text }}
-	</span>{% endif %}
-</dt>
-<dd>
-	{{ form.password }}
-</dd>
-<dt>
-	<input type="submit" class="submit" value="Log in" />
-</dt>
-</dl>
-</form>
+            {% if selected_organization and selected_zone %}
+            <div class="form-section" id="select_num_certificates">
+                <div class="form-label"># of desired installs<br/>(download can be reused)</div>
+                <div class="form-selection">
+                    <select name="num_certificates" id="num_certificates">
+                        {% mkrange 1 50 as some_range %}
+                        {% for n in some_range %}
+                        <option value="{{ n }}"{% if num_certificates == n|stringformat:"d" %}selected{% endif %}>{{ n }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+    
+        <div class="form-section" id="submit-section">
+            <div class="form-label">&nbsp;</div>
+            <div class="form-selection">
+                <input type="submit" value="{% trans "Download now!"%}" />
+            </div>
+        </div>
+    </form>
+    
+    <div id="instructions">
+        <div id="windows-instructions">
+            Windows installation instructions:
+            <ul>
+                <li>Click "download" to download the Windows installer</li>
+                <li>When the download completes, copy the file to your server(s).
+                <li>From the server(s), unzip the zip file.</li>
+                <li>From the server(s), double-click the install.bat script (inside the ka-lite folder).</li>
+                <li>After installation completes, double-click the start.bat script (inside the ka-lite folder) .</li>
+            </ul>                
+        </div>
+        <div id="linux-instructions">
+            Linux installation instructions:
+            <ul>
+                <li>Click "download" to download  the KA Lite zip file.</li>
+                <li>When the download completes, copy the file to your server(s).</li>
+                <li>From the server(s), unzip the zip file.</li>
+                <li>From the server(s), run the install.sh script (inside the ka-lite folder).</li>
+                <li>From the server(s), run the start.sh script (inside the ka-lite folder).</li>
+            </ul>
+        </div>
+        <div id="darwin-instructions">
+            Mac installation instructions:
+            <ul>
+                <li>Click "download" to download  the KA Lite zip file.</li>
+                <li>When the download completes, copy the file to your server(s).</li>
+                <li>From the server(s), unzip the zip file.</li>
+                <li>From the server(s), run the install.sh script (inside the ka-lite folder).</li>
+                <li>From the server(s), run the start.sh script (inside the ka-lite folder).</li>
+            </ul>
+        </div>
+        <div id="python-instructions">
+            Python - this is the program that runs KA Lite; please install as well!
+            <ul>
+                <li><a target="_new" href="http://www.python.org/getit/releases/2.7.5/#download">Download Python</a>.</li>
+                <li>Copy the Python installer over to your server.</li>
+                <li>Install Python</li>
+                <li>Make sure to add Python to your PATH (<a target="_new" href="https://www.google.com/search?q=add+python+to+path+tutorial+windows">Windows</a>, <a target="_new" href="https://www.google.com/search?q=add+python+to+path+tutorial+linux">Linux</a>, <a target="_new" href="https://www.google.com/search?q=add+python+to+path+tutorial+mac">MacOS</a>)</li>
 
-<p>If you've forgotten your password, you can <a href="/accounts/password/reset/">reset it here</a>.</p>
+    </div>
+ <script>
 
+function qparts(name) {
+    var vars = {};
+
+    var parts = window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m, key, value) {
+        vars[key] = value;
+    });
+    
+    if (name) {
+        return vars[name];
+    }
+    else
+        return vars;
+}
+function setGetParam(name, val) {
+    var vars = qparts();
+    
+    vars["server"] = $("#server option:selected").val();
+    vars["internet"] = $("#internet option:selected").val();
+    vars["platform"] = $("#platform option:selected").val();
+
+    if (vars[name] == val || (typeof val === "undefined") || val=="__empty__") {
+       return;
+    }
+        
+    if (val != "" && val != "__empty__") {
+        vars[name] = val;
+    } else {
+        delete vars[name];
+    }
+    url = "?" + $.param(vars);
+
+    window.location.href = url;
+}
+
+function select_instructions(platform) {
+    $("#instructions div").each(function(idx){
+        $(this).hide();
+    })
+    $("#"+ platform + "-instructions").show()
+    $("#python-instructions").show()
+}
+
+$(function() {
+    // Show a section, and alert user
+    user_logged_in = {{ user.is_authenticated|lower }};
+
+    // Deployment option
+    $("#server").change(function(){
+        var server_option = $("#server option:selected").val();
+        if (server_option == "single") {
+            $("#user-registration-info").hide();
+            $("#internet-section").hide();
+            $("#platform-section").show();
+            $("#install-form").hide();
+            $("#submit-section").show();
+            $("#instructions").hide();
+        }
+        else if (server_option == "__empty__") {// if ($("#server_option option:selected").val() == "single") {
+            $("#user-registration-info").hide();
+            $("#internet-section").hide();
+            $("#platform-section").hide();
+            $("#install-form").hide();
+            $("#submit-section").hide();
+            $("#instructions").hide();
+        }
+        else {            
+            if (!user_logged_in) {
+                $("#user-registration-info").show();
+                $("#internet-section").hide();
+                $("#platform-section").hide();
+                $("#install-form").hide();
+                $("#submit-section").hide();
+                $("#instructions").hide();
+            }
+            else {
+                $("#user-registration-info").hide();
+                $("#internet-section").show();
+                $("#platform-section").hide();
+                $("#install-form").hide();
+                $("#submit-section").hide();
+                $("#instructions").hide();
+            }
+        }
+        
+        prep_download_if_ready()
+    });//.val(qparts("server")).change();
+    
+    // Internet access options
+    $("#internet").change(function(){
+        // illegal
+        if ($("#internet option:selected").val() == "__empty__") {
+        }
+        else if ($("#internet option:selected").val() != "all") {
+            $("#internet-info").show()
+            $("#platform-section").hide();
+            $("#install-form").hide();
+            $("#submit-section").hide();
+            $("#instructions").hide();
+        }
+        // legal
+        else {
+            $("#internet-info").hide()
+            $("#platform-section").show();
+            $("#install-form").hide();
+            $("#submit-section").hide();
+            $("#instructions").hide();
+        }
+
+        prep_download_if_ready()
+    });//.val("{{ internet }}").change();
+
+        
+    // Platform options
+    $("#platform").change(function(){
+        select_instructions($("#platform option:selected").val());
+        if ($("#server option:selected").val()!="single")
+            $("#install-form").show();
+        //else //if ($("#server_option option:selected").val()=="single")
+
+        prep_download_if_ready()
+    });//.val(qparts("platform")).change();
+    
+    
+    // When selected, refresh the page
+    $("#organization").change(function(){
+       setGetParam("organization", $("#organization option:selected").val()); 
+        prep_download_if_ready()
+    }).val("{{selected_organization.id}}").change();
+    
+    $("#zone").change(function(){
+       setGetParam("zone", $("#zone option:selected").val()); 
+        prep_download_if_ready()
+    }).val("{{selected_zone.id}}").change();
+    
+    $("#num_certificates").change(function(){
+//       setGetParam("num_certificates", $("#num_certificates option:selected").val()); 
+        prep_download_if_ready()
+    }).val("{{num_certificates}}").change();
+    
+});
+
+function valof(name) {
+    return $("#" + name + " option:selected").val()
+}
+function prep_download_if_ready() {
+    if (  (valof("server") == "single" && valof("platform") != "__empty__")
+           || (valof("server") != "single" && valof("organization") != "__empty__"
+            && valof("zone") != "__empty__" && valof("num_certificates") != "__empty__") ) {
+            
+        $("#submit-section").show();
+        $("#instructions").show();
+    }
+    else {
+        $("#submit-section").hide();
+        $("#instructions").hide();
+    }    
+}
+</script>
 {% endblock %}
