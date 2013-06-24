@@ -1,4 +1,4 @@
-{% extends 'base_central.html' %}
+{% extends "central/base_central.html" %}
 
 {% load staticfiles %}
 
@@ -672,7 +672,8 @@ article {
 {% if feed %}
 <div id="bottom_content" class="row">  
     <div id="rss-logo">
-        <a href="{% url rss_feed %}"><img class="rss-feed-icon" src="{% static "images/rssfeed.jpg" %}"/></a>
+
+       <a href="{% url rss_feed %}"><img class="rss-feed-icon" src="{% static "images/rssfeed.jpg" %}"/></a>
     </div>
     <div id="rss-feed">
         <h2>Read more!</h2>

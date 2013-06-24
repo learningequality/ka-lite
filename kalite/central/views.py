@@ -3,18 +3,18 @@ import re, json
 import requests
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
+from annoying.decorators import render_to
 from decorator.decorator import decorator
 
+from django.core.urlresolvers import reverse
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseForbidden, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
-from django.core.urlresolvers import reverse
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib import messages
-from django.utils.translation import ugettext as _
 from django.template.loader import render_to_string
-from annoying.decorators import render_to
+from django.utils.translation import ugettext as _
+from django.views.decorators.csrf import csrf_exempt
 
 import kalite
 import settings
@@ -25,6 +25,7 @@ from securesync.models import Zone, SyncSession
 from securesync.models import Facility
 from securesync.forms import FacilityForm
 from utils.packaging import package_offline_install_zip
+
 
 def get_request_var(request, var_name, default_val="__empty__"):
     return  request.POST.get(var_name, request.GET.get(var_name, default_val))
@@ -350,8 +351,9 @@ def crypto_login(request):
         return HttpResponse("Unable to establish a session with KA Lite server at %s" % host)
     return HttpResponseRedirect("%ssecuresync/cryptologin/?client_nonce=%s" % (host, client.session.client_nonce))
 
-def central_404_handler(request):
-    return HttpResponseNotFound(render_to_string("404_central.html", {}, context_instance=RequestContext(request)))
+
+def handler_404(request):
+    return HttpResponseNotFound(render_to_string("central/404.html", {}, context_instance=RequestContext(request)))
     
-def central_500_handler(request):
-    return HttpResponseServerError(render_to_string("500_central.html", {}, context_instance=RequestContext(request)))
+def handler_500(request):
+    return HttpResponseServerError(render_to_string("central/500.html", {}, context_instance=RequestContext(request)))

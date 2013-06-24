@@ -1,6 +1,12 @@
 import re
 import unittest
 
+from django.test import TestCase
+
+import crypto
+import settings
+from models import FacilityUser
+
 
 from django.test import TestCase
 
@@ -54,6 +60,7 @@ class ChangeLocalUserPassword(unittest.TestCase):
         self.assertFalse(match is None, "could not parse stderr")
         self.assertEquals(match.groups()[0], fake_username, "Verify printed fake username")
         self.assertNotEquals(val, 0, "Verify exit code is non-zero")
+
 
 @unittest.skipIf(not crypto.M2CRYPTO_EXISTS, "Skipping M2Crypto tests as it does not appear to be installed.")
 class TestM2Crypto(unittest.TestCase):
@@ -203,3 +210,44 @@ class TestExistingKeysAndSignatures(unittest.TestCase):
         key = crypto.Key(public_key_string=self.pub_key_with_no_headers)
         self.assertTrue(key.verify(self.message_actual, self.signature_base64))
         self.assertFalse(key.verify(self.message_fake, self.signature_base64))
+
+
+
+class TestPasswordSetting(unittest.TestCase):
+
+    hashed_blah = "$p5k2$7d0$gTQ4yyg2$cixFA2fd5QUfmKLPWZYIVxoZwymFajCK"
+    
+    def test_set_password_hash_ok(self):
+        fu = FacilityUser(username="test_user")
+        dbg_mode = settings.DEBUG; settings.DEBUG=True
+        fu.set_password(hashed_password=self.__class__.hashed_blah)	
+        settings.DEBUG = dbg_mode 
+        self.assertTrue(fu.check_password("blah"))
+            
+    def test_set_password_raw_ok(self):
+        fu = FacilityUser(username="test_user")
+        dbg_mode = settings.DEBUG; settings.DEBUG=True
+        fu.set_password(raw_password="blah")
+        settings.DEBUG = dbg_mode 
+        self.assertTrue(fu.check_password("blah"))
+            
+    def test_set_password_both_bad(self):
+        fu = FacilityUser(username="test_user")
+        dbg_mode = settings.DEBUG; settings.DEBUG=True
+        with self.assertRaises(AssertionError):
+            fu.set_password(raw_password="blue", hashed_password=self.__class__.hashed_blah)
+        settings.DEBUG = dbg_mode 
+            
+    def test_set_password_neither_bad(self):
+        fu = FacilityUser(username="test_user")
+        dbg_mode = settings.DEBUG; settings.DEBUG=True
+        with self.assertRaises(AssertionError):
+            fu.set_password()	
+            
+    def test_set_password_hash_nodebug_bad(self):
+        fu = FacilityUser(username="test_user")
+        dbg_mode = settings.DEBUG; settings.DEBUG=False
+        with self.assertRaises(AssertionError):
+            fu.set_password(hashed_password=self.__class__.hashed_blah)	
+        settings.DEBUG = dbg_mode 
+            

@@ -156,7 +156,7 @@
                                                                             <span class="progress-circle" data-youtube-id="{{ video.youtube_id }}"></span>
                                                                             <span>{% trans video.title %}</span>
                                                                         </div>
-                                                                        <div class="thumbnail_teaser" style="height: 0px; ">{% trans video.description %}</div>
+                                                                        <div class="thumbnail_teaser" style="height: 0px; ">{% if video.description %}{% trans video.description %}{% endif %}</div>
                                                                     </div>
                                                                 </div>
                                                             </a>

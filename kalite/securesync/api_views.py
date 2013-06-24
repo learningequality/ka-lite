@@ -1,12 +1,15 @@
-import re
+import cgi
 import json
+import re
 import uuid
-import logging; 
 
+from django.contrib import messages
+from django.contrib.messages.api import get_messages
+from django.core import serializers
 from django.db import transaction
 from django.http import HttpResponse
 from django.utils import simplejson
-from django.core import serializers
+from django.utils.safestring import SafeString, SafeUnicode, mark_safe
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.gzip import gzip_page
 
@@ -14,10 +17,10 @@ import kalite
 import crypto
 import settings
 import model_sync
-from models import *
-from main.models import VideoLog, ExerciseLog
 from config.models import Settings
 from main.models import VideoLog, ExerciseLog
+from securesync.models import *
+from securesync.views import distributed_server_only
 
 
 class JsonResponse(HttpResponse):
@@ -225,13 +228,45 @@ def model_download(data, session):
 def test_connection(request):
     return HttpResponse("OK")
 
+
+@distributed_server_only
 def status(request):
+    """In order to promote (efficient) caching on (low-powered)
+    distributed devices, we do not include ANY user data in our
+    templates.  Instead, an AJAX request is made to download user
+    data, and javascript used to update the page.
+    
+    This view is the view providing the json blob of user information,
+    for each page view on the distributed server.
+    
+    Besides basic user data, we also provide access to the
+    Django message system through this API, again to promote
+    caching by excluding any dynamic information from the server-generated
+    templates.
+    """
+    # Build a list of messages to pass to the user.
+    #   Iterating over the messages removes them from the
+    #   session storage, thus they only appear once.
+    message_dicts = []
+    for message in  get_messages(request):
+        # Make sure to escape strings not marked as safe.
+        # Note: this duplicates a bit of Django template logic.
+        msg_txt = message.message
+        if not (isinstance(message.message, SafeString) or isinstance(message.message, SafeUnicode)):
+            msg_txt = cgi.escape(str(msg_txt))
+
+        message_dicts.append({
+            "tags": message.tags, 
+            "text": msg_txt,
+        }) 
+        
     data = {
         "is_logged_in": request.is_logged_in,
         "registered": bool(Settings.get("registered")),
         "is_admin": request.is_admin,
         "is_django_user": request.is_django_user,
         "points": 0,
+        "messages": message_dicts,
     }
     if "facility_user" in request.session:
         user = request.session["facility_user"]
@@ -241,4 +276,5 @@ def status(request):
     if request.user.is_authenticated():
         data["is_logged_in"] = True
         data["username"] = request.user.username
+    
     return JsonResponse(data)

@@ -1,6 +1,9 @@
 import json
 import os
 import logging
+import sys
+import time
+import tempfile
 
 try:
     from local_settings import *
@@ -13,9 +16,12 @@ TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
 
 # Set logging level based on the value of DEBUG (evaluates to 0 if False, 1 if True)
 logging.basicConfig()
-logging.getLogger().setLevel(logging.DEBUG*DEBUG + logging.INFO*(1-DEBUG))
+logging.getLogger("kalite").setLevel(logging.DEBUG*DEBUG + logging.INFO*(1-DEBUG))
 
 INTERNAL_IPS   = getattr(local_settings, "INTERNAL_IPS", ("127.0.0.1",))
+
+# TODO(jamalex): currently this only has an effect on Linux/OSX
+PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 8008)
 
 CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
 
@@ -94,8 +100,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.media",
     "django.contrib.messages.context_processors.messages",
     "django.core.context_processors.request",
-    "main.custom_context_processors.custom",
+    "%s.custom_context_processors.custom" % ("central" if CENTRAL_SERVER else "main"),
 )
+
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -108,11 +115,15 @@ MIDDLEWARE_CLASSES = (
     "django.contrib.sessions.middleware.SessionMiddleware",
     'django.middleware.locale.LocaleMiddleware',
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "main.middleware.GetNextParam",
+    "django.middleware.csrf.CsrfViewMiddleware",
 )
+if DEBUG:
+    MIDDLEWARE_CLASSES += (
+        'django_snippets.profiling_middleware.ProfileMiddleware', # add ?prof to URL, to see performance stats
+    )
 
 ROOT_URLCONF = "kalite.urls"
 
@@ -129,8 +140,8 @@ INSTALLED_APPS = (
     "django_cherrypy_wsgiserver",
     "securesync",
     "config",
-    "main",
     "kalite",
+    "main", # in order for securesync to work, this needs to be here.
 )
 
 if DEBUG or CENTRAL_SERVER:
@@ -147,6 +158,10 @@ if CENTRAL_SERVER:
     AUTH_PROFILE_MODULE     = 'central.UserProfile'
 
 else:
+    # Include optionally installed apps
+    if os.path.exists(PROJECT_PATH + "/loadtesting/"):
+        INSTALLED_APPS     += ("loadtesting"),
+
     MIDDLEWARE_CLASSES += (
         "securesync.middleware.DBCheck",
         "securesync.middleware.AuthFlags",
@@ -157,15 +172,32 @@ else:
     )
     INSTALL_CERTIFICATES = getattr(local_settings, "INSTALL_CERTIFICATES", [])
 
+# By default, cache for maximum possible time.
+#   Note: caching for 100 years can be too large a value
+#   sys.maxint also can be too large (causes ValueError), since it's added to the current time.
+#   Caching for the lesser of (100 years) or (5 years less than the max int) should work.
+_5_years = 5 * 365 * 24 * 60 * 60
+_100_years = 100 * 365 * 24 * 60 * 60
+_max_cache_time = min(_100_years, sys.maxint - time.time() - _5_years)
+CACHE_TIME = getattr(local_settings, "CACHE_TIME", _max_cache_time)
 
-slug_key = {
-    "Topic": "id",
-    "Video": "readable_id",
-    "Exercise": "name",
-}
+# Cache is activated in every case, 
+#   EXCEPT: if CACHE_TIME=0
+if CACHE_TIME or CACHE_TIME is None: # None can mean infinite caching to some functions
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+            'LOCATION': getattr(local_settings, "CACHE_LOCATION", tempfile.gettempdir()), # this is kind of OS-specific, so dangerous.
+            'TIMEOUT': CACHE_TIME, # should be consistent
+            'OPTIONS': {
+                'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
+            },
+        }
+    }
 
-title_key = {
-    "Topic": "title",
-    "Video": "title",
-    "Exercise": "display_name",
-}
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+
+# This setting is required for AJAX-based messaging to work in Django 1.4,
+#   due to this bug: https://code.djangoproject.com/ticket/19387
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
