@@ -43,9 +43,9 @@ class KaLiteServer(object):
     def start_server(self):
         """By default, run allowing external access."""        
         cwd = os.getcwd()
-        os.chdir(self.base_dir)
+        os.chdir(self.base_dir + "/kalite")
     
-        lexec(self.pyexec() + " kalite/manage.py runcherrypyserver host=%s port=%d threads=50 daemonize=true pidfile=kalite/runcherrypyserver.pid" % (self.hostname, self.port))
+        lexec(self.pyexec() + " manage.py runcherrypyserver host=%s port=%d threads=5 daemonize=true pidfile=%s/kalite/runcherrypyserver.pid" % (self.hostname, self.port, self.base_dir))
     
         os.chdir(cwd)
 
@@ -122,14 +122,14 @@ class KaLiteServer(object):
             commands = [commands]
 
         # Run shell plus
-        out = self.call_command("shell_plus", "--quiet-load", input=string.join(commands, "\n"))
+        out = self.call_command("shell_plus", "--quiet-load", input=str.join("\n", commands))
         
         # Parse the output cleanly, in the case where we succeed, for easier manipulation
         if not out['exit_code']:
             cmdout = out['stdout'].replace("\x1b[?1034h","").split("\n>>> ")
             if len(cmdout)>1 and not cmdout[-1]: # markers of successful parse
                  return {
-                    'stdout': string.join(cmdout[1:-1],"\n"),
+                    'stdout': str.join("\n", cmdout[1:-1]),
                     'stderr': None,
                     'exit_code': 0,
                 }
@@ -137,7 +137,6 @@ class KaLiteServer(object):
     
 
     def install_server(self):
-        import pdb; pdb.set_trace()
         # Then, make sure to run the installation
         self.log.info("Creating the database and admin user")
         if os.path.exists(self.base_dir + '/kalite/database/data.sqlite'):
@@ -164,7 +163,7 @@ class KaLiteServer(object):
         
     def is_installed(self):
         if not os.path.exists(self.base_dir + '/kalite/database/data.sqlite'):
-            return false
+            return False
         else:
             try:
                 self.call_command("syncdb", "--migrate", input="no\n")
@@ -173,7 +172,6 @@ class KaLiteServer(object):
                 return False
                 
     def setup_server(self):
-        import pdb; pdb.set_trace()
         # Always destroy/rewrite the local settings
         self.create_local_settings_file()
         self.install_server()
