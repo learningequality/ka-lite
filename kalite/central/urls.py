@@ -9,10 +9,9 @@ from feeds import RssSiteNewsFeed, AtomSiteNewsFeed
 
 admin.autodiscover()
 
-def redirect_to(self, url, wurl=""):
-    return HttpResponseRedirect(url + wurl)
-
-
+def redirect_to(self, base_url, path=""):
+    return HttpResponseRedirect(base_url + path)
+    
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^images/(.+)$', lambda request, path: HttpResponseRedirect('/static/images/' + path)),
@@ -55,11 +54,11 @@ urlpatterns += patterns('central.views',
 
     url(r'^contact/', include('contact.urls')),
     url(r'^install/$', 'install_wizard', {}, 'install_wizard'),
-    url(r'^wiki/(?P<wurl>\w+)/$', redirect_to, {'url': settings.CENTRAL_WIKI_URL}),
-    url(r'^about/$', redirect_to, { 'url': 'http://learningequality.org/' }),
     url(r'^download/kalite/(?P<args>.*)/$', 'download_kalite', {"argnames": ["platform", "locale", "zone_id", "n_certs"]}, 'download_kalite'),
+
+    url(r'^wiki/(?P<path>\w+)/$', redirect_to, {'base_url': settings.CENTRAL_WIKI_URL}),
+    url(r'^about/$', redirect_to, { 'base_url': 'http://learningequality.org/' }),
 )
 
 handler404 = 'central.views.handler_404'
 handler500 = 'central.views.handler_500'
-

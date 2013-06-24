@@ -1,19 +1,24 @@
 from django.contrib import admin
-from models import Contact, Deployment, Support, Info, Contribute
-            
+
+from models import *
+
+
 class ContactAdmin(admin.ModelAdmin):
     pass
+admin.site.register(Contact, ContactAdmin)
+
 class DeploymentAdmin(admin.ModelAdmin):
     pass
+admin.site.register(Deployment, DeploymentAdmin)
+
 class SupportAdmin(admin.ModelAdmin):
     pass
+admin.site.register(Support, SupportAdmin)
+
 class InfoAdmin(admin.ModelAdmin):
     pass
+admin.site.register(Info, InfoAdmin)
+
 class ContributeAdmin(admin.ModelAdmin):
     pass
-    
-admin.site.register(Contact, ContactAdmin)
-admin.site.register(Deployment, DeploymentAdmin)
-admin.site.register(Support, SupportAdmin)
-admin.site.register(Info, InfoAdmin)
 admin.site.register(Contribute, ContributeAdmin)

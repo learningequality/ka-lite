@@ -120,10 +120,6 @@ MIDDLEWARE_CLASSES = (
     "main.middleware.GetNextParam",
     "django.middleware.csrf.CsrfViewMiddleware",
 )
-if DEBUG:
-    MIDDLEWARE_CLASSES += (
-        'django_snippets.profiling_middleware.ProfileMiddleware', # add ?prof to URL, to see performance stats
-    )
 
 ROOT_URLCONF = "kalite.urls"
 
@@ -144,8 +140,10 @@ INSTALLED_APPS = (
     "main", # in order for securesync to work, this needs to be here.
 )
 
-if DEBUG or CENTRAL_SERVER:
-    INSTALLED_APPS += ("django_extensions","django_snippets")
+if DEBUG:
+    # add ?prof to URL, to see performance stats
+    MIDDLEWARE_CLASSES += ('django_snippets.profiling_middleware.ProfileMiddleware',)
+    INSTALLED_APPS += ("django_snippets",)
 
 if AUTO_LOAD_TEST:
     INSTALLED_APPS += ("loadtesting",)
@@ -156,21 +154,28 @@ if CENTRAL_SERVER:
     INSTALLED_APPS         += ("postmark", "kalite.registration", "central", "faq", "contact",)
     EMAIL_BACKEND           = getattr(local_settings, "EMAIL_BACKEND", "postmark.backends.PostmarkBackend")
     AUTH_PROFILE_MODULE     = 'central.UserProfile'
+    INSTALLED_APPS         += (
+        "django_extensions",
+        "postmark", 
+        "central", 
+        "contact",
+        "faq", 
+        "kalite.registration", 
+    )
 
 else:
     # Include optionally installed apps
     if os.path.exists(PROJECT_PATH + "/loadtesting/"):
-        INSTALLED_APPS     += ("loadtesting"),
+        INSTALLED_APPS     += ("loadtesting",)
 
     MIDDLEWARE_CLASSES += (
         "securesync.middleware.DBCheck",
         "securesync.middleware.AuthFlags",
         "main.middleware.SessionLanguage",
     )
-    TEMPLATE_CONTEXT_PROCESSORS += (
-        "main.custom_context_processors.languages",
-    )
+    TEMPLATE_CONTEXT_PROCESSORS += ("main.custom_context_processors.languages",)
     INSTALL_CERTIFICATES = getattr(local_settings, "INSTALL_CERTIFICATES", [])
+
 
 # By default, cache for maximum possible time.
 #   Note: caching for 100 years can be too large a value
