@@ -2,16 +2,12 @@ import re
 import unittest
 
 from django.test import TestCase
-
-import crypto
-import settings
-from models import FacilityUser
-
-
 from django.test import TestCase
-from kalite.utils.django_utils import call_command_with_output
 
+import settings
 from securesync import crypto
+from securesync.models import FacilityUser
+from kalite.utils.django_utils import call_command_with_output
 from securesync.models import Facility, FacilityUser, FacilityGroup
 
 
