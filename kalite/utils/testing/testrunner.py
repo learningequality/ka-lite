@@ -4,7 +4,6 @@ Test support harness to make setup.py test work.
 
 import os
 import sys
-import logging
 
 from django.test.simple import DjangoTestSuiteRunner
 from django.core import management
@@ -34,7 +33,7 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         #   the orphan pyc's are discovered and run during testing
         # pyc's are not tracked by git, so orphans can happen when an
         #   older branch has been checked out
-        logging.getLogger("kalite").info("Purging pyc files")
+        settings.LOG.info("Purging pyc files")
         management.call_command('clean_pyc', verbosity=2)
         
         if not test_labels:

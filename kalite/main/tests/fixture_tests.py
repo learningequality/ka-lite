@@ -1,20 +1,18 @@
 """
-This file demonstrates writing tests using the unittest module. These will pass
-when you run "manage.py test".
 
-Replace this with more appropriate tests for your application.
 """
 
 import os
-import unittest
 
 from django.test import TestCase
 from django.core.management import call_command
 from django.db import DatabaseError
 
-import settings
+from kalite import settings
+from utils.testing.decorators import distributed_only
 
 
+@distributed_only
 class FixtureTestCases(TestCase):
     """ """
 

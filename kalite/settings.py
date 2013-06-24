@@ -201,4 +201,4 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 #   due to this bug: https://code.djangoproject.com/ticket/19387
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
-TEST_RUNNER = 'kalite.utils.testrunner.KALiteTestRunner'
+TEST_RUNNER = 'kalite.utils.testing.testrunner.KALiteTestRunner'
