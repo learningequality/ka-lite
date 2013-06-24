@@ -125,7 +125,7 @@ def create_local_settings_file(location, server_type="local", locale=None, centr
         shutil.copy(location, fil) 
 
     # Can steal it
-    central_server = central_server or server.CENTRAL_SERVER_HOST
+    central_server = central_server or settings.CENTRAL_SERVER_HOST
         
     with open(fil,"a") as ls: #append, to keep those settings, but override SOME
         ls.write("\n") # never trust the previous file ended with a newline!

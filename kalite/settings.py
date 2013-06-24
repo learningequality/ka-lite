@@ -133,6 +133,7 @@ INSTALLED_APPS = (
     "south",
     "chronograph",
     "django_cherrypy_wsgiserver",
+    "django_extensions",
     "securesync",
     "config",
     "kalite",
@@ -141,8 +142,8 @@ INSTALLED_APPS = (
 
 if DEBUG:
     # add ?prof to URL, to see performance stats
-    MIDDLEWARE_CLASSES += ('django_snippets.profiling_middleware.ProfileMiddleware',)
     INSTALLED_APPS += ("django_snippets",)
+    MIDDLEWARE_CLASSES += ('django_snippets.profiling_middleware.ProfileMiddleware',)
 
 if CENTRAL_SERVER:
     ACCOUNT_ACTIVATION_DAYS = getattr(local_settings, "ACCOUNT_ACTIVATION_DAYS", 7)
@@ -151,7 +152,6 @@ if CENTRAL_SERVER:
     EMAIL_BACKEND           = getattr(local_settings, "EMAIL_BACKEND", "postmark.backends.PostmarkBackend")
     AUTH_PROFILE_MODULE     = 'central.UserProfile'
     INSTALLED_APPS         += (
-        "django_extensions",
         "postmark", 
         "central", 
         "contact",

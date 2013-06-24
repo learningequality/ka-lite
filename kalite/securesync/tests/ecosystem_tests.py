@@ -4,7 +4,7 @@ class CrossLocalServerSyncTestCase(KALiteEcosystemTestCase):
     
     def setUp(self, *args, **kwargs):
         return super(CrossLocalServerSyncTestCase, self).setUp(*args, **kwargs)
-    
+
     def call_command(self, server, command, params_string="", expect_success=True):
         out = self.servers[server].call_command(command=command, params_string=params_string)
         if expect_success:
@@ -37,7 +37,9 @@ class CrossLocalServerSyncTestCase(KALiteEcosystemTestCase):
         n_elogs = int(self.shell_plus("local2", "ExerciseLog.objects.all().count()"))
         n_vlogs = int(self.shell_plus("local2", "VideoLog.objects.all().count()"))
     
-
-        import pdb; pdb.set_trace()
         out = self.call_command("local2", "syncmodels")
+        out = self.call_command("local", "syncmodels")
             
+        import pdb; pdb.set_trace()
+#        n_elogs = int(self.shell_plus("central", "ExerciseLog.objects.all().count()"))
+
