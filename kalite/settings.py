@@ -190,6 +190,8 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 #   due to this bug: https://code.djangoproject.com/ticket/19387
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
+TEST_RUNNER = 'kalite.utils.testrunner.KALiteTestRunner'
+
 # import these one extra time to overwrite any settings not explicitly looking for local settings
 try:
     from local_settings import *
