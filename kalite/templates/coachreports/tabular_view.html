@@ -1,4 +1,4 @@
-{% extends 'base_distributed.html' %}
+{% extends "coachreports/base.html" %}
 
 {% load i18n %}
 {% load staticfiles %}
@@ -63,18 +63,14 @@
 }
 </style>
 {% endblock headcss %}
-{% block headscript %}
-<script>
-
-</script>
-{% endblock headscript %}
+{% block headjs %}
+{{ block.super }}
+{% endblock headjs %}
 
 {% block title %}{% trans "Coach Reports" %}{% endblock title %}
 
 {% block content %}
-<div id="content">
-    <div class="facility"><h2>{% blocktrans %}Coach Reports for {{ facility }}{% endblocktrans %} (<a href="?facility=select">{% trans "Change Facility" %}</a>)</h2></div>
-    {% block selection_bar %}
+{% block navbar_title %}{{ block.super }}{% endblock navbar_title %}
 
     <div id="selection-bar">
     {% comment %}Select the coach report type{% endcomment %}
@@ -89,23 +85,10 @@
         </div>
     {% else %}
         <div class="selection">
-            <div class="subtitle">{% trans "No Groups at this Facility" %}</div>
+            <div class="subtitle">{% trans "No Report Types Available" %}</div>
         </div>
     {% endif %}
-    {% if groups %}
-        <div class="selection">
-            <div class="subtitle">{% trans "Select Group" %}</div><select id="group">
-            <option {% if not request.GET.group_id %}selected{% endif %}>----</option>
-                {% for group in groups %}
-                    <option value="{{ group.id }}" {% if request.GET.group_id == group.id %}selected{% endif %}>{{ group }}</option>
-                {% endfor %}
-            </select>
-        </div>
-    {% else %}
-        <div class="selection">
-            <div class="subtitle">{% trans "No Groups at this Facility" %}</div>
-        </div>
-    {% endif %}
+
     {% if users and request_report_type == "student" %}
         <div class="selection">
             <div class="subtitle">{% trans "Select Student" %}</div><select id="student">
@@ -126,6 +109,10 @@
             </select>
         </div>
     {% endif %}
+    </div>
+
+<div id="content">
+   
         <div class="selection" style="display:none">
             <div class="subtitle">{% trans "Display Options" %}</div><select id="disp_options">
                 <option selected>----</option>
@@ -146,7 +133,6 @@
             <div class="legend"><div class="struggle"></div>{% trans "Struggling" %}</div>
         </div>
     </div>
-    {% endblock selection_bar %}
     {% if students %}
         {% block students_header %}
         <div style="clear: both;"></div>
@@ -259,21 +245,11 @@
     {% endif %}
 </div> 
 
-<script>
+{% block endjs %}
+{{ block.super }}
+{% endblock endjs %}
 
-function setGetParam(name, val) {
-    var vars = {};
-    var parts = window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m, key, value) {
-        vars[key] = value;
-    });
-    if (val != "" && val != "----") {
-        vars[name] = val;
-    } else {
-        delete vars[name];
-    }
-    url = "?" + $.param(vars);
-    window.location.href = url;    
-}
+<script>
 
 
 $(function() {
@@ -283,15 +259,15 @@ $(function() {
     });
 
     $("#student").change(function(){
-        setGetParam("user_id", $("#student option:selected").val());
+        window.location.href = setGetParam(window.location.href, "user_id", $("#student option:selected").val());
     });
 
     $("#topic").change(function(){
-        setGetParam("topic", $("#topic option:selected").val());
+        window.location.href = setGetParam(window.location.href, "topic", $("#topic option:selected").val());
     });
 
     $("#group").change(function(){
-       setGetParam("group_id", $("#group option:selected").val()); 
+        window.location.href = setGetParam(window.location.href, "group_id", $("#group option:selected").val()); 
     });
     
     // Selector to toggle visible elements is stored in each option value
