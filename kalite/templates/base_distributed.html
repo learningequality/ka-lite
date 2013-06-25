@@ -2,7 +2,8 @@
 
 {% load i18n %}
 
-{% block basejs %}
+{% block basejs %}{{ block.super }}
+<script type="text/javascript" src="{{ MEDIA_URL }}js/distributed-server.js"></script>
 <script type="text/javascript">
 
     var csrftoken = getCookie("csrftoken") || "";
@@ -34,6 +35,7 @@
     });
 </script>
 {% endblock basejs %}
+
 
 {% block sitewide_navigation %}
 
@@ -68,6 +70,11 @@
 </span>
 
 {% endblock sitewide_navigation %}
+
+
+{% block precontent %}
+<div id="message_container"><!-- add messages to this container via AJAX --></div>
+{% endblock precontent %}
 
 
 {% block footerleft %}
