@@ -1,4 +1,6 @@
-import os, sys
+import os, sys, warnings
+
+warnings.filterwarnings('ignore', message=r'Module .*? is being added to sys\.path', append=True)
 
 PROJECT_PATH = os.path.dirname(os.path.realpath(__file__))
 
