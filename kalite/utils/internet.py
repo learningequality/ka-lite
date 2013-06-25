@@ -3,6 +3,9 @@ For functions mucking with internet access
 """
 import logging
 import requests
+from urlparse import parse_qs, urlsplit, urlunsplit
+from urllib import urlencode
+
 
 def am_i_online(url, expected_val=None, search_string=None, timeout=5, allow_redirects=True):
     """Test whether we are online or not.
@@ -36,5 +39,45 @@ def am_i_online(url, expected_val=None, search_string=None, timeout=5, allow_red
         return False
 
 
-if __name__=="__main__":
+
+def generate_all_paths(path, base_path="/"):
+
+    if not base_path.endswith("/"):   # Must have trailing slash to work.
+        base_path += "/"
+        
+    if not path.endswith("/"):        # Must NOT have trailing slash to work.
+        path = path[0:-1]
+        
+    all_paths = []
+    cur_path = base_path[0:-1]
+    for dirname in path[len(base_path)-1:].split("/"): # start AFTER the base path
+        cur_path += dirname + "/"
+        all_paths.append(cur_path)
+    return all_paths
+
+
+def set_query_params(url, param_dict):
+    """Given a URL, set or replace a query parameter and return the
+    modified URL.
+
+    >>> set_query_params('http://example.com?foo=bar&biz=baz',  {'foo': 'stuff'})
+    'http://example.com?foo=stuff&biz=baz'
+
+    modified from http://stackoverflow.com/questions/4293460/how-to-add-custom-parameters-to-an-url-query-string-with-python
+    """
+    scheme, netloc, path, query_string, fragment = urlsplit(url)
+    query_params = parse_qs(query_string)
+
+    for param_name, param_value in param_dict.items():
+        query_params[param_name] = [param_value]
+    new_query_string = urlencode(query_params, doseq=True)
+
+    return urlunsplit((scheme, netloc, path, new_query_string, fragment))
+    
+    
+if __name__ == "__main__":
+    print generate_all_paths("/test/me/out")
+    print generate_all_paths("/test/me/out/")
+    print generate_all_paths("/test/me/out", base_path="/test")
+    
     print am_i_online()
