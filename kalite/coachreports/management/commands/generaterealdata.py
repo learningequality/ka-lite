@@ -128,7 +128,7 @@ def generate_fake_facility_users(nusers=20, facilities=None, facility_groups=Non
     If no facilities are given, they are created."""
 
     if not facility_groups:
-        (facility_groups,facilities) = generate_fake_facility_groups(facilities=facilities)
+        (facility_groups, facilities) = generate_fake_facility_groups(facilities=facilities)
 
     facility_users = []
 
@@ -157,12 +157,13 @@ def generate_fake_facility_users(nusers=20, facilities=None, facility_groups=Non
                         username=user_data["username"],
                         first_name=user_data["first_name"],
                         last_name=user_data["last_name"],
-                        notes=notes, group=facility_group
+                        notes=notes,
+                        group=facility_group,
                     )
                     facility_user.set_password(password) # set same password for every user
                     facility_user.full_clean()
                     facility_user.save()
-                    logging.info("Created facility user '%s/%s'" % (facility.name,user_data["username"] ))
+                    logging.info("Created facility user '%s/%s'" % (facility.name, user_data["username"] ))
 
                 facility_users.append(facility_user)
 
