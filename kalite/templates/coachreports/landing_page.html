@@ -1,0 +1,109 @@
+{% extends "coachreports/base.html" %}
+
+{% load i18n %}
+{% load repeatblock %}
+{% load static %}{% get_static_prefix as STATIC_URL %}
+
+{% block navbar_topics %}{% endblock navbar_topics %}
+{% block navbar_makelink %}{% endblock navbar_makelink %}
+{% block headcss %}{{ block.super }}
+<link rel='stylesheet' type='text/css' href='{{ STATIC_URL }}css/landing-page.css'>
+<style>
+#options {
+    width:100%;
+}
+.suggested-action {
+    margin: 0 auto;
+    width: 80%;
+}
+.separate {
+
+    display: block;
+    margin-bottom: 0;
+    position: relative;
+    width:30.245746691%;
+    /*width: 320px/1058;*/
+    float: left;
+    padding-bottom: 10px;
+    margin-left:2.835538752%;
+   /* margin-left: 30/1058px;*/
+    min-height: 225px;
+}
+
+.wrapit {
+    max-width: 1058px;
+/*   margin-left: auto;
+    margin-right: auto;*/
+}
+
+.suggested-action-image-link{
+    max-width: 280px;
+}
+
+.suggested-action-title{
+    height: 35px;
+    padding-bottom: 8px;
+    text-align: center;
+}
+
+
+.other {
+    margin-top: 10px;
+    font-size:18px;
+    float:left;
+}
+
+
+.changeable-link{
+    clear:both;
+    font-size: 16px;
+    float:left;
+
+}
+
+
+</style>
+{% endblock headcss %}
+
+{% block content %}
+
+<div>
+    {% block navbar %}{{ block.super }}{% endblock navbar %}
+
+    <div class="wrapit">
+        <div class="clearfix">
+            <div class="separate">
+                <div class="vertical-shadow suggested-action">
+                    <a class="changeable-link" href="{% url tabular_view %}?{% block topic_paths %}{% for path in form.topic_path %}topic_path={{ path }}&{% endfor %}{% endblock topic_paths %}">
+                        <h2 class="suggested-action-title">{% trans "Explore class engagement" %}</h2>
+                        <div class="suggested-action-image-link" style="background-image: url({{ STATIC_URL }}images/coachreports/coach-report-table.png);"></div>
+                    </a>
+                </div>
+                <span class="other"> Also try:</span>
+                <a class="changeable-link" style="display:block" href="{% url tabular_view report_type='video'%}?{% repeatblock topic_paths %}">{% trans "Engagement with videos" %}</a>
+            </div>
+            <div class="separate">
+                <div class="vertical-shadow suggested-action">
+                    <a class="changeable-link" href="{% url scatter_view xaxis='pct_mastery' yaxis='effort' %}?{% repeatblock topic_paths %}">
+                        <h2 class="suggested-action-title">{% trans "Explore student effort and achievement" %}</h2>
+                        <div class="suggested-action-image-link" style="background-image: url({{ STATIC_URL }}images/coachreports/coach-report-scatter.png);"></div>
+                    </a>
+                </div>
+                <span class="other"> Also try:</span>
+                <a class="changeable-link" style="display:block" href="{% url scatter_view xaxis='ex:attempts' yaxis='ex:points' %}?{% repeatblock topic_paths %}">{% trans "Practice effectiveness (attempts vs. points)" %}</a>
+            </div>
+            <div class="separate">
+                <div class="vertical-shadow suggested-action">
+                    <a class="changeable-link" href="{% url timeline_view xaxis='ex:completed_timestamp' yaxis='pct_mastery' %}?{% repeatblock topic_paths %}">
+                        <h2 class="suggested-action-title">{% trans "Explore student mastery over time" %}</h2>
+                        <div class="suggested-action-image-link" style="background-image: url({% static "images/coachreports/coach-report-timeline.png" %});"></div>
+                    </a>
+                </div>
+                <span class="other"> Also try:</span>
+                <a class="changeable-link" style="display:block" href="{% url timeline_view xaxis='6_months' yaxis='pct_mastery' %}?{% repeatblock topic_paths %}">{% trans "Mastery over the past 6 months" %}</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% block endjs %}{{ block.super }}{% endblock endjs %}
+{% endblock content %}

@@ -6,17 +6,12 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.gzip import gzip_page
 from main.models import VideoLog, ExerciseLog
 from config.models import Settings
+from utils.internet import JsonResponse
 
 import crypto
 import settings
 from models import *
 
-
-class JsonResponse(HttpResponse):
-    def __init__(self, content, *args, **kwargs):
-        if not isinstance(content, str) and not isinstance(content, unicode):
-            content = simplejson.dumps(content, ensure_ascii=False)
-        super(JsonResponse, self).__init__(content, content_type='application/json', *args, **kwargs)
 
 def require_sync_session(handler):
     def wrapper_fn(request):

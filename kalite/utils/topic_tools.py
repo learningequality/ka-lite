@@ -131,3 +131,12 @@ def get_related_videos(exercises, topics=None, possible_videos=None):
         if "related_exercise" in video and video["related_exercise"]['id'] in exercise_ids:
             related_videos.append(video)
     return related_videos
+
+
+def get_all_midlevel_topics():
+    """Nobody knows what the true definition of these are, but this is the list of 
+    exercise-related topics used in coach reports."""
+    
+    topics = topicdata.EXERCISE_TOPICS["topics"].values()
+    topics = sorted(topics, key = lambda k: (k["y"], k["x"]))
+    return topics

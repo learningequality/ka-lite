@@ -1,11 +1,12 @@
 {% extends 'base_distributed.html' %}
 
 {% load i18n %}
+{% load static %}{% get_static_prefix as STATIC_URL %}
 
 {% block currentusers_active %}active{% endblock currentusers_active %}
 
 {% block headcss %}
-<link rel='stylesheet' type='text/css' href='{{ MEDIA_URL }}css/current_users.css'>
+<link rel='stylesheet' type='text/css' href='{{ STATIC_URL }}css/current_users.css'>
 {% endblock headcss %}
 
 {% block title %}Current Users{% endblock title %}

@@ -3,11 +3,12 @@
 {% block update_active %}active{% endblock update_active %}
 
 {% load i18n %}
+{% load static %}{% get_static_prefix as STATIC_URL %}
 
 {% block title %}{% trans "Video Download" %}{% endblock %}
 
 {% block headcss %}
-<link href="{{ MEDIA_URL }}css/ui.dynatree.css"rel="stylesheet" type="text/css"/>
+<link href="{{ STATIC_URL }}css/ui.dynatree.css"rel="stylesheet" type="text/css"/>
 <style>
 
 ul.dynatree-container li, .ui-widget-content {
@@ -118,8 +119,8 @@ ul.dynatree-container li, .ui-widget-content {
 </style>
 {% endblock headcss %}
 {% block headjs %}
-<script src="{{ MEDIA_URL }}js/jquery-ui.custom.min.js"></script>
-<script src="{{ MEDIA_URL }}js/jquery.dynatree.min.js"></script>
+<script src="{{ STATIC_URL }}js/jquery-ui.custom.min.js"></script>
+<script src="{{ STATIC_URL }}js/jquery.dynatree.min.js"></script>
 
 <script type="text/javascript">
     window.downloading_videos = [];
