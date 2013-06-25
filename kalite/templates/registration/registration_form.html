@@ -4,31 +4,45 @@
 
 {% block headcss %}
 <style>
-.form-section { width:75%; clear:left; }
-.form-label label { width:150px; text-align:left}
-.form-element { float:left; ;margin:0 }
-.errorlisty { float:left; ;margin-left:25px; color:red}
-.submit {
-    margin-left: 71px;
-}
-.errorlist {
-    /*position: relative;*/
-    margin-top: -20px;
-    margin-bottom: 0;
-}
+    .form-section {
+        width:75%;
+        clear:left;
+    }
+    .form-label label {
+        width:150px;
+        text-align:left;
+    }
+    .form-element {
+        float:left;
+        margin:0;
+    }
+    .errorlist {
+        float:left;
+        margin-left:25px;
+        color:red;
+    }
+    .submit {
+        margin-left: 71px;
+    }
 
-/* hackish way to show org details, if there are any errors or content */
-#org_details { display:none } /* default: off */
-{% for prop in org_form %}{% if prop.errors or prop.value %}
-#org_details { display:block } /* dynamically override if we find an error */
-{% endif %}{% endfor %}
+    /* hackish way to show org details, if there are any errors or content */
+    #org_details {
+        display:none;
+    } /* default: off */
+{% for prop in org_form %}
+    {% if prop.errors or prop.value %}
+    #org_details {
+        display:block;
+    } /* dynamically override if we find an error */
+    {% endif %}
+{% endfor %}
 </style>
 {% endblock headcss %}
 
 {% block content %}
 
   {% if form.non_field_errors %}
-  <div class="errorlisty">
+  <div class="errorlist">
       Please correct the errors below:
       <br/>
        {{ form.non_field_errors }}
@@ -45,28 +59,28 @@
         <div class="form-label"><label for="id_first_name">First Name:</label></div>
         <div class="form-element">{{ form.first_name }}</div>
         {% if form.first_name.errors %}
-        <div class="errorlisty">{{ form.first_name.errors.as_text }}</div>
+        <div class="errorlist">{{ form.first_name.errors.as_text }}</div>
         {% endif %}
     </div>
     <div class="form-section">
         <div class="form-label"><label for="id_last_name">Last Name:</label></div>
         <div class="form-element">{{ form.last_name }}</div>
         {% if form.last_name.errors %}
-        <div class="errorlisty">{{ form.last_name.errors.as_text }}</div>
+        <div class="errorlist">{{ form.last_name.errors.as_text }}</div>
         {% endif %}
     </div>
     <div class="form-section">
       <div class="form-label"><label for="id_email">Email address:</label></div>
       <div class="form-element">{{ form.email }}</div>
       {% if form.email.errors %}
-        <div class="errorlisty">{{ form.email.errors.as_text }}</div>
+        <div class="errorlist">{{ form.email.errors.as_text }}</div>
       {% endif %}
     </div>
     <div class="form-section">
       <div class="form-label"><label for="id_org_name">Organization Name:</label></div>
       <div class="form-element">{{ org_form.name }}</div>
       {% if org_form.name.errors %}
-        <div class="errorlisty">{{ org_form.name.errors.as_text }}</div>
+        <div class="errorlist">{{ org_form.name.errors.as_text }}</div>
       {% endif %}
     </div>
     <div class="form-section">
@@ -77,35 +91,35 @@
           <div class="form-label"><label for="id_org_url">Organization URL:</label></div>
           <div class="form-element">{{ org_form.url }}</div>
           {% if org_form.url.errors %}
-            <div class="errorlisty">{{ org_form.url.errors.as_text }}</div>
+            <div class="errorlist">{{ org_form.url.errors.as_text }}</div>
           {% endif %}
         </div>
         <div class="form-section">
           <div class="form-label"><label for="id_org_description">Organization Description:</label></div>
           <div class="form-element">{{ org_form.description }}</div>
           {% if org_form.description.errors %}
-            <div class="errorlisty">{{ org_form.description.errors.as_text }}</div>
+            <div class="errorlist">{{ org_form.description.errors.as_text }}</div>
           {% endif %}
         </div>
         <div class="form-section">
           <div class="form-label"><label for="id_org_address">Organization Address:</label></div>
           <div class="form-element">{{ org_form.address }}</div>
           {% if org_form.address.errors %}
-            <div class="errorlisty">{{ org_form.address.errors.as_text }}</div>
+            <div class="errorlist">{{ org_form.address.errors.as_text }}</div>
           {% endif %}
         </div>
         <div class="form-section">
           <div class="form-label"><label for="id_org_country">Organization Country:</label></div>
           <div class="form-element">{{ org_form.country }}</div>
           {% if org_form.country.errors %}
-            <div class="errorlisty">{{ org_form.country.errors.as_text }}</div>
+            <div class="errorlist">{{ org_form.country.errors.as_text }}</div>
           {% endif %}
         </div>
         <div class="form-section">
           <div class="form-label"><label for="id_org_number">Organization Phone #:</label></div>
           <div class="form-element">{{ org_form.number }}</div>
           {% if org_form.number.errors %}
-            <div class="errorlisty">{{ org_form.number.errors.as_text }}</div>
+            <div class="errorlist">{{ org_form.number.errors.as_text }}</div>
           {% endif %}
         </div>
     </div>
@@ -113,14 +127,14 @@
       <div class="form-label"><label for="id_password1">Password:</label></div>
       <div class="form-element">{{ form.password1 }}</div>
       {% if form.password1.errors %}
-        <div class="errorlisty">{{ form.password1.errors.as_text }}</div>
+        <div class="errorlist">{{ form.password1.errors.as_text }}</div>
       {% endif %}
     </div>
     <div class="form-section">
       <div class="form-label"><label for="id_password2">Password (again):</label></div>
       <div class="form-element">{{ form.password2 }}</div>
       {% if form.password2.errors %}
-        <div class="errorlisty">{{ form.password2.errors.as_text }}</div>
+        <div class="errorlist">{{ form.password2.errors.as_text }}</div>
       {% endif %}
     </div>
     <div class="form-section">
@@ -130,7 +144,7 @@
       <a href="http://www.khanacademy.org/about/tos#7" target="_blank">non-commercial purposes only</a>.
       </div>
       {% if form.tos1.errors %}
-        <div class="errorlisty">{{ form.tos1.errors.as_text }}</div>
+        <div class="errorlist">{{ form.tos1.errors.as_text }}</div>
       {% endif %}
     </div>
     <div class="form-section">
@@ -139,7 +153,7 @@
       I acknowledge having read the <a href="http://www.khanacademy.org/about/api-tos" target="_blank">
       Khan Academy API terms of service</a>, and that KA Lite uses this API.
       {% if form.tos2.errors %}
-        <div class="errorlisty">{{ form.tos2.errors.as_text }}</div>
+        <div class="errorlist">{{ form.tos2.errors.as_text }}</div>
       {% endif %}
     </div>
     <div class="form-section">
