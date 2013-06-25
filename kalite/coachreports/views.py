@@ -186,18 +186,19 @@ def tabular_view(request, facility, report_type="exercise"):
     
     # Get a list of topics (sorted) and groups
     topics = get_all_midlevel_topics()
-    (groups, facilities) = get_accessible_objects_from_request(request, facility)
-    context = plotting_metadata_context(request, facility=facility)
-    context.update({
+    groups = FacilityGroup.objects.filter(facility=facility)
+    context = {
         "report_types": ("exercise","video"),
         "request_report_type": report_type,
+        "facility": facility,
+        "groups": groups,
         "topics": topics,
-    })
+    }
 
     # get querystring info
     topic_id = request.GET.get("topic", "")
     group_id = request.GET.get("group_id", "")
-    
+
     # No valid data; just show generic
     if not group_id or not topic_id or not re.match("^[\w\-]+$", topic_id):
         return context
