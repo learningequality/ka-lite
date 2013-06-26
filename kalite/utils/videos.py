@@ -22,9 +22,9 @@ class DownloadCancelled(Exception):
         return "Download has been cancelled"
 
 
-def video_connection_is_available():
+def video_connection_is_available(timeout=0.5):
     # In danger of failing, if amazon redirects us
-    return utils.internet.am_i_online(download_base_url, allow_redirects=False)
+    return utils.internet.am_i_online(download_base_url, allow_redirects=False, timeout=timeout)
     
 def get_video_ids(topic_tree):
     if topic_tree["kind"] == "Video":
