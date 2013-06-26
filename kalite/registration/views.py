@@ -2,23 +2,20 @@
 Views which allow users to create and activate accounts.
 
 """
-
-from central.forms import OrganizationForm
-from central.models import Organization
-from securesync.models import Zone
-
+from django.contrib import messages
+from django.contrib.auth import logout
+from django.db import IntegrityError, transaction
+from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.contrib import messages
-from django.contrib.auth import logout
-
-from django.db import IntegrityError, transaction
 from django.utils.translation import ugettext as _
 
+from central.forms import OrganizationForm
+from central.models import Organization
 from registration.backends import get_backend
-from django.http import HttpResponse
 from utils.mailchimp import mailchimp_subscribe
+from securesync.models import Zone
 
 
 def complete(request, *args, **kwargs):
@@ -200,29 +197,30 @@ def register(request, backend, success_url=None, form_class=None,
     if request.method == 'POST':
         form = form_class(data=request.POST, files=request.FILES)
         org_form = OrganizationForm(data=request.POST, instance=Organization())
-        
+
         # Could register
         if form.is_valid() and org_form.is_valid():
             form.cleaned_data['username'] = form.cleaned_data['email']
 
             # TODO (bcipolli): should do all this in one transaction,
             #   so that if any one part fails, it all rolls back.
-
+            #   For now, unlikely to happen, and consequence is only
+            #   a user without an org/zone
             try:
                 # Create the user
                 new_user = backend.register(request, **form.cleaned_data)
-            
+
                 # Add an org.  Must create org before adding user.
                 org_form.instance.owner = new_user
                 org_form.save()
                 org = org_form.instance
                 org.users.add(new_user)
-            
+
                 # Now add a zone, and link to the org
                 zone = Zone(name=org_form.instance.name + " Default Zone")
                 zone.save()
                 org.zones.add(zone)
-            
+
                 # Finally, try and subscribe the user to the mailing list
                 # (silently)
                 if request.POST.has_key("email_subscribe") and request.POST["email_subscribe"]=="on":
@@ -231,16 +229,16 @@ def register(request, backend, success_url=None, form_class=None,
                         return HttpResponse("We'll subscribe you via mailchimp when we're in RELEASE mode, %s, we swear!" % form.cleaned_data['email'])
                     else:
                         return HttpResponse(mailchimp_subscribe(form.cleaned_data['email']))
-            
+                org.save()
+
                 if success_url is None:
                     to, args, kwargs = backend.post_registration_redirect(request, new_user)
                     return redirect(to, *args, **kwargs)
                 else:
                     return redirect(success_url)
-                
+
             except IntegrityError, e:
                 if e.message=='column username is not unique':
-                    #import pdb; pdb.set_trace()
                     form._errors['__all__'] = _("An account with this email address has already been created.  Please login at the link above.")
                 else:
                     raise e
@@ -249,16 +247,19 @@ def register(request, backend, success_url=None, form_class=None,
     else:
         form = form_class()
         org_form = OrganizationForm()
-    
+
     if extra_context is None:
         extra_context = {}
     context = RequestContext(request)
     for key, value in extra_context.items():
         context[key] = callable(value) and value() or value
 
-    return render_to_response(template_name,
-                              { 'form': form, "org_form" : org_form},
-                              context_instance=context)
+    return render_to_response(
+        template_name,
+        {'form': form, "org_form" : org_form},
+        context_instance=context,
+    )
+
 
 def logout_view(request):
     logout(request)
