@@ -1,3 +1,8 @@
+"""
+Utilities for downloading Khan Academy topic tree and 
+massaging into data and files that we use in KA Lite.
+"""
+
 import json, requests, copy, os
 
 data_path = os.path.dirname(os.path.realpath(__file__)) + "/../static/data/"

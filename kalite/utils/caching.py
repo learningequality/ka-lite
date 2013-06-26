@@ -95,7 +95,7 @@ def invalidate_cached_topic_hierarchy(video_id=None, video_slug=None, video_path
         expire_page(path=path)
 
 
-def regenereate_cached_topic_hierarchies(video_ids):
+def regenerate_cached_topic_hierarchies(video_ids):
     """Same as above, but on a list of videos"""
     paths_to_regenerate = set() # unique set
     for video_id in video_ids:

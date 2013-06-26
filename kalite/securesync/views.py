@@ -1,43 +1,26 @@
 import urllib
+from annoying.decorators import render_to
+from annoying.functions import get_object_or_None   
 
+from django.contrib import messages
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError
 from django.shortcuts import get_object_or_404
 from django.utils.html import strip_tags
-from annoying.decorators import render_to
-from forms import RegisteredDevicePublicKeyForm, FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
-from django.contrib import messages
-from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
-from annoying.functions import get_object_or_None
-from config.models import Settings
 from django.utils.translation import ugettext as _
 
-import crypto
 import settings
-from securesync.models import SyncSession, Device, Facility, FacilityGroup
+from config.models import Settings
+from securesync import crypto
 from securesync.api_client import SyncClient
+from securesync.forms import RegisteredDevicePublicKeyForm, FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
+from securesync.models import SyncSession, Device, Facility, FacilityGroup
 from utils.jobs import force_job
-from utils.decorators import require_admin
+from utils.decorators import require_admin, central_server_only, distributed_server_only
 from utils.internet import set_query_params
-
-
-
-def central_server_only(handler):
-    def wrapper_fn(*args, **kwargs):
-        if not settings.CENTRAL_SERVER:
-            return HttpResponseNotFound("This path is only available on the central server.")
-        return handler(*args, **kwargs)
-    return wrapper_fn
-
-
-def distributed_server_only(handler):
-    def wrapper_fn(*args, **kwargs):
-        if settings.CENTRAL_SERVER:
-            return HttpResponseNotFound(_("This path is only available on distributed servers."))
-        return handler(*args, **kwargs)
-    return wrapper_fn
 
 
 def register_public_key(request):
@@ -75,13 +58,12 @@ def facility_required(handler):
                     request,
                     _("You must first have the administrator of this server log in below to add a facility.")
                 )
-                redir_url = reverse("add_facility")
-                redir_url = set_query_params(redir_url, {"prev": request.META.get("HTTP_REFERER", "")})
-                return HttpResponseRedirect(redir_url)
+            redir_url = reverse("add_facility")
+            redir_url = set_query_params(redir_url, {"prev": request.META.get("HTTP_REFERER", "")})
+            return HttpResponseRedirect(redir_url)
 
         else:
             facility = get_facility_from_request(request)
-
         if facility:
             return handler(request, facility, *args, **kwargs)
         else:
@@ -345,7 +327,7 @@ def logout(request):
     if "facility_user" in request.session:
         del request.session["facility_user"]
     auth_logout(request)
-    next = request.GET.get("next", "/")
+    next = request.GET.get("next", reverse("homepage"))
     if next[0] != "/":
         next = "/"
     return HttpResponseRedirect(next)
@@ -368,4 +350,4 @@ def crypto_login(request):
             user.backend = "django.contrib.auth.backends.ModelBackend"
             auth_login(request, user)
         session.delete()
-    return HttpResponseRedirect("/")
+    return HttpResponseRedirect(reverse("homepage"))
