@@ -9,7 +9,6 @@ These require a test server to be running, and multiple ports
 import logging
 import re
 import unittest
-
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
