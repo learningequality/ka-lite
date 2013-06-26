@@ -16,7 +16,7 @@ ul {
 article {
     padding: 30px;
 }
-#nav_signup, #nav_login, #nav_admin, #nav_faq, #nav_wiki, #nav_install {
+#nav_signup, #nav_login, #nav_admin, #nav_faq, #nav_contact, #nav_aboutus, #nav_install {
     display: block;
 }
 </style>
@@ -26,22 +26,21 @@ article {
 
 {% block sitewide_navigation %}
 	<span class="dropdown topic-browser-dropdown">
-        <a href="/" id="nav_home" class="{% block home_active %}{% endblock home_active %}">Home</a>
-        <!--a href="/wiki/" id="nav_wiki" class="{% block wiki_active %}{% endblock wiki_active %}">Wiki</a-->
-        <a href="/wiki/installation" id="nav_install" class="{% block install_active %}{% endblock install_active %}">Install</a>
-        <a href="/faq/" id="nav_faq" class="{% block faq_active %}{% endblock faq_active %}">FAQ</a>
-        <a href="/contact/" id="nav_contact" class="{% block contact_active %}{% endblock contact_active %}">Contact</a>
-        <a href="/about/" id="nav_aboutus" class="{% block aboutus_active %}{% endblock aboutus_active %}">About</a>
+        <a href="{% url homepage %}" id="nav_home" class="{% block home_active %}{% endblock home_active %}">Home</a>
+        <a href="{% url wiki path='installation' %}" id="nav_install" class="{% block install_active %}{% endblock install_active %}">Install</a>
+        <a href="{% url faq_topic_list %}" id="nav_faq" class="{% block faq_active %}{% endblock faq_active %}">FAQ</a>
+        <a href="{% url contact_wizard type='' %}" id="nav_contact" class="{% block contact_active %}{% endblock contact_active %}">Contact</a>
+        <a href="{% url about %}" id="nav_aboutus" class="{% block aboutus_active %}{% endblock aboutus_active %}">About</a>
     {% if user.is_authenticated %}
         {% if user.is_superuser %}
-        <a href="/admin/" id="nav_admin" class="{% block admin_active %}{% endblock admin_active %}">Admin</a>
+        <a href="{% url admin %}" id="nav_admin" class="{% block admin_active %}{% endblock admin_active %}">Admin</a>
         {% endif %}
-        <a href="/accounts/logout/">{{ user.username }} &nbsp; (Logout)</a>
+        <a href="{% url auth_logout %}">{{ user.username }} &nbsp; (Logout)</a>
     {% else %}
     {% comment %}
-        <a href="/accounts/register/" id="nav_signup" class="{% block register_active %}{% endblock register_active %}">Sign Up</a>
+        <a href="{% url registration_register %}" id="nav_signup" class="{% block register_active %}{% endblock register_active %}">Sign Up</a>
     {% endcomment %}
-        <a href="/accounts/login/" id="nav_login" class="{% block login_active %}{% endblock login_active %}">Login</a>
+        <a href="{% url auth_login %}" id="nav_login" class="{% block login_active %}{% endblock login_active %}">Login</a>
     {% endif %}
     </span>
 {% endblock sitewide_navigation %}

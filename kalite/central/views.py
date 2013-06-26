@@ -20,27 +20,20 @@ from securesync.forms import FacilityForm
 from securesync.models import Facility, Zone, SyncSession
 
 
-@render_to("central/install_wizard.html")
-def install_wizard(request):
-    return {
-        "central_contact_email": settings.CENTRAL_CONTACT_EMAIL,
-        "wiki_url": settings.CENTRAL_WIKI_URL
-        }
-    
 @render_to("central/homepage.html")
 def homepage(request):
-    
+
     # show the static landing page to users that aren't logged in
     if not request.user.is_authenticated():
         return landing_page(request)
-    
+
     # get a list of all the organizations this user helps administer    
     organizations = get_or_create_user_profile(request.user).get_organizations()
     
     # add invitation forms to each of the organizations
     for org in organizations:
         org.form = OrganizationInvitationForm(initial={"invited_by": request.user})
-    
+
     # handle a submitted invitation form
     if request.method == "POST":
         form = OrganizationInvitationForm(data=request.POST)

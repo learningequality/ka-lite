@@ -1,6 +1,4 @@
-from django.conf.urls.defaults import patterns, include, url
-
-import views
+from django.conf.urls.defaults import patterns, url
 
 
 urlpatterns = patterns('contact.views',

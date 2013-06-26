@@ -141,25 +141,19 @@ INSTALLED_APPS = (
     "kalite", # contains commands
 )
 
+if DEBUG or CENTRAL_SERVER:
+    INSTALLED_APPS += ("django_snippets",)   # used in contact form and (debug) profiling middleware
+
 if DEBUG:
     # add ?prof to URL, to see performance stats
     MIDDLEWARE_CLASSES += ('django_snippets.profiling_middleware.ProfileMiddleware',)
-    INSTALLED_APPS += ("django_snippets",)
 
 if CENTRAL_SERVER:
     ACCOUNT_ACTIVATION_DAYS = getattr(local_settings, "ACCOUNT_ACTIVATION_DAYS", 7)
     DEFAULT_FROM_EMAIL      = getattr(local_settings, "DEFAULT_FROM_EMAIL", CENTRAL_FROM_EMAIL)
-    INSTALLED_APPS         += ("postmark", "kalite.registration", "central", "faq",)
+    INSTALLED_APPS         += ("postmark", "kalite.registration", "central", "faq", "contact",)
     EMAIL_BACKEND           = getattr(local_settings, "EMAIL_BACKEND", "postmark.backends.PostmarkBackend")
     AUTH_PROFILE_MODULE     = 'central.UserProfile'
-    INSTALLED_APPS         += (
-        "django_extensions",
-        "postmark", 
-        "central", 
-        "contact",
-        "faq", 
-        "kalite.registration", 
-    )
 
 else:
     INSTALLED_APPS         += ("coachreports",)
