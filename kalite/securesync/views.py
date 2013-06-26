@@ -61,13 +61,12 @@ def facility_required(handler):
                     request,
                     _("You must first have the administrator of this server log in below to add a facility.")
                 )
-                redir_url = reverse("add_facility")
-                redir_url = set_query_params(redir_url, {"prev": request.META.get("HTTP_REFERER", "")})
-                return HttpResponseRedirect(redir_url)
+            redir_url = reverse("add_facility")
+            redir_url = set_query_params(redir_url, {"prev": request.META.get("HTTP_REFERER", "")})
+            return HttpResponseRedirect(redir_url)
 
         else:
             facility = get_facility_from_request(request)
-
         if facility:
             return handler(request, facility, *args, **kwargs)
         else:
