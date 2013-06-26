@@ -294,6 +294,8 @@ ul.dynatree-container li, .ui-widget-content {
 	        }
 	        window.download_subtitle_check_interval = setInterval(checkSubtitleDownloadProgress, 5000);
 	        checkSubtitleDownloadProgress();
+    	}).fail(function() {
+    	    show_message("error", "Error downloading subtitles: " + this);
     	});
     }
     
@@ -309,7 +311,17 @@ ul.dynatree-container li, .ui-widget-content {
                 $(".progress-subtitle, #cancel-download").hide();
                 return;
             }
-        });
+    	}).fail(function(resp) {
+    	    switch (resp.status) {
+    	        case 403:
+    	            window.location.reload()
+    	            break;
+    	        default:
+            	    show_message("error", "Error downloading subtitles: " + resp.responseText);
+            	    clearInterval(window.download_subtitle_check_interval)
+            	    break;
+            }
+    	});
     }
     
     function checkVideoDownloadProgress() {
@@ -334,7 +346,17 @@ ul.dynatree-container li, .ui-widget-content {
             } else {
                 $("#retry-video-download").hide();
             }
-        });
+    	}).fail(function(resp) {
+    	    switch (resp.status) {
+    	        case 403:
+    	            window.location.reload()
+    	            break;
+    	        default:
+            	    show_message("error", "Error downloading videos: " + resp.responseText);
+            	    clearInterval(window.download_subtitle_check_interval)
+            	    break;
+            }
+    	});
     }
     
     function updateProgressDisplay() {
