@@ -153,7 +153,8 @@ class BrowserTestCase(KALiteTestCase):
     def tearDown(self):
         if not self.persistent_browser:
             self.browser.quit()
-        
+            super(BrowserTestCase, self).tearDownClass()
+            
     def wait_for_page_change(self, source_url, wait_time=0.1, max_retries=50):
         """When testing, we have to make sure that the page has loaded before testing the resulting page."""
          
