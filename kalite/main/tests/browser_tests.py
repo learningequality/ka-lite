@@ -9,9 +9,11 @@ These require a test server to be running, and multiple ports
 import logging
 import re
 import unittest
+
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions, ui
 
 from django.test import TestCase
 from django.core.urlresolvers import reverse
@@ -60,5 +62,8 @@ class DeviceUnregisteredTest(KALiteLocalBrowserTestCase):
         self.browser_send_keys(self.admin_user.password)
         self.browser_send_keys(Keys.TAB)
         self.browser_send_keys(Keys.RETURN)
-
+        
+        # Finally, wait up to 30 seconds until the page has loaded
+        wait = ui.WebDriverWait(self.browser, 30)
+        wait.until(expected_conditions.title_contains(("Administration Panel")))
 
