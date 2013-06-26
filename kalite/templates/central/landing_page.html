@@ -1,14 +1,15 @@
 {% extends "central/base_central.html" %}
-{% load static %}{% get_static_prefix as STATIC_URL %}
+
+{% load staticfiles %}
 
 {% block home_active %}active{% endblock home_active %}
 
 {% block title %}Home{% endblock %}
 {% block jqueryjs %}
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.8.3.min.js"></script> 
+<script type="text/javascript" src="{% static "js/jquery-1.8.3.min.js" %}"></script> 
 {% endblock jqueryjs %}
 {% block headjs %}
-<script type="text/javascript" src="{{ STATIC_URL }}js/simple.carousel.js"></script> 
+<script type="text/javascript" src="{% static "js/simple.carousel.js" %}"></script> 
 <script type="text/javascript">
     $(function() {
         $(".carousel-class").simplecarousel({
@@ -451,7 +452,7 @@ article {
 }
 
 #next-button, #prev-button {
-    background-image: url("{{ STATIC_URL }}images/landing-page/arrows.png");
+    background-image: url("{% static "images/landing-page/arrows.png" %}");
     background-repeat: no-repeat;
     margin-top: -25px;
     width: 39px;
@@ -547,10 +548,10 @@ article {
             <span id="next-button"></span>
         </div>
         <ul class="carousel-class">
-            <li class="carousel-pic"><img src="{{ STATIC_URL }}images/landing-page/exercises-cropped.png"></li>
-            <li class="carousel-pic"><img src="{{ STATIC_URL }}images/landing-page/subtitle-mashup.png"></li>
-            <li class="carousel-pic"><img src="{{ STATIC_URL }}images/landing-page/vid-down-cropped.png"></li>
-            <li class="carousel-pic"><img src="{{ STATIC_URL }}images/landing-page/coach-reports-cropped.png"></li>
+            <li class="carousel-pic"><img src="{% static "images/landing-page/exercises-cropped.png" %}"></li>
+            <li class="carousel-pic"><img src="{% static "images/landing-page/subtitle-mashup.png" %}"></li>
+            <li class="carousel-pic"><img src="{% static "images/landing-page/vid-down-cropped.png" %}"></li>
+            <li class="carousel-pic"><img src="{% static "images/landing-page/coach-reports-cropped.png" %}"></li>
         </ul>
     </div>
     <!-- Motivation -->
@@ -600,7 +601,7 @@ article {
         </div>-->
         <div id="share-block">
             <!-- FB and Twitter -->
-            <img src="/static/images/social-fb-t.png" width="101" height="62" alt="FB and twitter" usemap="#socialmap">
+            <img src="{% static "images/social-fb-t.png" %}" width="101" height="62" alt="FB and twitter" usemap="#socialmap">
             <map name="socialmap">
                 <area shape="rect" coords="0,0,50,62" alt="Facebook" href="http://www.facebook.com/share.php?u=http://bit.ly/RnZgUp">
                 <area shape="rect" coords="51,0,101,62" alt="Twitter" href="https://twitter.com/intent/tweet?text=KA+Lite%2C+an+offline+version+of+Khan+Academy+for+rural+schools&url=http%3A%2F%2F{{ central_server_host }}%2F">
@@ -671,7 +672,7 @@ article {
 {% if feed %}
 <div id="bottom_content" class="row">  
     <div id="rss-logo">
-        <a href="{% url rss_feed %}"><img class="rss-feed-icon" src="{{ STATIC_URL }}images/rssfeed.jpg"/></a>
+        <a href="{% url rss_feed %}"><img class="rss-feed-icon" src="{% static "images/rssfeed.jpg" %}"/></a>
     </div>
     <div id="rss-feed">
         <h2>Read more!</h2>
@@ -698,7 +699,7 @@ article {
 {% block footerleft %}
     <span class="ka-on-social-container">
         <span class="ka-on-social follow-us-text">Follow us!</span> 
-        <a class="ka-on-social ka-on-facebook" href="https://www.facebook.com/kaliteproject"><img src="{{ STATIC_URL }}/images/ka-on-facebook-button.png"/></a>
-        <a class="ka-on-social ka-on-twitter" href="https://twitter.com/ka_lite"><img class="ka-on-twitter" src="{{ STATIC_URL }}/images/ka-on-twitter-button.png"/></a>
+        <a class="ka-on-social ka-on-facebook" href="https://www.facebook.com/kaliteproject"><img src="{% static "images/ka-on-facebook-button.png" %}"/></a>
+        <a class="ka-on-social ka-on-twitter" href="https://twitter.com/ka_lite"><img class="ka-on-twitter" src="{% static "images/ka-on-twitter-button.png" %}"/></a>
     </span>
 {% endblock footerleft %}

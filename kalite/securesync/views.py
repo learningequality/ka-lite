@@ -1,28 +1,25 @@
 import urllib
+from annoying.decorators import render_to
+from annoying.functions import get_object_or_None   
 
+from django.contrib import messages
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError
 from django.shortcuts import get_object_or_404
 from django.utils.html import strip_tags
-from annoying.decorators import render_to
-from forms import RegisteredDevicePublicKeyForm, FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
-from django.contrib import messages
-from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
-from annoying.functions import get_object_or_None
-from config.models import Settings
 from django.utils.translation import ugettext as _
 
-import crypto
 import settings
-from securesync.models import SyncSession, Device, Facility, FacilityGroup
+from config.models import Settings
+from securesync import crypto
 from securesync.api_client import SyncClient
+from securesync.forms import RegisteredDevicePublicKeyForm, FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
+from securesync.models import SyncSession, Device, Facility, FacilityGroup
 from utils.jobs import force_job
-
 from utils.decorators import require_admin, central_server_only, distributed_server_only
-from django.utils.translation import ugettext as _
-
 from utils.internet import set_query_params
 
 
