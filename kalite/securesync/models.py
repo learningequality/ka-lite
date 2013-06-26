@@ -13,8 +13,8 @@ from django.db.models import Q
 from django.utils.text import compress_string
 from django.utils.translation import ugettext_lazy as _
 
-import crypto
 from config.models import Settings
+from securesync import crypto
 
 
 _unhashable_fields = ["signature", "signed_by"]

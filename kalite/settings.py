@@ -126,7 +126,7 @@ INSTALLED_APPS = (
     "django.contrib.humanize",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django_extensions",
+    "django_extensions", # needed for clean_pyc (testing)
     "south",
     "chronograph",
     "django_cherrypy_wsgiserver",
@@ -134,7 +134,7 @@ INSTALLED_APPS = (
     "securesync",
     "config",
     "main", # in order for securesync to work, this needs to be here.
-    "kalite",
+    "kalite", # contains commands
 )
 
 if CENTRAL_SERVER:
