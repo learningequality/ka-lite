@@ -55,7 +55,7 @@ class Command(BaseCommand):
             facilityusers.append(newuser2)
         
         for topic in topics:
-            exercises = json.load(open("./static/data/topicdata/" + topic + ".json","r"))
+            exercises = json.load(open(settings.STATIC_ROOT + "data/topicdata/" + topic + ".json","r"))
             exercises = sorted(exercises, key = lambda k: (k["h_position"], k["v_position"]))
             exercises_a = [random.random() for i in range(len(exercises))]
             exercises_b = [float(i) / len(exercises) for i in range(len(exercises))]

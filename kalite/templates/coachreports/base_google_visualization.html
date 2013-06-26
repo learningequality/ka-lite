@@ -21,14 +21,12 @@ You must:
 
 {% load i18n %}
 {% load my_filters %}
-{% load static %}
-{% get_static_prefix as STATIC_URL %}
-
+{% load staticfiles %}
 
 
 {% block headcss %} {{ block.super }}
-<link rel="stylesheet" type="text/css" href='{{ STATIC_URL }}css/ui.dynatree.css' />
-<link rel="stylesheet" type="text/css" href='{{ STATIC_URL }}css/ui.dynatree.defaultoff.css' />
+<link rel="stylesheet" type="text/css" href="{% static 'css/ui.dynatree.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/ui.dynatree.defaultoff.css' %}" />
 
 <style>
 #loading {
@@ -48,9 +46,9 @@ You must:
 
 
 {% block headjs %}{{ block.super }}
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui.custom.min.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.dynatree.min.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.dynatree.extensions.js"></script>
+<script type="text/javascript" src="{% static 'js/jquery-ui.custom.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/jquery.dynatree.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/jquery.dynatree.extensions.js' %}"></script>
 
 <!-- Necessary for Google -->
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
@@ -234,7 +232,7 @@ function plotTopics(topic_paths) {
             doRequest("{% url get_topic_tree topic_path='/math/' %}", {}).success(function(treeData) {
                 
                 $("#content_tree").dynatree({
-                    imagePath:"{{ STATIC_URL }}images/",
+                    imagePath:"{% static 'images/' %}",
                     checkbox: true,
                     selectMode: 3,
                     children: treeData,

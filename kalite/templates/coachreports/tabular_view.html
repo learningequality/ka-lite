@@ -1,13 +1,12 @@
 {% extends 'base_distributed.html' %}
 
 {% load i18n %}
-{% load static %}
-{% get_static_prefix as STATIC_URL %}
+{% load staticfiles %}
 
 {% block coachreports_active %}active{% endblock coachreports_active %}
 
 {% block headcss %}{{ block.super }}
-<link rel='stylesheet' type='text/css' href='{{ STATIC_URL }}css/coachreports/tabular_view.css' />
+<link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/tabular_view.css' %}" />
 <style>
 #legend a {
     height:12px;
