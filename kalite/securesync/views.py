@@ -67,11 +67,12 @@ def facility_required(handler):
 
         else:
             facility = get_facility_from_request(request)
-
-        if facility:
-            return handler(request, facility, *args, **kwargs)
-        else:
-            return facility_selection(request)
+        try:
+            if facility:
+                return handler(request, facility, *args, **kwargs)
+        except NameError:
+            True
+        return facility_selection(request)
 
     return inner_fn
 
