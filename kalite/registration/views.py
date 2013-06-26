@@ -12,8 +12,8 @@ from django.utils.translation import ugettext as _
 
 from central.forms import OrganizationForm
 from central.models import Organization
-from securesync.models import Zone
 from registration.backends import get_backend
+from securesync.models import Zone
 
 
 def complete(request, *args, **kwargs):

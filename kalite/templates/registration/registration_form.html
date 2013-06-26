@@ -30,10 +30,13 @@
         display:none;
     } /* default: off */
 {% for prop in org_form %}
-    {% if prop.errors or prop.value %}
+    {% comment "org.name is on the outside of the expanded form, so no need to expand" %}{% endcomment %}
+    {% if not prop.name == "name" %}
+        {% if prop.errors or prop.value %}
     #org_details {
         display:block;
     } /* dynamically override if we find an error */
+        {% endif %}
     {% endif %}
 {% endfor %}
 </style>
