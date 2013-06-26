@@ -19,24 +19,8 @@ from securesync.api_client import SyncClient
 from securesync.forms import RegisteredDevicePublicKeyForm, FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
 from securesync.models import SyncSession, Device, Facility, FacilityGroup
 from utils.jobs import force_job
-from utils.decorators import require_admin
+from utils.decorators import require_admin, central_server_only, distributed_server_only
 from utils.internet import set_query_params
-
-
-def central_server_only(handler):
-    def wrapper_fn(*args, **kwargs):
-        if not settings.CENTRAL_SERVER:
-            return HttpResponseNotFound("This path is only available on the central server.")
-        return handler(*args, **kwargs)
-    return wrapper_fn
-
-
-def distributed_server_only(handler):
-    def wrapper_fn(*args, **kwargs):
-        if settings.CENTRAL_SERVER:
-            return HttpResponseNotFound(_("This path is only available on distributed servers."))
-        return handler(*args, **kwargs)
-    return wrapper_fn
 
 
 def register_public_key(request):
@@ -344,7 +328,7 @@ def logout(request):
     if "facility_user" in request.session:
         del request.session["facility_user"]
     auth_logout(request)
-    next = request.GET.get("next", "/")
+    next = request.GET.get("next", reverse("homepage"))
     if next[0] != "/":
         next = "/"
     return HttpResponseRedirect(next)
@@ -367,4 +351,4 @@ def crypto_login(request):
             user.backend = "django.contrib.auth.backends.ModelBackend"
             auth_login(request, user)
         session.delete()
-    return HttpResponseRedirect("/")
+    return HttpResponseRedirect(reverse("homepage"))

@@ -157,18 +157,30 @@ class SyncClient(object):
         response = json.loads(self.post("device/download", {"devices": devices_to_download}).content)
         download_results = save_serialized_models(response.get("devices", "[]"), increment_counters=False)
         
+        # BUGFIX(bcipolli) metadata only gets created if models are 
+        #   streamed; if a device is downloaded but no models are downloaded,
+        #   metadata does not exist.  Let's just force it here.
+        for device_id in devices_to_download: # force
+            try:
+                d = Device.objects.get(id=device_id)
+            except:
+                continue
+            dm = d.get_metadata() 
+            if not dm.counter_position: # this would be nonzero if the device sync'd models
+                dm.counter_position = self.counters_to_download[device_id]
+            dm.save()
+        
         self.session.models_downloaded += download_results["saved_model_count"]
         
         # TODO(jamalex): upload local devices as well? only needed once we have P2P syncing
         
     def sync_models(self):
-
         if self.counters_to_download is None or self.counters_to_upload is None:
             self.sync_device_records()
 
         response = json.loads(self.post("models/download", {"device_counters": self.counters_to_download}).content)
         download_results = save_serialized_models(response.get("models", "[]"))
-        
+            
         self.session.models_downloaded += download_results["saved_model_count"]
         
         response = self.post("models/upload", {"models": get_serialized_models(self.counters_to_upload)})

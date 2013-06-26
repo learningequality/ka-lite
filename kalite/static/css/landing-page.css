@@ -1,0 +1,61 @@
+.suggested-action {
+    background-color: #F7F7F7;
+    color: #444!important;
+    display: block;
+    margin-bottom: 0;
+    padding: 14px;
+    position: relative;
+    width: 370px;
+    float: left;
+    margin-right: 25px;
+    min-height: 225px;
+}
+
+.suggested-actions {
+    padding-top: 124px;
+}
+
+.suggested-action:hover {
+    border-color: #C3CA7D;
+    -webkit-box-shadow: 0 0 10px #76A005;
+    -moz-box-shadow: 0 0 10px #76a005;
+    box-shadow: 0 0 10px #76A005;
+}
+
+.suggested-action a:hover {
+    text-decoration: none!important;
+    color: #005987;
+}
+.suggested-action-image-link {
+    background-size: cover;
+    background-repeat: no-repeat;
+    border-bottom: 1px solid #DCE0B3;
+    display: block;
+    height: 230px;
+    margin: -5px -14px -15px -14px;
+}
+
+.suggested-action-title {
+    color: #005987;
+    text-decoration: none;
+    font-size: 21px;
+    margin-bottom: 20px;
+}
+
+.message {
+    margin-left: 7px;
+}
+
+.main-headline {
+    font-size: 26px;
+    margin: 10px 0 20px 0;
+    padding: 0;
+}
+
+a:hover, a:hover .suggested-action-title {
+    color: #2F92A5!important;
+}
+
+.front-page {
+    padding-left: 7px;
+}
