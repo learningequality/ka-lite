@@ -50,8 +50,10 @@ def get_data_form(request, *args, **kwargs):
 
     # Pull the form parameters out of the request or
     data = dict()
-    for field in ["facility_id", "group_id", "user_id", "xaxis", "yaxis"]:
-        # Default to empty string, as it makes template handling cleaner later.
+    # Default to empty string, as it makes template handling cleaner later.
+    for field in ["facility", "group", "user"]:
+        data[field + "_id"] = request.REQUEST.get(field, kwargs.get(field, ""))
+    for field in ["xaxis", "yaxis"]:
         data[field] = request.REQUEST.get(field, kwargs.get(field, ""))
     data["topic_path"] = request.REQUEST.getlist("topic_path") or kwargs.get("topic_path", [])
     form = DataForm(data = data)
