@@ -1,10 +1,11 @@
 from annoying.functions import get_object_or_None
+from functools import partial
 
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseForbidden, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, HttpResponseNotFound
+from django.http import HttpResponseRedirect, HttpResponseNotFound, HttpResponseForbidden
 from django.utils.safestring import mark_safe
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
@@ -15,15 +16,33 @@ from config.models import Settings
 from securesync.models import Device, DeviceZone, Zone, Facility
 #from securesync.views import facility_selection
 
+
+
 def require_admin(handler):
-    def wrapper_fn(request, *args, **kwargs):
+    return require_admin_shared(handler, api_request=False)
+
+def require_admin_api(handler):
+    return require_admin_shared(handler, api_request=True)
+
+def require_admin_shared(handler, api_request=False):
+    """Require admin, different behavior for api_request or not"""
+    
+    def wrapper_fn(request, api_request, *args, **kwargs):
         if (settings.CENTRAL_SERVER and request.user.is_authenticated()) or getattr(request, "is_admin", False):
             return handler(request, *args, **kwargs)
-        # Translators: Please ignore the html tags e.g. "Please login as one below, or <a href='%s'>go to home.</a>" is simply "Please login as one below, or go to home."
-        messages.error(request, mark_safe(_("To view the page you were trying to view, you need to be logged in as a teacher or an admin. Please login as one below, or <a href='%s'>go to home.</a>") % reverse("homepage")))
-        return HttpResponseRedirect(reverse("login") + "?next=" + request.path)
-    return wrapper_fn
-    
+
+        # Only here if user is not authenticated.
+        # Don't redirect users to login for an API request.
+        if api_request:
+            return HttpResponseForbidden("You must be logged in as an admin to access this API endpoint.")
+        else:
+            # Translators: Please ignore the html tags e.g. "Please login as one below, or <a href='%s'>go to home.</a>" is simply "Please login as one below, or go to home."
+            messages.error(request, mark_safe(_("To view the page you were trying to view, you need to be logged in as a teacher or an admin. Please login as one below, or <a href='%s'>go to home.</a>") % reverse("homepage")))
+            return HttpResponseRedirect(reverse("login") + "?next=" + request.path)
+
+    return partial(wrapper_fn, api_request=api_request)
+
+
 def require_login(handler):
     def wrapper_fn(request, *args, **kwargs):
         if request.user.is_authenticated() or "facility_user" in request.session:

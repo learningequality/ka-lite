@@ -2,19 +2,18 @@
 
 {% load repeatblock %}
 {% load my_filters %}
-{% load static %}
-{% get_static_prefix as STATIC_URL %}
+{% load staticfiles %}
 
 {% block title %}Scatter plot {{ block.super }}{% endblock title %}
 {% block report_title %}Scatter plot {% endblock report_title %}
 
 {% block headjs %} {{ block.super }}
-<script type="text/javascript" src="{{ STATIC_URL }}js/coachreports/scatter_view.js"></script>
+<script type="text/javascript" src="{% static 'js/coachreports/scatter_view.js' %}"></script>
 {% endblock headjs %}
 
 
 {% block headcss %} {{ block.super }}
-<link rel='stylesheet' type='text/css' href='{{ STATIC_URL }}css/coachreports/scatter_view.css'>
+<link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/scatter_view.css' %}" />
 {% endblock headcss %}
 
 {% block axis_dropdown %}

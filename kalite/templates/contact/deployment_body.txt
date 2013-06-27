@@ -1,0 +1,10 @@
+{% load humanize %}
+Please respond to the following deployment inquiry ASAP:
+
+From: {{ contact.name }}
+Email: {{ contact.email }}
+Organization: {{ contact.org_name }}
+{% if contact.org_url %}Organization URL: {{contact.org_url }}{% endif %}
+
+
+
