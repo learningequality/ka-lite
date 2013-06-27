@@ -11,8 +11,10 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
 
+import settings
 from central.forms import OrganizationForm
 from central.models import Organization
+from contact.views import contact_subscribe
 from registration.backends import get_backend
 from utils.mailchimp import mailchimp_subscribe
 from securesync.models import Zone
@@ -194,6 +196,8 @@ def register(request, backend, success_url=None, form_class=None,
     if form_class is None:
         form_class = backend.get_form_class(request)
 
+    do_subscribe = request.REQUEST.get("email_subscribe") == "on"
+
     if request.method == 'POST':
         form = form_class(data=request.POST, files=request.FILES)
         org_form = OrganizationForm(data=request.POST, instance=Organization())
@@ -222,13 +226,9 @@ def register(request, backend, success_url=None, form_class=None,
                 org.zones.add(zone)
 
                 # Finally, try and subscribe the user to the mailing list
-                # (silently)
-                if request.POST.has_key("email_subscribe") and request.POST["email_subscribe"]=="on":
-                    # Don't want to muck with mailchimp during testing (though I did validate this)
-                    if settings.DEBUG:
-                        return HttpResponse("We'll subscribe you via mailchimp when we're in RELEASE mode, %s, we swear!" % form.cleaned_data['email'])
-                    else:
-                        return HttpResponse(mailchimp_subscribe(form.cleaned_data['email']))
+                # (silently; don't return anything to the user)
+                if do_subscribe:
+                    contact_subscribe(request, form.cleaned_data['email'])  # no "return"
                 org.save()
 
                 if success_url is None:
@@ -256,7 +256,11 @@ def register(request, backend, success_url=None, form_class=None,
 
     return render_to_response(
         template_name,
-        {'form': form, "org_form" : org_form},
+        {
+            'form': form,
+            "org_form" : org_form,
+            "subscribe": do_subscribe,
+        },
         context_instance=context,
     )
 

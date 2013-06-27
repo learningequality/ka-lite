@@ -19,11 +19,17 @@ def contact_thankyou(request):
     }
 
 
-def contact_subscribe(request):
-    email = getattr(request,request.method)['email']
+def contact_subscribe(request, email=None):
+
+    email = email or getattr(request,request.method).get('email')
     if not email:
         raise Exception("Email not specified")
-    return HttpResponse(mailchimp_subscribe(email))
+        
+    # Don't want to muck with mailchimp during testing (though I did validate this)
+    if settings.DEBUG:
+        return HttpResponse("We'll subscribe you via mailchimp when we're in RELEASE mode, %s, we swear!" % email)
+    else:
+        return HttpResponse(mailchimp_subscribe(email))
 
 
 @render_to("contact/contact_wizard.html")
@@ -33,17 +39,23 @@ def contact_wizard(request, type=""):
 
     # handle a submitted contact form
     if request.method == "POST":
-        contact_form = ContactForm(prefix="cf", data=request.POST)
-        deployment_form = DeploymentForm(prefix="df", data=request.POST)
-        support_form = SupportForm(prefix="sf", data=request.POST)
-        contribute_form = ContributeForm(prefix="rf", data=request.POST)
-        info_form = InfoForm(prefix="if", data=request.POST)
+        # Note that each form has a "prefix", which makes forms with entries
+        #   of the same name avoid colliding with each other
+        #
+        # Note that these prefixes have to match those below in the "GET" section.
+        contact_form = ContactForm(prefix="contact_form", data=request.POST)
+        deployment_form = DeploymentForm(prefix="deployment_form", data=request.POST)
+        support_form = SupportForm(prefix="support_form", data=request.POST)
+        contribute_form = ContributeForm(prefix="contribute_form", data=request.POST)
+        info_form = InfoForm(prefix="info_form", data=request.POST)
 
         if contact_form.is_valid():
             # Point to authenticated user
             if request.user.is_authenticated():
                 contact_form.instance.user = request.user
-            # Map over the field at the bottom of the form to the hidden form element (laziness!)
+            # Map over the field at the bottom of the form to the hidden form element.
+            #   I couldn't find a better way to get this set up in the form, without
+            #   making a giant HTML mess, other than this way.
             contact_form.instance.cc_email = request.POST["hack_cc_email"]
 
             # Deployment
@@ -77,10 +89,10 @@ def contact_wizard(request, type=""):
     # A GET request.  Create empty forms, fill in user details if available
     #   Auto-select the type, if relevant
     else:
-        deployment_form = DeploymentForm(prefix="df")
-        support_form = SupportForm(prefix="sf")
-        info_form = InfoForm(prefix="if")
-        contribute_form = ContributeForm(prefix="rf")
+        deployment_form = DeploymentForm(prefix="deployment_form")
+        support_form = SupportForm(prefix="support_form")
+        info_form = InfoForm(prefix="info_form")
+        contribute_form = ContributeForm(prefix="contribute_form")
 
         # Use the user's information, if available
         if request.user.is_authenticated():
@@ -91,9 +103,9 @@ def contact_wizard(request, type=""):
             else:
                 org = Organization()
 
-            contact_form = ContactForm(prefix="cf", instance=Contact(type=type, user=request.user, name="%s %s"%(request.user.first_name, request.user.last_name), email=request.user.email, org_name=org.name, org_url=org.url))
+            contact_form = ContactForm(prefix="contact_form", instance=Contact(type=type, user=request.user, name="%s %s"%(request.user.first_name, request.user.last_name), email=request.user.email, org_name=org.name, org_url=org.url))
         else:
-            contact_form = ContactForm(prefix="cf", instance=Contact(type=type))
+            contact_form = ContactForm(prefix="contact_form", instance=Contact(type=type))
 
     return {
         "central_contact_email": settings.CENTRAL_CONTACT_EMAIL,
@@ -118,16 +130,23 @@ def handle_contact(request, contact_form, details_form, list_email, email_templa
             'details': details_form.instance,
             'central_server_host': settings.CENTRAL_SERVER_HOST,
         }
-        subject = '[KA Lite] %s'%render_to_string('contact/%s_subject.txt'%email_template_prefix, context)
-        body = render_to_string('contact/%s_body.txt'%email_template_prefix, context)
+        subject = '[KA Lite] %s'%render_to_string('contact/%s_subject.txt' % email_template_prefix, context)
+        body = render_to_string('contact/%s_body.txt' % email_template_prefix, context)
 
         if contact_form.instance.cc_email:
             cc_email = [contact_form.instance.email]
         else:
             cc_email = []
 
-        email = EmailMessage(subject=subject, body=body, from_email=settings.CENTRAL_FROM_EMAIL,
-                    to=[list_email], cc=cc_email, headers = {'Reply-To': contact_form.instance.email})
+        email = EmailMessage(
+            subject=subject,
+            body=body,
+            from_email=settings.CENTRAL_FROM_EMAIL,
+            to=[list_email],
+            cc=cc_email,
+            headers = {'Reply-To': contact_form.instance.email}  # when we reply, sent to the 'sender'
+        )
         email.send()
+        
         return HttpResponseRedirect(reverse("contact_thankyou"))
 
