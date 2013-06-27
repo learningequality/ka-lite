@@ -8,7 +8,10 @@ Replace this with more appropriate tests for your application.
 from django.test import LiveServerTestCase
 
 from utils.internet import am_i_online
+from utils.testing import distributed_only
 
+
+@distributed_only
 class OnlineTests(LiveServerTestCase):
     def test_am_online(self):
         """The only thing I'm guaranteed to have online?  Myself."""
