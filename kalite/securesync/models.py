@@ -1,18 +1,21 @@
 import datetime
 import uuid
+import zlib
+from annoying.functions import get_object_or_None
 from pbkdf2 import crypt
 
 from django.contrib.auth.models import check_password
+from django.core import serializers
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models, transaction
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
-from config.models import Settings
-import crypto
-import model_sync
-import settings
 import kalite
+import settings
+from config.models import Settings
+from securesync import crypto, model_sync
+from pbkdf2 import crypt
 
 
 # Note: this MUST be hard-coded for backwards-compatibility reasons.

@@ -1,0 +1,1 @@
+Interest in contributing from {{ contact.name }}{% if contact.org_name %} @ {{ contact.org_name }}{% endif %}

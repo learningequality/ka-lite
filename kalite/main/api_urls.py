@@ -1,7 +1,9 @@
-from django.http import HttpResponse, HttpResponseRedirect
-from django.conf.urls.defaults import patterns, include, url
-import views
+from django.conf.urls.defaults import patterns, url
+from django.http import HttpResponse
 
+
+# Note that these patterns are all under /api/, 
+# due to the way they've been included into main/urls.py
 urlpatterns = patterns('main.api_views',
 
     # toss out any requests made to actual KA site urls
