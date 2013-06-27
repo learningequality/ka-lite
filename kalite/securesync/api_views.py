@@ -1,4 +1,5 @@
-import re, json, uuid
+import re
+import uuid
 import cgi
 
 from django.core import serializers
@@ -9,6 +10,9 @@ from django.views.decorators.gzip import gzip_page
 from django.contrib import messages
 from main.models import VideoLog, ExerciseLog
 from config.models import Settings
+
+from utils.internet import JsonResponse
+
 from django.contrib.messages.api import get_messages
 from django.utils.safestring import SafeString, SafeUnicode, mark_safe
 
@@ -17,12 +21,6 @@ import settings
 from models import *
 from securesync.views import distributed_server_only
 
-
-class JsonResponse(HttpResponse):
-    def __init__(self, content, *args, **kwargs):
-        if not isinstance(content, str) and not isinstance(content, unicode):
-            content = simplejson.dumps(content, ensure_ascii=False)
-        super(JsonResponse, self).__init__(content, content_type='application/json', *args, **kwargs)
 
 def require_sync_session(handler):
     def wrapper_fn(request):
@@ -45,10 +43,11 @@ def require_sync_session(handler):
         return response
     return wrapper_fn
 
+
 @csrf_exempt
 def register_device(request):
     data = simplejson.loads(request.raw_post_data or "{}")
-    
+
     # attempt to load the client device data from the request data
     if "client_device" not in data:
         return JsonResponse({"error": "Serialized client device must be provided."}, status=500)
@@ -70,7 +69,7 @@ def register_device(request):
             "error": "Client device must be self-signed with a signature matching its own public key.",
             "code": "client_device_invalid_signature",
         }, status=500)
-        
+
     # we have a valid self-signed Device, so now check if its public key has been registered
     try:
         registration = RegisteredDevicePublicKey.objects.get(public_key=client_device.public_key)
@@ -80,31 +79,32 @@ def register_device(request):
             return JsonResponse({
                 "error": "This device has already been registered",
                 "code": "device_already_registered",
-            }, status=500)            
+            }, status=500)
         except Device.DoesNotExist:
             return JsonResponse({
                 "error": "Device registration with public key not found; login and register first?",
                 "code": "public_key_unregistered",
             }, status=500)
-    
+
     client_device.signed_by = client_device
-    
+
     # the device checks out; let's save it!
     client_device.save(imported=True)
-    
+
     # create the DeviceZone for the new device
     device_zone = DeviceZone(device=client_device, zone=registration.zone)
     device_zone.save()
-    
+
     # delete the RegisteredDevicePublicKey, now that we've initialized the device and put it in its zone
     registration.delete()
-    
+
     # return our local (server) Device, its Zone, and the newly created DeviceZone, to the client
     return JsonResponse(
         json_serializer.serialize(
             [Device.get_own_device(), registration.zone, device_zone], ensure_ascii=False
         )
     )
+
 
 @csrf_exempt
 def create_session(request):
@@ -126,7 +126,7 @@ def create_session(request):
             client_device = Device.objects.get(pk=data["client_device"])
             session.client_device = client_device
         except Device.DoesNotExist:
-             return JsonResponse({"error": "Client device matching id could not be found."}, status=500)
+            return JsonResponse({"error": "Client device matching id could not be found."}, status=500)
         session.server_nonce = uuid.uuid4().hex
         session.server_device = Device.get_own_device()
         session.ip = request.META.get("HTTP_X_FORWARDED_FOR", request.META.get('REMOTE_ADDR', ""))
@@ -146,17 +146,19 @@ def create_session(request):
             return JsonResponse({"error": "Signature did not match."}, status=500)
         session.verified = True
         session.save()
-        
+
     return JsonResponse({
         "session": json_serializer.serialize([session], ensure_ascii=False),
         "signature": session.sign(),
     })
-    
+
+
 @csrf_exempt
 @require_sync_session
 def destroy_session(data, session):
     session.closed = True
     return JsonResponse({})
+
 
 @csrf_exempt
 @gzip_page
@@ -168,6 +170,7 @@ def device_download(data, session):
     session.models_downloaded += len(devices) + len(devicezones)
     return JsonResponse({"devices": json_serializer.serialize(devices + devicezones, ensure_ascii=False)})
 
+
 @csrf_exempt
 @require_sync_session
 def device_upload(data, session):
@@ -176,7 +179,8 @@ def device_upload(data, session):
     result = save_serialized_models(data.get("devices", "[]"))
     session.models_uploaded += result["saved_model_count"]
     return JsonResponse(result)
-        
+
+
 @csrf_exempt
 @gzip_page
 @require_sync_session
@@ -186,6 +190,7 @@ def device_counters(data, session):
         "device_counters": device_counters,
     })
 
+
 @csrf_exempt
 @require_sync_session
 def upload_models(data, session):
@@ -194,6 +199,7 @@ def upload_models(data, session):
     result = save_serialized_models(data["models"])
     session.models_uploaded += result["saved_model_count"]
     return JsonResponse(result)
+
 
 @csrf_exempt
 @gzip_page
@@ -206,7 +212,8 @@ def download_models(data, session):
     return JsonResponse({
         "models": result["models"]
     })
-    
+
+
 @csrf_exempt
 def test_connection(request):
     return HttpResponse("OK")
@@ -221,10 +228,10 @@ def status(request):
     distributed devices, we do not include ANY user data in our
     templates.  Instead, an AJAX request is made to download user
     data, and javascript used to update the page.
-    
+
     This view is the view providing the json blob of user information,
     for each page view on the distributed server.
-    
+
     Besides basic user data, we also provide access to the
     Django message system through this API, again to promote
     caching by excluding any dynamic information from the server-generated
@@ -234,7 +241,7 @@ def status(request):
     #   Iterating over the messages removes them from the
     #   session storage, thus they only appear once.
     message_dicts = []
-    for message in  get_messages(request):
+    for message in get_messages(request):
         # Make sure to escape strings not marked as safe.
         # Note: this duplicates a bit of Django template logic.
         msg_txt = message.message
@@ -242,10 +249,10 @@ def status(request):
             msg_txt = cgi.escape(str(msg_txt))
 
         message_dicts.append({
-            "tags": message.tags, 
+            "tags": message.tags,
             "text": msg_txt,
-        }) 
-        
+        })
+
     data = {
         "is_logged_in": request.is_logged_in,
         "registered": bool(Settings.get("registered")),
@@ -262,5 +269,5 @@ def status(request):
     if request.user.is_authenticated():
         data["is_logged_in"] = True
         data["username"] = request.user.username
-    
+
     return JsonResponse(data)

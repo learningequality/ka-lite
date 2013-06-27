@@ -1,0 +1,28 @@
+{% extends "coachreports/base_google_visualization.html" %}
+
+{% load repeatblock %}
+{% load my_filters %}
+{% load staticfiles %}
+
+{% block title %}Scatter plot {{ block.super }}{% endblock title %}
+{% block report_title %}Scatter plot {% endblock report_title %}
+
+{% block headjs %} {{ block.super }}
+<script type="text/javascript" src="{% static 'js/coachreports/scatter_view.js' %}"></script>
+{% endblock headjs %}
+
+
+{% block headcss %} {{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/scatter_view.css' %}" />
+{% endblock headcss %}
+
+{% block axis_dropdown %}
+    X-Axis:
+    <select id="xaxis" name="xaxis">
+        {% block data_options %}{{ block.super }}{% endblock %}
+    </select>
+    Y-Axis:
+    <select id="yaxis" name="yaxis">
+        {% repeatblock data_options %}
+    </select>
+{% endblock axis_dropdown %}
