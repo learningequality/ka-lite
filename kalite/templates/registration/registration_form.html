@@ -9,7 +9,14 @@
 .form-section { width:75%; clear:left; font-size:10pt; line-height:25px; border:0px solid}
 .form-label label { width:150px; text-align:right; }
 .form-element { float:left; ;margin:0 }
-.errorlist { float:left; ;margin-left:25px; color:red}
+
+.long-errorlist { 
+  clear: both;
+  display: block;
+  color:red;
+  float:left; */
+}
+
 .submit {
     margin-left: 71px;
 }
@@ -21,11 +28,6 @@ input[type=text], input[type=password] {
 }
 .form-block {
     padding-bottom:15px;
-}
-.errorlist {
-    /*position: relative;*/
-    margin-top: -20px;
-    margin-bottom: 0;
 }
 
 /* hackish way to show org details, if there are any errors or content */
@@ -152,7 +154,7 @@ input[type=text], input[type=password] {
       <a href="http://www.khanacademy.org/about/tos#7" target="_blank">non-commercial purposes only</a>.
       </div>
       {% if form.tos1.errors %}
-        <div class="errorlist">{{ form.tos1.errors.as_text }}</div>
+        <div class="long-errorlist">{{ form.tos1.errors.as_text }}</div>
       {% endif %}
     </div>
     <div class="form-section">
@@ -164,7 +166,7 @@ input[type=text], input[type=password] {
 </div>
 <div class="form-block">
       {% if form.tos2.errors %}
-        <div class="errorlist">{{ form.tos2.errors.as_text }}</div>
+        <div class="long-errorlist">{{ form.tos2.errors.as_text }}</div>
       {% endif %}
     <div class="form-section">
         <div class="submit"><input class="submit" type="submit" value="Register &rarr;"></div>
