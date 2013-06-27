@@ -17,6 +17,16 @@ python-packages/django/templates/base.py
     +        self.root_nodelist.append(nodelist)
 
 
+python-packages/django/contrib/auth/forms.py: 139
+    #Changed to modify username length from 30 to 75 (matching email addresses)
+    +    username = forms.CharField(label=_("Username"), max_length=75) # tweaked for KA Lite (using email addr for username)
+
+python-packages/django/contrib/auth/models.py: 232
+    #Changed to modify username length from 30 to 75 (matching email addresses)
+    +    username = models.CharField(_('username'), max_length=75, unique=True, # tweaked for KA Lite (use email for username)
+    +        help_text=_('Required. 75 characters or fewer. Letters, numbers and '
+
+
 python-packages/django/utils/cache.py:168 
 requires package additions:
 import logging
