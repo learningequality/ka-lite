@@ -43,8 +43,8 @@ class SuperUserTest(KALiteCentralBrowserTestCase):
         self.assertTrue(self.wait_for_page_change(login_url), "RETURN causes page to change")
         self.assertIn(reverse("homepage"), self.browser.current_url, "Login browses to homepage (account admin)" )
         self.assertIn("Account administration", self.browser.title, "Check account admin page title")
-
-
+        
+        
 #@central_only
 class OrgUserRegistrationTest(KALiteCentralBrowserTestCase):
     user_email = "test_user@nowhere.com"
@@ -65,11 +65,14 @@ class OrgUserRegistrationTest(KALiteCentralBrowserTestCase):
         self.browser_send_keys("Lastname" + Keys.TAB) # last name
         self.browser_send_keys(self.user_email + Keys.TAB) #email
         self.browser_send_keys(self.org_name + Keys.TAB) #org name
+        self.browser_send_keys(Keys.TAB) # organization dropdown (skipped)
         self.browser_send_keys(self.password + Keys.TAB) #password
         self.browser_send_keys(self.password + Keys.TAB) #password (again)
         self.browser_send_keys(Keys.TAB) # subscribe checkbox (skipped)
         self.browser_send_keys(Keys.SPACE + Keys.TAB) # checkbox 1
+        self.browser_send_keys(Keys.TAB) # Usage Ts and Cs link (skipped)
         self.browser_send_keys(Keys.SPACE + Keys.TAB) # checkbox 2
+        self.browser_send_keys(Keys.TAB) # API Ts and Cs link (skipped)
 
         # This runs, but captures nothing.  
         # TODO(bcipolli): figure out why this is empty,
@@ -79,8 +82,8 @@ class OrgUserRegistrationTest(KALiteCentralBrowserTestCase):
         #   email to stdout
         #str = self.capture_stdout((self.browser_send_keys, Keys.RETURN))
         self.browser_send_keys(Keys.RETURN)
-        
-        
+
+                
         # Make sure that the page changed to the admin homepage
         self.assertTrue(self.wait_for_page_change(register_url), "RETURN causes page to change")
         self.assertIn(reverse("registration_complete"), self.browser.current_url, "Register browses to thank you page" )
