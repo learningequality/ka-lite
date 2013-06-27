@@ -8,29 +8,21 @@ from django.contrib.messages.api import get_messages
 from django.core import serializers
 from django.db import transaction
 from django.http import HttpResponse
-from django.contrib.messages.api import get_messages
 from django.utils.safestring import SafeString, SafeUnicode, mark_safe
 from django.utils import simplejson
 from django.utils.safestring import SafeString, SafeUnicode, mark_safe
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.gzip import gzip_page
 
 import kalite
-import crypto
 import settings
-import model_sync
 from config.models import Settings
-from models import *
+from kalite.utils.internet import JsonResponse
 from main.models import VideoLog, ExerciseLog
+from securesync import crypto, model_sync
 from securesync.models import *
 from securesync.views import distributed_server_only
 
-
-class JsonResponse(HttpResponse):
-    def __init__(self, content, *args, **kwargs):
-        if not isinstance(content, str) and not isinstance(content, unicode):
-            content = simplejson.dumps(content, ensure_ascii=False)
-        super(JsonResponse, self).__init__(content, content_type='application/json', *args, **kwargs)
 
 def require_sync_session(handler):
     def wrapper_fn(request):
@@ -53,13 +45,15 @@ def require_sync_session(handler):
         return response
     return wrapper_fn
 
+
 @csrf_exempt
 def register_device(request):
     """Receives the client device info from the distributed server.
     Tries to register either because the device has been pre-registered,
     or because it has a valid INSTALL_CERTIFICATE."""
-    
-    
+
+    data = simplejson.loads(request.raw_post_data or "{}")
+
     # attempt to load the client device data from the request data
     data = simplejson.loads(request.raw_post_data or "{}")
     if "client_device" not in data:
@@ -84,7 +78,6 @@ def register_device(request):
             "error": "Client device must be self-signed with a signature matching its own public key.",
             "code": "client_device_invalid_signature",
         }, status=500)
-
 
     (zone,json_response) = register_self_registered_device(client_device, models)
     if json_response:
@@ -113,6 +106,7 @@ def register_device(request):
 
     device_zone = DeviceZone(device=client_device, zone=zone)
     device_zone.save()     # create the DeviceZone for the new device
+
 
     # return our local (server) Device, its Zone, and the newly created DeviceZone, to the client
     return JsonResponse(
@@ -169,15 +163,15 @@ def register_self_registered_device(client_device, serialized_models):
         # we got through!  we got the zone, either recognized it or added it,
         #   and validated the certificate!
         json_response = None
-        
-                    
+
+
     except StopIteration:
         server_zone = None
         json_response = None
-    
+
     return (server_zone, json_response)
-    
-    
+
+
 @csrf_exempt
 def create_session(request):
     data = simplejson.loads(request.raw_post_data or "{}")
@@ -190,7 +184,7 @@ def create_session(request):
     if "server_nonce" not in data:
         if SyncSession.objects.filter(client_nonce=data["client_nonce"]).count():
             return JsonResponse({"error": "Session already exists; include server nonce and signature."}, status=500)
-            
+
         session = SyncSession()
         session.client_nonce = data["client_nonce"]
         session.client_os = data.get("client_os", "")
@@ -200,6 +194,7 @@ def create_session(request):
             session.client_device = client_device
         except Device.DoesNotExist:
             return JsonResponse({"error": "Client device matching id could not be found. (id=%s)" % data["client_device"]}, status=500)
+
         session.server_nonce = uuid.uuid4().hex
         session.server_device = Device.get_own_device()
         session.ip = request.META.get("HTTP_X_FORWARDED_FOR", request.META.get('REMOTE_ADDR', ""))
@@ -224,12 +219,14 @@ def create_session(request):
         "session": serializers.serialize("json", [session], client_version=session.client_version, ensure_ascii=False ),
         "signature": session.sign(),
     })
-    
+
+
 @csrf_exempt
 @require_sync_session
 def destroy_session(data, session):
     session.closed = True
     return JsonResponse({})
+
 
 @csrf_exempt
 @gzip_page
@@ -240,6 +237,7 @@ def device_download(data, session):
     devices = [devicezone.device for devicezone in devicezones]
     session.models_downloaded += len(devices) + len(devicezones)
     return JsonResponse({"devices": serializers.serialize("json", devices + devicezones, client_version=session.client_version, ensure_ascii=False)})
+
 
 @csrf_exempt
 @require_sync_session
@@ -254,7 +252,8 @@ def device_upload(data, session):
     session.models_uploaded += result["saved_model_count"]
     session.errors += result.has_key("error")
     return JsonResponse(result)
-        
+
+
 @csrf_exempt
 @gzip_page
 @require_sync_session
@@ -263,6 +262,7 @@ def device_counters(data, session):
     return JsonResponse({
         "device_counters": device_counters,
     })
+
 
 @csrf_exempt
 @require_sync_session
@@ -278,6 +278,7 @@ def model_upload(data, session):
     session.errors += result.has_key("error")
     return JsonResponse(result)
 
+
 @csrf_exempt
 @gzip_page
 @require_sync_session
@@ -292,22 +293,26 @@ def model_download(data, session):
     session.models_downloaded += result["count"]
     session.errors += result.has_key("error")
     return JsonResponse(result)
-            
+
+
 @csrf_exempt
 def test_connection(request):
     return HttpResponse("OK")
 
 
+# On pages with no forms, we want to ensure that the CSRF cookie is set, so that AJAX POST
+# requests will be possible. Since `status` is always loaded, it's a good place for this.
+@ensure_csrf_cookie
 @distributed_server_only
 def status(request):
     """In order to promote (efficient) caching on (low-powered)
     distributed devices, we do not include ANY user data in our
     templates.  Instead, an AJAX request is made to download user
     data, and javascript used to update the page.
-    
+
     This view is the view providing the json blob of user information,
     for each page view on the distributed server.
-    
+
     Besides basic user data, we also provide access to the
     Django message system through this API, again to promote
     caching by excluding any dynamic information from the server-generated
@@ -317,7 +322,7 @@ def status(request):
     #   Iterating over the messages removes them from the
     #   session storage, thus they only appear once.
     message_dicts = []
-    for message in  get_messages(request):
+    for message in get_messages(request):
         # Make sure to escape strings not marked as safe.
         # Note: this duplicates a bit of Django template logic.
         msg_txt = message.message
@@ -325,10 +330,10 @@ def status(request):
             msg_txt = cgi.escape(str(msg_txt))
 
         message_dicts.append({
-            "tags": message.tags, 
+            "tags": message.tags,
             "text": msg_txt,
-        }) 
-        
+        })
+
     data = {
         "is_logged_in": request.is_logged_in,
         "registered": bool(Settings.get("registered")),
@@ -345,5 +350,5 @@ def status(request):
     if request.user.is_authenticated():
         data["is_logged_in"] = True
         data["username"] = request.user.username
-    
+
     return JsonResponse(data)

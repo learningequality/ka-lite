@@ -105,7 +105,7 @@
                                 <div id='hintsarea'></div>
                             </div>
                             <div id="answer_area_wrap"><div id="answer_area">
-                                <form id="answerform" action="/exercisedashboard" method="get" name="answerform">
+                                <form id="answerform" action="{% url exercise_dashboard %}" method="get" name="answerform">
                                     {% trans "Your progress streak bar for this exercise" as prog_streak %}
                                     <div id="streakbar" class="info-box" title="{{ prog_streak }}">
                                         <div class="streak">

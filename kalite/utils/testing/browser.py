@@ -63,10 +63,13 @@ class BrowserTestCase(KALiteTestCase):
     """
     def __init__(self, *args, **kwargs):
         self.persistent_browser = False
+        self.max_wait_time = kwargs.get("max_wait_time", 30)
         super(BrowserTestCase, self).__init__(*args, **kwargs)
-        
+
     def setUp(self):
         """Create a browser to use for test cases.  Try a bunch of different browsers; hopefully one of them works!"""
+
+        super(BrowserTestCase, self).setUp()
         
         # Can use already launched browser.
         if self.persistent_browser:
@@ -85,17 +88,20 @@ class BrowserTestCase(KALiteTestCase):
     def tearDown(self):
         if not self.persistent_browser:
             self.browser.quit()
+        return super(BrowserTestCase, self).tearDown()
 
-        
+
     def browse_to(self, dest_url, wait_time=0.1, max_retries=50):
         """When testing, we have to make sure that the page has loaded before testing the resulting page."""
 
         self.assertTrue(browse_to(self.browser, dest_url=dest_url, wait_time=wait_time, max_retries=max_retries), "Browsing to '%s'" % dest_url)
         
         
-    def wait_for_page_change(self, source_url, wait_time=0.1, max_retries=50):
+    def wait_for_page_change(self, source_url, wait_time=0.1, max_retries=None):
         """When testing, we have to make sure that the page has loaded before testing the resulting page."""
-         
+
+        if not max_retries:
+            max_retries = int(self.max_wait_time/float(wait_time))
         return wait_for_page_change(self.browser, source_url, wait_time=wait_time, max_retries=max_retries)
 
     

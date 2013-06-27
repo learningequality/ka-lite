@@ -1,5 +1,16 @@
 # based on: http://www.djangosnippets.org/snippets/1926/
+
+from django import template
+from django.core.serializers import serialize
+from django.db.models.query import QuerySet
 from django.template import Library, Node, TemplateSyntaxError
+from django.template import Node, VariableNode
+from django.template.defaultfilters import floatformat
+from django.template.loader_tags import BlockNode, ExtendsNode
+from django.template.loader import get_template
+from django.utils import simplejson
+from django.utils.safestring import mark_safe
+
 
 register = Library()
 
@@ -17,7 +28,12 @@ class RangeNode(Node):
             resolved_ranges.append(compiled_arg.resolve(context, ignore_failures=True))
         context[self.context_name] = range(*resolved_ranges)
         return ""
-        
+
+@register.filter
+def get_item(dictionary, key):
+    return dictionary.get(key)
+
+
 @register.tag
 def mkrange(parser, token):
     """
@@ -64,4 +80,53 @@ def mkrange(parser, token):
 
     context_name = tokens.pop()
 
-    return RangeNode(parser, range_args, context_name)
+
+@register.tag
+def include_block(parser, token):
+    """ From http://stackoverflow.com/questions/2687173/django-how-can-i-get-a-block-from-a-template
+    Usage: {% include_block "template.html" "block_name" %}
+    """
+    try:
+        tag_name, include_file, block_name = token.split_contents()
+    except ValueError:
+        raise template.TemplateSyntaxError("%r tag requires a two arguments" % (token.contents.split()[0]))
+
+    #pass vars with stripped quotes 
+    return IncludeBlockNode(include_file.replace('"', ''), block_name.replace('"', ''))
+
+class IncludeBlockNode(Node):
+    def __init__(self, include_file, block_name):
+        self.include_file = include_file
+        self.block_name = block_name
+
+    def _get_node(self, template, context, name):
+        '''
+        taken originally from
+        http://stackoverflow.com/questions/2687173/django-how-can-i-get-a-block-from-a-template
+        '''
+        for node in template:
+            if isinstance(node, BlockNode) and node.name == name:
+                # Note: will not render VariableNode block.super
+                return node.nodelist.render(context)
+            elif isinstance(node, ExtendsNode):
+                return self._get_node(node.nodelist, context, name)
+                
+
+        raise Exception("Node '%s' could not be found in template." % name)
+
+    def render(self, context):
+        t = get_template(self.include_file)
+        return self._get_node(t, context, self.block_name)
+
+@register.filter
+def jsonify(object):
+    if isinstance(object, QuerySet):
+        return serialize('json', object)
+    return mark_safe(simplejson.dumps(object))
+
+
+@register.filter
+def percent(value, precision):
+  if value is None:
+    return None
+  return floatformat(value * 100.0, precision) + '%' 

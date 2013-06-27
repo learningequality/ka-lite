@@ -142,7 +142,7 @@ class SuperUserTest(KALiteCentralBrowserTestCase):
         self.login_user(self.admin_user.username, "test")
 
 
-@central_only
+#@central_only
 class OrgUserRegistrationTest(KALiteCentralBrowserTestCase):
     user_email = "test_user@nowhere.com"
     password   = "password"

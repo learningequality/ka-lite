@@ -8,8 +8,10 @@ from django.test import TestCase
 from django.core.management import call_command
 
 import settings
+from utils.testing import central_only
 
 
+@central_only
 class FixtureTestCases(TestCase):
     """Test the basic ability to load and dump data to a fixture.  Very basic."""
 

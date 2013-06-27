@@ -2,8 +2,8 @@ import json
 
 from django.core.management.base import BaseCommand, CommandError
 
-from securesync.models import ImportPurgatory
 from securesync import model_sync
+from securesync.models import ImportPurgatory
 
 
 class Command(BaseCommand):

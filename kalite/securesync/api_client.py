@@ -273,18 +273,20 @@ class SyncClient(object):
                 d = Device.objects.get(id=device_id)
             except:
                 continue
-            dm = d.get_metadata()
-            dm.counter_position = self.counters_to_download[device_id]
+
+            dm = d.get_metadata() 
+            if not dm.counter_position: # this would be nonzero if the device sync'd models
+                dm.counter_position = self.counters_to_download[device_id]
             dm.save()
         
         self.session.models_downloaded += download_results["saved_model_count"]
         self.session.errors += download_results.has_key("error")
 
         # TODO(jamalex): upload local devices as well? only needed once we have P2P syncing
-        
+
 
     def sync_models(self):
-        
+
         if self.counters_to_download is None or self.counters_to_upload is None:
             self.sync_device_records()
 
@@ -317,7 +319,6 @@ class SyncClient(object):
         except Exception as e:
             upload_results["error"] = e
             self.session.errors += 1
-                
 
         self.counters_to_download = None
         self.counters_to_upload = None

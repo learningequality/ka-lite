@@ -12,9 +12,12 @@ from django.test.client import Client
 import settings
 from kalite.main import topicdata
 from utils import caching
+from utils.django_utils import call_command_with_output
 from utils.testing.base import KALiteTestCase
+from utils.testing.decorators import distributed_only
 
 
+@distributed_only
 class CachingTest(KALiteTestCase):
 
     @unittest.skipIf(settings.CACHE_TIME==0, "Test only relevant when caching is enabled")

@@ -6,33 +6,55 @@
 
 {% block headcss %}
 <style>
-.form-section { width:75%; clear:left; font-size:10pt; line-height:25px; border:0px solid}
-.form-label label { width:150px; text-align:right; }
-.form-element { float:left; ;margin:0 }
-.errorlist { float:left; ;margin-left:25px; color:red}
-.submit {
-    margin-left: 71px;
-}
-#show-org-details {
-    padding:15px 0px 15px 135px;
-}
-input[type=text], input[type=password] {
-    width:150px;
-}
-.form-block {
-    padding-bottom:15px;
-}
-.errorlist {
-    /*position: relative;*/
-    margin-top: -20px;
-    margin-bottom: 0;
-}
+    .form-section {
+        width:75%;
+        clear:left;
+        font-size:10pt;
+        line-height:25px;
+        border:0px solid;
+    }
+    .form-label label {
+        width:150px;
+        text-align:right;
+    }
+    .form-element {
+        float:left;
+        margin:0;
+    }
+    .errorlist {
+        float:left;
+        margin-left:25px;
+        color:red;
+        margin-top: -20px;
+        margin-bottom: 0;
+    }
+    .submit {
+        margin-left: 71px;
+    }
+    #show-org-details {
+        padding:15px 0px 15px 135px;
+    }
+    input[type=text], input[type=password] {
+        width:150px;
+    }
+    .form-block {
+        padding-bottom:15px;
+    }
 
-/* hackish way to show org details, if there are any errors or content */
-#org_details { display:none } /* default: off */
-{% for prop in org_form %}{% if prop.errors or prop.value %}
-#org_details { display:block } /* dynamically override if we find an error */
-{% endif %}{% endfor %}
+    /* hackish way to show org details, if there are any errors or content */
+    #org_details {
+        display:none;
+    } /* default: off */
+{% for prop in org_form %}
+    {% comment "org.name is on the outside of the expanded form, so no need to expand" %}{% endcomment %}
+    {% if not prop.name == "name" %}
+        {% if prop.errors or prop.value %}
+    #org_details {
+        display:block;
+    } /* dynamically override if we find an error */
+        {% endif %}
+    {% endif %}
+{% endfor %}
 </style>
 {% endblock headcss %}
 
@@ -141,7 +163,7 @@ input[type=text], input[type=password] {
 <div class="form-block">
     <div class="form-section">
       <div class="form-label"><label for="id_tos1"></label></div>
-      <div class="form-element"><input type="checkbox" name="email_subscribe">
+      <div class="form-element"><input type="checkbox" name="email_subscribe"{% if subscribe %} checked="checked"{% endif %} />
       Subscribe to our "General Announcements" newsletter
       </div>
     </div>

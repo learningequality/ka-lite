@@ -2,6 +2,8 @@ from django.http import HttpResponseRedirect
 from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
 
+import coachreports.urls
+import main.api_urls
 import securesync.urls
 import settings
 
@@ -32,15 +34,20 @@ urlpatterns += patterns('',
 )
 
 urlpatterns += patterns('main.views',
-    url(r'^exercisedashboard/$', 'exercise_dashboard', {}, 'exercise_dashboard'),
-    url(r'^coachreports/$', 'coach_reports', {}, 'coach_reports'),
-    url(r'^easyadmin/$', 'easy_admin', {}, 'easy_admin'),
-    url(r'^stats/$', 'summary_stats', {}, 'summary_stats'),
-
-    url(r'^$', 'homepage', {}, 'homepage'),
+    # Admin
     url(r'^update/$', 'update', {}, 'update'),
     url(r'^userlist/$', 'user_list', {}, 'user_list'),
     url(r'^api/', include('main.api_urls')),
+    url(r'^easyadmin/$', 'easy_admin', {}, 'easy_admin'),
+    url(r'^stats/$', 'summary_stats', {}, 'summary_stats'),
+    url(r'^api/', include(main.api_urls)),
+
+    # Teachers
+    url(r'^coachreports/', include(coachreports.urls)),
+
+    # Students
+    url(r'^$', 'homepage', {}, 'homepage'),
+    url(r'^exercisedashboard/$', 'exercise_dashboard', {}, 'exercise_dashboard'),
 )
 
 if "loadtesting" in settings.INSTALLED_APPS:

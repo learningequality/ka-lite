@@ -4,6 +4,7 @@ Test support harness to make setup.py test work.
 
 import os
 import sys
+import logging
 
 from django.test.simple import DjangoTestSuiteRunner
 from django.core import management
@@ -35,7 +36,7 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         #   older branch has been checked out
         settings.LOG.info("Purging pyc files")
         management.call_command('clean_pyc', verbosity=2)
-        
+
         if not test_labels:
             test_labels = {'main', 'central', 'securesync'}
             if settings.CENTRAL_SERVER:
@@ -43,4 +44,4 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
             else:
                 test_labels -= {'central',}
         return super(KALiteTestRunner,self).run_tests(test_labels, extra_tests, **kwargs)
-        
+

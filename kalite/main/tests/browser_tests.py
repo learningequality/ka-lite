@@ -13,6 +13,7 @@ import unittest
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions, ui
 
 from django.test import TestCase
 from django.core.urlresolvers import reverse
@@ -24,7 +25,6 @@ from utils.testing.browser import BrowserTestCase
 from utils.testing.decorators import distributed_only
 
 
-
 class KALiteDistributedBrowserTestCase(BrowserTestCase):
     """Base class for main server test cases.
     They will have different functions in here, for sure.
@@ -32,14 +32,14 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
 
     def register_user(self, username, password, first_name="firstname", last_name="lastname", stay_logged_in=False, expect_success=True):
         """Tests that a user can register"""
-        
+
         # Expected results vary based on whether a user is logged in or not.
         if not stay_logged_in:
             self.logout_user()
-            
+
         register_url = self.reverse("add_facility_student")
         self.browse_to(register_url) # Load page
-        self.assertIn("Sign up", self.browser.title, "Register page title")
+        self.assertIn("Sign up", self.browser.title, "Register page title %s") # this depends on who is logged in.
         
         # Part 1: REGISTER
         self.browser_activate_element(id="id_username") # explicitly set the focus, to start
@@ -99,6 +99,7 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
     
     def login_student(self, username, password, expect_success=True):
         self.login_user(username=username, password=password, expect_success=expect_success)
+        time.sleep(self.max_wait_time/10) # allow time for async messages to load
         if expect_success:
             self.assertIn(reverse("homepage"), self.browser.current_url, "Login browses to homepage" )
             self.check_django_message("success", contains="You've been logged in!")
@@ -116,12 +117,15 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
             self.assertFalse(self.is_logged_in(), "Make sure that user is no longer logged in.")
 
 
-    def is_logged_in(self, username=None):
-        if username is not None:
-            return self.browser.find_element_by_id("logged-in-name").text.startswith(username + " ")
-        else:
-            return "(LOGOUT)" in self.browser.find_element_by_id("logged-in-name").text
-        
+    def is_logged_in(self, expected_username=None):
+        # Two ways to be logged in:
+        # 1. Student: #logged-in-name is username
+        # 2. Admin: #logout contains username
+        logged_in_name_text = self.browser.find_element_by_id("logged-in-name").text
+        logout_text = self.browser.find_element_by_id("logout").text
+
+        username =  logged_in_name_text or logout_text[0:len(" (LOGOUT)")]
+        return username and (not expected_username or username == expected_username)
 
 
 class KALiteRegisteredDistributedBrowserTestCase(KALiteDistributedBrowserTestCase):
@@ -134,6 +138,7 @@ class KALiteRegisteredDistributedBrowserTestCase(KALiteDistributedBrowserTestCas
         super(KALiteRegisteredDistributedBrowserTestCase,self).setUp() # sets up admin, etc
         
         self.add_facility(facility_name=self.facility_name)        
+        #Facility(name=self.facility_name).save()
         self.logout_user()
 
     def add_facility(self, facility_name):
@@ -205,35 +210,12 @@ class ChangeLocalUserPassword(unittest.TestCase):
         self.assertEquals(err, "", "no output on stderr")
         self.assertNotEquals(out, "", "some output on stderr")
         self.assertEquals(val, 0, "Exit code is zero")
-        
-        match = re.match(r"^.*Generated new password for user '([^']+)': '([^']+)'", out.replace("\n",""), re.MULTILINE)
-        self.assertFalse(match is None, "could not parse stdout")
-
-        user = FacilityUser.objects.get(facility=self.facility, username=self.user.username)
-        self.assertEquals(user.username, match.groups()[0], "Username reported correctly")
-
-        self.assertTrue(user.check_password(match.groups()[1]), "New password works")
-        self.assertFalse(user.check_password(self.user.clear_text_password), "NOT the old password")
-        
-
-    def test_no_user(self):
-        """Change the password on a non-existing user"""
-        
-        fake_username = self.user.username + "xxxxx"
-        
-        #with self.assertRaises(FacilityUser.DoesNotExist):
-        (out,err,val) = call_command_with_output("changelocalpassword", fake_username, noinput=True)
-
-        self.assertNotIn("Generated new password for user", out, "Did not set password")
-        self.assertNotEquals(err, "", "some output on stderr")
 
         match = re.match(r"^.*Error: user '([^']+)' does not exist$", err.replace("\n",""), re.M)
         self.assertFalse(match is None, "could not parse stderr")
         self.assertEquals(match.groups()[0], fake_username, "Verify printed fake username")
         self.assertNotEquals(val, 0, "Verify exit code is non-zero")
-        
-        
-        
+
 
 @distributed_only
 class UserRegistrationCaseTest(KALiteRegisteredDistributedBrowserTestCase):
@@ -242,7 +224,7 @@ class UserRegistrationCaseTest(KALiteRegisteredDistributedBrowserTestCase):
 
     def test_register_login_exact(self):
         """Tests that a user can login with the exact same email address as registered"""
-         
+
         # Register user in one case
         self.register_user(username=self.username.lower(), password=self.password)
 
@@ -250,17 +232,17 @@ class UserRegistrationCaseTest(KALiteRegisteredDistributedBrowserTestCase):
         self.login_student(username=self.username.lower(), password=self.password)
         self.logout_user()
 
-        
+
     def test_login_mixed(self):
         """Tests that a user can login with the uppercased version of the email address that was registered"""
-         
+
         # Register user in one case
         self.register_user(username=self.username.lower(), password=self.password)
 
         # Login in the same case
         self.login_student(username=self.username.upper(), password=self.password)
         self.logout_user()
-        
+
 
     def test_register_mixed(self):
         """Tests that a user cannot re-register with the uppercased version of an email address that was registered"""
@@ -305,7 +287,6 @@ class UserRegistrationCaseTest(KALiteRegisteredDistributedBrowserTestCase):
         # First, make sure that user 1 can only log in with user 1's email/password
         self.login_student(username=user1_uname, password=user1_password) # succeeds
         self.logout_user()
-
         self.login_student(username=user2_uname, password=user1_password, expect_success=False) # fails
         self.check_django_message("error", contains="There was an error logging you in.")
         
@@ -315,3 +296,4 @@ class UserRegistrationCaseTest(KALiteRegisteredDistributedBrowserTestCase):
 
         self.login_student(username=user1_uname, password=user2_password, expect_success=False) # fails
         self.check_django_message("error", contains="There was an error logging you in.")
+

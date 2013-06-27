@@ -15,11 +15,13 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
 
+import settings
 from central.forms import OrganizationForm
 from central.models import Organization
+from contact.views import contact_subscribe
 from registration.backends import get_backend
-from securesync.models import Zone
 from utils.mailchimp import mailchimp_subscribe
+from securesync.models import Zone
 
 
 def complete(request, *args, **kwargs):
@@ -198,19 +200,23 @@ def register(request, backend, success_url=None, form_class=None,
     if form_class is None:
         form_class = backend.get_form_class(request)
 
+    do_subscribe = request.REQUEST.get("email_subscribe") == "on"
+
     if request.method == 'POST':
         form = form_class(data=request.POST, files=request.FILES)
         org_form = OrganizationForm(data=request.POST, instance=Organization())
-        
+
         # Could register
         if form.is_valid() and org_form.is_valid():
             assert form.cleaned_data.get("username") == form.cleaned_data.get("email"), "Should be set equal in the call to clean()"
             # TODO (bcipolli): should do all this in one transaction,
             #   so that if any one part fails, it all rolls back.
+            #   For now, unlikely to happen, and consequence is only
+            #   a user without an org/zone
             try:
                 # Create the user
                 new_user = backend.register(request, **form.cleaned_data)
-            
+
                 # Add an org.  Must create org before adding user.
                 org_form.instance.owner = new_user
                 org_form.save()
@@ -224,14 +230,10 @@ def register(request, backend, success_url=None, form_class=None,
                 org.save()
 
                 # Finally, try and subscribe the user to the mailing list
-                # (silently)
-                if request.POST.has_key("email_subscribe") and request.POST["email_subscribe"]=="on":
-                    # Don't want to muck with mailchimp during testing (though I did validate this)
-                    if settings.DEBUG:
-                        return HttpResponse("We'll subscribe you via mailchimp when we're in RELEASE mode, %s, we swear!" % form.cleaned_data['email'])
-                    else:
-                        return HttpResponse(mailchimp_subscribe(form.cleaned_data['email']))
-            
+                # (silently; don't return anything to the user)
+                if do_subscribe:
+                    contact_subscribe(request, form.cleaned_data['email'])  # no "return"
+
                 if success_url is None:
                     to, args, kwargs = backend.post_registration_redirect(request, new_user)
                     return redirect(to, *args, **kwargs)
@@ -248,16 +250,23 @@ def register(request, backend, success_url=None, form_class=None,
     else:
         form = form_class()
         org_form = OrganizationForm()
-    
+
     if extra_context is None:
         extra_context = {}
     context = RequestContext(request)
     for key, value in extra_context.items():
         context[key] = callable(value) and value() or value
 
-    return render_to_response(template_name,
-                              { 'form': form, "org_form" : org_form},
-                              context_instance=context)
+    return render_to_response(
+        template_name,
+        {
+            'form': form,
+            "org_form" : org_form,
+            "subscribe": do_subscribe,
+        },
+        context_instance=context,
+    )
+
 
 def login_view(request, *args, **kwargs):
     """Force lowercase of the username.

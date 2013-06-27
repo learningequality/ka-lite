@@ -8,7 +8,11 @@ from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 
+import settings
+from utils.testing import central_only
 
+
+@central_only
 class UrlTestCases(TestCase):
     """Walk through a set of URLs, and validate very basic properties (status code, some text)
     A good test to weed out untested view/template errors"""
@@ -25,13 +29,9 @@ class UrlTestCases(TestCase):
         self.assertEquals(resp.status_code, status_code, "%s (check status code)" % url)
         if find_str is not None:
             self.assertTrue(find_str in resp.content, "%s (check content)" % url)
-        
+
     def test_urls(self):
         """Test some basic URLs on the project (will detect 500 errors, for example)"""
         self.validate_url(reverse('homepage'))
         self.validate_url(reverse('auth_login'))
         self.validate_url(reverse('registration_register'))
-        
-        
-        
-        

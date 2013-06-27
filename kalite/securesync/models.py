@@ -24,10 +24,9 @@ from django.utils.translation import ugettext_lazy as _
 
 import kalite
 import settings
-import crypto
-import model_sync
-from config.utils import set_as_registered
 from config.models import Settings
+from config.utils import set_as_registered
+from securesync import crypto, model_sync
 
 
 

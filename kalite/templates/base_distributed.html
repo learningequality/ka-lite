@@ -36,8 +36,8 @@
 </span>
 <span class="dropdown topic-browser-dropdown logged-in-only">
     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it a short as possible.{% endcomment %}
-    <a href="{% url logout %}" id="logged-in-name" title="Logout">&nbsp;{% trans "Logout" %}</a>
-</span>
+    <a href="{% url student_view %}" id="logged-in-name" class="not-admin-only {% block selfreports_active %}{% endblock selfreports_active %}"></a>
+    <a href="{% url logout %}" id="logout" title="Logout">&nbsp;{% trans "Logout" %}</a></span>
 
 {% endblock sitewide_navigation %}
 
