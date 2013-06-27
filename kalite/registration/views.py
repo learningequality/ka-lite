@@ -4,15 +4,19 @@ Views which allow users to create and activate accounts.
 """
 from django.contrib import messages
 from django.contrib.auth import logout
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
+from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
 
+import settings
 from central.forms import OrganizationForm
 from central.models import Organization
+from contact.views import contact_subscribe
 from registration.backends import get_backend
+from utils.mailchimp import mailchimp_subscribe
 from securesync.models import Zone
 
 
@@ -102,6 +106,7 @@ def activate(request, backend,
                               context_instance=context)
 
 
+@transaction.commit_on_success
 def register(request, backend, success_url=None, form_class=None,
              disallowed_url='registration_disallowed',
              template_name='registration/registration_form.html',
@@ -191,6 +196,8 @@ def register(request, backend, success_url=None, form_class=None,
     if form_class is None:
         form_class = backend.get_form_class(request)
 
+    do_subscribe = request.REQUEST.get("email_subscribe") == "on"
+
     if request.method == 'POST':
         form = form_class(data=request.POST, files=request.FILES)
         org_form = OrganizationForm(data=request.POST, instance=Organization())
@@ -208,7 +215,7 @@ def register(request, backend, success_url=None, form_class=None,
                 new_user = backend.register(request, **form.cleaned_data)
 
                 # Add an org.  Must create org before adding user.
-                org_form.instance.owner=new_user
+                org_form.instance.owner = new_user
                 org_form.save()
                 org = org_form.instance
                 org.users.add(new_user)
@@ -217,6 +224,11 @@ def register(request, backend, success_url=None, form_class=None,
                 zone = Zone(name=org_form.instance.name + " Default Zone")
                 zone.save()
                 org.zones.add(zone)
+
+                # Finally, try and subscribe the user to the mailing list
+                # (silently; don't return anything to the user)
+                if do_subscribe:
+                    contact_subscribe(request, form.cleaned_data['email'])  # no "return"
                 org.save()
 
                 if success_url is None:
@@ -244,7 +256,11 @@ def register(request, backend, success_url=None, form_class=None,
 
     return render_to_response(
         template_name,
-        {'form': form, "org_form" : org_form},
+        {
+            'form': form,
+            "org_form" : org_form,
+            "subscribe": do_subscribe,
+        },
         context_instance=context,
     )
 
