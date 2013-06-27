@@ -34,27 +34,6 @@ h3 {
 
 {% block headjs %}{{ block.super }}
 <script>
-
-function setGetParam(href, name, val) {
-    var vars = {};
-    var base = href.replace(/([?].*)$/gi, ""); // no querystring
-    var parts = href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m, key, value) {
-        vars[key] = value;
-    });
-
-    if (val == "" || val == "----") {
-        delete vars[name];
-    } else {
-        vars[name] = val;
-    }
-
-    var url = base + "?";
-    for (key in vars) {
-        url += "&" + key + "=" + vars[key];//         + $.param(vars);
-    }
-    return url
-}
-
 function generate_current_link() {
     var url = window.location.href + (window.location.search ? window.location.search : "?");
 
@@ -106,7 +85,7 @@ function make_editable(type) {
             <select id="facility">
             {% if facilities %}
                 {% for facility in facilities %}
-                <option value="{{ facility.id }}" {% if form.facility_id == facility.id %}selected{% endif %}>{{ facility }}</option>
+                <option value="{{ facility.id }}" {% if form.facility == facility.id %}selected{% endif %}>{{ facility }}</option>
                 {% endfor %}
             {% else %}
                 <option value="" selected>[{% trans "this device" %}]</option>
@@ -161,7 +140,7 @@ function make_editable(type) {
 </div>
 {% endblock navbar %}
 
-{% block endjs %}
+{% block endjs %}{{ block.super }}
 <script type="text/javascript">
     $(function() {        
         // Make sure that each dropdown has a callback 
@@ -169,9 +148,9 @@ function make_editable(type) {
         $("#group").change(   function() { changeData("group"); });
         $("#facility").change(function() { changeData("facility"); });
 
-        // Select the values in the 
-        $("#group").val("{{ form.group_id }}").change();
-        $("#facility").val("{{ form.facility_id }}").change();
+        // Select the values in the dropdowns
+        $("#group").val("{{ form.group }}").change();
+        $("#facility").val("{{ form.facility }}").change();
     });
 </script>
 {% endblock endjs %}

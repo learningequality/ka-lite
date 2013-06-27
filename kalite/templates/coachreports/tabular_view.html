@@ -92,9 +92,9 @@
     {% if users and request_report_type == "student" %}
         <div class="selection">
             <div class="subtitle">{% trans "Select Student" %}</div><select id="student">
-                <option {% if not request.GET.user_id %}selected{% endif %}>----</option>
+                <option {% if not request.GET.user %}selected{% endif %}>----</option>
                 {% for user in users %}
-                    <option value="{{ user.pk }}"{% if request.GET.user_id == user.pk %}selected{% endif %}>{{ user.last_name }} {{ user.first_name }}</option>
+                    <option value="{{ user.pk }}"{% if request.GET.user == user.pk %}selected{% endif %}>{{ user.last_name }} {{ user.first_name }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -150,7 +150,7 @@
                             <tr>
                                 <th class="username">
                                     <span title="{{ student.first_name }} {{ student.last_name }} ({{ student.username }})">
-                                        <div class="student-name"><a href="{% url student_view %}?user_id={{ student.id }}">{{ student.first_name }} {{ student.last_name }}</a></div>
+                                        <div class="student-name"><a href="{% url student_view %}?user={{ student.id }}">{{ student.first_name }} {{ student.last_name }}</a></div>
                                     </span>
                                 </th>
                             </tr>
@@ -245,13 +245,8 @@
     {% endif %}
 </div> 
 
-{% block endjs %}
-{{ block.super }}
-{% endblock endjs %}
-
+{% block endjs %}{{ block.super }}
 <script>
-
-
 $(function() {
 
     $("#report_type").change(function(){
@@ -259,17 +254,13 @@ $(function() {
     });
 
     $("#student").change(function(){
-        window.location.href = setGetParam(window.location.href, "user_id", $("#student option:selected").val());
+        window.location.href = setGetParam(window.location.href, "user", $("#student option:selected").val());
     });
 
     $("#topic").change(function(){
         window.location.href = setGetParam(window.location.href, "topic", $("#topic option:selected").val());
     });
 
-    $("#group").change(function(){
-        window.location.href = setGetParam(window.location.href, "group_id", $("#group option:selected").val()); 
-    });
-    
     // Selector to toggle visible elements is stored in each option value
     cell_height = 27;
     $("#disp_options").change(function(){
@@ -302,6 +293,7 @@ $(function() {
     
 });
 </script>
+{% endblock endjs %}
 {% endblock content %}
 
   

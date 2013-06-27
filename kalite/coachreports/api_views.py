@@ -51,9 +51,7 @@ def get_data_form(request, *args, **kwargs):
     # Pull the form parameters out of the request or
     data = dict()
     # Default to empty string, as it makes template handling cleaner later.
-    for field in ["facility", "group", "user"]:
-        data[field + "_id"] = request.REQUEST.get(field, kwargs.get(field, ""))
-    for field in ["xaxis", "yaxis"]:
+    for field in ["facility", "group", "user", "xaxis", "yaxis"]:
         data[field] = request.REQUEST.get(field, kwargs.get(field, ""))
     data["topic_path"] = request.REQUEST.getlist("topic_path") or kwargs.get("topic_path", [])
     form = DataForm(data = data)
@@ -61,14 +59,14 @@ def get_data_form(request, *args, **kwargs):
     # Filling in data for superusers
     if not "facility_user" in request.session:
         if request.user.is_superuser:
-            if not (form.data["facility_id"] or form.data["group_id"] or form.data["user_id"]):
+            if not (form.data["facility"] or form.data["group"] or form.data["user"]):
                 facility = kwargs.get("facility")
                 group = None if FacilityGroup.objects.all().count() !=1 else FacilityGroup.objects.all()[0]
 
-                if group and not form.data["group_id"]:
-                    form.data["group_id"] = group.id
-                if facility and not form.data["facility_id"]:
-                    form.data["facility_id"] = facility.id
+                if group and not form.data["group"]:
+                    form.data["group"] = group.id
+                if facility and not form.data["facility"]:
+                    form.data["facility"] = facility.id
 
 
     # Filling in data for FacilityUsers
@@ -79,7 +77,7 @@ def get_data_form(request, *args, **kwargs):
         facility = kwargs.get("facility") if not user else user.facility
 
         # Fill in default query data
-        if not (form.data["facility_id"] or form.data["group_id"] or form.data["user_id"]):
+        if not (form.data["facility"] or form.data["group"] or form.data["user"]):
 
             # Defaults:
             #   Students: only themselves
@@ -87,39 +85,39 @@ def get_data_form(request, *args, **kwargs):
 
             if request.is_admin:
                 if group:
-                    form.data["group_id"] = group.id
+                    form.data["group"] = group.id
                 elif facility:
-                    form.data["facility_id"] = facility.id
+                    form.data["facility"] = facility.id
                 else: # not a meaningful default, but responds efficiently (no data)
-                    form.data["user_id"] = user.id
+                    form.data["user"] = user.id
             else:
-                form.data["user_id"] = user.id
+                form.data["user"] = user.id
 
         ######
         # Authenticate
         if not request.is_admin:
-            if group and form.data["group_id"] and group.id != form.data["group_id"]: # can't go outside group
+            if group and form.data["group"] and group.id != form.data["group"]: # can't go outside group
                 # We could also redirect
                 HttpResponseForbidden("You cannot choose a group outside of your group.")
-            elif facility and form.data["facility_id"] and facility.id != form.data["facility_id"]:
+            elif facility and form.data["facility"] and facility.id != form.data["facility"]:
                 # We could also redirect
                 HttpResponseForbidden("You cannot choose a facility outside of your own facility.")
             elif not request.is_admin:
-                if not form.data["user_id"]:
+                if not form.data["user"]:
                     # We could also redirect
                     HttpResponseForbidden("You cannot choose facility/group-wide data.")
-                elif user and form.data["user_id"] and user.id != form.data["user_id"]:
+                elif user and form.data["user"] and user.id != form.data["user"]:
                     # We could also redirect
                     HttpResponseForbidden("You cannot choose a user outside of yourself.")
 
     # Fill in backwards: a user implies a group
-    if form.data.get("user_id") and not form.data.get("group_id"):
-         user = get_object_or_404(FacilityUser, id=form.data["user_id"])
-         form.data["group_id"] = getattr(user.group, "id")
+    if form.data.get("user") and not form.data.get("group"):
+         user = get_object_or_404(FacilityUser, id=form.data["user"])
+         form.data["group"] = getattr(user.group, "id")
 
-    if form.data.get("group_id") and not form.data.get("facility_id"):
-         group = get_object_or_404(FacilityGroup, id=form.data["group_id"])
-         form.data["facility_id"] = getattr(group.facility, "id")
+    if form.data.get("group") and not form.data.get("facility"):
+         group = get_object_or_404(FacilityGroup, id=form.data["group"])
+         form.data["facility"] = getattr(group.facility, "id")
 
     return form
 
@@ -264,17 +262,17 @@ def api_data(request, xaxis="", yaxis=""):
     form = get_data_form(request, xaxis=xaxis, yaxis=yaxis)#(data=request.REQUEST)
 
     # Query out the data: who?
-    if form.data.get("user_id"):
+    if form.data.get("user"):
         facility = []
         groups = []
-        users = [get_object_or_404(FacilityUser, id=form.data.get("user_id"))]
-    elif form.data.get("group_id"):
+        users = [get_object_or_404(FacilityUser, id=form.data.get("user"))]
+    elif form.data.get("group"):
         facility = []
-        groups = [get_object_or_404(FacilityGroup, id=form.data.get("group_id"))]
-        users = FacilityUser.objects.filter(group=form.data.get("group_id"), is_teacher=False).order_by("last_name", "first_name")
-    elif form.data.get("facility_id"):
-        facility = get_object_or_404(Facility, id=form.data.get("facility_id"))
-        groups = FacilityGroup.objects.filter(facility__in=[form.data.get("facility_id")])
+        groups = [get_object_or_404(FacilityGroup, id=form.data.get("group"))]
+        users = FacilityUser.objects.filter(group=form.data.get("group"), is_teacher=False).order_by("last_name", "first_name")
+    elif form.data.get("facility"):
+        facility = get_object_or_404(Facility, id=form.data.get("facility"))
+        groups = FacilityGroup.objects.filter(facility__in=[form.data.get("facility")])
         users = FacilityUser.objects.filter(group__in=groups, is_teacher=False).order_by("last_name", "first_name")
     else:
         return HttpResponseNotFound("Did not specify facility, group, nor user.")
