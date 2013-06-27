@@ -10,7 +10,7 @@
     }
     .form-label label {
         width:150px;
-        text-align:left;
+        text-align:right;
     }
     .form-element {
         float:left;
@@ -139,6 +139,12 @@
       {% if form.password2.errors %}
         <div class="errorlist">{{ form.password2.errors.as_text }}</div>
       {% endif %}
+    </div>
+    <div class="form-section">
+      <div class="form-label"><label for="id_tos1"></label></div>
+      <div class="form-element"><input type="checkbox" name="email_subscribe"{% if subscribe %} checked="checked"{% endif %} />
+      Subscribe to our "General Announcements" newsletter
+      </div>
     </div>
     <div class="form-section">
       <div class="form-label"><label for="id_tos1"></label></div>
