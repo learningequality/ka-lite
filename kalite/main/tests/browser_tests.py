@@ -63,6 +63,6 @@ class DeviceUnregisteredTest(KALiteLocalBrowserTestCase):
         self.browser_send_keys(Keys.RETURN)
         
         # Finally, wait up to 30 seconds until the page has loaded
-        wait = ui.WebDriverWait(self.browser, 30)
+        wait = ui.WebDriverWait(self.browser, self.max_wait_time)
         wait.until(expected_conditions.title_contains(("Administration Panel")))
 

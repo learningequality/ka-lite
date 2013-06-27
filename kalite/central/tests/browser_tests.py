@@ -18,7 +18,7 @@ import settings
 from utils.testing import central_only, KALiteCentralBrowserTestCase
 
 
-@central_only
+#@central_only
 class SuperUserTest(KALiteCentralBrowserTestCase):
     """Log in the super user"""
 
@@ -45,7 +45,7 @@ class SuperUserTest(KALiteCentralBrowserTestCase):
         self.assertIn("Account administration", self.browser.title, "Check account admin page title")
 
 
-@central_only
+#@central_only
 class OrgUserRegistrationTest(KALiteCentralBrowserTestCase):
     user_email = "test_user@nowhere.com"
     password   = "password"
@@ -64,8 +64,10 @@ class OrgUserRegistrationTest(KALiteCentralBrowserTestCase):
         self.browser_send_keys("Firstname" + Keys.TAB) # first name
         self.browser_send_keys("Lastname" + Keys.TAB) # last name
         self.browser_send_keys(self.user_email + Keys.TAB) #email
+        self.browser_send_keys(self.org_name + Keys.TAB) #org name
         self.browser_send_keys(self.password + Keys.TAB) #password
         self.browser_send_keys(self.password + Keys.TAB) #password (again)
+        self.browser_send_keys(Keys.TAB) # subscribe checkbox (skipped)
         self.browser_send_keys(Keys.SPACE + Keys.TAB) # checkbox 1
         self.browser_send_keys(Keys.SPACE + Keys.TAB) # checkbox 2
 

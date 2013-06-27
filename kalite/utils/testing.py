@@ -117,7 +117,7 @@ class KALiteTestCase(LiveServerTestCase):
     def __init__(self, *args, **kwargs):
         #create_test_admin()
         return super(KALiteTestCase, self).__init__(*args, **kwargs)
-        
+
     def reverse(self, url_name):
         """Given a URL name, returns the full central URL to that URL"""
 
@@ -131,15 +131,18 @@ class BrowserTestCase(KALiteTestCase):
     """
     def __init__(self, *args, **kwargs):
         self.persistent_browser = False
-        super(BrowserTestCase, self).__init__(*args, **kwargs)
-        
+        self.max_wait_time = kwargs.get("max_wait_time", 30)
+        return super(BrowserTestCase, self).__init__(*args, **kwargs)
+
     def setUp(self):
         """Create a browser to use for test cases.  Try a bunch of different browsers; hopefully one of them works!"""
-        
+
+        super(BrowserTestCase, self).setUp()
+
         # Can use already launched browser.
         if self.persistent_browser:
             (self.browser,self.admin_user) = setup_test_env(persistent_browser=self.persistent_browser)
-            
+
         # Must create a new browser to use
         else:
             for browser_type in ["Firefox", "Chrome", "Ie", "Opera"]:
@@ -148,13 +151,14 @@ class BrowserTestCase(KALiteTestCase):
                     break
                 except Exception as e:
                     settings.LOG.debug("Could not create browser %s through selenium: %s" % (browser_type, e))
-                    
-        
+
+
     def tearDown(self):
         if not self.persistent_browser:
             self.browser.quit()
-            super(BrowserTestCase, self).tearDownClass()
-            
+        return super(BrowserTestCase, self).tearDown()
+
+
     def wait_for_page_change(self, source_url, wait_time=0.1, max_retries=50):
         """When testing, we have to make sure that the page has loaded before testing the resulting page."""
          
@@ -164,7 +168,7 @@ class BrowserTestCase(KALiteTestCase):
         """Given the identifier to a page element, make it active.
         Currently done by clicking TODO(bcipolli): this won't work for buttons, 
         so find another way when that becomes an issue."""
-        
+
         if not elem:
             if id:
                 elem = self.browser.find_element_by_id(id)
@@ -178,14 +182,14 @@ class BrowserTestCase(KALiteTestCase):
         """Convenience method to send keys to active_element in the browser"""
         self.browser.switch_to_active_element().send_keys(keys)
 
-   
+
 class KALiteCentralBrowserTestCase(BrowserTestCase):
     """Base class for central server test cases.
     They will have different functions in here, for sure.
     """
     pass
-    
-    
+
+
 class KALiteLocalBrowserTestCase(BrowserTestCase):
     """Base class for main server test cases.
     They will have different functions in here, for sure.
@@ -193,4 +197,3 @@ class KALiteLocalBrowserTestCase(BrowserTestCase):
     pass
 
 
-        
