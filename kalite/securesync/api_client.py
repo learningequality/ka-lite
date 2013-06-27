@@ -1,6 +1,5 @@
-import logging
-import re
 import json
+import re
 import requests
 import urllib
 import urllib2
@@ -8,19 +7,16 @@ import uuid
 
 from django.core import serializers
 
-import crypto
-import settings
 import kalite
-import model_sync
-from models import *
+import settings
+from kalite.utils.internet import am_i_online
+from securesync import crypto
+from securesync.models import *
 
 
 class SyncClient(object):
     """ This is for the distributed server, for establishing a client session with
-    the central server.  Over that session, syncing can occur in multiple requests.
-    
-    Note that in the future, this object may be used to sync 
-    between two distributed servers (i.e. peer-to-peer sync)!"""
+    the central server.  Over that session, syncing can occur in multiple requests"""
      
     session = None
     counters_to_download = None
@@ -59,60 +55,24 @@ class SyncClient(object):
             return "connection_error"
         except Exception as e:
             return "error (%s)" % e
-    
-    def get_my_outside_IP(self):
-        if self.test_connection() != "success":
-            return None
-        else:
-            return self.get("IPtest", timeout=5)
-            
             
     def register(self):
-        """Register this device with a zone."""
-        
-        # Get the required model data by registering (online and offline options available)
-        try:
-            models = self.register_online(certs=certs)
-        except Exception as e:
-            # Some of our exceptions are actually json blobs from the server.
-            #   Try loading them to pass on that error info.
-            try:
-                return json.loads(e.message)
-            except:
-                return { "err", e.message }
-        
-        # If we got here, we've successfully registered, and 
-        #   have the model data necessary for completing registration!
-        for model in models:
-            if not model.object.verify():
-                logging.info("Failed to verify model!")
-                
-            # save the imported model, and mark the returned Device as trusted
-            if isinstance(model.object, Device):
-                model.object.save(is_trusted=True, imported=True)
-            else:
-                model.object.save(imported=True)
-        
-        # If that all completes successfully, then we've registered!  Woot!
-        return {"code": "registered"}
-
-
-    def register_online(self):
-        """Register this device with a zone, through the central server directly"""
-        
         own_device = Device.get_own_device()
-
         r = self.post("register", {
-            "client_device": serializers.serialize("json", [own_device], ensure_ascii=False),
+            "client_device": json_serializer.serialize([own_device], ensure_ascii=False)
         })
-
-        # Failed to register with any certificate
-        if r.status_code != 200:
-            raise Exception(r.content)
-
-        # When we register, we should receive the model information we require.
-        return serializers.deserialize("json", r.content)
-        
+        if r.status_code == 200:
+            models = serializers.deserialize("json", r.content)
+            for model in models:
+                if not model.object.verify():
+                    continue
+                # save the imported model, and mark the returned Device as trusted
+                if isinstance(model.object, Device):
+                    model.object.save(is_trusted=True, imported=True)
+                else:
+                    model.object.save(imported=True)
+            return {"code": "registered"}
+        return json.loads(r.content)
     
     def start_session(self):
         if self.session:
@@ -126,22 +86,11 @@ class SyncClient(object):
             "client_version": kalite.VERSION,
             "client_os": kalite.OS,
         })
-        
-        # Happens if the server has an error
-        raw_data = r.content
-        try:
-            data = json.loads(raw_data)
-        except ValueError as e:
-            z = re.search(r'exception_value">([^<]+)<', str(raw_data), re.MULTILINE)
-            if z:
-                raise Exception("Could not load JSON\n; server error=%s" % z.group(1))
-            else:
-                raise Exception("Could not load JSON\n; raw content=%s" % raw_data)
-            
+        data = json.loads(r.content)
         if data.get("error", ""):
             raise Exception(data.get("error", ""))
         signature = data.get("signature", "")
-        session = serializers.deserialize("json", data["session"], server_version=kalite.VERSION).next().object
+        session = serializers.deserialize("json", data["session"]).next().object
         if not session.verify_server_signature(signature):
             raise Exception("Signature did not match.")
         if session.client_nonce != self.session.client_nonce:
@@ -184,7 +133,7 @@ class SyncClient(object):
         return json.loads(r.content or "{}").get("device_counters", {})
         
     def get_client_device_counters(self):
-        return Device.get_device_counters(self.session.client_device.get_zone())
+        return get_device_counters(self.session.client_device.get_zone())
 
     def sync_device_records(self):
         
@@ -212,48 +161,39 @@ class SyncClient(object):
                 self.counters_to_download[device] = client_counters[device]
                 
         response = json.loads(self.post("device/download", {"devices": devices_to_download}).content)
-        download_results = model_sync.save_serialized_models(response.get("devices", "[]"), increment_counters=False)
+        download_results = save_serialized_models(response.get("devices", "[]"), increment_counters=False)
+        
+        # BUGFIX(bcipolli) metadata only gets created if models are 
+        #   streamed; if a device is downloaded but no models are downloaded,
+        #   metadata does not exist.  Let's just force it here.
+        for device_id in devices_to_download: # force
+            try:
+                d = Device.objects.get(id=device_id)
+            except:
+                continue
+            dm = d.get_metadata() 
+            if not dm.counter_position: # this would be nonzero if the device sync'd models
+                dm.counter_position = self.counters_to_download[device_id]
+            dm.save()
         
         self.session.models_downloaded += download_results["saved_model_count"]
-        self.session.errors += download_results.has_key("error")
-
+        
         # TODO(jamalex): upload local devices as well? only needed once we have P2P syncing
         
     def sync_models(self):
-        
         if self.counters_to_download is None or self.counters_to_upload is None:
             self.sync_device_records()
 
-        # Download (but prepare for errors--both thrown and unthrown!)
-        download_results = {
-            "saved_model_count" : 0,
-            "unsaved_model_count" : 0,
-        }
-        try:
-            response = json.loads(self.post("models/download", {"device_counters": self.counters_to_download}).content)
-            download_results = model_sync.save_serialized_models(response.get("models", "[]"))
-            self.session.models_downloaded += download_results["saved_model_count"]
-            self.session.errors += download_results.has_key("error")
-            self.session.errors += download_results.has_key("exceptions")
-        except Exception as e:
-            download_results["error"] = e
-            self.session.errors += 1
-
-        # Upload (but prepare for errors--both thrown and unthrown!)
-        upload_results = {
-            "saved_model_count" : 0,
-            "unsaved_model_count" : 0,
-        }
-        try:
-            response = self.post("models/upload", {"models": model_sync.get_serialized_models(self.counters_to_upload, client_version=self.session.client_version)})
-            upload_results = json.loads(response.content)
-            self.session.models_uploaded += upload_results["saved_model_count"]
-            self.session.errors += upload_results.has_key("error")
-            self.session.errors += upload_results.has_key("exceptions")
-        except Exception as e:
-            upload_results["error"] = e
-            self.session.errors += 1
-                
+        response = json.loads(self.post("models/download", {"device_counters": self.counters_to_download}).content)
+        download_results = save_serialized_models(response.get("models", "[]"))
+            
+        self.session.models_downloaded += download_results["saved_model_count"]
+        
+        response = self.post("models/upload", {"models": get_serialized_models(self.counters_to_upload)})
+        upload_results = json.loads(response.content)
+        
+        self.session.models_uploaded += upload_results["saved_model_count"]
+        
         self.counters_to_download = None
         self.counters_to_upload = None
         

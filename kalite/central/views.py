@@ -1,15 +1,13 @@
-import logging
-import re, json
-import requests
+import json
+import re 
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
-from annoying.decorators import render_to
 from decorator.decorator import decorator
 
-from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseForbidden, HttpResponseServerError
+from django.core.urlresolvers import reverse
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
@@ -18,12 +16,11 @@ from django.views.decorators.csrf import csrf_exempt
 
 import kalite
 import settings
-from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
 from central.forms import OrganizationForm, ZoneForm, OrganizationInvitationForm
+from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
 from securesync.api_client import SyncClient
-from securesync.models import Zone, SyncSession
-from securesync.models import Facility
 from securesync.forms import FacilityForm
+from securesync.models import Facility, Zone, SyncSession
 from utils.packaging import package_offline_install_zip
 
 
@@ -141,18 +138,18 @@ def download_kalite(request, args, argnames=None):
 
 @render_to("central/homepage.html")
 def homepage(request):
-    
+
     # show the static landing page to users that aren't logged in
     if not request.user.is_authenticated():
         return landing_page(request)
-    
+
     # get a list of all the organizations this user helps administer    
     organizations = get_or_create_user_profile(request.user).get_organizations()
     
     # add invitation forms to each of the organizations
     for pk,org in organizations.items():
         org.form = OrganizationInvitationForm(initial={"invited_by": request.user})
-    
+
     # handle a submitted invitation form
     if request.method == "POST":
         form = OrganizationInvitationForm(data=request.POST)
@@ -354,6 +351,6 @@ def crypto_login(request):
 
 def handler_404(request):
     return HttpResponseNotFound(render_to_string("central/404.html", {}, context_instance=RequestContext(request)))
-    
+
 def handler_500(request):
     return HttpResponseServerError(render_to_string("central/500.html", {}, context_instance=RequestContext(request)))

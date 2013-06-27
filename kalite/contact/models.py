@@ -2,17 +2,30 @@ from django.db import models
 from django.contrib.auth.models import User
 import django_snippets.multiselect as multiselect
 
+
+# Different contact types
 CONTACT_TYPE_DEPLOYMENT = 'deployment'
 CONTACT_TYPE_SUPPORT    = 'support'
 CONTACT_TYPE_CONTRIBUTE = 'contribute'
 CONTACT_TYPE_INFO       = 'info'
-CONTACT_TYPES = ((CONTACT_TYPE_DEPLOYMENT, 'New Deployment'),
-                 (CONTACT_TYPE_SUPPORT, 'Support'),
-                 (CONTACT_TYPE_CONTRIBUTE,"Contribute"),
-                 (CONTACT_TYPE_INFO, 'General Inquiries'))
-                 
+
+# Contribute types (contribute contact sub-form)
+CONTRIBUTE_TYPE_DEVELOPMENT='development'
+CONTRIBUTE_TYPE_FUNDING    ='funding'
+CONTRIBUTE_TYPE_TRANSLATION='translation'
+CONTRIBUTE_TYPE_TESTING    ='testing'
+CONTRIBUTE_TYPE_OTHER      ='other'
+
+
 class Contact(models.Model):
-    user      = models.ForeignKey(User, blank=True, null=True)
+    """Base contact information"""
+
+    CONTACT_TYPES = ((CONTACT_TYPE_DEPLOYMENT, 'New Deployment'),
+                     (CONTACT_TYPE_SUPPORT, 'Support'),
+                     (CONTACT_TYPE_CONTRIBUTE,"Contribute"),
+                     (CONTACT_TYPE_INFO, 'General Inquiries'))
+
+    user      = models.ForeignKey(User, blank=True, null=True)  # user, but can be null (unregistered contact)
     name      = models.CharField(verbose_name="Your Name", max_length=100)
     type      = models.CharField(verbose_name="Reason for Contact", max_length=12, choices=CONTACT_TYPES)
     email     = models.EmailField(verbose_name="Your Email", max_length=100)
@@ -23,9 +36,12 @@ class Contact(models.Model):
 
     def __unicode__(self):
         return "%s inquiry from %s @ %s on %s (%s)"%(self.type, self.name, self.org_name, self.contact_date, self.email)
-        
-        
+
+
 class Deployment(models.Model):
+    """Deployment contact"""
+
+    # The following values define limited options in the contact form
     DEPLOYMENT_INTERNET_ACCESS = (("none","The facilities have no internet access whatsoever."),
                                   ("occasional", "The facilities have occasional internet access, but it is rarely connected."),
                                   ("slow", "The facilities have very slow (e.g. 3G wireless or dialup) connections."),
@@ -36,7 +52,8 @@ class Deployment(models.Model):
                            ("no_network","The computers in these facilities cannot be networked."),
                            ("none","The facilities do not currently have any infrastructure, and we will be supplying hardware."),
                            ("roving","Servers will be in roving vans, visiting a number of facilities."))
-                           
+
+    # fields
     contact                 = models.ForeignKey(Contact)
     countries               = models.CharField(max_length=100, blank=True, verbose_name="What country/countries are you hoping to deploy in?")
     internet_access         = multiselect.MultiSelectField(choices=DEPLOYMENT_INTERNET_ACCESS, max_length=100, blank=True, verbose_name="Which of the following statements accurately describe the internet access at your planned deployment?")
@@ -49,16 +66,14 @@ class Deployment(models.Model):
         return "Inquiry from %s @ %s on %s (%s)"%(self.contact.name, self.contact.org_name, self.contact.contact_date, self.contact.email)
 
 
-    def __unicode__(self):
-        return "Inquiry from %s @ %s on %s (%s)"%(self.contact.name, self.contact.org_name, self.contact.contact_date, self.contact.email)
-
-
-SUPPORT_TYPES = (('installation', 'Installation'),
-                 ('setup',        'Post-install setup'),
-                 ('downloading',  'Downloading videos'),
-                 ('reporting',    'Coach reports'),
-                 ('other',        'Other'))
 class Support(models.Model):
+    # Different support types (support contact sub-form)
+    SUPPORT_TYPES = (('installation', 'Installation'),
+                     ('setup',        'Post-install setup'),
+                     ('downloading',  'Downloading videos'),
+                     ('reporting',    'Coach reports'),
+                     ('other',        'Other'))
+
     contact  = models.ForeignKey(Contact)
     type     = models.CharField(max_length=15, choices=SUPPORT_TYPES, verbose_name="Issue Type")
     issue    = models.TextField(blank=True, verbose_name="Please describe your issue.")
@@ -67,17 +82,15 @@ class Support(models.Model):
         return "%s inquiry from %s @ %s on %s (%s)"%(self.type, self.contact.name, self.contact.org_name, self.contact.contact_date, self.contact.email)
 
 
-CONTRIBUTE_TYPE_DEVELOPMENT='development'
-CONTRIBUTE_TYPE_FUNDING    ='funding'
-CONTRIBUTE_TYPE_TRANSLATION='translation'
-CONTRIBUTE_TYPE_TESTING    ='testing'
-CONTRIBUTE_TYPE_OTHER      ='other'
-CONTRIBUTE_TYPES = ((CONTRIBUTE_TYPE_DEVELOPMENT, 'Code Development'),
-                    (CONTRIBUTE_TYPE_FUNDING,     'Funding'),
-                    (CONTRIBUTE_TYPE_TRANSLATION, 'Translation'),
-                    (CONTRIBUTE_TYPE_TESTING,     'Testing'),
-                    (CONTRIBUTE_TYPE_OTHER,       'Other'))
 class Contribute(models.Model):
+    """Want to contribute?  We have a form for that."""
+
+    CONTRIBUTE_TYPES = ((CONTRIBUTE_TYPE_DEVELOPMENT, 'Code Development'),
+                        (CONTRIBUTE_TYPE_FUNDING,     'Funding'),
+                        (CONTRIBUTE_TYPE_TRANSLATION, 'Translation'),
+                        (CONTRIBUTE_TYPE_TESTING,     'Testing'),
+                        (CONTRIBUTE_TYPE_OTHER,       'Other'))
+
     contact  = models.ForeignKey(Contact)
     type     = models.CharField(max_length=15, choices=CONTRIBUTE_TYPES, verbose_name="Type of contribution:")
     issue    = models.TextField(blank=True, verbose_name="How would you like to contribute?")

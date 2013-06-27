@@ -13,8 +13,8 @@ from django.utils.translation import ugettext_lazy as _
 
 import settings
 
-SHA1_RE = re.compile('^[a-f0-9]{40}$')
 
+SHA1_RE = re.compile('^[a-f0-9]{40}$')
 
 class RegistrationManager(models.Manager):
     """
@@ -247,7 +247,7 @@ class RegistrationProfile(models.Model):
         """
         cdict = { 'activation_key': self.activation_key,
                  'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS,
-                 'central_server_host': getattr(site, "domain", settings.CENTRAL_SERVER_HOST),
+                 'central_server_host': getattr(site, "domain", settings.CENTRAL_SERVER_HOST),# try to get dynamically
                  'site': site }
         subject = render_to_string('registration/activation_email_subject.txt',
                                    cdict)

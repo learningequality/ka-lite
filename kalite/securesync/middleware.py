@@ -4,6 +4,7 @@ from django.http import HttpResponse
 
 from models import Device
 
+
 class DBCheck:
     def process_request(self, request):
         try:

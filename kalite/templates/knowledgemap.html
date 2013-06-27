@@ -14,7 +14,7 @@
 {% endblock headjs %}
 
 {% block headcss %}
-<link rel='stylesheet' type='text/css' href='{% static "css/kmap_editor.css" %}'>
+<link rel='stylesheet' type='text/css' href='{% static "css/kmap_editor.css" %}' />
 {% endblock headcss %}
 
 {% block title %}{% trans "Your Knowledge Map" %}{% endblock title %}
@@ -24,7 +24,7 @@
 <div id="map-edit-container">
     <div id="map-container">
         <div id="map"></div>
-        <a class="topic-button" href="/exercisedashboard/">{% trans "Back to topics" %}</a>
+        <a class="topic-button" href="{% url exercise_dashboard %}">{% trans "Back to topics" %}</a>
     </div>
 </div>
 {% endblock content %}

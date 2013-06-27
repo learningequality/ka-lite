@@ -23,9 +23,14 @@ $(function(){
         toggle_state("django-user", data.is_django_user);
         toggle_state("admin", data.is_admin);
         if (data.is_logged_in){
-            $('#logged-in-name').text(data.username + " (Logout)");
-            if (data.points!=0){
-                $('#sitepoints').text("Points: " + data.points);
+            if (data.is_admin) {
+                $('#logout').text(data.username + " (Logout)");
+            }
+            else {
+                $('#logged-in-name').text(data.username);
+                if (data.points!=0) {
+                    $('#sitepoints').text("Points: " + data.points);
+                }
             }
         }
         show_messages(data.messages);

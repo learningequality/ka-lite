@@ -78,5 +78,5 @@ class Command(BaseCommand):
     
         # Regenerate all pages, efficiently
         if hasattr(settings, "CACHES"):
-            caching.regenereate_cached_topic_hierarchies(handled_video_ids)
+            caching.regenerate_cached_topic_hierarchies(handled_video_ids)
         

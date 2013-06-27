@@ -82,10 +82,10 @@ USE_I18N       = getattr(local_settings, "USE_I18N", True)
 # calendars according to the current locale
 USE_L10N       = getattr(local_settings, "USE_L10N", False)
 
-MEDIA_URL       = getattr(local_settings, "MEDIA_URL", "/media/")
-MEDIA_ROOT      = getattr(local_settings, "MEDIA_ROOT", PROJECT_PATH + "/media/") # not currently used
-STATIC_URL      = getattr(local_settings, "STATIC_URL", "/static/")
-STATIC_ROOT     = getattr(local_settings, "STATIC_ROOT", PROJECT_PATH + "/static/")
+MEDIA_URL      = getattr(local_settings, "MEDIA_URL", "/media/")
+MEDIA_ROOT     = getattr(local_settings, "MEDIA_ROOT", PROJECT_PATH + "/media/")
+STATIC_URL     = getattr(local_settings, "STATIC_URL", "/static/")
+STATIC_ROOT    = getattr(local_settings, "STATIC_ROOT", PROJECT_PATH + "/static/")
 
  # Make this unique, and don't share it with anybody.
 SECRET_KEY     = getattr(local_settings, "SECRET_KEY", "8qq-!fa$92i=s1gjjitd&%s@4%ka9lj+=@n7a&fzjpwu%3kd#u")
@@ -131,22 +131,25 @@ INSTALLED_APPS = (
     "django.contrib.humanize",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_extensions", # needed for clean_pyc (testing)
     "south",
     "chronograph",
     "django_cherrypy_wsgiserver",
+    "kalite",
     "securesync",
     "config",
     "kalite",
     "main", # in order for securesync to work, this needs to be here.
+    "kalite", # contains commands
 )
+
+if DEBUG or CENTRAL_SERVER:
+    INSTALLED_APPS += ("django_snippets",)   # used in contact form and (debug) profiling middleware
 
 if DEBUG:
     # add ?prof to URL, to see performance stats
     MIDDLEWARE_CLASSES += ('django_snippets.profiling_middleware.ProfileMiddleware',)
     INSTALLED_APPS += ("django_snippets",)
-
-if AUTO_LOAD_TEST:
-    INSTALLED_APPS += ("loadtesting",)
 
 if CENTRAL_SERVER:
     ACCOUNT_ACTIVATION_DAYS = getattr(local_settings, "ACCOUNT_ACTIVATION_DAYS", 7)
@@ -154,16 +157,10 @@ if CENTRAL_SERVER:
     INSTALLED_APPS         += ("postmark", "kalite.registration", "central", "faq", "contact",)
     EMAIL_BACKEND           = getattr(local_settings, "EMAIL_BACKEND", "postmark.backends.PostmarkBackend")
     AUTH_PROFILE_MODULE     = 'central.UserProfile'
-    INSTALLED_APPS         += (
-        "django_extensions",
-        "postmark", 
-        "central", 
-        "contact",
-        "faq", 
-        "kalite.registration", 
-    )
 
 else:
+    INSTALLED_APPS         += ("coachreports",)
+
     # Include optionally installed apps
     if os.path.exists(PROJECT_PATH + "/loadtesting/"):
         INSTALLED_APPS     += ("loadtesting",)
