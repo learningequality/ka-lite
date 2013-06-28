@@ -7,12 +7,11 @@ import uuid
 
 from django.core import serializers
 
-import crypto
-import settings
 import kalite
-import model_sync
-from models import *
-from utils.internet import am_i_online
+import settings
+from kalite.utils.internet import am_i_online
+from securesync import crypto, model_sync
+from securesync.models import *
 
 
 class SyncClient(object):
@@ -58,19 +57,28 @@ class SyncClient(object):
             return "error (%s)" % e
 
     def register(self):
+        """Register a device with the central server.  Happens outside of a session."""
+
         own_device = Device.get_own_device()
-        # Start by telling the central server your true age
+        # Since we can't know the version of the remote device (yet),
+        #   we give it everything we possibly can (don't specify a dest_version)
+        #
+        # Note that (currently) this should never fail--the central server (which we're sending
+        #   these objects to) should always have a higher version.
         r = self.post("register", {
-            "client_device": serializers.serialize("json", [own_device], client_version=own_device.version, ensure_ascii=False)
+            "client_device": serializers.serialize("json", [own_device], ensure_ascii=False)
         })
-        # If they don't understand, then they're an older version.
-        # So just lie about your age, baby!
-        if r.status_code == 500 and -1 != r.content.find("Device has no field named 'version'"):
-            r = self.post("register", {
-                "client_device": serializers.serialize("json", [own_device], client_version="0.9.2", ensure_ascii=False)
-            })
-        if r.status_code == 200:
-            models = serializers.deserialize("json", r.content, client_version=None, server_version=own_device.version)
+        # If they don't understand, our assumption is broken.
+        if r.status_code == 500:
+            if "Device has no field named 'version'" in r.content:
+                raise Exception("Central server is of an older version than us?")
+            else:
+                raise Exception("Error registering with central server: %s" % r.content)
+
+        elif r.status_code == 200:
+            # Save to our local store.  By NOT passing a src_version, 
+            #   we're saying it's OK to just store what we can.
+            models = serializers.deserialize("json", r.content, src_version=None, dest_version=own_device.version)
             for model in models:
                 if not model.object.verify():
                     continue
@@ -83,6 +91,8 @@ class SyncClient(object):
         return json.loads(r.content)
 
     def start_session(self):
+        """A 'session' to exchange data"""
+        
         if self.session:
             self.close_session()
         self.session = SyncSession()
@@ -109,7 +119,10 @@ class SyncClient(object):
         if data.get("error", ""):
             raise Exception(data.get("error", ""))
         signature = data.get("signature", "")
-        session = serializers.deserialize("json", data["session"], server_version=kalite.VERSION).next().object
+        # Once again, we assume that (currently) the central server's version is >= ours,
+        #   We just store what we can.
+        own_device = self.session.client_device.version
+        session = serializers.deserialize("json", data["session"], src_version=None, dest_version=own_device.version).next().object
         if not session.verify_server_signature(signature):
             raise Exception("Signature did not match.")
         if session.client_nonce != self.session.client_nonce:
@@ -225,7 +238,9 @@ class SyncClient(object):
             "unsaved_model_count" : 0,
         }
         try:
-            response = self.post("models/upload", {"models": model_sync.get_serialized_models(self.counters_to_upload, client_version=self.session.client_version)})
+            # By not specifying a dest_version, we're sending everything.
+            #   Again, this is OK because we're sending to the central server.
+            response = self.post("models/upload", {"models": model_sync.get_serialized_models(self.counters_to_upload)})
             upload_results = json.loads(response.content)
             self.session.models_uploaded += upload_results["saved_model_count"]
             self.session.errors += upload_results.has_key("error")

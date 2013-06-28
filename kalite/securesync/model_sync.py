@@ -25,7 +25,8 @@ def get_syncing_models():
     return _syncing_models
 
     
-def get_serialized_models(device_counters=None, limit=100, zone=None, include_count=False, client_version=None):
+def get_serialized_models(device_counters=None, limit=100, zone=None, include_count=False, dest_version=version.VERSION):
+    """Serialize models for some intended version (dest_version)"""
     from models import Device # cannot be top-level, otherwise inter-dependency of this and models fouls things up
 
     # use the current device's zone if one was not specified
@@ -82,7 +83,7 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
         boost += limit
 
     # serialize the models we found
-    serialized_models = serializers.serialize("json", models, ensure_ascii=False, client_version=client_version)
+    serialized_models = serializers.serialize("json", models, ensure_ascii=False, dest_version=dest_version)
     
     if include_count:
         return {"models": serialized_models, "count": len(models)}
@@ -90,8 +91,8 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
         return serialized_models
 
 
-def save_serialized_models(data, increment_counters=True, client_version=None):
-    """Unserializes models in data and saves them to the django database.
+def save_serialized_models(data, increment_counters=True, src_version=version.VERSION):
+    """Unserializes models (from a device of version=src_version) in data and saves them to the django database.
     
     Returns a dictionary of the # of saved models, # unsaved, and any exceptions during saving"""
     
@@ -106,9 +107,9 @@ def save_serialized_models(data, increment_counters=True, client_version=None):
 
     # deserialize the models, either from text or a list of dictionaries
     if isinstance(data, str) or isinstance(data, unicode):
-        models = serializers.deserialize("json", data, client_version=client_version, server_version=version.VERSION)
+        models = serializers.deserialize("json", data, src_version=src_version, dest_version=version.VERSION)
     else:
-        models = serializers.deserialize("python", data, client_version=client_version, server_version=version.VERSION)
+        models = serializers.deserialize("python", data, src_version=src_version, dest_version=version.VERSION)
 
     # try importing each of the models in turn
     unsaved_models = []
@@ -133,16 +134,16 @@ def save_serialized_models(data, increment_counters=True, client_version=None):
         
                 # save the imported model (checking that the signature is valid in the process)
                 model.save(imported=True, increment_counters=increment_counters)
-        
+
                 # keep track of how many models have been successfully saved
                 saved_model_count += 1
-        
+
             except ValidationError as e: # the model could not be saved
-        
+
                 # keep a running list of models and exceptions, to be stored in purgatory
                 exceptions += "%s: %s\n" % (model.pk, e)
                 unsaved_models.append(model)
-        
+
                 # if the model is at least properly signed, try incrementing the counter for the signing device
                 # (because otherwise we may never ask for additional models)
                 try:
@@ -154,11 +155,13 @@ def save_serialized_models(data, increment_counters=True, client_version=None):
     except Exception as e:
         exceptions += str(e)
         
-    # deal with any models that didn't validate properly; throw them into purgatory so we can try again later    
+    # deal with any models that didn't validate properly; throw them into purgatory so we can try again later
     if unsaved_models:
         if not purgatory:
             purgatory = ImportPurgatory()
-        purgatory.serialized_models = serializers.serialize("json", unsaved_models, ensure_ascii=False, client_version=client_version)
+        
+        # These models were successfully unserialized, so re-save in our own version.
+        purgatory.serialized_models = serializers.serialize("json", unsaved_models, ensure_ascii=False, dest_version=version.VERSION)
         purgatory.exceptions = exceptions
         purgatory.model_count = len(unsaved_models)
         purgatory.retry_attempts += 1

@@ -404,6 +404,11 @@ class Device(SyncedModel):
         # TODO(jamalex): we skip out here, because otherwise self-signed devices will fail
         pass
 
+    @classmethod
+    def get_default_version(cls):
+        """Accessor method to probe the default version of a device (or field)"""
+        return cls._meta.get_field("version").default
+
     @staticmethod
     def get_own_device():
         devices = DeviceMetadata.objects.filter(is_own_device=True)
