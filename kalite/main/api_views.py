@@ -282,17 +282,15 @@ def annotate_topic_tree(node, level=0, statusdict=None):
             "expand": level < 1,
         }
     if node["kind"] == "Video":
-        if statusdict:
-            percent = statusdict.get(node["youtube_id"], 0)
-            if not percent:
-                status = "unstarted"
-            elif percent == 100:
-                status = "complete"
-            else:
-                status = "partial"
+        #statusdict contains an item for each video registered in the database
+        #statusdict will be empty/None/{} if there are no videos downloaded yet
+        percent = statusdict.get(node["youtube_id"], 0)
+        if not percent:
+            status = "unstarted"
+        elif percent == 100:
+            status = "complete"
         else:
-            # if no pre-computed status dict, then use the older, slower method
-            status = get_video_download_status(node["youtube_id"])
+            status = "partial"
         return {
             "title": node[title_key["Video"]],
             "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
