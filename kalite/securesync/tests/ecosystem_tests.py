@@ -63,7 +63,7 @@ class KALiteEcosystemTestCase(KALiteTestCase):
 
         self.setup_ports()
         server_types = ["central", "local", "local2"]
-        port_map = dict(zip(server_types, self.open_ports))
+        port_map = dict(zip(server_types, self.open_ports[0:3]))  #BUG open_ports has 1000 numbers?
 
 
         # Create a zip file package FROM THIS CODEBASE
