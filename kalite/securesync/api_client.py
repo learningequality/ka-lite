@@ -142,7 +142,7 @@ class SyncClient(object):
 
         # If they don't understand, our assumption is broken.
         if r.status_code == 500 and "Device has no field named 'version'" in r.content:
-                raise Exception("Central server is of an older version than us?")
+            raise Exception("Central server is of an older version than us?")
 
         # Failed to register with any certificate
         elif r.status_code != 200:
