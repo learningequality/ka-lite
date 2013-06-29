@@ -8,11 +8,11 @@ import uuid
 
 from django.core import serializers
 
-import crypto
-import settings
 import kalite
-import model_sync
-from models import *
+import settings
+from kalite.utils.internet import am_i_online
+from securesync import crypto, model_sync
+from securesync.models import *
 
 
 class SyncClient(object):
@@ -21,22 +21,21 @@ class SyncClient(object):
     
     Note that in the future, this object may be used to sync 
     between two distributed servers (i.e. peer-to-peer sync)!"""
-     
     session = None
     counters_to_download = None
     counters_to_upload = None
-    
+
     def __init__(self, host="%s://%s/"%(settings.SECURESYNC_PROTOCOL,settings.CENTRAL_SERVER_HOST), require_trusted=True):
         url = urllib2.urlparse.urlparse(host)
         self.url = "%s://%s" % (url.scheme, url.netloc)
         self.require_trusted = require_trusted
-    
+
     def path_to_url(self, path):
         if path.startswith("/"):
             return self.url + path
         else:
             return self.url + "/securesync/api/" + path
-    
+
     def post(self, path, payload={}, *args, **kwargs):
         if self.session and self.session.client_nonce:
             payload["client_nonce"] = self.session.client_nonce
@@ -49,7 +48,7 @@ class SyncClient(object):
         payload["_"] = uuid.uuid4().hex
         query = urllib.urlencode(payload)
         return requests.get(self.path_to_url(path) + "?" + query, *args, **kwargs)
-        
+
     def test_connection(self):
         try:
             if self.get("test", timeout=5).content != "OK":
@@ -77,7 +76,7 @@ class SyncClient(object):
                 return json.loads(e.message)
             except:
                 return { "code": "unexpected_exception", "error": e.message }
-        
+
         # If we got here, we've successfully registered, and 
         #   have the model data necessary for completing registration!
         for model in models:
@@ -91,7 +90,7 @@ class SyncClient(object):
                 model.object.save(is_trusted=True, imported=True)
             else:
                 model.object.save(imported=True)
-        
+
         # If that all completes successfully, then we've registered!  Woot!
         return {"code": "registered"}
 
@@ -111,6 +110,9 @@ class SyncClient(object):
             raise Exception("You shouldn't ask to self-register with the central server, when you don't have any install certificates to validate yourself with!")                
 
         # For now, just try with one certificate
+        #
+        # Serialize for any version; in the current implementation, we assume the central server has
+        #   a version at least as new as ours, so can handle whatever data we send.
         r = self.post("register", {
             "client_device": serializers.serialize("json", [own_device, own_zone, own_zone_key, install_certs[0]], ensure_ascii=False),
         })
@@ -120,7 +122,8 @@ class SyncClient(object):
             raise Exception(r.content)
 
         # When we register, we should receive the model information we require.
-        return (serializers.deserialize("json", r.content), r)
+        #   Make sure to deserialize for our version.
+        return (serializers.deserialize("json", r.content, dest_version=kalite.VERSION), r)
 
 
     def register_via_remote(self):
@@ -128,23 +131,38 @@ class SyncClient(object):
         
         own_device = Device.get_own_device()
 
+        # Since we can't know the version of the remote device (yet),
+        #   we give it everything we possibly can (don't specify a dest_version)
+        #
+        # Note that (currently) this should never fail--the central server (which we're sending
+        #   these objects to) should always have a higher version.
         r = self.post("register", {
             "client_device": serializers.serialize("json", [own_device], ensure_ascii=False),
         })
 
+        # If they don't understand, our assumption is broken.
+        if r.status_code == 500:
+            if "Device has no field named 'version'" in r.content:
+                raise Exception("Central server is of an older version than us?")
+            else:
+                raise Exception("Error registering with central server: %s" % r.content)
         # Failed to register with any certificate
-        if r.status_code != 200:
+        elif r.status_code != 200:
             raise Exception(r.content)
 
-        # When we register, we should receive the model information we require.
-        return serializers.deserialize("json", r.content)
-        
-    
+        else:
+            # Save to our local store.  By NOT passing a src_version, 
+            #   we're saying it's OK to just store what we can.
+            return serializers.deserialize("json", r.content, src_version=None, dest_version=own_device.version)
+
+
     def start_session(self):
+        """A 'session' to exchange data"""
+        
         if self.session:
             self.close_session()
         self.session = SyncSession()
-        
+
         # Request one: validate me as a sessionable partner
         (self.session.client_nonce, 
          self.session.client_device,
@@ -152,7 +170,11 @@ class SyncClient(object):
 
         # Able to create session
         signature = data.get("signature", "")
-        session = serializers.deserialize("json", data["session"], server_version=kalite.VERSION).next().object
+
+        # Once again, we assume that (currently) the central server's version is >= ours,
+        #   We just store what we can.
+        own_device = self.session.client_device
+        session = serializers.deserialize("json", data["session"], src_version=None, dest_version=own_device.version).next().object
         self.session.server_nonce = session.server_nonce
         self.session.server_device = session.server_device
         if not session.verify_server_signature(signature):
@@ -176,7 +198,7 @@ class SyncClient(object):
             "server_device": self.session.server_device.pk,
             "signature": self.session.sign(),
         })
-        
+
         if r.status_code == 200:
             return "success"
         else:
@@ -220,6 +242,7 @@ class SyncClient(object):
         return (client_nonce, client_device, data)
         
 
+
     def close_session(self):
         if not self.session:
             return
@@ -233,28 +256,28 @@ class SyncClient(object):
     def get_server_device_counters(self):
         r = self.get("device/counters")
         return json.loads(r.content or "{}").get("device_counters", {})
-        
+
     def get_client_device_counters(self):
         return Device.get_device_counters(self.session.client_device.get_zone())
 
     def sync_device_records(self):
-        
+
         server_counters = self.get_server_device_counters()
         client_counters = self.get_client_device_counters()
-        
+
         devices_to_download = []
         devices_to_upload = []
-        
+
         self.counters_to_download = {}
         self.counters_to_upload = {}
-        
+
         for device in client_counters:
             if device not in server_counters:
                 devices_to_upload.append(device)
                 self.counters_to_upload[device] = 0
             elif client_counters[device] > server_counters[device]:
                 self.counters_to_upload[device] = server_counters[device]
-        
+
         for device in server_counters:
             if device not in client_counters:
                 devices_to_download.append(device)
@@ -264,7 +287,7 @@ class SyncClient(object):
                 
         response = json.loads(self.post("device/download", {"devices": devices_to_download}).content)
         download_results = model_sync.save_serialized_models(response.get("devices", "[]"), increment_counters=False)
-        
+
         # BUGFIX(bcipolli) metadata only gets created if models are 
         #   streamed; if a device is downloaded but no models are downloaded,
         #   metadata does not exist.  Let's just force it here.
@@ -278,7 +301,7 @@ class SyncClient(object):
             if not dm.counter_position: # this would be nonzero if the device sync'd models
                 dm.counter_position = self.counters_to_download[device_id]
             dm.save()
-        
+
         self.session.models_downloaded += download_results["saved_model_count"]
         self.session.errors += download_results.has_key("error")
 
@@ -311,7 +334,9 @@ class SyncClient(object):
             "unsaved_model_count" : 0,
         }
         try:
-            response = self.post("models/upload", {"models": model_sync.get_serialized_models(self.counters_to_upload, client_version=self.session.client_version)})
+            # By not specifying a dest_version, we're sending everything.
+            #   Again, this is OK because we're sending to the central server.
+            response = self.post("models/upload", {"models": model_sync.get_serialized_models(self.counters_to_upload)})
             upload_results = json.loads(response.content)
             self.session.models_uploaded += upload_results["saved_model_count"]
             self.session.errors += upload_results.has_key("error")
@@ -322,5 +347,5 @@ class SyncClient(object):
 
         self.counters_to_download = None
         self.counters_to_upload = None
-        
+
         return {"download_results": download_results, "upload_results": upload_results}

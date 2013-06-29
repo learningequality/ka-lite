@@ -13,13 +13,12 @@ import zlib
 from annoying.functions import get_object_or_None
 from pbkdf2 import crypt
 
-from django.contrib.auth.models import User, check_password
+from django.contrib.auth.models import check_password
 from django.core import serializers
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models, transaction
-from django.db.models import Q
+from django.db.models import Q, Max
 from django.utils.text import compress_string
-from django.db.models import Max
 from django.utils.translation import ugettext_lazy as _
 
 import kalite
@@ -27,7 +26,6 @@ import settings
 from config.models import Settings
 from config.utils import set_as_registered
 from securesync import crypto, model_sync
-
 
 
 # Note: this MUST be hard-coded for backwards-compatibility reasons.
@@ -46,7 +44,7 @@ class SyncSession(models.Model):
     timestamp = models.DateTimeField(auto_now=True)
     models_uploaded = models.IntegerField(default=0)
     models_downloaded = models.IntegerField(default=0)
-    errors = models.IntegerField(default=0); errors.version="0.9.4" # kalite version
+    errors = models.IntegerField(default=0); errors.version="0.9.3" # kalite version
     closed = models.BooleanField(default=False)
     
     def _hashable_representation(self):
@@ -549,7 +547,7 @@ class Device(SyncedModel):
     name = models.CharField(max_length=100, blank=True)
     description = models.TextField(blank=True)
     public_key = models.CharField(max_length=500, db_index=True)
-    version = models.CharField(max_length=len("10.10.100"), default="0.9.2", blank=True); version.version="0.9.4" # default comes from knowing when this feature was implemented!
+    version = models.CharField(max_length=len("10.10.100"), default="0.9.2", blank=True); version.version="0.9.3"  # default comes from knowing when this feature was implemented!
 
     objects = DeviceManager()
     
@@ -591,6 +589,11 @@ class Device(SyncedModel):
     def full_clean(self):
         # TODO(jamalex): we skip out here, because otherwise self-signed devices will fail
         pass
+
+    @classmethod
+    def get_default_version(cls):
+        """Accessor method to probe the default version of a device (or field)"""
+        return cls._meta.get_field("version").default
 
     @staticmethod
     def get_own_device():
