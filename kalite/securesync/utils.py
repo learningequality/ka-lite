@@ -1,6 +1,7 @@
 from django.core import serializers
 from django.db import transaction
 
+import version
 from securesync.models import Zone, ZoneKey, ZoneInstallCertificate
 
 
@@ -23,6 +24,9 @@ def dump_zone_for_offline_install(zone_id, out_file=None,certs=[],num_certs=None
     zone_key.private_key = "" 
     
     # Create the json representation
+    #
+    # Since we're creating this for new versions of KA lite,
+    #   we don't need to specify a version (i.e. everything gets through)
     objects_json = json_serializer.serialize((zone, zone_key) + tuple(certs), ensure_ascii=False)
     if out_file:
         with open(out_file, "w") as fh:
@@ -40,7 +44,7 @@ def load_zone_for_offline_install(in_file=None, data=None):
             data = fh.read()
 
     all_models = []
-    models = serializers.deserialize("json", data)
+    models = serializers.deserialize("json", data, dest_version=version.VERSION)
     for model in models:
         all_models.append(model.object)
         model.object.save()
