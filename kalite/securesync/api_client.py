@@ -116,7 +116,7 @@ class SyncClient(object):
         r = self.post("register", {
             "client_device": serializers.serialize("json", [own_device, own_zone, own_zone_key, install_certs[0]], ensure_ascii=False),
         })
-    
+
         # Failed to register with any certificate
         if r.status_code != 200:
             raise Exception(r.content)
@@ -141,11 +141,9 @@ class SyncClient(object):
         })
 
         # If they don't understand, our assumption is broken.
-        if r.status_code == 500:
-            if "Device has no field named 'version'" in r.content:
+        if r.status_code == 500 and "Device has no field named 'version'" in r.content:
                 raise Exception("Central server is of an older version than us?")
-            else:
-                raise Exception("Error registering with central server: %s" % r.content)
+
         # Failed to register with any certificate
         elif r.status_code != 200:
             raise Exception(r.content)
