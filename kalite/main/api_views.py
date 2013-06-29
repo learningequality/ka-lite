@@ -255,6 +255,8 @@ def delete_users(request):
     return JsonResponse({})
 
 def annotate_topic_tree(node, level=0, statusdict=None):
+    if not statusdict:
+        statusdict = {}
     if node["kind"] == "Topic":
         if "Video" not in node["contains"]:
             return None
@@ -283,7 +285,7 @@ def annotate_topic_tree(node, level=0, statusdict=None):
         }
     if node["kind"] == "Video":
         #statusdict contains an item for each video registered in the database
-        #statusdict will be empty/None/{} if there are no videos downloaded yet
+        # will be {} (empty dict) if there are no videos downloaded yet
         percent = statusdict.get(node["youtube_id"], 0)
         if not percent:
             status = "unstarted"
