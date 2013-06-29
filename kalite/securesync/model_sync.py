@@ -26,7 +26,10 @@ def get_syncing_models():
 
     
 def get_serialized_models(device_counters=None, limit=100, zone=None, include_count=False, dest_version=version.VERSION):
-    """Serialize models for some intended version (dest_version)"""
+    """Serialize models for some intended version (dest_version)
+    Default is our own version--i.e. include all known fields.
+    If serializing for a device of a lower version, pass in that device's version!
+    """
     from models import Device # cannot be top-level, otherwise inter-dependency of this and models fouls things up
 
     # use the current device's zone if one was not specified
@@ -48,19 +51,19 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
 
     # loop until we've found some models, or determined that there are none to get
     while True:
-    
+
         # assume no instances remaining until proven otherwise
         instances_remaining = False
-            
+
         # loop through all the model classes marked as syncable
         for Model in _syncing_models:
-        
+
             # loop through each of the devices of interest
             for device_id, counter in device_counters.items():
-            
+
                 device = Device.objects.get(pk=device_id)
                 queryset = Model.objects.filter(signed_by=device)
-            
+
                 # for trusted (central) device, only include models with the correct fallback zone
                 if not device.in_zone(zone):
                     if device.get_metadata().is_trusted:
@@ -71,10 +74,10 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
                 # check whether there are any models that will be excluded by our limit, so we know to ask again
                 if not instances_remaining and queryset.filter(counter__gt=counter+limit+boost).count() > 0:
                     instances_remaining = True
-        
+
                 # pull out the model instances within the given counter range
                 models += queryset.filter(counter__gt=counter, counter__lte=counter+limit+boost)
-                    
+
         # if we got some models, or there were none to get, then call it quits
         if len(models) > 0 or not instances_remaining:
             break
@@ -84,7 +87,7 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
 
     # serialize the models we found
     serialized_models = serializers.serialize("json", models, ensure_ascii=False, dest_version=dest_version)
-    
+
     if include_count:
         return {"models": serialized_models, "count": len(models)}
     else:
@@ -93,7 +96,14 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
 
 def save_serialized_models(data, increment_counters=True, src_version=version.VERSION):
     """Unserializes models (from a device of version=src_version) in data and saves them to the django database.
-    
+    If src_version is None, all unrecognized fields are (silently) stripped off.  
+    If it is set to some value, then only fields of versions higher than ours are stripped off.
+    By defaulting to src_version=None, we're expecting a perfect match when we come in
+    (i.e. that wherever we got this data from, they were smart enough to "dumb it down" for us,
+    or they were old enough to have nothing unexpecting)
+
+    So, care must be taken in calling this function
+
     Returns a dictionary of the # of saved models, # unsaved, and any exceptions during saving"""
     
     from models import ImportPurgatory # cannot be top-level, otherwise inter-dependency of this and models fouls things up
