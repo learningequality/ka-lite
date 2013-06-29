@@ -121,7 +121,7 @@ class SyncClient(object):
         signature = data.get("signature", "")
         # Once again, we assume that (currently) the central server's version is >= ours,
         #   We just store what we can.
-        own_device = self.session.client_device.version
+        own_device = self.session.client_device
         session = serializers.deserialize("json", data["session"], src_version=None, dest_version=own_device.version).next().object
         if not session.verify_server_signature(signature):
             raise Exception("Signature did not match.")
