@@ -2,12 +2,21 @@
 
 {% load i18n %}
 {% load my_filters %}
+{% load staticfiles %}
 
 {% block title %}{% trans "Installation" %}{% endblock %}
 
 {% block install_active %}active{% endblock install_active %}
+{% block headjs %}
+<script type="text/javascript" src="{% static "js/jquery-ui.custom.min.js" %}"></script>
+<script type="text/javascript" src="{% static "js/bootstrap.min.js" %}"></script>
+{% endblock headjs %}
 
 {% block headcss %}
+
+<link rel="stylesheet" type="text/css" href="{% static "css/bootstrap.min.css" %}"></link>
+
+
 <style>
 #python-instructions {
     margin-top:25px;
@@ -64,7 +73,6 @@ ul {
         <form name="test" method="post" class="basic-form">
         {% csrf_token %}
 
-        <p>
         <div class="form-section" id="deployment-section">
             <div class="form-label">I would like to deploy:</div>
             <div class="form-selection">
@@ -171,7 +179,8 @@ ul {
         <div class="form-section" id="submit-section">
             <div class="form-label">&nbsp;</div>
             <div class="form-selection">
-                <input type="submit" value="{% trans "Download now!"%}" />
+                <button type="button" class="btn btn-primary">Downdload!</button>
+               <!--  <input type="submit" value="{% trans "Download now!"%}" /> -->
             </div>
         </div>
     </form>
