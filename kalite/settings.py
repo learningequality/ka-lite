@@ -195,21 +195,10 @@ if CACHE_TIME or CACHE_TIME is None: # None can mean infinite caching to some fu
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
+TEST_RUNNER = 'kalite.utils.testrunner.KALiteTestRunner'
+
 # This setting is required for AJAX-based messaging to work in Django 1.4,
 #   due to this bug: https://code.djangoproject.com/ticket/19387
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 TEST_RUNNER = 'kalite.utils.testrunner.KALiteTestRunner'
-
-# import these one extra time to overwrite any settings not explicitly looking for local settings
-try:
-    from local_settings import *
-except ImportError:
-    pass
-
-
-syncing_models = []
-def add_syncing_models(models):
-    for model in models:
-        if model not in syncing_models:
-            syncing_models.append(model)

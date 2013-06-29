@@ -1,3 +1,8 @@
+# Django serializers, for robustness when client/server/model versions are different
+python-packages/django/core/serializers/base.py
+    * django.core.serializers.base.py: added version_diff function, code to Serialize to skip serializing fields with a version greater than the client version
+python-packages/django/core/serializers/python.py: added code to Deserialize to ignore errors in deserializing fields when the remote server has a newer version than the local server
+
 python-packages/django/templates/base.py
     Purpose of the change: to enable "repeatblock", 
     a template tag with the ability to repeat a block multiple times on a page.
