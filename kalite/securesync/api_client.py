@@ -260,6 +260,7 @@ class SyncClient(object):
     def get_client_device_counters(self):
         return Device.get_device_counters(self.session.client_device.get_zone())
 
+
     def sync_device_records(self):
 
         server_counters = self.get_server_device_counters()
@@ -286,6 +287,9 @@ class SyncClient(object):
                 self.counters_to_download[device] = client_counters[device]
                 
         response = json.loads(self.post("device/download", {"devices": devices_to_download}).content)
+        # As usual, we're deserializing from the central server, so we assume that what we're getting
+        #   is "smartly" dumbed down for us.  We don't need to specify the src_version, as it's
+        #   pre-cleaned for us.
         download_results = model_sync.save_serialized_models(response.get("devices", "[]"), increment_counters=False)
 
         # BUGFIX(bcipolli) metadata only gets created if models are 
@@ -320,6 +324,9 @@ class SyncClient(object):
         }
         try:
             response = json.loads(self.post("models/download", {"device_counters": self.counters_to_download}).content)
+            # As usual, we're deserializing from the central server, so we assume that what we're getting
+            #   is "smartly" dumbed down for us.  We don't need to specify the src_version, as it's
+            #   pre-cleanaed for us.
             download_results = model_sync.save_serialized_models(response.get("models", "[]"))
             self.session.models_downloaded += download_results["saved_model_count"]
             self.session.errors += download_results.has_key("error")
