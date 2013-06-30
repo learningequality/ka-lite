@@ -5,18 +5,23 @@ Views which allow users to create and activate accounts.
 
 import copy
 
+from django.contrib import messages
+from django.contrib.auth import logout as auth_logout, views as auth_views
+from django.contrib.auth.models import User
+from django.db import IntegrityError, transaction
+from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.contrib import messages
-from django.contrib.auth import logout
-from django.contrib.auth import views as auth_views
-from django.contrib.auth.models import User
-from django.db import IntegrityError
 from django.utils.translation import ugettext as _
-from django.contrib.auth.models import User
 
+import settings
+from central.forms import OrganizationForm
+from central.models import Organization
+from contact.views import contact_subscribe
 from registration.backends import get_backend
+from securesync.models import Zone
+from utils.mailchimp import mailchimp_subscribe
 
 
 def complete(request, *args, **kwargs):
@@ -105,6 +110,7 @@ def activate(request, backend,
                               context_instance=context)
 
 
+@transaction.commit_on_success
 def register(request, backend, success_url=None, form_class=None,
              disallowed_url='registration_disallowed',
              template_name='registration/registration_form.html',
@@ -194,35 +200,70 @@ def register(request, backend, success_url=None, form_class=None,
     if form_class is None:
         form_class = backend.get_form_class(request)
 
+    do_subscribe = request.REQUEST.get("email_subscribe") == "on"
+
     if request.method == 'POST':
         form = form_class(data=request.POST, files=request.FILES)
-        if form.is_valid():
+        org_form = OrganizationForm(data=request.POST, instance=Organization())
+
+        # Could register
+        if form.is_valid() and org_form.is_valid():
             assert form.cleaned_data.get("username") == form.cleaned_data.get("email"), "Should be set equal in the call to clean()"
 
             try:
+                # Create the user
                 new_user = backend.register(request, **form.cleaned_data)
+
+                # Add an org.  Must create org before adding user.
+                org_form.instance.owner = new_user
+                org_form.save()
+                org = org_form.instance
+                org.users.add(new_user)
+
+                # Now add a zone, and link to the org
+                zone = Zone(name=org_form.instance.name + " Default Zone")
+                zone.save()
+                org.zones.add(zone)
+
+                # Finally, try and subscribe the user to the mailing list
+                # (silently; don't return anything to the user)
+                if do_subscribe:
+                    contact_subscribe(request, form.cleaned_data['email'])  # no "return"
+                org.save()
+
                 if success_url is None:
                     to, args, kwargs = backend.post_registration_redirect(request, new_user)
                     return redirect(to, *args, **kwargs)
                 else:
                     return redirect(success_url)
+
             except IntegrityError as e:
                 if e.message=='column username is not unique':
                     form._errors['__all__'] = _("An account with this email address has already been created.  Please login at the link above.")
                 else:
                     raise e
+
+    # GET, not POST
     else:
         form = form_class()
-    
+        org_form = OrganizationForm()
+
     if extra_context is None:
         extra_context = {}
     context = RequestContext(request)
     for key, value in extra_context.items():
         context[key] = callable(value) and value() or value
 
-    return render_to_response(template_name,
-                              { 'form': form },
-                              context_instance=context)
+    return render_to_response(
+        template_name,
+        {
+            'form': form,
+            "org_form" : org_form,
+            "subscribe": do_subscribe,
+        },
+        context_instance=context,
+    )
+
 
 def login_view(request, *args, **kwargs):
     """Force lowercase of the username.
@@ -242,5 +283,5 @@ def login_view(request, *args, **kwargs):
 
     
 def logout_view(request):
-    logout(request)
+    auth_logout(request)
     return redirect("homepage")

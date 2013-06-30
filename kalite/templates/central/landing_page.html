@@ -1,13 +1,15 @@
 {% extends "central/base_central.html" %}
 
+{% load staticfiles %}
+
 {% block home_active %}active{% endblock home_active %}
 
 {% block title %}Home{% endblock %}
 {% block jqueryjs %}
-<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.8.3.min.js"></script> 
+<script type="text/javascript" src="{% static "js/jquery-1.8.3.min.js" %}"></script> 
 {% endblock jqueryjs %}
 {% block headjs %}
-<script type="text/javascript" src="{{ MEDIA_URL }}js/simple.carousel.js"></script> 
+<script type="text/javascript" src="{% static "js/simple.carousel.js" %}"></script> 
 <script type="text/javascript">
     $(function() {
         $(".carousel-class").simplecarousel({
@@ -450,7 +452,7 @@ article {
 }
 
 #next-button, #prev-button {
-    background-image: url("{{ MEDIA_URL }}images/landing-page/arrows.png");
+    background-image: url("{% static "images/landing-page/arrows.png" %}");
     background-repeat: no-repeat;
     margin-top: -25px;
     width: 39px;
@@ -546,10 +548,10 @@ article {
             <span id="next-button"></span>
         </div>
         <ul class="carousel-class">
-            <li class="carousel-pic"><img src="{{ MEDIA_URL }}images/landing-page/exercises-cropped.png"></li>
-            <li class="carousel-pic"><img src="{{ MEDIA_URL }}images/landing-page/subtitle-mashup.png"></li>
-            <li class="carousel-pic"><img src="{{ MEDIA_URL }}images/landing-page/vid-down-cropped.png"></li>
-            <li class="carousel-pic"><img src="{{ MEDIA_URL }}images/landing-page/coach-reports-cropped.png"></li>
+            <li class="carousel-pic"><img src="{% static "images/landing-page/exercises-cropped.png" %}"></li>
+            <li class="carousel-pic"><img src="{% static "images/landing-page/subtitle-mashup.png" %}"></li>
+            <li class="carousel-pic"><img src="{% static "images/landing-page/vid-down-cropped.png" %}"></li>
+            <li class="carousel-pic"><img src="{% static "images/landing-page/coach-reports-cropped.png" %}"></li>
         </ul>
     </div>
     <!-- Motivation -->
@@ -574,32 +576,24 @@ article {
     <div id="subscribe_sec" class="col onecol share-subscribe-section">
         <div class="cent-s-by-s subscribe-title"><h1>SUBSCRIBE<br/></h1><h2>FOR UPDATES</h2></div>
         <div class="exclamation cent-s-by-s greenword">!</div>
- <!--        <div class="cent-s-by-s subscribe-text">
-            We’re constantly updating KA Lite, and would love to let you know about new developments.
-        </div> -->
         <div id="mc_embed_signup" class="cent-s-by-s subscribe-form">
-            <form action="http://adhocsync.us6.list-manage.com/subscribe/post?u=023b9af05922dfc7f47a4fffb&amp;id=97a379de16" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
-                <input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
+            <form action="{% url contact_subscribe %}" class="validate" target="_blank" novalidate>
+                <input type="email" value="" name="email" class="email" id="mce-EMAIL" placeholder="email address" required>
                 <input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button">
             </form>
         </div>
 
         <div class="cent-s-by-s email-title">
             <h1>Contact us</h1>
-            <a class="email-address" href="mailto:{{ central_contact_email }}">{{ central_contact_email }}</a>
+            <a class="email-address" href="{% url contact_wizard type='info' %}">{{ central_contact_email }}</a>
         </div>
 
     </div>
 
     <div id="share_sec" class="col social_media_sharing share-subscribe-section">
-        <!--<div class="cent-s-by-s subscribe-title"><h1>SHARING<br/></h1><h2>IS CARING</h2></div>
-        <div class="exclamation cent-s-by-s greenword">!</div>-->
-        <!--<div id="share-text">
-            <span class="greenword share-title">SHARE</span>
-        </div>-->
         <div id="share-block">
             <!-- FB and Twitter -->
-            <img src="/static/images/social-fb-t.png" width="101" height="62" alt="FB and twitter" usemap="#socialmap">
+            <img src="{% static "images/social-fb-t.png" %}" width="101" height="62" alt="FB and twitter" usemap="#socialmap">
             <map name="socialmap">
                 <area shape="rect" coords="0,0,50,62" alt="Facebook" href="http://www.facebook.com/share.php?u=http://bit.ly/RnZgUp">
                 <area shape="rect" coords="51,0,101,62" alt="Twitter" href="https://twitter.com/intent/tweet?text=KA+Lite%2C+an+offline+version+of+Khan+Academy+for+rural+schools&url=http%3A%2F%2F{{ central_server_host }}%2F">
@@ -641,7 +635,7 @@ article {
                 Tell us about your needs
             </div>
             <div class="button-section">
-                <a href="https://docs.google.com/spreadsheet/viewform?formkey=dEhEOWRNVDBzWTdsUnFQYWlCWnZoWWc6MQ">
+                <a href="{% url contact_wizard type='deployment' %}">
                     <button id="get-started-button">
                         Deployment
                     </button>
@@ -659,7 +653,7 @@ article {
         </div>
         <div class="button-section">
 
-            <a href="{{ wiki_url }}contribute" target="_blank"><button id="contribute-button">Contribute</button></a>
+            <a href="{% url contact_wizard type='contribute' %}"><button id="contribute-button">Contribute</button></a>
         </div>
     </div>
 
@@ -670,7 +664,7 @@ article {
 {% if feed %}
 <div id="bottom_content" class="row">  
     <div id="rss-logo">
-        <a href="{% url rss_feed %}"><img class="rss-feed-icon" src="{{ MEDIA_URL }}images/rssfeed.jpg"/></a>
+        <a href="{% url rss_feed %}"><img class="rss-feed-icon" src="{% static "images/rssfeed.jpg" %}"/></a>
     </div>
     <div id="rss-feed">
         <h2>Read more!</h2>
@@ -697,7 +691,7 @@ article {
 {% block footerleft %}
     <span class="ka-on-social-container">
         <span class="ka-on-social follow-us-text">Follow us!</span> 
-        <a class="ka-on-social ka-on-facebook" href="https://www.facebook.com/kaliteproject"><img src="{{ MEDIA_URL }}/images/ka-on-facebook-button.png"/></a>
-        <a class="ka-on-social ka-on-twitter" href="https://twitter.com/ka_lite"><img class="ka-on-twitter" src="{{ MEDIA_URL }}/images/ka-on-twitter-button.png"/></a>
+        <a class="ka-on-social ka-on-facebook" href="https://www.facebook.com/kaliteproject"><img src="{% static "images/ka-on-facebook-button.png" %}"/></a>
+        <a class="ka-on-social ka-on-twitter" href="https://twitter.com/ka_lite"><img class="ka-on-twitter" src="{% static "images/ka-on-twitter-button.png" %}"/></a>
     </span>
 {% endblock footerleft %}

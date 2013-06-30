@@ -13,13 +13,14 @@ import unittest
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions, ui
 
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 
 import settings
-from kalite.utils.django_utils import call_command_with_output
 from securesync.models import Facility, FacilityGroup, FacilityUser
+from utils.django_utils import call_command_with_output
 from utils.testing import distributed_only, KALiteDistributedBrowserTestCase, KALiteRegisteredDistributedBrowserTestCase
 
 
@@ -73,35 +74,12 @@ class ChangeLocalUserPassword(unittest.TestCase):
         self.assertEquals(err, "", "no output on stderr")
         self.assertNotEquals(out, "", "some output on stderr")
         self.assertEquals(val, 0, "Exit code is zero")
-        
-        match = re.match(r"^.*Generated new password for user '([^']+)': '([^']+)'", out.replace("\n",""), re.MULTILINE)
-        self.assertFalse(match is None, "could not parse stdout")
-
-        user = FacilityUser.objects.get(facility=self.facility, username=self.user.username)
-        self.assertEquals(user.username, match.groups()[0], "Username reported correctly")
-
-        self.assertTrue(user.check_password(match.groups()[1]), "New password works")
-        self.assertFalse(user.check_password(self.user.clear_text_password), "NOT the old password")
-        
-
-    def test_no_user(self):
-        """Change the password on a non-existing user"""
-        
-        fake_username = self.user.username + "xxxxx"
-        
-        #with self.assertRaises(FacilityUser.DoesNotExist):
-        (out,err,val) = call_command_with_output("changelocalpassword", fake_username, noinput=True)
-
-        self.assertNotIn("Generated new password for user", out, "Did not set password")
-        self.assertNotEquals(err, "", "some output on stderr")
 
         match = re.match(r"^.*Error: user '([^']+)' does not exist$", err.replace("\n",""), re.M)
         self.assertFalse(match is None, "could not parse stderr")
         self.assertEquals(match.groups()[0], fake_username, "Verify printed fake username")
         self.assertNotEquals(val, 0, "Verify exit code is non-zero")
-        
-        
-        
+
 
 @distributed_only
 class UserRegistrationCaseTest(KALiteRegisteredDistributedBrowserTestCase):
@@ -175,11 +153,13 @@ class UserRegistrationCaseTest(KALiteRegisteredDistributedBrowserTestCase):
         self.logout_user()
 
         self.login_student(username=user2_uname, password=user1_password, expect_success=False) # fails
+        self.assertFalse(self.is_logged_in(user2_uname), "make sure user2 is NOT logged in.")
         self.check_django_message("error", contains="There was an error logging you in.")
-        
+
         # Now, check the same in the opposite direction.
         self.login_student(username=user2_uname, password=user2_password) # succeeds
         self.logout_user()
 
         self.login_student(username=user1_uname, password=user2_password, expect_success=False) # fails
+        self.assertFalse(self.is_logged_in(user2_uname), "make sure user2 is NOT logged in.")
         self.check_django_message("error", contains="There was an error logging you in.")
