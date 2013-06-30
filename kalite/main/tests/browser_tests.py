@@ -79,6 +79,8 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
         # Make sure that the page changed to the admin homepage
         if expect_success:
             self.assertTrue(self.wait_for_page_change(login_url), "RETURN causes page to change")
+            time.sleep(0.5)  # allow async status to update
+            self.assertTrue(self.is_logged_in(username), "make sure %s is logged in." % username)
 
 
     def login_admin(self, username=None, password=None, expect_success=True):
@@ -123,9 +125,22 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
         # 2. Admin: #logout contains username
         logged_in_name_text = self.browser.find_element_by_id("logged-in-name").text
         logout_text = self.browser.find_element_by_id("logout").text
-
-        username =  logged_in_name_text or logout_text[0:len(" (LOGOUT)")]
-        return username and (not expected_username or username == expected_username)
+        username_text =  logged_in_name_text or logout_text[0:-len(" (LOGOUT)")]
+        
+        # Just checking to see if ANYBODY is logged in
+        if not expected_username:
+            return username_text != "" 
+        # Checking to see if Django user, or user with missing names is logged in
+        #   (then username displays)
+        elif username_text.lower() == expected_username.lower():
+            return True
+        # Checking to see if a FacilityUser with a filled-in-name is logged in
+        else:
+            user_obj = FacilityUser.objects.filter(username=expected_username)
+            if user_obj.count() == 0:  # couldn't find the user, they can't be logged in
+                assert username_text == "", "Impossible for anybody to be logged in."
+            else:
+                return username_text.lower() == user_obj[0].get_name().lower()
 
 
 class KALiteRegisteredDistributedBrowserTestCase(KALiteDistributedBrowserTestCase):
