@@ -9,9 +9,10 @@ from django.db.models import Sum, Avg
 from django.contrib.auth.decorators import login_required
 
 import settings
+from securesync import model_sync
 from securesync.models import SyncedModel, FacilityUser, Device
+from datetime import datetime
 
-logging.getLogger().setLevel(logging.INFO)
 
 class VideoLog(SyncedModel):
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
@@ -155,8 +156,8 @@ class UserLog(SyncedModel):
         cur_user_log_entry.save()
         
         return cur_user_log_entry
-    
-    
+
+
     @staticmethod
     def update_user_activity(user, activity_type="login", update_time=None):
         activity_type = UserLog.get_activity_int(activity_type)
@@ -192,8 +193,6 @@ class UserLog(SyncedModel):
         cur_user_log_entry.end_time = end_time
         cur_user_log_entry.save()
 
-            
-settings.add_syncing_models([VideoLog, ExerciseLog, UserLog])
 
 class VideoFile(models.Model):
     youtube_id = models.CharField(max_length=20, primary_key=True)
@@ -217,8 +216,4 @@ class LanguagePack(models.Model):
     lang_name = models.CharField(max_length=30)
 
 
-
-
-
-
-
+model_sync.add_syncing_models([VideoLog, ExerciseLog, UserLog])

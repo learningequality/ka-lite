@@ -1,16 +1,17 @@
 <!DOCTYPE HTML>
+{% load staticfiles %}
 <html>
     <head>
     <!--[if lt IE 9]>
-          <script src="{{ MEDIA_URL }}js/html5shiv.js"></script>
+          <script src="{% static "js/html5shiv.js" %}"></script>
     <![endif]-->
 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <link rel="shortcut icon" href="{{ MEDIA_URL }}images/favicon.ico">
+        <link rel="shortcut icon" href="{% static "images/favicon.ico" %}">
         {% block jqueryjs %}
-        <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.7.1.min.js"></script>
-        <script type="text/javascript" src="{{ MEDIA_URL }}js/underscore-min.js"></script>
-        <script type="text/javascript" src="{{ MEDIA_URL }}js/backbone-min.js"></script>
+        <script type="text/javascript" src="{% static "js/jquery-1.7.1.min.js" %}"></script>
+        <script type="text/javascript" src="{% static "js/underscore-min.js" %}"></script>
+        <script type="text/javascript" src="{% static "js/backbone-min.js" %}"></script>
         {% endblock jqueryjs %}
         
         <style>

@@ -1,5 +1,8 @@
 import os
+
 from django.core.management.base import BaseCommand, CommandError
+
+import version
 from securesync.models import Device, DeviceMetadata
 
 def get_host_name():
@@ -29,7 +32,7 @@ class Command(BaseCommand):
             description = args[1]
         else:
             description = ""
-        Device.initialize_own_device(name=name, description=description)
+        Device.initialize_own_device(name=name, description=description, version=version.VERSION)
         self.stdout.write("Device '%s'%s has been successfully initialized.\n"
             % (name, description and (" ('%s')" % description) or ""))
         

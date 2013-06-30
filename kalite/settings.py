@@ -1,6 +1,9 @@
 import json
 import os
 import logging
+import sys
+import time
+import tempfile
 
 try:
     from local_settings import *
@@ -8,76 +11,86 @@ try:
 except ImportError:
     local_settings = {}
 
-def local_or_(setting_name, default_val):
-    """Returns local_settings version if it exists (and is non-empty), otherwise uses default value"""
-    return hasattr(local_settings, setting_name) and getattr(local_settings, setting_name) or default_val
-    
-DEBUG          = local_or_("DEBUG", False)
-TEMPLATE_DEBUG = local_or_("TEMPLATE_DEBUG", False)
+DEBUG          = getattr(local_settings, "DEBUG", False)
+TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
 
 # Set logging level based on the value of DEBUG (evaluates to 0 if False, 1 if True)
-logging.getLogger().setLevel(logging.DEBUG*DEBUG + logging.INFO*(1-DEBUG))
+logging.basicConfig()
+LOG = getattr(local_settings, "LOG", logging.getLogger("kalite"))
+LOG.setLevel(logging.DEBUG*DEBUG + logging.INFO*(1-DEBUG))
     
-INTERNAL_IPS   = local_or_("INTERNAL_IPS", ("127.0.0.1",))
+INTERNAL_IPS   = getattr(local_settings, "INTERNAL_IPS", ("127.0.0.1",))
 
-CENTRAL_SERVER = local_or_("CENTRAL_SERVER", False)
+# TODO(jamalex): currently this only has an effect on Linux/OSX
+PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 8008)
+
+CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
 
 # info about the central server(s)
-SECURESYNC_PROTOCOL   = local_or_("SECURESYNC_PROTOCOL",   "https")
-CENTRAL_SERVER_DOMAIN = local_or_("CENTRAL_SERVER_DOMAIN", "adhocsync.com")
-CENTRAL_SERVER_HOST   = local_or_("CENTRAL_SERVER_HOST",   "kalite.%s"%CENTRAL_SERVER_DOMAIN)
-CENTRAL_FROM_EMAIL    = local_or_("CENTRAL_FROM_EMAIL",    "kalite@%s"%CENTRAL_SERVER_DOMAIN)
-CENTRAL_ADMIN_EMAIL   = local_or_("CENTRAL_ADMIN_EMAIL",   "info@learningequality.org")#"kalite@%s"%CENTRAL_SERVER_DOMAIN
-CENTRAL_CONTACT_EMAIL = local_or_("CENTRAL_CONTACT_EMAIL", "info@learningequality.org")#"kalite@%s"%CENTRAL_SERVER_DOMAIN
-CENTRAL_WIKI_URL      = local_or_("CENTRAL_WIKI_URL",      "http://kalitewiki.learningequality.org/")#http://%kalitewiki.s/%CENTRAL_SERVER_DOMAIN   
+SECURESYNC_PROTOCOL   = getattr(local_settings, "SECURESYNC_PROTOCOL",   "https")
+CENTRAL_SERVER_DOMAIN = getattr(local_settings, "CENTRAL_SERVER_DOMAIN", "adhocsync.com")
+CENTRAL_SERVER_HOST   = getattr(local_settings, "CENTRAL_SERVER_HOST",   "kalite.%s"%CENTRAL_SERVER_DOMAIN)
+CENTRAL_WIKI_URL      = getattr(local_settings, "CENTRAL_WIKI_URL",      "http://kalitewiki.learningequality.org/")#http://%kalitewiki.s/%CENTRAL_SERVER_DOMAIN   
+CENTRAL_FROM_EMAIL    = getattr(local_settings, "CENTRAL_FROM_EMAIL",    "kalite@%s"%CENTRAL_SERVER_DOMAIN)
+CENTRAL_DEPLOYMENT_EMAIL = getattr(local_settings, "CENTRAL_DEPLOYMENT_EMAIL", "deployments@learningequality.org")
+CENTRAL_SUPPORT_EMAIL = getattr(local_settings, "CENTRAL_SUPPORT_EMAIL",    "support@learningequality.org")
+CENTRAL_DEV_EMAIL     = getattr(local_settings, "CENTRAL_DEV_EMAIL",        "dev@learningequality.org")
+CENTRAL_INFO_EMAIL    = getattr(local_settings, "CENTRAL_INFO_EMAIL",       "info@learningequality.org")
+CENTRAL_CONTACT_EMAIL = getattr(local_settings, "CENTRAL_CONTACT_EMAIL", "info@learningequality.org")#"kalite@%s"%CENTRAL_SERVER_DOMAIN
+CENTRAL_ADMIN_EMAIL   = getattr(local_settings, "CENTRAL_ADMIN_EMAIL",   "errors@learningequality.org")#"kalite@%s"%CENTRAL_SERVER_DOMAIN
+CENTRAL_FROM_EMAIL    = getattr(local_settings, "CENTRAL_FROM_EMAIL",    "kalite@%s"%CENTRAL_SERVER_DOMAIN)
+CENTRAL_CONTACT_EMAIL = getattr(local_settings, "CENTRAL_CONTACT_EMAIL", "info@learningequality.org")#"kalite@%s"%CENTRAL_SERVER_DOMAIN    
 
-ADMINS         = local_or_("ADMINS", ( ("KA Lite Team", CENTRAL_ADMIN_EMAIL), ) )
+CENTRAL_SUBSCRIBE_URL    = getattr(local_settings, "CENTRAL_SUBSCRIBE_URL",    "http://adhocsync.us6.list-manage.com/subscribe/post?u=023b9af05922dfc7f47a4fffb&amp;id=97a379de16")
 
-MANAGERS       = local_or_("MANAGERS", ADMINS)
+ADMINS         = getattr(local_settings, "ADMINS", ( ("KA Lite Team", CENTRAL_ADMIN_EMAIL), ) )
 
-PROJECT_PATH   = local_or_("PROJECT_PATH", os.path.dirname(os.path.realpath(__file__)))
+MANAGERS       = getattr(local_settings, "MANAGERS", ADMINS)
 
-LOCALE_PATHS   = local_or_("LOCALE_PATHS", (PROJECT_PATH + "/../locale",))
+PROJECT_PATH   = getattr(local_settings, "PROJECT_PATH", os.path.dirname(os.path.realpath(__file__)))
 
-DATABASES      = local_or_("DATABASES", {
+LOCALE_PATHS   = getattr(local_settings, "LOCALE_PATHS", (PROJECT_PATH + "/../locale",))
+
+DATABASES      = getattr(local_settings, "DATABASES", {
     "default": {
-        "ENGINE": local_or_("DATABASE_TYPE", "django.db.backends.sqlite3"),
-        "NAME"  : local_or_("DATABASE_PATH", PROJECT_PATH + "/database/data.sqlite"),
+        "ENGINE": getattr(local_settings, "DATABASE_TYPE", "django.db.backends.sqlite3"),
+        "NAME"  : getattr(local_settings, "DATABASE_PATH", PROJECT_PATH + "/database/data.sqlite"),
         "OPTIONS": {
             "timeout": 60,
         },
     }
 })
 
-DATA_PATH      = local_or_("DATA_PATH", PROJECT_PATH + "/static/data/")
+DATA_PATH      = getattr(local_settings, "DATA_PATH", PROJECT_PATH + "/static/data/")
 
-CONTENT_ROOT   = local_or_("CONTENT_ROOT", PROJECT_PATH + "/../content/")
-CONTENT_URL    = local_or_("CONTENT_URL", "/content/")
+CONTENT_ROOT   = getattr(local_settings, "CONTENT_ROOT", PROJECT_PATH + "/../content/")
+CONTENT_URL    = getattr(local_settings, "CONTENT_URL", "/content/")
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-TIME_ZONE      = local_or_("TIME_ZONE", "America/Los_Angeles")
+TIME_ZONE      = getattr(local_settings, "TIME_ZONE", "America/Los_Angeles")
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE  = local_or_("LANGUAGE_CODE", "en-us")
+LANGUAGE_CODE  = getattr(local_settings, "LANGUAGE_CODE", "en-us")
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
-USE_I18N       = local_or_("USE_I18N", True)
+USE_I18N       = getattr(local_settings, "USE_I18N", True)
 
 # If you set this to False, Django will not format dates, numbers and
 # calendars according to the current locale
-USE_L10N       = local_or_("USE_L10N", False)
+USE_L10N       = getattr(local_settings, "USE_L10N", False)
 
-MEDIA_ROOT     = local_or_("MEDIA_ROOT", PROJECT_PATH + "/static/")
-MEDIA_URL      = local_or_("MEDIA_URL", "/static/")
-STATIC_URL     = local_or_("STATIC_URL", "/static/")
+MEDIA_URL      = getattr(local_settings, "MEDIA_URL", "/media/")
+MEDIA_ROOT     = getattr(local_settings, "MEDIA_ROOT", PROJECT_PATH + "/media/")
+STATIC_URL     = getattr(local_settings, "STATIC_URL", "/static/")
+STATIC_ROOT    = getattr(local_settings, "STATIC_ROOT", PROJECT_PATH + "/static/")
 
-# Make this unique, and don't share it with anybody.
-SECRET_KEY     = local_or_("SECRET_KEY", "8qq-!fa$92i=s1gjjitd&%s@4%ka9lj+=@n7a&fzjpwu%3kd#u")
+ # Make this unique, and don't share it with anybody.
+SECRET_KEY     = getattr(local_settings, "SECRET_KEY", "8qq-!fa$92i=s1gjjitd&%s@4%ka9lj+=@n7a&fzjpwu%3kd#u")
 
-TEMPLATE_DIRS  = local_or_("TEMPLATE_DIRS", (PROJECT_PATH + "/templates",))
+TEMPLATE_DIRS  = getattr(local_settings, "TEMPLATE_DIRS", (PROJECT_PATH + "/templates",))
 
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -87,8 +100,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.media",
     "django.contrib.messages.context_processors.messages",
     "django.core.context_processors.request",
-    "main.custom_context_processors.custom",
+    "%s.custom_context_processors.custom" % ("central" if CENTRAL_SERVER else "main"),
 )
+
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -101,10 +115,10 @@ MIDDLEWARE_CLASSES = (
     "django.contrib.sessions.middleware.SessionMiddleware",
     'django.middleware.locale.LocaleMiddleware',
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "main.middleware.GetNextParam",
+    "django.middleware.csrf.CsrfViewMiddleware",
 )
 
 ROOT_URLCONF = "kalite.urls"
@@ -116,52 +130,75 @@ INSTALLED_APPS = (
     "django.contrib.admin",
     "django.contrib.humanize",
     "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "django_extensions", # needed for clean_pyc (testing)
     "south",
     "chronograph",
     "django_cherrypy_wsgiserver",
+    "kalite",
     "securesync",
     "config",
-    "main",
-    "faq",
-    "loadtesting",
+    "main", # in order for securesync to work, this needs to be here.
+    "kalite", # contains commands
 )
 
 if DEBUG or CENTRAL_SERVER:
-    INSTALLED_APPS += ("django_extensions",)
+    INSTALLED_APPS += ("django_snippets",)   # used in contact form and (debug) profiling middleware
 
+if DEBUG:
+    # add ?prof to URL, to see performance stats
+    MIDDLEWARE_CLASSES += ('django_snippets.profiling_middleware.ProfileMiddleware',)
 
 if CENTRAL_SERVER:
-    ACCOUNT_ACTIVATION_DAYS = local_or_("ACCOUNT_ACTIVATION_DAYS", 7)
-    DEFAULT_FROM_EMAIL      = local_or_("DEFAULT_FROM_EMAIL", CENTRAL_FROM_EMAIL)
-    INSTALLED_APPS         += ("postmark", "kalite.registration", "central")
-    EMAIL_BACKEND           = local_or_("EMAIL_BACKEND", "postmark.backends.PostmarkBackend")
+    ACCOUNT_ACTIVATION_DAYS = getattr(local_settings, "ACCOUNT_ACTIVATION_DAYS", 7)
+    DEFAULT_FROM_EMAIL      = getattr(local_settings, "DEFAULT_FROM_EMAIL", CENTRAL_FROM_EMAIL)
+    INSTALLED_APPS         += ("postmark", "kalite.registration", "central", "faq", "contact",)
+    EMAIL_BACKEND           = getattr(local_settings, "EMAIL_BACKEND", "postmark.backends.PostmarkBackend")
     AUTH_PROFILE_MODULE     = 'central.UserProfile'
 
-if not CENTRAL_SERVER:
+else:
+    INSTALLED_APPS         += ("coachreports",)
+    # Include optionally installed apps
+    if os.path.exists(PROJECT_PATH + "/loadtesting/"):
+        INSTALLED_APPS     += ("loadtesting",)
+
     MIDDLEWARE_CLASSES += (
         "securesync.middleware.DBCheck",
         "securesync.middleware.AuthFlags",
         "main.middleware.SessionLanguage",
     )
-    TEMPLATE_CONTEXT_PROCESSORS += (
-        "main.custom_context_processors.languages",
-    )
+    TEMPLATE_CONTEXT_PROCESSORS += ("main.custom_context_processors.languages",)
 
 
-syncing_models = []
-def add_syncing_models(models):
-    for model in models:
-        if model not in syncing_models:
-            syncing_models.append(model)
+# By default, cache for maximum possible time.
+#   Note: caching for 100 years can be too large a value
+#   sys.maxint also can be too large (causes ValueError), since it's added to the current time.
+#   Caching for the lesser of (100 years) or (5 years less than the max int) should work.
+_5_years = 5 * 365 * 24 * 60 * 60
+_100_years = 100 * 365 * 24 * 60 * 60
+_max_cache_time = min(_100_years, sys.maxint - time.time() - _5_years)
+CACHE_TIME = getattr(local_settings, "CACHE_TIME", _max_cache_time)
 
-slug_key = {
-    "Topic": "id",
-    "Video": "readable_id",
-    "Exercise": "name",
-}
+# Cache is activated in every case, 
+#   EXCEPT: if CACHE_TIME=0
+if CACHE_TIME or CACHE_TIME is None: # None can mean infinite caching to some functions
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+            'LOCATION': getattr(local_settings, "CACHE_LOCATION", tempfile.gettempdir()), # this is kind of OS-specific, so dangerous.
+            'TIMEOUT': CACHE_TIME, # should be consistent
+            'OPTIONS': {
+                'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
+            },
+        }
+    }
 
-title_key = {
-    "Topic": "title",
-    "Video": "title",
-    "Exercise": "display_name",
-}
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+
+TEST_RUNNER = 'kalite.utils.testrunner.KALiteTestRunner'
+
+# This setting is required for AJAX-based messaging to work in Django 1.4,
+#   due to this bug: https://code.djangoproject.com/ticket/19387
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
+TEST_RUNNER = 'kalite.utils.testrunner.KALiteTestRunner'
