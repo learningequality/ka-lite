@@ -9,8 +9,8 @@ import settings
 download_path = settings.CONTENT_ROOT
 
 headers = {
-    "X-api-username": "",
-    "X-apikey": "",
+    "X-api-username": "kalite",
+    "X-apikey": "9931eb077687297823e8a23fd6c2bfafae25c543",
 }
 
 base_url = "http://www.universalsubtitles.org/api2/partners/videos"
