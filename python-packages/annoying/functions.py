@@ -30,13 +30,3 @@ def get_config(key, default):
     ADMIN_EMAIL = get_config('ADMIN_EMAIL', 'default@email.com')
     """
     return getattr(settings, key, default)
-
-
-def isnumeric(obj):
-    """Returns whether an object is itself numeric, or can be converted to numeric"""
-    
-    try:
-        float(obj)
-        return True
-    except:
-        return False

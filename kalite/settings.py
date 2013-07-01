@@ -169,6 +169,10 @@ else:
     )
     TEMPLATE_CONTEXT_PROCESSORS += ("main.custom_context_processors.languages",)
 
+# Used for user logs.  By default, completely off.
+USER_LOG_MAX_RECORDS = getattr(local_settings, "USER_LOG_MAX_RECORDS", 0)
+USER_LOG_SUMMARY_FREQUENCY = getattr(local_settings, "USER_LOG_SUMMARY_FREQUENCY", (1,"months"))
+
 
 # By default, cache for maximum possible time.
 #   Note: caching for 100 years can be too large a value
@@ -194,8 +198,6 @@ if CACHE_TIME or CACHE_TIME is None: # None can mean infinite caching to some fu
     }
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-
-TEST_RUNNER = 'kalite.utils.testrunner.KALiteTestRunner'
 
 # This setting is required for AJAX-based messaging to work in Django 1.4,
 #   due to this bug: https://code.djangoproject.com/ticket/19387
