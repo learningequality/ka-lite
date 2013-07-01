@@ -11,7 +11,7 @@ To install KA Lite on Linux, OSX, or Windows, view the [installation guide](http
 
 Bug reports should be filed on the [GitHub issue tracker](https://github.com/learningequality/ka-lite/issues).
 
-If you'd like to contribute, please check out the [development wiki](http://kalitewiki.learningequality.org/development/getting-started).
+If you'd like to contribute, please check out the [development wiki](http://kalitewiki.learningequality.org/development/coding/getting-started).
 
 Official website: http://kalite.learningequality.org/
 
