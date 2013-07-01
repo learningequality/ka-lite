@@ -30,7 +30,7 @@ class Migration(SchemaMigration):
             ('zone_fallback', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='+', null=True, to=orm['securesync.Zone'])),
             ('deleted', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('device', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['securesync.Device'])),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['securesync.FacilityUser'], null=True, blank=True)),
+            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['securesync.FacilityUser'])),
             ('activity_type', self.gf('django.db.models.fields.IntegerField')()),
             ('start_datetime', self.gf('django.db.models.fields.DateTimeField')()),
             ('end_datetime', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
@@ -98,7 +98,7 @@ class Migration(SchemaMigration):
             'signed_version': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
             'start_datetime': ('django.db.models.fields.DateTimeField', [], {}),
             'total_seconds': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['securesync.FacilityUser']", 'null': 'True', 'blank': 'True'}),
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['securesync.FacilityUser']"}),
             'zone_fallback': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Zone']"})
         },
         'main.videofile': {

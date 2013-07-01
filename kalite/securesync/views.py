@@ -297,8 +297,8 @@ def login(request):
         form = LoginForm(data=request.POST, request=request, initial={"facility": facility_id})
         if form.is_valid():
             user = form.get_user()
-            
-            UserLog.begin_user_activity(user, activity_type="login") # Success! Log the event
+
+            UserLog.begin_user_activity(user, activity_type="login")  # Success! Log the event
             request.session["facility_user"] = user
             messages.success(request, _("You've been logged in! We hope you enjoy your time with KA Lite ") +
                                         _("-- be sure to log out when you finish."))

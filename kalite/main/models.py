@@ -35,7 +35,7 @@ class VideoLog(SyncedModel):
 
             # Tell logins that they are still active.
             #   TODO(bcipolli): Could log video information in the future.
-            UserLog.update_user_activity(self.user, activity_type="login", update_time=(self.completion_timestamp or datetime.now()))
+            UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()))
 
         super(VideoLog, self).save(*args, **kwargs)
     
@@ -77,7 +77,7 @@ class ExerciseLog(SyncedModel):
                 
             # Tell logins that they are still active.
             #   TODO(bcipolli): Could log exercise information in the future.
-            UserLog.update_user_activity(self.user, activity_type="login", update_time=(self.completion_timestamp or datetime.now()))
+            UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()))
              
         super(ExerciseLog, self).save(*args, **kwargs)
 
@@ -93,8 +93,8 @@ class ExerciseLog(SyncedModel):
 class UserLogSummary(SyncedModel):
     """Like UserLogs, but summarized over a longer period of time.
     Also sync'd across devices.  Unique per user, device, activity_type, and time period."""
-    device = models.ForeignKey(Device)
-    user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
+    device = models.ForeignKey(Device, blank=False, null=False)
+    user = models.ForeignKey(FacilityUser, blank=False, null=False, db_index=True)
     activity_type = models.IntegerField(blank=False, null=False)
     start_datetime = models.DateTimeField(blank=False, null=False)
     end_datetime = models.DateTimeField(blank=True, null=True)
@@ -104,21 +104,20 @@ class UserLogSummary(SyncedModel):
         return "%d seconds for %s/%s/%d, period %s to %s" % (self.total_seconds, self.device.name, self.user.username, self.activity_type, self.start_datetime, self.end_datetime)
 
 
-    @staticmethod
-    def get_period_start_datetime(log_datetime, summary_freq):
+    @classmethod
+    def get_period_start_datetime(cls, log_time, summary_freq):
         """Periods can be: days, weeks, months, years.
         Days referenced from midnight on the current computer's clock.
         Weeks referenced from Monday morning @ 00:00:00am.
-        Months referenced from Jan 1.
-        Years follow from the above."""
+        Months and years follow from the above."""
 
         summary_freq_qty    = summary_freq[0]
         summary_freq_period = summary_freq[1].lower()
-        base_datetime       = log_datetime.replace(microsecond=0, second=0, minute=0, hour=0)
+        base_time = log_time.replace(microsecond=0, second=0, minute=0, hour=0)
         
         if summary_freq_period in ["day", "days"]:
             assert summary_freq_qty == 1, "Days only supports 1"
-            return base_datetime
+            return base_time
 
         elif summary_freq_period in ["week", "weeks"]:
             assert summary_freq_qty == 1, "Weeks only supports 1"
@@ -127,25 +126,21 @@ class UserLogSummary(SyncedModel):
         elif summary_freq_period in ["month", "months"]:
             assert summary_freq_qty in [1,2,3,4,6], "Months only supports [1,2,3,4,6]"
             # Integer math makes this equation work as desired
-            return base_datetime.replace(day=1, month=log_datetime.month / summary_freq_qty * summary_freq_qty)
+            return base_time.replace(day=1, month=log_time.month / summary_freq_qty * summary_freq_qty)
             
         elif summary_freq_period in ["year", "years"]:
-            assert summary_freq_qty == 1, "Years only supports 1"
-            return base_datetime.replace(day=1, month=1)
+            assert summary_freq_qty in [1,2,3,4,6], "Years only supports 1"
+            return base_time.replace(day=1, month=1)
 
         else:
             raise NotImplementedError("Unrecognized summary frequency period: %s" % summary_freq_period)
 
 
-    @staticmethod
-    def get_period_end_datetime(log_datetime, summary_freq):
-        """Similar to start_datetime, but defines the end date of a period.
-        To make sure intervals do not overlap, the end range has a 
-        second subtracted off."""
-
+    @classmethod
+    def get_period_end_datetime(cls, log_time, summary_freq):
+        start_datetime = cls.get_period_start_datetime(log_time, summary_freq)
         summary_freq_qty    = summary_freq[0]
         summary_freq_period = summary_freq[1].lower()
-        start_datetime      = UserLogSummary.get_period_start_datetime(log_datetime, summary_freq)
 
         if summary_freq_period in ["day", "days"]:
             return start_datetime + relativedelta.relativedelta(days=summary_freq_qty) - relativedelta.relativedelta(seconds=1)
@@ -165,12 +160,11 @@ class UserLogSummary(SyncedModel):
 
     @classmethod 
     def add_log_to_summary(cls, user_log, device=None):
-        """Adds total_seconds from a specific device/user/activity log to either a new, or existing, summary
-        object for that device/user/activity."""
+        """Adds total_time to the appropriate user/device/activity's summary log."""
 
         assert user_log.end_datetime, "all log items must have an end_datetime to be saved here."
         assert user_log.total_seconds >= 0, "all log items must have a non-negative total_seconds to be saved here."
-        device = device or Device.get_own_device()  # do here or else install fails
+        device = device or Device.get_own_device()  # Must be done here, or install fails
 
         # Check for an existing object
         log_summary = cls.objects.filter(
@@ -182,7 +176,7 @@ class UserLogSummary(SyncedModel):
         )
         assert log_summary.count() <= 1, "There should never be multiple summaries in the same time period/device/user/type combo"
 
-        # Either retrieve the existing log item, or create a new one.
+        # Get (or create) the log item
         log_summary = log_summary[0] if log_summary.count() else cls(
             device=device,
             user=user_log.user,
@@ -233,7 +227,7 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
             self.total_seconds = 0 if not self.last_active_datetime else (self.last_active_datetime-self.start_datetime).total_seconds()
 
             # Confirm the result (output info first for easier debugging)
-            settings.LOG.debug("%s/%s: total learning time: %d seconds" % (self.device.name, self.user.username, self.total_seconds))
+            settings.LOG.debug("%s: total learning time: %d seconds" % (self.user.username, self.total_seconds))
             assert self.total_seconds >= 0, "Total learning time should always be non-negative."
 
             # Save only completed log items to the UserLogSummary
@@ -258,7 +252,7 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
     def get_activity_int(cls, activity_type):
         """Helper function converts from string or int to the underlying int"""
 
-        if activity_type.__class__.__name__=="str":
+        if type(activity_type).__name__ in ["str", "unicode"]:
             if activity_type in cls.KNOWN_TYPES:
                 return cls.KNOWN_TYPES[activity_type]
             else:
@@ -363,4 +357,4 @@ class LanguagePack(models.Model):
     lang_name = models.CharField(max_length=30)
 
 
-model_sync.add_syncing_models([VideoLog, ExerciseLog, UserLogSummary])
+model_sync.add_syncing_models([VideoLog, ExerciseLog])
