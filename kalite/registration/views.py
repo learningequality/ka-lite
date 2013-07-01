@@ -266,6 +266,5 @@ def register(request, backend, success_url=None, form_class=None,
 
 
 def logout_view(request):
-
     logout(request)
     return redirect("homepage")

@@ -214,6 +214,11 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
         """When this model is saved, check if the activity is ended.
         If so, compute total_seconds and update the corresponding summary log."""
 
+        # Do nothing if the max # of records is zero or None
+        # (i.e. this functionality is disabled)
+        if not settings.USER_LOG_MAX_RECORDS:
+            return
+
         # Compute total_seconds, save to summary
         #   Note: only supports setting end_datetime once!
         if self.end_datetime and not self.total_seconds:
@@ -269,6 +274,11 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
     def begin_user_activity(cls, user, activity_type="login", start_datetime=None):
         """Helper function to create a user activity log entry."""
 
+        # Do nothing if the max # of records is zero or None
+        # (i.e. this functionality is disabled)
+        if not settings.USER_LOG_MAX_RECORDS:
+            return
+
         assert user is not None, "A valid user must always be specified."
         if not start_datetime:  # must be done outside the function header (else becomes static)
             start_datetime = datetime.now()
@@ -297,6 +307,11 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
     def update_user_activity(cls, user, activity_type="login", update_datetime=None):
         """Helper function to update an existing user activity log entry."""
 
+        # Do nothing if the max # of records is zero or None
+        # (i.e. this functionality is disabled)
+        if not settings.USER_LOG_MAX_RECORDS:
+            return
+
         assert user is not None, "A valid user must always be specified."
         if not update_datetime:  # must be done outside the function header (else becomes static)
             update_datetime = datetime.now()
@@ -317,6 +332,11 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
     @classmethod
     def end_user_activity(cls, user, activity_type="login", end_datetime=None):
         """Helper function to complete an existing user activity log entry."""
+
+        # Do nothing if the max # of records is zero or None
+        # (i.e. this functionality is disabled)
+        if not settings.USER_LOG_MAX_RECORDS:
+            return
 
         assert user is not None, "A valid user must always be specified."
         if not end_datetime:  # must be done outside the function header (else becomes static)
