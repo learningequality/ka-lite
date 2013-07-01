@@ -1,17 +1,16 @@
 import uuid
-import logging
-
-from annoying.functions import get_object_or_None, isnumeric
 from datetime import datetime
+from annoying.functions import get_object_or_None
+from dateutil import relativedelta
 
-from django.db import models
-from django.db.models import Sum, Avg
 from django.contrib.auth.decorators import login_required
+from django.db import models, transaction
+from django.db.models import Sum
 
 import settings
 from securesync import model_sync
 from securesync.models import SyncedModel, FacilityUser, Device
-from datetime import datetime
+from utils.functions import isnumeric
 
 
 class VideoLog(SyncedModel):
@@ -22,11 +21,11 @@ class VideoLog(SyncedModel):
     complete = models.BooleanField(default=False)
     completion_timestamp = models.DateTimeField(blank=True, null=True)
     completion_counter = models.IntegerField(blank=True, null=True)
-    
+
     def save(self, *args, **kwargs):
         if not kwargs.get("imported", False):
             self.full_clean()
-            
+
             # Compute learner status
             already_complete = self.complete
             self.complete = (self.points >= 750)
@@ -47,6 +46,7 @@ class VideoLog(SyncedModel):
     @staticmethod
     def get_points_for_user(user):
         return VideoLog.objects.filter(user=user).aggregate(Sum("points")).get("points__sum", 0) or 0
+
 
 class ExerciseLog(SyncedModel):
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
@@ -90,108 +90,255 @@ class ExerciseLog(SyncedModel):
         return ExerciseLog.objects.filter(user=user).aggregate(Sum("points")).get("points__sum", 0) or 0
 
 
-class UserLog(SyncedModel):
-    KNOWN_TYPES={"login": 1}
+class UserLogSummary(SyncedModel):
+    """Like UserLogs, but summarized over a longer period of time.
+    Also sync'd across devices.  Unique per user, device, activity_type, and time period."""
+    device = models.ForeignKey(Device)
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
     activity_type = models.IntegerField(blank=False, null=False)
-    start_time = models.DateTimeField(blank=False, null=False)
-    last_active_time = models.DateTimeField(blank=False, null=False)
-    end_time = models.DateTimeField(blank=True, null=True)
-    total_time = models.IntegerField(blank=True, null=True)
-    
-    def save(self, *args, **kwargs):
-        if self.end_time:
-            self.full_clean()
-            self.total_time = (self.end_time-self.start_time).total_seconds()
-            if self.total_time<0:
-                import pdb; pdb.set_trace()
-            logging.info("%s: total learning time: %d seconds"%(self.user.username,self.total_time)) 
-        super(UserLog, self).save(*args, **kwargs)
-
-#    def get_uuid(self, *args, **kwargs):
-#        namespace = uuid.UUID(self.user.id)
-#        return uuid.uuid5(namespace, str(self.exercise_id)).hex
+    start_datetime = models.DateTimeField(blank=False, null=False)
+    end_datetime = models.DateTimeField(blank=True, null=True)
+    total_seconds = models.IntegerField(blank=True, null=True)
 
     def __unicode__(self):
-        if self.end_time:
-            return "%s: logged in @ %s; for %s seconds"%(self.user.username,self.start_time, self.total_time)
-        else:
-            return "%s: logged in @ %s; last active @ %s"%(self.user.username, self.start_time, self.last_active_time)
-    
+        return "%d seconds for %s/%s/%d, period %s to %s" % (self.total_seconds, self.device.name, self.user.username, self.activity_type, self.start_datetime, self.end_datetime)
+
+
     @staticmethod
-    def get_activity_int(activity_type):
+    def get_period_start_datetime(log_datetime, summary_freq):
+        """Periods can be: days, weeks, months, years.
+        Days referenced from midnight on the current computer's clock.
+        Weeks referenced from Monday morning @ 00:00:00am.
+        Months referenced from Jan 1.
+        Years follow from the above."""
+
+        summary_freq_qty    = summary_freq[0]
+        summary_freq_period = summary_freq[1].lower()
+        base_datetime       = log_datetime.replace(microsecond=0, second=0, minute=0, hour=0)
+        
+        if summary_freq_period in ["day", "days"]:
+            assert summary_freq_qty == 1, "Days only supports 1"
+            return base_datetime
+
+        elif summary_freq_period in ["week", "weeks"]:
+            assert summary_freq_qty == 1, "Weeks only supports 1"
+            raise NotImplementedError("Still working to implement weeks.")
+
+        elif summary_freq_period in ["month", "months"]:
+            assert summary_freq_qty in [1,2,3,4,6], "Months only supports [1,2,3,4,6]"
+            # Integer math makes this equation work as desired
+            return base_datetime.replace(day=1, month=log_datetime.month / summary_freq_qty * summary_freq_qty)
+            
+        elif summary_freq_period in ["year", "years"]:
+            assert summary_freq_qty == 1, "Years only supports 1"
+            return base_datetime.replace(day=1, month=1)
+
+        else:
+            raise NotImplementedError("Unrecognized summary frequency period: %s" % summary_freq_period)
+
+
+    @staticmethod
+    def get_period_end_datetime(log_datetime, summary_freq):
+        """Similar to start_datetime, but defines the end date of a period.
+        To make sure intervals do not overlap, the end range has a 
+        second subtracted off."""
+
+        summary_freq_qty    = summary_freq[0]
+        summary_freq_period = summary_freq[1].lower()
+        start_datetime      = UserLogSummary.get_period_start_datetime(log_datetime, summary_freq)
+
+        if summary_freq_period in ["day", "days"]:
+            return start_datetime + relativedelta.relativedelta(days=summary_freq_qty) - relativedelta.relativedelta(seconds=1)
+
+        elif summary_freq_period in ["week", "weeks"]:
+            return start_datetime + relativedelta.relativedelta(days=7*summary_freq_qty) - relativedelta.relativedelta(seconds=1)
+
+        elif summary_freq_period in ["month", "months"]:
+            return start_datetime + relativedelta.relativedelta(months=summary_freq_qty) - relativedelta.relativedelta(seconds=1)
+
+        elif summary_freq_period in ["year", "years"]:
+            return start_datetime + relativedelta.relativedelta(years=summary_freq_qty) - relativedelta.relativedelta(seconds=1)
+
+        else:
+            raise NotImplementedError("Unrecognized summary frequency period: %s" % summary_freq_period)
+
+
+    @classmethod 
+    def add_log_to_summary(cls, user_log, device=None):
+        """Adds total_seconds from a specific device/user/activity log to either a new, or existing, summary
+        object for that device/user/activity."""
+
+        assert user_log.end_datetime, "all log items must have an end_datetime to be saved here."
+        assert user_log.total_seconds >= 0, "all log items must have a non-negative total_seconds to be saved here."
+        device = device or Device.get_own_device()  # do here or else install fails
+
+        # Check for an existing object
+        log_summary = cls.objects.filter(
+            device=device,
+            user=user_log.user,
+            activity_type=user_log.activity_type,
+            start_datetime__lte=user_log.end_datetime,
+            end_datetime__gte=user_log.end_datetime,
+        )
+        assert log_summary.count() <= 1, "There should never be multiple summaries in the same time period/device/user/type combo"
+
+        # Either retrieve the existing log item, or create a new one.
+        log_summary = log_summary[0] if log_summary.count() else cls(
+            device=device,
+            user=user_log.user,
+            activity_type=user_log.activity_type,
+            start_datetime=cls.get_period_start_datetime(user_log.end_datetime, settings.USER_LOG_SUMMARY_FREQUENCY),
+            end_datetime=cls.get_period_end_datetime(user_log.end_datetime, settings.USER_LOG_SUMMARY_FREQUENCY),
+            total_seconds=0,
+        )
+
+        settings.LOG.debug("Adding %d seconds for %s/%s/%d, period %s to %s" % (user_log.total_seconds, device.name, user_log.user.username, user_log.activity_type, log_summary.start_datetime, log_summary.end_datetime))
+
+        # Add the latest info
+        log_summary.total_seconds += user_log.total_seconds
+        log_summary.save()
+
+
+class UserLog(models.Model):  # Not sync'd, only summaries are
+    """Detailed instances of user behavior.
+    Currently not sync'd (only used for local detail reports).
+    """
+
+    # Currently, all activity is used just to update logged-in-time.
+    KNOWN_TYPES={"login": 1}
+
+    user = models.ForeignKey(FacilityUser, blank=False, null=False, db_index=True)
+    activity_type = models.IntegerField(blank=False, null=False)
+    start_datetime = models.DateTimeField(blank=False, null=False)
+    last_active_datetime = models.DateTimeField(blank=False, null=False)
+    end_datetime = models.DateTimeField(blank=True, null=True)
+    total_seconds = models.IntegerField(blank=True, null=True)
+
+
+    @transaction.commit_on_success
+    def save(self, *args, **kwargs):
+        """When this model is saved, check if the activity is ended.
+        If so, compute total_seconds and update the corresponding summary log."""
+
+        # Compute total_seconds, save to summary
+        #   Note: only supports setting end_datetime once!
+        if self.end_datetime and not self.total_seconds:
+            self.full_clean()
+            
+            # The top computation is more lenient: user activity is just time logged in, literally.
+            # The bottom computation is more strict: user activity is from start until the last "action"
+            #   recorded--in the current case, that means from login until the last moment an exercise or
+            #   video log was updated.
+            #self.total_seconds = (self.end_datetime-self.start_datetime).total_seconds()
+            self.total_seconds = 0 if not self.last_active_datetime else (self.last_active_datetime-self.start_datetime).total_seconds()
+
+            # Confirm the result (output info first for easier debugging)
+            settings.LOG.debug("%s/%s: total learning time: %d seconds" % (self.device.name, self.user.username, self.total_seconds))
+            assert self.total_seconds >= 0, "Total learning time should always be non-negative."
+
+            # Save only completed log items to the UserLogSummary
+            UserLogSummary.add_log_to_summary(self)
+        super(UserLog, self).save(*args, **kwargs)
+
+        if UserLog.objects.count() > settings.USER_LOG_MAX_RECORDS:
+            # Unfortunately, could not do an aggregate delete when doing a 
+            #   slice in query
+            for user_log in UserLog.objects.all().order_by("start_datetime")[0:UserLog.objects.count()-settings.USER_LOG_MAX_RECORDS]:
+                user_log.delete()
+
+
+    def __unicode__(self):
+        if self.end_datetime:
+            return "%s: logged in @ %s; for %s seconds"%(self.user.username,self.start_datetime, self.total_seconds)
+        else:
+            return "%s: logged in @ %s; last active @ %s"%(self.user.username, self.start_datetime, self.last_active_datetime)
+
+
+    @classmethod
+    def get_activity_int(cls, activity_type):
         """Helper function converts from string or int to the underlying int"""
+
         if activity_type.__class__.__name__=="str":
-            if activity_type in UserLog.KNOWN_TYPES:
-                return UserLog.KNOWN_TYPES[activity_type]
+            if activity_type in cls.KNOWN_TYPES:
+                return cls.KNOWN_TYPES[activity_type]
             else:
-                raise Exception("Unrecognized activity type: %s"%activity_type)
+                raise Exception("Unrecognized activity type: %s" % activity_type)
+
         elif isnumeric(activity_type):
             return int(activity_type)
+
         else:
             raise Exception("Cannot convert requested activity_type to int")
-            
-            
-    @staticmethod
-    def begin_user_activity(user, activity_type="login", start_time=None):
-        activity_type = UserLog.get_activity_int(activity_type)
-        if not start_time: start_time = datetime.now()
-        if not user:       raise Exception("user is None?")
-    
-        cur_user_log_entry = get_object_or_None(UserLog, user=user, end_time=None)
 
-        logging.info("%s: BEGIN activity(%d) @ %s"%(user.username, activity_type, start_time))
-        
+
+    @classmethod
+    def begin_user_activity(cls, user, activity_type="login", start_datetime=None):
+        """Helper function to create a user activity log entry."""
+
+        assert user is not None, "A valid user must always be specified."
+        if not start_datetime:  # must be done outside the function header (else becomes static)
+            start_datetime = datetime.now()
+        activity_type = cls.get_activity_int(activity_type)
+        cur_user_log_entry = get_object_or_None(cls, user=user, end_datetime=None)
+
+        settings.LOG.debug("%s: BEGIN activity(%d) @ %s"%(user.username, activity_type, start_datetime))
+
         # Seems we're logging in without logging out of the previous.
         #   Best thing to do is simulate a login
         #   at the previous last update time. 
         #
         # Note: this can be a recursive call
         if cur_user_log_entry:
-            logging.warn("%s: END activity on a begin @ %s"%(user.username,start_time))
-            UserLog.end_user_activity(user=user, activity_type=activity_type, end_time=cur_user_log_entry.last_active_time)
-        
+            settings.LOG.warn("%s: END activity on a begin @ %s"%(user.username,start_datetime))
+            cls.end_user_activity(user=user, activity_type=activity_type, end_datetime=cur_user_log_entry.last_active_datetime)
+
         # Create a new entry
-        cur_user_log_entry = UserLog(user=user, activity_type=activity_type, start_time=start_time, last_active_time=start_time)
+        cur_user_log_entry = cls(user=user, activity_type=activity_type, start_datetime=start_datetime, last_active_datetime=start_datetime)
         cur_user_log_entry.save()
-        
+
         return cur_user_log_entry
 
 
-    @staticmethod
-    def update_user_activity(user, activity_type="login", update_time=None):
-        activity_type = UserLog.get_activity_int(activity_type)
-        if not update_time: update_time = datetime.now()
-        if not user:        raise Exception("user is None?")
+    @classmethod
+    def update_user_activity(cls, user, activity_type="login", update_datetime=None):
+        """Helper function to update an existing user activity log entry."""
 
-        cur_user_log_entry = get_object_or_None(UserLog, user=user, end_time=None)
+        assert user is not None, "A valid user must always be specified."
+        if not update_datetime:  # must be done outside the function header (else becomes static)
+            update_datetime = datetime.now()
+        activity_type = cls.get_activity_int(activity_type)
+
+        cur_user_log_entry = get_object_or_None(cls, user=user, end_datetime=None)
 
         # No unstopped starts.  Start should have been called first!
         if not cur_user_log_entry:
-            logging.warn("%s: Had to create a user log entry, but UPDATING('%d')! @ %s"%(user.username,activity_type,update_time))
-            cur_user_log_entry = UserLog.begin_user_activity(user=user, activity_type=activity_type, start_time=update_time)
-            
-        logging.info("%s: UPDATE activity (%d) @ %s"%(user.username,activity_type,update_time))
-        cur_user_log_entry.last_active_time = update_time
+            settings.LOG.warn("%s: Had to create a user log entry, but UPDATING('%d')! @ %s"%(user.username,activity_type,update_datetime))
+            cur_user_log_entry = cls.begin_user_activity(user=user, activity_type=activity_type, start_datetime=update_datetime)
+
+        settings.LOG.debug("%s: UPDATE activity (%d) @ %s"%(user.username,activity_type,update_datetime))
+        cur_user_log_entry.last_active_datetime = update_datetime
         cur_user_log_entry.save()
 
 
-    @staticmethod
-    def end_user_activity(user,    activity_type="login", end_time=None):
-        activity_type = UserLog.get_activity_int(activity_type)
-        if not end_time:   end_time = datetime.now()
-        if not user:       raise Exception("user is None?")
+    @classmethod
+    def end_user_activity(cls, user, activity_type="login", end_datetime=None):
+        """Helper function to complete an existing user activity log entry."""
+
+        assert user is not None, "A valid user must always be specified."
+        if not end_datetime:  # must be done outside the function header (else becomes static)
+            end_datetime = datetime.now()
+        activity_type = cls.get_activity_int(activity_type)
                     
-        cur_user_log_entry = get_object_or_None(UserLog, user=user, end_time=None)
+        cur_user_log_entry = get_object_or_None(cls, user=user, end_datetime=None)
 
         # No unstopped starts.  Start should have been called first!
         if not cur_user_log_entry:
-            logging.warn("%s: Had to create a user log entry, but STOPPING('%d')! @ %s"%(user.username,activity_type,end_time))
-            cur_user_log_entry = UserLog.begin_user_activity(user=user, activity_type=activity_type, start_time=end_time)
+            settings.LOG.warn("%s: Had to create a user log entry, but STOPPING('%d')! @ %s"%(user.username,activity_type,end_datetime))
+            cur_user_log_entry = cls.begin_user_activity(user=user, activity_type=activity_type, start_datetime=end_datetime)
 
-        logging.info("%s: Logging LOGOUT activity @ %s"%(user.username, end_time))
-        cur_user_log_entry.end_time = end_time
-        cur_user_log_entry.save()
+        settings.LOG.debug("%s: Logging LOGOUT activity @ %s"%(user.username, end_datetime))
+        cur_user_log_entry.end_datetime = end_datetime
+        cur_user_log_entry.save()  # total-seconds will be computed here.
 
 
 class VideoFile(models.Model):
@@ -216,4 +363,4 @@ class LanguagePack(models.Model):
     lang_name = models.CharField(max_length=30)
 
 
-model_sync.add_syncing_models([VideoLog, ExerciseLog, UserLog])
+model_sync.add_syncing_models([VideoLog, ExerciseLog, UserLogSummary])
