@@ -1,0 +1,278 @@
+{% extends "coachreports/base.html" %}
+{% comment %}
+This template is a basic skeleton around a d3 plot.  It has the following parts:
+
+* Loads scripts necessary for d3 Visualizations (locally)
+* Has a div for plotting, and a div for status message (loading)
+
+You must:
+* Implement js function drawJsonChart(chart_div, json, xaxis, yaxis);
+    - Get a JSON blob
+    - Create the visualization chart and options
+    - Dump to the chart div (by default: chart_div)
+* Implement template block axis_dropdown that contains:
+        <select id="xaxis" name="xaxis">
+            <option value="">----</option>
+            [other options with value=API key for that value, and nice text for it (via common views.py code)
+        <select id="yaxis" name="yaxis">
+            <option value="">----</option>
+            [other options with value=API key for that value, and nice text for it (via common views.py code)
+{% endcomment %}
+
+{% load i18n %}
+{% load my_filters %}
+{% load static %}
+{% get_static_prefix as STATIC_URL %}
+
+
+
+{% block headcss %} {{ block.super }}
+<link rel="stylesheet" type="text/css" href='{{ STATIC_URL }}css/ui.dynatree.css' />
+<link rel="stylesheet" type="text/css" href='{{ STATIC_URL }}css/ui.dynatree.defaultoff.css' />
+
+<style>
+#loading {
+    width:100%;
+    font-size:12pt;
+    text-align:center;
+}
+.google-chart {
+    width: 900px; 
+    height: 500px;
+}
+.subtitle {
+    float: left;
+}
+
+#summary {
+    border: 1px black solid;
+    position: absolute;
+    background-color: white;
+}
+
+</style>
+{% endblock headcss %}
+
+
+{% block headjs %}{{ block.super }}
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui.custom.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.dynatree.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.dynatree.extensions.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/d3.v3.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/coachreports/d3.scatter.js"></script>
+
+<script type="text/javascript">
+// Scripts for mapping our stats into text names and Google vis types.
+function stat2name(stat) {
+    var children = $("#xaxis option");
+    for (opt in children) {
+        if (children[opt].value == stat) {        
+            return children[opt].text;
+        }
+    }
+
+    var children = $("#yaxis option");
+    for (opt in children) {
+        if (children[opt].value == stat) {        
+            return children[opt].text;
+        }
+    }
+    return null;
+}
+
+function stat2type(stat) {
+    switch (stat) {
+        {% for stat in stats %}
+        case "{{ stat.key }}": return "{{ stat.type }}";
+        {% endfor %}
+    }
+    return null;    
+}
+</script>
+
+<script type="text/javascript">
+function plotJsonData(chart_div, base_url, props) {
+    /* Called whenever json data blob returns (via AJAX)
+       NOTE: you have to implement drawJsonChart(chart_div, json, xaxis, yaxis); */
+    
+    // Scrub data
+    if (!props["facility_id"]) { props["facility_id"] = "{{ form.facility_id }}"; }
+    if (!props["group_id"])    { props["group_id"]    = "{{ form.group_id }}"; }
+    if (!props["user_id"])     { props["user_id"]     = "{{ form.user_id }}"; }
+    if (!props["topic_path"])  { props["topic_path"]  = {{ form.topic_path|jsonify }}; }
+
+    if (!props["xaxis"] || !props["yaxis"] || !props["topic_path"] || props["topic_path"].length==0) { // one of the ---- is selected
+        return false; 
+    }
+    
+    // Get the data
+    var url = base_url + "?";
+    for (key in props) {
+        switch (key) {
+            case "topic_path":                // Multiple topic paths
+                for (var i in props[key]) {
+                    url += "topic_path=" + props[key][i] + "&";
+                }
+                break;
+            default:
+                url += key + "=" + props[key] + "&";
+        }
+    }
+
+    $.getJSON(url, function(json) {        
+        $("#loading").text("Drawing '" + stat2name(props["xaxis"]) + "' vs '" + stat2name(props["yaxis"]) + "'..."); 
+        drawJsonChart(chart_div, json, props["xaxis"], props["yaxis"]);
+        $("#loading").text(""); 
+    }).fail(function(data) {
+        if (data.responseText == "too many SQL variables") {
+            errorMsg = "Too many topics; please select fewer topics and retry."
+        } else {
+            errorMsg = "Failure (" + data.status + "): " + data.responseText;
+        }
+        $("#loading").text(errorMsg);
+    });
+    $("#loading").text("Loading '" + stat2name(props["xaxis"]) + "' vs. '" + stat2name(props["yaxis"]) + "'...");
+    $("#chart_div").html("");
+}
+
+
+function plotTopics(topic_paths) {
+    if (!$("#content_tree")) {
+        return false;
+    }
+    if (topic_paths==null) {
+        topic_paths = get_topic_paths_from_tree()
+    }
+    plotJsonData(
+        "#chart_div",
+        "{% url api_data %}",
+        {
+            "xaxis":       $("#xaxis option:selected").val(),
+            "yaxis":       $("#yaxis option:selected").val(),
+            "user_id":     "",
+            "group_id":    $("#group option:selected").val(), 
+            "facility_id": $("#facility option:selected").val(),
+            "topic_path":  topic_paths,
+        }
+    );
+}
+</script>
+{% endblock headjs %}
+
+
+
+
+
+{% block content %}
+    {% block navbar %}{{ block.super }}{% endblock navbar %}
+
+    <!-- a good way to do this would be to create these elements dynamically (in script),
+         and move this all to javascript. -->
+    <div id="content_tree_template">
+        <button id="content_tree_toggle">
+            Use selected topics
+        </button>
+        <div id="content_tree">
+            <br/>
+            <h2>Loading topic tree... Please wait!</h2>
+        </div>
+    </div>
+    
+    <div id="google-chart">
+    {% block chart_div %}
+        <div id="loading"></div>
+        <div id="chart_div" class="google-chart"></div>
+    {% endblock chart_div %}
+    </div>
+
+    {% block data_table %}
+        <div id="data_table"></div>
+    {% endblock data_table %}
+
+    <div id="choose">
+        <form id="select_data" name="select_data">
+        {% block axis_dropdown %}
+        [You must fill me in!!]
+            {% comment "Stick this in here, as it will be silenced (but available as a block) %}{% endcomment %}
+            {% block data_options %}
+                <option value="">----</option>
+                {% for stat in stats %}
+                {% if stat.type == "number" %}
+                <option value="{{ stat.key }}"{% if stat.key = form|get_item:axis_value %} selected{% endif %}>{{ stat.name }}</option>
+                {% endif %}
+                {% endfor %}
+            {% endblock data_options %}
+        {% endblock axis_dropdown %}
+        </form>
+    </div>
+
+{% block endjs %}{{ block.super }}
+<script type="text/javascript">
+
+    $(function() {        
+        window.showing_tree = false;
+
+        // Select the values in the 
+        $("#xaxis").val("{{ form.xaxis }}").change();
+        $("#yaxis").val("{{ form.yaxis }}").change();
+        $("#group").val("{{ form.group_id }}").change();
+        $("#facility").val("{{ form.facility_id }}").change();
+        
+        
+        setTimeout(function() {
+            // Set some event functions, once objects are available to manipulate
+
+            // Register a callback
+            window.toggle_tree_callbacks.push(plotTopics);
+
+            // Make sure that each dropdown has a callback 
+            //   to replot upon selection.
+            $("#xaxis").change(   function() { plotTopics(null); });
+            $("#yaxis").change(   function() { plotTopics(null); });
+            $("#group").change(   function() { changeData("group"); plotTopics(null); });
+            $("#facility").change(function() { changeData("facility"); plotTopics(null); });
+
+            // When the button is clicked, toggle the view style
+            $("#content_tree_toggle").click(function() {
+                toggle_tree();
+            });
+
+            // Get the topic tree (starting on window load)            
+            doRequest("{% url get_topic_tree topic_path='/math/' %}", {}).success(function(treeData) {
+                
+                $("#content_tree").dynatree({
+                    imagePath:"{{ STATIC_URL }}images/",
+                    checkbox: true,
+                    selectMode: 3,
+                    children: treeData,
+                    debugLevel: 0,
+                    onSelect: function(select, node) {
+                        
+                    },
+                    onDblClick: function(node, event) {
+                        node.toggleSelect();
+                    },
+                    onKeydown: function(node, event) {
+                        if( event.which == 32 ) {
+                            node.toggleSelect();
+                            return false;
+                        }
+                    },
+                    onPostInit: function() {
+                        // Load the topics found in the querystring, when the topic_tree finishes initializing
+                        topic_paths_in_querystring = {{ form.topic_path|jsonify }};
+                        if (topic_paths_in_querystring.length == 0) {
+                            toggle_tree() // open tree
+                        }
+                        else {
+                            set_topic_paths_in_tree(this, topic_paths_in_querystring);
+                        }
+                        
+                    }
+                });
+            });
+        }, 200); //200= callback wait time.
+    });
+</script>
+{% endblock endjs %}
+{% endblock content %}
