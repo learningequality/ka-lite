@@ -5,15 +5,11 @@ function d3_multiTimeSeries (data, timeScale, appendtohtml) {
         width = 960 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom;
 
-    var parseDate = d3.time.format("%Y%m%d").parse;
-
     var x = d3.time.scale()
         .range([0, width]);
 
     var y = d3.scale.linear()
         .range([height, 0]);
-
-    console.log(data);
 
     // TODO: Dynamic Color Ranging based on number of students
     var color = d3.scale.category20();
@@ -41,6 +37,8 @@ function d3_multiTimeSeries (data, timeScale, appendtohtml) {
 
     x.domain(d3.extent(timeScale));
 
+
+    //TODO dynamically range based on values
     y.domain([0, 100]);
     //   d3.min(data, function(c) { return d3.min(c.values, function(v) { return v.pctmastery; }); }),
     //   d3.max(data, function(c) { return d3.max(c.values, function(v) { return v.pctmastery; }); })

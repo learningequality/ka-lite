@@ -16,10 +16,6 @@ function date_sort_asc (date1, date2) {
 function json2dataTable_timeline(json, xaxis, yaxis) {
     // Given a dictionary, create a data table, one row at a time.
     
-    // var parseDate = d3.time.format("%Y%m%d").parse;
-    
-    console.log(json);
-    
     var dataTable = [];
 
     nusers = Object.keys(json['data']).length;
