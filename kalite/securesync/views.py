@@ -53,14 +53,19 @@ def facility_required(handler):
                     request,
                     _("To continue, you must first add a facility (e.g. for your school). ")
                     + _("Please use the form below to add a facility."))
+                
+                # Redirect admins to add a facility
+                redir_url = reverse("add_facility")
+                redir_url = set_query_params(redir_url, {"prev": request.META.get("HTTP_REFERER", "")})
+                return HttpResponseRedirect(redir_url)
+
             else:
                 messages.error(
                     request,
                     _("You must first have the administrator of this server log in below to add a facility.")
                 )
-            redir_url = reverse("add_facility")
-            redir_url = set_query_params(redir_url, {"prev": request.META.get("HTTP_REFERER", "")})
-            return HttpResponseRedirect(redir_url)
+                # Nothing students can do, except to watch videos without a login.
+                return HttpResponseRedirect(reverse("homepage"))
 
         else:
             facility = get_facility_from_request(request)
