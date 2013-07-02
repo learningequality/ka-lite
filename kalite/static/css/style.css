@@ -20,9 +20,10 @@ button.green--small{-webkit-border-radius:2px;-moz-border-radius:2px;border-radi
 .footer__email{padding-bottom:10px;padding-right:15px;}
 input.footer__email__input{width:100%;padding:0;}
 .footer h2{font-size:22px;font-family:'Helvetica Neue: ;',Helvetica,Arial,sans-serif;font-weight:normal;color:white;}
-.footer__rss{padding-left:40px;}
+.footer__rss{padding-left:40px;padding-right:40px;}
 .footer__news-list{margin-top:15px;padding-left:0px;}.footer__news-list li{border-bottom:1px #7e7e7e solid;list-style:none;line-height:30px;}.footer__news-list li a{color:#c2c2c2;}
 .footer__second-line{padding-top:30px;}
+.footer__updates{padding-left:40px;padding-right:40px;}
 .symbol,a.symbol:before{font-family:'Mono Social Icons Font';-webkit-text-rendering:optimizeLegibility;-moz-text-rendering:optimizeLegibility;-ms-text-rendering:optimizeLegibility;-o-text-rendering:optimizeLegibility;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;-moz-font-smoothing:antialiased;-ms-font-smoothing:antialiased;-o-font-smoothing:antialiased;font-smoothing:antialiased;}
 a.symbol:before{content:attr(title);font-size:130%;}
 .list-icons{margin:0;font-size:45px;line-height:10px;padding:0px;}.list-icons li{display:inline;list-style-type:none;}.list-icons li a,.list-icons li a:hover{color:white;text-decoration:none;}

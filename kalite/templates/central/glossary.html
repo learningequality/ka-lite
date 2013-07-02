@@ -1,56 +1,30 @@
-{% extends base_template %}
+{% extends 'central/base.html' %}
 
 {% block title %}Glossary{% endblock title %}
 
 {% block content %}
-<style>
 
-.def-title {
-	margin-top: -5px;
-	margin-bottom: -25px;
-}
+<div class="span12">
+    <h2>Glossary<h2>
+    
+    <div class="glossary-element">
+        <ul>
+            <li class="glossary-title">Facility</li>
+            <li class="glossary-description">A Facility is a physical location to which Students and Teachers belong.</li>
+        </ul>
+    </div>
+    <div class="glossary-element">
+        <ul>
+            <li class="glossary-title">Organization</li>
+            <li class="glossary-description">An Organization is a group of people responsible for administering a set of Zones and Facilities.</li>
+        </ul>
+    </div>
+    <div class="glossary-element">
+        <ul>
+            <li class="glossary-title">suggested</li>
+            <li class="glossary-description">A Zone is a collection of Devices and Facilities within which student data is synchronized. Two Devices in the same Zone, if synced, can be used interchangeably by students.</li>
+        </ul>
+    </div>
 
-.def-body {
-	margin-top: -15px;
-	font-size: 12px;
-}
-
-.suggested-action {
-    background-color: #F7F7F7;
-    color: #444!important;
-    display: block;
-    margin-bottom: 10px;
-    padding: 14px;
-    position: relative;
-    float: center;
-    margin-left: 10%;
-    margin-right: 10%;
-    max-width: 770px;
-    min-width: 500px;
-}
-
-.suggested-action:hover {
-    border-color: #C3CA7D;
-    -webkit-box-shadow: 0 0 10px #76A005;
-    -moz-box-shadow: 0 0 10px #76a005;
-    box-shadow: 0 0 10px #76A005;
-    color: #444!important;
-    text-decoration: none!important;
-}
-
-</style>
-<h2>Glossary<h2>
-
-<ol>
-	<div class="vertical-shadow suggested-action">
-		<li class="def-title"><h3>Facility</h3><p class="def-body"> A Facility is a physical location to which Students and Teachers belong.</p></li>
-	</div>
-	<div class="vertical-shadow suggested-action">
-		<li class="def-title"><h3>Organization</h3><p class="def-body"> An Organization is a group of people responsible for administering a set of Zones and Facilities.</p></li>
-	</div>
-	<div class="vertical-shadow suggested-action">
-		<li class="def-title"><h3>Zone</h3><p class="def-body"> A Zone is a collection of Devices and Facilities within which student data is synchronized. Two Devices in the same Zone, if synced, can be used interchangeably by students.</p></li>
-	</div>
-</ol>
-
+</div>
 {% endblock content %}

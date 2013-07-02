@@ -1,4 +1,4 @@
-<!DOCTYPE HTML>
+    <!DOCTYPE HTML>
 {% load i18n %}
 
 <html>
@@ -58,9 +58,11 @@
                 </ul>
             </div>
         </div>
+        
+        <div class="row-fluid content"> 
+            {% block content %}{% endblock content %}
+        </div>
 
-        {% block content %}{% endblock content %}
-           
         {% block footer %}{% endblock footer %}
     
     </div>
