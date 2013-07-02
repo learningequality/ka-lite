@@ -8,10 +8,9 @@ def _add_message(request, level, message, extra_tags='', fail_silently=False):
     storage = django.contrib.messages.api.get_messages(request)
 
     for m in storage:
-    	if m.message == message:
-    		storage.used = False
-    		return request._messages
-    storage.used = False
+        storage.used = False
+        if m.message == message:            
+            return request._messages
 
     if hasattr(request, '_messages'):
         return request._messages.add(level, message, extra_tags)
@@ -20,4 +19,4 @@ def _add_message(request, level, message, extra_tags='', fail_silently=False):
                     'django.contrib.messages.middleware.MessageMiddleware')
 
 def override_add_messages():
-	django.contrib.messages.api.add_message = _add_message
+    django.contrib.messages.api.add_message = _add_message
