@@ -60,13 +60,15 @@
         </div>
         
         <div class="row-fluid content"> 
-            {% block content %}{% endblock content %}
+            <div class="span12 content-padding">
+                {% block content %}{% endblock content %}
+            </div>
         </div>
 
-        {% block footer %}{% endblock footer %}
+    {% block landing-page %}{% endblock landing-page %}
     
     </div>
-
+    
     {% block bodyjs %}{% endblock bodyjs %}
     </body>
 </html>

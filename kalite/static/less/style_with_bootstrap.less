@@ -1,7 +1,18 @@
 body {
  //background: url(/static/images/light-page-bg.png) repeat-x;
-background: rgb(225,233,203);
+  background: rgb(225,233,203);
+  font:11px/1.5em Helvetica;
 }
+//Idea from designing for the web
+h1,h2,h3,h4,h5,h6{
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: normal;
+}
+h1{font-size: 218%;}
+h2{font-size: 164%;}
+h3{font-size: 145%;}
+h4{font-size: 118%;}
+
 a:hover{
   text-decoration: none;
 }
@@ -40,20 +51,16 @@ p{
 }
 
 /* Content */
-.content{ // Green to white gradient border - TODO: Test on all the browsers
+.content{ 
   background-color: rgb(255, 255, 255);
   border-top: 3px solid @dark-green;
 
 }
-
-.content__map-container,.content__motto-container{
-  padding:10px;
+.content-padding{
+  padding: 20px 30px 0px 30px;
 }
-
 .content__box-container{
   background-color: rgb(211,211,211);
- // border-top: 3px solid rgb(194,194,194);
-
 }
 .center { float: none; margin-left: auto; margin-right: auto; }
 
@@ -78,8 +85,6 @@ p{
 
 .content__motto-container{
 
-  padding-left: 25px;
-  padding-top: 12px;
   h1{
     font-size: 25px;
     font-weight: normal;
