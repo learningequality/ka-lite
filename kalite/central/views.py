@@ -1,37 +1,39 @@
-import re, json
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseNotAllowed
+import re 
+import json
+from annoying.decorators import render_to
+
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
-from annoying.decorators import render_to
-from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
-from central.forms import OrganizationForm, ZoneForm, OrganizationInvitationForm
-from securesync.api_client import SyncClient
-from securesync.models import Zone, SyncSession
-from django.core.urlresolvers import reverse
-from django.contrib.auth.decorators import login_required
+from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
-from securesync.models import Facility
-from securesync.forms import FacilityForm
-from django.contrib import messages
 
 import requests
 import settings
+from central.forms import OrganizationForm, ZoneForm, OrganizationInvitationForm
+from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
+from securesync.api_client import SyncClient
+from securesync.forms import FacilityForm
+from securesync.models import Facility, Zone, SyncSession
 
 
 @render_to("central/homepage.html")
 def homepage(request):
-    
+
     # show the static landing page to users that aren't logged in
     if not request.user.is_authenticated():
         return landing_page(request)
-    
+
     # get a list of all the organizations this user helps administer    
     organizations = get_or_create_user_profile(request.user).get_organizations()
     
     # add invitation forms to each of the organizations
     for org in organizations:
         org.form = OrganizationInvitationForm(initial={"invited_by": request.user})
-    
+
     # handle a submitted invitation form
     if request.method == "POST":
         form = OrganizationInvitationForm(data=request.POST)
@@ -229,4 +231,11 @@ def crypto_login(request):
         return HttpResponse("Unable to establish a session with KA Lite server at %s" % host)
     return HttpResponseRedirect("%ssecuresync/cryptologin/?client_nonce=%s" % (host, client.session.client_nonce))
 
+
+
+def handler_404(request):
+    return HttpResponseNotFound(render_to_string("central/404.html", {}, context_instance=RequestContext(request)))
+    
+def handler_500(request):
+    return HttpResponseServerError(render_to_string("central/500.html", {}, context_instance=RequestContext(request)))
     

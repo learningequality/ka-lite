@@ -1,34 +1,35 @@
-    <!DOCTYPE HTML>
+<!DOCTYPE HTML>
 {% load i18n %}
+{% load staticfiles %}
 
 <html>
     <head>
     <!--[if lt IE 9]>
-          <script src="{{ MEDIA_URL }}js/html5shiv.js"></script>
+          <script src="{% static 'js/html5shiv.js' %}"></script>
     <![endif]-->
 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         {% block titletag %}
         <title>{% block title %}{{ title }}{% endblock title %} | KA Lite</title>
         {% endblock %}
-        <link rel="stylesheet/less" type="text/css" href="{{ MEDIA_URL }}less/bootstrap/bootstrap.less"></link>
-        <link rel="stylesheet/less" type="text/css" href="{{ MEDIA_URL }}less/bootstrap/responsive.less"></link>
-        <link rel="stylesheet/less" type="text/css" href="{{ MEDIA_URL }}less/style.less"></link>
+        <link rel="stylesheet/less" type="text/css" href="{% static 'less/bootstrap/bootstrap.less' %}"></link>
+        <link rel="stylesheet/less" type="text/css" href="{% static 'less/bootstrap/responsive.less' %}"></link>
+        <link rel="stylesheet/less" type="text/css" href="{% static 'less/style.less' %}"></link>
         <!--[if IE]>
-        <link rel="stylesheet/css" type="text/css" href="{{ MEDIA_URL }}css/bootstrap/bootstrap.css"></link>
-        <link rel="stylesheet/css" type="text/css" href="{{ MEDIA_URL }}css/bootstrap/responsive.css"></link>
-        <link rel="stylesheet/css" type="text/css" href="{{ MEDIA_URL }}css/style.css"></link>
+        <link rel="stylesheet/css" type="text/css" href="{% static 'css/bootstrap/bootstrap.css' %}"></link>
+        <link rel="stylesheet/css" type="text/css" href="{% static 'css/bootstrap/responsive.css' %}"></link>
+        <link rel="stylesheet/css" type="text/css" href="{% static 'css/style.css' %}"></link>
         <![endif]-->
         {% block basecss %}{% endblock basecss %}
         {% block headcss %}{% endblock headcss %}
-        <link rel="shortcut icon" href="{{ MEDIA_URL }}images/favicon.ico">
+        <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
         {% block jqueryjs %}
-        <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.7.1.min.js"></script>
-        <script type="text/javascript" src="{{ MEDIA_URL }}js/underscore-min.js"></script>
-        <script type="text/javascript" src="{{ MEDIA_URL }}js/backbone-min.js"></script>
+        <script type="text/javascript" src="{% static 'js/jquery-1.7.1.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/underscore-min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/backbone-min.js' %}"></script>
         {% endblock jqueryjs %}
-        <script type="text/javascript" src="{{ MEDIA_URL }}js/khan-lite.js"></script>
-        <script type="text/javascript" src="{{ MEDIA_URL }}js/less.js"></script>
+        <script type="text/javascript" src="{% static 'js/khan-lite.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/less.js' %}"></script>
 
         {% block headjs %}{% endblock headjs %}
         {% block basejs %}{% endblock basejs %}
@@ -36,24 +37,26 @@
         {% block extrahead %}{% endblock extrahead %}
         {% block analytics %}{% endblock analytics %}
     </head>
-    {% load i18n %}
+
     <body>
 
     <div class="container">
         <div class="row-fluid">
-          <div class="span2 header__logo"><img src="/static/images/horizontal-logo-small.png" alt=""></div>
+          <div class="span2 header__logo"><img src="{% static 'images/horizontal-logo-small.png' %}" alt=""></div>
             <div class="span6 offset4">
                 <ul class="header__horizontal-menu">
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/faq/">FAQ</a></li>
+                    <li><a href="{% url homepage %}">Home</a></li>
+                    <li><a href="{% url wiki path='installation' %}">Install</a></li>
+                    <li><a href="{% url faq_topic_list %}">FAQ</a></li>
+                    <li><a href="{% url contact_wizard %}">Contact</a></li>
+                    <li><a href="{% url about %}">About</a></li>
                 {% if user.is_authenticated %}
                     {% if user.is_superuser %}
-                    <li><a href="/admin/" >Admin</a></li>
+                    <li><a href="{% url admin:index %}" >Admin</a></li>
                     {% endif %}
-                    <li><a href="/accounts/logout/">{{ user.username }} &nbsp; (Logout)</a></li>
+                    <li><a href="{% url auth_logout %}">{{ user.username }} &nbsp; (Logout)</a></li>
                 {% else %}
-                    <li><a href="/accounts/register/">Sign Up</a></li>
-                    <li><a href="/accounts/login/">Login</a></li>
+                    <li><a href="{% url auth_login %}">Login</a></li>
                 {% endif %}
                 </ul>
             </div>

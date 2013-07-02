@@ -1,6 +1,7 @@
-{% extends 'base_central.html' %}
+{% extends "central/base.html" %}
 
 {% block home_active %}active{% endblock home_active %}
+{% block title %}Account administration{{ block.super }}{% endblock title %}
 
 {% block headjs %}
 	<script>

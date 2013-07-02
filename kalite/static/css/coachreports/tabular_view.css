@@ -1,0 +1,89 @@
+.selection {
+    float: left;
+    padding: 0 10px 10px 0;
+    
+}
+#displaygrid {
+    width: 100%;
+    padding-top: 5px;
+    padding-left: 2px;
+}
+
+#displaygrid > .users {
+    width: 11%;
+    margin-right: 1px;
+    float: left;
+}
+
+#displaygrid > .userstatus {
+    overflow: auto;
+    width: 88%;
+}
+
+.users table {
+    width: 100%;
+}
+
+#displaygrid table {
+    table-layout: fixed;
+}
+
+th, td {
+    border: 1px solid black;
+    padding: 2px;
+}
+
+.users th {
+    text-align: left;
+    
+}
+
+.subtitle {
+    font-size: 1.15em;
+    font-weight: bold;
+}
+
+.status {
+    height: 27px;
+    background-color: #EEE;
+    /*width: 80px;*/
+}
+
+th.username {
+    height: 27px;
+    border: 1px solid black;
+    /*border-right: none;*/
+    padding-left: 5px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+th.headrow {
+    /*width: 80px;*/
+    font-weight: bold;
+    background-color: white;
+}
+
+th.headrowuser {
+    font-weight: bold;
+}
+
+.complete {
+    background-color: #2F942F;
+}
+
+.partial {
+    background-color: #94BE48;
+}
+
+.struggle {
+    background-color: #CA4D4D;
+}
+
+#displaygrid td, #displaygrid th {
+    min-width: 60px;
+    max-width: 60px;
+    overflow: hidden;
+    /*white-space: nowrap;*/
+}
+

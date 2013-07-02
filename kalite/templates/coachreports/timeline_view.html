@@ -1,0 +1,33 @@
+{% extends "coachreports/base_google_visualization.html" %}
+
+{% load repeatblock %}
+{% load my_filters %}
+{% load staticfiles %}
+
+{% block title %}Timeline plot {{ block.super }}{% endblock title %}
+{% block report_title %}Timeline plot {% endblock report_title %}
+
+{% block headjs %} {{ block.super }}
+<script type="text/javascript" src="{% static 'js/coachreports/timeline_view.js' %}"></script>
+{% endblock headjs %}
+
+
+{% block headcss %} {{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/timeline_view.css' %}">
+{% endblock headcss %}
+
+{% block axis_dropdown %}
+    X-Axis:
+    <select id="xaxis" name="xaxis">
+        {% for stat in stats %}
+        {% if stat.type == "datetime" %}
+        <option value="{{ stat.key }}"{% if stat.key = form|get_item:axis_value %} selected{% endif %}>{{ stat.name }}</option>
+        {% endif %}
+        {% endfor %}
+    </select>
+    Y-Axis:
+    <select id="yaxis" name="yaxis">
+        {% block data_options %}{{ block.super }}{% endblock %}
+    </select>
+{% endblock axis_dropdown %}
+
