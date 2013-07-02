@@ -7,11 +7,6 @@ import main.api_urls
 import securesync.urls
 from kalite import settings
 
-# TODO(ruimalheiro) Do a cleaner implementation, by extending the SessionStorage. 
-# This override might create some confusion because it is affecting Django's default "add_message" function from "api.py".
-from main.custom_django_messages import override_add_messages
-override_add_messages()
-
 admin.autodiscover()
 
 urlpatterns = patterns('',
