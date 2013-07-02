@@ -70,29 +70,30 @@ function clear_messages() {
     return $("#message_container");
 }
 
-$(function() {
+function setGetParam(href, name, val) {
+    // Generic function for changing a querystring parameter in a url
+    var vars = {};
+    var base = href.replace(/([?].*)$/gi, ""); // no querystring
+    var parts = href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m, key, value) {
+        vars[key] = value;
+    });
 
-    // load progress data for all videos linked on page, and render progress circles
-    var youtube_ids = $.map($(".progress-circle[data-youtube-id]"), function(el) { return $(el).data("youtube-id") });
-    if (youtube_ids.length > 0) {
-        doRequest("/api/get_video_logs", youtube_ids).success(function(data) {
-            $.each(data, function(ind, video) {
-                var newClass = video.complete ? "complete" : "partial";
-                $("[data-youtube-id='" + video.youtube_id + "']").addClass(newClass);
-            });
-        });
+    if (val == "" || val == "----" || val === undefined) {
+        delete vars[name];
+    } else {
+        vars[name] = val;
     }
 
-    // load progress data for all exercises linked on page, and render progress circles
-    var exercise_ids = $.map($(".progress-circle[data-exercise-id]"), function(el) { return $(el).data("exercise-id") });
-    if (exercise_ids.length > 0) {
-        doRequest("/api/get_exercise_logs", exercise_ids).success(function(data) {
-            $.each(data, function(ind, exercise) {
-                var newClass = exercise.complete ? "complete" : "partial";
-                $("[data-exercise-id='" + exercise.exercise_id + "']").addClass(newClass);
-            });
-        });
+    var url = base + "?";
+    for (key in vars) {
+        url += "&" + key + "=" + vars[key];//         + $.param(vars);
     }
+    return url
+}
 
-
-});
+function setGetParamDict(href, dict) {
+    for (key in dict) {
+         href = setGetParam(href, key, dict[key]);
+    }
+    return href;
+}
