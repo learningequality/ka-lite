@@ -1,115 +1,697 @@
-{% extends 'central/base.html' %}
+{% extends "central/base_central.html" %}
+
+{% load staticfiles %}
+
+{% block home_active %}active{% endblock home_active %}
 
 {% block title %}Home{% endblock %}
-
 {% block jqueryjs %}
-<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.8.3.min.js"></script> 
+<script type="text/javascript" src="{% static "js/jquery-1.8.3.min.js" %}"></script> 
 {% endblock jqueryjs %}
+{% block headjs %}
+<script type="text/javascript" src="{% static "js/simple.carousel.js" %}"></script> 
+<script type="text/javascript">
+    $(function() {
+        $(".carousel-class").simplecarousel({
+            next: $('#next-button'),
+            prev: $('#prev-button'),
+            slidespeed: 700,
+            auto: 6000,
+            width: 420,
+            height: 337
+        });
+    });
+</script>
+<script type="text/javascript">
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+{% endblock headjs %}
+{% block headcss %}
+<style type="text/css">
 
-{% block analytics %}{% include 'analytics.html' %}{% endblock analytics %}
-  
+/*** Layout ***/
+.row{
+    width: 100%;
+    margin: 0 auto;
+    overflow: hidden;
+}
+.col, .floatleft{
+    float: left;
+}
+.subscriberow{
+    min-height: 100px;
+}
+.screenshotrow{
+    /*Width works out to be 1038px*/
+    min-height: 285px;
+    min-width: 700px;
+}
+/*** Layout END ***/
+
+/** Content Section Containers **/
+
+/* Relevant to Motivation Section */
+#motivation_sec{
+    /*Border*/
+    border-top: 4px;
+    border-bottom: 4px;
+    border-right: 1px;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+    border-color: #d5deb9;      /* Color: (Unoffical) Khan Grey Green*/
+    border-style: solid;
+    
+    /*Sizing*/
+    padding: 15px;
+    padding-right: 10px;
+    padding-bottom: 6px;
+    padding-left: 25px;
+}
+.greenword{
+    color: #78AB46;             /* Color: Pea Green */
+}
+.onecol-spacer-left,
+.onecol-spacer-right {
+    width: 20%;
+    visibility: hidden;
+}
+
+/* Get Started section */
+#get-started-contribute {
+    margin: 25px auto;
+    height: auto;
+    width: 100%;
+}
+#get_started_sec {
+    padding-bottom: 15px;
+
+    /* Size */
+    /*padding-left: 10px;*/
+    /*padding-right: 30px;*/
+    width: 65%;
+    height: auto;
+    border-right: 1px;
+    border-color: #DBE6E0;      /* Color: Moon */
+    border-style: solid;
+    text-align: center;
+}
+#get-started-button{
+    background: #78AB46;        /* Color: Pea Green */
+    color: white;
+    border-width: 1px;
+    border-color: #9CBA7F;      /* Color: Mint Candy */
+    border-radius: 5px;
+    width: 50%;
+    min-width: 160px;
+    height: 50px;
+    font-size: 24px;
+}
+#get-started-button:hover{
+    color: #DBE6E0;             /* Color: Moon */
+    cursor: auto;
+}
+
+/* Relevant to contribute section */
+#contribute_sec{
+    /*width: 45%;*/
+    margin-left: 30px;
+    /*border-right: 1px;*/      /* Uncomment when donate is back */
+
+    width: 25%;
+    height: auto;
+    text-align: center;
+}
+#contribute_sec div{
+    float: left;
+}
+.action-text{
+    font-weight: bold;
+    float: left;
+    line-height: 21px;
+    font-size: 13px;
+    width: 100%;
+    /*margin-right: 30px;*/
+    text-align: center;
+    /*margin-left: 50px;*/
+}
+/*button stuff*/
+#contribute-button{
+    background: #78AB46;        /* Color: Pea Green */
+    border-width: 1px;
+    border-color: #9CBA7F;      /* Color: Mint Candy */
+    border-radius: 5px;
+    width: 150px;
+    padding: 10px;
+    padding-top: 12px;
+    font-size: 24px;
+    color: white;
+}
+/*#contribute_sec button{
+    color: white;
+    line-height: 16px;
+    font-size: 24px;
+    margin-left: 20px;
+    margin-top: 5px;
+}*/
+#contribute_sec button:hover{
+    color: #DBE6E0;      /* Color: Moon */
+    cursor: auto;
+}
+.contribute-button-subtitle{
+    font-size: 10px;
+}
+
+/* Relevant to subscription section */
+.subscriberow{
+    margin-top: 10px;
+    margin-left: 7px;
+}
+#subscribe_sec{
+    border-color: #DBE6E0;      /* Color: Moon */
+    border-style: solid;
+    
+    /*Size*/
+    padding-left: 10px;
+    padding-right: 10px;
+    min-width: 600px;
+    /*width: 60%;*/
+    
+    /*Layout*//*
+    position: relative;
+    left: 20%;*/
+}
+
+#subscribe_sec .cent-s-by-s{
+    float: left;
+}
+.subscribe-title h1,
+.subscribe-title h2{
+    color: #78AB46;             /* Color: Pea Green */
+    font-weight: bold;
+    line-height: normal;
+    margin-bottom: 2px;
+    text-align: center;
+}
+.subscribe-title h1{
+    font-size: 30px;
+}
+.subscribe-title h2{
+    font-size: 24px;
+}
+
+.email-title {
+    font-weight: bold;
+    line-height: normal;
+    text-align: center;
+    width: 222px;
+}
+
+.email-title h1 {
+    color: #78AB46;             /* Color: Pea Green */
+    margin-top: 2px;
+    margin-bottom: 6px;
+    font-size: 30px;
+}
+
+.email-title a {
+    margin-bottom: 2px;
+    font-size: 13px;
+    margin-left: 4px;
+}
+
+.exclamation {
+    font-size: 6.2em;
+    margin-top: 20px; /* not a perfect way to do it.... */
+    margin-left: 3px;
+}
+
+.subscribe-text {
+    width: 195px;
+    margin-top: 0px;
+    padding: 0 5px 0 8px;
+    line-height: 21px;
+    font-size: 13px;
+    text-align: justify;
+}
+
+.subscribe-form {
+    width: 170px;
+    margin-left: 10px;
+    margin-top: 5px;
+}
+.subscribe-form form {
+    padding: 1px;
+}
+
+.subscribe-form input {
+    height: 22px;
+    width: 130px;
+}
+
+.subscribe-form input[type=email] {
+    border: 1px;
+    border-radius: 5px;
+    border-color: #bbb;         /* Color: medium-light Grey */
+    border-style: solid;
+    padding: 1px;
+    padding-left: 3px;
+    font-size: 12px;
+    margin-bottom: 5px;
+    width: 123px;
+    
+    /*font*/
+    color: #555;                /* Color: Medium Grey */
+    font-style: oblique;
+}
+
+.subscribe-form input[type=submit] {
+    background: #78AB46;        /* Color: Pea Green */
+    color: white;
+    border-width: 1px;
+    border-color: #9CBA7F;      /* Color: Mint Candy */
+    border-radius: 5px;
+    font-size: 14px;
+}
+.subscribe-form input[type=submit]:hover {
+    color: #DBE6E0;      /* Color: Moon */
+}
+
+/* Relevant to share section */
+#share_sec {
+    /*width: 37%;*/
+    border-color: #DBE6E0;      /* Color: Moon */
+    border-style: solid;
+}
+#share_sec div {
+    float: left;
+}
+#share-text {
+    margin-top: 5px;
+    width: 24%;
+}
+.share-title {
+    font-size: 22px;
+}
+#share-block {
+    margin-left: 15px;
+    /*margin-top: 10px;*/
+}
+
+/* Relevant to donate section */
+#donate_sec {
+    display: none;
+    width: 25%;
+    margin-left: 10px;
+}
+#donate_sec div {
+    float: left;
+}
+#donate-text {
+    margin-top: 4px;
+    line-height: 14px;
+    font-size: 12px;
+    text-align: justify;
+    width: 65%;
+}
+/*button stuff*/
+#donate-button {
+    background: #78AB46;        /* Color: Pea Green */
+    border-width: 1px;
+    border-color: #9CBA7F;      /* Color: Mint Candy */
+    border-radius: 5px;
+    padding: 10px;
+    padding-top: 12px;
+    width: 80px;
+
+    /* Text */
+    /*text-align: center;*/
+}
+#donate_sec button {
+    color: white;
+    line-height: 14px;
+    font-size: 14px;
+    margin-left: 10px;
+    margin-top: 20px;
+}
+#donate_sec button:hover {
+    color: #DBE6E0;             /* Color: Moon */
+    line-height: 14px;
+}
+/** Content END **/
+
+/* RSS Feed relevant stuff */
+#bottom_content {
+    margin: 25px auto;
+    min-height: 70px;
+    width: 860px;
+    padding-top: 25px;
+
+    border-top: 1px dashed #DBE6E0; /* Color: Moon */
+}
+#rss-logo {
+    float: left;
+    margin-left: 10px;
+}
+#rss-feed {
+    float: left;
+    min-width: 400px;
+    margin-left: 10px;
+}
+#rss-feed h2 {
+    font-size: 22px;
+}
+.rss-entry {
+    margin-bottom: 10px;
+}
+.rss-title{
+    display: block;
+    font-size: 16px;
+    color: #333;
+    padding-bottom: 1px;
+    margin-bottom: 0;
+    border-bottom: 1px dotted #DBE6E0; /* Color: Moon */
+}
+.rss-entry p{
+    margin: 1px 0;
+    font-size: 
+}
+
+/*** Landing Page END */
+
+/* Pre-Fully internal stylesheet CSS*/
+ul {
+    list-style: disc outside none;
+    margin-left: 20px;
+    font-size: 14px;
+}
+#logo-image-small img {
+    width: auto;
+}
+article {
+    padding: 30px;
+}
+#nav_signup, #nav_login, #nav_admin {
+    display: block;
+}
+
+
+#screenshot {
+    width: 100%;
+    height: 100%;
+}
+
+.screenshotrow img {
+    height: 274px;
+}
+
+#screenshot_sec {
+    height: 275px;
+    width: 420px;
+    border: 1px solid #d5deb9;
+    border-top-width: 4px;
+    border-bottom-width: 4px;
+    border-left-width: 2px;
+}
+
+#motivation_sec {
+    border-left: 1px solid #d5deb9;
+    width: 445px;
+    min-height: 254px;
+}
+
+.share-subscribe-section {
+    margin-top: 25px;
+    min-width: 300px;
+}
+
+#inner-content {
+    width: 950px;
+    margin: 0 auto;
+}
+
+#motivation_sec h1 {
+    line-height: 1.3em;
+}
+
+.motivation_text {
+    font-size: 13px;
+}
+
+.rss-feed-icon {
+    margin-top: -5px;
+}
+
+/* override just for front-page style */
+.message {
+    width: 912px;
+    margin-left: 44px;
+}
+
+#next-button, #prev-button {
+    background-image: url("{% static "images/landing-page/arrows.png" %}");
+    background-repeat: no-repeat;
+    margin-top: -25px;
+    width: 39px;
+    height: 40px;
+    position: absolute;
+}
+
+#next-button {
+    right: -20px;
+    background-position: left -40px;
+    width: 40px;
+}
+
+#prev-button {
+    left: -20px;
+    background-position: left top;
+    width: 40px;
+}
+
+#button-sec {
+    position: absolute;
+    margin-top: 145px;
+    width: 422px;
+}
+
+/* Dylan's extra, apart from what I changed above (sorry... rush to launch) */
+.mini-action-section {
+    width: 48%;
+    float: left;
+    margin-right: 10px;
+    text-align: center;
+}
+
+.button-section, #get_started_sec > h2, #contribute_sec > h2 {
+    /*margin-left: 40px;*/
+    width: 100%;
+}
+
+.button-section button {
+    margin-top: 10px;
+}
+
+#left-bump {
+    margin-left: 85px;
+}
+
+.carousel-pic {
+    list-style-type: none;
+}
+
+.ka-on-social {
+    float: left;
+}
+
+.ka-on-social-container {
+    float: left;
+    margin-left: 70px;
+    margin-top: 2px;
+}
+
+.follow-us-text {
+    font-size: 16px;
+    margin-top: 6px;
+}
+
+.ka-on-twitter {
+    margin-top: 2px;
+    margin-left: -3px;
+}
+
+.ka-on-facebook {
+    margin-left: 5px;
+}
+
+.carousel-class {
+    overflow: hidden;
+    height: 100%;
+}
+
+</style>
+{% endblock headcss %}
+
 {% block content %}
-    <div class="row-fluid">
-        <div class="span12">
-            <div class="content__motto-container">
-                <h1>Only 35% of the world has internet. 100% of the world needs education.</h1>
-                <p>
-                    KA Lite is an offline version of <a href="http://www.khanacademy.org/" target="_blank">Khan Academy</a> that runs on almost anything.
-                </p>
-                <ul class="content__motto-container__motivation-box">
-                    <li>Bringing the online education revolution to rural communities.</li>
-                    <li>Synchronize and manage your organization's deployments centrally.</li>
-                    <li>Quick installation, minimal system requirements, and simple to use.</li>
-                    <li>Students can earn points, teacher can view coach reports.</li>
-                    <li>Choose which videos to download, and languages for subtitles.</li>
-                </ul>
-            </div>
+          
+<div id="inner-content">
+
+<!--First Content Row-->
+<div class="screenshotrow">
+    <!-- screenshot or Image Carousel -->
+    <div id="screenshot_sec" class="col twocol">
+        <div id="button-sec">
+            <span id="prev-button"></span>
+            <span id="next-button"></span>
+        </div>
+        <ul class="carousel-class">
+            <li class="carousel-pic"><img src="{% static "images/landing-page/exercises-cropped.png" %}"></li>
+            <li class="carousel-pic"><img src="{% static "images/landing-page/subtitle-mashup.png" %}"></li>
+            <li class="carousel-pic"><img src="{% static "images/landing-page/vid-down-cropped.png" %}"></li>
+            <li class="carousel-pic"><img src="{% static "images/landing-page/coach-reports-cropped.png" %}"></li>
+        </ul>
+    </div>
+    <!-- Motivation -->
+    <div id="motivation_sec" class="col twocol">
+        <h1>Only 35% of the world has internet.<br/>100% of the world needs education.</h1>
+        <p class="motivation_text">KA Lite is an offline version of <a href="http://www.khanacademy.org/" target="_blank">Khan Academy</a> that runs on almost anything.
+            
+            </p>
+        <ul>
+            <li class="motivation_text">Bringing the online education revolution to rural communities.</li>
+            <li class="motivation_text">Synchronize and manage your organization's deployments centrally.</li>
+            <li class="motivation_text">Quick installation, minimal system requirements, and simple to use.</li>
+            <li class="motivation_text">Students can earn points, teacher can view coach reports.</li>
+            <li class="motivation_text">Choose which videos to download, and languages for subtitles.</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Second Content Row - Subscribe and Share -->
+<div class="row subscriberow">
+
+    <div id="subscribe_sec" class="col onecol share-subscribe-section">
+        <div class="cent-s-by-s subscribe-title"><h1>SUBSCRIBE<br/></h1><h2>FOR UPDATES</h2></div>
+        <div class="exclamation cent-s-by-s greenword">!</div>
+        <div id="mc_embed_signup" class="cent-s-by-s subscribe-form">
+            <form action="{% url contact_subscribe %}" class="validate" target="_blank" novalidate>
+                <input type="email" value="" name="email" class="email" id="mce-EMAIL" placeholder="email address" required>
+                <input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button">
+            </form>
+        </div>
+
+        <div class="cent-s-by-s email-title">
+            <h1>Contact us</h1>
+            <a class="email-address" href="{% url contact_wizard type='info' %}">{{ central_contact_email }}</a>
         </div>
 
     </div>
 
-    <div class="row-fluid content__box-container">
+    <div id="share_sec" class="col social_media_sharing share-subscribe-section">
+        <div id="share-block">
+            <!-- FB and Twitter -->
+            <img src="{% static "images/social-fb-t.png" %}" width="101" height="62" alt="FB and twitter" usemap="#socialmap">
+            <map name="socialmap">
+                <area shape="rect" coords="0,0,50,62" alt="Facebook" href="http://www.facebook.com/share.php?u=http://bit.ly/RnZgUp">
+                <area shape="rect" coords="51,0,101,62" alt="Twitter" href="https://twitter.com/intent/tweet?text=KA+Lite%2C+an+offline+version+of+Khan+Academy+for+rural+schools&url=http%3A%2F%2F{{ central_server_host }}%2F">
+            </map>
 
-        <div class="span4">
-            <div class="content__box">
-                <img src="/static/images/landing-page/install.png" alt="">
-                <p>Ready to get started</p>
-                <a href="/installation">
-                     <button type="button" name="" value="" class="green">Install Now!</button>
-                </a> 
-                <br> 
-            </div>
-        </div>
-        <div class="span4">
-            <div class="content__box">
-                <img src="/static/images/landing-page/contact.png" alt="">
-                <p>Want deployment advice?</p>
-                <a href="https://docs.google.com/spreadsheet/viewform?formkey=dEhEOWRNVDBzWTdsUnFQYWlCWnZoWWc6MQ">
-                    <button type="button" name="" value="" class="green">Contact Us</button>
-                </a>
-            </div>
-        </div>
-        <div class="span4">
-            <div class="content__box">
-                <img src="/static/images/landing-page/contribute.png" alt="">
-                <p>Want to contribute</p>
-                <a href="/contribute">
-                    <button type="button" name="" value="" class="green">Get Involved</button>
-                </a>
-            </div>
-        </div>
+            <!-- G+ -->
+            <div class="g-plus" data-action="share" data-annotation="vertical-bubble" data-height="60" data-href="http://{{ central_server_host }}/"></div>
 
+            <!-- LinkedIN -->
+
+            <script src="//platform.linkedin.com/in.js" type="text/javascript"> </script> <script type="IN/Share" data-url="http://{{ central_server_host }}/" data-counter="top"></script>
+        </div>
     </div>
+
+</div>
+
+<!-- Third Content Row  - Get Started and Contribute -->
+<div id="get-started-contribute" class="row">
+    <div id="get_started_sec" class="floatleft">
+        <h2>
+            Do you know somewhere that KA Lite could be useful?
+        </h2>
+        <div class="mini-action-section">
+            <div class="action-text">
+                Ready to get started? 
+            </div>
+            <div class="button-section">
+
+                <a href="{{ wiki_url }}installation">
+
+                    <button id="get-started-button">
+                       Install now!
+                    </button>
+                </a>
+            </div>
+        </div>
+        <div class="mini-action-section">
+            <div class="action-text">
+                Tell us about your needs
+            </div>
+            <div class="button-section">
+                <a href="{% url contact_wizard type='deployment' %}">
+                    <button id="get-started-button">
+                        Deployment
+                    </button>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div id="contribute_sec" class="floatleft">
+        <h2>
+            Want to contribute?
+        </h2>
+        <div class="action-text">
+            Develop, translate, or seed!
+        </div>
+        <div class="button-section">
+
+            <a href="{% url contact_wizard type='contribute' %}"><button id="contribute-button">Contribute</button></a>
+        </div>
+    </div>
+
+</div>
+
+</div> <!--end promo content-->
+
+{% if feed %}
+<div id="bottom_content" class="row">  
+    <div id="rss-logo">
+        <a href="{% url rss_feed %}"><img class="rss-feed-icon" src="{% static "images/rssfeed.jpg" %}"/></a>
+    </div>
+    <div id="rss-feed">
+        <h2>Read more!</h2>
+        {% for entry in feed %}
+            <div class="rss-entry"><span class="rss-title"><a href="{{ entry.url }}" target="_blank" title="{{ entry.description }}">{{entry.title}}</a></span> 
+                {% if entry.description|length >= 1000 %}
+                    <p>{{ entry.description|slice:":500" }}<a href="{{ entry.url }}" target="_blank" title="{{ entry.description }}">...</a></p>
+                {% else %}
+                    <p>{{ entry.description }}</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <div id="press-col">
+    </div>
+
+
+</div>
+{% endif %}
+
 {% endblock content %}
 
-{% block footer %}
-<div class="row-fluid footer">
-        <div class="span8 footer__rss">
-
-            <h2>Read More</h2>
-            <ul class="footer__news-list">
-                {% for entry in feed %}
-                    <li><a href="{{ entry.url }}">{{entry.title}}</a></li>
-                {% endfor %}
-            </ul> 
-        </div>
-        <div class="span4 footer__updates">    
-            <h2>Share</h2>
-                    <ul class="list-icons">
-                        <li>
-                            <a  href="http://www.facebook.com/sharer.php?u=http://adhocsync.com/" class="symbol">&#xe227;</a>       
-                        </li>
-                        <li>
-                            <a href="http://twitter.com/share?text=An%20Awesome%20Link&url=http://adhocsync.com/" class="symbol">&#xe286;</a>      
-                        </li>
-                         <li>
-                            <a href="https://plus.google.com/share?url=http://adhocsync.com/" class="symbol">&#xe239;</a>      
-                        </li>
-                         <li>
-                            <a href="http://www.linkedin.com/shareArticle?mini=true&url=http://adhocsync.com/&title=Awesome%20link!" class="symbol">&#xe252;</a>      
-                        </li>
-                    </ul>
-            <div class="row-fluid footer__second-line">
-                <div class="span6">
-                    <h2>Follow</h2>
-                    <ul class="list-icons">
-                        <li>
-                            <a href="https://www.facebook.com/kaliteproject" class="symbol">&#xe227;</a>       
-                        </li>
-                        <li>
-                            <a href="https://twitter.com/ka_lite" class="symbol">&#xe286;</a>      
-                        </li>
-                    </ul>
-
-                </div>
-                <div class="span6 footer__email">
-                    <h2>Email Updates</h2>
-                    <input type="text" class="footer__email__input">
-                    <br>
-                    <button type="button" name="" value="" class="green--small">Subscribe</button>
-                </div>
-            </div>
-
-        </div>
-    </div>
-{% endblock footer %}
+{% block footerleft %}
+    <span class="ka-on-social-container">
+        <span class="ka-on-social follow-us-text">Follow us!</span> 
+        <a class="ka-on-social ka-on-facebook" href="https://www.facebook.com/kaliteproject"><img src="{% static "images/ka-on-facebook-button.png" %}"/></a>
+        <a class="ka-on-social ka-on-twitter" href="https://twitter.com/ka_lite"><img class="ka-on-twitter" src="{% static "images/ka-on-twitter-button.png" %}"/></a>
+    </span>
+{% endblock footerleft %}
