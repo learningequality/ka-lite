@@ -7,6 +7,8 @@ import main.api_urls
 import securesync.urls
 from kalite import settings
 
+from main.custom_django_messages import override_add_messages
+override_add_messages()
 
 admin.autodiscover()
 
