@@ -242,8 +242,8 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
         if UserLog.objects.count() > settings.USER_LOG_MAX_RECORDS:
             # Unfortunately, could not do an aggregate delete when doing a 
             #   slice in query
-            for user_log in UserLog.objects.all().order_by("start_datetime")[0:UserLog.objects.count()-settings.USER_LOG_MAX_RECORDS]:
-                user_log.delete()
+            to_discard = UserLog.objects.order_by("start_datetime")[0:UserLog.objects.count()-settings.USER_LOG_MAX_RECORDS]
+            UserLog.objects.filter(pk__in=to_discard).delete()
 
 
     def __unicode__(self):
