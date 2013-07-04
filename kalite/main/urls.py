@@ -2,7 +2,9 @@ from django.http import HttpResponseRedirect
 from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
 
+import coachreports.urls
 import control_panel.urls
+import main.api_urls
 import securesync.urls
 from kalite import settings
 
@@ -35,13 +37,13 @@ urlpatterns += patterns('',
 # Teaching / admin patterns
 urlpatterns += patterns('main.views',
     # For teachers
-    url(r'^coachreports/$', 'coach_reports', {}, 'coach_reports'),
-    url(r'^easyadmin/$', 'easy_admin', {}, 'easy_admin'),
-    url(r'^stats/$', 'summary_stats', {}, 'summary_stats'),
+    url(r'^coachreports/', include(coachreports.urls)),
 
     # For admins
     url(r'^update/$', 'update', {}, 'update'),
+    url(r'^easyadmin/$', 'easy_admin', {}, 'easy_admin'),
     url(r'^userlist/$', 'user_list', {}, 'user_list'),
+    url(r'^stats/$', 'summary_stats', {}, 'summary_stats'),
 
     # Management: Zone, facility, device
     url(r'^management/zone/$', 'zone_discovery', {}, 'zone_discovery'), # only one zone, so make an easy way to access it
@@ -54,7 +56,7 @@ if "loadtesting" in settings.INSTALLED_APPS:
     urlpatterns += patterns('main.views',
         url(r'^loadtesting/', include('loadtesting.urls')),
     )
-    
+
 # Front-end
 urlpatterns += patterns('main.views',
     url(r'^$', 'homepage', {}, 'homepage'),

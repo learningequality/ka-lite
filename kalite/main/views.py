@@ -1,27 +1,27 @@
-import re, json, sys, logging
+import json
+import re
+import sys
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 
+from django.contrib import messages
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.management import call_command
+from django.core.urlresolvers import reverse
+from django.db.models import Sum
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
-from django.core.management import call_command
-from django.core.urlresolvers import reverse
-from django.contrib import messages
 from django.utils.safestring import mark_safe
-from django.db.models import Sum
-from django.contrib import messages
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import cache_control
 from django.views.decorators.cache import cache_page
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.utils.translation import ugettext as _
 
 import settings
+from config.models import Settings
 from main import topicdata
 from main.models import VideoLog, ExerciseLog, VideoFile
-from config.models import Settings
 from securesync.api_client import SyncClient
 from securesync.models import Facility, FacilityUser,FacilityGroup, DeviceZone, Device
 from securesync.views import facility_required
@@ -45,7 +45,7 @@ def splat_handler(request, splat):
             seeking = "Video"
         elif slug == "e":
             seeking = "Exercise"
-            
+
         # match each step in the topics hierarchy, with the url slug.
         else:
             children = [child for child in current_node['children'] if child['kind'] == seeking]
@@ -94,19 +94,23 @@ def check_setup_status(handler):
                 messages.warning(request, mark_safe("Please <a href='%s'>create a facility</a> now. Users will not be able to sign up for accounts until you have made a facility." % reverse("add_facility")))
         return handler(request, *args, **kwargs)
     return wrapper_fn
-    
+
 
 @cache_page(settings.CACHE_TIME)
 @render_to("topic.html")
 def topic_handler(request, topic):
-    videos = filter(lambda node: node["kind"] == "Video", topic["children"])
-    exercises = filter(lambda node: node["kind"] == "Exercise" and node["live"], topic["children"])
-    topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"] and "Video" in node["contains"], topic["children"])
-    
-    my_topics = []
-    for t in topics:
-        my_topics.append({ 'title': t['title'], 'path': t['path'] })
-        
+    videos    = topicdata.get_videos(topic)
+    exercises = topicdata.get_exercises(topic)
+    topics    = topicdata.get_live_topics(topic)
+
+    # Get video counts if they'll be used, on-demand only.
+    #
+    # Check in this order so that the initial counts are always updated
+    if topic_tools.video_counts_need_update() or not 'nvideos_local' in topic:
+        (topic,_,_) = topic_tools.get_video_counts(topic=topic, videos_path=settings.CONTENT_ROOT)
+
+    my_topics = [dict((k, t[k]) for k in ('title', 'path', 'nvideos_local', 'nvideos_known')) for t in topics]
+
     context = {
         "topic": topic,
         "title": topic[title_key["Topic"]],
@@ -116,12 +120,21 @@ def topic_handler(request, topic):
         "topics": my_topics,
     }
     return context
-    
+
 
 @cache_page(settings.CACHE_TIME)
 @render_to("video.html")
 def video_handler(request, video, prev=None, next=None):
-    if not VideoFile.objects.filter(pk=video['youtube_id']).exists():
+    video_exists = VideoFile.objects.filter(pk=video['youtube_id']).exists()
+
+    # If we detect that a video exists, but it's not on disk, then
+    #   force the database to update.  No race condition here for saving
+    #   progress in a VideoLog: it is not dependent on VideoFile.
+    if not video_exists and topic_tools.is_video_on_disk(video['youtube_id']):
+        force_job("videoscan")
+        video_exists = True
+
+    if not video_exists:
         if request.is_admin:
             messages.warning(request, _("This video was not found! You can download it by going to the Update page."))
         elif request.is_logged_in:
@@ -135,17 +148,18 @@ def video_handler(request, video, prev=None, next=None):
     context = {
         "video": video,
         "title": video[title_key["Video"]],
+        "video_exists": video_exists,
         "prev": prev,
         "next": next,
     }
     return context
-    
+
 
 @cache_page(settings.CACHE_TIME)
 @render_to("exercise.html")
 def exercise_handler(request, exercise):
     related_videos = [topicdata.NODE_CACHE["Video"][key] for key in exercise["related_video_readable_ids"]]
-    
+
     if request.user.is_authenticated():
         messages.warning(request, _("Note: You're logged in as an admin (not as a student/teacher), so your exercise progress and points won't be saved."))
     elif not request.is_logged_in:
@@ -168,16 +182,16 @@ def exercise_dashboard(request):
         "exercise_paths": json.dumps(paths),
     }
     return context
-    
+
 @check_setup_status
 @cache_page(settings.CACHE_TIME)
 @render_to("homepage.html")
 def homepage(request):
+    # TODO(bcipolli): video counts on the distributed server homepage
     topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"], topicdata.TOPICS["children"])
-    
-    my_topics = []
-    for t in topics:
-        my_topics.append({ 'title': t['title'], 'path': t['path'] })
+
+    # indexed by integer
+    my_topics = [dict([(k, t[k]) for k in ('title', 'path')]) for t in topics]
 
     context = {
         "title": "Home",
@@ -185,24 +199,24 @@ def homepage(request):
         "registered": Settings.get("registered"),
     }
     return context
-        
+
 @require_admin
 @render_to("admin_distributed.html")
 def easy_admin(request):
-    
+
     context = {
         "wiki_url" : settings.CENTRAL_WIKI_URL,
         "central_server_host" : settings.CENTRAL_SERVER_HOST,
-        "am_i_online": am_i_online(settings.CENTRAL_WIKI_URL, allow_redirects=False), 
+        "am_i_online": am_i_online(settings.CENTRAL_WIKI_URL, allow_redirects=False),
         "in_a_zone":  Device.get_own_device().get_zone() is not None,
     }
     return context
-    
+
 @require_admin
 @render_to("summary_stats.html")
 def summary_stats(request):
     # TODO (bcipolli): allow specific stats to be requested (more efficient)
-    
+
     context = {
         "video_stats" : get_stats(("total_video_views","total_video_time","total_video_points")),
         "exercise_stats": get_stats(("total_exercise_attempts","total_exercise_points","total_exercise_status")),
@@ -210,23 +224,23 @@ def summary_stats(request):
         "group_stats": get_stats(("total_groups",)),
     }
     return context
-    
-    
+
+
 def get_stats(stat_names):
     """Given a list of stat names, return a dictionary of stat values.
     For efficiency purposes, best to request all related stats together.
     In low-memory conditions should group requests by common source (video, exercise, user, group), but otherwise separate
-    
+
 Available stats:
     video:    total_video_views, total_video_time, total_video_points
     exercise: total_exercise_attempts, total_exercise_points, total_exercise_status
     users:    total_users
     groups:   total_groups
     """
-    
+
     val = {}
     for stat_name in stat_names:
-    
+
         # Total time from videos
         if stat_name == "total_video_views":
             val[stat_name] = VideoLog.objects.count()
@@ -237,13 +251,13 @@ Available stats:
 
         elif stat_name == "total_video_points":
             val[stat_name] = VideoLog.objects.aggregate(Sum("points"))['points__sum'] or 0
-        
+
         elif stat_name == "total_exercise_attempts":
             val[stat_name] = ExerciseLog.objects.aggregate(Sum("attempts"))['attempts__sum'] or 0
-            
+
         elif stat_name == "total_exercise_points":
             val[stat_name] = ExerciseLog.objects.aggregate(Sum("points"))['points__sum'] or 0
-            
+
         elif stat_name == "total_exercise_status":
             val[stat_name] = {
                 "struggling": ExerciseLog.objects.aggregate(Sum("struggling"))['struggling__sum'] or 0,
@@ -259,9 +273,9 @@ Available stats:
 
         else:
             raise Exception("Unknown stat requested: %s" % stat_name)
-        
+
     return val
-    
+
 @require_admin
 @render_to("video_download.html")
 def update(request):
@@ -275,7 +289,7 @@ def update(request):
         language_list.append(default_language)
     languages = [{"id": key, "name": language_lookup[key]} for key in language_list]
     languages = sorted(languages, key=lambda k: k["name"])
-    
+
     am_i_online = video_connection_is_available()
     if not am_i_online:
         messages.warning(request, _("No internet connection was detected.  You must be online to download videos or subtitles."))
@@ -292,9 +306,9 @@ def update(request):
 @render_to("coach_reports.html")
 def coach_reports(request, facility):
     return group_report_context(
-        facility_id=facility.id, 
-        group_id=request.REQUEST.get("group", ""), 
-        topic_id=request.REQUEST.get("topic", ""), 
+        facility_id=facility.id,
+        group_id=request.REQUEST.get("group", ""),
+        topic_id=request.REQUEST.get("topic", ""),
     )
 
 @require_admin
@@ -303,7 +317,7 @@ def coach_reports(request, facility):
 def user_list(request,facility):
     return facility_users_context(
         request=request,
-        facility_id=facility.id, 
+        facility_id=facility.id,
         group_id=request.REQUEST.get("group",""),
         page=request.REQUEST.get("page","1"),
     )
@@ -318,7 +332,7 @@ def zone_discovery(request):
         return HttpResponseRedirect(reverse("zone_management", kwargs={"org_id": "", "zone_id": zone.pk}))
     else:
         raise Http404(_("This device is not on any zone."))
-        
+
 @require_admin
 def device_discovery(request):
     """Dummy view to generate a helpful dynamic redirect to interface with 'control_panel' app"""

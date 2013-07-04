@@ -1,10 +1,10 @@
 from annoying.functions import get_object_or_None
+from functools import partial
 
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseForbidden, HttpResponseServerError
-from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseForbidden, HttpResponseServerError
+from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.utils.safestring import mark_safe
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
@@ -13,8 +13,6 @@ import settings
 from central.models import Organization
 from config.models import Settings
 from securesync.models import Device, DeviceZone, Zone, Facility
-#from securesync.views import facility_selection
-
 
 
 def central_server_only(handler):
@@ -31,8 +29,6 @@ def distributed_server_only(handler):
             return HttpResponseNotFound(_("This path is only available on distributed servers."))
         return handler(*args, **kwargs)
     return wrapper_fn
-
-
 
 
 def facility_from_request(handler):
@@ -69,38 +65,57 @@ def facility_required(handler):
             return HttpResponseRedirect(reverse("add_facility"))
         else:
             return facility_selection(request)
-    
+
     return inner_fn
 
 def require_admin(handler):
+    """Require admin, different behavior for api_request or not"""
+
+    def wrapper_fn(request, api_request, *args, **kwargs):
+        if (settings.CENTRAL_SERVER and request.user.is_authenticated()) or getattr(request, "is_admin", False):
+            return handler(request, *args, **kwargs)
+
+        # Only here if user is not authenticated.
+        # Don't redirect users to login for an API request.
+        if request.is_ajax():
+            return HttpResponseForbidden("You must be logged in as an admin to access this API endpoint.")
+        else:
+            # Translators: Please ignore the html tags e.g. "Please login as one below, or <a href='%s'>go to home.</a>" is simply "Please login as one below, or go to home."
+            messages.error(request, mark_safe(_("To view the page you were trying to view, you need to be logged in as a teacher or an admin. Please login as one below, or <a href='%s'>go to home.</a>") % reverse("homepage")))
+            return HttpResponseRedirect(reverse("login") + "?next=" + request.path)
+
+    return partial(wrapper_fn, api_request=api_request)
+
+
+def require_login(handler):
     def wrapper_fn(request, *args, **kwargs):
-        if getattr(request, "is_admin", False):
+        if request.user.is_authenticated() or "facility_user" in request.session:
             return handler(request, *args, **kwargs)
         # Translators: Please ignore the html tags e.g. "Please login as one below, or <a href='%s'>go to home.</a>" is simply "Please login as one below, or go to home."
-        messages.error(request, mark_safe(_("To view the page you were trying to view, you need to be logged in as a teacher or an admin. Please login as one below, or <a href='%s'>go to home.</a>") % reverse("homepage")))
+        messages.error(request, mark_safe(_("To view the page you were trying to view, you need to be logged in. Please login as one below, or <a href='%s'>go to home.</a>") % reverse("homepage")))
         return HttpResponseRedirect(reverse("login") + "?next=" + request.path)
     return wrapper_fn
-    
+
 
 def authorized_login_required(handler):
     """A generic function that determines whether a user has permissions to view a page.
-    
+
     Central server: this is by organization permissions.
     Distributed server: you have to be an admin.
     """
-    @login_required
+#    @login_required
     def wrapper_fn(request, *args, **kwargs):
         user = request.user
         assert not user.is_anonymous(), "Wrapped by login_required!"
 
         if user.is_superuser:
             return handler(request, *args, **kwargs)
-        
-        org = None; org_id      = kwargs.get("org_id", None)
-        zone = None; zone_id     = kwargs.get("zone_id", None)
-        device = None; device_id   = kwargs.get("device_id", None)
-        facility = None; facility_id = kwargs.get("facility_id", None)
-        
+
+        org = None; org_id      = kwargs.get("org", None)
+        zone = None; zone_id     = kwargs.get("zone", None)
+        device = None; device_id   = kwargs.get("device", None)
+        facility = None; facility_id = kwargs.get("facility", None)
+
         # Validate device through zone
         if device_id:
             device = get_object_or_404(Device, pk=device_id)
@@ -109,7 +124,7 @@ def authorized_login_required(handler):
                 if not zone:
                     return HttpResponseForbidden("Device, no zone, no DeviceZone")
                 zone_id = zone.pk
-                
+
         # Validate device through zone
         if facility_id:
             facility = get_object_or_404(Facility, pk=facility_id)
@@ -118,7 +133,7 @@ def authorized_login_required(handler):
                 if not zone:
                     return HttpResponseForbidden("Facility, no zone")
                 zone_id = zone.pk
-                
+
         # Validate zone through org
         if zone_id:
             zone = get_object_or_404(Zone, pk=zone_id)
@@ -137,9 +152,8 @@ def authorized_login_required(handler):
                 return HttpResponseForbidden("Org")
             elif zone_id and zone and org.zones.filter(pk=zone.pk).count() == 0:
                 return HttpResponseForbidden("This organization does not have permissions for this zone.")
-    
+
         # Made it through, we're safe!
         return handler(request, *args, **kwargs)
-        
-    
+
     return wrapper_fn if settings.CENTRAL_SERVER else require_admin(handler)

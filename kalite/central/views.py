@@ -1,28 +1,21 @@
-import logging
-import re, json
-import requests
-import datetime
-import pickle
+import re
+import json
 from annoying.decorators import render_to
-from annoying.functions import get_object_or_None
-from decorator.decorator import decorator
 
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseForbidden, HttpResponseServerError
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
-from django.core.urlresolvers import reverse
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib import messages
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext as _
-from django.template.loader import render_to_string
-from django.core import serializers
+from django.views.decorators.csrf import csrf_exempt
 
 import kalite
 import settings
-from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
 from central.forms import OrganizationForm, OrganizationInvitationForm
+from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
 from securesync.api_client import SyncClient
 from utils.decorators import authorized_login_required
 
@@ -30,22 +23,24 @@ from utils.decorators import authorized_login_required
 @render_to("central/homepage.html")
 def homepage(request):
     feed = FeedListing.objects.order_by('-posted_date')[:5]
-    return {"feed": feed,
-            "central_contact_email": settings.CENTRAL_CONTACT_EMAIL,
-            "wiki_url": settings.CENTRAL_WIKI_URL}
-    
+    return {
+        "feed": feed,
+        "central_contact_email": settings.CENTRAL_CONTACT_EMAIL,
+        "wiki_url": settings.CENTRAL_WIKI_URL
+    }
+
 @login_required
 @render_to("central/org_management.html")
 def org_management(request):
     """Management of all organizations for the given user"""
 
-    # get a list of all the organizations this user helps administer    
+    # get a list of all the organizations this user helps administer
     organizations = get_or_create_user_profile(request.user).get_organizations()
-    
+
     # add invitation forms to each of the organizations
     for pk,org in organizations.items():
         org.form = OrganizationInvitationForm(initial={"invited_by": request.user})
-    
+
     # handle a submitted invitation form
     if request.method == "POST":
         form = OrganizationInvitationForm(data=request.POST)
@@ -61,7 +56,7 @@ def org_management(request):
             for pk,org in organizations.items():
                 if org.pk == int(request.POST.get("organization")):
                     org.form = form
-                    
+
     return {
         "title": _("Account administration"),
         "organizations": organizations,
@@ -121,7 +116,7 @@ def delete_invite(request, org_id, invite_id):
     messages.success(request, "You have succesfully revoked the invitation for " + invite.email_to_invite + ".")
     return HttpResponseRedirect(reverse("org_management"))
 
- 
+
 @authorized_login_required
 @render_to("central/organization_form.html")
 def organization_form(request, org_id):
@@ -132,20 +127,20 @@ def organization_form(request, org_id):
     if request.method == 'POST':
         form = OrganizationForm(data=request.POST, instance=org)
         if form.is_valid():
-            # form.instance.owner = form.instance.owner or request.user 
+            # form.instance.owner = form.instance.owner or request.user
             old_org = bool(form.instance.pk)
             form.instance.save(owner=request.user)
             form.instance.users.add(request.user)
             # form.instance.save()
             if old_org:
                 return HttpResponseRedirect(reverse("org_management"))
-            else:    
+            else:
                 return HttpResponseRedirect(reverse("zone_form", kwargs={"zone_id": "new", "org_id": form.instance.pk}) )
     else:
         form = OrganizationForm(instance=org)
     return {
         'form': form
-    } 
+    }
 
 
 @render_to("central/glossary.html")
@@ -164,7 +159,7 @@ def crypto_login(request):
     client = SyncClient(host=host, require_trusted=False)
     if client.test_connection() != "success":
         return HttpResponse("Unable to connect to a KA Lite server at %s" % host)
-    client.start_session() 
+    client.start_session()
     if not client.session or not client.session.client_nonce:
         return HttpResponse("Unable to establish a session with KA Lite server at %s" % host)
     return HttpResponseRedirect("%ssecuresync/cryptologin/?client_nonce=%s" % (host, client.session.client_nonce))
@@ -173,7 +168,6 @@ def crypto_login(request):
 
 def handler_404(request):
     return HttpResponseNotFound(render_to_string("central/404.html", {}, context_instance=RequestContext(request)))
-    
+
 def handler_500(request):
     return HttpResponseServerError(render_to_string("central/500.html", {}, context_instance=RequestContext(request)))
-    

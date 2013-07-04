@@ -1,12 +1,12 @@
-import crypto
+from __future__ import absolute_import
+
 import datetime
 import uuid
 import zlib
-import settings
 from annoying.functions import get_object_or_None
 from pbkdf2 import crypt
 
-from django.contrib.auth.models import User, check_password
+from django.contrib.auth.models import check_password
 from django.core import serializers
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models, transaction
@@ -14,13 +14,11 @@ from django.db.models import Q
 from django.utils.text import compress_string
 from django.utils.translation import ugettext_lazy as _
 
+import kalite
+import settings
 from config.models import Settings
+from securesync import crypto, model_sync
 
-
-_unhashable_fields = ["signature", "signed_by"]
-_always_hash_fields = ["signed_version", "id"]
-
-json_serializer = serializers.get_serializer("json")()
 
 # Note: this MUST be hard-coded for backwards-compatibility reasons.
 ROOT_UUID_NAMESPACE = uuid.uuid5(uuid.NAMESPACE_URL, "https://kalite.adhocsync.com/")
@@ -38,14 +36,15 @@ class SyncSession(models.Model):
     timestamp = models.DateTimeField(auto_now=True)
     models_uploaded = models.IntegerField(default=0)
     models_downloaded = models.IntegerField(default=0)
+    errors = models.IntegerField(default=0); errors.version="0.9.3" # kalite version
     closed = models.BooleanField(default=False)
-    
+
     def _hashable_representation(self):
         return "%s:%s:%s:%s" % (
             self.client_nonce, self.client_device.pk,
             self.server_nonce, self.server_device.pk,
         )
-        
+
     def _verify_signature(self, device, signature):
         return device.get_key().verify(self._hashable_representation(), signature)
 
@@ -57,7 +56,7 @@ class SyncSession(models.Model):
 
     def sign(self):
         return Device.get_own_device().get_key().sign(self._hashable_representation())
-        
+
     def __unicode__(self):
         return "%s... -> %s..." % (self.client_device.pk[0:5],
             (self.server_device and self.server_device.pk[0:5] or "?????"))
@@ -77,7 +76,7 @@ class DeviceMetadata(models.Model):
     is_own_device = models.BooleanField(default=False)
     counter_position = models.IntegerField(default=0)
 
-    class Meta:    
+    class Meta:
         verbose_name_plural = "Device metadata"
 
     def __unicode__(self):
@@ -85,7 +84,7 @@ class DeviceMetadata(models.Model):
 
 
 class SyncedModelManager(models.Manager):
-    
+
     def by_zone(self, zone):
         # get model instances that were signed by devices in the zone,
         # or signed by a trusted authority that said they were for the zone
@@ -102,6 +101,9 @@ class SyncedModel(models.Model):
     deleted = models.BooleanField(default=False)
 
     objects = SyncedModelManager()
+    _unhashable_fields = ["signature", "signed_by"] # fields of this class to avoid serializing
+    _always_hash_fields = ["signed_version", "id"]  # fields of this class to always serialize
+
 
     def sign(self, device=None):
         if not self.id:
@@ -132,41 +134,41 @@ class SyncedModel(models.Model):
             return self.signed_by.get_key().verify(self._hashable_representation(), self.signature)
         except:
             return False
-    
+
     def _hashable_fields(self, fields=None):
-        
+
         # if no fields were specified, build a list of all the model's field names
         if not fields:
-            fields = [field.name for field in self._meta.fields if field.name not in _unhashable_fields]
+            fields = [field.name for field in self._meta.fields if field.name not in self.__class__._unhashable_fields]
             # sort the list of fields, for consistency
             fields.sort()
-        
+
         # certain fields should always be included
-        for field in _always_hash_fields:
+        for field in self.__class__._always_hash_fields:
             if field not in fields:
                 fields = [field] + fields
-        
+
         # certain fields should never be included
-        fields = [field for field in fields if field not in _unhashable_fields]
-                
+        fields = [field for field in fields if field not in self.__class__._unhashable_fields]
+
         return fields
-    
+
     def _hashable_representation(self, fields=None):
         fields = self._hashable_fields(fields)
         chunks = []
         for field in fields:
-            
+
             try:
                 val = getattr(self, field)
             except ObjectDoesNotExist as e:
                 # if it's a foreign key and is broken, just use the id of the related model
                 val = getattr(self, field + "_id")
-            
+
             if val:
                 # convert models to just an id
                 if isinstance(val, models.Model):
                     val = val.pk
-                
+
                 # convert datetimes to a str in a predictable way
                 if isinstance(val, datetime.datetime):
                     val = ("%04d-%02d-%02d %d:%02d:%02d" %
@@ -178,18 +180,18 @@ class SyncedModel(models.Model):
 
                 # add this field/val pair onto the chunks to include in the hash
                 chunks.append("%s=%s" % (field, val))
-                
+
         return "&".join(chunks)
 
     def save(self, own_device=None, imported=False, increment_counters=True, *args, **kwargs):
-        
+
         # we allow for the "own device" to be passed in so that a device can sign itself (before existing)
         own_device = own_device or Device.get_own_device()
-        
+
         # this will probably never happen (since getting the device creates it), but just to be safe
         if not own_device:
             raise ValidationError("Cannot save any synced models before registering this Device.")
-        
+
         # imported models are signed by other devices; make sure they check out
         if imported:
             if not self.signed_by_id:
@@ -199,10 +201,10 @@ class SyncedModel(models.Model):
         else: # local models need to be signed by us
             self.counter = own_device.increment_and_get_counter()
             self.sign(device=own_device)
-        
+
         # call the base Django Model save to write to the DB
         super(SyncedModel, self).save(*args, **kwargs)
-        
+
         # for imported models, we want to keep track of the counter position we're at for that device
         if imported and increment_counters:
             self.signed_by.set_counter_position(self.counter)
@@ -248,22 +250,22 @@ class Zone(SyncedModel):
     description = models.TextField(blank=True)
 
     requires_trusted_signature = True
-    
+
     def __unicode__(self):
         return self.name
-        
+
     @classmethod
     def get_headless_zones(cls):
         # Must import inline (not in header) to avoid import loop
         from central.models import Organization
-        
+
         all_zones = Zone.objects.all()
         headless_zones = []
         for zone in all_zones:
             orgs = Organization.objects.filter(zones__in=[zone])
             if not orgs:
                 headless_zones.append(zone)
-                
+
         return headless_zones
 
 
@@ -280,7 +282,7 @@ class Facility(SyncedModel):
     contact_email = models.EmailField(max_length=60, verbose_name=_("Contact Email"), blank=True)
     user_count = models.IntegerField(verbose_name=_("User Count"), help_text=_("(How many potential users do you estimate there are at this facility?)"), blank=True, null=True)
 
-    class Meta:    
+    class Meta:
         verbose_name_plural = "Facilities"
 
     def __unicode__(self):
@@ -290,8 +292,8 @@ class Facility(SyncedModel):
 
     def is_default(self):
         return self.id == Settings.get("default_facility")
-        
-        
+
+
     @classmethod
     def from_zone(cls, zone):
         """Our best approximation of how to map facilities to zones"""
@@ -303,12 +305,12 @@ class Facility(SyncedModel):
             facilities = facilities.union(set(Facility.objects.filter(signed_by=device)))
 
         return facilities
-               
+
 
 class FacilityGroup(SyncedModel):
     facility = models.ForeignKey(Facility, verbose_name=_("Facility"))
     name = models.CharField(max_length=30, verbose_name=_("Name"))
-    
+
     def __unicode__(self):
         return self.name
 
@@ -334,7 +336,7 @@ class FacilityUser(SyncedModel):
 
     def __unicode__(self):
         return "%s (Facility: %s)" % (self.get_name(), self.facility)
-        
+
     def check_password(self, raw_password):
         if self.password.split("$", 1)[0] == "sha1":
             # use Django's built-in password checker for SHA1-hashed passwords
@@ -345,14 +347,14 @@ class FacilityUser(SyncedModel):
 
     def set_password(self, raw_password=None, hashed_password=None):
         """Set a password with the raw password string, or the pre-hashed password."""
-        
+
         assert hashed_password is None or settings.DEBUG, "Only use hashed_password in debug mode."
         assert raw_password is not None or hashed_password is not None, "Must be passing in raw or hashed password"
         assert not (raw_password is not None and hashed_password is not None), "Must be specifying only one--not both."
-                 
+
         if hashed_password:
             self.password = hashed_password
-        else:       
+        else:
             self.password = crypt(raw_password, iterations=Settings.get("password_hash_iterations", 2000 if self.is_teacher else 1000))
 
     def get_name(self):
@@ -367,7 +369,7 @@ class DeviceZone(SyncedModel):
     zone = models.ForeignKey("Zone", db_index=True)
     revoked = models.BooleanField(default=False)
     max_counter = models.IntegerField(blank=True, null=True)
-            
+
     requires_trusted_signature = True
 
     def __unicode__(self):
@@ -381,7 +383,7 @@ class SyncedLog(SyncedModel):
 
 
 class DeviceManager(models.Manager):
-    
+
     def by_zone(self, zone):
         # get Devices that belong to a particular zone, or are a trusted authority
         return self.filter(Q(devicezone__zone=zone, devicezone__revoked=False) |
@@ -391,9 +393,10 @@ class Device(SyncedModel):
     name = models.CharField(max_length=100, blank=True)
     description = models.TextField(blank=True)
     public_key = models.CharField(max_length=500, db_index=True)
+    version = models.CharField(max_length=len("10.10.100"), default="0.9.2", blank=True); version.version="0.9.3"  # default comes from knowing when this feature was implemented!
 
     objects = DeviceManager()
-    
+
     key = None
 
     def set_key(self, key):
@@ -412,7 +415,7 @@ class Device(SyncedModel):
         fields = ["signed_version", "name", "description", "public_key"]
         return super(Device, self)._hashable_representation(fields=fields)
 
-    def get_metadata(self):        
+    def get_metadata(self):
         try:
             return self.devicemetadata
         except DeviceMetadata.DoesNotExist:
@@ -430,15 +433,20 @@ class Device(SyncedModel):
         # TODO(jamalex): we skip out here, because otherwise self-signed devices will fail
         pass
 
+    @classmethod
+    def get_default_version(cls):
+        """Accessor method to probe the default version of a device (or field)"""
+        return cls._meta.get_field("version").default
+
     @staticmethod
     def get_own_device():
         devices = DeviceMetadata.objects.filter(is_own_device=True)
         if devices.count() == 0:
-            own_device = Device.initialize_own_device()
+            own_device = Device.initialize_own_device(version=kalite.VERSION) # why don't we need name or description here?
         else:
             own_device = devices[0].device
         return own_device
-    
+
     @staticmethod
     def initialize_own_device(**kwargs):
         own_device = Device(**kwargs)
@@ -459,13 +467,13 @@ class Device(SyncedModel):
         metadata.counter_position += 1
         metadata.save()
         return metadata.counter_position
-        
+
     def get_counter(self):
         metadata = self.get_metadata()
         if not metadata.device.id:
             return 0
         return metadata.counter_position
-        
+
     def __unicode__(self):
         return self.name or self.id[0:5]
 
@@ -494,8 +502,13 @@ class Device(SyncedModel):
     def get_uuid(self):
         return uuid.uuid5(ROOT_UUID_NAMESPACE, str(self.public_key)).hex
 
-
-settings.add_syncing_models([Facility, FacilityGroup, FacilityUser, SyncedLog])
+    @staticmethod
+    def get_device_counters(zone):
+        device_counters = {}
+        for device in Device.objects.by_zone(zone):
+            if device.id not in device_counters:
+                device_counters[device.id] = device.get_metadata().counter_position
+        return device_counters
 
 
 class ImportPurgatory(models.Model):
@@ -505,152 +518,10 @@ class ImportPurgatory(models.Model):
     model_count = models.IntegerField(default=0)
     serialized_models = models.TextField()
     exceptions = models.TextField()
-    
+
     def save(self, *args, **kwargs):
         self.counter = self.counter or Device.get_own_device().get_counter()
         super(ImportPurgatory, self).save(*args, **kwargs)
 
 
-def get_serialized_models(device_counters=None, limit=100, zone=None, include_count=False):
-    
-    # use the current device's zone if one was not specified
-    if not zone:
-        zone = Device.get_own_device().get_zone()
-    
-    # if no devices specified, assume we're starting from zero, and include all devices in the zone
-    if device_counters is None:        
-        device_counters = dict((device.id, 0) for device in Device.objects.by_zone(zone))
-    
-    # remove all requested devices that either don't exist or aren't in the correct zone
-    for device_id in device_counters.keys():
-        device = get_object_or_None(Device, pk=device_id)
-        if not device or not (device.in_zone(zone) or device.get_metadata().is_trusted):
-            del device_counters[device_id]
-    
-    models = []
-    boost = 0
-    
-    # loop until we've found some models, or determined that there are none to get
-    while True:
-        
-        # assume no instances remaining until proven otherwise
-        instances_remaining = False
-                
-        # loop through all the model classes marked as syncable
-        for Model in settings.syncing_models:
-            
-            # loop through each of the devices of interest
-            for device_id, counter in device_counters.items():
-                
-                device = Device.objects.get(pk=device_id)
-                queryset = Model.objects.filter(signed_by=device)
-                
-                # for trusted (central) device, only include models with the correct fallback zone
-                if not device.in_zone(zone):
-                    if device.get_metadata().is_trusted:
-                        queryset = queryset.filter(zone_fallback=zone)
-                    else:
-                        continue
-
-                # check whether there are any models that will be excluded by our limit, so we know to ask again
-                if not instances_remaining and queryset.filter(counter__gt=counter+limit+boost).count() > 0:
-                    instances_remaining = True
-            
-                # pull out the model instances within the given counter range
-                models += queryset.filter(counter__gt=counter, counter__lte=counter+limit+boost)
-                        
-        # if we got some models, or there were none to get, then call it quits
-        if len(models) > 0 or not instances_remaining:
-            break
-
-        # boost the effective limit, so we have a chance of catching something when we do another round
-        boost += limit
-    
-    # serialize the models we found
-    serialized_models = json_serializer.serialize(models, ensure_ascii=False)
-        
-    if include_count:
-        return {"models": serialized_models, "count": len(models)}
-    else:
-        return serialized_models
-
-
-def save_serialized_models(data, increment_counters=True):
-    
-    # if data is from a purgatory object, load it up
-    if isinstance(data, ImportPurgatory):
-        purgatory = data
-        data = purgatory.serialized_models
-    else:
-        purgatory = None
-    
-    # deserialize the models, either from text or a list of dictionaries
-    if isinstance(data, str) or isinstance(data, unicode):
-        models = serializers.deserialize("json", data)
-    else:
-        models = serializers.deserialize("python", data)
-
-    # try importing each of the models in turn
-    unsaved_models = []
-    exceptions = ""
-    saved_model_count = 0
-    for modelwrapper in models:
-        try:
-            
-            # extract the model from the deserialization wrapper
-            model = modelwrapper.object
-            
-            # only allow the importing of models that are subclasses of SyncedModel
-            if not hasattr(model, "verify"):
-                raise ValidationError("Cannot save model: %s does not have a verify method (not a subclass of SyncedModel?)" % model.__class__)
-            
-            # TODO(jamalex): more robust way to do this? (otherwise, it might barf about the id already existing)
-            model._state.adding = False
-            
-            # verify that all fields are valid, and that foreign keys can be resolved
-            model.full_clean()
-            
-            # save the imported model (checking that the signature is valid in the process)
-            model.save(imported=True, increment_counters=increment_counters)
-            
-            # keep track of how many models have been successfully saved
-            saved_model_count += 1
-            
-        except ValidationError as e: # the model could not be saved
-            
-            # keep a running list of models and exceptions, to be stored in purgatory
-            exceptions += "%s: %s\n" % (model.pk, e)
-            unsaved_models.append(model)
-            
-            # if the model is at least properly signed, try incrementing the counter for the signing device
-            # (because otherwise we may never ask for additional models)
-            try:
-                if increment_counters and model.verify():
-                    model.signed_by.set_counter_position(model.counter)
-            except:
-                pass
-            
-    # deal with any models that didn't validate properly; throw them into purgatory so we can try again later    
-    if unsaved_models:
-        if not purgatory:
-            purgatory = ImportPurgatory()
-        purgatory.serialized_models = json_serializer.serialize(unsaved_models, ensure_ascii=False)
-        purgatory.exceptions = exceptions
-        purgatory.model_count = len(unsaved_models)
-        purgatory.retry_attempts += 1
-        purgatory.save()
-    elif purgatory: # everything saved properly this time, so we can eliminate the purgatory instance
-        purgatory.delete()
-    
-    return {
-        "unsaved_model_count": len(unsaved_models),
-        "saved_model_count": saved_model_count,
-    }
-
-    
-def get_device_counters(zone):
-    device_counters = {}
-    for device in Device.objects.by_zone(zone):
-        if device.id not in device_counters:
-            device_counters[device.id] = device.get_metadata().counter_position
-    return device_counters
+model_sync.add_syncing_models([Facility, FacilityGroup, FacilityUser, SyncedLog])

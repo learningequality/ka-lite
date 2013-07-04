@@ -9,6 +9,8 @@ from django.core.serializers import base
 from django.db import models, DEFAULT_DB_ALIAS
 from django.utils.encoding import smart_unicode, is_protected_type
 
+from django.core.serializers.base import version_diff # necessary for KA Lite extension
+
 class Serializer(base.Serializer):
     """
     Serializes a QuerySet to basic Python objects.
@@ -75,6 +77,12 @@ def Deserializer(object_list, **options):
     stream or a string) to the constructor
     """
     db = options.pop('using', DEFAULT_DB_ALIAS)
+
+    # 
+    src_version = options.pop("src_version", None)  # version that was serialized 
+    dest_version = options.pop("dest_version", None)  # version that we're deserializing to
+    assert dest_version, "For KA Lite, we should always set the dest version to the current device."
+
     models.get_apps()
     for d in object_list:
         # Look up the model and starting build a dict of data for it.
@@ -87,8 +95,23 @@ def Deserializer(object_list, **options):
             if isinstance(field_value, str):
                 field_value = smart_unicode(field_value, options.get("encoding", settings.DEFAULT_CHARSET), strings_only=True)
 
-            field = Model._meta.get_field(field_name)
-
+            try:
+                field = Model._meta.get_field(field_name)
+            except models.FieldDoesNotExist as fdne:
+                # If src version is newer than dest version,
+                #   or if it's unknown, then assume that the field
+                #   is a new one and skip it.
+                # We can't know for sure, because
+                #   we don't have that field (we are the dest!),
+                #   so we don't know what version it came in on.
+                v_diff = version_diff(src_version, dest_version)
+                if v_diff > 0 or v_diff is None:
+                    continue
+                
+                # Something else must be going on, so re-raise.
+                else:
+                    raise fdne
+                    
             # Handle M2M relations
             if field.rel and isinstance(field.rel, models.ManyToManyRel):
                 if hasattr(field.rel.to._default_manager, 'get_by_natural_key'):
