@@ -1,9 +1,16 @@
 {% extends base_template %}
 
+{% load staticfiles %}
+
 {% block control_panel_active %}active{% endblock control_panel_active %}
 
 {% block headcss %}
-    <link  rel="stylesheet" type="text/css" href="/static/css/control_panel.css" />
+    <link  rel="stylesheet" type="text/css" href="{% static 'css/control_panel.css' %}" />
+<style>
+    .titlebar__buttons {
+        display:none; /* temp disabling */
+    }
+</style>
 {% endblock headcss %}
 
 {% block content %}
@@ -33,18 +40,18 @@
             {% if device %}
             <li>{% if zone %}&gt; {% endif %}{{ device.name }}</li>
             {% endif %}
-            
-            
+
+
             {% comment "Provide upload/download buttons; each button should be an LI" %}{% endcomment %}
             <ul class="titlebar__buttons">
             {% block buttons %}
             {% endblock buttons %}
             </ul>
-            
+
         </ul>
     </div>
     {% endblock titlebar %}
-    
+
     {% block inner_content %}
     {% endblock inner_content %}
 {% endblock content %}
