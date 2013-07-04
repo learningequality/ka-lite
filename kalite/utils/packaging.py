@@ -36,7 +36,7 @@ def package_offline_install_zip(platform, locale, server_type="local", zone=None
         if not os.path.exists(os.path.split(base_archive_path)[0]):
             os.mkdir(os.path.split(base_archive_path)[0])
 
-        out = call_command_with_output("package_for_download", platform=platform, locale=locale, server_type=server_type, central_server=central_server, file=base_archive_path)
+        out = call_command_with_output("zip_kalite", platform=platform, locale=locale, server_type=server_type, central_server=central_server, file=base_archive_path)
         if out[1] or out[2]:
             raise Exception("Failed to create zip file(%d): %s" % (out[2], out[1]))
                             

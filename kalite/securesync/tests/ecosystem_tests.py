@@ -67,7 +67,7 @@ class KALiteEcosystemTestCase(KALiteTestCase):
 
         # Create a zip file package FROM THIS CODEBASE
         self.log.info("Creating zip package from your server; please wait.")
-        out = call_command_with_output("package_for_download", server_type="central", platform=platform.system(), locale='en', file=self.zip_file)
+        out = call_command_with_output("zip_kalite", server_type="central", platform=platform.system(), locale='en', file=self.zip_file)
         
         # Install the central server
         self.log.info("Installing the central server; please wait.")

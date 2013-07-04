@@ -26,6 +26,10 @@ PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 8008)
 
 CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
 
+AUTO_LOAD_TEST = getattr(local_settings, "AUTO_LOAD_TEST", False)
+assert not AUTO_LOAD_TEST or not CENTRAL_SERVER, "AUTO_LOAD_TEST only on local server"
+
+
 # info about the central server(s)
 SECURESYNC_PROTOCOL   = getattr(local_settings, "SECURESYNC_PROTOCOL",   "https")
 CENTRAL_SERVER_DOMAIN = getattr(local_settings, "CENTRAL_SERVER_DOMAIN", "adhocsync.com")
@@ -136,7 +140,6 @@ INSTALLED_APPS = (
     "django_cherrypy_wsgiserver",
     "securesync",
     "config",
-    "kalite",
     "main", # in order for securesync to work, this needs to be here.
     "kalite", # contains commands
 )
@@ -197,6 +200,7 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 # This setting is required for AJAX-based messaging to work in Django 1.4,
 #   due to this bug: https://code.djangoproject.com/ticket/19387
-MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+#MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+MESSAGE_STORAGE = 'utils.django_utils.NoDuplicateMessagesSessionStorage'
 
 TEST_RUNNER = 'kalite.utils.testing.testrunner.KALiteTestRunner'

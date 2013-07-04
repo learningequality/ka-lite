@@ -7,7 +7,6 @@ import main.api_urls
 import securesync.urls
 import settings
 
-
 admin.autodiscover()
 
 urlpatterns = patterns('',
