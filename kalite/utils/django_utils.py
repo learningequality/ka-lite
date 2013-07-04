@@ -3,7 +3,6 @@ import sys
 from cStringIO import StringIO
 
 from django.core.management import call_command
-from django.contrib.messages.storage.base import Message
 from django.contrib.messages.storage.session import SessionStorage
 
 def call_command_with_output(cmd, *args, **kwargs): 
@@ -42,23 +41,7 @@ def call_command_with_output(cmd, *args, **kwargs):
 class NoDuplicateMessagesSessionStorage(SessionStorage):
     
     def add(self, level, message, extra_tags=''):
-        """
-        Queues a message to be stored.
-
-        The message is only queued if it contained something and its level is
-        not less than the recording level (``self.level``).
-        """
         for m in self._queued_messages:
-            if m.message == message:
+            if m.level == level and m.message == message:
                 return
-
-        if not message:
-            return
-        # Check that the message level is not less than the recording level.
-        level = int(level)
-        if level < self.level:
-            return
-        # Add the message.
-        self.added_new = True
-        message = Message(level, message, extra_tags=extra_tags)
-        self._queued_messages.append(message)
+        super(NoDuplicateMessagesSessionStorage, self).add(level, message, extra_tags)
