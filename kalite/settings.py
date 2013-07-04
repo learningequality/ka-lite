@@ -5,6 +5,13 @@ import sys
 import time
 import tempfile
 
+# suppress warnings here.
+try:
+    import warnings
+    warnings.simplefilter("ignore") # any other filter was ineffecual or threw an error
+except:
+    pass
+
 try:
     from local_settings import *
     import local_settings
@@ -34,7 +41,7 @@ assert not AUTO_LOAD_TEST or not CENTRAL_SERVER, "AUTO_LOAD_TEST only on local s
 SECURESYNC_PROTOCOL   = getattr(local_settings, "SECURESYNC_PROTOCOL",   "https")
 CENTRAL_SERVER_DOMAIN = getattr(local_settings, "CENTRAL_SERVER_DOMAIN", "adhocsync.com")
 CENTRAL_SERVER_HOST   = getattr(local_settings, "CENTRAL_SERVER_HOST",   "kalite.%s"%CENTRAL_SERVER_DOMAIN)
-CENTRAL_WIKI_URL      = getattr(local_settings, "CENTRAL_WIKI_URL",      "http://kalitewiki.learningequality.org/")#http://%kalitewiki.s/%CENTRAL_SERVER_DOMAIN   
+CENTRAL_WIKI_URL      = getattr(local_settings, "CENTRAL_WIKI_URL",      "http://kalitewiki.learningequality.org/")#http://%kalitewiki.s/%CENTRAL_SERVER_DOMAIN
 CENTRAL_FROM_EMAIL    = getattr(local_settings, "CENTRAL_FROM_EMAIL",    "kalite@%s"%CENTRAL_SERVER_DOMAIN)
 CENTRAL_DEPLOYMENT_EMAIL = getattr(local_settings, "CENTRAL_DEPLOYMENT_EMAIL", "deployments@learningequality.org")
 CENTRAL_SUPPORT_EMAIL = getattr(local_settings, "CENTRAL_SUPPORT_EMAIL",    "support@learningequality.org")
@@ -86,9 +93,9 @@ USE_I18N       = getattr(local_settings, "USE_I18N", True)
 USE_L10N       = getattr(local_settings, "USE_L10N", False)
 
 MEDIA_URL      = getattr(local_settings, "MEDIA_URL", "/media/")
-MEDIA_ROOT     = getattr(local_settings, "MEDIA_ROOT", PROJECT_PATH + "/media/")
+MEDIA_ROOT     = os.path.realpath(getattr(local_settings, "MEDIA_ROOT", PROJECT_PATH + "/media/")) + "/"
 STATIC_URL     = getattr(local_settings, "STATIC_URL", "/static/")
-STATIC_ROOT    = getattr(local_settings, "STATIC_ROOT", PROJECT_PATH + "/static/")
+STATIC_ROOT    = os.path.realpath(getattr(local_settings, "STATIC_ROOT", PROJECT_PATH + "/static/")) + "/"
 
  # Make this unique, and don't share it with anybody.
 SECRET_KEY     = getattr(local_settings, "SECRET_KEY", "8qq-!fa$92i=s1gjjitd&%s@4%ka9lj+=@n7a&fzjpwu%3kd#u")
@@ -182,7 +189,7 @@ _100_years = 100 * 365 * 24 * 60 * 60
 _max_cache_time = min(_100_years, sys.maxint - time.time() - _5_years)
 CACHE_TIME = getattr(local_settings, "CACHE_TIME", _max_cache_time)
 
-# Cache is activated in every case, 
+# Cache is activated in every case,
 #   EXCEPT: if CACHE_TIME=0
 if CACHE_TIME or CACHE_TIME is None: # None can mean infinite caching to some functions
     CACHES = {
@@ -198,9 +205,6 @@ if CACHE_TIME or CACHE_TIME is None: # None can mean infinite caching to some fu
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
-# This setting is required for AJAX-based messaging to work in Django 1.4,
-#   due to this bug: https://code.djangoproject.com/ticket/19387
-#MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 MESSAGE_STORAGE = 'utils.django_utils.NoDuplicateMessagesSessionStorage'
 
 TEST_RUNNER = 'kalite.utils.testing.testrunner.KALiteTestRunner'
