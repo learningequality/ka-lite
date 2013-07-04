@@ -202,6 +202,7 @@ TEST_RUNNER = 'kalite.utils.testrunner.KALiteTestRunner'
 
 # This setting is required for AJAX-based messaging to work in Django 1.4,
 #   due to this bug: https://code.djangoproject.com/ticket/19387
-MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+#MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+MESSAGE_STORAGE = 'utils.django_utils.NoDuplicateMessagesSessionStorage'
 
 TEST_RUNNER = 'kalite.utils.testrunner.KALiteTestRunner'
