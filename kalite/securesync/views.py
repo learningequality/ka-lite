@@ -16,6 +16,7 @@ from django.utils.translation import ugettext as _
 
 import settings
 from config.models import Settings
+from main.models import UserLog
 from securesync import crypto
 from securesync.api_client import SyncClient
 from securesync.forms import RegisteredDevicePublicKeyForm, FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
@@ -299,12 +300,12 @@ def login(request, facility):
         # try logging in as a facility user
         form = LoginForm(data=request.POST, request=request, initial={"facility": facility_id})
         if form.is_valid():
-            request.session["facility_user"] = form.get_user()
-            messages.success(
-                request,
-                _("You've been logged in! We hope you enjoy your time with KA Lite ")
-                + _("-- be sure to log out when you finish.")
-            )
+            user = form.get_user()
+
+            UserLog.begin_user_activity(user, activity_type="login")  # Success! Log the event
+            request.session["facility_user"] = user
+            messages.success(request, _("You've been logged in! We hope you enjoy your time with KA Lite ") +
+                                        _("-- be sure to log out when you finish."))
             return HttpResponseRedirect(
                 form.non_field_errors()
                 or request.next
@@ -329,6 +330,7 @@ def login(request, facility):
 @distributed_server_only
 def logout(request):
     if "facility_user" in request.session:
+        UserLog.end_user_activity(request.session["facility_user"], activity_type="login")
         del request.session["facility_user"]
     auth_logout(request)
     next = request.GET.get("next", reverse("homepage"))
