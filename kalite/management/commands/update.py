@@ -69,7 +69,7 @@ class Command(BaseCommand):
         make_option('-p', '--port',
             action='store',
             dest='test_port',
-            default=8008,
+            default=9157,  # 'Random' test port.  Hopefully open!
             help='PORT where we can test KA Lite',
             metavar="PORT"),
         make_option('-i', '--interactive',
@@ -444,14 +444,16 @@ class Command(BaseCommand):
                 shutil.move(self.working_dir, self.dest_dir)
 
             except Exception as e:
-                if str(e) != "Windows sucks.":
+                if str(e) == "Windows sucks.":
                     # We expect this error for Windows (sometimes, see above).
+                    sys.stdout.write("Copying contents from temp directory to original directory.\n")
+                else:
 
                     # If the move above fails, then we are in trouble.
                     #   The only way to try and save our asses is to
                     #   move each file from the new installation to the dest location,
                     #   one by one.
-                    sys.stdout.write("***** ERROR: Failed to move: %s to %s:\n" % (self.dest_dir, tempdir))
+                    sys.stdout.write("***** Warning: failed to move: %s to %s:\n" % (self.dest_dir, tempdir))
                     sys.stdout.write("*****        '%s'\n" % e)
                     sys.stdout.write("***** Trying to copy contents into dest_dir\n")
 
@@ -485,13 +487,13 @@ class Command(BaseCommand):
 
     def start_server(self, port=None):
         """
-        Start the server, for real (not to test)
+        Start the server, for real (not to test) (cron and web server)
         """
 
         sys.stdout.write("* Starting the server\n")
 
         # Start the server to validate
-        start_cmd = self.get_shell_script("serverstart*", location=self.current_dir + "/kalite/")
+        start_cmd = self.get_shell_script("start*", location=self.current_dir)
         full_cmd = [start_cmd] if not port else [start_cmd, port]
         p = subprocess.Popen(full_cmd, shell=False, cwd=os.path.split(start_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out = p.communicate()

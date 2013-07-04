@@ -1,5 +1,5 @@
 rem @echo off
-if "%1" = "" (
+if "%1" == "" (
     set PORT=8008
 ) else (
     set PORT=%1

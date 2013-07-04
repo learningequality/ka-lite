@@ -160,7 +160,7 @@ class Command(BaseCommand):
         make_option('-l', '--locale',
             action='store',
             dest='locale',
-            default=None,
+            default='en',  # don't ship other languages, by default.
             help='LOCALE to package for',
             metavar="LOCALE"),
         make_option('-t', '--server-type',
