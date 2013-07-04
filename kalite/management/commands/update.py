@@ -165,7 +165,10 @@ class Command(BaseCommand):
         self.move_video_files()
 
         # Validation & confirmation
-        self.test_server_full(test_port=test_port)
+        if platform.system() == "Windows":  # In Windows. serverstart is not async
+            self.test_server_weak()
+        else:
+            self.test_server_full(test_port=test_port)
         self.move_to_final(interactive)
         self.start_server()
 
@@ -371,7 +374,7 @@ class Command(BaseCommand):
         sys.stdout.write("* Testing the new server (simple)\n")
 
         out = call_outside_command_with_output(self.working_dir, "update", "test")
-        if out[0] != "Success!":
+        if "Success!" not in out[0]:
             raise CommandError(out[1] if out[1] else out[0])
 
 
@@ -500,11 +503,8 @@ class Command(BaseCommand):
         if out[1]:
             raise CommandError(out[1])
 
-        str = "The server should now be accessible locally at"
-        idx = out[0].find(str)
-        addr = out[0][idx+2+len(str):]#out[0].find("\n",idx)]
-
-        sys.stdout.write("* Server accessible @ %s\n" % addr)
+        running_port = out[0].split(" ")[-1]
+        sys.stdout.write("* Server accessible @ port %s.\n" % running_port)
 
 
     def print_footer(self):
