@@ -26,6 +26,9 @@ PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 8008)
 
 CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
 
+AUTO_LOAD_TEST = getattr(local_settings, "AUTO_LOAD_TEST", False)
+assert not AUTO_LOAD_TEST or not CENTRAL_SERVER, "AUTO_LOAD_TEST only on local server"
+
 # info about the central server(s)
 SECURESYNC_PROTOCOL   = getattr(local_settings, "SECURESYNC_PROTOCOL",   "https")
 CENTRAL_SERVER_DOMAIN = getattr(local_settings, "CENTRAL_SERVER_DOMAIN", "adhocsync.com")
