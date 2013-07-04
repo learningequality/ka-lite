@@ -70,7 +70,7 @@ def facility_required(handler):
 def require_admin(handler):
     """Require admin, different behavior for api_request or not"""
 
-    def wrapper_fn(request, api_request, *args, **kwargs):
+    def wrapper_fn(request, *args, **kwargs):
         if (settings.CENTRAL_SERVER and request.user.is_authenticated()) or getattr(request, "is_admin", False):
             return handler(request, *args, **kwargs)
 
@@ -83,7 +83,7 @@ def require_admin(handler):
             messages.error(request, mark_safe(_("To view the page you were trying to view, you need to be logged in as a teacher or an admin. Please login as one below, or <a href='%s'>go to home.</a>") % reverse("homepage")))
             return HttpResponseRedirect(reverse("login") + "?next=" + request.path)
 
-    return partial(wrapper_fn, api_request=api_request)
+    return wrapper_fn
 
 
 def require_login(handler):
