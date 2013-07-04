@@ -16,7 +16,6 @@ from django.utils.translation import ugettext as _
 
 import settings
 from config.models import Settings
-from config.utils import set_as_registered
 from securesync import crypto
 from securesync.api_client import SyncClient
 from securesync.forms import RegisteredDevicePublicKeyForm, FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
