@@ -68,7 +68,7 @@ class Command(BaseCommand):
             metavar="FILE"),
         make_option('-p', '--port',
             action='store',
-            dest='port',
+            dest='test_port',
             default=8008,
             help='PORT where we can test KA Lite',
             metavar="PORT"),
@@ -89,17 +89,27 @@ class Command(BaseCommand):
 
         if options.get("repo", None):
             # Specified a repo
-            self.update_via_git(options.get("repo", "."))
+            self.update_via_git(**options)
 
         elif options.get("zip_file", None):
             # Specified a file
             if not os.path.exists(options.get("zip_file")):
                 raise CommandError("Specified zip file does not exist: %s" % options.get("zip_file"))
-            self.update_via_zip(options.get("zip_file"), options.get("interactive"))
+            self.update_via_zip(**options)
 
         elif os.path.exists(settings.PROJECT_PATH + "/../.git"):
             # Without params, if we detect a git repo, try git
-            self.update_via_git()
+            self.update_via_git(**options)
+
+        elif len(args) > 1:
+            raise CommandError("Too many command-line arguments.")
+
+        elif len(args) == 1:
+            # Specify zip via first command-line arg
+            if options['zip_file'] is not None:
+                raise CommandError("Cannot specify a zipfile as unnamed and named command-line arguments at the same time.")
+            options['zip_file'] = args[0]
+            self.update_via_zip(**options)
 
         else:
             # No params, no git repo: try to get a file online.
@@ -115,23 +125,25 @@ class Command(BaseCommand):
                     settings.LOG.debug("Failed to get zipfile from %s: %s" % (url, e))
                     continue
 
-            self.update_via_zip(zip_file, options.get("interactive"))
+            self.update_via_zip(zip_file=zip_file, **options)
 
 
         self.stdout.write("Update is complete!\n")
 
 
 
-    def update_via_git(self, repo="."):
+    def update_via_git(self, repo=".", *args, **kwargs):
         # Step 1: update via git repo
         sys.stdout.write("Updating via git repo: %s\n" % repo)
         self.stdout.write(git.Repo(repo).git.pull() + "\n")
         call_command("syncdb", migrate=True)
 
 
-    def update_via_zip(self, zip_file, interactive=True):
+    def update_via_zip(self, zip_file, interactive=True, test_port=8008, *args, **kwargs):
         if not os.path.exists(zip_file):
             raise CommandError("Zip file doesn't exist")
+        if not self.kalite_is_installed():
+            raise CommandError("KA Lite not yet installed; cannot update.  Please install KA Lite first, then update.\n")
 
         sys.stdout.write("Updating via zip file: %s\n" % zip_file)
 
@@ -153,7 +165,7 @@ class Command(BaseCommand):
         self.move_video_files()
 
         # Validation & confirmation
-        self.test_server_full()
+        self.test_server_full(test_port=test_port)
         self.move_to_final(interactive)
         self.start_server()
 
@@ -265,8 +277,8 @@ class Command(BaseCommand):
             zip.extract(afile, path=self.working_dir)
             # If it's a unix script, give permissions to execute
             if os.path.splitext(afile)[1] == ".sh":
-                os.chmod(os.path.realpath(self.working_dir + "/" + afile), 0777)
-                sys.stdout.write("\tChanging perms on script %s\n" % os.path.realpath(self.working_dir + "/" + afile))
+                os.chmod(os.path.realpath(self.working_dir + "/" + afile), 0755)
+                settings.LOG.debug("\tChanging perms on script %s\n" % os.path.realpath(self.working_dir + "/" + afile))
         sys.stdout.write("\n")
 
         # Error checking (successful unpacking would skip all the following logic.)
@@ -286,8 +298,12 @@ class Command(BaseCommand):
     def copy_in_data(self):
         """Copy over sqlite3 database, then run syncdb"""
 
-        if settings.DATABASES['default']['ENGINE']!='django.db.backends.sqlite3':
+        if settings.DATABASES['default']['ENGINE'] != 'django.db.backends.sqlite3':
             sys.stdout.write("Nothing to do for non-sqlite3 database.\n")
+            return
+        elif not os.path.exists(settings.DATABASES['default']['NAME']):
+            sys.stdout.write("KA Lite not yet installed; no data to copy.\n")
+            return
         else:
             # Copy over data for sqlite
             sys.stdout.write("* Copying over database to the server update location\n")
@@ -379,7 +395,7 @@ class Command(BaseCommand):
         # Start the server to validate
         start_cmd = self.get_shell_script("serverstart*", location=self.working_dir + "/kalite/")
         try:
-            p = subprocess.Popen([start_cmd, test_port], shell=False, cwd=os.path.split(start_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            p = subprocess.Popen([start_cmd, str(test_port)], shell=False, cwd=os.path.split(start_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out = p.communicate()
             if out[1]:
                 raise CommandError(out[1])
@@ -412,9 +428,15 @@ class Command(BaseCommand):
 
         # OK, don't actually kill it--just move it
         if os.path.exists(self.dest_dir):
-            tempdir = tempfile.mkdtemp()
-            sys.stdout.write("* Moving old directory to a temporary location...\n")
             try:
+                if platform.system() == "Windows" and self.current_dir == self.dest_dir:
+                    # We know this will fail, so rather than get in an intermediate state,
+                    #   just move right to the compensatory mechanism.
+                    raise Exception("Windows sucks.")
+
+                tempdir = tempfile.mkdtemp()
+
+                sys.stdout.write("* Moving old directory to a temporary location...\n")
                 shutil.move(self.dest_dir, tempdir)
 
                 # Move to the final destination
@@ -422,34 +444,42 @@ class Command(BaseCommand):
                 shutil.move(self.working_dir, self.dest_dir)
 
             except Exception as e:
-                # If the move above fails, then we are in trouble.
-                #   The only way to try and save our asses is to
-                #   move each file from the new installation to the dest location,
-                #   one by one.
-                sys.stdout.write("***** ERROR: Failed to move: %s to %s:\n" % (self.dest_dir, tempdir))
-                sys.stdout.write("*****        '%s'\n" % e)
-                sys.stdout.write("***** Trying to copy contents into dest_dir\n")
+                if str(e) != "Windows sucks.":
+                    # We expect this error for Windows (sometimes, see above).
+
+                    # If the move above fails, then we are in trouble.
+                    #   The only way to try and save our asses is to
+                    #   move each file from the new installation to the dest location,
+                    #   one by one.
+                    sys.stdout.write("***** ERROR: Failed to move: %s to %s:\n" % (self.dest_dir, tempdir))
+                    sys.stdout.write("*****        '%s'\n" % e)
+                    sys.stdout.write("***** Trying to copy contents into dest_dir\n")
 
                 copy_success = 0  # count the # of files successfully moved over
                 for root, dirs, files in os.walk(self.working_dir):
                     # Turn root into a relative path
-                    relpath = root[len(self.working_dir):] if root.startswith(self.working_dir) else root[1:]
+                    assert root.startswith(self.working_dir), "Root from os.walk should be an absolute path."
+                    relpath = root[len(self.working_dir)+1:]
 
                     # Loop over all directories to create destination directories
                     for d in dirs:
                         drelpath = os.path.join(relpath, d)
-                        if not os.path.exists(self.dest_dir + drelpath):
-                            sys.stdout.write("Created directory %s%s\n" % (self.dest_dir, drelpath))
-                            os.mkdir(self.dest_dir + drelpath)
+                        dabspath = os.path.join(self.dest_dir, drelpath)
+                        if not os.path.exists(dabspath):
+                            settings.LOG.debug("Created directory %s\n" % (dabspath))
+                            os.mkdir(dabspath)
 
                     # Loop over all files, to move them over.
                     for f in files:
                         try:
-                            frelpath = os.path.join("/", relpath, f)
-                            shutil.copyfile(self.working_dir + frelpath, self.dest_dir + frelpath)
+                            frelpath = os.path.join(relpath, f)
+                            shutil.copyfile(
+                                os.path.join(self.working_dir, frelpath),
+                                os.path.join(self.dest_dir, frelpath),
+                            )
                             copy_success += 1
                         except:
-                            sys.stderr.write("**** failed to copy %s%s\n" % (self.working_dir, frelpath))
+                            sys.stderr.write("**** failed to copy %s\n" % os.path.join(self.working_dir, frelpath))
                 sys.stdout.write("* Successfully copied %d files into final directory\n" % copy_success)
 
 
@@ -479,6 +509,13 @@ class Command(BaseCommand):
         sys.stdout.write("*\n")
         sys.stdout.write("* Installation complete!\n")
         sys.stdout.write("*"*50 + "\n")
+
+    def kalite_is_installed(self):
+        if settings.DATABASES['default']['ENGINE'] != 'django.db.backends.sqlite3':
+            return True  # I have no idea, so assume the best.  They updated local_settings and are "sophisticated"
+
+        else:
+            return os.path.exists(settings.DATABASES['default']['NAME'])
 
 
     def get_shell_script(self, cmd_glob, location=None):
