@@ -18,13 +18,16 @@ TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
 logging.basicConfig()
 LOG = getattr(local_settings, "LOG", logging.getLogger("kalite"))
 LOG.setLevel(logging.DEBUG*DEBUG + logging.INFO*(1-DEBUG))
-    
+
 INTERNAL_IPS   = getattr(local_settings, "INTERNAL_IPS", ("127.0.0.1",))
 
 # TODO(jamalex): currently this only has an effect on Linux/OSX
 PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 8008)
 
 CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
+
+AUTO_LOAD_TEST = getattr(local_settings, "AUTO_LOAD_TEST", False)
+assert not AUTO_LOAD_TEST or not CENTRAL_SERVER, "AUTO_LOAD_TEST only on local server"
 
 # info about the central server(s)
 SECURESYNC_PROTOCOL   = getattr(local_settings, "SECURESYNC_PROTOCOL",   "https")
