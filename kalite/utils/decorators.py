@@ -10,7 +10,6 @@ from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 
 import settings
-from central.models import Organization
 from config.models import Settings
 from securesync.models import Device, DeviceZone, Zone, Facility
 
@@ -134,6 +133,9 @@ def authorized_login_required(handler):
                     return HttpResponseForbidden("Facility, no zone")
                 zone_id = zone.pk
 
+        # inline import, to avoid unnecessary dependency on central server module
+        #    on the distributed server.
+        from central.models import Organization
         # Validate zone through org
         if zone_id:
             zone = get_object_or_404(Zone, pk=zone_id)

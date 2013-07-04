@@ -8,7 +8,6 @@ import main.api_urls
 import securesync.urls
 from kalite import settings
 
-
 admin.autodiscover()
 
 urlpatterns = patterns('',

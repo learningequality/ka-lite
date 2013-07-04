@@ -79,7 +79,7 @@ def recursively_add_files(dirpath, files_dict=dict(), key_base="", **kwargs):
              the location in the project when including/excluding files/dirs
     """
 
-    for (_, dirnames, filenames) in os.walk(dirpath):
+    for (root, dirnames, filenames) in os.walk(dirpath):
 
         #
         in_dirs = select_package_dirs(dirnames, key_base=key_base, **kwargs)
@@ -95,13 +95,11 @@ def recursively_add_files(dirpath, files_dict=dict(), key_base="", **kwargs):
 
             # Made it through!  Include in the package
             files_dict[file_path] = {
-                "dest_path": f if key_base == "" else file_path
+                "dest_path": os.path.join(key_base, f)
             }
 
         # Recursive case: loop all subdirectories
         for d in in_dirs:
-            if d is None or dirpath is None:
-                import pdb; pdb.set_trace()
             files_dict = recursively_add_files(
                 dirpath = os.path.join(dirpath, d),
                 files_dict = files_dict,
@@ -162,7 +160,7 @@ class Command(BaseCommand):
         make_option('-l', '--locale',
             action='store',
             dest='locale',
-            default=None,
+            default='en',  # don't ship other languages, by default.
             help='LOCALE to package for',
             metavar="LOCALE"),
         make_option('-t', '--server-type',

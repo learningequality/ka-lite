@@ -75,7 +75,6 @@ def facility_required(handler):
     return inner_fn
 
 
->>>>>>> 914e361077f666b7f083b2d3d2e46b255fb92928
 def set_as_registered():
     force_job("syncmodels", "Secure Sync", "HOURLY")
     Settings.set("registered", True)
@@ -275,11 +274,6 @@ def add_group(request, facility):
 @render_to("securesync/login.html")
 def login(request, facility):
     facilities = Facility.objects.all()
-<<<<<<< HEAD
-=======
-
-    facility = get_facility_from_request(request)
->>>>>>> 914e361077f666b7f083b2d3d2e46b255fb92928
     facility_id = facility and facility.id or None
 
     if request.method == 'POST':
