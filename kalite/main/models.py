@@ -168,7 +168,6 @@ class UserLogSummary(SyncedModel):
         device = device or Device.get_own_device()  # Must be done here, or install fails
 
         # Check for an existing object
-        import pdb; pdb.set_trace()
         log_summary = cls.objects.filter(
             device=device,
             user=user_log.user,

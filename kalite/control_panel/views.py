@@ -152,7 +152,7 @@ def zone_management(request, zone_id, org_id=None):
             "num_times_synced": num_times_synced,
             "last_time_synced": None if num_times_synced == 0 else sync_sessions.order_by("-timestamp")[0].timestamp,
             "last_time_used":   last_device_activity,
-            "counter": device.counter,
+            "counter": device.get_counter(),
         }
 
     # Accumulate facility data

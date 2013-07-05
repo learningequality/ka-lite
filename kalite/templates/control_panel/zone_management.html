@@ -55,16 +55,16 @@
 
             {% for id,facility in facilities.items %}
                 <tr>
-                    <td>
+                    <td nowrap>
                         <a href="{% url facility_usage org_id=org.id zone_id=zone.id facility_id=id %}">
                             {{ facility.name }}
                         </a>
                     </td>
-                    <td>{{ facility.num_users }}</td>
-                    <td>{{ facility.num_groups }}</td>
-                    <td>{% if not facility.last_time_used %}{% trans "Never" %}{% else %}{{ facility.last_time_used.start_datetime|date }} - {{ facility.last_time_used.end_datetime|date }}{% endif %}</td>
+                    <td nowrap>{{ facility.num_users }}</td>
+                    <td nowrap>{{ facility.num_groups }}</td>
+                    <td nowrap>{% if not facility.last_time_used %}{% trans "Never" %}{% else %}{{ facility.last_time_used.start_datetime|date }} - {{ facility.last_time_used.end_datetime|date }}{% endif %}</td>
 
-                    <td>
+                    <td nowrap>
                         <!--span class="actions">[<a href="{% url facility_user_management org_id=org.id zone_id=zone.id facility_id=id %}">{% trans "manage users" %}</a>]</span>
                         <span class="reports">[<a href="{% url facility_usage org_id=org.id zone_id=zone.id facility_id=id %}">{% trans "view usage" %}</a>]</span>
                         <span class="reports">[<a href="{% url facility_mastery org_id=org.id zone_id=zone.id facility_id=id %}">{% trans "view mastery" %}</a>]</span-->
@@ -96,14 +96,14 @@
                 </tr>
                 {% for id,device in devices.items %}
                     <tr>
-                        <td>
+                        <td nowrap>
                             <a href="{% url device_management org_id=org.id zone_id=zone.id device_id=id %}">
                                 {{ device.name }}
                             </a></td>
                         <td>{{ device.num_times_synced }}</td>
-                        <td>{{ device.last_time_synced }}</td>
-                        <td>{% if not device.last_time_used %}{% trans "Never" %}{% else %}{{ device.last_time_used.start_datetime|date }} - {{ device.last_time_used.end_datetime|date }}{% endif %}</td>
-                        <td>{{ device.counter }}</td>
+                        <td nowrap>{{ device.last_time_synced }}</td>
+                        <td nowrap>{% if not device.last_time_used %}{% trans "Never" %}{% else %}{{ device.last_time_used.start_datetime|date }} - {{ device.last_time_used.end_datetime|date }}{% endif %}</td>
+                        <td nowrap>{{ device.counter }}</td>
                     </tr>
 
                 {% endfor %}
