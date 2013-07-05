@@ -151,6 +151,7 @@ INSTALLED_APPS = (
     "config",
     "main", # in order for securesync to work, this needs to be here.
     "control_panel", # in both apps
+    "coachreports", # in both apps; reachable on central via control_panel
     "kalite", # contains commands
 )
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
@@ -170,7 +171,6 @@ if CENTRAL_SERVER:
     AUTH_PROFILE_MODULE     = 'central.UserProfile'
 
 else:
-    INSTALLED_APPS         += ("coachreports",)
     # Include optionally installed apps
     if os.path.exists(PROJECT_PATH + "/loadtesting/"):
         INSTALLED_APPS     += ("loadtesting",)

@@ -15,7 +15,8 @@
         {% else %}
             <table class="simple-table">
                 <tr>
-                    <th width="250px">Group name</th>
+                    <th width="100px">Group name</th>
+                    <th width="150px"></th>
                     <th width="100px"># Users</th>
                     <th width="100px">Logins</th>
                     <th width="100px">Login Time</th>
@@ -25,12 +26,14 @@
                 </tr>
                 {% for id, group in groups.items %}
                     <tr>
+                        <td>{{ group.name }}</td>
                         <td>
-                            <a href="{% url coach_reports %}?facility={{ facility.id }}&group={{ id }}">{{ group.name }}</a></td>
-                        <td>
-                            {{ group.total_users }}
-                            <span class="actions">[<a href="{% url facility_user_management org_id=org.id zone_id=zone.id facility_id=id %}">{% trans "manage" %}</a>]</span>
+                            <span class="actions">[
+                                <a href="{% url coach_reports %}?facility={{ facility.id }}&group={{ id }}">{% trans "coach" %}</a>
+                                / <a href="{% url facility_user_management org_id=org.id zone_id=zone.id facility_id=facility.id group_id=id %}">{% trans "manage" %}</a>
+                            ]</span>
                         </td>
+                        <td>{{ group.total_users }}</td>
                         <td>{{ group.total_logins }}</td>
                         <td>{{ group.total_hours|floatformat }}</td>
                         <td>{{ group.total_videos }}</td>

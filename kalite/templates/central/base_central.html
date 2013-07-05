@@ -35,7 +35,7 @@ article {
         {% if user.is_superuser %}
         <a href="{% url admin:index %}" id="nav_admin" class="{% block admin_active %}{% endblock admin_active %}">Admin</a>
         {% endif %}
-        <a href="{% url org_management %}" id="nav_faq" class="{% block control_panel_active %}{% endblock control_panel_active %}">{{ user.username }}</a>
+        <a href="{% url org_management %}" id="nav_faq" class="{% block control_panel_active %}{% endblock control_panel_active %}{% block coachreports_active %}{% endblock coachreports_active %}{% block selfreports_active %}{% endblock selfreports_active %}">{{ user.username }}</a>
         <a href="{% url auth_logout %}">Logout</a>
     {% else %}
     {% comment %}

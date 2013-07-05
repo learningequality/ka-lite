@@ -25,7 +25,7 @@ from main.models import VideoLog, ExerciseLog, VideoFile
 from securesync.api_client import SyncClient
 from securesync.models import Facility, FacilityUser,FacilityGroup, DeviceZone, Device
 from securesync.views import facility_required
-from control_panel.views import facility_users_context, group_report_context
+from control_panel.views import user_management_context
 from utils import topic_tools
 from utils.jobs import force_job
 from utils.decorators import require_admin
@@ -301,21 +301,12 @@ def update(request):
     }
     return context
 
-@require_admin
-@facility_required
-@render_to("coach_reports.html")
-def coach_reports(request, facility):
-    return group_report_context(
-        facility_id=facility.id,
-        group_id=request.REQUEST.get("group", ""),
-        topic_id=request.REQUEST.get("topic", ""),
-    )
 
 @require_admin
 @facility_required
 @render_to("current_users.html")
 def user_list(request,facility):
-    return facility_users_context(
+    return user_management_context(
         request=request,
         facility_id=facility.id,
         group_id=request.REQUEST.get("group",""),

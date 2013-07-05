@@ -202,7 +202,7 @@ def tabular_view(request, facility, report_type="exercise"):
 
     group_id = request.GET.get("group", "")
     if group_id:
-        users = FacilityUser.objects.filter(group=group, is_teacher=False).order_by("last_name", "first_name")
+        users = FacilityUser.objects.filter(group=group_id, is_teacher=False).order_by("last_name", "first_name")
     else:
         users = FacilityUser.objects.filter(group__in=groups, is_teacher=False).order_by("last_name", "first_name")
 

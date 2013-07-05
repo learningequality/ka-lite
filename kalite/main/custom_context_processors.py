@@ -10,6 +10,7 @@ def custom(request):
         "CONTENT_URL": settings.CONTENT_URL,
         "DATA_PATH": settings.DATA_PATH,
         "settings": settings,
+        "is_central": settings.CENTRAL_SERVER,
     }
 
 

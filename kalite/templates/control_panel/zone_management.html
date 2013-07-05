@@ -13,22 +13,11 @@
 
 {% block buttons %}
             {% block upload_button %}
-            <!--li>
-                <form name="upload_form" id="upload_form" method="post"
-                      action="{% url zone_data_upload org_id=org.id zone_id=zone.id %}"
-                      enctype="multipart/form-data" >{% csrf_token %}
-                    <div id="form_data">
-                        <br/>
-                        {% block upload_form %}{{ upload_form.as_p }}{% endblock %}
-                    </div>
-                    <input class="add green_button" type="submit" value="{% trans 'Bulk upload zone data' %}">
-                </form>
-            </li-->
             {% endblock upload_button %}
 
             {% block download_button %}
                 <li>
-                    <a class="green_button" href="{% url zone_data_download org_id=org.id zone_id=zone.id %}">{% trans "Sync via USB" %}</a>
+                    <a class="green_button" href="#">{% trans "Sync via USB" %}</a>
                 </li>
             {% endblock download_button %}
 {% endblock buttons %}
@@ -65,9 +54,7 @@
                     <td nowrap>{% if not facility.last_time_used %}{% trans "Never" %}{% else %}{{ facility.last_time_used.start_datetime|date }} - {{ facility.last_time_used.end_datetime|date }}{% endif %}</td>
 
                     <td nowrap>
-                        <!--span class="actions">[<a href="{% url facility_user_management org_id=org.id zone_id=zone.id facility_id=id %}">{% trans "manage users" %}</a>]</span>
-                        <span class="reports">[<a href="{% url facility_usage org_id=org.id zone_id=zone.id facility_id=id %}">{% trans "view usage" %}</a>]</span>
-                        <span class="reports">[<a href="{% url facility_mastery org_id=org.id zone_id=zone.id facility_id=id %}">{% trans "view mastery" %}</a>]</span-->
+                        <!--span class="reports">[<a href="{% url facility_usage org_id=org.id zone_id=zone.id facility_id=id %}">{% trans "view usage" %}</a>]</span-->
                     </td>
                 </tr>
             {% endfor %}

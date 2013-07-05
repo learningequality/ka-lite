@@ -56,7 +56,7 @@
     {% block navbar %}{{ block.super }} {% endblock navbar %}
 
 {% if no_data %}
-    {% if request.is_admin %}
+    {% if request.is_admin or is_central %}
         {% trans "No data for this user." %}
     {% else %}
         {% trans "Welcome to KA Lite!" %}
@@ -86,7 +86,11 @@
         </td>
         <td>
             <span title="{{ topic.description }}">
-                <a href="{{ topic.path }}">{{ topic.title }}</a>
+                {% if not is_central %}
+                    <a href="{{ topic.path }}">{{ topic.title }}</a>
+                {% else %}
+                    {{ topic.title }}
+                {% endif %}
             </span>
         </td>
         {% for def in stat_defs %}
