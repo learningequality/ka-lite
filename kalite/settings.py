@@ -208,6 +208,9 @@ if CACHE_TIME or CACHE_TIME is None: # None can mean infinite caching to some fu
         }
     }
 
+# Here, None === no limit
+SYNC_SESSIONS_MAX_RECORDS = getattr(local_settings, "SYNC_SESSIONS_MAX_RECORDS", None if CENTRAL_SERVER else 10)
+
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 MESSAGE_STORAGE = 'utils.django_utils.NoDuplicateMessagesSessionStorage'

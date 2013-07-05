@@ -153,7 +153,6 @@ class SyncClient(object):
         self.post("session/destroy", {
             "client_nonce": self.session.client_nonce
         })
-        self.session.delete()
         self.session = None
         return "success"
 
