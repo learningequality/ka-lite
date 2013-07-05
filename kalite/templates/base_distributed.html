@@ -5,6 +5,7 @@
 
 {% block basejs %}{{ block.super }}
     <script type="text/javascript" src="{% static 'js/distributed-server.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/purl.js' %}"></script>
 {% endblock basejs %}
 
 
@@ -74,4 +75,16 @@
         });
     </script>
 {% endif %}
+{% block endjs %}
+<script>
+
+$(function() {
+    // Propagate any facility and group info to the coach reports link
+    var params_dict = { "facility": $.url().param('facility'), "group": $.url().param('group'), }
+    var new_href =  setGetParamDict($("#nav_coachreports").attr("href"), params_dict);
+//    $("#nav_coachreports").attr("href", new_href);
+});
+</script>
+{% endblock endjs %}
+
 {% endblock footerleft %}

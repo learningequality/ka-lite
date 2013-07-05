@@ -85,10 +85,10 @@ def authorized_login_required(handler):
         if user.is_superuser:
             return handler(request, *args, **kwargs)
         
-        org = None; org_id      = kwargs.get("org_id", None)
-        zone = None; zone_id     = kwargs.get("zone_id", None)
-        device = None; device_id   = kwargs.get("device_id", None)
-        facility = None; facility_id = kwargs.get("facility_id", None)
+        org = None; org_id      = kwargs.get("org", None)
+        zone = None; zone_id     = kwargs.get("zone", None)
+        device = None; device_id   = kwargs.get("device", None)
+        facility = None; facility_id = kwargs.get("facility", None)
         
         # Validate device through zone
         if device_id:
