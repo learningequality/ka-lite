@@ -1,5 +1,6 @@
 {% extends "control_panel/base_management_printable.html" %}
 {% load i18n %}
+{% load my_filters %}
 
 {% block title %}{{ facility.name }} - Facility Usage{% endblock title %}
 
@@ -16,22 +17,25 @@
                 <tr>
                     <th width="250px">Group name</th>
                     <th width="100px"># Users</th>
-                    <th width="100px">Total Logins</th>
-                    <th width="100px">Total Login Time</th>
-                    <th width="100px">Total Videos Viewed</th>
-                    <th width="100px">Total Exercises Completed</th>
-                    <th width="100px">Total Mastery</th>
+                    <th width="100px">Logins</th>
+                    <th width="100px">Login Time</th>
+                    <th width="100px">Videos Viewed</th>
+                    <th width="100px">Exercises Completed</th>
+                    <th width="100px">Mastery</th>
                 </tr>
-                {% for id,group in groups.items %}
+                {% for id, group in groups.items %}
                     <tr>
                         <td>
-                            <a href="{% url group_report org_id=org.id zone_id=zone.id facility_id=facility.id group_id=id %}">{{ group.name }}</a></td>
-                        <td>{{ group.total_users }}</td>
+                            <a href="{% url coach_reports %}?facility={{ facility.id }}&group={{ id }}">{{ group.name }}</a></td>
+                        <td>
+                            {{ group.total_users }}
+                            <span class="actions">[<a href="{% url facility_user_management org_id=org.id zone_id=zone.id facility_id=id %}">{% trans "manage" %}</a>]</span>
+                        </td>
                         <td>{{ group.total_logins }}</td>
-                        <td>{{ group.total_hours }}</td>
+                        <td>{{ group.total_hours|floatformat }}</td>
                         <td>{{ group.total_videos }}</td>
                         <td>{{ group.total_exercises }}</td>
-                        <td>{{ group.total_mastery }}</td>
+                        <td>{{ group.pct_mastery|percent:1 }}</td>
                     </tr>
 
                 {% endfor %}
@@ -53,25 +57,35 @@
                 <tr>
                     <th width="250px">User name</th>
                     <th width="100px">Group</th>
-                    <th width="100px">Total Logins</th>
-                    <th width="100px">Total Login Time</th>
-                    <th width="100px">Total Videos Viewed</th>
-                    <th width="100px">Total Exercises Completed</th>
-                    <th width="100px">Total Mastery</th>
+                    <th width="100px">Logins</th>
+                    <th width="100px">Login Time</th>
+                    <th width="100px">Videos Viewed</th>
+                    <th width="100px">Exercises Begun</th>
+                    <th width="100px">Mastery</th>
                 </tr>
-                {% for id,user in users.items %}
+                {% for id, user in users.items %}
                     <tr>
-                        {% if user.last_name and user.first_name %}<td>{{ user.last_name }}, {{ user.first_name }}</td>
-                        {% elif user.last_name %}<td>{{user.last_name }}</td>
-                        {% elif user.last_name %}<td>{{user.first_name }}</td>
-                        {% else %}<td>{{ user.name }}</td>
-                        {% endif %}
-                        <td>{{ user.group_name }}</td>
+                        <td>
+                            <a href="{% url student_view %}?user={{ id }}">
+                                {% if user.last_name and user.first_name %}{{ user.last_name }}, {{ user.first_name }}
+                                {% elif user.last_name %}{{user.last_name }}
+                                {% elif user.last_name %}{{user.first_name }}
+                                {% else %}{{ user.name }}
+                                {% endif %}
+                            </a>
+                        </td>
+                        <td>
+                            {% if user.group %}
+                                <a href="{% url coach_reports %}?facility={{ facility.id }}&group={{ user.group.id }}">{{ user.group.name }}</a>
+                            {% else %}
+                                [{% trans "None" %}]
+                            {% endif %}
+                        </td>
                         <td>{{ user.total_logins }}</td>
                         <td>{{ user.total_hours|floatformat }}</td>
                         <td>{{ user.total_videos }}</td>
                         <td>{{ user.total_exercises }}</td>
-                        <td>{{ user.total_mastery }}</td>
+                        <td>{{ user.pct_mastery|percent:1  }}</td>
                     </tr>
 
             {% endfor %}

@@ -6,11 +6,6 @@
 
 {% block headcss %}
     <link  rel="stylesheet" type="text/css" href="{% static 'css/control_panel.css' %}" />
-<style>
-    .titlebar__buttons {
-        display:none; /* temp disabling */
-    }
-</style>
 {% endblock headcss %}
 
 {% block content %}
@@ -21,6 +16,7 @@
             {% if org %}
             <li><a href="{% url org_management %}"> {{org.name }}</a></li>
             {% endif %}
+
             {% if zone %}
             <li>
                 {% if org %}&gt;{% endif %}
@@ -30,17 +26,24 @@
                 {% else %} <a class="edit-link" href="{% url zone_form org_id=org.id zone_id=zone.id %}">(edit)</a>
                 {% endif %}</li>
             {% endif %}
-            {% if facility %}
-            <li>
-                {% if zone %}&gt; {% endif %}
-                {{ facility.name }}
-                <a class="edit-link" href="{% url facility_form org_id=org.id zone_id=zone.id facility_id=facility.id%}">(edit)</a>
-            </li>
-            {% endif %}
+
             {% if device %}
             <li>{% if zone %}&gt; {% endif %}{{ device.name }}</li>
             {% endif %}
 
+            {% if facility %}
+            <li>
+                {% if zone %}&gt; {% endif %}
+                {{ facility.name }}
+                {% if not group %}
+                <a class="edit-link" href="{% url facility_form org_id=org.id zone_id=zone.id facility_id=facility.id%}">(edit)</a>
+                {% endif %}
+            </li>
+            {% endif %}
+
+            {% if group %}
+            <li>{% if facility %}&gt; {% endif %}{{ group.name }}</li>
+            {% endif %}
 
             {% comment "Provide upload/download buttons; each button should be an LI" %}{% endcomment %}
             <ul class="titlebar__buttons">
@@ -54,4 +57,16 @@
 
     {% block inner_content %}
     {% endblock inner_content %}
+    {% block endjs %}{{ block.super }}
+<script>
+    $(".green_button").each(function () {
+        if (this.tagName == "INPUT") {
+            this.onclick = null;
+            this.onsubmit = null;
+        } else {
+            this.setAttribute("href","#");
+        }
+    });
+</script>
+    {% endblock endjs %}
 {% endblock content %}

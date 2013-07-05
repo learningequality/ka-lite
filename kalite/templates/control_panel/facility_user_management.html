@@ -12,5 +12,6 @@
 
 {% block inner_content %}
 <div id="content">
-    {% include_block "current_users.html" "content" %}
+    {% include_block "current_users.html" "users_table" %}
+    {% include_block "current_users.html" "endjs" %}
 {% endblock inner_content %}

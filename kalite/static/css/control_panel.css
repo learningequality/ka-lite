@@ -3,6 +3,12 @@ body {
     min-height: 500px;
 }
 
+h2 {
+    margin-top: 15px;
+}
+table {
+    margin-bottom: 25px;
+}
 ul, li {
     list-style: none;
     margin-left: 0px;
@@ -51,7 +57,7 @@ ul, li {
 
 .simple-table th{
     font-weight: bold;
-    text-align: left; 
+    text-align: left;
     padding: 8px 8px 8px 10px;
     background-color: #E7E7E7;
 }
@@ -75,12 +81,12 @@ ul, li {
 }
 
 a.green_button, a.green_button:hover,input.green_button, input.green_button:hover {
-    color: white !important; 
+    color: white !important;
     text-decoration: none;
 }
 a.green_button:hover,input.green_button:hover{
     background-color:#C0C0C0;
-} 
+}
 a.edit-link {
     font-size:11pt;
 }

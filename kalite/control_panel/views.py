@@ -141,21 +141,33 @@ def zone_management(request, zone_id, org_id=None):
     device_data = dict()
     for device_zone in device_zones:
         device = device_zone.device
-        num_times_synced = SyncSession.objects.filter(client_device=device).count()
+
+        sync_sessions = SyncSession.objects.filter(client_device=device)
+        num_times_synced = sync_sessions.count()
+        user_activity = UserLogSummary.objects.filter(device=device)
+        last_device_activity = None if user_activity.count() == 0 else user_activity.order_by("-end_datetime")[0]
+
         device_data[device.id] = {
             "name": device.name,
             "num_times_synced": num_times_synced,
-            "last_time_synced": None if num_times_synced == 0 else SyncSession.objects.filter(client_device=device, ).order_by("-timestamp")[0].timestamp,
+            "last_time_synced": None if num_times_synced == 0 else sync_sessions.order_by("-timestamp")[0].timestamp,
+            "last_time_used":   last_device_activity,
+            "counter": device.counter,
         }
 
     # Accumulate facility data
     facility_data = dict()
     for facility in Facility.from_zone(zone):
+
+        user_activity = UserLogSummary.objects.filter(user__in=FacilityUser.objects.filter(facility=facility))
+        last_facility_activity = None if user_activity.count() == 0 else user_activity.order_by("-end_datetime")[0]
+
         facility_data[facility.id] = {
             "name": facility.name,
             "num_users":  FacilityUser.objects.filter(facility=facility).count(),
             "num_groups": FacilityGroup.objects.filter(facility=facility).count(),
             "id": facility.id,
+            "last_time_used":   last_facility_activity,
         }
 
     return {
@@ -190,23 +202,26 @@ def facility_usage(request, facility_id, org_id=None, zone_id=None):
     users = FacilityUser.objects.filter(facility=facility).order_by("last_name")
 
     # Accumulating data
+    len_all_exercises = len(topicdata.NODE_CACHE['Exercise'])
+
     group_data = collections.OrderedDict()
     user_data = collections.OrderedDict()
     for user in users:
-        exercise_stats = {"count": ExerciseLog.objects.filter(user=user).count()}
+        exercise_logs = ExerciseLog.objects.filter(user=user)
+        exercise_stats = {"count": exercise_logs.count(), "total_mastery": exercise_logs.aggregate(Sum("complete"))["complete__sum"]}
         video_stats = {"count": VideoLog.objects.filter(user=user).count()}
         login_stats = UserLogSummary.objects.filter(user=user).aggregate(Sum("total_logins"), Sum("total_seconds"))
 
         user_data[user.pk] = {
             "first_name": user.first_name,
             "last_name": user.last_name,
-            "name": user.get_name,
-            "group_name": getattr(user.group, "name", None),
+            "name": user.get_name(),
+            "group": user.group,
             "total_logins": login_stats["total_logins__sum"] or 0,
-            "total_hours": login_stats["total_seconds__sum"]/3600. if login_stats["total_seconds__sum"] else 0.,
+            "total_hours": (login_stats["total_seconds__sum"] or 0)/3600.,
             "total_videos": video_stats["count"],
             "total_exercises": exercise_stats["count"],
-            "total_mastery": "NYI",
+            "pct_mastery": (exercise_stats["total_mastery"] or 0)/float(len_all_exercises),
         }
 
         group = user.group
@@ -214,16 +229,19 @@ def facility_usage(request, facility_id, org_id=None, zone_id=None):
             if not group.pk in group_data:
                 group_data[group.pk] = {
                     "name": group.name,
-                    "total_logins": "NYI",
-                    "total_hours": "NYI",
+                    "total_logins": 0,
+                    "total_hours": 0,
                     "total_users": 0,
                     "total_videos": 0,
                     "total_exercises": 0,
-                    "total_mastery": "NYI",
+                    "pct_mastery": 0,
                 }
             group_data[group.pk]["total_users"] += 1
+            group_data[group.pk]["total_logins"] += user_data[user.pk]["total_logins"]
+            group_data[group.pk]["total_hours"] += user_data[user.pk]["total_hours"]
             group_data[group.pk]["total_videos"] += user_data[user.pk]["total_videos"]
             group_data[group.pk]["total_exercises"] += user_data[user.pk]["total_exercises"]
+            group_data[group.pk]["pct_mastery"] = (group_data[group.pk]["pct_mastery"] * (group_data[group.pk]["total_users"] - 1) + user_data[user.pk]["pct_mastery"]) / group_data[group.pk]["total_users"]
 
     return {
         "org": org,

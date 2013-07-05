@@ -18,7 +18,7 @@
         font-weight: bold;
     }
     th {
-        color: #555; 
+        color: #555;
     }
     th, td {
         padding: 3px;
@@ -30,8 +30,11 @@
         text-align: right;
     }
     td.struggling {
-        background-color: #aa0; 
+        background-color: #aa0;
         font-weight: bold;
+    }
+    .table-title {
+        margin-bottom: 15px;
     }
 </style>
 {% endblock headcss %}
@@ -43,7 +46,7 @@
     {% block navbar_user %}
     {% if student %}
     <div id="select-user" class="selection">
-        <span id="user">{{ student.first_name }} {{ student.last_name }}</span>
+        <span id="user">{{ student.get_name }}</span>
     </div>
     {% endif %}
     {% endblock navbar_user %}
@@ -51,21 +54,24 @@
 
 {% block content %}
     {% block navbar %}{{ block.super }} {% endblock navbar %}
-    
+
 {% if no_data %}
-    {% trans "Welcome to KA Lite!" %}
-    {% trans "Please return to this page after watching videos or practicing exercises." %}
-    
+    {% if request.is_admin %}
+        {% trans "No data for this user." %}
+    {% else %}
+        {% trans "Welcome to KA Lite!" %}
+        {% trans "Please return to this page after watching videos or practicing exercises." %}
+    {% endif %}
 {% else %}
-<h2>Topics Table</h2>
+<h2 class="table-title">{% trans "Mastery of Topics" %}</h2>
 <table>
     <tr>
-        <th rowspan="2" colspan="2" class="super-header">&nbsp;</th>
-        <!--th rowspan="2" style="vertical-align:middle">{% trans "Topic name" %}</th-->
+        <th colspan="2" class="super-header"></th>
         <th colspan="7" class="super-header">{% trans "Exercises" %}</th><!-- everything is programmatic... except colspans here. :( -->
         <th colspan="5" class="super-header">{% trans "Videos" %}</th>
     </tr>
     <tr>
+        <th colspan="2" class="" >Topic</th>
         {% for def in stat_defs %}
         <th>{{ def.title }}</th>
         {% endfor %}

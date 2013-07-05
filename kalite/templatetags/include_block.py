@@ -28,19 +28,24 @@ class IncludeBlockNode(template.Node):
         self.include_file = include_file
         self.block_name = block_name
 
-    def _get_node(self, template, context, name):
+    def _get_node(self, nodelist, name):
         '''
         taken originally from
         http://stackoverflow.com/questions/2687173/django-how-can-i-get-a-block-from-a-template
         '''
-        for node in template:
+        for node in nodelist:
             if isinstance(node, BlockNode) and node.name == name:
-                return node.nodelist.render(context)
-            elif isinstance(node, ExtendsNode):
-                return self._get_node(node.nodelist, context, name)
-
-        raise Exception("Node '%s' could not be found in template." % name)
+                return node
+            elif hasattr(node, "nodelist"):
+                child = self._get_node(node.nodelist, name)
+                if child:
+                    return child
+        return None
 
     def render(self, context):
         t = get_template(self.include_file)
-        return self._get_node(t, context, self.block_name)
+        node = self._get_node(t, self.block_name)
+        if node:
+            return node.nodelist.render(context)
+        else:
+             Exception("Node '%s' could not be found in template." % self.block_name)
