@@ -83,7 +83,8 @@ class Serializer(object):
             # See logic below.  We selectively skip serializing
             #   objects that have a (starting) version greater than the
             #   version we're serializing for.
-            if version_diff(dest_version, getattr(obj, "version", None)) < 0:
+            v_diff = version_diff(dest_version, getattr(obj, "version", None))
+            if v_diff is not None and v_diff < 0:
                 continue
 
             self.start_object(obj)
