@@ -57,6 +57,15 @@ class SyncSession(models.Model):
     def sign(self):
         return Device.get_own_device().get_key().sign(self._hashable_representation())
 
+    def save(self, *args, **kwargs):
+        """
+        Save, while obeying the max count.
+        """
+        super(SyncSession,self).save(*args, **kwargs)
+        if SyncSession.objects.count() > settings.SYNC_SESSIONS_MAX_RECORDS:
+            to_discard = SyncSession.objects.order_by("timestamp")[0:SyncSession.objects.count()-settings.SYNC_SESSIONS_MAX_RECORDS]
+            SyncSession.objects.filter(pk__in=to_discard).delete()
+
     def __unicode__(self):
         return "%s... -> %s..." % (self.client_device.pk[0:5],
             (self.server_device and self.server_device.pk[0:5] or "?????"))
