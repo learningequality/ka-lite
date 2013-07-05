@@ -98,10 +98,11 @@ class UserLogSummary(SyncedModel):
     activity_type = models.IntegerField(blank=False, null=False)
     start_datetime = models.DateTimeField(blank=False, null=False)
     end_datetime = models.DateTimeField(blank=True, null=True)
-    total_seconds = models.IntegerField(blank=True, null=True)
+    total_logins = models.IntegerField(default=0, blank=False, null=False)
+    total_seconds = models.IntegerField(default=0, blank=False, null=False)
 
     def __unicode__(self):
-        return "%d seconds for %s/%s/%d, period %s to %s" % (self.total_seconds, self.device.name, self.user.username, self.activity_type, self.start_datetime, self.end_datetime)
+        return "%d seconds over %d logins for %s/%s/%d, period %s to %s" % (self.total_seconds, self.total_logins, self.device.name, self.user.username, self.activity_type, self.start_datetime, self.end_datetime)
 
 
     @classmethod
@@ -167,6 +168,7 @@ class UserLogSummary(SyncedModel):
         device = device or Device.get_own_device()  # Must be done here, or install fails
 
         # Check for an existing object
+        import pdb; pdb.set_trace()
         log_summary = cls.objects.filter(
             device=device,
             user=user_log.user,
@@ -184,12 +186,14 @@ class UserLogSummary(SyncedModel):
             start_datetime=cls.get_period_start_datetime(user_log.end_datetime, settings.USER_LOG_SUMMARY_FREQUENCY),
             end_datetime=cls.get_period_end_datetime(user_log.end_datetime, settings.USER_LOG_SUMMARY_FREQUENCY),
             total_seconds=0,
+            total_logins=0,
         )
 
         settings.LOG.debug("Adding %d seconds for %s/%s/%d, period %s to %s" % (user_log.total_seconds, device.name, user_log.user.username, user_log.activity_type, log_summary.start_datetime, log_summary.end_datetime))
 
         # Add the latest info
         log_summary.total_seconds += user_log.total_seconds
+        log_summary.total_logins += 1
         log_summary.save()
 
 
