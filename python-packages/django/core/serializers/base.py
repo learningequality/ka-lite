@@ -25,24 +25,24 @@ def version_diff(v1, v2):
 
     version_diff("0.9", "1.0") returns -1 (0-1)
     version_diff("0.3", "0.7") returns -4 (3-7)
-        
+
         """
-    
-    
+
+
     #
     if v1 is None or v2 is None:
         return None
-        
+
     v1_parts = v1.split(".")
     v2_parts = v2.split(".")
     if len(v1_parts) != len(v2_parts):
         raise Exception("versions must have the same number of components (periods)")
-    
+
     for v1p,v2p in zip(v1_parts,v2_parts):
         cur_diff = int(v1p)-int(v2p)
         if cur_diff:
             return cur_diff
-    
+
     return 0
 
 class SerializerDoesNotExist(KeyError):
@@ -75,22 +75,28 @@ class Serializer(object):
         self.stream = options.pop("stream", StringIO())
         self.selected_fields = options.pop("fields", None)
         self.use_natural_keys = options.pop("use_natural_keys", False)
-        
+
         dest_version = options.pop("dest_version", None)  # We're serializing to send to a machine of this version.
-        
+
         self.start_serialization()
         for obj in queryset:
+            # See logic below.  We selectively skip serializing
+            #   objects that have a (starting) version greater than the
+            #   version we're serializing for.
+            if version_diff(dest_version, getattr(obj, "version", None)) < 0:
+                continue
+
             self.start_object(obj)
             # Use the concrete parent class' _meta instead of the object's _meta
             # This is to avoid local_fields problems for proxy models. Refs #17717.
             concrete_model = obj._meta.concrete_model
             for field in concrete_model._meta.local_fields:
-            
+
                 # "and" condition added by KA Lite.
                 #
                 # Serialize the field UNLESS all of the following are true:
                 #   * we've passed in a specific dest_version
-                #   * the field is marked with a version 
+                #   * the field is marked with a version
                 #   * that version is later than the dest_version
                 v_diff = version_diff(dest_version, getattr(field, "version", None))
                 if field.serialize and (v_diff is None or v_diff >= 0):

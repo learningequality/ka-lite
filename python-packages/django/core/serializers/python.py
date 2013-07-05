@@ -78,8 +78,8 @@ def Deserializer(object_list, **options):
     """
     db = options.pop('using', DEFAULT_DB_ALIAS)
 
-    # 
-    src_version = options.pop("src_version", None)  # version that was serialized 
+    #
+    src_version = options.pop("src_version", None)  # version that was serialized
     dest_version = options.pop("dest_version", None)  # version that we're deserializing to
     assert dest_version, "For KA Lite, we should always set the dest version to the current device."
 
@@ -87,6 +87,14 @@ def Deserializer(object_list, **options):
     for d in object_list:
         # Look up the model and starting build a dict of data for it.
         Model = _get_model(d["model"])
+
+        # See comment below for versioned fields; same logic
+        #   applies here as well.
+        if hasattr(Model, "version"):
+            v_diff = version_diff(Model.version, dest_version)
+            if v_diff > 0 or v_diff is None:
+                continue
+
         data = {Model._meta.pk.attname : Model._meta.pk.to_python(d["pk"])}
         m2m_data = {}
 
@@ -107,11 +115,11 @@ def Deserializer(object_list, **options):
                 v_diff = version_diff(src_version, dest_version)
                 if v_diff > 0 or v_diff is None:
                     continue
-                
+
                 # Something else must be going on, so re-raise.
                 else:
                     raise fdne
-                    
+
             # Handle M2M relations
             if field.rel and isinstance(field.rel, models.ManyToManyRel):
                 if hasattr(field.rel.to._default_manager, 'get_by_natural_key'):
