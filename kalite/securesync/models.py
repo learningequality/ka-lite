@@ -62,7 +62,10 @@ class SyncSession(models.Model):
         Save, while obeying the max count.
         """
         super(SyncSession,self).save(*args, **kwargs)
-        if SyncSession.objects.count() > settings.SYNC_SESSIONS_MAX_RECORDS:
+        # TODO(bcipolli): think about adding an index for efficiency
+        #   to timestamp, making sure that whatever we do works for both
+        #   distributed and central servers.
+        if settings.SYNC_SESSIONS_MAX_RECORDS is not None and SyncSession.objects.count() > settings.SYNC_SESSIONS_MAX_RECORDS:
             to_discard = SyncSession.objects.order_by("timestamp")[0:SyncSession.objects.count()-settings.SYNC_SESSIONS_MAX_RECORDS]
             SyncSession.objects.filter(pk__in=to_discard).delete()
 
