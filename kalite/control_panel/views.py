@@ -7,29 +7,30 @@ from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 from decorator.decorator import decorator
 
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.core import serializers
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.urlresolvers import reverse
+from django.db.models import Sum
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseForbidden, HttpResponseServerError
 from django.shortcuts import get_object_or_404
 from django.template import RequestContext
-from django.core.urlresolvers import reverse
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib import messages
 from django.template.loader import render_to_string
-from django.core import serializers
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.utils.translation import ugettext as _
+from django.views.decorators.csrf import csrf_exempt
 
 import kalite
 import settings
 from main import topicdata
 from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
 from control_panel.forms import ZoneForm, UploadFileForm
+from main.models import ExerciseLog, VideoLog, UserLogSummary
 from securesync.api_client import SyncClient
+from securesync.forms import FacilityForm
 from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device
 from securesync.models import Zone, SyncSession
-from main.models import ExerciseLog, VideoLog
 from securesync.model_sync import save_serialized_models, get_serialized_models
-from securesync.forms import FacilityForm
 from utils.decorators import authorized_login_required
 
 
@@ -192,34 +193,37 @@ def facility_usage(request, facility_id, org_id=None, zone_id=None):
     group_data = collections.OrderedDict()
     user_data = collections.OrderedDict()
     for user in users:
-        exercise_logs = ExerciseLog.objects.filter(user=user)
-        video_logs = VideoLog.objects.filter(user=user)
+        exercise_stats = {"count": ExerciseLog.objects.filter(user=user).count()}
+        video_stats = {"count": VideoLog.objects.filter(user=user).count()}
+        login_stats = UserLogSummary.objects.filter(user=user).aggregate(Sum("total_logins"), Sum("total_seconds"))
 
         user_data[user.pk] = {
             "first_name": user.first_name,
             "last_name": user.last_name,
-            "group_name": user.group.name,
-            "total_logins": "NYI",
-            "total_hours": "NYI",
-            "total_videos": len(video_logs),
-            "total_exercises": len(exercise_logs),
+            "name": user.get_name,
+            "group_name": getattr(user.group, "name", None),
+            "total_logins": login_stats["total_logins__sum"] or 0,
+            "total_hours": login_stats["total_seconds__sum"]/3600. if login_stats["total_seconds__sum"] else 0.,
+            "total_videos": video_stats["count"],
+            "total_exercises": exercise_stats["count"],
             "total_mastery": "NYI",
         }
 
         group = user.group
-        if not group.pk in group_data:
-            group_data[group.pk] = {
-                "name": group.name,
-                "total_logins": "NYI",
-                "total_hours": "NYI",
-                "total_users": 0,
-                "total_videos": 0,
-                "total_exercises": 0,
-                "total_mastery": "NYI",
-            }
-        group_data[group.pk]["total_users"] += 1
-        group_data[group.pk]["total_videos"] += user_data[user.pk]["total_videos"]
-        group_data[group.pk]["total_exercises"] += user_data[user.pk]["total_exercises"]
+        if group:
+            if not group.pk in group_data:
+                group_data[group.pk] = {
+                    "name": group.name,
+                    "total_logins": "NYI",
+                    "total_hours": "NYI",
+                    "total_users": 0,
+                    "total_videos": 0,
+                    "total_exercises": 0,
+                    "total_mastery": "NYI",
+                }
+            group_data[group.pk]["total_users"] += 1
+            group_data[group.pk]["total_videos"] += user_data[user.pk]["total_videos"]
+            group_data[group.pk]["total_exercises"] += user_data[user.pk]["total_exercises"]
 
     return {
         "org": org,

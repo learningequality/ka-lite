@@ -1,4 +1,6 @@
 {% extends "control_panel/base_management.html" %}
+{% load staticfiles %}
+{% load include_block %}
 
 {% block title %}{{ group.name }} - User Management{% endblock title %}
 
@@ -10,5 +12,5 @@
 
 {% block inner_content %}
 <div id="content">
-    {% include "user_list_body.html" %}
+    {% include_block "current_users.html" "content" %}
 {% endblock inner_content %}

@@ -40,9 +40,9 @@
     </div>
 
 
-	<div class="users">
+    <div class="users">
         <h2>User Usage Reports</h2>
-        
+
         {% if not users %}
             <p>You currently have no data available</p>
 
@@ -61,10 +61,14 @@
                 </tr>
                 {% for id,user in users.items %}
                     <tr>
-                        <td>{{ user.last_name }}, {{ user.first_name }}</td>
+                        {% if user.last_name and user.first_name %}<td>{{ user.last_name }}, {{ user.first_name }}</td>
+                        {% elif user.last_name %}<td>{{user.last_name }}</td>
+                        {% elif user.last_name %}<td>{{user.first_name }}</td>
+                        {% else %}<td>{{ user.name }}</td>
+                        {% endif %}
                         <td>{{ user.group_name }}</td>
                         <td>{{ user.total_logins }}</td>
-                        <td>{{ user.total_hours }}</td>
+                        <td>{{ user.total_hours|floatformat }}</td>
                         <td>{{ user.total_videos }}</td>
                         <td>{{ user.total_exercises }}</td>
                         <td>{{ user.total_mastery }}</td>
