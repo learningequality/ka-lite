@@ -73,7 +73,7 @@ class SyncClient(object):
             raise Exception("Central server is of an older version than us?")
 
         elif r.status_code == 200:
-            # Save to our local store.  By NOT passing a src_version, 
+            # Save to our local store.  By NOT passing a src_version,
             #   we're saying it's OK to just store what we can.
             models = serializers.deserialize("json", r.content, src_version=None, dest_version=own_device.version)
             for model in models:
@@ -89,7 +89,7 @@ class SyncClient(object):
 
     def start_session(self):
         """A 'session' to exchange data"""
-        
+
         if self.session:
             self.close_session()
         self.session = SyncSession()
@@ -189,14 +189,14 @@ class SyncClient(object):
                 self.counters_to_download[device] = 0
             elif server_counters[device] > client_counters[device]:
                 self.counters_to_download[device] = client_counters[device]
-                
+
         response = json.loads(self.post("device/download", {"devices": devices_to_download}).content)
         # As usual, we're deserializing from the central server, so we assume that what we're getting
         #   is "smartly" dumbed down for us.  We don't need to specify the src_version, as it's
         #   pre-cleaned for us.
         download_results = model_sync.save_serialized_models(response.get("devices", "[]"), increment_counters=False)
 
-        # BUGFIX(bcipolli) metadata only gets created if models are 
+        # BUGFIX(bcipolli) metadata only gets created if models are
         #   streamed; if a device is downloaded but no models are downloaded,
         #   metadata does not exist.  Let's just force it here.
         for device_id in devices_to_download: # force
@@ -204,7 +204,7 @@ class SyncClient(object):
                 d = Device.objects.get(id=device_id)
             except:
                 continue
-            dm = d.get_metadata() 
+            dm = d.get_metadata()
             if not dm.counter_position: # this would be nonzero if the device sync'd models
                 dm.counter_position = self.counters_to_download[device_id]
             dm.save()
