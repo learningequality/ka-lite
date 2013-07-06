@@ -1,11 +1,12 @@
-""" Used for labeling models that use securesync.  This is where the heavy lifting happens!"""
-
-import logging
+"""
+Used for labeling models that use securesync.  This is where the heavy lifting happens!
+"""
 from annoying.functions import get_object_or_None
 
 from django.core.exceptions import ValidationError
 from django.core import serializers
 
+import settings
 import version
 
 
@@ -17,7 +18,7 @@ def add_syncing_models(models):
     """When sync is run, these models will be sync'd"""
     for model in models:
         if model in _syncing_models:
-            logging.warn("We are already syncing model %s" % str(model))
+            settings.LOG.warn("We are already syncing model %s" % str(model))
         else:
             _syncing_models.append(model)
 
