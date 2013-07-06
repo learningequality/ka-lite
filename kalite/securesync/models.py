@@ -267,7 +267,7 @@ class Zone(SyncedModel):
         return self.name
 
     #@central_server_only  # causes circular loop, to include here
-    def get_org()
+    def get_org(self):
         """
         Reverse lookup of organization containing this zone.
         """
