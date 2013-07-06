@@ -26,7 +26,8 @@ class RegisteredDevicePublicKeyForm(forms.ModelForm):
 
 class FacilityUserForm(forms.ModelForm):
 
-    password = forms.CharField(widget=forms.PasswordInput, label=_("Password"))    
+    password = forms.CharField(widget=forms.PasswordInput, label=_("Password"))
+    password_recheck = forms.CharField(widget=forms.PasswordInput, label=_("Confirm password"))
     
     def __init__(self, request, *args, **kwargs):
         self.request = request
@@ -48,6 +49,11 @@ class FacilityUserForm(forms.ModelForm):
             raise forms.ValidationError(_("A user with this username at this facility already exists. Please choose a new username (or select a different facility) and try again."))
 
         return self.cleaned_data
+
+    def clean_password_recheck(self):
+
+        if self.cleaned_data.get('password') != self.cleaned_data.get('password_recheck'):
+            raise forms.ValidationError(_("The passwords didn't match. Please re-enter the passwords."))
 
 
 class FacilityForm(forms.ModelForm):
