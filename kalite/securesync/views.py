@@ -20,7 +20,7 @@ from main.models import UserLog
 from securesync import crypto
 from securesync.api_client import SyncClient
 from securesync.forms import RegisteredDevicePublicKeyForm, FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
-from securesync.models import SyncSession, Device, Facility, FacilityGroup
+from securesync.models import SyncSession, Device, Facility, FacilityGroup, Zone
 from utils.jobs import force_job
 from utils.decorators import require_admin, central_server_only, distributed_server_only, facility_required, facility_from_request
 from utils.internet import set_query_params
@@ -119,13 +119,13 @@ def register_public_key_server(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("The device's public key has been successfully registered. You may now close this window."))
-            zone_id = form.data["zone_id"]
+            zone_id = form.data["zone"]
             org_id = Zone.objects.get(id=zone_id).id
             return HttpResponseRedirect(reverse("zone_management", kwargs={'org_id': org_id, 'zone_id': zone_id}))
     else:
         form = RegisteredDevicePublicKeyForm(request.user)
     return {
-        "form": form
+        "form": form,
     }
 
 
