@@ -18,39 +18,89 @@
 
 
 <style>
+
+select { 
+    width:200px;
+}
+#instructions {
+    font-size:12pt;
+    margin-left: 40px;
+}
+ul {
+    margin-top:5px;
+}
+
+h2{
+    font-size: 33px;
+}
+
 #python-instructions {
     margin-top:25px;
 }
 
+.basic-form label{
+    width: auto;
+    clear: both;
+}
+
+
 .form-label {
     float: left;
-    width:200px;
-    text-align:right;
-    margin-right:15px;
+    color: #678D00;
+    text-align: right;
+    padding-right: 6px;
+    width: 250px;
 }
-.form-selection {
-    float: left;
-}
+
 .form-section {
     width: 100%;
     text-align:left;
     float: left;
     margin-bottom:15px;
 }
-select { 
-    width:200px;
+
+
+.information{
+    font-size: 13px;
+    color: #666;
+    margin-top: -10px;
+    margin-bottom: 20px;
 }
-#instructions {
-    font-size:12pt;
+
+.warning{
+    clear: both;
+    margin-left: 30px;
+    font-size: 13px;
+    color: #666;
 }
-ul {
-    margin-top:5px;
+
+.asterisk{
+    color: orange;
 }
+
+
+select{
+    margin-left: 15px;
+    margin-top: 5px;
+}
+
+.radio{
+    margin-left: 15px;
+}
+
+.radio-selections{
+    margin-top: 11px;
+    display: inline-block;
+    position: relative;
+}
+
+
 #user-registration-info,
 #internet-info,
-#instructions div,
-#platform-section,
-#submit-section,
+#linux-instructions,
+#darwin-instructions,
+/*#platform-section,*/
+/*#submit-section,*/
 #internet-section,
 #install-form {
     display:none;
@@ -67,57 +117,80 @@ ul {
 
 {% block content %}
     {% comment "Header instructions" %}{% endcomment %}
-    <div class="instructions">
-        <h1>Installation</h1>
+        <div class="instructions">
+            <h2>Installation</h2>
+            <div class="information">
+            Tell us about your infrastructure, we will provide you a corresponding download link.
+            </div>
+
         
         <form name="test" method="post" class="basic-form">
-        {% csrf_token %}
+        {% csrf_token %} 
+        
 
         <div class="form-section" id="deployment-section">
-            <div class="form-label">I would like to deploy:</div>
-            <div class="form-selection">
-                <select name="server" id="server">
-                    <option value="__empty__">----</option>
-                    <option value="single">A single server (stand-alone)</option>
-                    <option value="multi-independent"> Multiple independent servers</option>
-                    <option value="multi-sharing"> Multiple servers sharing student data</option>
-                </select>
-                <div id="user-registration-info">
+            <div class="form-label"><h4>I would like run KA Lite on:</h4></div>
+            <div class= "radio-selections">
+                <label class="radio">
+                        <input type="radio" name="depolymen-section" value="single">
+                            A single server (stand-alone)
+                </label>
+                <label class="radio">
+                        <input type="radio" name="depolymen-section" value="multi-independent">
+                            Multiple independent servers <span class="asterisk">*</span>
+                </label>
+                <label class="radio">
+                        <input type="radio" name="depolymen-section" value="multi-sharing">
+                            Multiple servers sharing student data <span class="asterisk">*</span>
+                </label>
+                <div class="warning"> 
+                    <span class="asterisk">*</span><a href="{% url auth_login %}">Login</a> to download multiple servers edition of KA Lite.
+                </div>
+                <!-- </select> -->
+                <!-- <div id="user-registration-info">
                     You must have an account with us in order to do this.<br/>
                     Please <a href="{% url registration_register %}">register</a> for an account or <a href="{% url auth_login %}">log in</a>, then revisit this page.
-                </div>
+                </div> -->
+            </div>
+         </div> 
+
+            <div class="form-section" id="platform-section">
+                <div class="form-label"><h4>Server operating system:</h4></div>
+                <div class="form-selection">
+                    <select name="platform" id="platform">
+                        <option value="windows">Windows</option>
+                        <option value="darwin">Mac</option>
+                        <option value="linux">Linux</option>
+                    </select>
+                <span id="platform_info"></span>
             </div>
         </div> 
 
+
         <div class="form-section" id="internet-section">
-            <div class="form-label">Internet access at server:</div>
-            <div class="form-selection">
-                <select name="internet" id="internet">
-                    <option value="__empty__">----</option>
-                    <option value="never">Servers will never have internet access</option>
-                    <option value="some">At least one server will have occasional internet access</option>
-                    <option value="all">All servers will have occasional internet access</option>
-                </select>
-                <div id="internet-info">
+            <div class="form-label"><h4>Internet access at server:</h4></div>
+            <div class="radio-selections">
+                <label class="radio">
+                        <input type="radio" name="internet" value="never">
+                            Servers will never have internet access
+                </label>
+                <label class="radio">
+                        <input type="radio" name="internet" value="some">
+                            At least one server will have occasional internet access
+                </label>
+                <label class="radio">
+                        <input type="radio" name="internet" value="all">
+                            All servers will have occasional internet access
+                </label>
+
+               <!--  <div id="internet-info">
                     KA Lite currently does not support this scenario.<br/>
                     Please <a href="{% url contact_wizard "deployments" %}">contact us</a>, to let us know of your interest [or subscribe to our newsletter]!
-                </div>
+                </div> -->
             </div>
         </div>        
         
-        <div class="form-section" id="platform-section">
-            <div class="form-label">Server operating system:</div>
-            <div class="form-selection">
-                <select name="platform" id="platform">
-                    <option value="__empty__">----</option>
-                    <option value="windows">Windows</option>
-                    <option value="darwin">Mac</option>
-                    <option value="linux">Linux</option>
-                </select>
-                <span id="platform_info"></span>
-            </div>
-        </div>        
-        
+
         <div class="form-section" id="locale-section" style="display:none">
             <div class="form-label">Server operating system:</div>
             <div class="form-selection">
@@ -137,7 +210,6 @@ ul {
                 <div class="form-label">{% trans "Select Organization" %}</div>
                 <div class="form-selection">
                     <select name="organization" id="organization">
-                        <option value="__empty__" {% if not selected_organization %}selected{% endif %}>----</option>
                             {% for org in organizations %}
                             <option value="{{ org.id }}" {% if selected_organization.id == org.id %}selected{% endif %}>{{ org }} : {{org.id}}</option>
                             {% endfor %}
@@ -150,7 +222,7 @@ ul {
                 <div class="form-label">{% trans "Select Zone" %}</div>
                 <div class="form-selection">
                     <select name="zone" id="zone">
-                        <option value="__empty__" {% if not selected_zone %}selected{% endif %}>----</option>
+                        <option value="__empty__" {% if not selected_zone %}selected{% endif %}>Please select your zone</option>
                         {% for zone in zones %}
                         <option value="{{ zone.id }}"{% if selected_zone.id == zone.id %}selected{% endif %}>{{ zone }}</option>
                         {% endfor %}
@@ -160,11 +232,11 @@ ul {
             {% endif %}
 
             {% if selected_organization and selected_zone %}
-            <div class="form-section" id="select_num_certificates">
+            <div class="form-section" id="select_num_certificates" style="display:none">
                 <div class="form-label"># of desired installs<br/>(download can be reused)</div>
                 <div class="form-selection">
                     <select name="num_certificates" id="num_certificates">
-                        {% mkrange 1 50 as some_range %}
+                        {% mkrange 1 10 as some_range %}
                         {% for n in some_range %}
                         <option value="{{ n }}"{% if num_certificates == n|stringformat:"d" %}selected{% endif %}>{{ n }}</option>
                         {% endfor %}
@@ -175,14 +247,7 @@ ul {
         </div>
     </div>
     {% endif %}
-    
-        <div class="form-section" id="submit-section">
-            <div class="form-label">&nbsp;</div>
-            <div class="form-selection">
-                <button type="button" class="btn btn-primary">Downdload!</button>
-               <!--  <input type="submit" value="{% trans "Download now!"%}" /> -->
-            </div>
-        </div>
+
     </form>
     
     <div id="instructions">
@@ -223,9 +288,18 @@ ul {
                 <li>Copy the Python installer over to your server.</li>
                 <li>Install Python</li>
                 <li>Make sure to add Python to your PATH (<a target="_new" href="https://www.google.com/search?q=add+python+to+path+tutorial+windows">Windows</a>, <a target="_new" href="https://www.google.com/search?q=add+python+to+path+tutorial+linux">Linux</a>, <a target="_new" href="https://www.google.com/search?q=add+python+to+path+tutorial+mac">MacOS</a>)</li>
-
+        </div>  
     </div>
- <script>
+
+    <div class="form-section" id="submit-section">
+            <div class="form-label">&nbsp;</div>
+            <div class="form-selection">
+                <button type="submit" class="btn" disabled>Download!</button>
+               <!--  <input type="submit" value="{% trans "Download now!"%}" /> -->
+            </div>
+    </div>
+    
+<script>
 
 function qparts(name) {
     var vars = {};
@@ -270,8 +344,18 @@ function select_instructions(platform) {
 }
 
 $(function() {
-    // Show a section, and alert user
+    // Show a section, and alert users
     user_logged_in = {{ user.is_authenticated|lower }};
+
+    // Gery out and disable Deployment option
+    $('input[value=multi-independent]').attr('disabled', 'true')
+                                       .parent().css("color", "#C0C0C0"); //grey out the disabled radio selection
+    $('input[value=multi-sharing]').attr('disabled', 'true')
+                                   .parent().css("color", "#C0C0C0"); //grey out the disabled radio selection
+
+    // $('#submit-section .btn').addClass('btn-primary').removeAttr('disabled');//To active 'download' button
+    
+
 
     // Deployment option
     $("#server").change(function(){
@@ -282,14 +366,8 @@ $(function() {
             $("#platform-section").show();
             $("#install-form").hide();
             $("#submit-section").show();
-            $("#instructions").hide();
-        }
-        else if (server_option == "__empty__") {// if ($("#server_option option:selected").val() == "single") {
-            $("#user-registration-info").hide();
-            $("#internet-section").hide();
-            $("#platform-section").hide();
-            $("#install-form").hide();
-            $("#submit-section").hide();
+            $('#submit-section .btn').addClass('btn-primary').removeAttr('disabled');//To active 'download' button
+    
             $("#instructions").hide();
         }
         else {            
