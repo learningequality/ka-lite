@@ -25,7 +25,7 @@ def auto_pdb(*exceptions):
             try:
                 return f(*args, **kwargs)
             except:
-                pdb.post_mortem(sys.exc_info()[3])
+                pdb.post_mortem(sys.exc_info()[2])
         return wrapper
     return decorator
 

@@ -392,7 +392,7 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
             #
             # Note that if a facilityuser isn't logging in (i.e. an admin), the above returns count==0
             logged_in_username = username if user_obj.count() != 1 else user_obj[0].username
-            self.assertTrue(self.is_logged_in(username), "make sure %s is logged in." % username)
+            self.assertTrue(self.is_logged_in(logged_in_username), "make sure %s is logged in." % username)
 
 
     def login_admin(self, username=None, password=None, expect_success=True):
