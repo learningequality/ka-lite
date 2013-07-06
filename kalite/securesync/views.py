@@ -120,7 +120,7 @@ def register_public_key_server(request):
             form.save()
             messages.success(request, _("The device's public key has been successfully registered. You may now close this window."))
             zone_id = form.data["zone"]
-            org_id = Zone.objects.get(id=zone_id).id
+            org_id = Zone.objects.get(id=zone_id).get_org().id
             return HttpResponseRedirect(reverse("zone_management", kwargs={'org_id': org_id, 'zone_id': zone_id}))
     else:
         form = RegisteredDevicePublicKeyForm(request.user)
