@@ -63,7 +63,7 @@ def create_test_admin(username="admin", password="pass", email="admin@example.co
     """Create a test user.
     Taken from http://stackoverflow.com/questions/3495114/how-to-create-admin-user-in-django-tests-py"""
 
-    if User.objects.filter(username=username).count() != 0:
+    if User.objects.filter(username__iexact=username).count() != 0:
         return
 
     test_admin = User.objects.create_superuser(username, email, password)
@@ -137,10 +137,10 @@ class KALiteTestCase(LiveServerTestCase):
     def __init__(self, *args, **kwargs):
         return super(KALiteTestCase, self).__init__(*args, **kwargs)
 
-    def reverse(self, url_name, args=None, kwargs=None):
+    def reverse(self, url_name, *args, **kwargs):
         """Given a URL name, returns the full central URL to that URL"""
 
-        return self.live_server_url + reverse(url_name, args=args, kwargs=kwargs)
+        return self.live_server_url + reverse(url_name, *args, **kwargs)
 
     
 class BrowserTestCase(KALiteTestCase):
@@ -440,7 +440,7 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
             return True
         # Checking to see if a FacilityUser with a filled-in-name is logged in
         else:
-            user_obj = FacilityUser.objects.filter(username=expected_username)
+            user_obj = FacilityUser.objects.filter(username__iexact=expected_username)
             if user_obj.count() == 0:  # couldn't find the user, they can't be logged in
                 assert username_text == "", "Impossible for anybody to be logged in."
             else:

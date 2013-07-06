@@ -75,8 +75,13 @@ class ChangeLocalUserPassword(unittest.TestCase):
         self.assertNotEquals(out, "", "some output on stderr")
         self.assertEquals(val, 0, "Exit code is zero")
 
+    def test_fail_change_password(self):
+        """Fail to change the password on a nonexistent user."""
+        fake_username = "fakeusername"
+        
+        (out,err,val) = call_command_with_output("changelocalpassword", fake_username, noinput=True)
         match = re.match(r"^.*Error: user '([^']+)' does not exist$", err.replace("\n",""), re.M)
-        self.assertFalse(match is None, "could not parse stderr")
+        self.assertFalse(match is None, "could not parse stderr: (%s)" % err)
         self.assertEquals(match.groups()[0], fake_username, "Verify printed fake username")
         self.assertNotEquals(val, 0, "Verify exit code is non-zero")
 

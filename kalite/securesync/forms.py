@@ -90,15 +90,13 @@ class LoginForm(forms.ModelForm):
         facility = self.cleaned_data.get('facility')
         password = self.cleaned_data.get('password')
 
-        try:
-            users = FacilityUser.objects.filter(username__iexact=username)
-            nusers = users.count()
+        # Coerce
+        users = FacilityUser.objects.filter(username__iexact=username, facility=facility)
+        if users.count() == 1 and users[0].username != username:
+            username = users[0].username
+            self.cleaned_data['username'] = username
 
-            # Coerce
-            if nusers == 1 and users[0].username != username:
-                username = users[0].username
-                self.cleaned_data['username'] = username
-    
+        try:
             self.user_cache = FacilityUser.objects.get(username=username, facility=facility)
         except FacilityUser.DoesNotExist as e:
             raise forms.ValidationError(_("Username was not found for this facility. Did you type your username correctly, and choose the right facility?"))
