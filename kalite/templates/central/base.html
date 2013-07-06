@@ -1,4 +1,4 @@
-    <!DOCTYPE HTML>
+<!DOCTYPE HTML>
 {% load i18n %}
 
 <html>
@@ -41,20 +41,22 @@
 
     <div class="container">
         <div class="row-fluid">
-          <div class="span2 header__logo"><img src="/static/images/horizontal-logo-small.png" alt=""></div>
-            <div class="span6 offset4">
+            <div class="span12">
                 <ul class="header__horizontal-menu">
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/faq/">FAQ</a></li>
-                {% if user.is_authenticated %}
-                    {% if user.is_superuser %}
-                    <li><a href="/admin/" >Admin</a></li>
+                    <li class="header__logo"><a href="/"><img src="/static/images/horizontal-logo-small.png" alt=""></a></li>
+                    <ul class="header__horizontal-menu__right">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/faq/">FAQ</a></li>
+                    {% if user.is_authenticated %}
+                        {% if user.is_superuser %}
+                        <li><a href="/admin/" >Admin</a></li>
+                        {% endif %}
+                        <li><a href="/accounts/logout/">{{ user.username }} &nbsp; (Logout)</a></li>
+                    {% else %}
+                        <li><a href="/accounts/register/">Sign Up</a></li>
+                        <li><a href="/accounts/login/">Login</a></li>
                     {% endif %}
-                    <li><a href="/accounts/logout/">{{ user.username }} &nbsp; (Logout)</a></li>
-                {% else %}
-                    <li><a href="/accounts/register/">Sign Up</a></li>
-                    <li><a href="/accounts/login/">Login</a></li>
-                {% endif %}
+                    </ul>
                 </ul>
             </div>
         </div>
