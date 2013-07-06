@@ -5,22 +5,17 @@ from django.utils import simplejson
 from django.db.models import Q
 from annoying.functions import get_object_or_None
 import settings
-from settings import slug_key, title_key
+from utils.topics import slug_key, title_key
 from main import topicdata
 from utils.jobs import force_job, job_status
 from utils.videos import delete_downloaded_files
 from models import FacilityUser, VideoLog, ExerciseLog, VideoFile
 from securesync.models import FacilityGroup
 from config.models import Settings
-from utils.decorators import require_admin
+from utils.decorators import require_admin_api
 from utils.general import break_into_chunks
 from utils.orderedset import OrderedSet
-
-class JsonResponse(HttpResponse):
-    def __init__(self, content, *args, **kwargs):
-        if not isinstance(content, str) and not isinstance(content, unicode):
-            content = simplejson.dumps(content, ensure_ascii=False)
-        super(JsonResponse, self).__init__(content, content_type='application/json', *args, **kwargs)
+from utils.internet import JsonResponse
 
 
 def save_video_log(request):
@@ -124,7 +119,7 @@ def _get_exercise_log_dict(request, user, exercise_id):
         "struggling": exerciselog.struggling,
     }
 
-@require_admin
+@require_admin_api
 def start_video_download(request):
     youtube_ids = OrderedSet(simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", []))
     
@@ -140,7 +135,7 @@ def start_video_download(request):
     force_job("videodownload", "Download Videos")
     return JsonResponse({})
 
-@require_admin
+@require_admin_api
 def delete_videos(request):
     youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
     for id in youtube_ids:
@@ -154,7 +149,7 @@ def delete_videos(request):
         videofile.save()
     return JsonResponse({})
 
-@require_admin
+@require_admin_api
 def check_video_download(request):
     youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
     percentages = {}
@@ -175,13 +170,13 @@ def get_video_download_status(youtube_id):
     else:
         return "partial"
 
-@require_admin
+@require_admin_api
 def get_video_download_list(request):
     videofiles = VideoFile.objects.filter(flagged_for_download=True).values("youtube_id")
     video_ids = [video["youtube_id"] for video in videofiles]
     return JsonResponse(video_ids)
 
-@require_admin
+@require_admin_api
 def start_subtitle_download(request):
     new_only = simplejson.loads(request.raw_post_data or "{}").get("new_only", False)
     language = simplejson.loads(request.raw_post_data or "{}").get("language", "")
@@ -207,18 +202,18 @@ def start_subtitle_download(request):
     force_job("subtitledownload", "Download Subtitles")
     return JsonResponse({})
 
-@require_admin
+@require_admin_api
 def check_subtitle_download(request):
     videofiles = VideoFile.objects.filter(flagged_for_subtitle_download=True)
     return JsonResponse(videofiles.count())
 
-@require_admin
+@require_admin_api
 def get_subtitle_download_list(request):
     videofiles = VideoFile.objects.filter(flagged_for_subtitle_download=True).values("youtube_id")
     video_ids = [video["youtube_id"] for video in videofiles]
     return JsonResponse(video_ids)
 
-@require_admin
+@require_admin_api
 def cancel_downloads(request):
     
     # clear all download in progress flags, to make sure new downloads will go through
@@ -236,14 +231,14 @@ def cancel_downloads(request):
     return JsonResponse({}) 
     
     
-@require_admin
+@require_admin_api
 def remove_from_group(request):
     users = simplejson.loads(request.raw_post_data or "{}").get("users", "")
     users_to_remove = FacilityUser.objects.filter(username__in=users)
     users_to_remove.update(group=None)
     return JsonResponse({})
     
-@require_admin
+@require_admin_api
 def move_to_group(request):
     users = simplejson.loads(request.raw_post_data or "{}").get("users", [])
     group = simplejson.loads(request.raw_post_data or "{}").get("group", "")
@@ -252,14 +247,16 @@ def move_to_group(request):
     users_to_move.update(group=group_update)
     return JsonResponse({})
     
-@require_admin
+@require_admin_api
 def delete_users(request):
     users = simplejson.loads(request.raw_post_data or "{}").get("users", [])
     users_to_delete = FacilityUser.objects.filter(username__in=users)
     users_to_delete.delete()
     return JsonResponse({})
 
-def convert_topic_tree(node, level=0, statusdict=None):
+def annotate_topic_tree(node, level=0, statusdict=None):
+    if not statusdict:
+        statusdict = {}
     if node["kind"] == "Topic":
         if "Video" not in node["contains"]:
             return None
@@ -267,7 +264,7 @@ def convert_topic_tree(node, level=0, statusdict=None):
         unstarted = True
         complete = True
         for child_node in node["children"]:
-            child = convert_topic_tree(child_node, level=level+1, statusdict=statusdict)
+            child = annotate_topic_tree(child_node, level=level+1, statusdict=statusdict)
             if child:
                 if child["addClass"] == "unstarted":
                     complete = False
@@ -287,17 +284,15 @@ def convert_topic_tree(node, level=0, statusdict=None):
             "expand": level < 1,
         }
     if node["kind"] == "Video":
-        if statusdict:
-            percent = statusdict.get(node["youtube_id"], 0)
-            if not percent:
-                status = "unstarted"
-            elif percent == 100:
-                status = "complete"
-            else:
-                status = "partial"
+        #statusdict contains an item for each video registered in the database
+        # will be {} (empty dict) if there are no videos downloaded yet
+        percent = statusdict.get(node["youtube_id"], 0)
+        if not percent:
+            status = "unstarted"
+        elif percent == 100:
+            status = "complete"
         else:
-            # if no pre-computed status dict, then use the older, slower method
-            status = get_video_download_status(node["youtube_id"])
+            status = "partial"
         return {
             "title": node[title_key["Video"]],
             "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
@@ -306,10 +301,11 @@ def convert_topic_tree(node, level=0, statusdict=None):
         }
     return None
 
+#@require_admin_api
 def get_annotated_topic_tree():
     statusdict = dict(VideoFile.objects.values_list("youtube_id", "percent_complete"))
-    return convert_topic_tree(topicdata.TOPICS, statusdict=statusdict)
+    return annotate_topic_tree(topicdata.TOPICS, statusdict=statusdict)
 
-@require_admin
+@require_admin_api
 def get_topic_tree(request):
     return JsonResponse(get_annotated_topic_tree())

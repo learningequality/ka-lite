@@ -1,12 +1,14 @@
 {% extends 'central/base.html' %}
 
+{% load staticfiles %}
+
 {% block title %}Home{% endblock %}
 
 {% block jqueryjs %}
 <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.8.3.min.js"></script> 
 {% endblock jqueryjs %}
 
-{% block analytics %}{% include 'analytics.html' %}{% endblock analytics %}
+{% block analytics %}{% include 'central/web_analytics.html' %}{% endblock analytics %}
 
 {% block content %}
 
@@ -33,7 +35,7 @@
 
     <div class="span4">
         <div class="content__box">
-            <img src="/static/images/landing-page/install.png" alt="">
+            <img src="{% static 'images/landing-page/install.png' %}" alt="">
             <p>Ready to get started</p>
             <a href="/installation">
                <button type="button" name="" value="" class="green">Install Now!</button>
@@ -43,7 +45,7 @@
    </div>
    <div class="span4">
     <div class="content__box">
-        <img src="/static/images/landing-page/contact.png" alt="">
+        <img src="{% static 'images/landing-page/contact.png' %}" alt="">
         <p>Want deployment advice?</p>
         <a href="https://docs.google.com/spreadsheet/viewform?formkey=dEhEOWRNVDBzWTdsUnFQYWlCWnZoWWc6MQ">
             <button type="button" name="" value="" class="green">Contact Us</button>
@@ -52,7 +54,7 @@
 </div>
 <div class="span4">
     <div class="content__box">
-        <img src="/static/images/landing-page/contribute.png" alt="">
+        <img src="{% static 'images/landing-page/contribute.png' %}" alt="">
         <p>Want to contribute</p>
         <a href="/contribute">
             <button type="button" name="" value="" class="green">Get Involved</button>

@@ -2,12 +2,12 @@
 
 SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
 pyexec=`$SCRIPT_DIR/../python.sh`
+
 if [ "$1" = "" ]; then
-    port=8008
+    port=`$pyexec -c "import settings; print settings.PRODUCTION_PORT"`
 else
     port=$1
 fi
-
 
 cd `dirname "${BASH_SOURCE[0]}"`
 if [ -f "runcherrypyserver.pid" ];
