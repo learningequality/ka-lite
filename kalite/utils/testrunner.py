@@ -1,8 +1,9 @@
 """
 Test support harness to make setup.py test work.
 """
-
+import functools
 import os
+import pdb
 import sys
 import logging
 
@@ -10,6 +11,23 @@ from django.test.simple import DjangoTestSuiteRunner
 from django.core import management
 
 from kalite import settings
+
+
+def auto_pdb(*exceptions):
+    """
+    From http://stackoverflow.com/questions/4398967/python-unit-testing-automatically-running-the-debugger-when-a-test-fails
+    """
+    if not exceptions:
+        exceptions = (AssertionError, )
+    def decorator(f):
+        @functools.wraps(f)
+        def wrapper(*args, **kwargs):
+            try:
+                return f(*args, **kwargs)
+            except:
+                pdb.post_mortem(sys.exc_info()[3])
+        return wrapper
+    return decorator
 
 
 class KALiteTestRunner(DjangoTestSuiteRunner):
@@ -44,4 +62,13 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
             else:
                 test_labels -= {'central',}
         return super(KALiteTestRunner,self).run_tests(test_labels, extra_tests, **kwargs)
-        
+
+    def build_suite(self, *args, **kwargs):
+        """
+        Wrap each test function such that it automatically calls PDB on a failure.
+        """
+        test_suite = super(KALiteTestRunner, self).build_suite(*args, **kwargs)
+        for test in test_suite._tests:
+            testfun = getattr(test, test._testMethodName)
+            setattr(test, test._testMethodName, auto_pdb()(testfun))
+        return test_suite

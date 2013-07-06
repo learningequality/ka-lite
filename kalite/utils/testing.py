@@ -352,6 +352,7 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
         self.browser_send_keys(first_name + Keys.TAB) # first name
         self.browser_send_keys(last_name + Keys.TAB) # last name
         self.browser_send_keys(password + Keys.TAB) #password
+        self.browser_send_keys(password + Keys.TAB) #password check
 
         self.browser_send_keys(Keys.RETURN)
 
@@ -383,6 +384,14 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
         if expect_success:
             self.assertTrue(self.wait_for_page_change(login_url), "RETURN causes page to change")
             time.sleep(0.5)  # allow async status to update
+            
+            user_obj = FacilityUser.objects.filter(username__iexact=username)
+            # Username is case-insensitive now, but wasn't in the past.
+            #   So we need to dance a little bit in case there are two users with the
+            #   same username (different cases)--in that case, case matters!
+            #
+            # Note that if a facilityuser isn't logging in (i.e. an admin), the above returns count==0
+            logged_in_username = username if user_obj.count() != 1 else user_obj[0].username
             self.assertTrue(self.is_logged_in(username), "make sure %s is logged in." % username)
 
 
@@ -440,9 +449,12 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
             return True
         # Checking to see if a FacilityUser with a filled-in-name is logged in
         else:
-            user_obj = FacilityUser.objects.filter(username__iexact=expected_username)
+            user_obj = FacilityUser.objects.filter(username=expected_username)
             if user_obj.count() == 0:  # couldn't find the user, they can't be logged in
-                assert username_text == "", "Impossible for anybody to be logged in."
+                if FacilityUser.objects.filter(username__iexact=expected_username).count() != 0:
+                    assert username_text == "", "We don't have a valid user object, but someone's logged in; looks like you sent in the wrong username case."
+                else:
+                    assert username_text == "", "Impossible for anybody to be logged in; no recognizable user of that username exists!"
             else:
                 return username_text.lower() == user_obj[0].get_name().lower()
 
