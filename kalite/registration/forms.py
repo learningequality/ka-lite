@@ -79,12 +79,8 @@ class RegistrationForm(forms.Form):
 
             
     def clean(self):
-        #Help docs @ https://docs.djangoproject.com/en/dev/ref/forms/validation/
         cleaned_data = super(RegistrationForm, self).clean()
-        self.clean_email()
-        self.clean_password()
-        if cleaned_data.get("email"):
-            cleaned_data['username'] = cleaned_data.get('email')
-        else:
-            cleaned_data['username'] = None
+
+        # Set username to email
+        cleaned_data['username'] = cleaned_data.get('email', None)
         return cleaned_data

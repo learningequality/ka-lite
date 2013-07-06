@@ -248,12 +248,12 @@ class KALiteCentralBrowserTestCase(BrowserTestCase):
         self.browser_send_keys(last_name + Keys.TAB) # last name
         self.browser_send_keys(username + Keys.TAB) #email
         self.browser_send_keys(org_name + Keys.TAB) #org name
-#        self.browser_send_keys(Keys.TAB) #skip org expansion
+        self.browser_send_keys(Keys.TAB) #skip org expansion
         self.browser_send_keys(password + Keys.TAB) #password
         self.browser_send_keys(password + Keys.TAB) #password (again)
         self.browser_send_keys(Keys.TAB) # skip newsletter subscribe
-        self.browser_send_keys(Keys.SPACE + Keys.TAB) # agree to terms 1
-        self.browser_send_keys(Keys.SPACE + Keys.TAB) # agree to terms 2
+        self.browser_send_keys(Keys.SPACE + Keys.TAB + Keys.TAB) # agree to terms 1, skip link
+        self.browser_send_keys(Keys.SPACE + Keys.TAB + Keys.TAB) # agree to terms 2, skip link
 
         # We could capture the activation link, but we'll just cheat
         #   by querying the value directly in the "activate user" function.

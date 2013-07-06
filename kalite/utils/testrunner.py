@@ -34,9 +34,13 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
     """Forces us to start in liveserver mode, and only includes relevant apps to test"""
     
     def __init__(self, *args, **kwargs):
-        """Force setting up live server test.  Adding to kwargs doesn't work, need to go to env.
-        Dependent on how Django works here."""
-        
+        """
+        Force setting up live server test.  Adding to kwargs doesn't work, need to go to env.
+        Dependent on how Django works here.
+        """
+
+        self.failfast = kwargs.get("failfast")  # overload
+
         # If no liveserver specified, set some default.
         #   port range is the set of open ports that Django can use to 
         #   start the server.  They may have multiple servers open at once.
@@ -68,7 +72,10 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         Wrap each test function such that it automatically calls PDB on a failure.
         """
         test_suite = super(KALiteTestRunner, self).build_suite(*args, **kwargs)
-        for test in test_suite._tests:
-            testfun = getattr(test, test._testMethodName)
-            setattr(test, test._testMethodName, auto_pdb()(testfun))
+
+        # If failfast, drop into the debugger
+        if self.failfast:
+            for test in test_suite._tests:
+                testfun = getattr(test, test._testMethodName)
+                setattr(test, test._testMethodName, auto_pdb()(testfun))
         return test_suite

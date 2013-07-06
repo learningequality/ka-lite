@@ -9,6 +9,7 @@ These require a test server to be running, and multiple ports
 #import logging
 #from selenium import webdriver
 #from selenium.common.exceptions import NoSuchElementException
+import time
 
 from django.contrib.auth.models import User
 
