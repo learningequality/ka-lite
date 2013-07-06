@@ -2,9 +2,12 @@
 Views which allow users to create and activate accounts.
 
 """
+
+import copy
+
 from django.contrib import messages
-from django.contrib.auth import logout, REDIRECT_FIELD_NAME
-from django.contrib.auth import views as auth_views
+from django.contrib.auth import logout as auth_logout, views as auth_views, REDIRECT_FIELD_NAME
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError, transaction
 from django.http import HttpResponse
@@ -19,18 +22,14 @@ from central.models import Organization
 from contact.views import contact_subscribe
 from registration.backends import get_backend
 from securesync.models import Zone
-from utils.decorators import central_server_only
 from utils.mailchimp import mailchimp_subscribe
 
 
-@central_server_only
 def complete(request, *args, **kwargs):
     messages.success(request, "Congratulations! Your account is now active. To get started, "
         + "login to the central server below, to administer organizations and zones.")
     return redirect("auth_login")
 
-
-@central_server_only
 def activate(request, backend,
              template_name='registration/activate.html',
              success_url=None, extra_context=None, **kwargs):
@@ -70,7 +69,7 @@ def activate(request, backend,
         acivation. This is optional; if not specified, this will be
         obtained by calling the backend's
         ``post_activation_redirect()`` method.
-
+    
     ``template_name``
         A custom template to use. This is optional; if not specified,
         this will default to ``registration/activate.html``.
@@ -79,17 +78,17 @@ def activate(request, backend,
         Any keyword arguments captured from the URL, such as an
         activation key, which will be passed to the backend's
         ``activate()`` method.
-
+    
     **Context:**
-
+    
     The context will be populated from the keyword arguments captured
     in the URL, and any extra variables supplied in the
     ``extra_context`` argument (see above).
-
+    
     **Template:**
-
+    
     registration/activate.html or ``template_name`` keyword argument.
-
+    
     """
     backend = get_backend(backend)
     account = backend.activate(request, **kwargs)
@@ -111,7 +110,7 @@ def activate(request, backend,
                               kwargs,
                               context_instance=context)
 
-@central_server_only
+
 @transaction.commit_on_success
 def register(request, backend, success_url=None, form_class=None,
              disallowed_url='registration_disallowed',
@@ -146,11 +145,11 @@ def register(request, backend, success_url=None, form_class=None,
        the ``HttpRequest`` and the new ``User``, to determine the URL
        to redirect the user to. To override this, see the list of
        optional arguments for this view (below).
-
+    
     **Required arguments**
-
+    
     None.
-
+    
     **Optional arguments**
 
     ``backend``
@@ -162,11 +161,11 @@ def register(request, backend, success_url=None, form_class=None,
         passed to ``django.shortcuts.redirect``. If not supplied, this
         will be whatever URL corresponds to the named URL pattern
         ``registration_disallowed``.
-
+    
     ``form_class``
         The form class to use for registration. If not supplied, this
         will be retrieved from the registration backend.
-
+    
     ``extra_context``
         A dictionary of variables to add to the template context. Any
         callable object in this dictionary will be called to produce
@@ -177,24 +176,24 @@ def register(request, backend, success_url=None, form_class=None,
         value which can legally be passed to
         ``django.shortcuts.redirect``. If not supplied, this will be
         retrieved from the registration backend.
-
+    
     ``template_name``
         A custom template to use. If not supplied, this will default
         to ``registration/registration_form.html``.
-
+    
     **Context:**
-
+    
     ``form``
         The registration form.
-
+    
     Any extra variables supplied in the ``extra_context`` argument
     (see above).
-
+    
     **Template:**
-
+    
     registration/registration_form.html or ``template_name`` keyword
     argument.
-
+    
     """
     backend = get_backend(backend)
     if not backend.registration_allowed(request):
@@ -210,12 +209,8 @@ def register(request, backend, success_url=None, form_class=None,
 
         # Could register
         if form.is_valid() and org_form.is_valid():
-            form.cleaned_data['username'] = form.cleaned_data['email']
+            assert form.cleaned_data.get("username") == form.cleaned_data.get("email"), "Should be set equal in the call to clean()"
 
-            # TODO (bcipolli): should do all this in one transaction,
-            #   so that if any one part fails, it all rolls back.
-            #   For now, unlikely to happen, and consequence is only
-            #   a user without an org/zone
             try:
                 # Create the user
                 new_user = backend.register(request, **form.cleaned_data)
@@ -243,7 +238,7 @@ def register(request, backend, success_url=None, form_class=None,
                 else:
                     return redirect(success_url)
 
-            except IntegrityError, e:
+            except IntegrityError as e:
                 if e.message=='column username is not unique':
                     form._errors['__all__'] = _("An account with this email address has already been created.  Please login at the link above.")
                 else:
@@ -271,14 +266,21 @@ def register(request, backend, success_url=None, form_class=None,
     )
 
 
-
-@central_server_only
 def login_view(request, *args, **kwargs):
     """Force lowercase of the username.
-
+    
     Since we don't want things to change to the user (if something fails),
     we should try the new way first, then fall back to the old way"""
+    if request.method=="POST":
+        users = User.objects.filter(username__iexact=request.POST["username"])
+        nusers = users.count()
 
+        # Coerce
+        if nusers == 1 and users[0].username != request.POST["username"]:
+            request.POST = copy.deepcopy(request.POST)
+            request.POST['username'] = request.POST['username'].lower()
+
+    # Add redirection context, for smoother navigation
     extra_context = {
         "redirect": {
             "name": REDIRECT_FIELD_NAME,
@@ -287,13 +289,9 @@ def login_view(request, *args, **kwargs):
     }
     kwargs["extra_context"] = extra_context
 
-    template_response = auth_views.login(request, *args, **kwargs)
+    return auth_views.login(request, *args, **kwargs)
 
-    # Return the logged in version, or failed to login using lcased version
-    return template_response
-
-
-@central_server_only
+    
 def logout_view(request):
-    logout(request)
-    return redirect("landing_page")
+    auth_logout(request)
+    return redirect("homepage")
