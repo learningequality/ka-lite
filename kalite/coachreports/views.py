@@ -11,6 +11,7 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidde
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
+from django.utils.translation import ugettext as _
 
 from coachreports.forms import DataForm
 from coachreports.api_views import get_data_form, stats_dict
@@ -27,7 +28,7 @@ def get_accessible_objects_from_request(request, facility):
     """Given a request, get all the facility/group/user objects relevant to the request,
     subject to the permissions of the user type.
     """
-    
+
     # Options to select.  Note that this depends on the user.
     if request.user.is_superuser:
         groups = FacilityGroup.objects.filter(facility=facility)
@@ -50,10 +51,10 @@ def get_accessible_objects_from_request(request, facility):
     return (groups, facilities)
 
 
-def plotting_metadata_context(request, facility, topic_path=[], *args, **kwargs):
+def plotting_metadata_context(request, facility=None, topic_path=[], *args, **kwargs):
     """Basic context for any plot: get the data form, a dictionary of stat definitions,
     and the full gamut of facility/group objects relevant to the request."""
-    
+
     # Get the form, and retrieve the API data
     form = get_data_form(request, facility=facility, topic_path=topic_path, *args, **kwargs)
 
@@ -85,15 +86,14 @@ def scatter_view(request, facility, xaxis="", yaxis=""):
 
 
 @require_login
-@facility_required
 @render_to("coachreports/student_view.html")
-def student_view(request, facility, xaxis="pct_mastery", yaxis="ex:attempts"):
+def student_view(request, xaxis="pct_mastery", yaxis="ex:attempts"):
     """student view: data generated on the back-end.
-    
+
     Student view lists a by-topic-summary of their activity logs.
     """
-    
-    user = get_object_or_None(FacilityUser, id=request.REQUEST.get("user_id"))
+
+    user = get_object_or_None(FacilityUser, id=request.REQUEST.get("user"))
     user = user or request.session.get("facility_user",None)
 
     topics = get_all_midlevel_topics()
@@ -129,17 +129,17 @@ def student_view(request, facility, xaxis="pct_mastery", yaxis="ex:attempts"):
             "ex:average_attempts": 0 if not n_exercises_touched else sum([el.attempts for el in exercise_logs[topic['id']]])/float(n_exercises_touched),
             "ex:average_streak":   0 if not n_exercises_touched else sum([el.streak_progress for el in exercise_logs[topic['id']]])/float(n_exercises_touched)/100.,
             "ex:total_struggling": 0 if not n_exercises_touched else sum([el.struggling for el in exercise_logs[topic['id']]]),
-            "ex:last_completed":None if not n_exercises_touched else max([el.completion_timestamp or datetime.datetime(year=1900, month=1, day=1) for el in exercise_logs[topic['id']]]),
+            "ex:last_completed":None if not n_exercises_touched else max([el.completion_timestamp or None for el in exercise_logs[topic['id']]]),
 
             "vid:pct_started":      0 if not n_videos_touched else n_videos_touched/float(n_videos),
             "vid:pct_completed":    0 if not n_videos_touched else sum([vl.complete for vl in video_logs[topic['id']]])/float(n_videos),
             "vid:total_minutes":      0 if not n_videos_touched else sum([vl.total_seconds_watched for vl in video_logs[topic['id']]])/60.,
-            "vid:average_points":   0 if not n_videos_touched else sum([vl.points for vl in video_logs[topic['id']]])/float(n_videos_touched),
-            "vid:last_completed":None if not n_videos_touched else max([vl.completion_timestamp or datetime.datetime(year=1900, month=1, day=1) for vl in video_logs[topic['id']]]),
+            "vid:average_points":   0. if not n_videos_touched else float(sum([vl.points for vl in video_logs[topic['id']]])/float(n_videos_touched)),
+            "vid:last_completed":None if not n_videos_touched else max([vl.completion_timestamp or None for vl in video_logs[topic['id']]]),
         }
         any_data = any_data or n_exercises_touched>0 or n_videos_touched>0
 
-    context = plotting_metadata_context(request, facility)
+    context = plotting_metadata_context(request)
     return {
         "form": context["form"],
         "groups": context["groups"],
@@ -154,18 +154,18 @@ def student_view(request, facility, xaxis="pct_mastery", yaxis="ex:attempts"):
         "no_data": not any_data,
         "stats": stats,
         "stat_defs": [ # this order determines the order of display
-            {"key": "ex:pct_mastery",          "title": "% Mastery",            "type": "pct"},
-            {"key": "ex:pct_started",          "title": "% Started",  "type": "pct"},
-            {"key": "ex:average_points",       "title": "Average Points",       "type": "float"},
-            {"key": "ex:average_attempts",     "title": "Average Attempts",     "type": "float"},
-            {"key": "ex:average_streak",       "title": "Average Streak",     "type": "pct"},
-            {"key": "ex:total_struggling",     "title": "Struggling",     "type": "int"},
-            {"key": "ex:last_completed",       "title": "Last Completed",       "type": "date"},
-            {"key": "vid:pct_completed",       "title": "% Completed",  "type": "pct"},
-            {"key": "vid:pct_started",         "title": "% Started",  "type": "pct"},
-            {"key": "vid:total_minutes",        "title": "Average Minutes Watched","type": "float"},
-            {"key": "vid:average_points",      "title": "Average Points",       "type": "float"},
-            {"key": "vid:last_completed",      "title": "Last Completed",       "type": "date"},
+            {"key": "ex:pct_mastery",      "title": _("% Mastery"),        "type": "pct"},
+            {"key": "ex:pct_started",      "title": _("% Started"),        "type": "pct"},
+            {"key": "ex:average_points",   "title": _("Average Points"),   "type": "float"},
+            {"key": "ex:average_attempts", "title": _("Average Attempts"), "type": "float"},
+            {"key": "ex:average_streak",   "title": _("Average Streak"),   "type": "pct"},
+            {"key": "ex:total_struggling", "title": _("Struggling"),       "type": "int"},
+            {"key": "ex:last_completed",   "title": _("Last Completed"),   "type": "date"},
+            {"key": "vid:pct_completed",   "title": _("% Completed"),      "type": "pct"},
+            {"key": "vid:pct_started",     "title": _("% Started"),        "type": "pct"},
+            {"key": "vid:total_minutes",   "title": _("Average Minutes Watched"),"type": "float"},
+            {"key": "vid:average_points",  "title": _("Average Points"),   "type": "float"},
+            {"key": "vid:last_completed",  "title": _("Last Completed"),   "type": "date"},
         ]
     }
 
@@ -183,28 +183,28 @@ def landing_page(request, facility):
 @render_to("coachreports/tabular_view.html")
 def tabular_view(request, facility, report_type="exercise"):
     """Tabular view also gets data server-side."""
-    
+
     # Get a list of topics (sorted) and groups
     topics = get_all_midlevel_topics()
-    groups = FacilityGroup.objects.filter(facility=facility)
-    context = {
+    (groups, facilities) = get_accessible_objects_from_request(request, facility)
+    context = plotting_metadata_context(request, facility=facility)
+    context.update({
         "report_types": ("exercise","video"),
         "request_report_type": report_type,
-        "facility": facility,
-        "groups": groups,
         "topics": topics,
-    }
+    })
 
     # get querystring info
     topic_id = request.GET.get("topic", "")
-    group_id = request.GET.get("group_id", "")
-
     # No valid data; just show generic
-    if not group_id or not topic_id or not re.match("^[\w\-]+$", topic_id):
+    if not topic_id or not re.match("^[\w\-]+$", topic_id):
         return context
 
-    group = get_object_or_404(FacilityGroup, pk=group_id)
-    users = FacilityUser.objects.filter(group=group, is_teacher=False).order_by("last_name", "first_name")
+    group_id = request.GET.get("group", "")
+    if group_id:
+        users = FacilityUser.objects.filter(group=group_id, is_teacher=False).order_by("last_name", "first_name")
+    else:
+        users = FacilityUser.objects.filter(group__in=groups, is_teacher=False).order_by("last_name", "first_name")
 
     # We have enough data to render over a group of students
     # Get type-specific information

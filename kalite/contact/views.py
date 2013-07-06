@@ -97,9 +97,9 @@ def contact_wizard(request, type=""):
         # Use the user's information, if available
         if request.user.is_authenticated():
             if request.user.owned_organizations.count()>0:
-                org = request.user.owned_organizations.get()
+                org = request.user.owned_organizations.all()[0]
             elif request.user.organization_set.count()>0:
-                org = request.user.organization_set.get()
+                org = request.user.organization_set[0]
             else:
                 org = Organization()
 

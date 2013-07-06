@@ -44,18 +44,21 @@
         <div class="row-fluid">
             <div class="span12">
                 <ul class="header__horizontal-menu">
-                    <li class="header__logo"><a href="/"><img src="/static/images/horizontal-logo-small.png" alt=""></a></li>
+                    <li class="header__logo"><a href="/"><img src="{% static 'images/horizontal-logo-small.png' %}" alt=""></a></li>
                     <ul class="header__horizontal-menu__right">
-                        <li><a href="/">Home</a></li>
-                        <li><a href="/faq/">FAQ</a></li>
-                    {% if user.is_authenticated %}
-                        {% if user.is_superuser %}
-                        <li><a href="/admin/" >Admin</a></li>
-                        {% endif %}
-                        <li><a href="/accounts/logout/">{{ user.username }} &nbsp; (Logout)</a></li>
+                        <li><a href="{% url homepage %}">{% trans "Home" %}</a></li>
+                        <li><a href="{% url wiki path='installation' %}">{% trans "Install" %}</a></li>
+                        <li><a href="{% url faq_topic_list %}">{% trans "FAQ" %}</a></li>
+                        <li><a href="{% url contact_wizard %}">{% trans "Contact" %}</a></li>
+                        <li><a href="{% url about %}">{% trans "About Us" %}</a></li>
+                    {% if not user.is_authenticated %}
+                        <li><a href="{% url auth_login %}" id="nav_login">{% trans "Login" %}</a></li>
                     {% else %}
-                        <li><a href="/accounts/register/">Sign Up</a></li>
-                        <li><a href="/accounts/login/">Login</a></li>
+                        {% if user.is_superuser %}
+                        <li><a href="{% url admin:index %}" >{% trans "Admin" %}</a></li>
+                        {% endif %}
+                        <li><a href="{% url org_management %}" id="nav_org_management">{{ user.username }}</a></li>
+                        <li><a href="{% url auth_logout %}" id="nav_logout">{% trans "Logout" %}</a></li>
                     {% endif %}
                     </ul>
                 </ul>

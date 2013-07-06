@@ -1,262 +1,115 @@
-{% extends "central/base.html" %}
+{% extends 'central/base.html' %}
 
-{% block home_active %}active{% endblock home_active %}
-{% block title %}Account administration{{ block.super }}{% endblock title %}
+{% load staticfiles %}
 
-{% block headjs %}
-	<script>
-		// makes correct link submit form for removing admin & revoking invites
-		$(function() {
-			$('.remove-admin-submit, .remove-invite-submit').click(function(ev) {
-				$(ev.srcElement).parents('form').submit();
-				return false;
-			});
+{% block title %}Home{% endblock %}
 
-			$('.glossary-link').wrap('<a href="{% url glossary %}"></a>');
-		});
-	    
-	</script>
-{% endblock headjs %}
+{% block jqueryjs %}
+<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.8.3.min.js"></script> 
+{% endblock jqueryjs %}
 
-{% block headcss %}
-
-	<style>
-	body {
-		min-height: 500px;
-	}
-
-	ul, li {
-	    list-style: none;
-	    margin-left: 15px;
-	}
-
-	h1.title {
-		font-size: 30px;
-	}
-
-	h2, h3, h4 {
-		margin-bottom: 5px;
-	}
-
-	.title-bar {
-		margin-bottom: .7em;
-		padding-bottom: 5px;
-		border-bottom: 1px dotted gray;
-		width: 100%;
-
-	}
-
-	.title-bar > a {
-		position: relative;
-		top: 2px;
-	}
-
-	.title-contents {
-		padding: 10px 0px 0px 20px;
-	}
-
-	.nudge-left {
-		margin-left: 5px;
-	}
-
-	h2.title {
-		float: left;
-		margin-right: 5px;
-	}
-
-	.floatleft {
-		float:left;
-	}
-
-	h2.title {
-		font-size: 25px;
-	}
-
-	h4.title {
-		font-weight: bold;
-	}
-
-	#container .h3 !important{
-		border-bottom: none;
-	}
-
-
-	#last {
-		margin-top: 25px;
-	}
-
-	.organization, .org-invite {
-		width: 90%;
-		margin: 20px 0px;
-		border: 1px dotted gray;
-		border-radius: 5px;
-		background-color: #F8F8F8;
-	}
-
-	#invite-text > p {
-		margin: 15px 0 10px 15px;
-		padding: 0;
-	}
-
-	#invite-text > .inputs {
-		margin: 0px 0 10px 15px;
-	}
-
-	.organization > li {
-		list-style-type: none;
-		margin: 0px;
-		padding: 0px;
-	}
-
-	#new-zone {
-		margin-top: 10px;
-	}
-
-	.zones, .members {
-		min-width: 300px;
-		float: left;
-		padding: 6px 0px 10px 20px;
-	}
-
-	#form-label {
-		float: left;
-		margin-top: 3px;
-		margin-right: 5px;
-	}
-
-	.clearfix {
-		width: 100%;
-		clear: both; 
-	}
-
-	#invited-tag {
-		color: gray;
-	}
-
-	</style>
-
-{% endblock headcss %}
+{% block analytics %}{% include 'central/web_analytics.html' %}{% endblock analytics %}
 
 {% block content %}
 
-<div id="org_container">
-	<h1 class="title">My Organizations<span class="glossary-link nudge-left" title="An Organization is an entity responsible for administering zones."></span></h2>
-	{% for invite in invitations %}
-		<div class="org-invite">
-			<form method="post" action="{% url org_invite_action invite_id=invite.pk %}"> 
-				{% csrf_token %}
-				<div id="invite-text">
-					<p>You have been invited by <a href="mailto:{{invite.invited_by.email}}">{% firstof invite.invited_by.get_full_name invite.invited_by.username %}</a> to help administer "<span style="font-weight:bold">{{ invite.organization }}</span>". Please click below to join the organization or to decline this invitation.</p> 
-					<div class="inputs">
-						<input type="submit" name="join" value="Join">
-						<input type="submit" name="decline" value="Decline">
-					</div>
-				</div>
-			</form>
-		</div>
-	{% endfor %}
-	<div id="organizations">
-			{% if organizations %}
-				{% for org in organizations %}
-					<div class="organization">
-						<div class="title-bar">
-							<div class="title-contents">
-								<h2 class="title">
-									{{ org.name }}
-								</h2>
-								<a href="{% url organization_form id=org.id %}">
-									(Edit)
-								</a>
-							<div class="clearfix"></div>
-						</div>
-						</div>
-						<div class="zones">
-							<h4 class="title floatleft">Affiliated Zones</h4><span class="glossary-link nudge-left" title="A Zone is the area in which multiple devices may connect to share content with each other."></span>
-							<div class="clearfix"></div>
-							{% for zone in org.get_zones %}
-								<h4 class="floatleft">
-									{{ zone.name }}
-								</h4>
-								<div class="nudge-left floatleft">
-									<a href="{% url zone_form org_id=org.id id=zone.id %}">
-										(Edit Zone)
-									</a>
-									<a href="{% url central_facility_admin org_id=org.id zone_id=zone.id %}">
-										(Manage Facilities)
-									</a>
-								</div>
-								<div class="clearfix"></div>
-							{% endfor %}
-							<div class="clearfix"></div>
-							<form method="link" action="{% url zone_form org_id=org.id id='new' %}">
-								<input class="add" type="submit" value="Create a new zone">
-							</form>
-						</div>
-						<div class="members">
-							<h4 class="title floatleft">Organization Admins</h4><span class="glossary-link nudge-left" title="An Organization Admin is a user responsible for overseeing an organization."></span>
-							<div class="clearfix"></div>
-							{% for member in org.get_members %}
-								<h4 title="{{member.email }}" class="floatleft">
-									{% firstof member.get_full_name member.username %}
-								</h4>
-								<div class="nudge-left floatleft">
-									{% if org.owner == member and member == request.user %}
-										(You are the owner)
-									{% elif member == request.user %}
-										(You)
-									{% elif org.owner == member %}
-										(Owner)
-									{% else %}
-										<form method="post" action="{% url delete_admin org_id=org.id user_id=member.id %}">
-												{% csrf_token %}
-												(<a href="" class="remove-admin-submit">Remove Admin</a>)
-										</form>
-									{% endif %}
-								</div>
-								<div class="clearfix"></div>
-							{% endfor %}
-							{% for invite in org.invitations.all %}
-								<h4 id="invited-tag" class="floatleft">
-									{{ invite.email_to_invite }} (invited)
-								</h4>
-								<div class="nudge-left floatleft">
-									<form method="post" action="{% url delete_invite org_id=org.id invite_id=invite.pk %}">
-										{% csrf_token %}
-										<a href="" class="remove-invite-submit">(Revoke Invite)</a>
-									</form>
-								</div>
-								<div class="clearfix"></div>
-							{% endfor %}
-							<div class="add">
-								<form method="post">
-									{% csrf_token %}
-									<input type="hidden" name="organization" value="{{ org.pk }}">
-									{{ org.form.invited_by }}
-									<h4 id="form-label">Add Admin: </h4><input type="text" placeholder="example@email.com" name="email_to_invite">
-									<input type="submit" value="Send invite!">
-									{% for error in org.form.non_field_errors %}
-										<div class="errors">{{ error }}</div>
-									{% endfor %}
-								</form>
-							</div>
-					</div>
-					<div class="clearfix"></div>
-					</div>
-				{% endfor %}
-				<div id="last">
-					<form method="link" action="/organization/new/">
-						<input type="submit" value="Create a new organization">
-					</form>
-				</div>
-			{% else %}
-				<h2>You currently have no organizations. Would you like to <a href="/organization/new/">create a new organization</a>?</h2>
-				<h2>To join an existing organization, contact one of its administrators to have them add you.</h2>
-			{% endif %}
-	</div>
+<div class="content__motto-container">
+    <h1>Only 35% of the world has internet. 100% of the world needs education.</h1>
+    <p>
+        KA Lite is an offline version of <a href="http://www.khanacademy.org/" target="_blank">Khan Academy</a> that runs on almost anything.
+    </p>
+    <ul class="content__motto-container__motivation-box">
+        <li>Bringing the online education revolution to rural communities.</li>
+        <li>Synchronize and manage your organization's deployments centrally.</li>
+        <li>Quick installation, minimal system requirements, and simple to use.</li>
+        <li>Students can earn points, teacher can view coach reports.</li>
+        <li>Choose which videos to download, and languages for subtitles.</li>
+    </ul>
 </div>
 
-<div>	
-	<p>After creating an organization and adding a zone to it, above, you're ready to follow the <a href="https://github.com/learningequality/ka-lite/blob/master/INSTALL.md" target="_blank">installation instructions</a> on the server where you'll be running KA Lite.</p>
-</div>
+
 
 {% endblock content %}
+
+{% block landing-page %}
+<div class="row-fluid content__box-container">
+
+    <div class="span4">
+        <div class="content__box">
+            <img src="{% static 'images/landing-page/install.png' %}" alt="">
+            <p>Ready to get started</p>
+            <a href="/installation">
+               <button type="button" name="" value="" class="green">Install Now!</button>
+           </a> 
+           <br> 
+       </div>
+   </div>
+   <div class="span4">
+    <div class="content__box">
+        <img src="{% static 'images/landing-page/contact.png' %}" alt="">
+        <p>Want deployment advice?</p>
+        <a href="https://docs.google.com/spreadsheet/viewform?formkey=dEhEOWRNVDBzWTdsUnFQYWlCWnZoWWc6MQ">
+            <button type="button" name="" value="" class="green">Contact Us</button>
+        </a>
+    </div>
+</div>
+<div class="span4">
+    <div class="content__box">
+        <img src="{% static 'images/landing-page/contribute.png' %}" alt="">
+        <p>Want to contribute</p>
+        <a href="/contribute">
+            <button type="button" name="" value="" class="green">Get Involved</button>
+        </a>
+    </div>
+</div>
+
+</div>
+<div class="row-fluid footer">
+    <div class="span8 footer__rss">
+
+        <h2>Read More</h2>
+        <ul class="footer__news-list">
+            {% for entry in feed %}
+            <li><a href="{{ entry.url }}">{{entry.title}}</a></li>
+            {% endfor %}
+        </ul> 
+    </div>
+    <div class="span4 footer__updates">    
+        <h2>Share</h2>
+        <ul class="list-icons">
+            <li>
+                <a  href="http://www.facebook.com/sharer.php?u=http://adhocsync.com/" class="symbol">&#xe227;</a>       
+            </li>
+            <li>
+                <a href="http://twitter.com/share?text=An%20Awesome%20Link&url=http://adhocsync.com/" class="symbol">&#xe286;</a>      
+            </li>
+            <li>
+                <a href="https://plus.google.com/share?url=http://adhocsync.com/" class="symbol">&#xe239;</a>      
+            </li>
+            <li>
+                <a href="http://www.linkedin.com/shareArticle?mini=true&url=http://adhocsync.com/&title=Awesome%20link!" class="symbol">&#xe252;</a>      
+            </li>
+        </ul>
+        <div class="row-fluid footer__second-line">
+            <div class="span6">
+                <h2>Follow</h2>
+                <ul class="list-icons">
+                    <li>
+                        <a href="https://www.facebook.com/kaliteproject" class="symbol">&#xe227;</a>       
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/ka_lite" class="symbol">&#xe286;</a>      
+                    </li>
+                </ul>
+
+            </div>
+            <div class="span6 footer__email">
+                <h2>Email Updates</h2>
+                <input type="text" class="footer__email__input">
+                <br>
+                <button type="button" name="" value="" class="green--small">Subscribe</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock landing-page %}
