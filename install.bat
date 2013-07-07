@@ -63,7 +63,8 @@ echo Please choose a username and password for the admin account on this device.
 echo You must remember this login information, as you will need to enter it to
 echo administer this installation of KA Lite.
 echo.
-python manage.py createsuperuser
+python manage.py createsuperuser --email=dummy@learningequality.org
+echo.
 
 set /p name=Please enter a name for this server (or, press Enter to use the default): 
 set /p description=Please enter a description for this server (or, press Enter to leave blank): 

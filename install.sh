@@ -106,7 +106,8 @@ echo "Please choose a username and password for the admin account on this device
 echo "You must remember this login information, as you will need to enter it to"
 echo "administer this installation of KA Lite."
 echo
-$pyexec manage.py createsuperuser
+$pyexec manage.py createsuperuser --email=dummy@learningequality.org
+echo
 
 hostname=`uname -n`
 echo -n "Please enter a name for this server (or, press Enter to use '$hostname'): "
