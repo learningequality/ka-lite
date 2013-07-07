@@ -128,7 +128,7 @@ select{
         {% csrf_token %} 
         
 
-        <div class="form-section" id="deployment-section">
+        <div class="form-section" id="server">
             <div class="form-label"><h4>I would like run KA Lite on:</h4></div>
             <div class= "radio-selections">
                 <label class="radio">
@@ -317,7 +317,7 @@ function qparts(name) {
 function setGetParam(name, val) {
     var vars = qparts();
     
-    vars["server"] = $("#server option:selected").val();
+    vars["server"] = $('input:radio[name=depolymen-section]:checked').val();
     vars["internet"] = $("#internet option:selected").val();
     vars["platform"] = $("#platform option:selected").val();
 
@@ -359,7 +359,7 @@ $(function() {
 
     // Deployment option
     $("#server").change(function(){
-        var server_option = $("#server option:selected").val();
+        var server_option = $('input:radio[name=depolymen-section]:checked').val();
         if (server_option == "single") {
             $("#user-registration-info").hide();
             $("#internet-section").hide();
@@ -367,7 +367,6 @@ $(function() {
             $("#install-form").hide();
             $("#submit-section").show();
             $('#submit-section .btn').addClass('btn-primary').removeAttr('disabled');//To active 'download' button
-    
             $("#instructions").hide();
         }
         else {            
