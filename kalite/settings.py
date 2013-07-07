@@ -208,4 +208,4 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 MESSAGE_STORAGE = 'utils.django_utils.NoDuplicateMessagesSessionStorage'
 
-TEST_RUNNER = 'kalite.utils.testrunner.KALiteTestRunner'
+CRONSERVER_FREQUENCY = getattr(local_settings, "CRONSERVER_FREQUENCY", 5) # in seconds
