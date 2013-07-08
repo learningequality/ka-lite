@@ -275,7 +275,7 @@ Available stats:
 @require_admin
 @render_to("video_download.html")
 def update(request):
-    call_command("videoscan")
+    call_command("videoscan")  # Could potentially be very slow, blocking request.
     force_job("videodownload", "Download Videos")
     force_job("subtitledownload", "Download Subtitles")
     language_lookup = topicdata.LANGUAGE_LOOKUP

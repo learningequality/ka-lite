@@ -67,7 +67,7 @@ class Command(BaseCommand):
                 self.stderr.write("Error in downloading: %s\n" % e)
                 video.download_in_progress = False
                 video.save()
-                force_job("videodownload", "Download Videos") # infinite recursive call? :(
+                force_job("videodownload", "Download Videos", force_cron=False)  # infinite recursive call? :(
                 break
             
             handled_video_ids.append(video.youtube_id)

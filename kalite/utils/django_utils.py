@@ -1,9 +1,14 @@
+import os
 import re
+import subprocess
 import sys
 from cStringIO import StringIO
 
 from django.core.management import call_command
 from django.contrib.messages.storage.session import SessionStorage
+
+import settings
+
 
 def call_command_with_output(cmd, *args, **kwargs): 
     """Run call_command while capturing stdout/stderr and calls to sys.exit"""
@@ -37,6 +42,21 @@ def call_command_with_output(cmd, *args, **kwargs):
         sys.stdout = backups[0]
         sys.stderr = backups[1]
         sys.exit   = backups[2]
+
+
+def call_command_async(cmd, *args, **kwargs):
+    """
+    This may be finicky, as it requires stringifying.
+    """
+    # Use sys to get the same executable running as is running this process.
+    # Make sure to call the manage.py from this project.
+    call_args = [sys.executable, os.path.join(settings.PROJECT_PATH, "manage.py"), cmd]
+    call_args += list(args)
+    for key,val in kwargs:
+        call_args.append("--%s=%s", key, val)
+
+    import pdb; pdb.set_trace()
+    subprocess.Popen(call_args)
 
 
 class NoDuplicateMessagesSessionStorage(SessionStorage):
