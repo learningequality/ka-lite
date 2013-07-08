@@ -1,12 +1,8 @@
+import glob
+import os
 from functools import partial
 
 import settings
-
-import glob
-import os
-
-import logging
-
 from main import topicdata
 
 
@@ -97,7 +93,10 @@ def get_video_counts(topic, videos_path, force=False):
         raise Exception("should not be calling this function on leaves; it's inefficient!")
 
     # Only look for videos if there are more branches
-    elif len(topic) > 0:
+    elif len(topic["children"]) == 0:
+        settings.LOG.debug("no children: %s" % topic)
+
+    elif len(topic["children"]) > 0:
         # RECURSIVE CALL:
         #  The children have children, let them figure things out themselves
         # $ASSUMPTION: if first child is a branch, THEY'RE ALL BRANCHES.
