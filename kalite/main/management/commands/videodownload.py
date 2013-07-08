@@ -3,10 +3,10 @@ import time
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
-from kalite.main.models import VideoFile
-from kalite.utils.videos import download_video, DownloadCancelled
-from utils.jobs import force_job
+from main.models import VideoFile
 from utils import caching
+from utils.jobs import force_job
+from utils.videos import download_video, DownloadCancelled
 
 
 def download_progress_callback(self, videofile):

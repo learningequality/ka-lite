@@ -1,10 +1,12 @@
 import time
+
 from django.core.management.base import BaseCommand, CommandError
-from kalite.main.models import VideoFile
-from kalite.utils.subtitles import download_subtitles, NoSubs
-from utils.jobs import force_job
+
 from config.models import Settings
-            
+from main.models import VideoFile
+from utils.jobs import force_job
+from utils.subtitles import download_subtitles, NoSubs
+
 
 class Command(BaseCommand):
     help = "Download all subtitles marked to be downloaded"
