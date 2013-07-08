@@ -8,7 +8,6 @@ These require a test server to be running, and multiple ports
 
 import logging
 import re
-import unittest
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
@@ -16,6 +15,7 @@ from selenium.webdriver.support import expected_conditions, ui
 
 from django.test import TestCase
 from django.core.urlresolvers import reverse
+from django.utils import unittest
 
 import settings
 from kalite.utils.django_utils import call_command_with_output

@@ -14,7 +14,6 @@ import shutil
 import sys
 import platform
 import tempfile
-import unittest
 from selenium import webdriver
 from StringIO import StringIO
 
@@ -23,6 +22,7 @@ from django.test.client import Client
 from django.core.urlresolvers import reverse
 from django.core.management import call_command
 from django.test import TestCase, LiveServerTestCase
+from django.utils import unittest
 
 import settings
 from kalite.utils.django_utils import call_command_with_output
