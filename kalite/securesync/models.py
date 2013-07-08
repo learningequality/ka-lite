@@ -36,13 +36,13 @@ class SyncSession(models.Model):
     models_downloaded = models.IntegerField(default=0)
     errors = models.IntegerField(default=0); errors.version="0.9.3" # kalite version
     closed = models.BooleanField(default=False)
-    
+
     def _hashable_representation(self):
         return "%s:%s:%s:%s" % (
             self.client_nonce, self.client_device.pk,
             self.server_nonce, self.server_device.pk,
         )
-        
+
     def _verify_signature(self, device, signature):
         return device.get_key().verify(self._hashable_representation(), signature)
 
@@ -54,7 +54,20 @@ class SyncSession(models.Model):
 
     def sign(self):
         return Device.get_own_device().get_key().sign(self._hashable_representation())
-        
+
+
+    def save(self, *args, **kwargs):
+        """
+        Save, while obeying the max count.
+        """
+        super(SyncSession,self).save(*args, **kwargs)
+        # TODO(bcipolli): think about adding an index for efficiency
+        #   to timestamp, making sure that whatever we do works for both
+        #   distributed and central servers.
+        if settings.SYNC_SESSIONS_MAX_RECORDS is not None and SyncSession.objects.count() > settings.SYNC_SESSIONS_MAX_RECORDS:
+            to_discard = SyncSession.objects.order_by("timestamp")[0:SyncSession.objects.count()-settings.SYNC_SESSIONS_MAX_RECORDS]
+            SyncSession.objects.filter(pk__in=to_discard).delete()
+
     def __unicode__(self):
         return "%s... -> %s..." % (self.client_device.pk[0:5],
             (self.server_device and self.server_device.pk[0:5] or "?????"))
@@ -74,7 +87,7 @@ class DeviceMetadata(models.Model):
     is_own_device = models.BooleanField(default=False)
     counter_position = models.IntegerField(default=0)
 
-    class Meta:    
+    class Meta:
         verbose_name_plural = "Device metadata"
 
     def __unicode__(self):
@@ -82,7 +95,7 @@ class DeviceMetadata(models.Model):
 
 
 class SyncedModelManager(models.Manager):
-    
+
     def by_zone(self, zone):
         # get model instances that were signed by devices in the zone,
         # or signed by a trusted authority that said they were for the zone
@@ -132,41 +145,41 @@ class SyncedModel(models.Model):
             return self.signed_by.get_key().verify(self._hashable_representation(), self.signature)
         except:
             return False
-    
+
     def _hashable_fields(self, fields=None):
-        
+
         # if no fields were specified, build a list of all the model's field names
         if not fields:
             fields = [field.name for field in self._meta.fields if field.name not in self.__class__._unhashable_fields]
             # sort the list of fields, for consistency
             fields.sort()
-        
+
         # certain fields should always be included
         for field in self.__class__._always_hash_fields:
             if field not in fields:
                 fields = [field] + fields
-        
+
         # certain fields should never be included
         fields = [field for field in fields if field not in self.__class__._unhashable_fields]
-                
+
         return fields
-    
+
     def _hashable_representation(self, fields=None):
         fields = self._hashable_fields(fields)
         chunks = []
         for field in fields:
-            
+
             try:
                 val = getattr(self, field)
             except ObjectDoesNotExist as e:
                 # if it's a foreign key and is broken, just use the id of the related model
                 val = getattr(self, field + "_id")
-            
+
             if val:
                 # convert models to just an id
                 if isinstance(val, models.Model):
                     val = val.pk
-                
+
                 # convert datetimes to a str in a predictable way
                 if isinstance(val, datetime.datetime):
                     val = ("%04d-%02d-%02d %d:%02d:%02d" %
@@ -178,18 +191,18 @@ class SyncedModel(models.Model):
 
                 # add this field/val pair onto the chunks to include in the hash
                 chunks.append("%s=%s" % (field, val))
-                
+
         return "&".join(chunks)
 
     def save(self, own_device=None, imported=False, increment_counters=True, *args, **kwargs):
-        
+
         # we allow for the "own device" to be passed in so that a device can sign itself (before existing)
         own_device = own_device or Device.get_own_device()
-        
+
         # this will probably never happen (since getting the device creates it), but just to be safe
         if not own_device:
             raise ValidationError("Cannot save any synced models before registering this Device.")
-        
+
         # imported models are signed by other devices; make sure they check out
         if imported:
             if not self.signed_by_id:
@@ -199,10 +212,10 @@ class SyncedModel(models.Model):
         else: # local models need to be signed by us
             self.counter = own_device.increment_and_get_counter()
             self.sign(device=own_device)
-        
+
         # call the base Django Model save to write to the DB
         super(SyncedModel, self).save(*args, **kwargs)
-        
+
         # for imported models, we want to keep track of the counter position we're at for that device
         if imported and increment_counters:
             self.signed_by.set_counter_position(self.counter)
@@ -248,10 +261,10 @@ class Zone(SyncedModel):
     description = models.TextField(blank=True)
 
     requires_trusted_signature = True
-    
+
     def __unicode__(self):
         return self.name
-        
+
 
 class Facility(SyncedModel):
     name = models.CharField(verbose_name=_("Name"), help_text=_("(This is the name that students/teachers will see when choosing their facility; it can be in the local language.)"), max_length=100)
@@ -266,7 +279,7 @@ class Facility(SyncedModel):
     contact_email = models.EmailField(max_length=60, verbose_name=_("Contact Email"), blank=True)
     user_count = models.IntegerField(verbose_name=_("User Count"), help_text=_("(How many potential users do you estimate there are at this facility?)"), blank=True, null=True)
 
-    class Meta:    
+    class Meta:
         verbose_name_plural = "Facilities"
 
     def __unicode__(self):
@@ -281,7 +294,7 @@ class Facility(SyncedModel):
 class FacilityGroup(SyncedModel):
     facility = models.ForeignKey(Facility, verbose_name=_("Facility"))
     name = models.CharField(max_length=30, verbose_name=_("Name"))
-    
+
     def __unicode__(self):
         return self.name
 
@@ -307,7 +320,7 @@ class FacilityUser(SyncedModel):
 
     def __unicode__(self):
         return "%s (Facility: %s)" % (self.get_name(), self.facility)
-        
+
     def check_password(self, raw_password):
         if self.password.split("$", 1)[0] == "sha1":
             # use Django's built-in password checker for SHA1-hashed passwords
@@ -318,14 +331,14 @@ class FacilityUser(SyncedModel):
 
     def set_password(self, raw_password=None, hashed_password=None):
         """Set a password with the raw password string, or the pre-hashed password."""
-        
+
         assert hashed_password is None or settings.DEBUG, "Only use hashed_password in debug mode."
         assert raw_password is not None or hashed_password is not None, "Must be passing in raw or hashed password"
         assert not (raw_password is not None and hashed_password is not None), "Must be specifying only one--not both."
-                 
+
         if hashed_password:
             self.password = hashed_password
-        else:       
+        else:
             self.password = crypt(raw_password, iterations=Settings.get("password_hash_iterations", 2000 if self.is_teacher else 1000))
 
     def get_name(self):
@@ -340,7 +353,7 @@ class DeviceZone(SyncedModel):
     zone = models.ForeignKey("Zone", db_index=True)
     revoked = models.BooleanField(default=False)
     max_counter = models.IntegerField(blank=True, null=True)
-            
+
     requires_trusted_signature = True
 
     def __unicode__(self):
@@ -354,7 +367,7 @@ class SyncedLog(SyncedModel):
 
 
 class DeviceManager(models.Manager):
-    
+
     def by_zone(self, zone):
         # get Devices that belong to a particular zone, or are a trusted authority
         return self.filter(Q(devicezone__zone=zone, devicezone__revoked=False) |
@@ -367,7 +380,7 @@ class Device(SyncedModel):
     version = models.CharField(max_length=len("10.10.100"), default="0.9.2", blank=True); version.version="0.9.3"  # default comes from knowing when this feature was implemented!
 
     objects = DeviceManager()
-    
+
     key = None
 
     def set_key(self, key):
@@ -386,7 +399,7 @@ class Device(SyncedModel):
         fields = ["signed_version", "name", "description", "public_key"]
         return super(Device, self)._hashable_representation(fields=fields)
 
-    def get_metadata(self):        
+    def get_metadata(self):
         try:
             return self.devicemetadata
         except DeviceMetadata.DoesNotExist:
@@ -417,7 +430,7 @@ class Device(SyncedModel):
         else:
             own_device = devices[0].device
         return own_device
-    
+
     @staticmethod
     def initialize_own_device(**kwargs):
         own_device = Device(**kwargs)
@@ -438,13 +451,13 @@ class Device(SyncedModel):
         metadata.counter_position += 1
         metadata.save()
         return metadata.counter_position
-        
+
     def get_counter(self):
         metadata = self.get_metadata()
         if not metadata.device.id:
             return 0
         return metadata.counter_position
-        
+
     def __unicode__(self):
         return self.name or self.id[0:5]
 
@@ -473,15 +486,15 @@ class Device(SyncedModel):
     def get_uuid(self):
         return uuid.uuid5(ROOT_UUID_NAMESPACE, str(self.public_key)).hex
 
-    @staticmethod    
+    @staticmethod
     def get_device_counters(zone):
         device_counters = {}
         for device in Device.objects.by_zone(zone):
             if device.id not in device_counters:
                 device_counters[device.id] = device.get_metadata().counter_position
         return device_counters
-    
-    
+
+
 class ImportPurgatory(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     counter = models.IntegerField()
@@ -489,7 +502,7 @@ class ImportPurgatory(models.Model):
     model_count = models.IntegerField(default=0)
     serialized_models = models.TextField()
     exceptions = models.TextField()
-    
+
     def save(self, *args, **kwargs):
         self.counter = self.counter or Device.get_own_device().get_counter()
         super(ImportPurgatory, self).save(*args, **kwargs)
