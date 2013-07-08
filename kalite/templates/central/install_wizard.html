@@ -34,6 +34,10 @@ h2{
     font-size: 33px;
 }
 
+h4{
+    font-size: 16px;
+}
+
 #python-instructions {
     margin-top:25px;
 }
@@ -41,8 +45,8 @@ h2{
 .basic-form label{
     width: auto;
     clear: both;
+    font-weight: normal;
 }
-
 
 .form-label {
     float: left;
@@ -56,10 +60,13 @@ h2{
     width: 100%;
     text-align:left;
     float: left;
-    margin-bottom:15px;
+    margin-bottom:5px;
 }
 
-
+#submit-section{
+    margin-left: 60px;
+    padding-bottom: 30px;
+}
 .information{
     font-size: 13px;
     color: #666;
@@ -67,7 +74,7 @@ h2{
     margin-bottom: 20px;
 }
 
-.warning{
+.suggestion{
     clear: both;
     margin-left: 30px;
     font-size: 13px;
@@ -76,6 +83,7 @@ h2{
 
 .asterisk{
     color: orange;
+    display: none;
 }
 
 
@@ -127,69 +135,38 @@ select{
         <form name="test" method="post" class="basic-form">
         {% csrf_token %} 
         
+        <div class="form-section" id="platform-section">
+            <div class="form-label"><h4>Server operating system:</h4></div>
+            <div class="form-selection">
+                <select name="platform" id="platform">
+                    <option value="windows">Windows</option>
+                    <option value="darwin">Mac</option>
+                    <option value="linux">Linux</option>
+                </select>
+            <span id="platform_info"></span>
+            </div>
+        </div>
 
         <div class="form-section" id="server">
             <div class="form-label"><h4>I would like run KA Lite on:</h4></div>
             <div class= "radio-selections">
                 <label class="radio">
-                        <input type="radio" name="depolymen-section" value="single">
+                        <input type="radio" name="depolyment-section" value="single">
                             A single server (stand-alone)
                 </label>
                 <label class="radio">
-                        <input type="radio" name="depolymen-section" value="multi-independent">
+                        <input type="radio" name="depolyment-section" value="multi-independent">
                             Multiple independent servers <span class="asterisk">*</span>
                 </label>
                 <label class="radio">
-                        <input type="radio" name="depolymen-section" value="multi-sharing">
+                        <input type="radio" name="depolyment-section" value="multi-sharing">
                             Multiple servers sharing student data <span class="asterisk">*</span>
                 </label>
-                <div class="warning"> 
+                <div class="suggestion" style="display:none"> 
                     <span class="asterisk">*</span><a href="{% url auth_login %}">Login</a> to download multiple servers edition of KA Lite.
                 </div>
-                <!-- </select> -->
-                <!-- <div id="user-registration-info">
-                    You must have an account with us in order to do this.<br/>
-                    Please <a href="{% url registration_register %}">register</a> for an account or <a href="{% url auth_login %}">log in</a>, then revisit this page.
-                </div> -->
             </div>
          </div> 
-
-            <div class="form-section" id="platform-section">
-                <div class="form-label"><h4>Server operating system:</h4></div>
-                <div class="form-selection">
-                    <select name="platform" id="platform">
-                        <option value="windows">Windows</option>
-                        <option value="darwin">Mac</option>
-                        <option value="linux">Linux</option>
-                    </select>
-                <span id="platform_info"></span>
-            </div>
-        </div> 
-
-
-        <div class="form-section" id="internet-section">
-            <div class="form-label"><h4>Internet access at server:</h4></div>
-            <div class="radio-selections">
-                <label class="radio">
-                        <input type="radio" name="internet" value="never">
-                            Servers will never have internet access
-                </label>
-                <label class="radio">
-                        <input type="radio" name="internet" value="some">
-                            At least one server will have occasional internet access
-                </label>
-                <label class="radio">
-                        <input type="radio" name="internet" value="all">
-                            All servers will have occasional internet access
-                </label>
-
-               <!--  <div id="internet-info">
-                    KA Lite currently does not support this scenario.<br/>
-                    Please <a href="{% url contact_wizard "deployments" %}">contact us</a>, to let us know of your interest [or subscribe to our newsletter]!
-                </div> -->
-            </div>
-        </div>        
-        
 
         <div class="form-section" id="locale-section" style="display:none">
             <div class="form-label">Server operating system:</div>
@@ -207,7 +184,7 @@ select{
     <div id="install-form">
         <div class="errors">{% for err in errors %}{{ err }}{% endfor %}</div>
             <div class="form-section" id="select_organization">
-                <div class="form-label">{% trans "Select Organization" %}</div>
+                <div class="form-label"><h4>{% trans "Select Organization:" %}</h4></div>
                 <div class="form-selection">
                     <select name="organization" id="organization">
                             {% for org in organizations %}
@@ -219,10 +196,10 @@ select{
         
             {% if selected_organization %}
             <div class="form-section" id="select_zone">
-                <div class="form-label">{% trans "Select Zone" %}</div>
+                <div class="form-label"><h4>{% trans "Select Zone:" %}</h4></div>
                 <div class="form-selection">
                     <select name="zone" id="zone">
-                        <option value="__empty__" {% if not selected_zone %}selected{% endif %}>Please select your zone</option>
+                        <option disabled="disabled" value="__empty__" {% if not selected_zone %}selected{% endif %}>--select your zone--</option>
                         {% for zone in zones %}
                         <option value="{{ zone.id }}"{% if selected_zone.id == zone.id %}selected{% endif %}>{{ zone }}</option>
                         {% endfor %}
@@ -247,9 +224,39 @@ select{
         </div>
     </div>
     {% endif %}
-
     </form>
+
+    <div class="form-section" id="internet-section">
+        <div class="form-label"><h4>Internet access at server:</h4></div>
+        <div class="radio-selections">
+            <label class="radio">
+                    <input type="radio" name="internet" value="never">
+                        Servers will never have internet access
+            </label>
+            <label class="radio">
+                    <input type="radio" name="internet" value="some">
+                        At least one server will have occasional internet access
+            </label>
+            <label class="radio">
+                    <input type="radio" name="internet" value="all">
+                        All servers will have occasional internet access
+            </label>
+
+           <!--  <div id="internet-info">
+                KA Lite currently does not support this scenario.<br/>
+                Please <a href="{% url contact_wizard "deployments" %}">contact us</a>, to let us know of your interest [or subscribe to our newsletter]!
+            </div> -->
+        </div>
+    </div>
     
+    <div class="form-section" id="submit-section">
+            <div class="form-label">&nbsp;</div>
+            <div class="form-selection">
+                <button type="submit" class="btn" disabled>Download!</button>
+               <!--  <input type="submit" value="{% trans "Download now!"%}" /> -->
+            </div>
+    </div>
+
     <div id="instructions">
         <div id="windows-instructions">
             Windows installation instructions:
@@ -291,13 +298,6 @@ select{
         </div>  
     </div>
 
-    <div class="form-section" id="submit-section">
-            <div class="form-label">&nbsp;</div>
-            <div class="form-selection">
-                <button type="submit" class="btn" disabled>Download!</button>
-               <!--  <input type="submit" value="{% trans "Download now!"%}" /> -->
-            </div>
-    </div>
     
 <script>
 
@@ -317,8 +317,8 @@ function qparts(name) {
 function setGetParam(name, val) {
     var vars = qparts();
     
-    vars["server"] = $('input:radio[name=depolymen-section]:checked').val();
-    vars["internet"] = $("#internet option:selected").val();
+    vars["server"] = $('input:radio[name=depolyment-section]:checked').val();
+    vars["internet"] = $('input:radio[name=internet]:checked').val();
     vars["platform"] = $("#platform option:selected").val();
 
     if (vars[name] == val || (typeof val === "undefined") || val=="__empty__") {
@@ -347,56 +347,49 @@ $(function() {
     // Show a section, and alert users
     user_logged_in = {{ user.is_authenticated|lower }};
 
-    // Gery out and disable Deployment option
+    // If user has not login, Gery out and disable Deployment option, and showing suggestion for login to active multile account
+    if (!user_logged_in){
     $('input[value=multi-independent]').attr('disabled', 'true')
-                                       .parent().css("color", "#C0C0C0"); //grey out the disabled radio selection
+                                       .parent().css("color", "#C0C0C0");
+
     $('input[value=multi-sharing]').attr('disabled', 'true')
-                                   .parent().css("color", "#C0C0C0"); //grey out the disabled radio selection
-
-    // $('#submit-section .btn').addClass('btn-primary').removeAttr('disabled');//To active 'download' button
-    
-
+                                   .parent().css("color", "#C0C0C0");
+    $('.suggestion').show();
+    $('.asterisk').show();
+    }
 
     // Deployment option
     $("#server").change(function(){
-        var server_option = $('input:radio[name=depolymen-section]:checked').val();
+        var server_option = $('input:radio[name=depolyment-section]:checked').val();
         if (server_option == "single") {
-            $("#user-registration-info").hide();
-            $("#internet-section").hide();
             $("#platform-section").show();
+            $("#internet-section").hide();
             $("#install-form").hide();
-            $("#submit-section").show();
             $('#submit-section .btn').addClass('btn-primary').removeAttr('disabled');//To active 'download' button
-            $("#instructions").hide();
+
         }
         else {            
-            if (!user_logged_in) {
-                $("#user-registration-info").show();
+            if (server_option == "multi-independent") {
+                $("#platform-section").show();
                 $("#internet-section").hide();
-                $("#platform-section").hide();
-                $("#install-form").hide();
-                $("#submit-section").hide();
-                $("#instructions").hide();
+                $("#install-form").show();
+                $('#submit-section .btn').removeClass("btn-primary").attr('disabled','disabled');
             }
             else {
-                $("#user-registration-info").hide();
+                $("#platform-section").show();
+                $("#install-form").show();
                 $("#internet-section").show();
-                $("#platform-section").hide();
-                $("#install-form").hide();
-                $("#submit-section").hide();
-                $("#instructions").hide();
+                $('#submit-section .btn').removeClass("btn-primary").attr('disabled','disabled');
             }
         }
         
         prep_download_if_ready()
     });//.val(qparts("server")).change();
     
-    // Internet access options
+    // Internet access optionss
     $("#internet").change(function(){
         // illegal
-        if ($("#internet option:selected").val() == "__empty__") {
-        }
-        else if ($("#internet option:selected").val() != "all") {
+        if ($('input:radio[name=internet]:checked').val() != "all") {
             $("#internet-info").show()
             $("#platform-section").hide();
             $("#install-form").hide();
@@ -445,21 +438,39 @@ $(function() {
     
 });
 
-function valof(name) {
-    return $("#" + name + " option:selected").val()
+function select_valof(name) {
+    return $("#" + name + " option:selected" ).val();
+    //$('#platform option:selected').val();
 }
+
+function radio_valof(name) {
+    return $("input[name=" + name + "]:checked").val();
+    //$('input[name=depolyment-section]:checked').val()
+}
+
+function RadioHasChecked(name) {
+    //$("input:radio[name='depolyment-section']").is(":checked");
+    return $("input:radio[name=" + name + "]").is(":checked");
+} // to check wether radio choices have selected
+
+
+function HasSelected(name) {
+    //$('#platform option').is(':selected');
+    return $("#" + name + " option").is(':selected');
+}// to check wether select choices have selected
+
+
 function prep_download_if_ready() {
-    if (  (valof("server") == "single" && valof("platform") != "__empty__")
-           || (valof("server") != "single" && valof("organization") != "__empty__"
-            && valof("zone") != "__empty__" && valof("num_certificates") != "__empty__") ) {
+    if ( (radio_valof("depolyment-section") != "single" && select_valof("organization") != "__empty__"
+            && select_valof("zone") != "__empty__" && select_valof("num_certificates") != "__empty__") ) {
             
         $("#submit-section").show();
+        //$('#submit-section .btn').addClass('btn-primary').removeAttr('disabled');
         $("#instructions").show();
     }
-    else {
-        $("#submit-section").hide();
-        $("#instructions").hide();
-    }    
+    else{
+       $('#submit-section .btn').removeClass("btn-primary").attr('disabled','disabled'); 
+    }
 }
 </script>
 {% endblock %}
