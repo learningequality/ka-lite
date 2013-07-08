@@ -50,5 +50,5 @@ class Command(BaseCommand):
                 video.subtitle_download_in_progress = False
                 video.flagged_for_subtitle_download = False
                 video.save()
-                force_job("subtitledownload", "Download Subtitles", force_cron=False)
+                force_job("subtitledownload", "Download Subtitles")
                 return

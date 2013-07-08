@@ -11,7 +11,9 @@ import settings
 
 
 def call_command_with_output(cmd, *args, **kwargs): 
-    """Run call_command while capturing stdout/stderr and calls to sys.exit"""
+    """
+    Run call_command while capturing stdout/stderr and calls to sys.exit
+    """
     
     backups = [sys.stdout, sys.stderr, sys.exit]
     try:
@@ -56,7 +58,7 @@ def call_command_async(cmd, *args, **kwargs):
     call_args = [sys.executable, os.path.join(settings.PROJECT_PATH, "manage.py"), cmd]
     call_args += list(args)
     for key,val in kwargs:
-        call_args.append("--%s=%s", key, val)
+        call_args.append("--%s=%s" % (key, val))
 
     # We don't need to hold onto the process handle.
     #    we expect all commands to return eventually, on their own--
