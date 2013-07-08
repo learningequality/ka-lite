@@ -81,6 +81,13 @@ h4{
     color: #666;
 }
 
+.internet-suggestion{
+    clear: both;
+    margin-left: 30px;
+    margin-top: -5px;
+    font-size: 13px;
+    color: orange;
+}
 .asterisk{
     color: orange;
     display: none;
@@ -231,21 +238,20 @@ select{
         <div class="radio-selections">
             <label class="radio">
                     <input type="radio" name="internet" value="never">
-                        Servers will never have internet access
+                        Servers will never have internet access<span style="color: orange">*</span>
             </label>
             <label class="radio">
                     <input type="radio" name="internet" value="some">
-                        At least one server will have occasional internet access
+                        At least one server will have occasional internet access<span style="color: orange">*</span>
             </label>
             <label class="radio">
                     <input type="radio" name="internet" value="all">
                         All servers will have occasional internet access
             </label>
 
-           <!--  <div id="internet-info">
-                KA Lite currently does not support this scenario.<br/>
-                Please <a href="{% url contact_wizard "deployments" %}">contact us</a>, to let us know of your interest [or subscribe to our newsletter]!
-            </div> -->
+            <div class="internet-suggestion">
+               *Only supports manual syncing user data through export/import external storage.
+            </div>
         </div>
     </div>
     
@@ -335,6 +341,28 @@ function setGetParam(name, val) {
     window.location.href = url;
 }
 
+function select_valof(name) {
+    return $("#" + name + " option:selected" ).val();
+    //$('#platform option:selected').val();
+}
+
+function radio_valof(name) {
+    return $("input[name=" + name + "]:checked").val();
+    //$('input[name=depolyment-section]:checked').val()
+}
+
+function RadioHasChecked(name) {
+    //$("input:radio[name='depolyment-section']").is(":checked");
+    return $("input:radio[name=" + name + "]").is(":checked");
+} // to check wether radio choices have selected
+
+
+function HasSelected(name) {
+    //$('#platform option').is(':selected');
+    return $("#" + name + " option").is(':selected');
+}// to check wether select choices have selected
+
+
 function select_instructions(platform) {
     $("#instructions div").each(function(idx){
         $(this).hide();
@@ -383,30 +411,8 @@ $(function() {
             }
         }
         
-        prep_download_if_ready()
     });//.val(qparts("server")).change();
     
-    // Internet access optionss
-    $("#internet").change(function(){
-        // illegal
-        if ($('input:radio[name=internet]:checked').val() != "all") {
-            $("#internet-info").show()
-            $("#platform-section").hide();
-            $("#install-form").hide();
-            $("#submit-section").hide();
-            $("#instructions").hide();
-        }
-        // legal
-        else {
-            $("#internet-info").hide()
-            $("#platform-section").show();
-            $("#install-form").hide();
-            $("#submit-section").hide();
-            $("#instructions").hide();
-        }
-
-        prep_download_if_ready()
-    });//.val("{{ internet }}").change();
 
         
     // Platform options
@@ -414,8 +420,6 @@ $(function() {
         select_instructions($("#platform option:selected").val());
         if ($("#server option:selected").val()!="single")
             $("#install-form").show();
-        //else //if ($("#server_option option:selected").val()=="single")
-
         prep_download_if_ready()
     });//.val(qparts("platform")).change();
     
@@ -430,6 +434,18 @@ $(function() {
        setGetParam("zone", $("#zone option:selected").val()); 
         prep_download_if_ready()
     }).val("{{selected_zone.id}}").change();
+
+        // Internet access optionss
+    $("#internet").change(function(){
+
+        if(RadioHasChecked('internet')){
+            $('#submit-section .btn').addClass('btn-primary').removeAttr('disabled'); //to active button
+        }
+        else {
+            $('#submit-section .btn').removeClass("btn-primary").attr('disabled','disabled');
+        }
+            prep_download_if_ready()
+    });//.val("{{ internet }}").change();
     
     $("#num_certificates").change(function(){
 //       setGetParam("num_certificates", $("#num_certificates option:selected").val()); 
@@ -438,39 +454,14 @@ $(function() {
     
 });
 
-function select_valof(name) {
-    return $("#" + name + " option:selected" ).val();
-    //$('#platform option:selected').val();
-}
 
-function radio_valof(name) {
-    return $("input[name=" + name + "]:checked").val();
-    //$('input[name=depolyment-section]:checked').val()
-}
-
-function RadioHasChecked(name) {
-    //$("input:radio[name='depolyment-section']").is(":checked");
-    return $("input:radio[name=" + name + "]").is(":checked");
-} // to check wether radio choices have selected
-
-
-function HasSelected(name) {
-    //$('#platform option').is(':selected');
-    return $("#" + name + " option").is(':selected');
-}// to check wether select choices have selected
-
-
-function prep_download_if_ready() {
-    if ( (radio_valof("depolyment-section") != "single" && select_valof("organization") != "__empty__"
-            && select_valof("zone") != "__empty__" && select_valof("num_certificates") != "__empty__") ) {
-            
-        $("#submit-section").show();
-        //$('#submit-section .btn').addClass('btn-primary').removeAttr('disabled');
-        $("#instructions").show();
-    }
-    else{
-       $('#submit-section .btn').removeClass("btn-primary").attr('disabled','disabled'); 
-    }
-}
+// function prep_download_if_ready() {
+//     if ( RadioHasChecked('platform') || HasSelected('organization') || select_valof("zone") != "__empty__" || RadioHasChecked('internet'){
+//         $('#submit-section .btn').addClass('btn-primary').removeAttr('disabled'); //active
+//     }
+//     else{
+//        $('#submit-section .btn').removeClass("btn-primary").attr('disabled','disabled'); 
+//     }
+// }
 </script>
 {% endblock %}
