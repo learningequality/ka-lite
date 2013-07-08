@@ -1,108 +1,109 @@
 [
   {
     "related_video_readable_ids": [
-      "solving-systems-by-graphing-2", 
-      "solving-systems-by-graphing-3", 
-      "graphings-systems-of-equations"
+      "solving-linear-systems-by-graphing", 
+      "solving-systems-graphically", 
+      "solving-systems-graphically", 
+      "solving-systems-graphically"
     ], 
     "v_position": 11, 
     "path": "/math/algebra/systems-of-eq-and-ineq/systems-of-eq-overview/e/graphing_systems_of_equations/", 
     "display_name": "Graphing systems of equations", 
     "title": "Graphing systems of equations", 
     "live": true, 
-    "seconds_per_fast_problem": 41.0, 
     "description": "Graph a system of equations in slope-intercept or standard form", 
     "h_position": 46, 
     "slug": "graphing_systems_of_equations", 
     "kind": "Exercise", 
     "name": "graphing_systems_of_equations", 
+    "seconds_per_fast_problem": 45.0, 
     "prerequisites": [
       "graphing_linear_equations"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "solving-systems-by-elimination", 
-      "solving-systems-by-elimination-2", 
-      "solving-systems-by-elimination-3"
+      "solving-systems-of-equations-by-elimination", 
+      "simple-elimination-practice", 
+      "simple-elimination-practice", 
+      "simple-elimination-practice"
     ], 
     "v_position": 11, 
     "path": "/math/algebra/systems-of-eq-and-ineq/systems-of-eq-overview/e/systems_of_equations_with_elimination_0.5/", 
     "display_name": "Systems of equations with simple elimination", 
     "title": "Systems of equations with simple elimination", 
     "live": true, 
-    "seconds_per_fast_problem": 35.0, 
     "description": "Solve systems of equation with one-step elimination (e.g., x-values or y-values cancel each other out).", 
     "h_position": 47, 
     "slug": "systems_of_equations_with_elimination_0.5", 
     "kind": "Exercise", 
     "name": "systems_of_equations_with_elimination_0.5", 
+    "seconds_per_fast_problem": 35.0, 
     "prerequisites": [
       "graphing_systems_of_equations"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "solving-systems-by-elimination", 
-      "solving-systems-by-elimination-2", 
-      "solving-systems-by-elimination-3"
+      "solving-systems-of-equations-by-multiplication", 
+      "systems-with-elimination-practice", 
+      "systems-with-elimination-practice", 
+      "systems-with-elimination-practice"
     ], 
     "v_position": 11, 
     "path": "/math/algebra/systems-of-eq-and-ineq/systems-of-eq-overview/e/systems_of_equations_with_elimination/", 
     "display_name": "Systems of equations with elimination", 
     "title": "Systems of equations with elimination", 
     "live": true, 
-    "seconds_per_fast_problem": 55.0, 
     "description": "Solving systems of equations with elimination.", 
     "h_position": 48, 
     "slug": "systems_of_equations_with_elimination", 
     "kind": "Exercise", 
     "name": "systems_of_equations_with_elimination", 
+    "seconds_per_fast_problem": 50.0, 
     "prerequisites": [
       "systems_of_equations_with_elimination_0.5"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "solving-systems-by-substitution-1", 
-      "solving-systems-by-substitution-2", 
-      "solving-systems-by-substitution-3", 
-      "solving-linear-systems-by-substitution"
+      "solving-linear-systems-by-substitution", 
+      "practice-using-substitution-for-systems", 
+      "practice-using-substitution-for-systems", 
+      "practice-using-substitution-for-systems"
     ], 
     "v_position": 12, 
     "path": "/math/algebra/systems-of-eq-and-ineq/systems-of-eq-overview/e/systems_of_equations_with_substitution/", 
     "display_name": "Systems of equations with substitution", 
     "title": "Systems of equations with substitution", 
     "live": true, 
-    "seconds_per_fast_problem": 55.0, 
     "description": "Solve systems of equations using substitution", 
     "h_position": 47, 
     "slug": "systems_of_equations_with_substitution", 
     "kind": "Exercise", 
     "name": "systems_of_equations_with_substitution", 
+    "seconds_per_fast_problem": 53.0, 
     "prerequisites": [
       "graphing_systems_of_equations"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "solving-linear-systems-by-substitution", 
-      "solving-systems-of-equations-by-elimination", 
       "solving-systems-of-equations-by-multiplication", 
-      "special-types-of-linear-systems", 
-      "systems-of-equations"
+      "practice-using-substitution-for-systems", 
+      "practice-using-substitution-for-systems"
     ], 
     "v_position": 12, 
     "path": "/math/algebra/systems-of-eq-and-ineq/systems-of-eq-overview/e/systems_of_equations/", 
     "display_name": "Systems of equations", 
     "title": "Systems of equations", 
     "live": true, 
-    "seconds_per_fast_problem": 55.0, 
     "description": "Solve systems of equations with substitution and elimination.", 
     "h_position": 49, 
     "slug": "systems_of_equations", 
     "kind": "Exercise", 
     "name": "systems_of_equations", 
+    "seconds_per_fast_problem": 56.0, 
     "prerequisites": [
       "systems_of_equations_with_substitution", 
       "systems_of_equations_with_elimination"
@@ -110,129 +111,130 @@
   }, 
   {
     "related_video_readable_ids": [
-      "solving-systems-by-substitution-1", 
-      "solving-systems-by-elimination-2", 
-      "systems-of-equations"
+      "problem-solving-word-problems-2", 
+      "practice-using-substitution-for-systems", 
+      "practice-using-substitution-for-systems"
     ], 
     "v_position": 12, 
     "path": "/math/algebra/systems-of-eq-and-ineq/systems-of-eq-overview/e/systems_of_equations_word_problems/", 
     "display_name": "Systems of equations word problems", 
     "title": "Systems of equations word problems", 
     "live": true, 
-    "seconds_per_fast_problem": 60.0, 
     "description": "Word problems with systems of equations.", 
     "h_position": 50, 
     "slug": "systems_of_equations_word_problems", 
     "kind": "Exercise", 
     "name": "systems_of_equations_word_problems", 
+    "seconds_per_fast_problem": 60.0, 
     "prerequisites": [
       "systems_of_equations"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "solving-systems-by-graphing-2", 
-      "solving-systems-by-graphing-3", 
-      "graphings-systems-of-equations"
+      "solving-linear-systems-by-graphing", 
+      "solving-systems-graphically", 
+      "solving-systems-graphically", 
+      "solving-systems-graphically"
     ], 
     "v_position": 11, 
     "path": "/math/algebra/systems-of-eq-and-ineq/fast-systems-of-equations/e/graphing_systems_of_equations/", 
     "display_name": "Graphing systems of equations", 
     "title": "Graphing systems of equations", 
     "live": true, 
-    "seconds_per_fast_problem": 41.0, 
     "description": "Graph a system of equations in slope-intercept or standard form", 
     "h_position": 46, 
     "slug": "graphing_systems_of_equations", 
     "kind": "Exercise", 
     "name": "graphing_systems_of_equations", 
+    "seconds_per_fast_problem": 45.0, 
     "prerequisites": [
       "graphing_linear_equations"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "solving-systems-by-substitution-1", 
-      "solving-systems-by-substitution-2", 
-      "solving-systems-by-substitution-3", 
-      "solving-linear-systems-by-substitution"
+      "solving-linear-systems-by-substitution", 
+      "practice-using-substitution-for-systems", 
+      "practice-using-substitution-for-systems", 
+      "practice-using-substitution-for-systems"
     ], 
     "v_position": 12, 
     "path": "/math/algebra/systems-of-eq-and-ineq/fast-systems-of-equations/e/systems_of_equations_with_substitution/", 
     "display_name": "Systems of equations with substitution", 
     "title": "Systems of equations with substitution", 
     "live": true, 
-    "seconds_per_fast_problem": 55.0, 
     "description": "Solve systems of equations using substitution", 
     "h_position": 47, 
     "slug": "systems_of_equations_with_substitution", 
     "kind": "Exercise", 
     "name": "systems_of_equations_with_substitution", 
+    "seconds_per_fast_problem": 53.0, 
     "prerequisites": [
       "graphing_systems_of_equations"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "solving-systems-by-elimination", 
-      "solving-systems-by-elimination-2", 
-      "solving-systems-by-elimination-3"
+      "solving-systems-of-equations-by-elimination", 
+      "simple-elimination-practice", 
+      "simple-elimination-practice", 
+      "simple-elimination-practice"
     ], 
     "v_position": 11, 
     "path": "/math/algebra/systems-of-eq-and-ineq/fast-systems-of-equations/e/systems_of_equations_with_elimination_0.5/", 
     "display_name": "Systems of equations with simple elimination", 
     "title": "Systems of equations with simple elimination", 
     "live": true, 
-    "seconds_per_fast_problem": 35.0, 
     "description": "Solve systems of equation with one-step elimination (e.g., x-values or y-values cancel each other out).", 
     "h_position": 47, 
     "slug": "systems_of_equations_with_elimination_0.5", 
     "kind": "Exercise", 
     "name": "systems_of_equations_with_elimination_0.5", 
+    "seconds_per_fast_problem": 35.0, 
     "prerequisites": [
       "graphing_systems_of_equations"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "solving-systems-by-elimination", 
-      "solving-systems-by-elimination-2", 
-      "solving-systems-by-elimination-3"
+      "solving-systems-of-equations-by-multiplication", 
+      "systems-with-elimination-practice", 
+      "systems-with-elimination-practice", 
+      "systems-with-elimination-practice"
     ], 
     "v_position": 11, 
     "path": "/math/algebra/systems-of-eq-and-ineq/fast-systems-of-equations/e/systems_of_equations_with_elimination/", 
     "display_name": "Systems of equations with elimination", 
     "title": "Systems of equations with elimination", 
     "live": true, 
-    "seconds_per_fast_problem": 55.0, 
     "description": "Solving systems of equations with elimination.", 
     "h_position": 48, 
     "slug": "systems_of_equations_with_elimination", 
     "kind": "Exercise", 
     "name": "systems_of_equations_with_elimination", 
+    "seconds_per_fast_problem": 50.0, 
     "prerequisites": [
       "systems_of_equations_with_elimination_0.5"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "solving-linear-systems-by-substitution", 
-      "solving-systems-of-equations-by-elimination", 
       "solving-systems-of-equations-by-multiplication", 
-      "special-types-of-linear-systems", 
-      "systems-of-equations"
+      "practice-using-substitution-for-systems", 
+      "practice-using-substitution-for-systems"
     ], 
     "v_position": 12, 
     "path": "/math/algebra/systems-of-eq-and-ineq/fast-systems-of-equations/e/systems_of_equations/", 
     "display_name": "Systems of equations", 
     "title": "Systems of equations", 
     "live": true, 
-    "seconds_per_fast_problem": 55.0, 
     "description": "Solve systems of equations with substitution and elimination.", 
     "h_position": 49, 
     "slug": "systems_of_equations", 
     "kind": "Exercise", 
     "name": "systems_of_equations", 
+    "seconds_per_fast_problem": 56.0, 
     "prerequisites": [
       "systems_of_equations_with_substitution", 
       "systems_of_equations_with_elimination"
@@ -240,167 +242,171 @@
   }, 
   {
     "related_video_readable_ids": [
-      "independent-and-dependent-systems", 
-      "consistent-and-inconsistent-systems"
+      "special-types-of-linear-systems", 
+      "practice-thinking-about-number-of-solutions-to-systems", 
+      "practice-thinking-about-number-of-solutions-to-systems"
     ], 
     "v_position": 10, 
     "path": "/math/algebra/systems-of-eq-and-ineq/fast-systems-of-equations/e/solutions_to_systems_of_equations/", 
     "display_name": "Solutions to systems of equations", 
     "title": "Solutions to systems of equations", 
     "live": true, 
-    "seconds_per_fast_problem": 8.0, 
     "description": "Determine how many solutions exist to a given system of equations (one, zero, infinite).", 
     "h_position": 47, 
     "slug": "solutions_to_systems_of_equations", 
     "kind": "Exercise", 
     "name": "solutions_to_systems_of_equations", 
+    "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "graphing_systems_of_equations"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "solving-systems-by-graphing-2", 
-      "solving-systems-by-graphing-3", 
-      "graphings-systems-of-equations"
+      "solving-linear-systems-by-graphing", 
+      "solving-systems-graphically", 
+      "solving-systems-graphically", 
+      "solving-systems-graphically"
     ], 
     "v_position": 11, 
     "path": "/math/algebra/systems-of-eq-and-ineq/systems-through-examples/e/graphing_systems_of_equations/", 
     "display_name": "Graphing systems of equations", 
     "title": "Graphing systems of equations", 
     "live": true, 
-    "seconds_per_fast_problem": 41.0, 
     "description": "Graph a system of equations in slope-intercept or standard form", 
     "h_position": 46, 
     "slug": "graphing_systems_of_equations", 
     "kind": "Exercise", 
     "name": "graphing_systems_of_equations", 
+    "seconds_per_fast_problem": 45.0, 
     "prerequisites": [
       "graphing_linear_equations"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "independent-and-dependent-systems", 
-      "consistent-and-inconsistent-systems"
+      "special-types-of-linear-systems", 
+      "practice-thinking-about-number-of-solutions-to-systems", 
+      "practice-thinking-about-number-of-solutions-to-systems"
     ], 
     "v_position": 10, 
     "path": "/math/algebra/systems-of-eq-and-ineq/systems-solutions/e/solutions_to_systems_of_equations/", 
     "display_name": "Solutions to systems of equations", 
     "title": "Solutions to systems of equations", 
     "live": true, 
-    "seconds_per_fast_problem": 8.0, 
     "description": "Determine how many solutions exist to a given system of equations (one, zero, infinite).", 
     "h_position": 47, 
     "slug": "solutions_to_systems_of_equations", 
     "kind": "Exercise", 
     "name": "solutions_to_systems_of_equations", 
+    "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "graphing_systems_of_equations"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "solving-systems-by-substitution-1", 
-      "solving-systems-by-substitution-2", 
-      "solving-systems-by-substitution-3", 
-      "solving-linear-systems-by-substitution"
+      "solving-linear-systems-by-substitution", 
+      "practice-using-substitution-for-systems", 
+      "practice-using-substitution-for-systems", 
+      "practice-using-substitution-for-systems"
     ], 
     "v_position": 12, 
     "path": "/math/algebra/systems-of-eq-and-ineq/systems-with-substitution/e/systems_of_equations_with_substitution/", 
     "display_name": "Systems of equations with substitution", 
     "title": "Systems of equations with substitution", 
     "live": true, 
-    "seconds_per_fast_problem": 55.0, 
     "description": "Solve systems of equations using substitution", 
     "h_position": 47, 
     "slug": "systems_of_equations_with_substitution", 
     "kind": "Exercise", 
     "name": "systems_of_equations_with_substitution", 
+    "seconds_per_fast_problem": 53.0, 
     "prerequisites": [
       "graphing_systems_of_equations"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "solving-systems-by-elimination", 
-      "solving-systems-by-elimination-2", 
-      "solving-systems-by-elimination-3"
+      "solving-systems-of-equations-by-elimination", 
+      "simple-elimination-practice", 
+      "simple-elimination-practice", 
+      "simple-elimination-practice"
     ], 
     "v_position": 11, 
     "path": "/math/algebra/systems-of-eq-and-ineq/solving-systems-addition-elimination/e/systems_of_equations_with_elimination_0.5/", 
     "display_name": "Systems of equations with simple elimination", 
     "title": "Systems of equations with simple elimination", 
     "live": true, 
-    "seconds_per_fast_problem": 35.0, 
     "description": "Solve systems of equation with one-step elimination (e.g., x-values or y-values cancel each other out).", 
     "h_position": 47, 
     "slug": "systems_of_equations_with_elimination_0.5", 
     "kind": "Exercise", 
     "name": "systems_of_equations_with_elimination_0.5", 
+    "seconds_per_fast_problem": 35.0, 
     "prerequisites": [
       "graphing_systems_of_equations"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "solving-systems-by-elimination", 
-      "solving-systems-by-elimination-2", 
-      "solving-systems-by-elimination-3"
+      "solving-systems-of-equations-by-multiplication", 
+      "systems-with-elimination-practice", 
+      "systems-with-elimination-practice", 
+      "systems-with-elimination-practice"
     ], 
     "v_position": 11, 
     "path": "/math/algebra/systems-of-eq-and-ineq/solving-systems-addition-elimination/e/systems_of_equations_with_elimination/", 
     "display_name": "Systems of equations with elimination", 
     "title": "Systems of equations with elimination", 
     "live": true, 
-    "seconds_per_fast_problem": 55.0, 
     "description": "Solving systems of equations with elimination.", 
     "h_position": 48, 
     "slug": "systems_of_equations_with_elimination", 
     "kind": "Exercise", 
     "name": "systems_of_equations_with_elimination", 
+    "seconds_per_fast_problem": 50.0, 
     "prerequisites": [
       "systems_of_equations_with_elimination_0.5"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "solving-systems-by-substitution-1", 
-      "solving-systems-by-elimination-2", 
-      "systems-of-equations"
+      "problem-solving-word-problems-2", 
+      "practice-using-substitution-for-systems", 
+      "practice-using-substitution-for-systems"
     ], 
     "v_position": 12, 
     "path": "/math/algebra/systems-of-eq-and-ineq/systems-word-problems/e/systems_of_equations_word_problems/", 
     "display_name": "Systems of equations word problems", 
     "title": "Systems of equations word problems", 
     "live": true, 
-    "seconds_per_fast_problem": 60.0, 
     "description": "Word problems with systems of equations.", 
     "h_position": 50, 
     "slug": "systems_of_equations_word_problems", 
     "kind": "Exercise", 
     "name": "systems_of_equations_word_problems", 
+    "seconds_per_fast_problem": 60.0, 
     "prerequisites": [
       "systems_of_equations"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "solving-and-graphing-linear-inequalities-in-two-variables-1", 
-      "graphing-linear-inequalities-in-two-variables-3", 
-      "graphical-system-of-inequalities"
+      "u06-l3-t1-we3-graphing-systems-of-inequalities", 
+      "u06-l3-t1-we3-graphing-systems-of-inequalities"
     ], 
     "v_position": 9, 
     "path": "/math/algebra/systems-of-eq-and-ineq/system-of-inequalities/e/graphing_systems_of_inequalities/", 
     "display_name": "Graphing systems of inequalities", 
     "title": "Graphing systems of inequalities", 
     "live": true, 
-    "seconds_per_fast_problem": 52.0, 
     "description": "Graph a system of linear inequalities.", 
     "h_position": 48, 
     "slug": "graphing_systems_of_inequalities", 
     "kind": "Exercise", 
     "name": "graphing_systems_of_inequalities", 
+    "seconds_per_fast_problem": 56.0, 
     "prerequisites": [
       "graphing_inequalities_2", 
       "graphing_systems_of_equations"
@@ -408,36 +414,40 @@
   }, 
   {
     "related_video_readable_ids": [
-      "graphing-systems-of-inequalities-2"
+      "u06-l3-t1-we3-graphing-systems-of-inequalities", 
+      "u06-l3-t1-we3-graphing-systems-of-inequalities"
     ], 
     "v_position": 9, 
     "path": "/math/algebra/systems-of-eq-and-ineq/system-of-inequalities/e/graphing_systems_of_inequalities_2/", 
     "display_name": "Graphing and solving systems of inequalities", 
     "title": "Graphing and solving systems of inequalities", 
     "live": true, 
-    "seconds_per_fast_problem": 55.0, 
     "description": "Graph a system of inequalities, and determine whether ordered pairs are solutions.", 
     "h_position": 49, 
     "slug": "graphing_systems_of_inequalities_2", 
     "kind": "Exercise", 
     "name": "graphing_systems_of_inequalities_2", 
+    "seconds_per_fast_problem": 55.0, 
     "prerequisites": [
       "graphing_systems_of_inequalities"
     ]
   }, 
   {
-    "related_video_readable_ids": [], 
+    "related_video_readable_ids": [
+      "systems-of-nonlinear-equations-3", 
+      "systems-of-nonlinear-equations-3"
+    ], 
     "v_position": 11, 
     "path": "/math/algebra/systems-of-eq-and-ineq/nonlinear-systems-alg/e/systems-of-nonlinear-equations/", 
     "display_name": "Systems of nonlinear equations", 
     "title": "Systems of nonlinear equations", 
     "live": true, 
-    "seconds_per_fast_problem": 4.0, 
     "description": "", 
     "h_position": 50, 
     "slug": "systems-of-nonlinear-equations", 
     "kind": "Exercise", 
     "name": "systems-of-nonlinear-equations", 
+    "seconds_per_fast_problem": 34.0, 
     "prerequisites": [
       "systems_of_equations"
     ]

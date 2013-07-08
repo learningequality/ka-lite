@@ -1,7 +1,7 @@
 [
   {
     "related_video_readable_ids": [
-      "introduction-to-i-and-imaginary-numbers", 
+      "calculating-i-raised-to-arbitrary-exponents", 
       "calculating-i-raised-to-arbitrary-exponents"
     ], 
     "v_position": -12, 
@@ -9,38 +9,39 @@
     "display_name": "Imaginary unit powers", 
     "title": "Imaginary unit powers", 
     "live": true, 
-    "seconds_per_fast_problem": 5.0, 
     "description": "Solve problems with base i (square root of -1) raised to a positive exponent", 
     "h_position": 45, 
     "slug": "imaginary_unit_powers", 
     "kind": "Exercise", 
     "name": "imaginary_unit_powers", 
+    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "equation_of_a_line"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "complex-numbers--part-1"
+      "complex-numbers--part-2", 
+      "complex-numbers--part-2"
     ], 
     "v_position": -12, 
     "path": "/math/algebra/complex-numbers/complex_numbers/e/the_complex_plane/", 
     "display_name": "The complex plane", 
     "title": "The complex plane", 
     "live": true, 
-    "seconds_per_fast_problem": 6.0, 
     "description": "Plot complex numbers on the complex plane.", 
     "h_position": 46, 
     "slug": "the_complex_plane", 
     "kind": "Exercise", 
     "name": "the_complex_plane", 
+    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "imaginary_unit_powers"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "adding-complex-numbers", 
+      "subtracting-complex-numbers", 
       "subtracting-complex-numbers"
     ], 
     "v_position": -12, 
@@ -48,12 +49,12 @@
     "display_name": "Adding and subtracting complex numbers", 
     "title": "Adding and subtracting complex numbers", 
     "live": true, 
-    "seconds_per_fast_problem": 9.0, 
     "description": "Add or subtract complex numbers. Identify the real and imaginary parts.", 
     "h_position": 48, 
     "slug": "adding_and_subtracting_complex_numbers", 
     "kind": "Exercise", 
     "name": "adding_and_subtracting_complex_numbers", 
+    "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "adding_and_subtracting_polynomials", 
       "complex_plane_operations"
@@ -61,6 +62,7 @@
   }, 
   {
     "related_video_readable_ids": [
+      "multiplying-complex-numbers", 
       "multiplying-complex-numbers"
     ], 
     "v_position": -12, 
@@ -68,12 +70,12 @@
     "display_name": "Multiplying complex numbers", 
     "title": "Multiplying complex numbers", 
     "live": true, 
-    "seconds_per_fast_problem": 18.0, 
     "description": "Multiply complex numbers. Identify the real and imaginary parts.", 
     "h_position": 49, 
     "slug": "multiplying_complex_numbers", 
     "kind": "Exercise", 
     "name": "multiplying_complex_numbers", 
+    "seconds_per_fast_problem": 18.0, 
     "prerequisites": [
       "multiplying_expressions_1", 
       "adding_and_subtracting_complex_numbers"
@@ -81,7 +83,7 @@
   }, 
   {
     "related_video_readable_ids": [
-      "complex-conjugates-example", 
+      "dividing-complex-numbers", 
       "dividing-complex-numbers"
     ], 
     "v_position": -12, 
@@ -89,29 +91,32 @@
     "display_name": "Dividing complex numbers", 
     "title": "Dividing complex numbers", 
     "live": true, 
-    "seconds_per_fast_problem": 35.0, 
     "description": "Divide complex numbers. Identify the real and imaginary parts.", 
     "h_position": 50, 
     "slug": "dividing_complex_numbers", 
     "kind": "Exercise", 
     "name": "dividing_complex_numbers", 
+    "seconds_per_fast_problem": 40.0, 
     "prerequisites": [
       "multiplying_complex_numbers"
     ]
   }, 
   {
-    "related_video_readable_ids": [], 
+    "related_video_readable_ids": [
+      "complex-conjugates-example", 
+      "complex-conjugates-example"
+    ], 
     "v_position": -13, 
     "path": "/math/algebra/complex-numbers/complex_numbers/e/absolute_value_of_complex_numbers/", 
     "display_name": "Absolute value of complex numbers", 
     "title": "Absolute value of complex numbers", 
     "live": true, 
-    "seconds_per_fast_problem": 10.0, 
     "description": "Find the absolute value of a complex number.", 
     "h_position": 47, 
     "slug": "absolute_value_of_complex_numbers", 
     "kind": "Exercise", 
     "name": "absolute_value_of_complex_numbers", 
+    "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "the_complex_plane", 
       "distance_formula"

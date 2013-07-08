@@ -136,7 +136,7 @@ def get_topic_by_path(path):
     parts = path[len(root_node["path"]):-1].split("/")
     cur_node = root_node
     for part in parts:
-        cur_node = filter(partial(lambda n, p: n["id"] == p, p=part), cur_node["children"])
+        cur_node = filter(partial(lambda n, p: n["slug"] == p, p=part), cur_node["children"])
         if cur_node:
             cur_node = cur_node[0]
         else:
@@ -165,8 +165,9 @@ def get_topic_leaves(leaf_type, topic_id=None, path=None):
     """Given a topic (identified by topic_id or path), return all descendant exercises"""
     assert (topic_id or path) and not (topic_id and path), "Specify topic_id or path, not both."
 
+    import pdb; pdb.set_trace()
     if not path:
-        topic_node = filter(partial(lambda node, name: node['id'] == name, name=topic_id), topicdata.NODE_CACHE['Topic'].values())
+        topic_node = filter(partial(lambda node, name: node['slug'] == name, name=topic_id), topicdata.NODE_CACHE['Topic'].values())
         if not topic_node:
             return []
         path = topic_node[0]['path']

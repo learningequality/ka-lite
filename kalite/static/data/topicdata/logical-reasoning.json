@@ -6,12 +6,12 @@
     "display_name": "Converse, inverse, and contrapositive", 
     "title": "Converse, inverse, and contrapositive", 
     "live": true, 
-    "seconds_per_fast_problem": 8.0, 
     "description": "Find converses, inverses, and contrapositives of conditional statements. ", 
     "h_position": 31, 
     "slug": "converse_inverse_and_contrapositive", 
     "kind": "Exercise", 
     "name": "converse_inverse_and_contrapositive", 
+    "seconds_per_fast_problem": 9.0, 
     "prerequisites": []
   }, 
   {
@@ -21,12 +21,12 @@
     "display_name": "Conditional statements", 
     "title": "Conditional statements", 
     "live": true, 
-    "seconds_per_fast_problem": 12.0, 
     "description": "Rewrite conditional statements in \"if-then\" form.", 
     "h_position": 31, 
     "slug": "conditional_statements_2", 
     "kind": "Exercise", 
     "name": "conditional_statements_2", 
+    "seconds_per_fast_problem": 14.0, 
     "prerequisites": []
   }, 
   {
@@ -36,12 +36,12 @@
     "display_name": "Logical arguments and deductive reasoning", 
     "title": "Logical arguments and deductive reasoning", 
     "live": true, 
-    "seconds_per_fast_problem": 6.0, 
     "description": "Use given conditional statements to come to a logical conclusion, if possible.", 
     "h_position": 32, 
     "slug": "logical_arguments_deductive_reasoning", 
     "kind": "Exercise", 
     "name": "logical_arguments_deductive_reasoning", 
+    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "converse_inverse_and_contrapositive"
     ]
@@ -53,12 +53,12 @@
     "display_name": "Conditional statements and truth value", 
     "title": "Conditional statements and truth value", 
     "live": true, 
-    "seconds_per_fast_problem": 6.0, 
     "description": "If some statement is true, determine what other statements must also be true.", 
     "h_position": 32, 
     "slug": "conditional_statements_and_truth_value", 
     "kind": "Exercise", 
     "name": "conditional_statements_and_truth_value", 
+    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "converse_inverse_and_contrapositive", 
       "conditional_statements_2"

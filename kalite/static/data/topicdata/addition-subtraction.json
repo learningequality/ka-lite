@@ -1,23 +1,6 @@
 [
   {
     "related_video_readable_ids": [
-      "points-on-a-number-line"
-    ], 
-    "v_position": 4, 
-    "path": "/math/arithmetic/addition-subtraction/basic_addition/e/number_line/", 
-    "display_name": "Number line 1", 
-    "title": "Number line 1", 
-    "live": true, 
-    "seconds_per_fast_problem": 5.0, 
-    "description": "Drag a dot to a positive integer on the number line", 
-    "h_position": 0, 
-    "slug": "number_line", 
-    "kind": "Exercise", 
-    "name": "number_line", 
-    "prerequisites": []
-  }, 
-  {
-    "related_video_readable_ids": [
       "basic-addition"
     ], 
     "v_position": 5, 
@@ -25,12 +8,12 @@
     "display_name": "1-digit addition", 
     "title": "1-digit addition", 
     "live": true, 
-    "seconds_per_fast_problem": 5.0, 
     "description": "Add two 1-digit numbers", 
     "h_position": 0, 
     "slug": "addition_1", 
     "kind": "Exercise", 
     "name": "addition_1", 
+    "seconds_per_fast_problem": 4.0, 
     "prerequisites": []
   }, 
   {
@@ -42,93 +25,91 @@
     "display_name": "1-digit subtraction", 
     "title": "1-digit subtraction", 
     "live": true, 
-    "seconds_per_fast_problem": 4.0, 
     "description": "Subtract two 1-digit numbers", 
     "h_position": 2, 
     "slug": "subtraction_1", 
     "kind": "Exercise", 
     "name": "subtraction_1", 
+    "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "addition_1"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "level-2-addition", 
-      "addition-2"
+      "basic-subtraction"
     ], 
-    "v_position": 4, 
-    "path": "/math/arithmetic/addition-subtraction/two_dig_add_sub/e/addition_2/", 
-    "display_name": "2-digit addition", 
-    "title": "2-digit addition", 
+    "v_position": 3, 
+    "path": "/math/arithmetic/addition-subtraction/basic_addition/e/number_line/", 
+    "display_name": "Number line 1", 
+    "title": "Number line 1", 
     "live": true, 
-    "seconds_per_fast_problem": 5.0, 
-    "description": "Add two 2-digit numbers, no carrying", 
-    "h_position": 1, 
-    "slug": "addition_2", 
+    "description": "Drag a dot to a positive integer on the number line", 
+    "h_position": 2, 
+    "slug": "number_line", 
     "kind": "Exercise", 
-    "name": "addition_2", 
-    "prerequisites": [
-      "number_line", 
-      "addition_1", 
-      "representing_numbers"
-    ]
-  }, 
-  {
-    "related_video_readable_ids": [
-      "subtraction-2"
-    ], 
-    "v_position": 6, 
-    "path": "/math/arithmetic/addition-subtraction/two_dig_add_sub/e/subtraction_2/", 
-    "display_name": "2 and 3-digit subtraction", 
-    "title": "2 and 3-digit subtraction", 
-    "live": true, 
-    "seconds_per_fast_problem": 6.0, 
-    "description": "Subtract two 2-3 digit numbers without borrowing", 
-    "h_position": 3, 
-    "slug": "subtraction_2", 
-    "kind": "Exercise", 
-    "name": "subtraction_2", 
-    "prerequisites": [
-      "subtraction_1"
-    ]
-  }, 
-  {
-    "related_video_readable_ids": [
-      "addition-3", 
-      "addition-4"
-    ], 
-    "v_position": 4, 
-    "path": "/math/arithmetic/addition-subtraction/addition_carrying/e/addition_3/", 
-    "display_name": "Addition with carrying", 
-    "title": "Addition with carrying", 
-    "live": true, 
-    "seconds_per_fast_problem": 8.0, 
-    "description": "Add two 3-digit numbers with carrying", 
-    "h_position": 4, 
-    "slug": "addition_3", 
-    "kind": "Exercise", 
-    "name": "addition_3", 
+    "name": "number_line", 
+    "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "addition_2"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "singapore-math--grade-3a--unit-1--part-1"
+      "adding-whole-numbers-and-applications-1"
     ], 
-    "v_position": 3, 
-    "path": "/math/arithmetic/addition-subtraction/addition_carrying/e/representing_numbers/", 
-    "display_name": "Representing numbers", 
-    "title": "Representing numbers", 
+    "v_position": 4, 
+    "path": "/math/arithmetic/addition-subtraction/two_dig_add_sub/e/addition_2/", 
+    "display_name": "2-digit addition", 
+    "title": "2-digit addition", 
     "live": true, 
-    "seconds_per_fast_problem": 6.0, 
-    "description": "Identify the number represented by hundreds, tens, and ones blocks", 
-    "h_position": 0, 
-    "slug": "representing_numbers", 
+    "description": "Add two 2-digit numbers, no carrying", 
+    "h_position": 1, 
+    "slug": "addition_2", 
     "kind": "Exercise", 
-    "name": "representing_numbers", 
-    "prerequisites": []
+    "name": "addition_2", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "addition_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "subtracting-whole-numbers"
+    ], 
+    "v_position": 6, 
+    "path": "/math/arithmetic/addition-subtraction/two_dig_add_sub/e/subtraction_2/", 
+    "display_name": "2 and 3-digit subtraction", 
+    "title": "2 and 3-digit subtraction", 
+    "live": true, 
+    "description": "Subtract two 2-3 digit numbers without borrowing", 
+    "h_position": 3, 
+    "slug": "subtraction_2", 
+    "kind": "Exercise", 
+    "name": "subtraction_2", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "subtraction_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "addition-3"
+    ], 
+    "v_position": 4, 
+    "path": "/math/arithmetic/addition-subtraction/addition_carrying/e/addition_3/", 
+    "display_name": "Addition with carrying", 
+    "title": "Addition with carrying", 
+    "live": true, 
+    "description": "Add two 3-digit numbers with carrying", 
+    "h_position": 4, 
+    "slug": "addition_3", 
+    "kind": "Exercise", 
+    "name": "addition_3", 
+    "seconds_per_fast_problem": 8.0, 
+    "prerequisites": [
+      "addition_2"
+    ]
   }, 
   {
     "related_video_readable_ids": [
@@ -139,69 +120,70 @@
     "display_name": "4-digit addition with carrying", 
     "title": "4-digit addition with carrying", 
     "live": true, 
-    "seconds_per_fast_problem": 8.0, 
     "description": "Add two 3- or 4-digit numbers with carrying", 
     "h_position": 5, 
     "slug": "addition_4", 
     "kind": "Exercise", 
     "name": "addition_4", 
+    "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
       "addition_3"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "subtraction-3---introduction-to-borrowing-or-regrouping", 
-      "alternate-mental-subtraction-method", 
-      "why-borrowing-works"
+      "borrowing-once-example-1", 
+      "borrowing-once-example-2"
     ], 
     "v_position": 6, 
     "path": "/math/arithmetic/addition-subtraction/sub_borrowing/e/subtraction_3/", 
     "display_name": "Subtraction with borrowing", 
     "title": "Subtraction with borrowing", 
     "live": true, 
-    "seconds_per_fast_problem": 13.0, 
     "description": "Subtract two 3- or 4-digit numbers. Borrow once", 
     "h_position": 4, 
     "slug": "subtraction_3", 
     "kind": "Exercise", 
     "name": "subtraction_3", 
+    "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
       "subtraction_2"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "level-4-subtraction"
+      "regrouping--borrowing--twice-example"
     ], 
     "v_position": 6, 
     "path": "/math/arithmetic/addition-subtraction/sub_borrowing/e/subtraction_4/", 
     "display_name": "4-digit subtraction with borrowing ", 
     "title": "4-digit subtraction with borrowing ", 
     "live": true, 
-    "seconds_per_fast_problem": 14.0, 
     "description": "Subtract two 4-digit numbers. Borrow twice", 
     "h_position": 5, 
     "slug": "subtraction_4", 
     "kind": "Exercise", 
     "name": "subtraction_4", 
+    "seconds_per_fast_problem": 14.0, 
     "prerequisites": [
       "subtraction_3"
     ]
   }, 
   {
-    "related_video_readable_ids": [], 
+    "related_video_readable_ids": [
+      "subtraction-word-problem"
+    ], 
     "v_position": 5, 
     "path": "/math/arithmetic/addition-subtraction/add_sub_word_problems/e/arithmetic_word_problems_1/", 
     "display_name": "Addition and subtraction word problems", 
     "title": "Addition and subtraction word problems", 
     "live": true, 
-    "seconds_per_fast_problem": 11.0, 
     "description": "Word problems with addition and subtraction of positive integers. Some carrying and borrowing.", 
     "h_position": 4, 
     "slug": "arithmetic_word_problems_1", 
     "kind": "Exercise", 
     "name": "arithmetic_word_problems_1", 
+    "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "addition_2", 
       "subtraction_2"

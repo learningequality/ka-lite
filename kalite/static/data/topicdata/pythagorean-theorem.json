@@ -1,27 +1,27 @@
 [
   {
     "related_video_readable_ids": [
-      "the-pythagorean-theorem", 
-      "pythagorean-theorem", 
-      "pythagorean-theorem-ii"
+      "pythagorean-theorem"
     ], 
     "v_position": -13, 
     "path": "/math/algebra/pythagorean-theorem/e/pythagorean_theorem_1/", 
     "display_name": "Pythagorean theorem", 
     "title": "Pythagorean theorem", 
     "live": true, 
-    "seconds_per_fast_problem": 15.0, 
     "description": "Find the leg or hypotenuse of a right triangle using the Pythagorean theorem.", 
     "h_position": 38, 
     "slug": "pythagorean_theorem_1", 
     "kind": "Exercise", 
     "name": "pythagorean_theorem_1", 
+    "seconds_per_fast_problem": 15.0, 
     "prerequisites": [
       "adding_and_subtracting_radicals"
     ]
   }, 
   {
     "related_video_readable_ids": [
+      "pythagorean-theorem", 
+      "distance-formula", 
       "distance-formula"
     ], 
     "v_position": -13, 
@@ -29,18 +29,20 @@
     "display_name": "Distance formula", 
     "title": "Distance formula", 
     "live": true, 
-    "seconds_per_fast_problem": 24.0, 
     "description": "Use the Pythagorean theorem to find the distance between two points on the coordinate plane.", 
     "h_position": 39, 
     "slug": "distance_formula", 
     "kind": "Exercise", 
     "name": "distance_formula", 
+    "seconds_per_fast_problem": 26.0, 
     "prerequisites": [
       "pythagorean_theorem_1"
     ]
   }, 
   {
     "related_video_readable_ids": [
+      "pythagorean-theorem", 
+      "midpoint-formula", 
       "midpoint-formula"
     ], 
     "v_position": -12, 
@@ -48,12 +50,12 @@
     "display_name": "Midpoint formula", 
     "title": "Midpoint formula", 
     "live": true, 
-    "seconds_per_fast_problem": 21.0, 
     "description": "Find the midpoint of a segment on the coordinate plane, or find the endpoint of a segment given one point and the midpoint.", 
     "h_position": 40, 
     "slug": "midpoint_formula", 
     "kind": "Exercise", 
     "name": "midpoint_formula", 
+    "seconds_per_fast_problem": 22.0, 
     "prerequisites": [
       "distance_formula"
     ]

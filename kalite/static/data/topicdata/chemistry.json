@@ -1,52 +1,58 @@
 [
   {
-    "related_video_readable_ids": [], 
+    "related_video_readable_ids": [
+      "balancing-chemical-equations"
+    ], 
     "v_position": 18, 
     "path": "/science/chemistry/chemical-reactions-stoichiometry/e/balancing_chemical_equations/", 
     "display_name": "Balancing chemical equations", 
     "title": "Balancing chemical equations", 
     "live": true, 
-    "seconds_per_fast_problem": 16.0, 
     "description": "Practice balancing chemical equations", 
     "h_position": 39, 
     "slug": "balancing_chemical_equations", 
     "kind": "Exercise", 
     "name": "balancing_chemical_equations", 
+    "seconds_per_fast_problem": 16.0, 
     "prerequisites": [
       "expressions_with_unknown_variables_2", 
       "solving_for_a_variable"
     ]
   }, 
   {
-    "related_video_readable_ids": [], 
+    "related_video_readable_ids": [
+      "stoichiometry"
+    ], 
     "v_position": 18, 
     "path": "/science/chemistry/chemical-reactions-stoichiometry/e/ideal_stoichiometry/", 
     "display_name": "Ideal stoichiometry", 
     "title": "Ideal stoichiometry", 
     "live": true, 
-    "seconds_per_fast_problem": 41.0, 
     "description": "Determine the amount (in moles) of a product from a given amount of one reactant.", 
     "h_position": 40, 
     "slug": "ideal_stoichiometry", 
     "kind": "Exercise", 
     "name": "ideal_stoichiometry", 
+    "seconds_per_fast_problem": 45.0, 
     "prerequisites": [
       "balancing_chemical_equations"
     ]
   }, 
   {
-    "related_video_readable_ids": [], 
+    "related_video_readable_ids": [
+      "stoichiometry--limiting-reagent"
+    ], 
     "v_position": 18, 
     "path": "/science/chemistry/chemical-reactions-stoichiometry/e/limiting_reagent_stoichiometry/", 
     "display_name": "Limiting reagent stoichiometry", 
     "title": "Limiting reagent stoichiometry", 
     "live": true, 
-    "seconds_per_fast_problem": 60.0, 
     "description": "Determine the amount (in grams) of a product from given amounts of two reactants, one of which is limiting.", 
     "h_position": 41, 
     "slug": "limiting_reagent_stoichiometry", 
     "kind": "Exercise", 
     "name": "limiting_reagent_stoichiometry", 
+    "seconds_per_fast_problem": 60.0, 
     "prerequisites": [
       "ideal_stoichiometry"
     ]

@@ -1,6 +1,7 @@
 [
   {
     "related_video_readable_ids": [
+      "factoring-polynomials-1", 
       "factoring-trinomials-with-a-leading-1-coefficient"
     ], 
     "v_position": -6, 
@@ -8,39 +9,39 @@
     "display_name": "Factoring polynomials 1", 
     "title": "Factoring polynomials 1", 
     "live": true, 
-    "seconds_per_fast_problem": 21.0, 
     "description": "Factor polynomials that are not perfect squares, where A=1", 
     "h_position": 49, 
     "slug": "factoring_polynomials_1", 
     "kind": "Exercise", 
     "name": "factoring_polynomials_1", 
+    "seconds_per_fast_problem": 20.0, 
     "prerequisites": [
       "factoring_linear_binomials"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "solving-a-quadratic-by-factoring", 
-      "factoring-quadratic-expressions", 
-      "factoring-special-products"
+      "Example 2: Solving a quadratic equation by factoring", 
+      "quadratic-functions-1"
     ], 
     "v_position": -2, 
     "path": "/math/algebra/quadratics/factoring_quadratics/e/solving_quadratics_by_factoring/", 
     "display_name": "Solving quadratics by factoring", 
     "title": "Solving quadratics by factoring", 
     "live": true, 
-    "seconds_per_fast_problem": 11.0, 
     "description": "Factor quadratics to find the x-intercepts. Solve a polynomial by factoring.", 
     "h_position": 50, 
     "slug": "solving_quadratics_by_factoring", 
     "kind": "Exercise", 
     "name": "solving_quadratics_by_factoring", 
+    "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "factoring_polynomials_1"
     ]
   }, 
   {
     "related_video_readable_ids": [
+      "factoring-trinomials-with-a-common-factor", 
       "factoring-trinomials-with-a-common-factor"
     ], 
     "v_position": -6, 
@@ -48,155 +49,172 @@
     "display_name": "Factoring polynomials 2", 
     "title": "Factoring polynomials 2", 
     "live": true, 
-    "seconds_per_fast_problem": 44.0, 
     "description": "Factor polynomials that are not perfect squares, where A is not 1", 
     "h_position": 50, 
     "slug": "factoring_polynomials_2", 
     "kind": "Exercise", 
     "name": "factoring_polynomials_2", 
+    "seconds_per_fast_problem": 45.0, 
     "prerequisites": [
       "factoring_polynomials_1"
     ]
   }, 
   {
-    "related_video_readable_ids": [], 
+    "related_video_readable_ids": [
+      "factoring-trinomials-with-a-common-factor", 
+      "factoring-trinomials-with-a-common-factor"
+    ], 
     "v_position": -2, 
     "path": "/math/algebra/quadratics/factoring_quadratics/e/solving_quadratics_by_factoring_2/", 
     "display_name": "Solving quadratics by factoring 2", 
     "title": "Solving quadratics by factoring 2", 
     "live": true, 
-    "seconds_per_fast_problem": 23.0, 
     "description": "Solve quadratics by factoring, where A is not 1", 
     "h_position": 51, 
     "slug": "solving_quadratics_by_factoring_2", 
     "kind": "Exercise", 
     "name": "solving_quadratics_by_factoring_2", 
+    "seconds_per_fast_problem": 23.0, 
     "prerequisites": [
       "solving_quadratics_by_factoring"
     ]
   }, 
   {
-    "related_video_readable_ids": [], 
+    "related_video_readable_ids": [
+      "u09-l2-t1-we3-factoring-special-products-3", 
+      "u09-l2-t1-we3-factoring-special-products-3"
+    ], 
     "v_position": -8, 
     "path": "/math/algebra/quadratics/factoring_quadratics/e/factoring_difference_of_squares_1/", 
     "display_name": "Factoring difference of squares 1", 
     "title": "Factoring difference of squares 1", 
     "live": true, 
-    "seconds_per_fast_problem": 9.0, 
     "description": "Factoring differences of squares into the form (x+b)*(x-b)", 
     "h_position": 49, 
     "slug": "factoring_difference_of_squares_1", 
     "kind": "Exercise", 
     "name": "factoring_difference_of_squares_1", 
+    "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "multiplying_expressions_1", 
       "multiplying_polynomials"
     ]
   }, 
   {
-    "related_video_readable_ids": [], 
+    "related_video_readable_ids": [
+      "u09-l2-t1-we3-factoring-special-products-3", 
+      "u09-l2-t1-we3-factoring-special-products-3"
+    ], 
     "v_position": -8, 
     "path": "/math/algebra/quadratics/factoring_quadratics/e/factoring_difference_of_squares_2/", 
     "display_name": "Factoring difference of squares 2", 
     "title": "Factoring difference of squares 2", 
     "live": true, 
-    "seconds_per_fast_problem": 12.0, 
     "description": "Factoring differences of squares into the form (Ax+b)*(Ax-b)", 
     "h_position": 50, 
     "slug": "factoring_difference_of_squares_2", 
     "kind": "Exercise", 
     "name": "factoring_difference_of_squares_2", 
+    "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
       "factoring_difference_of_squares_1"
     ]
   }, 
   {
-    "related_video_readable_ids": [], 
+    "related_video_readable_ids": [
+      "u09-l2-t1-we3-factoring-special-products-3", 
+      "u09-l2-t1-we3-factoring-special-products-3"
+    ], 
     "v_position": -8, 
     "path": "/math/algebra/quadratics/factoring_quadratics/e/factoring_difference_of_squares_3/", 
     "display_name": "Factoring difference of squares 3", 
     "title": "Factoring difference of squares 3", 
     "live": true, 
-    "seconds_per_fast_problem": 22.0, 
     "description": "Factoring a difference of squares in the format C(Ax+b)*(Ax-b)", 
     "h_position": 51, 
     "slug": "factoring_difference_of_squares_3", 
     "kind": "Exercise", 
     "name": "factoring_difference_of_squares_3", 
+    "seconds_per_fast_problem": 23.0, 
     "prerequisites": [
       "factoring_difference_of_squares_2"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "factor-by-grouping-and-factoring-completely"
+      "factoring-trinomials-by-grouping-6", 
+      "factoring-trinomials-by-grouping-6"
     ], 
     "v_position": -5, 
     "path": "/math/algebra/quadratics/factoring_quadratics/e/factoring_polynomials_by_grouping_1/", 
     "display_name": "Factoring polynomials by grouping", 
     "title": "Factoring polynomials by grouping", 
     "live": true, 
-    "seconds_per_fast_problem": 52.0, 
     "description": "Factor polynomials by grouping", 
     "h_position": 51, 
     "slug": "factoring_polynomials_by_grouping_1", 
     "kind": "Exercise", 
     "name": "factoring_polynomials_by_grouping_1", 
+    "seconds_per_fast_problem": 60.0, 
     "prerequisites": [
       "factoring_polynomials_2"
     ]
   }, 
   {
-    "related_video_readable_ids": [], 
+    "related_video_readable_ids": [
+      "factoring-trinomials-by-grouping-6"
+    ], 
     "v_position": -6, 
     "path": "/math/algebra/quadratics/factoring_quadratics/e/factoring_polynomials_with_two_variables/", 
     "display_name": "Factoring polynomials with two variables", 
     "title": "Factoring polynomials with two variables", 
     "live": true, 
-    "seconds_per_fast_problem": 21.0, 
     "description": "Factor a polynomial with two variables into expressions", 
     "h_position": 51, 
     "slug": "factoring_polynomials_with_two_variables", 
     "kind": "Exercise", 
     "name": "factoring_polynomials_with_two_variables", 
+    "seconds_per_fast_problem": 22.0, 
     "prerequisites": [
       "factoring_polynomials_2"
     ]
   }, 
   {
-    "related_video_readable_ids": [], 
+    "related_video_readable_ids": [
+      "solving-quadratic-equations-by-square-roots", 
+      "simple-quadratic-equation"
+    ], 
     "v_position": -1, 
     "path": "/math/algebra/quadratics/completing_the_square/e/solving_quadratics_by_taking_the_square_root/", 
     "display_name": "Solving quadratics by taking the square root", 
     "title": "Solving quadratics by taking the square root", 
     "live": true, 
-    "seconds_per_fast_problem": 18.0, 
     "description": "Solve quadratics by taking the square root.", 
     "h_position": 50, 
     "slug": "solving_quadratics_by_taking_the_square_root", 
     "kind": "Exercise", 
     "name": "solving_quadratics_by_taking_the_square_root", 
+    "seconds_per_fast_problem": 17.0, 
     "prerequisites": [
       "factoring_polynomials_1"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "ca-algebra-i--completing-the-square", 
-      "completing-the-square", 
-      "ex1-completing-the-square"
+      "solving-quadratic-equations-by-completing-the-square", 
+      "completing-the-square-to-solve-quadratic-equations"
     ], 
     "v_position": -1, 
     "path": "/math/algebra/quadratics/completing_the_square/e/completing_the_square_1/", 
     "display_name": "Completing the square 1", 
     "title": "Completing the square 1", 
     "live": true, 
-    "seconds_per_fast_problem": 25.0, 
     "description": "Find the roots of a quadratic equation by completing the square. Can also be solved by factoring.", 
     "h_position": 51, 
     "slug": "completing_the_square_1", 
     "kind": "Exercise", 
     "name": "completing_the_square_1", 
+    "seconds_per_fast_problem": 29.0, 
     "prerequisites": [
       "solving_quadratics_by_taking_the_square_root", 
       "solving_quadratics_by_factoring"
@@ -204,21 +222,20 @@
   }, 
   {
     "related_video_readable_ids": [
-      "ca-algebra-i--completing-the-square", 
-      "completing-the-square", 
-      "ex1-completing-the-square"
+      "solving-quadratic-equations-by-completing-the-square", 
+      "completing-the-square-to-solve-quadratic-equations"
     ], 
     "v_position": -2, 
     "path": "/math/algebra/quadratics/completing_the_square/e/completing_the_square_2/", 
     "display_name": "Completing the square 2", 
     "title": "Completing the square 2", 
     "live": true, 
-    "seconds_per_fast_problem": 53.0, 
     "description": "Find the roots of a quadratic by completing the square.", 
     "h_position": 52, 
     "slug": "completing_the_square_2", 
     "kind": "Exercise", 
     "name": "completing_the_square_2", 
+    "seconds_per_fast_problem": 60.0, 
     "prerequisites": [
       "solving_quadratics_by_factoring_2", 
       "completing_the_square_1"
@@ -226,87 +243,99 @@
   }, 
   {
     "related_video_readable_ids": [
-      "using-the-quadratic-formula"
+      "proof-of-quadratic-formula", 
+      "applying-the-quadratic-formula"
     ], 
     "v_position": -2, 
     "path": "/math/algebra/quadratics/quadratic_formula/e/quadratic_equation/", 
     "display_name": "Quadratic formula", 
     "title": "Quadratic formula", 
     "live": true, 
-    "seconds_per_fast_problem": 23.0, 
     "description": "Use the quadratic formula to find the roots of a quadratic function.", 
     "h_position": 53, 
     "slug": "quadratic_equation", 
     "kind": "Exercise", 
     "name": "quadratic_equation", 
+    "seconds_per_fast_problem": 24.0, 
     "prerequisites": [
       "completing_the_square_2"
     ]
   }, 
   {
-    "related_video_readable_ids": [], 
+    "related_video_readable_ids": [
+      "complex-roots-from-the-quadratic-formula"
+    ], 
     "v_position": -3, 
     "path": "/math/algebra/quadratics/quadratic_formula/e/quadratic-formula-with-complex-solutions/", 
     "display_name": "Quadratic formula with complex solutions", 
     "title": "Quadratic formula with complex solutions", 
     "live": true, 
-    "seconds_per_fast_problem": 4.0, 
     "description": "", 
     "h_position": 54, 
     "slug": "quadratic-formula-with-complex-solutions", 
     "kind": "Exercise", 
     "name": "quadratic-formula-with-complex-solutions", 
+    "seconds_per_fast_problem": 36.0, 
     "prerequisites": [
       "quadratic_equation"
     ]
   }, 
   {
-    "related_video_readable_ids": [], 
+    "related_video_readable_ids": [
+      "discriminant-for-types-of-solutions-for-a-quadratic", 
+      "discriminant-for-types-of-solutions-for-a-quadratic"
+    ], 
     "v_position": -2, 
     "path": "/math/algebra/quadratics/quadratic_formula/e/solutions_to_quadratic_equations/", 
     "display_name": "Solutions to quadratic equations", 
     "title": "Solutions to quadratic equations", 
     "live": true, 
-    "seconds_per_fast_problem": 16.0, 
     "description": "Determine how many solutions a quadratic equation has and whether they are rational, irrational, or complex", 
     "h_position": 54, 
     "slug": "solutions_to_quadratic_equations", 
     "kind": "Exercise", 
     "name": "solutions_to_quadratic_equations", 
+    "seconds_per_fast_problem": 16.0, 
     "prerequisites": [
       "quadratic_equation"
     ]
   }, 
   {
-    "related_video_readable_ids": [], 
+    "related_video_readable_ids": [
+      "graphs-of-quadratic-functions", 
+      "applying-quadratic-functions-3"
+    ], 
     "v_position": 0, 
     "path": "/math/algebra/quadratics/graphing_quadratics/e/graphing_parabolas_0.5/", 
     "display_name": "Graphing parabolas in standard form", 
     "title": "Graphing parabolas in standard form", 
     "live": true, 
-    "seconds_per_fast_problem": 32.0, 
     "description": "Graph a parabola given the equation in the form ax^2+bx+c", 
     "h_position": 51, 
     "slug": "graphing_parabolas_0.5", 
     "kind": "Exercise", 
     "name": "graphing_parabolas_0.5", 
+    "seconds_per_fast_problem": 35.0, 
     "prerequisites": [
       "parabola_intuition_2"
     ]
   }, 
   {
-    "related_video_readable_ids": [], 
+    "related_video_readable_ids": [
+      "focus-and-directrix-of-a-parabola-2", 
+      "focus-and-directrix-of-a-parabola-2"
+    ], 
     "v_position": -1, 
     "path": "/math/algebra/quadratics/graphing_quadratics/e/vertex_of_a_parabola/", 
     "display_name": "Vertex of a parabola", 
     "title": "Vertex of a parabola", 
     "live": true, 
-    "seconds_per_fast_problem": 30.0, 
     "description": "Find the vertex of a parabola in standard form.", 
     "h_position": 52, 
     "slug": "vertex_of_a_parabola", 
     "kind": "Exercise", 
     "name": "vertex_of_a_parabola", 
+    "seconds_per_fast_problem": 37.0, 
     "prerequisites": [
       "graphing_parabolas_0.5", 
       "completing_the_square_1"
@@ -314,38 +343,40 @@
   }, 
   {
     "related_video_readable_ids": [
-      "graphs-of-quadratic-functions"
+      "focus-and-directrix-of-a-parabola-2", 
+      "focus-and-directrix-of-a-parabola-2"
     ], 
     "v_position": 0, 
     "path": "/math/algebra/quadratics/graphing_quadratics/e/graphing_parabolas_1/", 
     "display_name": "Graphing parabolas in vertex form", 
     "title": "Graphing parabolas in vertex form", 
     "live": true, 
-    "seconds_per_fast_problem": 26.0, 
     "description": "Graph a parabola given the equation in the form a(x+b)^2+c", 
     "h_position": 52, 
     "slug": "graphing_parabolas_1", 
     "kind": "Exercise", 
     "name": "graphing_parabolas_1", 
+    "seconds_per_fast_problem": 28.0, 
     "prerequisites": [
       "graphing_parabolas_0.5"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "graphs-of-quadratic-functions"
+      "focus-and-directrix-of-a-parabola-2", 
+      "focus-and-directrix-of-a-parabola-2"
     ], 
     "v_position": -1, 
     "path": "/math/algebra/quadratics/graphing_quadratics/e/graphing_parabolas_2/", 
     "display_name": "Graphing parabolas in all forms", 
     "title": "Graphing parabolas in all forms", 
     "live": true, 
-    "seconds_per_fast_problem": 53.0, 
     "description": "Graph a parabola in vertex or standard form.", 
     "h_position": 53, 
     "slug": "graphing_parabolas_2", 
     "kind": "Exercise", 
     "name": "graphing_parabolas_2", 
+    "seconds_per_fast_problem": 54.0, 
     "prerequisites": [
       "graphing_parabolas_1", 
       "vertex_of_a_parabola"
@@ -354,19 +385,19 @@
   {
     "related_video_readable_ids": [
       "focus-and-directrix-of-a-parabola-2", 
-      "parabola-focus-and-directrix-1"
+      "focus-and-directrix-of-a-parabola-2"
     ], 
     "v_position": -1, 
     "path": "/math/algebra/quadratics/graphing_quadratics/e/parabola_intuition_3/", 
     "display_name": "Parabola intuition 3", 
     "title": "Parabola intuition 3", 
     "live": true, 
-    "seconds_per_fast_problem": 52.0, 
     "description": "Make one parabola overlap with another by adjusting the focus coordinates and directrix. Find the equation of the parabola.", 
     "h_position": 54, 
     "slug": "parabola_intuition_3", 
     "kind": "Exercise", 
     "name": "parabola_intuition_3", 
+    "seconds_per_fast_problem": 54.0, 
     "prerequisites": [
       "graphing_parabolas_2"
     ]

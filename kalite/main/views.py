@@ -297,39 +297,6 @@ def update(request):
     }
     return context
 
-@require_admin
-@facility_required
-@render_to("coach_reports.html")
-def coach_reports(request, facility):
-    topics = topicdata.EXERCISE_TOPICS["topics"].values()
-    topics = sorted(topics, key = lambda k: (k["y"], k["x"]))
-    groups = FacilityGroup.objects.filter(facility=facility)
-    paths = dict((key, val["path"]) for key, val in topicdata.NODE_CACHE["Exercise"].items())
-    context = {
-        "facility": facility,
-        "groups": groups,
-        "topics": topics,
-        "exercise_paths": json.dumps(paths),
-    }
-    topic = request.GET.get("topic", "")
-    group = request.GET.get("group", "")
-    if group and topic and re.match("^[\w\-]+$", topic):
-        exercises = json.loads(open("%stopicdata/%s.json" % (settings.DATA_PATH, topic)).read())
-        exercises = sorted(exercises, key=lambda e: (e["h_position"], e["v_position"]))
-        context["exercises"] = [{
-            "display_name": ex["display_name"],
-            "description": ex["description"],
-            "short_display_name": ex["short_display_name"],
-            "path": topicdata.NODE_CACHE["Exercise"][ex["name"]]["path"],
-        } for ex in exercises]
-        users = get_object_or_404(FacilityGroup, pk=group).facilityuser_set.order_by("first_name", "last_name")
-        context["students"] = [{
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-            "username": user.username,
-            "exercise_logs": [get_object_or_None(ExerciseLog, user=user, exercise_id=ex["name"]) for ex in exercises],
-        } for user in users]
-    return context
 
 @require_admin
 @facility_required

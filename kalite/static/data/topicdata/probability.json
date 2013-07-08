@@ -1,7 +1,6 @@
 [
   {
     "related_video_readable_ids": [
-      "probability-space", 
       "basic-probability"
     ], 
     "v_position": 0, 
@@ -9,120 +8,118 @@
     "display_name": "Probability space", 
     "title": "Probability space", 
     "live": true, 
-    "seconds_per_fast_problem": 15.0, 
     "description": "review probability spaces", 
     "h_position": 29, 
     "slug": "dice_probability", 
     "kind": "Exercise", 
     "name": "dice_probability", 
+    "seconds_per_fast_problem": 16.0, 
     "prerequisites": [
       "counting_2"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "probability-1-module-examples", 
-      "getting-at-least-one-heads", 
-      "probability--part-2", 
-      "probability--part-3", 
-      "probability--part-1"
+      "events-and-outcomes-1", 
+      "events-and-outcomes-1"
     ], 
     "v_position": 0, 
     "path": "/math/probability/independent-dependent-probability/basic_probability/e/probability_1/", 
     "display_name": "Probability 1", 
     "title": "Probability 1", 
     "live": true, 
-    "seconds_per_fast_problem": 10.0, 
     "description": null, 
     "h_position": 30, 
     "slug": "probability_1", 
     "kind": "Exercise", 
     "name": "probability_1", 
+    "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "dice_probability"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "lebron-asks-about-the-chances-of-making-10-free-throws"
+      "independent-events-3", 
+      "independent-events-3"
     ], 
     "v_position": 0, 
     "path": "/math/probability/independent-dependent-probability/independent_events/e/independent_probability/", 
     "display_name": "Independent probability", 
     "title": "Independent probability", 
     "live": true, 
-    "seconds_per_fast_problem": 10.0, 
     "description": "", 
     "h_position": 31, 
     "slug": "independent_probability", 
     "kind": "Exercise", 
     "name": "independent_probability", 
+    "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "probability_1"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "getting-exactly-two-heads--combinatorics", 
-      "exactly-three-heads-in-five-flips", 
-      "dependent-probability-example-1", 
       "dependent-probability-example-2", 
-      "probability-of-dependent-events", 
-      "probability-of-dependent-events-2"
+      "dependent-probability-example-2"
     ], 
     "v_position": 0, 
     "path": "/math/probability/independent-dependent-probability/dependent_probability/e/dependent_probability/", 
     "display_name": "Dependent probability", 
     "title": "Dependent probability", 
     "live": true, 
-    "seconds_per_fast_problem": 24.0, 
     "description": null, 
     "h_position": 32, 
     "slug": "dependent_probability", 
     "kind": "Exercise", 
     "name": "dependent_probability", 
+    "seconds_per_fast_problem": 25.0, 
     "prerequisites": [
       "independent_probability"
     ]
   }, 
   {
-    "related_video_readable_ids": [], 
+    "related_video_readable_ids": [
+      "relative-complement-or-difference-between-sets"
+    ], 
     "v_position": 1, 
     "path": "/math/probability/independent-dependent-probability/basic_set_operations/e/basic_set_notation/", 
     "display_name": "Basic set notation", 
     "title": "Basic set notation", 
     "live": true, 
-    "seconds_per_fast_problem": 9.0, 
     "description": "The union, complement, and intersection of sets.", 
     "h_position": 33, 
     "slug": "basic_set_notation", 
     "kind": "Exercise", 
     "name": "basic_set_notation", 
+    "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "dependent_probability"
     ]
   }, 
   {
-    "related_video_readable_ids": [], 
+    "related_video_readable_ids": [
+      "combinations", 
+      "combinations"
+    ], 
     "v_position": 0, 
     "path": "/math/probability/probability-and-combinatorics-topic/permutations_and_combinations/e/counting_2/", 
     "display_name": "Counting 2", 
     "title": "Counting 2", 
     "live": true, 
-    "seconds_per_fast_problem": 8.0, 
     "description": null, 
     "h_position": 28, 
     "slug": "counting_2", 
     "kind": "Exercise", 
     "name": "counting_2", 
+    "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "exponents_1"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "permutations", 
-      "permutations-and-combinations-1", 
+      "permutations-and-combinations-2", 
       "permutations-and-combinations-2"
     ], 
     "v_position": -1, 
@@ -130,66 +127,72 @@
     "display_name": "Permutations", 
     "title": "Permutations", 
     "live": true, 
-    "seconds_per_fast_problem": 6.0, 
     "description": "Introductory permutation problems.", 
     "h_position": 30, 
     "slug": "permutations_1", 
     "kind": "Exercise", 
     "name": "permutations_1", 
+    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "dice_probability"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "combinations", 
-      "permutations-and-combinations-3"
+      "permutations-and-combinations-2", 
+      "permutations-and-combinations-2"
     ], 
     "v_position": -1, 
     "path": "/math/probability/probability-and-combinatorics-topic/permutations_and_combinations/e/combinations_1/", 
     "display_name": "Combinations", 
     "title": "Combinations", 
     "live": true, 
-    "seconds_per_fast_problem": 12.0, 
     "description": "Introductory combination problems", 
     "h_position": 31, 
     "slug": "combinations_1", 
     "kind": "Exercise", 
     "name": "combinations_1", 
+    "seconds_per_fast_problem": 14.0, 
     "prerequisites": [
       "permutations_1"
     ]
   }, 
   {
-    "related_video_readable_ids": [], 
+    "related_video_readable_ids": [
+      "permutations-and-combinations-2", 
+      "permutations-and-combinations-2"
+    ], 
     "v_position": -1, 
     "path": "/math/probability/probability-and-combinatorics-topic/permutations_and_combinations/e/permutations_and_combinations_2/", 
     "display_name": "Permutations and combinations", 
     "title": "Permutations and combinations", 
     "live": true, 
-    "seconds_per_fast_problem": 12.0, 
     "description": "Permutations and Combinations with overcounting", 
     "h_position": 32, 
     "slug": "permutations_and_combinations_2", 
     "kind": "Exercise", 
     "name": "permutations_and_combinations_2", 
+    "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
       "combinations_1"
     ]
   }, 
   {
-    "related_video_readable_ids": [], 
+    "related_video_readable_ids": [
+      "birthday-probability-problem", 
+      "birthday-probability-problem"
+    ], 
     "v_position": -1, 
     "path": "/math/probability/probability-and-combinatorics-topic/probability_combinatorics/e/probability_with_perm_comb/", 
     "display_name": "Probability with permutations and combinations", 
     "title": "Probability with permutations and combinations", 
     "live": true, 
-    "seconds_per_fast_problem": 29.0, 
     "description": "Probability questions using permutations and combinations of objects", 
     "h_position": 33, 
     "slug": "probability_with_perm_comb", 
     "kind": "Exercise", 
     "name": "probability_with_perm_comb", 
+    "seconds_per_fast_problem": 29.0, 
     "prerequisites": [
       "permutations_and_combinations_2"
     ]
@@ -203,68 +206,69 @@
     "display_name": "Expected value", 
     "title": "Expected value", 
     "live": true, 
-    "seconds_per_fast_problem": 17.0, 
     "description": "Compute the expected value given a set of outcomes, probabilities, and payoffs", 
     "h_position": 31, 
     "slug": "expected_value", 
     "kind": "Exercise", 
     "name": "expected_value", 
+    "seconds_per_fast_problem": 16.0, 
     "prerequisites": [
       "probability_1"
     ]
   }, 
   {
-    "related_video_readable_ids": [], 
+    "related_video_readable_ids": [
+      "mean-median-and-mode"
+    ], 
     "v_position": -23, 
     "path": "/math/probability/descriptive-statistics/central_tendency/e/mean_median_and_mode/", 
     "display_name": "Mean median and mode", 
     "title": "Mean median and mode", 
     "live": true, 
-    "seconds_per_fast_problem": 8.0, 
     "description": null, 
     "h_position": 18, 
     "slug": "mean_median_and_mode", 
     "kind": "Exercise", 
     "name": "mean_median_and_mode", 
+    "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "exploring_mean_and_median"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "statistics--the-average", 
-      "algebra-ii--mean-and-standard-deviation"
+      "exploring-mean-and-median-module"
     ], 
     "v_position": -23, 
     "path": "/math/probability/descriptive-statistics/central_tendency/e/exploring_mean_and_median/", 
     "display_name": "Exploring mean and median", 
     "title": "Exploring mean and median", 
     "live": true, 
-    "seconds_per_fast_problem": 33.0, 
     "description": null, 
     "h_position": 17, 
     "slug": "exploring_mean_and_median", 
     "kind": "Exercise", 
     "name": "exploring_mean_and_median", 
+    "seconds_per_fast_problem": 33.0, 
     "prerequisites": [
       "order_of_operations"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "averages"
+      "exploring-mean-and-median-module"
     ], 
     "v_position": -22, 
     "path": "/math/probability/descriptive-statistics/central_tendency/e/average_word_problems/", 
     "display_name": "Average word problems", 
     "title": "Average word problems", 
     "live": true, 
-    "seconds_per_fast_problem": 23.0, 
     "description": null, 
     "h_position": 19, 
     "slug": "average_word_problems", 
     "kind": "Exercise", 
     "name": "average_word_problems", 
+    "seconds_per_fast_problem": 25.0, 
     "prerequisites": [
       "mean_median_and_mode"
     ]
@@ -278,66 +282,69 @@
     "display_name": "Creating box and whisker plots", 
     "title": "Creating box and whisker plots", 
     "live": true, 
-    "seconds_per_fast_problem": 51.0, 
     "description": null, 
     "h_position": 19, 
     "slug": "creating_box_and_whisker_plots", 
     "kind": "Exercise", 
     "name": "creating_box_and_whisker_plots", 
+    "seconds_per_fast_problem": 50.25, 
     "prerequisites": [
       "mean_median_and_mode"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "statistics--variance-of-a-population", 
-      "statistics--sample-variance"
+      "simulation-providing-evidence-that--n-1--gives-us-unbiased-estimate"
     ], 
     "v_position": -21, 
     "path": "/math/probability/descriptive-statistics/variance_std_deviation/e/variance/", 
     "display_name": "Variance", 
     "title": "Variance", 
     "live": true, 
-    "seconds_per_fast_problem": 53.0, 
     "description": null, 
     "h_position": 19, 
     "slug": "variance", 
     "kind": "Exercise", 
     "name": "variance", 
+    "seconds_per_fast_problem": 53.0, 
     "prerequisites": [
       "mean_median_and_mode"
     ]
   }, 
   {
-    "related_video_readable_ids": [], 
+    "related_video_readable_ids": [
+      "exploring-standard-deviation-1-module"
+    ], 
     "v_position": -21, 
     "path": "/math/probability/descriptive-statistics/variance_std_deviation/e/exploring_standard_deviation_1/", 
     "display_name": "Exploring standard deviation 1", 
     "title": "Exploring standard deviation 1", 
     "live": true, 
-    "seconds_per_fast_problem": 13.0, 
     "description": null, 
     "h_position": 20, 
     "slug": "exploring_standard_deviation_1", 
     "kind": "Exercise", 
     "name": "exploring_standard_deviation_1", 
+    "seconds_per_fast_problem": 14.0, 
     "prerequisites": [
       "variance"
     ]
   }, 
   {
-    "related_video_readable_ids": [], 
+    "related_video_readable_ids": [
+      "exploring-standard-deviation-1-module"
+    ], 
     "v_position": -22, 
     "path": "/math/probability/descriptive-statistics/variance_std_deviation/e/standard_deviation/", 
     "display_name": "Standard deviation", 
     "title": "Standard deviation", 
     "live": true, 
-    "seconds_per_fast_problem": 48.0, 
     "description": null, 
     "h_position": 20, 
     "slug": "standard_deviation", 
     "kind": "Exercise", 
     "name": "standard_deviation", 
+    "seconds_per_fast_problem": 44.0, 
     "prerequisites": [
       "variance"
     ]
@@ -349,31 +356,31 @@
     "display_name": "Estimating the line of best fit", 
     "title": "Estimating the line of best fit", 
     "live": true, 
-    "seconds_per_fast_problem": 6.0, 
     "description": "Given a random assortment of points, find the best fit line for them.", 
     "h_position": 18, 
     "slug": "plotting_the_line_of_best_fit", 
     "kind": "Exercise", 
     "name": "plotting_the_line_of_best_fit", 
+    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "reading_line_charts_1"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "ck12-org-normal-distribution-problems--empirical-rule"
+      "ck12-org-exercise--standard-normal-distribution-and-the-empirical-rule"
     ], 
     "v_position": -21, 
     "path": "/math/probability/statistics-inferential/normal_distribution/e/empirical_rule/", 
     "display_name": "Empirical rule", 
     "title": "Empirical rule", 
     "live": true, 
-    "seconds_per_fast_problem": 26.0, 
     "description": null, 
     "h_position": 21, 
     "slug": "empirical_rule", 
     "kind": "Exercise", 
     "name": "empirical_rule", 
+    "seconds_per_fast_problem": 25.0, 
     "prerequisites": [
       "exploring_standard_deviation_1", 
       "standard_deviation"
@@ -381,19 +388,19 @@
   }, 
   {
     "related_video_readable_ids": [
-      "ck12-org-normal-distribution-problems--z-score"
+      "ck12-org--more-empirical-rule-and-z-score-practice"
     ], 
     "v_position": -22, 
     "path": "/math/probability/statistics-inferential/normal_distribution/e/z_scores_1/", 
     "display_name": "Z scores 1", 
     "title": "Z scores 1", 
     "live": true, 
-    "seconds_per_fast_problem": 13.0, 
     "description": "Find the z-score of a particular measurement given the mean and standard deviation.", 
     "h_position": 21, 
     "slug": "z_scores_1", 
     "kind": "Exercise", 
     "name": "z_scores_1", 
+    "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "exploring_standard_deviation_1", 
       "standard_deviation"
@@ -408,12 +415,12 @@
     "display_name": "Z scores 2", 
     "title": "Z scores 2", 
     "live": true, 
-    "seconds_per_fast_problem": 22.0, 
     "description": "Use a z-table to find the probability of a particular measurement.", 
     "h_position": 22, 
     "slug": "z_scores_2", 
     "kind": "Exercise", 
     "name": "z_scores_2", 
+    "seconds_per_fast_problem": 22.0, 
     "prerequisites": [
       "z_scores_1"
     ]
@@ -427,12 +434,12 @@
     "display_name": "Z scores 3", 
     "title": "Z scores 3", 
     "live": true, 
-    "seconds_per_fast_problem": 50.0, 
     "description": "Use a z-table to find the probability that a particular measurement is in a range.", 
     "h_position": 23, 
     "slug": "z_scores_3", 
     "kind": "Exercise", 
     "name": "z_scores_3", 
+    "seconds_per_fast_problem": 48.0, 
     "prerequisites": [
       "z_scores_2"
     ]

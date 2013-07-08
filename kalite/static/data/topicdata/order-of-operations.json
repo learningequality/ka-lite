@@ -1,66 +1,57 @@
 [
   {
     "related_video_readable_ids": [
-      "commutative-law-of-addition", 
-      "commutative-law-of-multiplication", 
-      "associative-law-of-addition", 
-      "associative-law-of-multiplication"
+      "properties-of-numbers-1"
     ], 
     "v_position": -5, 
     "path": "/math/arithmetic/order-of-operations/arithmetic_properties/e/properties_of_numbers_1/", 
     "display_name": "Properties of numbers 1", 
     "title": "Properties of numbers 1", 
     "live": true, 
-    "seconds_per_fast_problem": 5.0, 
-    "description": null, 
+    "description": "", 
     "h_position": 13, 
     "slug": "properties_of_numbers_1", 
     "kind": "Exercise", 
     "name": "properties_of_numbers_1", 
+    "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "multiplying_and_dividing_negative_numbers"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "commutative-law-of-addition", 
-      "associative-law-of-addition", 
-      "the-distributive-property"
+      "number-properties-terminology-1"
     ], 
     "v_position": -4, 
     "path": "/math/arithmetic/order-of-operations/arithmetic_properties/e/number_properties_terminology_1/", 
     "display_name": "Number properties terminology 1", 
     "title": "Number properties terminology 1", 
     "live": true, 
-    "seconds_per_fast_problem": 5.0, 
-    "description": null, 
+    "description": "", 
     "h_position": 14, 
     "slug": "number_properties_terminology_1", 
     "kind": "Exercise", 
     "name": "number_properties_terminology_1", 
+    "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "multiplying_and_dividing_negative_numbers"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "inverse-property-of-multiplication", 
-      "inverse-property-of-addition", 
-      "identity-property-of-0", 
-      "identity-property-of-1--second-example", 
-      "identity-property-of-1"
+      "properties-of-numbers-2"
     ], 
     "v_position": -5, 
     "path": "/math/arithmetic/order-of-operations/arithmetic_properties/e/properties_of_numbers_2/", 
     "display_name": "Properties of numbers 2", 
     "title": "Properties of numbers 2", 
     "live": true, 
-    "seconds_per_fast_problem": 6.0, 
-    "description": null, 
+    "description": "", 
     "h_position": 14, 
     "slug": "properties_of_numbers_2", 
     "kind": "Exercise", 
     "name": "properties_of_numbers_2", 
+    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "properties_of_numbers_1"
     ]

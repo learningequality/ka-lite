@@ -6,12 +6,12 @@
     "display_name": "Shaded areas", 
     "title": "Shaded areas", 
     "live": true, 
-    "seconds_per_fast_problem": 23.0, 
     "description": "Find the areas of shaded regions which are combinations of squares, triangles, and circles.     ", 
     "h_position": 38, 
     "slug": "shaded_areas", 
     "kind": "Exercise", 
     "name": "shaded_areas", 
+    "seconds_per_fast_problem": 22.0, 
     "prerequisites": [
       "circles_and_arcs", 
       "areas_of_circles_and_sectors"

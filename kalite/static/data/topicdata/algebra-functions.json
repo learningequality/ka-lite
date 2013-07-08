@@ -1,62 +1,66 @@
 [
   {
     "related_video_readable_ids": [
-      "functions--part-4", 
-      "functions-part-2", 
-      "introduction-to-functions", 
-      "functions--part-iii"
+      "functions-as-graphs", 
+      "understanding-function-notation-example-3"
     ], 
     "v_position": -1, 
     "path": "/math/algebra/algebra-functions/relationships_functions/e/functions_1/", 
     "display_name": "Understanding function notation", 
     "title": "Understanding function notation", 
     "live": true, 
-    "seconds_per_fast_problem": 8.0, 
     "description": "", 
     "h_position": 38, 
     "slug": "functions_1", 
     "kind": "Exercise", 
     "name": "functions_1", 
+    "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "interpreting_linear_equations"
     ]
   }, 
   {
-    "related_video_readable_ids": [], 
+    "related_video_readable_ids": [
+      "recognizing-functions--example-2"
+    ], 
     "v_position": -3, 
     "path": "/math/algebra/algebra-functions/relationships_functions/e/recognizing_functions/", 
     "display_name": "Recognizing functions", 
     "title": "Recognizing functions", 
     "live": true, 
-    "seconds_per_fast_problem": 5.0, 
     "description": "Determine if different relationships are functions or not.", 
     "h_position": 41, 
     "slug": "recognizing_functions", 
     "kind": "Exercise", 
     "name": "recognizing_functions", 
+    "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "views_of_a_function"
     ]
   }, 
   {
-    "related_video_readable_ids": [], 
+    "related_video_readable_ids": [
+      "recognizing-functions--example-5"
+    ], 
     "v_position": -3, 
     "path": "/math/algebra/algebra-functions/relationships_functions/e/recog-func-2/", 
     "display_name": "Recognizing functions 2", 
     "title": "Recognizing functions 2", 
     "live": true, 
-    "seconds_per_fast_problem": 4.0, 
     "description": "", 
     "h_position": 42, 
     "slug": "recog-func-2", 
     "kind": "Exercise", 
     "name": "recog-func-2", 
+    "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "recognizing_functions"
     ]
   }, 
   {
     "related_video_readable_ids": [
+      "domain-of-a-radical-function", 
+      "domain-of-a-radical-function", 
       "domain-of-a-function"
     ], 
     "v_position": -1, 
@@ -64,12 +68,12 @@
     "display_name": "Domain of a function", 
     "title": "Domain of a function", 
     "live": true, 
-    "seconds_per_fast_problem": 10.0, 
     "description": "Given the equation of a function, determine the domain.", 
     "h_position": 40, 
     "slug": "domain_of_a_function", 
     "kind": "Exercise", 
     "name": "domain_of_a_function", 
+    "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "functions_2", 
       "domain_and_range_0.5"
@@ -77,7 +81,7 @@
   }, 
   {
     "related_video_readable_ids": [
-      "domain-and-range-1", 
+      "domain-and-range-of-a-function", 
       "domain-and-range-of-a-function"
     ], 
     "v_position": 1, 
@@ -85,12 +89,12 @@
     "display_name": "Range of a function", 
     "title": "Range of a function", 
     "live": true, 
-    "seconds_per_fast_problem": 10.0, 
     "description": "Given the equation of a quadratic function, determine the range.", 
     "h_position": 40, 
     "slug": "range_of_a_function", 
     "kind": "Exercise", 
     "name": "range_of_a_function", 
+    "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "functions_2", 
       "domain_and_range_0.5"
@@ -98,145 +102,143 @@
   }, 
   {
     "related_video_readable_ids": [
-      "domain-and-range-1", 
-      "domain-and-range-2", 
-      "domain-and-range-of-a-function"
+      "domain-and-range-of-a-function", 
+      "domain-and-range-of-a-relation"
     ], 
     "v_position": 0, 
     "path": "/math/algebra/algebra-functions/domain_and_range/e/domain_and_range_0.5/", 
     "display_name": "Domain and range", 
     "title": "Domain and range", 
     "live": true, 
-    "seconds_per_fast_problem": 8.0, 
     "description": "Given the graph of a function, determine its domain or range.", 
     "h_position": 39, 
     "slug": "domain_and_range_0.5", 
     "kind": "Exercise", 
     "name": "domain_and_range_0.5", 
+    "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "functions_1"
     ]
   }, 
   {
-    "related_video_readable_ids": [], 
+    "related_video_readable_ids": [
+      "comparing-features-of-functions-6"
+    ], 
     "v_position": -5, 
     "path": "/math/algebra/algebra-functions/analyzing-functions-algebra/e/comparing-features-of-functions-1/", 
     "display_name": "Comparing features of functions 1", 
     "title": "Comparing features of functions 1", 
     "live": true, 
-    "seconds_per_fast_problem": 4.0, 
     "description": "", 
     "h_position": 42, 
     "slug": "comparing-features-of-functions-1", 
     "kind": "Exercise", 
     "name": "comparing-features-of-functions-1", 
+    "seconds_per_fast_problem": 25.0, 
     "prerequisites": [
       "recog-features-func-2"
     ]
   }, 
   {
-    "related_video_readable_ids": [], 
+    "related_video_readable_ids": [
+      "linear-and-nonlinear-functions-example-2"
+    ], 
     "v_position": 10, 
     "path": "/math/algebra/algebra-functions/linear-nonlinear-functions-tut/e/linear-non-linear-functions/", 
     "display_name": "Linear and nonlinear functions", 
     "title": "Linear and nonlinear functions", 
     "live": true, 
-    "seconds_per_fast_problem": 4.0, 
     "description": "", 
     "h_position": 40, 
     "slug": "linear-non-linear-functions", 
     "kind": "Exercise", 
     "name": "linear-non-linear-functions", 
+    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "plugging_in_values"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "direct-and-inverse-variation", 
-      "recognizing-direct-and-inverse-variation", 
-      "direct-variation-models", 
-      "direct-variation-1"
+      "proportionality-constant-for-direct-variation"
     ], 
     "v_position": 2, 
     "path": "/math/algebra/algebra-functions/direct_inverse_variation/e/direct_and_inverse_variation/", 
     "display_name": "Direct and inverse variation", 
     "title": "Direct and inverse variation", 
     "live": true, 
-    "seconds_per_fast_problem": 9.0, 
     "description": "Select a function that indicates direct or inverse variation between two variables.", 
     "h_position": 38, 
     "slug": "direct_and_inverse_variation", 
     "kind": "Exercise", 
     "name": "direct_and_inverse_variation", 
+    "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "interpreting_linear_equations"
     ]
   }, 
   {
-    "related_video_readable_ids": [], 
+    "related_video_readable_ids": [
+      "graphing-exponential-functions"
+    ], 
     "v_position": -3, 
     "path": "/math/algebra/algebra-functions/graphing_functions/e/views_of_a_function/", 
     "display_name": "Views of a function", 
     "title": "Views of a function", 
     "live": true, 
-    "seconds_per_fast_problem": 31.0, 
     "description": "Representing functions in multiple ways", 
     "h_position": 40, 
     "slug": "views_of_a_function", 
     "kind": "Exercise", 
     "name": "views_of_a_function", 
+    "seconds_per_fast_problem": 34.0, 
     "prerequisites": [
       "functions_2"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "functions-part-2", 
-      "functions--part-iii", 
-      "functions--part-4"
+      "evaluating-a-function-expression", 
+      "quotient-of-functions"
     ], 
     "v_position": -2, 
     "path": "/math/algebra/algebra-functions/eval-function-expressions/e/functions_2/", 
     "display_name": "Evaluating expressions with function notation", 
     "title": "Evaluating expressions with function notation", 
     "live": true, 
-    "seconds_per_fast_problem": 26.0, 
     "description": "Find the value of a function for a given x based on a graph, and perform operations with that value.", 
     "h_position": 39, 
     "slug": "functions_2", 
     "kind": "Exercise", 
     "name": "functions_2", 
+    "seconds_per_fast_problem": 28.0, 
     "prerequisites": [
       "functions_1"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "functions--part-4", 
-      "functions-part-2", 
-      "functions--part-iii"
+      "evaluating-composite-functions-example-1", 
+      "quotient-of-functions"
     ], 
     "v_position": -2, 
     "path": "/math/algebra/algebra-functions/eval-function-expressions/e/functions_3/", 
     "display_name": "Evaluating composite functions", 
     "title": "Evaluating composite functions", 
     "live": true, 
-    "seconds_per_fast_problem": 44.0, 
     "description": "Find the function of a function.", 
     "h_position": 40, 
     "slug": "functions_3", 
     "kind": "Exercise", 
     "name": "functions_3", 
+    "seconds_per_fast_problem": 48.0, 
     "prerequisites": [
       "functions_2"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "introduction-to-function-inverses", 
-      "function-inverse-example-1", 
-      "function-inverses-example-2", 
+      "function-inverses-example-3", 
       "function-inverses-example-3"
     ], 
     "v_position": -1, 
@@ -244,12 +246,12 @@
     "display_name": "Inverses of functions", 
     "title": "Inverses of functions", 
     "live": true, 
-    "seconds_per_fast_problem": 11.0, 
     "description": "Determine the inverse of a function based on the equation and graph.", 
     "h_position": 41, 
     "slug": "inverses_of_functions", 
     "kind": "Exercise", 
     "name": "inverses_of_functions", 
+    "seconds_per_fast_problem": 14.0, 
     "prerequisites": [
       "domain_of_a_function", 
       "range_of_a_function"
@@ -264,31 +266,31 @@
     "display_name": "New operator definitions 1", 
     "title": "New operator definitions 1", 
     "live": true, 
-    "seconds_per_fast_problem": 12.0, 
     "description": "Given the definition of a new operator, evaluate an expression that contains that operator.", 
     "h_position": 38, 
     "slug": "new_definitions_1", 
     "kind": "Exercise", 
     "name": "new_definitions_1", 
+    "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
       "interpreting_linear_equations"
     ]
   }, 
   {
     "related_video_readable_ids": [
-      "new-operator-definitions"
+      "new-definitions-2"
     ], 
     "v_position": 1, 
     "path": "/math/algebra/algebra-functions/new_operators/e/new_definitions_2/", 
     "display_name": "New operator definitions 2", 
     "title": "New operator definitions 2", 
     "live": true, 
-    "seconds_per_fast_problem": 27.0, 
     "description": "Given the definition of 2 new operators, evaluate an expression that contains that operator.", 
     "h_position": 39, 
     "slug": "new_definitions_2", 
     "kind": "Exercise", 
     "name": "new_definitions_2", 
+    "seconds_per_fast_problem": 27.0, 
     "prerequisites": [
       "new_definitions_1"
     ]
