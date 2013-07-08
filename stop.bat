@@ -1,17 +1,12 @@
 @echo off
 
-echo The stop command is not yet cleanly implemented for Windows.
-echo We will have to kill all processes called "python.exe".
+cd kalite
+set /p cronserverpid=<cronserver.pid
+set /p runcherrypyserverpid=<runcherrypyserver.pid
 
-:choice
-set /P c=Do you wish to proceed [Y/N]?
-if /I "%c%" EQU "Y" goto :yes
-if /I "%c%" EQU "N" goto :no
-goto :choice
+taskkill /f /pid %cronserverpid% > nul 2>&1 && echo Cron server was stopped!
+tskill %cronserverpid% > nul 2>&1 && echo Cron server was stopped!
 
-:yes
-taskkill /f /im python.exe
-exit /B
-
-:no
-echo The server has not been stopped.
+taskkill /f /pid %runcherrypyserverpid% > nul 2>&1 && echo CherryPy server was stopped!
+tskill %runcherrypyserverpid% > nul 2>&1 && echo CherryPy server was stopped!
+cd ..
