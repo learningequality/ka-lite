@@ -38,10 +38,10 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         management.call_command('clean_pyc', verbosity=2)
         
         if not test_labels:
-            test_labels = {'main', 'central', 'securesync'}
+            test_labels = set(['main', 'central', 'securesync'])
             if settings.CENTRAL_SERVER:
-                test_labels -= {'main',}
+                test_labels -= set(['main',])
             else:
-                test_labels -= {'central',}
+                test_labels -= set(['central',])
         return super(KALiteTestRunner,self).run_tests(test_labels, extra_tests, **kwargs)
         
