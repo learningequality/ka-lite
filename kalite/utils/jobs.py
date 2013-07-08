@@ -7,7 +7,6 @@ from utils.django_utils import call_command_async
 def force_job(command, name="", frequency="YEARLY", stop=False, force_cron=True):
     """
     """
-    import pdb; pdb.set_trace()
     force_cron = force_cron and not stop  #cannot stop and force start at the same time.
 
     jobs = Job.objects.filter(command=command)
@@ -23,7 +22,10 @@ def force_job(command, name="", frequency="YEARLY", stop=False, force_cron=True)
         job.next_run = datetime.now()
     job.save()
 
-    if force_cron:  # Just start cron directly, so that the process starts immediately.
+    if force_cron:  
+        # Just start cron directly, so that the process starts immediately.
+        # Note that if you're calling force_job frequently, then 
+        # you probably want to avoid doing this on every call.
         call_command_async("cron")
 
 

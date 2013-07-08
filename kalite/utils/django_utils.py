@@ -46,7 +46,10 @@ def call_command_with_output(cmd, *args, **kwargs):
 
 def call_command_async(cmd, *args, **kwargs):
     """
-    This may be finicky, as it requires stringifying.
+    Runs a manage.py command asynchronously, by calling into
+    the subprocess module.
+
+    This may be finicky, as it requires stringifying kwargs, but:
     """
     # Use sys to get the same executable running as is running this process.
     # Make sure to call the manage.py from this project.
@@ -55,7 +58,13 @@ def call_command_async(cmd, *args, **kwargs):
     for key,val in kwargs:
         call_args.append("--%s=%s", key, val)
 
-    import pdb; pdb.set_trace()
+    # We don't need to hold onto the process handle.
+    #    we expect all commands to return eventually, on their own--
+    #    we have no way to deal with a rogue process.
+    # But, because they're subprocesses of this process, when the
+    #    server stops, so do these processes.
+    # Note that this is also OK because chronograph does all "stopping"
+    #    using messaging through the database
     subprocess.Popen(call_args)
 
 
