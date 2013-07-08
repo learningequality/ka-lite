@@ -26,11 +26,11 @@ consult a specific backend's documentation for details.
 from django.conf.urls.defaults import *
 
 from django.contrib.auth import views as auth_views
-from views import logout_view
+from views import login_view, logout_view
 
 urlpatterns = patterns('',
                        url(r'^login/$',
-                           auth_views.login,
+                           login_view,
                            {'template_name': 'registration/login.html'},
                            name='auth_login'),
                        url(r'^logout/$',
