@@ -2,20 +2,20 @@
 
 {% load repeatblock %}
 {% load my_filters %}
-{% load static %}
-{% get_static_prefix as STATIC_URL %}
+{% load staticfiles %}
 
 {% block title %}Timeline plot {{ block.super }}{% endblock title %}
 {% block report_title %}Timeline plot {% endblock report_title %}
 
 {% block headjs %} {{ block.super }}
-<script type="text/javascript" src="{{ STATIC_URL }}js/coachreports/d3.multitimeseries.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/coachreports/timeline_view.js"></script>
+<script type="text/javascript" src="{% static 'js/coachreports/d3.multitimeseries.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/coachreports/timeline_view.js' %}"></script>
 {% endblock headjs %}
 
 
 {% block headcss %} {{ block.super }}
-<link rel='stylesheet' type='text/css' href='{{ STATIC_URL }}css/coachreports/timeline_view.css'>
+<<<<<<< HEAD
+<link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/timeline_view.css' %}">
 <style>
 .axis path,
 .axis line {
@@ -34,7 +34,6 @@
   stroke-width: 1.5px;
 }
 </style>
-
 {% endblock headcss %}
 
 {% block axis_dropdown %}

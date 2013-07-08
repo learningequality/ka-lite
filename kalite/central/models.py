@@ -65,6 +65,8 @@ class OrganizationInvitation(models.Model):
         cdict = {
             'organization': self.organization,
             'invited_by': self.invited_by,
+            'central_server_host': request.META.get('HTTP_HOST', settings.CENTRAL_SERVER_HOST), # for central server actions, determine DYNAMICALLY to be safe
+
         }
         # Invite an existing user
         if User.objects.filter(email=to_email).count() > 0:

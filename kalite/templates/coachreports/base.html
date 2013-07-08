@@ -34,27 +34,6 @@ h3 {
 
 {% block headjs %}{{ block.super }}
 <script>
-
-function setGetParam(href, name, val) {
-    var vars = {};
-    var base = href.replace(/([?].*)$/gi, ""); // no querystring
-    var parts = href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m, key, value) {
-        vars[key] = value;
-    });
-
-    if (val == "" || val == "----") {
-        delete vars[name];
-    } else {
-        vars[name] = val;
-    }
-
-    var url = base + "?";
-    for (key in vars) {
-        url += "&" + key + "=" + vars[key];//         + $.param(vars);
-    }
-    return url
-}
-
 function generate_current_link() {
     var url = window.location.href + (window.location.search ? window.location.search : "?");
 
@@ -67,8 +46,8 @@ function generate_current_link() {
     // Add axis information
     url = setGetParam(url, "xaxis", $("#xaxis option:selected").val());
     url = setGetParam(url, "yaxis", $("#yaxis option:selected").val());
-    url = setGetParam(url, "facility_id", $("#facility option:selected").val());
-    url = setGetParam(url, "group_id", $("#group option:selected").val());
+    url = setGetParam(url, "facility", $("#facility option:selected").val());
+    url = setGetParam(url, "group", $("#group option:selected").val());
     
     return url;
 }
@@ -77,7 +56,7 @@ function changeData(type) {
     var opt = $("#" + type + " option:selected");
     $("#" + type + "_editable").text(opt.text());
     $(".changeable-link").each(function () { 
-        this.href = setGetParam(this.href, type + "_id", opt.val());
+        this.href = setGetParam(this.href, type, opt.val());
     });
 }
 function make_editable(type) {
@@ -92,17 +71,7 @@ function make_editable(type) {
 {% block content %}
 {% block navbar %}
 <div id="navbar" style="padding-bottom:25px">
-<!--     <div id="topic_link">
-        Topic: 
-        <a href="{{ form.topic_path }}">{{ form.topic_path }}</a>
-        [We could split these on '/' and link to each level of the path, and have easy navigation...
-    </div> -->
     <div id="users_link">
-<!--     {% if form.user_id %}User: {{ form.user_id }}
-    {% elif form.facility_id %}Facility: {{ form.facility_id }}
-    {% elif form.group_id %}Group: {{ form.group_id }}
-    {% else %}All data (across facilities, groups, etc)
-    {% endif %} -->
     </div>
 
     {% block navbar_title %}
@@ -116,7 +85,7 @@ function make_editable(type) {
             <select id="facility">
             {% if facilities %}
                 {% for facility in facilities %}
-                <option value="{{ facility.id }}" {% if form.facility_id == facility.id %}selected{% endif %}>{{ facility }}</option>
+                <option value="{{ facility.id }}" {% if form.facility == facility.id %}selected{% endif %}>{{ facility }}</option>
                 {% endfor %}
             {% else %}
                 <option value="" selected>[{% trans "this device" %}]</option>
@@ -171,18 +140,17 @@ function make_editable(type) {
 </div>
 {% endblock navbar %}
 
-{% block endjs %}
+{% block endjs %}{{ block.super }}
 <script type="text/javascript">
     $(function() {        
         // Make sure that each dropdown has a callback 
         //   to replot upon selection.
         $("#group").change(   function() { changeData("group"); });
         $("#facility").change(function() { changeData("facility"); });
-        window.onreload = function() {alert('1');}
 
-        // Select the values in the 
-        $("#group").val("{{ form.group_id }}").change();
-        $("#facility").val("{{ form.facility_id }}").change();
+        // Select the values in the dropdowns
+        $("#group").val("{{ form.group }}").change();
+        $("#facility").val("{{ form.facility }}").change();
     });
 </script>
 {% endblock endjs %}

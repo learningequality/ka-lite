@@ -83,8 +83,6 @@ function d3_scatter(data, xCoordinate, yCoordinate, appendtohtml) {
             .style("left", (d3.event.pageX) + "px")     
             .style("top", (d3.event.pageY - 28) + "px");
           d3.select(this).attr("tooltip", true);
-          console.log(d3.event.pageX);
-          console.log(d3.event.pageY);
         } else {
           if(d3.select(this).attr("tooltip")=="true") {
             tooltip.style("visibility", "hidden");

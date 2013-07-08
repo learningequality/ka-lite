@@ -21,14 +21,13 @@ You must:
 
 {% load i18n %}
 {% load my_filters %}
-{% load static %}
-{% get_static_prefix as STATIC_URL %}
+{% load staticfiles %}
 
 
 
 {% block headcss %} {{ block.super }}
-<link rel="stylesheet" type="text/css" href='{{ STATIC_URL }}css/ui.dynatree.css' />
-<link rel="stylesheet" type="text/css" href='{{ STATIC_URL }}css/ui.dynatree.defaultoff.css' />
+<link rel="stylesheet" type="text/css" href="{% static 'css/ui.dynatree.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/ui.dynatree.defaultoff.css' %}" />
 
 <style>
 #loading {
@@ -55,11 +54,11 @@ You must:
 
 
 {% block headjs %}{{ block.super }}
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui.custom.min.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.dynatree.min.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.dynatree.extensions.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/d3.v3.min.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/coachreports/d3.scatter.js"></script>
+<script type="text/javascript" src="{% static 'js/jquery-ui.custom.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/jquery.dynatree.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/jquery.dynatree.extensions.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/d3.v3.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/coachreports/d3.scatter.js' %}"></script>
 
 <script type="text/javascript">
 // Scripts for mapping our stats into text names and Google vis types.
@@ -96,9 +95,9 @@ function plotJsonData(chart_div, base_url, props) {
        NOTE: you have to implement drawJsonChart(chart_div, json, xaxis, yaxis); */
     
     // Scrub data
-    if (!props["facility_id"]) { props["facility_id"] = "{{ form.facility_id }}"; }
-    if (!props["group_id"])    { props["group_id"]    = "{{ form.group_id }}"; }
-    if (!props["user_id"])     { props["user_id"]     = "{{ form.user_id }}"; }
+    if (!props["facility"]) { props["facility"] = "{{ form.facility }}"; }
+    if (!props["group"])    { props["group"]    = "{{ form.group }}"; }
+    if (!props["user"])     { props["user"]     = "{{ form.user }}"; }
     if (!props["topic_path"])  { props["topic_path"]  = {{ form.topic_path|jsonify }}; }
 
     if (!props["xaxis"] || !props["yaxis"] || !props["topic_path"] || props["topic_path"].length==0) { // one of the ---- is selected
@@ -149,9 +148,9 @@ function plotTopics(topic_paths) {
         {
             "xaxis":       $("#xaxis option:selected").val(),
             "yaxis":       $("#yaxis option:selected").val(),
-            "user_id":     "",
-            "group_id":    $("#group option:selected").val(), 
-            "facility_id": $("#facility option:selected").val(),
+            "user":        "",
+            "group":       $("#group option:selected").val(), 
+            "facility":    $("#facility option:selected").val(),
             "topic_path":  topic_paths,
         }
     );
@@ -215,8 +214,8 @@ function plotTopics(topic_paths) {
         // Select the values in the 
         $("#xaxis").val("{{ form.xaxis }}").change();
         $("#yaxis").val("{{ form.yaxis }}").change();
-        $("#group").val("{{ form.group_id }}").change();
-        $("#facility").val("{{ form.facility_id }}").change();
+        $("#group").val("{{ form.group }}").change();
+        $("#facility").val("{{ form.facility }}").change();
         
         
         setTimeout(function() {
@@ -241,7 +240,7 @@ function plotTopics(topic_paths) {
             doRequest("{% url get_topic_tree topic_path='/math/' %}", {}).success(function(treeData) {
                 
                 $("#content_tree").dynatree({
-                    imagePath:"{{ STATIC_URL }}images/",
+                    imagePath:"{% static 'images/' %}",
                     checkbox: true,
                     selectMode: 3,
                     children: treeData,

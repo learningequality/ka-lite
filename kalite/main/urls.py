@@ -7,12 +7,12 @@ import main.api_urls
 import securesync.urls
 from kalite import settings
 
-
 admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^images/(.+)$', lambda request, path: HttpResponseRedirect('/static/images/' + path)),
+    url(r'^(favico.ico)/?$', lambda request, path: HttpResponseRedirect('/static/images/' + path)),
     url(r'^securesync/', include(securesync.urls)),
 )
 
