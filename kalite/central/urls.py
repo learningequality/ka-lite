@@ -9,6 +9,9 @@ from feeds import RssSiteNewsFeed, AtomSiteNewsFeed
 
 admin.autodiscover()
 
+def redirect_to(self, base_url, path=""):
+    return HttpResponseRedirect(base_url + path)
+    
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^images/(.+)$', lambda request, path: HttpResponseRedirect('/static/images/' + path)),
@@ -48,6 +51,10 @@ urlpatterns += patterns('central.views',
     url(r'^feeds/rss/$', RssSiteNewsFeed(), {}, 'rss_feed'),
     url(r'^feeds/atom/$', AtomSiteNewsFeed(), {}, 'atom_feed'),
     url(r'^faq/', include('faq.urls')),
+
+    url(r'^contact/', include('contact.urls')),
+    url(r'^wiki/(?P<path>\w+)/$', redirect_to, {'base_url': settings.CENTRAL_WIKI_URL}, 'wiki'),
+    url(r'^about/$', redirect_to, { 'base_url': 'http://learningequality.org/' }, 'about'),
 )   
    
 handler404 = 'central.views.handler_404'

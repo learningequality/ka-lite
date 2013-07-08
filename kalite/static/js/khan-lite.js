@@ -40,29 +40,60 @@ function doRequest(url, data) {
     });
 }
 
-$(function() {
 
-    // load progress data for all videos linked on page, and render progress circles
-    var youtube_ids = $.map($(".progress-circle[data-youtube-id]"), function(el) { return $(el).data("youtube-id") });
-    if (youtube_ids.length > 0) {
-        doRequest("/api/get_video_logs", youtube_ids).success(function(data) {
-            $.each(data, function(ind, video) {
-                var newClass = video.complete ? "complete" : "partial";
-                $("[data-youtube-id='" + video.youtube_id + "']").addClass(newClass);
-            });
-        });
+// Generic functions for client-side message passing
+//   through our Django-based server-side API
+
+function show_message(msg_class, msg_text, msg_id) {
+    // This function is generic--can be called with server-side messages,
+    //    or to display purely client-side messages.
+    // msg_class includes error, warning, and success
+    
+    msg_html = "<div class='message " + msg_class + "'";
+    if (msg_id) {
+        msg_html += " id='" + msg_id + "'"
+    }
+    msg_html += ">" + msg_text + "</div>"
+    $("#message_container").append(msg_html);
+    return $("#message_container");
+}
+
+function clear_message(msg_id) {
+    // Clear a single message, by ID
+    $("#" + msg_id).remove();
+    return $("#message_container");
+}
+
+function clear_messages() {
+    // Clear all messages
+    $("#message_container .message").remove();
+    return $("#message_container");
+}
+
+function setGetParam(href, name, val) {
+    // Generic function for changing a querystring parameter in a url
+    var vars = {};
+    var base = href.replace(/([?].*)$/gi, ""); // no querystring
+    var parts = href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m, key, value) {
+        vars[key] = value;
+    });
+
+    if (val == "" || val == "----" || val === undefined) {
+        delete vars[name];
+    } else {
+        vars[name] = val;
     }
 
-    // load progress data for all exercises linked on page, and render progress circles
-    var exercise_ids = $.map($(".progress-circle[data-exercise-id]"), function(el) { return $(el).data("exercise-id") });
-    if (exercise_ids.length > 0) {
-        doRequest("/api/get_exercise_logs", exercise_ids).success(function(data) {
-            $.each(data, function(ind, exercise) {
-                var newClass = exercise.complete ? "complete" : "partial";
-                $("[data-exercise-id='" + exercise.exercise_id + "']").addClass(newClass);
-            });
-        });
+    var url = base + "?";
+    for (key in vars) {
+        url += "&" + key + "=" + vars[key];//         + $.param(vars);
     }
+    return url
+}
 
-
-});
+function setGetParamDict(href, dict) {
+    for (key in dict) {
+         href = setGetParam(href, key, dict[key]);
+    }
+    return href;
+}

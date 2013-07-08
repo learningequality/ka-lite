@@ -93,7 +93,7 @@ def student_view(request, facility, xaxis="pct_mastery", yaxis="ex:attempts"):
     Student view lists a by-topic-summary of their activity logs.
     """
     
-    user = get_object_or_None(FacilityUser, id=request.REQUEST.get("user_id"))
+    user = get_object_or_None(FacilityUser, id=request.REQUEST.get("user"))
     user = user or request.session.get("facility_user",None)
 
     topics = get_all_midlevel_topics()
@@ -196,14 +196,15 @@ def tabular_view(request, facility, report_type="exercise"):
 
     # get querystring info
     topic_id = request.GET.get("topic", "")
-    group_id = request.GET.get("group_id", "")
-    
     # No valid data; just show generic
-    if not group_id or not topic_id or not re.match("^[\w\-]+$", topic_id):
+    if not topic_id or not re.match("^[\w\-]+$", topic_id):
         return context
 
-    group = get_object_or_404(FacilityGroup, pk=group_id)
-    users = FacilityUser.objects.filter(group=group, is_teacher=False).order_by("last_name", "first_name")
+    group_id = request.GET.get("group", "")
+    if group_id:
+        users = FacilityUser.objects.filter(group=group, is_teacher=False).order_by("last_name", "first_name")
+    else:
+        users = FacilityUser.objects.filter(group__in=groups, is_teacher=False).order_by("last_name", "first_name")
 
     # We have enough data to render over a group of students
     # Get type-specific information

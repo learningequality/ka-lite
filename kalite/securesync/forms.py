@@ -1,7 +1,9 @@
-from django import forms
-from models import RegisteredDevicePublicKey, Zone, FacilityUser, Facility, FacilityGroup
-from django.utils.translation import ugettext_lazy as _
 import re
+
+from django import forms
+from django.utils.translation import ugettext_lazy as _
+
+from models import RegisteredDevicePublicKey, Zone, FacilityUser, Facility, FacilityGroup
 
 
 class RegisteredDevicePublicKeyForm(forms.ModelForm):
@@ -24,7 +26,8 @@ class RegisteredDevicePublicKeyForm(forms.ModelForm):
 
 class FacilityUserForm(forms.ModelForm):
 
-    password = forms.CharField(widget=forms.PasswordInput, label=_("Password"))    
+    password = forms.CharField(widget=forms.PasswordInput, label=_("Password"))
+    password_recheck = forms.CharField(widget=forms.PasswordInput, label=_("Confirm password"))
     
     def __init__(self, request, *args, **kwargs):
         self.request = request
@@ -46,15 +49,11 @@ class FacilityUserForm(forms.ModelForm):
 
         return self.cleaned_data
 
-    
-class FacilityTeacherForm(FacilityUserForm):
+    def clean_password_recheck(self):
 
-    class Meta:
-        model = FacilityUser
-        fields = ("facility", "username", "first_name", "last_name",)
-        widgets = {
-            'facility': forms.HiddenInput(),
-        }
+        if self.cleaned_data.get('password') != self.cleaned_data.get('password_recheck'):
+            raise forms.ValidationError(_("The passwords didn't match. Please re-enter the passwords."))
+
 
 class FacilityForm(forms.ModelForm):
 

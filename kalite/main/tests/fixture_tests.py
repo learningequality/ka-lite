@@ -13,8 +13,10 @@ from django.core.management import call_command
 from django.db import DatabaseError
 
 import settings
+from utils.testing import distributed_only
 
 
+@distributed_only
 class FixtureTestCases(TestCase):
     """ """
 
