@@ -109,7 +109,7 @@ class FileBasedCache(BaseCache):
             return False
 
     def _cull(self):
-        if int(self._num_entries) < self._max_entries:
+        if int(self._num_entries) < self._max_entries or self._max_entries is None:
             return
 
         try:
@@ -150,6 +150,8 @@ class FileBasedCache(BaseCache):
         return os.path.join(self._dir, path)
 
     def _get_num_entries(self):
+        if self._max_entries is None:
+            return 0
         count = 0
         for _,_,files in os.walk(self._dir):
             count += len(files)

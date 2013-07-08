@@ -1,7 +1,9 @@
-from django import forms
-from models import RegisteredDevicePublicKey, Zone, FacilityUser, Facility, FacilityGroup
-from django.utils.translation import ugettext_lazy as _
 import re
+
+from django import forms
+from django.utils.translation import ugettext_lazy as _
+
+from models import RegisteredDevicePublicKey, Zone, FacilityUser, Facility, FacilityGroup
 
 
 class RegisteredDevicePublicKeyForm(forms.ModelForm):
@@ -46,15 +48,6 @@ class FacilityUserForm(forms.ModelForm):
 
         return self.cleaned_data
 
-    
-class FacilityTeacherForm(FacilityUserForm):
-
-    class Meta:
-        model = FacilityUser
-        fields = ("facility", "username", "first_name", "last_name",)
-        widgets = {
-            'facility': forms.HiddenInput(),
-        }
 
 class FacilityForm(forms.ModelForm):
 

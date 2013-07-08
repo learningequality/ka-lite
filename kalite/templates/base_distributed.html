@@ -1,35 +1,13 @@
 {% extends 'base.html' %}
 
 {% load i18n %}
+{% load staticfiles %}
 
-{% block basejs %}
-<script type="text/javascript">
-
-    var csrftoken = "{{ csrf_token }}";
-
-    function toggle_state(state, status){
-        $("." + (status ? "not-" : "") + state + "-only").hide(); 
-        $("." + (!status ? "not-" : "") + state + "-only").show(); 
-    }
-
-    $(function(){
-        $("[class$=-only]").hide();
-        doRequest("/securesync/api/status").success(function(data){
-            toggle_state("logged-in", data.is_logged_in);
-            toggle_state("registered", data.registered);
-            toggle_state("django-user", data.is_django_user);
-            toggle_state("admin", data.is_admin);
-            if (data.is_logged_in){
-                $('#logged-in-name').text(data.username + " (Logout)");
-                if (data.points!=0){
-                    $('#sitepoints').text("Points: " + data.points);
-                }
-            }
-
-        });        
-    });
-</script>
+{% block basejs %}{{ block.super }}
+    <script type="text/javascript" src="{% static 'js/distributed-server.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/purl.js' %}"></script>
 {% endblock basejs %}
+
 
 {% block sitewide_navigation %}
 
@@ -43,7 +21,7 @@
     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it a short as possible.{% endcomment %}
     <a href="{% url add_facility_teacher %}" id="nav_addteacher" class="admin-only {% block addteacher_active %}{% endblock addteacher_active %}" title="Add a teacher">{% trans "Add Teacher" %}</a>
     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it a short as possible.{% endcomment %}
-    <a href="/admin" id="nav_admin" class="django-user-only {% block admin_active %}{% endblock admin_active %}" title="Visit the admin panel">{% trans "Admin" %}</a>
+    <a href="{% url easy_admin %}" id="nav_admin" class="admin-only {% block easyadmin_active %}{% endblock easyadmin_active %}" title="Visit the admin panel">{% trans "Admin" %}</a>
     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it a short as possible.{% endcomment %}
     <a href="{% url update %}" id="nav_update" class="admin-only {% block update_active %}{% endblock update_active %}" title="Update this server with new videos and subtitles">{% trans "Update" %}</a>
     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it a short as possible.{% endcomment %}
@@ -59,10 +37,15 @@
 </span>
 <span class="dropdown topic-browser-dropdown logged-in-only">
     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it a short as possible.{% endcomment %}
-    <a href="{% url logout %}" id="logged-in-name" title="Logout">&nbsp;{% trans "Logout" %}</a>
-</span>
+    <a href="{% url student_view %}" id="logged-in-name" class="not-admin-only {% block selfreports_active %}{% endblock selfreports_active %}"></a>
+    <a href="{% url logout %}" id="logout" title="Logout">&nbsp;{% trans "Logout" %}</a></span>
 
 {% endblock sitewide_navigation %}
+
+
+{% block precontent %}
+<div id="message_container"><!-- add messages to this container via AJAX --></div>
+{% endblock precontent %}
 
 
 {% block footerleft %}
@@ -92,4 +75,16 @@
         });
     </script>
 {% endif %}
+{% block endjs %}
+<script>
+
+$(function() {
+    // Propagate any facility and group info to the coach reports link
+    var params_dict = { "facility": $.url().param('facility'), "group": $.url().param('group'), }
+    var new_href =  setGetParamDict($("#nav_coachreports").attr("href"), params_dict);
+//    $("#nav_coachreports").attr("href", new_href);
+});
+</script>
+{% endblock endjs %}
+
 {% endblock footerleft %}

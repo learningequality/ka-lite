@@ -1,7 +1,11 @@
-import json
-import requests
+"""
+Utilities for downloading Khan Academy topic tree and 
+massaging into data and files that we use in KA Lite.
+"""
 import copy
+import json
 import os
+import requests
 
 data_path = os.path.dirname(os.path.realpath(__file__)) + "/../static/data/"
 
@@ -156,6 +160,9 @@ def download_topictree():
     recurse_nodes_to_add_related_exercise(topics)
     recurse_nodes_to_extract_knowledge_map(topics)
 
+    recurse_nodes(topics)
+    recurse_nodes_to_add_related_exercise(topics)
+
     with open(data_path + "topics.json", "w") as fp:
         fp.write(json.dumps(topics, indent=2))
 
@@ -168,3 +175,22 @@ def download_topictree():
     for key, value in knowledge_topics.items():
         with open(data_path + "topicdata/%s.json" % key, "w") as fp:
             fp.write(json.dumps(value, indent=2))
+
+
+
+def create_youtube_id_to_slug_map():
+    """Go through all videos, and make a map of youtube_id to slug, for fast look-up later"""
+
+    map_file = data_path + "youtube_to_slug_map.json"
+
+    if not os.path.exists(map_file):
+        NODE_CACHE = json.loads(open(data_path + "nodecache.json").read())
+        ID2SLUG_MAP = dict()
+
+        # Make a map from youtube ID to video slug
+        for v in NODE_CACHE['Video'].values():
+            ID2SLUG_MAP[v['youtube_id']] = v['slug']
+
+        # Save the map!
+        with open(map_file, "w") as fp:
+            fp.write(json.dumps(ID2SLUG_MAP, indent=2))

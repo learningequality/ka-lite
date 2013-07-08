@@ -1,0 +1,116 @@
+{% extends "coachreports/base.html" %}
+
+{% load i18n %}
+{% load my_filters %}
+
+{% block coachreports_active %}{% endblock coachreports_active %}
+{% block selfreports_active %}active{% endblock selfreports_active %}
+{% block report_title %}User report{% endblock report_title %}
+{% block title %}User report{% endblock title%}
+
+{% block headcss %}{{ block.super }}
+<style>
+    table, th, td {
+        border: 1px solid black;
+    }
+    .super-header {
+        background-color: #ccc;
+        font-weight: bold;
+    }
+    th {
+        color: #555; 
+    }
+    th, td {
+        padding: 3px;
+    }
+    tr.invisible {
+        display:none;
+    }
+    td.pct, td.float, td.int, td.date {
+        text-align: right;
+    }
+    td.struggling {
+        background-color: #aa0; 
+        font-weight: bold;
+    }
+</style>
+{% endblock headcss %}
+
+{% block navbar_topics %}{% endblock navbar_topics %}
+{% block navbar_makelink %}{% endblock navbar_makelink %}
+{% block navbar_facilities %}{% endblock %}
+{% block navbar_groups %}
+    {% block navbar_user %}
+    {% if student %}
+    <div id="select-user" class="selection">
+        <span id="user">{{ student.first_name }} {{ student.last_name }}</span>
+    </div>
+    {% endif %}
+    {% endblock navbar_user %}
+{% endblock navbar_groups %}
+
+{% block content %}
+    {% block navbar %}{{ block.super }} {% endblock navbar %}
+    
+{% if no_data %}
+    {% trans "Welcome to KA Lite!" %}
+    {% trans "Please return to this page after watching videos or practicing exercises." %}
+    
+{% else %}
+<h2>Topics Table</h2>
+<table>
+    <tr>
+        <th rowspan="2" colspan="2" class="super-header">&nbsp;</th>
+        <!--th rowspan="2" style="vertical-align:middle">{% trans "Topic name" %}</th-->
+        <th colspan="7" class="super-header">{% trans "Exercises" %}</th><!-- everything is programmatic... except colspans here. :( -->
+        <th colspan="5" class="super-header">{% trans "Videos" %}</th>
+    </tr>
+    <tr>
+        {% for def in stat_defs %}
+        <th>{{ def.title }}</th>
+        {% endfor %}
+    </tr>
+
+{% for topic in topics %}
+    <tr class="{% if exercise_logs|get_item:topic.id or video_logs|get_item:topic.id%}visible{% else %}invisible{% endif %}">
+        <td>
+            <div class="progress-circle {% if stats|get_item:topic.id|get_item:'pct_mastery' = 1.0 %}complete{% else %}partial{% endif %}">
+            &nbsp;
+            </div>
+        </td>
+        <td>
+            <span title="{{ topic.description }}">
+                <a href="{{ topic.path }}">{{ topic.title }}</a>
+            </span>
+        </td>
+        {% for def in stat_defs %}
+        <td class="{{ def.type }}{% if def.key == 'total_struggling' and stats|get_item:topic.id|get_item:def.key > 0 %} struggling{% endif %}"">
+            {% if def.type == "float" %}
+                {{ stats|get_item:topic.id|get_item:def.key|floatformat }}
+            {% elif def.type == "pct" %}
+                {{ stats|get_item:topic.id|get_item:def.key|percent:1 }}
+            {% elif def.type == "date" %}
+                {{ stats|get_item:topic.id|get_item:def.key|date:"SHORT_DATE_FORMAT" }}
+            {% elif def.key != "ex:total_struggling" %}
+                {{ stats|get_item:topic.id|get_item:def.key }}
+            {% else %}
+                {% for exercise_log in exercise_logs|get_item:topic.id %}
+                    {% if exercise_log.struggling %}
+                        {% cycle 'a' 'b' 'c' 'd' 'e' 'f' 'g' 'h' 'i' 'j' 'k' 'l' 'm' 'n' 'o' 'p' as letter silent %}
+                        {% for exercise in exercises|get_item:topic.id %}
+                            {% if exercise.name = exercise_log.exercise_id %}
+                            <a href="{{ exercise.path }}">{{ letter }}</a>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </td>
+        {% endfor %}
+    </tr>
+{% endfor %}
+</table>
+{% endif %}
+
+{% block endjs %}{{ block.super }}{% endblock endjs %}
+{% endblock content %}

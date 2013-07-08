@@ -1,38 +1,39 @@
-import re, json
+import re 
+import json
+from annoying.decorators import render_to
+
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
-from annoying.decorators import render_to
-from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
-from central.forms import OrganizationForm, ZoneForm, OrganizationInvitationForm
-from securesync.api_client import SyncClient
-from securesync.models import Zone, SyncSession
-from django.core.urlresolvers import reverse
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
-from securesync.models import Facility
-from securesync.forms import FacilityForm
-from django.contrib import messages
 from django.template.loader import render_to_string
+from django.views.decorators.csrf import csrf_exempt
 
 import requests
 import settings
+from central.forms import OrganizationForm, ZoneForm, OrganizationInvitationForm
+from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
+from securesync.api_client import SyncClient
+from securesync.forms import FacilityForm
+from securesync.models import Facility, Zone, SyncSession
 
 
 @render_to("central/homepage.html")
 def homepage(request):
-    
+
     # show the static landing page to users that aren't logged in
     if not request.user.is_authenticated():
         return landing_page(request)
-    
+
     # get a list of all the organizations this user helps administer    
     organizations = get_or_create_user_profile(request.user).get_organizations()
     
     # add invitation forms to each of the organizations
     for org in organizations:
         org.form = OrganizationInvitationForm(initial={"invited_by": request.user})
-    
+
     # handle a submitted invitation form
     if request.method == "POST":
         form = OrganizationInvitationForm(data=request.POST)

@@ -1,3 +1,8 @@
+"""
+Utility for extracting app-specific data.
+
+Not usually run.
+"""
 import json
 import pdb
 import polib
