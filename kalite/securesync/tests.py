@@ -1,5 +1,4 @@
 import re
-import unittest
 
 from django.test import TestCase
 
@@ -9,6 +8,7 @@ from models import FacilityUser
 
 
 from django.test import TestCase
+from django.utils import unittest
 
 import crypto
 from securesync.models import Facility, FacilityUser, FacilityGroup

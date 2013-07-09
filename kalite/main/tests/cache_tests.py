@@ -8,11 +8,11 @@ import sys
 import random
 import requests
 import urllib
-import unittest
 
 from django.test import TestCase, LiveServerTestCase
 from django.core.management import call_command
 from django.test.client import Client
+from django.utils import unittest
 
 import settings
 from utils import caching
