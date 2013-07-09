@@ -1,99 +1,99 @@
 [
   {
+    "kind": "Exercise", 
+    "display_name": "Circles and arcs", 
+    "description": "Relate the length of an arc to the circumference of a whole circle.", 
+    "title": "Circles and arcs", 
+    "seconds_per_fast_problem": 32.0, 
     "related_video_readable_ids": [
       "area-of-a-circle"
     ], 
+    "prerequisites": [
+      "area_of_parallelograms", 
+      "areas_of_trapezoids_rhombi_and_kites"
+    ], 
+    "live": true, 
+    "h_position": 37, 
     "v_position": -20, 
     "path": "/math/geometry/circles/e/circles_and_arcs/", 
-    "display_name": "Circles and arcs", 
-    "title": "Circles and arcs", 
-    "live": true, 
-    "description": "Relate the length of an arc to the circumference of a whole circle.", 
-    "h_position": 37, 
     "slug": "circles_and_arcs", 
-    "kind": "Exercise", 
-    "name": "circles_and_arcs", 
-    "seconds_per_fast_problem": 32.0, 
-    "prerequisites": [
-      "area_of_parallelograms", 
-      "areas_of_trapezoids_rhombi_and_kites"
-    ]
+    "name": "circles_and_arcs"
   }, 
   {
+    "kind": "Exercise", 
+    "display_name": "Areas of circles and sectors", 
+    "description": "Relate the area of a sector to the area of a whole circle.", 
+    "title": "Areas of circles and sectors", 
+    "seconds_per_fast_problem": 29.0, 
     "related_video_readable_ids": [
       "area-of-a-circle"
     ], 
-    "v_position": -19, 
-    "path": "/math/geometry/circles/e/areas_of_circles_and_sectors/", 
-    "display_name": "Areas of circles and sectors", 
-    "title": "Areas of circles and sectors", 
-    "live": true, 
-    "description": "Relate the area of a sector to the area of a whole circle.", 
-    "h_position": 37, 
-    "slug": "areas_of_circles_and_sectors", 
-    "kind": "Exercise", 
-    "name": "areas_of_circles_and_sectors", 
-    "seconds_per_fast_problem": 29.0, 
     "prerequisites": [
       "area_of_parallelograms", 
       "areas_of_trapezoids_rhombi_and_kites"
-    ]
+    ], 
+    "live": true, 
+    "h_position": 37, 
+    "v_position": -19, 
+    "path": "/math/geometry/circles/e/areas_of_circles_and_sectors/", 
+    "slug": "areas_of_circles_and_sectors", 
+    "name": "areas_of_circles_and_sectors"
   }, 
   {
+    "kind": "Exercise", 
+    "display_name": "Inscribed angles 1", 
+    "description": null, 
+    "title": "Inscribed angles 1", 
+    "seconds_per_fast_problem": 6.0, 
     "related_video_readable_ids": [
       "inscribed-and-central-angles"
     ], 
-    "v_position": -22, 
-    "path": "/math/geometry/circles/e/inscribed_angles_1/", 
-    "display_name": "Inscribed angles 1", 
-    "title": "Inscribed angles 1", 
-    "live": true, 
-    "description": null, 
-    "h_position": 42, 
-    "slug": "inscribed_angles_1", 
-    "kind": "Exercise", 
-    "name": "inscribed_angles_1", 
-    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "circles_and_arcs"
-    ]
+    ], 
+    "live": true, 
+    "h_position": 42, 
+    "v_position": -22, 
+    "path": "/math/geometry/circles/e/inscribed_angles_1/", 
+    "slug": "inscribed_angles_1", 
+    "name": "inscribed_angles_1"
   }, 
   {
+    "kind": "Exercise", 
+    "display_name": "Inscribed angles 2", 
+    "description": null, 
+    "title": "Inscribed angles 2", 
+    "seconds_per_fast_problem": 5.75, 
     "related_video_readable_ids": [
       "inscribed-and-central-angles"
     ], 
-    "v_position": -22, 
-    "path": "/math/geometry/circles/e/inscribed_angles_2/", 
-    "display_name": "Inscribed angles 2", 
-    "title": "Inscribed angles 2", 
-    "live": true, 
-    "description": null, 
-    "h_position": 43, 
-    "slug": "inscribed_angles_2", 
-    "kind": "Exercise", 
-    "name": "inscribed_angles_2", 
-    "seconds_per_fast_problem": 5.75, 
     "prerequisites": [
       "inscribed_angles_1"
-    ]
+    ], 
+    "live": true, 
+    "h_position": 43, 
+    "v_position": -22, 
+    "path": "/math/geometry/circles/e/inscribed_angles_2/", 
+    "slug": "inscribed_angles_2", 
+    "name": "inscribed_angles_2"
   }, 
   {
+    "kind": "Exercise", 
+    "display_name": "Inscribed angles 3", 
+    "description": null, 
+    "title": "Inscribed angles 3", 
+    "seconds_per_fast_problem": 6.0, 
     "related_video_readable_ids": [
       "inscribed-and-central-angles"
     ], 
-    "v_position": -22, 
-    "path": "/math/geometry/circles/e/inscribed_angles_3/", 
-    "display_name": "Inscribed angles 3", 
-    "title": "Inscribed angles 3", 
-    "live": true, 
-    "description": null, 
-    "h_position": 44, 
-    "slug": "inscribed_angles_3", 
-    "kind": "Exercise", 
-    "name": "inscribed_angles_3", 
-    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "inscribed_angles_2"
-    ]
+    ], 
+    "live": true, 
+    "h_position": 44, 
+    "v_position": -22, 
+    "path": "/math/geometry/circles/e/inscribed_angles_3/", 
+    "slug": "inscribed_angles_3", 
+    "name": "inscribed_angles_3"
   }
 ]

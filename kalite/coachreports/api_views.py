@@ -14,7 +14,6 @@ from django.utils import simplejson
 
 from main.models import VideoLog, ExerciseLog, VideoFile
 from securesync.models import Facility, FacilityUser,FacilityGroup, DeviceZone, Device
-from utils.topics import slug_key, title_key
 from securesync.views import facility_required
 #from shared.views import group_report_context
 from coachreports.forms import DataForm

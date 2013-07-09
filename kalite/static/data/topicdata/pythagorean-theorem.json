@@ -1,63 +1,63 @@
 [
   {
+    "kind": "Exercise", 
+    "display_name": "Pythagorean theorem", 
+    "description": "Find the leg or hypotenuse of a right triangle using the Pythagorean theorem.", 
+    "title": "Pythagorean theorem", 
+    "seconds_per_fast_problem": 15.0, 
     "related_video_readable_ids": [
       "pythagorean-theorem"
     ], 
-    "v_position": -13, 
-    "path": "/math/algebra/pythagorean-theorem/e/pythagorean_theorem_1/", 
-    "display_name": "Pythagorean theorem", 
-    "title": "Pythagorean theorem", 
-    "live": true, 
-    "description": "Find the leg or hypotenuse of a right triangle using the Pythagorean theorem.", 
-    "h_position": 38, 
-    "slug": "pythagorean_theorem_1", 
-    "kind": "Exercise", 
-    "name": "pythagorean_theorem_1", 
-    "seconds_per_fast_problem": 15.0, 
     "prerequisites": [
       "adding_and_subtracting_radicals"
-    ]
+    ], 
+    "live": true, 
+    "h_position": 38, 
+    "v_position": -13, 
+    "path": "/math/algebra/pythagorean-theorem/e/pythagorean_theorem_1/", 
+    "slug": "pythagorean_theorem_1", 
+    "name": "pythagorean_theorem_1"
   }, 
   {
+    "kind": "Exercise", 
+    "display_name": "Distance formula", 
+    "description": "Use the Pythagorean theorem to find the distance between two points on the coordinate plane.", 
+    "title": "Distance formula", 
+    "seconds_per_fast_problem": 26.0, 
     "related_video_readable_ids": [
       "pythagorean-theorem", 
       "distance-formula", 
       "distance-formula"
     ], 
-    "v_position": -13, 
-    "path": "/math/algebra/pythagorean-theorem/e/distance_formula/", 
-    "display_name": "Distance formula", 
-    "title": "Distance formula", 
-    "live": true, 
-    "description": "Use the Pythagorean theorem to find the distance between two points on the coordinate plane.", 
-    "h_position": 39, 
-    "slug": "distance_formula", 
-    "kind": "Exercise", 
-    "name": "distance_formula", 
-    "seconds_per_fast_problem": 26.0, 
     "prerequisites": [
       "pythagorean_theorem_1"
-    ]
+    ], 
+    "live": true, 
+    "h_position": 39, 
+    "v_position": -13, 
+    "path": "/math/algebra/pythagorean-theorem/e/distance_formula/", 
+    "slug": "distance_formula", 
+    "name": "distance_formula"
   }, 
   {
+    "kind": "Exercise", 
+    "display_name": "Midpoint formula", 
+    "description": "Find the midpoint of a segment on the coordinate plane, or find the endpoint of a segment given one point and the midpoint.", 
+    "title": "Midpoint formula", 
+    "seconds_per_fast_problem": 22.0, 
     "related_video_readable_ids": [
       "pythagorean-theorem", 
       "midpoint-formula", 
       "midpoint-formula"
     ], 
-    "v_position": -12, 
-    "path": "/math/algebra/pythagorean-theorem/e/midpoint_formula/", 
-    "display_name": "Midpoint formula", 
-    "title": "Midpoint formula", 
-    "live": true, 
-    "description": "Find the midpoint of a segment on the coordinate plane, or find the endpoint of a segment given one point and the midpoint.", 
-    "h_position": 40, 
-    "slug": "midpoint_formula", 
-    "kind": "Exercise", 
-    "name": "midpoint_formula", 
-    "seconds_per_fast_problem": 22.0, 
     "prerequisites": [
       "distance_formula"
-    ]
+    ], 
+    "live": true, 
+    "h_position": 40, 
+    "v_position": -12, 
+    "path": "/math/algebra/pythagorean-theorem/e/midpoint_formula/", 
+    "slug": "midpoint_formula", 
+    "name": "midpoint_formula"
   }
 ]

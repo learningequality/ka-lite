@@ -1,12 +1,78 @@
+"""
+Important constants and helpful functions
+"""
 import glob
+import json
 import os
 from functools import partial
 
 import settings
-from main import topicdata
 
 
-def find_videos_by_youtube_id(youtube_id, node=topicdata.TOPICS):
+kind_slugs = {
+    "Video": "v/",
+    "Exercise": "e/",
+    "Topic": ""
+}
+
+topics_file = "topics.json"
+node_cache_file = "nodecache.json"
+map_layout_file = "maplayout_data.json"
+video_remap_file = "youtube_to_slug_map.json"
+
+
+# Globals that can be filled
+TOPICS          = None
+def get_topics_root(force=False):
+    global TOPICS, topics_file
+    if TOPICS is None or force:
+        TOPICS = json.loads(open(os.path.join(settings.DATA_PATH, topics_file)).read())
+    return TOPICS
+
+
+NODE_CACHE = None
+def get_node_cache(force=False):
+    global NODE_CACHE, node_cache_file
+    if NODE_CACHE is None or force:
+        NODE_CACHE      = json.loads(open(os.path.join(settings.DATA_PATH, node_cache_file)).read())
+    return NODE_CACHE
+
+
+EXERCISE_TOPICS = None
+def get_exercise_topics(force=False):
+    global EXERCISE_TOPICS, map_layout_file
+    if EXERCISE_TOPICS is None or force:
+        EXERCISE_TOPICS = json.loads(open(os.path.join(settings.DATA_PATH, map_layout_file)).read())
+    return EXERCISE_TOPICS
+
+
+ID2SLUG_MAP = None
+def get_id2slug_map(force=False):
+    global ID2SLUG_MAP, video_remap_file
+    if ID2SLUG_MAP is None or force:
+        ID2SLUG_MAP     = json.loads(open(os.path.join(settings.DATA_PATH, video_remap_file)).read())
+    return ID2SLUG_MAP
+
+
+
+def get_videos(topic): 
+    """Given a topic node, returns all video node children (non-recursively)"""
+    return filter(lambda node: node["kind"] == "Video", topic["children"])
+
+
+def get_exercises(topic): 
+    """Given a topic node, returns all exercise node children (non-recursively)"""
+    return filter(lambda node: node["kind"] == "Exercise" and node["live"], topic["children"])
+
+
+def get_live_topics(topic): 
+    """Given a topic node, returns all children that are not hidden and contain at least one video (non-recursively)"""
+    return filter(lambda node: node["kind"] == "Topic" and not node["hide"] and "Video" in node["contains"], topic["children"])
+
+
+def find_videos_by_youtube_id(youtube_id, node=None):
+    if node is None:
+        node = get_topics_root()
     videos = []
     if node.get("youtube_id", "") == youtube_id:
         videos.append(node)
@@ -17,7 +83,9 @@ def find_videos_by_youtube_id(youtube_id, node=topicdata.TOPICS):
 # find_video_by_youtube_id("NSSoMafbBqQ")
 
 
-def get_all_youtube_ids(node=topicdata.TOPICS):
+def get_all_youtube_ids(node=None):
+    if node is None:
+        node = get_topics_root()
     if node.get("youtube_id", ""):
         return [node.get("youtube_id", "")]
     ids = []
@@ -110,7 +178,7 @@ def get_video_counts(topic, videos_path, force=False):
         # BASE CASE:
         # All my children are leaves, so we'll query here (a bit more efficient than 1 query per leaf)
         else:
-            videos = topicdata.get_videos(topic)
+            videos = get_videos(topic)
             if len(videos) > 0:
 
                 for video in videos:
@@ -127,7 +195,7 @@ def get_video_counts(topic, videos_path, force=False):
 def get_topic_by_path(path):
     """Given a topic path, return the corresponding topic node in the topic hierarchy"""
     # Make sure the root fits
-    root_node = topicdata.TOPICS
+    root_node = get_topics_root()
     if not path.startswith(root_node["path"]):
         return None
 
@@ -146,12 +214,19 @@ def get_topic_by_path(path):
     return cur_node
 
 
-def get_all_leaves(leaf_type, topic_node=topicdata.TOPICS):
+def get_all_leaves(topic_node=None, leaf_type=None):
+    """
+    Recurses the topic tree to return all leaves of type leaf_type, at all levels of the tree.
+
+    If leaf_type is None, returns all child nodes of all types and levels.
+    """
+    if not topic_node:
+        topic_node = get_topics_root()
     leaves = []
 
     # base case
     if not "children" in topic_node:
-        if topic_node['kind'] == leaf_type:
+        if leaf_type is None or topic_node['kind'] == leaf_type:
             leaves.append(topic_node)
     else:
         for child in topic_node["children"]:
@@ -160,37 +235,32 @@ def get_all_leaves(leaf_type, topic_node=topicdata.TOPICS):
     return leaves
 
 
-def get_topic_leaves(leaf_type, topic_id=None, path=None):
+def get_topic_leaves(topic_id=None, path=None, leaf_type=None):
     """Given a topic (identified by topic_id or path), return all descendant exercises"""
     assert (topic_id or path) and not (topic_id and path), "Specify topic_id or path, not both."
 
-    import pdb; pdb.set_trace()
     if not path:
-        topic_node = filter(partial(lambda node, name: node['slug'] == name, name=topic_id), topicdata.NODE_CACHE['Topic'].values())
+        topic_node = filter(partial(lambda node, name: node['slug'] == name, name=topic_id), get_node_cache()['Topic'].values())
         if not topic_node:
             return []
         path = topic_node[0]['path']
 
-    # More efficient way
     topic_node = get_topic_by_path(path)
     exercises = get_all_leaves(topic_node=topic_node, leaf_type=leaf_type)
 
-    # Brute force way
-    # exercises = []
-    # for ex in topicdata.NODE_CACHE['Exercise'].values():
-    #    if ex['path'].startswith(path):
-    #        exercises.append(ex)
     return exercises
 
 
 def get_topic_exercises(*args, **kwargs):
     """Get all exercises for a particular set of topics"""
-    return get_topic_leaves(leaf_type='Exercise', *args, **kwargs)
+    kwargs["leaf_type"] = "Exercise"
+    return get_topic_leaves(*args, **kwargs)
 
 
 def get_topic_videos(*args, **kwargs):
     """Get all videos for a particular set of topics"""
-    return get_topic_leaves(leaf_type='Video', *args, **kwargs)
+    kwargs["leaf_type"] = "Video"
+    return get_topic_leaves(*args, **kwargs)
 
 
 def get_related_exercises(videos):
@@ -212,7 +282,7 @@ def get_related_videos(exercises, topics=None, possible_videos=None):
 
     if not possible_videos:
         possible_videos = []
-        for topic in (topics or topicdata.NODE_CACHE['Topic'].values()):
+        for topic in (topics or get_node_cache()['Topic'].values()):
             possible_videos += get_topic_videos(topic_id=topic['id'])
 
     # Get exercises from videos
@@ -227,6 +297,6 @@ def get_all_midlevel_topics():
     """Nobody knows what the true definition of these are, but this is the list of
     exercise-related topics used in coach reports."""
 
-    topics = topicdata.EXERCISE_TOPICS["topics"].values()
+    topics = get_exercise_topics()["topics"].values()
     topics = sorted(topics, key=lambda k: (k["y"], k["x"]))
     return topics

@@ -1,193 +1,174 @@
 [
   {
+    "kind": "Exercise", 
+    "display_name": "Expressing ratios as fractions", 
+    "description": null, 
+    "title": "Expressing ratios as fractions", 
+    "seconds_per_fast_problem": 8.0, 
     "related_video_readable_ids": [
       "ratios-as-fractions-in-simplest-form"
     ], 
-    "v_position": -10, 
-    "path": "/math/arithmetic/rates-and-ratios/ratios_and_proportions/e/expressing_ratios_as_fractions/", 
-    "display_name": "Expressing ratios as fractions", 
-    "title": "Expressing ratios as fractions", 
-    "live": true, 
-    "description": null, 
-    "h_position": 28, 
-    "slug": "expressing_ratios_as_fractions", 
-    "kind": "Exercise", 
-    "name": "expressing_ratios_as_fractions", 
-    "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "simplifying_fractions"
-    ]
+    ], 
+    "live": true, 
+    "h_position": 28, 
+    "v_position": -10, 
+    "path": "/math/arithmetic/rates-and-ratios/ratios_and_proportions/e/expressing_ratios_as_fractions/", 
+    "slug": "expressing_ratios_as_fractions", 
+    "name": "expressing_ratios_as_fractions"
   }, 
   {
+    "kind": "Exercise", 
+    "display_name": "Ratio word problems", 
+    "description": null, 
+    "title": "Ratio word problems", 
+    "seconds_per_fast_problem": 11.0, 
     "related_video_readable_ids": [
       "simplifying-rates-and-ratios"
     ], 
+    "prerequisites": [
+      "expressing_ratios_as_fractions"
+    ], 
+    "live": true, 
+    "h_position": 29, 
     "v_position": -8, 
     "path": "/math/arithmetic/rates-and-ratios/ratios_and_proportions/e/ratio_word_problems/", 
-    "display_name": "Ratio word problems", 
-    "title": "Ratio word problems", 
-    "live": true, 
-    "description": null, 
-    "h_position": 29, 
     "slug": "ratio_word_problems", 
-    "kind": "Exercise", 
-    "name": "ratio_word_problems", 
-    "seconds_per_fast_problem": 11.0, 
-    "prerequisites": [
-      "expressing_ratios_as_fractions"
-    ]
+    "name": "ratio_word_problems"
   }, 
   {
+    "kind": "Exercise", 
+    "display_name": "Writing proportions", 
+    "description": null, 
+    "title": "Writing proportions", 
+    "seconds_per_fast_problem": 9.0, 
     "related_video_readable_ids": [
       "understanding-proportions"
     ], 
+    "prerequisites": [
+      "expressing_ratios_as_fractions"
+    ], 
+    "live": true, 
+    "h_position": 29, 
     "v_position": -10, 
     "path": "/math/arithmetic/rates-and-ratios/ratios_and_proportions/e/writing_proportions/", 
-    "display_name": "Writing proportions", 
-    "title": "Writing proportions", 
-    "live": true, 
-    "description": null, 
-    "h_position": 29, 
     "slug": "writing_proportions", 
-    "kind": "Exercise", 
-    "name": "writing_proportions", 
-    "seconds_per_fast_problem": 9.0, 
-    "prerequisites": [
-      "expressing_ratios_as_fractions"
-    ]
+    "name": "writing_proportions"
   }, 
   {
+    "kind": "Exercise", 
+    "display_name": "Proportions 1", 
+    "description": null, 
+    "title": "Proportions 1", 
+    "seconds_per_fast_problem": 8.0, 
     "related_video_readable_ids": [
       "understanding-proportions"
     ], 
-    "v_position": -9, 
-    "path": "/math/arithmetic/rates-and-ratios/ratios_and_proportions/e/proportions_1/", 
-    "display_name": "Proportions 1", 
-    "title": "Proportions 1", 
-    "live": true, 
-    "description": null, 
-    "h_position": 29, 
-    "slug": "proportions_1", 
-    "kind": "Exercise", 
-    "name": "proportions_1", 
-    "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "proportions_1", 
       "expressing_ratios_as_fractions"
-    ]
+    ], 
+    "live": true, 
+    "h_position": 29, 
+    "v_position": -9, 
+    "path": "/math/arithmetic/rates-and-ratios/ratios_and_proportions/e/proportions_1/", 
+    "slug": "proportions_1", 
+    "name": "proportions_1"
   }, 
   {
+    "kind": "Exercise", 
+    "display_name": "Proportions 2", 
+    "description": null, 
+    "title": "Proportions 2", 
+    "seconds_per_fast_problem": 17.0, 
     "related_video_readable_ids": [
       "understanding-proportions"
     ], 
-    "v_position": -9, 
-    "path": "/math/arithmetic/rates-and-ratios/ratios_and_proportions/e/proportions_2/", 
-    "display_name": "Proportions 2", 
-    "title": "Proportions 2", 
-    "live": true, 
-    "description": null, 
-    "h_position": 30, 
-    "slug": "proportions_2", 
-    "kind": "Exercise", 
-    "name": "proportions_2", 
-    "seconds_per_fast_problem": 17.0, 
     "prerequisites": [
       "proportions_1"
-    ]
-  }, 
-  {
-    "related_video_readable_ids": [
-      "understanding-proportions"
     ], 
-    "v_position": -7, 
-    "path": "/math/arithmetic/rates-and-ratios/ratios_and_proportions/e/solving-ratio-problems-with-tables/", 
-    "display_name": "Solving ratio problems with tables", 
-    "title": "Solving ratio problems with tables", 
     "live": true, 
-    "description": "", 
     "h_position": 30, 
-    "slug": "solving-ratio-problems-with-tables", 
-    "kind": "Exercise", 
-    "name": "solving-ratio-problems-with-tables", 
-    "seconds_per_fast_problem": 27.0, 
-    "prerequisites": [
-      "ratio_word_problems"
-    ]
+    "v_position": -9, 
+    "path": "/math/arithmetic/rates-and-ratios/ratios_and_proportions/e/proportions_2/", 
+    "slug": "proportions_2", 
+    "name": "proportions_2"
   }, 
   {
+    "kind": "Exercise", 
+    "display_name": "Rate problems 0.5", 
+    "description": null, 
+    "title": "Rate problems 0.5", 
+    "seconds_per_fast_problem": 14.0, 
     "related_video_readable_ids": [
       "finding-unit-prices"
     ], 
-    "v_position": -11, 
-    "path": "/math/arithmetic/rates-and-ratios/rates_tutorial/e/rate_problems_0.5/", 
-    "display_name": "Rate problems 0.5", 
-    "title": "Rate problems 0.5", 
-    "live": true, 
-    "description": null, 
-    "h_position": 29, 
-    "slug": "rate_problems_0.5", 
-    "kind": "Exercise", 
-    "name": "rate_problems_0.5", 
-    "seconds_per_fast_problem": 14.0, 
     "prerequisites": [
       "units"
-    ]
+    ], 
+    "live": true, 
+    "h_position": 29, 
+    "v_position": -11, 
+    "path": "/math/arithmetic/rates-and-ratios/rates_tutorial/e/rate_problems_0.5/", 
+    "slug": "rate_problems_0.5", 
+    "name": "rate_problems_0.5"
   }, 
   {
+    "kind": "Exercise", 
+    "display_name": "Rate problems 1", 
+    "description": null, 
+    "title": "Rate problems 1", 
+    "seconds_per_fast_problem": 60.0, 
     "related_video_readable_ids": [
       "finding-unit-prices"
     ], 
-    "v_position": -11, 
-    "path": "/math/arithmetic/rates-and-ratios/rates_tutorial/e/rate_problems_1/", 
-    "display_name": "Rate problems 1", 
-    "title": "Rate problems 1", 
-    "live": true, 
-    "description": null, 
-    "h_position": 30, 
-    "slug": "rate_problems_1", 
-    "kind": "Exercise", 
-    "name": "rate_problems_1", 
-    "seconds_per_fast_problem": 60.0, 
     "prerequisites": [
       "rate_problems_0.5"
-    ]
+    ], 
+    "live": true, 
+    "h_position": 30, 
+    "v_position": -11, 
+    "path": "/math/arithmetic/rates-and-ratios/rates_tutorial/e/rate_problems_1/", 
+    "slug": "rate_problems_1", 
+    "name": "rate_problems_1"
   }, 
   {
+    "kind": "Exercise", 
+    "display_name": "Rate problems 2", 
+    "description": "", 
+    "title": "Rate problems 2", 
+    "seconds_per_fast_problem": 14.0, 
     "related_video_readable_ids": [
       "finding-unit-prices"
     ], 
-    "v_position": -11, 
-    "path": "/math/arithmetic/rates-and-ratios/rates_tutorial/e/rate_problems_2/", 
-    "display_name": "Rate problems 2", 
-    "title": "Rate problems 2", 
-    "live": true, 
-    "description": "", 
-    "h_position": 31, 
-    "slug": "rate_problems_2", 
-    "kind": "Exercise", 
-    "name": "rate_problems_2", 
-    "seconds_per_fast_problem": 14.0, 
     "prerequisites": [
       "rate_problems_1"
-    ]
+    ], 
+    "live": true, 
+    "h_position": 31, 
+    "v_position": -11, 
+    "path": "/math/arithmetic/rates-and-ratios/rates_tutorial/e/rate_problems_2/", 
+    "slug": "rate_problems_2", 
+    "name": "rate_problems_2"
   }, 
   {
+    "kind": "Exercise", 
+    "display_name": "Units", 
+    "description": null, 
+    "title": "Units", 
+    "seconds_per_fast_problem": 15.0, 
     "related_video_readable_ids": [
       "unit-conversion-with-fractions"
     ], 
-    "v_position": -11, 
-    "path": "/math/arithmetic/rates-and-ratios/unit_conversion/e/units/", 
-    "display_name": "Units", 
-    "title": "Units", 
-    "live": true, 
-    "description": null, 
-    "h_position": 28, 
-    "slug": "units", 
-    "kind": "Exercise", 
-    "name": "units", 
-    "seconds_per_fast_problem": 15.0, 
     "prerequisites": [
       "multiplying_fractions"
-    ]
+    ], 
+    "live": true, 
+    "h_position": 28, 
+    "v_position": -11, 
+    "path": "/math/arithmetic/rates-and-ratios/unit_conversion/e/units/", 
+    "slug": "units", 
+    "name": "units"
   }
 ]

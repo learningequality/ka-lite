@@ -1,21 +1,21 @@
 [
   {
+    "kind": "Exercise", 
+    "display_name": "Angle bisector theorem", 
+    "description": null, 
+    "title": "Angle bisector theorem", 
+    "seconds_per_fast_problem": 20.0, 
     "related_video_readable_ids": [
       "angle-bisector-theorem-examples"
     ], 
-    "v_position": -19, 
-    "path": "/math/geometry/triangle-properties/angle_bisectors/e/angle_bisector_theorem/", 
-    "display_name": "Angle bisector theorem", 
-    "title": "Angle bisector theorem", 
-    "live": true, 
-    "description": null, 
-    "h_position": 32, 
-    "slug": "angle_bisector_theorem", 
-    "kind": "Exercise", 
-    "name": "angle_bisector_theorem", 
-    "seconds_per_fast_problem": 20.0, 
     "prerequisites": [
       "triangle_angles_1"
-    ]
+    ], 
+    "live": true, 
+    "h_position": 32, 
+    "v_position": -19, 
+    "path": "/math/geometry/triangle-properties/angle_bisectors/e/angle_bisector_theorem/", 
+    "slug": "angle_bisector_theorem", 
+    "name": "angle_bisector_theorem"
   }
 ]

@@ -7,10 +7,7 @@ from django.test.client import Client
 
 import settings
 from main import topicdata
-from utils import topic_tools, internet
-
-# all code based on Django snippet at:
-#   http://djangosnippets.org/snippets/936/
+from utils.internet import generate_all_paths
 
 
 def get_cache_key(path=None, url_name=None):
@@ -45,8 +42,8 @@ def create_cache(path=None, url_name=None, force=False):
         expire_page(path=path)
     if not has_cache_key(path=path):
         Client().get(path)
-    
-    
+
+
 def expire_page(path=None,url_name=None):
     assert (path or url_name) and not (path and url_name), "Must have path or url_name parameter, but not both"
     
@@ -91,7 +88,7 @@ def invalidate_cached_topic_hierarchy(video_id=None, video_slug=None, video_path
     if not video_path:
         video_path = get_video_page_path(video_id=video_id, video_slug=video_slug)
 
-    for path in internet.generate_all_paths(path=video_path, base_path=topicdata.TOPICS['path']): # start at the root
+    for path in generate_all_paths(path=video_path, base_path=topicdata.TOPICS['path']): # start at the root
         expire_page(path=path)
 
 
@@ -101,7 +98,7 @@ def regenerate_cached_topic_hierarchies(video_ids):
     for video_id in video_ids:
         video_path = get_video_page_path(video_id=video_id)
 
-        paths_to_regenerate = paths_to_regenerate.union(internet.generate_all_paths(path=video_path, base_path=topicdata.TOPICS['path'])) # start at the root
+        paths_to_regenerate = paths_to_regenerate.union(generate_all_paths(path=video_path, base_path=topicdata.TOPICS['path'])) # start at the root
 
     # Now, regenerate any page.
     for path in paths_to_regenerate:

@@ -1,125 +1,125 @@
 [
   {
+    "kind": "Exercise", 
+    "display_name": "Imaginary unit powers", 
+    "description": "Solve problems with base i (square root of -1) raised to a positive exponent", 
+    "title": "Imaginary unit powers", 
+    "seconds_per_fast_problem": 6.0, 
     "related_video_readable_ids": [
       "calculating-i-raised-to-arbitrary-exponents", 
       "calculating-i-raised-to-arbitrary-exponents"
     ], 
-    "v_position": -12, 
-    "path": "/math/algebra/complex-numbers/imaginary_unit_i/e/imaginary_unit_powers/", 
-    "display_name": "Imaginary unit powers", 
-    "title": "Imaginary unit powers", 
-    "live": true, 
-    "description": "Solve problems with base i (square root of -1) raised to a positive exponent", 
-    "h_position": 45, 
-    "slug": "imaginary_unit_powers", 
-    "kind": "Exercise", 
-    "name": "imaginary_unit_powers", 
-    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "equation_of_a_line"
-    ]
+    ], 
+    "live": true, 
+    "h_position": 45, 
+    "v_position": -12, 
+    "path": "/math/algebra/complex-numbers/imaginary_unit_i/e/imaginary_unit_powers/", 
+    "slug": "imaginary_unit_powers", 
+    "name": "imaginary_unit_powers"
   }, 
   {
+    "kind": "Exercise", 
+    "display_name": "The complex plane", 
+    "description": "Plot complex numbers on the complex plane.", 
+    "title": "The complex plane", 
+    "seconds_per_fast_problem": 6.0, 
     "related_video_readable_ids": [
       "complex-numbers--part-2", 
       "complex-numbers--part-2"
     ], 
-    "v_position": -12, 
-    "path": "/math/algebra/complex-numbers/complex_numbers/e/the_complex_plane/", 
-    "display_name": "The complex plane", 
-    "title": "The complex plane", 
-    "live": true, 
-    "description": "Plot complex numbers on the complex plane.", 
-    "h_position": 46, 
-    "slug": "the_complex_plane", 
-    "kind": "Exercise", 
-    "name": "the_complex_plane", 
-    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "imaginary_unit_powers"
-    ]
+    ], 
+    "live": true, 
+    "h_position": 46, 
+    "v_position": -12, 
+    "path": "/math/algebra/complex-numbers/complex_numbers/e/the_complex_plane/", 
+    "slug": "the_complex_plane", 
+    "name": "the_complex_plane"
   }, 
   {
+    "kind": "Exercise", 
+    "display_name": "Adding and subtracting complex numbers", 
+    "description": "Add or subtract complex numbers. Identify the real and imaginary parts.", 
+    "title": "Adding and subtracting complex numbers", 
+    "seconds_per_fast_problem": 9.0, 
     "related_video_readable_ids": [
       "subtracting-complex-numbers", 
       "subtracting-complex-numbers"
     ], 
-    "v_position": -12, 
-    "path": "/math/algebra/complex-numbers/complex_numbers/e/adding_and_subtracting_complex_numbers/", 
-    "display_name": "Adding and subtracting complex numbers", 
-    "title": "Adding and subtracting complex numbers", 
-    "live": true, 
-    "description": "Add or subtract complex numbers. Identify the real and imaginary parts.", 
-    "h_position": 48, 
-    "slug": "adding_and_subtracting_complex_numbers", 
-    "kind": "Exercise", 
-    "name": "adding_and_subtracting_complex_numbers", 
-    "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "adding_and_subtracting_polynomials", 
       "complex_plane_operations"
-    ]
+    ], 
+    "live": true, 
+    "h_position": 48, 
+    "v_position": -12, 
+    "path": "/math/algebra/complex-numbers/complex_numbers/e/adding_and_subtracting_complex_numbers/", 
+    "slug": "adding_and_subtracting_complex_numbers", 
+    "name": "adding_and_subtracting_complex_numbers"
   }, 
   {
+    "kind": "Exercise", 
+    "display_name": "Multiplying complex numbers", 
+    "description": "Multiply complex numbers. Identify the real and imaginary parts.", 
+    "title": "Multiplying complex numbers", 
+    "seconds_per_fast_problem": 18.0, 
     "related_video_readable_ids": [
       "multiplying-complex-numbers", 
       "multiplying-complex-numbers"
     ], 
-    "v_position": -12, 
-    "path": "/math/algebra/complex-numbers/complex_numbers/e/multiplying_complex_numbers/", 
-    "display_name": "Multiplying complex numbers", 
-    "title": "Multiplying complex numbers", 
-    "live": true, 
-    "description": "Multiply complex numbers. Identify the real and imaginary parts.", 
-    "h_position": 49, 
-    "slug": "multiplying_complex_numbers", 
-    "kind": "Exercise", 
-    "name": "multiplying_complex_numbers", 
-    "seconds_per_fast_problem": 18.0, 
     "prerequisites": [
       "multiplying_expressions_1", 
       "adding_and_subtracting_complex_numbers"
-    ]
+    ], 
+    "live": true, 
+    "h_position": 49, 
+    "v_position": -12, 
+    "path": "/math/algebra/complex-numbers/complex_numbers/e/multiplying_complex_numbers/", 
+    "slug": "multiplying_complex_numbers", 
+    "name": "multiplying_complex_numbers"
   }, 
   {
+    "kind": "Exercise", 
+    "display_name": "Dividing complex numbers", 
+    "description": "Divide complex numbers. Identify the real and imaginary parts.", 
+    "title": "Dividing complex numbers", 
+    "seconds_per_fast_problem": 40.0, 
     "related_video_readable_ids": [
       "dividing-complex-numbers", 
       "dividing-complex-numbers"
     ], 
-    "v_position": -12, 
-    "path": "/math/algebra/complex-numbers/complex_numbers/e/dividing_complex_numbers/", 
-    "display_name": "Dividing complex numbers", 
-    "title": "Dividing complex numbers", 
-    "live": true, 
-    "description": "Divide complex numbers. Identify the real and imaginary parts.", 
-    "h_position": 50, 
-    "slug": "dividing_complex_numbers", 
-    "kind": "Exercise", 
-    "name": "dividing_complex_numbers", 
-    "seconds_per_fast_problem": 40.0, 
     "prerequisites": [
       "multiplying_complex_numbers"
-    ]
+    ], 
+    "live": true, 
+    "h_position": 50, 
+    "v_position": -12, 
+    "path": "/math/algebra/complex-numbers/complex_numbers/e/dividing_complex_numbers/", 
+    "slug": "dividing_complex_numbers", 
+    "name": "dividing_complex_numbers"
   }, 
   {
+    "kind": "Exercise", 
+    "display_name": "Absolute value of complex numbers", 
+    "description": "Find the absolute value of a complex number.", 
+    "title": "Absolute value of complex numbers", 
+    "seconds_per_fast_problem": 10.0, 
     "related_video_readable_ids": [
       "complex-conjugates-example", 
       "complex-conjugates-example"
     ], 
-    "v_position": -13, 
-    "path": "/math/algebra/complex-numbers/complex_numbers/e/absolute_value_of_complex_numbers/", 
-    "display_name": "Absolute value of complex numbers", 
-    "title": "Absolute value of complex numbers", 
-    "live": true, 
-    "description": "Find the absolute value of a complex number.", 
-    "h_position": 47, 
-    "slug": "absolute_value_of_complex_numbers", 
-    "kind": "Exercise", 
-    "name": "absolute_value_of_complex_numbers", 
-    "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "the_complex_plane", 
       "distance_formula"
-    ]
+    ], 
+    "live": true, 
+    "h_position": 47, 
+    "v_position": -13, 
+    "path": "/math/algebra/complex-numbers/complex_numbers/e/absolute_value_of_complex_numbers/", 
+    "slug": "absolute_value_of_complex_numbers", 
+    "name": "absolute_value_of_complex_numbers"
   }
 ]
