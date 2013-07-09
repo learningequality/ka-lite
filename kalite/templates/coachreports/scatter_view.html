@@ -8,6 +8,7 @@
 {% block report_title %}Scatter plot {% endblock report_title %}
 
 {% block headjs %} {{ block.super }}
+<script type="text/javascript" src="{% static 'js/coachreports/d3.scatter.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/coachreports/scatter_view.js' %}"></script>
 {% endblock headjs %}
 

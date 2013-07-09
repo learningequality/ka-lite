@@ -58,7 +58,6 @@ You must:
 <script type="text/javascript" src="{% static 'js/jquery.dynatree.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/jquery.dynatree.extensions.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/d3.v3.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/coachreports/d3.scatter.js' %}"></script>
 
 <script type="text/javascript">
 // Scripts for mapping our stats into text names and Google vis types.
@@ -204,6 +203,7 @@ function plotTopics(topic_paths) {
         {% endblock axis_dropdown %}
         </form>
     </div>
+{% endblock content %}
 
 {% block endjs %}{{ block.super }}
 <script type="text/javascript">
@@ -233,6 +233,7 @@ function plotTopics(topic_paths) {
 
             // When the button is clicked, toggle the view style
             $("#content_tree_toggle").click(function() {
+                console.log("CLICK!");
                 toggle_tree();
             });
 
@@ -274,4 +275,3 @@ function plotTopics(topic_paths) {
     });
 </script>
 {% endblock endjs %}
-{% endblock content %}
