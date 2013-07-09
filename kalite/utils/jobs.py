@@ -2,6 +2,7 @@ from datetime import datetime
 from chronograph.models import Job
 from croncount import get_count
 
+from settings import LOG as logging
 from utils.django_utils import call_command_async
 
 
@@ -17,6 +18,7 @@ def force_job(command, name="", frequency="YEARLY", stop=False, no_cron=False):
         job = Job(command=command)
         job.frequency = frequency
         job.name = name or command
+
     if stop:
         job.is_running = False
     else:
@@ -27,7 +29,8 @@ def force_job(command, name="", frequency="YEARLY", stop=False, no_cron=False):
         # Just start cron directly, so that the process starts immediately.
         # Note that if you're calling force_job frequently, then 
         # you probably want to avoid doing this on every call.
-        if get_count():
+        if get_count() and not job_status(command):
+            logging.debug("Ready to launch command '%s'" % command)
             call_command_async("cron")
 
 
