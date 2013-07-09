@@ -27,7 +27,7 @@ from securesync.api_client import SyncClient
 from securesync.models import Facility, FacilityUser,FacilityGroup
 from securesync.views import require_admin, facility_required
 from utils import topic_tools
-from utils.internet import am_i_online, is_sibling
+from utils.internet import am_i_online
 from utils.jobs import force_job
 from utils.videos import video_connection_is_available
 
@@ -156,14 +156,26 @@ def exercise_handler(request, exercise):
     Display an exercise
     """
     # Copy related videos (should be small), as we're going to tweak them
-    related_videos = [copy.copy(topicdata.NODE_CACHE["Video"][key]) for key in exercise["related_video_readable_ids"]]
-    # Resolve the most related path
-    for video in related_videos:
-        video["path"] = video["paths"][0]
+    related_videos = [copy.copy(topicdata.NODE_CACHE["Video"].get(key, None)) for key in exercise["related_video_readable_ids"]]
+
+    videos_to_delete = []
+    for idx, video in enumerate(related_videos):
+        # Remove all videos that were not recognized or 
+        #   simply aren't on disk.  
+        #   Check on disk is relatively cheap, also executed infrequently
+        if not video or not topic_tools.is_video_on_disk(video["youtube_id"]):
+            videos_to_delete.append(idx)
+            continue
+
+        # Resolve the most related path
+        video["path"] = video["paths"][0]  # default value
         for path in video["paths"]:
-            if is_sibling(path, exercise["path"]):
+            if topic_tools.is_sibling({"path": path, "kind": "Video"}, exercise):
                 video["path"] = path
+                break
         del video["paths"]
+    for idx in reversed(videos_to_delete):
+        del related_videos[idx]
 
     if request.user.is_authenticated():
         messages.warning(request, _("Note: You're logged in as an admin (not as a student/teacher), so your exercise progress and points won't be saved."))
