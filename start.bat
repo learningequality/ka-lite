@@ -10,6 +10,18 @@ if exist database\data.sqlite (
   REM transfer any previously downloaded content from the old location to the new
 	move static\videos\* ..\content > nul 2> nul
 
+	set "file_exist="
+	if exist cronserver.pid set file_exist=0
+	if exist runcherrypyserver.pid set file_exist=0
+	if defined file_exist (
+		echo -------------------------------------------------------------------
+		echo KA Lite server is still running. 
+		echo Please run stop.bat and then start.bat again.
+		echo -------------------------------------------------------------------
+		cd ..
+		exit /b
+	)
+
 	reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths" /f "python.exe" /s /k /e /d > nul
 	if !ERRORLEVEL! EQU 1 (
 		echo -------------------------------------------------------------------
