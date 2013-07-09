@@ -96,10 +96,6 @@ def set_query_params(url, param_dict):
     return urlunsplit((scheme, netloc, path, new_query_string, fragment))
 
 
-def is_sibling(path1, path2):
-    return os.path.dirname(path1) == os.path.dirname(path2)
-
-
 if __name__ == "__main__":
     print generate_all_paths("/test/me/out")
     print generate_all_paths("/test/me/out/")

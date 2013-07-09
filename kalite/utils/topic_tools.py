@@ -269,3 +269,16 @@ def get_all_midlevel_topics():
     topics = get_exercise_topics()["topics"].values()
     topics = sorted(topics, key=lambda k: (k["y"], k["x"]))
     return topics
+
+
+
+def is_sibling(node1, node2):
+    """
+    """
+    parse_path = lambda n: n["path"] if not kind_slugs[n["kind"]] else n["path"].split("/" + kind_slugs[n["kind"]])[0]
+
+    parent_path1 = parse_path(node1)
+    parent_path2 = parse_path(node2)
+
+    return parent_path1 == parent_path2
+

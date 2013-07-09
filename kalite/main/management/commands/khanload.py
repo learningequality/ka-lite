@@ -189,7 +189,11 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
                 recurse_nodes_to_delete_exercise(child, OLD_NODE_CACHE)
                 # Delete children without children (all their children were removed)
                 if not child.get("children", None):
+                    logging.debug("Removing now-childless topic node '%s'" % child["slug"])
                     children_to_delete.append(ci)
+                # If there are no longer exercises, be honest about it
+                elif not any([ch["kind"] == "Exercise" or "Exercise" in ch.get("contains", []) for ch in child["children"]]):
+                    child["contains"] = list(set(child["contains"]) - set(["Exercise"]))
 
         # Do the actual deletion
         for i in reversed(children_to_delete):
@@ -199,7 +203,10 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
     recurse_nodes(topictree)
     if remove_unknown_exercises:
         OLD_NODE_CACHE = topic_tools.get_node_cache()
-        recurse_nodes_to_delete_exercise(topictree, OLD_NODE_CACHE)
+        recurse_nodes_to_delete_exercise(topictree, OLD_NODE_CACHE) # do this before [add related]
+        for vid, ex in related_exercise.items():
+            if ex and ex["slug"] not in OLD_NODE_CACHE["Exercise"].keys():
+                related_exercise[vid] = None
     recurse_nodes_to_add_related_exercise(topictree)
 
     with open(os.path.join(data_path, topic_tools.topics_file), "w") as fp:
@@ -349,6 +356,27 @@ def create_youtube_id_to_slug_map(node_cache=None, data_path=settings.PROJECT_PA
         fp.write(json.dumps(id2slug_map, indent=2))
 
 
+def validate_data(topictree, node_cache):
+
+    # Validate related videos
+    for exercise in node_cache['Exercise'].values():
+        for vid in exercise.get("related_video_readable_ids", []):
+            if not vid in node_cache["Video"]:
+                sys.stderr.write("Could not find related video %s in node_cache (from exercise %s)\n" % (vid, exercise["slug"]))
+
+    # Validate related exercises
+    for video in node_cache["Video"].values():
+        ex = video["related_exercise"]
+        if ex and not ex["slug"] in node_cache["Exercise"]:
+            sys.stderr.write("Could not find related exercise %s in node_cache (from video %s)\n" % (ex["slug"], video["slug"]))
+            
+    # Validate all topics have leaves
+    for topic in node_cache["Topic"].values():
+        n_children = topic_tools.get_all_leaves(topic_node=topic)
+        if n_children == 0:
+            sys.stderr.write("Could not find any children for topic %s\n" % (topic["path"]))
+
+
 class Command(BaseCommand):
     help = """**WARNING** not intended for use outside of the FLE; use at your own risk!
     Update the topic tree caches from Khan Academy.
@@ -382,6 +410,8 @@ class Command(BaseCommand):
 
         node_cache = generate_node_cache(topictree)
         create_youtube_id_to_slug_map(node_cache)
+
+        validate_data(topictree, node_cache)
 
         sys.stdout.write("Downloaded topictree data for %d topics, %d videos, %d exercises\n" % (
             len(node_cache["Topic"]),

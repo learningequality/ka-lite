@@ -27,7 +27,7 @@ from securesync.api_client import SyncClient
 from securesync.models import Facility, FacilityUser,FacilityGroup
 from securesync.views import require_admin, facility_required
 from utils import topic_tools
-from utils.internet import am_i_online, is_sibling
+from utils.internet import am_i_online
 from utils.jobs import force_job
 from utils.videos import video_connection_is_available
 
@@ -161,7 +161,7 @@ def exercise_handler(request, exercise):
     for video in related_videos:
         video["path"] = video["paths"][0]
         for path in video["paths"]:
-            if is_sibling(path, exercise["path"]):
+            if topic_tools.is_sibling({"path": path, "kind": "Video"}, exercise):
                 video["path"] = path
         del video["paths"]
 
