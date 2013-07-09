@@ -207,7 +207,7 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
     return topictree
 
 
-def rebuild_knowledge_map(topictree, data_path=settings.PROJECT_PATH + "/static/data/"):
+def rebuild_knowledge_map(topictree, data_path=settings.PROJECT_PATH + "/static/data/", force_icons=False):
 
     """
     Uses KA Lite topic data and supporting data from Khan Academy 
@@ -224,13 +224,18 @@ def rebuild_knowledge_map(topictree, data_path=settings.PROJECT_PATH + "/static/
             knowledge_map["topics"][key] = value
 
             out_path = data_path + "../" + value["icon_url"]
-            if not os.path.exists(out_path):
-                icon = requests.get("http://www.khanacademy.org" + value["icon_url"])
+            if not os.path.exists(out_path) or force_icons:
+                icon_khan_url = "http://www.khanacademy.org" + value["icon_url"]
+                sys.stdout.write("Downloading icon %s from %s..." % (value["id"], icon_khan_url))
+                sys.stdout.flush()
+                icon = requests.get(icon_khan_url)
                 if icon.status_code == 200:
                     iconfile = file(data_path + "../" + value["icon_url"], "w")
                     iconfile.write(icon.content)
                 else:
+                    sys.stdout.write(" [NOT FOUND]")
                     value["icon_url"] = iconfilepath + defaulticon + iconextension
+                sys.stdout.write(" done.\n")
 
     def recurse_nodes_to_extract_knowledge_map(node):
         """
@@ -327,8 +332,10 @@ class Command(BaseCommand):
         if len(args) != 0:
             raise CommandError("Unknown argument list: %s" % args)
 
+        # TODO(bcipolli)
+        # Make remove_unknown_exercises and force_icons into command-line arguments
         topictree = rebuild_topictree(remove_unknown_exercises=True)
-        rebuild_knowledge_map(topictree)
+        rebuild_knowledge_map(topictree, force_icons=True)
 
         node_cache = generate_node_cache(topictree)
         create_youtube_id_to_slug_map(node_cache)
