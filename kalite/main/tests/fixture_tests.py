@@ -16,6 +16,7 @@ import settings
 from utils.testing import distributed_only
 
 
+@unittest.skip
 @distributed_only
 class FixtureTestCases(TestCase):
     """ """
