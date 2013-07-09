@@ -6,10 +6,10 @@ Replace this with more appropriate tests for your application.
 """
 
 import os
-import unittest
 #from selenium 
 from django.test import TestCase, Client
 from django.core.management import call_command
+from django.utils import unittest
 
 import settings
 from utils.testing import distributed_only
