@@ -31,7 +31,10 @@ class Organization(models.Model):
     zones = models.ManyToManyField(Zone)
     owner = models.ForeignKey(User, related_name="owned_organizations")
 
-    dummy_name = "Headless Zones"
+    HEADLESS_ORG_NAME = "Headless Zones"
+    HEADLESS_ORG_PK = None  # keep the primary key of the headless org around, for efficiency
+    HEADLESS_ORG_SAVE_FLAG = "internally_safe_headless_org_save"  # indicates safe save() call
+
 
     def get_zones(self):
         return list(self.zones.all())
@@ -53,12 +56,15 @@ class Organization(models.Model):
             self.owner = owner
 
         # Make org unique by name, for dummy name only.
-        if self.name==Organization.dummy_name:
-            dummy_orgs = Organization.objects.filter(name=Organization.dummy_name)
-            if len(dummy_orgs)>0 and self.pk not in [d.pk for d in dummy_orgs]:
+        #   So make sure that any save() call is coming either
+        #   from a trusted source (passing HEADLESS_ORG_SAVE_FLAG),
+        #   or doesn't overlap with our safe name
+        if self.name == Organization.HEADLESS_ORG_NAME and not kwargs.get(HEADLESS_ORG_SAVE_FLAG, False):
+            dummy_org = Organization.get_dummy_organization()
+            if dummy_org.pk != self.pk
                 raise Exception("Cannot add more than one dummy org!")
-
         super(Organization, self).save(*args, **kwargs)
+
 
     @classmethod
     def from_zone(cls, zone):
@@ -66,18 +72,32 @@ class Organization(models.Model):
 
         return Organization.objects.filter(zones__pk=zone.pk)
 
+
     @classmethod
     def get_dummy_organization(cls, user):
         assert user.is_superuser, "only super-users can call this method!"
 
-        orgs = cls.objects.filter(name=cls.dummy_name)
-        if not orgs:
-            org = Organization(name=cls.dummy_name, owner=user)
-            org.save()
+        if cls.HEADLESS_ORG_PK is not None:
+            # Already exists and cached, just query fast and return
+            org = cls.objects.get(pk=cls.HEADLESS_ORG_PK)
             return org
+
         else:
-            assert len(orgs)==1, "Cannot have multiple dummy organizations"
-            return orgs[0]
+            # Potentially inefficient query, so limit this to once per server thread
+            # by caching the results.  Here, we've had a cache miss
+            orgs = cls.objects.filter(name=cls.HEADLESS_ORG_NAME)
+            if not orgs:
+                # Cache miss because the org actually doesn't exist.  Create it!
+                org = Organization(name=cls.HEADLESS_ORG_NAME, owner=user)
+                org.save(HEADLESS_ORG_SAVE_FLAG=True)
+                cls.HEADLESS_ORG_PK = org.pk
+                return org
+            else:
+                # Cache miss because it's the first relevant query since this thread started.
+                assert len(orgs) == 1, "Cannot have multiple HEADLESS ZONE organizations"
+                cls.HEADLESS_ORG_PK = orgs[0].pk
+                return orgs[0]
+
 
     @classmethod
     def update_dummy_organization(cls, user):
