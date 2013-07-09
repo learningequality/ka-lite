@@ -1,9 +1,12 @@
 import re, json
+from annoying.functions import get_object_or_None
+from collections import OrderedDict
+
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse, HttpResponseNotAllowed
 from django.utils import simplejson
 from django.db.models import Q
-from annoying.functions import get_object_or_None
+
 import settings
 from utils.topics import slug_key, title_key
 from main import topicdata
@@ -149,15 +152,22 @@ def delete_videos(request):
         videofile.save()
     return JsonResponse({})
 
+
 @require_admin_api
 def check_video_download(request):
     youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
-    percentages = {}
+    percentages = OrderedDict()
     percentages["downloading"] = job_status("videodownload")
-    for id in youtube_ids:
-        videofile = get_object_or_None(VideoFile, youtube_id=id) or VideoFile(youtube_id=id)
-        percentages[id] = videofile.percent_complete
+
+    # Get existing videofiles in a principled order
+    data = [(vf["youtube_id"], vf["percent_complete"]) for vf in get_video_files(youtube_id__in=youtube_ids)]
+    for youtube_id, pct_complete in data:
+        percentages[youtube_id] = pct_complete
+    # Add any requested youtube IDs that we don't recognize
+    for youtube_id in set(youtube_ids)-set(percentages.keys()):
+        percentages[youtube_id] = 0
     return JsonResponse(percentages)
+
 
 def get_video_download_status(youtube_id):
     videofile = get_object_or_None(VideoFile, youtube_id=youtube_id)
@@ -170,9 +180,17 @@ def get_video_download_status(youtube_id):
     else:
         return "partial"
 
+#@helper
+def get_video_files(*args, **kwargs):
+    """
+    kwargs used as filters.  Ensures consistent sorting logic
+    """
+    return VideoFile.objects.filter(**kwargs).order_by("-download_in_progress", "-percent_complete", "youtube_id").values("youtube_id", "percent_complete")
+
+
 @require_admin_api
 def get_video_download_list(request):
-    videofiles = VideoFile.objects.filter(flagged_for_download=True).values("youtube_id")
+    videofiles = get_video_files(flagged_for_download=True)
     video_ids = [video["youtube_id"] for video in videofiles]
     return JsonResponse(video_ids)
 

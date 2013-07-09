@@ -124,7 +124,7 @@ ul.dynatree-container li, .ui-widget-content {
 
 <script type="text/javascript">
     window.downloading_videos = [];
-    window.download_index = 0;
+    window.num_completed = 0;
     window.download_subtitle_index = 0;
     
     window.download_check_interval = null;
@@ -181,7 +181,7 @@ ul.dynatree-container li, .ui-widget-content {
     
         $("#progressbar-overall").progressbar({
             value: 0,
-            max: 10000000
+            max: 100
         });
 
         $("#progressbar-current").progressbar({
@@ -206,6 +206,7 @@ ul.dynatree-container li, .ui-widget-content {
             $(".progress-section").hide();
             $(".progress-waiting").show();
             $("#cancel-download").show();
+            window.current_download_percent = null
         });
 
         $("#delete-videos").click(function() {
@@ -248,7 +249,7 @@ ul.dynatree-container li, .ui-widget-content {
             clearInterval(window.download_check_interval);
             clearInterval(window.download_subtitle_check_interval);
             window.downloading_videos = [];
-            window.download_index = 0;
+            window.num_completed = 0;
             window.download_subtitle_index = 0;
             
             window.download_check_interval = null;
@@ -273,7 +274,7 @@ ul.dynatree-container li, .ui-widget-content {
     function startDownloadChecks() {
         doRequest("/api/get_video_download_list").success(function(video_ids) {
             window.downloading_videos = video_ids;
-            window.download_index = 0;
+            window.num_completed = 0;
             clearInterval(window.download_check_interval);
             if (video_ids.length == 0) {
                 return;
@@ -323,19 +324,43 @@ ul.dynatree-container li, .ui-widget-content {
             }
     	});
     }
-    
+
+
+    function calc_num_completed(progress) {
+        var completed = 0;
+        for (key in progress) {
+            if (progress[key]==100) {
+                completed++;
+            }
+        }
+        return completed;
+    }
+
+
+    function calc_pct_completed(progress) {
+        var total_pct_completed = 0;
+        for (key in progress) {
+            if (key != "downloading") {
+                total_pct_completed += progress[key]
+            }
+        }
+        return total_pct_completed / (keys(progress).length - (keys(progress).indexOf("downloading") != -1));
+    }
+
+
     function checkVideoDownloadProgress() {
-        var currentKey = window.downloading_videos[window.download_index];
-        doRequest("/api/check_video_download", {youtube_ids: [currentKey]}).success(function(progress) {
+        doRequest("/api/check_video_download", {youtube_ids: window.downloading_videos}).success(function(progress) {
+            window.progress = progress;
             if (!window.download_check_interval) {
                 return;
             }
-            window.current_download_percent = progress[currentKey];
+            currentKey = keys(progress)[1];  // index 0 is "downloading", index 1 is the currently downloading file.
+            window.current_download_percent = (progress["downloading"]) ? progress[currentKey] : null;
             updateProgressDisplay();
             if (window.current_download_percent == 100) {
                 setNodeClass(currentKey, "complete");
-                window.download_index++;
-                if (window.download_index >= window.downloading_videos.length) {
+                window.num_completed = calc_num_completed(progress);
+                if (!progress["downloading"] || window.num_completed == window.downloading_videos.length) {
                     clearInterval(window.download_check_interval);
                     $(".progress-section, #cancel-download").hide();
                     return;
@@ -352,6 +377,7 @@ ul.dynatree-container li, .ui-widget-content {
     	            window.location.reload()
     	            break;
     	        default:
+    	            clear_messages(); // clear old messages, so we don't produce an endless stream.
             	    show_message("error", "Error downloading videos: " + resp.responseText);
             	    clearInterval(window.download_subtitle_check_interval)
             	    break;
@@ -360,8 +386,8 @@ ul.dynatree-container li, .ui-widget-content {
     }
     
     function updateProgressDisplay() {
-        if (window.download_index < window.downloading_videos.length) {
-            if (download_index > 0 || current_download_percent > 0) {
+        if (window.progress["downloading"]) {//window.download_index < window.downloading_videos.length) {
+            if (window.current_download_percent != null) {
             	$(".progress-section").show();
             	$(".progress-waiting").hide();
                 $("#cancel-download").show();
@@ -379,15 +405,12 @@ ul.dynatree-container li, .ui-widget-content {
         }
         
         $("#progressbar-current").progressbar({value: window.current_download_percent});
-        $("#progressbar-overall").progressbar({
-            value: window.download_index * 100 + window.current_download_percent,
-            max: window.downloading_videos.length * 100
-        });
+        $("#progressbar-overall").progressbar({value: calc_pct_completed(progress)});
 
-        var currentKey = window.downloading_videos[window.download_index];
+        var currentKey = window.downloading_videos[0];
         var currentNode = $("#content_tree").dynatree("getTree").getNodeByKey(currentKey);
         $(".video-title").text(currentNode.data.title);
-        $(".video-downloading-current").text(window.download_index + 1);
+        $(".video-downloading-current").text(window.num_completed + 1);
         $(".video-downloading-total").text(window.downloading_videos.length);
    
        
