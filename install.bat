@@ -51,7 +51,7 @@ if !ERRORLEVEL! EQU 1 (
     exit /b
 )
 
-start /b /wait python.exe -c "import sys; sys.version_info[0]==2 and sys.version_info[1] >= 5 and sys.exit(0) or sys.exit(1)"
+start /b /wait python.exe -c "import sys; sys.version_info[0]==2 and sys.version_info[1] >= 6 and sys.exit(0) or sys.exit(1)"
 if ERRORLEVEL 1 (
     echo -------------------------------------------------------------------
     echo Error: You must have Python version 2.6 or 2.7 installed.
