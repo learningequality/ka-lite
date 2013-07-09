@@ -7,6 +7,7 @@ import os
 from functools import partial
 
 import settings
+from settings import LOG as logging
 
 
 kind_slugs = {
@@ -162,7 +163,7 @@ def get_video_counts(topic, videos_path, force=False):
 
     # Only look for videos if there are more branches
     elif len(topic["children"]) == 0:
-        settings.LOG.debug("no children: %s" % topic)
+        logging.debug("no children: %s" % topic)
 
     elif len(topic["children"]) > 0:
         # RECURSIVE CALL:
