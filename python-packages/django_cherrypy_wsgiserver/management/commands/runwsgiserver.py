@@ -38,6 +38,8 @@ Optional CherryPy server settings: (setting=value)
                         Defaults to www-data
   server_group=STRING   group to daemonized process
                         Defaults to www-data
+  autoreload=BOOL       automatically reload the server if project modules change
+                        defaults to False
   adminserve=True|False  Serve the django admin media automatically. Useful
                          in development. Defaults to True so turn to False
                          if  using in production.
@@ -242,8 +244,8 @@ def runwsgiserver(argset=[], **kwargs):
         fp.write("%d\n" % os.getpid())
         fp.close()
     if options['autoreload']:
-        import autoreload
-        autoreload.run()
+        import autoreload #if this script isn't deprecated fixme - this doesn't work
+        autoreload.run()   #fixme
     
     # Start the webserver
     print 'starting server with options %s' % options
