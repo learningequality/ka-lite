@@ -48,18 +48,22 @@ echo -------------------------------------------------------------------
 echo.
 echo This script will configure the database and prepare it for use.
 echo.
-echo When asked if you want to create a superuser, type 'yes' and enter
-echo your details. You must remember this login information, as you will
-echo need to enter it to administer the website.
-echo.
 echo -------------------------------------------------------------------
 echo.
 pause
 
-python manage.py syncdb --migrate
+python manage.py syncdb --migrate --noinput
 
 echo.
 python manage.py generatekeys
+echo.
+
+echo.
+echo Please choose a username and password for the admin account on this device.
+echo You must remember this login information, as you will need to enter it to
+echo administer this installation of KA Lite.
+echo.
+python manage.py createsuperuser --email=dummy@learningequality.org
 echo.
 
 set /p name=Please enter a name for this server (or, press Enter to use the default): 

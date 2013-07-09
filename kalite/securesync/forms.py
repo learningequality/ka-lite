@@ -26,7 +26,8 @@ class RegisteredDevicePublicKeyForm(forms.ModelForm):
 
 class FacilityUserForm(forms.ModelForm):
 
-    password = forms.CharField(widget=forms.PasswordInput, label=_("Password"))    
+    password = forms.CharField(widget=forms.PasswordInput, label=_("Password"))
+    password_recheck = forms.CharField(widget=forms.PasswordInput, label=_("Confirm password"))
     
     def __init__(self, request, *args, **kwargs):
         self.request = request
@@ -40,13 +41,19 @@ class FacilityUserForm(forms.ModelForm):
         }
 
     def clean(self):
-        username = self.cleaned_data.get('username')
         facility = self.cleaned_data.get('facility')
+        username = self.cleaned_data.get('username')
         
-        if FacilityUser.objects.filter(username=username, facility=facility).count() > 0:
+        # Now validate again, as lowercase
+        if FacilityUser.objects.filter(username__iexact=username, facility=facility).count() > 0:
             raise forms.ValidationError(_("A user with this username at this facility already exists. Please choose a new username (or select a different facility) and try again."))
 
         return self.cleaned_data
+
+    def clean_password_recheck(self):
+
+        if self.cleaned_data.get('password') != self.cleaned_data.get('password_recheck'):
+            raise forms.ValidationError(_("The passwords didn't match. Please re-enter the passwords."))
 
 
 class FacilityForm(forms.ModelForm):
@@ -88,6 +95,12 @@ class LoginForm(forms.ModelForm):
         username = self.cleaned_data.get('username')
         facility = self.cleaned_data.get('facility')
         password = self.cleaned_data.get('password')
+
+        # Coerce
+        users = FacilityUser.objects.filter(username__iexact=username, facility=facility)
+        if users.count() == 1 and users[0].username != username:
+            username = users[0].username
+            self.cleaned_data['username'] = username
 
         try:
             self.user_cache = FacilityUser.objects.get(username=username, facility=facility)

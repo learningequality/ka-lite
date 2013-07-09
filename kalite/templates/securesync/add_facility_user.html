@@ -5,7 +5,7 @@
 
 {% load i18n %}
 
-{% block title %}{% trans "Add facility user" %}{% endblock title %}
+{% block title %}{% if request.is_admin %}{% trans "Add facility user" %}{% else %}{% trans "Sign up" %}{% endif %}{% endblock title %}
 
 {% block content %}
 
