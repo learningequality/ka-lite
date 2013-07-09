@@ -24,7 +24,7 @@ video_remap_file = "youtube_to_slug_map.json"
 
 # Globals that can be filled
 TOPICS          = None
-def get_topics_root(force=False):
+def get_topic_tree(force=False):
     global TOPICS, topics_file
     if TOPICS is None or force:
         TOPICS = json.loads(open(os.path.join(settings.DATA_PATH, topics_file)).read())
@@ -32,11 +32,14 @@ def get_topics_root(force=False):
 
 
 NODE_CACHE = None
-def get_node_cache(force=False):
+def get_node_cache(node_type=None, force=False):
     global NODE_CACHE, node_cache_file
     if NODE_CACHE is None or force:
         NODE_CACHE      = json.loads(open(os.path.join(settings.DATA_PATH, node_cache_file)).read())
-    return NODE_CACHE
+    if node_type is None:
+        return NODE_CACHE
+    else:
+        return NODE_CACHE[node_type]
 
 
 EXERCISE_TOPICS = None
@@ -73,7 +76,7 @@ def get_live_topics(topic):
 
 def find_videos_by_youtube_id(youtube_id, node=None):
     if node is None:
-        node = get_topics_root()
+        node = get_topic_tree()
     videos = []
     if node.get("youtube_id", "") == youtube_id:
         videos.append(node)
@@ -86,7 +89,7 @@ def find_videos_by_youtube_id(youtube_id, node=None):
 
 def get_all_youtube_ids(node=None):
     if node is None:
-        node = get_topics_root()
+        node = get_topic_tree()
     if node.get("youtube_id", ""):
         return [node.get("youtube_id", "")]
     ids = []
@@ -196,7 +199,7 @@ def get_video_counts(topic, videos_path, force=False):
 def get_topic_by_path(path):
     """Given a topic path, return the corresponding topic node in the topic hierarchy"""
     # Make sure the root fits
-    root_node = get_topics_root()
+    root_node = get_topic_tree()
     if not path.startswith(root_node["path"]):
         return None
 
@@ -222,7 +225,7 @@ def get_all_leaves(topic_node=None, leaf_type=None):
     If leaf_type is None, returns all child nodes of all types and levels.
     """
     if not topic_node:
-        topic_node = get_topics_root()
+        topic_node = get_topic_tree()
     leaves = []
 
     # base case
@@ -241,7 +244,7 @@ def get_topic_leaves(topic_id=None, path=None, leaf_type=None):
     assert (topic_id or path) and not (topic_id and path), "Specify topic_id or path, not both."
 
     if not path:
-        topic_node = filter(partial(lambda node, name: node['slug'] == name, name=topic_id), get_node_cache()['Topic'].values())
+        topic_node = filter(partial(lambda node, name: node['slug'] == name, name=topic_id), get_node_cache('Topic').values())
         if not topic_node:
             return []
         path = topic_node[0]['path']
@@ -283,7 +286,7 @@ def get_related_videos(exercises, topics=None, possible_videos=None):
 
     if not possible_videos:
         possible_videos = []
-        for topic in (topics or get_node_cache()['Topic'].values()):
+        for topic in (topics or get_node_cache('Topic').values()):
             possible_videos += get_topic_videos(topic_id=topic['id'])
 
     # Get exercises from videos

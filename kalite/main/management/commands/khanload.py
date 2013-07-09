@@ -276,7 +276,7 @@ def generate_node_cache(topictree=None, output_dir=settings.DATA_PATH):
     """
 
     if not topictree:
-        topictree = topic_tools.get_topics_root(force=True)
+        topictree = topic_tools.get_topic_tree(force=True)
     node_cache = {}
 
     def recurse_nodes(node, path="/"):
