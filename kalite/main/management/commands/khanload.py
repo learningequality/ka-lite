@@ -11,6 +11,7 @@ import requests
 import shutil
 import sys
 import time
+from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
 
@@ -279,18 +280,46 @@ def generate_node_cache(topictree=None, output_dir=settings.DATA_PATH):
         topictree = topic_tools.get_topic_tree(force=True)
     node_cache = {}
 
+
     def recurse_nodes(node, path="/"):
         # Add the node to the node cache
         kind = node["kind"]
         node_cache[kind] = node_cache.get(kind, {})
-        if node["slug"] not in node_cache[kind]:
+        
+        if node["slug"] in node_cache[kind]:
+            # Existing node, so append the path to the set of paths
+            assert kind in topic_tools.multipath_kinds, "Make sure we expect to see multiple nodes map to the same slug (%s unexpected)" % kind
+
+            # We already added this node, it's just found at multiple paths.
+            #   So, save the new path
+            node_shared_keys = set(node.keys()) - set(["path"])
+            stored_shared_keys = set(node_cache[kind][node["slug"]]) - set(["paths"])
+            unshared_keys = node_shared_keys.symmetric_difference(stored_shared_keys)
+            shared_keys = node_shared_keys.intersection(stored_shared_keys)
+            assert not unshared_keys, "Node and stored node should have all the same keys."
+            for key in shared_keys:
+                # A cursory check on values, for strings only (avoid unsafe types)
+                if isinstance(node[key], basestring):
+                    assert node[key] == node_cache[kind][node["slug"]][key]
+            node_cache[kind][node["slug"]]["paths"].append(node["path"])
+
+        else:
             # New node, so copy off, massage, and store.
             node_copy = copy.copy(node)
             if "children" in node_copy:
                 del node_copy["children"]
+            if kind in topic_tools.multipath_kinds:
+                # If multiple paths can map to a single slug, need to store all paths.
+                node_copy["paths"] = [node_copy["path"]]
+                del node_copy["path"]
             node_cache[kind][node["slug"]] = node_copy
+
+        # Do the recursion
         for child in node.get("children", []):
+            assert "path" in node and "paths" not in node, "This code can't handle nodes with multiple paths; it just generates them!"
             recurse_nodes(child, node["path"])
+
+
     recurse_nodes(topictree)
 
     with open(os.path.join(output_dir, topic_tools.node_cache_file), "w") as fp:
@@ -328,14 +357,28 @@ class Command(BaseCommand):
         id2slug - regenerate the id2slug map file.
 """
 
+    option_list = BaseCommand.option_list + (
+        # Basic options
+        make_option('-i', '--force-icons',
+            action='store_true',
+            dest='force_icons',
+            default=False,
+            help='Force the download of each icon'),
+        make_option('-k', '--keep-new-exercises',
+            action='store_true',
+            dest='keep_new_exercises',
+            default=False,
+            help="Keep data on new exercises (if not specified, these are stripped out, as we don't have code to download/use them)"),
+    )
+
     def handle(self, *args, **options):
         if len(args) != 0:
             raise CommandError("Unknown argument list: %s" % args)
 
         # TODO(bcipolli)
         # Make remove_unknown_exercises and force_icons into command-line arguments
-        topictree = rebuild_topictree(remove_unknown_exercises=True)
-        rebuild_knowledge_map(topictree, force_icons=True)
+        topictree = rebuild_topictree(remove_unknown_exercises=not options["keep_new_exercises"])
+        rebuild_knowledge_map(topictree, force_icons=options["force_icons"])
 
         node_cache = generate_node_cache(topictree)
         create_youtube_id_to_slug_map(node_cache)

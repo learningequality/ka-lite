@@ -74,7 +74,7 @@ class Command(BaseCommand):
             
             # Expire, but don't regenerate until the very end, for efficiency.
             if hasattr(settings, "CACHES"):
-                caching.invalidate_cached_topic_hierarchy(video_id=video.youtube_id)
+                caching.invalidate_cached_topic_hierarchies(video_id=video.youtube_id)
     
         # Regenerate all pages, efficiently
         if hasattr(settings, "CACHES"):

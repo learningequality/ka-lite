@@ -16,6 +16,8 @@ kind_slugs = {
     "Topic": ""
 }
 
+multipath_kinds = ["Exercise", "Video"]
+
 topics_file = "topics.json"
 node_cache_file = "nodecache.json"
 map_layout_file = "maplayout_data.json"
@@ -74,41 +76,6 @@ def get_live_topics(topic):
     return filter(lambda node: node["kind"] == "Topic" and not node["hide"] and "Video" in node["contains"], topic["children"])
 
 
-def find_videos_by_youtube_id(youtube_id, node=None):
-    if node is None:
-        node = get_topic_tree()
-    videos = []
-    if node.get("youtube_id", "") == youtube_id:
-        videos.append(node)
-    for child in node.get("children", []):
-        videos += find_videos_by_youtube_id(youtube_id, child)
-    return videos
-
-# find_video_by_youtube_id("NSSoMafbBqQ")
-
-
-def get_all_youtube_ids(node=None):
-    if node is None:
-        node = get_topic_tree()
-    if node.get("youtube_id", ""):
-        return [node.get("youtube_id", "")]
-    ids = []
-    for child in node.get("children", []):
-        ids += get_all_youtube_ids(child)
-    return ids
-
-
-def get_dups(threshold=2):
-    ids = get_all_youtube_ids()
-    return [id for id in set(ids) if ids.count(id) >= threshold]
-
-
-def print_videos(youtube_id):
-    print "Videos with YouTube ID '%s':" % youtube_id
-    for node in find_videos_by_youtube_id(youtube_id):
-        print " > ".join(node["path"].split("/")[1:-3] + [node["title"]])
-
-
 def get_downloaded_youtube_ids(videos_path=settings.CONTENT_ROOT):
     return [path.split("/")[-1].split(".")[0] for path in glob.glob(videos_path + "*.mp4")]
 
@@ -119,8 +86,6 @@ def is_video_on_disk(youtube_id, videos_path=settings.CONTENT_ROOT):
 
 _vid_last_updated = 0
 _vid_last_count = 0
-
-
 def video_counts_need_update(videos_path=settings.CONTENT_ROOT):
     global _vid_last_count
     global _vid_last_updated
@@ -166,7 +131,7 @@ def get_video_counts(topic, videos_path, force=False):
 
     # Only look for videos if there are more branches
     elif len(topic["children"]) == 0:
-        logging.debug("no children: %s" % topic)
+        logging.debug("no children: %s" % topic["path"])
 
     elif len(topic["children"]) > 0:
         # RECURSIVE CALL:
