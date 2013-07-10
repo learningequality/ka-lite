@@ -15,24 +15,6 @@
 
 {% block headcss %} {{ block.super }}
 <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/timeline_view.css' %}">
-<style>
-.axis path,
-.axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-}
-
-.x.axis path {
-  display: none;
-}
-
-.line {
-  fill: none;
-  stroke: steelblue;
-  stroke-width: 1.5px;
-}
-</style>
 {% endblock headcss %}
 
 {% block axis_dropdown %}
