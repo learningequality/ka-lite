@@ -1,0 +1,72 @@
+{% extends base_template %}
+
+{% load staticfiles %}
+
+{% block control_panel_active %}active{% endblock control_panel_active %}
+
+{% block headcss %}
+    <link  rel="stylesheet" type="text/css" href="{% static 'css/control_panel.css' %}" />
+{% endblock headcss %}
+
+{% block content %}
+    {% block titlebar %}
+    <div class="titlebar">
+        <ul class="titlebar__title">
+            {% comment "Draw the top navigation bar %}{% endcomment %}
+            {% if org %}
+            <li><a href="{% url org_management %}"> {{org.name }}</a></li>
+            {% endif %}
+
+            {% if zone %}
+            <li>
+                {% if org %}&gt;{% endif %}
+                {% if facility or device %}<a href="{%url zone_management org_id=org.id zone_id=zone.id %}">{% endif %}
+                    {{ zone.name }}
+                {% if facility or device %}</a>
+                {% else %} <a class="edit-link" href="{% url zone_form org_id=org.id zone_id=zone.id %}">(edit)</a>
+                {% endif %}</li>
+            {% endif %}
+
+            {% if device %}
+            <li>{% if zone %}&gt; {% endif %}{{ device.name }}</li>
+            {% endif %}
+
+            {% if facility %}
+            <li>
+                {% if zone %}&gt; {% endif %}
+                {{ facility.name }}
+                {% if not group %}
+                <a class="edit-link" href="{% url facility_form org_id=org.id zone_id=zone.id facility_id=facility.id%}">(edit)</a>
+                {% endif %}
+            </li>
+            {% endif %}
+
+            {% if group %}
+            <li>{% if facility %}&gt; {% endif %}{{ group.name }}</li>
+            {% endif %}
+
+            {% comment "Provide upload/download buttons; each button should be an LI" %}{% endcomment %}
+            <ul class="titlebar__buttons">
+            {% block buttons %}
+            {% endblock buttons %}
+            </ul>
+
+        </ul>
+    </div>
+    {% endblock titlebar %}
+
+    {% block inner_content %}
+    {% endblock inner_content %}
+    {% block endjs %}{{ block.super }}
+<script>
+    $(".green_button").each(function () {
+        if (this.tagName == "INPUT") {
+            this.onclick = null;
+            this.onsubmit = null;
+        } else {
+            this.setAttribute("href","#");
+        }
+    });
+</script>
+    {% endblock endjs %}
+{% endblock content %}

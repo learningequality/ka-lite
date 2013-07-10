@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 import datetime
 import uuid
 import zlib
@@ -9,13 +11,13 @@ from django.core import serializers
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models, transaction
 from django.db.models import Q
+from django.utils.text import compress_string
 from django.utils.translation import ugettext_lazy as _
 
 import kalite
 import settings
 from config.models import Settings
 from securesync import crypto, model_sync
-from pbkdf2 import crypt
 
 
 # Note: this MUST be hard-coded for backwards-compatibility reasons.
@@ -54,7 +56,6 @@ class SyncSession(models.Model):
 
     def sign(self):
         return Device.get_own_device().get_key().sign(self._hashable_representation())
-
 
     def save(self, *args, **kwargs):
         """
@@ -265,6 +266,32 @@ class Zone(SyncedModel):
     def __unicode__(self):
         return self.name
 
+    #@central_server_only  # causes circular loop, to include here
+    def get_org(self):
+        """
+        Reverse lookup of organization containing this zone.
+        """
+        from central.models import Organization  # inline import to avoid unnecessary dependence on central app
+        orgs = Organization.objects.filter(zones__in=[self])
+        assert orgs.count() <= 1, "Zone must be contained by 0 or 1 organization(s)."
+
+        return orgs[0] if orgs else None
+
+
+    @classmethod
+    def get_headless_zones(cls):
+        # Must import inline (not in header) to avoid import loop
+        from central.models import Organization
+
+        all_zones = Zone.objects.all()
+        headless_zones = []
+        for zone in all_zones:
+            orgs = Organization.objects.filter(zones__in=[zone])
+            if not orgs:
+                headless_zones.append(zone)
+
+        return headless_zones
+
 
 class Facility(SyncedModel):
     name = models.CharField(verbose_name=_("Name"), help_text=_("(This is the name that students/teachers will see when choosing their facility; it can be in the local language.)"), max_length=100)
@@ -289,6 +316,19 @@ class Facility(SyncedModel):
 
     def is_default(self):
         return self.id == Settings.get("default_facility")
+
+
+    @classmethod
+    def from_zone(cls, zone):
+        """Our best approximation of how to map facilities to zones"""
+
+        facilities = set(Facility.objects.filter(zone_fallback=zone))
+
+        for device_zone in DeviceZone.objects.filter(zone=zone):
+            device = device_zone.device
+            facilities = facilities.union(set(Facility.objects.filter(signed_by=device)))
+
+        return facilities
 
 
 class FacilityGroup(SyncedModel):

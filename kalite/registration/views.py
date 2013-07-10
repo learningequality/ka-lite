@@ -6,8 +6,9 @@ Views which allow users to create and activate accounts.
 import copy
 
 from django.contrib import messages
-from django.contrib.auth import logout as auth_logout, views as auth_views
+from django.contrib.auth import logout as auth_logout, views as auth_views, REDIRECT_FIELD_NAME
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.db import IntegrityError, transaction
 from django.http import HttpResponse
 from django.shortcuts import redirect
@@ -273,12 +274,21 @@ def login_view(request, *args, **kwargs):
     if request.method=="POST":
         users = User.objects.filter(username__iexact=request.POST["username"])
         nusers = users.count()
-    
+
         # Coerce
         if nusers == 1 and users[0].username != request.POST["username"]:
             request.POST = copy.deepcopy(request.POST)
             request.POST['username'] = request.POST['username'].lower()
-    
+
+    # Add redirection context, for smoother navigation
+    extra_context = {
+        "redirect": {
+            "name": REDIRECT_FIELD_NAME,
+            "url": request.REQUEST.get("next", reverse('org_management')),
+        }
+    }
+    kwargs["extra_context"] = extra_context
+
     return auth_views.login(request, *args, **kwargs)
 
     

@@ -1,0 +1,45 @@
+{% extends "control_panel/base_management.html" %}
+
+{% load i18n %}
+
+{% if not is_central %}
+    {% block buttons %}
+        <li>
+            <a class="green_button" href="javascript:alert('NYI; sorry!');">{% trans "Sync device now!" %}</a>
+        </li>
+    {% endblock buttons %}
+{% endif %}
+
+{% block inner_content %}
+<div id="zone_container">
+        
+    <div class="sync_sessions">
+        <h2>Sync Sessions</h2>
+
+        {% if not sync_sessions %}
+            <p>This device has never synced with the central server</p>
+
+        {% else %}
+            <table class="simple-table">
+                <tr>
+                    <th width="250px">Sync date</th>
+                    <th width="250px">Sync IP address</th>
+                    <th width="200px"># models uploaded</th>
+                    <th width="200px"># models downloaded</th>
+                    <th width="200px"># errors</th>
+                </tr>
+                {% for sync_session in sync_sessions %}
+                    <tr>
+                        <td>{{ sync_session.timestamp }}</td>
+                        <td>{{ sync_session.ip }}</td>
+                        <td>{{ sync_session.models_uploaded }}</td>
+                        <td>{{ sync_session.models_downloaded }}</td>
+                        <td>{{ sync_session.errors }}</td>
+                    </tr>
+
+                {% endfor %}
+            </table>
+        {% endif %}
+    </div>
+
+{% endblock inner_content %}
