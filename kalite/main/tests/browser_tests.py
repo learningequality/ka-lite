@@ -312,3 +312,30 @@ class UserRegistrationCaseTest(KALiteRegisteredDistributedBrowserTestCase):
         self.login_student(username=user1_uname, password=user2_password, expect_success=False) # fails
         self.check_django_message("error", contains="There was an error logging you in.")
 
+class StudentExerciseTest(KALiteDistributedBrowserTestCase):
+    username = 'test_student'
+    password =  'socrates'
+    facilityname = 'middle of nowhere'
+
+    def create_admin(self):
+        pass
+
+    def create_student(self):
+        facility = Facility(name=self.facilityname)
+        facility.save()
+        student = FacilityUser(username=self.username, facility=facility)
+        student.set_password(raw_password=self.password)
+        student.save()
+
+    def test_points_are_added(self):
+        self.create_student()
+        self.login_student(self.username, self.password)
+        self.browse_to('http://localhost:8000/math/arithmetic/addition-subtraction/basic_addition/e/addition_1/') # TODO: do not hardcode
+        numbers = self.browser.find_elements_by_class_name('mn')[:-1] # last one is to be blank
+        answer = sum(int(num.text) for num in numbers)
+        self.browser.find_element_by_css_selector('#solutionarea input[type=text]').click()
+        self.browser_send_keys(str(answer)) 
+        self.browser_send_keys(Keys.RETURN)
+        points = self.browser.find_element_by_css_selector('#totalpoints').text
+        self.assertTrue(points == '12', "point update is wrong: %s. Should be 12".format(points))
+
