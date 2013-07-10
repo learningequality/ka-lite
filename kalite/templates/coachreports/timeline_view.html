@@ -1,4 +1,4 @@
-{% extends "coachreports/base_google_visualization.html" %}
+{% extends "coachreports/base_d3_visualization.html" %}
 
 {% load repeatblock %}
 {% load my_filters %}
@@ -8,6 +8,7 @@
 {% block report_title %}Timeline plot {% endblock report_title %}
 
 {% block headjs %} {{ block.super }}
+<script type="text/javascript" src="{% static 'js/coachreports/d3.multitimeseries.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/coachreports/timeline_view.js' %}"></script>
 {% endblock headjs %}
 

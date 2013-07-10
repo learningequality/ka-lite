@@ -23,6 +23,8 @@ Optional CherryPy server settings: (setting=value)
                         Defaults to False
   pidfile=FILE          write the spawned process-id to this file
   threads=NUMBER        Number of threads for server to use
+  autoreload=BOOL       automatically reload the server if project modules change
+                        defaults to False
 
 Examples:
   Run a "standard" CherryPy wsgi server
@@ -42,11 +44,12 @@ CPWSGI_OPTIONS = {
     'threads': 50,
     'daemonize': False,
     'pidfile': None,
+    'autoreload': False,
 }
 
 class Command(BaseCommand):
     help = "CherryPy Server for project. Requires CherryPy."
-    args = "[various KEY=val options, use `runwsgiserver help` for help]"
+    args = "[various KEY=val options, use `runcherrypyserver help` for help]"
 
     def handle(self, *args, **options):
         from django.conf import settings

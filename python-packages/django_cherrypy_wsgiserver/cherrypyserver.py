@@ -113,7 +113,7 @@ def stop_server(pidfile):
         os.remove(pidfile)
 
 
-def run_cherrypy_server(host="127.0.0.1", port=8008, threads=50, daemonize=False, pidfile=None):
+def run_cherrypy_server(host="127.0.0.1", port=8008, threads=50, daemonize=False, pidfile=None, autoreload=False):
     
     if daemonize:
         if not pidfile:
@@ -133,8 +133,13 @@ def run_cherrypy_server(host="127.0.0.1", port=8008, threads=50, daemonize=False
         'server.thread_pool': int(threads),
         'checker.on': False,
     })
-
+    
     DjangoAppPlugin(cherrypy.engine).subscribe()
+    if not autoreload:
+        # cherrypyserver automatically reloads if any modules change
+        # Switch-off that functionality here to save cpu cycles
+        # http://docs.cherrypy.org/stable/appendix/faq.html
+        cherrypy.engine.autoreload.unsubscribe()
 
     cherrypy.quickstart()
     if pidfile:
