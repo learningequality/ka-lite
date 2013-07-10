@@ -1,8 +1,9 @@
 """
 Test support harness to make setup.py test work.
 """
-
+import functools
 import os
+import pdb
 import sys
 import logging
 
@@ -12,13 +13,34 @@ from django.core import management
 from kalite import settings
 
 
+def auto_pdb(*exceptions):
+    """
+    From http://stackoverflow.com/questions/4398967/python-unit-testing-automatically-running-the-debugger-when-a-test-fails
+    """
+    if not exceptions:
+        exceptions = (AssertionError, )
+    def decorator(f):
+        @functools.wraps(f)
+        def wrapper(*args, **kwargs):
+            try:
+                return f(*args, **kwargs)
+            except:
+                pdb.post_mortem(sys.exc_info()[2])
+        return wrapper
+    return decorator
+
+
 class KALiteTestRunner(DjangoTestSuiteRunner):
     """Forces us to start in liveserver mode, and only includes relevant apps to test"""
     
     def __init__(self, *args, **kwargs):
-        """Force setting up live server test.  Adding to kwargs doesn't work, need to go to env.
-        Dependent on how Django works here."""
-        
+        """
+        Force setting up live server test.  Adding to kwargs doesn't work, need to go to env.
+        Dependent on how Django works here.
+        """
+
+        self.failfast = kwargs.get("failfast")  # overload
+
         # If no liveserver specified, set some default.
         #   port range is the set of open ports that Django can use to 
         #   start the server.  They may have multiple servers open at once.
@@ -38,10 +60,22 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         management.call_command('clean_pyc', verbosity=2)
         
         if not test_labels:
-            test_labels = {'main', 'central', 'securesync'}
+            test_labels = set(['main', 'central', 'securesync'])
             if settings.CENTRAL_SERVER:
-                test_labels -= {'main',}
+                test_labels -= set(['main',])
             else:
-                test_labels -= {'central',}
+                test_labels -= set(['central',])
         return super(KALiteTestRunner,self).run_tests(test_labels, extra_tests, **kwargs)
-        
+
+    def build_suite(self, *args, **kwargs):
+        """
+        Wrap each test function such that it automatically calls PDB on a failure.
+        """
+        test_suite = super(KALiteTestRunner, self).build_suite(*args, **kwargs)
+
+        # If failfast, drop into the debugger
+        if self.failfast:
+            for test in test_suite._tests:
+                testfun = getattr(test, test._testMethodName)
+                setattr(test, test._testMethodName, auto_pdb()(testfun))
+        return test_suite

@@ -6,6 +6,7 @@ Replace this with more appropriate tests for your application.
 """
 
 import os
+import unittest
 
 from django.test import TestCase
 from django.core.management import call_command
@@ -14,6 +15,7 @@ import settings
 from utils.testing import central_only
 
 
+@unittest.skip
 @central_only
 class FixtureTestCases(TestCase):
     """ """
