@@ -152,7 +152,7 @@ function plotTopics(topic_paths) {
 
 
 {% block content %}
-    
+    {% block navbar %}{{ block.super }}{% endblock navbar %}
 
     <!-- a good way to do this would be to create these elements dynamically (in script),
          and move this all to javascript. -->
