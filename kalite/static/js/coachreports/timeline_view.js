@@ -2,17 +2,6 @@ function drawChart_timeline(chart_div, dataTable, timeScale, options) {
     d3_multiTimeSeries(dataTable, timeScale, chart_div);
 }
 
-
-// Taken from https://gist.github.com/onpubcom/1772996
-function date_sort_asc (date1, date2) {
-  // This is a comparison function that will result in dates being sorted in
-  // ASCENDING order. As you can see, JavaScript's native comparison operators
-  // can be used to compare dates. This was news to me.
-  if (date1 > date2) return 1;
-  if (date1 < date2) return -1;
-  return 0;
-};
-
 function json2dataTable_timeline(json, xaxis, yaxis) {
     // Given a dictionary, create a data table, one row at a time.
     
@@ -40,8 +29,6 @@ function json2dataTable_timeline(json, xaxis, yaxis) {
             good_ydata.push( good_ydata.length + 1 );
         }
 
-        good_xdata.sort(date_sort_asc);
-
         // Now create a data table
         var data_array = {};
 
@@ -60,15 +47,8 @@ function json2dataTable_timeline(json, xaxis, yaxis) {
         
         dataTable.push(data_array);
     }
-    timeScale.sort(date_sort_asc);
     return [dataTable, timeScale];
   }
-
-function user2tooltip_timeline(json, uid, xaxis, yaxis) {
-    // A very simple tooltip that seems not to be used.
-    var html = "<div class='tooltip'>" + json["users"][uid] + "</div>";
-    return html;
-}
 
 function drawJsonChart_timeline(chart_div, json, xaxis, yaxis) {
     var options = {

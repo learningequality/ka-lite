@@ -1,6 +1,13 @@
 //Modified from http://bl.ocks.org/mbostock/3887118
 function d3_scatter(data, xCoordinate, yCoordinate, appendtohtml) {
-  
+  // Takes data in the form of an array of users' data.
+  // Each user's data is an object with a user attribute,
+  // containing an object of all user data, a userid attribute.
+  // See scatter_view.js for more details.
+  // xCoordinate and yCoordinate determine which items from the user data item will be used.
+  // appendtohtml is the element identifier for the svg element to be attached to.
+
+
   var margin = {top: 20, right: 20, bottom: 30, left: 40},
       width = 960 - margin.left - margin.right,
       height = 500 - margin.top - margin.bottom;

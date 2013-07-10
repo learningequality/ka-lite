@@ -1,6 +1,13 @@
 // Modified from http://bl.ocks.org/mbostock/3884955
 
 function d3_multiTimeSeries (data, timeScale, appendtohtml) {
+  // Takes data in the form of an array of users' data.
+  // Each user's data is an object with a name attribute,
+  // and a values attribute, containing an array of objects
+  // each with a Date and pctmastery attribute. See timeline_view.js for more details.
+  // timeScale is a collection of all Date objects in data for scaling the x-axis.
+  // appendtohtml is the element identifier for the svg element to be attached to.
+
     var margin = {top: 20, right: 80, bottom: 30, left: 50},
         width = 960 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom;

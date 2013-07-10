@@ -94,9 +94,9 @@ function plotJsonData(chart_div, base_url, props) {
        NOTE: you have to implement drawJsonChart(chart_div, json, xaxis, yaxis); */
     
     // Scrub data
-    if (!props["facility"]) { props["facility"] = "{{ form.facility }}"; }
-    if (!props["group"])    { props["group"]    = "{{ form.group }}"; }
-    if (!props["user"])     { props["user"]     = "{{ form.user }}"; }
+    if (!props["facility"]) { props["facility"] = "{{ form.facility|escapejs }}"; }
+    if (!props["group"])    { props["group"]    = "{{ form.group|escapejs }}"; }
+    if (!props["user"])     { props["user"]     = "{{ form.user|escapejs }}"; }
     if (!props["topic_path"])  { props["topic_path"]  = {{ form.topic_path|jsonify }}; }
 
     if (!props["xaxis"] || !props["yaxis"] || !props["topic_path"] || props["topic_path"].length==0) { // one of the ---- is selected
@@ -105,17 +105,7 @@ function plotJsonData(chart_div, base_url, props) {
     
     // Get the data
     var url = base_url + "?";
-    for (key in props) {
-        switch (key) {
-            case "topic_path":                // Multiple topic paths
-                for (var i in props[key]) {
-                    url += "topic_path=" + props[key][i] + "&";
-                }
-                break;
-            default:
-                url += key + "=" + props[key] + "&";
-        }
-    }
+    url = url + $.param(props, true);
 
     $.getJSON(url, function(json) {        
         $("#loading").text("Drawing '" + stat2name(props["xaxis"]) + "' vs '" + stat2name(props["yaxis"]) + "'..."); 
@@ -150,7 +140,7 @@ function plotTopics(topic_paths) {
             "user":        "",
             "group":       $("#group option:selected").val(), 
             "facility":    $("#facility option:selected").val(),
-            "topic_path":  topic_paths,
+            "topic_path":  topic_paths
         }
     );
 }
@@ -162,7 +152,7 @@ function plotTopics(topic_paths) {
 
 
 {% block content %}
-    {% block navbar %}{{ block.super }}{% endblock navbar %}
+    
 
     <!-- a good way to do this would be to create these elements dynamically (in script),
          and move this all to javascript. -->
@@ -233,7 +223,6 @@ function plotTopics(topic_paths) {
 
             // When the button is clicked, toggle the view style
             $("#content_tree_toggle").click(function() {
-                console.log("CLICK!");
                 toggle_tree();
             });
 
