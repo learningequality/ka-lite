@@ -17,19 +17,17 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
 import settings
-import utils
-from utils.topics import slug_key, title_key
+from config.models import Settings
 from main import topicdata
-from securesync.views import require_admin, facility_required
-from config.models import Settings
-from securesync.models import Facility, FacilityUser,FacilityGroup
-from models import VideoLog, ExerciseLog, VideoFile
-from config.models import Settings
+from main.models import VideoLog, ExerciseLog, VideoFile
 from securesync.api_client import SyncClient
+from securesync.models import Facility, FacilityUser,FacilityGroup
+from securesync.views import require_admin, facility_required
 from utils import topic_tools
+from utils.internet import am_i_online
 from utils.jobs import force_job
 from utils.videos import video_connection_is_available
-from utils.internet import am_i_online
+
 
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
@@ -38,17 +36,15 @@ def splat_handler(request, splat):
     for slug in slugs:
         # towards the end of the url, we switch from seeking a topic node
         #   to the particular type of node in the tree
-        if slug == "v":
-            seeking = "Video"
-        elif slug == "e":
-            seeking = "Exercise"
+        for kind, kind_slug in topic_tools.kind_slugs.items():
+            if slug == kind_slug.split("/")[0]:
+                seeking = kind
+                break
             
         # match each step in the topics hierarchy, with the url slug.
         else:
             children = [child for child in current_node['children'] if child['kind'] == seeking]
             if not children:
-                # return HttpResponseNotFound("No children of type '%s' found for node '%s'!" %
-                #     (seeking, current_node[title_key[current_node['kind']]]))
                 raise Http404
             match = None
             prev = None
@@ -57,13 +53,11 @@ def splat_handler(request, splat):
                 if match:
                     next = child
                     break
-                if child[slug_key[seeking]] == slug:
+                if child["slug"] == slug:
                     match = child
                 else:
                     prev = child
             if not match:
-                # return HttpResponseNotFound("Child with slug '%s' of type '%s' not found in node '%s'!" %
-                #     (slug, seeking, current_node[title_key[current_node['kind']]]))
                 raise Http404
             current_node = match
     if current_node["kind"] == "Topic":
@@ -96,9 +90,9 @@ def check_setup_status(handler):
 @cache_page(settings.CACHE_TIME)
 @render_to("topic.html")
 def topic_handler(request, topic):
-    videos    = topicdata.get_videos(topic)
-    exercises = topicdata.get_exercises(topic)
-    topics    = topicdata.get_live_topics(topic)
+    videos    = topic_tools.get_videos(topic)
+    exercises = topic_tools.get_exercises(topic)
+    topics    = topic_tools.get_live_topics(topic)
 
     # Get video counts if they'll be used, on-demand only.
     #
@@ -110,7 +104,7 @@ def topic_handler(request, topic):
 
     context = {
         "topic": topic,
-        "title": topic[title_key["Topic"]],
+        "title": topic["title"],
         "description": re.sub(r'<[^>]*?>', '', topic["description"] or ""),
         "videos": videos,
         "exercises": exercises,
@@ -144,7 +138,7 @@ def video_handler(request, video, prev=None, next=None):
         messages.warning(request, _("Friendly reminder: You are not currently logged in, so your video progress and points won't be saved."))
     context = {
         "video": video,
-        "title": video[title_key["Video"]],
+        "title": video["title"],
         "video_exists": video_exists,
         "prev": prev,
         "next": next,
@@ -164,8 +158,8 @@ def exercise_handler(request, exercise):
 
     context = {
         "exercise": exercise,
-        "title": exercise[title_key["Exercise"]],
-        "exercise_template": "exercises/" + exercise[slug_key["Exercise"]] + ".html",
+        "title": exercise["title"],
+        "exercise_template": "exercises/" + exercise["slug"] + ".html",
         "related_videos": related_videos,
     }
     return context
@@ -297,39 +291,6 @@ def update(request):
     }
     return context
 
-@require_admin
-@facility_required
-@render_to("coach_reports.html")
-def coach_reports(request, facility):
-    topics = topicdata.EXERCISE_TOPICS["topics"].values()
-    topics = sorted(topics, key = lambda k: (k["y"], k["x"]))
-    groups = FacilityGroup.objects.filter(facility=facility)
-    paths = dict((key, val["path"]) for key, val in topicdata.NODE_CACHE["Exercise"].items())
-    context = {
-        "facility": facility,
-        "groups": groups,
-        "topics": topics,
-        "exercise_paths": json.dumps(paths),
-    }
-    topic = request.GET.get("topic", "")
-    group = request.GET.get("group", "")
-    if group and topic and re.match("^[\w\-]+$", topic):
-        exercises = json.loads(open("%stopicdata/%s.json" % (settings.DATA_PATH, topic)).read())
-        exercises = sorted(exercises, key=lambda e: (e["h_position"], e["v_position"]))
-        context["exercises"] = [{
-            "display_name": ex["display_name"],
-            "description": ex["description"],
-            "short_display_name": ex["short_display_name"],
-            "path": topicdata.NODE_CACHE["Exercise"][ex["name"]]["path"],
-        } for ex in exercises]
-        users = get_object_or_404(FacilityGroup, pk=group).facilityuser_set.order_by("first_name", "last_name")
-        context["students"] = [{
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-            "username": user.username,
-            "exercise_logs": [get_object_or_None(ExerciseLog, user=user, exercise_id=ex["name"]) for ex in exercises],
-        } for user in users]
-    return context
 
 @require_admin
 @facility_required

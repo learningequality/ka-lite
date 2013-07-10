@@ -28,6 +28,7 @@ from django.utils import unittest
 import settings
 from registration.models import RegistrationProfile
 from securesync.models import FacilityUser
+from settings import LOG as logging
 from utils.django_utils import call_command_with_output
 
 
@@ -169,7 +170,7 @@ class BrowserTestCase(KALiteTestCase):
                     (self.browser,self.admin_user,self.admin_pass) = setup_test_env(browser_type=browser_type)
                     break
                 except Exception as e:
-                    settings.LOG.debug("Could not create browser %s through selenium: %s" % (browser_type, e))
+                    logging.debug("Could not create browser %s through selenium: %s" % (browser_type, e))
 
 
     def tearDown(self):
