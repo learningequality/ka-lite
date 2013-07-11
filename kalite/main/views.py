@@ -1,5 +1,6 @@
+import copy
 import json
-import re
+import re 
 import sys
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
@@ -153,7 +154,18 @@ def video_handler(request, video, prev=None, next=None):
 @cache_page(settings.CACHE_TIME)
 @render_to("exercise.html")
 def exercise_handler(request, exercise):
-    related_videos = [topicdata.NODE_CACHE["Video"][key] for key in exercise["related_video_readable_ids"]]
+    """
+    Display an exercise
+    """
+    # Copy related videos (should be small), as we're going to tweak them
+    related_videos = [copy.copy(topicdata.NODE_CACHE["Video"][key]) for key in exercise["related_video_readable_ids"]]
+    # Resolve the most related path
+    for video in related_videos:
+        video["path"] = video["paths"][0]
+        for path in video["paths"]:
+            if topic_tools.is_sibling({"path": path, "kind": "Video"}, exercise):
+                video["path"] = path
+        del video["paths"]
 
     if request.user.is_authenticated():
         messages.warning(request, _("Note: You're logged in as an admin (not as a student/teacher), so your exercise progress and points won't be saved."))
@@ -171,7 +183,8 @@ def exercise_handler(request, exercise):
 @cache_page(settings.CACHE_TIME)
 @render_to("knowledgemap.html")
 def exercise_dashboard(request):
-    paths = dict((key, val["path"]) for key, val in topicdata.NODE_CACHE["Exercise"].items())
+    # Just grab the first path, whatever it is
+    paths = dict((key, val["paths"][0]) for key, val in topicdata.NODE_CACHE["Exercise"].items())
     context = {
         "title": "Knowledge map",
         "exercise_paths": json.dumps(paths),

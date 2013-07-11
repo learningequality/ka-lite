@@ -150,10 +150,17 @@ def compute_data(types, who, where):
     # Topics: topics.
     # Exercises: names (ids for ExerciseLog objects)
     # Videos: youtube_id (ids for VideoLog objects)
-    search_fun      = partial(lambda t,p: t["path"].startswith(p), p=tuple(where))
-    query_topics    = partial(lambda t,sf: t if t is not None else [t           for t   in filter(sf, topicdata.NODE_CACHE['Topic'].values())],sf=search_fun)
-    query_exercises = partial(lambda e,sf: e if e is not None else [ex["name"]  for ex  in filter(sf, topicdata.NODE_CACHE['Exercise'].values())],sf=search_fun)
-    query_videos    = partial(lambda v,sf: v if v is not None else [vid["youtube_id"] for vid in filter(sf, topicdata.NODE_CACHE['Video'].values())],sf=search_fun)
+    #
+    # TODO(bcipolli):
+    # 
+    # This code is massively inefficient (good demo code, bad production code).
+    #   Use smarter queries (i.e. query out all props at once, instead of individually)
+    #   to make this go faster.
+    search_fun_single_path = partial(lambda t,p: t["path"].startswith(p), p=tuple(where))
+    search_fun_multi_path  = partial(lambda t,p: any([tp.startswith(p) for tp in t["paths"]]),  p=tuple(where))
+    query_topics    = partial(lambda t,sf: t if t is not None else [t           for t   in filter(sf, topicdata.NODE_CACHE['Topic'].values())],sf=search_fun_single_path)
+    query_exercises = partial(lambda e,sf: e if e is not None else [ex["name"]  for ex  in filter(sf, topicdata.NODE_CACHE['Exercise'].values())],sf=search_fun_multi_path)
+    query_videos    = partial(lambda v,sf: v if v is not None else [vid["youtube_id"] for vid in filter(sf, topicdata.NODE_CACHE['Video'].values())],sf=search_fun_multi_path)
 
     # Exercise log and video log dictionary (key: user)
     query_exlogs    = lambda u,ex,el:  el if el is not None else ExerciseLog.objects.filter(user=u, exercise_id__in=ex).order_by("completion_timestamp")
