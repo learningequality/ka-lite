@@ -29,6 +29,28 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
     """Base class for main server test cases.
     They will have different functions in here, for sure.
     """
+    student_username = 'test_student'
+    student_password =  'socrates'
+    facilityname = 'middle of nowhere'
+
+    def db_create_student(self, username=None, password=None):
+        if not username:
+            username = self.student_username
+        if not password:
+            password = self.student_password
+        facility = self.db_create_facility()
+        student = FacilityUser(username=username, facility=facility)
+        student.set_password(raw_password=password)
+        student.save()
+        return student
+
+    def db_create_facility(self, facilityname=None):
+        if not facilityname:
+            facilityname = self.facilityname
+        facility = Facility(name=facilityname)
+        facility.save()
+        return facility
+
 
     def register_user(self, username, password, first_name="firstname", last_name="lastname", stay_logged_in=False, expect_success=True):
         """Tests that a user can register"""
@@ -313,33 +335,12 @@ class UserRegistrationCaseTest(KALiteRegisteredDistributedBrowserTestCase):
         self.check_django_message("error", contains="There was an error logging you in.")
 
 class StudentExerciseTest(KALiteDistributedBrowserTestCase):
-    student_username = 'test_student'
-    student_password =  'socrates'
-    facilityname = 'middle of nowhere'
 
     def setUp(self):
         super(KALiteDistributedBrowserTestCase, self).setUp()
         self.db_create_student()
         self.login_student(self.student_username, self.student_password)
         self.browse_to('http://localhost:8000/math/arithmetic/addition-subtraction/basic_addition/e/addition_1/') # TODO: there must be a better way to do this
-
-    def db_create_student(self, username=None, password=None):
-        if not username:
-            username = self.student_username
-        if not password:
-            password = self.student_password
-        facility = self.db_create_facility()
-        student = FacilityUser(username=username, facility=facility)
-        student.set_password(raw_password=password)
-        student.save()
-        return student
-
-    def db_create_facility(self, facilityname=None):
-        if not facilityname:
-            facilityname = self.facilityname
-        facility = Facility(name=facilityname)
-        facility.save()
-        return facility
 
     def browser_insert_answer(self, answer):
         self.browser.find_element_by_css_selector('#solutionarea input[type=text]').click()
