@@ -329,8 +329,21 @@ def device_discovery(request):
     else:
         raise Http404(_("This device is not on any zone."))
 
+
+def handler_403(request, *args, **kwargs):
+    context = RequestContext(request)
+    message = None  # Need to retrieve, but can't figure it out yet.
+
+    if request.is_ajax():
+        return HttpResponseForbidden(message)
+    else:
+        messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page..")))
+        return HttpResponseRedirect(reverse("login") + "?next=" + request.path)
+
+
 def handler_404(request):
     return HttpResponseNotFound(render_to_string("404.html", {}, context_instance=RequestContext(request)))
+
 
 def handler_500(request):
     errortype, value, tb = sys.exc_info()

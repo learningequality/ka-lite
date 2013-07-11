@@ -19,7 +19,7 @@ from main import topicdata
 from main.models import VideoLog, ExerciseLog, VideoFile
 from securesync.models import Facility, FacilityUser,FacilityGroup, DeviceZone, Device
 from securesync.views import facility_required
-from utils.decorators import require_login, require_admin
+from utils.decorators import require_authorized_login, require_authorized_admin, get_user_from_request
 from utils.internet import StatusException
 from utils.topic_tools import get_topic_exercises, get_topic_videos, get_all_midlevel_topics
 
@@ -69,7 +69,7 @@ def plotting_metadata_context(request, facility=None, topic_path=[], *args, **kw
 
 ####### view end-points ####
 
-@require_admin
+@require_authorized_admin
 @facility_required
 @render_to("coachreports/timeline_view.html")
 def timeline_view(request, facility, xaxis="", yaxis=""):
@@ -77,7 +77,7 @@ def timeline_view(request, facility, xaxis="", yaxis=""):
     return plotting_metadata_context(request, facility=facility, xaxis=xaxis, yaxis=yaxis)
 
 
-@require_admin
+@require_authorized_admin
 @facility_required
 @render_to("coachreports/scatter_view.html")
 def scatter_view(request, facility, xaxis="", yaxis=""):
@@ -85,29 +85,31 @@ def scatter_view(request, facility, xaxis="", yaxis=""):
     return plotting_metadata_context(request, facility=facility, xaxis=xaxis, yaxis=yaxis)
 
 
-@require_login
+@require_authorized_login
 @render_to("coachreports/student_view.html")
 def student_view(request, xaxis="pct_mastery", yaxis="ex:attempts"):
-    """student view: data generated on the back-end.
+    """
+    Student view: data generated on the back-end.
 
     Student view lists a by-topic-summary of their activity logs.
     """
-
-    user = get_object_or_None(FacilityUser, id=request.REQUEST.get("user"))
-    user = user or request.session.get("facility_user",None)
+    user = get_user_from_request(request=request)
 
     topics = get_all_midlevel_topics()
+    import pdb; pdb.set_trace()
     topic_ids = [t['id'] for t in topics]
     topics = filter(partial(lambda n,ids: n['id'] in ids, ids=topic_ids), topicdata.NODE_CACHE['Topic'].values()) # real data, like paths
-
-    any_data = False # whether the user has any data at all.
+    
+    any_data = False  # whether the user has any data at all.
     exercise_logs = dict()
     video_logs = dict()
     exercise_sparklines = dict()
     stats = dict()
     topic_exercises = dict()
+    import pdb; pdb.set_trace()
     for topic in topics:
 
+        import pdb; pdb.set_trace()
         topic_exercises[topic['id']] = get_topic_exercises(path=topic['path'])
         n_exercises = len(topic_exercises[topic['id']])
         exercise_logs[topic['id']] = ExerciseLog.objects.filter(user=user, exercise_id__in=[t['name'] for t in topic_exercises[topic['id']]]).order_by("completion_timestamp")
@@ -170,7 +172,7 @@ def student_view(request, xaxis="pct_mastery", yaxis="ex:attempts"):
     }
 
 
-@require_admin
+@require_authorized_admin
 @facility_required
 @render_to("coachreports/landing_page.html")
 def landing_page(request, facility):
@@ -178,7 +180,7 @@ def landing_page(request, facility):
     return plotting_metadata_context(request, facility=facility)
 
 
-@require_admin
+@require_authorized_admin
 @facility_required
 @render_to("coachreports/tabular_view.html")
 def tabular_view(request, facility, report_type="exercise"):

@@ -29,7 +29,7 @@ class Organization(models.Model):
     country = models.CharField(max_length=100, blank=True)
     users = models.ManyToManyField(User)
     zones = models.ManyToManyField(Zone)
-    owner = models.ForeignKey(User, related_name="owned_organizations")
+    owner = models.ForeignKey(User, related_name="owned_organizations", null=True)
 
     HEADLESS_ORG_NAME = "Headless Zones"
     HEADLESS_ORG_PK = None  # keep the primary key of the headless org around, for efficiency
@@ -52,29 +52,32 @@ class Organization(models.Model):
         return self.name
 
     def save(self, owner=None, *args, **kwargs):
-        if not self.owner_id:
+        # backwards compatibility
+        if not getattr(self, "owner_id", None):
             self.owner = owner
+            assert self.owner or self.name == Organization.HEADLESS_ORG_NAME, "Organization must have an owner (save for the 'headless' org)" 
 
-        # Make org unique by name, for dummy name only.
+        # Make org unique by name, for headless name only.
         #   So make sure that any save() call is coming either
         #   from a trusted source (passing HEADLESS_ORG_SAVE_FLAG),
         #   or doesn't overlap with our safe name
-        if self.name == Organization.HEADLESS_ORG_NAME and not kwargs.get(HEADLESS_ORG_SAVE_FLAG, False):
-            dummy_org = Organization.get_dummy_organization()
-            if dummy_org.pk != self.pk:
-                raise Exception("Cannot add more than one dummy org!")
+        if self.name == Organization.HEADLESS_ORG_NAME and not kwargs.get(Organization.HEADLESS_ORG_SAVE_FLAG, False):
+            headless_org = Organization.get_headless_organization()
+            if headless_org.pk != self.pk:
+                raise Exception("Cannot add more than one headless org!")
         super(Organization, self).save(*args, **kwargs)
 
 
     @classmethod
     def from_zone(cls, zone):
-        """Given a zone, figure out which organization is the parent."""
-
+        """
+        Given a zone, figure out which organizations contain it.
+        """
         return Organization.objects.filter(zones__pk=zone.pk)
 
 
     @classmethod
-    def get_dummy_organization(cls, user):
+    def get_headless_organization(cls, user):
         assert user.is_superuser, "only super-users can call this method!"
 
         if cls.HEADLESS_ORG_PK is not None:
@@ -89,7 +92,7 @@ class Organization(models.Model):
             if not orgs:
                 # Cache miss because the org actually doesn't exist.  Create it!
                 org = Organization(name=cls.HEADLESS_ORG_NAME, owner=user)
-                org.save(HEADLESS_ORG_SAVE_FLAG=True)
+                org.save(**({cls.HEADLESS_ORG_SAVE_FLAG: True}))
                 cls.HEADLESS_ORG_PK = org.pk
                 return org
             else:
@@ -100,15 +103,15 @@ class Organization(models.Model):
 
 
     @classmethod
-    def update_dummy_organization(cls, user):
+    def update_headless_organization(cls, user):
         assert user.is_superuser, "only super-users can call this method!"
-        dummy_org = Organization.get_dummy_organization(user)
+        headless_org = Organization.get_headless_organization(user)
         headless_zones = Zone.get_headless_zones()
         if headless_zones:
             for zone in headless_zones:
-                dummy_org.zones.add(zone)
-            dummy_org.save()
-        return dummy_org
+                headless_org.zones.add(zone)
+            headless_org.save()
+        return headless_org
 
 
 class UserProfile(models.Model):
@@ -122,13 +125,13 @@ class UserProfile(models.Model):
         for org in self.user.organization_set.all():  # add in order queries (alphabetical?)
             orgs[org.pk] = org
 
-        # Add a dummy organization for superusers, containing
+        # Add a headless organization for superusers, containing
         #   any headless zones.
         # Make sure this is at the END of the list, so it is clearly special.
         if self.user.is_superuser:
-            dummy_org = Organization.update_dummy_organization(self.user)
-            if dummy_org.zones:
-                orgs[dummy_org.pk] = dummy_org
+            headless_org = Organization.update_headless_organization(self.user)
+            if headless_org.zones:
+                orgs[headless_org.pk] = headless_org
 
         return orgs
 

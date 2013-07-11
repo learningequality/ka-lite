@@ -31,10 +31,10 @@ from securesync.forms import FacilityForm
 from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device
 from securesync.models import Zone, SyncSession
 from securesync.model_sync import save_serialized_models, get_serialized_models
-from utils.decorators import authorized_login_required
+from utils.decorators import require_authorized_admin
 
 
-@authorized_login_required
+@require_authorized_admin
 @render_to("control_panel/zone_form.html")
 def zone_form(request, zone_id, org_id=None):
     org = get_object_or_None(Organization, pk=org_id) if org_id else None
@@ -60,7 +60,7 @@ def zone_form(request, zone_id, org_id=None):
 
 
 
-@authorized_login_required
+@require_authorized_admin
 @render_to("control_panel/zone_management.html")
 def zone_management(request, zone_id, org_id=None):
     org = get_object_or_None(Organization, pk=org_id) if org_id else None
@@ -111,7 +111,7 @@ def zone_management(request, zone_id, org_id=None):
 
 
 #TODO(bcipolli) I think this will be deleted on the central server side
-@authorized_login_required
+@require_authorized_admin
 @render_to("control_panel/facility_management.html")
 def facility_management(request, zone_id, org_id=None):
     facilities = Facility.objects.by_zone(zone_id)
@@ -120,7 +120,7 @@ def facility_management(request, zone_id, org_id=None):
         "facilities": facilities,
     }
 
-@authorized_login_required
+@require_authorized_admin
 @render_to("control_panel/facility_usage.html")
 def facility_usage(request, facility_id, org_id=None, zone_id=None):
 
@@ -182,7 +182,7 @@ def facility_usage(request, facility_id, org_id=None, zone_id=None):
     }
 
 
-@authorized_login_required
+@require_authorized_admin
 @render_to("control_panel/device_management.html")
 def device_management(request, device_id, org_id=None, zone_id=None):
     org = get_object_or_None(Organization, pk=org_id) if org_id else None
@@ -198,7 +198,7 @@ def device_management(request, device_id, org_id=None, zone_id=None):
     }
 
 
-@authorized_login_required
+@require_authorized_admin
 @render_to("control_panel/facility_form.html")
 def facility_form(request, facility_id, org_id=None, zone_id=None):
     org = get_object_or_None(Organization, pk=org_id) if org_id else None
@@ -223,7 +223,7 @@ def facility_form(request, facility_id, org_id=None, zone_id=None):
     }
 
 
-@authorized_login_required
+@require_authorized_admin
 @render_to("control_panel/group_report.html")
 def group_report(request, facility_id, group_id, org_id=None, zone_id=None):
     context = group_report_context(
@@ -241,7 +241,7 @@ def group_report(request, facility_id, group_id, org_id=None, zone_id=None):
 
     return context
 
-@authorized_login_required
+@require_authorized_admin
 @render_to("control_panel/group_users_management.html")
 def facility_user_management(request, facility_id, group_id="", org_id=None, zone_id=None):
     group_id=group_id or request.REQUEST.get("group","")

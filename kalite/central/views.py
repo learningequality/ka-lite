@@ -9,6 +9,7 @@ from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_exempt
 
@@ -17,7 +18,7 @@ import settings
 from central.forms import OrganizationForm, OrganizationInvitationForm
 from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
 from securesync.api_client import SyncClient
-from utils.decorators import authorized_login_required
+from utils.decorators import require_authorized_admin
 
 
 @render_to("central/homepage.html")
@@ -90,7 +91,7 @@ def org_invite_action(request, invite_id):
     return HttpResponseRedirect(reverse("org_management"))
 
 
-@authorized_login_required
+@require_authorized_admin
 def delete_admin(request, org_id, user_id):
     org = Organization.objects.get(pk=org_id)
     admin = org.users.get(pk=user_id)
@@ -106,7 +107,7 @@ def delete_admin(request, org_id, user_id):
     return HttpResponseRedirect(reverse("org_management"))
 
 
-@authorized_login_required
+@require_authorized_admin
 def delete_invite(request, org_id, invite_id):
     org = Organization.objects.get(pk=org_id)
     invite = OrganizationInvitation.objects.get(pk=invite_id)
@@ -117,7 +118,7 @@ def delete_invite(request, org_id, invite_id):
     return HttpResponseRedirect(reverse("org_management"))
 
 
-@authorized_login_required
+@require_authorized_admin
 @render_to("central/organization_form.html")
 def organization_form(request, org_id):
     if org_id != "new":
@@ -165,6 +166,15 @@ def crypto_login(request):
     return HttpResponseRedirect("%ssecuresync/cryptologin/?client_nonce=%s" % (host, client.session.client_nonce))
 
 
+def handler_403(request, *args, **kwargs):
+    context = RequestContext(request)
+    message = None  # Need to retrieve, but can't figure it out yet.
+
+    if request.is_ajax():
+        return HttpResponseForbidden(message)
+    else:
+        messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page..")))
+        return HttpResponseRedirect(reverse("auth_login") + "?next=" + request.path)
 
 def handler_404(request):
     return HttpResponseNotFound(render_to_string("central/404.html", {}, context_instance=RequestContext(request)))
