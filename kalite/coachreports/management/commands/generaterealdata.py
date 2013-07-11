@@ -32,7 +32,7 @@ from django.core.management.base import BaseCommand, CommandError
 import settings
 import securesync
 from main import topicdata
-from main.models import ExerciseLog, VideoLog
+from main.models import ExerciseLog, VideoLog, UserLog
 from securesync.models import Facility, FacilityUser, FacilityGroup, Device, DeviceMetadata
 from settings import LOG as logging
 from utils.general import datediff
@@ -202,6 +202,7 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
 
     date_diff = datetime.datetime.now() - start_date
     exercise_logs = []
+    user_logs = []
 
     # It's not a user: probably a list.
     # Recursive case
@@ -212,7 +213,9 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
 
         for topic in topics:
             for user in facility_user:
-                exercise_logs.append(generate_fake_exercise_logs(facility_user=user, topics=[topic], start_date=start_date))
+                (elogs, ulogs) = generate_fake_exercise_logs(facility_user=user, topics=[topic], start_date=start_date)
+                exercise_logs.append(elogs)
+                user_logs.append(ulogs)
 
     # Actually generate!
     else:
@@ -278,7 +281,8 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
                     streak_progress,
                     date_completed,
                 ))
-                log = ExerciseLog(
+
+                elog = ExerciseLog(
                     user=facility_user,
                     exercise_id=exercise["name"],
                     attempts=int(attempts),
@@ -287,13 +291,26 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
                     completion_timestamp=date_completed,
                     completion_counter=datediff(date_completed, start_date, units="seconds"),
                 )
-                log.full_clean()
-                # TODO(bcipolli): bulk saving of logs
-                log.save()
+                elog.full_clean()
+                elog.save()   # TODO(bcipolli): bulk saving of logs
+                exercise_logs.append(elog)
 
-                exercise_logs.append(log)
+                # For now, make all attempts on an exercise into a single UserLog.
+                seconds_per_attempt = 10 * (1 + user_settings["speed_of_learning"] * random.random())
+                time_to_navigate = 15 * (0.5 + random.random())  #between 7.5s and 22.5s
+                time_to_logout = 5 * (0.5 + random.random()) # between 2.5 and 7.5s
+                ulog = UserLog(
+                    user=facility_user,
+                    activity_type=1,
+                    start_datetime = date_completed - datetime.timedelta(seconds=int(attempts * seconds_per_attempt + time_to_navigate)),
+                    end_datetime = date_completed + datetime.timedelta(seconds=time_to_logout),
+                    last_active_datetime = date_completed,
+                )
+                ulog.full_clean()
+                ulog.save()
+                user_logs.append(ulog)
 
-    return exercise_logs
+    return (exercise_logs, user_logs)
 
 
 def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datetime.datetime.now() - datetime.timedelta(days=30 * 6)):
