@@ -1,7 +1,7 @@
 """
 For functions mucking with internet access
 """
-import logging
+import os
 import requests
 from urlparse import parse_qs, urlsplit, urlunsplit
 from urllib import urlencode
@@ -9,6 +9,8 @@ from urllib import urlencode
 
 from django.http import HttpResponse
 from django.utils import simplejson
+
+from settings import LOG as logging
 
 
 class StatusException(Exception):
@@ -54,7 +56,7 @@ def am_i_online(url, expected_val=None, search_string=None, timeout=5, allow_red
         return True
         
     except Exception as e:
-        logging.getLogger("kalite").debug("am_i_online: %s" % e)
+        logging.debug("am_i_online: %s" % e)
         return False
 
 
@@ -92,8 +94,8 @@ def set_query_params(url, param_dict):
     new_query_string = urlencode(query_params, doseq=True)
 
     return urlunsplit((scheme, netloc, path, new_query_string, fragment))
-    
-    
+
+
 if __name__ == "__main__":
     print generate_all_paths("/test/me/out")
     print generate_all_paths("/test/me/out/")
