@@ -8,6 +8,7 @@
     "related_video_readable_ids": [
       "reading-tables-1"
     ], 
+    "slug": "reading_tables_1", 
     "prerequisites": [
       "multiplication_1.5"
     ], 
@@ -15,7 +16,7 @@
     "h_position": 14, 
     "v_position": -23, 
     "path": "/math/arithmetic/applying-math-reasoning-topic/reading_data/e/reading_tables_1/", 
-    "slug": "reading_tables_1", 
+    "id": "reading_tables_1", 
     "name": "reading_tables_1"
   }, 
   {
@@ -27,6 +28,7 @@
     "related_video_readable_ids": [
       "reading-tables-2"
     ], 
+    "slug": "reading_tables_2", 
     "prerequisites": [
       "reading_tables_1"
     ], 
@@ -34,7 +36,7 @@
     "h_position": 15, 
     "v_position": -24, 
     "path": "/math/arithmetic/applying-math-reasoning-topic/reading_data/e/reading_tables_2/", 
-    "slug": "reading_tables_2", 
+    "id": "reading_tables_2", 
     "name": "reading_tables_2"
   }, 
   {
@@ -46,6 +48,7 @@
     "related_video_readable_ids": [
       "reading-stem-and-leaf-plots"
     ], 
+    "slug": "reading_stem_and_leaf_plots", 
     "prerequisites": [
       "reading_tables_2"
     ], 
@@ -53,7 +56,7 @@
     "h_position": 16, 
     "v_position": -25, 
     "path": "/math/arithmetic/applying-math-reasoning-topic/reading_data/e/reading_stem_and_leaf_plots/", 
-    "slug": "reading_stem_and_leaf_plots", 
+    "id": "reading_stem_and_leaf_plots", 
     "name": "reading_stem_and_leaf_plots"
   }, 
   {
@@ -65,6 +68,7 @@
     "related_video_readable_ids": [
       "reading-pictographs"
     ], 
+    "slug": "reading_pictographs_1", 
     "prerequisites": [
       "reading_tables_1"
     ], 
@@ -72,7 +76,7 @@
     "h_position": 15, 
     "v_position": -23, 
     "path": "/math/arithmetic/applying-math-reasoning-topic/reading_data/e/reading_pictographs_1/", 
-    "slug": "reading_pictographs_1", 
+    "id": "reading_pictographs_1", 
     "name": "reading_pictographs_1"
   }, 
   {
@@ -84,6 +88,7 @@
     "related_video_readable_ids": [
       "reading-pictographs"
     ], 
+    "slug": "reading_pictographs_2", 
     "prerequisites": [
       "reading_pictographs_1"
     ], 
@@ -91,7 +96,7 @@
     "h_position": 16, 
     "v_position": -23, 
     "path": "/math/arithmetic/applying-math-reasoning-topic/reading_data/e/reading_pictographs_2/", 
-    "slug": "reading_pictographs_2", 
+    "id": "reading_pictographs_2", 
     "name": "reading_pictographs_2"
   }, 
   {
@@ -103,6 +108,7 @@
     "related_video_readable_ids": [
       "reading-bar-charts-1"
     ], 
+    "slug": "reading_bar_charts_1", 
     "prerequisites": [
       "reading_tables_2"
     ], 
@@ -110,7 +116,7 @@
     "h_position": 16, 
     "v_position": -24, 
     "path": "/math/arithmetic/applying-math-reasoning-topic/reading_data/e/reading_bar_charts_1/", 
-    "slug": "reading_bar_charts_1", 
+    "id": "reading_bar_charts_1", 
     "name": "reading_bar_charts_1"
   }, 
   {
@@ -122,6 +128,7 @@
     "related_video_readable_ids": [
       "creating-bar-charts-1"
     ], 
+    "slug": "creating_bar_charts_1", 
     "prerequisites": [
       "reading_bar_charts_1"
     ], 
@@ -129,7 +136,7 @@
     "h_position": 17, 
     "v_position": -25, 
     "path": "/math/arithmetic/applying-math-reasoning-topic/reading_data/e/creating_bar_charts_1/", 
-    "slug": "creating_bar_charts_1", 
+    "id": "creating_bar_charts_1", 
     "name": "creating_bar_charts_1"
   }, 
   {
@@ -141,6 +148,7 @@
     "related_video_readable_ids": [
       "reading-bar-charts-2"
     ], 
+    "slug": "reading_bar_charts_2", 
     "prerequisites": [
       "reading_bar_charts_1"
     ], 
@@ -148,7 +156,7 @@
     "h_position": 18, 
     "v_position": -24, 
     "path": "/math/arithmetic/applying-math-reasoning-topic/reading_data/e/reading_bar_charts_2/", 
-    "slug": "reading_bar_charts_2", 
+    "id": "reading_bar_charts_2", 
     "name": "reading_bar_charts_2"
   }, 
   {
@@ -160,6 +168,7 @@
     "related_video_readable_ids": [
       "reading-bar-charts-3"
     ], 
+    "slug": "reading_bar_charts_3", 
     "prerequisites": [
       "reading_bar_charts_2", 
       "mean_median_and_mode"
@@ -168,7 +177,7 @@
     "h_position": 19, 
     "v_position": -24, 
     "path": "/math/arithmetic/applying-math-reasoning-topic/reading_data/e/reading_bar_charts_3/", 
-    "slug": "reading_bar_charts_3", 
+    "id": "reading_bar_charts_3", 
     "name": "reading_bar_charts_3"
   }, 
   {
@@ -180,6 +189,7 @@
     "related_video_readable_ids": [
       "u08-l1-t2-we2-reading-line-graphs"
     ], 
+    "slug": "reading_line_charts_1", 
     "prerequisites": [
       "reading_bar_charts_1"
     ], 
@@ -187,7 +197,7 @@
     "h_position": 17, 
     "v_position": -26, 
     "path": "/math/arithmetic/applying-math-reasoning-topic/reading_data/e/reading_line_charts_1/", 
-    "slug": "reading_line_charts_1", 
+    "id": "reading_line_charts_1", 
     "name": "reading_line_charts_1"
   }
 ]

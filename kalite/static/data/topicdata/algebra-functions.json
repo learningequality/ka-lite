@@ -9,6 +9,7 @@
       "functions-as-graphs", 
       "understanding-function-notation-example-3"
     ], 
+    "slug": "functions_1", 
     "prerequisites": [
       "interpreting_linear_equations"
     ], 
@@ -16,7 +17,7 @@
     "h_position": 38, 
     "v_position": -1, 
     "path": "/math/algebra/algebra-functions/relationships_functions/e/functions_1/", 
-    "slug": "functions_1", 
+    "id": "functions_1", 
     "name": "functions_1"
   }, 
   {
@@ -30,6 +31,7 @@
       "domain-of-a-radical-function", 
       "domain-of-a-function"
     ], 
+    "slug": "domain_of_a_function", 
     "prerequisites": [
       "functions_2", 
       "domain_and_range_0.5"
@@ -38,7 +40,7 @@
     "h_position": 40, 
     "v_position": -1, 
     "path": "/math/algebra/algebra-functions/domain_and_range/e/domain_of_a_function/", 
-    "slug": "domain_of_a_function", 
+    "id": "domain_of_a_function", 
     "name": "domain_of_a_function"
   }, 
   {
@@ -51,6 +53,7 @@
       "domain-and-range-of-a-function", 
       "domain-and-range-of-a-function"
     ], 
+    "slug": "range_of_a_function", 
     "prerequisites": [
       "functions_2", 
       "domain_and_range_0.5"
@@ -59,7 +62,7 @@
     "h_position": 40, 
     "v_position": 1, 
     "path": "/math/algebra/algebra-functions/domain_and_range/e/range_of_a_function/", 
-    "slug": "range_of_a_function", 
+    "id": "range_of_a_function", 
     "name": "range_of_a_function"
   }, 
   {
@@ -72,6 +75,7 @@
       "domain-and-range-of-a-function", 
       "domain-and-range-of-a-relation"
     ], 
+    "slug": "domain_and_range_0.5", 
     "prerequisites": [
       "functions_1"
     ], 
@@ -79,7 +83,7 @@
     "h_position": 39, 
     "v_position": 0, 
     "path": "/math/algebra/algebra-functions/domain_and_range/e/domain_and_range_0.5/", 
-    "slug": "domain_and_range_0.5", 
+    "id": "domain_and_range_0.5", 
     "name": "domain_and_range_0.5"
   }, 
   {
@@ -91,6 +95,7 @@
     "related_video_readable_ids": [
       "proportionality-constant-for-direct-variation"
     ], 
+    "slug": "direct_and_inverse_variation", 
     "prerequisites": [
       "interpreting_linear_equations"
     ], 
@@ -98,7 +103,7 @@
     "h_position": 38, 
     "v_position": 2, 
     "path": "/math/algebra/algebra-functions/direct_inverse_variation/e/direct_and_inverse_variation/", 
-    "slug": "direct_and_inverse_variation", 
+    "id": "direct_and_inverse_variation", 
     "name": "direct_and_inverse_variation"
   }, 
   {
@@ -110,6 +115,7 @@
     "related_video_readable_ids": [
       "graphing-exponential-functions"
     ], 
+    "slug": "views_of_a_function", 
     "prerequisites": [
       "functions_2"
     ], 
@@ -117,7 +123,7 @@
     "h_position": 40, 
     "v_position": -3, 
     "path": "/math/algebra/algebra-functions/graphing_functions/e/views_of_a_function/", 
-    "slug": "views_of_a_function", 
+    "id": "views_of_a_function", 
     "name": "views_of_a_function"
   }, 
   {
@@ -130,6 +136,7 @@
       "evaluating-a-function-expression", 
       "quotient-of-functions"
     ], 
+    "slug": "functions_2", 
     "prerequisites": [
       "functions_1"
     ], 
@@ -137,7 +144,7 @@
     "h_position": 39, 
     "v_position": -2, 
     "path": "/math/algebra/algebra-functions/eval-function-expressions/e/functions_2/", 
-    "slug": "functions_2", 
+    "id": "functions_2", 
     "name": "functions_2"
   }, 
   {
@@ -150,6 +157,7 @@
       "evaluating-composite-functions-example-1", 
       "quotient-of-functions"
     ], 
+    "slug": "functions_3", 
     "prerequisites": [
       "functions_2"
     ], 
@@ -157,7 +165,7 @@
     "h_position": 40, 
     "v_position": -2, 
     "path": "/math/algebra/algebra-functions/eval-function-expressions/e/functions_3/", 
-    "slug": "functions_3", 
+    "id": "functions_3", 
     "name": "functions_3"
   }, 
   {
@@ -170,6 +178,7 @@
       "function-inverses-example-3", 
       "function-inverses-example-3"
     ], 
+    "slug": "inverses_of_functions", 
     "prerequisites": [
       "domain_of_a_function", 
       "range_of_a_function"
@@ -178,7 +187,7 @@
     "h_position": 41, 
     "v_position": -1, 
     "path": "/math/algebra/algebra-functions/function_inverses/e/inverses_of_functions/", 
-    "slug": "inverses_of_functions", 
+    "id": "inverses_of_functions", 
     "name": "inverses_of_functions"
   }, 
   {
@@ -190,6 +199,7 @@
     "related_video_readable_ids": [
       "new-operator-definitions"
     ], 
+    "slug": "new_definitions_1", 
     "prerequisites": [
       "interpreting_linear_equations"
     ], 
@@ -197,7 +207,7 @@
     "h_position": 38, 
     "v_position": 1, 
     "path": "/math/algebra/algebra-functions/new_operators/e/new_definitions_1/", 
-    "slug": "new_definitions_1", 
+    "id": "new_definitions_1", 
     "name": "new_definitions_1"
   }, 
   {
@@ -209,6 +219,7 @@
     "related_video_readable_ids": [
       "new-definitions-2"
     ], 
+    "slug": "new_definitions_2", 
     "prerequisites": [
       "new_definitions_1"
     ], 
@@ -216,7 +227,7 @@
     "h_position": 39, 
     "v_position": 1, 
     "path": "/math/algebra/algebra-functions/new_operators/e/new_definitions_2/", 
-    "slug": "new_definitions_2", 
+    "id": "new_definitions_2", 
     "name": "new_definitions_2"
   }
 ]

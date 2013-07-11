@@ -8,6 +8,7 @@
     "related_video_readable_ids": [
       "pythagorean-theorem"
     ], 
+    "slug": "pythagorean_theorem_1", 
     "prerequisites": [
       "adding_and_subtracting_radicals"
     ], 
@@ -15,7 +16,7 @@
     "h_position": 38, 
     "v_position": -13, 
     "path": "/math/algebra/pythagorean-theorem/e/pythagorean_theorem_1/", 
-    "slug": "pythagorean_theorem_1", 
+    "id": "pythagorean_theorem_1", 
     "name": "pythagorean_theorem_1"
   }, 
   {
@@ -29,6 +30,7 @@
       "distance-formula", 
       "distance-formula"
     ], 
+    "slug": "distance_formula", 
     "prerequisites": [
       "pythagorean_theorem_1"
     ], 
@@ -36,7 +38,7 @@
     "h_position": 39, 
     "v_position": -13, 
     "path": "/math/algebra/pythagorean-theorem/e/distance_formula/", 
-    "slug": "distance_formula", 
+    "id": "distance_formula", 
     "name": "distance_formula"
   }, 
   {
@@ -50,6 +52,7 @@
       "midpoint-formula", 
       "midpoint-formula"
     ], 
+    "slug": "midpoint_formula", 
     "prerequisites": [
       "distance_formula"
     ], 
@@ -57,7 +60,7 @@
     "h_position": 40, 
     "v_position": -12, 
     "path": "/math/algebra/pythagorean-theorem/e/midpoint_formula/", 
-    "slug": "midpoint_formula", 
+    "id": "midpoint_formula", 
     "name": "midpoint_formula"
   }
 ]

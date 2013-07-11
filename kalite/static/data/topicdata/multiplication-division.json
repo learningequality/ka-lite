@@ -8,6 +8,7 @@
     "related_video_readable_ids": [
       "basic-multiplication"
     ], 
+    "slug": "multiplication_0.5", 
     "prerequisites": [
       "addition_2"
     ], 
@@ -15,7 +16,7 @@
     "h_position": 3, 
     "v_position": -5, 
     "path": "/math/arithmetic/multiplication-division/multiplication_fun/e/multiplication_0.5/", 
-    "slug": "multiplication_0.5", 
+    "id": "multiplication_0.5", 
     "name": "multiplication_0.5"
   }, 
   {
@@ -27,6 +28,7 @@
     "related_video_readable_ids": [
       "multiplication-2--the-multiplication-tables"
     ], 
+    "slug": "multiplication_1", 
     "prerequisites": [
       "multiplication_0.5"
     ], 
@@ -34,7 +36,7 @@
     "h_position": 4, 
     "v_position": -5, 
     "path": "/math/arithmetic/multiplication-division/multiplication_fun/e/multiplication_1/", 
-    "slug": "multiplication_1", 
+    "id": "multiplication_1", 
     "name": "multiplication_1"
   }, 
   {
@@ -46,6 +48,7 @@
     "related_video_readable_ids": [
       "division-1"
     ], 
+    "slug": "division_0.5", 
     "prerequisites": [
       "multiplication_1"
     ], 
@@ -53,7 +56,7 @@
     "h_position": 5, 
     "v_position": -7, 
     "path": "/math/arithmetic/multiplication-division/delightful_division/e/division_0.5/", 
-    "slug": "division_0.5", 
+    "id": "division_0.5", 
     "name": "division_0.5"
   }, 
   {
@@ -65,6 +68,7 @@
     "related_video_readable_ids": [
       "division-2"
     ], 
+    "slug": "division_1", 
     "prerequisites": [
       "division_0.5"
     ], 
@@ -72,7 +76,7 @@
     "h_position": 7, 
     "v_position": -7, 
     "path": "/math/arithmetic/multiplication-division/delightful_division/e/division_1/", 
-    "slug": "division_1", 
+    "id": "division_1", 
     "name": "division_1"
   }, 
   {
@@ -85,6 +89,7 @@
       "division-word-problem-example-1", 
       "multiplication-word-problem-example-1"
     ], 
+    "slug": "arithmetic_word_problems_2", 
     "prerequisites": [
       "multiplication_2", 
       "division_1"
@@ -93,7 +98,7 @@
     "h_position": 8, 
     "v_position": -4, 
     "path": "/math/arithmetic/multiplication-division/mult-div-word-problems/e/arithmetic_word_problems_2/", 
-    "slug": "arithmetic_word_problems_2", 
+    "id": "arithmetic_word_problems_2", 
     "name": "arithmetic_word_problems_2"
   }, 
   {
@@ -105,6 +110,7 @@
     "related_video_readable_ids": [
       "distributive-property-exercise"
     ], 
+    "slug": "distributive_property", 
     "prerequisites": [
       "multiplying_and_dividing_negative_numbers"
     ], 
@@ -112,7 +118,7 @@
     "h_position": 14, 
     "v_position": -3, 
     "path": "/math/arithmetic/multiplication-division/ditributive_property/e/distributive_property/", 
-    "slug": "distributive_property", 
+    "id": "distributive_property", 
     "name": "distributive_property"
   }, 
   {
@@ -126,6 +132,7 @@
       "order-of-operations", 
       "more-complicated-order-of-operations-example"
     ], 
+    "slug": "order_of_operations", 
     "prerequisites": [
       "properties_of_numbers_2", 
       "number_properties_terminology_1", 
@@ -135,7 +142,7 @@
     "h_position": 15, 
     "v_position": -4, 
     "path": "/math/arithmetic/multiplication-division/order_of_operations/e/order_of_operations/", 
-    "slug": "order_of_operations", 
+    "id": "order_of_operations", 
     "name": "order_of_operations"
   }, 
   {
@@ -149,6 +156,7 @@
       "place-value-2", 
       "place-value-3"
     ], 
+    "slug": "place_value", 
     "prerequisites": [
       "adding_decimals_2"
     ], 
@@ -156,7 +164,7 @@
     "h_position": 13, 
     "v_position": 4, 
     "path": "/math/arithmetic/multiplication-division/place_value/e/place_value/", 
-    "slug": "place_value", 
+    "id": "place_value", 
     "name": "place_value"
   }, 
   {
@@ -168,6 +176,7 @@
     "related_video_readable_ids": [
       "representing-numbers"
     ], 
+    "slug": "representing_numbers", 
     "prerequisites": [
       "multiplication_1"
     ], 
@@ -175,7 +184,7 @@
     "h_position": 5, 
     "v_position": -4, 
     "path": "/math/arithmetic/multiplication-division/place_value/e/representing_numbers/", 
-    "slug": "representing_numbers", 
+    "id": "representing_numbers", 
     "name": "representing_numbers"
   }, 
   {
@@ -188,6 +197,7 @@
       "2-digit-times-1-digit-example-no-carrying", 
       "3-digit-times-1-digit-example-no-carrying"
     ], 
+    "slug": "multiplication_1.5", 
     "prerequisites": [
       "multiplication_1"
     ], 
@@ -195,7 +205,7 @@
     "h_position": 5, 
     "v_position": -5, 
     "path": "/math/arithmetic/multiplication-division/multi_digit_multiplication/e/multiplication_1.5/", 
-    "slug": "multiplication_1.5", 
+    "id": "multiplication_1.5", 
     "name": "multiplication_1.5"
   }, 
   {
@@ -209,6 +219,7 @@
       "3-digit-times-1-digit-example", 
       "4-digit-times-1-digit-example"
     ], 
+    "slug": "multiplication_2", 
     "prerequisites": [
       "multiplication_1.5"
     ], 
@@ -216,7 +227,7 @@
     "h_position": 6, 
     "v_position": -5, 
     "path": "/math/arithmetic/multiplication-division/multi_digit_multiplication/e/multiplication_2/", 
-    "slug": "multiplication_2", 
+    "id": "multiplication_2", 
     "name": "multiplication_2"
   }, 
   {
@@ -229,6 +240,7 @@
       "multiplication-5---2-digit-times-a-2-digit-number", 
       "multiplying-whole-numbers-and-applications-2"
     ], 
+    "slug": "multiplication_3", 
     "prerequisites": [
       "multiplication_2"
     ], 
@@ -236,7 +248,7 @@
     "h_position": 7, 
     "v_position": -5, 
     "path": "/math/arithmetic/multiplication-division/multi_digit_multiplication/e/multiplication_3/", 
-    "slug": "multiplication_3", 
+    "id": "multiplication_3", 
     "name": "multiplication_3"
   }, 
   {
@@ -248,6 +260,7 @@
     "related_video_readable_ids": [
       "multiplication-6--multiple-digit-numbers"
     ], 
+    "slug": "multiplication_4", 
     "prerequisites": [
       "multiplication_3"
     ], 
@@ -255,7 +268,7 @@
     "h_position": 8, 
     "v_position": -5, 
     "path": "/math/arithmetic/multiplication-division/multi_digit_multiplication/e/multiplication_4/", 
-    "slug": "multiplication_4", 
+    "id": "multiplication_4", 
     "name": "multiplication_4"
   }, 
   {
@@ -267,6 +280,7 @@
     "related_video_readable_ids": [
       "division-3--more-long-division-and-remainder-examples"
     ], 
+    "slug": "division_2", 
     "prerequisites": [
       "division_1.5"
     ], 
@@ -274,7 +288,7 @@
     "h_position": 9, 
     "v_position": -7, 
     "path": "/math/arithmetic/multiplication-division/long_division/e/division_2/", 
-    "slug": "division_2", 
+    "id": "division_2", 
     "name": "division_2"
   }, 
   {
@@ -286,6 +300,7 @@
     "related_video_readable_ids": [
       "division-3--more-long-division-and-remainder-examples"
     ], 
+    "slug": "division_1.5", 
     "prerequisites": [
       "division_1"
     ], 
@@ -293,7 +308,7 @@
     "h_position": 8, 
     "v_position": -7, 
     "path": "/math/arithmetic/multiplication-division/long_division/e/division_1.5/", 
-    "slug": "division_1.5", 
+    "id": "division_1.5", 
     "name": "division_1.5"
   }, 
   {
@@ -305,6 +320,7 @@
     "related_video_readable_ids": [
       "division-3--more-long-division-and-remainder-examples"
     ], 
+    "slug": "division_3", 
     "prerequisites": [
       "multiplication_2", 
       "division_2"
@@ -313,7 +329,7 @@
     "h_position": 10, 
     "v_position": -7, 
     "path": "/math/arithmetic/multiplication-division/long_division/e/division_3/", 
-    "slug": "division_3", 
+    "id": "division_3", 
     "name": "division_3"
   }, 
   {
@@ -325,6 +341,7 @@
     "related_video_readable_ids": [
       "division-3--more-long-division-and-remainder-examples"
     ], 
+    "slug": "arithmetic_word_problems", 
     "prerequisites": [
       "arithmetic_word_problems_2"
     ], 
@@ -332,7 +349,7 @@
     "h_position": 9, 
     "v_position": -4, 
     "path": "/math/arithmetic/multiplication-division/long_division/e/arithmetic_word_problems/", 
-    "slug": "arithmetic_word_problems", 
+    "id": "arithmetic_word_problems", 
     "name": "arithmetic_word_problems"
   }, 
   {
@@ -344,6 +361,7 @@
     "related_video_readable_ids": [
       "division-3--more-long-division-and-remainder-examples"
     ], 
+    "slug": "division_4", 
     "prerequisites": [
       "division_3"
     ], 
@@ -351,7 +369,7 @@
     "h_position": 11, 
     "v_position": -7, 
     "path": "/math/arithmetic/multiplication-division/long_division/e/division_4/", 
-    "slug": "division_4", 
+    "id": "division_4", 
     "name": "division_4"
   }, 
   {
@@ -363,6 +381,7 @@
     "related_video_readable_ids": [
       "level-4-division"
     ], 
+    "slug": "counting_1", 
     "prerequisites": [
       "division_2"
     ], 
@@ -370,7 +389,7 @@
     "h_position": 10, 
     "v_position": -8, 
     "path": "/math/arithmetic/multiplication-division/long_division/e/counting_1/", 
-    "slug": "counting_1", 
+    "id": "counting_1", 
     "name": "counting_1"
   }, 
   {
@@ -384,6 +403,7 @@
       "rounding-whole-numbers-2", 
       "rounding-whole-numbers-3"
     ], 
+    "slug": "rounding_whole_numbers", 
     "prerequisites": [
       "place_value"
     ], 
@@ -391,7 +411,7 @@
     "h_position": 14, 
     "v_position": 3, 
     "path": "/math/arithmetic/multiplication-division/rounding_whole_numbers/e/rounding_whole_numbers/", 
-    "slug": "rounding_whole_numbers", 
+    "id": "rounding_whole_numbers", 
     "name": "rounding_whole_numbers"
   }
 ]
