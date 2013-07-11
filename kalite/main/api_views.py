@@ -1,6 +1,6 @@
 import re, json
 from django.core.exceptions import ValidationError
-from django.http import HttpResponse, HttpResponseNotAllowed
+from django.http import HttpResponse
 from django.utils import simplejson
 from django.db.models import Q
 from annoying.functions import get_object_or_None

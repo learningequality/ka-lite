@@ -7,7 +7,7 @@ from annoying.functions import get_object_or_None
 from functools import partial
 
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, HttpResponseNotFound, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
@@ -258,6 +258,6 @@ def tabular_view(request, facility, report_type="exercise"):
                 "video_logs": log_table,
             })
     else:
-        return HttpResponseNotFound(render_to_string("404_distributed.html", {}, context_instance=RequestContext(request)))
+        raise Http404("Unknown report_type: %s" % report_type)
 
     return context

@@ -4,8 +4,8 @@ from annoying.functions import get_object_or_None
 from functools import partial
 from collections import OrderedDict
 
-from django.utils import simplejson
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, HttpResponseNotFound, HttpResponseServerError
+from django.core.exceptions import PermissionDenied
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
@@ -13,13 +13,12 @@ from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.utils import simplejson
 from django.utils.translation import ugettext as _
 
+from coachreports.forms import DataForm
+from config.models import Settings
+from main import topicdata
 from main.models import VideoLog, ExerciseLog, VideoFile
 from securesync.models import Facility, FacilityUser,FacilityGroup, DeviceZone, Device
 from securesync.views import facility_required
-#from shared.views import group_report_context
-from coachreports.forms import DataForm
-from main import topicdata
-from config.models import Settings
 from utils.internet import StatusException, JsonResponse
 from utils.topic_tools import get_topic_by_path
 
@@ -98,17 +97,17 @@ def get_data_form(request, *args, **kwargs):
         if not request.is_admin:
             if group and form.data["group"] and group.id != form.data["group"]: # can't go outside group
                 # We could also redirect
-                HttpResponseForbidden("You cannot choose a group outside of your group.")
+                raise PermissionDenied("You cannot choose a group outside of your group.")
             elif facility and form.data["facility"] and facility.id != form.data["facility"]:
                 # We could also redirect
-                HttpResponseForbidden("You cannot choose a facility outside of your own facility.")
+                raise PermissionDenied("You cannot choose a facility outside of your own facility.")
             elif not request.is_admin:
                 if not form.data["user"]:
                     # We could also redirect
-                    HttpResponseForbidden("You cannot choose facility/group-wide data.")
+                    raise PermissionDenied("You cannot choose facility/group-wide data.")
                 elif user and form.data["user"] and user.id != form.data["user"]:
                     # We could also redirect
-                    HttpResponseForbidden("You cannot choose a user outside of yourself.")
+                    raise PermissionDenied("You cannot choose a user outside of yourself.")
 
     # Fill in backwards: a user implies a group
     if form.data.get("user") and not form.data.get("group"):
@@ -286,7 +285,7 @@ def api_data(request, xaxis="", yaxis=""):
 
     # Query out the data: where?
     if not form.data.get("topic_path"):
-        return HttpResponseServerError("Must specify a topic path")
+        return HttpResponseNotFound("Must specify a topic path")
 
     # Query out the data: what?
     try:

@@ -271,13 +271,13 @@ class Zone(SyncedModel):
         """
         Reverse lookup of organization containing this zone.
         """
-        from central.models import Organization  # inline import to avoid unnecessary dependence on central app
-        orgs = Organization.objects.filter(zones__in=[self])
+        orgs = self.organization_set.all()
         assert orgs.count() <= 1, "Zone must be contained by 0 or 1 organization(s)."
 
         return orgs[0] if orgs else None
 
 
+#class ZoneManager
     @classmethod
     def get_headless_zones(cls):
         # Must import inline (not in header) to avoid import loop

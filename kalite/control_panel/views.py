@@ -1,36 +1,22 @@
 import collections
-import datetime
-import json
-import pickle
-import re
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
-from decorator.decorator import decorator
 
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.core import serializers
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
-from django.db.models import Sum
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseForbidden, HttpResponseServerError
+from django.db.models import Sum, Max
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from django.template import RequestContext
-from django.template.loader import render_to_string
 from django.utils.translation import ugettext as _
-from django.views.decorators.csrf import csrf_exempt
 
-import kalite
 import settings
 from main import topicdata
-from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
+from central.models import Organization
 from control_panel.forms import ZoneForm, UploadFileForm
 from main.models import ExerciseLog, VideoLog, UserLogSummary
-from securesync.api_client import SyncClient
 from securesync.forms import FacilityForm
-from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device
-from securesync.models import Zone, SyncSession
-from securesync.model_sync import save_serialized_models, get_serialized_models
+from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device, Zone, SyncSession
 from utils.decorators import require_authorized_admin
 
 
@@ -67,37 +53,32 @@ def zone_management(request, zone_id, org_id=None):
     zone = get_object_or_404(Zone, pk=zone_id)# if zone_id != "new" else None
 
     # Accumulate device data
-    device_zones = DeviceZone.objects.filter(zone=zone)
     device_data = dict()
-    for device_zone in device_zones:
-        device = device_zone.device
+    for device in Device.objects.filter(devicezone__zone=zone):
 
         sync_sessions = SyncSession.objects.filter(client_device=device)
-        num_times_synced = sync_sessions.count()
         user_activity = UserLogSummary.objects.filter(device=device)
-        last_device_activity = None if user_activity.count() == 0 else user_activity.order_by("-end_datetime")[0]
 
         device_data[device.id] = {
             "name": device.name,
-            "num_times_synced": num_times_synced,
-            "last_time_synced": None if num_times_synced == 0 else sync_sessions.order_by("-timestamp")[0].timestamp,
-            "last_time_used":   last_device_activity,
+            "num_times_synced": sync_sessions.count(),
+            "last_time_synced": sync_sessions.aggregate(Max("timestamp"))["timestamp__max"],
+            "last_time_used":   None if user_activity.count() == 0 else user_activity.order_by("-end_datetime")[0],
             "counter": device.get_counter(),
         }
 
     # Accumulate facility data
     facility_data = dict()
-    for facility in Facility.from_zone(zone):
+    for facility in Facility.objects.by_zone(zone):
 
         user_activity = UserLogSummary.objects.filter(user__in=FacilityUser.objects.filter(facility=facility))
-        last_facility_activity = None if user_activity.count() == 0 else user_activity.order_by("-end_datetime")[0]
 
         facility_data[facility.id] = {
             "name": facility.name,
             "num_users":  FacilityUser.objects.filter(facility=facility).count(),
             "num_groups": FacilityGroup.objects.filter(facility=facility).count(),
             "id": facility.id,
-            "last_time_used":   last_facility_activity,
+            "last_time_used":   None if user_activity.count() == 0 else user_activity.order_by("-end_datetime")[0],
         }
 
     return {
@@ -171,7 +152,9 @@ def facility_usage(request, facility_id, org_id=None, zone_id=None):
             group_data[group.pk]["total_hours"] += user_data[user.pk]["total_hours"]
             group_data[group.pk]["total_videos"] += user_data[user.pk]["total_videos"]
             group_data[group.pk]["total_exercises"] += user_data[user.pk]["total_exercises"]
-            group_data[group.pk]["pct_mastery"] = (group_data[group.pk]["pct_mastery"] * (group_data[group.pk]["total_users"] - 1) + user_data[user.pk]["pct_mastery"]) / group_data[group.pk]["total_users"]
+
+            total_mastery_so_far = (group_data[group.pk]["pct_mastery"] * (group_data[group.pk]["total_users"] - 1) + user_data[user.pk]["pct_mastery"])
+            group_data[group.pk]["pct_mastery"] =  total_mastery_so_far / group_data[group.pk]["total_users"]
 
     return {
         "org": org,
@@ -205,16 +188,16 @@ def facility_form(request, facility_id, org_id=None, zone_id=None):
     zone = get_object_or_None(Zone, pk=zone_id) if zone_id else None
     facil = get_object_or_404(Facility, pk=facility_id) if id != "new" else None
 
-    if request.method == "POST":
+    if request.method != "POST":
+        form = FacilityForm(instance=facil)
+
+    else:
         form = FacilityForm(data=request.POST, instance=facil)
         if form.is_valid():
             form.instance.zone_fallback = get_object_or_404(Zone, pk=zone_id)
             form.save()
-            if not facil:
-                facil = None
             return HttpResponseRedirect(reverse("zone_management", kwargs={"org_id": org_id, "zone_id": zone_id}))
-    else:
-        form = FacilityForm(instance=facil)
+
     return {
         "org": org,
         "zone": zone,
@@ -225,7 +208,7 @@ def facility_form(request, facility_id, org_id=None, zone_id=None):
 
 @require_authorized_admin
 @render_to("control_panel/group_report.html")
-def group_report(request, facility_id, group_id, org_id=None, zone_id=None):
+def group_report(request, facility_id, group_id=None, org_id=None, zone_id=None):
     context = group_report_context(
         facility_id=facility_id,
         group_id=group_id or request.REQUEST.get("group", ""),
@@ -240,6 +223,7 @@ def group_report(request, facility_id, group_id, org_id=None, zone_id=None):
     context["group"] = get_object_or_None(FacilityGroup, pk=group_id)
 
     return context
+
 
 @require_authorized_admin
 @render_to("control_panel/group_users_management.html")

@@ -323,8 +323,10 @@ def user_list(request,facility):
 
 
 @require_admin
-def zone_discovery(request):
-    """Dummy view to generate a helpful dynamic redirect to interface with 'control_panel' app"""
+def zone_redirect(request):
+    """
+    Dummy view to generate a helpful dynamic redirect to interface with 'control_panel' app
+    """
     device = Device.get_own_device()
     zone = device.get_zone()
     if zone:
@@ -333,8 +335,10 @@ def zone_discovery(request):
         raise Http404(_("This device is not on any zone."))
 
 @require_admin
-def device_discovery(request):
-    """Dummy view to generate a helpful dynamic redirect to interface with 'control_panel' app"""
+def device_redirect(request):
+    """
+    Dummy view to generate a helpful dynamic redirect to interface with 'control_panel' app
+    """
     device = Device.get_own_device()
     zone = device.get_zone()
     if zone:
