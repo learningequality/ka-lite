@@ -297,8 +297,13 @@ def generate_node_cache(topictree=None, output_dir=settings.DATA_PATH):
             # Existing node, so append the path to the set of paths
             assert kind in topic_tools.multipath_kinds, "Make sure we expect to see multiple nodes map to the same slug (%s unexpected)" % kind
 
-            # We already added this node, it's just found at multiple paths.
-            #   So, save the new path
+            # Before adding, let's validate some basic properties of the 
+            #   stored node and the new node:
+            # 1. Compare the keys, and make sure that they overlap 
+            #      (except the stored node will not have 'path', but instead 'paths')
+            # 2. For string args, check that values are the same
+            #      (most/all args are strings, and ... I feel we're already being darn
+            #      careful here.  So, I think it's enough.
             node_shared_keys = set(node.keys()) - set(["path"])
             stored_shared_keys = set(node_cache[kind][node["slug"]]) - set(["paths"])
             unshared_keys = node_shared_keys.symmetric_difference(stored_shared_keys)
@@ -308,6 +313,9 @@ def generate_node_cache(topictree=None, output_dir=settings.DATA_PATH):
                 # A cursory check on values, for strings only (avoid unsafe types)
                 if isinstance(node[key], basestring):
                     assert node[key] == node_cache[kind][node["slug"]][key]
+
+            # We already added this node, it's just found at multiple paths.
+            #   So, save the new path
             node_cache[kind][node["slug"]]["paths"].append(node["path"])
 
         else:
