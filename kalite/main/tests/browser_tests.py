@@ -356,4 +356,4 @@ class StudentExerciseTest(KALiteDistributedBrowserTestCase):
     def test_question_incorrect_no_points_are_added(self):
         self.browser_insert_answer('this is a wrong answer')
         points = self.browser.find_element_by_css_selector('#totalpoints').text
-        self.assertTrue(points, "points text is not empty")
+        self.assertTrue(points == '', "points text is not empty") # somehow we can't use the truthiness of string, so we use ==
