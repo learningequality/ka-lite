@@ -11,6 +11,7 @@
       "solving-systems-graphically", 
       "solving-systems-graphically"
     ], 
+    "slug": "graphing_systems_of_equations", 
     "prerequisites": [
       "graphing_linear_equations"
     ], 
@@ -18,7 +19,7 @@
     "h_position": 46, 
     "v_position": 11, 
     "path": "/math/algebra/systems-of-eq-and-ineq/systems-of-eq-overview/e/graphing_systems_of_equations/", 
-    "slug": "graphing_systems_of_equations", 
+    "id": "graphing_systems_of_equations", 
     "name": "graphing_systems_of_equations"
   }, 
   {
@@ -33,6 +34,7 @@
       "simple-elimination-practice", 
       "simple-elimination-practice"
     ], 
+    "slug": "systems_of_equations_with_elimination_0.5", 
     "prerequisites": [
       "graphing_systems_of_equations"
     ], 
@@ -40,7 +42,7 @@
     "h_position": 47, 
     "v_position": 11, 
     "path": "/math/algebra/systems-of-eq-and-ineq/systems-of-eq-overview/e/systems_of_equations_with_elimination_0.5/", 
-    "slug": "systems_of_equations_with_elimination_0.5", 
+    "id": "systems_of_equations_with_elimination_0.5", 
     "name": "systems_of_equations_with_elimination_0.5"
   }, 
   {
@@ -55,6 +57,7 @@
       "systems-with-elimination-practice", 
       "systems-with-elimination-practice"
     ], 
+    "slug": "systems_of_equations_with_elimination", 
     "prerequisites": [
       "systems_of_equations_with_elimination_0.5"
     ], 
@@ -62,7 +65,7 @@
     "h_position": 48, 
     "v_position": 11, 
     "path": "/math/algebra/systems-of-eq-and-ineq/systems-of-eq-overview/e/systems_of_equations_with_elimination/", 
-    "slug": "systems_of_equations_with_elimination", 
+    "id": "systems_of_equations_with_elimination", 
     "name": "systems_of_equations_with_elimination"
   }, 
   {
@@ -77,6 +80,7 @@
       "practice-using-substitution-for-systems", 
       "practice-using-substitution-for-systems"
     ], 
+    "slug": "systems_of_equations_with_substitution", 
     "prerequisites": [
       "graphing_systems_of_equations"
     ], 
@@ -84,7 +88,7 @@
     "h_position": 47, 
     "v_position": 12, 
     "path": "/math/algebra/systems-of-eq-and-ineq/systems-of-eq-overview/e/systems_of_equations_with_substitution/", 
-    "slug": "systems_of_equations_with_substitution", 
+    "id": "systems_of_equations_with_substitution", 
     "name": "systems_of_equations_with_substitution"
   }, 
   {
@@ -98,6 +102,7 @@
       "practice-using-substitution-for-systems", 
       "practice-using-substitution-for-systems"
     ], 
+    "slug": "systems_of_equations", 
     "prerequisites": [
       "systems_of_equations_with_substitution", 
       "systems_of_equations_with_elimination"
@@ -106,7 +111,7 @@
     "h_position": 49, 
     "v_position": 12, 
     "path": "/math/algebra/systems-of-eq-and-ineq/systems-of-eq-overview/e/systems_of_equations/", 
-    "slug": "systems_of_equations", 
+    "id": "systems_of_equations", 
     "name": "systems_of_equations"
   }, 
   {
@@ -120,6 +125,7 @@
       "practice-using-substitution-for-systems", 
       "practice-using-substitution-for-systems"
     ], 
+    "slug": "systems_of_equations_word_problems", 
     "prerequisites": [
       "systems_of_equations"
     ], 
@@ -127,7 +133,7 @@
     "h_position": 50, 
     "v_position": 12, 
     "path": "/math/algebra/systems-of-eq-and-ineq/systems-of-eq-overview/e/systems_of_equations_word_problems/", 
-    "slug": "systems_of_equations_word_problems", 
+    "id": "systems_of_equations_word_problems", 
     "name": "systems_of_equations_word_problems"
   }, 
   {
@@ -142,6 +148,7 @@
       "solving-systems-graphically", 
       "solving-systems-graphically"
     ], 
+    "slug": "graphing_systems_of_equations", 
     "prerequisites": [
       "graphing_linear_equations"
     ], 
@@ -149,7 +156,7 @@
     "h_position": 46, 
     "v_position": 11, 
     "path": "/math/algebra/systems-of-eq-and-ineq/fast-systems-of-equations/e/graphing_systems_of_equations/", 
-    "slug": "graphing_systems_of_equations", 
+    "id": "graphing_systems_of_equations", 
     "name": "graphing_systems_of_equations"
   }, 
   {
@@ -164,6 +171,7 @@
       "practice-using-substitution-for-systems", 
       "practice-using-substitution-for-systems"
     ], 
+    "slug": "systems_of_equations_with_substitution", 
     "prerequisites": [
       "graphing_systems_of_equations"
     ], 
@@ -171,7 +179,7 @@
     "h_position": 47, 
     "v_position": 12, 
     "path": "/math/algebra/systems-of-eq-and-ineq/fast-systems-of-equations/e/systems_of_equations_with_substitution/", 
-    "slug": "systems_of_equations_with_substitution", 
+    "id": "systems_of_equations_with_substitution", 
     "name": "systems_of_equations_with_substitution"
   }, 
   {
@@ -186,6 +194,7 @@
       "simple-elimination-practice", 
       "simple-elimination-practice"
     ], 
+    "slug": "systems_of_equations_with_elimination_0.5", 
     "prerequisites": [
       "graphing_systems_of_equations"
     ], 
@@ -193,7 +202,7 @@
     "h_position": 47, 
     "v_position": 11, 
     "path": "/math/algebra/systems-of-eq-and-ineq/fast-systems-of-equations/e/systems_of_equations_with_elimination_0.5/", 
-    "slug": "systems_of_equations_with_elimination_0.5", 
+    "id": "systems_of_equations_with_elimination_0.5", 
     "name": "systems_of_equations_with_elimination_0.5"
   }, 
   {
@@ -208,6 +217,7 @@
       "systems-with-elimination-practice", 
       "systems-with-elimination-practice"
     ], 
+    "slug": "systems_of_equations_with_elimination", 
     "prerequisites": [
       "systems_of_equations_with_elimination_0.5"
     ], 
@@ -215,7 +225,7 @@
     "h_position": 48, 
     "v_position": 11, 
     "path": "/math/algebra/systems-of-eq-and-ineq/fast-systems-of-equations/e/systems_of_equations_with_elimination/", 
-    "slug": "systems_of_equations_with_elimination", 
+    "id": "systems_of_equations_with_elimination", 
     "name": "systems_of_equations_with_elimination"
   }, 
   {
@@ -229,6 +239,7 @@
       "practice-using-substitution-for-systems", 
       "practice-using-substitution-for-systems"
     ], 
+    "slug": "systems_of_equations", 
     "prerequisites": [
       "systems_of_equations_with_substitution", 
       "systems_of_equations_with_elimination"
@@ -237,7 +248,7 @@
     "h_position": 49, 
     "v_position": 12, 
     "path": "/math/algebra/systems-of-eq-and-ineq/fast-systems-of-equations/e/systems_of_equations/", 
-    "slug": "systems_of_equations", 
+    "id": "systems_of_equations", 
     "name": "systems_of_equations"
   }, 
   {
@@ -251,6 +262,7 @@
       "practice-thinking-about-number-of-solutions-to-systems", 
       "practice-thinking-about-number-of-solutions-to-systems"
     ], 
+    "slug": "solutions_to_systems_of_equations", 
     "prerequisites": [
       "graphing_systems_of_equations"
     ], 
@@ -258,7 +270,7 @@
     "h_position": 47, 
     "v_position": 10, 
     "path": "/math/algebra/systems-of-eq-and-ineq/fast-systems-of-equations/e/solutions_to_systems_of_equations/", 
-    "slug": "solutions_to_systems_of_equations", 
+    "id": "solutions_to_systems_of_equations", 
     "name": "solutions_to_systems_of_equations"
   }, 
   {
@@ -273,6 +285,7 @@
       "solving-systems-graphically", 
       "solving-systems-graphically"
     ], 
+    "slug": "graphing_systems_of_equations", 
     "prerequisites": [
       "graphing_linear_equations"
     ], 
@@ -280,7 +293,7 @@
     "h_position": 46, 
     "v_position": 11, 
     "path": "/math/algebra/systems-of-eq-and-ineq/systems-through-examples/e/graphing_systems_of_equations/", 
-    "slug": "graphing_systems_of_equations", 
+    "id": "graphing_systems_of_equations", 
     "name": "graphing_systems_of_equations"
   }, 
   {
@@ -294,6 +307,7 @@
       "practice-thinking-about-number-of-solutions-to-systems", 
       "practice-thinking-about-number-of-solutions-to-systems"
     ], 
+    "slug": "solutions_to_systems_of_equations", 
     "prerequisites": [
       "graphing_systems_of_equations"
     ], 
@@ -301,7 +315,7 @@
     "h_position": 47, 
     "v_position": 10, 
     "path": "/math/algebra/systems-of-eq-and-ineq/systems-solutions/e/solutions_to_systems_of_equations/", 
-    "slug": "solutions_to_systems_of_equations", 
+    "id": "solutions_to_systems_of_equations", 
     "name": "solutions_to_systems_of_equations"
   }, 
   {
@@ -316,6 +330,7 @@
       "practice-using-substitution-for-systems", 
       "practice-using-substitution-for-systems"
     ], 
+    "slug": "systems_of_equations_with_substitution", 
     "prerequisites": [
       "graphing_systems_of_equations"
     ], 
@@ -323,7 +338,7 @@
     "h_position": 47, 
     "v_position": 12, 
     "path": "/math/algebra/systems-of-eq-and-ineq/systems-with-substitution/e/systems_of_equations_with_substitution/", 
-    "slug": "systems_of_equations_with_substitution", 
+    "id": "systems_of_equations_with_substitution", 
     "name": "systems_of_equations_with_substitution"
   }, 
   {
@@ -338,6 +353,7 @@
       "simple-elimination-practice", 
       "simple-elimination-practice"
     ], 
+    "slug": "systems_of_equations_with_elimination_0.5", 
     "prerequisites": [
       "graphing_systems_of_equations"
     ], 
@@ -345,7 +361,7 @@
     "h_position": 47, 
     "v_position": 11, 
     "path": "/math/algebra/systems-of-eq-and-ineq/solving-systems-addition-elimination/e/systems_of_equations_with_elimination_0.5/", 
-    "slug": "systems_of_equations_with_elimination_0.5", 
+    "id": "systems_of_equations_with_elimination_0.5", 
     "name": "systems_of_equations_with_elimination_0.5"
   }, 
   {
@@ -360,6 +376,7 @@
       "systems-with-elimination-practice", 
       "systems-with-elimination-practice"
     ], 
+    "slug": "systems_of_equations_with_elimination", 
     "prerequisites": [
       "systems_of_equations_with_elimination_0.5"
     ], 
@@ -367,7 +384,7 @@
     "h_position": 48, 
     "v_position": 11, 
     "path": "/math/algebra/systems-of-eq-and-ineq/solving-systems-addition-elimination/e/systems_of_equations_with_elimination/", 
-    "slug": "systems_of_equations_with_elimination", 
+    "id": "systems_of_equations_with_elimination", 
     "name": "systems_of_equations_with_elimination"
   }, 
   {
@@ -381,6 +398,7 @@
       "practice-using-substitution-for-systems", 
       "practice-using-substitution-for-systems"
     ], 
+    "slug": "systems_of_equations_word_problems", 
     "prerequisites": [
       "systems_of_equations"
     ], 
@@ -388,7 +406,7 @@
     "h_position": 50, 
     "v_position": 12, 
     "path": "/math/algebra/systems-of-eq-and-ineq/systems-word-problems/e/systems_of_equations_word_problems/", 
-    "slug": "systems_of_equations_word_problems", 
+    "id": "systems_of_equations_word_problems", 
     "name": "systems_of_equations_word_problems"
   }, 
   {
@@ -401,6 +419,7 @@
       "u06-l3-t1-we3-graphing-systems-of-inequalities", 
       "u06-l3-t1-we3-graphing-systems-of-inequalities"
     ], 
+    "slug": "graphing_systems_of_inequalities", 
     "prerequisites": [
       "graphing_inequalities_2", 
       "graphing_systems_of_equations"
@@ -409,7 +428,7 @@
     "h_position": 48, 
     "v_position": 9, 
     "path": "/math/algebra/systems-of-eq-and-ineq/system-of-inequalities/e/graphing_systems_of_inequalities/", 
-    "slug": "graphing_systems_of_inequalities", 
+    "id": "graphing_systems_of_inequalities", 
     "name": "graphing_systems_of_inequalities"
   }, 
   {
@@ -422,6 +441,7 @@
       "u06-l3-t1-we3-graphing-systems-of-inequalities", 
       "u06-l3-t1-we3-graphing-systems-of-inequalities"
     ], 
+    "slug": "graphing_systems_of_inequalities_2", 
     "prerequisites": [
       "graphing_systems_of_inequalities"
     ], 
@@ -429,7 +449,7 @@
     "h_position": 49, 
     "v_position": 9, 
     "path": "/math/algebra/systems-of-eq-and-ineq/system-of-inequalities/e/graphing_systems_of_inequalities_2/", 
-    "slug": "graphing_systems_of_inequalities_2", 
+    "id": "graphing_systems_of_inequalities_2", 
     "name": "graphing_systems_of_inequalities_2"
   }
 ]
