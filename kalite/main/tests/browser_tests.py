@@ -313,29 +313,47 @@ class UserRegistrationCaseTest(KALiteRegisteredDistributedBrowserTestCase):
         self.check_django_message("error", contains="There was an error logging you in.")
 
 class StudentExerciseTest(KALiteDistributedBrowserTestCase):
-    username = 'test_student'
-    password =  'socrates'
+    student_username = 'test_student'
+    student_password =  'socrates'
     facilityname = 'middle of nowhere'
 
-    def create_admin(self):
-        pass
+    def setUp(self):
+        super(KALiteDistributedBrowserTestCase, self).setUp()
+        self.db_create_student()
+        self.login_student(self.student_username, self.student_password)
+        self.browse_to('http://localhost:8000/math/arithmetic/addition-subtraction/basic_addition/e/addition_1/') # TODO: there must be a better way to do this
 
-    def create_student(self):
-        facility = Facility(name=self.facilityname)
-        facility.save()
-        student = FacilityUser(username=self.username, facility=facility)
-        student.set_password(raw_password=self.password)
+    def db_create_student(self, username=None, password=None):
+        if not username:
+            username = self.student_username
+        if not password:
+            password = self.student_password
+        facility = self.db_create_facility()
+        student = FacilityUser(username=username, facility=facility)
+        student.set_password(raw_password=password)
         student.save()
+        return student
 
-    def test_points_are_added(self):
-        self.create_student()
-        self.login_student(self.username, self.password)
-        self.browse_to('http://localhost:8000/math/arithmetic/addition-subtraction/basic_addition/e/addition_1/') # TODO: do not hardcode
-        numbers = self.browser.find_elements_by_class_name('mn')[:-1] # last one is to be blank
-        answer = sum(int(num.text) for num in numbers)
+    def db_create_facility(self, facilityname=None):
+        if not facilityname:
+            facilityname = self.facilityname
+        facility = Facility(name=facilityname)
+        facility.save()
+        return facility
+
+    def browser_insert_answer(self, answer):
         self.browser.find_element_by_css_selector('#solutionarea input[type=text]').click()
         self.browser_send_keys(str(answer)) 
         self.browser_send_keys(Keys.RETURN)
-        points = self.browser.find_element_by_css_selector('#totalpoints').text
-        self.assertTrue(points == '12', "point update is wrong: %s. Should be 12".format(points))
 
+    def test_question_correct_points_are_added(self):
+        numbers = self.browser.find_elements_by_class_name('mn')[:-1] # last one is to be blank
+        answer = sum(int(num.text) for num in numbers)
+        self.browser_insert_answer(answer)
+        points = self.browser.find_element_by_css_selector('#totalpoints').text
+        self.assertTrue(points == '12', "point update is wrong: {}. Should be 12".format(points))
+
+    def test_question_incorrect_no_points_are_added(self):
+        self.browser_insert_answer('this is a wrong answer')
+        points = self.browser.find_element_by_css_selector('#totalpoints').text
+        self.assertTrue(points, "points text is not empty")
