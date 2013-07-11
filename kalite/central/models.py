@@ -61,7 +61,7 @@ class Organization(models.Model):
         #   or doesn't overlap with our safe name
         if self.name == Organization.HEADLESS_ORG_NAME and not kwargs.get(HEADLESS_ORG_SAVE_FLAG, False):
             dummy_org = Organization.get_dummy_organization()
-            if dummy_org.pk != self.pk
+            if dummy_org.pk != self.pk:
                 raise Exception("Cannot add more than one dummy org!")
         super(Organization, self).save(*args, **kwargs)
 
