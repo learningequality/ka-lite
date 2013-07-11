@@ -51,7 +51,10 @@ def call_command_async(cmd, *args, **kwargs):
     Runs a manage.py command asynchronously, by calling into
     the subprocess module.
 
-    This may be finicky, as it requires stringifying kwargs, but:
+    This may be finicky, as it requires stringifying kwargs, but
+    it works well for the current needs and should be safe for types
+    that stringify in a way that commands can parse
+    (which will work for str, bool, int, etc).
     """
     # Use sys to get the same executable running as is running this process.
     # Make sure to call the manage.py from this project.
