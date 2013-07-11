@@ -24,7 +24,8 @@ select {
 }
 #instructions {
     font-size:12pt;
-    margin-left: 40px;
+    margin-left: 10px;
+    margin-top: 20px;
 }
 ul {
     margin-top:5px;
@@ -32,6 +33,7 @@ ul {
 
 h2{
     font-size: 33px;
+    margin-left: 200px;
 }
 
 h4{
@@ -51,7 +53,7 @@ h4{
 .form-label {
     float: left;
     color: #678D00;
-    text-align: right;
+    /*text-align: right;*/
     padding-right: 6px;
     width: 250px;
 }
@@ -127,6 +129,32 @@ select{
     color:red;
 }
 
+
+.instructions{
+    margin-left: 200px;
+}
+.download-buttons{
+    margin-bottom: 5px;
+
+}
+#submit-section{
+    display: none;
+}
+.features{
+    margin-left: 290px;
+    margin-bottom: 50px;
+    color: green;
+    font-size: 14px;
+}
+
+#platform-section{
+    margin-left: 10px;
+}
+#platform{
+    margin-left: -170px;
+}
+
+
 </style>
 {% endblock headcss %}
 
@@ -134,16 +162,30 @@ select{
     {% comment "Header instructions" %}{% endcomment %}
         <div class="instructions">
             <h2>Installation</h2>
-            <div class="information">
+<!--             <div class="information">
             Tell us about your infrastructure, we will provide you a corresponding download link.
-            </div>
+            </div> -->
 
         
         <form name="test" method="post" class="basic-form">
         {% csrf_token %} 
-        
+
+
+        <div class="download-buttons">
+        <button class="btn btn-large btn-large btn-primary" type="button">Download Single-server Edition</button>
+        <button class="btn btn-large btn-large btn-success" type="button">Login to get Multiple-servers Edition -> </button>
+        </div>
+
+        <div class="features">
+            <ul>
+                <li>Generate a customerized package for your organization </li>
+                <li>View usage data online through this website</li>
+                <li>Share students and teachers data across multiple installs</li>
+            </ul>
+        </div>
+
         <div class="form-section" id="platform-section">
-            <div class="form-label"><h4>Server operating system:</h4></div>
+            <div class="form-label"><h4>Server OS:</h4></div>
             <div class="form-selection">
                 <select name="platform" id="platform">
                     <option value="windows">Windows</option>
@@ -154,7 +196,7 @@ select{
             </div>
         </div>
 
-        <div class="form-section" id="server">
+<!--         <div class="form-section" id="server">
             <div class="form-label"><h4>I would like run KA Lite on:</h4></div>
             <div class= "radio-selections">
                 <label class="radio">
@@ -173,7 +215,7 @@ select{
                     <span class="asterisk">*</span><a href="{% url auth_login %}">Login</a> to download multiple servers edition of KA Lite.
                 </div>
             </div>
-         </div> 
+         </div>  -->
 
         <div class="form-section" id="locale-section" style="display:none">
             <div class="form-label">Server operating system:</div>
