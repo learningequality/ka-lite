@@ -1,0 +1,79 @@
+[
+  {
+    "kind": "Exercise", 
+    "display_name": "Inequalities on a number line", 
+    "description": "Write equations of inequalities graphed on number lines. Identify number line graphs of inequalities.", 
+    "title": "Inequalities on a number line", 
+    "seconds_per_fast_problem": 11.0, 
+    "related_video_readable_ids": [
+      "inequalities-on-a-number-line"
+    ], 
+    "prerequisites": [
+      "linear_equations_1"
+    ], 
+    "live": true, 
+    "h_position": 29, 
+    "v_position": 11, 
+    "path": "/math/algebra/linear_inequalities/inequalities/e/inequalities_on_a_number_line/", 
+    "slug": "inequalities_on_a_number_line", 
+    "name": "inequalities_on_a_number_line"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "One step inequalities", 
+    "description": "Solve inequalities in one step.", 
+    "title": "One step inequalities", 
+    "seconds_per_fast_problem": 14.0, 
+    "related_video_readable_ids": [
+      "solving-inequalities"
+    ], 
+    "prerequisites": [
+      "inequalities_on_a_number_line"
+    ], 
+    "live": true, 
+    "h_position": 30, 
+    "v_position": 13, 
+    "path": "/math/algebra/linear_inequalities/inequalities/e/one_step_inequalities/", 
+    "slug": "one_step_inequalities", 
+    "name": "one_step_inequalities"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Multi-step linear inequalities", 
+    "description": "Solve linear inequalities in multiple steps.", 
+    "title": "Multi-step linear inequalities", 
+    "seconds_per_fast_problem": 29.0, 
+    "related_video_readable_ids": [
+      "multi-step-inequalities-3"
+    ], 
+    "prerequisites": [
+      "linear_equations_3", 
+      "one_step_inequalities"
+    ], 
+    "live": true, 
+    "h_position": 31, 
+    "v_position": 13, 
+    "path": "/math/algebra/linear_inequalities/inequalities/e/linear_inequalities/", 
+    "slug": "linear_inequalities", 
+    "name": "linear_inequalities"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Compound inequalities", 
+    "description": "Solve compound inequalities.", 
+    "title": "Compound inequalities", 
+    "seconds_per_fast_problem": 28.0, 
+    "related_video_readable_ids": [
+      "compound-inequalities-4"
+    ], 
+    "prerequisites": [
+      "one_step_inequalities"
+    ], 
+    "live": true, 
+    "h_position": 31, 
+    "v_position": 14, 
+    "path": "/math/algebra/linear_inequalities/compound_absolute_value_inequali/e/compound_inequalities/", 
+    "slug": "compound_inequalities", 
+    "name": "compound_inequalities"
+  }
+]

@@ -1,1 +1,40 @@
-[{"relative_url": "/exercise/quadrilateral_types", "guaranteed_file_name": "quadrilateral_types.html", "file_name": null, "author_name": "Igor Terzic", "creation_date": "2011-09-16T23:18:13Z", "ka_url": "http://www.khanacademy.org/exercise/quadrilateral_types", "v_position": -14, "h_position": 33, "node_slug": "e/quadrilateral_types", "progress_key": "e251616813", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/quadrilaterals-and-polygons-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/quadrilateral_types.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Quadril Typ", "covers": [], "display_name": "Quadrilateral types", "kind": "Exercise", "sha1": "642f4051673633feeb1e4162b01861699508fa5c", "name": "quadrilateral_types", "seconds_per_fast_problem": 4.75, "prerequisites": ["angles_2"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/quadrilateral_types_256.png"}, {"relative_url": "/exercise/quadrilateral_angles", "guaranteed_file_name": "quadrilateral_angles.html", "file_name": null, "author_name": "Igor Terzic", "creation_date": "2011-09-16T23:25:17Z", "ka_url": "http://www.khanacademy.org/exercise/quadrilateral_angles", "v_position": -14, "h_position": 34, "node_slug": "e/quadrilateral_angles", "progress_key": "e251658143", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/quadrilaterals-and-polygons-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/quadrilateral_angles.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "QuadrilAng", "covers": [], "display_name": "Quadrilateral angles", "kind": "Exercise", "sha1": "af69d640c82932bb885f48872f7fd72b66e1ff01", "name": "quadrilateral_angles", "seconds_per_fast_problem": 6.0, "prerequisites": ["quadrilateral_types"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/quadrilateral_angles_256.png"}, {"relative_url": "/exercise/angles_of_a_polygon", "guaranteed_file_name": "angles_of_a_polygon.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-10-20T18:31:37Z", "ka_url": "http://www.khanacademy.org/exercise/angles_of_a_polygon", "v_position": -13, "h_position": 34, "node_slug": "e/angles_of_a_polygon", "progress_key": "e324859999", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/quadrilaterals-and-polygons-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/angles_of_a_polygon.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Polygon ang", "covers": [], "display_name": "Angles of a polygon", "kind": "Exercise", "sha1": "4702e62e27b368e43ce33baf340106e5e9b5ecf2", "name": "angles_of_a_polygon", "seconds_per_fast_problem": 6.0, "prerequisites": ["quadrilateral_types"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/angles_of_a_polygon_256.png"}]
+[
+  {
+    "kind": "Exercise", 
+    "display_name": "Quadrilateral types", 
+    "description": null, 
+    "title": "Quadrilateral types", 
+    "seconds_per_fast_problem": 5.0, 
+    "related_video_readable_ids": [
+      "quadrilateral-properties"
+    ], 
+    "prerequisites": [
+      "angles_2"
+    ], 
+    "live": true, 
+    "h_position": 33, 
+    "v_position": -14, 
+    "path": "/math/geometry/quadrilaterals-and-polygons/e/quadrilateral_types/", 
+    "slug": "quadrilateral_types", 
+    "name": "quadrilateral_types"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Quadrilateral angles", 
+    "description": null, 
+    "title": "Quadrilateral angles", 
+    "seconds_per_fast_problem": 6.0, 
+    "related_video_readable_ids": [
+      "proof---opposite-angles-of-parallelogram-congruent"
+    ], 
+    "prerequisites": [
+      "quadrilateral_types"
+    ], 
+    "live": true, 
+    "h_position": 34, 
+    "v_position": -15, 
+    "path": "/math/geometry/quadrilaterals-and-polygons/e/quadrilateral_angles/", 
+    "slug": "quadrilateral_angles", 
+    "name": "quadrilateral_angles"
+  }
+]

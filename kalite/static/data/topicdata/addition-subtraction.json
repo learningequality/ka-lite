@@ -1,1 +1,192 @@
-[{"relative_url": "/exercise/representing_numbers", "guaranteed_file_name": "representing_numbers.html", "file_name": "", "author_name": "Ben Alpert", "creation_date": "2012-04-13T23:02:25Z", "ka_url": "http://www.khanacademy.org/exercise/representing_numbers", "v_position": 3, "h_position": 0, "node_slug": "e/representing_numbers", "progress_key": "e720787733", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/addition-subtraction-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/representing_numbers.png", "custom_stacks": [], "description": "Identify the number represented by hundreds, tens, and ones blocks", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Represnt #s", "covers": [], "display_name": "Representing numbers", "kind": "Exercise", "sha1": "60403d07796b951b0cb877889459113602cbf8c7", "name": "representing_numbers", "seconds_per_fast_problem": 6.0, "prerequisites": [], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/representing_numbers_256.png"}, {"relative_url": "/exercise/number_line", "guaranteed_file_name": "number_line.html", "file_name": "", "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/number_line", "v_position": 4, "h_position": 0, "node_slug": "e/number_line", "progress_key": "e213229225", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/addition-subtraction-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/number_line.png", "custom_stacks": [], "description": "Drag a dot to a positive integer on the number line", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "# line", "covers": [], "display_name": "Number line 1", "kind": "Exercise", "sha1": "fdbd5666d8fcb4ac60df4b81c8c138871ed386e1", "name": "number_line", "seconds_per_fast_problem": 5.0, "prerequisites": [], "pretty_display_name": "Number line 1", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/number_line_256.png"}, {"relative_url": "/exercise/addition_1", "guaranteed_file_name": "addition_1.html", "file_name": "", "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/addition_1", "v_position": 5, "h_position": 0, "node_slug": "e/addition_1", "progress_key": "e3001", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/addition-subtraction-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/addition_1.png", "custom_stacks": [], "description": "Add two 1-digit numbers", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Add. 1", "covers": [], "display_name": "1-digit addition", "kind": "Exercise", "sha1": "79fb7edca7eed84ae5d37d935418b663b944978d", "name": "addition_1", "seconds_per_fast_problem": 4.0, "prerequisites": [], "pretty_display_name": "1-digit addition", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/addition_1_256.png"}, {"relative_url": "/exercise/subtraction_1", "guaranteed_file_name": "subtraction_1.html", "file_name": "", "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/subtraction_1", "v_position": 6, "h_position": 2, "node_slug": "e/subtraction_1", "progress_key": "e2003", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/addition-subtraction-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/subtraction_1.png", "custom_stacks": [], "description": "Subtract two 1-digit numbers", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Sub. 1", "covers": [], "display_name": "1-digit subtraction", "kind": "Exercise", "sha1": "1d0ceca4fef5d20efef3f5a867e20e67add29e28", "name": "subtraction_1", "seconds_per_fast_problem": 5.0, "prerequisites": ["addition_1"], "pretty_display_name": "1-digit subtraction", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/subtraction_1_256.png"}, {"relative_url": "/exercise/addition_2", "guaranteed_file_name": "addition_2.html", "file_name": "", "author_name": "johnfn", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/addition_2", "v_position": 4, "h_position": 1, "node_slug": "e/addition_2", "progress_key": "e3002", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/addition-subtraction-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/addition_2.png", "custom_stacks": [], "description": "Add two 2-digit numbers, no carrying", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Add. 2", "covers": ["addition_1"], "display_name": "2-digit addition", "kind": "Exercise", "sha1": "b2739d91cbed9f3f05637ca51b670ec7b591a4d2", "name": "addition_2", "seconds_per_fast_problem": 5.0, "prerequisites": ["number_line", "addition_1", "representing_numbers"], "pretty_display_name": "2-digit addition", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/addition_2_256.png"}, {"relative_url": "/exercise/subtraction_2", "guaranteed_file_name": "subtraction_2.html", "file_name": "", "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/subtraction_2", "v_position": 6, "h_position": 3, "node_slug": "e/subtraction_2", "progress_key": "e3004", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/addition-subtraction-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/subtraction_2.png", "custom_stacks": [], "description": "Subtract two 2-3 digit numbers without borrowing", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Sub. 2", "covers": ["subtraction_1"], "display_name": "2 and 3-digit subtraction", "kind": "Exercise", "sha1": "daf2c1604e6612be3621940d55194b30ef32721c", "name": "subtraction_2", "seconds_per_fast_problem": 6.0, "prerequisites": ["subtraction_1"], "pretty_display_name": "2 and 3-digit subtraction", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/subtraction_2_256.png"}, {"relative_url": "/exercise/addition_3", "guaranteed_file_name": "addition_3.html", "file_name": "", "author_name": "Lukas Domagala", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/addition_3", "v_position": 4, "h_position": 4, "node_slug": "e/addition_3", "progress_key": "e3003", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/addition-subtraction-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/addition_3.png", "custom_stacks": [], "description": "Add two 3-digit numbers with carrying", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Add. 3", "covers": ["addition_2"], "display_name": "Addition with carrying", "kind": "Exercise", "sha1": "e95450376fbc7e26525fa0c19c6dbeb0a770f256", "name": "addition_3", "seconds_per_fast_problem": 8.0, "prerequisites": ["addition_2"], "pretty_display_name": "Addition with carrying", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/addition_3_256.png"}, {"relative_url": "/exercise/subtraction_3", "guaranteed_file_name": "subtraction_3.html", "file_name": "", "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/subtraction_3", "v_position": 6, "h_position": 4, "node_slug": "e/subtraction_3", "progress_key": "e2004", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/addition-subtraction-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/subtraction_3.png", "custom_stacks": [], "description": "Subtract two 3- or 4-digit numbers. Borrow once", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Sub. 3", "covers": ["subtraction_2"], "display_name": "Subtraction with borrowing", "kind": "Exercise", "sha1": "fa26f1849034707a02a19331cc0b0c9668a8cd05", "name": "subtraction_3", "seconds_per_fast_problem": 12.0, "prerequisites": ["subtraction_2"], "pretty_display_name": "Subtraction with borrowing", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/subtraction_3_256.png"}, {"relative_url": "/exercise/addition_4", "guaranteed_file_name": "addition_4.html", "file_name": "", "author_name": "Lukas Domagala", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/addition_4", "v_position": 4, "h_position": 5, "node_slug": "e/addition_4", "progress_key": "e2002", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/addition-subtraction-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/addition_4.png", "custom_stacks": [], "description": "Add two 3- or 4-digit numbers with carrying", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Add. 4", "covers": ["addition_3", "representing_numbers"], "display_name": "4-digit addition with carrying", "kind": "Exercise", "sha1": "4f8fc0b3ed46adf8b25f7bfdafd2686ce540d080", "name": "addition_4", "seconds_per_fast_problem": 12.0, "prerequisites": ["addition_3"], "pretty_display_name": "4-digit addition with carrying", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/addition_4_256.png"}, {"relative_url": "/exercise/subtraction_4", "guaranteed_file_name": "subtraction_4.html", "file_name": "", "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/subtraction_4", "v_position": 6, "h_position": 5, "node_slug": "e/subtraction_4", "progress_key": "e3005", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/addition-subtraction-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/subtraction_4.png", "custom_stacks": [], "description": "Subtract two 4-digit numbers. Borrow twice", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Sub. 4", "covers": ["subtraction_3"], "display_name": "4-digit subtraction with borrowing ", "kind": "Exercise", "sha1": "56426b195edc22961b24f6e8f2acf437cd00250b", "name": "subtraction_4", "seconds_per_fast_problem": 14.0, "prerequisites": ["subtraction_3"], "pretty_display_name": "4-digit subtraction with borrowing ", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/subtraction_4_256.png"}, {"relative_url": "/exercise/arithmetic_word_problems_1", "guaranteed_file_name": "arithmetic_word_problems_1.html", "file_name": "", "author_name": "Rock Hymas", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/arithmetic_word_problems_1", "v_position": 5, "h_position": 4, "node_slug": "e/arithmetic_word_problems_1", "progress_key": "e214174044", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/addition-subtraction-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/arithmetic_word_problems_1.png", "custom_stacks": [], "description": "Word problems with addition and subtraction of positive integers. Some carrying and borrowing.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Arith WP1", "covers": [], "display_name": "Addition and subtraction word problems", "kind": "Exercise", "sha1": "448892b28948f981e34dd04c350b9e38a971bf78", "name": "arithmetic_word_problems_1", "seconds_per_fast_problem": 10.0, "prerequisites": ["addition_2", "subtraction_2"], "pretty_display_name": "Addition and subtraction word problems", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/arithmetic_word_problems_1_256.png"}, {"relative_url": "/exercise/number_line_2", "guaranteed_file_name": "number_line_2.html", "file_name": "", "author_name": "Ben Eater", "creation_date": "2011-09-23T04:59:55Z", "ka_url": "http://www.khanacademy.org/exercise/number_line_2", "v_position": 3, "h_position": 2, "node_slug": "e/number_line_2", "progress_key": "e265365034", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/addition-subtraction-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/number_line_2.png", "custom_stacks": [], "description": "Identify positive and negative integers on the number line", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "# line 2", "covers": [], "display_name": "Number line 2", "kind": "Exercise", "sha1": "c9ea0a37b8cac2110edddaf99c190bb9fdda4d87", "name": "number_line_2", "seconds_per_fast_problem": 5.0, "prerequisites": ["addition_2"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/number_line_2_256.png"}, {"relative_url": "/exercise/ordering_negative_numbers", "guaranteed_file_name": "ordering_negative_numbers.html", "file_name": "", "author_name": "Omar Rizwan", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/ordering_negative_numbers", "v_position": 1, "h_position": 4, "node_slug": "e/ordering_negative_numbers", "progress_key": "e205304798", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/addition-subtraction-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/ordering_negative_numbers.png", "custom_stacks": [], "description": "Put negative integers in order", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Order Neg #", "covers": [], "display_name": "Ordering negative numbers", "kind": "Exercise", "sha1": "f913d9b8535cefd38c1cdc64d1273f1d54f0d5b2", "name": "ordering_negative_numbers", "seconds_per_fast_problem": 7.0, "prerequisites": ["number_line_3"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/ordering_negative_numbers_256.png"}, {"relative_url": "/exercise/number_line_3", "guaranteed_file_name": "number_line_3.html", "file_name": "", "author_name": "Ben Eater", "creation_date": "2011-11-04T23:25:33Z", "ka_url": "http://www.khanacademy.org/exercise/number_line_3", "v_position": 2, "h_position": 3, "node_slug": "e/number_line_3", "progress_key": "e357396312", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/addition-subtraction-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/number_line_3.png", "custom_stacks": [], "description": "Identify positive and negative integers on the number line based on placement of other numbers", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "# line 3", "covers": [], "display_name": "Number line 3", "kind": "Exercise", "sha1": "af8aaabd3b63476827df7462f83060e8f1a0870f", "name": "number_line_3", "seconds_per_fast_problem": 7.0, "prerequisites": ["number_line_2"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/number_line_3_256.png"}, {"relative_url": "/exercise/adding_negative_numbers", "guaranteed_file_name": "adding_negative_numbers.html", "file_name": "", "author_name": "Sundar Subbarayan", "creation_date": "2011-10-20T21:58:36Z", "ka_url": "http://www.khanacademy.org/exercise/adding_negative_numbers", "v_position": 1, "h_position": 5, "node_slug": "e/adding_negative_numbers", "progress_key": "e325329347", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/addition-subtraction-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/adding_negative_numbers.png", "custom_stacks": [], "description": "Adding positive and negative single-digit numbers", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "+ Neg. #s", "covers": [], "display_name": "Adding negative numbers", "kind": "Exercise", "sha1": "0cd475887e782f9546b3d53b74031a0297e5a082", "name": "adding_negative_numbers", "seconds_per_fast_problem": 5.0, "prerequisites": ["subtraction_1", "ordering_negative_numbers"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/adding_negative_numbers_256.png"}, {"relative_url": "/exercise/adding_and_subtracting_negative_numbers", "guaranteed_file_name": "adding_and_subtracting_negative_numbers.html", "file_name": "", "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/adding_and_subtracting_negative_numbers", "v_position": 1, "h_position": 6, "node_slug": "e/adding_and_subtracting_negative_numbers", "progress_key": "e3010", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/addition-subtraction-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/adding_and_subtracting_negative_numbers.png", "custom_stacks": [], "description": "Add and subtract positive and negative single-digit integers", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "+- Neg. #s", "covers": [], "display_name": "Adding and subtracting negative numbers", "kind": "Exercise", "sha1": "ac8567d22254839f3c9c392aaa70521e7f317e6b", "name": "adding_and_subtracting_negative_numbers", "seconds_per_fast_problem": 5.0, "prerequisites": ["adding_negative_numbers"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/adding_and_subtracting_negative_numbers_256.png"}]
+[
+  {
+    "kind": "Exercise", 
+    "display_name": "1-digit addition", 
+    "description": "Add two 1-digit numbers", 
+    "title": "1-digit addition", 
+    "seconds_per_fast_problem": 4.0, 
+    "related_video_readable_ids": [
+      "basic-addition"
+    ], 
+    "prerequisites": [], 
+    "live": true, 
+    "h_position": 0, 
+    "v_position": 5, 
+    "path": "/math/arithmetic/addition-subtraction/basic_addition/e/addition_1/", 
+    "slug": "addition_1", 
+    "name": "addition_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "1-digit subtraction", 
+    "description": "Subtract two 1-digit numbers", 
+    "title": "1-digit subtraction", 
+    "seconds_per_fast_problem": 4.0, 
+    "related_video_readable_ids": [
+      "basic-subtraction"
+    ], 
+    "prerequisites": [
+      "addition_1"
+    ], 
+    "live": true, 
+    "h_position": 2, 
+    "v_position": 6, 
+    "path": "/math/arithmetic/addition-subtraction/basic_addition/e/subtraction_1/", 
+    "slug": "subtraction_1", 
+    "name": "subtraction_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Number line 1", 
+    "description": "Drag a dot to a positive integer on the number line", 
+    "title": "Number line 1", 
+    "seconds_per_fast_problem": 7.0, 
+    "related_video_readable_ids": [
+      "basic-subtraction"
+    ], 
+    "prerequisites": [
+      "addition_2"
+    ], 
+    "live": true, 
+    "h_position": 2, 
+    "v_position": 3, 
+    "path": "/math/arithmetic/addition-subtraction/basic_addition/e/number_line/", 
+    "slug": "number_line", 
+    "name": "number_line"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "2-digit addition", 
+    "description": "Add two 2-digit numbers, no carrying", 
+    "title": "2-digit addition", 
+    "seconds_per_fast_problem": 5.0, 
+    "related_video_readable_ids": [
+      "adding-whole-numbers-and-applications-1"
+    ], 
+    "prerequisites": [
+      "addition_1"
+    ], 
+    "live": true, 
+    "h_position": 1, 
+    "v_position": 4, 
+    "path": "/math/arithmetic/addition-subtraction/two_dig_add_sub/e/addition_2/", 
+    "slug": "addition_2", 
+    "name": "addition_2"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "2 and 3-digit subtraction", 
+    "description": "Subtract two 2-3 digit numbers without borrowing", 
+    "title": "2 and 3-digit subtraction", 
+    "seconds_per_fast_problem": 5.0, 
+    "related_video_readable_ids": [
+      "subtracting-whole-numbers"
+    ], 
+    "prerequisites": [
+      "subtraction_1"
+    ], 
+    "live": true, 
+    "h_position": 3, 
+    "v_position": 6, 
+    "path": "/math/arithmetic/addition-subtraction/two_dig_add_sub/e/subtraction_2/", 
+    "slug": "subtraction_2", 
+    "name": "subtraction_2"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Addition with carrying", 
+    "description": "Add two 3-digit numbers with carrying", 
+    "title": "Addition with carrying", 
+    "seconds_per_fast_problem": 8.0, 
+    "related_video_readable_ids": [
+      "addition-3"
+    ], 
+    "prerequisites": [
+      "addition_2"
+    ], 
+    "live": true, 
+    "h_position": 4, 
+    "v_position": 4, 
+    "path": "/math/arithmetic/addition-subtraction/addition_carrying/e/addition_3/", 
+    "slug": "addition_3", 
+    "name": "addition_3"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "4-digit addition with carrying", 
+    "description": "Add two 3- or 4-digit numbers with carrying", 
+    "title": "4-digit addition with carrying", 
+    "seconds_per_fast_problem": 12.0, 
+    "related_video_readable_ids": [
+      "addition-4"
+    ], 
+    "prerequisites": [
+      "addition_3"
+    ], 
+    "live": true, 
+    "h_position": 5, 
+    "v_position": 4, 
+    "path": "/math/arithmetic/addition-subtraction/addition_carrying/e/addition_4/", 
+    "slug": "addition_4", 
+    "name": "addition_4"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Subtraction with borrowing", 
+    "description": "Subtract two 3- or 4-digit numbers. Borrow once", 
+    "title": "Subtraction with borrowing", 
+    "seconds_per_fast_problem": 12.0, 
+    "related_video_readable_ids": [
+      "borrowing-once-example-1", 
+      "borrowing-once-example-2"
+    ], 
+    "prerequisites": [
+      "subtraction_2"
+    ], 
+    "live": true, 
+    "h_position": 4, 
+    "v_position": 6, 
+    "path": "/math/arithmetic/addition-subtraction/sub_borrowing/e/subtraction_3/", 
+    "slug": "subtraction_3", 
+    "name": "subtraction_3"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "4-digit subtraction with borrowing ", 
+    "description": "Subtract two 4-digit numbers. Borrow twice", 
+    "title": "4-digit subtraction with borrowing ", 
+    "seconds_per_fast_problem": 14.0, 
+    "related_video_readable_ids": [
+      "regrouping--borrowing--twice-example"
+    ], 
+    "prerequisites": [
+      "subtraction_3"
+    ], 
+    "live": true, 
+    "h_position": 5, 
+    "v_position": 6, 
+    "path": "/math/arithmetic/addition-subtraction/sub_borrowing/e/subtraction_4/", 
+    "slug": "subtraction_4", 
+    "name": "subtraction_4"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Addition and subtraction word problems", 
+    "description": "Word problems with addition and subtraction of positive integers. Some carrying and borrowing.", 
+    "title": "Addition and subtraction word problems", 
+    "seconds_per_fast_problem": 10.0, 
+    "related_video_readable_ids": [
+      "subtraction-word-problem"
+    ], 
+    "prerequisites": [
+      "addition_2", 
+      "subtraction_2"
+    ], 
+    "live": true, 
+    "h_position": 4, 
+    "v_position": 5, 
+    "path": "/math/arithmetic/addition-subtraction/add_sub_word_problems/e/arithmetic_word_problems_1/", 
+    "slug": "arithmetic_word_problems_1", 
+    "name": "arithmetic_word_problems_1"
+  }
+]

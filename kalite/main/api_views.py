@@ -5,7 +5,6 @@ from django.utils import simplejson
 from django.db.models import Q
 from annoying.functions import get_object_or_None
 import settings
-from utils.topics import slug_key, title_key
 from main import topicdata
 from utils.jobs import force_job, job_status
 from utils.videos import delete_downloaded_files
@@ -275,10 +274,10 @@ def annotate_topic_tree(node, level=0, statusdict=None):
                     unstarted = False
                 children.append(child)
         return {
-            "title": node[title_key["Topic"]],
+            "title": node["title"],
             "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
             "isFolder": True,
-            "key": node[slug_key["Topic"]],
+            "key": node["slug"],
             "children": children,
             "addClass": complete and "complete" or unstarted and "unstarted" or "partial",
             "expand": level < 1,
@@ -294,7 +293,7 @@ def annotate_topic_tree(node, level=0, statusdict=None):
         else:
             status = "partial"
         return {
-            "title": node[title_key["Video"]],
+            "title": node["title"],
             "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
             "key": node["youtube_id"],
             "addClass": status,

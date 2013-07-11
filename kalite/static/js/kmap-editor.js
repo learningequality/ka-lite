@@ -233,7 +233,6 @@ $(document).ready(function() {
 
     if (vars["topic"]) {
         $.getJSON("/static/data/topicdata/" + vars["topic"] + ".json", function(exerciseLayout) {
-            console.log(exerciseLayout);
             var exercise_ids = $.map(exerciseLayout, function(exercise) { return exercise.name });
             doRequest("/api/get_exercise_logs", exercise_ids).success(function(data) {
                 var exercisesCompleted = {};
