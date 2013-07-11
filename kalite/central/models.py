@@ -61,10 +61,11 @@ class Organization(models.Model):
         #   So make sure that any save() call is coming either
         #   from a trusted source (passing HEADLESS_ORG_SAVE_FLAG),
         #   or doesn't overlap with our safe name
-        if self.name == Organization.HEADLESS_ORG_NAME and not kwargs.get(Organization.HEADLESS_ORG_SAVE_FLAG, False):
-            headless_org = Organization.get_headless_organization()
-            if headless_org.pk != self.pk:
-                raise Exception("Cannot add more than one headless org!")
+        if self.name == Organization.HEADLESS_ORG_NAME:
+            if kwargs.get(Organization.HEADLESS_ORG_SAVE_FLAG, False):
+                del kwargs[Organization.HEADLESS_ORG_SAVE_FLAG]  # don't pass it on, it's an error
+            elif self.pk != Organization.get_or_create_headless_organization().pk:
+                raise Exception("Cannot save to reserved organization name: %s" % Organization.HEADLESS_ORG_NAME)
         super(Organization, self).save(*args, **kwargs)
 
 
@@ -73,44 +74,42 @@ class Organization(models.Model):
         """
         Given a zone, figure out which organizations contain it.
         """
-        return Organization.objects.filter(zones__pk=zone.pk)
+        return Organization.objects.filter(zones=zone)
 
 
     @classmethod
-    def get_headless_organization(cls, user):
-        assert user.is_superuser, "only super-users can call this method!"
-
+    def get_or_create_headless_organization(cls, refresh_zones=False):
+        """
+        Retrieve the organization encapsulating all headless zones.
+        """
         if cls.HEADLESS_ORG_PK is not None:
             # Already exists and cached, just query fast and return
-            org = cls.objects.get(pk=cls.HEADLESS_ORG_PK)
-            return org
+            headless_org = cls.objects.get(pk=cls.HEADLESS_ORG_PK)
 
         else:
             # Potentially inefficient query, so limit this to once per server thread
             # by caching the results.  Here, we've had a cache miss
-            orgs = cls.objects.filter(name=cls.HEADLESS_ORG_NAME)
-            if not orgs:
+            headless_orgs = cls.objects.filter(name=cls.HEADLESS_ORG_NAME)
+            if not headless_orgs:
                 # Cache miss because the org actually doesn't exist.  Create it!
-                org = Organization(name=cls.HEADLESS_ORG_NAME, owner=user)
-                org.save(**({cls.HEADLESS_ORG_SAVE_FLAG: True}))
-                cls.HEADLESS_ORG_PK = org.pk
-                return org
+                headless_org = Organization(name=cls.HEADLESS_ORG_NAME)
+                headless_org.save(**({cls.HEADLESS_ORG_SAVE_FLAG: True}))
+                cls.HEADLESS_ORG_PK = headless_org.pk
+
             else:
                 # Cache miss because it's the first relevant query since this thread started.
-                assert len(orgs) == 1, "Cannot have multiple HEADLESS ZONE organizations"
-                cls.HEADLESS_ORG_PK = orgs[0].pk
-                return orgs[0]
+                assert len(headless_orgs) == 1, "Cannot have multiple HEADLESS ZONE organizations"
+                cls.HEADLESS_ORG_PK = headless_orgs[0].pk
+                headless_org = headless_orgs[0]
+        
+        # TODO(bcipolli): remove this code!
+        #
+        # In the future, when we self-register headless zones, we'll
+        #    add them directly to the headless organization.
+        #    For now, we'll have to do an exhaustive search.
+        if refresh_zones:
+            headless_org.zones.add(*Zone.get_headless_zones())
 
-
-    @classmethod
-    def update_headless_organization(cls, user):
-        assert user.is_superuser, "only super-users can call this method!"
-        headless_org = Organization.get_headless_organization(user)
-        headless_zones = Zone.get_headless_zones()
-        if headless_zones:
-            for zone in headless_zones:
-                headless_org.zones.add(zone)
-            headless_org.save()
         return headless_org
 
 
@@ -121,6 +120,11 @@ class UserProfile(models.Model):
         return self.user.username
 
     def get_organizations(self):
+        """
+        Return all organizations that this user manages.
+        
+        If this user is a super-user, then the headless org will be appended at the end.
+        """
         orgs = OrderedDict()  # no dictionary comprehensions, so have to loop
         for org in self.user.organization_set.all():  # add in order queries (alphabetical?)
             orgs[org.pk] = org
@@ -129,9 +133,8 @@ class UserProfile(models.Model):
         #   any headless zones.
         # Make sure this is at the END of the list, so it is clearly special.
         if self.user.is_superuser:
-            headless_org = Organization.update_headless_organization(self.user)
-            if headless_org.zones:
-                orgs[headless_org.pk] = headless_org
+            headless_org = Organization.get_or_create_headless_organization(refresh_zones=True)
+            orgs[headless_org.pk] = headless_org
 
         return orgs
 

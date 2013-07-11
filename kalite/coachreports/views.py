@@ -96,7 +96,6 @@ def student_view(request, xaxis="pct_mastery", yaxis="ex:attempts"):
     user = get_user_from_request(request=request)
 
     topics = get_all_midlevel_topics()
-    import pdb; pdb.set_trace()
     topic_ids = [t['id'] for t in topics]
     topics = filter(partial(lambda n,ids: n['id'] in ids, ids=topic_ids), topicdata.NODE_CACHE['Topic'].values()) # real data, like paths
     
@@ -106,10 +105,7 @@ def student_view(request, xaxis="pct_mastery", yaxis="ex:attempts"):
     exercise_sparklines = dict()
     stats = dict()
     topic_exercises = dict()
-    import pdb; pdb.set_trace()
     for topic in topics:
-
-        import pdb; pdb.set_trace()
         topic_exercises[topic['id']] = get_topic_exercises(path=topic['path'])
         n_exercises = len(topic_exercises[topic['id']])
         exercise_logs[topic['id']] = ExerciseLog.objects.filter(user=user, exercise_id__in=[t['name'] for t in topic_exercises[topic['id']]]).order_by("completion_timestamp")
