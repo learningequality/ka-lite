@@ -1,1 +1,125 @@
-[{"relative_url": "/exercise/imaginary_unit_powers", "guaranteed_file_name": "imaginary_unit_powers.html", "file_name": "", "author_name": "Michal Pokorny", "creation_date": "2012-01-25T02:59:30Z", "ka_url": "http://www.khanacademy.org/exercise/imaginary_unit_powers", "v_position": -12, "h_position": 45, "node_slug": "e/imaginary_unit_powers", "progress_key": "e523254889", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/complex-numbers-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/imaginary_unit_powers.png", "custom_stacks": [], "description": "Solve problems with base i (square root of -1) raised to a positive exponent", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Powers of i", "covers": [], "display_name": "Imaginary unit powers", "kind": "Exercise", "sha1": "11d181e9b427ba9be8b16be203f65b487c92d2c3", "name": "imaginary_unit_powers", "seconds_per_fast_problem": 5.0, "prerequisites": ["equation_of_a_line"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/imaginary_unit_powers_256.png"}, {"relative_url": "/exercise/the_complex_plane", "guaranteed_file_name": "the_complex_plane.html", "file_name": "", "author_name": "Michal Pokorny", "creation_date": "2012-01-25T03:04:38Z", "ka_url": "http://www.khanacademy.org/exercise/the_complex_plane", "v_position": -12, "h_position": 46, "node_slug": "e/the_complex_plane", "progress_key": "e523235921", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/complex-numbers-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/the_complex_plane.png", "custom_stacks": [], "description": "Plot complex numbers on the complex plane.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Cmplx plane", "covers": [], "display_name": "The complex plane", "kind": "Exercise", "sha1": "ad6ebe87fcea6c19955f6be69619b6bfc4c55876", "name": "the_complex_plane", "seconds_per_fast_problem": 6.0, "prerequisites": ["imaginary_unit_powers"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/the_complex_plane_256.png"}, {"relative_url": "/exercise/absolute_value_of_complex_numbers", "guaranteed_file_name": "absolute_value_of_complex_numbers.html", "file_name": "", "author_name": "Michal Pokorny", "creation_date": "2012-01-25T03:26:21Z", "ka_url": "http://www.khanacademy.org/exercise/absolute_value_of_complex_numbers", "v_position": -13, "h_position": 47, "node_slug": "e/absolute_value_of_complex_numbers", "progress_key": "e523341553", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/complex-numbers-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/absolute_value_of_complex_numbers.png", "custom_stacks": [], "description": "Find the absolute value of a complex number.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Abs complex", "covers": [], "display_name": "Absolute value of complex numbers", "kind": "Exercise", "sha1": "7a70d3a7c1d8f5165f1b8c610b2e65ac7a5dd86f", "name": "absolute_value_of_complex_numbers", "seconds_per_fast_problem": 11.0, "prerequisites": ["the_complex_plane", "distance_formula"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/absolute_value_of_complex_numbers_256.png"}, {"relative_url": "/exercise/adding_and_subtracting_complex_numbers", "guaranteed_file_name": "adding_and_subtracting_complex_numbers.html", "file_name": "", "author_name": "Michal Pokorny", "creation_date": "2012-01-25T03:09:22Z", "ka_url": "http://www.khanacademy.org/exercise/adding_and_subtracting_complex_numbers", "v_position": -12, "h_position": 47, "node_slug": "e/adding_and_subtracting_complex_numbers", "progress_key": "e523319125", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/complex-numbers-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/adding_and_subtracting_complex_numbers.png", "custom_stacks": [], "description": "Add or subtract complex numbers. Identify the real and imaginary parts.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "+/- cmplx #", "covers": [], "display_name": "Adding and subtracting complex numbers", "kind": "Exercise", "sha1": "c6b0f2780e70dd8e32dab115ba8eaddd53609c50", "name": "adding_and_subtracting_complex_numbers", "seconds_per_fast_problem": 9.0, "prerequisites": ["adding_and_subtracting_polynomials", "the_complex_plane"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/adding_and_subtracting_complex_numbers_256.png"}, {"relative_url": "/exercise/multiplying_complex_numbers", "guaranteed_file_name": "multiplying_complex_numbers.html", "file_name": "", "author_name": "Michal Pokorny", "creation_date": "2012-01-25T03:15:19Z", "ka_url": "http://www.khanacademy.org/exercise/multiplying_complex_numbers", "v_position": -12, "h_position": 48, "node_slug": "e/multiplying_complex_numbers", "progress_key": "e523337087", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/complex-numbers-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/multiplying_complex_numbers.png", "custom_stacks": [], "description": "Multiply complex numbers. Identify the real and imaginary parts.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Mult cmplx", "covers": [], "display_name": "Multiplying complex numbers", "kind": "Exercise", "sha1": "559fdf97021ba293f81eb68d7e57e1714aa870cf", "name": "multiplying_complex_numbers", "seconds_per_fast_problem": 19.0, "prerequisites": ["multiplying_expressions_1", "adding_and_subtracting_complex_numbers"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/multiplying_complex_numbers_256.png"}, {"relative_url": "/exercise/dividing_complex_numbers", "guaranteed_file_name": "dividing_complex_numbers.html", "file_name": "", "author_name": "Michal Pokorny", "creation_date": "2012-01-25T03:21:10Z", "ka_url": "http://www.khanacademy.org/exercise/dividing_complex_numbers", "v_position": -12, "h_position": 49, "node_slug": "e/dividing_complex_numbers", "progress_key": "e523311311", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/complex-numbers-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/dividing_complex_numbers.png", "custom_stacks": [], "description": "Divide complex numbers. Identify the real and imaginary parts.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Divde cmplx", "covers": [], "display_name": "Dividing complex numbers", "kind": "Exercise", "sha1": "dc629967b1770fb8d4c812dbd8f1cc613bf5dc70", "name": "dividing_complex_numbers", "seconds_per_fast_problem": 36.0, "prerequisites": ["multiplying_complex_numbers"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/dividing_complex_numbers_256.png"}]
+[
+  {
+    "kind": "Exercise", 
+    "display_name": "Imaginary unit powers", 
+    "description": "Solve problems with base i (square root of -1) raised to a positive exponent", 
+    "title": "Imaginary unit powers", 
+    "seconds_per_fast_problem": 6.0, 
+    "related_video_readable_ids": [
+      "calculating-i-raised-to-arbitrary-exponents", 
+      "calculating-i-raised-to-arbitrary-exponents"
+    ], 
+    "prerequisites": [
+      "equation_of_a_line"
+    ], 
+    "live": true, 
+    "h_position": 45, 
+    "v_position": -12, 
+    "path": "/math/algebra/complex-numbers/imaginary_unit_i/e/imaginary_unit_powers/", 
+    "slug": "imaginary_unit_powers", 
+    "name": "imaginary_unit_powers"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "The complex plane", 
+    "description": "Plot complex numbers on the complex plane.", 
+    "title": "The complex plane", 
+    "seconds_per_fast_problem": 6.0, 
+    "related_video_readable_ids": [
+      "complex-numbers--part-2", 
+      "complex-numbers--part-2"
+    ], 
+    "prerequisites": [
+      "imaginary_unit_powers"
+    ], 
+    "live": true, 
+    "h_position": 46, 
+    "v_position": -12, 
+    "path": "/math/algebra/complex-numbers/complex_numbers/e/the_complex_plane/", 
+    "slug": "the_complex_plane", 
+    "name": "the_complex_plane"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Adding and subtracting complex numbers", 
+    "description": "Add or subtract complex numbers. Identify the real and imaginary parts.", 
+    "title": "Adding and subtracting complex numbers", 
+    "seconds_per_fast_problem": 9.0, 
+    "related_video_readable_ids": [
+      "subtracting-complex-numbers", 
+      "subtracting-complex-numbers"
+    ], 
+    "prerequisites": [
+      "adding_and_subtracting_polynomials", 
+      "complex_plane_operations"
+    ], 
+    "live": true, 
+    "h_position": 48, 
+    "v_position": -12, 
+    "path": "/math/algebra/complex-numbers/complex_numbers/e/adding_and_subtracting_complex_numbers/", 
+    "slug": "adding_and_subtracting_complex_numbers", 
+    "name": "adding_and_subtracting_complex_numbers"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Multiplying complex numbers", 
+    "description": "Multiply complex numbers. Identify the real and imaginary parts.", 
+    "title": "Multiplying complex numbers", 
+    "seconds_per_fast_problem": 18.0, 
+    "related_video_readable_ids": [
+      "multiplying-complex-numbers", 
+      "multiplying-complex-numbers"
+    ], 
+    "prerequisites": [
+      "multiplying_expressions_1", 
+      "adding_and_subtracting_complex_numbers"
+    ], 
+    "live": true, 
+    "h_position": 49, 
+    "v_position": -12, 
+    "path": "/math/algebra/complex-numbers/complex_numbers/e/multiplying_complex_numbers/", 
+    "slug": "multiplying_complex_numbers", 
+    "name": "multiplying_complex_numbers"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Dividing complex numbers", 
+    "description": "Divide complex numbers. Identify the real and imaginary parts.", 
+    "title": "Dividing complex numbers", 
+    "seconds_per_fast_problem": 40.0, 
+    "related_video_readable_ids": [
+      "dividing-complex-numbers", 
+      "dividing-complex-numbers"
+    ], 
+    "prerequisites": [
+      "multiplying_complex_numbers"
+    ], 
+    "live": true, 
+    "h_position": 50, 
+    "v_position": -12, 
+    "path": "/math/algebra/complex-numbers/complex_numbers/e/dividing_complex_numbers/", 
+    "slug": "dividing_complex_numbers", 
+    "name": "dividing_complex_numbers"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Absolute value of complex numbers", 
+    "description": "Find the absolute value of a complex number.", 
+    "title": "Absolute value of complex numbers", 
+    "seconds_per_fast_problem": 10.0, 
+    "related_video_readable_ids": [
+      "complex-conjugates-example", 
+      "complex-conjugates-example"
+    ], 
+    "prerequisites": [
+      "the_complex_plane", 
+      "distance_formula"
+    ], 
+    "live": true, 
+    "h_position": 47, 
+    "v_position": -13, 
+    "path": "/math/algebra/complex-numbers/complex_numbers/e/absolute_value_of_complex_numbers/", 
+    "slug": "absolute_value_of_complex_numbers", 
+    "name": "absolute_value_of_complex_numbers"
+  }
+]

@@ -6,11 +6,11 @@ Replace this with more appropriate tests for your application.
 """
 
 import os
-import unittest
 
 from django.test import TestCase
 from django.core.management import call_command
 from django.db import DatabaseError
+from django.utils import unittest
 
 import settings
 from utils.testing import distributed_only

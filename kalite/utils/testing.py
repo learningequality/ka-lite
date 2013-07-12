@@ -14,7 +14,6 @@ import shutil
 import sys
 import platform
 import tempfile
-import unittest
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from StringIO import StringIO
@@ -24,10 +23,12 @@ from django.test.client import Client
 from django.core.urlresolvers import reverse
 from django.core.management import call_command
 from django.test import TestCase, LiveServerTestCase
+from django.utils import unittest
 
 import settings
 from registration.models import RegistrationProfile
 from securesync.models import FacilityUser
+from settings import LOG as logging
 from utils.django_utils import call_command_with_output
 
 
@@ -169,7 +170,7 @@ class BrowserTestCase(KALiteTestCase):
                     (self.browser,self.admin_user,self.admin_pass) = setup_test_env(browser_type=browser_type)
                     break
                 except Exception as e:
-                    settings.LOG.debug("Could not create browser %s through selenium: %s" % (browser_type, e))
+                    logging.debug("Could not create browser %s through selenium: %s" % (browser_type, e))
 
 
     def tearDown(self):
