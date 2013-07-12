@@ -239,20 +239,25 @@ class ChangeLocalUserPassword(unittest.TestCase):
         self.user.save()
     
     
-    def test_change_password(self):
+    def test_change_password_on_existing_user(self):
         """Change the password on an existing user."""
         
         # Now, re-retrieve the user, to check.
+        old_password = self.user.password
         (out,err,val) = call_command_with_output("changelocalpassword", self.user.username, noinput=True)
-        self.assertEquals(err, "", "no output on stderr")
-        self.assertNotEquals(out, "", "some output on stderr")
-        self.assertEquals(val, 0, "Exit code is zero")
+        self.assertEqual(err, "", "no output on stderr")
+        self.assertNotEqual(out, "", "some output on stdout")
+        self.assertEqual(val, 0, "Exit code is not zero")
+        new_password = FacilityUser.objects.get(id=self.user.id).password
+        self.assertNotEqual(new_password, old_password, "password not changed")
 
-        match = re.match(r"^.*Error: user '([^']+)' does not exist$", err.replace("\n",""), re.M)
-        self.assertFalse(match is None, "could not parse stderr")
-        self.assertEquals(match.groups()[0], fake_username, "Verify printed fake username")
-        self.assertNotEquals(val, 0, "Verify exit code is non-zero")
 
+    def test_change_password_on_nonexistent_user(self):
+        nonexistent_username = "voiduser"
+        (out, err, val) = call_command_with_output("changelocalpassword", nonexistent_username, noinput=True)
+        self.assertEqual(out, '', "Expected no stdout; stdout is {}".format(out))
+        self.assertNotEqual(err, '', "Expected nonempty stderr")
+        self.assertNotEqual(val, 0, 'Expected return code to be nonzero')
 
 @distributed_only
 class UserRegistrationCaseTest(KALiteRegisteredDistributedBrowserTestCase):
