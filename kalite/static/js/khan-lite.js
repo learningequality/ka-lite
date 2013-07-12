@@ -41,6 +41,25 @@ function doRequest(url, data) {
 }
 
 
+function keys(dict) {
+    var all_keys = [];
+    for (key in dict) {
+        all_keys.push(key);
+    }
+    return all_keys;
+}
+
+
+function vals(dict) {
+    var all_vals = [];
+    for (key in dict) {
+        all_vals.push(dict[key]);
+    }
+    return all_vals;
+}
+
+
+    
 // Generic functions for client-side message passing
 //   through our Django-based server-side API
 

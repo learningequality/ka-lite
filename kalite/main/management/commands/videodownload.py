@@ -33,12 +33,11 @@ class Command(BaseCommand):
     help = "Download all videos marked to be downloaded"
 
     def handle(self, *args, **options):
-        
         handled_video_ids = []
         
         while True: # loop until the method is aborted
             
-            if VideoFile.objects.filter(download_in_progress=True).count() > 0:
+            if VideoFile.objects.filter(download_in_progress=True).count() == VideoFile.objects.filter(flagged_for_download=True).count():
                 self.stderr.write("Another download is still in progress; aborting.\n")
                 break
             
