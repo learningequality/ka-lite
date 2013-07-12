@@ -8,6 +8,7 @@
     "related_video_readable_ids": [
       "lines--line-segments--and-rays"
     ], 
+    "slug": "measuring_segments", 
     "prerequisites": [
       "recognizing_rays_lines_and_line_segments"
     ], 
@@ -15,7 +16,7 @@
     "h_position": 26, 
     "v_position": -23, 
     "path": "/math/geometry/segments-and-angles/intro_euclid/e/measuring_segments/", 
-    "slug": "measuring_segments", 
+    "id": "measuring_segments", 
     "name": "measuring_segments"
   }, 
   {
@@ -27,6 +28,7 @@
     "related_video_readable_ids": [
       "lines--line-segments--and-rays"
     ], 
+    "slug": "points_lines_and_planes", 
     "prerequisites": [
       "recognizing_rays_lines_and_line_segments"
     ], 
@@ -34,7 +36,7 @@
     "h_position": 26, 
     "v_position": -24, 
     "path": "/math/geometry/segments-and-angles/intro_euclid/e/points_lines_and_planes/", 
-    "slug": "points_lines_and_planes", 
+    "id": "points_lines_and_planes", 
     "name": "points_lines_and_planes"
   }, 
   {
@@ -46,6 +48,7 @@
     "related_video_readable_ids": [
       "identifying-rays"
     ], 
+    "slug": "recognizing_rays_lines_and_line_segments", 
     "prerequisites": [
       "area_of_a_circle", 
       "area_of_triangles_1"
@@ -54,7 +57,7 @@
     "h_position": 25, 
     "v_position": -22, 
     "path": "/math/geometry/segments-and-angles/intro_euclid/e/recognizing_rays_lines_and_line_segments/", 
-    "slug": "recognizing_rays_lines_and_line_segments", 
+    "id": "recognizing_rays_lines_and_line_segments", 
     "name": "recognizing_rays_lines_and_line_segments"
   }, 
   {
@@ -66,6 +69,7 @@
     "related_video_readable_ids": [
       "identifying-rays"
     ], 
+    "slug": "congruent_segments", 
     "prerequisites": [
       "recognizing_rays_lines_and_line_segments"
     ], 
@@ -73,7 +77,7 @@
     "h_position": 26, 
     "v_position": -22, 
     "path": "/math/geometry/segments-and-angles/intro_euclid/e/congruent_segments/", 
-    "slug": "congruent_segments", 
+    "id": "congruent_segments", 
     "name": "congruent_segments"
   }, 
   {
@@ -85,6 +89,7 @@
     "related_video_readable_ids": [
       "identifying-rays"
     ], 
+    "slug": "segment_addition", 
     "prerequisites": [
       "measuring_segments", 
       "congruent_segments"
@@ -93,7 +98,7 @@
     "h_position": 27, 
     "v_position": -23, 
     "path": "/math/geometry/segments-and-angles/intro_euclid/e/segment_addition/", 
-    "slug": "segment_addition", 
+    "id": "segment_addition", 
     "name": "segment_addition"
   }, 
   {
@@ -105,6 +110,7 @@
     "related_video_readable_ids": [
       "identifying-rays"
     ], 
+    "slug": "midpoint_of_a_segment", 
     "prerequisites": [
       "measuring_segments", 
       "congruent_segments"
@@ -113,7 +119,7 @@
     "h_position": 27, 
     "v_position": -22, 
     "path": "/math/geometry/segments-and-angles/intro_euclid/e/midpoint_of_a_segment/", 
-    "slug": "midpoint_of_a_segment", 
+    "id": "midpoint_of_a_segment", 
     "name": "midpoint_of_a_segment"
   }
 ]

@@ -9,6 +9,7 @@
       "plot-ordered-pairs", 
       "plot-ordered-pairs"
     ], 
+    "slug": "graphing_points", 
     "prerequisites": [
       "linear_equations_3"
     ], 
@@ -16,7 +17,7 @@
     "h_position": 34, 
     "v_position": 9, 
     "path": "/math/algebra/linear-equations-and-inequalitie/coordinate-plane/e/graphing_points/", 
-    "slug": "graphing_points", 
+    "id": "graphing_points", 
     "name": "graphing_points"
   }, 
   {
@@ -29,6 +30,7 @@
       "quadrants-of-coordinate-plane", 
       "quadrants-of-coordinate-plane"
     ], 
+    "slug": "graphing_points_2", 
     "prerequisites": [
       "graphing_points"
     ], 
@@ -36,7 +38,7 @@
     "h_position": 35, 
     "v_position": 8, 
     "path": "/math/algebra/linear-equations-and-inequalitie/coordinate-plane/e/graphing_points_2/", 
-    "slug": "graphing_points_2", 
+    "id": "graphing_points_2", 
     "name": "graphing_points_2"
   }, 
   {
@@ -49,6 +51,7 @@
       "quadrants-of-coordinate-plane", 
       "quadrants-of-coordinate-plane"
     ], 
+    "slug": "identifying_points_1", 
     "prerequisites": [
       "graphing_points"
     ], 
@@ -56,7 +59,7 @@
     "h_position": 35, 
     "v_position": 9, 
     "path": "/math/algebra/linear-equations-and-inequalitie/coordinate-plane/e/identifying_points_1/", 
-    "slug": "identifying_points_1", 
+    "id": "identifying_points_1", 
     "name": "identifying_points_1"
   }, 
   {
@@ -69,6 +72,7 @@
       "application-problem-with-graph", 
       "ordered-pair-solutions-of-equations-2"
     ], 
+    "slug": "identifying_points_2", 
     "prerequisites": [
       "graphing_points"
     ], 
@@ -76,7 +80,7 @@
     "h_position": 35, 
     "v_position": 10, 
     "path": "/math/algebra/linear-equations-and-inequalitie/graphing_solutions2/e/identifying_points_2/", 
-    "slug": "identifying_points_2", 
+    "id": "identifying_points_2", 
     "name": "identifying_points_2"
   }, 
   {
@@ -89,6 +93,7 @@
       "recognizing-linear-functions", 
       "recognizing-linear-functions"
     ], 
+    "slug": "interpreting_linear_equations", 
     "prerequisites": [
       "identifying_points_2", 
       "identifying_points_1", 
@@ -98,7 +103,7 @@
     "h_position": 36, 
     "v_position": 9, 
     "path": "/math/algebra/linear-equations-and-inequalitie/graphing_solutions2/e/interpreting_linear_equations/", 
-    "slug": "interpreting_linear_equations", 
+    "id": "interpreting_linear_equations", 
     "name": "interpreting_linear_equations"
   }, 
   {
@@ -110,6 +115,7 @@
     "related_video_readable_ids": [
       "x-and-y-intercepts-2"
     ], 
+    "slug": "solving_for_the_x-intercept", 
     "prerequisites": [
       "solving_for_the_y-intercept"
     ], 
@@ -117,7 +123,7 @@
     "h_position": 38, 
     "v_position": 10, 
     "path": "/math/algebra/linear-equations-and-inequalitie/graphing_with_intercepts/e/solving_for_the_x-intercept/", 
-    "slug": "solving_for_the_x-intercept", 
+    "id": "solving_for_the_x-intercept", 
     "name": "solving_for_the_x-intercept"
   }, 
   {
@@ -130,6 +136,7 @@
       "hairier-slope-of-line", 
       "slope-of-a-line-3"
     ], 
+    "slug": "slope_of_a_line", 
     "prerequisites": [
       "interpreting_linear_equations"
     ], 
@@ -137,7 +144,7 @@
     "h_position": 37, 
     "v_position": 9, 
     "path": "/math/algebra/linear-equations-and-inequalitie/slope-and-intercepts/e/slope_of_a_line/", 
-    "slug": "slope_of_a_line", 
+    "id": "slope_of_a_line", 
     "name": "slope_of_a_line"
   }, 
   {
@@ -150,6 +157,7 @@
       "slope-and-y-intercept-intuition", 
       "slope-and-y-intercept-intuition"
     ], 
+    "slug": "line_graph_intuition", 
     "prerequisites": [
       "slope_of_a_line"
     ], 
@@ -157,7 +165,7 @@
     "h_position": 38, 
     "v_position": 9, 
     "path": "/math/algebra/linear-equations-and-inequalitie/slope-and-intercepts/e/line_graph_intuition/", 
-    "slug": "line_graph_intuition", 
+    "id": "line_graph_intuition", 
     "name": "line_graph_intuition"
   }, 
   {
@@ -170,6 +178,7 @@
       "converting-to-slope-intercept-form", 
       "converting-to-slope-intercept-form"
     ], 
+    "slug": "graphing_linear_equations", 
     "prerequisites": [
       "equation_of_a_line"
     ], 
@@ -177,7 +186,7 @@
     "h_position": 42, 
     "v_position": 9, 
     "path": "/math/algebra/linear-equations-and-inequalitie/equation-of-a-line/e/graphing_linear_equations/", 
-    "slug": "graphing_linear_equations", 
+    "id": "graphing_linear_equations", 
     "name": "graphing_linear_equations"
   }, 
   {
@@ -190,6 +199,7 @@
       "equation-of-a-line-3", 
       "equation-of-a-line-3"
     ], 
+    "slug": "solving_for_the_y-intercept", 
     "prerequisites": [
       "interpreting_linear_equations"
     ], 
@@ -197,7 +207,7 @@
     "h_position": 37, 
     "v_position": 10, 
     "path": "/math/algebra/linear-equations-and-inequalitie/equation-of-a-line/e/solving_for_the_y-intercept/", 
-    "slug": "solving_for_the_y-intercept", 
+    "id": "solving_for_the_y-intercept", 
     "name": "solving_for_the_y-intercept"
   }, 
   {
@@ -210,6 +220,7 @@
       "equation-of-a-line-3", 
       "equation-of-a-line-3"
     ], 
+    "slug": "slope_intercept_form", 
     "prerequisites": [
       "solving_for_the_x-intercept", 
       "line_graph_intuition"
@@ -218,7 +229,7 @@
     "h_position": 39, 
     "v_position": 11, 
     "path": "/math/algebra/linear-equations-and-inequalitie/equation-of-a-line/e/slope_intercept_form/", 
-    "slug": "slope_intercept_form", 
+    "id": "slope_intercept_form", 
     "name": "slope_intercept_form"
   }, 
   {
@@ -231,6 +242,7 @@
       "linear-equations-in-point-slope-form", 
       "linear-equations-in-point-slope-form"
     ], 
+    "slug": "point_slope_form", 
     "prerequisites": [
       "line_graph_intuition"
     ], 
@@ -238,7 +250,7 @@
     "h_position": 39, 
     "v_position": 9, 
     "path": "/math/algebra/linear-equations-and-inequalitie/equation-of-a-line/e/point_slope_form/", 
-    "slug": "point_slope_form", 
+    "id": "point_slope_form", 
     "name": "point_slope_form"
   }, 
   {
@@ -251,6 +263,7 @@
       "point-slope-and-standard-form", 
       "point-slope-and-standard-form"
     ], 
+    "slug": "converting_between_slope_intercept_and_standard_form", 
     "prerequisites": [
       "slope_intercept_form"
     ], 
@@ -258,7 +271,7 @@
     "h_position": 40, 
     "v_position": 11, 
     "path": "/math/algebra/linear-equations-and-inequalitie/equation-of-a-line/e/converting_between_slope_intercept_and_standard_form/", 
-    "slug": "converting_between_slope_intercept_and_standard_form", 
+    "id": "converting_between_slope_intercept_and_standard_form", 
     "name": "converting_between_slope_intercept_and_standard_form"
   }, 
   {
@@ -271,6 +284,7 @@
       "point-slope-and-standard-form", 
       "point-slope-and-standard-form"
     ], 
+    "slug": "converting_between_point_slope_and_slope_intercept", 
     "prerequisites": [
       "point_slope_form", 
       "slope_intercept_form"
@@ -279,7 +293,7 @@
     "h_position": 40, 
     "v_position": 9, 
     "path": "/math/algebra/linear-equations-and-inequalitie/equation-of-a-line/e/converting_between_point_slope_and_slope_intercept/", 
-    "slug": "converting_between_point_slope_and_slope_intercept", 
+    "id": "converting_between_point_slope_and_slope_intercept", 
     "name": "converting_between_point_slope_and_slope_intercept"
   }, 
   {
@@ -292,6 +306,7 @@
       "point-slope-and-standard-form", 
       "point-slope-and-standard-form"
     ], 
+    "slug": "equation_of_a_line", 
     "prerequisites": [
       "converting_between_slope_intercept_and_standard_form", 
       "converting_between_point_slope_and_slope_intercept"
@@ -300,7 +315,7 @@
     "h_position": 41, 
     "v_position": 8, 
     "path": "/math/algebra/linear-equations-and-inequalitie/equation-of-a-line/e/equation_of_a_line/", 
-    "slug": "equation_of_a_line", 
+    "id": "equation_of_a_line", 
     "name": "equation_of_a_line"
   }, 
   {
@@ -312,6 +327,7 @@
     "related_video_readable_ids": [
       "point-slope-and-standard-form"
     ], 
+    "slug": "plugging_in_values", 
     "prerequisites": [
       "line_graph_intuition"
     ], 
@@ -319,7 +335,7 @@
     "h_position": 39, 
     "v_position": 10, 
     "path": "/math/algebra/linear-equations-and-inequalitie/equation-of-a-line/e/plugging_in_values/", 
-    "slug": "plugging_in_values", 
+    "id": "plugging_in_values", 
     "name": "plugging_in_values"
   }, 
   {
@@ -333,6 +349,7 @@
       "midpoint-formula", 
       "midpoint-formula"
     ], 
+    "slug": "midpoint_formula", 
     "prerequisites": [
       "distance_formula"
     ], 
@@ -340,7 +357,7 @@
     "h_position": 40, 
     "v_position": -12, 
     "path": "/math/algebra/linear-equations-and-inequalitie/more-analytic-geometry/e/midpoint_formula/", 
-    "slug": "midpoint_formula", 
+    "id": "midpoint_formula", 
     "name": "midpoint_formula"
   }, 
   {
@@ -354,6 +371,7 @@
       "distance-formula", 
       "distance-formula"
     ], 
+    "slug": "distance_formula", 
     "prerequisites": [
       "pythagorean_theorem_1"
     ], 
@@ -361,7 +379,7 @@
     "h_position": 39, 
     "v_position": -13, 
     "path": "/math/algebra/linear-equations-and-inequalitie/more-analytic-geometry/e/distance_formula/", 
-    "slug": "distance_formula", 
+    "id": "distance_formula", 
     "name": "distance_formula"
   }, 
   {
@@ -374,6 +392,7 @@
       "perpendicular-lines-2", 
       "perpendicular-lines-2"
     ], 
+    "slug": "line_relationships", 
     "prerequisites": [
       "equation_of_a_line"
     ], 
@@ -381,7 +400,7 @@
     "h_position": 43, 
     "v_position": 8, 
     "path": "/math/algebra/linear-equations-and-inequalitie/more-analytic-geometry/e/line_relationships/", 
-    "slug": "line_relationships", 
+    "id": "line_relationships", 
     "name": "line_relationships"
   }, 
   {
@@ -394,6 +413,7 @@
       "perpendicular-lines-2", 
       "perpendicular-lines-2"
     ], 
+    "slug": "distance_between_point_and_line", 
     "prerequisites": [
       "line_relationships", 
       "graphing_systems_of_equations"
@@ -402,7 +422,7 @@
     "h_position": 47, 
     "v_position": 8, 
     "path": "/math/algebra/linear-equations-and-inequalitie/more-analytic-geometry/e/distance_between_point_and_line/", 
-    "slug": "distance_between_point_and_line", 
+    "id": "distance_between_point_and_line", 
     "name": "distance_between_point_and_line"
   }, 
   {
@@ -415,6 +435,7 @@
       "graphing-linear-inequalities-in-two-variables-3", 
       "graphing-linear-inequalities-in-two-variables-3"
     ], 
+    "slug": "graphs_of_inequalities", 
     "prerequisites": [
       "graphing_linear_equations"
     ], 
@@ -422,7 +443,7 @@
     "h_position": 43, 
     "v_position": 10, 
     "path": "/math/algebra/linear-equations-and-inequalitie/graphing-linear-inequalities/e/graphs_of_inequalities/", 
-    "slug": "graphs_of_inequalities", 
+    "id": "graphs_of_inequalities", 
     "name": "graphs_of_inequalities"
   }, 
   {
@@ -435,6 +456,7 @@
       "graphing-linear-inequalities-in-two-variables-3", 
       "graphing-linear-inequalities-in-two-variables-3"
     ], 
+    "slug": "graphing_inequalities", 
     "prerequisites": [
       "graphing_linear_equations"
     ], 
@@ -442,7 +464,7 @@
     "h_position": 43, 
     "v_position": 9, 
     "path": "/math/algebra/linear-equations-and-inequalitie/graphing-linear-inequalities/e/graphing_inequalities/", 
-    "slug": "graphing_inequalities", 
+    "id": "graphing_inequalities", 
     "name": "graphing_inequalities"
   }, 
   {
@@ -455,6 +477,7 @@
       "graphing-inequalities-1", 
       "graphing-linear-inequalities-in-two-variables-3"
     ], 
+    "slug": "graphing_inequalities_2", 
     "prerequisites": [
       "graphing_inequalities"
     ], 
@@ -462,7 +485,7 @@
     "h_position": 44, 
     "v_position": 9, 
     "path": "/math/algebra/linear-equations-and-inequalitie/graphing-linear-inequalities/e/graphing_inequalities_2/", 
-    "slug": "graphing_inequalities_2", 
+    "id": "graphing_inequalities_2", 
     "name": "graphing_inequalities_2"
   }
 ]

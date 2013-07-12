@@ -8,6 +8,7 @@
     "related_video_readable_ids": [
       "similarity-postulates"
     ], 
+    "slug": "similar_triangles_1", 
     "prerequisites": [
       "congruent_triangles_2"
     ], 
@@ -15,7 +16,7 @@
     "h_position": 36, 
     "v_position": -33, 
     "path": "/math/geometry/similarity/triangle_similarlity/e/similar_triangles_1/", 
-    "slug": "similar_triangles_1", 
+    "id": "similar_triangles_1", 
     "name": "similar_triangles_1"
   }, 
   {
@@ -27,6 +28,7 @@
     "related_video_readable_ids": [
       "similarity-postulates"
     ], 
+    "slug": "similar_triangles_2", 
     "prerequisites": [
       "similar_triangles_1"
     ], 
@@ -34,7 +36,7 @@
     "h_position": 37, 
     "v_position": -33, 
     "path": "/math/geometry/similarity/triangle_similarlity/e/similar_triangles_2/", 
-    "slug": "similar_triangles_2", 
+    "id": "similar_triangles_2", 
     "name": "similar_triangles_2"
   }, 
   {
@@ -46,6 +48,7 @@
     "related_video_readable_ids": [
       "similarity-example-problems"
     ], 
+    "slug": "solving_similar_triangles_1", 
     "prerequisites": [
       "similar_triangles_2"
     ], 
@@ -53,7 +56,7 @@
     "h_position": 38, 
     "v_position": -33, 
     "path": "/math/geometry/similarity/triangle_similarlity/e/solving_similar_triangles_1/", 
-    "slug": "solving_similar_triangles_1", 
+    "id": "solving_similar_triangles_1", 
     "name": "solving_similar_triangles_1"
   }, 
   {
@@ -65,6 +68,7 @@
     "related_video_readable_ids": [
       "similarity-example-where-same-side-plays-different-roles"
     ], 
+    "slug": "solving_similar_triangles_2", 
     "prerequisites": [
       "solving_similar_triangles_1"
     ], 
@@ -72,7 +76,7 @@
     "h_position": 39, 
     "v_position": -33, 
     "path": "/math/geometry/similarity/triangle_similarlity/e/solving_similar_triangles_2/", 
-    "slug": "solving_similar_triangles_2", 
+    "id": "solving_similar_triangles_2", 
     "name": "solving_similar_triangles_2"
   }
 ]

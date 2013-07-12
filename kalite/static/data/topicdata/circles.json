@@ -8,6 +8,7 @@
     "related_video_readable_ids": [
       "area-of-a-circle"
     ], 
+    "slug": "circles_and_arcs", 
     "prerequisites": [
       "area_of_parallelograms", 
       "areas_of_trapezoids_rhombi_and_kites"
@@ -16,7 +17,7 @@
     "h_position": 37, 
     "v_position": -20, 
     "path": "/math/geometry/circles/e/circles_and_arcs/", 
-    "slug": "circles_and_arcs", 
+    "id": "circles_and_arcs", 
     "name": "circles_and_arcs"
   }, 
   {
@@ -28,6 +29,7 @@
     "related_video_readable_ids": [
       "area-of-a-circle"
     ], 
+    "slug": "areas_of_circles_and_sectors", 
     "prerequisites": [
       "area_of_parallelograms", 
       "areas_of_trapezoids_rhombi_and_kites"
@@ -36,7 +38,7 @@
     "h_position": 37, 
     "v_position": -19, 
     "path": "/math/geometry/circles/e/areas_of_circles_and_sectors/", 
-    "slug": "areas_of_circles_and_sectors", 
+    "id": "areas_of_circles_and_sectors", 
     "name": "areas_of_circles_and_sectors"
   }, 
   {
@@ -48,6 +50,7 @@
     "related_video_readable_ids": [
       "inscribed-and-central-angles"
     ], 
+    "slug": "inscribed_angles_1", 
     "prerequisites": [
       "circles_and_arcs"
     ], 
@@ -55,7 +58,7 @@
     "h_position": 42, 
     "v_position": -22, 
     "path": "/math/geometry/circles/e/inscribed_angles_1/", 
-    "slug": "inscribed_angles_1", 
+    "id": "inscribed_angles_1", 
     "name": "inscribed_angles_1"
   }, 
   {
@@ -67,6 +70,7 @@
     "related_video_readable_ids": [
       "inscribed-and-central-angles"
     ], 
+    "slug": "inscribed_angles_2", 
     "prerequisites": [
       "inscribed_angles_1"
     ], 
@@ -74,7 +78,7 @@
     "h_position": 43, 
     "v_position": -22, 
     "path": "/math/geometry/circles/e/inscribed_angles_2/", 
-    "slug": "inscribed_angles_2", 
+    "id": "inscribed_angles_2", 
     "name": "inscribed_angles_2"
   }, 
   {
@@ -86,6 +90,7 @@
     "related_video_readable_ids": [
       "inscribed-and-central-angles"
     ], 
+    "slug": "inscribed_angles_3", 
     "prerequisites": [
       "inscribed_angles_2"
     ], 
@@ -93,7 +98,7 @@
     "h_position": 44, 
     "v_position": -22, 
     "path": "/math/geometry/circles/e/inscribed_angles_3/", 
-    "slug": "inscribed_angles_3", 
+    "id": "inscribed_angles_3", 
     "name": "inscribed_angles_3"
   }
 ]

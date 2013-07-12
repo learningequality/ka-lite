@@ -9,6 +9,7 @@
       "calculating-i-raised-to-arbitrary-exponents", 
       "calculating-i-raised-to-arbitrary-exponents"
     ], 
+    "slug": "imaginary_unit_powers", 
     "prerequisites": [
       "equation_of_a_line"
     ], 
@@ -16,7 +17,7 @@
     "h_position": 45, 
     "v_position": -12, 
     "path": "/math/algebra/complex-numbers/imaginary_unit_i/e/imaginary_unit_powers/", 
-    "slug": "imaginary_unit_powers", 
+    "id": "imaginary_unit_powers", 
     "name": "imaginary_unit_powers"
   }, 
   {
@@ -29,6 +30,7 @@
       "complex-numbers--part-2", 
       "complex-numbers--part-2"
     ], 
+    "slug": "the_complex_plane", 
     "prerequisites": [
       "imaginary_unit_powers"
     ], 
@@ -36,7 +38,7 @@
     "h_position": 46, 
     "v_position": -12, 
     "path": "/math/algebra/complex-numbers/complex_numbers/e/the_complex_plane/", 
-    "slug": "the_complex_plane", 
+    "id": "the_complex_plane", 
     "name": "the_complex_plane"
   }, 
   {
@@ -49,6 +51,7 @@
       "subtracting-complex-numbers", 
       "subtracting-complex-numbers"
     ], 
+    "slug": "adding_and_subtracting_complex_numbers", 
     "prerequisites": [
       "adding_and_subtracting_polynomials", 
       "complex_plane_operations"
@@ -57,7 +60,7 @@
     "h_position": 48, 
     "v_position": -12, 
     "path": "/math/algebra/complex-numbers/complex_numbers/e/adding_and_subtracting_complex_numbers/", 
-    "slug": "adding_and_subtracting_complex_numbers", 
+    "id": "adding_and_subtracting_complex_numbers", 
     "name": "adding_and_subtracting_complex_numbers"
   }, 
   {
@@ -70,6 +73,7 @@
       "multiplying-complex-numbers", 
       "multiplying-complex-numbers"
     ], 
+    "slug": "multiplying_complex_numbers", 
     "prerequisites": [
       "multiplying_expressions_1", 
       "adding_and_subtracting_complex_numbers"
@@ -78,7 +82,7 @@
     "h_position": 49, 
     "v_position": -12, 
     "path": "/math/algebra/complex-numbers/complex_numbers/e/multiplying_complex_numbers/", 
-    "slug": "multiplying_complex_numbers", 
+    "id": "multiplying_complex_numbers", 
     "name": "multiplying_complex_numbers"
   }, 
   {
@@ -91,6 +95,7 @@
       "dividing-complex-numbers", 
       "dividing-complex-numbers"
     ], 
+    "slug": "dividing_complex_numbers", 
     "prerequisites": [
       "multiplying_complex_numbers"
     ], 
@@ -98,7 +103,7 @@
     "h_position": 50, 
     "v_position": -12, 
     "path": "/math/algebra/complex-numbers/complex_numbers/e/dividing_complex_numbers/", 
-    "slug": "dividing_complex_numbers", 
+    "id": "dividing_complex_numbers", 
     "name": "dividing_complex_numbers"
   }, 
   {
@@ -111,6 +116,7 @@
       "complex-conjugates-example", 
       "complex-conjugates-example"
     ], 
+    "slug": "absolute_value_of_complex_numbers", 
     "prerequisites": [
       "the_complex_plane", 
       "distance_formula"
@@ -119,7 +125,7 @@
     "h_position": 47, 
     "v_position": -13, 
     "path": "/math/algebra/complex-numbers/complex_numbers/e/absolute_value_of_complex_numbers/", 
-    "slug": "absolute_value_of_complex_numbers", 
+    "id": "absolute_value_of_complex_numbers", 
     "name": "absolute_value_of_complex_numbers"
   }
 ]
