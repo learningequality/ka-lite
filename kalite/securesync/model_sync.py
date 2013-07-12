@@ -8,6 +8,7 @@ from django.core import serializers
 
 import settings
 import version
+from settings import LOG as logging
 
 
 _syncing_models = [] # all models we want to sync
@@ -18,7 +19,7 @@ def add_syncing_models(models):
     """When sync is run, these models will be sync'd"""
     for model in models:
         if model in _syncing_models:
-            settings.LOG.warn("We are already syncing model %s" % str(model))
+            logging.warn("We are already syncing model %s" % str(model))
         else:
             _syncing_models.append(model)
 

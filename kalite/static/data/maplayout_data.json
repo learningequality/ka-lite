@@ -1,1 +1,854 @@
-{"topics": {"fractions": {"y": 22, "x": -10, "standalone_title": "Fractions", "id": "fractions", "icon_url": "/images/power-mode/badges/fractions-40x40.png"}, "area--perimeter--and-volume": {"y": 37, "x": -19, "standalone_title": "Area, perimeter, and volume", "id": "area--perimeter--and-volume", "icon_url": "/images/power-mode/badges/area--perimeter--and-volume-40x40.png"}, "probability": {"y": 28.5, "x": -1, "standalone_title": "Probability", "id": "probability", "icon_url": "/images/power-mode/badges/probability-40x40.png"}, "similarity": {"y": 37, "x": -33, "standalone_title": "Similarity", "id": "similarity", "icon_url": "/images/power-mode/badges/similarity-40x40.png"}, "segments-and-angles": {"y": 26, "x": -22, "standalone_title": "Segments and angles", "id": "segments-and-angles", "icon_url": "/images/power-mode/badges/segments-and-angles-40x40.png"}, "multiplication-division": {"y": 6, "x": -5, "standalone_title": "Multiplication and division", "id": "multiplication-division", "icon_url": "/images/power-mode/badges/multiplication-division-40x40.png"}, "telling-time": {"y": 3.5, "x": 11, "standalone_title": "Telling time", "id": "telling-time", "icon_url": "/images/power-mode/badges/telling-time-40x40.png"}, "systems-of-eq-and-ineq": {"y": 49, "x": 10, "standalone_title": "Systems of equations and inequalities", "id": "systems-of-eq-and-ineq", "icon_url": "/images/power-mode/badges/systems-of-eq-and-ineq-40x40.png"}, "triangle-properties": {"y": 31, "x": -19, "standalone_title": "Triangle properties", "id": "triangle-properties", "icon_url": "/images/power-mode/badges/triangle-properties-40x40.png"}, "conic-sections": {"y": 49, "x": 4, "standalone_title": "Conic sections", "id": "conic-sections", "icon_url": "/images/power-mode/badges/conic-sections-40x40.png"}, "absolute-value": {"y": 6, "x": 0, "standalone_title": "Absolute value", "id": "absolute-value", "icon_url": "/images/power-mode/badges/absolute-value-40x40.png"}, "congruent-triangles": {"y": 37, "x": -26, "standalone_title": "Congruent triangles", "id": "congruent-triangles", "icon_url": "/images/power-mode/badges/congruent-triangles-40x40.png"}, "factors-multiples": {"y": 12, "x": -10, "standalone_title": "Factors and multiples", "id": "factors-multiples", "icon_url": "/images/power-mode/badges/factors-multiples-40x40.png"}, "statistics": {"y": 17, "x": -23, "standalone_title": "Statistics", "id": "statistics", "icon_url": "/images/power-mode/badges/statistics-40x40.png"}, "linear-equations-and-inequalitie": {"y": 40, "x": 10, "standalone_title": "Linear functions", "id": "linear-equations-and-inequalitie", "icon_url": "/images/power-mode/badges/linear-equations-and-inequalitie-40x40.png"}, "transformations": {"y": 43, "x": -30, "standalone_title": "Transformations", "id": "transformations", "icon_url": "/images/power-mode/badges/transformations-40x40.png"}, "quadrilaterals-and-polygons": {"y": 33.5, "x": -13.5, "standalone_title": "Quadrilaterals and polygons", "id": "quadrilaterals-and-polygons", "icon_url": "/images/power-mode/badges/quadrilaterals-and-polygons-40x40.png"}, "percents": {"y": 27, "x": -7, "standalone_title": "Percents", "id": "percents", "icon_url": "/images/power-mode/badges/percents-40x40.png"}, "circles": {"y": 43, "x": -22, "standalone_title": "Circles", "id": "circles", "icon_url": "/images/power-mode/badges/circles-40x40.png"}, "exponents-radicals": {"y": 21, "x": 4, "standalone_title": "Exponents, radicals, and logarithms", "id": "exponents-radicals", "icon_url": "/images/power-mode/badges/exponents-radicals-40x40.png"}, "addition-subtraction": {"y": 1.5, "x": 4, "standalone_title": "Addition and subtraction", "id": "addition-subtraction", "icon_url": "/images/power-mode/badges/addition-subtraction-40x40.png"}, "parallel-and-perpendicular-lines": {"y": 31, "x": -26, "standalone_title": "Parallel and perpendicular lines", "id": "parallel-and-perpendicular-lines", "icon_url": "/images/power-mode/badges/parallel-and-perpendicular-lines-40x40.png"}, "algebra-matrices": {"y": 51.5, "x": 18, "standalone_title": "Matrices", "id": "algebra-matrices", "icon_url": "/images/power-mode/badges/algebra-matrices-40x40.png"}, "polynomials": {"y": 46, "x": -7, "standalone_title": "Polynomials", "id": "polynomials", "icon_url": "/images/power-mode/badges/polynomials-40x40.png"}, "solving-linear-equations-and-inequalities": {"y": 30, "x": 10, "standalone_title": "Equation basics", "id": "solving-linear-equations-and-inequalities", "icon_url": "/images/power-mode/badges/solving-linear-equations-and-inequalities-40x40.png"}, "pythagorean-theorem": {"y": 38, "x": -12, "standalone_title": "Pythagorean theorem", "id": "pythagorean-theorem", "icon_url": "/images/power-mode/badges/pythagorean-theorem-40x40.png"}, "differential-calculus": {"y": 58, "x": -25, "standalone_title": "Differential calculus", "id": "differential-calculus", "icon_url": "/images/power-mode/badges/differential-calculus-40x40.png"}, "quadratics": {"y": 49, "x": -1, "standalone_title": "Quadratic functions", "id": "quadratics", "icon_url": "/images/power-mode/badges/quadratics-40x40.png"}, "complex-numbers": {"y": 49, "x": -12, "standalone_title": "Complex numbers", "id": "complex-numbers", "icon_url": "/images/power-mode/badges/complex-numbers-40x40.png"}, "rates-and-ratios": {"y": 29, "x": -12, "standalone_title": "Rates and ratios", "id": "rates-and-ratios", "icon_url": "/images/power-mode/badges/rates-and-ratios-40x40.png"}, "vectors": {"y": 32, "x": 18, "standalone_title": "Vectors", "id": "vectors", "icon_url": "/images/power-mode/badges/vectors-40x40.png"}, "logical-reasoning": {"y": 31, "x": -33, "standalone_title": "Logical reasoning", "id": "logical-reasoning", "icon_url": "/images/power-mode/badges/default-40x40.png"}, "basic-geometry": {"y": 19.5, "x": -17.5, "standalone_title": "Basic geometry", "id": "basic-geometry", "icon_url": "/images/power-mode/badges/basic-geometry-40x40.png"}, "algebra-functions": {"y": 39, "x": -1, "standalone_title": "Functions", "id": "algebra-functions", "icon_url": "/images/power-mode/badges/algebra-functions-40x40.png"}, "decimals": {"y": 11, "x": 4, "standalone_title": "Decimals", "id": "decimals", "icon_url": "/images/power-mode/badges/decimals-40x40.png"}, "trigonometry": {"y": 49, "x": -25, "standalone_title": "Trigonometry", "id": "trigonometry", "icon_url": "/images/power-mode/badges/trigonometry-40x40.png"}, "order-of-operations": {"y": 14, "x": -4, "standalone_title": "Order of operations", "id": "order-of-operations", "icon_url": "/images/power-mode/badges/order-of-operations-40x40.png"}}, "polylines": [{"path": [{"y": 14, "x": -4}, {"y": 19.5, "x": -17.5}]}, {"path": [{"y": 19.5, "x": -17.5}, {"y": 26, "x": -22}]}, {"path": [{"y": 26, "x": -22}, {"y": 31, "x": -26}]}, {"path": [{"y": 26, "x": -22}, {"y": 31, "x": -19}]}, {"path": [{"y": 31, "x": -33}, {"y": 37, "x": -26}]}, {"path": [{"y": 31, "x": -26}, {"y": 37, "x": -26}]}, {"path": [{"y": 31, "x": -19}, {"y": 37, "x": -26}]}, {"path": [{"y": 31, "x": -19}, {"y": 33.5, "x": -13.5}]}, {"path": [{"y": 31, "x": -19}, {"y": 37, "x": -19}]}, {"path": [{"y": 36.5, "x": -26}, {"y": 37.5, "x": -33}]}, {"path": [{"y": 37, "x": -19}, {"y": 43, "x": -22}]}, {"path": [{"y": 37, "x": -33}, {"y": 43, "x": -30}]}, {"path": [{"y": 37, "x": -26}, {"y": 43, "x": -30}]}, {"path": [{"y": 37, "x": -26}, {"y": 49, "x": -25}]}, {"path": [{"y": 1.5, "x": 4}, {"y": 6, "x": -5}]}, {"path": [{"y": 1.5, "x": 4}, {"y": 7, "x": 0}]}, {"path": [{"y": 1.5, "x": 4}, {"y": 11, "x": 4}]}, {"path": [{"y": 6, "x": -5}, {"y": 11, "x": 4}]}, {"path": [{"y": 6, "x": -5}, {"y": 12, "x": -10}]}, {"path": [{"y": 6, "x": -5}, {"y": 14, "x": -4}]}, {"path": [{"y": 14, "x": -4}, {"y": 17, "x": -23}]}, {"path": [{"y": 22, "x": -10}, {"y": 28.5, "x": -1}]}, {"path": [{"y": 14, "x": -4}, {"y": 22, "x": -10}]}, {"path": [{"y": 14, "x": -4}, {"y": 21, "x": 4}]}, {"path": [{"y": 12, "x": -10}, {"y": 22, "x": -10}]}, {"path": [{"y": 22, "x": -10}, {"y": 29, "x": -12}]}, {"path": [{"y": 22, "x": -10}, {"y": 27, "x": -7}]}, {"path": [{"y": 21, "x": 4}, {"y": 38, "x": -12}]}, {"path": [{"y": 38, "x": -12}, {"y": 49, "x": -25}]}, {"path": [{"y": 49, "x": -25}, {"y": 58, "x": -25}]}, {"path": [{"y": 21, "x": 4}, {"y": 28.5, "x": -1}]}, {"path": [{"y": 21, "x": 4}, {"y": 30, "x": 10}]}, {"path": [{"y": 30, "x": 10}, {"y": 32, "x": 18}]}, {"path": [{"y": 30, "x": 10}, {"y": 39, "x": -1}]}, {"path": [{"y": 30, "x": 10}, {"y": 40, "x": 10}]}, {"path": [{"y": 39, "x": -1}, {"y": 40, "x": 10}]}, {"path": [{"y": 39, "x": -1}, {"y": 46, "x": -7}]}, {"path": [{"y": 40, "x": 10}, {"y": 46, "x": -7}]}, {"path": [{"y": 40, "x": 10}, {"y": 49, "x": 10}]}, {"path": [{"y": 38, "x": -12}, {"y": 46, "x": -7}]}, {"path": [{"y": 46, "x": -7}, {"y": 49, "x": -12}]}, {"path": [{"y": 46, "x": -7}, {"y": 49, "x": -1}]}, {"path": [{"y": 46, "x": -7}, {"y": 49, "x": 4}]}, {"path": [{"y": 49, "x": 10}, {"y": 51.5, "x": 18}]}]}
+{
+  "topics": {
+    "circles": {
+      "icon_url": "/images/power-mode/badges/circles-40x40.png", 
+      "translated_standalone_title": "Circles", 
+      "y": 43.0, 
+      "x": -22.0, 
+      "standalone_title": "Circles", 
+      "id": "circles"
+    }, 
+    "area--perimeter--and-volume": {
+      "icon_url": "/images/power-mode/badges/area--perimeter--and-volume-40x40.png", 
+      "translated_standalone_title": "Area, perimeter, and volume", 
+      "y": 37.0, 
+      "x": -19.0, 
+      "standalone_title": "Area, perimeter, and volume", 
+      "id": "area--perimeter--and-volume"
+    }, 
+    "probability": {
+      "icon_url": "/images/power-mode/badges/probability-40x40.png", 
+      "translated_standalone_title": "Probability and statistics", 
+      "y": 28.5, 
+      "x": -1.0, 
+      "standalone_title": "Probability and statistics", 
+      "id": "probability"
+    }, 
+    "similarity": {
+      "icon_url": "/images/power-mode/badges/similarity-40x40.png", 
+      "translated_standalone_title": "Similarity", 
+      "y": 37.0, 
+      "x": -33.0, 
+      "standalone_title": "Similarity", 
+      "id": "similarity"
+    }, 
+    "segments-and-angles": {
+      "icon_url": "/images/power-mode/badges/segments-and-angles-40x40.png", 
+      "translated_standalone_title": "Points, lines, and planes", 
+      "y": 26.0, 
+      "x": -22.0, 
+      "standalone_title": "Points, lines, and planes", 
+      "id": "segments-and-angles"
+    }, 
+    "multiplication-division": {
+      "icon_url": "/images/power-mode/badges/multiplication-division-40x40.png", 
+      "translated_standalone_title": "Multiplication and division", 
+      "y": 6.0, 
+      "x": -5.0, 
+      "standalone_title": "Multiplication and division", 
+      "id": "multiplication-division"
+    }, 
+    "telling-time": {
+      "icon_url": "/images/power-mode/badges/telling-time-40x40.png", 
+      "translated_standalone_title": "Telling time", 
+      "y": 3.5, 
+      "x": 11.0, 
+      "standalone_title": "Telling time", 
+      "id": "telling-time"
+    }, 
+    "systems-of-eq-and-ineq": {
+      "icon_url": "/images/power-mode/badges/systems-of-eq-and-ineq-40x40.png", 
+      "translated_standalone_title": "Systems of equations and inequalities", 
+      "y": 49.0, 
+      "x": 10.0, 
+      "standalone_title": "Systems of equations and inequalities", 
+      "id": "systems-of-eq-and-ineq"
+    }, 
+    "triangle-properties": {
+      "icon_url": "/images/power-mode/badges/triangle-properties-40x40.png", 
+      "translated_standalone_title": "Special properties and parts of triangles", 
+      "y": 31.0, 
+      "x": -19.0, 
+      "standalone_title": "Special properties and parts of triangles", 
+      "id": "triangle-properties"
+    }, 
+    "conic-sections": {
+      "icon_url": "/images/power-mode/badges/conic-sections-40x40.png", 
+      "translated_standalone_title": "Conic sections", 
+      "y": 49.0, 
+      "x": 4.0, 
+      "standalone_title": "Conic sections", 
+      "id": "conic-sections"
+    }, 
+    "absolute-value": {
+      "icon_url": "/images/power-mode/badges/absolute-value-40x40.png", 
+      "translated_standalone_title": "Negative numbers and absolute value", 
+      "y": 6.0, 
+      "x": 0.0, 
+      "standalone_title": "Negative numbers and absolute value", 
+      "id": "absolute-value"
+    }, 
+    "congruent-triangles": {
+      "icon_url": "/images/power-mode/badges/congruent-triangles-40x40.png", 
+      "translated_standalone_title": "Congruent triangles", 
+      "y": 37.0, 
+      "x": -26.0, 
+      "standalone_title": "Congruent triangles", 
+      "id": "congruent-triangles"
+    }, 
+    "factors-multiples": {
+      "icon_url": "/images/power-mode/badges/factors-multiples-40x40.png", 
+      "translated_standalone_title": "Factors and multiples", 
+      "y": 12.0, 
+      "x": -10.0, 
+      "standalone_title": "Factors and multiples", 
+      "id": "factors-multiples"
+    }, 
+    "linear-equations-and-inequalitie": {
+      "icon_url": "/images/power-mode/badges/linear-equations-and-inequalitie-40x40.png", 
+      "translated_standalone_title": "Graphing points, equations and inequalities", 
+      "y": 40.0, 
+      "x": 10.0, 
+      "standalone_title": "Graphing points, equations and inequalities", 
+      "id": "linear-equations-and-inequalitie"
+    }, 
+    "transformations": {
+      "icon_url": "/images/power-mode/badges/transformations-40x40.png", 
+      "translated_standalone_title": "Transformations", 
+      "y": 43.0, 
+      "x": -30.0, 
+      "standalone_title": "Transformations", 
+      "id": "transformations"
+    }, 
+    "quadrilaterals-and-polygons": {
+      "icon_url": "/images/power-mode/badges/quadrilaterals-and-polygons-40x40.png", 
+      "translated_standalone_title": "Quadrilaterals", 
+      "y": 33.5, 
+      "x": -13.5, 
+      "standalone_title": "Quadrilaterals", 
+      "id": "quadrilaterals-and-polygons"
+    }, 
+    "rational-expressions": {
+      "icon_url": "/images/power-mode/badges/rational-expressions-40x40.png", 
+      "translated_standalone_title": "Ratios and rational expressions", 
+      "y": 54.0, 
+      "x": -7.0, 
+      "standalone_title": "Ratios and rational expressions", 
+      "id": "rational-expressions"
+    }, 
+    "linear_inequalities": {
+      "icon_url": "/images/power-mode/badges/linear_inequalities-40x40.png", 
+      "translated_standalone_title": "Linear inequalities", 
+      "y": 35.0, 
+      "x": 10.0, 
+      "standalone_title": "Linear inequalities", 
+      "id": "linear_inequalities"
+    }, 
+    "applying-math-reasoning-topic": {
+      "icon_url": "/images/power-mode/badges/applying-math-reasoning-topic-40x40.png", 
+      "translated_standalone_title": "Applying mathematical reasoning", 
+      "y": 17.0, 
+      "x": -23.0, 
+      "standalone_title": "Applying mathematical reasoning", 
+      "id": "applying-math-reasoning-topic"
+    }, 
+    "fractions": {
+      "icon_url": "/images/power-mode/badges/fractions-40x40.png", 
+      "translated_standalone_title": "Fractions", 
+      "y": 22.0, 
+      "x": -10.0, 
+      "standalone_title": "Fractions", 
+      "id": "fractions"
+    }, 
+    "exponents-radicals": {
+      "icon_url": "/images/power-mode/badges/exponents-radicals-40x40.png", 
+      "translated_standalone_title": "Exponents, radicals, and scientific notation", 
+      "y": 21.0, 
+      "x": 4.0, 
+      "standalone_title": "Exponents, radicals, and scientific notation", 
+      "id": "exponents-radicals"
+    }, 
+    "addition-subtraction": {
+      "icon_url": "/images/power-mode/badges/addition-subtraction-40x40.png", 
+      "translated_standalone_title": "Addition and subtraction", 
+      "y": 1.5, 
+      "x": 4.0, 
+      "standalone_title": "Addition and subtraction", 
+      "id": "addition-subtraction"
+    }, 
+    "parallel-and-perpendicular-lines": {
+      "icon_url": "/images/power-mode/badges/parallel-and-perpendicular-lines-40x40.png", 
+      "translated_standalone_title": "Angles and intersecting lines", 
+      "y": 31.0, 
+      "x": -26.0, 
+      "standalone_title": "Angles and intersecting lines", 
+      "id": "parallel-and-perpendicular-lines"
+    }, 
+    "algebra-matrices": {
+      "icon_url": "/images/power-mode/badges/algebra-matrices-40x40.png", 
+      "translated_standalone_title": "Matrices", 
+      "y": 51.5, 
+      "x": 18.0, 
+      "standalone_title": "Matrices", 
+      "id": "algebra-matrices"
+    }, 
+    "polynomials": {
+      "icon_url": "/images/power-mode/badges/polynomials-40x40.png", 
+      "translated_standalone_title": "Polynomials", 
+      "y": 46.0, 
+      "x": -7.0, 
+      "standalone_title": "Polynomials", 
+      "id": "polynomials"
+    }, 
+    "solving-linear-equations-and-inequalities": {
+      "icon_url": "/images/power-mode/badges/solving-linear-equations-and-inequalities-40x40.png", 
+      "translated_standalone_title": "Linear equations", 
+      "y": 30.0, 
+      "x": 10.0, 
+      "standalone_title": "Linear equations", 
+      "id": "solving-linear-equations-and-inequalities"
+    }, 
+    "pythagorean-theorem": {
+      "icon_url": "/images/power-mode/badges/pythagorean-theorem-40x40.png", 
+      "translated_standalone_title": "Pythagorean theorem", 
+      "y": 38.0, 
+      "x": -12.0, 
+      "standalone_title": "Pythagorean theorem", 
+      "id": "pythagorean-theorem"
+    }, 
+    "quadratics": {
+      "icon_url": "/images/power-mode/badges/quadratics-40x40.png", 
+      "translated_standalone_title": "Quadratics", 
+      "y": 49.0, 
+      "x": -1.0, 
+      "standalone_title": "Quadratics", 
+      "id": "quadratics"
+    }, 
+    "statistics-inferential": {
+      "icon_url": "/images/power-mode/badges/statistics-inferential-40x40.png", 
+      "translated_standalone_title": "Inferential statistics", 
+      "y": 22.0, 
+      "x": -25.0, 
+      "standalone_title": "Inferential statistics", 
+      "id": "statistics-inferential"
+    }, 
+    "complex-numbers": {
+      "icon_url": "/images/power-mode/badges/complex-numbers-40x40.png", 
+      "translated_standalone_title": "Complex numbers", 
+      "y": 49.0, 
+      "x": -12.0, 
+      "standalone_title": "Complex numbers", 
+      "id": "complex-numbers"
+    }, 
+    "rates-and-ratios": {
+      "icon_url": "/images/power-mode/badges/rates-and-ratios-40x40.png", 
+      "translated_standalone_title": "Rates and ratios", 
+      "y": 29.0, 
+      "x": -12.0, 
+      "standalone_title": "Rates and ratios", 
+      "id": "rates-and-ratios"
+    }, 
+    "calculus": {
+      "icon_url": "/images/power-mode/badges/calculus-40x40.png", 
+      "translated_standalone_title": "Calculus", 
+      "y": 58.0, 
+      "x": -25.0, 
+      "standalone_title": "Calculus", 
+      "id": "calculus"
+    }, 
+    "vectors": {
+      "icon_url": "/images/power-mode/badges/vectors-40x40.png", 
+      "translated_standalone_title": "Vectors", 
+      "y": 32.0, 
+      "x": 18.0, 
+      "standalone_title": "Vectors", 
+      "id": "vectors"
+    }, 
+    "logical-reasoning": {
+      "icon_url": "/images/power-mode/badges/default-40x40.png", 
+      "translated_standalone_title": "Logical reasoning", 
+      "y": 31.0, 
+      "x": -33.0, 
+      "standalone_title": "Logical reasoning", 
+      "id": "logical-reasoning"
+    }, 
+    "basic-geometry": {
+      "icon_url": "/images/power-mode/badges/basic-geometry-40x40.png", 
+      "translated_standalone_title": "Perimeter, area and volume", 
+      "y": 19.5, 
+      "x": -17.5, 
+      "standalone_title": "Perimeter, area and volume", 
+      "id": "basic-geometry"
+    }, 
+    "algebra-functions": {
+      "icon_url": "/images/power-mode/badges/algebra-functions-40x40.png", 
+      "translated_standalone_title": "Functions", 
+      "y": 39.0, 
+      "x": -1.0, 
+      "standalone_title": "Functions", 
+      "id": "algebra-functions"
+    }, 
+    "chemistry": {
+      "icon_url": "/images/power-mode/badges/chemistry-40x40.png", 
+      "translated_standalone_title": "Chemistry", 
+      "y": 39.0, 
+      "x": 18.0, 
+      "standalone_title": "Chemistry", 
+      "id": "chemistry"
+    }, 
+    "decimals": {
+      "icon_url": "/images/power-mode/badges/decimals-40x40.png", 
+      "translated_standalone_title": "Decimals", 
+      "y": 11.0, 
+      "x": 4.0, 
+      "standalone_title": "Decimals", 
+      "id": "decimals"
+    }, 
+    "trigonometry": {
+      "icon_url": "/images/power-mode/badges/trigonometry-40x40.png", 
+      "translated_standalone_title": "Trigonometry and precalculus", 
+      "y": 49.0, 
+      "x": -25.0, 
+      "standalone_title": "Trigonometry and precalculus", 
+      "id": "trigonometry"
+    }, 
+    "order-of-operations": {
+      "icon_url": "/images/power-mode/badges/order-of-operations-40x40.png", 
+      "translated_standalone_title": "Arithmetic properties", 
+      "y": 14.0, 
+      "x": -4.0, 
+      "standalone_title": "Arithmetic properties", 
+      "id": "order-of-operations"
+    }
+  }, 
+  "polylines": [
+    {
+      "path": [
+        {
+          "y": 14, 
+          "x": -4
+        }, 
+        {
+          "y": 19.5, 
+          "x": -17.5
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 19.5, 
+          "x": -17.5
+        }, 
+        {
+          "y": 26, 
+          "x": -22
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 26, 
+          "x": -22
+        }, 
+        {
+          "y": 31, 
+          "x": -26
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 26, 
+          "x": -22
+        }, 
+        {
+          "y": 31, 
+          "x": -19
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 31, 
+          "x": -33
+        }, 
+        {
+          "y": 37, 
+          "x": -26
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 31, 
+          "x": -26
+        }, 
+        {
+          "y": 37, 
+          "x": -26
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 31, 
+          "x": -19
+        }, 
+        {
+          "y": 37, 
+          "x": -26
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 31, 
+          "x": -19
+        }, 
+        {
+          "y": 33.5, 
+          "x": -13.5
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 31, 
+          "x": -19
+        }, 
+        {
+          "y": 37, 
+          "x": -19
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 36.5, 
+          "x": -26
+        }, 
+        {
+          "y": 37.5, 
+          "x": -33
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 37, 
+          "x": -19
+        }, 
+        {
+          "y": 43, 
+          "x": -22
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 37, 
+          "x": -33
+        }, 
+        {
+          "y": 43, 
+          "x": -30
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 37, 
+          "x": -26
+        }, 
+        {
+          "y": 43, 
+          "x": -30
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 37, 
+          "x": -26
+        }, 
+        {
+          "y": 49, 
+          "x": -25
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 1.5, 
+          "x": 4
+        }, 
+        {
+          "y": 6, 
+          "x": -5
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 1.5, 
+          "x": 4
+        }, 
+        {
+          "y": 7, 
+          "x": 0
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 1.5, 
+          "x": 4
+        }, 
+        {
+          "y": 11, 
+          "x": 4
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 6, 
+          "x": -5
+        }, 
+        {
+          "y": 11, 
+          "x": 4
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 6, 
+          "x": -5
+        }, 
+        {
+          "y": 12, 
+          "x": -10
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 6, 
+          "x": -5
+        }, 
+        {
+          "y": 14, 
+          "x": -4
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 14, 
+          "x": -4
+        }, 
+        {
+          "y": 17, 
+          "x": -23
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 22, 
+          "x": -10
+        }, 
+        {
+          "y": 28.5, 
+          "x": -1
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 14, 
+          "x": -4
+        }, 
+        {
+          "y": 22, 
+          "x": -10
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 14, 
+          "x": -4
+        }, 
+        {
+          "y": 21, 
+          "x": 4
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 12, 
+          "x": -10
+        }, 
+        {
+          "y": 22, 
+          "x": -10
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 22, 
+          "x": -10
+        }, 
+        {
+          "y": 29, 
+          "x": -12
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 22, 
+          "x": -10
+        }, 
+        {
+          "y": 27, 
+          "x": -7
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 21, 
+          "x": 4
+        }, 
+        {
+          "y": 38, 
+          "x": -12
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 38, 
+          "x": -12
+        }, 
+        {
+          "y": 49, 
+          "x": -25
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 49, 
+          "x": -25
+        }, 
+        {
+          "y": 58, 
+          "x": -25
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 21, 
+          "x": 4
+        }, 
+        {
+          "y": 28.5, 
+          "x": -1
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 21, 
+          "x": 4
+        }, 
+        {
+          "y": 30, 
+          "x": 10
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 30, 
+          "x": 10
+        }, 
+        {
+          "y": 32, 
+          "x": 18
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 30, 
+          "x": 10
+        }, 
+        {
+          "y": 39, 
+          "x": -1
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 30, 
+          "x": 10
+        }, 
+        {
+          "y": 40, 
+          "x": 10
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 39, 
+          "x": -1
+        }, 
+        {
+          "y": 40, 
+          "x": 10
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 39, 
+          "x": -1
+        }, 
+        {
+          "y": 46, 
+          "x": -7
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 40, 
+          "x": 10
+        }, 
+        {
+          "y": 46, 
+          "x": -7
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 40, 
+          "x": 10
+        }, 
+        {
+          "y": 49, 
+          "x": 10
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 38, 
+          "x": -12
+        }, 
+        {
+          "y": 46, 
+          "x": -7
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 46, 
+          "x": -7
+        }, 
+        {
+          "y": 49, 
+          "x": -12
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 46, 
+          "x": -7
+        }, 
+        {
+          "y": 49, 
+          "x": -1
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 46, 
+          "x": -7
+        }, 
+        {
+          "y": 49, 
+          "x": 4
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 49, 
+          "x": 10
+        }, 
+        {
+          "y": 51.5, 
+          "x": 18
+        }
+      ]
+    }
+  ]
+}

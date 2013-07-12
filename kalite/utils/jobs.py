@@ -6,7 +6,7 @@ from settings import LOG as logging
 from utils.django_utils import call_command_async
 
 
-def force_job(command, name="", frequency="YEARLY", stop=False, no_cron=False):
+def force_job(command, name="", frequency="YEARLY", stop=False, launch_cron=True):
     """
     Mark a job as to run immediately (or to stop).
     By default, call cron directly, to resolve.
@@ -25,7 +25,7 @@ def force_job(command, name="", frequency="YEARLY", stop=False, no_cron=False):
         job.next_run = datetime.now()
     job.save()
 
-    if not no_cron:
+    if launch_cron:
         # Just start cron directly, so that the process starts immediately.
         # Note that if you're calling force_job frequently, then 
         # you probably want to avoid doing this on every call.

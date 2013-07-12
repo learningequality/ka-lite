@@ -15,6 +15,7 @@ from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
+from settings import LOG as logging
 
 
 def call_outside_command_with_output(kalite_location, command, *args, **kwargs):
@@ -35,7 +36,7 @@ def call_outside_command_with_output(kalite_location, command, *args, **kwargs):
         else:
             cmd += ("%s%s=%s" % (prefix,key,str(val)),)
 
-    settings.LOG.debug(cmd)
+    logging.debug(cmd)
 
     # Execute the command, using subprocess/Popen
     cwd = os.getcwd()
@@ -44,7 +45,7 @@ def call_outside_command_with_output(kalite_location, command, *args, **kwargs):
     out = p.communicate()
     os.chdir(cwd)
 
-    settings.LOG.debug(out[1] if out[1] else out[0])
+    logging.debug(out[1] if out[1] else out[0])
 
     # tuple output of stdout, stderr, and exit code
     return out + (1 if out[1] else 0,)
@@ -116,13 +117,13 @@ class Command(BaseCommand):
             zip_file = tempfile.mkstemp()[1]
             for url in ["https://github.com/learningequality/ka-lite/archive/master.zip",
                         "http://%s/download/kalite/%s/%s/" % (settings.CENTRAL_SERVER_HOST, platform.system().lower(), "all")]:
-                settings.LOG.info("Downloading repo snapshot from %s to %s" % (url, zip_file))
+                logging.info("Downloading repo snapshot from %s to %s" % (url, zip_file))
                 try:
                     urllib.urlretrieve(url, zip_file)
                     sys.stdout.write("success @ %s\n" % url)
                     break;
                 except Exception as e:
-                    settings.LOG.debug("Failed to get zipfile from %s: %s" % (url, e))
+                    logging.debug("Failed to get zipfile from %s: %s" % (url, e))
                     continue
 
             self.update_via_zip(zip_file=zip_file, **options)
@@ -281,7 +282,7 @@ class Command(BaseCommand):
             # If it's a unix script, give permissions to execute
             if os.path.splitext(afile)[1] == ".sh":
                 os.chmod(os.path.realpath(self.working_dir + "/" + afile), 0755)
-                settings.LOG.debug("\tChanging perms on script %s\n" % os.path.realpath(self.working_dir + "/" + afile))
+                logging.debug("\tChanging perms on script %s\n" % os.path.realpath(self.working_dir + "/" + afile))
         sys.stdout.write("\n")
 
         # Error checking (successful unpacking would skip all the following logic.)
@@ -471,7 +472,7 @@ class Command(BaseCommand):
                         drelpath = os.path.join(relpath, d)
                         dabspath = os.path.join(self.dest_dir, drelpath)
                         if not os.path.exists(dabspath):
-                            settings.LOG.debug("Created directory %s\n" % (dabspath))
+                            logging.debug("Created directory %s\n" % (dabspath))
                             os.mkdir(dabspath)
 
                     # Loop over all files, to move them over.

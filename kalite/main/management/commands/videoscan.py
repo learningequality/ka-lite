@@ -22,7 +22,7 @@ class Command(BaseCommand):
         youtube_ids_to_delete = [d["youtube_id"] for d in video_files_to_delete.values("youtube_id")]
         video_files_to_delete.delete()
         for youtube_id in youtube_ids_to_delete:
-            caching.invalidate_cached_video_page(video_id=youtube_id)
+            caching.invalidate_cached_topic_hierarchies(video_id=youtube_id)
             touched_video_ids.append(youtube_id)
 
         files = glob.glob(settings.CONTENT_ROOT + "*.mp4")
@@ -45,7 +45,7 @@ class Command(BaseCommand):
             count += video_files_needing_model_update.count()
             video_files_needing_model_update.update(percent_complete=100, flagged_for_download=False)
             for vf in video_files_needing_model_update:
-                caching.invalidate_cached_video_page(video_id=vf.youtube_id)
+                caching.invalidate_cached_topic_hierarchies(video_id=vf.youtube_id)
                 touched_video_ids.append(vf.youtube_id)
         if count:
             self.stdout.write("Updated %d VideoFile models (to mark them as complete, since the files exist)\n" % count)
@@ -55,7 +55,7 @@ class Command(BaseCommand):
         if count:
             VideoFile.objects.bulk_create([VideoFile(youtube_id=youtube_id, percent_complete=100) for youtube_id in video_ids_needing_model_creation])
             for vid in video_ids_needing_model_creation:
-                caching.invalidate_cached_video_page(video_id=vid)
+                caching.invalidate_cached_topic_hierarchies(video_id=vid)
                 touched_video_ids.append(vid)
             self.stdout.write("Created %d VideoFile models (to mark them as complete, since the files exist)\n" % count)
         
@@ -66,7 +66,7 @@ class Command(BaseCommand):
             count += video_files_needing_model_deletion.count()
             video_files_needing_model_deletion.delete()
             for vf in video_files_needing_model_deletion:
-                caching.invalidate_cached_video_page(video_id=vf.youtube_id)
+                caching.invalidate_cached_topic_hierarchies(video_id=vf.youtube_id)
                 touched_video_ids.append(vf.youtube_id)
         if count:
             self.stdout.write("Deleted %d VideoFile models (because the videos didn't exist in the filesystem)\n" % count)
@@ -77,7 +77,7 @@ class Command(BaseCommand):
             count += video_files_needing_model_update.count()
             video_files_needing_model_update.update(subtitles_downloaded=True)
             for vf in video_files_needing_model_update:
-                caching.invalidate_cached_video_page(video_id=vf.youtube_id)
+                caching.invalidate_cached_topic_hierarchies(video_id=vf.youtube_id)
                 touched_video_ids.append(vf.youtube_id)
                     
         if count:
