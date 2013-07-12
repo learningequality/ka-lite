@@ -70,11 +70,7 @@
                     <tr>
                         <td>
                             <a href="{% url student_view %}?user={{ id }}">
-                                {% if user.last_name and user.first_name %}{{ user.last_name }}, {{ user.first_name }}
-                                {% elif user.last_name %}{{user.last_name }}
-                                {% elif user.last_name %}{{user.first_name }}
-                                {% else %}{{ user.name }}
-                                {% endif %}
+                                {% user|format_name:"last_first" %}
                             </a>
                         </td>
                         <td>

@@ -277,20 +277,13 @@ class Zone(SyncedModel):
         return orgs[0] if orgs else None
 
 
-#class ZoneManager
     @classmethod
     def get_headless_zones(cls):
+        """
+        Method for getting all zones that aren't connected to at least one organization.
+        """
         # Must import inline (not in header) to avoid import loop
-        from central.models import Organization
-
-        all_zones = Zone.objects.all()
-        headless_zones = []
-        for zone in all_zones:
-            orgs = Organization.objects.filter(zones__in=[zone])
-            if not orgs:
-                headless_zones.append(zone)
-
-        return headless_zones
+        return Zone.objects.filter(organization=None)
 
 
 class Facility(SyncedModel):

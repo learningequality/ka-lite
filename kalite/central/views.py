@@ -61,6 +61,7 @@ def org_management(request):
     return {
         "title": _("Account administration"),
         "organizations": organizations,
+        "HEADLESS_ORG_NAME": Organization.HEADLESS_ORG_NAME,
         "invitations": OrganizationInvitation.objects.filter(email_to_invite=request.user.email)
     }
 

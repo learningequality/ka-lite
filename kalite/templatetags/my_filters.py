@@ -5,6 +5,7 @@ from django.db.models.query import QuerySet
 from django.utils import simplejson
 from django.utils.safestring import mark_safe
 
+
 register = Library()
 
 class RangeNode(Node):
@@ -85,8 +86,28 @@ from django import template
 
 from django.template.defaultfilters import floatformat
 
+
 @register.filter
 def percent(value, precision):
   if value is None:
     return None
   return floatformat(value * 100.0, precision) + '%'
+
+
+@register.filter
+def format_name(user, format="first_last"):
+    if format == "first_last":
+        return user.get_name()
+
+    elif format == "last_first":
+        if user.last_name and user.first_name:
+            return "%s, %s" % (user.last_name, user.first_name)
+        elif user.last_name:
+            return user.last_name
+        elif user.first_name:
+            return user.first_name
+        else:
+            return user.username
+
+    else:
+        raise NotImplementedError("Unrecognized format string: %s" % format)
