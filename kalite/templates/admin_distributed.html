@@ -76,6 +76,7 @@ td.title {
         {% endif %}
 
         {% if user.is_superuser %}{% comment "Django-admins only" %}{% endcomment %}
+        {% if check_debug_mode %}
         <tr>
             <td class="title" colspan="2">
                 <h2>{% trans "Advanced User Tools" %}</h2>
@@ -91,6 +92,7 @@ td.title {
                 <span class="warn">({% trans "Warning: changing database values can break your KA Lite installation!" %})</span>
             </td>
         </tr>
+        {% endif %}
         {% endif %}
     </table>
 </div>
