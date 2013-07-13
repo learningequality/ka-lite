@@ -20,7 +20,6 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
 import settings
-import local_settings
 from config.models import Settings
 from main import topicdata
 from main.models import VideoLog, ExerciseLog, VideoFile
@@ -215,7 +214,6 @@ def easy_admin(request):
         "wiki_url" : settings.CENTRAL_WIKI_URL,
         "central_server_host" : settings.CENTRAL_SERVER_HOST,
         "am_i_online": am_i_online(settings.CENTRAL_WIKI_URL, allow_redirects=False), 
-        "check_debug_mode" : local_settings.DEBUG,
     }
     return context
     
