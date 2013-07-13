@@ -6,12 +6,13 @@
     "title": "Converse, inverse, and contrapositive", 
     "seconds_per_fast_problem": 9.0, 
     "related_video_readable_ids": [], 
+    "slug": "converse_inverse_and_contrapositive", 
     "prerequisites": [], 
     "live": true, 
     "h_position": 31, 
     "v_position": -33, 
     "path": "/math/geometry/logical-reasoning/e/converse_inverse_and_contrapositive/", 
-    "slug": "converse_inverse_and_contrapositive", 
+    "id": "converse_inverse_and_contrapositive", 
     "name": "converse_inverse_and_contrapositive"
   }, 
   {
@@ -21,12 +22,13 @@
     "title": "Conditional statements", 
     "seconds_per_fast_problem": 14.0, 
     "related_video_readable_ids": [], 
+    "slug": "conditional_statements_2", 
     "prerequisites": [], 
     "live": true, 
     "h_position": 31, 
     "v_position": -32, 
     "path": "/math/geometry/logical-reasoning/e/conditional_statements_2/", 
-    "slug": "conditional_statements_2", 
+    "id": "conditional_statements_2", 
     "name": "conditional_statements_2"
   }, 
   {
@@ -36,6 +38,7 @@
     "title": "Logical arguments and deductive reasoning", 
     "seconds_per_fast_problem": 6.0, 
     "related_video_readable_ids": [], 
+    "slug": "logical_arguments_deductive_reasoning", 
     "prerequisites": [
       "converse_inverse_and_contrapositive"
     ], 
@@ -43,7 +46,7 @@
     "h_position": 32, 
     "v_position": -33, 
     "path": "/math/geometry/logical-reasoning/e/logical_arguments_deductive_reasoning/", 
-    "slug": "logical_arguments_deductive_reasoning", 
+    "id": "logical_arguments_deductive_reasoning", 
     "name": "logical_arguments_deductive_reasoning"
   }, 
   {
@@ -53,6 +56,7 @@
     "title": "Conditional statements and truth value", 
     "seconds_per_fast_problem": 6.0, 
     "related_video_readable_ids": [], 
+    "slug": "conditional_statements_and_truth_value", 
     "prerequisites": [
       "converse_inverse_and_contrapositive", 
       "conditional_statements_2"
@@ -61,7 +65,7 @@
     "h_position": 32, 
     "v_position": -32, 
     "path": "/math/geometry/logical-reasoning/e/conditional_statements_and_truth_value/", 
-    "slug": "conditional_statements_and_truth_value", 
+    "id": "conditional_statements_and_truth_value", 
     "name": "conditional_statements_and_truth_value"
   }
 ]

@@ -8,6 +8,7 @@
     "related_video_readable_ids": [
       "understanding-exponents"
     ], 
+    "slug": "exponents_1", 
     "prerequisites": [
       "multiplying_and_dividing_negative_numbers"
     ], 
@@ -15,7 +16,7 @@
     "h_position": 18, 
     "v_position": 3, 
     "path": "/math/arithmetic/exponents-radicals/world-of-exponents/e/exponents_1/", 
-    "slug": "exponents_1", 
+    "id": "exponents_1", 
     "name": "exponents_1"
   }, 
   {
@@ -27,6 +28,7 @@
     "related_video_readable_ids": [
       "negative-exponent-intuition"
     ], 
+    "slug": "exponents_2", 
     "prerequisites": [
       "exponents_1"
     ], 
@@ -34,7 +36,7 @@
     "h_position": 19, 
     "v_position": 4, 
     "path": "/math/arithmetic/exponents-radicals/world-of-exponents/e/exponents_2/", 
-    "slug": "exponents_2", 
+    "id": "exponents_2", 
     "name": "exponents_2"
   }, 
   {
@@ -46,6 +48,7 @@
     "related_video_readable_ids": [
       "evaluating-exponential-expressions"
     ], 
+    "slug": "exponents_3", 
     "prerequisites": [
       "exponents_2"
     ], 
@@ -53,7 +56,7 @@
     "h_position": 20, 
     "v_position": 4, 
     "path": "/math/arithmetic/exponents-radicals/world-of-exponents/e/exponents_3/", 
-    "slug": "exponents_3", 
+    "id": "exponents_3", 
     "name": "exponents_3"
   }, 
   {
@@ -65,6 +68,7 @@
     "related_video_readable_ids": [
       "evaluating-exponential-expressions"
     ], 
+    "slug": "exponents_4", 
     "prerequisites": [
       "exponents_3"
     ], 
@@ -72,7 +76,7 @@
     "h_position": 21, 
     "v_position": 4, 
     "path": "/math/arithmetic/exponents-radicals/world-of-exponents/e/exponents_4/", 
-    "slug": "exponents_4", 
+    "id": "exponents_4", 
     "name": "exponents_4"
   }, 
   {
@@ -84,6 +88,7 @@
     "related_video_readable_ids": [
       "understanding-square-roots"
     ], 
+    "slug": "square_roots", 
     "prerequisites": [
       "exponents_2"
     ], 
@@ -91,7 +96,7 @@
     "h_position": 20, 
     "v_position": 5, 
     "path": "/math/arithmetic/exponents-radicals/radical-radicals/e/square_roots/", 
-    "slug": "square_roots", 
+    "id": "square_roots", 
     "name": "square_roots"
   }, 
   {
@@ -103,6 +108,7 @@
     "related_video_readable_ids": [
       "approximating-square-roots"
     ], 
+    "slug": "square_roots_2", 
     "prerequisites": [
       "square_roots"
     ], 
@@ -110,7 +116,7 @@
     "h_position": 21, 
     "v_position": 5, 
     "path": "/math/arithmetic/exponents-radicals/radical-radicals/e/square_roots_2/", 
-    "slug": "square_roots_2", 
+    "id": "square_roots_2", 
     "name": "square_roots_2"
   }, 
   {
@@ -122,6 +128,7 @@
     "related_video_readable_ids": [
       "finding-cube-roots"
     ], 
+    "slug": "cube_roots", 
     "prerequisites": [
       "exponents_2"
     ], 
@@ -129,7 +136,7 @@
     "h_position": 20, 
     "v_position": 6, 
     "path": "/math/arithmetic/exponents-radicals/radical-radicals/e/cube_roots/", 
-    "slug": "cube_roots", 
+    "id": "cube_roots", 
     "name": "cube_roots"
   }, 
   {
@@ -141,6 +148,7 @@
     "related_video_readable_ids": [
       "square-roots-and-real-numbers"
     ], 
+    "slug": "simplifying_radicals", 
     "prerequisites": [
       "exponent_rules", 
       "square_roots", 
@@ -150,7 +158,7 @@
     "h_position": 21, 
     "v_position": 6, 
     "path": "/math/arithmetic/exponents-radicals/radical-radicals/e/simplifying_radicals/", 
-    "slug": "simplifying_radicals", 
+    "id": "simplifying_radicals", 
     "name": "simplifying_radicals"
   }, 
   {
@@ -162,6 +170,7 @@
     "related_video_readable_ids": [
       "square-roots-and-real-numbers"
     ], 
+    "slug": "multiplying_radicals", 
     "prerequisites": [
       "adding_and_subtracting_radicals"
     ], 
@@ -169,7 +178,7 @@
     "h_position": 23, 
     "v_position": 6, 
     "path": "/math/arithmetic/exponents-radicals/radical-radicals/e/multiplying_radicals/", 
-    "slug": "multiplying_radicals", 
+    "id": "multiplying_radicals", 
     "name": "multiplying_radicals"
   }, 
   {
@@ -181,6 +190,7 @@
     "related_video_readable_ids": [
       "square-roots-and-real-numbers"
     ], 
+    "slug": "adding_and_subtracting_radicals", 
     "prerequisites": [
       "simplifying_radicals"
     ], 
@@ -188,7 +198,7 @@
     "h_position": 22, 
     "v_position": 6, 
     "path": "/math/arithmetic/exponents-radicals/radical-radicals/e/adding_and_subtracting_radicals/", 
-    "slug": "adding_and_subtracting_radicals", 
+    "id": "adding_and_subtracting_radicals", 
     "name": "adding_and_subtracting_radicals"
   }, 
   {
@@ -200,6 +210,7 @@
     "related_video_readable_ids": [
       "exponent-properties-involving-quotients"
     ], 
+    "slug": "exponent_rules", 
     "prerequisites": [
       "exponents_2"
     ], 
@@ -207,7 +218,7 @@
     "h_position": 20, 
     "v_position": 7, 
     "path": "/math/arithmetic/exponents-radicals/exponent-properties/e/exponent_rules/", 
-    "slug": "exponent_rules", 
+    "id": "exponent_rules", 
     "name": "exponent_rules"
   }, 
   {
@@ -219,6 +230,7 @@
     "related_video_readable_ids": [
       "scientific-notation-examples"
     ], 
+    "slug": "scientific_notation_intuition", 
     "prerequisites": [
       "exponents_3", 
       "exponent_rules"
@@ -227,7 +239,7 @@
     "h_position": 21, 
     "v_position": 3, 
     "path": "/math/arithmetic/exponents-radicals/scientific-notation/e/scientific_notation_intuition/", 
-    "slug": "scientific_notation_intuition", 
+    "id": "scientific_notation_intuition", 
     "name": "scientific_notation_intuition"
   }, 
   {
@@ -239,6 +251,7 @@
     "related_video_readable_ids": [
       "scientific-notation-example-2"
     ], 
+    "slug": "scientific_notation", 
     "prerequisites": [
       "scientific_notation_intuition"
     ], 
@@ -246,7 +259,7 @@
     "h_position": 22, 
     "v_position": 3, 
     "path": "/math/arithmetic/exponents-radicals/scientific-notation/e/scientific_notation/", 
-    "slug": "scientific_notation", 
+    "id": "scientific_notation", 
     "name": "scientific_notation"
   }, 
   {
@@ -258,6 +271,7 @@
     "related_video_readable_ids": [
       "multiplying-in-scientific-notation"
     ], 
+    "slug": "multiplying_and_dividing_scientific_notation", 
     "prerequisites": [
       "scientific_notation"
     ], 
@@ -265,7 +279,7 @@
     "h_position": 23, 
     "v_position": 3, 
     "path": "/math/arithmetic/exponents-radicals/scientific-notation/e/multiplying_and_dividing_scientific_notation/", 
-    "slug": "multiplying_and_dividing_scientific_notation", 
+    "id": "multiplying_and_dividing_scientific_notation", 
     "name": "multiplying_and_dividing_scientific_notation"
   }, 
   {
@@ -277,6 +291,7 @@
     "related_video_readable_ids": [
       "fractional-exponent-expressions-3"
     ], 
+    "slug": "simplifying_expressions_with_exponents", 
     "prerequisites": [
       "exponent_rules"
     ], 
@@ -284,7 +299,7 @@
     "h_position": 21, 
     "v_position": 7, 
     "path": "/math/arithmetic/exponents-radicals/exponent-expressions-equations/e/simplifying_expressions_with_exponents/", 
-    "slug": "simplifying_expressions_with_exponents", 
+    "id": "simplifying_expressions_with_exponents", 
     "name": "simplifying_expressions_with_exponents"
   }, 
   {
@@ -296,6 +311,7 @@
     "related_video_readable_ids": [
       "applying-radical-equations-3"
     ], 
+    "slug": "radical_equations", 
     "prerequisites": [
       "simplifying_radicals"
     ], 
@@ -303,7 +319,7 @@
     "h_position": 22, 
     "v_position": 7, 
     "path": "/math/arithmetic/exponents-radicals/exponent-expressions-equations/e/radical_equations/", 
-    "slug": "radical_equations", 
+    "id": "radical_equations", 
     "name": "radical_equations"
   }, 
   {
@@ -315,6 +331,7 @@
     "related_video_readable_ids": [
       "logarithmic-equations-2"
     ], 
+    "slug": "logarithms_1", 
     "prerequisites": [
       "exponents_4"
     ], 
@@ -322,7 +339,7 @@
     "h_position": 24, 
     "v_position": 4, 
     "path": "/math/arithmetic/exponents-radicals/exponent-expressions-equations/e/logarithms_1/", 
-    "slug": "logarithms_1", 
+    "id": "logarithms_1", 
     "name": "logarithms_1"
   }, 
   {
@@ -334,6 +351,7 @@
     "related_video_readable_ids": [
       "fancier-logarithm-expressions"
     ], 
+    "slug": "logarithms_1.5", 
     "prerequisites": [
       "logarithms_1"
     ], 
@@ -341,7 +359,7 @@
     "h_position": 25, 
     "v_position": 4, 
     "path": "/math/arithmetic/exponents-radicals/exponent-expressions-equations/e/logarithms_1.5/", 
-    "slug": "logarithms_1.5", 
+    "id": "logarithms_1.5", 
     "name": "logarithms_1.5"
   }, 
   {
@@ -353,6 +371,7 @@
     "related_video_readable_ids": [
       "using-multiple-logarithm-properties-to-simplify"
     ], 
+    "slug": "logarithms_2", 
     "prerequisites": [
       "logarithms_1.5"
     ], 
@@ -360,7 +379,7 @@
     "h_position": 26, 
     "v_position": 4, 
     "path": "/math/arithmetic/exponents-radicals/exponent-expressions-equations/e/logarithms_2/", 
-    "slug": "logarithms_2", 
+    "id": "logarithms_2", 
     "name": "logarithms_2"
   }
 ]

@@ -9,6 +9,7 @@
       "factoring-polynomials-1", 
       "factoring-trinomials-with-a-leading-1-coefficient"
     ], 
+    "slug": "factoring_polynomials_1", 
     "prerequisites": [
       "factoring_linear_binomials"
     ], 
@@ -16,7 +17,7 @@
     "h_position": 49, 
     "v_position": -6, 
     "path": "/math/algebra/quadratics/factoring_quadratics/e/factoring_polynomials_1/", 
-    "slug": "factoring_polynomials_1", 
+    "id": "factoring_polynomials_1", 
     "name": "factoring_polynomials_1"
   }, 
   {
@@ -29,6 +30,7 @@
       "Example 2: Solving a quadratic equation by factoring", 
       "quadratic-functions-1"
     ], 
+    "slug": "solving_quadratics_by_factoring", 
     "prerequisites": [
       "factoring_polynomials_1"
     ], 
@@ -36,7 +38,7 @@
     "h_position": 50, 
     "v_position": -2, 
     "path": "/math/algebra/quadratics/factoring_quadratics/e/solving_quadratics_by_factoring/", 
-    "slug": "solving_quadratics_by_factoring", 
+    "id": "solving_quadratics_by_factoring", 
     "name": "solving_quadratics_by_factoring"
   }, 
   {
@@ -49,6 +51,7 @@
       "factoring-trinomials-with-a-common-factor", 
       "factoring-trinomials-with-a-common-factor"
     ], 
+    "slug": "factoring_polynomials_2", 
     "prerequisites": [
       "factoring_polynomials_1"
     ], 
@@ -56,7 +59,7 @@
     "h_position": 50, 
     "v_position": -6, 
     "path": "/math/algebra/quadratics/factoring_quadratics/e/factoring_polynomials_2/", 
-    "slug": "factoring_polynomials_2", 
+    "id": "factoring_polynomials_2", 
     "name": "factoring_polynomials_2"
   }, 
   {
@@ -69,6 +72,7 @@
       "factoring-trinomials-with-a-common-factor", 
       "factoring-trinomials-with-a-common-factor"
     ], 
+    "slug": "solving_quadratics_by_factoring_2", 
     "prerequisites": [
       "solving_quadratics_by_factoring"
     ], 
@@ -76,7 +80,7 @@
     "h_position": 51, 
     "v_position": -2, 
     "path": "/math/algebra/quadratics/factoring_quadratics/e/solving_quadratics_by_factoring_2/", 
-    "slug": "solving_quadratics_by_factoring_2", 
+    "id": "solving_quadratics_by_factoring_2", 
     "name": "solving_quadratics_by_factoring_2"
   }, 
   {
@@ -89,6 +93,7 @@
       "u09-l2-t1-we3-factoring-special-products-3", 
       "u09-l2-t1-we3-factoring-special-products-3"
     ], 
+    "slug": "factoring_difference_of_squares_1", 
     "prerequisites": [
       "multiplying_expressions_1", 
       "multiplying_polynomials"
@@ -97,7 +102,7 @@
     "h_position": 49, 
     "v_position": -8, 
     "path": "/math/algebra/quadratics/factoring_quadratics/e/factoring_difference_of_squares_1/", 
-    "slug": "factoring_difference_of_squares_1", 
+    "id": "factoring_difference_of_squares_1", 
     "name": "factoring_difference_of_squares_1"
   }, 
   {
@@ -110,6 +115,7 @@
       "u09-l2-t1-we3-factoring-special-products-3", 
       "u09-l2-t1-we3-factoring-special-products-3"
     ], 
+    "slug": "factoring_difference_of_squares_2", 
     "prerequisites": [
       "factoring_difference_of_squares_1"
     ], 
@@ -117,7 +123,7 @@
     "h_position": 50, 
     "v_position": -8, 
     "path": "/math/algebra/quadratics/factoring_quadratics/e/factoring_difference_of_squares_2/", 
-    "slug": "factoring_difference_of_squares_2", 
+    "id": "factoring_difference_of_squares_2", 
     "name": "factoring_difference_of_squares_2"
   }, 
   {
@@ -130,6 +136,7 @@
       "u09-l2-t1-we3-factoring-special-products-3", 
       "u09-l2-t1-we3-factoring-special-products-3"
     ], 
+    "slug": "factoring_difference_of_squares_3", 
     "prerequisites": [
       "factoring_difference_of_squares_2"
     ], 
@@ -137,7 +144,7 @@
     "h_position": 51, 
     "v_position": -8, 
     "path": "/math/algebra/quadratics/factoring_quadratics/e/factoring_difference_of_squares_3/", 
-    "slug": "factoring_difference_of_squares_3", 
+    "id": "factoring_difference_of_squares_3", 
     "name": "factoring_difference_of_squares_3"
   }, 
   {
@@ -150,6 +157,7 @@
       "factoring-trinomials-by-grouping-6", 
       "factoring-trinomials-by-grouping-6"
     ], 
+    "slug": "factoring_polynomials_by_grouping_1", 
     "prerequisites": [
       "factoring_polynomials_2"
     ], 
@@ -157,7 +165,7 @@
     "h_position": 51, 
     "v_position": -5, 
     "path": "/math/algebra/quadratics/factoring_quadratics/e/factoring_polynomials_by_grouping_1/", 
-    "slug": "factoring_polynomials_by_grouping_1", 
+    "id": "factoring_polynomials_by_grouping_1", 
     "name": "factoring_polynomials_by_grouping_1"
   }, 
   {
@@ -169,6 +177,7 @@
     "related_video_readable_ids": [
       "factoring-trinomials-by-grouping-6"
     ], 
+    "slug": "factoring_polynomials_with_two_variables", 
     "prerequisites": [
       "factoring_polynomials_2"
     ], 
@@ -176,7 +185,7 @@
     "h_position": 51, 
     "v_position": -6, 
     "path": "/math/algebra/quadratics/factoring_quadratics/e/factoring_polynomials_with_two_variables/", 
-    "slug": "factoring_polynomials_with_two_variables", 
+    "id": "factoring_polynomials_with_two_variables", 
     "name": "factoring_polynomials_with_two_variables"
   }, 
   {
@@ -189,6 +198,7 @@
       "solving-quadratic-equations-by-square-roots", 
       "simple-quadratic-equation"
     ], 
+    "slug": "solving_quadratics_by_taking_the_square_root", 
     "prerequisites": [
       "factoring_polynomials_1"
     ], 
@@ -196,7 +206,7 @@
     "h_position": 50, 
     "v_position": -1, 
     "path": "/math/algebra/quadratics/completing_the_square/e/solving_quadratics_by_taking_the_square_root/", 
-    "slug": "solving_quadratics_by_taking_the_square_root", 
+    "id": "solving_quadratics_by_taking_the_square_root", 
     "name": "solving_quadratics_by_taking_the_square_root"
   }, 
   {
@@ -209,6 +219,7 @@
       "solving-quadratic-equations-by-completing-the-square", 
       "completing-the-square-to-solve-quadratic-equations"
     ], 
+    "slug": "completing_the_square_1", 
     "prerequisites": [
       "solving_quadratics_by_taking_the_square_root", 
       "solving_quadratics_by_factoring"
@@ -217,7 +228,7 @@
     "h_position": 51, 
     "v_position": -1, 
     "path": "/math/algebra/quadratics/completing_the_square/e/completing_the_square_1/", 
-    "slug": "completing_the_square_1", 
+    "id": "completing_the_square_1", 
     "name": "completing_the_square_1"
   }, 
   {
@@ -230,6 +241,7 @@
       "solving-quadratic-equations-by-completing-the-square", 
       "completing-the-square-to-solve-quadratic-equations"
     ], 
+    "slug": "completing_the_square_2", 
     "prerequisites": [
       "solving_quadratics_by_factoring_2", 
       "completing_the_square_1"
@@ -238,7 +250,7 @@
     "h_position": 52, 
     "v_position": -2, 
     "path": "/math/algebra/quadratics/completing_the_square/e/completing_the_square_2/", 
-    "slug": "completing_the_square_2", 
+    "id": "completing_the_square_2", 
     "name": "completing_the_square_2"
   }, 
   {
@@ -251,6 +263,7 @@
       "proof-of-quadratic-formula", 
       "applying-the-quadratic-formula"
     ], 
+    "slug": "quadratic_equation", 
     "prerequisites": [
       "completing_the_square_2"
     ], 
@@ -258,7 +271,7 @@
     "h_position": 53, 
     "v_position": -2, 
     "path": "/math/algebra/quadratics/quadratic_formula/e/quadratic_equation/", 
-    "slug": "quadratic_equation", 
+    "id": "quadratic_equation", 
     "name": "quadratic_equation"
   }, 
   {
@@ -271,6 +284,7 @@
       "discriminant-for-types-of-solutions-for-a-quadratic", 
       "discriminant-for-types-of-solutions-for-a-quadratic"
     ], 
+    "slug": "solutions_to_quadratic_equations", 
     "prerequisites": [
       "quadratic_equation"
     ], 
@@ -278,7 +292,7 @@
     "h_position": 54, 
     "v_position": -2, 
     "path": "/math/algebra/quadratics/quadratic_formula/e/solutions_to_quadratic_equations/", 
-    "slug": "solutions_to_quadratic_equations", 
+    "id": "solutions_to_quadratic_equations", 
     "name": "solutions_to_quadratic_equations"
   }, 
   {
@@ -291,6 +305,7 @@
       "graphs-of-quadratic-functions", 
       "applying-quadratic-functions-3"
     ], 
+    "slug": "graphing_parabolas_0.5", 
     "prerequisites": [
       "parabola_intuition_2"
     ], 
@@ -298,7 +313,7 @@
     "h_position": 51, 
     "v_position": 0, 
     "path": "/math/algebra/quadratics/graphing_quadratics/e/graphing_parabolas_0.5/", 
-    "slug": "graphing_parabolas_0.5", 
+    "id": "graphing_parabolas_0.5", 
     "name": "graphing_parabolas_0.5"
   }, 
   {
@@ -311,6 +326,7 @@
       "focus-and-directrix-of-a-parabola-2", 
       "focus-and-directrix-of-a-parabola-2"
     ], 
+    "slug": "vertex_of_a_parabola", 
     "prerequisites": [
       "graphing_parabolas_0.5", 
       "completing_the_square_1"
@@ -319,7 +335,7 @@
     "h_position": 52, 
     "v_position": -1, 
     "path": "/math/algebra/quadratics/graphing_quadratics/e/vertex_of_a_parabola/", 
-    "slug": "vertex_of_a_parabola", 
+    "id": "vertex_of_a_parabola", 
     "name": "vertex_of_a_parabola"
   }, 
   {
@@ -332,6 +348,7 @@
       "focus-and-directrix-of-a-parabola-2", 
       "focus-and-directrix-of-a-parabola-2"
     ], 
+    "slug": "graphing_parabolas_1", 
     "prerequisites": [
       "graphing_parabolas_0.5"
     ], 
@@ -339,7 +356,7 @@
     "h_position": 52, 
     "v_position": 0, 
     "path": "/math/algebra/quadratics/graphing_quadratics/e/graphing_parabolas_1/", 
-    "slug": "graphing_parabolas_1", 
+    "id": "graphing_parabolas_1", 
     "name": "graphing_parabolas_1"
   }, 
   {
@@ -352,6 +369,7 @@
       "focus-and-directrix-of-a-parabola-2", 
       "focus-and-directrix-of-a-parabola-2"
     ], 
+    "slug": "graphing_parabolas_2", 
     "prerequisites": [
       "graphing_parabolas_1", 
       "vertex_of_a_parabola"
@@ -360,7 +378,7 @@
     "h_position": 53, 
     "v_position": -1, 
     "path": "/math/algebra/quadratics/graphing_quadratics/e/graphing_parabolas_2/", 
-    "slug": "graphing_parabolas_2", 
+    "id": "graphing_parabolas_2", 
     "name": "graphing_parabolas_2"
   }, 
   {
@@ -373,6 +391,7 @@
       "focus-and-directrix-of-a-parabola-2", 
       "focus-and-directrix-of-a-parabola-2"
     ], 
+    "slug": "parabola_intuition_3", 
     "prerequisites": [
       "graphing_parabolas_2"
     ], 
@@ -380,7 +399,7 @@
     "h_position": 54, 
     "v_position": -1, 
     "path": "/math/algebra/quadratics/graphing_quadratics/e/parabola_intuition_3/", 
-    "slug": "parabola_intuition_3", 
+    "id": "parabola_intuition_3", 
     "name": "parabola_intuition_3"
   }
 ]

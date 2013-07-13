@@ -8,6 +8,7 @@
     "related_video_readable_ids": [
       "negative-numbers-introduction"
     ], 
+    "slug": "number_line_2", 
     "prerequisites": [
       "addition_2"
     ], 
@@ -15,7 +16,7 @@
     "h_position": 2, 
     "v_position": 1, 
     "path": "/math/arithmetic/absolute-value/add-sub-negatives/e/number_line_2/", 
-    "slug": "number_line_2", 
+    "id": "number_line_2", 
     "name": "number_line_2"
   }, 
   {
@@ -27,6 +28,7 @@
     "related_video_readable_ids": [
       "negative-numbers-introduction"
     ], 
+    "slug": "number_line_3", 
     "prerequisites": [
       "number_line_2"
     ], 
@@ -34,7 +36,7 @@
     "h_position": 3, 
     "v_position": 1, 
     "path": "/math/arithmetic/absolute-value/add-sub-negatives/e/number_line_3/", 
-    "slug": "number_line_3", 
+    "id": "number_line_3", 
     "name": "number_line_3"
   }, 
   {
@@ -46,6 +48,7 @@
     "related_video_readable_ids": [
       "ordering-negative-numbers"
     ], 
+    "slug": "ordering_negative_numbers", 
     "prerequisites": [
       "number_line_3"
     ], 
@@ -53,7 +56,7 @@
     "h_position": 4, 
     "v_position": 1, 
     "path": "/math/arithmetic/absolute-value/add-sub-negatives/e/ordering_negative_numbers/", 
-    "slug": "ordering_negative_numbers", 
+    "id": "ordering_negative_numbers", 
     "name": "ordering_negative_numbers"
   }, 
   {
@@ -65,6 +68,7 @@
     "related_video_readable_ids": [
       "adding-integers-with-different-signs"
     ], 
+    "slug": "adding_negative_numbers", 
     "prerequisites": [
       "subtraction_1", 
       "ordering_negative_numbers"
@@ -73,7 +77,7 @@
     "h_position": 5, 
     "v_position": 1, 
     "path": "/math/arithmetic/absolute-value/adding_subtracting_negatives/e/adding_negative_numbers/", 
-    "slug": "adding_negative_numbers", 
+    "id": "adding_negative_numbers", 
     "name": "adding_negative_numbers"
   }, 
   {
@@ -85,6 +89,7 @@
     "related_video_readable_ids": [
       "why-subtracting-a-negative-equivalent-to-adding-a-positive"
     ], 
+    "slug": "adding_and_subtracting_negative_numbers", 
     "prerequisites": [
       "adding_negative_numbers"
     ], 
@@ -92,7 +97,7 @@
     "h_position": 6, 
     "v_position": 1, 
     "path": "/math/arithmetic/absolute-value/adding_subtracting_negatives/e/adding_and_subtracting_negative_numbers/", 
-    "slug": "adding_and_subtracting_negative_numbers", 
+    "id": "adding_and_subtracting_negative_numbers", 
     "name": "adding_and_subtracting_negative_numbers"
   }, 
   {
@@ -104,6 +109,7 @@
     "related_video_readable_ids": [
       "why-subtracting-a-negative-equivalent-to-adding-a-positive"
     ], 
+    "slug": "negative_number_word_problems", 
     "prerequisites": [
       "adding_and_subtracting_negative_numbers"
     ], 
@@ -111,7 +117,7 @@
     "h_position": 7, 
     "v_position": 2, 
     "path": "/math/arithmetic/absolute-value/adding_subtracting_negatives/e/negative_number_word_problems/", 
-    "slug": "negative_number_word_problems", 
+    "id": "negative_number_word_problems", 
     "name": "negative_number_word_problems"
   }, 
   {
@@ -123,6 +129,7 @@
     "related_video_readable_ids": [
       "multiplying-negative-real-numbers"
     ], 
+    "slug": "multiplying_and_dividing_negative_numbers", 
     "prerequisites": [
       "adding_and_subtracting_negative_numbers", 
       "division_4"
@@ -131,7 +138,7 @@
     "h_position": 12, 
     "v_position": -4, 
     "path": "/math/arithmetic/absolute-value/mult_div_negatives/e/multiplying_and_dividing_negative_numbers/", 
-    "slug": "multiplying_and_dividing_negative_numbers", 
+    "id": "multiplying_and_dividing_negative_numbers", 
     "name": "multiplying_and_dividing_negative_numbers"
   }, 
   {
@@ -143,6 +150,7 @@
     "related_video_readable_ids": [
       "absolute-value-1"
     ], 
+    "slug": "absolute_value", 
     "prerequisites": [
       "adding_and_subtracting_negative_numbers"
     ], 
@@ -150,7 +158,7 @@
     "h_position": 7, 
     "v_position": -1, 
     "path": "/math/arithmetic/absolute-value/abs_value_tutorial/e/absolute_value/", 
-    "slug": "absolute_value", 
+    "id": "absolute_value", 
     "name": "absolute_value"
   }, 
   {
@@ -162,6 +170,7 @@
     "related_video_readable_ids": [
       "comparing-absolute-values"
     ], 
+    "slug": "comparing_absolute_values", 
     "prerequisites": [
       "absolute_value"
     ], 
@@ -169,7 +178,7 @@
     "h_position": 8, 
     "v_position": -1, 
     "path": "/math/arithmetic/absolute-value/abs_value_tutorial/e/comparing_absolute_values/", 
-    "slug": "comparing_absolute_values", 
+    "id": "comparing_absolute_values", 
     "name": "comparing_absolute_values"
   }
 ]

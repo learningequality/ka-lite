@@ -8,6 +8,7 @@
     "related_video_readable_ids": [
       "properties-of-numbers-1"
     ], 
+    "slug": "properties_of_numbers_1", 
     "prerequisites": [
       "multiplying_and_dividing_negative_numbers"
     ], 
@@ -15,7 +16,7 @@
     "h_position": 13, 
     "v_position": -5, 
     "path": "/math/arithmetic/order-of-operations/arithmetic_properties/e/properties_of_numbers_1/", 
-    "slug": "properties_of_numbers_1", 
+    "id": "properties_of_numbers_1", 
     "name": "properties_of_numbers_1"
   }, 
   {
@@ -27,6 +28,7 @@
     "related_video_readable_ids": [
       "number-properties-terminology-1"
     ], 
+    "slug": "number_properties_terminology_1", 
     "prerequisites": [
       "multiplying_and_dividing_negative_numbers"
     ], 
@@ -34,7 +36,7 @@
     "h_position": 14, 
     "v_position": -4, 
     "path": "/math/arithmetic/order-of-operations/arithmetic_properties/e/number_properties_terminology_1/", 
-    "slug": "number_properties_terminology_1", 
+    "id": "number_properties_terminology_1", 
     "name": "number_properties_terminology_1"
   }, 
   {
@@ -46,6 +48,7 @@
     "related_video_readable_ids": [
       "properties-of-numbers-2"
     ], 
+    "slug": "properties_of_numbers_2", 
     "prerequisites": [
       "properties_of_numbers_1"
     ], 
@@ -53,7 +56,7 @@
     "h_position": 14, 
     "v_position": -5, 
     "path": "/math/arithmetic/order-of-operations/arithmetic_properties/e/properties_of_numbers_2/", 
-    "slug": "properties_of_numbers_2", 
+    "id": "properties_of_numbers_2", 
     "name": "properties_of_numbers_2"
   }
 ]
