@@ -13,14 +13,15 @@ import time
 
 import requests
 
-import amara_headers
+import paths_and_headers # paths and headers that are shared across the central/utils folder 
 
-data_path = os.path.dirname(os.path.realpath(
-    __file__)) + "/../../static/data/subtitledata/"
+headers = paths_and_headers.headers
 
-logger = logging.getLogger('generate_subtitles_map.py')
+data_path = paths_and_headers.data_path
 
-headers = amara_headers.headers
+logger = paths_and_headers.logger
+
+SRTS_JSON_FILENAME = paths_and_headers.api_info_filename
 
 
 class OutDatedSchema(Exception):
@@ -41,9 +42,10 @@ def create_new_mapping():
     videos = nodecache['Video']
     new_json = {}
     counter = 0
+    pdb.set_trace()
     for video, data in videos.iteritems():
         youtube_id = data['youtube_id']
-        new_json.update(update_video_entry(youtube_id))
+        new_json[youtube_id] = update_video_entry(youtube_id)
         # TODO(dylan) 3000+ videos - can't expect process to complete before
         # saving. HELP: is this the best interim step?
         if counter%200 == 0:
@@ -52,8 +54,8 @@ def create_new_mapping():
             with open(data_path + temp_file, 'wb') as fp:
                 json.dump(new_json, fp)
         counter += 1
-    logger.info("Great success! Stored %s fresh entries.")
-    with open(data_path + 'video_srts.json', 'wb') as fp:
+    logger.info("Great success! Stored %s fresh entries." % str(counter))
+    with open(data_path + SRTS_JSON_FILENAME, 'wb') as fp:
         json.dump(new_json, fp)
     logger.info("Deleting temp file....")
     os.remove(data_path + temp_file)
@@ -61,37 +63,52 @@ def create_new_mapping():
 
 def update_subtitle_map(code_to_check, date_to_check):
     """Update JSON dictionary of subtitle information based on arguments provided"""
-    srts_dict = json.loads(open(data_path + "video_srts.json").read())
+    srts_dict = json.loads(open(data_path + SRTS_JSON_FILENAME).read())
     for youtube_id, data in srts_dict.items():
         # ensure response code and date exists
-        response_code = data.get("api-response")
+        response_code = data.get("api_response")
         last_attempt = data.get("last_attempt")
         if not (response_code or last_attempt):
             raise OutDatedSchema()
 
         # HELP: why does the below if statement suck so much? does it suck? it feels like it sucks
         # case: -d AND -s
+        flag_filter = False
         if date_to_check and code_to_check:
             if date_to_check < last_attempt and code_to_check == "all" or code_to_check == response_code:
-                srts_dict.update(update_video_entry(youtube_id))
+                flag_filter = True
         # case: -d only
         elif date_to_check and not code_to_check:
             if date_to_check < last_attempt:
-                srts_dict.update(update_video_entry(youtube_id))
+                flag_filter = True
         # case: -s only
         elif code_to_check and not date_to_check:
             if code_to_check == "all" or code_to_check == response_code:
-                srts_dict.update(update_video_entry(youtube_id))
+                flag_filter = True
 
+        if flag_filter:
+            new_entry = update_video_entry(youtube_id)
+            # here we are checking that the original data isn't overwritten by an error response, which only returns last-attempt and api-response
+            new_api_response = new_entry["api_response"]
+            if new_api_response is not "success":
+                srts_dict[youtube_id]["api_response"] = new_api_response
+                srts_dict[youtube_id]["last_attempt"] = new_entry["last_attempt"]
+            # if it wasn't an error, we simply update the old information with the new
+            else: 
+                srts_dict[youtube_id].update(new_entry)
+
+    logger.info("Great success! Re-writing JSON file.")
+    with open(data_path + SRTS_JSON_FILENAME, 'wb') as fp:
+        json.dump(srts_dict, fp)
 
 def update_video_entry(youtube_id):
     """Return a dictionary to be appended to the current schema:
             youtube_id: {
                             "amara_code": "3x4mp1e",
                             "language_codes": ["en", "es", "etc"],
-                            "api-response": "success",
-                            "last_successful_attempt": "2013-07-06 ",
-                            "last_attempt": "",
+                            "api_response": "success" OR "client_error" OR "server_error",
+                            "last_success": "2013-07-06",
+                            "last_attempt": "2013-07-06",
                         }
 
     """
@@ -101,11 +118,11 @@ def update_video_entry(youtube_id):
     # add api response first to prevent empty json on errors
     entry = {}
     entry["last_attempt"] = unicode(datetime.datetime.now())
-    if r == "client-error" or r == "server-error":
-        entry["api-response"] = r
+    if r == "client_error" or r == "server_error":
+        entry["api_response"] = r
     else:
-        entry["api-response"] = "success"
-        entry["last_successful_attempt"] = unicode(datetime.datetime.now())
+        entry["api_response"] = "success"
+        entry["last_success"] = unicode(datetime.datetime.now())
         content = json.loads(r.content)
         # index into data to extract languages and amara code, then add them
         if content.get("objects"):
@@ -159,11 +176,11 @@ def create_parser():
     # parses command line args
     parser = argparse.ArgumentParser()
     parser.add_argument('-N', '--new', action='store_true',
-                        help="Force a new mapping. Fetches new data for every one of our videos and overwrites current data with fresh data from Amara. Should really only ever be run once, because it can be updated from then on with '-s all'.")
+                        help="Force a new mapping. Cannot be run with other options. Fetches new data for every one of our videos and overwrites current data with fresh data from Amara. Should really only ever be run once, because data can be updated from then on with '-s all'.")
     parser.add_argument('-r', '--response_code', default=None,
-                        help="Which api-response code to recheck. Can be combined with -d. USAGE: '-s all', '-s client-error', or '-s server-error'. ")
+                        help="Which api-response code to recheck. Can be combined with -d. USAGE: '-r all', '-r client-error', or '-r server-error'. ")
     parser.add_argument('-d', '--date_since_attempt',
-                        help="Setting a date flag will update only those entries which have not been attempted since that date. Can be combined with -s. This could potentially be useful for updating old subtitles. USAGE: '-d MM/DD/YYYY'")
+                        help="Setting a date flag will update only those entries which have not been attempted since that date. Can be combined with -r. This could potentially be useful for updating old subtitles. USAGE: '-d MM/DD/YYYY'")
     return parser
 
 
