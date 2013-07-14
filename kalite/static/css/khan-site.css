@@ -1,6 +1,6 @@
 /* http://meyerweb.com/eric/tools/css/reset/
-   v2.0 | 20110126
-   License: none (public domain)
+     v2.0 | 20110126
+     License: none (public domain)
 */
 
 html, body, div, span, applet, object, iframe,
@@ -16,35 +16,35 @@ article, aside, canvas, details, embed,
 figure, figcaption, footer, header, hgroup,
 menu, nav, output, ruby, section, summary,
 time, mark, audio, video {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	font-size: 100%;
-	font: inherit;
-	vertical-align: baseline;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
 }
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
-	display: block;
+    display: block;
 }
 body {
-	line-height: 1;
+    line-height: 1;
 }
 ol, ul {
-	list-style: none;
+    list-style: none;
 }
 blockquote, q {
-	quotes: none;
+    quotes: none;
 }
 blockquote:before, blockquote:after,
 q:before, q:after {
-	content: '';
-	content: none;
+    content: '';
+    content: none;
 }
 table {
-	border-collapse: collapse;
-	border-spacing: 0;
+    border-collapse: collapse;
+    border-spacing: 0;
 }
 
 /* End Reset */
@@ -156,55 +156,45 @@ hr {
 
 /* Borrowed from those smart guys @ Fog Creek. Props to Justin & Bobby */
 .fancy-scrollbar::-webkit-scrollbar {
-  height: 8px;
-  width: 8px;
+    height: 8px;
+    width: 8px;
 }
 .fancy-scrollbar::-webkit-scrollbar-button:start:decrement,
 .fancy-scrollbar::-webkit-scrollbar-button:end:increment {
-  background: transparent;
-  display: none;
+    background: transparent;
+    display: none;
 }
 .fancy-scrollbar::-webkit-scrollbar-track-piece {
-  background: transparent;
+    background: transparent;
 }
 .fancy-scrollbar::-webkit-scrollbar-track-piece:vertical:start {
-  -webkit-border-top-left-radius: 4px;
-  -webkit-border-top-right-radius: 4px;
+    -webkit-border-top-left-radius: 4px;
+    -webkit-border-top-right-radius: 4px;
 }
 .fancy-scrollbar::-webkit-scrollbar-track-piece:vertical:end {
-  -webkit-border-bottom-left-radius: 4px;
-  -webkit-border-bottom-right-radius: 4px;
+    -webkit-border-bottom-left-radius: 4px;
+    -webkit-border-bottom-right-radius: 4px;
 }
 .fancy-scrollbar::-webkit-scrollbar-track-piece:horizontal:start {
-  -webkit-border-top-left-radius: 4px;
-  -webkit-border-bottom-left-radius: 4px;
+    -webkit-border-top-left-radius: 4px;
+    -webkit-border-bottom-left-radius: 4px;
 }
 .fancy-scrollbar::-webkit-scrollbar-track-piece:horizontal:end {
-  -webkit-border-top-right-radius: 4px;
-  -webkit-border-bottom-right-radius: 4px;
+    -webkit-border-top-right-radius: 4px;
+    -webkit-border-bottom-right-radius: 4px;
 }
 .fancy-scrollbar::-webkit-scrollbar-thumb:vertical,
 .fancy-scrollbar::-webkit-scrollbar-thumb:horizontal {
-  background: #ccc;
-  border: 1px solid #aaa;
-  -webkit-border-radius: 4px;
-  display: block;
-  height: 50px;
+    background: #ccc;
+    border: 1px solid #aaa;
+    -webkit-border-radius: 4px;
+    display: block;
+    height: 50px;
 }
 
-/* Links in the header and footer don't change color when visited. */
 a:link, a:visited {
     color: #005987;
     text-decoration: none;
-}
-
-a:visited {
-    color: #678D00;
-}
-
-a:link:hover, a:link:focus, a:visited:hover, a:visited:focus {
-    color: #678D00;
-    text-decoration: underline;
 }
 
 img {
@@ -325,15 +315,14 @@ article, section {
 /* http://sonspring.com/journal/clearing-floats */
 
 .clear {
-	clear: both;
-	display: block;
-	overflow: hidden;
-	visibility: hidden;
-	width: 1px;
-	height: 1px;
+    clear: both;
+    display: block;
+    overflow: hidden;
+    visibility: hidden;
+    width: 1px;
+    height: 1px;
 }
 
-/* Exercise Dashboard styles */
 
 #container {
     overflow: hidden;
@@ -427,7 +416,9 @@ article, section {
 
 }
 
-.hide { display: none; }
+.hide {
+    display: none;
+}
 
 .progress-bar {
     position: relative;
@@ -445,39 +436,39 @@ article, section {
 
 /* A simple 3D button style */
 .simple-button {
-  border: 1px solid #ccc;
-  border-bottom: 1px solid #bbb;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  border-radius: 5px;
-  -webkit-background-clip: padding-box;
-  -moz-background-clip: padding;
-  background-clip: padding-box;
-  -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255, .3);
-  -moz-box-shadow: inset 0 1px 0 rgba(255,255,255, .3);
-  box-shadow: inset 0 1px 0 rgba(255,255,255, .3);
-  background-color: #f3f3f3;
-  background-image: -moz-linear-gradient(top, #f7f7f7, #eeeeee);
-  background-image: -ms-linear-gradient(top, #f7f7f7, #eeeeee);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f7f7f7), to(#eeeeee));
-  background-image: -webkit-linear-gradient(top, #f7f7f7, #eeeeee);
-  background-image: -o-linear-gradient(top, #f7f7f7, #eeeeee);
-  background-image: linear-gradient(top, #f7f7f7, #eeeeee);
-  background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f7f7f7', endColorstr='#eeeeee', GradientType=0);
-  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
-  color: #333333 !important;
-  cursor: pointer !important;
-  font-family: inherit;
-  /* input[type=button] won't inherit by default */
+    border: 1px solid #ccc;
+    border-bottom: 1px solid #bbb;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-background-clip: padding-box;
+    -moz-background-clip: padding;
+    background-clip: padding-box;
+    -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255, .3);
+    -moz-box-shadow: inset 0 1px 0 rgba(255,255,255, .3);
+    box-shadow: inset 0 1px 0 rgba(255,255,255, .3);
+    background-color: #f3f3f3;
+    background-image: -moz-linear-gradient(top, #f7f7f7, #eeeeee);
+    background-image: -ms-linear-gradient(top, #f7f7f7, #eeeeee);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f7f7f7), to(#eeeeee));
+    background-image: -webkit-linear-gradient(top, #f7f7f7, #eeeeee);
+    background-image: -o-linear-gradient(top, #f7f7f7, #eeeeee);
+    background-image: linear-gradient(top, #f7f7f7, #eeeeee);
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f7f7f7', endColorstr='#eeeeee', GradientType=0);
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+    color: #333333 !important;
+    cursor: pointer !important;
+    font-family: inherit;
+    /* input[type=button] won't inherit by default */
 
-  line-height: 22px;
-  margin: 0;
-  padding: 5px 10px;
-  position: relative;
-  text-decoration: none !important;
-  text-shadow: 0 1px 0 #ffffff;
-  /* Special button types */
+    line-height: 22px;
+    margin: 0;
+    padding: 5px 10px;
+    position: relative;
+    text-decoration: none !important;
+    text-shadow: 0 1px 0 #ffffff;
+    /* Special button types */
 
 }
 .simple-button:hover,
@@ -485,51 +476,51 @@ article, section {
 .simple-button.active,
 .simple-button.disabled,
 .simple-button[disabled] {
-  background-color: #eeeeee;
+    background-color: #eeeeee;
 }
 .simple-button:active,
 .simple-button.active {
-  background-color: #d5d5d5 \9;
+    background-color: #d5d5d5 \9;
 }
 .simple-button:hover {
-  border-color: #aaaaaa;
-  -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255, .4), inset 0 0 50px 5px rgba(255,255,255,.2);
-  -moz-box-shadow: inset 0 1px 0 rgba(255,255,255, .4), inset 0 0 50px 5px rgba(255,255,255,.2);
-  box-shadow: inset 0 1px 0 rgba(255,255,255, .4), inset 0 0 50px 5px rgba(255,255,255,.2);
+    border-color: #aaaaaa;
+    -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255, .4), inset 0 0 50px 5px rgba(255,255,255,.2);
+    -moz-box-shadow: inset 0 1px 0 rgba(255,255,255, .4), inset 0 0 50px 5px rgba(255,255,255,.2);
+    box-shadow: inset 0 1px 0 rgba(255,255,255, .4), inset 0 0 50px 5px rgba(255,255,255,.2);
 }
 .simple-button:active,
 .simple-button.toggled {
-  -webkit-box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.3), inset 0 2px 4px rgba(0, 0, 0, 0.4);
-  -moz-box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.3), inset 0 2px 4px rgba(0, 0, 0, 0.4);
-  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.3), inset 0 2px 4px rgba(0, 0, 0, 0.4);
+    -webkit-box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.3), inset 0 2px 4px rgba(0, 0, 0, 0.4);
+    -moz-box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.3), inset 0 2px 4px rgba(0, 0, 0, 0.4);
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.3), inset 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 .simple-button:disabled,
 .simple-button.disabled {
-  background-image: none !important;
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  box-shadow: none;
-  cursor: not-allowed !important;
-  opacity: 0.5;
-  filter: alpha(opacity=50);
-  top: 0 !important;
+    background-image: none !important;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    cursor: not-allowed !important;
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+    top: 0 !important;
 }
 .simple-button.blue,
 .simple-button.secondary {
-  border-color: #2c3747 !important;
-  border-bottom-color: #000000 !important;
-  background-color: #364253;
-  background-image: -moz-linear-gradient(top, #3a4759, #303b4a);
-  background-image: -ms-linear-gradient(top, #3a4759, #303b4a);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#3a4759), to(#303b4a));
-  background-image: -webkit-linear-gradient(top, #3a4759, #303b4a);
-  background-image: -o-linear-gradient(top, #3a4759, #303b4a);
-  background-image: linear-gradient(top, #3a4759, #303b4a);
-  background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#3a4759', endColorstr='#303b4a', GradientType=0);
-  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
-  color: #ffffff !important;
-  text-shadow: 0 -1px 0 #050608;
+    border-color: #2c3747 !important;
+    border-bottom-color: #000000 !important;
+    background-color: #364253;
+    background-image: -moz-linear-gradient(top, #3a4759, #303b4a);
+    background-image: -ms-linear-gradient(top, #3a4759, #303b4a);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#3a4759), to(#303b4a));
+    background-image: -webkit-linear-gradient(top, #3a4759, #303b4a);
+    background-image: -o-linear-gradient(top, #3a4759, #303b4a);
+    background-image: linear-gradient(top, #3a4759, #303b4a);
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#3a4759', endColorstr='#303b4a', GradientType=0);
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+    color: #ffffff !important;
+    text-shadow: 0 -1px 0 #050608;
 }
 .simple-button.blue:hover,
 .simple-button.secondary:hover,
@@ -541,30 +532,30 @@ article, section {
 .simple-button.secondary.disabled,
 .simple-button.blue[disabled],
 .simple-button.secondary[disabled] {
-  background-color: #303b4a;
+    background-color: #303b4a;
 }
 .simple-button.blue:active,
 .simple-button.secondary:active,
 .simple-button.blue.active,
 .simple-button.secondary.active {
-  background-color: #1c222b \9;
+    background-color: #1c222b \9;
 }
 .simple-button.green,
 .simple-button.primary {
-  border-color: #76a005 !important;
-  border-bottom-color: #526f03 !important;
-  background-color: #7fac05;
-  background-image: -moz-linear-gradient(top, #8aba08, #6e9700);
-  background-image: -ms-linear-gradient(top, #8aba08, #6e9700);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#8aba08), to(#6e9700));
-  background-image: -webkit-linear-gradient(top, #8aba08, #6e9700);
-  background-image: -o-linear-gradient(top, #8aba08, #6e9700);
-  background-image: linear-gradient(top, #8aba08, #6e9700);
-  background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#8aba08', endColorstr='#6e9700', GradientType=0);
-  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
-  color: #ffffff !important;
-  text-shadow: 0 -1px 0 #526f03;
+    border-color: #76a005 !important;
+    border-bottom-color: #526f03 !important;
+    background-color: #7fac05;
+    background-image: -moz-linear-gradient(top, #8aba08, #6e9700);
+    background-image: -ms-linear-gradient(top, #8aba08, #6e9700);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#8aba08), to(#6e9700));
+    background-image: -webkit-linear-gradient(top, #8aba08, #6e9700);
+    background-image: -o-linear-gradient(top, #8aba08, #6e9700);
+    background-image: linear-gradient(top, #8aba08, #6e9700);
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#8aba08', endColorstr='#6e9700', GradientType=0);
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+    color: #ffffff !important;
+    text-shadow: 0 -1px 0 #526f03;
 }
 .simple-button.green:hover,
 .simple-button.primary:hover,
@@ -576,30 +567,30 @@ article, section {
 .simple-button.primary.disabled,
 .simple-button.green[disabled],
 .simple-button.primary[disabled] {
-  background-color: #6e9700;
+    background-color: #6e9700;
 }
 .simple-button.green:active,
 .simple-button.primary:active,
 .simple-button.green.active,
 .simple-button.primary.active {
-  background-color: #496400 \9;
+    background-color: #496400 \9;
 }
 .simple-button.orange,
 .simple-button.warning {
-  border-color: #bf4f04 !important;
-  border-bottom-color: #8d3a03 !important;
-  background-color: #d55704;
-  background-image: -moz-linear-gradient(top, #e35d04, #bf4f04);
-  background-image: -ms-linear-gradient(top, #e35d04, #bf4f04);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#e35d04), to(#bf4f04));
-  background-image: -webkit-linear-gradient(top, #e35d04, #bf4f04);
-  background-image: -o-linear-gradient(top, #e35d04, #bf4f04);
-  background-image: linear-gradient(top, #e35d04, #bf4f04);
-  background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#e35d04', endColorstr='#bf4f04', GradientType=0);
-  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
-  color: #ffffff !important;
-  text-shadow: 0 -1px 0 #743002;
+    border-color: #bf4f04 !important;
+    border-bottom-color: #8d3a03 !important;
+    background-color: #d55704;
+    background-image: -moz-linear-gradient(top, #e35d04, #bf4f04);
+    background-image: -ms-linear-gradient(top, #e35d04, #bf4f04);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#e35d04), to(#bf4f04));
+    background-image: -webkit-linear-gradient(top, #e35d04, #bf4f04);
+    background-image: -o-linear-gradient(top, #e35d04, #bf4f04);
+    background-image: linear-gradient(top, #e35d04, #bf4f04);
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#e35d04', endColorstr='#bf4f04', GradientType=0);
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+    color: #ffffff !important;
+    text-shadow: 0 -1px 0 #743002;
 }
 .simple-button.orange:hover,
 .simple-button.warning:hover,
@@ -611,119 +602,119 @@ article, section {
 .simple-button.warning.disabled,
 .simple-button.orange[disabled],
 .simple-button.warning[disabled] {
-  background-color: #bf4f04;
+    background-color: #bf4f04;
 }
 .simple-button.orange:active,
 .simple-button.warning:active,
 .simple-button.orange.active,
 .simple-button.warning.active {
-  background-color: #8d3a03 \9;
+    background-color: #8d3a03 \9;
 }
 /* Modifications for IE8 and under */
 .lte8 .simple-button:active,
 .lte8 .simple-button.toggled {
-  background-color: #d5d5d5;
+    background-color: #d5d5d5;
 }
 .lte8 .simple-button.blue:active,
 .lte8 .simple-button.blue.toggled {
-  background-color: #10161d;
+    background-color: #10161d;
 }
 .lte8 .simple-button.green:active,
 .lte8 .simple-button.green.toggled {
-  background-color: #496400;
+    background-color: #496400;
 }
 .lte8 .simple-button.orange:active,
 .lte8 .simple-button.orange.toggled {
-  background-color: #8d3a03;
+    background-color: #8d3a03;
 }
 .lte8 .simple-button:hover {
-  outline: 2px solid #333333;
+    outline: 2px solid #333333;
 }
 .lte7 .simple-button {
-  position: static;
+    position: static;
 }
 input.simple-button {
-  /* Inputs (specificically buttons) don't obey padding in some cases */
+    /* Inputs (specificically buttons) don't obey padding in some cases */
 
-  line-height: 15px;
+    line-height: 15px;
 }
 
 .vertical-shadow {
-  border: 1px solid #cccccc;
-  border-bottom: 1px solid #aaa;
-  -webkit-box-shadow: 0 1px 3px #cccccc;
-  -moz-box-shadow: 0 1px 3px #cccccc;
-  box-shadow: 0 1px 3px #cccccc;
+    border: 1px solid #cccccc;
+    border-bottom: 1px solid #aaa;
+    -webkit-box-shadow: 0 1px 3px #cccccc;
+    -moz-box-shadow: 0 1px 3px #cccccc;
+    box-shadow: 0 1px 3px #cccccc;
 }
 /* links that wrap divs and are big buttons */
 a.big-button:link,
 a.big-button:visited {
-  text-decoration: none;
-  color: inherit;
-  display: inline-block;
+    text-decoration: none;
+    color: inherit;
+    display: inline-block;
 }
 a.big-button:focus > div,
 a.big-button:hover > div,
 a.big-button:active > div {
-  -webkit-box-shadow: 0px 0px 4px 0px #aaaaaa;
-  -moz-box-shadow: 0px 0px 4px 0px #aaaaaa;
-  box-shadow: 0px 0px 4px 0px #aaaaaa;
+    -webkit-box-shadow: 0px 0px 4px 0px #aaaaaa;
+    -moz-box-shadow: 0px 0px 4px 0px #aaaaaa;
+    box-shadow: 0px 0px 4px 0px #aaaaaa;
 }
 
 .current-card-container {
-  position: relative;
+    position: relative;
 }
 .current-card-container-inner {
-  background-color: #F8F8F8;
+    background-color: #F8F8F8;
 }
 
 .exercises-card {
-  float: left;
-  width: 7%;
-  /* margin-bottom: -9999px;
+    float: left;
+    width: 7%;
+    /* margin-bottom: -9999px;
     padding-bottom: 9999px; */
 
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }
 .exercises-card {
-  width: 86%;
+    width: 86%;
 }
 .current-card {
-  position: relative;
-  margin-bottom: 20px;
+    position: relative;
+    margin-bottom: 20px;
 }
 .current-card #answer_area_wrap {
-  margin: 10px -8px 0 0;
+    margin: 10px -8px 0 0;
 }
 .current-card #answer_area .info-box {
-  overflow: visible;
+    overflow: visible;
 }
 .current-card .info-box:before {
-  content: " ";
-  display: block;
-  border-right: 7px solid transparent;
-  border-bottom: 8px solid #ccc;
-  width: 0;
-  height: 15px;
-  position: absolute;
-  right: -1px;
-  top: -24px;
+    content: " ";
+    display: block;
+    border-right: 7px solid transparent;
+    border-bottom: 8px solid #ccc;
+    width: 0;
+    height: 15px;
+    position: absolute;
+    right: -1px;
+    top: -24px;
 }
 
 .current-card #problemarea {
-  margin-top: 35px;
+    margin-top: 35px;
 }
 .current-card #answer_area_wrap {
-  margin-top: 52px;
+    margin-top: 52px;
 }
 
 /**
-  * General Exercise area styling
-  */
+    * General Exercise area styling
+    */
 .exercises-body {
-  min-height: 380px;
+    min-height: 380px;
 }
 
 .exercises-card {
