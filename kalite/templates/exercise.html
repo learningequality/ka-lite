@@ -120,7 +120,6 @@
                                         <input type="button" class="simple-button green" id="check-answer-button" value="{{ check_btn }}"/>
                                         {% trans "Correct! Next Question..." as next_btn %}
                                         <input type="button" class="simple-button green" id="next-question-button" style="display:none;" name="correctnextbutton" value="{{ next_btn }}"/>
-                                        <span id="show-solution-button-container"></span>
                                         <div id="check-answer-results"><p class="check-answer-message info-box-sub-description"></p></div>
                                         </div>
                                     </div>
@@ -183,9 +182,10 @@
                         </div>
                     </div>
                 </div>
-                <div id="extras" class="single-exercise">
+                <div>
                     <ul>
-                        <li> <a id="scratchpad-show" href style>{% trans "Show scratchpad" %}</a>
+                        <li>
+                            <a id="scratchpad-show" href style>{% trans "Show scratchpad" %}</a>
                             <span id="scratchpad-not-available" style="display: none;">{% trans "Scratchpad not available" %}</span>
                         </li>
                     </ul>

@@ -118,9 +118,6 @@ h4 {font-size:15px; margin-bottom: 22px;}
 h5 {font-size: 15px; margin-bottom: -22px;}
 p { font-size: 14px; margin: 22px 0;}
 
-.pulls { margin-bottom: 9px; } /* "Pulls" the next block element up by halving the margin. */
-.pulled { margin-top: 9px; margin-bottom: 27px; } /* Preserves vertical rhythm. Not always necessary */
-
 b, strong { font-weight: bold; }
 em { font-style: italic; }
 
@@ -129,9 +126,6 @@ em { font-style: italic; }
 .left { text-align: left; }
 .center { text-align: center; }
 .justify { text-align: justify; }
-
-a.simple-link { text-decoration: none; }
-a.simple-link:hover { text-decoration: underline; }
 
 /*  ellipses:
     You *must* set a width and display: (inline-)block
@@ -199,13 +193,7 @@ hr {
 }
 
 /* Links in the header and footer don't change color when visited. */
-a:link,
-a:visited,
-header a:visited,
-footer a:visited,
-.visited-no-recolor a:visited,
-a.visited-no-recolor:visited
- {
+a:link, a:visited {
     color: #005987;
     text-decoration: none;
 }
@@ -362,34 +350,6 @@ article, section {
 
 /* Individual Exercise Styles */
 
-#container.single-exercise {
-    overflow: visible;
-    min-width: 950px;
-}
-#container .dashboard-header.single-exercise {
-    border: 1px solid #ccc;
-    border-top: none;
-}
-
-#description .practice.simple-button {
-    float: right;
-    font-size: 110%;
-}
-
-#extras.single-exercise {
-    margin: 6px 0 10px;
-    padding-right: 10px;
-}
-
-#question_area {
-    margin-bottom: 10px;
-    position: relative;
-    padding: 0;
-    float: left;
-    width: 63%;
-    margin-left: 1%;
-}
-
 #answer_area_wrap {
     float: right;
     width: 27%;
@@ -410,10 +370,7 @@ article, section {
         -webkit-box-shadow: 0 1px 2px #ccc;
         box-shadow: 0 1px 2px #ccc;
     }
-    .info-box table {
-        border-collapse: collapse;
-    }
-    .info-box .info-box-header, .info-box .info-box-subheader {
+    .info-box .info-box-header {
         color: #777;
         display: block;
         font-size: 18px;
@@ -422,20 +379,6 @@ article, section {
         font-weight: bold;
         text-shadow: 0 1px 0 #fff;
     }
-    .info-box .info-box-subheader {
-        line-height: 200%;
-        font-size: 14px;
-        color: #333;
-    }
-    .info-box .related-content-title {
-        display: none;
-    }
-    .info-box #related-video-list {
-        padding: 0;
-        margin: 0;
-        list-style: none;
-    }
-        /* Energy points badge look. Should be used wherever we display energy points */
     .info-box .info-box-sub-description {
         display: block;
         color: #777;
@@ -444,15 +387,11 @@ article, section {
         .info-box .info-box-sub-description strong {
             color: #444;
             font-style: italic;
-        }
-    .info-box #answer {
-        width: 100px;
-    }
-    
+        }    
     #answer_area .info-box .select-choice {
         margin: 5px 0 10px;
     }
-/* End of Individual Exercise Styles */
+
 
 .nav-subheader {
     background: #75a400;
@@ -462,10 +401,6 @@ article, section {
     color: #fff;
     font-weight: normal;
     font-size: 12pt;
-}
-
-#related-video-list > .related-video-list > li > a > .vid-progress {
-  padding-left: 14px;
 }
 
 
@@ -742,7 +677,6 @@ a.big-button:active > div {
   background-color: #F8F8F8;
 }
 
-.exercises-stack,
 .exercises-card {
   float: left;
   width: 7%;
@@ -777,10 +711,6 @@ a.big-button:active > div {
   right: -1px;
   top: -24px;
 }
-.qtip.ui-tooltip.leaf-tooltip {
-  max-width: 200px !important;
-}
-
 
 .current-card #problemarea {
   margin-top: 35px;
@@ -789,40 +719,14 @@ a.big-button:active > div {
   margin-top: 52px;
 }
 
-.three-col {
-  float: left;
-  width: 32%;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-}
-.three-col.col-one,
-.three-col.col-two {
-  margin-right: 2%;
-}
-/**
- * End read-only historical problem viewing mode
- */
 /**
   * General Exercise area styling
   */
-.exercises-content {
-  padding-left: 0;
-  padding-right: 0;
-}
 .exercises-body {
   min-height: 380px;
 }
-.exercises-header .topic-exercise-image {
-  width: 40px;
-  height: 40px;
-}
-.exercises-header .topic-exercise-image.inline {
-  display: inline-block;
-  margin: -50% 0;
-}
 
-div.exercises-card {
+.exercises-card {
     width: 753px;
 }
 
