@@ -216,11 +216,12 @@ class DeviceUnregisteredTest(KALiteDistributedBrowserTestCase):
 
 
 @distributed_only
-class ChangeLocalUserPassword(unittest.TestCase):
+class ChangeLocalUserPassword(KALiteDistributedBrowserTestCase):
     """Tests for the changelocalpassword command"""
     
     def setUp(self):
         """Create a new facility and facility user"""
+        super(KALiteDistributedBrowserTestCase, self).setUp()
         self.facility = Facility(name="Test Facility")
         self.facility.save()
         self.group = FacilityGroup(facility=self.facility, name="Test Class")
@@ -242,8 +243,9 @@ class ChangeLocalUserPassword(unittest.TestCase):
         self.assertEqual(err, "", "no output on stderr")
         self.assertNotEqual(out, "", "some output on stdout")
         self.assertEqual(val, 0, "Exit code is not zero")
-        new_password = FacilityUser.objects.get(id=self.user.id).password
-        self.assertNotEqual(new_password, old_password, "password not changed")
+        new_password =  re.search(r"Generated new password for user .*: '(?P<password>.*)'", out).group('password')
+        self.login_student("testuser", new_password)
+        self.assertTrue(self.is_logged_in(), "student's password did not change")
 
 
     def test_change_password_on_nonexistent_user(self):
