@@ -336,19 +336,21 @@ class StudentExerciseTest(KALiteDistributedBrowserTestCase):
         self.login_student(self.student_username, self.student_password)
         self.browse_to(self.live_server_url + '/math/arithmetic/addition-subtraction/basic_addition/e/addition_1/') 
 
+    def browser_get_current_points(self):
+        return self.browser.find_element_by_css_selector('#totalpoints').text
+
     def browser_insert_answer(self, answer):
         self.browser.find_element_by_css_selector('#solutionarea input[type=text]').click()
         self.browser_send_keys(str(answer)) 
         self.browser_send_keys(Keys.RETURN)
+        return self.browser_get_current_points()
 
     def test_question_correct_points_are_added(self):
         numbers = self.browser.find_elements_by_class_name('mn')[:-1] # last one is to be blank
         answer = sum(int(num.text) for num in numbers)
-        self.browser_insert_answer(answer)
-        points = self.browser.find_element_by_css_selector('#totalpoints').text
+        points = self.browser_insert_answer(answer)
         self.assertTrue(points == '12', "point update is wrong: {}. Should be 12".format(points))
 
     def test_question_incorrect_no_points_are_added(self):
-        self.browser_insert_answer('this is a wrong answer')
-        points = self.browser.find_element_by_css_selector('#totalpoints').text
+        points = self.browser_insert_answer('this is a wrong answer')
         self.assertTrue(points == '', "points text is not empty") # somehow we can't use the truthiness of string, so we use ==
