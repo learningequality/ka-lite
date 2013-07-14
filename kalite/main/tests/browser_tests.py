@@ -33,20 +33,14 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
     student_password =  'socrates'
     facilityname = 'middle of nowhere'
 
-    def db_create_student(self, username=None, password=None):
-        if not username:
-            username = self.student_username
-        if not password:
-            password = self.student_password
-        facility = self.db_create_facility()
+    def create_student(self, username='test_student', password='socrates'):
+        facility = self.create_facility()
         student = FacilityUser(username=username, facility=facility)
         student.set_password(raw_password=password)
         student.save()
         return student
 
-    def db_create_facility(self, facilityname=None):
-        if not facilityname:
-            facilityname = self.facilityname
+    def create_facility(self, facilityname='middle of nowhere'):
         facility = Facility(name=facilityname)
         facility.save()
         return facility
@@ -343,7 +337,7 @@ class StudentExerciseTest(KALiteDistributedBrowserTestCase):
 
     def setUp(self):
         super(KALiteDistributedBrowserTestCase, self).setUp()
-        self.db_create_student()
+        self.create_student()
         self.login_student(self.student_username, self.student_password)
         self.browse_to('http://localhost:8000/math/arithmetic/addition-subtraction/basic_addition/e/addition_1/') # TODO: there must be a better way to do this
 
