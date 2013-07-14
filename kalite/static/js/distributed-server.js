@@ -1,10 +1,10 @@
 // Functions related to loading the page
-    
+
 var csrftoken = getCookie("csrftoken") || "";
 
 function toggle_state(state, status){
-    $("." + (status ? "not-" : "") + state + "-only").hide(); 
-    $("." + (!status ? "not-" : "") + state + "-only").show(); 
+    $("." + (status ? "not-" : "") + state + "-only").hide();
+    $("." + (!status ? "not-" : "") + state + "-only").show();
 }
 
 function show_messages(messages) {
@@ -13,9 +13,9 @@ function show_messages(messages) {
         show_message(messages[mi]["tags"], messages[mi]["text"]);
     }
 }
-    
+
 $(function(){
-    // Do the AJAX request to async-load user and message data 
+    // Do the AJAX request to async-load user and message data
     $("[class$=-only]").hide();
     doRequest("/securesync/api/status").success(function(data){
         toggle_state("logged-in", data.is_logged_in);
