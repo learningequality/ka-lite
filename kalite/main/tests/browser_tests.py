@@ -245,6 +245,8 @@ class ChangeLocalUserPassword(KALiteDistributedBrowserTestCase):
         self.assertEqual(out, '', "Expected no stdout; stdout is {}".format(out))
         self.assertNotEqual(err, '', "Expected nonempty stderr")
         self.assertNotEqual(val, 0, 'Expected return code to be nonzero')
+        self.login_student(self.user.username, self.old_password)
+        self.assertTrue(self.is_logged_in(), "student's password was changed!")
 
 @distributed_only
 class UserRegistrationCaseTest(KALiteRegisteredDistributedBrowserTestCase):
