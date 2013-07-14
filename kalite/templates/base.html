@@ -12,11 +12,12 @@
         {% block titletag %}
         <title>{% block title %}{{ title }}{% endblock title %} | KA Lite</title>
         {% endblock %}
-        <link rel="stylesheet" type="text/css" href="{% static "css/khan-site.css" %}"></link>
-        <link rel="stylesheet" type="text/css" href="{% static "css/khan-lite.css" %}"></link>
+        <link rel="stylesheet" type="text/css" href="{% static "css/khan-site.css" %}">
+        <link rel="stylesheet" type="text/css" href="{% static "css/khan-lite.css" %}">
         {% block basecss %}{% endblock basecss %}
         {% block headcss %}{% endblock headcss %}
         <link rel="shortcut icon" href="{% static "images/favicon.ico" %}">
+        <script type="text/javascript" src="{% static "js/json2.js" %}"></script>
         {% block jqueryjs %}
         <script type="text/javascript" src="{% static "js/jquery-1.7.1.min.js" %}"></script>
         {% endblock jqueryjs %}
@@ -54,8 +55,8 @@
                             </div>
 
                             <div id="logo">
-                                <a id="logo-image-small" href="/" title="KA Lite Home" name="logo-image">
-                                    <img src="{% static "images/horizontal-logo-small.png" %}"/>
+                                <a id="logo-image-small" href="/" title="KA Lite Home">
+                                    <img src="{% static "images/horizontal-logo-small.png" %}" alt="KA Lite logo">
                                 </a>
                             </div>
                             <div class="clear"></div>
