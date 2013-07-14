@@ -339,7 +339,7 @@ class StudentExerciseTest(KALiteDistributedBrowserTestCase):
         super(KALiteDistributedBrowserTestCase, self).setUp()
         self.create_student()
         self.login_student(self.student_username, self.student_password)
-        self.browse_to('http://localhost:8000/math/arithmetic/addition-subtraction/basic_addition/e/addition_1/') # TODO: there must be a better way to do this
+        self.browse_to(self.live_server_url + '/math/arithmetic/addition-subtraction/basic_addition/e/addition_1/') 
 
     def browser_insert_answer(self, answer):
         self.browser.find_element_by_css_selector('#solutionarea input[type=text]').click()
