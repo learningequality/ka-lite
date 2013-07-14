@@ -222,29 +222,20 @@ class ChangeLocalUserPassword(KALiteDistributedBrowserTestCase):
     def setUp(self):
         """Create a new facility and facility user"""
         super(KALiteDistributedBrowserTestCase, self).setUp()
-        self.facility = Facility(name="Test Facility")
-        self.facility.save()
-        self.group = FacilityGroup(facility=self.facility, name="Test Class")
-        self.group.full_clean()
-        self.group.save()
-        self.user = FacilityUser(facility=self.facility, username="testuser", first_name="Firstname", last_name="Lastname", group=self.group)
-        self.user.clear_text_password = "testpass" # not used anywhere but by us, for testing purposes
-        self.user.set_password(self.user.clear_text_password)
-        self.user.full_clean()
-        self.user.save()
-    
+        self.old_password = 'testpass'
+        self.user = self.create_student(password=self.old_password)
     
     def test_change_password_on_existing_user(self):
         """Change the password on an existing user."""
         
         # Now, re-retrieve the user, to check.
-        old_password = self.user.password
         (out,err,val) = call_command_with_output("changelocalpassword", self.user.username, noinput=True)
         self.assertEqual(err, "", "no output on stderr")
         self.assertNotEqual(out, "", "some output on stdout")
         self.assertEqual(val, 0, "Exit code is not zero")
         new_password =  re.search(r"Generated new password for user .*: '(?P<password>.*)'", out).group('password')
-        self.login_student("testuser", new_password)
+        self.assertNotEqual(self.old_password, new_password)
+        self.login_student(self.user.username, new_password)
         self.assertTrue(self.is_logged_in(), "student's password did not change")
 
 
