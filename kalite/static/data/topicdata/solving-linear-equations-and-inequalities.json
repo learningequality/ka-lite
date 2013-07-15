@@ -8,6 +8,7 @@
     "related_video_readable_ids": [
       "evaluating-exponential-expressions-2"
     ], 
+    "slug": "evaluating_expressions_1", 
     "prerequisites": [
       "multiplying_radicals", 
       "adding_and_subtracting_fractions"
@@ -16,7 +17,7 @@
     "h_position": 25, 
     "v_position": 9, 
     "path": "/math/algebra/solving-linear-equations-and-inequalities/variable-and-expressions/e/evaluating_expressions_1/", 
-    "slug": "evaluating_expressions_1", 
+    "id": "evaluating_expressions_1", 
     "name": "evaluating_expressions_1"
   }, 
   {
@@ -28,6 +29,7 @@
     "related_video_readable_ids": [
       "evaluating-expressions-with-two-variables"
     ], 
+    "slug": "evaluating_expressions_2", 
     "prerequisites": [
       "evaluating_expressions_1"
     ], 
@@ -35,7 +37,7 @@
     "h_position": 26, 
     "v_position": 9, 
     "path": "/math/algebra/solving-linear-equations-and-inequalities/variable-and-expressions/e/evaluating_expressions_2/", 
-    "slug": "evaluating_expressions_2", 
+    "id": "evaluating_expressions_2", 
     "name": "evaluating_expressions_2"
   }, 
   {
@@ -47,6 +49,7 @@
     "related_video_readable_ids": [
       "one-step-equation-intuition-exercise-intro"
     ], 
+    "slug": "one_step_equation_intuition", 
     "prerequisites": [
       "evaluating_expressions_1"
     ], 
@@ -54,7 +57,7 @@
     "h_position": 26, 
     "v_position": 10, 
     "path": "/math/algebra/solving-linear-equations-and-inequalities/why-of-algebra/e/one_step_equation_intuition/", 
-    "slug": "one_step_equation_intuition", 
+    "id": "one_step_equation_intuition", 
     "name": "one_step_equation_intuition"
   }, 
   {
@@ -64,12 +67,13 @@
     "title": "One step equations 0.5", 
     "seconds_per_fast_problem": 5.0, 
     "related_video_readable_ids": [], 
+    "slug": "one_step_equations_0.5", 
     "prerequisites": [], 
     "live": false, 
     "h_position": 63, 
     "v_position": -20, 
     "path": "/math/algebra/solving-linear-equations-and-inequalities/why-of-algebra/e/one_step_equations_0.5/", 
-    "slug": "one_step_equations_0.5", 
+    "id": "one_step_equations_0.5", 
     "name": "one_step_equations_0.5"
   }, 
   {
@@ -81,6 +85,7 @@
     "related_video_readable_ids": [
       "combining-like-terms"
     ], 
+    "slug": "combining_like_terms_1", 
     "prerequisites": [
       "multiplying_radicals"
     ], 
@@ -88,7 +93,7 @@
     "h_position": 25, 
     "v_position": 7, 
     "path": "/math/algebra/solving-linear-equations-and-inequalities/manipulating-expressions/e/combining_like_terms_1/", 
-    "slug": "combining_like_terms_1", 
+    "id": "combining_like_terms_1", 
     "name": "combining_like_terms_1"
   }, 
   {
@@ -100,6 +105,7 @@
     "related_video_readable_ids": [
       "combining-like-terms-and-the-distributive-property"
     ], 
+    "slug": "combining_like_terms_2", 
     "prerequisites": [
       "combining_like_terms_1"
     ], 
@@ -107,7 +113,7 @@
     "h_position": 27, 
     "v_position": 7, 
     "path": "/math/algebra/solving-linear-equations-and-inequalities/manipulating-expressions/e/combining_like_terms_2/", 
-    "slug": "combining_like_terms_2", 
+    "id": "combining_like_terms_2", 
     "name": "combining_like_terms_2"
   }, 
   {
@@ -119,6 +125,7 @@
     "related_video_readable_ids": [
       "combining-like-terms-and-the-distributive-property"
     ], 
+    "slug": "writing_expressions_1", 
     "prerequisites": [
       "evaluating_expressions_1"
     ], 
@@ -126,7 +133,7 @@
     "h_position": 26, 
     "v_position": 8, 
     "path": "/math/algebra/solving-linear-equations-and-inequalities/manipulating-expressions/e/writing_expressions_1/", 
-    "slug": "writing_expressions_1", 
+    "id": "writing_expressions_1", 
     "name": "writing_expressions_1"
   }, 
   {
@@ -138,6 +145,7 @@
     "related_video_readable_ids": [
       "combining-like-terms-and-the-distributive-property"
     ], 
+    "slug": "writing_expressions_2", 
     "prerequisites": [
       "writing_expressions_1"
     ], 
@@ -145,7 +153,7 @@
     "h_position": 27, 
     "v_position": 8, 
     "path": "/math/algebra/solving-linear-equations-and-inequalities/manipulating-expressions/e/writing_expressions_2/", 
-    "slug": "writing_expressions_2", 
+    "id": "writing_expressions_2", 
     "name": "writing_expressions_2"
   }, 
   {
@@ -155,12 +163,13 @@
     "title": "One step equations 0.5", 
     "seconds_per_fast_problem": 5.0, 
     "related_video_readable_ids": [], 
+    "slug": "one_step_equations_0.5", 
     "prerequisites": [], 
     "live": false, 
     "h_position": 63, 
     "v_position": -20, 
     "path": "/math/algebra/solving-linear-equations-and-inequalities/equations_beginner/e/one_step_equations_0.5/", 
-    "slug": "one_step_equations_0.5", 
+    "id": "one_step_equations_0.5", 
     "name": "one_step_equations_0.5"
   }, 
   {
@@ -172,6 +181,7 @@
     "related_video_readable_ids": [
       "one-step-equations"
     ], 
+    "slug": "one_step_equations", 
     "prerequisites": [
       "one_step_equation_intuition"
     ], 
@@ -179,7 +189,7 @@
     "h_position": 27, 
     "v_position": 11, 
     "path": "/math/algebra/solving-linear-equations-and-inequalities/equations_beginner/e/one_step_equations/", 
-    "slug": "one_step_equations", 
+    "id": "one_step_equations", 
     "name": "one_step_equations"
   }, 
   {
@@ -191,6 +201,7 @@
     "related_video_readable_ids": [
       "one-step-equations"
     ], 
+    "slug": "linear_equations_1", 
     "prerequisites": [
       "one_step_equations", 
       "combining_like_terms_2", 
@@ -200,7 +211,7 @@
     "h_position": 28, 
     "v_position": 9, 
     "path": "/math/algebra/solving-linear-equations-and-inequalities/equations_beginner/e/linear_equations_1/", 
-    "slug": "linear_equations_1", 
+    "id": "linear_equations_1", 
     "name": "linear_equations_1"
   }, 
   {
@@ -212,6 +223,7 @@
     "related_video_readable_ids": [
       "application-problems-with-equation-in-one-variable"
     ], 
+    "slug": "linear_equations_2", 
     "prerequisites": [
       "linear_equations_1"
     ], 
@@ -219,7 +231,7 @@
     "h_position": 29, 
     "v_position": 9, 
     "path": "/math/algebra/solving-linear-equations-and-inequalities/equations_beginner/e/linear_equations_2/", 
-    "slug": "linear_equations_2", 
+    "id": "linear_equations_2", 
     "name": "linear_equations_2"
   }, 
   {
@@ -231,6 +243,7 @@
     "related_video_readable_ids": [
       "equation-special-cases"
     ], 
+    "slug": "linear_equations_3", 
     "prerequisites": [
       "linear_equations_2"
     ], 
@@ -238,7 +251,7 @@
     "h_position": 30, 
     "v_position": 9, 
     "path": "/math/algebra/solving-linear-equations-and-inequalities/basic-equation-practice/e/linear_equations_3/", 
-    "slug": "linear_equations_3", 
+    "id": "linear_equations_3", 
     "name": "linear_equations_3"
   }, 
   {
@@ -250,6 +263,7 @@
     "related_video_readable_ids": [
       "basic-linear-equation-word-problem"
     ], 
+    "slug": "linear_equation_word_problems", 
     "prerequisites": [
       "linear_equations_2"
     ], 
@@ -257,7 +271,7 @@
     "h_position": 30, 
     "v_position": 8, 
     "path": "/math/algebra/solving-linear-equations-and-inequalities/basic-equation-practice/e/linear_equation_word_problems/", 
-    "slug": "linear_equation_word_problems", 
+    "id": "linear_equation_word_problems", 
     "name": "linear_equation_word_problems"
   }, 
   {
@@ -269,6 +283,7 @@
     "related_video_readable_ids": [
       "word-problem-solving-3"
     ], 
+    "slug": "percentage_word_problems_1", 
     "prerequisites": [
       "converting_decimals_to_percents", 
       "converting_percents_to_decimals"
@@ -277,7 +292,7 @@
     "h_position": 28, 
     "v_position": -5, 
     "path": "/math/algebra/solving-linear-equations-and-inequalities/percent_word_problems/e/percentage_word_problems_1/", 
-    "slug": "percentage_word_problems_1", 
+    "id": "percentage_word_problems_1", 
     "name": "percentage_word_problems_1"
   }, 
   {
@@ -289,6 +304,7 @@
     "related_video_readable_ids": [
       "word-problem-solving-3"
     ], 
+    "slug": "percentage_word_problems_2", 
     "prerequisites": [
       "percentage_word_problems_1"
     ], 
@@ -296,7 +312,7 @@
     "h_position": 29, 
     "v_position": -5, 
     "path": "/math/algebra/solving-linear-equations-and-inequalities/percent_word_problems/e/percentage_word_problems_2/", 
-    "slug": "percentage_word_problems_2", 
+    "id": "percentage_word_problems_2", 
     "name": "percentage_word_problems_2"
   }, 
   {
@@ -308,6 +324,7 @@
     "related_video_readable_ids": [
       "example-of-solving-for-a-variable"
     ], 
+    "slug": "solving_for_a_variable", 
     "prerequisites": [
       "multistep_equations_with_distribution"
     ], 
@@ -315,7 +332,7 @@
     "h_position": 33, 
     "v_position": 10, 
     "path": "/math/algebra/solving-linear-equations-and-inequalities/solving_for_variable/e/solving_for_a_variable/", 
-    "slug": "solving_for_a_variable", 
+    "id": "solving_for_a_variable", 
     "name": "solving_for_a_variable"
   }, 
   {
@@ -327,6 +344,7 @@
     "related_video_readable_ids": [
       "coverting-repeating-decimals-to-fractions-1"
     ], 
+    "slug": "converting_repeating_decimals_to_fractions_1", 
     "prerequisites": [
       "linear_equations_4"
     ], 
@@ -334,7 +352,7 @@
     "h_position": 32, 
     "v_position": 11, 
     "path": "/math/algebra/solving-linear-equations-and-inequalities/conv_rep_decimals/e/converting_repeating_decimals_to_fractions_1/", 
-    "slug": "converting_repeating_decimals_to_fractions_1", 
+    "id": "converting_repeating_decimals_to_fractions_1", 
     "name": "converting_repeating_decimals_to_fractions_1"
   }, 
   {
@@ -346,6 +364,7 @@
     "related_video_readable_ids": [
       "coverting-repeating-decimals-to-fractions-2"
     ], 
+    "slug": "converting_repeating_decimals_to_fractions_2", 
     "prerequisites": [
       "converting_repeating_decimals_to_fractions_1"
     ], 
@@ -353,7 +372,7 @@
     "h_position": 33, 
     "v_position": 11, 
     "path": "/math/algebra/solving-linear-equations-and-inequalities/conv_rep_decimals/e/converting_repeating_decimals_to_fractions_2/", 
-    "slug": "converting_repeating_decimals_to_fractions_2", 
+    "id": "converting_repeating_decimals_to_fractions_2", 
     "name": "converting_repeating_decimals_to_fractions_2"
   }, 
   {
@@ -365,6 +384,7 @@
     "related_video_readable_ids": [
       "ex-3-age-word-problem"
     ], 
+    "slug": "age_word_problems", 
     "prerequisites": [
       "linear_equations_3"
     ], 
@@ -372,7 +392,7 @@
     "h_position": 31, 
     "v_position": 10, 
     "path": "/math/algebra/solving-linear-equations-and-inequalities/age_word_problems_tut/e/age_word_problems/", 
-    "slug": "age_word_problems", 
+    "id": "age_word_problems", 
     "name": "age_word_problems"
   }, 
   {
@@ -384,6 +404,7 @@
     "related_video_readable_ids": [
       "absolute-value-equations-1"
     ], 
+    "slug": "absolute_value_equations", 
     "prerequisites": [
       "linear_equations_3"
     ], 
@@ -391,7 +412,7 @@
     "h_position": 31, 
     "v_position": 12, 
     "path": "/math/algebra/solving-linear-equations-and-inequalities/absolute-value-equations/e/absolute_value_equations/", 
-    "slug": "absolute_value_equations", 
+    "id": "absolute_value_equations", 
     "name": "absolute_value_equations"
   }, 
   {
@@ -403,6 +424,7 @@
     "related_video_readable_ids": [
       "ex-2-multi-step-equation"
     ], 
+    "slug": "linear_equations_4", 
     "prerequisites": [
       "linear_equations_3"
     ], 
@@ -410,7 +432,7 @@
     "h_position": 31, 
     "v_position": 11, 
     "path": "/math/algebra/solving-linear-equations-and-inequalities/complicated_equations/e/linear_equations_4/", 
-    "slug": "linear_equations_4", 
+    "id": "linear_equations_4", 
     "name": "linear_equations_4"
   }, 
   {
@@ -422,6 +444,7 @@
     "related_video_readable_ids": [
       "equations-with-variables-on-both-sides"
     ], 
+    "slug": "multistep_equations_with_distribution", 
     "prerequisites": [
       "linear_equations_4"
     ], 
@@ -429,7 +452,7 @@
     "h_position": 32, 
     "v_position": 10, 
     "path": "/math/algebra/solving-linear-equations-and-inequalities/complicated_equations/e/multistep_equations_with_distribution/", 
-    "slug": "multistep_equations_with_distribution", 
+    "id": "multistep_equations_with_distribution", 
     "name": "multistep_equations_with_distribution"
   }, 
   {
@@ -441,6 +464,7 @@
     "related_video_readable_ids": [
       "evaluating-expressions-with-unknown-variables-2"
     ], 
+    "slug": "expressions_with_unknown_variables", 
     "prerequisites": [
       "linear_equations_4"
     ], 
@@ -448,7 +472,7 @@
     "h_position": 32, 
     "v_position": 12, 
     "path": "/math/algebra/solving-linear-equations-and-inequalities/exp_unknown_vars/e/expressions_with_unknown_variables/", 
-    "slug": "expressions_with_unknown_variables", 
+    "id": "expressions_with_unknown_variables", 
     "name": "expressions_with_unknown_variables"
   }, 
   {
@@ -460,6 +484,7 @@
     "related_video_readable_ids": [
       "evaluating-expressions-with-unknown-variables-2"
     ], 
+    "slug": "expressions_with_unknown_variables_2", 
     "prerequisites": [
       "expressions_with_unknown_variables"
     ], 
@@ -467,7 +492,7 @@
     "h_position": 33, 
     "v_position": 12, 
     "path": "/math/algebra/solving-linear-equations-and-inequalities/exp_unknown_vars/e/expressions_with_unknown_variables_2/", 
-    "slug": "expressions_with_unknown_variables_2", 
+    "id": "expressions_with_unknown_variables_2", 
     "name": "expressions_with_unknown_variables_2"
   }
 ]

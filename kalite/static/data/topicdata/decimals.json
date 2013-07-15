@@ -8,6 +8,7 @@
     "related_video_readable_ids": [
       "comparing-decimals"
     ], 
+    "slug": "understanding_decimals_place_value", 
     "prerequisites": [
       "place_value"
     ], 
@@ -15,7 +16,7 @@
     "h_position": 14, 
     "v_position": 4, 
     "path": "/math/arithmetic/decimals/decimal_place_value/e/understanding_decimals_place_value/", 
-    "slug": "understanding_decimals_place_value", 
+    "id": "understanding_decimals_place_value", 
     "name": "understanding_decimals_place_value"
   }, 
   {
@@ -27,6 +28,7 @@
     "related_video_readable_ids": [
       "decimals-on-a-number-line"
     ], 
+    "slug": "decimals_on_the_number_line_1", 
     "prerequisites": [
       "number_line_2"
     ], 
@@ -34,7 +36,7 @@
     "h_position": 8, 
     "v_position": 3, 
     "path": "/math/arithmetic/decimals/decimal_place_value/e/decimals_on_the_number_line_1/", 
-    "slug": "decimals_on_the_number_line_1", 
+    "id": "decimals_on_the_number_line_1", 
     "name": "decimals_on_the_number_line_1"
   }, 
   {
@@ -46,6 +48,7 @@
     "related_video_readable_ids": [
       "points-on-a-number-line"
     ], 
+    "slug": "decimals_on_the_number_line_2", 
     "prerequisites": [
       "decimals_on_the_number_line_1"
     ], 
@@ -53,7 +56,7 @@
     "h_position": 9, 
     "v_position": 3, 
     "path": "/math/arithmetic/decimals/decimal_place_value/e/decimals_on_the_number_line_2/", 
-    "slug": "decimals_on_the_number_line_2", 
+    "id": "decimals_on_the_number_line_2", 
     "name": "decimals_on_the_number_line_2"
   }, 
   {
@@ -65,6 +68,7 @@
     "related_video_readable_ids": [
       "adding-decimals"
     ], 
+    "slug": "adding_decimals_2", 
     "prerequisites": [
       "adding_decimals"
     ], 
@@ -72,7 +76,7 @@
     "h_position": 12, 
     "v_position": 4, 
     "path": "/math/arithmetic/decimals/adding_decimals/e/adding_decimals_2/", 
-    "slug": "adding_decimals_2", 
+    "id": "adding_decimals_2", 
     "name": "adding_decimals_2"
   }, 
   {
@@ -84,6 +88,7 @@
     "related_video_readable_ids": [
       "adding-decimals"
     ], 
+    "slug": "adding_decimals_0.5", 
     "prerequisites": [
       "decimals_on_the_number_line_2"
     ], 
@@ -91,7 +96,7 @@
     "h_position": 10, 
     "v_position": 3, 
     "path": "/math/arithmetic/decimals/adding_decimals/e/adding_decimals_0.5/", 
-    "slug": "adding_decimals_0.5", 
+    "id": "adding_decimals_0.5", 
     "name": "adding_decimals_0.5"
   }, 
   {
@@ -103,6 +108,7 @@
     "related_video_readable_ids": [
       "subtracting-decimals"
     ], 
+    "slug": "subtracting_decimals_0.5", 
     "prerequisites": [
       "subtraction_4", 
       "adding_decimals"
@@ -111,7 +117,7 @@
     "h_position": 12, 
     "v_position": 6, 
     "path": "/math/arithmetic/decimals/adding_decimals/e/subtracting_decimals_0.5/", 
-    "slug": "subtracting_decimals_0.5", 
+    "id": "subtracting_decimals_0.5", 
     "name": "subtracting_decimals_0.5"
   }, 
   {
@@ -123,6 +129,7 @@
     "related_video_readable_ids": [
       "subtracting-decimals"
     ], 
+    "slug": "adding_decimals", 
     "prerequisites": [
       "addition_4", 
       "adding_decimals_0.5"
@@ -131,7 +138,7 @@
     "h_position": 11, 
     "v_position": 4, 
     "path": "/math/arithmetic/decimals/adding_decimals/e/adding_decimals/", 
-    "slug": "adding_decimals", 
+    "id": "adding_decimals", 
     "name": "adding_decimals"
   }, 
   {
@@ -143,6 +150,7 @@
     "related_video_readable_ids": [
       "subtracting-decimals-word-problem"
     ], 
+    "slug": "subtracting_decimals", 
     "prerequisites": [
       "subtracting_decimals_0.5"
     ], 
@@ -150,7 +158,7 @@
     "h_position": 13, 
     "v_position": 6, 
     "path": "/math/arithmetic/decimals/adding_decimals/e/subtracting_decimals/", 
-    "slug": "subtracting_decimals", 
+    "id": "subtracting_decimals", 
     "name": "subtracting_decimals"
   }, 
   {
@@ -162,6 +170,7 @@
     "related_video_readable_ids": [
       "subtracting-decimals-word-problem"
     ], 
+    "slug": "adding_and_subtracting_decimals_word_problems", 
     "prerequisites": [
       "subtracting_decimals"
     ], 
@@ -169,7 +178,7 @@
     "h_position": 14, 
     "v_position": 6, 
     "path": "/math/arithmetic/decimals/adding_decimals/e/adding_and_subtracting_decimals_word_problems/", 
-    "slug": "adding_and_subtracting_decimals_word_problems", 
+    "id": "adding_and_subtracting_decimals_word_problems", 
     "name": "adding_and_subtracting_decimals_word_problems"
   }, 
   {
@@ -181,6 +190,7 @@
     "related_video_readable_ids": [
       "mulitplication-8--multiplying-decimals--old-video"
     ], 
+    "slug": "multiplying_decimals", 
     "prerequisites": [
       "adding_decimals", 
       "multiplication_4"
@@ -189,7 +199,7 @@
     "h_position": 13, 
     "v_position": 2, 
     "path": "/math/arithmetic/decimals/multiplying_decimals/e/multiplying_decimals/", 
-    "slug": "multiplying_decimals", 
+    "id": "multiplying_decimals", 
     "name": "multiplying_decimals"
   }, 
   {
@@ -201,6 +211,7 @@
     "related_video_readable_ids": [
       "dividing-a-decimal-by-a-power-of-10"
     ], 
+    "slug": "understanding_moving_the_decimal", 
     "prerequisites": [
       "multiplying_decimals"
     ], 
@@ -208,7 +219,7 @@
     "h_position": 14, 
     "v_position": 2, 
     "path": "/math/arithmetic/decimals/multiplying_decimals/e/understanding_moving_the_decimal/", 
-    "slug": "understanding_moving_the_decimal", 
+    "id": "understanding_moving_the_decimal", 
     "name": "understanding_moving_the_decimal"
   }, 
   {
@@ -220,6 +231,7 @@
     "related_video_readable_ids": [
       "dividing-decimals-2-1"
     ], 
+    "slug": "dividing_decimals_0.5", 
     "prerequisites": [
       "division_3"
     ], 
@@ -227,7 +239,7 @@
     "h_position": 12, 
     "v_position": 0, 
     "path": "/math/arithmetic/decimals/dividing_decimals/e/dividing_decimals_0.5/", 
-    "slug": "dividing_decimals_0.5", 
+    "id": "dividing_decimals_0.5", 
     "name": "dividing_decimals_0.5"
   }, 
   {
@@ -239,6 +251,7 @@
     "related_video_readable_ids": [
       "dividing-decimals-2-1"
     ], 
+    "slug": "dividing_decimals_1", 
     "prerequisites": [
       "dividing_decimals_0.5", 
       "division_4"
@@ -247,7 +260,7 @@
     "h_position": 13, 
     "v_position": 1, 
     "path": "/math/arithmetic/decimals/dividing_decimals/e/dividing_decimals_1/", 
-    "slug": "dividing_decimals_1", 
+    "id": "dividing_decimals_1", 
     "name": "dividing_decimals_1"
   }, 
   {
@@ -259,6 +272,7 @@
     "related_video_readable_ids": [
       "dividing-decimals-2-1"
     ], 
+    "slug": "dividing_decimals_2", 
     "prerequisites": [
       "dividing_decimals_1"
     ], 
@@ -266,7 +280,7 @@
     "h_position": 14, 
     "v_position": 1, 
     "path": "/math/arithmetic/decimals/dividing_decimals/e/dividing_decimals_2/", 
-    "slug": "dividing_decimals_2", 
+    "id": "dividing_decimals_2", 
     "name": "dividing_decimals_2"
   }, 
   {
@@ -278,6 +292,7 @@
     "related_video_readable_ids": [
       "dividing-decimals-2-1"
     ], 
+    "slug": "dividing_decimals", 
     "prerequisites": [
       "dividing_decimals_2"
     ], 
@@ -285,7 +300,7 @@
     "h_position": 15, 
     "v_position": 1, 
     "path": "/math/arithmetic/decimals/dividing_decimals/e/dividing_decimals/", 
-    "slug": "dividing_decimals", 
+    "id": "dividing_decimals", 
     "name": "dividing_decimals"
   }, 
   {
@@ -297,6 +312,7 @@
     "related_video_readable_ids": [
       "describing-the-meaning-of-percent-2"
     ], 
+    "slug": "converting_percents_to_decimals", 
     "prerequisites": [
       "finding_percents"
     ], 
@@ -304,7 +320,7 @@
     "h_position": 27, 
     "v_position": -4, 
     "path": "/math/arithmetic/decimals/percent_tutorial/e/converting_percents_to_decimals/", 
-    "slug": "converting_percents_to_decimals", 
+    "id": "converting_percents_to_decimals", 
     "name": "converting_percents_to_decimals"
   }, 
   {
@@ -316,6 +332,7 @@
     "related_video_readable_ids": [
       "converting-decimals-to-percents--ex-2"
     ], 
+    "slug": "converting_decimals_to_percents", 
     "prerequisites": [
       "finding_percents"
     ], 
@@ -323,7 +340,7 @@
     "h_position": 27, 
     "v_position": -5, 
     "path": "/math/arithmetic/decimals/percent_tutorial/e/converting_decimals_to_percents/", 
-    "slug": "converting_decimals_to_percents", 
+    "id": "converting_decimals_to_percents", 
     "name": "converting_decimals_to_percents"
   }, 
   {
@@ -335,6 +352,7 @@
     "related_video_readable_ids": [
       "solving-percent-problems-3"
     ], 
+    "slug": "discount_tax_and_tip_word_problems", 
     "prerequisites": [
       "converting_decimals_to_percents", 
       "converting_percents_to_decimals"
@@ -343,7 +361,7 @@
     "h_position": 28, 
     "v_position": -4, 
     "path": "/math/arithmetic/decimals/percent_word_probs/e/discount_tax_and_tip_word_problems/", 
-    "slug": "discount_tax_and_tip_word_problems", 
+    "id": "discount_tax_and_tip_word_problems", 
     "name": "discount_tax_and_tip_word_problems"
   }, 
   {
@@ -355,6 +373,7 @@
     "related_video_readable_ids": [
       "solving-percent-problems-3"
     ], 
+    "slug": "markup_and_commission_word_problems", 
     "prerequisites": [
       "converting_decimals_to_percents", 
       "converting_percents_to_decimals"
@@ -363,7 +382,7 @@
     "h_position": 28, 
     "v_position": -3, 
     "path": "/math/arithmetic/decimals/percent_word_probs/e/markup_and_commission_word_problems/", 
-    "slug": "markup_and_commission_word_problems", 
+    "id": "markup_and_commission_word_problems", 
     "name": "markup_and_commission_word_problems"
   }, 
   {
@@ -375,6 +394,7 @@
     "related_video_readable_ids": [
       "rounding-decimals"
     ], 
+    "slug": "rounding_numbers", 
     "prerequisites": [
       "rounding_whole_numbers"
     ], 
@@ -382,7 +402,7 @@
     "h_position": 15, 
     "v_position": 3, 
     "path": "/math/arithmetic/decimals/decimal_rounding_estimation/e/rounding_numbers/", 
-    "slug": "rounding_numbers", 
+    "id": "rounding_numbers", 
     "name": "rounding_numbers"
   }, 
   {
@@ -394,6 +414,7 @@
     "related_video_readable_ids": [
       "estimation-with-decimals"
     ], 
+    "slug": "estimation_with_decimals", 
     "prerequisites": [
       "rounding_numbers"
     ], 
@@ -401,7 +422,7 @@
     "h_position": 16, 
     "v_position": 3, 
     "path": "/math/arithmetic/decimals/decimal_rounding_estimation/e/estimation_with_decimals/", 
-    "slug": "estimation_with_decimals", 
+    "id": "estimation_with_decimals", 
     "name": "estimation_with_decimals"
   }, 
   {
@@ -413,6 +434,7 @@
     "related_video_readable_ids": [
       "multiplying-and-dividing-with-significant-figures"
     ], 
+    "slug": "significant_figures_1", 
     "prerequisites": [
       "scientific_notation"
     ], 
@@ -420,7 +442,7 @@
     "h_position": 23, 
     "v_position": 2, 
     "path": "/math/arithmetic/decimals/significant_figures_tutorial/e/significant_figures_1/", 
-    "slug": "significant_figures_1", 
+    "id": "significant_figures_1", 
     "name": "significant_figures_1"
   }
 ]

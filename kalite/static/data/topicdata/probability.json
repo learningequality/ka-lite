@@ -9,6 +9,7 @@
       "events-and-outcomes-1", 
       "events-and-outcomes-1"
     ], 
+    "slug": "probability_1", 
     "prerequisites": [
       "dice_probability"
     ], 
@@ -16,7 +17,7 @@
     "h_position": 30, 
     "v_position": 0, 
     "path": "/math/probability/independent-dependent-probability/basic_probability/e/probability_1/", 
-    "slug": "probability_1", 
+    "id": "probability_1", 
     "name": "probability_1"
   }, 
   {
@@ -29,6 +30,7 @@
       "independent-events-3", 
       "independent-events-3"
     ], 
+    "slug": "independent_probability", 
     "prerequisites": [
       "probability_1"
     ], 
@@ -36,7 +38,7 @@
     "h_position": 31, 
     "v_position": 0, 
     "path": "/math/probability/independent-dependent-probability/independent_events/e/independent_probability/", 
-    "slug": "independent_probability", 
+    "id": "independent_probability", 
     "name": "independent_probability"
   }, 
   {
@@ -49,6 +51,7 @@
       "dependent-probability-example-2", 
       "dependent-probability-example-2"
     ], 
+    "slug": "dependent_probability", 
     "prerequisites": [
       "independent_probability"
     ], 
@@ -56,7 +59,7 @@
     "h_position": 32, 
     "v_position": 0, 
     "path": "/math/probability/independent-dependent-probability/dependent_probability/e/dependent_probability/", 
-    "slug": "dependent_probability", 
+    "id": "dependent_probability", 
     "name": "dependent_probability"
   }, 
   {
@@ -69,6 +72,7 @@
       "combinations", 
       "combinations"
     ], 
+    "slug": "counting_2", 
     "prerequisites": [
       "exponents_1"
     ], 
@@ -76,7 +80,7 @@
     "h_position": 28, 
     "v_position": 0, 
     "path": "/math/probability/probability-and-combinatorics-topic/permutations_and_combinations/e/counting_2/", 
-    "slug": "counting_2", 
+    "id": "counting_2", 
     "name": "counting_2"
   }, 
   {
@@ -89,6 +93,7 @@
       "permutations-and-combinations-2", 
       "permutations-and-combinations-2"
     ], 
+    "slug": "permutations_1", 
     "prerequisites": [
       "dice_probability"
     ], 
@@ -96,7 +101,7 @@
     "h_position": 30, 
     "v_position": -1, 
     "path": "/math/probability/probability-and-combinatorics-topic/permutations_and_combinations/e/permutations_1/", 
-    "slug": "permutations_1", 
+    "id": "permutations_1", 
     "name": "permutations_1"
   }, 
   {
@@ -109,6 +114,7 @@
       "permutations-and-combinations-2", 
       "permutations-and-combinations-2"
     ], 
+    "slug": "combinations_1", 
     "prerequisites": [
       "permutations_1"
     ], 
@@ -116,7 +122,7 @@
     "h_position": 31, 
     "v_position": -1, 
     "path": "/math/probability/probability-and-combinatorics-topic/permutations_and_combinations/e/combinations_1/", 
-    "slug": "combinations_1", 
+    "id": "combinations_1", 
     "name": "combinations_1"
   }, 
   {
@@ -129,6 +135,7 @@
       "permutations-and-combinations-2", 
       "permutations-and-combinations-2"
     ], 
+    "slug": "permutations_and_combinations_2", 
     "prerequisites": [
       "combinations_1"
     ], 
@@ -136,7 +143,7 @@
     "h_position": 32, 
     "v_position": -1, 
     "path": "/math/probability/probability-and-combinatorics-topic/permutations_and_combinations/e/permutations_and_combinations_2/", 
-    "slug": "permutations_and_combinations_2", 
+    "id": "permutations_and_combinations_2", 
     "name": "permutations_and_combinations_2"
   }, 
   {
@@ -149,6 +156,7 @@
       "birthday-probability-problem", 
       "birthday-probability-problem"
     ], 
+    "slug": "probability_with_perm_comb", 
     "prerequisites": [
       "permutations_and_combinations_2"
     ], 
@@ -156,7 +164,7 @@
     "h_position": 33, 
     "v_position": -1, 
     "path": "/math/probability/probability-and-combinatorics-topic/probability_combinatorics/e/probability_with_perm_comb/", 
-    "slug": "probability_with_perm_comb", 
+    "id": "probability_with_perm_comb", 
     "name": "probability_with_perm_comb"
   }, 
   {
@@ -168,6 +176,7 @@
     "related_video_readable_ids": [
       "expected-value--e-x"
     ], 
+    "slug": "expected_value", 
     "prerequisites": [
       "probability_1"
     ], 
@@ -175,7 +184,7 @@
     "h_position": 31, 
     "v_position": 1, 
     "path": "/math/probability/random-variables-topic/random_variables_prob_dist/e/expected_value/", 
-    "slug": "expected_value", 
+    "id": "expected_value", 
     "name": "expected_value"
   }, 
   {
@@ -187,6 +196,7 @@
     "related_video_readable_ids": [
       "mean-median-and-mode"
     ], 
+    "slug": "mean_median_and_mode", 
     "prerequisites": [
       "exploring_mean_and_median"
     ], 
@@ -194,7 +204,7 @@
     "h_position": 18, 
     "v_position": -23, 
     "path": "/math/probability/descriptive-statistics/central_tendency/e/mean_median_and_mode/", 
-    "slug": "mean_median_and_mode", 
+    "id": "mean_median_and_mode", 
     "name": "mean_median_and_mode"
   }, 
   {
@@ -206,6 +216,7 @@
     "related_video_readable_ids": [
       "exploring-mean-and-median-module"
     ], 
+    "slug": "exploring_mean_and_median", 
     "prerequisites": [
       "order_of_operations"
     ], 
@@ -213,7 +224,7 @@
     "h_position": 17, 
     "v_position": -23, 
     "path": "/math/probability/descriptive-statistics/central_tendency/e/exploring_mean_and_median/", 
-    "slug": "exploring_mean_and_median", 
+    "id": "exploring_mean_and_median", 
     "name": "exploring_mean_and_median"
   }, 
   {
@@ -225,6 +236,7 @@
     "related_video_readable_ids": [
       "exploring-mean-and-median-module"
     ], 
+    "slug": "average_word_problems", 
     "prerequisites": [
       "mean_median_and_mode"
     ], 
@@ -232,7 +244,7 @@
     "h_position": 19, 
     "v_position": -22, 
     "path": "/math/probability/descriptive-statistics/central_tendency/e/average_word_problems/", 
-    "slug": "average_word_problems", 
+    "id": "average_word_problems", 
     "name": "average_word_problems"
   }, 
   {
@@ -244,6 +256,7 @@
     "related_video_readable_ids": [
       "box-and-whisker-plots"
     ], 
+    "slug": "creating_box_and_whisker_plots", 
     "prerequisites": [
       "mean_median_and_mode"
     ], 
@@ -251,7 +264,7 @@
     "h_position": 19, 
     "v_position": -23, 
     "path": "/math/probability/descriptive-statistics/Box-and-whisker plots/e/creating_box_and_whisker_plots/", 
-    "slug": "creating_box_and_whisker_plots", 
+    "id": "creating_box_and_whisker_plots", 
     "name": "creating_box_and_whisker_plots"
   }, 
   {
@@ -263,6 +276,7 @@
     "related_video_readable_ids": [
       "simulation-providing-evidence-that--n-1--gives-us-unbiased-estimate"
     ], 
+    "slug": "variance", 
     "prerequisites": [
       "mean_median_and_mode"
     ], 
@@ -270,7 +284,7 @@
     "h_position": 19, 
     "v_position": -21, 
     "path": "/math/probability/descriptive-statistics/variance_std_deviation/e/variance/", 
-    "slug": "variance", 
+    "id": "variance", 
     "name": "variance"
   }, 
   {
@@ -282,6 +296,7 @@
     "related_video_readable_ids": [
       "exploring-standard-deviation-1-module"
     ], 
+    "slug": "exploring_standard_deviation_1", 
     "prerequisites": [
       "variance"
     ], 
@@ -289,7 +304,7 @@
     "h_position": 20, 
     "v_position": -21, 
     "path": "/math/probability/descriptive-statistics/variance_std_deviation/e/exploring_standard_deviation_1/", 
-    "slug": "exploring_standard_deviation_1", 
+    "id": "exploring_standard_deviation_1", 
     "name": "exploring_standard_deviation_1"
   }, 
   {
@@ -301,6 +316,7 @@
     "related_video_readable_ids": [
       "exploring-standard-deviation-1-module"
     ], 
+    "slug": "standard_deviation", 
     "prerequisites": [
       "variance"
     ], 
@@ -308,7 +324,7 @@
     "h_position": 20, 
     "v_position": -22, 
     "path": "/math/probability/descriptive-statistics/variance_std_deviation/e/standard_deviation/", 
-    "slug": "standard_deviation", 
+    "id": "standard_deviation", 
     "name": "standard_deviation"
   }, 
   {
@@ -318,6 +334,7 @@
     "title": "Estimating the line of best fit", 
     "seconds_per_fast_problem": 6.0, 
     "related_video_readable_ids": [], 
+    "slug": "plotting_the_line_of_best_fit", 
     "prerequisites": [
       "reading_line_charts_1"
     ], 
@@ -325,7 +342,7 @@
     "h_position": 18, 
     "v_position": -26, 
     "path": "/math/probability/regression/regression-correlation/e/plotting_the_line_of_best_fit/", 
-    "slug": "plotting_the_line_of_best_fit", 
+    "id": "plotting_the_line_of_best_fit", 
     "name": "plotting_the_line_of_best_fit"
   }, 
   {
@@ -337,6 +354,7 @@
     "related_video_readable_ids": [
       "ck12-org-exercise--standard-normal-distribution-and-the-empirical-rule"
     ], 
+    "slug": "empirical_rule", 
     "prerequisites": [
       "exploring_standard_deviation_1", 
       "standard_deviation"
@@ -345,7 +363,7 @@
     "h_position": 21, 
     "v_position": -21, 
     "path": "/math/probability/statistics-inferential/normal_distribution/e/empirical_rule/", 
-    "slug": "empirical_rule", 
+    "id": "empirical_rule", 
     "name": "empirical_rule"
   }, 
   {
@@ -357,6 +375,7 @@
     "related_video_readable_ids": [
       "ck12-org--more-empirical-rule-and-z-score-practice"
     ], 
+    "slug": "z_scores_1", 
     "prerequisites": [
       "exploring_standard_deviation_1", 
       "standard_deviation"
@@ -365,7 +384,7 @@
     "h_position": 21, 
     "v_position": -22, 
     "path": "/math/probability/statistics-inferential/normal_distribution/e/z_scores_1/", 
-    "slug": "z_scores_1", 
+    "id": "z_scores_1", 
     "name": "z_scores_1"
   }, 
   {
@@ -377,6 +396,7 @@
     "related_video_readable_ids": [
       "ck12-org--more-empirical-rule-and-z-score-practice"
     ], 
+    "slug": "z_scores_2", 
     "prerequisites": [
       "z_scores_1"
     ], 
@@ -384,7 +404,7 @@
     "h_position": 22, 
     "v_position": -22, 
     "path": "/math/probability/statistics-inferential/normal_distribution/e/z_scores_2/", 
-    "slug": "z_scores_2", 
+    "id": "z_scores_2", 
     "name": "z_scores_2"
   }, 
   {
@@ -396,6 +416,7 @@
     "related_video_readable_ids": [
       "ck12-org--more-empirical-rule-and-z-score-practice"
     ], 
+    "slug": "z_scores_3", 
     "prerequisites": [
       "z_scores_2"
     ], 
@@ -403,7 +424,7 @@
     "h_position": 23, 
     "v_position": -22, 
     "path": "/math/probability/statistics-inferential/normal_distribution/e/z_scores_3/", 
-    "slug": "z_scores_3", 
+    "id": "z_scores_3", 
     "name": "z_scores_3"
   }
 ]

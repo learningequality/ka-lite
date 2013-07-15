@@ -8,6 +8,7 @@
     "related_video_readable_ids": [
       "area-and-perimeter"
     ], 
+    "slug": "perimeter_1", 
     "prerequisites": [
       "order_of_operations"
     ], 
@@ -15,7 +16,7 @@
     "h_position": 18, 
     "v_position": -18, 
     "path": "/math/geometry/basic-geometry/perimeter_area_basics/e/perimeter_1/", 
-    "slug": "perimeter_1", 
+    "id": "perimeter_1", 
     "name": "perimeter_1"
   }, 
   {
@@ -27,6 +28,7 @@
     "related_video_readable_ids": [
       "area-and-perimeter"
     ], 
+    "slug": "perimeter_of_squares_and_rectangles", 
     "prerequisites": [
       "perimeter_1"
     ], 
@@ -34,7 +36,7 @@
     "h_position": 19, 
     "v_position": -18, 
     "path": "/math/geometry/basic-geometry/perimeter_area_basics/e/perimeter_of_squares_and_rectangles/", 
-    "slug": "perimeter_of_squares_and_rectangles", 
+    "id": "perimeter_of_squares_and_rectangles", 
     "name": "perimeter_of_squares_and_rectangles"
   }, 
   {
@@ -46,6 +48,7 @@
     "related_video_readable_ids": [
       "area-and-perimeter"
     ], 
+    "slug": "area_1", 
     "prerequisites": [
       "order_of_operations"
     ], 
@@ -53,7 +56,7 @@
     "h_position": 18, 
     "v_position": -17, 
     "path": "/math/geometry/basic-geometry/perimeter_area_basics/e/area_1/", 
-    "slug": "area_1", 
+    "id": "area_1", 
     "name": "area_1"
   }, 
   {
@@ -65,6 +68,7 @@
     "related_video_readable_ids": [
       "area-and-perimeter"
     ], 
+    "slug": "area_of_squares_and_rectangles", 
     "prerequisites": [
       "area_1"
     ], 
@@ -72,7 +76,7 @@
     "h_position": 19, 
     "v_position": -17, 
     "path": "/math/geometry/basic-geometry/perimeter_area_basics/e/area_of_squares_and_rectangles/", 
-    "slug": "area_of_squares_and_rectangles", 
+    "id": "area_of_squares_and_rectangles", 
     "name": "area_of_squares_and_rectangles"
   }, 
   {
@@ -84,6 +88,7 @@
     "related_video_readable_ids": [
       "triangle-area-proofs"
     ], 
+    "slug": "area_of_triangles_1", 
     "prerequisites": [
       "area_of_squares_and_rectangles"
     ], 
@@ -91,7 +96,7 @@
     "h_position": 21, 
     "v_position": -17, 
     "path": "/math/geometry/basic-geometry/perimeter_area_tutorial/e/area_of_triangles_1/", 
-    "slug": "area_of_triangles_1", 
+    "id": "area_of_triangles_1", 
     "name": "area_of_triangles_1"
   }, 
   {
@@ -103,6 +108,7 @@
     "related_video_readable_ids": [
       "triangle-inqequality-theorem"
     ], 
+    "slug": "triangle_inequality_theorem", 
     "prerequisites": [
       "triangle_angles_1"
     ], 
@@ -110,7 +116,7 @@
     "h_position": 32, 
     "v_position": -18, 
     "path": "/math/geometry/basic-geometry/triangle_inequality_theorem/e/triangle_inequality_theorem/", 
-    "slug": "triangle_inequality_theorem", 
+    "id": "triangle_inequality_theorem", 
     "name": "triangle_inequality_theorem"
   }, 
   {
@@ -122,6 +128,7 @@
     "related_video_readable_ids": [
       "heron-s-formula"
     ], 
+    "slug": "herons_formula", 
     "prerequisites": [
       "shaded_areas"
     ], 
@@ -129,7 +136,7 @@
     "h_position": 39, 
     "v_position": -19, 
     "path": "/math/geometry/basic-geometry/heron_formula_tutorial/e/herons_formula/", 
-    "slug": "herons_formula", 
+    "id": "herons_formula", 
     "name": "herons_formula"
   }, 
   {
@@ -141,6 +148,7 @@
     "related_video_readable_ids": [
       "parts-of-a-circle"
     ], 
+    "slug": "radius_diameter_and_circumference", 
     "prerequisites": [
       "perimeter_of_squares_and_rectangles"
     ], 
@@ -148,7 +156,7 @@
     "h_position": 20, 
     "v_position": -18, 
     "path": "/math/geometry/basic-geometry/circum_area_circles/e/radius_diameter_and_circumference/", 
-    "slug": "radius_diameter_and_circumference", 
+    "id": "radius_diameter_and_circumference", 
     "name": "radius_diameter_and_circumference"
   }, 
   {
@@ -160,6 +168,7 @@
     "related_video_readable_ids": [
       "area-of-a-circle"
     ], 
+    "slug": "area_of_a_circle", 
     "prerequisites": [
       "radius_diameter_and_circumference", 
       "area_of_squares_and_rectangles"
@@ -168,7 +177,7 @@
     "h_position": 21, 
     "v_position": -18, 
     "path": "/math/geometry/basic-geometry/circum_area_circles/e/area_of_a_circle/", 
-    "slug": "area_of_a_circle", 
+    "id": "area_of_a_circle", 
     "name": "area_of_a_circle"
   }, 
   {
@@ -180,6 +189,7 @@
     "related_video_readable_ids": [
       "area-of-a-parallelogram"
     ], 
+    "slug": "area_of_parallelograms", 
     "prerequisites": [
       "angles_2"
     ], 
@@ -187,7 +197,7 @@
     "h_position": 36, 
     "v_position": -20, 
     "path": "/math/geometry/basic-geometry/area_non_standard/e/area_of_parallelograms/", 
-    "slug": "area_of_parallelograms", 
+    "id": "area_of_parallelograms", 
     "name": "area_of_parallelograms"
   }, 
   {
@@ -199,6 +209,7 @@
     "related_video_readable_ids": [
       "area-of-a-parallelogram"
     ], 
+    "slug": "areas_of_trapezoids_rhombi_and_kites", 
     "prerequisites": [
       "angles_2"
     ], 
@@ -206,7 +217,7 @@
     "h_position": 36, 
     "v_position": -19, 
     "path": "/math/geometry/basic-geometry/area_non_standard/e/areas_of_trapezoids_rhombi_and_kites/", 
-    "slug": "areas_of_trapezoids_rhombi_and_kites", 
+    "id": "areas_of_trapezoids_rhombi_and_kites", 
     "name": "areas_of_trapezoids_rhombi_and_kites"
   }, 
   {
@@ -218,6 +229,7 @@
     "related_video_readable_ids": [
       "volume-of-a-sphere"
     ], 
+    "slug": "solid_geometry", 
     "prerequisites": [
       "area_of_parallelograms", 
       "areas_of_trapezoids_rhombi_and_kites"
@@ -226,7 +238,7 @@
     "h_position": 37, 
     "v_position": -18, 
     "path": "/math/geometry/basic-geometry/volume_tutorial/e/solid_geometry/", 
-    "slug": "solid_geometry", 
+    "id": "solid_geometry", 
     "name": "solid_geometry"
   }
 ]

@@ -9,6 +9,7 @@
       "introduction-to-conic-sections", 
       "introduction-to-conic-sections"
     ], 
+    "slug": "recognizing_conic_sections", 
     "prerequisites": [
       "adding_and_subtracting_polynomials"
     ], 
@@ -16,7 +17,7 @@
     "h_position": 46, 
     "v_position": 4, 
     "path": "/math/algebra/conic-sections/conic_basics/e/recognizing_conic_sections/", 
-    "slug": "recognizing_conic_sections", 
+    "id": "recognizing_conic_sections", 
     "name": "recognizing_conic_sections"
   }, 
   {
@@ -29,6 +30,7 @@
       "conic-sections--intro-to-circles", 
       "conic-sections--intro-to-circles"
     ], 
+    "slug": "graphing_circles", 
     "prerequisites": [
       "circles_and_arcs"
     ], 
@@ -36,7 +38,7 @@
     "h_position": 42, 
     "v_position": -21, 
     "path": "/math/algebra/conic-sections/conic_circles/e/graphing_circles/", 
-    "slug": "graphing_circles", 
+    "id": "graphing_circles", 
     "name": "graphing_circles"
   }, 
   {
@@ -49,6 +51,7 @@
       "conic-sections--intro-to-circles", 
       "conic-sections--intro-to-circles"
     ], 
+    "slug": "equation_of_a_circle_1", 
     "prerequisites": [
       "recognizing_conic_sections"
     ], 
@@ -56,7 +59,7 @@
     "h_position": 47, 
     "v_position": 5, 
     "path": "/math/algebra/conic-sections/conic_circles/e/equation_of_a_circle_1/", 
-    "slug": "equation_of_a_circle_1", 
+    "id": "equation_of_a_circle_1", 
     "name": "equation_of_a_circle_1"
   }, 
   {
@@ -69,6 +72,7 @@
       "conic-sections--intro-to-circles", 
       "conic-sections--intro-to-circles"
     ], 
+    "slug": "equation_of_a_circle_2", 
     "prerequisites": [
       "equation_of_a_circle_1"
     ], 
@@ -76,7 +80,7 @@
     "h_position": 48, 
     "v_position": 5, 
     "path": "/math/algebra/conic-sections/conic_circles/e/equation_of_a_circle_2/", 
-    "slug": "equation_of_a_circle_2", 
+    "id": "equation_of_a_circle_2", 
     "name": "equation_of_a_circle_2"
   }, 
   {
@@ -89,6 +93,7 @@
       "conic-sections--intro-to-circles", 
       "conic-sections--intro-to-circles"
     ], 
+    "slug": "graphing_circles_2", 
     "prerequisites": [
       "graphing_circles"
     ], 
@@ -96,7 +101,7 @@
     "h_position": 43, 
     "v_position": -21, 
     "path": "/math/algebra/conic-sections/conic_circles/e/graphing_circles_2/", 
-    "slug": "graphing_circles_2", 
+    "id": "graphing_circles_2", 
     "name": "graphing_circles_2"
   }, 
   {
@@ -109,6 +114,7 @@
       "conic-sections--intro-to-ellipses", 
       "conic-sections--intro-to-ellipses"
     ], 
+    "slug": "equation_of_an_ellipse", 
     "prerequisites": [
       "equation_of_a_circle_1"
     ], 
@@ -116,7 +122,7 @@
     "h_position": 48, 
     "v_position": 4, 
     "path": "/math/algebra/conic-sections/conic_ellipses/e/equation_of_an_ellipse/", 
-    "slug": "equation_of_an_ellipse", 
+    "id": "equation_of_an_ellipse", 
     "name": "equation_of_an_ellipse"
   }, 
   {
@@ -129,6 +135,7 @@
       "focus-and-directrix-of-a-parabola-2", 
       "focus-and-directrix-of-a-parabola-2"
     ], 
+    "slug": "parabola_intuition_1", 
     "prerequisites": [
       "recognizing_conic_sections"
     ], 
@@ -136,7 +143,7 @@
     "h_position": 47, 
     "v_position": 3, 
     "path": "/math/algebra/conic-sections/conic_parabolas/e/parabola_intuition_1/", 
-    "slug": "parabola_intuition_1", 
+    "id": "parabola_intuition_1", 
     "name": "parabola_intuition_1"
   }, 
   {
@@ -149,6 +156,7 @@
       "focus-and-directrix-of-a-parabola-2", 
       "focus-and-directrix-of-a-parabola-2"
     ], 
+    "slug": "parabola_intuition_2", 
     "prerequisites": [
       "parabola_intuition_1"
     ], 
@@ -156,7 +164,7 @@
     "h_position": 48, 
     "v_position": 3, 
     "path": "/math/algebra/conic-sections/conic_parabolas/e/parabola_intuition_2/", 
-    "slug": "parabola_intuition_2", 
+    "id": "parabola_intuition_2", 
     "name": "parabola_intuition_2"
   }, 
   {
@@ -169,6 +177,7 @@
       "conic-sections--hyperbolas-3", 
       "conic-sections--hyperbolas-3"
     ], 
+    "slug": "equation_of_a_hyperbola", 
     "prerequisites": [
       "equation_of_a_circle_1"
     ], 
@@ -176,7 +185,7 @@
     "h_position": 48, 
     "v_position": 6, 
     "path": "/math/algebra/conic-sections/hyperbolas-conic/e/equation_of_a_hyperbola/", 
-    "slug": "equation_of_a_hyperbola", 
+    "id": "equation_of_a_hyperbola", 
     "name": "equation_of_a_hyperbola"
   }
 ]
