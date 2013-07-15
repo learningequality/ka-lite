@@ -26,36 +26,37 @@ LANGUAGE_SRT_FILENAME = paths_and_headers.language_srt_map
 
 def update_language_srt_map():
     """Update the language_srt_map from the api_info_map"""
-    # open up srts_json_filename
-    api_info_map = json.loads(open(data_path + SRTS_JSON_FILENAME).read())
-    language_srt_map = json.loads(open(
-        data_path + LANGUAGE_SRT_FILENAME).read())
 
-    # go through each youtube id from Amara's API, and create an entry for it
-    # in the language srt map file if it doesn't already have one, set
-    # downloaded to false and everything else to empty
-    pdb.set_trace()
+    api_info_map = json.loads(open(data_path + SRTS_JSON_FILENAME).read())
+    language_srt_filepath = data_path + LANGUAGE_SRT_FILENAME
+    language_srt_map = json.loads(open(language_srt_filepath).read())
+
     for youtube_id, content in api_info_map.items():
-        lang_list = content.get("language_codes")
+        lang_list = content.get("language_codes") or []
         for code in lang_list:
             # create language section if it doesn't exist
+            language_srt_map.get(code)
             if not language_srt_map.get(code):
+                logger.info("Creating language section '%s'" % code)
                 language_srt_map[code] = {}
             # create entry for video entry if it doesn't exist
             if not language_srt_map[code].get(youtube_id):
+                logger.info("Creating entry in '%s' for YouTube video: '%s'" %(code, youtube_id))
                 language_srt_map[code][youtube_id] = {
                     "downloaded": False,
                     "api_response": "",
                     "last_attempt": "",
                     "last_success": "",
                 }
-    logger.info("Writing updates to file.")
-    with open(data_path + LANGUAGE_SRT_FILENAME, 'wb') as fp:
+
+    logger.info("Writing updates to %s" % language_srt_filepath)
+    with open(language_srt_filepath, 'wb') as fp:
             json.dump(language_srt_map, fp)
 
 
 
 def download_subtitles(args):
+    """Download subtitles specified by command line args"""
     lang_code = args.language
     redo = args.redo
     response_code = args.response_code

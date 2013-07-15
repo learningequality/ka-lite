@@ -42,7 +42,6 @@ def create_new_mapping():
     videos = nodecache['Video']
     new_json = {}
     counter = 0
-    pdb.set_trace()
     for video, data in videos.iteritems():
         youtube_id = data['youtube_id']
         new_json[youtube_id] = update_video_entry(youtube_id)
@@ -127,13 +126,15 @@ def update_video_entry(youtube_id):
         # index into data to extract languages and amara code, then add them
         if content.get("objects"):
             languages = json.loads(r.content)['objects'][0]['languages']
+            entry["language_codes"] = []
             if languages:  # ensuring it isn't an empty list
+                # add the codes and then
+                for language in languages:
+                    entry["language_codes"].append(language['code'])
+                # pull amara video id
                 amara_code = languages[0].get("subtitles_uri").split("/")[4]
                 assert len(amara_code) == 12  # in case of future API change
                 entry["amara_code"] = amara_code
-                entry["language_codes"] = []
-                for language in languages:
-                    entry["language_codes"].append(language['code'])
     return entry
 
 

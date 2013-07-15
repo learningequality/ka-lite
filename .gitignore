@@ -27,3 +27,4 @@ content/*.mp4
 content/*.json
 content/*.srt
 locale/*
+static/data/subtitledata/*
