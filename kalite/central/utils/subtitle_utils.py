@@ -22,20 +22,12 @@ def make_request(url):
         r = requests.get(url, headers=headers)
         time.sleep(1) # HELP: is this ok on the server?
         if r.status_code > 499:
-            logging.warning("Server error: %s at %s" % (
-                str(r.status_code), url))
             if retries == 4:
-                logging.info(
-                    "Maxed out retries: adding %s to bad urls list" % url)
                 r = "server-error"
         elif r.status_code > 399:
-            logging.warning("Client error: %s at %s" % (
-                str(r.status_code), url))
-            logging.info("Adding %s to bad urls list" % url)
             r = "client-error"
             break
         else:
-            logging.info("Good request: %s at %s" % (str(r.status_code), url))
             break
     return r
 

@@ -41,7 +41,7 @@ def create_new_mapping():
         # saving. HELP: is this the best interim step?
         if counter%200 == 0:
             temp_file = "temp_video_srts.json"
-            logger.info("On loop %s dumping dictionary into temp file in subtitledata folder: %s" %(str(counter), temp_file))
+            logger.info("On loop %s dumping dictionary into temp file static/data/subtitledata/: %s" %(str(counter), temp_file))
             with open(data_path + temp_file, 'wb') as fp:
                 json.dump(new_json, fp)
         counter += 1
@@ -111,8 +111,10 @@ def update_video_entry(youtube_id):
     entry = {}
     entry["last_attempt"] = unicode(datetime.datetime.now().date())
     if r == "client_error" or r == "server_error":
+        logger.info("%s at %s" %(r, request_url))
         entry["api_response"] = r
     else:
+        logger.info("Success at %s" % request_url)
         entry["api_response"] = "success"
         entry["last_success"] = unicode(datetime.datetime.now().date())
         content = json.loads(r.content)
