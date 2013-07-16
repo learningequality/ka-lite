@@ -9,10 +9,8 @@ import logging
 import os
 import pdb
 import sys
-import time
 
-import requests
-
+import subtitle_utils 
 import paths_and_headers # paths and headers that are shared across the central/utils folder 
 
 headers = paths_and_headers.headers
@@ -28,12 +26,6 @@ class OutDatedSchema(Exception):
 
     def __str__(value):
         return "The current data schema is outdated and doesn't store the important bits. Please run 'generate_subtitles_map.py -N' to generate a totally new file and the correct schema."
-
-
-class InvalidDateFormat(Exception):
-
-    def __str__(value):
-        return "Invalid date format. Please format your date (-d) flag like this: 'MM/DD/YYYY'"
 
 
 def create_new_mapping():
@@ -113,7 +105,7 @@ def update_video_entry(youtube_id):
     """
     request_url = "https://www.amara.org/api2/partners/videos/?format=json&video_url=http://www.youtube.com/watch?v=%s" % (
         youtube_id)
-    r = make_request(request_url)
+    r = subtitle_utils.make_request(request_url)
     # add api response first to prevent empty json on errors
     entry = {}
     entry["last_attempt"] = unicode(datetime.datetime.now())
@@ -138,41 +130,6 @@ def update_video_entry(youtube_id):
     return entry
 
 
-def make_request(url):
-    """Return response from url; retry up to 5 times for server errors; when returning an error, return human-readable status code."""
-    for retries in range(1, 5):
-        r = requests.get(url, headers=headers)
-        time.sleep(1) # HELP: is this ok on the server?
-        if r.status_code > 499:
-            logging.warning("Server error: %s at %s" % (
-                str(r.status_code), url))
-            if retries == 4:
-                logging.info(
-                    "Maxed out retries: adding %s to bad urls list" % url)
-                r = "server-error"
-        elif r.status_code > 399:
-            logging.warning("Client error: %s at %s" % (
-                str(r.status_code), url))
-            logging.info("Adding %s to bad urls list" % url)
-            r = "client-error"
-            break
-        else:
-            logging.info("Good request: %s at %s" % (str(r.status_code), url))
-            break
-    return r
-
-
-def convert_date_input(date_to_convert):
-    # convert from MM/DD/YYYY to Unix timestamp to compare against JSON file
-    if date_to_convert:
-        try:
-            converted_date = datetime.datetime.strptime(
-                date_to_convert, '%m/%d/%Y')
-        except:
-            raise InvalidDateFormat()
-    return converted_date
-
-
 def create_parser():
     # parses command line args
     parser = argparse.ArgumentParser()
@@ -185,20 +142,14 @@ def create_parser():
     return parser
 
 
-def setup_logging():
-    logging.basicConfig(level=logging.DEBUG,
-                        format='%(asctime)s %(name)-12s - %(levelname)s: %(message)s',
-                        datefmt='%m-%d %H:%M')
-
-
 if __name__ == '__main__':
-    setup_logging()
+    subtitle_utils.setup_logging()
     parser = create_parser()
     args = parser.parse_args()
     if args.new and not (args.response_code or args.date_since_attempt):
         create_new_mapping()
     elif not args.new and (args.response_code or args.date_since_attempt):
-        converted_date = convert_date_input(args.date_since_attempt)
+        converted_date = subtitle_utils.convert_date_input(args.date_since_attempt)
         update_subtitle_map(args.response_code, converted_date)
     else:
         logger.info(
