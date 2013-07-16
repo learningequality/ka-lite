@@ -6,12 +6,14 @@ import os
 from django.test import TestCase
 from django.core.management import call_command
 from django.db import DatabaseError
+from django.utils import unittest
 
 import settings
 from kalite import settings
 from utils.testing.decorators import distributed_only
 
 
+@unittest.skip
 @distributed_only
 class FixtureTestCases(TestCase):
     """ """

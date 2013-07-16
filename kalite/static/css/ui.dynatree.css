@@ -33,10 +33,7 @@ ul.dynatree-container li
 	background-repeat: repeat-y;
 	background-image: url("../images/vline.gif");
 	background-position: 0 0;
-	
-	background-image: url("icons_96x256.gif");
-	background-position: -80px -64px;
-	
+
 	margin: 0;
 	padding: 1px 0 0 0;
 }
@@ -249,7 +246,7 @@ span.dynatree-icon /* Default icon */
 .dynatree-statusnode-error span.dynatree-icon
 {
 	background-position: 0px -112px;
-/*	background-image: url("ltError.gif");*/
+/*	background-image: url("../images/ltError.gif");*/
 }
 
 /*******************************************************************************

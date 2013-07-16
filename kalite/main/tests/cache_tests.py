@@ -5,9 +5,9 @@ import sys
 import random
 import requests
 import urllib
-import unittest
 
 from django.test.client import Client
+from django.utils import unittest
 
 import settings
 from kalite.main import topicdata
@@ -29,18 +29,18 @@ class CachingTest(KALiteTestCase):
         video_slug = random.choice(topicdata.NODE_CACHE['Video'].keys())
         sys.stdout.write("Testing on video_slug = %s\n" % video_slug)
         youtube_id = topicdata.NODE_CACHE['Video'][video_slug]['youtube_id']
-        video_path = topicdata.NODE_CACHE['Video'][video_slug]['path']
+        video_path = topicdata.NODE_CACHE['Video'][video_slug]['paths'][0]
 
         # Clean the cache for this item
         caching.expire_page(path=video_path)
         
         # Create the cache item, and check it
         self.assertTrue(not caching.has_cache_key(path=video_path), "expect: no cache key after expiring the page")
-        urllib.urlopen(self.live_server_url + video_path).close()
+        caching.regenerate_cached_topic_hierarchies(video_ids=[youtube_id])
         self.assertTrue(caching.has_cache_key(path=video_path), "expect: Cache key exists after Django Client get")
 
         # Invalidate the cache item, and check it
-        caching.invalidate_cached_video_page(youtube_id) # test the convenience function
+        caching.invalidate_cached_topic_hierarchies(video_id=youtube_id) # test the convenience function
         self.assertTrue(not caching.has_cache_key(path=video_path), "expect: no cache key after expiring the page")
 
     
@@ -54,7 +54,7 @@ class CachingTest(KALiteTestCase):
         video_slug = random.choice(topicdata.NODE_CACHE['Video'].keys())
         sys.stdout.write("Testing on video_slug = %s\n" % video_slug)
         youtube_id = topicdata.NODE_CACHE['Video'][video_slug]['youtube_id']
-        video_path = topicdata.NODE_CACHE['Video'][video_slug]['path']
+        video_path = topicdata.NODE_CACHE['Video'][video_slug]['paths'][0]
 
         # Clean the cache for this item
         caching.expire_page(path=video_path)

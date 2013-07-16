@@ -6,12 +6,8 @@ from django.utils import translation
 from django.test.client import Client
 
 import settings
-from main import topicdata
-from utils import topic_tools, internet
-
-# all code based on Django snippet at:
-#   http://djangosnippets.org/snippets/936/
-
+from utils.internet import generate_all_paths
+from utils import topic_tools
 
 def get_cache_key(path=None, url_name=None):
     """Call into Django to retrieve a cache key for the given url, or given url name
@@ -45,8 +41,8 @@ def create_cache(path=None, url_name=None, force=False):
         expire_page(path=path)
     if not has_cache_key(path=path):
         Client().get(path)
-    
-    
+
+
 def expire_page(path=None,url_name=None):
     assert (path or url_name) and not (path and url_name), "Must have path or url_name parameter, but not both"
     
@@ -54,54 +50,55 @@ def expire_page(path=None,url_name=None):
     
     if cache.has_key(key):
         cache.delete(key)
-        
 
-def get_video_page_path(video_id=None, video_slug=None):
-    # only import for this specific function
 
+def get_video_page_paths(video_id=None, video_slug=None):
     assert (video_id or video_slug) and not (video_id and video_slug), "One arg, not two" 
-        
-    from kalite.main import topicdata
 
     try:
         if not video_slug:
-            video_slug = topicdata.ID2SLUG_MAP[video_id]
+            video_slug = topic_tools.get_id2slug_map()[video_id]
         
-        return topicdata.NODE_CACHE["Video"][video_slug]['path']
+        return topic_tools.get_node_cache("Video")[video_slug]['paths']
     except:
-        return None
-    
-    
-def invalidate_cached_video_page(video_id=None, video_slug=None, video_path=None):
-    """Convenience function for expiring a video page"""
-
-    assert (video_id or video_path or video_slug) and not (video_id and video_slug and video_path), "One arg, not two" 
-
-    if not video_path:
-        video_path = get_video_page_path(video_id=video_id, video_slug=video_slug)
-                    
-    # Clean the cache for this item
-    expire_page(path=video_path)
+        return []
 
 
-def invalidate_cached_topic_hierarchy(video_id=None, video_slug=None, video_path=None):
+def get_exercise_page_paths(video_id=None, video_slug=None):
+    assert (video_id or video_slug) and not (video_id and video_slug), "One arg, not two" 
+
+    try:
+        exercise_paths = set()
+        for exercise in get_related_exercises(video=topic_tools.get_node_cache("Video")[video_slug]):
+            exercise_paths = exercise_paths.union(set(exercise["paths"]))
+        return list(exercise_paths)
+    except:
+        return []
+
+
+def invalidate_cached_topic_hierarchies(video_id=None, video_slug=None):
     """Given a video file, recurse backwards up the hierarchy and invaliate all pages"""
-    assert (video_id or video_path or video_slug) and not (video_id and video_slug and video_path), "One arg, not two" 
+    assert (video_id or video_slug) and not (video_id and video_slug), "One arg, not two" 
 
-    if not video_path:
-        video_path = get_video_page_path(video_id=video_id, video_slug=video_slug)
+    # Expire all video files and related paths
+    video_paths = get_video_page_paths(video_id=video_id, video_slug=video_slug)
+    exercise_paths = get_exercise_page_paths(video_id=video_id, video_slug=video_slug)
+    leaf_paths = set(video_paths).union(set(exercise_paths))
 
-    for path in internet.generate_all_paths(path=video_path, base_path=topicdata.TOPICS['path']): # start at the root
-        expire_page(path=path)
+    for leaf_path in leaf_paths:
+        for path in generate_all_paths(path=leaf_path, base_path=topic_tools.get_topic_tree()['path']): # start at the root
+            expire_page(path=path)
 
 
 def regenerate_cached_topic_hierarchies(video_ids):
     """Same as above, but on a list of videos"""
     paths_to_regenerate = set() # unique set
     for video_id in video_ids:
-        video_path = get_video_page_path(video_id=video_id)
 
-        paths_to_regenerate = paths_to_regenerate.union(internet.generate_all_paths(path=video_path, base_path=topicdata.TOPICS['path'])) # start at the root
+        for video_path in get_video_page_paths(video_id=video_id):
+            paths_to_regenerate = paths_to_regenerate.union(generate_all_paths(path=video_path, base_path=topic_tools.get_topic_tree()['path']))  # start at the root
+        for exercise_path in get_exercise_page_paths(video_id=video_id):
+            paths_to_regenerate = paths_to_regenerate.union(generate_all_paths(path=exercise_path, base_path=topic_tools.get_topic_tree()['path']))  # start at the root
 
     # Now, regenerate any page.
     for path in paths_to_regenerate:

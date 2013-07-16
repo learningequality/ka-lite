@@ -179,6 +179,10 @@ else:
     TEMPLATE_CONTEXT_PROCESSORS += ("main.custom_context_processors.languages",)
     INSTALL_CERTIFICATES = getattr(local_settings, "INSTALL_CERTIFICATES", [])
 
+# Used for user logs.  By default, completely off.
+USER_LOG_MAX_RECORDS = getattr(local_settings, "USER_LOG_MAX_RECORDS", 0)
+USER_LOG_SUMMARY_FREQUENCY = getattr(local_settings, "USER_LOG_SUMMARY_FREQUENCY", (1,"months"))
+
 
 # By default, cache for maximum possible time.
 #   Note: caching for 100 years can be too large a value
@@ -203,8 +207,13 @@ if CACHE_TIME or CACHE_TIME is None: # None can mean infinite caching to some fu
         }
     }
 
+# Here, None === no limit
+SYNC_SESSIONS_MAX_RECORDS = getattr(local_settings, "SYNC_SESSIONS_MAX_RECORDS", None if CENTRAL_SERVER else 10)
+
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 MESSAGE_STORAGE = 'utils.django_utils.NoDuplicateMessagesSessionStorage'
 
 TEST_RUNNER = 'kalite.utils.testing.testrunner.KALiteTestRunner'
+
+CRONSERVER_FREQUENCY = getattr(local_settings, "CRONSERVER_FREQUENCY", 600) # 10 mins (in seconds)

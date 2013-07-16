@@ -1,1 +1,720 @@
-[{"relative_url": "/exercise/recognizing_fractions_0.5", "guaranteed_file_name": "recognizing_fractions_0.5.html", "file_name": null, "author_name": "Lya Laberge", "creation_date": "2011-11-07T23:45:53Z", "ka_url": "http://www.khanacademy.org/exercise/recognizing_fractions_0.5", "v_position": -2, "h_position": 18, "node_slug": "e/recognizing_fractions_0.5", "progress_key": "e363750329", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/recognizing_fractions_0.5.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Rec frac0.5", "covers": [], "display_name": "Recognizing fractions 0.5", "kind": "Exercise", "sha1": "f9f15ee3f2a335afc7d0ed00edd8a09806e30a74", "name": "recognizing_fractions_0.5", "seconds_per_fast_problem": 7.0, "prerequisites": ["order_of_operations"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/recognizing_fractions_0.5_256.png"}, {"relative_url": "/exercise/recognizing_fractions", "guaranteed_file_name": "recognizing_fractions.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/recognizing_fractions", "v_position": -1, "h_position": 20, "node_slug": "e/recognizing_fractions", "progress_key": "e196013736", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/recognizing_fractions.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Recog Fract", "covers": [], "display_name": "Recognizing fractions", "kind": "Exercise", "sha1": "69d7381bb3792874f80e5a799885a229559df84a", "name": "recognizing_fractions", "seconds_per_fast_problem": 4.0, "prerequisites": ["recognizing_fractions_0.5"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/recognizing_fractions_256.png"}, {"relative_url": "/exercise/fractions_on_the_number_line_1", "guaranteed_file_name": "fractions_on_the_number_line_1.html", "file_name": null, "author_name": "Matt Wahl", "creation_date": "2011-12-23T16:30:27Z", "ka_url": "http://www.khanacademy.org/exercise/fractions_on_the_number_line_1", "v_position": -2, "h_position": 20, "node_slug": "e/fractions_on_the_number_line_1", "progress_key": "e461002061", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/fractions_on_the_number_line_1.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Fr # line 1", "covers": [], "display_name": "Fractions on the number line 1", "kind": "Exercise", "sha1": "16ba367d971631b06792d2a3f80592f820fec949", "name": "fractions_on_the_number_line_1", "seconds_per_fast_problem": 4.0, "prerequisites": ["recognizing_fractions_0.5"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/fractions_on_the_number_line_1_256.png"}, {"relative_url": "/exercise/comparing_fractions_1", "guaranteed_file_name": "comparing_fractions_1.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/comparing_fractions_1", "v_position": -14, "h_position": 22, "node_slug": "e/comparing_fractions_1", "progress_key": "e196041692", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/comparing_fractions_1.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Cmp Fract 1", "covers": [], "display_name": "Comparing fractions 1", "kind": "Exercise", "sha1": "7149e6cf7fec2190c00b438f14e0b29f5a9efa20", "name": "comparing_fractions_1", "seconds_per_fast_problem": 5.0, "prerequisites": ["simplifying_fractions"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/comparing_fractions_1_256.png"}, {"relative_url": "/exercise/simplifying_fractions", "guaranteed_file_name": "simplifying_fractions.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/simplifying_fractions", "v_position": -10, "h_position": 21, "node_slug": "e/simplifying_fractions", "progress_key": "e196011899", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/simplifying_fractions.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Simp Fract", "covers": [], "display_name": "Simplifying fractions", "kind": "Exercise", "sha1": "b49deb328069b9520c074785ec19f1b60df4e267", "name": "simplifying_fractions", "seconds_per_fast_problem": 9.0, "prerequisites": ["greatest_common_divisor", "adding_fractions_with_common_denominators", "equivalent_fractions_2", "subtracting_fractions_with_common_denominators"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/simplifying_fractions_256.png"}, {"relative_url": "/exercise/equivalent_fractions", "guaranteed_file_name": "equivalent_fractions.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/equivalent_fractions", "v_position": -6, "h_position": 19, "node_slug": "e/equivalent_fractions", "progress_key": "e3018", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/equivalent_fractions.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Equiv Frac.", "covers": [], "display_name": "Equivalent fractions", "kind": "Exercise", "sha1": "69366c955141e6200c2b38f3d193fb09856a2e9c", "name": "equivalent_fractions", "seconds_per_fast_problem": 5.0, "prerequisites": ["order_of_operations", "recognizing_fractions_0.5"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/equivalent_fractions_256.png"}, {"relative_url": "/exercise/equivalent_fractions_2", "guaranteed_file_name": "equivalent_fractions_2.html", "file_name": null, "author_name": "Ben Alpert", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/equivalent_fractions_2", "v_position": -6, "h_position": 20, "node_slug": "e/equivalent_fractions_2", "progress_key": "e196046899", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/equivalent_fractions_2.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Equi Fract2", "covers": ["equivalent_fractions"], "display_name": "Equivalent fractions 2", "kind": "Exercise", "sha1": "a27c9448483ec8cd239b31701a25d1734f9f571d", "name": "equivalent_fractions_2", "seconds_per_fast_problem": 7.0, "prerequisites": ["equivalent_fractions"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/equivalent_fractions_2_256.png"}, {"relative_url": "/exercise/comparing_fractions_2", "guaranteed_file_name": "comparing_fractions_2.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/comparing_fractions_2", "v_position": -14, "h_position": 23, "node_slug": "e/comparing_fractions_2", "progress_key": "e196034489", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/comparing_fractions_2.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Cmp Fract 2", "covers": ["comparing_fractions_1"], "display_name": "Comparing fractions 2", "kind": "Exercise", "sha1": "735717a7633df1dadc4a302c918f4088cc84dd39", "name": "comparing_fractions_2", "seconds_per_fast_problem": 5.0, "prerequisites": ["comparing_fractions_1"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/comparing_fractions_2_256.png"}, {"relative_url": "/exercise/ordering_fractions", "guaranteed_file_name": "ordering_fractions.html", "file_name": null, "author_name": "Omar Rizwan", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/ordering_fractions", "v_position": -14, "h_position": 24, "node_slug": "e/ordering_fractions", "progress_key": "e205280964", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/ordering_fractions.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Ordering fr", "covers": [], "display_name": "Ordering fractions", "kind": "Exercise", "sha1": "8a64bce40d30dcb6ac91daf9add0cbe517aaa702", "name": "ordering_fractions", "seconds_per_fast_problem": 13.0, "prerequisites": ["comparing_fractions_2"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/ordering_fractions_256.png"}, {"relative_url": "/exercise/converting_mixed_numbers_and_improper_fractions", "guaranteed_file_name": "converting_mixed_numbers_and_improper_fractions.html", "file_name": null, "author_name": "Omar Rizwan", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/converting_mixed_numbers_and_improper_fractions", "v_position": -8, "h_position": 22, "node_slug": "e/converting_mixed_numbers_and_improper_fractions", "progress_key": "e213328056", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/converting_mixed_numbers_and_improper_fractions.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Mxd impro f", "covers": [], "display_name": "Converting mixed numbers and improper fractions", "kind": "Exercise", "sha1": "7cb928ffe4ba62e03c0974fc9d30f4f97324d238", "name": "converting_mixed_numbers_and_improper_fractions", "seconds_per_fast_problem": 13.0, "prerequisites": ["simplifying_fractions"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/converting_mixed_numbers_and_improper_fractions_256.png"}, {"relative_url": "/exercise/comparing_improper_fractions_and_mixed_numbers", "guaranteed_file_name": "comparing_improper_fractions_and_mixed_numbers.html", "file_name": null, "author_name": "Matt Wahl", "creation_date": "2012-01-13T08:34:41Z", "ka_url": "http://www.khanacademy.org/exercise/comparing_improper_fractions_and_mixed_numbers", "v_position": -8, "h_position": 24, "node_slug": "e/comparing_improper_fractions_and_mixed_numbers", "progress_key": "e497964681", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/comparing_improper_fractions_and_mixed_numbers.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Comp imp fr", "covers": ["comparing_fractions_2"], "display_name": "Comparing improper fractions and mixed numbers", "kind": "Exercise", "sha1": "5f44e69283a381f8bd79da48d7af19e40e2ca348", "name": "comparing_improper_fractions_and_mixed_numbers", "seconds_per_fast_problem": 7.0, "prerequisites": ["converting_mixed_numbers_and_improper_fractions"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/comparing_improper_fractions_and_mixed_numbers_256.png"}, {"relative_url": "/exercise/fractions_on_the_number_line_2", "guaranteed_file_name": "fractions_on_the_number_line_2.html", "file_name": null, "author_name": "Matt Wahl", "creation_date": "2011-12-23T16:31:54Z", "ka_url": "http://www.khanacademy.org/exercise/fractions_on_the_number_line_2", "v_position": -6, "h_position": 24, "node_slug": "e/fractions_on_the_number_line_2", "progress_key": "e460972000", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/fractions_on_the_number_line_2.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Fr # line 2", "covers": ["fractions_on_the_number_line_1"], "display_name": "Fractions on the number line 2", "kind": "Exercise", "sha1": "64215b39287ced65ea248a5f85c98afd091e2ea2", "name": "fractions_on_the_number_line_2", "seconds_per_fast_problem": 6.0, "prerequisites": ["converting_mixed_numbers_and_improper_fractions"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/fractions_on_the_number_line_2_256.png"}, {"relative_url": "/exercise/ordering_improper_fractions_and_mixed_numbers", "guaranteed_file_name": "ordering_improper_fractions_and_mixed_numbers.html", "file_name": null, "author_name": "Rajiv Abraham", "creation_date": "2012-01-13T08:25:07Z", "ka_url": "http://www.khanacademy.org/exercise/ordering_improper_fractions_and_mixed_numbers", "v_position": -8, "h_position": 26, "node_slug": "e/ordering_improper_fractions_and_mixed_numbers", "progress_key": "e498099631", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/ordering_improper_fractions_and_mixed_numbers.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Ordr imp fr", "covers": ["comparing_improper_fractions_and_mixed_numbers"], "display_name": "Ordering improper fractions and mixed numbers", "kind": "Exercise", "sha1": "b51bcc267a8f79309d692fadd7461e2c4f16b510", "name": "ordering_improper_fractions_and_mixed_numbers", "seconds_per_fast_problem": 22.0, "prerequisites": ["comparing_improper_fractions_and_mixed_numbers"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/ordering_improper_fractions_and_mixed_numbers_256.png"}, {"relative_url": "/exercise/fractions_cut_and_copy_1", "guaranteed_file_name": "fractions_cut_and_copy_1.html", "file_name": null, "author_name": "Julian Pulgarin", "creation_date": "2011-09-29T23:39:47Z", "ka_url": "http://www.khanacademy.org/exercise/fractions_cut_and_copy_1", "v_position": -12, "h_position": 25, "node_slug": "e/fractions_cut_and_copy_1", "progress_key": "e280682094", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/fractions_cut_and_copy_1.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Fr cut copy", "covers": [], "display_name": "Fractions cut and copy 1", "kind": "Exercise", "sha1": "6646713da0e2ce58f52192c99d1a2dc10a669229", "name": "fractions_cut_and_copy_1", "seconds_per_fast_problem": 11.0, "prerequisites": ["dividing_fractions"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/fractions_cut_and_copy_1_256.png"}, {"relative_url": "/exercise/fractions_cut_and_copy_2", "guaranteed_file_name": "fractions_cut_and_copy_2.html", "file_name": null, "author_name": "Julian Pulgarin", "creation_date": "2011-10-20T18:28:34Z", "ka_url": "http://www.khanacademy.org/exercise/fractions_cut_and_copy_2", "v_position": -12, "h_position": 26, "node_slug": "e/fractions_cut_and_copy_2", "progress_key": "e324869626", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/fractions_cut_and_copy_2.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Fr cut cpy2", "covers": [], "display_name": "Fractions cut and copy 2", "kind": "Exercise", "sha1": "da31eeea3de366839b823c41859bb4539c742df0", "name": "fractions_cut_and_copy_2", "seconds_per_fast_problem": 23.0, "prerequisites": ["fractions_cut_and_copy_1"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/fractions_cut_and_copy_2_256.png"}, {"relative_url": "/exercise/adding_fractions_with_common_denominators", "guaranteed_file_name": "adding_fractions_with_common_denominators.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/adding_fractions_with_common_denominators", "v_position": -5, "h_position": 20, "node_slug": "e/adding_fractions_with_common_denominators", "progress_key": "e66768579", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/adding_fractions_with_common_denominators.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "+CommDenom", "covers": [], "display_name": "Adding fractions with common denominators", "kind": "Exercise", "sha1": "602e5a14a0bb300aaf77da7d22b877984288ac57", "name": "adding_fractions_with_common_denominators", "seconds_per_fast_problem": 6.0, "prerequisites": ["order_of_operations", "recognizing_fractions_0.5"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/adding_fractions_with_common_denominators_256.png"}, {"relative_url": "/exercise/subtracting_fractions_with_common_denominators", "guaranteed_file_name": "subtracting_fractions_with_common_denominators.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/subtracting_fractions_with_common_denominators", "v_position": -3, "h_position": 20, "node_slug": "e/subtracting_fractions_with_common_denominators", "progress_key": "e66792177", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/subtracting_fractions_with_common_denominators.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "-CommDenom", "covers": [], "display_name": "Subtracting fractions with common denominators", "kind": "Exercise", "sha1": "a4da9dea356364bd04855568bda88f035c7149dd", "name": "subtracting_fractions_with_common_denominators", "seconds_per_fast_problem": 5.0, "prerequisites": ["order_of_operations", "recognizing_fractions_0.5"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/subtracting_fractions_with_common_denominators_256.png"}, {"relative_url": "/exercise/fraction_word_problems_1", "guaranteed_file_name": "fraction_word_problems_1.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/fraction_word_problems_1", "v_position": -4, "h_position": 21, "node_slug": "e/fraction_word_problems_1", "progress_key": "e196083980", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/fraction_word_problems_1.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Frac WP 1", "covers": [], "display_name": "Fraction word problems 1", "kind": "Exercise", "sha1": "6be0cbb72973440bf097fbb4eace9fc5d4fa5e74", "name": "fraction_word_problems_1", "seconds_per_fast_problem": 9.0, "prerequisites": ["adding_fractions_with_common_denominators", "subtracting_fractions_with_common_denominators"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/fraction_word_problems_1_256.png"}, {"relative_url": "/exercise/adding_fractions", "guaranteed_file_name": "adding_fractions.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/adding_fractions", "v_position": -5, "h_position": 22, "node_slug": "e/adding_fractions", "progress_key": "e201422224", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/adding_fractions.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "+ Fract", "covers": ["adding_fractions_with_common_denominators", "least_common_multiple"], "display_name": "Adding fractions", "kind": "Exercise", "sha1": "db600f5beafa9abf55818b3c65259609009195ad", "name": "adding_fractions", "seconds_per_fast_problem": 27.0, "prerequisites": ["adding_fractions_with_common_denominators", "simplifying_fractions"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/adding_fractions_256.png"}, {"relative_url": "/exercise/subtracting_fractions", "guaranteed_file_name": "subtracting_fractions.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/subtracting_fractions", "v_position": -3, "h_position": 22, "node_slug": "e/subtracting_fractions", "progress_key": "e231832521", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/subtracting_fractions.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Sub Fract", "covers": ["subtracting_fractions_with_common_denominators", "least_common_multiple"], "display_name": "Subtracting fractions", "kind": "Exercise", "sha1": "d2705d83d1582af13a7facb9e348b61fd12fd288", "name": "subtracting_fractions", "seconds_per_fast_problem": 25.0, "prerequisites": ["subtracting_fractions_with_common_denominators", "simplifying_fractions"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/subtracting_fractions_256.png"}, {"relative_url": "/exercise/multiplying_fractions_0.5", "guaranteed_file_name": "multiplying_fractions_0.5.html", "file_name": null, "author_name": "Matt Wahl", "creation_date": "2012-01-30T20:22:43Z", "ka_url": "http://www.khanacademy.org/exercise/multiplying_fractions_0.5", "v_position": -12, "h_position": 22, "node_slug": "e/multiplying_fractions_0.5", "progress_key": "e537138489", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/multiplying_fractions_0.5.png", "custom_stacks": [], "description": "Multiplying positive fractions with simplification", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "M Frac. 0.5", "covers": [], "display_name": "Multiplying fractions 0.5", "kind": "Exercise", "sha1": "5666b04381b319e399992da1a85dc946f0b5337a", "name": "multiplying_fractions_0.5", "seconds_per_fast_problem": 9.0, "prerequisites": ["simplifying_fractions"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/multiplying_fractions_0.5_256.png"}, {"relative_url": "/exercise/multiplying_fractions_word_problems", "guaranteed_file_name": "multiplying_fractions_word_problems.html", "file_name": null, "author_name": "Ben Eater", "creation_date": "2011-12-26T06:04:11Z", "ka_url": "http://www.khanacademy.org/exercise/multiplying_fractions_word_problems", "v_position": -13, "h_position": 23, "node_slug": "e/multiplying_fractions_word_problems", "progress_key": "e463316077", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/multiplying_fractions_word_problems.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Mult Fr WP", "covers": [], "display_name": "Multiplying fractions word problems", "kind": "Exercise", "sha1": "cc0cc4ed6c74e60ed68863e5812c739674b318b1", "name": "multiplying_fractions_word_problems", "seconds_per_fast_problem": 11.0, "prerequisites": ["multiplying_fractions_0.5"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/multiplying_fractions_word_problems_256.png"}, {"relative_url": "/exercise/dividing_fractions_0.5", "guaranteed_file_name": "dividing_fractions_0.5.html", "file_name": null, "author_name": "Matt Wahl", "creation_date": "2012-01-30T20:23:19Z", "ka_url": "http://www.khanacademy.org/exercise/dividing_fractions_0.5", "v_position": -12, "h_position": 23, "node_slug": "e/dividing_fractions_0.5", "progress_key": "e537154517", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/dividing_fractions_0.5.png", "custom_stacks": [], "description": "Dividing positive fractions with simplification", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "D Frac. 0.5", "covers": [], "display_name": "Dividing fractions 0.5", "kind": "Exercise", "sha1": "7501e3b12d773e78a1aff596b312f71f04c7b791", "name": "dividing_fractions_0.5", "seconds_per_fast_problem": 12.0, "prerequisites": ["multiplying_fractions_0.5"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/dividing_fractions_0.5_256.png"}, {"relative_url": "/exercise/dividing_fractions_word_problems", "guaranteed_file_name": "dividing_fractions_word_problems.html", "file_name": null, "author_name": "Ben Eater", "creation_date": "2011-12-26T06:10:01Z", "ka_url": "http://www.khanacademy.org/exercise/dividing_fractions_word_problems", "v_position": -13, "h_position": 24, "node_slug": "e/dividing_fractions_word_problems", "progress_key": "e463313527", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/dividing_fractions_word_problems.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Div Frac WP", "covers": [], "display_name": "Dividing fractions word problems", "kind": "Exercise", "sha1": "3db99e4d4af17ec61621a8b308a69b577bba4970", "name": "dividing_fractions_word_problems", "seconds_per_fast_problem": 18.0, "prerequisites": ["dividing_fractions_0.5"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/dividing_fractions_word_problems_256.png"}, {"relative_url": "/exercise/adding_subtracting_mixed_numbers_0.5", "guaranteed_file_name": "adding_subtracting_mixed_numbers_0.5.html", "file_name": null, "author_name": "Matt Wahl", "creation_date": "2011-12-23T16:57:27Z", "ka_url": "http://www.khanacademy.org/exercise/adding_subtracting_mixed_numbers_0.5", "v_position": -7, "h_position": 24, "node_slug": "e/adding_subtracting_mixed_numbers_0.5", "progress_key": "e460926478", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/adding_subtracting_mixed_numbers_0.5.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "+- Mix #0.5", "covers": [], "display_name": "Adding subtracting mixed numbers 0.5", "kind": "Exercise", "sha1": "1c3f9cf3422210e66acec198c059d56727fdb48a", "name": "adding_subtracting_mixed_numbers_0.5", "seconds_per_fast_problem": 15.0, "prerequisites": ["adding_and_subtracting_fractions", "converting_mixed_numbers_and_improper_fractions"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/adding_subtracting_mixed_numbers_0.5_256.png"}, {"relative_url": "/exercise/adding_subtracting_mixed_numbers_1", "guaranteed_file_name": "adding_subtracting_mixed_numbers_1.html", "file_name": null, "author_name": "Ben Eater", "creation_date": "2011-09-27T18:07:36Z", "ka_url": "http://www.khanacademy.org/exercise/adding_subtracting_mixed_numbers_1", "v_position": -7, "h_position": 25, "node_slug": "e/adding_subtracting_mixed_numbers_1", "progress_key": "e274942887", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/adding_subtracting_mixed_numbers_1.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "+- Mix #1", "covers": [], "display_name": "Adding subtracting mixed numbers 1", "kind": "Exercise", "sha1": "a48af752343d2a2374cbaf073adac7946a9e2956", "name": "adding_subtracting_mixed_numbers_1", "seconds_per_fast_problem": 38.0, "prerequisites": ["adding_subtracting_mixed_numbers_0.5"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/adding_subtracting_mixed_numbers_1_256.png"}, {"relative_url": "/exercise/multiplying_mixed_numbers_1", "guaranteed_file_name": "multiplying_mixed_numbers_1.html", "file_name": null, "author_name": "Matt Wahl", "creation_date": "2012-01-13T08:11:55Z", "ka_url": "http://www.khanacademy.org/exercise/multiplying_mixed_numbers_1", "v_position": -9, "h_position": 24, "node_slug": "e/multiplying_mixed_numbers_1", "progress_key": "e498117097", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/multiplying_mixed_numbers_1.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Mult mix# 1", "covers": ["multiplying_fractions_0.5"], "display_name": "Multiplying mixed numbers 1", "kind": "Exercise", "sha1": "67586173eea9ae45f72f4d627167111b0b5aa3d0", "name": "multiplying_mixed_numbers_1", "seconds_per_fast_problem": 34.0, "prerequisites": ["converting_mixed_numbers_and_improper_fractions", "multiplying_fractions"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/multiplying_mixed_numbers_1_256.png"}, {"relative_url": "/exercise/fractions_on_the_number_line_3", "guaranteed_file_name": "fractions_on_the_number_line_3.html", "file_name": null, "author_name": "Matt Wahl", "creation_date": "2011-12-23T16:32:45Z", "ka_url": "http://www.khanacademy.org/exercise/fractions_on_the_number_line_3", "v_position": -6, "h_position": 25, "node_slug": "e/fractions_on_the_number_line_3", "progress_key": "e460969351", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/fractions_on_the_number_line_3.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Fr # line 3", "covers": ["fractions_on_the_number_line_2", "fractions_on_the_number_line_1"], "display_name": "Fractions on the number line 3", "kind": "Exercise", "sha1": "9b508bbcc7e8ccae93c33f278a47bea0181ec217", "name": "fractions_on_the_number_line_3", "seconds_per_fast_problem": 6.0, "prerequisites": ["fractions_on_the_number_line_2"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/fractions_on_the_number_line_3_256.png"}, {"relative_url": "/exercise/adding_and_subtracting_fractions", "guaranteed_file_name": "adding_and_subtracting_fractions.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/adding_and_subtracting_fractions", "v_position": -4, "h_position": 23, "node_slug": "e/adding_and_subtracting_fractions", "progress_key": "e3011", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/adding_and_subtracting_fractions.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "+- Fract.", "covers": ["least_common_multiple", "adding_fractions", "subtracting_fractions"], "display_name": "Adding and subtracting fractions", "kind": "Exercise", "sha1": "666d260c0b2ec20dd6e5bf524bb69f44c88fc82f", "name": "adding_and_subtracting_fractions", "seconds_per_fast_problem": 23.0, "prerequisites": ["subtracting_fractions", "adding_fractions"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/adding_and_subtracting_fractions_256.png"}, {"relative_url": "/exercise/multiplying_fractions", "guaranteed_file_name": "multiplying_fractions.html", "file_name": null, "author_name": "Ben Alpert", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/multiplying_fractions", "v_position": -11, "h_position": 23, "node_slug": "e/multiplying_fractions", "progress_key": "e3014", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/multiplying_fractions.png", "custom_stacks": [], "description": "", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Mult. Frac.", "covers": [], "display_name": "Multiplying fractions", "kind": "Exercise", "sha1": "60c41d0fcf406e7464c1c813c866ab7fbfd705e8", "name": "multiplying_fractions", "seconds_per_fast_problem": 10.0, "prerequisites": ["multiplying_fractions_0.5"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/multiplying_fractions_256.png"}, {"relative_url": "/exercise/dividing_fractions", "guaranteed_file_name": "dividing_fractions.html", "file_name": null, "author_name": "Peter Kuperman", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/dividing_fractions", "v_position": -12, "h_position": 24, "node_slug": "e/dividing_fractions", "progress_key": "e3015", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/dividing_fractions.png", "custom_stacks": [], "description": "", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Div. Frac.", "covers": ["dividing_fractions_0.5"], "display_name": "Dividing fractions", "kind": "Exercise", "sha1": "a1487938c6cad08b0c30c6996b81d4768602b3a9", "name": "dividing_fractions", "seconds_per_fast_problem": 14.0, "prerequisites": ["multiplying_fractions", "dividing_fractions_0.5"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/dividing_fractions_256.png"}, {"relative_url": "/exercise/converting_fractions_to_decimals", "guaranteed_file_name": "converting_fractions_to_decimals.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-09-14T00:07:12Z", "ka_url": "http://www.khanacademy.org/exercise/converting_fractions_to_decimals", "v_position": 0, "h_position": 20, "node_slug": "e/converting_fractions_to_decimals", "progress_key": "e245552066", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/converting_fractions_to_decimals.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Frac to dec", "covers": [], "display_name": "Converting fractions to decimals", "kind": "Exercise", "sha1": "e029a11cb286183918fe0f59f5261cfa3c0dd39e", "name": "converting_fractions_to_decimals", "seconds_per_fast_problem": 13.0, "prerequisites": ["dividing_decimals_0.5", "recognizing_fractions_0.5"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/converting_fractions_to_decimals_256.png"}, {"relative_url": "/exercise/converting_decimals_to_fractions_1", "guaranteed_file_name": "converting_decimals_to_fractions_1.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/converting_decimals_to_fractions_1", "v_position": -4, "h_position": 24, "node_slug": "e/converting_decimals_to_fractions_1", "progress_key": "e231802990", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/converting_decimals_to_fractions_1.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Dec to Fra1", "covers": [], "display_name": "Converting decimals to fractions 1", "kind": "Exercise", "sha1": "614e943c4e7622ac1429b94386d46f268ff463a8", "name": "converting_decimals_to_fractions_1", "seconds_per_fast_problem": 5.0, "prerequisites": ["converting_fractions_to_decimals", "adding_and_subtracting_fractions"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/converting_decimals_to_fractions_1_256.png"}, {"relative_url": "/exercise/converting_decimals_to_fractions_2", "guaranteed_file_name": "converting_decimals_to_fractions_2.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/converting_decimals_to_fractions_2", "v_position": -4, "h_position": 25, "node_slug": "e/converting_decimals_to_fractions_2", "progress_key": "e231856074", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/converting_decimals_to_fractions_2.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Dec to Fra2", "covers": ["converting_decimals_to_fractions_1"], "display_name": "Converting decimals to fractions 2", "kind": "Exercise", "sha1": "59ac299b12075039e0e23f09a9f4277895813a69", "name": "converting_decimals_to_fractions_2", "seconds_per_fast_problem": 12.0, "prerequisites": ["converting_decimals_to_fractions_1"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/converting_decimals_to_fractions_2_256.png"}, {"relative_url": "/exercise/ordering_numbers", "guaranteed_file_name": "ordering_numbers.html", "file_name": null, "author_name": "Ben Alpert", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/ordering_numbers", "v_position": -14, "h_position": 25, "node_slug": "e/ordering_numbers", "progress_key": "e3019", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/fractions-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/ordering_numbers.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Ordering #s", "covers": ["equivalent_fractions"], "display_name": "Ordering numbers", "kind": "Exercise", "sha1": "f09c3a38300c4f9ee1039d117a8de979fa4f0b00", "name": "ordering_numbers", "seconds_per_fast_problem": 14.0, "prerequisites": ["ordering_fractions"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/ordering_numbers_256.png"}]
+[
+  {
+    "kind": "Exercise", 
+    "display_name": "Recognizing fractions 0.5", 
+    "description": null, 
+    "title": "Recognizing fractions 0.5", 
+    "seconds_per_fast_problem": 7.0, 
+    "related_video_readable_ids": [
+      "numerator-and-denominator-of-a-fraction"
+    ], 
+    "slug": "recognizing_fractions_0.5", 
+    "prerequisites": [
+      "order_of_operations"
+    ], 
+    "live": true, 
+    "h_position": 18, 
+    "v_position": -2, 
+    "path": "/math/arithmetic/fractions/understanding_fractions/e/recognizing_fractions_0.5/", 
+    "id": "recognizing_fractions_0.5", 
+    "name": "recognizing_fractions_0.5"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Recognizing fractions", 
+    "description": null, 
+    "title": "Recognizing fractions", 
+    "seconds_per_fast_problem": 4.0, 
+    "related_video_readable_ids": [
+      "identifying-fraction-parts"
+    ], 
+    "slug": "recognizing_fractions", 
+    "prerequisites": [
+      "recognizing_fractions_0.5"
+    ], 
+    "live": true, 
+    "h_position": 20, 
+    "v_position": -1, 
+    "path": "/math/arithmetic/fractions/understanding_fractions/e/recognizing_fractions/", 
+    "id": "recognizing_fractions", 
+    "name": "recognizing_fractions"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Fractions on the number line 1", 
+    "description": null, 
+    "title": "Fractions on the number line 1", 
+    "seconds_per_fast_problem": 5.0, 
+    "related_video_readable_ids": [
+      "identifying-fraction-parts"
+    ], 
+    "slug": "fractions_on_the_number_line_1", 
+    "prerequisites": [
+      "recognizing_fractions_0.5"
+    ], 
+    "live": true, 
+    "h_position": 20, 
+    "v_position": -2, 
+    "path": "/math/arithmetic/fractions/understanding_fractions/e/fractions_on_the_number_line_1/", 
+    "id": "fractions_on_the_number_line_1", 
+    "name": "fractions_on_the_number_line_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Fraction word problems 1", 
+    "description": null, 
+    "title": "Fraction word problems 1", 
+    "seconds_per_fast_problem": 10.0, 
+    "related_video_readable_ids": [
+      "identifying-fraction-parts"
+    ], 
+    "slug": "fraction_word_problems_1", 
+    "prerequisites": [
+      "adding_fractions_with_common_denominators", 
+      "subtracting_fractions_with_common_denominators"
+    ], 
+    "live": true, 
+    "h_position": 21, 
+    "v_position": -4, 
+    "path": "/math/arithmetic/fractions/understanding_fractions/e/fraction_word_problems_1/", 
+    "id": "fraction_word_problems_1", 
+    "name": "fraction_word_problems_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Simplifying fractions", 
+    "description": null, 
+    "title": "Simplifying fractions", 
+    "seconds_per_fast_problem": 10.0, 
+    "related_video_readable_ids": [
+      "finding-common-denominators"
+    ], 
+    "slug": "simplifying_fractions", 
+    "prerequisites": [
+      "greatest_common_divisor", 
+      "adding_fractions_with_common_denominators", 
+      "equivalent_fractions_2", 
+      "subtracting_fractions_with_common_denominators"
+    ], 
+    "live": true, 
+    "h_position": 21, 
+    "v_position": -10, 
+    "path": "/math/arithmetic/fractions/Equivalent_fractions/e/simplifying_fractions/", 
+    "id": "simplifying_fractions", 
+    "name": "simplifying_fractions"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Comparing fractions 1", 
+    "description": null, 
+    "title": "Comparing fractions 1", 
+    "seconds_per_fast_problem": 5.0, 
+    "related_video_readable_ids": [
+      "comparing-fractions-2"
+    ], 
+    "slug": "comparing_fractions_1", 
+    "prerequisites": [
+      "simplifying_fractions"
+    ], 
+    "live": true, 
+    "h_position": 22, 
+    "v_position": -14, 
+    "path": "/math/arithmetic/fractions/Equivalent_fractions/e/comparing_fractions_1/", 
+    "id": "comparing_fractions_1", 
+    "name": "comparing_fractions_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Equivalent fractions", 
+    "description": null, 
+    "title": "Equivalent fractions", 
+    "seconds_per_fast_problem": 5.0, 
+    "related_video_readable_ids": [
+      "comparing-fractions-2"
+    ], 
+    "slug": "equivalent_fractions", 
+    "prerequisites": [
+      "order_of_operations", 
+      "recognizing_fractions_0.5"
+    ], 
+    "live": true, 
+    "h_position": 19, 
+    "v_position": -6, 
+    "path": "/math/arithmetic/fractions/Equivalent_fractions/e/equivalent_fractions/", 
+    "id": "equivalent_fractions", 
+    "name": "equivalent_fractions"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Equivalent fractions 2", 
+    "description": null, 
+    "title": "Equivalent fractions 2", 
+    "seconds_per_fast_problem": 6.0, 
+    "related_video_readable_ids": [
+      "comparing-fractions-2"
+    ], 
+    "slug": "equivalent_fractions_2", 
+    "prerequisites": [
+      "equivalent_fractions"
+    ], 
+    "live": true, 
+    "h_position": 20, 
+    "v_position": -6, 
+    "path": "/math/arithmetic/fractions/Equivalent_fractions/e/equivalent_fractions_2/", 
+    "id": "equivalent_fractions_2", 
+    "name": "equivalent_fractions_2"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Comparing fractions 2", 
+    "description": null, 
+    "title": "Comparing fractions 2", 
+    "seconds_per_fast_problem": 6.0, 
+    "related_video_readable_ids": [
+      "comparing-fractions-2"
+    ], 
+    "slug": "comparing_fractions_2", 
+    "prerequisites": [
+      "comparing_fractions_1"
+    ], 
+    "live": true, 
+    "h_position": 23, 
+    "v_position": -14, 
+    "path": "/math/arithmetic/fractions/Equivalent_fractions/e/comparing_fractions_2/", 
+    "id": "comparing_fractions_2", 
+    "name": "comparing_fractions_2"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Ordering fractions", 
+    "description": null, 
+    "title": "Ordering fractions", 
+    "seconds_per_fast_problem": 14.0, 
+    "related_video_readable_ids": [
+      "comparing-fractions-2"
+    ], 
+    "slug": "ordering_fractions", 
+    "prerequisites": [
+      "comparing_fractions_2"
+    ], 
+    "live": true, 
+    "h_position": 24, 
+    "v_position": -14, 
+    "path": "/math/arithmetic/fractions/Equivalent_fractions/e/ordering_fractions/", 
+    "id": "ordering_fractions", 
+    "name": "ordering_fractions"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Fractions cut and copy 1", 
+    "description": null, 
+    "title": "Fractions cut and copy 1", 
+    "seconds_per_fast_problem": 10.0, 
+    "related_video_readable_ids": [
+      "comparing-fractions-2"
+    ], 
+    "slug": "fractions_cut_and_copy_1", 
+    "prerequisites": [
+      "dividing_fractions"
+    ], 
+    "live": true, 
+    "h_position": 25, 
+    "v_position": -12, 
+    "path": "/math/arithmetic/fractions/Equivalent_fractions/e/fractions_cut_and_copy_1/", 
+    "id": "fractions_cut_and_copy_1", 
+    "name": "fractions_cut_and_copy_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Adding fractions with common denominators", 
+    "description": null, 
+    "title": "Adding fractions with common denominators", 
+    "seconds_per_fast_problem": 6.0, 
+    "related_video_readable_ids": [
+      "adding-fractions-with-like-denominators"
+    ], 
+    "slug": "adding_fractions_with_common_denominators", 
+    "prerequisites": [
+      "order_of_operations", 
+      "recognizing_fractions_0.5"
+    ], 
+    "live": true, 
+    "h_position": 20, 
+    "v_position": -5, 
+    "path": "/math/arithmetic/fractions/Adding_and_subtracting_fractions/e/adding_fractions_with_common_denominators/", 
+    "id": "adding_fractions_with_common_denominators", 
+    "name": "adding_fractions_with_common_denominators"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Subtracting fractions with common denominators", 
+    "description": null, 
+    "title": "Subtracting fractions with common denominators", 
+    "seconds_per_fast_problem": 5.0, 
+    "related_video_readable_ids": [
+      "subtracting--fractions"
+    ], 
+    "slug": "subtracting_fractions_with_common_denominators", 
+    "prerequisites": [
+      "order_of_operations", 
+      "recognizing_fractions_0.5"
+    ], 
+    "live": true, 
+    "h_position": 20, 
+    "v_position": -3, 
+    "path": "/math/arithmetic/fractions/Adding_and_subtracting_fractions/e/subtracting_fractions_with_common_denominators/", 
+    "id": "subtracting_fractions_with_common_denominators", 
+    "name": "subtracting_fractions_with_common_denominators"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Adding fractions", 
+    "description": null, 
+    "title": "Adding fractions", 
+    "seconds_per_fast_problem": 28.0, 
+    "related_video_readable_ids": [
+      "adding-fractions--ex-1"
+    ], 
+    "slug": "adding_fractions", 
+    "prerequisites": [
+      "adding_fractions_with_common_denominators", 
+      "simplifying_fractions"
+    ], 
+    "live": true, 
+    "h_position": 22, 
+    "v_position": -5, 
+    "path": "/math/arithmetic/fractions/Adding_and_subtracting_fractions/e/adding_fractions/", 
+    "id": "adding_fractions", 
+    "name": "adding_fractions"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Subtracting fractions", 
+    "description": null, 
+    "title": "Subtracting fractions", 
+    "seconds_per_fast_problem": 25.0, 
+    "related_video_readable_ids": [
+      "adding-fractions--ex-1"
+    ], 
+    "slug": "subtracting_fractions", 
+    "prerequisites": [
+      "subtracting_fractions_with_common_denominators", 
+      "simplifying_fractions"
+    ], 
+    "live": true, 
+    "h_position": 22, 
+    "v_position": -3, 
+    "path": "/math/arithmetic/fractions/Adding_and_subtracting_fractions/e/subtracting_fractions/", 
+    "id": "subtracting_fractions", 
+    "name": "subtracting_fractions"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Adding and subtracting fractions", 
+    "description": null, 
+    "title": "Adding and subtracting fractions", 
+    "seconds_per_fast_problem": 27.0, 
+    "related_video_readable_ids": [
+      "adding-fractions--ex-1"
+    ], 
+    "slug": "adding_and_subtracting_fractions", 
+    "prerequisites": [
+      "subtracting_fractions", 
+      "adding_fractions"
+    ], 
+    "live": true, 
+    "h_position": 23, 
+    "v_position": -4, 
+    "path": "/math/arithmetic/fractions/Adding_and_subtracting_fractions/e/adding_and_subtracting_fractions/", 
+    "id": "adding_and_subtracting_fractions", 
+    "name": "adding_and_subtracting_fractions"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Multiplying fractions 0.5", 
+    "description": "Multiplying positive fractions with simplification", 
+    "title": "Multiplying fractions 0.5", 
+    "seconds_per_fast_problem": 9.0, 
+    "related_video_readable_ids": [
+      "multiplying-fractions"
+    ], 
+    "slug": "multiplying_fractions_0.5", 
+    "prerequisites": [
+      "simplifying_fractions"
+    ], 
+    "live": true, 
+    "h_position": 22, 
+    "v_position": -12, 
+    "path": "/math/arithmetic/fractions/multiplying_and_dividing_frac/e/multiplying_fractions_0.5/", 
+    "id": "multiplying_fractions_0.5", 
+    "name": "multiplying_fractions_0.5"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Multiplying fractions", 
+    "description": "", 
+    "title": "Multiplying fractions", 
+    "seconds_per_fast_problem": 11.0, 
+    "related_video_readable_ids": [
+      "multiplying-fractions"
+    ], 
+    "slug": "multiplying_fractions", 
+    "prerequisites": [
+      "multiplying_fractions_0.5", 
+      "multiplying_fractions_by_integers"
+    ], 
+    "live": true, 
+    "h_position": 23, 
+    "v_position": -11, 
+    "path": "/math/arithmetic/fractions/multiplying_and_dividing_frac/e/multiplying_fractions/", 
+    "id": "multiplying_fractions", 
+    "name": "multiplying_fractions"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Multiplying fractions word problems", 
+    "description": null, 
+    "title": "Multiplying fractions word problems", 
+    "seconds_per_fast_problem": 11.0, 
+    "related_video_readable_ids": [
+      "multiplying-fractions-word-problem"
+    ], 
+    "slug": "multiplying_fractions_word_problems", 
+    "prerequisites": [
+      "multiplying_fractions_0.5", 
+      "multiplying_fractions_by_integers"
+    ], 
+    "live": true, 
+    "h_position": 23, 
+    "v_position": -13, 
+    "path": "/math/arithmetic/fractions/multiplying_and_dividing_frac/e/multiplying_fractions_word_problems/", 
+    "id": "multiplying_fractions_word_problems", 
+    "name": "multiplying_fractions_word_problems"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Dividing fractions 0.5", 
+    "description": "Dividing positive fractions with simplification", 
+    "title": "Dividing fractions 0.5", 
+    "seconds_per_fast_problem": 11.0, 
+    "related_video_readable_ids": [
+      "dividing-fractions-example"
+    ], 
+    "slug": "dividing_fractions_0.5", 
+    "prerequisites": [
+      "multiplying_fractions_0.5", 
+      "multiplying_fractions_by_integers"
+    ], 
+    "live": true, 
+    "h_position": 23, 
+    "v_position": -12, 
+    "path": "/math/arithmetic/fractions/multiplying_and_dividing_frac/e/dividing_fractions_0.5/", 
+    "id": "dividing_fractions_0.5", 
+    "name": "dividing_fractions_0.5"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Dividing fractions", 
+    "description": "", 
+    "title": "Dividing fractions", 
+    "seconds_per_fast_problem": 15.0, 
+    "related_video_readable_ids": [
+      "dividing-fractions-example"
+    ], 
+    "slug": "dividing_fractions", 
+    "prerequisites": [
+      "multiplying_fractions", 
+      "dividing_fractions_0.5"
+    ], 
+    "live": true, 
+    "h_position": 24, 
+    "v_position": -12, 
+    "path": "/math/arithmetic/fractions/multiplying_and_dividing_frac/e/dividing_fractions/", 
+    "id": "dividing_fractions", 
+    "name": "dividing_fractions"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Dividing fractions word problems", 
+    "description": null, 
+    "title": "Dividing fractions word problems", 
+    "seconds_per_fast_problem": 16.0, 
+    "related_video_readable_ids": [
+      "dividing-fractions-word-problem"
+    ], 
+    "slug": "dividing_fractions_word_problems", 
+    "prerequisites": [
+      "dividing_fractions_0.5"
+    ], 
+    "live": true, 
+    "h_position": 24, 
+    "v_position": -13, 
+    "path": "/math/arithmetic/fractions/multiplying_and_dividing_frac/e/dividing_fractions_word_problems/", 
+    "id": "dividing_fractions_word_problems", 
+    "name": "dividing_fractions_word_problems"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Fractions on the number line 2", 
+    "description": null, 
+    "title": "Fractions on the number line 2", 
+    "seconds_per_fast_problem": 6.0, 
+    "related_video_readable_ids": [
+      "proper-and-improper-fractions"
+    ], 
+    "slug": "fractions_on_the_number_line_2", 
+    "prerequisites": [
+      "converting_mixed_numbers_and_improper_fractions"
+    ], 
+    "live": true, 
+    "h_position": 24, 
+    "v_position": -6, 
+    "path": "/math/arithmetic/fractions/mixed_numbers/e/fractions_on_the_number_line_2/", 
+    "id": "fractions_on_the_number_line_2", 
+    "name": "fractions_on_the_number_line_2"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Comparing improper fractions and mixed numbers", 
+    "description": null, 
+    "title": "Comparing improper fractions and mixed numbers", 
+    "seconds_per_fast_problem": 8.0, 
+    "related_video_readable_ids": [
+      "mixed-numbers-and-improper-fractions"
+    ], 
+    "slug": "comparing_improper_fractions_and_mixed_numbers", 
+    "prerequisites": [
+      "converting_mixed_numbers_and_improper_fractions"
+    ], 
+    "live": true, 
+    "h_position": 24, 
+    "v_position": -8, 
+    "path": "/math/arithmetic/fractions/mixed_numbers/e/comparing_improper_fractions_and_mixed_numbers/", 
+    "id": "comparing_improper_fractions_and_mixed_numbers", 
+    "name": "comparing_improper_fractions_and_mixed_numbers"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Converting mixed numbers and improper fractions", 
+    "description": null, 
+    "title": "Converting mixed numbers and improper fractions", 
+    "seconds_per_fast_problem": 11.0, 
+    "related_video_readable_ids": [
+      "changing-an-improper-fraction-to-a-mixed-number"
+    ], 
+    "slug": "converting_mixed_numbers_and_improper_fractions", 
+    "prerequisites": [
+      "simplifying_fractions"
+    ], 
+    "live": true, 
+    "h_position": 22, 
+    "v_position": -8, 
+    "path": "/math/arithmetic/fractions/mixed_numbers/e/converting_mixed_numbers_and_improper_fractions/", 
+    "id": "converting_mixed_numbers_and_improper_fractions", 
+    "name": "converting_mixed_numbers_and_improper_fractions"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Ordering improper fractions and mixed numbers", 
+    "description": null, 
+    "title": "Ordering improper fractions and mixed numbers", 
+    "seconds_per_fast_problem": 21.0, 
+    "related_video_readable_ids": [
+      "ordering-improper-fractions-and-mixed-numbers"
+    ], 
+    "slug": "ordering_improper_fractions_and_mixed_numbers", 
+    "prerequisites": [
+      "comparing_improper_fractions_and_mixed_numbers"
+    ], 
+    "live": true, 
+    "h_position": 26, 
+    "v_position": -8, 
+    "path": "/math/arithmetic/fractions/mixed_numbers/e/ordering_improper_fractions_and_mixed_numbers/", 
+    "id": "ordering_improper_fractions_and_mixed_numbers", 
+    "name": "ordering_improper_fractions_and_mixed_numbers"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Fractions cut and copy 2", 
+    "description": null, 
+    "title": "Fractions cut and copy 2", 
+    "seconds_per_fast_problem": 23.0, 
+    "related_video_readable_ids": [
+      "ordering-improper-fractions-and-mixed-numbers"
+    ], 
+    "slug": "fractions_cut_and_copy_2", 
+    "prerequisites": [
+      "fractions_cut_and_copy_1"
+    ], 
+    "live": true, 
+    "h_position": 26, 
+    "v_position": -12, 
+    "path": "/math/arithmetic/fractions/mixed_numbers/e/fractions_cut_and_copy_2/", 
+    "id": "fractions_cut_and_copy_2", 
+    "name": "fractions_cut_and_copy_2"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Fractions on the number line 3", 
+    "description": null, 
+    "title": "Fractions on the number line 3", 
+    "seconds_per_fast_problem": 7.0, 
+    "related_video_readable_ids": [
+      "points-on-a-number-line"
+    ], 
+    "slug": "fractions_on_the_number_line_3", 
+    "prerequisites": [
+      "fractions_on_the_number_line_2"
+    ], 
+    "live": true, 
+    "h_position": 25, 
+    "v_position": -6, 
+    "path": "/math/arithmetic/fractions/mixed_numbers/e/fractions_on_the_number_line_3/", 
+    "id": "fractions_on_the_number_line_3", 
+    "name": "fractions_on_the_number_line_3"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Adding subtracting mixed numbers 0.5", 
+    "description": null, 
+    "title": "Adding subtracting mixed numbers 0.5", 
+    "seconds_per_fast_problem": 10.0, 
+    "related_video_readable_ids": [
+      "adding-subtracting-mixed-numbers-0-5--ex-2"
+    ], 
+    "slug": "adding_subtracting_mixed_numbers_0.5", 
+    "prerequisites": [
+      "adding_and_subtracting_fractions", 
+      "converting_mixed_numbers_and_improper_fractions"
+    ], 
+    "live": true, 
+    "h_position": 24, 
+    "v_position": -7, 
+    "path": "/math/arithmetic/fractions/Mixed_number_add_sub/e/adding_subtracting_mixed_numbers_0.5/", 
+    "id": "adding_subtracting_mixed_numbers_0.5", 
+    "name": "adding_subtracting_mixed_numbers_0.5"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Adding subtracting mixed numbers 1", 
+    "description": null, 
+    "title": "Adding subtracting mixed numbers 1", 
+    "seconds_per_fast_problem": 36.0, 
+    "related_video_readable_ids": [
+      "adding-subtracting-mixed-numbers-1--ex-2"
+    ], 
+    "slug": "adding_subtracting_mixed_numbers_1", 
+    "prerequisites": [
+      "adding_subtracting_mixed_numbers_0.5"
+    ], 
+    "live": true, 
+    "h_position": 25, 
+    "v_position": -7, 
+    "path": "/math/arithmetic/fractions/Mixed_number_add_sub/e/adding_subtracting_mixed_numbers_1/", 
+    "id": "adding_subtracting_mixed_numbers_1", 
+    "name": "adding_subtracting_mixed_numbers_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Multiplying mixed numbers 1", 
+    "description": null, 
+    "title": "Multiplying mixed numbers 1", 
+    "seconds_per_fast_problem": 33.0, 
+    "related_video_readable_ids": [
+      "multiplying--mixed-numbers"
+    ], 
+    "slug": "multiplying_mixed_numbers_1", 
+    "prerequisites": [
+      "converting_mixed_numbers_and_improper_fractions", 
+      "multiplying_fractions"
+    ], 
+    "live": true, 
+    "h_position": 24, 
+    "v_position": -9, 
+    "path": "/math/arithmetic/fractions/mixed_number_mult_div/e/multiplying_mixed_numbers_1/", 
+    "id": "multiplying_mixed_numbers_1", 
+    "name": "multiplying_mixed_numbers_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Converting fractions to decimals", 
+    "description": "Convert a fraction to decimal rounded to the nearest thousandth.", 
+    "title": "Converting fractions to decimals", 
+    "seconds_per_fast_problem": 12.0, 
+    "related_video_readable_ids": [
+      "converting-fractions-to-decimals--ex2"
+    ], 
+    "slug": "converting_fractions_to_decimals", 
+    "prerequisites": [
+      "dividing_decimals_0.5", 
+      "recognizing_fractions_0.5"
+    ], 
+    "live": true, 
+    "h_position": 20, 
+    "v_position": 0, 
+    "path": "/math/arithmetic/fractions/decimals_fractions/e/converting_fractions_to_decimals/", 
+    "id": "converting_fractions_to_decimals", 
+    "name": "converting_fractions_to_decimals"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Converting decimals to fractions 1", 
+    "description": null, 
+    "title": "Converting decimals to fractions 1", 
+    "seconds_per_fast_problem": 5.0, 
+    "related_video_readable_ids": [
+      "representing-a-number-as-a-decimal--percent--and-fraction"
+    ], 
+    "slug": "converting_decimals_to_fractions_1", 
+    "prerequisites": [
+      "converting_fractions_to_decimals", 
+      "adding_and_subtracting_fractions"
+    ], 
+    "live": true, 
+    "h_position": 24, 
+    "v_position": -4, 
+    "path": "/math/arithmetic/fractions/decimals_fractions/e/converting_decimals_to_fractions_1/", 
+    "id": "converting_decimals_to_fractions_1", 
+    "name": "converting_decimals_to_fractions_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Converting decimals to fractions 2", 
+    "description": "Convert a decimal to an equivalent fraction. Convert a decimal to an equivalent mixed number. Reduce to lowest terms.", 
+    "title": "Converting decimals to fractions 2", 
+    "seconds_per_fast_problem": 13.0, 
+    "related_video_readable_ids": [
+      "representing-a-number-as-a-decimal--percent--and-fraction"
+    ], 
+    "slug": "converting_decimals_to_fractions_2", 
+    "prerequisites": [
+      "converting_decimals_to_fractions_1"
+    ], 
+    "live": true, 
+    "h_position": 25, 
+    "v_position": -4, 
+    "path": "/math/arithmetic/fractions/decimals_fractions/e/converting_decimals_to_fractions_2/", 
+    "id": "converting_decimals_to_fractions_2", 
+    "name": "converting_decimals_to_fractions_2"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Ordering numbers", 
+    "description": null, 
+    "title": "Ordering numbers", 
+    "seconds_per_fast_problem": 15.0, 
+    "related_video_readable_ids": [
+      "ordering-numeric-expressions_DUP_3"
+    ], 
+    "slug": "ordering_numbers", 
+    "prerequisites": [
+      "ordering_fractions"
+    ], 
+    "live": true, 
+    "h_position": 25, 
+    "v_position": -14, 
+    "path": "/math/arithmetic/fractions/decimals_fractions/e/ordering_numbers/", 
+    "id": "ordering_numbers", 
+    "name": "ordering_numbers"
+  }
+]

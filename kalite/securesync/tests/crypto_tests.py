@@ -1,8 +1,8 @@
 import re
-import unittest
 
 from django.test import TestCase
 from django.test import TestCase
+from django.utils import unittest
 
 import settings
 from securesync import crypto

@@ -1,22 +1,23 @@
-import threading
+import os
 import subprocess
 import sys
+import threading
 from croncount import get_count
 
-t = None
+import settings  # get cron settings from Django project settings file
+
 
 def cron():
     # only bother spinning up the full cron management command if there's something waiting to be run
     if get_count():
-        p = subprocess.Popen(["python", "manage.py", "cron"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out = p.communicate()
-        if out[0]:
-            sys.stdout.write(out[0])
-        if out[1]:
-            sys.stderr.write("Error: %s\n" % out[1])
-            if -1 != out[1].find("no such table: chronograph_job"): # installation failed, don't keep going!
-                t.cancel()
-    
+        # Use sys to get the same executable running as is running this process.
+        # Make sure to call the manage.py from this project.
+        subprocess.call([sys.executable, os.path.join(os.path.dirname(__file__), "manage.py"), "cron"])
+
+    # This is the pause between executions.  If the above hangs for a long time,
+    #   we won't check again until it has returned / completed.
+    threading.Timer(settings.CRONSERVER_FREQUENCY, cron).start()
+
+
 if __name__ == "__main__":
-    t = threading.Timer(5, cron)
-    t.start()
+    cron()

@@ -14,14 +14,14 @@ from django.utils.translation import ugettext as _
 
 import settings
 from config.models import Settings
-from config.utils import set_as_registered
-from kalite.utils.jobs import force_job
-from kalite.utils.decorators import require_admin, central_server_only, distributed_server_only
-from kalite.utils.internet import set_query_params
+from main.models import UserLog
 from securesync import crypto
 from securesync.api_client import SyncClient
 from securesync.forms import RegisteredDevicePublicKeyForm, FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
-from securesync.models import SyncSession, Device, RegisteredDevicePublicKey, Zone, Facility, FacilityGroup
+from securesync.models import SyncSession, Device, Facility, FacilityGroup
+from utils.jobs import force_job
+from utils.decorators import require_admin, central_server_only, distributed_server_only
+from utils.internet import set_query_params
 
 
 def register_public_key(request):
@@ -73,53 +73,39 @@ def facility_required(handler):
     return inner_fn
 
 
+def set_as_registered():
+    force_job("syncmodels", "Secure Sync", "HOURLY")  # now launches asynchronously
+    Settings.set("registered", True)
+
+
 @require_admin
 @render_to("securesync/register_public_key_client.html")
 def register_public_key_client(request):
-    # When successfully registered, the zone information is syncd
-    #   and the local device's zone is marked
-    if Device.get_own_device().is_registered():
-        set_as_registered()   
+    if Device.get_own_device().get_zone():
+        set_as_registered()
         return {"already_registered": True}
-
-    # Not registered, but we may be able to register
-    #   offline or online
     client = SyncClient()
+    if client.test_connection() != "success":
+        return {"no_internet": True}
     reg_response = client.register()
     reg_status = reg_response.get("code")
-    
-    # We could register! woot!
     if reg_status == "registered":
         set_as_registered()
         return {"newly_registered": True}
-    
-    # We didn't need to register; this device was already registered!  
-    elif reg_status == "device_already_registered":
+    if reg_status == "device_already_registered":
         set_as_registered()
         return {"already_registered": True}
-    
-    # The public key of this device is unrecognized (and no install certificate
-    #   to smooth things over)
-    elif reg_status == "public_key_unregistered":
+    if reg_status == "public_key_unregistered":
         return {
             "unregistered": True,
             "registration_url": client.path_to_url(
                 "/securesync/register/?" + urllib.quote(crypto.get_own_key().get_public_key_string())),
             "login_url": client.path_to_url("/accounts/login/")
         }
-    
-    # We weren't online, and have no offline methods for registering  
-    elif reg_status == "offline_with_no_install_certificates":
-        return {"no_internet": True}
-        
-    # An error occurred
-    elif reg_response.get("error", None):
-        return {"error_msg": reg_response.get("error") }
-        
-    # An unexpected error type; bubble it up to the user?
-    else:
-        return HttpResponse(_("Registration status: ") + reg_status)
-
+    error_msg = reg_response.get("error", "")
+    if error_msg:
+        return {"error_msg": error_msg}
+    return HttpResponse(_("Registration status: ") + reg_status)
 
 
 @central_server_only
@@ -289,13 +275,8 @@ def login(request):
     facility_id = facility and facility.id or None
 
     if request.method == 'POST':
-        # log out any Django user
-        if request.user.is_authenticated():
-            auth_logout(request)
-
-        # log out a facility user
-        if "facility_user" in request.session:
-            del request.session["facility_user"]
+        # log out any Django user or facility user
+        logout(request)
 
         username = request.POST.get("username", "")
         password = request.POST.get("password", "")
@@ -309,12 +290,12 @@ def login(request):
         # try logging in as a facility user
         form = LoginForm(data=request.POST, request=request, initial={"facility": facility_id})
         if form.is_valid():
-            request.session["facility_user"] = form.get_user()
-            messages.success(
-                request,
-                _("You've been logged in! We hope you enjoy your time with KA Lite ")
-                + _("-- be sure to log out when you finish.")
-            )
+            user = form.get_user()
+
+            UserLog.begin_user_activity(user, activity_type="login")  # Success! Log the event
+            request.session["facility_user"] = user
+            messages.success(request, _("You've been logged in! We hope you enjoy your time with KA Lite ") +
+                                        _("-- be sure to log out when you finish."))
             return HttpResponseRedirect(
                 form.non_field_errors()
                 or request.next
@@ -339,6 +320,7 @@ def login(request):
 @distributed_server_only
 def logout(request):
     if "facility_user" in request.session:
+        UserLog.end_user_activity(request.session["facility_user"], activity_type="login")
         del request.session["facility_user"]
     auth_logout(request)
     next = request.GET.get("next", reverse("homepage"))

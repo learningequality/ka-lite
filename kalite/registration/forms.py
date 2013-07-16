@@ -2,10 +2,9 @@
 Forms and validation code for user registration.
 
 """
-
-
-from django.contrib.auth.models import User
 from django import forms
+from django.contrib.auth.models import User
+from django.utils.translation import ugettext_lazy as _
 
 
 # I put this on all required fields, because it's easier to pick up
@@ -32,11 +31,11 @@ class RegistrationForm(forms.Form):
     last_name = forms.CharField(max_length=30)
     email = forms.EmailField(widget=forms.TextInput(attrs=dict(attrs_dict,
                                                                maxlength=75)),
-                             label=("Email address"))
+                             label=_("Email address"))
     password1 = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict, render_value=False),
-                                label=("Password"))
+                                label=_("Password"))
     password2 = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict, render_value=False),
-                                label=("Password (again)"))
+                                label=_("Password (again)"))
     tos1 = forms.BooleanField(required=False)
     tos2 = forms.BooleanField(required=False)
     
@@ -50,15 +49,15 @@ class RegistrationForm(forms.Form):
         email = self.cleaned_data.get('email')
         
         if not email:
-            raise forms.ValidationError(("You must specify an email address."))
+            raise forms.ValidationError(_("You must specify an email address."))
         elif User.objects.filter(email=email.lower()) or User.objects.filter(email=email):
-            raise forms.ValidationError(("This email address is already in use. Please supply a different email address."))
+            raise forms.ValidationError(_("This email address is already in use. Please supply a different email address."))
         return email
 
         
-    def clean_password(self): # NOT CALLED AUTOMATICALLY!
+    def clean_password2(self):
         """
-        Verifiy that the values entered into the two password fields
+        Verify that the values entered into the two password fields
         match. Note that an error here will end up in
         ``non_field_errors()`` because it doesn't apply to a single
         field.
@@ -66,11 +65,11 @@ class RegistrationForm(forms.Form):
         """
         if 'password1' in self.cleaned_data and 'password2' in self.cleaned_data:
             if self.cleaned_data.get('password1') != self.cleaned_data.get('password2'):
-                raise forms.ValidationError(("The two password fields didn't match."))
+                raise forms.ValidationError(_("The two password fields didn't match."))
         
     def clean_tos1(self):
         if not self.cleaned_data.get('tos1'):
-            raise forms.ValidationError(("You must acknowledge having read these terms."))
+            raise forms.ValidationError(_("You must acknowledge having read these terms."))
         return self.cleaned_data.get('tos1')
         
     def clean_tos2(self):
@@ -80,12 +79,8 @@ class RegistrationForm(forms.Form):
 
             
     def clean(self):
-        #Help docs @ https://docs.djangoproject.com/en/dev/ref/forms/validation/
         cleaned_data = super(RegistrationForm, self).clean()
-        self.clean_email()
-        self.clean_password()
-        if cleaned_data.get("email"):
-            cleaned_data['username'] = cleaned_data.get('email')
-        else:
-            cleaned_data['username'] = None
+
+        # Set username to email
+        cleaned_data['username'] = cleaned_data.get('email', None)
         return cleaned_data

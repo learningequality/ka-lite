@@ -1,13 +1,4 @@
-"""
-Note: this module should not depend on central, 
-so we can exclude shipping central server code
-to distributed servers.
-"""
-
-import crypto
 import datetime
-import logging
-import random
 import uuid
 import zlib
 from annoying.functions import get_object_or_None
@@ -17,15 +8,14 @@ from django.contrib.auth.models import check_password
 from django.core import serializers
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models, transaction
-from django.db.models import Q, Max
-from django.utils.text import compress_string
+from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
 import kalite
 import settings
 from config.models import Settings
-from config.utils import set_as_registered
 from securesync import crypto, model_sync
+from pbkdf2 import crypt
 
 
 # Note: this MUST be hard-coded for backwards-compatibility reasons.
@@ -46,13 +36,13 @@ class SyncSession(models.Model):
     models_downloaded = models.IntegerField(default=0)
     errors = models.IntegerField(default=0); errors.version="0.9.3" # kalite version
     closed = models.BooleanField(default=False)
-    
+
     def _hashable_representation(self):
         return "%s:%s:%s:%s" % (
             self.client_nonce, self.client_device.pk,
             self.server_nonce, self.server_device.pk,
         )
-        
+
     def _verify_signature(self, device, signature):
         return device.get_key().verify(self._hashable_representation(), signature)
 
@@ -64,14 +54,27 @@ class SyncSession(models.Model):
 
     def sign(self):
         return Device.get_own_device().get_key().sign(self._hashable_representation())
-        
+
+
+    def save(self, *args, **kwargs):
+        """
+        Save, while obeying the max count.
+        """
+        super(SyncSession,self).save(*args, **kwargs)
+        # TODO(bcipolli): think about adding an index for efficiency
+        #   to timestamp, making sure that whatever we do works for both
+        #   distributed and central servers.
+        if settings.SYNC_SESSIONS_MAX_RECORDS is not None and SyncSession.objects.count() > settings.SYNC_SESSIONS_MAX_RECORDS:
+            to_discard = SyncSession.objects.order_by("timestamp")[0:SyncSession.objects.count()-settings.SYNC_SESSIONS_MAX_RECORDS]
+            SyncSession.objects.filter(pk__in=to_discard).delete()
+
     def __unicode__(self):
         return "%s... -> %s..." % (self.client_device.pk[0:5],
             (self.server_device and self.server_device.pk[0:5] or "?????"))
 
 
 class RegisteredDevicePublicKey(models.Model):
-    public_key = models.CharField(max_length=500, help_text="(this field should be filled in automatically; don't change it)")
+    public_key = models.CharField(max_length=500, help_text="(This field will be filled in automatically)")
     zone = models.ForeignKey("Zone")
 
     def __unicode__(self):
@@ -84,7 +87,7 @@ class DeviceMetadata(models.Model):
     is_own_device = models.BooleanField(default=False)
     counter_position = models.IntegerField(default=0)
 
-    class Meta:    
+    class Meta:
         verbose_name_plural = "Device metadata"
 
     def __unicode__(self):
@@ -92,7 +95,7 @@ class DeviceMetadata(models.Model):
 
 
 class SyncedModelManager(models.Manager):
-    
+
     def by_zone(self, zone):
         # get model instances that were signed by devices in the zone,
         # or signed by a trusted authority that said they were for the zone
@@ -142,41 +145,41 @@ class SyncedModel(models.Model):
             return self.signed_by.get_key().verify(self._hashable_representation(), self.signature)
         except:
             return False
-    
+
     def _hashable_fields(self, fields=None):
-        
+
         # if no fields were specified, build a list of all the model's field names
         if not fields:
             fields = [field.name for field in self._meta.fields if field.name not in self.__class__._unhashable_fields]
             # sort the list of fields, for consistency
             fields.sort()
-        
+
         # certain fields should always be included
         for field in self.__class__._always_hash_fields:
             if field not in fields:
                 fields = [field] + fields
-        
+
         # certain fields should never be included
         fields = [field for field in fields if field not in self.__class__._unhashable_fields]
-                
+
         return fields
-    
+
     def _hashable_representation(self, fields=None):
         fields = self._hashable_fields(fields)
         chunks = []
         for field in fields:
-            
+
             try:
                 val = getattr(self, field)
             except ObjectDoesNotExist as e:
                 # if it's a foreign key and is broken, just use the id of the related model
                 val = getattr(self, field + "_id")
-            
+
             if val:
                 # convert models to just an id
                 if isinstance(val, models.Model):
                     val = val.pk
-                
+
                 # convert datetimes to a str in a predictable way
                 if isinstance(val, datetime.datetime):
                     val = ("%04d-%02d-%02d %d:%02d:%02d" %
@@ -188,18 +191,18 @@ class SyncedModel(models.Model):
 
                 # add this field/val pair onto the chunks to include in the hash
                 chunks.append("%s=%s" % (field, val))
-                
+
         return "&".join(chunks)
 
     def save(self, own_device=None, imported=False, increment_counters=True, *args, **kwargs):
-        
+
         # we allow for the "own device" to be passed in so that a device can sign itself (before existing)
         own_device = own_device or Device.get_own_device()
-        
+
         # this will probably never happen (since getting the device creates it), but just to be safe
         if not own_device:
             raise ValidationError("Cannot save any synced models before registering this Device.")
-        
+
         # imported models are signed by other devices; make sure they check out
         if imported:
             if not self.signed_by_id:
@@ -209,10 +212,10 @@ class SyncedModel(models.Model):
         else: # local models need to be signed by us
             self.counter = own_device.increment_and_get_counter()
             self.sign(device=own_device)
-        
+
         # call the base Django Model save to write to the DB
         super(SyncedModel, self).save(*args, **kwargs)
-        
+
         # for imported models, we want to keep track of the counter position we're at for that device
         if imported and increment_counters:
             self.signed_by.set_counter_position(self.counter)
@@ -258,170 +261,9 @@ class Zone(SyncedModel):
     description = models.TextField(blank=True)
 
     requires_trusted_signature = True
-    
-    def generate_install_certificates(self, num_certificates=5):
-        
-        certs = []
-        if settings.CENTRAL_SERVER:
-            for i in range(num_certificates):
-                cert = self.zoneinstallcertificate_set.create()
-                certs.append(cert)
-                logging.debug("Created install certificate: Zone=%s; Cert=%s" % (self.name, cert.raw_value))
-        return certs            
-        
-    @transaction.commit_on_success
-    def register_offline(self, device, signed_values=None):
-        """Registers in an offline context by verifying the given certificates
-        with the zone's public key"""
-        
-        if device.is_registered():
-            raise Exception("Device is already registered!")
-        
-        if signed_values:
-            if hasattr(user_certificates,"pop"):
-                user_certificates = [ZoneInstallCertificate.objects.get(signed_value=sv) for sv in signed_values]
-            else:
-                user_certificates = [ZoneInstallCertificate.objects.get(signed_value=signed_values)]
-        else:
-            user_certificates = ZoneInstallCertificate.objects.filter(zone=self.id)
 
-        for cert in user_certificates:
-            if cert.verify():
-                # Things we have to do, in order to register
-                dz = DeviceZone(device=device, zone=self)
-                dz.save()
-                set_as_registered()
-
-                # Things we'd like to do, in order to facilitate user registrations:
-                #    Create a default facility.
-                if len(Facility.objects.all())==0:
-                    facility = Facility(name="Facility for device [%s]" % device.name)
-                    facility.save()
-
-                return cert.raw_value
-        return None
-        
     def __unicode__(self):
         return self.name
-
-
-class ZoneKey(SyncedModel):
-    """Zones should have keys, but for back compat, they can't.
-    So, let's define a one-to-one table, to store zone keys.
-    
-    ZoneKey gets created on the fly, whenever something happens
-    that requires one.  Note that right now, that is when
-    a ZoneInstallCertificate is requested."""
-    
-    zone = models.ForeignKey(Zone, verbose_name="Zone", unique=True)
-    private_key = models.TextField(max_length=500, blank=True) # distributed server
-    public_key = models.TextField(max_length=500)
-    
-    key = None
-    
-    def save(self, *args, **kwargs):
-        # This happens on the local server side
-        if self.public_key:
-            assert self.private_key or not settings.CENTRAL_SERVER, "public_key should only be set alone in distributed servers."
-            
-        # Auto-generate keys, if necessary
-        elif not self.private_key:
-            key = crypto.Key()
-            self.private_key = key.get_private_key_string()
-            self.public_key  = key.get_public_key_string()
-            
-        else:# self.public_key:
-            self.public_key = self.get_key().get_public_key_string()
-        
-        super(ZoneKey, self).save(*args, **kwargs)
-        
-        
-    def get_key(self):
-
-        # We have a cryptographic key object (from previous run); return it
-        if self.key:
-            return self.key
-
-        # We have key strings, but no key object.  create one!
-        elif self.private_key:
-            # For back-compatibility, where zones didn't have keys
-            if self.private_key=="dummy_key":
-                self.private_key = None
-                self.public_key = None
-                self.save()
-                
-            self.key = crypto.Key(private_key_string = self.private_key, public_key_string = self.public_key)
-            return self.key
-
-        elif self.public_key:
-            self.key = crypto.Key(public_key_string = self.public_key)
-            return self.key
-            
-        else:  
-            # Cannot create a key here; otherwise we run the risk
-            #   of changing the key (if it's generated here and not saved)
-            raise Exception('No key set for this object.')
-
-        
-class ZoneInstallCertificate(models.Model):
-    """Install certificates are used to validate the addition of a 
-    device to a zone during an offline install, with some guarantee
-    that if the device ever comes online, the central server will approve the addition.
-    """
-    
-    zone = models.ForeignKey(Zone, verbose_name="Zone Certificate")
-    raw_value = models.CharField(max_length=50, blank=False)
-    signed_value = models.CharField(max_length=500, blank=False)
-    expiration_date = models.DateTimeField()
-    
-    
-    @transaction.commit_on_success
-    def save(self, *args, **kwargs):
-
-        # Generate the certificate
-        if not self.raw_value:
-            self.raw_value = "%f" % random.random()
-            self.signed_value = ""
-        
-        if not self.signed_value:
-            self.signed_value = self.get_key().sign(self.raw_value)
-        
-        # Make sure we don't get duplicate certificates
-        cert_ids = set([cert.id for cert in ZoneInstallCertificate.objects.filter(zone=self.id,  raw_value=self.raw_value)]).union(set((self.id,)))
-        if len(cert_ids) != 1:
-            raise Exception("Cannot double-add install certificates.")
-        
-        # Expire in one year, if not specified
-        #   Note: no "years" nor "month" keywords, so set in days
-        if not self.expiration_date:
-            self.expiration_date = datetime.datetime.now() + datetime.timedelta(days=365) 
-            
-        super(ZoneInstallCertificate, self).save(*args, **kwargs)
-
-
-    def get_key(self):
-        if not getattr(self, "zonekey", None):
-            try:
-                self.zonekey = ZoneKey.objects.get(zone=self.zone)
-            except ZoneKey.DoesNotExist:
-                # generate the zone key
-                self.zonekey = ZoneKey(zone=self.zone)
-                self.zonekey.save()
-                self.zonekey.full_clean()
-        return self.zonekey.get_key()
-    
-    
-    def verify(self):
-        """Check that the given certificate is recognized, but don't actually use it."""
-        
-        return self.get_key().verify(self.raw_value, self.signed_value)
-            
-                
-    def use(self):
-        """Use the given install certificate: validate it, and remove it from the database.
-        If the certificate was invalid/unrecognized, then the method with raise an Exception"""
-        
-        self.delete()
 
 
 class Facility(SyncedModel):
@@ -437,7 +279,7 @@ class Facility(SyncedModel):
     contact_email = models.EmailField(max_length=60, verbose_name=_("Contact Email"), blank=True)
     user_count = models.IntegerField(verbose_name=_("User Count"), help_text=_("(How many potential users do you estimate there are at this facility?)"), blank=True, null=True)
 
-    class Meta:    
+    class Meta:
         verbose_name_plural = "Facilities"
 
     def __unicode__(self):
@@ -452,7 +294,7 @@ class Facility(SyncedModel):
 class FacilityGroup(SyncedModel):
     facility = models.ForeignKey(Facility, verbose_name=_("Facility"))
     name = models.CharField(max_length=30, verbose_name=_("Name"))
-    
+
     def __unicode__(self):
         return self.name
 
@@ -478,7 +320,7 @@ class FacilityUser(SyncedModel):
 
     def __unicode__(self):
         return "%s (Facility: %s)" % (self.get_name(), self.facility)
-        
+
     def check_password(self, raw_password):
         if self.password.split("$", 1)[0] == "sha1":
             # use Django's built-in password checker for SHA1-hashed passwords
@@ -489,14 +331,14 @@ class FacilityUser(SyncedModel):
 
     def set_password(self, raw_password=None, hashed_password=None):
         """Set a password with the raw password string, or the pre-hashed password."""
-        
+
         assert hashed_password is None or settings.DEBUG, "Only use hashed_password in debug mode."
         assert raw_password is not None or hashed_password is not None, "Must be passing in raw or hashed password"
         assert not (raw_password is not None and hashed_password is not None), "Must be specifying only one--not both."
-                 
+
         if hashed_password:
             self.password = hashed_password
-        else:       
+        else:
             self.password = crypt(raw_password, iterations=Settings.get("password_hash_iterations", 2000 if self.is_teacher else 1000))
 
     def get_name(self):
@@ -511,20 +353,8 @@ class DeviceZone(SyncedModel):
     zone = models.ForeignKey("Zone", db_index=True)
     revoked = models.BooleanField(default=False)
     max_counter = models.IntegerField(blank=True, null=True)
-            
-    requires_trusted_signature = True
 
-    def save(self, *args, **kwargs):
-        """Self-registering offline devices create their own;
-        all devices that register online receive one.
-        
-        TODO(bcipolli): we should just send our DeviceZone.  This is for later.. oops!"""
-        
-        existing_dz = DeviceZone.objects.filter(zone=self.zone, device=self.device)
-        if existing_dz and existing_dz[0].pk != self.pk:
-            pass # this happens when we self-registered offline.
-        else:
-            super(DeviceZone,self).save(*args,**kwargs)
+    requires_trusted_signature = True
 
     def __unicode__(self):
         return "Device: %s, assigned to Zone: %s" % (self.device, self.zone)
@@ -537,7 +367,7 @@ class SyncedLog(SyncedModel):
 
 
 class DeviceManager(models.Manager):
-    
+
     def by_zone(self, zone):
         # get Devices that belong to a particular zone, or are a trusted authority
         return self.filter(Q(devicezone__zone=zone, devicezone__revoked=False) |
@@ -550,7 +380,7 @@ class Device(SyncedModel):
     version = models.CharField(max_length=len("10.10.100"), default="0.9.2", blank=True); version.version="0.9.3"  # default comes from knowing when this feature was implemented!
 
     objects = DeviceManager()
-    
+
     key = None
 
     def set_key(self, key):
@@ -569,10 +399,7 @@ class Device(SyncedModel):
         fields = ["signed_version", "name", "description", "public_key"]
         return super(Device, self)._hashable_representation(fields=fields)
 
-    def is_registered(self):
-        return self.get_zone() is not None
-        
-    def get_metadata(self):        
+    def get_metadata(self):
         try:
             return self.devicemetadata
         except DeviceMetadata.DoesNotExist:
@@ -603,7 +430,7 @@ class Device(SyncedModel):
         else:
             own_device = devices[0].device
         return own_device
-    
+
     @staticmethod
     def initialize_own_device(**kwargs):
         own_device = Device(**kwargs)
@@ -618,21 +445,19 @@ class Device(SyncedModel):
 
     @transaction.commit_on_success
     def increment_and_get_counter(self):
-        """Device sets own counter (in metadata), and returns it (for update)"""
-        
         metadata = self.get_metadata()
-        if not metadata.device.id: 
+        if not metadata.device.id:
             return 0
         metadata.counter_position += 1
         metadata.save()
         return metadata.counter_position
-        
+
     def get_counter(self):
         metadata = self.get_metadata()
         if not metadata.device.id:
             return 0
         return metadata.counter_position
-        
+
     def __unicode__(self):
         return self.name or self.id[0:5]
 
@@ -661,15 +486,15 @@ class Device(SyncedModel):
     def get_uuid(self):
         return uuid.uuid5(ROOT_UUID_NAMESPACE, str(self.public_key)).hex
 
-    @staticmethod    
+    @staticmethod
     def get_device_counters(zone):
         device_counters = {}
         for device in Device.objects.by_zone(zone):
             if device.id not in device_counters:
                 device_counters[device.id] = device.get_metadata().counter_position
         return device_counters
-    
-    
+
+
 class ImportPurgatory(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     counter = models.IntegerField()
@@ -677,7 +502,7 @@ class ImportPurgatory(models.Model):
     model_count = models.IntegerField(default=0)
     serialized_models = models.TextField()
     exceptions = models.TextField()
-    
+
     def save(self, *args, **kwargs):
         self.counter = self.counter or Device.get_own_device().get_counter()
         super(ImportPurgatory, self).save(*args, **kwargs)

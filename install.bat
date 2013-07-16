@@ -1,6 +1,22 @@
 @echo off
 
-copy %0 kalite\writetest.temp
+echo.
+echo """"""""""""""""""""""""""""""""""""""
+echo "   _   __  ___    _     _ _         "
+echo "  | | / / / _ \  | |   (_) |        "
+echo "  | |/ / / /_\ \ | |    _| |_ ___   "
+echo "  |    \ |  _  | | |   | | __/ _ \  "
+echo "  | |\  \| | | | | |___| | ||  __/  "
+echo "  \_| \_/\_| |_/ \_____/_|\__\___|  "
+echo "                                    "
+echo " http://kalite.learningequality.org "
+echo "                                    "
+echo """"""""""""""""""""""""""""""""""""""
+echo.
+
+setlocal enabledelayedexpansion
+
+copy %0 kalite\writetest.temp > nul
 
 if %ERRORLEVEL% == 1 (
 	echo -------------------------------------------------------------------
@@ -9,7 +25,7 @@ if %ERRORLEVEL% == 1 (
 	exit /B
 ) else (
 	if %ERRORLEVEL% == 0 (
-		del kalite\writetest.temp
+		del kalite\writetest.temp > nul
 	)
 )
 
@@ -25,20 +41,22 @@ if exist database\data.sqlite (
     exit /B
 )
 
-python -c "import sys; sys.version_info[0]==2 and sys.version_info[1] >= 5 and sys.exit(0) or sys.exit(1)"
+reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths" /f "python.exe" /s /k /e /d > nul
+if !ERRORLEVEL! EQU 1 (
+    echo -------------------------------------------------------------------
+    echo Error: You do not seem to have Python installed.
+    echo Please install version 2.6 or 2.7, and re-run this script.
+    echo -------------------------------------------------------------------
+    cd ..
+    exit /b
+)
+
+start /b /wait python.exe -c "import sys; sys.version_info[0]==2 and sys.version_info[1] >= 6 and sys.exit(0) or sys.exit(1)"
 if ERRORLEVEL 1 (
     echo -------------------------------------------------------------------
     echo Error: You must have Python version 2.6 or 2.7 installed.
     echo Your version is:
-    python -V
-    echo -------------------------------------------------------------------
-    cd ..
-    exit /B
-)
-if ERRORLEVEL 9009 (
-    echo -------------------------------------------------------------------
-    echo Error: You do not seem to have Python installed, or it is not on
-    echo the PATH. Install version 2.6 or 2.7, and re-run this script.
+    start /b /wait python.exe -V
     echo -------------------------------------------------------------------
     cd ..
     exit /B
@@ -48,33 +66,27 @@ echo -------------------------------------------------------------------
 echo.
 echo This script will configure the database and prepare it for use.
 echo.
-echo When asked if you want to create a superuser, type 'yes' and enter
-echo your details. You must remember this login information, as you will
-echo need to enter it to administer the website.
-echo.
 echo -------------------------------------------------------------------
 echo.
 pause
 
-python manage.py syncdb --migrate
+start /b /wait python.exe manage.py syncdb --migrate --noinput
 
 echo.
-python manage.py generatekeys
+start /b /wait python.exe manage.py generatekeys
+echo.
+
+echo.
+echo Please choose a username and password for the admin account on this device.
+echo You must remember this login information, as you will need to enter it to
+echo administer this installation of KA Lite.
+echo.
+start /b /wait python.exe manage.py createsuperuser --email=dummy@learningequality.org
 echo.
 
 set /p name=Please enter a name for this server (or, press Enter to use the default): 
 set /p description=Please enter a description for this server (or, press Enter to leave blank): 
-
-rem Look for an offline installation file
-set offline_install_file=static\data\zone_data.json
-if not exist "%offline_install_file%" (
-    set offline_install_file=
-)
-
-python manage.py initdevice "%name%" "%description%" "%offline_install_file%"
-
-rem Try to sync immediately; the device will have its own zone, or have imported one.
-python manage.py syncmodels
+start /b /wait python.exe manage.py initdevice "%name%" "%description%"
 
 :choice
 echo.

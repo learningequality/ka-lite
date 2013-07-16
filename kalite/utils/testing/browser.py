@@ -1,5 +1,6 @@
 import time
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 
 from kalite import settings
 from utils.testing.base import create_test_admin, KALiteTestCase
@@ -61,6 +62,9 @@ class BrowserTestCase(KALiteTestCase):
     A base test case for Selenium, providing helper methods for generating
     clients and logging in profiles.
     """
+
+    HtmlFormElements = ["form", "input", "textarea", "label", "fieldset", "legend", "select", "optgroup", "option", "ubtton", "datalist", "keygen", "output"]  # not all act as tab stops, but ...
+
     def __init__(self, *args, **kwargs):
         self.persistent_browser = False
         self.max_wait_time = kwargs.get("max_wait_time", 30)
@@ -146,4 +150,35 @@ class BrowserTestCase(KALiteTestCase):
             if exact is not None:
                 self.assertEqual(exact, message.text, "Make sure message = '%s'" % exact)
 
-           
+
+    def browser_next_form_element(self, num_expected_links=None):
+        """
+        Use keyboard navigation to traverse form elements.  Skip any intervening elements that have tab stops (namely, links).
+        
+        If specified, validate the # links skipped, or the total # of tabs needed.
+        """
+
+        # Move tot he next thing.
+        self.browser_send_keys(Keys.TAB)
+        num_tabs = 1
+
+        # Loop until you've arrived at a form element
+        num_links = 0
+        while self.browser.switch_to_active_element().tag_name not in BrowserTestCase.HtmlFormElements:
+            num_links += self.browser.switch_to_active_element().tag_name == "a"
+            self.browser_send_keys(Keys.TAB)
+            num_tabs += 1
+
+        if num_expected_links is not None:
+            self.assertEqual(num_links, num_expected_links, "Num links (%d) == %d" % (num_links, num_expected_links))
+
+        return num_tabs
+
+    def browser_form_fill(self, keys="", num_expected_links=0):
+        """
+        Convenience function to send some keys to a form element,
+        then traverse to the next form element.
+        """
+        if keys:
+            self.browser_send_keys(keys)
+        self.browser_next_form_element(num_expected_links=num_expected_links)

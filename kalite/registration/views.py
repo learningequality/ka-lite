@@ -5,8 +5,7 @@ Views which allow users to create and activate accounts.
 import copy
 
 from django.contrib import messages
-from django.contrib.auth import logout
-from django.contrib.auth import views as auth_views
+from django.contrib.auth import logout as auth_logout, views as auth_views
 from django.contrib.auth.models import User
 from django.db import IntegrityError, transaction
 from django.http import HttpResponse
@@ -20,9 +19,8 @@ from central.forms import OrganizationForm
 from central.models import Organization
 from contact.views import contact_subscribe
 from registration.backends import get_backend
-from utils.mailchimp import mailchimp_subscribe
 from securesync.models import Zone
-
+from utils.mailchimp import mailchimp_subscribe
 
 def complete(request, *args, **kwargs):
     messages.success(request, "Congratulations! Your account is now active. To get started, "
@@ -209,10 +207,7 @@ def register(request, backend, success_url=None, form_class=None,
         # Could register
         if form.is_valid() and org_form.is_valid():
             assert form.cleaned_data.get("username") == form.cleaned_data.get("email"), "Should be set equal in the call to clean()"
-            # TODO (bcipolli): should do all this in one transaction,
-            #   so that if any one part fails, it all rolls back.
-            #   For now, unlikely to happen, and consequence is only
-            #   a user without an org/zone
+
             try:
                 # Create the user
                 new_user = backend.register(request, **form.cleaned_data)
@@ -286,5 +281,5 @@ def login_view(request, *args, **kwargs):
 
     
 def logout_view(request):
-    logout(request)
+    auth_logout(request)
     return redirect("homepage")

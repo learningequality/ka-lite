@@ -21,6 +21,7 @@ from django.core.urlresolvers import reverse
 import settings
 from kalite.utils.django_utils import call_command_with_output
 from securesync.models import Facility, FacilityGroup, FacilityUser
+from utils.general import isnumeric
 from utils.testing.browser import BrowserTestCase
 from utils.testing.decorators import distributed_only
 
@@ -59,12 +60,11 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
         
         # Part 1: REGISTER
         self.browser_activate_element(id="id_username") # explicitly set the focus, to start
-        self.browser_send_keys(username + Keys.TAB) # first name
-        self.browser_send_keys(first_name + Keys.TAB) # first name
-        self.browser_send_keys(last_name + Keys.TAB) # last name
-        self.browser_send_keys(password + Keys.TAB) #password
-#        self.browser_send_keys(password + Keys.TAB) #password (again)
-
+        self.browser_form_fill(username) # first name
+        self.browser_form_fill(first_name) # first name
+        self.browser_form_fill(last_name) # last name
+        self.browser_form_fill(password) #password
+        self.browser_form_fill(password) #password (again)
         self.browser_send_keys(Keys.RETURN)
         
         
@@ -88,10 +88,10 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
         #   should be accessible through keyboard only.
         self.browser.find_element_by_id("id_username").clear() # explicitly set the focus, to start
         self.browser.find_element_by_id("id_username").click() # explicitly set the focus, to start
-        self.browser.switch_to_active_element().send_keys(username + Keys.TAB)
-        self.browser.switch_to_active_element().send_keys(password + Keys.TAB)
-        self.browser.switch_to_active_element().send_keys(Keys.RETURN)
-        
+        self.browser_form_fill(username)
+        self.browser_form_fill(password)
+        self.browser_send_keys(Keys.RETURN)
+
         # Make sure that the page changed to the admin homepage
         if expect_success:
             self.assertTrue(self.wait_for_page_change(login_url), "RETURN causes page to change")
@@ -153,10 +153,14 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
         # Checking to see if a FacilityUser with a filled-in-name is logged in
         else:
             user_obj = FacilityUser.objects.filter(username=expected_username)
-            if user_obj.count() == 0:  # couldn't find the user, they can't be logged in
-                assert username_text == "", "Impossible for anybody to be logged in."
-            else:
+            if user_obj.count() != 0:  # couldn't find the user, they can't be logged in
                 return username_text.lower() == user_obj[0].get_name().lower()
+
+            user_obj = FacilityUser.objects.filter(username__iexact=expected_username)
+            if user_obj.count() != 0:  # couldn't find the user, they can't be logged in
+                return username_text.lower() == user_obj[0].get_name().lower()
+            else:
+                assert username_text == "", "Impossible for anybody to be logged in."
 
 
 class KALiteRegisteredDistributedBrowserTestCase(KALiteDistributedBrowserTestCase):
@@ -343,14 +347,17 @@ class StudentExerciseTest(KALiteDistributedBrowserTestCase):
         self.browser.find_element_by_css_selector('#solutionarea input[type=text]').click()
         self.browser_send_keys(str(answer)) 
         self.browser_send_keys(Keys.RETURN)
-        return self.browser_get_current_points()
+
+        # Convert points to a number, when appropriate
+        points = self.browser_get_current_points()
+        return float(points) if isnumeric(points) else points 
 
     def test_question_correct_points_are_added(self):
         numbers = self.browser.find_elements_by_class_name('mn')[:-1] # last one is to be blank
         answer = sum(int(num.text) for num in numbers)
         points = self.browser_insert_answer(answer)
-        self.assertTrue(points == '12', "point update is wrong: {}. Should be 12".format(points))
+        self.assertTrue(points == 10, "point update is wrong: {}. Should be 10".format(points))
 
     def test_question_incorrect_no_points_are_added(self):
         points = self.browser_insert_answer('this is a wrong answer')
-        self.assertTrue(points == '', "points text is not empty") # somehow we can't use the truthiness of string, so we use ==
+        self.assertTrue(points == '', "points text should be empty")  # somehow we can't use the truthiness of string, so we use ==
