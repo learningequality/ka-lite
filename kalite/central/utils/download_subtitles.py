@@ -9,14 +9,14 @@ import time
 
 import requests
 
-import subtitle_utils
-import paths_and_headers
+import subtitle_utils 
+import paths_and_headers # paths and headers that are shared across the central/utils folder 
 
 headers = paths_and_headers.headers
 
 data_path = paths_and_headers.data_path
 
-logger = paths_and_headers.logger
+logger = subtitle_utils.setup_logging("download_subtitles")
 
 SRTS_JSON_FILENAME = paths_and_headers.api_info_filename
 
@@ -24,7 +24,7 @@ LANGUAGE_SRT_FILENAME = paths_and_headers.language_srt_map
 
 # HELP: Is there a better way to organize the below import of settings?
 PROJECT_PATH = os.path.dirname(os.path.realpath(__file__))
-sys.path = [PROJECT_PATH, os.path.join(PROJECT_PATH, "../"), os.path.join(
+sys.path = [PROJECT_PATH, os.path.join(PROJECT_PATH, "../../"), os.path.join(
     PROJECT_PATH, "../python-packages/")] + sys.path
 
 import settings
@@ -41,9 +41,14 @@ class LanguageCodeDoesNotExist(Exception):
 def update_language_srt_map():
     """Update the language_srt_map from the api_info_map"""
 
-    api_info_map = json.loads(open(data_path + SRTS_JSON_FILENAME).read())
+    # Create file if first time being run
     language_srt_filepath = data_path + LANGUAGE_SRT_FILENAME
+    if not subtitle_utils.file_already_exists(language_srt_filepath):
+        with open(language_srt_filepath, 'w') as outfile:
+            json.dump({}, outfile)
+
     language_srt_map = json.loads(open(language_srt_filepath).read())
+    api_info_map = json.loads(open(data_path + SRTS_JSON_FILENAME).read())
 
     for youtube_id, content in api_info_map.items():
         lang_list = content.get("language_codes") or []
@@ -53,7 +58,7 @@ def update_language_srt_map():
             if not language_srt_map.get(code):
                 logger.info("Creating language section '%s'" % code)
                 language_srt_map[code] = {}
-            # create entry for video entry if it doesn't exist
+            # create empty entry for video entry if it doesn't exist
             if not language_srt_map[code].get(youtube_id):
                 logger.info("Creating entry in '%s' for YouTube video: '%s'" % (
                     code, youtube_id))
@@ -97,49 +102,49 @@ def download_if_criteria_met(videos, args, lang_code):
     response_code = args.response_code
     date_specified = subtitle_utils.convert_date_input(args.date_since_attempt)
 
-    for youtube_id in videos:
-        entry = language_srt_map[youtube_id]
+    for youtube_id, entry in videos.items():
         last_attempt = entry.get("last_attempt")
         api_response = entry.get("api_response")
         previously_downloaded = entry.get("downloaded")
 
         # HELP: I feel like this set of logic gates could be more efficient or
         # easier to read
+        date_test_passed = False
+        response_code_test = False
+
+        # pdb.set_trace()
         if date_specified:
-            if last_attempt < date_specified:
+            if not last_attempt or datetime.datetime.strptime(last_attempt, '%Y-%m-%d') < date_specified:
                 date_test_passed = True
             else:
                 logger.info(
                     "Last attempt more recent than specified date. Moving on.")
-        if response_code:
-            if response_code == "all" or response_code == api_response:
-                response_code_test = True
-            else:
-                logger.info(
-                    "API response doesn't match specified HTTP status code. Moving on.")
+        # response code must be specified, so it must exist
+        if response_code == "all" or response_code == api_response:
+            response_code_test = True
+        else:
+            logger.info(
+                "API response doesn't match specified HTTP status code. Moving on.")
 
+        # HELP: not feeling to good stylistically for having this extra block 
         download_it = False
-        if date_test_passed and response_code_test:
+        if date_specified and date_test_passed and response_code_test:
             download_it = True
-        elif date_test_passed and not response_code:
-            download_it = True
-        elif response_code_test and not date_specified:
-            download_it = True
-        elif not(response_code or date_specified):
+        elif not date_specified and response_code_test:
             download_it = True
 
         if download_it:
             if not previously_downloaded or redo_requested:
-                logger.info("Attempting to download subtitle")
-                subtitle = download_subtitle(youtube_id, lang_code)
-                time_of_attempt = unicode(datetime.datetime.now())
+                logger.info("Attempting to download subtitle for lang: %s and YouTube ID: %s" % (lang_code, youtube_id))
+                response = download_subtitle(youtube_id, lang_code, format="srt")
+                time_of_attempt = unicode(datetime.datetime.now().date())
                 if response == "client-error" or response == "server-error":
                     logger.info("Updating JSON file to record %s." % response)
                     update_json(
                         youtube_id, lang_code, previously_downloaded, response, time_of_attempt)
                 else:
-                    # placing them directly into locale folder
-                    dirpath = download_path + language + "/subtitles/"
+                    # pdb.set_trace()
+                    dirpath = download_path + lang_code + "/subtitles/"
                     filename = youtube_id + ".srt"
                     fullpath = dirpath + filename
                     logger.info("Writing file to %s" % fullpath)
@@ -148,16 +153,16 @@ def download_if_criteria_met(videos, args, lang_code):
                         os.makedirs(dirpath)
 
                     with open(fullpath, 'w') as fp:
-                        fp.write(subtitles.encode('UTF-8'))
+                        fp.write(response.encode('UTF-8'))
 
-                    logger.info("Updating JSON file to record success.")
+                    logger.info("Updating JSON file to record xe.")
                     update_json(youtube_id, lang_code, True, "success", time_of_attempt)
             else:
                 logger.info(
                     "Already downloaded. To redownload, run again with -R.")
 
 
-def download_subtitle(youtube_id, language, format="json"):
+def download_subtitle(youtube_id, language, format="srt"):
     """Return subtitles for YouTube ID in language specified. Return False if they do not exist. Update local JSON accordingly."""
 
     api_info_map = json.loads(open(data_path + SRTS_JSON_FILENAME).read())
@@ -166,32 +171,46 @@ def download_subtitle(youtube_id, language, format="json"):
 
     # make request
     base_url = "https://amara.org/api2/partners/videos"
-    if format == "json":
-        r = subtitle_utils.make_request("%s/%s/languages/%s/subtitles/" % (
-            base_url, amara_code, language))
-        if r:
-            subtitles = json.loads(r.text)
-            return subtitles
-    elif format == "srt":
+    # HELP: do we ever call for the json format? otherwise this top block can go
+    # if format == "json":
+    #     return subtitle_utils.make_request("%s/%s/languages/%s/subtitles/" % (
+    #         base_url, amara_code, language))
+    if format == "srt":
         r = subtitle_utils.make_request("%s/%s/languages/%s/subtitles/?format=srt" % (
             base_url, amara_code, language))
         if r:
             # return the subtitle text, replacing empty subtitle lines with
             # spaces to make the FLV player happy
-            return (r.text or "").replace("\n\n\n", "\n   \n\n").replace("\r\n\r\n\r\n", "\r\n   \r\n\r\n")
+            try:
+                response = (r.text or "").replace("\n\n\n", "\n   \n\n").replace("\r\n\r\n\r\n", "\r\n   \r\n\r\n")
+            except: 
+                response = r 
+            return response
     return False
 
 
 def update_json(youtube_id, lang_code, downloaded, api_response, time_of_attempt):
     """Update language_srt_map to reflect download status"""
-    language_srt_map = json.loads(open(
-        data_path + LANGUAGE_SRT_FILENAME).read())
+    #Open JSON file
+    filepath = data_path + LANGUAGE_SRT_FILENAME
+    language_srt_map = json.loads(open(filepath).read())
+
+    # create updated entry
     entry = language_srt_map[lang_code][youtube_id] 
     entry["downloaded"] = downloaded
     entry["api_response"] = api_response
     entry["last_attempt"] = time_of_attempt
     if api_response == "success":
         entry["last_success"] = time_of_attempt
+
+    # update full-size JSON with new information
+    language_srt_map[lang_code][youtube_id].update(entry)
+
+    # write it to file
+    logger.info("File updated.")
+    json_file = open(filepath, "w+")
+    json_file.write(json.dumps(language_srt_map))
+    json_file.close()
 
 
 def create_parser():
@@ -211,7 +230,6 @@ def create_parser():
 
 
 if __name__ == '__main__':
-    subtitle_utils.setup_logging()
     parser = create_parser()
     args = parser.parse_args()
     if args.update:

@@ -17,7 +17,7 @@ headers = paths_and_headers.headers
 
 data_path = paths_and_headers.data_path
 
-logger = paths_and_headers.logger
+logger = subtitle_utils.setup_logging("generate_subtitle_map")
 
 SRTS_JSON_FILENAME = paths_and_headers.api_info_filename
 
@@ -58,7 +58,8 @@ def update_subtitle_map(code_to_check, date_to_check):
     for youtube_id, data in srts_dict.items():
         # ensure response code and date exists
         response_code = data.get("api_response")
-        last_attempt = data.get("last_attempt")
+        # TODO(dylan): make sure this conversion is ok here (e.g. there will never be an empty date string will there?)
+        last_attempt = datetime.datetime.strptime(data.get("last_attempt"), '%Y-%m-%d')
         if not (response_code or last_attempt):
             raise OutDatedSchema()
 
@@ -108,12 +109,12 @@ def update_video_entry(youtube_id):
     r = subtitle_utils.make_request(request_url)
     # add api response first to prevent empty json on errors
     entry = {}
-    entry["last_attempt"] = unicode(datetime.datetime.now())
+    entry["last_attempt"] = unicode(datetime.datetime.now().date())
     if r == "client_error" or r == "server_error":
         entry["api_response"] = r
     else:
         entry["api_response"] = "success"
-        entry["last_success"] = unicode(datetime.datetime.now())
+        entry["last_success"] = unicode(datetime.datetime.now().date())
         content = json.loads(r.content)
         # index into data to extract languages and amara code, then add them
         if content.get("objects"):
@@ -143,7 +144,6 @@ def create_parser():
 
 
 if __name__ == '__main__':
-    subtitle_utils.setup_logging()
     parser = create_parser()
     args = parser.parse_args()
     if args.new and not (args.response_code or args.date_since_attempt):

@@ -1,8 +1,11 @@
 import datetime
 import logging
+import os
 import time
 
 import requests
+
+import paths_and_headers
 
 class InvalidDateFormat(Exception):
 
@@ -12,6 +15,9 @@ class InvalidDateFormat(Exception):
 
 def make_request(url):
     """Return response from url; retry up to 5 times for server errors; when returning an error, return human-readable status code."""
+    
+    headers = paths_and_headers.headers
+
     for retries in range(1, 5):
         r = requests.get(url, headers=headers)
         time.sleep(1) # HELP: is this ok on the server?
@@ -41,10 +47,22 @@ def convert_date_input(date_to_convert):
                 date_to_convert, '%m/%d/%Y')
         except:
             raise InvalidDateFormat()
-    return converted_date
+        return converted_date
+    else:
+        return date_to_convert
 
 
-def setup_logging():
-    logging.basicConfig(level=logging.DEBUG,
-                        format='%(asctime)s %(name)-12s - %(levelname)s: %(message)s',
-                        datefmt='%m-%d %H:%M')
+def setup_logging(name):
+    FORMAT = '%(asctime)s - %(levelname)s - %(module)s - %(message)s'
+    logging.basicConfig(format=FORMAT)
+
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.DEBUG)
+    return logger
+
+
+def file_already_exists(path):
+    file_exists = False
+    if os.path.exists(path):
+        file_exists = True
+    return file_exists
