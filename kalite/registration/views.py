@@ -2,6 +2,7 @@
 Views which allow users to create and activate accounts.
 
 """
+
 import copy
 
 from django.contrib import messages
@@ -21,6 +22,7 @@ from contact.views import contact_subscribe
 from registration.backends import get_backend
 from securesync.models import Zone
 from utils.mailchimp import mailchimp_subscribe
+
 
 def complete(request, *args, **kwargs):
     messages.success(request, "Congratulations! Your account is now active. To get started, "
@@ -222,12 +224,12 @@ def register(request, backend, success_url=None, form_class=None,
                 zone = Zone(name=org_form.instance.name + " Default Zone")
                 zone.save()
                 org.zones.add(zone)
-                org.save()
 
                 # Finally, try and subscribe the user to the mailing list
                 # (silently; don't return anything to the user)
                 if do_subscribe:
                     contact_subscribe(request, form.cleaned_data['email'])  # no "return"
+                org.save()
 
                 if success_url is None:
                     to, args, kwargs = backend.post_registration_redirect(request, new_user)
@@ -241,7 +243,7 @@ def register(request, backend, success_url=None, form_class=None,
                 else:
                     raise e
 
-    # Request method was GET        
+    # GET, not POST
     else:
         form = form_class()
         org_form = OrganizationForm()
