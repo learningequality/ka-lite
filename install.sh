@@ -117,18 +117,7 @@ if [ "$name" ]; then
 fi
 echo -n "Please enter a one-line description for this server (or, press Enter to leave blank): "
 read -e description
-
-# Look for an offline installation file
-offline_install_file=static/data/zone_data.json
-if [ ! -e "$offline_install_file" ]; then
-    offline_install_file=
-fi
-
-$pyexec manage.py initdevice "$hostname" "$description" "$offline_install_file"
-
-# Sync--we have a zone already.
-$pyexec manage.py syncmodels
-
+$pyexec manage.py initdevice "$hostname" "$description"
 
 initd_available=`command -v update-rc.d`
 if [ $initd_available ]; then

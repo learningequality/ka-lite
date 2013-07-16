@@ -157,7 +157,7 @@
 	{% endfor %}
 	<div id="organizations">
 			{% if organizations %}
-				{% for pk,org in organizations.items %}
+				{% for org in organizations %}
 					<div class="organization">
 						<div class="title-bar">
 							<div class="title-contents">
@@ -256,12 +256,7 @@
 </div>
 
 <div>	
-    {% if not organizations %}
-	<p>After creating an organization and adding a zone to it, above, you'll be 
-	{% else %}
-	<p>You're
-	{% endif %}
-    ready to <a href="/install/">install KA Lite</a> (either on this machine, or to download the installation package to install offline on another machine)</p>
+	<p>After creating an organization and adding a zone to it, above, you're ready to follow the <a href="https://github.com/learningequality/ka-lite/blob/master/INSTALL.md" target="_blank">installation instructions</a> on the server where you'll be running KA Lite.</p>
 </div>
 
 {% endblock content %}

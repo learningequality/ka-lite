@@ -1,139 +1,23 @@
 import re 
 import json
 from annoying.decorators import render_to
-from annoying.functions import get_object_or_None
-from decorator.decorator import decorator
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseForbidden, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
-from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_exempt
 
-import kalite
+import requests
 import settings
 from central.forms import OrganizationForm, ZoneForm, OrganizationInvitationForm
 from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
 from securesync.api_client import SyncClient
-from securesync.models import Facility, Zone, SyncSession
 from securesync.forms import FacilityForm
-from utils.django_utils import call_command_with_output
-from utils.packaging import package_offline_install_zip
-
-
-def get_request_var(request, var_name, default_val="__empty__"):
-    return  request.POST.get(var_name, request.GET.get(var_name, default_val))
-
-
-@render_to("central/install_wizard.html")
-def install_wizard(request):
-
-    
-    # get a list of all the organizations this user helps administer,
-    #   then choose the selected organization (if possible)
-    if request.user.is_anonymous():
-        organizations = []
-        organization = None
-        organization_id = None
-        zones = []
-        zone = None
-        zoneid = None
-        num_certificates = 1
-        
-    else:
-        # Get all data
-        organization_id = get_request_var(request, "organization", None)
-        zone_id = get_request_var(request, "zone", None)
-        num_certificates = int(get_request_var(request, "num_certificates", 1))
-        
-        organization = None
-        if organization_id and organization_id != "__empty__":
-            organizations = request.user.organization_set.filter(id=organization_id)
-            organization = organizations[0] if organizations else None
-        else:
-            organizations = request.user.organization_set.all()
-            if len(organizations) == 1:
-                organization_id = organizations[0].id
-                organization = organizations[0]
-        
-        # If a zone is selected grab it
-        zones = []
-        zone = None
-        if organization_id and len(organizations)==1:
-            zones = organizations[0].zones.all()
-            if zone_id and zone_id != "__empty__": 
-                zone = get_object_or_None(Zone, id=zone_id)
-            zone = zone or (zones[0] if len(zones)==1 else None)              
-            
-
-    # Generate install certificates
-    if request.method == "POST":
-        platform = get_request_var(request, "platform", "all")
-        locale = get_request_var(request, "locale", "en")
-        server_type = get_request_var(request, "server-type", "local")
-        
-        return HttpResponseRedirect("/download/kalite/%s/%s/%s/%d/" % (platform, locale, zone.id if zone else "_", num_certificates))#
-
-        
-    else: # GET
-        return {
-            "organizations": organizations,
-            "selected_organization": organization,
-            "zones": zones,
-            "selected_zone": zone,
-            "num_certificates": num_certificates,  
-            "internet": get_request_var(request, "internet") 
-        }
-
-
-@decorator
-def args_from_url(f, request, args, argnames=None):
-    """Turns a URL into a set of [unnamed] argments"""
-
-    # Split and scrub values    
-    args = args.split('/')
-    for i in range(len(args)):
-        if args[i] == "_":
-            args[i] = None
-            
-    # Return a dict or list
-    if argnames:
-        if len(args)<len(argnames):
-            args = tuple(args) + ((None,)*(len(argnames)-len(args)))
-        args = dict(zip(argnames, args))
-
-    return f(request, args)
-
-@args_from_url
-def download_kalite(request, args, argnames=None):
-
-    # Parse args
-    zone = get_object_or_None(Zone, id=args['zone_id']) if args['zone_id'] else None
-    n_certs = int(args['n_certs']) if args['n_certs'] else 1
-    platform = args['platform']
-    locale = args['locale']
-    central_server = request.get_host() or getattr(settings, CENTRAL_SERVER_HOST, "")
-    
-    # Make sure this user has permission to admin this zone
-    if zone and not request.user.is_authenticated():
-        return HttpResponseForbidden("Requires authentication")
-    elif zone:
-        zone_org = Organization.from_zone(zone)
-        if not zone_org or not zone_org[0].id in [org for org in get_or_create_user_profile(request.user).get_organizations()]:
-            return HttpResponseForbidden("Requires authentication")
-    
-    zip_file = package_offline_install_zip(platform, locale, zone=zone, num_certificates=n_certs, central_server=central_server)
-
-    # Stream that zip back to the user."
-    user_facing_filename = "kalite-%s-%s-%s-%s.zip" % (platform, locale, kalite.VERSION, zone.name if zone else "zonefree")
-    zh = open(zip_file,"rb")
-    response = HttpResponse(content=zh, mimetype='application/zip', content_type='application/zip')
-    response['Content-Disposition'] = 'attachment; filename="%s"' % user_facing_filename
-    return response
+from securesync.models import Facility, Zone, SyncSession
 
 
 @render_to("central/homepage.html")
@@ -147,7 +31,7 @@ def homepage(request):
     organizations = get_or_create_user_profile(request.user).get_organizations()
     
     # add invitation forms to each of the organizations
-    for pk,org in organizations.items():
+    for org in organizations:
         org.form = OrganizationInvitationForm(initial={"invited_by": request.user})
 
     # handle a submitted invitation form
@@ -156,18 +40,17 @@ def homepage(request):
         if form.is_valid():
             # ensure that the current user is a member of the organization to which someone is being invited
             if not form.instance.organization.is_member(request.user):
-                return HttpResponseForbidden("Unfortunately for you, you do not have permission to do that.")
+                return HttpResponseNotAllowed("Unfortunately for you, you do not have permission to do that.")
             # send the invitation email, and save the invitation record
             form.instance.send(request)
             form.save()
             return HttpResponseRedirect(reverse("homepage"))
         else: # we need to inject the form into the correct organization, so errors are displayed inline
-            for pk,org in organizations.items():
+            for org in organizations:
                 if org.pk == int(request.POST.get("organization")):
                     org.form = form
-
+                    
     return {
-        "title": _("Account administration"),
         "organizations": organizations,
         "invitations": OrganizationInvitation.objects.filter(email_to_invite=request.user.email)
     }
@@ -195,7 +78,7 @@ def org_invite_action(request, invite_id):
     invite = OrganizationInvitation.objects.get(pk=invite_id)
     org = invite.organization
     if request.user.email != invite.email_to_invite:
-        return HttpResponseForbidden("It's not nice to force your way into groups.")
+        return HttpResponseNotAllowed("It's not nice to force your way into groups.")
     if request.method == "POST":
         data = request.POST
         if data.get("join"):
@@ -212,11 +95,11 @@ def delete_admin(request, org_id, user_id):
     org = Organization.objects.get(pk=org_id)
     admin = org.users.get(pk=user_id)
     if not org.is_member(request.user):
-        return HttpResponseForbidden("Nice try, but you have to be an admin for an org to delete someone from it.")
+        return HttpResponseNotAllowed("Nice try, but you have to be an admin for an org to delete someone from it.")
     if org.owner == admin:
-        return HttpResponseForbidden("The owner of an organization cannot be removed.")
+        return HttpResponseNotAllowed("The owner of an organization cannot be removed.")
     if request.user == admin:
-        return HttpResponseForbidden("Your personal views are your own, but in this case " +
+        return HttpResponseNotAllowed("Your personal views are your own, but in this case " +
             "you are not allowed to delete yourself.")
     deletion = DeletionRecord(organization=org, deleter=request.user, deleted_user=admin)
     deletion.save()
@@ -229,7 +112,7 @@ def delete_admin(request, org_id, user_id):
 def delete_invite(request, org_id, invite_id):
     org = Organization.objects.get(pk=org_id)
     if not org.is_member(request.user):
-        return HttpResponseForbidden("Nice try, but you have to be an admin for an org to delete its invitations.")
+        return HttpResponseNotAllowed("Nice try, but you have to be an admin for an org to delete its invitations.")
     invite = OrganizationInvitation.objects.get(pk=invite_id)
     deletion = DeletionRecord(organization=org, deleter=request.user, deleted_invite=invite)
     deletion.save()
@@ -244,7 +127,7 @@ def organization_form(request, id=None):
     if id != "new":
         org = get_object_or_404(Organization, pk=id)
         if not org.is_member(request.user):
-            return HttpResponseForbidden("You do not have permissions for this organization.")
+            return HttpResponseNotAllowed("You do not have permissions for this organization.")
     else:
         org = None
     if request.method == 'POST':
@@ -271,11 +154,11 @@ def organization_form(request, id=None):
 def zone_form(request, org_id=None, id=None):
     org = get_object_or_404(Organization, pk=org_id)
     if not org.is_member(request.user):
-        return HttpResponseForbidden("You do not have permissions for this organization.")
+        return HttpResponseNotAllowed("You do not have permissions for this organization.")
     if id != "new":
         zone = get_object_or_404(Zone, pk=id)
         if org.zones.filter(pk=zone.pk).count() == 0:
-            return HttpResponseForbidden("This organization does not have permissions for this zone.")
+            return HttpResponseNotAllowed("This organization does not have permissions for this zone.")
     else:
         zone = None
     if request.method == "POST":
@@ -306,12 +189,12 @@ def central_facility_admin(request, org_id=None, zone_id=None):
 def central_facility_edit(request, org_id=None, zone_id=None, id=None):
     org = get_object_or_404(Organization, pk=org_id)
     if not org.is_member(request.user):
-        return HttpResponseForbidden("You do not have permissions for this organization.")
+        return HttpResponseNotAllowed("You do not have permissions for this organization.")
     zone = org.zones.get(pk=zone_id)
     if id != "new":
         facil = get_object_or_404(Facility, pk=id)
         if not facil.in_zone(zone):
-            return HttpResponseForbidden("This facility does not belong to this zone.")
+            return HttpResponseNotAllowed("This facility does not belong to this zone.")
     else:
         facil = None
     if request.method == "POST":
@@ -335,7 +218,7 @@ def glossary(request):
 @login_required
 def crypto_login(request):
     if not request.user.is_superuser:
-        return HttpResponseForbidden()
+        return HttpResponseNotAllowed()
     ip = request.GET.get("ip", "")
     if not ip:
         return HttpResponseNotFound("Please specify an IP (as a GET param).")
@@ -349,8 +232,10 @@ def crypto_login(request):
     return HttpResponseRedirect("%ssecuresync/cryptologin/?client_nonce=%s" % (host, client.session.client_nonce))
 
 
+
 def handler_404(request):
     return HttpResponseNotFound(render_to_string("central/404.html", {}, context_instance=RequestContext(request)))
-
+    
 def handler_500(request):
     return HttpResponseServerError(render_to_string("central/500.html", {}, context_instance=RequestContext(request)))
+    

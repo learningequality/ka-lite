@@ -5,7 +5,7 @@ from django.contrib import admin
 import coachreports.urls
 import main.api_urls
 import securesync.urls
-import settings
+from kalite import settings
 
 admin.autodiscover()
 
@@ -34,20 +34,15 @@ urlpatterns += patterns('',
 )
 
 urlpatterns += patterns('main.views',
-    # Admin
-    url(r'^update/$', 'update', {}, 'update'),
-    url(r'^userlist/$', 'user_list', {}, 'user_list'),
-    url(r'^api/', include('main.api_urls')),
+    url(r'^exercisedashboard/$', 'exercise_dashboard', {}, 'exercise_dashboard'),
     url(r'^easyadmin/$', 'easy_admin', {}, 'easy_admin'),
     url(r'^stats/$', 'summary_stats', {}, 'summary_stats'),
-    url(r'^api/', include(main.api_urls)),
-
-    # Teachers
-    url(r'^coachreports/', include(coachreports.urls)),
-
-    # Students
     url(r'^$', 'homepage', {}, 'homepage'),
-    url(r'^exercisedashboard/$', 'exercise_dashboard', {}, 'exercise_dashboard'),
+    url(r'^update/$', 'update', {}, 'update'),
+    url(r'^userlist/$', 'user_list', {}, 'user_list'),
+
+    url(r'^coachreports/', include(coachreports.urls)),
+    url(r'^api/', include(main.api_urls)),
 )
 
 if "loadtesting" in settings.INSTALLED_APPS:

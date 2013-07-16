@@ -1,16 +1,9 @@
 # based on: http://www.djangosnippets.org/snippets/1926/
-
-from django import template
+from django.template import Library, Node, TemplateSyntaxError
 from django.core.serializers import serialize
 from django.db.models.query import QuerySet
-from django.template import Library, Node, TemplateSyntaxError
-from django.template import Node, VariableNode
-from django.template.defaultfilters import floatformat
-from django.template.loader_tags import BlockNode, ExtendsNode
-from django.template.loader import get_template
 from django.utils import simplejson
 from django.utils.safestring import mark_safe
-
 
 register = Library()
 
@@ -28,12 +21,11 @@ class RangeNode(Node):
             resolved_ranges.append(compiled_arg.resolve(context, ignore_failures=True))
         context[self.context_name] = range(*resolved_ranges)
         return ""
-
+        
 @register.filter
 def get_item(dictionary, key):
     return dictionary.get(key)
-
-
+    
 @register.tag
 def mkrange(parser, token):
     """
@@ -80,7 +72,11 @@ def mkrange(parser, token):
 
     context_name = tokens.pop()
 
+    return RangeNode(parser, range_args, context_name)
 
+from django.template import Node, VariableNode
+from django.template.loader_tags import BlockNode, ExtendsNode
+from django.template.loader import get_template
 @register.tag
 def include_block(parser, token):
     """ From http://stackoverflow.com/questions/2687173/django-how-can-i-get-a-block-from-a-template
@@ -123,7 +119,10 @@ def jsonify(object):
     if isinstance(object, QuerySet):
         return serialize('json', object)
     return mark_safe(simplejson.dumps(object))
+    
+from django import template
 
+from django.template.defaultfilters import floatformat
 
 @register.filter
 def percent(value, precision):
