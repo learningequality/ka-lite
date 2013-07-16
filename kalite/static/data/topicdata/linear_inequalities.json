@@ -8,6 +8,7 @@
     "related_video_readable_ids": [
       "inequalities-on-a-number-line"
     ], 
+    "slug": "inequalities_on_a_number_line", 
     "prerequisites": [
       "linear_equations_1"
     ], 
@@ -15,7 +16,7 @@
     "h_position": 29, 
     "v_position": 11, 
     "path": "/math/algebra/linear_inequalities/inequalities/e/inequalities_on_a_number_line/", 
-    "slug": "inequalities_on_a_number_line", 
+    "id": "inequalities_on_a_number_line", 
     "name": "inequalities_on_a_number_line"
   }, 
   {
@@ -27,6 +28,7 @@
     "related_video_readable_ids": [
       "solving-inequalities"
     ], 
+    "slug": "one_step_inequalities", 
     "prerequisites": [
       "inequalities_on_a_number_line"
     ], 
@@ -34,7 +36,7 @@
     "h_position": 30, 
     "v_position": 13, 
     "path": "/math/algebra/linear_inequalities/inequalities/e/one_step_inequalities/", 
-    "slug": "one_step_inequalities", 
+    "id": "one_step_inequalities", 
     "name": "one_step_inequalities"
   }, 
   {
@@ -46,6 +48,7 @@
     "related_video_readable_ids": [
       "multi-step-inequalities-3"
     ], 
+    "slug": "linear_inequalities", 
     "prerequisites": [
       "linear_equations_3", 
       "one_step_inequalities"
@@ -54,7 +57,7 @@
     "h_position": 31, 
     "v_position": 13, 
     "path": "/math/algebra/linear_inequalities/inequalities/e/linear_inequalities/", 
-    "slug": "linear_inequalities", 
+    "id": "linear_inequalities", 
     "name": "linear_inequalities"
   }, 
   {
@@ -66,6 +69,7 @@
     "related_video_readable_ids": [
       "compound-inequalities-4"
     ], 
+    "slug": "compound_inequalities", 
     "prerequisites": [
       "one_step_inequalities"
     ], 
@@ -73,7 +77,7 @@
     "h_position": 31, 
     "v_position": 14, 
     "path": "/math/algebra/linear_inequalities/compound_absolute_value_inequali/e/compound_inequalities/", 
-    "slug": "compound_inequalities", 
+    "id": "compound_inequalities", 
     "name": "compound_inequalities"
   }
 ]

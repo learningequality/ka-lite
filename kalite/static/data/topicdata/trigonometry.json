@@ -9,6 +9,7 @@
       "plot-ordered-pairs", 
       "plot-ordered-pairs"
     ], 
+    "slug": "graphing_points", 
     "prerequisites": [
       "linear_equations_3"
     ], 
@@ -16,7 +17,7 @@
     "h_position": 34, 
     "v_position": 9, 
     "path": "/math/trigonometry/graphs/graphing_coordinates/e/graphing_points/", 
-    "slug": "graphing_points", 
+    "id": "graphing_points", 
     "name": "graphing_points"
   }, 
   {
@@ -29,6 +30,7 @@
       "quadrants-of-coordinate-plane", 
       "quadrants-of-coordinate-plane"
     ], 
+    "slug": "graphing_points_2", 
     "prerequisites": [
       "graphing_points"
     ], 
@@ -36,7 +38,7 @@
     "h_position": 35, 
     "v_position": 8, 
     "path": "/math/trigonometry/graphs/graphing_coordinates/e/graphing_points_2/", 
-    "slug": "graphing_points_2", 
+    "id": "graphing_points_2", 
     "name": "graphing_points_2"
   }, 
   {
@@ -49,6 +51,7 @@
       "quadrants-of-coordinate-plane", 
       "quadrants-of-coordinate-plane"
     ], 
+    "slug": "identifying_points_1", 
     "prerequisites": [
       "graphing_points"
     ], 
@@ -56,7 +59,7 @@
     "h_position": 35, 
     "v_position": 9, 
     "path": "/math/trigonometry/graphs/graphing_coordinates/e/identifying_points_1/", 
-    "slug": "identifying_points_1", 
+    "id": "identifying_points_1", 
     "name": "identifying_points_1"
   }, 
   {
@@ -69,6 +72,7 @@
       "application-problem-with-graph", 
       "ordered-pair-solutions-of-equations-2"
     ], 
+    "slug": "identifying_points_2", 
     "prerequisites": [
       "graphing_points"
     ], 
@@ -76,7 +80,7 @@
     "h_position": 35, 
     "v_position": 10, 
     "path": "/math/trigonometry/graphs/graphing_coordinates/e/identifying_points_2/", 
-    "slug": "identifying_points_2", 
+    "id": "identifying_points_2", 
     "name": "identifying_points_2"
   }, 
   {
@@ -89,6 +93,7 @@
       "recognizing-linear-functions", 
       "recognizing-linear-functions"
     ], 
+    "slug": "interpreting_linear_equations", 
     "prerequisites": [
       "identifying_points_2", 
       "identifying_points_1", 
@@ -98,7 +103,7 @@
     "h_position": 36, 
     "v_position": 9, 
     "path": "/math/trigonometry/graphs/graphing_coordinates/e/interpreting_linear_equations/", 
-    "slug": "interpreting_linear_equations", 
+    "id": "interpreting_linear_equations", 
     "name": "interpreting_linear_equations"
   }, 
   {
@@ -111,6 +116,7 @@
       "hairier-slope-of-line", 
       "slope-of-a-line-3"
     ], 
+    "slug": "slope_of_a_line", 
     "prerequisites": [
       "interpreting_linear_equations"
     ], 
@@ -118,7 +124,7 @@
     "h_position": 37, 
     "v_position": 9, 
     "path": "/math/trigonometry/graphs/slope_of_line/e/slope_of_a_line/", 
-    "slug": "slope_of_a_line", 
+    "id": "slope_of_a_line", 
     "name": "slope_of_a_line"
   }, 
   {
@@ -131,6 +137,7 @@
       "slope-and-y-intercept-intuition", 
       "slope-and-y-intercept-intuition"
     ], 
+    "slug": "line_graph_intuition", 
     "prerequisites": [
       "slope_of_a_line"
     ], 
@@ -138,7 +145,7 @@
     "h_position": 38, 
     "v_position": 9, 
     "path": "/math/trigonometry/graphs/slope_of_line/e/line_graph_intuition/", 
-    "slug": "line_graph_intuition", 
+    "id": "line_graph_intuition", 
     "name": "line_graph_intuition"
   }, 
   {
@@ -151,6 +158,7 @@
       "converting-to-slope-intercept-form", 
       "converting-to-slope-intercept-form"
     ], 
+    "slug": "graphing_linear_equations", 
     "prerequisites": [
       "equation_of_a_line"
     ], 
@@ -158,7 +166,7 @@
     "h_position": 42, 
     "v_position": 9, 
     "path": "/math/trigonometry/graphs/line_equation/e/graphing_linear_equations/", 
-    "slug": "graphing_linear_equations", 
+    "id": "graphing_linear_equations", 
     "name": "graphing_linear_equations"
   }, 
   {
@@ -171,6 +179,7 @@
       "equation-of-a-line-3", 
       "equation-of-a-line-3"
     ], 
+    "slug": "solving_for_the_y-intercept", 
     "prerequisites": [
       "interpreting_linear_equations"
     ], 
@@ -178,7 +187,7 @@
     "h_position": 37, 
     "v_position": 10, 
     "path": "/math/trigonometry/graphs/line_equation/e/solving_for_the_y-intercept/", 
-    "slug": "solving_for_the_y-intercept", 
+    "id": "solving_for_the_y-intercept", 
     "name": "solving_for_the_y-intercept"
   }, 
   {
@@ -191,6 +200,7 @@
       "equation-of-a-line-3", 
       "equation-of-a-line-3"
     ], 
+    "slug": "slope_intercept_form", 
     "prerequisites": [
       "solving_for_the_x-intercept", 
       "line_graph_intuition"
@@ -199,7 +209,7 @@
     "h_position": 39, 
     "v_position": 11, 
     "path": "/math/trigonometry/graphs/line_equation/e/slope_intercept_form/", 
-    "slug": "slope_intercept_form", 
+    "id": "slope_intercept_form", 
     "name": "slope_intercept_form"
   }, 
   {
@@ -212,6 +222,7 @@
       "linear-equations-in-point-slope-form", 
       "linear-equations-in-point-slope-form"
     ], 
+    "slug": "point_slope_form", 
     "prerequisites": [
       "line_graph_intuition"
     ], 
@@ -219,7 +230,7 @@
     "h_position": 39, 
     "v_position": 9, 
     "path": "/math/trigonometry/graphs/line_equation/e/point_slope_form/", 
-    "slug": "point_slope_form", 
+    "id": "point_slope_form", 
     "name": "point_slope_form"
   }, 
   {
@@ -232,6 +243,7 @@
       "point-slope-and-standard-form", 
       "point-slope-and-standard-form"
     ], 
+    "slug": "converting_between_slope_intercept_and_standard_form", 
     "prerequisites": [
       "slope_intercept_form"
     ], 
@@ -239,7 +251,7 @@
     "h_position": 40, 
     "v_position": 11, 
     "path": "/math/trigonometry/graphs/line_equation/e/converting_between_slope_intercept_and_standard_form/", 
-    "slug": "converting_between_slope_intercept_and_standard_form", 
+    "id": "converting_between_slope_intercept_and_standard_form", 
     "name": "converting_between_slope_intercept_and_standard_form"
   }, 
   {
@@ -252,6 +264,7 @@
       "point-slope-and-standard-form", 
       "point-slope-and-standard-form"
     ], 
+    "slug": "converting_between_point_slope_and_slope_intercept", 
     "prerequisites": [
       "point_slope_form", 
       "slope_intercept_form"
@@ -260,7 +273,7 @@
     "h_position": 40, 
     "v_position": 9, 
     "path": "/math/trigonometry/graphs/line_equation/e/converting_between_point_slope_and_slope_intercept/", 
-    "slug": "converting_between_point_slope_and_slope_intercept", 
+    "id": "converting_between_point_slope_and_slope_intercept", 
     "name": "converting_between_point_slope_and_slope_intercept"
   }, 
   {
@@ -273,6 +286,7 @@
       "point-slope-and-standard-form", 
       "point-slope-and-standard-form"
     ], 
+    "slug": "equation_of_a_line", 
     "prerequisites": [
       "converting_between_slope_intercept_and_standard_form", 
       "converting_between_point_slope_and_slope_intercept"
@@ -281,7 +295,7 @@
     "h_position": 41, 
     "v_position": 8, 
     "path": "/math/trigonometry/graphs/line_equation/e/equation_of_a_line/", 
-    "slug": "equation_of_a_line", 
+    "id": "equation_of_a_line", 
     "name": "equation_of_a_line"
   }, 
   {
@@ -295,6 +309,7 @@
       "midpoint-formula", 
       "midpoint-formula"
     ], 
+    "slug": "midpoint_formula", 
     "prerequisites": [
       "distance_formula"
     ], 
@@ -302,7 +317,7 @@
     "h_position": 40, 
     "v_position": -12, 
     "path": "/math/trigonometry/graphs/midpoint_and_distance/e/midpoint_formula/", 
-    "slug": "midpoint_formula", 
+    "id": "midpoint_formula", 
     "name": "midpoint_formula"
   }, 
   {
@@ -316,6 +331,7 @@
       "distance-formula", 
       "distance-formula"
     ], 
+    "slug": "distance_formula", 
     "prerequisites": [
       "pythagorean_theorem_1"
     ], 
@@ -323,7 +339,7 @@
     "h_position": 39, 
     "v_position": -13, 
     "path": "/math/trigonometry/graphs/midpoint_and_distance/e/distance_formula/", 
-    "slug": "distance_formula", 
+    "id": "distance_formula", 
     "name": "distance_formula"
   }, 
   {
@@ -336,6 +352,7 @@
       "perpendicular-lines-2", 
       "perpendicular-lines-2"
     ], 
+    "slug": "line_relationships", 
     "prerequisites": [
       "equation_of_a_line"
     ], 
@@ -343,7 +360,7 @@
     "h_position": 43, 
     "v_position": 8, 
     "path": "/math/trigonometry/graphs/parallel_perpendicular/e/line_relationships/", 
-    "slug": "line_relationships", 
+    "id": "line_relationships", 
     "name": "line_relationships"
   }, 
   {
@@ -356,6 +373,7 @@
       "perpendicular-lines-2", 
       "perpendicular-lines-2"
     ], 
+    "slug": "distance_between_point_and_line", 
     "prerequisites": [
       "line_relationships", 
       "graphing_systems_of_equations"
@@ -364,7 +382,7 @@
     "h_position": 47, 
     "v_position": 8, 
     "path": "/math/trigonometry/graphs/parallel_perpendicular/e/distance_between_point_and_line/", 
-    "slug": "distance_between_point_and_line", 
+    "id": "distance_between_point_and_line", 
     "name": "distance_between_point_and_line"
   }, 
   {
@@ -377,6 +395,7 @@
       "graphing-linear-inequalities-in-two-variables-3", 
       "graphing-linear-inequalities-in-two-variables-3"
     ], 
+    "slug": "graphs_of_inequalities", 
     "prerequisites": [
       "graphing_linear_equations"
     ], 
@@ -384,7 +403,7 @@
     "h_position": 43, 
     "v_position": 10, 
     "path": "/math/trigonometry/graphs/graphing_inequalities/e/graphs_of_inequalities/", 
-    "slug": "graphs_of_inequalities", 
+    "id": "graphs_of_inequalities", 
     "name": "graphs_of_inequalities"
   }, 
   {
@@ -397,6 +416,7 @@
       "graphing-linear-inequalities-in-two-variables-3", 
       "graphing-linear-inequalities-in-two-variables-3"
     ], 
+    "slug": "graphing_inequalities", 
     "prerequisites": [
       "graphing_linear_equations"
     ], 
@@ -404,7 +424,7 @@
     "h_position": 43, 
     "v_position": 9, 
     "path": "/math/trigonometry/graphs/graphing_inequalities/e/graphing_inequalities/", 
-    "slug": "graphing_inequalities", 
+    "id": "graphing_inequalities", 
     "name": "graphing_inequalities"
   }, 
   {
@@ -417,6 +437,7 @@
       "graphing-inequalities-1", 
       "graphing-linear-inequalities-in-two-variables-3"
     ], 
+    "slug": "graphing_inequalities_2", 
     "prerequisites": [
       "graphing_inequalities"
     ], 
@@ -424,7 +445,7 @@
     "h_position": 44, 
     "v_position": 9, 
     "path": "/math/trigonometry/graphs/graphing_inequalities/e/graphing_inequalities_2/", 
-    "slug": "graphing_inequalities_2", 
+    "id": "graphing_inequalities_2", 
     "name": "graphing_inequalities_2"
   }, 
   {
@@ -437,6 +458,7 @@
       "functions-as-graphs", 
       "understanding-function-notation-example-3"
     ], 
+    "slug": "functions_1", 
     "prerequisites": [
       "interpreting_linear_equations"
     ], 
@@ -444,7 +466,7 @@
     "h_position": 38, 
     "v_position": -1, 
     "path": "/math/trigonometry/functions_and_graphs/function_introduction/e/functions_1/", 
-    "slug": "functions_1", 
+    "id": "functions_1", 
     "name": "functions_1"
   }, 
   {
@@ -457,6 +479,7 @@
       "evaluating-a-function-expression", 
       "quotient-of-functions"
     ], 
+    "slug": "functions_2", 
     "prerequisites": [
       "functions_1"
     ], 
@@ -464,7 +487,7 @@
     "h_position": 39, 
     "v_position": -2, 
     "path": "/math/trigonometry/functions_and_graphs/function_introduction/e/functions_2/", 
-    "slug": "functions_2", 
+    "id": "functions_2", 
     "name": "functions_2"
   }, 
   {
@@ -477,6 +500,7 @@
       "evaluating-composite-functions-example-1", 
       "quotient-of-functions"
     ], 
+    "slug": "functions_3", 
     "prerequisites": [
       "functions_2"
     ], 
@@ -484,7 +508,7 @@
     "h_position": 40, 
     "v_position": -2, 
     "path": "/math/trigonometry/functions_and_graphs/function_introduction/e/functions_3/", 
-    "slug": "functions_3", 
+    "id": "functions_3", 
     "name": "functions_3"
   }, 
   {
@@ -498,6 +522,7 @@
       "domain-of-a-radical-function", 
       "domain-of-a-function"
     ], 
+    "slug": "domain_of_a_function", 
     "prerequisites": [
       "functions_2", 
       "domain_and_range_0.5"
@@ -506,7 +531,7 @@
     "h_position": 40, 
     "v_position": -1, 
     "path": "/math/trigonometry/functions_and_graphs/function_introduction/e/domain_of_a_function/", 
-    "slug": "domain_of_a_function", 
+    "id": "domain_of_a_function", 
     "name": "domain_of_a_function"
   }, 
   {
@@ -519,6 +544,7 @@
       "domain-and-range-of-a-function", 
       "domain-and-range-of-a-relation"
     ], 
+    "slug": "domain_and_range_0.5", 
     "prerequisites": [
       "functions_1"
     ], 
@@ -526,7 +552,7 @@
     "h_position": 39, 
     "v_position": 0, 
     "path": "/math/trigonometry/functions_and_graphs/domain_range/e/domain_and_range_0.5/", 
-    "slug": "domain_and_range_0.5", 
+    "id": "domain_and_range_0.5", 
     "name": "domain_and_range_0.5"
   }, 
   {
@@ -540,6 +566,7 @@
       "domain-of-a-radical-function", 
       "domain-of-a-function"
     ], 
+    "slug": "domain_of_a_function", 
     "prerequisites": [
       "functions_2", 
       "domain_and_range_0.5"
@@ -548,7 +575,7 @@
     "h_position": 40, 
     "v_position": -1, 
     "path": "/math/trigonometry/functions_and_graphs/domain_range/e/domain_of_a_function/", 
-    "slug": "domain_of_a_function", 
+    "id": "domain_of_a_function", 
     "name": "domain_of_a_function"
   }, 
   {
@@ -561,6 +588,7 @@
       "domain-and-range-of-a-function", 
       "domain-and-range-of-a-function"
     ], 
+    "slug": "range_of_a_function", 
     "prerequisites": [
       "functions_2", 
       "domain_and_range_0.5"
@@ -569,7 +597,7 @@
     "h_position": 40, 
     "v_position": 1, 
     "path": "/math/trigonometry/functions_and_graphs/domain_range/e/range_of_a_function/", 
-    "slug": "range_of_a_function", 
+    "id": "range_of_a_function", 
     "name": "range_of_a_function"
   }, 
   {
@@ -582,6 +610,7 @@
       "function-inverses-example-3", 
       "function-inverses-example-3"
     ], 
+    "slug": "inverses_of_functions", 
     "prerequisites": [
       "domain_of_a_function", 
       "range_of_a_function"
@@ -590,7 +619,7 @@
     "h_position": 41, 
     "v_position": -1, 
     "path": "/math/trigonometry/functions_and_graphs/fucntion_inverses/e/inverses_of_functions/", 
-    "slug": "inverses_of_functions", 
+    "id": "inverses_of_functions", 
     "name": "inverses_of_functions"
   }, 
   {
@@ -602,6 +631,7 @@
     "related_video_readable_ids": [
       "connection-between-even-and-odd-numbers-and-functions"
     ], 
+    "slug": "even_and_odd_functions", 
     "prerequisites": [
       "functions_2"
     ], 
@@ -609,7 +639,7 @@
     "h_position": 40, 
     "v_position": -4, 
     "path": "/math/trigonometry/functions_and_graphs/analyzing_functions/e/even_and_odd_functions/", 
-    "slug": "even_and_odd_functions", 
+    "id": "even_and_odd_functions", 
     "name": "even_and_odd_functions"
   }, 
   {
@@ -621,6 +651,7 @@
     "related_video_readable_ids": [
       "graphs-of-square-root-functions"
     ], 
+    "slug": "shifting_and_reflecting_functions", 
     "prerequisites": [
       "domain_of_a_function", 
       "functions_3", 
@@ -630,7 +661,7 @@
     "h_position": 41, 
     "v_position": 1, 
     "path": "/math/trigonometry/functions_and_graphs/analyzing_functions/e/shifting_and_reflecting_functions/", 
-    "slug": "shifting_and_reflecting_functions", 
+    "id": "shifting_and_reflecting_functions", 
     "name": "shifting_and_reflecting_functions"
   }, 
   {
@@ -643,6 +674,7 @@
       "factoring-polynomials-1", 
       "factoring-trinomials-with-a-leading-1-coefficient"
     ], 
+    "slug": "factoring_polynomials_1", 
     "prerequisites": [
       "factoring_linear_binomials"
     ], 
@@ -650,7 +682,7 @@
     "h_position": 49, 
     "v_position": -6, 
     "path": "/math/trigonometry/polynomial_and_rational/quad_factoring/e/factoring_polynomials_1/", 
-    "slug": "factoring_polynomials_1", 
+    "id": "factoring_polynomials_1", 
     "name": "factoring_polynomials_1"
   }, 
   {
@@ -663,6 +695,7 @@
       "Example 2: Solving a quadratic equation by factoring", 
       "quadratic-functions-1"
     ], 
+    "slug": "solving_quadratics_by_factoring", 
     "prerequisites": [
       "factoring_polynomials_1"
     ], 
@@ -670,7 +703,7 @@
     "h_position": 50, 
     "v_position": -2, 
     "path": "/math/trigonometry/polynomial_and_rational/quad_factoring/e/solving_quadratics_by_factoring/", 
-    "slug": "solving_quadratics_by_factoring", 
+    "id": "solving_quadratics_by_factoring", 
     "name": "solving_quadratics_by_factoring"
   }, 
   {
@@ -683,6 +716,7 @@
       "factoring-trinomials-with-a-common-factor", 
       "factoring-trinomials-with-a-common-factor"
     ], 
+    "slug": "factoring_polynomials_2", 
     "prerequisites": [
       "factoring_polynomials_1"
     ], 
@@ -690,7 +724,7 @@
     "h_position": 50, 
     "v_position": -6, 
     "path": "/math/trigonometry/polynomial_and_rational/quad_factoring/e/factoring_polynomials_2/", 
-    "slug": "factoring_polynomials_2", 
+    "id": "factoring_polynomials_2", 
     "name": "factoring_polynomials_2"
   }, 
   {
@@ -703,6 +737,7 @@
       "factoring-trinomials-with-a-common-factor", 
       "factoring-trinomials-with-a-common-factor"
     ], 
+    "slug": "solving_quadratics_by_factoring_2", 
     "prerequisites": [
       "solving_quadratics_by_factoring"
     ], 
@@ -710,7 +745,7 @@
     "h_position": 51, 
     "v_position": -2, 
     "path": "/math/trigonometry/polynomial_and_rational/quad_factoring/e/solving_quadratics_by_factoring_2/", 
-    "slug": "solving_quadratics_by_factoring_2", 
+    "id": "solving_quadratics_by_factoring_2", 
     "name": "solving_quadratics_by_factoring_2"
   }, 
   {
@@ -723,6 +758,7 @@
       "u09-l2-t1-we3-factoring-special-products-3", 
       "u09-l2-t1-we3-factoring-special-products-3"
     ], 
+    "slug": "factoring_difference_of_squares_1", 
     "prerequisites": [
       "multiplying_expressions_1", 
       "multiplying_polynomials"
@@ -731,7 +767,7 @@
     "h_position": 49, 
     "v_position": -8, 
     "path": "/math/trigonometry/polynomial_and_rational/quad_factoring/e/factoring_difference_of_squares_1/", 
-    "slug": "factoring_difference_of_squares_1", 
+    "id": "factoring_difference_of_squares_1", 
     "name": "factoring_difference_of_squares_1"
   }, 
   {
@@ -744,6 +780,7 @@
       "u09-l2-t1-we3-factoring-special-products-3", 
       "u09-l2-t1-we3-factoring-special-products-3"
     ], 
+    "slug": "factoring_difference_of_squares_2", 
     "prerequisites": [
       "factoring_difference_of_squares_1"
     ], 
@@ -751,7 +788,7 @@
     "h_position": 50, 
     "v_position": -8, 
     "path": "/math/trigonometry/polynomial_and_rational/quad_factoring/e/factoring_difference_of_squares_2/", 
-    "slug": "factoring_difference_of_squares_2", 
+    "id": "factoring_difference_of_squares_2", 
     "name": "factoring_difference_of_squares_2"
   }, 
   {
@@ -764,6 +801,7 @@
       "u09-l2-t1-we3-factoring-special-products-3", 
       "u09-l2-t1-we3-factoring-special-products-3"
     ], 
+    "slug": "factoring_difference_of_squares_3", 
     "prerequisites": [
       "factoring_difference_of_squares_2"
     ], 
@@ -771,7 +809,7 @@
     "h_position": 51, 
     "v_position": -8, 
     "path": "/math/trigonometry/polynomial_and_rational/quad_factoring/e/factoring_difference_of_squares_3/", 
-    "slug": "factoring_difference_of_squares_3", 
+    "id": "factoring_difference_of_squares_3", 
     "name": "factoring_difference_of_squares_3"
   }, 
   {
@@ -784,6 +822,7 @@
       "factoring-trinomials-by-grouping-6", 
       "factoring-trinomials-by-grouping-6"
     ], 
+    "slug": "factoring_polynomials_by_grouping_1", 
     "prerequisites": [
       "factoring_polynomials_2"
     ], 
@@ -791,7 +830,7 @@
     "h_position": 51, 
     "v_position": -5, 
     "path": "/math/trigonometry/polynomial_and_rational/quad_factoring/e/factoring_polynomials_by_grouping_1/", 
-    "slug": "factoring_polynomials_by_grouping_1", 
+    "id": "factoring_polynomials_by_grouping_1", 
     "name": "factoring_polynomials_by_grouping_1"
   }, 
   {
@@ -804,6 +843,7 @@
       "solving-quadratic-equations-by-square-roots", 
       "simple-quadratic-equation"
     ], 
+    "slug": "solving_quadratics_by_taking_the_square_root", 
     "prerequisites": [
       "factoring_polynomials_1"
     ], 
@@ -811,7 +851,7 @@
     "h_position": 50, 
     "v_position": -1, 
     "path": "/math/trigonometry/polynomial_and_rational/quad_formula_tutorial/e/solving_quadratics_by_taking_the_square_root/", 
-    "slug": "solving_quadratics_by_taking_the_square_root", 
+    "id": "solving_quadratics_by_taking_the_square_root", 
     "name": "solving_quadratics_by_taking_the_square_root"
   }, 
   {
@@ -824,6 +864,7 @@
       "solving-quadratic-equations-by-completing-the-square", 
       "completing-the-square-to-solve-quadratic-equations"
     ], 
+    "slug": "completing_the_square_1", 
     "prerequisites": [
       "solving_quadratics_by_taking_the_square_root", 
       "solving_quadratics_by_factoring"
@@ -832,7 +873,7 @@
     "h_position": 51, 
     "v_position": -1, 
     "path": "/math/trigonometry/polynomial_and_rational/quad_formula_tutorial/e/completing_the_square_1/", 
-    "slug": "completing_the_square_1", 
+    "id": "completing_the_square_1", 
     "name": "completing_the_square_1"
   }, 
   {
@@ -845,6 +886,7 @@
       "solving-quadratic-equations-by-completing-the-square", 
       "completing-the-square-to-solve-quadratic-equations"
     ], 
+    "slug": "completing_the_square_2", 
     "prerequisites": [
       "solving_quadratics_by_factoring_2", 
       "completing_the_square_1"
@@ -853,7 +895,7 @@
     "h_position": 52, 
     "v_position": -2, 
     "path": "/math/trigonometry/polynomial_and_rational/quad_formula_tutorial/e/completing_the_square_2/", 
-    "slug": "completing_the_square_2", 
+    "id": "completing_the_square_2", 
     "name": "completing_the_square_2"
   }, 
   {
@@ -866,6 +908,7 @@
       "proof-of-quadratic-formula", 
       "applying-the-quadratic-formula"
     ], 
+    "slug": "quadratic_equation", 
     "prerequisites": [
       "completing_the_square_2"
     ], 
@@ -873,7 +916,7 @@
     "h_position": 53, 
     "v_position": -2, 
     "path": "/math/trigonometry/polynomial_and_rational/quad_formula_tutorial/e/quadratic_equation/", 
-    "slug": "quadratic_equation", 
+    "id": "quadratic_equation", 
     "name": "quadratic_equation"
   }, 
   {
@@ -886,6 +929,7 @@
       "discriminant-for-types-of-solutions-for-a-quadratic", 
       "discriminant-for-types-of-solutions-for-a-quadratic"
     ], 
+    "slug": "solutions_to_quadratic_equations", 
     "prerequisites": [
       "quadratic_equation"
     ], 
@@ -893,7 +937,7 @@
     "h_position": 54, 
     "v_position": -2, 
     "path": "/math/trigonometry/polynomial_and_rational/quad_formula_tutorial/e/solutions_to_quadratic_equations/", 
-    "slug": "solutions_to_quadratic_equations", 
+    "id": "solutions_to_quadratic_equations", 
     "name": "solutions_to_quadratic_equations"
   }, 
   {
@@ -906,6 +950,7 @@
       "graphs-of-quadratic-functions", 
       "applying-quadratic-functions-3"
     ], 
+    "slug": "graphing_parabolas_0.5", 
     "prerequisites": [
       "parabola_intuition_2"
     ], 
@@ -913,7 +958,7 @@
     "h_position": 51, 
     "v_position": 0, 
     "path": "/math/trigonometry/polynomial_and_rational/solving_graphing_quadratics/e/graphing_parabolas_0.5/", 
-    "slug": "graphing_parabolas_0.5", 
+    "id": "graphing_parabolas_0.5", 
     "name": "graphing_parabolas_0.5"
   }, 
   {
@@ -926,6 +971,7 @@
       "focus-and-directrix-of-a-parabola-2", 
       "focus-and-directrix-of-a-parabola-2"
     ], 
+    "slug": "vertex_of_a_parabola", 
     "prerequisites": [
       "graphing_parabolas_0.5", 
       "completing_the_square_1"
@@ -934,7 +980,7 @@
     "h_position": 52, 
     "v_position": -1, 
     "path": "/math/trigonometry/polynomial_and_rational/solving_graphing_quadratics/e/vertex_of_a_parabola/", 
-    "slug": "vertex_of_a_parabola", 
+    "id": "vertex_of_a_parabola", 
     "name": "vertex_of_a_parabola"
   }, 
   {
@@ -947,6 +993,7 @@
       "focus-and-directrix-of-a-parabola-2", 
       "focus-and-directrix-of-a-parabola-2"
     ], 
+    "slug": "graphing_parabolas_1", 
     "prerequisites": [
       "graphing_parabolas_0.5"
     ], 
@@ -954,7 +1001,7 @@
     "h_position": 52, 
     "v_position": 0, 
     "path": "/math/trigonometry/polynomial_and_rational/solving_graphing_quadratics/e/graphing_parabolas_1/", 
-    "slug": "graphing_parabolas_1", 
+    "id": "graphing_parabolas_1", 
     "name": "graphing_parabolas_1"
   }, 
   {
@@ -967,6 +1014,7 @@
       "focus-and-directrix-of-a-parabola-2", 
       "focus-and-directrix-of-a-parabola-2"
     ], 
+    "slug": "graphing_parabolas_2", 
     "prerequisites": [
       "graphing_parabolas_1", 
       "vertex_of_a_parabola"
@@ -975,7 +1023,7 @@
     "h_position": 53, 
     "v_position": -1, 
     "path": "/math/trigonometry/polynomial_and_rational/solving_graphing_quadratics/e/graphing_parabolas_2/", 
-    "slug": "graphing_parabolas_2", 
+    "id": "graphing_parabolas_2", 
     "name": "graphing_parabolas_2"
   }, 
   {
@@ -988,6 +1036,7 @@
       "focus-and-directrix-of-a-parabola-2", 
       "focus-and-directrix-of-a-parabola-2"
     ], 
+    "slug": "parabola_intuition_3", 
     "prerequisites": [
       "graphing_parabolas_2"
     ], 
@@ -995,7 +1044,7 @@
     "h_position": 54, 
     "v_position": -1, 
     "path": "/math/trigonometry/polynomial_and_rational/solving_graphing_quadratics/e/parabola_intuition_3/", 
-    "slug": "parabola_intuition_3", 
+    "id": "parabola_intuition_3", 
     "name": "parabola_intuition_3"
   }, 
   {
@@ -1008,6 +1057,7 @@
       "addition-and-subtraction-of-polynomials", 
       "subtracting-polynomials-with-multiple-variables"
     ], 
+    "slug": "adding_and_subtracting_polynomials", 
     "prerequisites": [
       "equation_of_a_line"
     ], 
@@ -1015,7 +1065,7 @@
     "h_position": 45, 
     "v_position": -7, 
     "path": "/math/trigonometry/polynomial_and_rational/polynomial_tutorial/e/adding_and_subtracting_polynomials/", 
-    "slug": "adding_and_subtracting_polynomials", 
+    "id": "adding_and_subtracting_polynomials", 
     "name": "adding_and_subtracting_polynomials"
   }, 
   {
@@ -1028,6 +1078,7 @@
       "more-multiplying-polynomials", 
       "multiplying-polynomials-3"
     ], 
+    "slug": "multiplying_polynomials", 
     "prerequisites": [
       "multiplying_expressions_0.5"
     ], 
@@ -1035,7 +1086,7 @@
     "h_position": 47, 
     "v_position": -6, 
     "path": "/math/trigonometry/polynomial_and_rational/polynomial_tutorial/e/multiplying_polynomials/", 
-    "slug": "multiplying_polynomials", 
+    "id": "multiplying_polynomials", 
     "name": "multiplying_polynomials"
   }, 
   {
@@ -1047,6 +1098,7 @@
     "related_video_readable_ids": [
       "basic-trigonometry"
     ], 
+    "slug": "trigonometry_0.5", 
     "prerequisites": [
       "pythagorean_theorem_1", 
       "radians_and_degrees"
@@ -1055,7 +1107,7 @@
     "h_position": 48, 
     "v_position": -24, 
     "path": "/math/trigonometry/basic-trigonometry/basic_trig_ratios/e/trigonometry_0.5/", 
-    "slug": "trigonometry_0.5", 
+    "id": "trigonometry_0.5", 
     "name": "trigonometry_0.5"
   }, 
   {
@@ -1067,6 +1119,7 @@
     "related_video_readable_ids": [
       "basic-trigonometry-ii"
     ], 
+    "slug": "trigonometry_1", 
     "prerequisites": [
       "trigonometry_0.5", 
       "unit_circle"
@@ -1075,7 +1128,7 @@
     "h_position": 49, 
     "v_position": -25, 
     "path": "/math/trigonometry/basic-trigonometry/basic_trig_ratios/e/trigonometry_1/", 
-    "slug": "trigonometry_1", 
+    "id": "trigonometry_1", 
     "name": "trigonometry_1"
   }, 
   {
@@ -1087,6 +1140,7 @@
     "related_video_readable_ids": [
       "example--the-six-trig-ratios"
     ], 
+    "slug": "reciprocal_trig_funcs", 
     "prerequisites": [
       "trigonometry_1"
     ], 
@@ -1094,7 +1148,7 @@
     "h_position": 50, 
     "v_position": -26, 
     "path": "/math/trigonometry/basic-trigonometry/basic_trig_ratios/e/reciprocal_trig_funcs/", 
-    "slug": "reciprocal_trig_funcs", 
+    "id": "reciprocal_trig_funcs", 
     "name": "reciprocal_trig_funcs"
   }, 
   {
@@ -1106,6 +1160,7 @@
     "related_video_readable_ids": [
       "example--using-trig-to-solve-for-missing-information"
     ], 
+    "slug": "trigonometry_1.5", 
     "prerequisites": [
       "trigonometry_1"
     ], 
@@ -1113,7 +1168,7 @@
     "h_position": 50, 
     "v_position": -25, 
     "path": "/math/trigonometry/basic-trigonometry/basic_trig_ratios/e/trigonometry_1.5/", 
-    "slug": "trigonometry_1.5", 
+    "id": "trigonometry_1.5", 
     "name": "trigonometry_1.5"
   }, 
   {
@@ -1125,6 +1180,7 @@
     "related_video_readable_ids": [
       "example--trig-to-solve-the-sides-and-angles-of-a-right-triangle"
     ], 
+    "slug": "trigonometry_2", 
     "prerequisites": [
       "trigonometry_1.5"
     ], 
@@ -1132,7 +1188,7 @@
     "h_position": 51, 
     "v_position": -25, 
     "path": "/math/trigonometry/basic-trigonometry/basic_trig_ratios/e/trigonometry_2/", 
-    "slug": "trigonometry_2", 
+    "id": "trigonometry_2", 
     "name": "trigonometry_2"
   }, 
   {
@@ -1145,6 +1201,7 @@
       "30-60-90-triangle-example-problem", 
       "30-60-90-triangles-and-trig"
     ], 
+    "slug": "pythagorean_theorem_2", 
     "prerequisites": [
       "trigonometry_1.5"
     ], 
@@ -1152,7 +1209,7 @@
     "h_position": 51, 
     "v_position": -24, 
     "path": "/math/trigonometry/basic-trigonometry/basic_trig_ratios/e/pythagorean_theorem_2/", 
-    "slug": "pythagorean_theorem_2", 
+    "id": "pythagorean_theorem_2", 
     "name": "pythagorean_theorem_2"
   }, 
   {
@@ -1164,6 +1221,7 @@
     "related_video_readable_ids": [
       "we-converting-degrees-to-radians"
     ], 
+    "slug": "degrees_to_radians", 
     "prerequisites": [
       "congruent_triangles_2"
     ], 
@@ -1171,7 +1229,7 @@
     "h_position": 46, 
     "v_position": -24, 
     "path": "/math/trigonometry/basic-trigonometry/radians_tutorial/e/degrees_to_radians/", 
-    "slug": "degrees_to_radians", 
+    "id": "degrees_to_radians", 
     "name": "degrees_to_radians"
   }, 
   {
@@ -1183,6 +1241,7 @@
     "related_video_readable_ids": [
       "we-converting-radians-to-degrees"
     ], 
+    "slug": "radians_to_degrees", 
     "prerequisites": [
       "congruent_triangles_2"
     ], 
@@ -1190,7 +1249,7 @@
     "h_position": 46, 
     "v_position": -26, 
     "path": "/math/trigonometry/basic-trigonometry/radians_tutorial/e/radians_to_degrees/", 
-    "slug": "radians_to_degrees", 
+    "id": "radians_to_degrees", 
     "name": "radians_to_degrees"
   }, 
   {
@@ -1202,6 +1261,7 @@
     "related_video_readable_ids": [
       "we-converting-radians-to-degrees"
     ], 
+    "slug": "radians_and_degrees", 
     "prerequisites": [
       "radians_to_degrees", 
       "degrees_to_radians"
@@ -1210,7 +1270,7 @@
     "h_position": 47, 
     "v_position": -25, 
     "path": "/math/trigonometry/basic-trigonometry/radians_tutorial/e/radians_and_degrees/", 
-    "slug": "radians_and_degrees", 
+    "id": "radians_and_degrees", 
     "name": "radians_and_degrees"
   }, 
   {
@@ -1222,6 +1282,7 @@
     "related_video_readable_ids": [
       "unit-circle-manipulative"
     ], 
+    "slug": "unit_circle", 
     "prerequisites": [
       "radians_and_degrees"
     ], 
@@ -1229,7 +1290,7 @@
     "h_position": 48, 
     "v_position": -26, 
     "path": "/math/trigonometry/basic-trigonometry/unit_circle_tut/e/unit_circle/", 
-    "slug": "unit_circle", 
+    "id": "unit_circle", 
     "name": "unit_circle"
   }, 
   {
@@ -1241,6 +1302,7 @@
     "related_video_readable_ids": [
       "matching-a-trigonometric-function-to-its-graph"
     ], 
+    "slug": "graphs_of_sine_and_cosine", 
     "prerequisites": [
       "trigonometry_2"
     ], 
@@ -1248,7 +1310,7 @@
     "h_position": 52, 
     "v_position": -24, 
     "path": "/math/trigonometry/basic-trigonometry/trig_graphs_tutorial/e/graphs_of_sine_and_cosine/", 
-    "slug": "graphs_of_sine_and_cosine", 
+    "id": "graphs_of_sine_and_cosine", 
     "name": "graphs_of_sine_and_cosine"
   }, 
   {
@@ -1260,6 +1322,7 @@
     "related_video_readable_ids": [
       "example---calculator-to-evaluate-inverse-trig-function"
     ], 
+    "slug": "inverse_trig_functions", 
     "prerequisites": [
       "trigonometry_2"
     ], 
@@ -1267,7 +1330,7 @@
     "h_position": 52, 
     "v_position": -25, 
     "path": "/math/trigonometry/basic-trigonometry/inverse_trig_functions/e/inverse_trig_functions/", 
-    "slug": "inverse_trig_functions", 
+    "id": "inverse_trig_functions", 
     "name": "inverse_trig_functions"
   }, 
   {
@@ -1277,12 +1340,13 @@
     "title": "Trig identities 1", 
     "seconds_per_fast_problem": 12.0, 
     "related_video_readable_ids": [], 
+    "slug": "trig_identities_1", 
     "prerequisites": [], 
     "live": false, 
     "h_position": 63, 
     "v_position": -16, 
     "path": "/math/trigonometry/less-basic-trigonometry/trig_iden_tutorial/e/trig_identities_1/", 
-    "slug": "trig_identities_1", 
+    "id": "trig_identities_1", 
     "name": "trig_identities_1"
   }, 
   {
@@ -1294,6 +1358,7 @@
     "related_video_readable_ids": [
       "trigonometric-identities"
     ], 
+    "slug": "pythagorean_identities", 
     "prerequisites": [
       "trigonometry_2", 
       "reciprocal_trig_funcs"
@@ -1302,7 +1367,7 @@
     "h_position": 52, 
     "v_position": -27, 
     "path": "/math/trigonometry/less-basic-trigonometry/trig_iden_tutorial/e/pythagorean_identities/", 
-    "slug": "pythagorean_identities", 
+    "id": "pythagorean_identities", 
     "name": "pythagorean_identities"
   }, 
   {
@@ -1314,6 +1379,7 @@
     "related_video_readable_ids": [
       "trig-identies-part-3--part-5-if-you-watch-the-proofs"
     ], 
+    "slug": "trig_addition_identities", 
     "prerequisites": [
       "trigonometry_2"
     ], 
@@ -1321,7 +1387,7 @@
     "h_position": 52, 
     "v_position": -26, 
     "path": "/math/trigonometry/less-basic-trigonometry/trig_iden_tutorial/e/trig_addition_identities/", 
-    "slug": "trig_addition_identities", 
+    "id": "trig_addition_identities", 
     "name": "trig_addition_identities"
   }, 
   {
@@ -1333,6 +1399,7 @@
     "related_video_readable_ids": [
       "law-of-cosines"
     ], 
+    "slug": "law_of_cosines", 
     "prerequisites": [
       "pythagorean_identities"
     ], 
@@ -1340,7 +1407,7 @@
     "h_position": 53, 
     "v_position": -27, 
     "path": "/math/trigonometry/less-basic-trigonometry/trig_iden_tutorial/e/law_of_cosines/", 
-    "slug": "law_of_cosines", 
+    "id": "law_of_cosines", 
     "name": "law_of_cosines"
   }, 
   {
@@ -1350,12 +1417,13 @@
     "title": "Law of sines", 
     "seconds_per_fast_problem": 36.5, 
     "related_video_readable_ids": [], 
+    "slug": "law_of_sines", 
     "prerequisites": [], 
     "live": false, 
     "h_position": 62, 
     "v_position": -21, 
     "path": "/math/trigonometry/less-basic-trigonometry/trig_iden_tutorial/e/law_of_sines/", 
-    "slug": "law_of_sines", 
+    "id": "law_of_sines", 
     "name": "law_of_sines"
   }, 
   {
@@ -1368,6 +1436,7 @@
       "introduction-to-conic-sections", 
       "introduction-to-conic-sections"
     ], 
+    "slug": "recognizing_conic_sections", 
     "prerequisites": [
       "adding_and_subtracting_polynomials"
     ], 
@@ -1375,7 +1444,7 @@
     "h_position": 46, 
     "v_position": 4, 
     "path": "/math/trigonometry/conics_precalc/conic_section_intro/e/recognizing_conic_sections/", 
-    "slug": "recognizing_conic_sections", 
+    "id": "recognizing_conic_sections", 
     "name": "recognizing_conic_sections"
   }, 
   {
@@ -1388,6 +1457,7 @@
       "conic-sections--intro-to-circles", 
       "conic-sections--intro-to-circles"
     ], 
+    "slug": "graphing_circles", 
     "prerequisites": [
       "circles_and_arcs"
     ], 
@@ -1395,7 +1465,7 @@
     "h_position": 42, 
     "v_position": -21, 
     "path": "/math/trigonometry/conics_precalc/circles-tutorial-precalc/e/graphing_circles/", 
-    "slug": "graphing_circles", 
+    "id": "graphing_circles", 
     "name": "graphing_circles"
   }, 
   {
@@ -1408,6 +1478,7 @@
       "conic-sections--intro-to-circles", 
       "conic-sections--intro-to-circles"
     ], 
+    "slug": "equation_of_a_circle_1", 
     "prerequisites": [
       "recognizing_conic_sections"
     ], 
@@ -1415,7 +1486,7 @@
     "h_position": 47, 
     "v_position": 5, 
     "path": "/math/trigonometry/conics_precalc/circles-tutorial-precalc/e/equation_of_a_circle_1/", 
-    "slug": "equation_of_a_circle_1", 
+    "id": "equation_of_a_circle_1", 
     "name": "equation_of_a_circle_1"
   }, 
   {
@@ -1428,6 +1499,7 @@
       "conic-sections--intro-to-circles", 
       "conic-sections--intro-to-circles"
     ], 
+    "slug": "equation_of_a_circle_2", 
     "prerequisites": [
       "equation_of_a_circle_1"
     ], 
@@ -1435,7 +1507,7 @@
     "h_position": 48, 
     "v_position": 5, 
     "path": "/math/trigonometry/conics_precalc/circles-tutorial-precalc/e/equation_of_a_circle_2/", 
-    "slug": "equation_of_a_circle_2", 
+    "id": "equation_of_a_circle_2", 
     "name": "equation_of_a_circle_2"
   }, 
   {
@@ -1448,6 +1520,7 @@
       "conic-sections--intro-to-circles", 
       "conic-sections--intro-to-circles"
     ], 
+    "slug": "graphing_circles_2", 
     "prerequisites": [
       "graphing_circles"
     ], 
@@ -1455,7 +1528,7 @@
     "h_position": 43, 
     "v_position": -21, 
     "path": "/math/trigonometry/conics_precalc/circles-tutorial-precalc/e/graphing_circles_2/", 
-    "slug": "graphing_circles_2", 
+    "id": "graphing_circles_2", 
     "name": "graphing_circles_2"
   }, 
   {
@@ -1468,6 +1541,7 @@
       "conic-sections--intro-to-ellipses", 
       "conic-sections--intro-to-ellipses"
     ], 
+    "slug": "equation_of_an_ellipse", 
     "prerequisites": [
       "equation_of_a_circle_1"
     ], 
@@ -1475,7 +1549,7 @@
     "h_position": 48, 
     "v_position": 4, 
     "path": "/math/trigonometry/conics_precalc/ellipses-precalc/e/equation_of_an_ellipse/", 
-    "slug": "equation_of_an_ellipse", 
+    "id": "equation_of_an_ellipse", 
     "name": "equation_of_an_ellipse"
   }, 
   {
@@ -1488,6 +1562,7 @@
       "focus-and-directrix-of-a-parabola-2", 
       "focus-and-directrix-of-a-parabola-2"
     ], 
+    "slug": "parabola_intuition_1", 
     "prerequisites": [
       "recognizing_conic_sections"
     ], 
@@ -1495,7 +1570,7 @@
     "h_position": 47, 
     "v_position": 3, 
     "path": "/math/trigonometry/conics_precalc/parabolas_precalc/e/parabola_intuition_1/", 
-    "slug": "parabola_intuition_1", 
+    "id": "parabola_intuition_1", 
     "name": "parabola_intuition_1"
   }, 
   {
@@ -1508,6 +1583,7 @@
       "focus-and-directrix-of-a-parabola-2", 
       "focus-and-directrix-of-a-parabola-2"
     ], 
+    "slug": "parabola_intuition_2", 
     "prerequisites": [
       "parabola_intuition_1"
     ], 
@@ -1515,7 +1591,7 @@
     "h_position": 48, 
     "v_position": 3, 
     "path": "/math/trigonometry/conics_precalc/parabolas_precalc/e/parabola_intuition_2/", 
-    "slug": "parabola_intuition_2", 
+    "id": "parabola_intuition_2", 
     "name": "parabola_intuition_2"
   }, 
   {
@@ -1528,6 +1604,7 @@
       "conic-sections--hyperbolas-3", 
       "conic-sections--hyperbolas-3"
     ], 
+    "slug": "equation_of_a_hyperbola", 
     "prerequisites": [
       "equation_of_a_circle_1"
     ], 
@@ -1535,7 +1612,7 @@
     "h_position": 48, 
     "v_position": 6, 
     "path": "/math/trigonometry/conics_precalc/hyperbolas-precalc/e/equation_of_a_hyperbola/", 
-    "slug": "equation_of_a_hyperbola", 
+    "id": "equation_of_a_hyperbola", 
     "name": "equation_of_a_hyperbola"
   }, 
   {
@@ -1550,6 +1627,7 @@
       "solving-systems-graphically", 
       "solving-systems-graphically"
     ], 
+    "slug": "graphing_systems_of_equations", 
     "prerequisites": [
       "graphing_linear_equations"
     ], 
@@ -1557,7 +1635,7 @@
     "h_position": 46, 
     "v_position": 11, 
     "path": "/math/trigonometry/systems_eq_ineq/systems_tutorial_precalc/e/graphing_systems_of_equations/", 
-    "slug": "graphing_systems_of_equations", 
+    "id": "graphing_systems_of_equations", 
     "name": "graphing_systems_of_equations"
   }, 
   {
@@ -1572,6 +1650,7 @@
       "simple-elimination-practice", 
       "simple-elimination-practice"
     ], 
+    "slug": "systems_of_equations_with_elimination_0.5", 
     "prerequisites": [
       "graphing_systems_of_equations"
     ], 
@@ -1579,7 +1658,7 @@
     "h_position": 47, 
     "v_position": 11, 
     "path": "/math/trigonometry/systems_eq_ineq/systems_tutorial_precalc/e/systems_of_equations_with_elimination_0.5/", 
-    "slug": "systems_of_equations_with_elimination_0.5", 
+    "id": "systems_of_equations_with_elimination_0.5", 
     "name": "systems_of_equations_with_elimination_0.5"
   }, 
   {
@@ -1594,6 +1673,7 @@
       "systems-with-elimination-practice", 
       "systems-with-elimination-practice"
     ], 
+    "slug": "systems_of_equations_with_elimination", 
     "prerequisites": [
       "systems_of_equations_with_elimination_0.5"
     ], 
@@ -1601,7 +1681,7 @@
     "h_position": 48, 
     "v_position": 11, 
     "path": "/math/trigonometry/systems_eq_ineq/systems_tutorial_precalc/e/systems_of_equations_with_elimination/", 
-    "slug": "systems_of_equations_with_elimination", 
+    "id": "systems_of_equations_with_elimination", 
     "name": "systems_of_equations_with_elimination"
   }, 
   {
@@ -1616,6 +1696,7 @@
       "practice-using-substitution-for-systems", 
       "practice-using-substitution-for-systems"
     ], 
+    "slug": "systems_of_equations_with_substitution", 
     "prerequisites": [
       "graphing_systems_of_equations"
     ], 
@@ -1623,7 +1704,7 @@
     "h_position": 47, 
     "v_position": 12, 
     "path": "/math/trigonometry/systems_eq_ineq/systems_tutorial_precalc/e/systems_of_equations_with_substitution/", 
-    "slug": "systems_of_equations_with_substitution", 
+    "id": "systems_of_equations_with_substitution", 
     "name": "systems_of_equations_with_substitution"
   }, 
   {
@@ -1637,6 +1718,7 @@
       "practice-using-substitution-for-systems", 
       "practice-using-substitution-for-systems"
     ], 
+    "slug": "systems_of_equations", 
     "prerequisites": [
       "systems_of_equations_with_substitution", 
       "systems_of_equations_with_elimination"
@@ -1645,7 +1727,7 @@
     "h_position": 49, 
     "v_position": 12, 
     "path": "/math/trigonometry/systems_eq_ineq/systems_tutorial_precalc/e/systems_of_equations/", 
-    "slug": "systems_of_equations", 
+    "id": "systems_of_equations", 
     "name": "systems_of_equations"
   }, 
   {
@@ -1659,6 +1741,7 @@
       "practice-using-substitution-for-systems", 
       "practice-using-substitution-for-systems"
     ], 
+    "slug": "systems_of_equations_word_problems", 
     "prerequisites": [
       "systems_of_equations"
     ], 
@@ -1666,7 +1749,7 @@
     "h_position": 50, 
     "v_position": 12, 
     "path": "/math/trigonometry/systems_eq_ineq/systems_tutorial_precalc/e/systems_of_equations_word_problems/", 
-    "slug": "systems_of_equations_word_problems", 
+    "id": "systems_of_equations_word_problems", 
     "name": "systems_of_equations_word_problems"
   }, 
   {
@@ -1680,6 +1763,7 @@
       "practice-thinking-about-number-of-solutions-to-systems", 
       "practice-thinking-about-number-of-solutions-to-systems"
     ], 
+    "slug": "solutions_to_systems_of_equations", 
     "prerequisites": [
       "graphing_systems_of_equations"
     ], 
@@ -1687,7 +1771,7 @@
     "h_position": 47, 
     "v_position": 10, 
     "path": "/math/trigonometry/systems_eq_ineq/systems_tutorial_precalc/e/solutions_to_systems_of_equations/", 
-    "slug": "solutions_to_systems_of_equations", 
+    "id": "solutions_to_systems_of_equations", 
     "name": "solutions_to_systems_of_equations"
   }, 
   {
@@ -1700,6 +1784,7 @@
       "u06-l3-t1-we3-graphing-systems-of-inequalities", 
       "u06-l3-t1-we3-graphing-systems-of-inequalities"
     ], 
+    "slug": "graphing_systems_of_inequalities", 
     "prerequisites": [
       "graphing_inequalities_2", 
       "graphing_systems_of_equations"
@@ -1708,7 +1793,7 @@
     "h_position": 48, 
     "v_position": 9, 
     "path": "/math/trigonometry/systems_eq_ineq/systems_inequalities_precalc/e/graphing_systems_of_inequalities/", 
-    "slug": "graphing_systems_of_inequalities", 
+    "id": "graphing_systems_of_inequalities", 
     "name": "graphing_systems_of_inequalities"
   }, 
   {
@@ -1721,6 +1806,7 @@
       "u06-l3-t1-we3-graphing-systems-of-inequalities", 
       "u06-l3-t1-we3-graphing-systems-of-inequalities"
     ], 
+    "slug": "graphing_systems_of_inequalities_2", 
     "prerequisites": [
       "graphing_systems_of_inequalities"
     ], 
@@ -1728,7 +1814,7 @@
     "h_position": 49, 
     "v_position": 9, 
     "path": "/math/trigonometry/systems_eq_ineq/systems_inequalities_precalc/e/graphing_systems_of_inequalities_2/", 
-    "slug": "graphing_systems_of_inequalities_2", 
+    "id": "graphing_systems_of_inequalities_2", 
     "name": "graphing_systems_of_inequalities_2"
   }, 
   {
@@ -1741,6 +1827,7 @@
       "events-and-outcomes-1", 
       "events-and-outcomes-1"
     ], 
+    "slug": "probability_1", 
     "prerequisites": [
       "dice_probability"
     ], 
@@ -1748,7 +1835,7 @@
     "h_position": 30, 
     "v_position": 0, 
     "path": "/math/trigonometry/prob_comb/basic_prob_precalc/e/probability_1/", 
-    "slug": "probability_1", 
+    "id": "probability_1", 
     "name": "probability_1"
   }, 
   {
@@ -1761,6 +1848,7 @@
       "independent-events-3", 
       "independent-events-3"
     ], 
+    "slug": "independent_probability", 
     "prerequisites": [
       "probability_1"
     ], 
@@ -1768,7 +1856,7 @@
     "h_position": 31, 
     "v_position": 0, 
     "path": "/math/trigonometry/prob_comb/independent_events_precalc/e/independent_probability/", 
-    "slug": "independent_probability", 
+    "id": "independent_probability", 
     "name": "independent_probability"
   }, 
   {
@@ -1781,6 +1869,7 @@
       "dependent-probability-example-2", 
       "dependent-probability-example-2"
     ], 
+    "slug": "dependent_probability", 
     "prerequisites": [
       "independent_probability"
     ], 
@@ -1788,7 +1877,7 @@
     "h_position": 32, 
     "v_position": 0, 
     "path": "/math/trigonometry/prob_comb/dependent_events_precalc/e/dependent_probability/", 
-    "slug": "dependent_probability", 
+    "id": "dependent_probability", 
     "name": "dependent_probability"
   }, 
   {
@@ -1801,6 +1890,7 @@
       "combinations", 
       "combinations"
     ], 
+    "slug": "counting_2", 
     "prerequisites": [
       "exponents_1"
     ], 
@@ -1808,7 +1898,7 @@
     "h_position": 28, 
     "v_position": 0, 
     "path": "/math/trigonometry/prob_comb/combinatorics_precalc/e/counting_2/", 
-    "slug": "counting_2", 
+    "id": "counting_2", 
     "name": "counting_2"
   }, 
   {
@@ -1821,6 +1911,7 @@
       "permutations-and-combinations-2", 
       "permutations-and-combinations-2"
     ], 
+    "slug": "permutations_1", 
     "prerequisites": [
       "dice_probability"
     ], 
@@ -1828,7 +1919,7 @@
     "h_position": 30, 
     "v_position": -1, 
     "path": "/math/trigonometry/prob_comb/combinatorics_precalc/e/permutations_1/", 
-    "slug": "permutations_1", 
+    "id": "permutations_1", 
     "name": "permutations_1"
   }, 
   {
@@ -1841,6 +1932,7 @@
       "permutations-and-combinations-2", 
       "permutations-and-combinations-2"
     ], 
+    "slug": "combinations_1", 
     "prerequisites": [
       "permutations_1"
     ], 
@@ -1848,7 +1940,7 @@
     "h_position": 31, 
     "v_position": -1, 
     "path": "/math/trigonometry/prob_comb/combinatorics_precalc/e/combinations_1/", 
-    "slug": "combinations_1", 
+    "id": "combinations_1", 
     "name": "combinations_1"
   }, 
   {
@@ -1861,6 +1953,7 @@
       "permutations-and-combinations-2", 
       "permutations-and-combinations-2"
     ], 
+    "slug": "permutations_and_combinations_2", 
     "prerequisites": [
       "combinations_1"
     ], 
@@ -1868,7 +1961,7 @@
     "h_position": 32, 
     "v_position": -1, 
     "path": "/math/trigonometry/prob_comb/combinatorics_precalc/e/permutations_and_combinations_2/", 
-    "slug": "permutations_and_combinations_2", 
+    "id": "permutations_and_combinations_2", 
     "name": "permutations_and_combinations_2"
   }, 
   {
@@ -1881,6 +1974,7 @@
       "birthday-probability-problem", 
       "birthday-probability-problem"
     ], 
+    "slug": "probability_with_perm_comb", 
     "prerequisites": [
       "permutations_and_combinations_2"
     ], 
@@ -1888,7 +1982,7 @@
     "h_position": 33, 
     "v_position": -1, 
     "path": "/math/trigonometry/prob_comb/prob_combinatorics_precalc/e/probability_with_perm_comb/", 
-    "slug": "probability_with_perm_comb", 
+    "id": "probability_with_perm_comb", 
     "name": "probability_with_perm_comb"
   }, 
   {
@@ -1901,6 +1995,7 @@
       "calculating-i-raised-to-arbitrary-exponents", 
       "calculating-i-raised-to-arbitrary-exponents"
     ], 
+    "slug": "imaginary_unit_powers", 
     "prerequisites": [
       "equation_of_a_line"
     ], 
@@ -1908,7 +2003,7 @@
     "h_position": 45, 
     "v_position": -12, 
     "path": "/math/trigonometry/imaginary_complex_precalc/i_precalc/e/imaginary_unit_powers/", 
-    "slug": "imaginary_unit_powers", 
+    "id": "imaginary_unit_powers", 
     "name": "imaginary_unit_powers"
   }, 
   {
@@ -1921,6 +2016,7 @@
       "complex-numbers--part-2", 
       "complex-numbers--part-2"
     ], 
+    "slug": "the_complex_plane", 
     "prerequisites": [
       "imaginary_unit_powers"
     ], 
@@ -1928,7 +2024,7 @@
     "h_position": 46, 
     "v_position": -12, 
     "path": "/math/trigonometry/imaginary_complex_precalc/complex_num_precalc/e/the_complex_plane/", 
-    "slug": "the_complex_plane", 
+    "id": "the_complex_plane", 
     "name": "the_complex_plane"
   }, 
   {
@@ -1941,6 +2037,7 @@
       "subtracting-complex-numbers", 
       "subtracting-complex-numbers"
     ], 
+    "slug": "adding_and_subtracting_complex_numbers", 
     "prerequisites": [
       "adding_and_subtracting_polynomials", 
       "complex_plane_operations"
@@ -1949,7 +2046,7 @@
     "h_position": 48, 
     "v_position": -12, 
     "path": "/math/trigonometry/imaginary_complex_precalc/complex_num_precalc/e/adding_and_subtracting_complex_numbers/", 
-    "slug": "adding_and_subtracting_complex_numbers", 
+    "id": "adding_and_subtracting_complex_numbers", 
     "name": "adding_and_subtracting_complex_numbers"
   }, 
   {
@@ -1962,6 +2059,7 @@
       "multiplying-complex-numbers", 
       "multiplying-complex-numbers"
     ], 
+    "slug": "multiplying_complex_numbers", 
     "prerequisites": [
       "multiplying_expressions_1", 
       "adding_and_subtracting_complex_numbers"
@@ -1970,7 +2068,7 @@
     "h_position": 49, 
     "v_position": -12, 
     "path": "/math/trigonometry/imaginary_complex_precalc/complex_num_precalc/e/multiplying_complex_numbers/", 
-    "slug": "multiplying_complex_numbers", 
+    "id": "multiplying_complex_numbers", 
     "name": "multiplying_complex_numbers"
   }, 
   {
@@ -1983,6 +2081,7 @@
       "dividing-complex-numbers", 
       "dividing-complex-numbers"
     ], 
+    "slug": "dividing_complex_numbers", 
     "prerequisites": [
       "multiplying_complex_numbers"
     ], 
@@ -1990,7 +2089,7 @@
     "h_position": 50, 
     "v_position": -12, 
     "path": "/math/trigonometry/imaginary_complex_precalc/complex_num_precalc/e/dividing_complex_numbers/", 
-    "slug": "dividing_complex_numbers", 
+    "id": "dividing_complex_numbers", 
     "name": "dividing_complex_numbers"
   }, 
   {
@@ -2003,6 +2102,7 @@
       "complex-conjugates-example", 
       "complex-conjugates-example"
     ], 
+    "slug": "absolute_value_of_complex_numbers", 
     "prerequisites": [
       "the_complex_plane", 
       "distance_formula"
@@ -2011,7 +2111,7 @@
     "h_position": 47, 
     "v_position": -13, 
     "path": "/math/trigonometry/imaginary_complex_precalc/complex_num_precalc/e/absolute_value_of_complex_numbers/", 
-    "slug": "absolute_value_of_complex_numbers", 
+    "id": "absolute_value_of_complex_numbers", 
     "name": "absolute_value_of_complex_numbers"
   }, 
   {
@@ -2025,6 +2125,7 @@
       "more-limits", 
       "introduction-to-limits"
     ], 
+    "slug": "limits_1", 
     "prerequisites": [
       "quadratic_equation", 
       "graphs_of_sine_and_cosine", 
@@ -2035,7 +2136,7 @@
     "h_position": 55, 
     "v_position": -25, 
     "path": "/math/trigonometry/limit_topic_precalc/limits_precalc/e/limits_1/", 
-    "slug": "limits_1", 
+    "id": "limits_1", 
     "name": "limits_1"
   }, 
   {
@@ -2048,6 +2149,7 @@
       "limits-with-two-horizontal-asymptotes", 
       "introduction-to-limits"
     ], 
+    "slug": "limits_2", 
     "prerequisites": [
       "limits_1"
     ], 
@@ -2055,7 +2157,7 @@
     "h_position": 56, 
     "v_position": -25, 
     "path": "/math/trigonometry/limit_topic_precalc/limits_precalc/e/limits_2/", 
-    "slug": "limits_2", 
+    "id": "limits_2", 
     "name": "limits_2"
   }
 ]

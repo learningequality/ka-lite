@@ -8,6 +8,7 @@
     "related_video_readable_ids": [
       "quadrilateral-properties"
     ], 
+    "slug": "quadrilateral_types", 
     "prerequisites": [
       "angles_2"
     ], 
@@ -15,7 +16,7 @@
     "h_position": 33, 
     "v_position": -14, 
     "path": "/math/geometry/quadrilaterals-and-polygons/e/quadrilateral_types/", 
-    "slug": "quadrilateral_types", 
+    "id": "quadrilateral_types", 
     "name": "quadrilateral_types"
   }, 
   {
@@ -27,6 +28,7 @@
     "related_video_readable_ids": [
       "proof---opposite-angles-of-parallelogram-congruent"
     ], 
+    "slug": "quadrilateral_angles", 
     "prerequisites": [
       "quadrilateral_types"
     ], 
@@ -34,7 +36,7 @@
     "h_position": 34, 
     "v_position": -15, 
     "path": "/math/geometry/quadrilaterals-and-polygons/e/quadrilateral_angles/", 
-    "slug": "quadrilateral_angles", 
+    "id": "quadrilateral_angles", 
     "name": "quadrilateral_angles"
   }
 ]

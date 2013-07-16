@@ -10,6 +10,7 @@
       "more-limits", 
       "introduction-to-limits"
     ], 
+    "slug": "limits_1", 
     "prerequisites": [
       "quadratic_equation", 
       "graphs_of_sine_and_cosine", 
@@ -20,7 +21,7 @@
     "h_position": 55, 
     "v_position": -25, 
     "path": "/math/calculus/limits_topic/limits_tutorial/e/limits_1/", 
-    "slug": "limits_1", 
+    "id": "limits_1", 
     "name": "limits_1"
   }, 
   {
@@ -34,6 +35,7 @@
       "more-limits", 
       "introduction-to-limits"
     ], 
+    "slug": "limits_1", 
     "prerequisites": [
       "quadratic_equation", 
       "graphs_of_sine_and_cosine", 
@@ -44,7 +46,7 @@
     "h_position": 55, 
     "v_position": -25, 
     "path": "/math/calculus/limits_topic/old-limits-tutorial/e/limits_1/", 
-    "slug": "limits_1", 
+    "id": "limits_1", 
     "name": "limits_1"
   }, 
   {
@@ -57,6 +59,7 @@
       "limits-with-two-horizontal-asymptotes", 
       "introduction-to-limits"
     ], 
+    "slug": "limits_2", 
     "prerequisites": [
       "limits_1"
     ], 
@@ -64,7 +67,7 @@
     "h_position": 56, 
     "v_position": -25, 
     "path": "/math/calculus/limits_topic/limits-infinity/e/limits_2/", 
-    "slug": "limits_2", 
+    "id": "limits_2", 
     "name": "limits_2"
   }, 
   {
@@ -76,6 +79,7 @@
     "related_video_readable_ids": [
       "calculus--derivatives-2-5--new-hd-version"
     ], 
+    "slug": "derivatives_1", 
     "prerequisites": [
       "derivative_intuition", 
       "recognizing_slope"
@@ -84,7 +88,7 @@
     "h_position": 59, 
     "v_position": -25, 
     "path": "/math/calculus/differential-calculus/derivative_intro/e/derivatives_1/", 
-    "slug": "derivatives_1", 
+    "id": "derivatives_1", 
     "name": "derivatives_1"
   }, 
   {
@@ -96,6 +100,7 @@
     "related_video_readable_ids": [
       "derivative-intuition-module"
     ], 
+    "slug": "derivative_intuition", 
     "prerequisites": [
       "limits_2"
     ], 
@@ -103,7 +108,7 @@
     "h_position": 57, 
     "v_position": -25, 
     "path": "/math/calculus/differential-calculus/visualizing-derivatives-tutorial/e/derivative_intuition/", 
-    "slug": "derivative_intuition", 
+    "id": "derivative_intuition", 
     "name": "derivative_intuition"
   }, 
   {
@@ -115,6 +120,7 @@
     "related_video_readable_ids": [
       "derivative-properties-and-polynomial-derivatives"
     ], 
+    "slug": "power_rule", 
     "prerequisites": [
       "derivatives_1"
     ], 
@@ -122,7 +128,7 @@
     "h_position": 60, 
     "v_position": -26, 
     "path": "/math/calculus/differential-calculus/power_rule_tutorial/e/power_rule/", 
-    "slug": "power_rule", 
+    "id": "power_rule", 
     "name": "power_rule"
   }, 
   {
@@ -135,6 +141,7 @@
       "derivatives-of-sin-x--cos-x--tan-x--e-x-and-ln-x", 
       "derivatives-of-sin-x--cos-x--tan-x--e-x-and-ln-x"
     ], 
+    "slug": "special_derivatives", 
     "prerequisites": [
       "derivatives_1"
     ], 
@@ -142,7 +149,7 @@
     "h_position": 60, 
     "v_position": -24, 
     "path": "/math/calculus/differential-calculus/chain_rule/e/special_derivatives/", 
-    "slug": "special_derivatives", 
+    "id": "special_derivatives", 
     "name": "special_derivatives"
   }, 
   {
@@ -154,6 +161,7 @@
     "related_video_readable_ids": [
       "derivative-of-log-with-arbitrary-base"
     ], 
+    "slug": "chain_rule_1", 
     "prerequisites": [
       "power_rule", 
       "special_derivatives"
@@ -162,7 +170,7 @@
     "h_position": 61, 
     "v_position": -27, 
     "path": "/math/calculus/differential-calculus/chain_rule/e/chain_rule_1/", 
-    "slug": "chain_rule_1", 
+    "id": "chain_rule_1", 
     "name": "chain_rule_1"
   }, 
   {
@@ -175,6 +183,7 @@
       "derivatives-of-sin-x--cos-x--tan-x--e-x-and-ln-x", 
       "derivatives-of-sin-x--cos-x--tan-x--e-x-and-ln-x"
     ], 
+    "slug": "special_derivatives", 
     "prerequisites": [
       "derivatives_1"
     ], 
@@ -182,7 +191,7 @@
     "h_position": 60, 
     "v_position": -24, 
     "path": "/math/calculus/differential-calculus/product_rule/e/special_derivatives/", 
-    "slug": "special_derivatives", 
+    "id": "special_derivatives", 
     "name": "special_derivatives"
   }, 
   {
@@ -194,6 +203,7 @@
     "related_video_readable_ids": [
       "product-rule-for-more-than-two-functions"
     ], 
+    "slug": "product_rule", 
     "prerequisites": [
       "power_rule", 
       "special_derivatives"
@@ -202,7 +212,7 @@
     "h_position": 61, 
     "v_position": -26, 
     "path": "/math/calculus/differential-calculus/product_rule/e/product_rule/", 
-    "slug": "product_rule", 
+    "id": "product_rule", 
     "name": "product_rule"
   }, 
   {
@@ -214,6 +224,7 @@
     "related_video_readable_ids": [
       "quotient-rule-for-derivative-of-tan-x"
     ], 
+    "slug": "quotient_rule", 
     "prerequisites": [
       "power_rule", 
       "special_derivatives"
@@ -222,7 +233,7 @@
     "h_position": 61, 
     "v_position": -25, 
     "path": "/math/calculus/differential-calculus/product_rule/e/quotient_rule/", 
-    "slug": "quotient_rule", 
+    "id": "quotient_rule", 
     "name": "quotient_rule"
   }, 
   {
@@ -234,6 +245,7 @@
     "related_video_readable_ids": [
       "l-hopital-s-rule-example-3"
     ], 
+    "slug": "lhopitals_rule", 
     "prerequisites": [
       "power_rule", 
       "special_derivatives"
@@ -242,7 +254,7 @@
     "h_position": 61, 
     "v_position": -23, 
     "path": "/math/calculus/derivative_applications/lhopital_rule/e/lhopitals_rule/", 
-    "slug": "lhopitals_rule", 
+    "id": "lhopitals_rule", 
     "name": "lhopitals_rule"
   }
 ]

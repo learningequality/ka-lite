@@ -8,6 +8,7 @@
     "related_video_readable_ids": [
       "introduction-to-the-matrix"
     ], 
+    "slug": "matrix_dimensions", 
     "prerequisites": [
       "systems_of_equations"
     ], 
@@ -15,7 +16,7 @@
     "h_position": 51, 
     "v_position": 17, 
     "path": "/math/algebra/algebra-matrices/Basic_matrix_operations/e/matrix_dimensions/", 
-    "slug": "matrix_dimensions", 
+    "id": "matrix_dimensions", 
     "name": "matrix_dimensions"
   }, 
   {
@@ -27,6 +28,7 @@
     "related_video_readable_ids": [
       "scalar-multiplication"
     ], 
+    "slug": "scalar_matrix_multiplication", 
     "prerequisites": [
       "systems_of_equations"
     ], 
@@ -34,7 +36,7 @@
     "h_position": 51, 
     "v_position": 19, 
     "path": "/math/algebra/algebra-matrices/Basic_matrix_operations/e/scalar_matrix_multiplication/", 
-    "slug": "scalar_matrix_multiplication", 
+    "id": "scalar_matrix_multiplication", 
     "name": "scalar_matrix_multiplication"
   }, 
   {
@@ -46,6 +48,7 @@
     "related_video_readable_ids": [
       "matrix-addition-and-subtraction-1"
     ], 
+    "slug": "matrix_addition_and_subtraction", 
     "prerequisites": [
       "systems_of_equations"
     ], 
@@ -53,7 +56,7 @@
     "h_position": 51, 
     "v_position": 18, 
     "path": "/math/algebra/algebra-matrices/Basic_matrix_operations/e/matrix_addition_and_subtraction/", 
-    "slug": "matrix_addition_and_subtraction", 
+    "id": "matrix_addition_and_subtraction", 
     "name": "matrix_addition_and_subtraction"
   }, 
   {
@@ -65,6 +68,7 @@
     "related_video_readable_ids": [
       "matrix-multiplication--part-2"
     ], 
+    "slug": "defined_and_undefined_matrix_operations", 
     "prerequisites": [
       "matrix_dimensions"
     ], 
@@ -72,7 +76,7 @@
     "h_position": 52, 
     "v_position": 17, 
     "path": "/math/algebra/algebra-matrices/matrix_multiplication/e/defined_and_undefined_matrix_operations/", 
-    "slug": "defined_and_undefined_matrix_operations", 
+    "id": "defined_and_undefined_matrix_operations", 
     "name": "defined_and_undefined_matrix_operations"
   }, 
   {
@@ -84,6 +88,7 @@
     "related_video_readable_ids": [
       "matrix-multiplication--part-2"
     ], 
+    "slug": "multiplying_a_matrix_by_a_vector", 
     "prerequisites": [
       "matrix_addition_and_subtraction", 
       "scalar_matrix_multiplication", 
@@ -93,7 +98,7 @@
     "h_position": 52, 
     "v_position": 18, 
     "path": "/math/algebra/algebra-matrices/matrix_multiplication/e/multiplying_a_matrix_by_a_vector/", 
-    "slug": "multiplying_a_matrix_by_a_vector", 
+    "id": "multiplying_a_matrix_by_a_vector", 
     "name": "multiplying_a_matrix_by_a_vector"
   }, 
   {
@@ -105,6 +110,7 @@
     "related_video_readable_ids": [
       "matrix-multiplication--part-2"
     ], 
+    "slug": "multiplying_a_matrix_by_a_matrix", 
     "prerequisites": [
       "matrix_dimensions", 
       "matrix_addition_and_subtraction", 
@@ -114,7 +120,7 @@
     "h_position": 52, 
     "v_position": 19, 
     "path": "/math/algebra/algebra-matrices/matrix_multiplication/e/multiplying_a_matrix_by_a_matrix/", 
-    "slug": "multiplying_a_matrix_by_a_matrix", 
+    "id": "multiplying_a_matrix_by_a_matrix", 
     "name": "multiplying_a_matrix_by_a_matrix"
   }
 ]

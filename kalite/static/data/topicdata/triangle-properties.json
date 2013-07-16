@@ -8,6 +8,7 @@
     "related_video_readable_ids": [
       "angle-bisector-theorem-examples"
     ], 
+    "slug": "angle_bisector_theorem", 
     "prerequisites": [
       "triangle_angles_1"
     ], 
@@ -15,7 +16,7 @@
     "h_position": 32, 
     "v_position": -19, 
     "path": "/math/geometry/triangle-properties/angle_bisectors/e/angle_bisector_theorem/", 
-    "slug": "angle_bisector_theorem", 
+    "id": "angle_bisector_theorem", 
     "name": "angle_bisector_theorem"
   }
 ]
