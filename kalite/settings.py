@@ -22,7 +22,7 @@ DEBUG          = getattr(local_settings, "DEBUG", False)
 TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
 
 # Set logging level based on the value of DEBUG (evaluates to 0 if False, 1 if True)
-logging.basicConfig(format='%(levelname)s:%(message)s')
+logging.basicConfig()
 LOG = getattr(local_settings, "LOG", logging.getLogger("kalite"))
 LOG.setLevel(logging.DEBUG*DEBUG + logging.INFO*(1-DEBUG))
 
@@ -35,7 +35,6 @@ CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
 
 AUTO_LOAD_TEST = getattr(local_settings, "AUTO_LOAD_TEST", False)
 assert not AUTO_LOAD_TEST or not CENTRAL_SERVER, "AUTO_LOAD_TEST only on local server"
-
 
 # info about the central server(s)
 SECURESYNC_PROTOCOL   = getattr(local_settings, "SECURESYNC_PROTOCOL",   "https")
@@ -177,7 +176,6 @@ else:
         "main.middleware.SessionLanguage",
     )
     TEMPLATE_CONTEXT_PROCESSORS += ("main.custom_context_processors.languages",)
-    INSTALL_CERTIFICATES = getattr(local_settings, "INSTALL_CERTIFICATES", [])
 
 # Used for user logs.  By default, completely off.
 USER_LOG_MAX_RECORDS = getattr(local_settings, "USER_LOG_MAX_RECORDS", 0)
