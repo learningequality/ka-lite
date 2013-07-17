@@ -2,15 +2,17 @@ from django.http import HttpResponseRedirect
 from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
 
+import coachreports.urls
+import main.api_urls
 import securesync.urls
 from kalite import settings
-
 
 admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^images/(.+)$', lambda request, path: HttpResponseRedirect('/static/images/' + path)),
+    url(r'^(favico.ico)/?$', lambda request, path: HttpResponseRedirect('/static/images/' + path)),
     url(r'^securesync/', include(securesync.urls)),
 )
 
@@ -33,13 +35,14 @@ urlpatterns += patterns('',
 
 urlpatterns += patterns('main.views',
     url(r'^exercisedashboard/$', 'exercise_dashboard', {}, 'exercise_dashboard'),
-    url(r'^coachreports/$', 'coach_reports', {}, 'coach_reports'),
     url(r'^easyadmin/$', 'easy_admin', {}, 'easy_admin'),
     url(r'^stats/$', 'summary_stats', {}, 'summary_stats'),
     url(r'^$', 'homepage', {}, 'homepage'),
     url(r'^update/$', 'update', {}, 'update'),
     url(r'^userlist/$', 'user_list', {}, 'user_list'),
-    url(r'^api/', include('main.api_urls')),
+
+    url(r'^coachreports/', include(coachreports.urls)),
+    url(r'^api/', include(main.api_urls)),
 )
 
 if "loadtesting" in settings.INSTALLED_APPS:

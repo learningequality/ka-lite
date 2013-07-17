@@ -1,3 +1,37 @@
+# Django serializers, for robustness when client/server/model versions are different
+python-packages/django/core/serializers/base.py
+    * django.core.serializers.base.py: added version_diff function, code to Serialize to skip serializing fields with a version greater than the client version
+python-packages/django/core/serializers/python.py: added code to Deserialize to ignore errors in deserializing fields when the remote server has a newer version than the local server
+
+python-packages/django/templates/base.py
+    Purpose of the change: to enable "repeatblock", 
+    a template tag with the ability to repeat a block multiple times on a page.
+    --- a/python-packages/django/template/base.py
+    +++ b/python-packages/django/template/base.py
+    @@ -230,11 +230,14 @@ class Parser(object):
+             self.filters = {}
+             for lib in builtins:
+                 self.add_library(lib)
+    +        self.root_nodelist = []
+ 
+         def parse(self, parse_until=None):
+             if parse_until is None:
+                 parse_until = []
+             nodelist = self.create_nodelist()
+    +        #if self.root_nodelist is None:
+    +        self.root_nodelist.append(nodelist)
+
+
+python-packages/django/contrib/auth/forms.py: 139
+    #Changed to modify username length from 30 to 75 (matching email addresses)
+    +    username = forms.CharField(label=_("Username"), max_length=75) # tweaked for KA Lite (using email addr for username)
+
+python-packages/django/contrib/auth/models.py: 232
+    #Changed to modify username length from 30 to 75 (matching email addresses)
+    +    username = models.CharField(_('username'), max_length=75, unique=True, # tweaked for KA Lite (use email for username)
+    +        help_text=_('Required. 75 characters or fewer. Letters, numbers and '
+
+
 python-packages/django/utils/cache.py:168 
 requires package additions:
 import logging

@@ -1,4 +1,7 @@
-import re, json, sys, logging
+import copy
+import json
+import re 
+import sys
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 
@@ -10,7 +13,6 @@ from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.db.models import Sum
-from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.decorators.cache import cache_control
 from django.views.decorators.cache import cache_page
@@ -18,18 +20,16 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
 import settings
-import utils
-from utils.topics import slug_key, title_key
+from config.models import Settings
 from main import topicdata
-from securesync.views import require_admin, facility_required
-from config.models import Settings
-from securesync.models import Facility, FacilityUser,FacilityGroup
-from models import VideoLog, ExerciseLog, VideoFile
-from config.models import Settings
+from main.models import VideoLog, ExerciseLog, VideoFile
 from securesync.api_client import SyncClient
+from securesync.models import Facility, FacilityUser,FacilityGroup
+from securesync.views import require_admin, facility_required
+from utils import topic_tools
+from utils.internet import am_i_online, is_loopback_connection
 from utils.jobs import force_job
 from utils.videos import video_connection_is_available
-from utils.internet import am_i_online, is_loopback_connection
 
 
 def splat_handler(request, splat):
@@ -39,17 +39,15 @@ def splat_handler(request, splat):
     for slug in slugs:
         # towards the end of the url, we switch from seeking a topic node
         #   to the particular type of node in the tree
-        if slug == "v":
-            seeking = "Video"
-        elif slug == "e":
-            seeking = "Exercise"
+        for kind, kind_slug in topic_tools.kind_slugs.items():
+            if slug == kind_slug.split("/")[0]:
+                seeking = kind
+                break
             
         # match each step in the topics hierarchy, with the url slug.
         else:
             children = [child for child in current_node['children'] if child['kind'] == seeking]
             if not children:
-                # return HttpResponseNotFound("No children of type '%s' found for node '%s'!" %
-                #     (seeking, current_node[title_key[current_node['kind']]]))
                 raise Http404
             match = None
             prev = None
@@ -58,13 +56,11 @@ def splat_handler(request, splat):
                 if match:
                     next = child
                     break
-                if child[slug_key[seeking]] == slug:
+                if child["slug"] == slug:
                     match = child
                 else:
                     prev = child
             if not match:
-                # return HttpResponseNotFound("Child with slug '%s' of type '%s' not found in node '%s'!" %
-                #     (slug, seeking, current_node[title_key[current_node['kind']]]))
                 raise Http404
             current_node = match
     if current_node["kind"] == "Topic":
@@ -97,17 +93,21 @@ def check_setup_status(handler):
 @cache_page(settings.CACHE_TIME)
 @render_to("topic.html")
 def topic_handler(request, topic):
-    videos = filter(lambda node: node["kind"] == "Video", topic["children"])
-    exercises = filter(lambda node: node["kind"] == "Exercise" and node["live"], topic["children"])
-    topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"] and "Video" in node["contains"], topic["children"])
-    
-    my_topics = []
-    for t in topics:
-        my_topics.append({ 'title': t['title'], 'path': t['path'] })
-        
+    videos    = topic_tools.get_videos(topic)
+    exercises = topic_tools.get_exercises(topic)
+    topics    = topic_tools.get_live_topics(topic)
+
+    # Get video counts if they'll be used, on-demand only.
+    #
+    # Check in this order so that the initial counts are always updated
+    if topic_tools.video_counts_need_update() or not 'nvideos_local' in topic:
+        (topic,_,_) = topic_tools.get_video_counts(topic=topic, videos_path=settings.CONTENT_ROOT) 
+            
+    my_topics = [dict((k, t[k]) for k in ('title', 'path', 'nvideos_local', 'nvideos_known')) for t in topics]
+
     context = {
         "topic": topic,
-        "title": topic[title_key["Topic"]],
+        "title": topic["title"],
         "description": re.sub(r'<[^>]*?>', '', topic["description"] or ""),
         "videos": videos,
         "exercises": exercises,
@@ -119,7 +119,16 @@ def topic_handler(request, topic):
 @cache_page(settings.CACHE_TIME)
 @render_to("video.html")
 def video_handler(request, video, prev=None, next=None):
-    if not VideoFile.objects.filter(pk=video['youtube_id']).exists():
+    video_exists = VideoFile.objects.filter(pk=video['youtube_id']).exists()
+    
+    # If we detect that a video exists, but it's not on disk, then 
+    #   force the database to update.  No race condition here for saving
+    #   progress in a VideoLog: it is not dependent on VideoFile.
+    if not video_exists and topic_tools.is_video_on_disk(video['youtube_id']):
+        force_job("videoscan")
+        video_exists = True
+        
+    if not video_exists:
         if request.is_admin:
             messages.warning(request, _("This video was not found! You can download it by going to the Update page."))
         elif request.is_logged_in:
@@ -132,7 +141,8 @@ def video_handler(request, video, prev=None, next=None):
         messages.warning(request, _("Friendly reminder: You are not currently logged in, so your video progress and points won't be saved."))
     context = {
         "video": video,
-        "title": video[title_key["Video"]],
+        "title": video["title"],
+        "video_exists": video_exists,
         "prev": prev,
         "next": next,
         "use_mplayer": settings.USE_MPLAYER and is_loopback_connection(request),
@@ -143,8 +153,31 @@ def video_handler(request, video, prev=None, next=None):
 @cache_page(settings.CACHE_TIME)
 @render_to("exercise.html")
 def exercise_handler(request, exercise):
-    related_videos = [topicdata.NODE_CACHE["Video"][key] for key in exercise["related_video_readable_ids"]]
-    
+    """
+    Display an exercise
+    """
+    # Copy related videos (should be small), as we're going to tweak them
+    related_videos = [copy.copy(topicdata.NODE_CACHE["Video"].get(key, None)) for key in exercise["related_video_readable_ids"]]
+
+    videos_to_delete = []
+    for idx, video in enumerate(related_videos):
+        # Remove all videos that were not recognized or 
+        #   simply aren't on disk.  
+        #   Check on disk is relatively cheap, also executed infrequently
+        if not video or not topic_tools.is_video_on_disk(video["youtube_id"]):
+            videos_to_delete.append(idx)
+            continue
+
+        # Resolve the most related path
+        video["path"] = video["paths"][0]  # default value
+        for path in video["paths"]:
+            if topic_tools.is_sibling({"path": path, "kind": "Video"}, exercise):
+                video["path"] = path
+                break
+        del video["paths"]
+    for idx in reversed(videos_to_delete):
+        del related_videos[idx]
+
     if request.user.is_authenticated():
         messages.warning(request, _("Note: You're logged in as an admin (not as a student/teacher), so your exercise progress and points won't be saved."))
     elif not request.is_logged_in:
@@ -152,8 +185,8 @@ def exercise_handler(request, exercise):
 
     context = {
         "exercise": exercise,
-        "title": exercise[title_key["Exercise"]],
-        "exercise_template": "exercises/" + exercise[slug_key["Exercise"]] + ".html",
+        "title": exercise["title"],
+        "exercise_template": "exercises/" + exercise["slug"] + ".html",
         "related_videos": related_videos,
     }
     return context
@@ -161,7 +194,8 @@ def exercise_handler(request, exercise):
 @cache_page(settings.CACHE_TIME)
 @render_to("knowledgemap.html")
 def exercise_dashboard(request):
-    paths = dict((key, val["path"]) for key, val in topicdata.NODE_CACHE["Exercise"].items())
+    # Just grab the first path, whatever it is
+    paths = dict((key, val["paths"][0]) for key, val in topicdata.NODE_CACHE["Exercise"].items())
     context = {
         "title": "Knowledge map",
         "exercise_paths": json.dumps(paths),
@@ -172,11 +206,11 @@ def exercise_dashboard(request):
 @cache_page(settings.CACHE_TIME)
 @render_to("homepage.html")
 def homepage(request):
+    # TODO(bcipolli): video counts on the distributed server homepage
     topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"], topicdata.TOPICS["children"])
-    
-    my_topics = []
-    for t in topics:
-        my_topics.append({ 'title': t['title'], 'path': t['path'] })
+
+    # indexed by integer
+    my_topics = [dict([(k, t[k]) for k in ('title', 'path')]) for t in topics]
 
     context = {
         "title": "Home",
@@ -188,7 +222,7 @@ def homepage(request):
 @require_admin
 @render_to("admin_distributed.html")
 def easy_admin(request):
-    
+
     context = {
         "wiki_url" : settings.CENTRAL_WIKI_URL,
         "central_server_host" : settings.CENTRAL_SERVER_HOST,
@@ -263,7 +297,7 @@ Available stats:
 @require_admin
 @render_to("video_download.html")
 def update(request):
-    call_command("videoscan")
+    call_command("videoscan")  # Could potentially be very slow, blocking request.
     force_job("videodownload", "Download Videos")
     force_job("subtitledownload", "Download Subtitles")
     language_lookup = topicdata.LANGUAGE_LOOKUP
@@ -285,39 +319,6 @@ def update(request):
     }
     return context
 
-@require_admin
-@facility_required
-@render_to("coach_reports.html")
-def coach_reports(request, facility):
-    topics = topicdata.EXERCISE_TOPICS["topics"].values()
-    topics = sorted(topics, key = lambda k: (k["y"], k["x"]))
-    groups = FacilityGroup.objects.filter(facility=facility)
-    paths = dict((key, val["path"]) for key, val in topicdata.NODE_CACHE["Exercise"].items())
-    context = {
-        "facility": facility,
-        "groups": groups,
-        "topics": topics,
-        "exercise_paths": json.dumps(paths),
-    }
-    topic = request.GET.get("topic", "")
-    group = request.GET.get("group", "")
-    if group and topic and re.match("^[\w\-]+$", topic):
-        exercises = json.loads(open("%stopicdata/%s.json" % (settings.DATA_PATH, topic)).read())
-        exercises = sorted(exercises, key=lambda e: (e["h_position"], e["v_position"]))
-        context["exercises"] = [{
-            "display_name": ex["display_name"],
-            "description": ex["description"],
-            "short_display_name": ex["short_display_name"],
-            "path": topicdata.NODE_CACHE["Exercise"][ex["name"]]["path"],
-        } for ex in exercises]
-        users = get_object_or_404(FacilityGroup, pk=group).facilityuser_set.order_by("first_name", "last_name")
-        context["students"] = [{
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-            "username": user.username,
-            "exercise_logs": [get_object_or_None(ExerciseLog, user=user, exercise_id=ex["name"]) for ex in exercises],
-        } for user in users]
-    return context
 
 @require_admin
 @facility_required

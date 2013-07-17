@@ -1,6 +1,7 @@
 {% extends 'base_distributed.html' %}
 
 {% load i18n %}
+{% load staticfiles %}
 
 {% block watch_active %}active{% endblock watch_active %}
 
@@ -88,7 +89,7 @@ a:hover, a:hover .suggested-action-title {
 {% if settings.AUTO_LOAD_TEST %}
 <script>
 if (window.parent.frames.length === 0) {
-    window.location = "/loadtesting/";
+    window.location = "{% url load_test %}";
 }
 </script>
 {% endif %}
@@ -109,10 +110,10 @@ if (window.parent.frames.length === 0) {
     </div>
 
     <div class="vertical-shadow suggested-action">
-        <a href="/exercisedashboard">
+        <a href="{% url exercise_dashboard %}">
             <h2 class="suggested-action-title">{% trans "Learn by doing exercises!" %}</h2>
             <p>{% trans "Practice your math skills from addition to calculus and everything in between." %}</p>
-            <div class="suggested-action-image-link" style="background-image: url(/static/images/knowledge-map-derivative-intuition.png);"></div>
+            <div class="suggested-action-image-link" style="background-image: url({% static "images/knowledge-map-derivative-intuition.png" %});"></div>
         </a>
     </div>
 

@@ -1,11 +1,12 @@
 {% extends 'base_distributed.html' %}
 
 {% load i18n %}
+{% load staticfiles %}
 
 {% block practice_active %}active{% endblock practice_active %}
 
 {% block headcss %}
-<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}js/khan-exercises/css/khan-exercise.css"></link>
+<link rel="stylesheet" type="text/css" href="{% static "js/khan-exercises/css/khan-exercise.css" %}"></link>
 
 <style>
 .return-link {
@@ -20,7 +21,7 @@
 
 {% block headjs %}
 <script>
-    var urlBaseOverride = "{{ MEDIA_URL }}js/khan-exercises/";
+    var urlBaseOverride = "{% static "js/khan-exercises/" %}";
     // some dummy features on the Exercises object to make khan-exercises.js happy
     Exercises = {
         completeStack: {
@@ -31,8 +32,8 @@
     };
 </script>
 <script type="text/javascript" src="/jsi18n/"></script>
-<script src="{{ MEDIA_URL }}js/khan-exercises/khan-exercise.js"></script>
-<script src="{{ MEDIA_URL }}js/khan-exercises/utils/jquery-ui.js"></script>
+<script src="{% static "js/khan-exercises/khan-exercise.js" %}"></script>
+<script src="{% static "js/khan-exercises/utils/jquery-ui.js" %}"></script>
 <script>
     var exerciseData = {
         "description": "{{ exercise.description }}",
@@ -49,7 +50,7 @@
         "points": 0
     };    
 </script>
-<script src="{{ MEDIA_URL }}js/exercises.js"></script>
+<script src="{% static "js/exercises.js" %}"></script>
 
 <script>
     $(function(){
@@ -104,7 +105,7 @@
                                 <div id='hintsarea'></div>
                             </div>
                             <div id="answer_area_wrap"><div id="answer_area">
-                                <form id="answerform" action="/exercisedashboard" method="get" name="answerform">
+                                <form id="answerform" action="{% url exercise_dashboard %}" method="get" name="answerform">
                                     {% trans "Your progress streak bar for this exercise" as prog_streak %}
                                     <div id="streakbar" class="info-box" title="{{ prog_streak }}">
                                         <div class="streak">
@@ -135,6 +136,7 @@
                                         <span id="hint-remainder">{% trans "Note: this will reset your streak and points for this exercise!" %}</span>
                                     </div>
 
+                                    {% if related_videos %}
                                     <div class="info-box related-video-box">
                                         <div id="related-video-content">
                                             <span class="info-box-header">{% trans "Stuck? Watch a video." %}</span>
@@ -142,9 +144,8 @@
                                             <div id="related-video-list">
                                                 <span class="related-content-title">{% trans "Related videos:" %}</span>
                                                 <ul class="related-video-list">
-                                                    {% if related_videos %}
-                                                    {% for video in related_videos %}
-                                                    {% if forloop.first %}
+                                                {% for video in related_videos %}
+                                                {% if forloop.first %}
                                                     <li>
                                                         <div class="thumbnail">
                                                             <a class="related-video" href="{{ video.path }}" title="{% trans video.title %}" target="_blank">
@@ -161,7 +162,8 @@
                                                             </a>
                                                         </div>
                                                     </li>
-                                                    {% else %}
+                                                    
+                                                {% else %}
                                                     <li>
                                                         <a class="related-video related-video-inline" href="{{ video.path }}" title="{% trans video.title %}" target="_blank">
                                                             <span class="video-title">
@@ -170,18 +172,18 @@
                                                             </span>
                                                         </a>
                                                     </li>
-                                                    {% endif %}
-                                                    {% endfor %}
-                                                    {% endif %}
+                                                {% endif %}
+                                                {% endfor %}
                                                 </ul>
                                             </div>
                                             <div class="clear"></div>
                                         </div>
                                     </div>
+                                    {% endif %}
                                 </form>
                             </div></div>
                             <div class="clear"></div>
-                        </div>                        
+                        </div>
                     </div>
                 </div>
                 <div id="extras" class="single-exercise">

@@ -1,1 +1,378 @@
-[{"relative_url": "/exercise/congruent_angles", "guaranteed_file_name": "congruent_angles.html", "file_name": "congruent_angles.html", "author_name": "Emily Eisenberg", "creation_date": "2012-06-14T00:46:57Z", "ka_url": "http://www.khanacademy.org/exercise/congruent_angles", "v_position": -27, "h_position": 30, "node_slug": "e/congruent_angles", "progress_key": "e844384906", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/parallel-and-perpendicular-lines-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/congruent_angles.png", "custom_stacks": [], "description": "Determine which angles must be congruent when parallel lines are crossed by a transversal.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Cong angles", "covers": [], "display_name": "Congruent angles", "kind": "Exercise", "sha1": "56ce2100293a1172a6f72b2751d06fc213094f02", "name": "congruent_angles", "seconds_per_fast_problem": 4.0, "prerequisites": ["angle_addition_postulate", "segment_addition"], "pretty_display_name": "Congruent angles", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/congruent_angles_256.png"}, {"relative_url": "/exercise/parallel_lines_1", "guaranteed_file_name": "parallel_lines_1.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-09-26T18:43:26Z", "ka_url": "http://www.khanacademy.org/exercise/parallel_lines_1", "v_position": -25, "h_position": 30, "node_slug": "e/parallel_lines_1", "progress_key": "e272338869", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/parallel-and-perpendicular-lines-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/parallel_lines_1.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "|| angles", "covers": ["corresponding_angles", "same_side_exterior_angles", "same_side_interior_angles", "alternate_interior_angles", "vertical_angles", "alternate_exterior_angles"], "display_name": "Parallel lines 1", "kind": "Exercise", "sha1": "c516aea1ebc31168bd5c52bae75ab7de1ddb18c4", "name": "parallel_lines_1", "seconds_per_fast_problem": 5.0, "prerequisites": ["angle_addition_postulate", "segment_addition"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/parallel_lines_1_256.png"}, {"relative_url": "/exercise/corresponding_angles_2", "guaranteed_file_name": "corresponding_angles_2.html", "file_name": null, "author_name": "Matt Wahl", "creation_date": "2012-04-11T18:50:42Z", "ka_url": "http://www.khanacademy.org/exercise/corresponding_angles_2", "v_position": -27, "h_position": 31, "node_slug": "e/corresponding_angles_2", "progress_key": "e716254540", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/parallel-and-perpendicular-lines-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/corresponding_angles_2.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "cor angls 2", "covers": [], "display_name": "Corresponding angles 2", "kind": "Exercise", "sha1": "b8a9932e456e97cc088f37565bb4031cb425905d", "name": "corresponding_angles_2", "seconds_per_fast_problem": 22.0, "prerequisites": ["parallel_lines_1", "congruent_angles"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/corresponding_angles_2_256.png"}, {"relative_url": "/exercise/alternate_interior_angles_2", "guaranteed_file_name": "alternate_interior_angles_2.html", "file_name": null, "author_name": "Matt Wahl", "creation_date": "2012-04-11T18:51:06Z", "ka_url": "http://www.khanacademy.org/exercise/alternate_interior_angles_2", "v_position": -28, "h_position": 31, "node_slug": "e/alternate_interior_angles_2", "progress_key": "e716394236", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/parallel-and-perpendicular-lines-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/alternate_interior_angles_2.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "as int ang2", "covers": [], "display_name": "Alternate interior angles 2", "kind": "Exercise", "sha1": "7d046188e3b69d2718dfd522d8eddccca28956b6", "name": "alternate_interior_angles_2", "seconds_per_fast_problem": 17.0, "prerequisites": ["parallel_lines_1", "congruent_angles"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/alternate_interior_angles_2_256.png"}, {"relative_url": "/exercise/alternate_exterior_angles_2", "guaranteed_file_name": "alternate_exterior_angles_2.html", "file_name": null, "author_name": "Matt Wahl", "creation_date": "2012-04-11T18:51:26Z", "ka_url": "http://www.khanacademy.org/exercise/alternate_exterior_angles_2", "v_position": -26, "h_position": 31, "node_slug": "e/alternate_exterior_angles_2", "progress_key": "e716367331", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/parallel-and-perpendicular-lines-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/alternate_exterior_angles_2.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "as ext ang2", "covers": [], "display_name": "Alternate exterior angles 2", "kind": "Exercise", "sha1": "f47a1206a33f55666a90ff5d4738ca01e9fc9e5c", "name": "alternate_exterior_angles_2", "seconds_per_fast_problem": 14.0, "prerequisites": ["parallel_lines_1", "congruent_angles"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/alternate_exterior_angles_2_256.png"}, {"relative_url": "/exercise/same_side_interior_angles_2", "guaranteed_file_name": "same_side_interior_angles_2.html", "file_name": null, "author_name": "Matt Wahl", "creation_date": "2012-04-11T18:51:50Z", "ka_url": "http://www.khanacademy.org/exercise/same_side_interior_angles_2", "v_position": -25, "h_position": 31, "node_slug": "e/same_side_interior_angles_2", "progress_key": "e716110810", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/parallel-and-perpendicular-lines-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/same_side_interior_angles_2.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "ss int ang2", "covers": [], "display_name": "Same side interior angles 2", "kind": "Exercise", "sha1": "e9e1222b961769408e5ed1cc5cc4dc556a4d11dc", "name": "same_side_interior_angles_2", "seconds_per_fast_problem": 27.0, "prerequisites": ["parallel_lines_1", "congruent_angles"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/same_side_interior_angles_2_256.png"}, {"relative_url": "/exercise/same_side_exterior_angles_2", "guaranteed_file_name": "same_side_exterior_angles_2.html", "file_name": null, "author_name": "Matt Wahl", "creation_date": "2012-04-11T18:52:08Z", "ka_url": "http://www.khanacademy.org/exercise/same_side_exterior_angles_2", "v_position": -24, "h_position": 31, "node_slug": "e/same_side_exterior_angles_2", "progress_key": "e716380165", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/parallel-and-perpendicular-lines-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/same_side_exterior_angles_2.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "ss ext ang2", "covers": [], "display_name": "Same side exterior angles 2", "kind": "Exercise", "sha1": "cd2e61e285ef644567dac4e317a5b02f3f7e4435", "name": "same_side_exterior_angles_2", "seconds_per_fast_problem": 20.0, "prerequisites": ["parallel_lines_1", "congruent_angles"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/same_side_exterior_angles_2_256.png"}, {"relative_url": "/exercise/parallel_lines_2", "guaranteed_file_name": "parallel_lines_2.html", "file_name": "", "author_name": "Matt Wahl", "creation_date": "2011-12-01T18:03:55Z", "ka_url": "http://www.khanacademy.org/exercise/parallel_lines_2", "v_position": -26, "h_position": 32, "node_slug": "e/parallel_lines_2", "progress_key": "e413665443", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/parallel-and-perpendicular-lines-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/parallel_lines_2.png", "custom_stacks": [], "description": "", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "|| angles 2", "covers": ["parallel_lines_1", "corresponding_angles_2", "alternate_exterior_angles_2", "alternate_interior_angles_2", "same_side_exterior_angles_2", "same_side_interior_angles_2"], "display_name": "Parallel lines 2", "kind": "Exercise", "sha1": "622c52ea3f926d02e353d3df0e5e939f6fb874f1", "name": "parallel_lines_2", "seconds_per_fast_problem": 24.0, "prerequisites": ["alternate_exterior_angles_2", "alternate_interior_angles_2", "same_side_exterior_angles_2", "same_side_interior_angles_2", "corresponding_angles_2"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/parallel_lines_2_256.png"}]
+[
+  {
+    "kind": "Exercise", 
+    "display_name": "Measuring angles", 
+    "description": null, 
+    "title": "Measuring angles", 
+    "seconds_per_fast_problem": 13.0, 
+    "related_video_readable_ids": [
+      "measuring-angles"
+    ], 
+    "slug": "measuring_angles", 
+    "prerequisites": [
+      "recognizing_rays_lines_and_line_segments"
+    ], 
+    "live": true, 
+    "h_position": 26, 
+    "v_position": -21, 
+    "path": "/math/geometry/parallel-and-perpendicular-lines/Angle_basics/e/measuring_angles/", 
+    "id": "measuring_angles", 
+    "name": "measuring_angles"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Angle types", 
+    "description": null, 
+    "title": "Angle types", 
+    "seconds_per_fast_problem": 4.0, 
+    "related_video_readable_ids": [
+      "acute-right-and-obtuse-angles"
+    ], 
+    "slug": "angle_types", 
+    "prerequisites": [
+      "recognizing_rays_lines_and_line_segments"
+    ], 
+    "live": true, 
+    "h_position": 26, 
+    "v_position": -20, 
+    "path": "/math/geometry/parallel-and-perpendicular-lines/Angle_basics/e/angle_types/", 
+    "id": "angle_types", 
+    "name": "angle_types"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Exploring angle pairs", 
+    "description": "Find vertical angles, adjacent angles, and linearly paired angles.", 
+    "title": "Exploring angle pairs", 
+    "seconds_per_fast_problem": 11.0, 
+    "related_video_readable_ids": [
+      "complementary-and-supplementary-angles"
+    ], 
+    "slug": "exploring_angle_pairs_1", 
+    "prerequisites": [
+      "measuring_angles", 
+      "angle_types"
+    ], 
+    "live": true, 
+    "h_position": 27, 
+    "v_position": -21, 
+    "path": "/math/geometry/parallel-and-perpendicular-lines/Angle_basics/e/exploring_angle_pairs_1/", 
+    "id": "exploring_angle_pairs_1", 
+    "name": "exploring_angle_pairs_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Complementary and supplementary angles", 
+    "description": null, 
+    "title": "Complementary and supplementary angles", 
+    "seconds_per_fast_problem": 8.0, 
+    "related_video_readable_ids": [
+      "complementary-and-supplementary-angles"
+    ], 
+    "slug": "complementary_and_supplementary_angles", 
+    "prerequisites": [
+      "measuring_angles", 
+      "angle_types"
+    ], 
+    "live": true, 
+    "h_position": 27, 
+    "v_position": -20, 
+    "path": "/math/geometry/parallel-and-perpendicular-lines/Angle_basics/e/complementary_and_supplementary_angles/", 
+    "id": "complementary_and_supplementary_angles", 
+    "name": "complementary_and_supplementary_angles"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Angle addition postulate", 
+    "description": "", 
+    "title": "Angle addition postulate", 
+    "seconds_per_fast_problem": 41.0, 
+    "related_video_readable_ids": [
+      "complementary-and-supplementary-angles"
+    ], 
+    "slug": "angle_addition_postulate", 
+    "prerequisites": [
+      "vertical_angles", 
+      "vertical_angles_2"
+    ], 
+    "live": true, 
+    "h_position": 29, 
+    "v_position": -21, 
+    "path": "/math/geometry/parallel-and-perpendicular-lines/Angle_basics/e/angle_addition_postulate/", 
+    "id": "angle_addition_postulate", 
+    "name": "angle_addition_postulate"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Vertical angles", 
+    "description": null, 
+    "title": "Vertical angles", 
+    "seconds_per_fast_problem": 4.0, 
+    "related_video_readable_ids": [
+      "angles-at-the-intersection-of-two-lines"
+    ], 
+    "slug": "vertical_angles", 
+    "prerequisites": [
+      "exploring_angle_pairs_1", 
+      "complementary_and_supplementary_angles"
+    ], 
+    "live": true, 
+    "h_position": 28, 
+    "v_position": -21, 
+    "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/vertical_angles/", 
+    "id": "vertical_angles", 
+    "name": "vertical_angles"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Vertical angles 2", 
+    "description": null, 
+    "title": "Vertical angles 2", 
+    "seconds_per_fast_problem": 21.0, 
+    "related_video_readable_ids": [
+      "angles-at-the-intersection-of-two-lines"
+    ], 
+    "slug": "vertical_angles_2", 
+    "prerequisites": [
+      "exploring_angle_pairs_1", 
+      "complementary_and_supplementary_angles"
+    ], 
+    "live": true, 
+    "h_position": 28, 
+    "v_position": -20, 
+    "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/vertical_angles_2/", 
+    "id": "vertical_angles_2", 
+    "name": "vertical_angles_2"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Parallel lines 1", 
+    "description": null, 
+    "title": "Parallel lines 1", 
+    "seconds_per_fast_problem": 5.0, 
+    "related_video_readable_ids": [
+      "ca-geometry--deducing-angle-measures"
+    ], 
+    "slug": "parallel_lines_1", 
+    "prerequisites": [
+      "angle_addition_postulate", 
+      "segment_addition"
+    ], 
+    "live": true, 
+    "h_position": 30, 
+    "v_position": -25, 
+    "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/parallel_lines_1/", 
+    "id": "parallel_lines_1", 
+    "name": "parallel_lines_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Parallel lines 2", 
+    "description": "", 
+    "title": "Parallel lines 2", 
+    "seconds_per_fast_problem": 23.0, 
+    "related_video_readable_ids": [
+      "ca-geometry--deducing-angle-measures"
+    ], 
+    "slug": "parallel_lines_2", 
+    "prerequisites": [
+      "alternate_exterior_angles_2", 
+      "alternate_interior_angles_2", 
+      "same_side_exterior_angles_2", 
+      "same_side_interior_angles_2", 
+      "corresponding_angles_2"
+    ], 
+    "live": true, 
+    "h_position": 32, 
+    "v_position": -26, 
+    "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/parallel_lines_2/", 
+    "id": "parallel_lines_2", 
+    "name": "parallel_lines_2"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Corresponding angles 2", 
+    "description": "", 
+    "title": "Corresponding angles 2", 
+    "seconds_per_fast_problem": 15.0, 
+    "related_video_readable_ids": [
+      "ca-geometry--deducing-angle-measures"
+    ], 
+    "slug": "corresponding_angles_2", 
+    "prerequisites": [
+      "parallel_lines_1", 
+      "congruent_angles"
+    ], 
+    "live": true, 
+    "h_position": 31, 
+    "v_position": -27, 
+    "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/corresponding_angles_2/", 
+    "id": "corresponding_angles_2", 
+    "name": "corresponding_angles_2"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Same side exterior angles 2", 
+    "description": null, 
+    "title": "Same side exterior angles 2", 
+    "seconds_per_fast_problem": 24.0, 
+    "related_video_readable_ids": [
+      "ca-geometry--deducing-angle-measures"
+    ], 
+    "slug": "same_side_exterior_angles_2", 
+    "prerequisites": [
+      "parallel_lines_1", 
+      "congruent_angles"
+    ], 
+    "live": true, 
+    "h_position": 31, 
+    "v_position": -24, 
+    "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/same_side_exterior_angles_2/", 
+    "id": "same_side_exterior_angles_2", 
+    "name": "same_side_exterior_angles_2"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Same side interior angles 2", 
+    "description": null, 
+    "title": "Same side interior angles 2", 
+    "seconds_per_fast_problem": 19.0, 
+    "related_video_readable_ids": [
+      "ca-geometry--deducing-angle-measures"
+    ], 
+    "slug": "same_side_interior_angles_2", 
+    "prerequisites": [
+      "parallel_lines_1", 
+      "congruent_angles"
+    ], 
+    "live": true, 
+    "h_position": 31, 
+    "v_position": -25, 
+    "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/same_side_interior_angles_2/", 
+    "id": "same_side_interior_angles_2", 
+    "name": "same_side_interior_angles_2"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Alternate interior angles 2", 
+    "description": null, 
+    "title": "Alternate interior angles 2", 
+    "seconds_per_fast_problem": 14.0, 
+    "related_video_readable_ids": [
+      "ca-geometry--deducing-angle-measures"
+    ], 
+    "slug": "alternate_interior_angles_2", 
+    "prerequisites": [
+      "parallel_lines_1", 
+      "congruent_angles"
+    ], 
+    "live": true, 
+    "h_position": 31, 
+    "v_position": -28, 
+    "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/alternate_interior_angles_2/", 
+    "id": "alternate_interior_angles_2", 
+    "name": "alternate_interior_angles_2"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Alternate exterior angles 2", 
+    "description": null, 
+    "title": "Alternate exterior angles 2", 
+    "seconds_per_fast_problem": 10.0, 
+    "related_video_readable_ids": [
+      "ca-geometry--deducing-angle-measures"
+    ], 
+    "slug": "alternate_exterior_angles_2", 
+    "prerequisites": [
+      "parallel_lines_1", 
+      "congruent_angles"
+    ], 
+    "live": true, 
+    "h_position": 31, 
+    "v_position": -26, 
+    "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/alternate_exterior_angles_2/", 
+    "id": "alternate_exterior_angles_2", 
+    "name": "alternate_exterior_angles_2"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Congruent angles", 
+    "description": "Determine which angles must be congruent when parallel lines are crossed by a transversal.", 
+    "title": "Congruent angles", 
+    "seconds_per_fast_problem": 4.0, 
+    "related_video_readable_ids": [
+      "ca-geometry--deducing-angle-measures"
+    ], 
+    "slug": "congruent_angles", 
+    "prerequisites": [
+      "angle_addition_postulate", 
+      "segment_addition"
+    ], 
+    "live": true, 
+    "h_position": 30, 
+    "v_position": -27, 
+    "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/congruent_angles/", 
+    "id": "congruent_angles", 
+    "name": "congruent_angles"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Angles 1", 
+    "description": null, 
+    "title": "Angles 1", 
+    "seconds_per_fast_problem": 14.0, 
+    "related_video_readable_ids": [
+      "finding-more-angles"
+    ], 
+    "slug": "angles_1", 
+    "prerequisites": [
+      "triangle_types"
+    ], 
+    "live": true, 
+    "h_position": 31, 
+    "v_position": -20, 
+    "path": "/math/geometry/parallel-and-perpendicular-lines/triang_prop_tut/e/angles_1/", 
+    "id": "angles_1", 
+    "name": "angles_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Angles 2", 
+    "description": null, 
+    "title": "Angles 2", 
+    "seconds_per_fast_problem": 12.0, 
+    "related_video_readable_ids": [
+      "finding-more-angles"
+    ], 
+    "slug": "angles_2", 
+    "prerequisites": [
+      "angles_1"
+    ], 
+    "live": true, 
+    "h_position": 32, 
+    "v_position": -20, 
+    "path": "/math/geometry/parallel-and-perpendicular-lines/triang_prop_tut/e/angles_2/", 
+    "id": "angles_2", 
+    "name": "angles_2"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Angles of a polygon", 
+    "description": null, 
+    "title": "Angles of a polygon", 
+    "seconds_per_fast_problem": 6.0, 
+    "related_video_readable_ids": [
+      "sum-of-interior-angles-of-a-polygon"
+    ], 
+    "slug": "angles_of_a_polygon", 
+    "prerequisites": [
+      "quadrilateral_types"
+    ], 
+    "live": true, 
+    "h_position": 34, 
+    "v_position": -13, 
+    "path": "/math/geometry/parallel-and-perpendicular-lines/triang_prop_tut/e/angles_of_a_polygon/", 
+    "id": "angles_of_a_polygon", 
+    "name": "angles_of_a_polygon"
+  }
+]
