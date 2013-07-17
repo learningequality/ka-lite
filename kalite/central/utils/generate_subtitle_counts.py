@@ -38,14 +38,16 @@ def get_new_counts():
     for (dirpath, languages, filenames) in os.walk(locale_path):
         for lang_code in languages:
             subtitles_path = "%s%s/subtitles/" % (locale_path, lang_code) 
-            subtitle_counts[lang_code] = {}
             try:      
-                subtitle_counts[lang_code]["count"] = len(os.listdir(subtitles_path))
+                count = len(os.listdir(subtitles_path))
             except:
                 logger.info("No subs for %s" % lang_code)
                 continue
             else: 
-                subtitle_counts[lang_code]["name"] = get_language_name(lang_code) 
+                lang_name = get_language_name(lang_code) 
+                subtitle_counts[lang_name] = {}
+                subtitle_counts[lang_name]["count"] = count
+                subtitle_counts[lang_name]["code"] = lang_code
     write_new_json(subtitle_counts)
 
 

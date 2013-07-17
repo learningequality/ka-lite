@@ -183,8 +183,8 @@ ul.dynatree-container li, .ui-widget-content {
                 // api returns an 2d array of the following format to show counts of srt files 
                 // {"gu": {"count": 45, "name": "Gujarati"}, etc}
                 var defaultLanguage = "{{ default_language }}";
-                $.each(subtitleCounts, function(langCode, langData) {
-                    var langName = langData["name"];
+                $.each(subtitleCounts, function(langName, langData) {
+                    var langCode = langData["code"];
                     var srtCount = langData["count"];
                     if(langCode === defaultLanguage) {
                         $('#language').append('<option value="' + langCode + '" selected>' + langName + ' (' + srtCount +')</option>')    
