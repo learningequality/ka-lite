@@ -9,7 +9,7 @@ import settings
 from main import topicdata
 from utils.jobs import force_job, job_status
 from utils.videos import delete_downloaded_files
-from models import FacilityUser, VideoLog, ExerciseLog, VideoFile
+from models import FacilityUser, VideoLog, ExerciseLog, VideoFile, POINTS_PER_VIDEO
 from securesync.models import FacilityGroup
 from config.models import Settings
 from utils.decorators import require_admin_api
@@ -306,18 +306,24 @@ def launch_mplayer(request):
     youtube_id = request.REQUEST.get("youtube_id")
     if youtube_id:
         facility_user = request.session.get("facility_user")
+        callback = None
         if facility_user:
             callback = partial(
                 _update_video_log_with_points,
                 youtube_id=youtube_id,
                 facility_user=facility_user,
             )
-        else:
-            callback = None
         play_video_in_new_thread(youtube_id, callback=callback)
     return JsonResponse({})
 
 def _update_video_log_with_points(seconds_watched, video_length, youtube_id, facility_user):
     """ Handle the callback from the mplayer thread, saving the VideoLog. """
-    new_points = (float(seconds_watched) / video_length) * 750
-    return VideoLog.update_video_log(facility_user, youtube_id, seconds_watched, new_points=new_points)
+    try: # while it's unlikely that these calls would fail, it wouldn't be worth killing mplayer over
+        new_points = (float(seconds_watched) / video_length) * POINTS_PER_VIDEO
+        video_log_data = VideoLog.update_video_log(facility_user, youtube_id, seconds_watched, new_points=new_points)
+    except:
+        video_log_data = {
+            "points": 0,
+            "complete": False,
+        }
+    return video_log_data

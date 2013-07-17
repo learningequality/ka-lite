@@ -123,8 +123,8 @@ $(function() {
 
     $("#launch_mplayer").click(function() {
         // launch mplayer in the background to play the video
-        doRequest("/api/launch_mplayer?youtube_id={{ video.youtube_id }}");
-        // after mplayer closes and focus returns to the website, refresh the points
+        doRequest("{% url launch_mplayer %}?youtube_id={{ video.youtube_id }}");
+        // after mplayer closes and focus returns to the website, refresh the points from the server
         $(window).focus(function() {
             $(window).unbind("focus");
             videoView.model.fetch();

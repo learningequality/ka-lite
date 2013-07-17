@@ -4,16 +4,31 @@ import time
 
 from mplayer import *
 
+
+def play_video(youtube_id, *args, **kwargs):
+    """
+    Starts mplayer from the current thread, for the specified YouTube ID.
+    Defaults to full screen, but can be overridden by passing a boolean `fullscreen` argument.
+    """
+    player = Player("%s%s.mp4" % (settings.CONTENT_ROOT, youtube_id))
+    player.fullscreen = kwargs.get("fullscreen", True)
+    return player
+
+
 def play_video_in_new_thread(*args, **kwargs):
-    """ Starts mplayer in a new persistent thread, with an optional callback for seconds watched. """
+    """
+    Starts mplayer in a new persistent thread, with an optional callback that will be called every 10 seconds.
+    The callback signature is `callback(<time_watched>, <video_length>)`, with both args in seconds.
+    You can override the 10 second interval by passing in a `save_interval` argument.
+    """
     thread.start_new_thread(_video_thread, args, kwargs)
 
-def _video_thread(*args, **kwargs):
+
+def _video_thread(callback=None, save_interval=10, *args, **kwargs):
     player = play_video(*args, **kwargs)
-    callback = kwargs.get("callback", None)
     has_callback = callable(callback)
-    last_timestamp = 0
-    time.sleep(10)
+    last_timestamp = player.time_pos or 0
+    time.sleep(save_interval)
     video_length = player.length
     while True:
         if not player.is_alive():
@@ -21,13 +36,7 @@ def _video_thread(*args, **kwargs):
         if has_callback:
             timestamp = player.time_pos
             if timestamp > last_timestamp:
-                seconds_watched = min(timestamp - last_timestamp, 10)
+                seconds_watched = min(timestamp - last_timestamp, save_interval)
                 callback(seconds_watched, video_length)
             last_timestamp = timestamp
-        time.sleep(10)
-
-def play_video(youtube_id, *args, **kwargs):
-    """ Starts mplayer from the current thread, for the specified YouTube ID. """
-    player = Player("%s%s.mp4" % (settings.CONTENT_ROOT, youtube_id))
-    player.fullscreen = True
-    return player
+        time.sleep(save_interval)

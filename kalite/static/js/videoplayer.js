@@ -250,14 +250,10 @@ window.VideoView = Backbone.View.extend({
         var player_id = this.$("video").attr("id");
 
         if (player_id) { // if it's using mplayer, there won't be a player here
-
             this.player = this.model.player = _V_(player_id);
-
             this._beginIntervalUpdate();
-
             this._initializeEventListeners();
         }
-
     },
 
     _initializeEventListeners: function() {
@@ -375,6 +371,9 @@ window.VideoView = Backbone.View.extend({
 
 
 window.PointView = Backbone.View.extend({
+    /*
+    Passively display the point count to the user (and listen to changes on the model to know when to update).
+    */
 
     el: $(".points-container"),
 
