@@ -27,6 +27,7 @@ def make_request(url):
         elif r.status_code > 399:
             r = "client-error"
             break
+        # TODO(dylan): if internet connection goes down, we aren't catching that, and things just break
         else:
             break
     return r

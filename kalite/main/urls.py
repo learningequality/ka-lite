@@ -4,6 +4,7 @@ from django.contrib import admin
 
 import coachreports.urls
 import main.api_urls
+import central.api_urls
 import securesync.urls
 from kalite import settings
 
@@ -43,6 +44,10 @@ urlpatterns += patterns('main.views',
 
     url(r'^coachreports/', include(coachreports.urls)),
     url(r'^api/', include(main.api_urls)),
+)
+
+urlpatterns += patterns('central.api_views',
+    url(r'^central_api/get_subtitle_counts/$', 'get_subtitle_counts', {}, 'get_subtitle_counts'),
 )
 
 if "loadtesting" in settings.INSTALLED_APPS:
