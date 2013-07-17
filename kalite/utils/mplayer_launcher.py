@@ -24,12 +24,19 @@ def play_video_in_new_thread(*args, **kwargs):
     thread.start_new_thread(_video_thread, args, kwargs)
 
 
-def _video_thread(callback=None, save_interval=10, *args, **kwargs):
-    player = play_video(*args, **kwargs)
+def _video_thread(*args, **kwargs):
+    # optional arguments
+    save_interval = kwargs.get("save_interval", 10)
+    callback = kwargs.get("callback", None)
     has_callback = callable(callback)
+    
+    # start mplayer, and get a handle for the player
+    player = play_video(*args, **kwargs)
+        
     last_timestamp = player.time_pos or 0
     time.sleep(save_interval)
     video_length = player.length
+    
     while True:
         if not player.is_alive():
             break
