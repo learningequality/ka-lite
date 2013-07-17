@@ -33,5 +33,5 @@ urlpatterns = patterns('main.api_views',
 
 if settings.USE_MPLAYER:
     urlpatterns += patterns('main.api_views',
-        url(r'^launch_mplayer$', 'launch_mplayer'),
+        url(r'^launch_mplayer$', 'launch_mplayer', {}, 'launch_mplayer'),
     )
