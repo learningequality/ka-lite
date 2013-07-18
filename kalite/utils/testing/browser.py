@@ -96,13 +96,17 @@ class BrowserTestCase(KALiteTestCase):
 
 
     def browse_to(self, dest_url, wait_time=0.1, max_retries=50):
-        """When testing, we have to make sure that the page has loaded before testing the resulting page."""
+        """
+        When testing, we have to make sure that the page has loaded before testing the resulting page.
+        """
 
         self.assertTrue(browse_to(self.browser, dest_url=dest_url, wait_time=wait_time, max_retries=max_retries), "Browsing to '%s'" % dest_url)
-        
-        
+
+
     def wait_for_page_change(self, source_url, wait_time=0.1, max_retries=None):
-        """When testing, we have to make sure that the page has loaded before testing the resulting page."""
+        """
+        When testing, we have to make sure that the page has loaded before testing the resulting page.
+        """
 
         if not max_retries:
             max_retries = int(self.max_wait_time/float(wait_time))
@@ -110,9 +114,11 @@ class BrowserTestCase(KALiteTestCase):
 
     
     def browser_activate_element(self, elem=None, id=None, name=None, tag_name=None):
-        """Given the identifier to a page element, make it active.
+        """
+        Given the identifier to a page element, make it active.
         Currently done by clicking TODO(bcipolli): this won't work for buttons, 
-        so find another way when that becomes an issue."""
+        so find another way when that becomes an issue.
+        """
         
         if not elem:
             if id:
@@ -129,7 +135,7 @@ class BrowserTestCase(KALiteTestCase):
         self.browser.switch_to_active_element().send_keys(keys)
         
 
-    def check_django_message(self, message_type=None, contains=None, exact=None, num_messages=1):
+    def browser_check_django_message(self, message_type=None, contains=None, exact=None, num_messages=1):
         """Both central and distributed servers use the Django messaging system.
         This code will verify that a message with the given type contains the specified text."""
         
@@ -173,6 +179,7 @@ class BrowserTestCase(KALiteTestCase):
             self.assertEqual(num_links, num_expected_links, "Num links (%d) == %d" % (num_links, num_expected_links))
 
         return num_tabs
+
 
     def browser_form_fill(self, keys="", num_expected_links=0):
         """

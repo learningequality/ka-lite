@@ -5,7 +5,7 @@ import unittest
 from kalite import settings
 
 
-def x_only(f, cond, msg):
+def x_server_test(f, cond, msg):
     """Decorator to label test classes or instance methods as x_only,
     x = "main" or "central"
     """
@@ -24,13 +24,13 @@ def x_only(f, cond, msg):
         return wrapped_fn
 
 
-def distributed_only(f):
+def distributed_server_test(f):
     """Run the test only on the distributed server"""
-    return x_only(f, not settings.CENTRAL_SERVER, "Distributed server test")
+    return x_server_test(f, not settings.CENTRAL_SERVER, "Distributed server test")
 
 
-def central_only(f):
+def central_server_test(f):
     """Run the test only on the central server"""
-    return x_only(f, settings.CENTRAL_SERVER, "Central server test")
+    return x_server_test(f, settings.CENTRAL_SERVER, "Central server test")
     
          

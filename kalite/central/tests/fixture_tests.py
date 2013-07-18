@@ -9,11 +9,11 @@ from django.test import TestCase
 from django.core.management import call_command
 
 import settings
-from utils.testing import central_only
+from utils.testing import central_server_test
 
 
 @unittest.skip
-@central_only
+@central_server_test
 class FixtureTestCases(TestCase):
     """Test the basic ability to load and dump data to a fixture.  Very basic."""
 

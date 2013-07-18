@@ -11,15 +11,16 @@ from django.contrib.auth.models import User
 
 import settings
 from registration.models import RegistrationProfile
-from utils.testing import central_only, BrowserTestCase
+from utils.testing import central_server_test, BrowserTestCase
 
 
+@central_server_test
 class KALiteCentralBrowserTestCase(BrowserTestCase):
     """
     Base class for browser-based central server test cases.
     """
 
-    def register_user(self, username, password, first_name="firstname", last_name="lastname", org_name="orgname", expect_success=True):
+    def browser_register_user(self, username, password, first_name="firstname", last_name="lastname", org_name="orgname", expect_success=True):
         """Registers a user on the central server (and performs relevant checks, unless expect_success=False)"""
          
         register_url = self.reverse("registration_register")
@@ -48,7 +49,7 @@ class KALiteCentralBrowserTestCase(BrowserTestCase):
 
 
 
-    def activate_user(self, username, expect_success=True):
+    def browser_activate_user(self, username, expect_success=True):
         """Activates a user account on the central server (and performs relevant checks, unless expect_success=False)"""
         
         # Get the activation url, then browse there.
@@ -62,10 +63,10 @@ class KALiteCentralBrowserTestCase(BrowserTestCase):
         
         # Verify what we see!
         if expect_success:
-            self.check_django_message(message_type="success", contains="Your account is now activ", num_messages=1)
+            self.browser_check_django_message(message_type="success", contains="Your account is now activ", num_messages=1)
 
 
-    def login_user(self, username, password, expect_success=True):
+    def browser_login_user(self, username, password, expect_success=True):
         """Logs a user account in to the central server (and performs relevant checks, unless expect_success=False)"""
 
         login_url = self.reverse("auth_login")
@@ -87,11 +88,11 @@ class KALiteCentralBrowserTestCase(BrowserTestCase):
             self.assertIn("Account administration", self.browser.title, "Check account admin page title")
 
         
-    def logout_user(self, expect_success=True):
+    def browser_logout_user(self, expect_success=True):
         """Logs a user account out of the central server (and performs relevant checks, unless expect_success=False)"""
         
         # Nothing to do if they're not logged in!
-        if not self.is_logged_in():
+        if not self.browser_is_logged_in():
             return
         
         # To avoid detection of page changes, do different things based on the 
@@ -103,10 +104,10 @@ class KALiteCentralBrowserTestCase(BrowserTestCase):
     
         if expect_success:
             self.assertIn(self.reverse("homepage"), self.browser.current_url, "Logout browses to homepage" )
-            self.assertFalse(self.is_logged_in(), "Make sure that user is no longer logged in.")
+            self.assertFalse(self.browser_is_logged_in(), "Make sure that user is no longer logged in.")
 
 
-    def is_logged_in(self, username=None):
+    def browser_is_logged_in(self, username=None):
         """Checks if a user account is logged in to the central server."""
         elements = self.browser.find_elements_by_id("logout")
         
@@ -119,7 +120,7 @@ class KALiteCentralBrowserTestCase(BrowserTestCase):
         
         
 
-@central_only
+@central_server_test
 class SuperUserTest(KALiteCentralBrowserTestCase):
     """Log in the super user"""
 
@@ -128,10 +129,10 @@ class SuperUserTest(KALiteCentralBrowserTestCase):
         Tests that an existing admin user can log in.
         """
 
-        self.login_user(self.admin_user.username, "test")
+        self.browser_login_user(self.admin_user.username, "test")
 
 
-#@central_only
+#@central_server_test
 class OrgUserRegistrationTest(KALiteCentralBrowserTestCase):
     user_email = "test_user@nowhere.com"
     password   = "password"
@@ -139,10 +140,10 @@ class OrgUserRegistrationTest(KALiteCentralBrowserTestCase):
     def test_user_register(self):
         """Tests that a user can register"""
          
-        self.register_user(username=self.user_email, password=self.password)
+        self.browser_register_user(username=self.user_email, password=self.password)
 
 
-@central_only
+@central_server_test
 class UserRegistrationCaseTest(KALiteCentralBrowserTestCase):
     user_email = "test_user@nowhere.com"
     password   = "password"
@@ -151,35 +152,35 @@ class UserRegistrationCaseTest(KALiteCentralBrowserTestCase):
         """Tests that a user can login with the exact same email address as registered"""
          
         # Register user in one case
-        self.register_user(username=self.user_email.lower(), password=self.password)
-        self.activate_user(username=self.user_email.lower())
+        self.browser_register_user(username=self.user_email.lower(), password=self.password)
+        self.browser_activate_user(username=self.user_email.lower())
 
         # Login in the same case
-        self.login_user(username=self.user_email.lower(), password=self.password)
-        self.logout_user()
+        self.browser_login_user(username=self.user_email.lower(), password=self.password)
+        self.browser_logout_user()
 
         
     def test_login_mixed(self):
         """Tests that a user can login with the uppercased version of the email address that was registered"""
          
         # Register user in one case
-        self.register_user(username=self.user_email.lower(), password=self.password)
-        self.activate_user(username=self.user_email.lower())
+        self.browser_register_user(username=self.user_email.lower(), password=self.password)
+        self.browser_activate_user(username=self.user_email.lower())
 
         # Login in the same case
-        self.login_user(username=self.user_email.upper(), password=self.password)
-        self.logout_user()
+        self.browser_login_user(username=self.user_email.upper(), password=self.password)
+        self.browser_logout_user()
         
 
     def test_register_mixed(self):
         """Tests that a user cannot re-register with the uppercased version of an email address that was registered"""
         
         # Register user in one case
-        self.register_user(username=self.user_email.lower(), password=self.password)
-        self.activate_user(username=self.user_email.lower())
+        self.browser_register_user(username=self.user_email.lower(), password=self.password)
+        self.browser_activate_user(username=self.user_email.lower())
 
         # Try to register again in a different case
-        self.register_user(username=self.user_email.upper(), password=self.password, expect_success=False)
+        self.browser_register_user(username=self.user_email.upper(), password=self.password, expect_success=False)
 
         text_box = self.browser.find_element_by_id("id_email") # form element        
         error    = text_box.parent.find_elements_by_class_name("errorlist")[-1]
@@ -197,15 +198,15 @@ class UserRegistrationCaseTest(KALiteCentralBrowserTestCase):
         user2_fname = "User2"
         
         # Register & activate two users with different usernames / emails
-        self.register_user(username=user1_uname, password=user1_password, first_name=user1_fname)
-        self.activate_user(username=user1_uname)
-        self.login_user(   username=user1_uname, password=user1_password)
-        self.logout_user()
+        self.browser_register_user(username=user1_uname, password=user1_password, first_name=user1_fname)
+        self.browser_activate_user(username=user1_uname)
+        self.browser_login_user(   username=user1_uname, password=user1_password)
+        self.browser_logout_user()
         
-        self.register_user(username=user2_uname, password=user2_password, first_name=user2_fname)
-        self.activate_user(username=user2_uname)
-        self.login_user(   username=user2_uname, password=user2_password)
-        self.logout_user()
+        self.browser_register_user(username=user2_uname, password=user2_password, first_name=user2_fname)
+        self.browser_activate_user(username=user2_uname)
+        self.browser_login_user(   username=user2_uname, password=user2_password)
+        self.browser_logout_user()
         
         # Change the second user to be a case-different version of the first user
         user2 = User.objects.get(username=user2_uname)
@@ -215,23 +216,23 @@ class UserRegistrationCaseTest(KALiteCentralBrowserTestCase):
         user2.save()
         
         # First, make sure that user 1 can only log in with user 1's email/password
-        self.login_user( username=user1_uname, password=user1_password) # succeeds
+        self.browser_login_user( username=user1_uname, password=user1_password) # succeeds
         errors = self.browser.find_elements_by_class_name("login_error")
         self.assertEqual(len(errors), 0, "No login errors on successful login.")
-        self.logout_user()
+        self.browser_logout_user()
         
-        self.login_user( username=user2_uname, password=user1_password, expect_success=False) # fails
+        self.browser_login_user( username=user2_uname, password=user1_password, expect_success=False) # fails
         errors = self.browser.find_elements_by_class_name("login_error")
         self.assertEqual(len(errors), 1, "Login errors on failed login.")
         self.assertIn("Incorrect user name or password", errors[0].text, "Error text on failed login.")
         
         # Now, check the same in the opposite direction.
-        self.login_user( username=user2_uname, password=user2_password) # succeeds
+        self.browser_login_user( username=user2_uname, password=user2_password) # succeeds
         errors = self.browser.find_elements_by_class_name("login_error")
         self.assertEqual(len(errors), 0, "No login errors on successful login.")
-        self.logout_user()
+        self.browser_logout_user()
 
-        self.login_user( username=user1_uname, password=user2_password, expect_success=False) # fails
+        self.browser_login_user( username=user1_uname, password=user2_password, expect_success=False) # fails
         errors = self.browser.find_elements_by_class_name("login_error")
         self.assertEqual(len(errors), 1, "Login errors on failed login.")
         self.assertIn("Incorrect user name or password", errors[0].text, "Error text on failed login.")

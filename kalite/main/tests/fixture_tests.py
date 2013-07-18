@@ -10,11 +10,11 @@ from django.utils import unittest
 
 import settings
 from kalite import settings
-from utils.testing.decorators import distributed_only
+from utils.testing.decorators import distributed_server_test
 
 
 @unittest.skip
-@distributed_only
+@distributed_server_test
 class FixtureTestCases(TestCase):
     """ """
 
