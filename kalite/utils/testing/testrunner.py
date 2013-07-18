@@ -56,9 +56,9 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         #   the orphan pyc's are discovered and run during testing
         # pyc's are not tracked by git, so orphans can happen when an
         #   older branch has been checked out
-        logging.getLogger("kalite").info("Purging pyc files")
+        settings.LOG.info("Purging pyc files")
         management.call_command('clean_pyc', verbosity=2)
-        
+
         if not test_labels:
             test_labels = set(['main', 'central', 'securesync'])
             if settings.CENTRAL_SERVER:
@@ -66,6 +66,7 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
             else:
                 test_labels -= set(['central',])
         return super(KALiteTestRunner,self).run_tests(test_labels, extra_tests, **kwargs)
+
 
     def build_suite(self, *args, **kwargs):
         """
