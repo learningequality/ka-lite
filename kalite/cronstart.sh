@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 pyexec=`$SCRIPT_DIR/../python.sh`
 
 cd `dirname "${BASH_SOURCE[0]}"`
