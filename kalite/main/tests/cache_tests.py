@@ -1,32 +1,29 @@
 """
-This file demonstrates writing tests using the unittest module. These will pass
-when you run "manage.py test".
-
-Replace this with more appropriate tests for your application.
+Test the topic-tree caching code (but only if caching is enabled in settings)
 """
 import sys
 import random
 import requests
 import urllib
 
-from django.test import TestCase, LiveServerTestCase
-from django.core.management import call_command
 from django.test.client import Client
 from django.utils import unittest
 
 import settings
-from utils import caching
 from kalite.main import topicdata
+from utils import caching
 from utils.django_utils import call_command_with_output
-from utils.testing import distributed_only
+from utils.testing.base import KALiteTestCase
+from utils.testing.decorators import distributed_server_test
 
 
-@distributed_only
-class CachingTest(LiveServerTestCase):
+@distributed_server_test
+class CachingTest(KALiteTestCase):
 
     @unittest.skipIf(settings.CACHE_TIME==0, "Test only relevant when caching is enabled")
     def test_cache_invalidation(self):
-
+        """Create the cache item, then invalidate it and show that it is deleted."""
+        
         # Get a random youtube id
         n_videos = len(topicdata.NODE_CACHE['Video'])
         video_slug = random.choice(topicdata.NODE_CACHE['Video'].keys())
@@ -49,7 +46,9 @@ class CachingTest(LiveServerTestCase):
     
     @unittest.skipIf(settings.CACHE_TIME==0, "Test only relevant when caching is enabled")
     def test_cache_across_clients(self):
-
+        """Show that caching is accessible across all clients 
+        (i.e. that different clients don't generate different cache keys)"""
+        
         # Get a random youtube id
         n_videos = len(topicdata.NODE_CACHE['Video'])
         video_slug = random.choice(topicdata.NODE_CACHE['Video'].keys())

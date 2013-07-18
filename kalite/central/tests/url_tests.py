@@ -11,10 +11,10 @@ from django.test import TestCase, Client
 from django.core.management import call_command
 
 import settings
-from utils.testing import central_only
+from utils.testing import central_server_test
 
 
-@central_only
+@central_server_test
 class UrlTestCases(TestCase):
     """Walk through a set of URLs, and validate very basic properties (status code, some text)
     A good test to weed out untested view/template errors"""

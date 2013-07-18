@@ -5,7 +5,7 @@ import django.test
 import mock
 import os
 from django.conf import settings
-from ..models import Topic, Question
+from faq.models import Topic, Question
 
 class FAQViewTests(django.test.TestCase):
     urls = 'faq.urls'
@@ -24,7 +24,7 @@ class FAQViewTests(django.test.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "faq/submit_question.html")
 
-    @mock.patch('django.contrib.messages')
+#    @mock.patch('django.contrib.messages')
     def test_submit_faq_post(self, mock_messages):
         data = {
             'topic': '1',
