@@ -1,10 +1,6 @@
 """
-This file demonstrates writing tests using the unittest module. These will pass
-when you run "manage.py test".
 
-Replace this with more appropriate tests for your application.
 """
-
 import os
 
 from django.test import TestCase
@@ -13,11 +9,12 @@ from django.db import DatabaseError
 from django.utils import unittest
 
 import settings
-from utils.testing import distributed_only
+from kalite import settings
+from utils.testing.decorators import distributed_server_test
 
 
 @unittest.skip
-@distributed_only
+@distributed_server_test
 class FixtureTestCases(TestCase):
     """ """
 

@@ -1,9 +1,9 @@
 #!/bin/bash
 
-SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
-pyexec=`$SCRIPT_DIR/../python.sh`
+SCRIPT_DIR=`dirname "${BASH_SOURCE[0]}"`
+pyexec=`"$SCRIPT_DIR/../python.sh"`
 
-cd `dirname "${BASH_SOURCE[0]}"`
+cd "$SCRIPT_DIR"
 pids=`ps aux | grep cronserver.py | grep -v "grep" | awk '{print $2}'`
 
 if [ "$pids" ]; then
