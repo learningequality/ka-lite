@@ -1,7 +1,7 @@
 #!/bin/bash
 
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-pyexec=`$SCRIPT_DIR/../python.sh`
+SCRIPT_DIR=`dirname "${BASH_SOURCE[0]}"`
+pyexec=`"$SCRIPT_DIR/../python.sh"`
 
 if [ "$1" = "" ]; then
     port=`$pyexec -c "import settings; print settings.PRODUCTION_PORT"`
@@ -9,7 +9,7 @@ else
     port=$1
 fi
 
-cd `dirname "${BASH_SOURCE[0]}"`
+cd "$SCRIPT_DIR"
 if [ -f "runcherrypyserver.pid" ];
 then
     pid=`cat runcherrypyserver.pid`
