@@ -242,16 +242,16 @@ ul.dynatree-container li, .ui-widget-content {
 
         $(".download-subtitles").click(function(event) {
         
-            var new_only = $(event.target).attr("new_only");
-            var language = $("#language option:selected").val();
-            if (new_only!="true") {
-                if(!confirm("{% trans 'You are about to download new subtitles for all downloaded videos. This may take a long time.' %}")) {
-                    return;
-                }
-            }
+            var langCode = $("#language option:selected").val();
             
-            if (language) {
-                doRequest("/api/start_subtitle_download", {language: language, new_only: new_only}).success(startSubtitleDownloadChecks);
+            if (langCode) {
+                doRequest("/api/start_subtitle_download", {language: langCode}).success(
+                    startSubtitleDownloadChecks
+                    console.log("success")
+                ).fail(function(resp) {
+                    console.log("Shit");
+                    window.resp= resp;
+                });
                 $(".progress-waiting").show();
             } else {
                 alert("{% trans 'Please select a language first' %}");
@@ -362,7 +362,7 @@ ul.dynatree-container li, .ui-widget-content {
             } else {
                 $("#retry-video-download").hide();
             }
-    	}).fail(function(resp) {
+    	}.fail)(function(resp) {
     	    switch (resp.status) {
     	        case 403:
     	            window.location.reload()
@@ -518,9 +518,8 @@ ul.dynatree-container li, .ui-widget-content {
     <span class= "button_style">
         <select id="language">
         </select>
-    </span><br/>
-    <button class="download-subtitles" type="button">{% trans "Get/Update All Subtitles" %}</button>
-    <button class="download-subtitles" new_only=true type="button">{% trans "Get Missing Subtitles Only" %}</button>
+    </span>
+    <button class="download-subtitles" type="button">{% trans "Get Subtitle Pack" %}</button>
 </div>
 
 <div style="clear: both;"></div>

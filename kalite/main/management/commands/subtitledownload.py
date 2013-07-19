@@ -1,54 +1,71 @@
+import requests
+import sys 
 import time
+import urllib2
+import zipfile
+
 
 from django.core.management.base import BaseCommand, CommandError
 
 from config.models import Settings
-from main.models import VideoFile
-from utils.jobs import force_job
-from utils.subtitles import download_subtitles, NoSubs
+from updates.models import UpdateProcessLog
 
+PROJECT_PATH = os.path.dirname(os.path.realpath(__file__)) + "/../"
+
+sys.path = [PROJECT_PATH] + sys.path
+
+import settings
+from settings import LOG as logging
 
 class Command(BaseCommand):
-    help = "Download all subtitles marked to be downloaded"
+    help = "Download zip of subtitles of the indicated language"
 
     def handle(self, *args, **options):
-        
+        logging.info("Inside subtitle_download")
+        import pdb; pdb.set_trace()
         language = Settings.get("subtitle_language")
-        
-        while True: # loop until the method is aborted
             
-            if VideoFile.objects.filter(subtitle_download_in_progress=True).count() > 4:
-                self.stderr.write("Maximum downloads are in progress; aborting.\n")
-                return
-            
-            videos = VideoFile.objects.filter(flagged_for_subtitle_download=True, subtitle_download_in_progress=False)
-            if videos.count() == 0:
-                self.stdout.write("Nothing to download; aborting.\n")
-                return
+        #  Create database entry 
+        subtitle_download = UpdateProcessLog(process_name="subtitle download", stage_name="downloading")
+        subtitle_download.save()
 
-            video = videos[0]
-            
-            video.subtitle_download_in_progress = True
-            video.save()
-            
-            self.stdout.write("Downloading subtitles for video '%s'...\n" % video.youtube_id)
-            try:
-                download_subtitles(video.youtube_id, language)
-                self.stdout.write("Download is complete!\n")
-                video.subtitles_downloaded = True
-                video.subtitle_download_in_progress = False
-                video.flagged_for_subtitle_download = False
-                video.save()
-            except NoSubs as e:
-                video.flagged_for_subtitle_download = False
-                video.subtitle_download_in_progress = False
-                video.subtitles_downloaded = True
-                video.save()
-                self.stderr.write("No subtitles available\n")
-            except Exception as e:
-                self.stderr.write("Error in downloading subtitles: %s\n" % e)
-                video.subtitle_download_in_progress = False
-                video.flagged_for_subtitle_download = False
-                video.save()
-                force_job("subtitledownload", "Download Subtitles")
-                return
+        # Download zip and update database with progress
+        central_url = settings.CENTRAL_SERVER_DOMAIN
+        f, file_path = tempfile.mkstemp()
+        # file_path = "%s_subtitles.zip" % language
+
+        response = urllib2.urlopen(central_url)
+        # f = open(file_path, 'wb')
+        meta = response.info()
+        file_size = int(meta.getheaders("Content-Length")[0])
+
+        file_size_dl = 0
+        block_size = 8192
+        while True:
+            buffer = response.read(block_size)
+            if not buffer:
+                break
+
+            file_size_dl += len(buffer)
+            f.write(buffer)
+            # Update database
+            subtitle_download.stage_percent = float(file_size_dl/file_size)
+            subtitle_download.save()
+        f.close()
+
+        # Once complete, save and move to next stage
+        subtitle_download.stage_percent = 0
+        subtitle_download.stage_name = "unpacking"
+        subtitle_download.process_percent = 0.33
+        subtitle_download.save()
+
+        # Unpack it into content directory
+        content_path = settings.CONTENT_ROOT
+        with zipfile.ZipFile(file_path, 'r') as f:
+            f.extractall(content_path)
+
+        # Once complete, save and move to next stage
+        subtitle_download.stage_name = "updating db"
+        subtitle_download.process_percent = 0.66
+        subtitle_download.save()
+           

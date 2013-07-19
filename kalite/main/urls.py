@@ -48,6 +48,7 @@ urlpatterns += patterns('main.views',
 
 urlpatterns += patterns('central.api_views',
     url(r'^central_api/get_subtitle_counts/$', 'get_subtitle_counts', {}, 'get_subtitle_counts'),
+    url(r'^download/subtitles/(?P<locale>\w+)$', 'download_subtitle_zip', {}, 'download_subtitle_zip'),
 )
 
 if "loadtesting" in settings.INSTALLED_APPS:

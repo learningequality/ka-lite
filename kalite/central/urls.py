@@ -56,6 +56,10 @@ urlpatterns += patterns('central.views',
     url(r'^wiki/(?P<path>\w+)/$', redirect_to, {'base_url': settings.CENTRAL_WIKI_URL}, 'wiki'),
     url(r'^about/$', redirect_to, { 'base_url': 'http://learningequality.org/' }, 'about'),
 )   
+
+urlpatterns += patterns('central.api_views',
+    url(r'^download/subtitles/(?P<locale>\w+)$', 'download_subtitle_zip', {}, 'download_subtitle_zip'),
+)
    
 handler404 = 'central.views.handler_404'
 handler500 = 'central.views.handler_500'
