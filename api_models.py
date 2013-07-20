@@ -25,7 +25,7 @@ class APIModel(AttrDict):
 
     _related_field_types = {}  # this is a dummy; do not use directly
 
-    API_attributes = {} # this is also a dummy.
+    API_attributes = {}  # this is also a dummy.
 
     def __getattr__(self, name):
         """
@@ -41,7 +41,6 @@ class APIModel(AttrDict):
             return self[name]
         else:
             return super(APIModel, self).__getattr__(name)
-
 
     def __init__(self, *args, **kwargs):
 
@@ -173,6 +172,26 @@ class User(APIModel):
 
 
 class Badge(APIModel):
+
+    base_url = "/badges"
+
+    _related_field_types = {
+        "user_badges": class_by_kind,
+    }
+
+    @classmethod
+    def get_badges(cls):
+        return convert_list_to_classes(api_call("v1", cls.base_url), Badge)
+
+    @classmethod
+    def get_category(cls, category_id=None):
+        if category_id is not None:
+            return BadgeCategory(api_call("v1", cls.base_url + "/categories/" + str(category_id))[0])
+        else:
+            return convert_list_to_classes(api_call("v1", cls.base_url + "/categories"), BadgeCategory)
+
+
+class BadgeCategory(APIModel):
     pass
 
 
@@ -184,7 +203,11 @@ class UserVideo(APIModel):
     pass
 
 
+class UserBadge(APIModel):
+    pass
+
 # ProblemLog and VideoLog API calls return multiple entities in a list
+
 
 class ProblemLog(APIModel):
     pass
@@ -205,8 +228,9 @@ class Scratchpad(APIModel):
 class Article(APIModel):
     pass
 
-#kind_to_class_map maps from the kinds of data found in the topic tree to particular classes.
-#If Khan Academy add any new types of data to topic tree, this will break the topic tree rendering.
+# kind_to_class_map maps from the kinds of data found in the topic tree to particular classes.
+# If Khan Academy add any new types of data to topic tree, this will break
+# the topic tree rendering.
 
 
 kind_to_class_map = {
@@ -216,11 +240,15 @@ kind_to_class_map = {
     "Separator": Separator,
     "Scratchpad": Scratchpad,
     "Article": Article,
+    "UserBadge": UserBadge,
+    "UserVideo": UserVideo,
+    "UserExercise": UserExercise,
 }
 
 
-#Different API endpoints use different attributes as the id, depending on the kind of the item.
-#This map defines the id to use for API calls, depending on the kind of the item.
+# Different API endpoints use different attributes as the id, depending on the kind of the item.
+# This map defines the id to use for API calls, depending on the kind of
+# the item.
 
 
 kind_to_id_map = {
