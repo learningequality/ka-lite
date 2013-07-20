@@ -42,12 +42,6 @@ def start_auth(request):
     Step 1 of oauth authentication: get the REQUEST_TOKEN
     """
 
-    # Store information in a session
-    request.session["distributed_user_id"] = request.GET["user_id"]
-    request.session["distributed_callback_url"] = request.GET["callback"]
-    request.session["distributed_redirect_url"] = request.next or request.META.get("HTTP_REFERER", "") or "/"
-    request.session["distributed_csrf_token"] = request._cookies["csrftoken"]
-
     # Redirect to KA, for auth.  They will return to central, and we'll be able to continue
     #   using data from the session
     central_callback_url = request.build_absolute_uri(reverse('update_all_central_callback'))
@@ -103,8 +97,21 @@ def update_all_central(request):
     Update can't proceed without authentication.
     Start that process here.
     """
-    # Will enter the callback, when it completes.
-    return start_auth(request)
+
+    # Store information in a session
+    request.session["distributed_user_id"] = request.GET["user_id"]
+    # TODO(bcipolli): remove total HACK to get playground demo to work.
+    request.session["distributed_callback_url"] = request.GET["callback"].replace("playground.learningequality.org","10.28.237.39")
+    request.session["distributed_redirect_url"] = request.next or request.META.get("HTTP_REFERER", "") or "/"
+    request.session["distributed_csrf_token"] = request._cookies["csrftoken"]
+
+    if not "ACCESS_TOKEN" in request.session:
+        # Will enter the callback, when it completes.
+        logging.debug("starting new authorization handshake")
+        return start_auth(request)
+    else:
+        logging.debug("using cached authorization handshake")
+        return update_all_central_callback(request)
 
 
 @central_server_only
@@ -115,6 +122,9 @@ def update_all_central_callback(request):
     Parses out the request token verification.
     Then finishes the request by getting an auth token.
     """
+    if not "ACCESS_TOKEN" in request.session:
+        finish_auth(request)
+    
     exercises = get_api_resource(request, "/api/v1/user/exercises")
     videos = get_api_resource(request, "/api/v1/user/videos")
 
