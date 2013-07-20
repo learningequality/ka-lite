@@ -25,16 +25,23 @@ class APIModel(AttrDict):
 
     _related_field_types = {}  # this is a dummy; do not use directly
 
-    API_attributes = {}
+    API_attributes = {} # this is also a dummy.
 
     def __getattr__(self, name):
-        if name in self:
-            return super(APIModel, self).__getattr__(name)
+        """
+        Check to see if the attribute already exists in the object.
+        If so, return that attribute according to super.
+        If not, and the attribute is in API_attributes for this class,
+        then make the appropriate API call to fetch the data, and set it
+        into the object, so that repeated queries will not requery the API.
+        """
+        if name in self.API_attributes and name not in self:
+            self[name] = api_call("v1", self.API_url(name))
+            convert_items(name, self)
+            return self[name]
         else:
-            if name in self.API_attributes:
-                self[name] = api_call("v1", self.API_url(name))
-                convert_items(name, self)
-                return self[name]
+            return super(APIModel, self).__getattr__(name)
+
 
     def __init__(self, *args, **kwargs):
 
@@ -45,6 +52,9 @@ class APIModel(AttrDict):
                 convert_items(name, self)
 
     def API_url(self, name):
+        """
+        Generate the url from which to make API calls.
+        """
         return self.base_url + "/" + self[kind_to_id_map[self.kind]] + self.API_attributes[name]
 
 
@@ -132,18 +142,29 @@ class Topic(APIModel):
     }
 
     @classmethod
-    def get_tree(cls, root_topic_slug=""):
-        if (root_topic_slug):
-            return Topic(api_call("v1", cls.base_url + "/" + root_topic_slug))
+    def get_tree(cls, topic_slug=""):
+        """
+        Retrieve complete node tree starting at the specified root_slug and descending.
+        """
+        if topic_slug:
+            return Topic(api_call("v1", cls.base_url + "/" + topic_slug))
         else:
             return Topic(api_call("v1", "/topictree"))
 
     @classmethod
     def get_topic_exercises(cls, topic_slug):
+        """
+        This will return a list of exercises in the highest level of a topic.
+        Not lazy loading from get_tree, as any load of the topic data includes these.
+        """
         return convert_list_to_classes(api_call("v1", cls.base_url + "/" + topic_slug + "/exercises"))
 
     @classmethod
     def get_topic_videos(cls, topic_slug):
+        """
+        This will return a list of videos in the highest level of a topic.
+        Not lazy loading from get_tree, as any load of the topic data includes these.
+        """
         return convert_list_to_classes(api_call("v1", cls.base_url + "/" + topic_slug + "/videos"))
 
 
@@ -184,6 +205,10 @@ class Scratchpad(APIModel):
 class Article(APIModel):
     pass
 
+#kind_to_class_map maps from the kinds of data found in the topic tree to particular classes.
+#If Khan Academy add any new types of data to topic tree, this will break the topic tree rendering.
+
+
 kind_to_class_map = {
     "Video": Video,
     "Exercise": Exercise,
@@ -192,6 +217,11 @@ kind_to_class_map = {
     "Scratchpad": Scratchpad,
     "Article": Article,
 }
+
+
+#Different API endpoints use different attributes as the id, depending on the kind of the item.
+#This map defines the id to use for API calls, depending on the kind of the item.
+
 
 kind_to_id_map = {
     "Video": "readable_id",
