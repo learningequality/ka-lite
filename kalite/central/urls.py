@@ -2,6 +2,10 @@ from django.http import HttpResponseRedirect
 from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
 
+import contact.urls
+import faq.urls
+import khanload.api_urls
+import registration.urls
 import securesync.urls
 from kalite import settings
 from feeds import RssSiteNewsFeed, AtomSiteNewsFeed
@@ -36,7 +40,7 @@ urlpatterns += patterns('central.views',
     url(r'^$', 'homepage', {}, 'homepage'), 
     url(r'^delete_admin/(?P<org_id>\w+)/(?P<user_id>\w+)/$', 'delete_admin', {}, 'delete_admin'), 
     url(r'^delete_invite/(?P<org_id>\w+)/(?P<invite_id>\w+)/$', 'delete_invite', {}, 'delete_invite'), 
-    url(r'^accounts/', include('registration.urls')),
+    url(r'^accounts/', include(registration.urls)),
 
     url(r'^organization/(?P<id>\w+)/$', 'organization_form', {}, 'organization_form'),
     url(r'^organization/(?P<org_id>\w+)/zone/(?P<id>\w+)/$', 'zone_form', {}, 'zone_form'),
@@ -50,13 +54,16 @@ urlpatterns += patterns('central.views',
     url(r'^addsubscription/$', 'add_subscription', {}, 'add_subscription'),
     url(r'^feeds/rss/$', RssSiteNewsFeed(), {}, 'rss_feed'),
     url(r'^feeds/atom/$', AtomSiteNewsFeed(), {}, 'atom_feed'),
-    url(r'^faq/', include('faq.urls')),
+    url(r'^faq/', include(faq.urls)),
 
-    url(r'^contact/', include('contact.urls')),
+    url(r'^contact/', include(contact.urls)),
     url(r'^wiki/(?P<path>\w+)/$', redirect_to, {'base_url': settings.CENTRAL_WIKI_URL}, 'wiki'),
     url(r'^about/$', redirect_to, { 'base_url': 'http://learningequality.org/' }, 'about'),
-)   
-   
+
+    # api
+    url(r'^api/khanload/', include(khanload.api_urls)),
+)
+
 handler404 = 'central.views.handler_404'
 handler500 = 'central.views.handler_500'
 

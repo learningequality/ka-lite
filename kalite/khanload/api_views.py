@@ -84,14 +84,17 @@ def get_api_resource(request, resource_url):
     Step 3 of the api process:
     Get the data.
     """
+    logging.info("Getting data from khan academy (%s)." % resource_url)
     client = TestOAuthClient(KHAN_SERVER_URL, settings.KHAN_API_CONSUMER_KEY, settings.KHAN_API_CONSUMER_SECRET)
     start = time.time()
     response = client.access_resource(resource_url, request.session["ACCESS_TOKEN"])
     end = time.time()
 
     logging.debug("API (%s) time: %s" % (resource_url, end - start))
+    data = json.loads(response)
+    logging.info("Got %d items from khan academy (%s)." % (len(data), resource_url))
 
-    return json.loads(response)
+    return data
 
 
 @central_server_only
@@ -112,13 +115,8 @@ def update_all_central_callback(request):
     Parses out the request token verification.
     Then finishes the request by getting an auth token.
     """
-    logging.debug("Getting exercise data.")
     exercises = get_api_resource(request, "/api/v1/user/exercises")
-    logging.debug("Got %d exercises" % len(exercises))
-
-    logging.debug("Getting video data.")
     videos = get_api_resource(request, "/api/v1/user/videos")
-    logging.debug("Got %d videos" % len(videos))
 
     # Save videos
     video_logs = []
