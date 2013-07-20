@@ -117,6 +117,7 @@ class Exercise(APIModel):
 
     API_attributes = {"related_videos": "/videos",
                       "followup_exercises": "/followup_exercises"}
+
     @classmethod
     def get_exercise(cls, exercise_id):
         return Exercise(api_call("v1", cls.base_url + "/" + exercise_id))
@@ -131,7 +132,7 @@ class Topic(APIModel):
     }
 
     @staticmethod
-    def get_tree(root_topic_slug = ""):
+    def get_tree(root_topic_slug=""):
         if (root_topic_slug):
             return Topic(api_call("v1", "/topictree"))
         else:
@@ -172,10 +173,24 @@ class VideoLog(APIModel):
     pass
 
 
+class Separator(APIModel):
+    pass
+
+
+class Scratchpad(APIModel):
+    pass
+
+
+class Article(APIModel):
+    pass
+
 kind_to_class_map = {
     "Video": Video,
     "Exercise": Exercise,
     "Topic": Topic,
+    "Separator": Separator,
+    "Scratchpad": Scratchpad,
+    "Article": Article,
 }
 
 kind_to_id_map = {
@@ -192,5 +207,5 @@ if __name__ == "__main__":
     # print api_call("v1", "/videos");
     # print api_call("nothing");
     # Video.get_video("adding-subtracting-negative-numbers")
-    #Video.get_video("C38B33ZywWs")
+    # Video.get_video("C38B33ZywWs")
     Topic.get_tree("addition-subtraction")
