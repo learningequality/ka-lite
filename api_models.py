@@ -45,7 +45,7 @@ class APIModel(AttrDict):
                 convert_items(name, self)
 
     def API_url(self, name):
-        return self.base_url + "/" + self.readable_id + self.API_attributes[name]
+        return self.base_url + "/" + self[kind_to_id_map[self.kind]] + self.API_attributes[name]
 
 
 def api_call(target_version, target_api_url):
@@ -100,17 +100,24 @@ class Video(APIModel):
     API_attributes = {"related_exercises": "/exercises"}
 
     @staticmethod
-    def get_video(video_id):
-        return Video(api_call("v1", "/videos/" + video_id))
+    def get_video(self, video_id):
+        return Video(api_call("v1", self.base_url + "/" + video_id))
 
 
 class Exercise(APIModel):
 
     base_url = "/exercises"
 
+    _related_field_types = {
+        "related_videos": class_by_kind,
+        "followup_exercises": class_by_kind,
+    }
+
     API_attributes = {"related_videos": "/videos",
                       "followup_exercises": "/followup_exercises"}
-    pass
+    @classmethod
+    def get_exercise(cls, exercise_id):
+        return Exercise(api_call("v1", cls.base_url + "/" + exercise_id))
 
 
 class Topic(APIModel):
@@ -150,6 +157,12 @@ kind_to_class_map = {
     "Video": Video,
     "Exercise": Exercise,
     "Topic": Topic,
+}
+
+kind_to_id_map = {
+    "Video": "readable_id",
+    "Exercise": "name",
+    "Topic": "slug",
 }
 
 if __name__ == "__main__":
