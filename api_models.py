@@ -101,9 +101,9 @@ class Video(APIModel):
 
     API_attributes = {"related_exercises": "/exercises"}
 
-    @staticmethod
-    def get_video(self, video_id):
-        return Video(api_call("v1", self.base_url + "/" + video_id))
+    @classmethod
+    def get_video(cls, video_id):
+        return Video(api_call("v1", cls.base_url + "/" + video_id))
 
 
 class Exercise(APIModel):
@@ -125,26 +125,26 @@ class Exercise(APIModel):
 
 class Topic(APIModel):
 
-    base_url = "/topictree"
+    base_url = "/topic"
 
     _related_field_types = {
         "children": class_by_kind,
     }
 
-    @staticmethod
-    def get_tree(root_topic_slug=""):
+    @classmethod
+    def get_tree(cls, root_topic_slug=""):
         if (root_topic_slug):
-            return Topic(api_call("v1", "/topictree"))
+            return Topic(api_call("v1", cls.base_url + "/" + root_topic_slug))
         else:
-            return Topic(api_call("v1", "/topictree/" + root_topic_slug))
+            return Topic(api_call("v1", "/topictree"))
 
-    @staticmethod
-    def get_topic_exercises(topic_slug):
-        return convert_list_to_classes(api_call("v1", topic_slug + "/exercises"))
+    @classmethod
+    def get_topic_exercises(cls, topic_slug):
+        return convert_list_to_classes(api_call("v1", cls.base_url + "/" + topic_slug + "/exercises"))
 
-    @staticmethod
-    def get_topic_videos(topic_slug):
-        return convert_list_to_classes(api_call("v1", topic_slug + "/videos"))
+    @classmethod
+    def get_topic_videos(cls, topic_slug):
+        return convert_list_to_classes(api_call("v1", cls.base_url + "/" + topic_slug + "/videos"))
 
 
 class User(APIModel):
