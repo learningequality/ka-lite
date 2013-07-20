@@ -71,17 +71,23 @@ def convert_list_to_classes(nodelist, class_converter=class_by_kind):
     
 
 class Video(APIModel):
-    pass
+
+    base_url = "/videos"
+
+    API_attributes = {"related_exercices": "/exercises"}
+
+    @staticmethod
+    def get_video(video_id):
+        return Video(api_call("v1", "/videos/" + video_id))
+
 
 class Exercise(APIModel):
 
     base_url = "/exercises"
 
     API_attributes = {"related_videos": "/videos", "followup_exercises": "/followup_exercises"}
-
-
-
     pass
+
 
 class Topic(APIModel):
     
@@ -89,22 +95,28 @@ class Topic(APIModel):
         "children": class_by_kind,
     }
 
+
 class User(APIModel):
     pass
+
 
 class Badge(APIModel):
     pass
 
+
 class UserExercise(APIModel):
     pass
 
+
 class UserVideo(APIModel):
     pass
+
 
 #ProblemLog and VideoLog API calls return multiple entities in a list
 
 class ProblemLog(APIModel):
     pass
+
 
 class VideoLog(APIModel):
     pass
@@ -146,5 +158,7 @@ if __name__ == "__main__":
     #print t.children
     #print t.children[0].__class__
     #print t.children[1].__class__
-    #print api_call("v1", "/badges");
-    print api_call("nothing");
+    #print api_call("v1", "/videos");
+    #print api_call("nothing");
+    #Video.get_video("adding-subtracting-negative-numbers")
+    Video.get_video("C38B33ZywWs")
