@@ -48,13 +48,15 @@ class APIModel(AttrDict):
         return self.base_url + "/" + self.id + self.API_attributes[name]
 
 
-def api_call(target_version, target_api_url):
+def api_call(target_version, target_api_url, debug=False):
     # usage : api_call("v1", "/badges")
     try:
         json_object = json.loads(requests.get(
             "http://www.khanacademy.org/api/" + target_version + target_api_url).content)
     except:
         return {}
+    if(debug):
+        print json_object
     return json_object
 
 
@@ -111,9 +113,26 @@ class Exercise(APIModel):
 
 class Topic(APIModel):
 
+    base_url = "/topictree"
+
     _related_field_types = {
         "children": class_by_kind,
     }
+
+    @staticmethod
+    def get_tree(root_topic_slug = ""):
+        if (root_topic_slug):
+            return Topic(api_call("v1", "/topictree"))
+        else:
+            return Topic(api_call("v1", "/topictree/" + root_topic_slug))
+
+    @staticmethod
+    def get_topic_exercises(topic_slug):
+        return convert_list_to_classes(api_call("v1", topic_slug + "/exercises"))
+
+    @staticmethod
+    def get_topic_videos(topic_slug):
+        return convert_list_to_classes(api_call("v1", topic_slug + "/videos"))
 
 
 class User(APIModel):
@@ -181,4 +200,5 @@ if __name__ == "__main__":
     # print api_call("v1", "/videos");
     # print api_call("nothing");
     # Video.get_video("adding-subtracting-negative-numbers")
-    Video.get_video("C38B33ZywWs")
+    #Video.get_video("C38B33ZywWs")
+    Topic.get_tree("addition-subtraction")
