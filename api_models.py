@@ -21,6 +21,16 @@ class APIModel(AttrDict):
     
     _related_field_types = {} # this is a dummy; do not use directly
     
+    API_attributes = {}
+
+    def __getattr__(self, name):
+        if name in self:
+            super.__getattr__(self, name)
+        else:
+            if name in API_attributes:
+                self[name] = APIcall(API_attributes[name])
+
+
     def __init__(self, *args, **kwargs):
         
         super(APIModel, self).__init__(*args, **kwargs)
@@ -55,6 +65,13 @@ class Video(APIModel):
     pass
 
 class Exercise(APIModel):
+
+    base_url = "/exercises"
+
+    API_attributes = {"related_videos": "/videos", "followup_exercises": "/followup_exercises"}
+
+
+
     pass
 
 class Topic(APIModel):
