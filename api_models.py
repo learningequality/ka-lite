@@ -63,6 +63,26 @@ class Topic(APIModel):
         "children": class_by_kind,
     }
 
+class User(APIModel):
+    pass
+
+class Badge(APIModel):
+    pass
+
+class UserExercise(APIModel):
+    pass
+
+class UserVideo(APIModel):
+    pass
+
+#ProblemLog and VideoLog API calls return multiple entities in a list
+
+class ProblemLog(APIModel):
+    pass
+
+class VideoLog(APIModel):
+    pass
+
 
 kind_to_class_map = {
     "video": Video,
