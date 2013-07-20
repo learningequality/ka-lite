@@ -1,3 +1,5 @@
+import requests
+import json
 
 class AttrDict(dict):
 
@@ -43,7 +45,14 @@ class APIModel(AttrDict):
                 # convert every item in related list to correct type
                 elif type(self[name]) == list:
                     convert_list_to_classes(self[name], class_converter=self._related_field_types[name])
-                    
+
+# usage : api_call("v1", "/badges")
+def api_call(target_version, target_api_url):
+    try:
+        json_object = json.loads(requests.get("http://www.khanacademy.org/api/" + target_version + target_api_url).content)
+    except:
+        return {}
+    return json_object                    
 
 def class_by_kind(node):
     return kind_to_class_map[node["kind"]](node)
@@ -133,8 +142,9 @@ t = Topic({
 })
 
 if __name__ == "__main__":
-    print t.name
-    print t.children
-    print t.children[0].__class__
-    print t.children[1].__class__
-
+    #print t.name
+    #print t.children
+    #print t.children[0].__class__
+    #print t.children[1].__class__
+    #print api_call("v1", "/badges");
+    print api_call("nothing");
