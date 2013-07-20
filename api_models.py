@@ -47,10 +47,9 @@ class APIModel(AttrDict):
     def API_url(self, name):
         return self.base_url + "/" + self.id + self.API_attributes[name]
 
-# usage : api_call("v1", "/badges")
-
 
 def api_call(target_version, target_api_url):
+    # usage : api_call("v1", "/badges")
     try:
         json_object = json.loads(requests.get(
             "http://www.khanacademy.org/api/" + target_version + target_api_url).content)
@@ -94,7 +93,7 @@ class Video(APIModel):
 
     base_url = "/videos"
 
-    API_attributes = {"related_exercices": "/exercises"}
+    API_attributes = {"related_exercises": "/exercises"}
 
     @staticmethod
     def get_video(video_id):
