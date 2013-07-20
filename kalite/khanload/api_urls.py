@@ -1,11 +1,12 @@
 from django.conf.urls.defaults import patterns, include, url
 
+
 urlpatterns = patterns('khanload.api_views',
     # Distributed server urls
-    url(r'^oauth/$', 'update_all_callback', {}, 'update_all_callback'),
-    url(r'^update/$', 'update_all', {}, 'update_all'),
-
     # Central server urls
-    url(r'^user/exercises', 'user_exercises', {}, 'user_exercises'),
-    url(r'^user/videos', 'user_videos', {}, 'user_videos'),
+    url(r'^update/central/$', 'update_all_central', {}, 'update_all_central'),
+    url(r'^oauth/$', 'update_all_central_callback', {}, 'update_all_central_callback'),
+
+    url(r'^update/distributed/$', 'update_all_distributed', {}, 'update_all_distributed'),
+    url(r'^update/distributed_callback/$', 'update_all_distributed_callback', {}, 'update_all_distributed_callback'),
 )

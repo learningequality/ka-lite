@@ -165,6 +165,12 @@ if CENTRAL_SERVER:
     EMAIL_BACKEND           = getattr(local_settings, "EMAIL_BACKEND", "postmark.backends.PostmarkBackend")
     AUTH_PROFILE_MODULE     = 'central.UserProfile'
 
+    # Used for accessing the KA API.
+    #   By default, things won't work--local_settings needs to specify good values.
+    #   We do this so that we have control over our own key/secret (secretly, of course!)
+    KHAN_API_CONSUMER_KEY = getattr(local_settings, "KHAN_API_CONSUMER_KEY", "")
+    KHAN_API_CONSUMER_SECRET = getattr(local_settings, "KHAN_API_CONSUMER_SECRET", "")
+
 else:
     INSTALLED_APPS         += ("coachreports",)
     # Include optionally installed apps
@@ -217,6 +223,3 @@ TEST_RUNNER = 'kalite.utils.testing.testrunner.KALiteTestRunner'
 
 CRONSERVER_FREQUENCY = getattr(local_settings, "CRONSERVER_FREQUENCY", 600) # 10 mins (in seconds)
 
-# Used for accessing the KA API.  By default, things won't work--local_settings needs to specify good values.
-KHAN_API_CONSUMER_KEY = getattr(local_settings, "KHAN_API_CONSUMER_KEY", "")
-KHAN_API_CONSUMER_SECRET = getattr(local_settings, "KHAN_API_CONSUMER_SECRET", "")
