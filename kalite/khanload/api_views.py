@@ -10,6 +10,7 @@ import time
 from khanacademy.test_oauth_client import TestOAuthClient
 from oauth import OAuthToken
 
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.datastructures import MultiValueDictKeyError
@@ -199,7 +200,7 @@ def update_all_distributed(request):
         "user_id": request.session["facility_user"].id,
     }
 
-    query_string = "&".join(["%s=%s" % item for item in params.items()])
+    query_string = "&".join(["%s=%s" % (k,oauth.escape(v)) for k,v in params.items()])
     central_url = CENTRAL_SERVER_URL + reverse("update_all_central") + "?" + query_string
 
     return HttpResponseRedirect(central_url)
@@ -208,6 +209,12 @@ def update_all_distributed(request):
 @csrf_exempt
 @distributed_server_only
 def update_all_distributed_callback(request):
+    """
+    """
+
+    if request.method != "POST":
+        raise PermissionDenied("Only POST allowed to this URL endpoint.")
+
     videos = json.loads(request.POST["video_logs"])
     exercises = json.loads(request.POST["exercise_logs"])
     user = FacilityUser.objects.get(id=request.POST["user_id"])
