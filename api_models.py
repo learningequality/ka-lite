@@ -1,3 +1,4 @@
+
 class AttrDict(dict):
 
     def __init__(self, *args, **kwargs):
@@ -31,10 +32,72 @@ class APIModel(AttrDict):
                     self[name] = self._related_field_types[name](self[name])
                 # convert every item in related list to correct type
                 elif type(self[name]) == list:
-                    for i in range(len(self[name])):
-                        self[name][i] = self._related_field_types[name](self[name][i])
+                    convert_list_to_classes(self[name], class_converter=self._related_field_types[name])
+                    
 
 def class_by_kind(node):
     return kind_to_class_map[node["kind"]](node)
 
+
+def convert_list_to_classes(nodelist, class_converter=class_by_kind):
+    """
+    Convert each element of the list (in-place) into an instance of a subclass of APIModel.
+    You can pass a particular class to `class_converter` if you want to, or it will auto-select by kind.
+    """
+    
+    for i in range(len(nodelist)):
+        nodelist[i] = class_converter(nodelist[i])
+    
+    return nodelist # just for good measure; it's already been changed
+    
+
+class Video(APIModel):
+    pass
+
+class Exercise(APIModel):
+    pass
+
+class Topic(APIModel):
+    
+    _related_field_types = {
+        "children": class_by_kind,
+    }
+
+
+kind_to_class_map = {
+    "video": Video,
+    "exercise": Exercise,
+    "topic": Topic,
+}    
+
+t = Topic({
+    "name": "Penguin Watchers", 
+    "children":
+        [
+            {
+                "kind": "video",
+                "name": "Waddling"
+            }, 
+            {
+                "kind": "exercise",
+                "name": "Waddle Test"
+            },
+            {
+                "kind": "topic",
+                "name": "More stuff",
+                "children": [
+                    {
+                        "kind": "video",
+                        "name": "Deep Secrets"
+                    }
+                ]
+            },
+        ],
+})
+
+if __name__ == "__main__":
+    print t.name
+    print t.children
+    print t.children[0].__class__
+    print t.children[1].__class__
 
