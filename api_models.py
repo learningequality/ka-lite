@@ -36,9 +36,10 @@ class APIModel(AttrDict):
                 elif type(self[name]) == list:
                     convert_list_to_classes(self[name], class_converter=self._related_field_types[name])
 
-def api_call(target_api_url):
+# usage : api_call("v1", "/badges")
+def api_call(target_version, target_api_url):
     try:
-        json_object = json.loads(requests.get("http://www.khanacademy.org/api" + target_api_url).content)
+        json_object = json.loads(requests.get("http://www.khanacademy.org/api/" + target_version + target_api_url).content)
     except:
         return {}
     return json_object                    
@@ -128,5 +129,5 @@ if __name__ == "__main__":
     #print t.children
     #print t.children[0].__class__
     #print t.children[1].__class__
-    #print api_call("/v1/badges");
+    #print api_call("v1", "/badges");
     print api_call("nothing");
