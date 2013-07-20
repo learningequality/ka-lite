@@ -147,7 +147,8 @@ INSTALLED_APPS = (
     "securesync",
     "config",
     "main", # in order for securesync to work, this needs to be here.
-    "kalite", # contains commands
+    "kalite",  # contains commands
+    "khanload",  # khan academy data
 )
 
 if DEBUG or CENTRAL_SERVER:

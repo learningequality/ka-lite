@@ -129,13 +129,13 @@ def student_view(request, facility, xaxis="pct_mastery", yaxis="ex:attempts"):
             "ex:average_attempts": 0 if not n_exercises_touched else sum([el.attempts for el in exercise_logs[topic['id']]])/float(n_exercises_touched),
             "ex:average_streak":   0 if not n_exercises_touched else sum([el.streak_progress for el in exercise_logs[topic['id']]])/float(n_exercises_touched)/100.,
             "ex:total_struggling": 0 if not n_exercises_touched else sum([el.struggling for el in exercise_logs[topic['id']]]),
-            "ex:last_completed":None if not n_exercises_touched else max([el.completion_timestamp or datetime.datetime(year=1900, month=1, day=1) for el in exercise_logs[topic['id']]]),
+            "ex:last_completed":None if not n_exercises_touched else max([el.completion_timestamp or None for el in exercise_logs[topic['id']]]),
 
             "vid:pct_started":      0 if not n_videos_touched else n_videos_touched/float(n_videos),
             "vid:pct_completed":    0 if not n_videos_touched else sum([vl.complete for vl in video_logs[topic['id']]])/float(n_videos),
             "vid:total_minutes":      0 if not n_videos_touched else sum([vl.total_seconds_watched for vl in video_logs[topic['id']]])/60.,
             "vid:average_points":   0 if not n_videos_touched else sum([vl.points for vl in video_logs[topic['id']]])/float(n_videos_touched),
-            "vid:last_completed":None if not n_videos_touched else max([vl.completion_timestamp or datetime.datetime(year=1900, month=1, day=1) for vl in video_logs[topic['id']]]),
+            "vid:last_completed":None if not n_videos_touched else max([vl.completion_timestamp or None for vl in video_logs[topic['id']]]),
         }
         any_data = any_data or n_exercises_touched>0 or n_videos_touched>0
 

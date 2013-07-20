@@ -1,6 +1,7 @@
 {% extends "coachreports/base.html" %}
 
 {% load i18n %}
+{% load staticfiles %}
 {% load my_filters %}
 
 {% block coachreports_active %}{% endblock coachreports_active %}
@@ -9,31 +10,57 @@
 {% block title %}User report{% endblock title%}
 
 {% block headcss %}{{ block.super }}
-<style>
-    table, th, td {
-        border: 1px solid black;
-    }
-    .super-header {
-        background-color: #ccc;
-        font-weight: bold;
-    }
-    th {
-        color: #555; 
-    }
-    th, td {
-        padding: 3px;
-    }
-    tr.invisible {
-        display:none;
-    }
-    td.pct, td.float, td.int, td.date {
-        text-align: right;
-    }
-    td.struggling {
-        background-color: #aa0; 
-        font-weight: bold;
-    }
-</style>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+        }
+        .super-header {
+            background-color: #ccc;
+            font-weight: bold;
+        }
+        th {
+            color: #555;
+        }
+        th, td {
+            padding: 3px;
+        }
+        tr.invisible {
+            display:none;
+        }
+        td.pct, td.float, td.int, td.date {
+            text-align: right;
+        }
+        td.struggling {
+            background-color: #aa0;
+            font-weight: bold;
+        }
+        .table-title {
+            margin-bottom: 15px;
+        }
+    </style>
+
+    <style>
+        .green_button{
+            -webkit-border-radius: 5px;
+            -moz-border-radius: 5px;
+            border-radius: 5px;
+            background-color: #91ca7f;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 13px;
+            color: #ffffff;
+            padding: 10px 20px;
+            border:0px;
+            vertical-align: middle;
+        }
+
+        a.green_button, a.green_button:hover,input.green_button, input.green_button:hover {
+            color: white !important;
+            text-decoration: none;
+        }
+        a.green_button:hover,input.green_button:hover{
+            background-color:#C0C0C0;
+        }
+    </style>
 {% endblock headcss %}
 
 {% block navbar_topics %}{% endblock navbar_topics %}
@@ -47,10 +74,13 @@
     </div>
     {% endif %}
     {% endblock navbar_user %}
+                <li>
+                    <a class="green_button" href="{% url update_all %}">{% trans "Download data from Khan Academy" %}</a>
+                </li>
 {% endblock navbar_groups %}
 
 {% block content %}
-    {% block navbar %}{{ block.super }} {% endblock navbar %}
+    {% block navbar %}{{ block.super }}{% endblock navbar %}
     
 {% if no_data %}
     {% trans "Welcome to KA Lite!" %}

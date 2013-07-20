@@ -3,6 +3,7 @@ from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
 
 import coachreports.urls
+import khanload.api_urls
 import main.api_urls
 import securesync.urls
 from kalite import settings
@@ -43,6 +44,7 @@ urlpatterns += patterns('main.views',
 
     url(r'^coachreports/', include(coachreports.urls)),
     url(r'^api/', include(main.api_urls)),
+    url(r'^api/khanload/', include(khanload.api_urls)),
 )
 
 if "loadtesting" in settings.INSTALLED_APPS:
