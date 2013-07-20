@@ -12,10 +12,10 @@ from django.core.management import call_command
 from django.utils import unittest
 
 import settings
-from utils.testing import distributed_only
+from utils.testing import distributed_server_test
 
 
-@distributed_only
+@distributed_server_test
 class UrlTestCases(TestCase):
     """Walk through a set of URLs, and validate very basic properties (status code, some text)
     A good test to weed out untested view/template errors"""

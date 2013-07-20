@@ -48,8 +48,6 @@ CENTRAL_DEV_EMAIL     = getattr(local_settings, "CENTRAL_DEV_EMAIL",        "dev
 CENTRAL_INFO_EMAIL    = getattr(local_settings, "CENTRAL_INFO_EMAIL",       "info@learningequality.org")
 CENTRAL_CONTACT_EMAIL = getattr(local_settings, "CENTRAL_CONTACT_EMAIL", "info@learningequality.org")#"kalite@%s"%CENTRAL_SERVER_DOMAIN
 CENTRAL_ADMIN_EMAIL   = getattr(local_settings, "CENTRAL_ADMIN_EMAIL",   "errors@learningequality.org")#"kalite@%s"%CENTRAL_SERVER_DOMAIN
-CENTRAL_FROM_EMAIL    = getattr(local_settings, "CENTRAL_FROM_EMAIL",    "kalite@%s"%CENTRAL_SERVER_DOMAIN)
-CENTRAL_CONTACT_EMAIL = getattr(local_settings, "CENTRAL_CONTACT_EMAIL", "info@learningequality.org")#"kalite@%s"%CENTRAL_SERVER_DOMAIN
 
 CENTRAL_SUBSCRIBE_URL    = getattr(local_settings, "CENTRAL_SUBSCRIBE_URL",    "http://adhocsync.us6.list-manage.com/subscribe/post?u=023b9af05922dfc7f47a4fffb&amp;id=97a379de16")
 
@@ -146,7 +144,6 @@ INSTALLED_APPS = (
     "south",
     "chronograph",
     "django_cherrypy_wsgiserver",
-    "kalite",
     "securesync",
     "config",
     "main", # in order for securesync to work, this needs to be here.
@@ -172,8 +169,8 @@ if CENTRAL_SERVER:
 
 else:
     # Include optionally installed apps
-    if os.path.exists(PROJECT_PATH + "/loadtesting/"):
-        INSTALLED_APPS     += ("loadtesting",)
+    if os.path.exists(PROJECT_PATH + "/tests/loadtesting/"):
+        INSTALLED_APPS     += ("kalite.tests.loadtesting"),
 
     MIDDLEWARE_CLASSES += (
         "securesync.middleware.DBCheck",
@@ -217,4 +214,6 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 MESSAGE_STORAGE = 'utils.django_utils.NoDuplicateMessagesSessionStorage'
 
-TEST_RUNNER = 'kalite.utils.testrunner.KALiteTestRunner'
+TEST_RUNNER = 'kalite.utils.testing.testrunner.KALiteTestRunner'
+
+CRONSERVER_FREQUENCY = getattr(local_settings, "CRONSERVER_FREQUENCY", 600) # 10 mins (in seconds)

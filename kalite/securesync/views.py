@@ -76,7 +76,7 @@ def facility_required(handler):
 
 
 def set_as_registered():
-    force_job("syncmodels", "Secure Sync", "HOURLY")
+    force_job("syncmodels", "Secure Sync", "HOURLY")  # now launches asynchronously
     Settings.set("registered", True)
 
 

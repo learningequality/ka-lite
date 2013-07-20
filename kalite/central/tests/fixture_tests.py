@@ -1,8 +1,5 @@
 """
-This file demonstrates writing tests using the unittest module. These will pass
-when you run "manage.py test".
-
-Replace this with more appropriate tests for your application.
+Test the basic ability to load and dump data to a fixture.  Very basic.
 """
 
 import os
@@ -12,13 +9,13 @@ from django.test import TestCase
 from django.core.management import call_command
 
 import settings
-from utils.testing import central_only
+from utils.testing import central_server_test
 
 
 @unittest.skip
-@central_only
+@central_server_test
 class FixtureTestCases(TestCase):
-    """ """
+    """Test the basic ability to load and dump data to a fixture.  Very basic."""
 
     def test_loaddata(self):
         cur_dir = os.path.split(__file__)[0]

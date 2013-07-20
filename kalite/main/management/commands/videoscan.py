@@ -1,14 +1,14 @@
-import time, glob
+import glob
+import time
 from annoying.functions import get_object_or_None
 
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
 from main.models import VideoFile
-from utils.videos import download_video
-from utils.jobs import force_job
-from utils.general import break_into_chunks
 from utils import caching
+from utils.general import break_into_chunks
+from utils.videos import download_video
 
 
 class Command(BaseCommand):
