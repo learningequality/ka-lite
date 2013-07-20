@@ -29,9 +29,9 @@ class APIModel(AttrDict):
 
     def __getattr__(self, name):
         if name in self:
-            super.__getattr__(self, name)
+            return super(APIModel, self).__getattr__(name)
         else:
-            if name in API_attributes:
+            if name in self.API_attributes:
                 self[name] = api_call("v1", self.API_url(name))
                 convert_items(name, self)
                 return self[name]
@@ -45,7 +45,7 @@ class APIModel(AttrDict):
                 convert_items(name, self)
 
     def API_url(self, name):
-        return self.base_url + "/" + self.id + self.API_attributes[name]
+        return self.base_url + "/" + self.readable_id + self.API_attributes[name]
 
 # usage : api_call("v1", "/badges")
 
@@ -94,7 +94,11 @@ class Video(APIModel):
 
     base_url = "/videos"
 
-    API_attributes = {"related_exercices": "/exercises"}
+    _related_field_types = {
+        "related_exercises": class_by_kind,
+    }
+
+    API_attributes = {"related_exercises": "/exercises"}
 
     @staticmethod
     def get_video(video_id):
@@ -144,35 +148,35 @@ class VideoLog(APIModel):
 
 
 kind_to_class_map = {
-    "video": Video,
-    "exercise": Exercise,
-    "topic": Topic,
+    "Video": Video,
+    "Exercise": Exercise,
+    "Topic": Topic,
 }
 
-t = Topic({
-    "name": "Penguin Watchers",
-    "children":
-    [
-            {
-                "kind": "video",
-                "name": "Waddling"
-            },
-    {
-    "kind": "exercise",
-    "name": "Waddle Test"
-    },
-        {
-            "kind": "topic",
-            "name": "More stuff",
-            "children": [
-                    {
-                        "kind": "video",
-                        "name": "Deep Secrets"
-                    }
-            ]
-        },
-    ],
-})
+# t = Topic({
+#     "name": "Penguin Watchers",
+#     "children":
+#     [
+#             {
+#                 "kind": "video",
+#                 "name": "Waddling"
+#             },
+#     {
+#     "kind": "exercise",
+#     "name": "Waddle Test"
+#     },
+#         {
+#             "kind": "topic",
+#             "name": "More stuff",
+#             "children": [
+#                     {
+#                         "kind": "video",
+#                         "name": "Deep Secrets"
+#                     }
+#             ]
+#         },
+#     ],
+# })
 
 if __name__ == "__main__":
     # print t.name
