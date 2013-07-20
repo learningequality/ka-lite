@@ -47,10 +47,9 @@ class APIModel(AttrDict):
     def API_url(self, name):
         return self.base_url + "/" + self.readable_id + self.API_attributes[name]
 
-# usage : api_call("v1", "/badges")
-
 
 def api_call(target_version, target_api_url):
+    # usage : api_call("v1", "/badges")
     try:
         json_object = json.loads(requests.get(
             "http://www.khanacademy.org/api/" + target_version + target_api_url).content)
@@ -152,31 +151,6 @@ kind_to_class_map = {
     "Exercise": Exercise,
     "Topic": Topic,
 }
-
-# t = Topic({
-#     "name": "Penguin Watchers",
-#     "children":
-#     [
-#             {
-#                 "kind": "video",
-#                 "name": "Waddling"
-#             },
-#     {
-#     "kind": "exercise",
-#     "name": "Waddle Test"
-#     },
-#         {
-#             "kind": "topic",
-#             "name": "More stuff",
-#             "children": [
-#                     {
-#                         "kind": "video",
-#                         "name": "Deep Secrets"
-#                     }
-#             ]
-#         },
-#     ],
-# })
 
 if __name__ == "__main__":
     # print t.name
