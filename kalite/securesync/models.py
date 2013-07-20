@@ -75,7 +75,7 @@ class SyncSession(models.Model):
 
 
 class RegisteredDevicePublicKey(models.Model):
-    public_key = models.CharField(max_length=500, help_text="(this field should be filled in automatically; don't change it)")
+    public_key = models.CharField(max_length=500, help_text="(This field will be filled in automatically)")
     zone = models.ForeignKey("Zone")
 
     def __unicode__(self):
@@ -266,19 +266,24 @@ class Zone(SyncedModel):
     def __unicode__(self):
         return self.name
 
+    #@central_server_only  # causes circular loop, to include here
+    def get_org(self):
+        """
+        Reverse lookup of organization containing this zone.
+        """
+        orgs = self.organization_set.all()
+        assert orgs.count() <= 1, "Zone must be contained by 0 or 1 organization(s)."
+
+        return orgs[0] if orgs else None
+
+
     @classmethod
     def get_headless_zones(cls):
+        """
+        Method for getting all zones that aren't connected to at least one organization.
+        """
         # Must import inline (not in header) to avoid import loop
-        from central.models import Organization
-
-        all_zones = Zone.objects.all()
-        headless_zones = []
-        for zone in all_zones:
-            orgs = Organization.objects.filter(zones__in=[zone])
-            if not orgs:
-                headless_zones.append(zone)
-
-        return headless_zones
+        return Zone.objects.filter(organization=None)
 
 
 class Facility(SyncedModel):

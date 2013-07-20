@@ -162,11 +162,11 @@
 							<div class="title-contents">
 								<h2 class="title">
 									{{ org.name }}
-									{% if org.name == "Headless Zones" %}
+									{% if org.name == HEADLESS_ORG_NAME %}
                                         <span class="glossary-link nudge-left" title="Headless zones are (auto-registered) zones not linked to any account."></span>
 									{% endif %}
 								</h2>
-								{% if org.name != "Headless Zones" %}
+								{% if org.name != HEADLESS_ORG_NAME %}
 								<a href="{% url organization_form org_id=org.id %}">
 									(Edit)
 								</a>

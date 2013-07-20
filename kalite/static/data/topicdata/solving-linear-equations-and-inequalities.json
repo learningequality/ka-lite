@@ -1,1 +1,498 @@
-[{"relative_url": "/exercise/writing_expressions_1", "file_name": "", "covers": [], "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/writing_expressions_1", "v_position": 5, "display_name": "Writing expressions", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/solving-linear-equations-and-inequalities-250x250.png?7", "custom_stacks": [], "description": "Write a mathematical expression from a sentence.", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "Write Exp1", "author_name": "John Resig", "h_position": 26, "kind": "Exercise", "sha1": "af7ad50cf381a9fca29f1cb1cbcd1ec82ccf870d", "name": "writing_expressions_1", "prerequisites": ["evaluating_expressions_1"], "seconds_per_fast_problem": 8.0, "pretty_display_name": "Writing expressions"}, {"relative_url": "/exercise/writing_expressions_2", "file_name": "", "covers": ["writing_expressions_1"], "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/writing_expressions_2", "v_position": 5, "display_name": "Writing expressions 2", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/solving-linear-equations-and-inequalities-250x250.png?7", "custom_stacks": [], "description": "Write a mathematical expression from sentences. Requires distribution.", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "Write Exp2", "author_name": "Peter Kuperman", "h_position": 27, "kind": "Exercise", "sha1": "01eeffef0e76cc49b6b5971f85cdde67059df216", "name": "writing_expressions_2", "prerequisites": ["writing_expressions_1"], "seconds_per_fast_problem": 13.0, "pretty_display_name": ""}, {"relative_url": "/exercise/one_step_equations", "file_name": "", "covers": ["one_step_equations_0.5"], "creation_date": "2011-11-07T23:59:07Z", "ka_url": "http://www.khanacademy.org/exercise/one_step_equations", "v_position": 8, "display_name": "One step equations", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/solving-linear-equations-and-inequalities-250x250.png?7", "custom_stacks": [], "description": "Solve equations in one step.", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "1step eq", "author_name": "Scott Menke", "h_position": 27, "kind": "Exercise", "sha1": "afd5b952756c41ae37f7c007fafe72fe15a028c2", "name": "one_step_equations", "prerequisites": ["evaluating_expressions_1"], "seconds_per_fast_problem": 9.0, "pretty_display_name": ""}, {"relative_url": "/exercise/linear_equations_1", "file_name": "", "covers": ["division_1"], "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/linear_equations_1", "v_position": 6, "display_name": "One-step equations with mult", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/solving-linear-equations-and-inequalities-250x250.png?7", "custom_stacks": [], "description": "Solve equations in one step.", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "Lin. Eq. 1", "author_name": "Marcia Lee", "h_position": 28, "kind": "Exercise", "sha1": "f662af7fabf87b1c927e2aa82e23c043dcee3ec8", "name": "linear_equations_1", "prerequisites": ["evaluating_expressions_2", "one_step_equations", "combining_like_terms_2"], "seconds_per_fast_problem": 5.0, "pretty_display_name": "One-step equations with mult"}, {"relative_url": "/exercise/linear_equations_2", "file_name": "", "covers": ["linear_equations_1"], "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/linear_equations_2", "v_position": 6, "display_name": "2-step equations", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/solving-linear-equations-and-inequalities-250x250.png?7", "custom_stacks": [], "description": "Solve equations in two steps.", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "Lin. Eq. 2", "author_name": "Ben Alpert", "h_position": 29, "kind": "Exercise", "sha1": "14861714dec2d50409c6218e99cdfe30ca670654", "name": "linear_equations_2", "prerequisites": ["linear_equations_1"], "seconds_per_fast_problem": 8.0, "pretty_display_name": "2-step equations"}, {"relative_url": "/exercise/linear_equations_3", "file_name": "", "covers": ["linear_equations_2"], "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/linear_equations_3", "v_position": 6, "display_name": "Equations with variables on both sides", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/solving-linear-equations-and-inequalities-250x250.png?7", "custom_stacks": [], "description": "Solve equations with a variable on both sides. Solutions are integers.", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "Lin. Eq. 3", "author_name": "Ben Alpert", "h_position": 30, "kind": "Exercise", "sha1": "c939ee5312f840b7e94e11d6d86f5f8a1ca368c9", "name": "linear_equations_3", "prerequisites": ["linear_equations_2"], "seconds_per_fast_problem": 15.0, "pretty_display_name": "Equations with variables on both sides"}, {"relative_url": "/exercise/linear_equations_4", "file_name": "", "covers": ["linear_equations_3"], "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/linear_equations_4", "v_position": 7, "display_name": "Multi-step equations", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/solving-linear-equations-and-inequalities-250x250.png?7", "custom_stacks": [], "description": "Solve equations with variables in numerator and denominator. Solutions can be fractions.", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "Lin. Eq. 4", "author_name": "Ben Alpert", "h_position": 31, "kind": "Exercise", "sha1": "9dd85f8618550dd94dabf679e7ec935669b7019c", "name": "linear_equations_4", "prerequisites": ["linear_equations_3"], "seconds_per_fast_problem": 31.0, "pretty_display_name": "Multi-step equations"}, {"relative_url": "/exercise/inequalities_on_a_number_line", "file_name": "", "covers": [], "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/inequalities_on_a_number_line", "v_position": 8, "display_name": "Inequalities on a number line", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/solving-linear-equations-and-inequalities-250x250.png?7", "custom_stacks": [], "description": "Write equations of inequalities graphed on number lines. Identify number line graphs of inequalities.", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "Ineq # line", "author_name": "Ben Kamens", "h_position": 29, "kind": "Exercise", "sha1": "f67481ae7e14240d0ee7e5ced21cc5c0e55cdd7b", "name": "inequalities_on_a_number_line", "prerequisites": ["linear_equations_1"], "seconds_per_fast_problem": 10.0, "pretty_display_name": ""}, {"relative_url": "/exercise/one_step_inequalities", "file_name": "", "covers": [], "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/one_step_inequalities", "v_position": 10, "display_name": "One step inequalities", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/solving-linear-equations-and-inequalities-250x250.png?7", "custom_stacks": [], "description": "Solve inequalities in one step.", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "1step ineq", "author_name": "Julian Pulgarin", "h_position": 30, "kind": "Exercise", "sha1": "80d5d935a03edb6bb55db0d7eb8c9a29ea994bf7", "name": "one_step_inequalities", "prerequisites": ["inequalities_on_a_number_line"], "seconds_per_fast_problem": 12.0, "pretty_display_name": ""}, {"relative_url": "/exercise/linear_inequalities", "file_name": "", "covers": ["linear_equations_3"], "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/linear_inequalities", "v_position": 10, "display_name": "Multi-step linear inequalities", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/solving-linear-equations-and-inequalities-250x250.png?7", "custom_stacks": [], "description": "Solve linear inequalities in multiple steps.", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "Lin. Ineq.", "author_name": "Ben Alpert", "h_position": 31, "kind": "Exercise", "sha1": "1f70bb182c83b24e676496b25ece24981d6fc5d3", "name": "linear_inequalities", "prerequisites": ["linear_equations_3", "one_step_inequalities"], "seconds_per_fast_problem": 22.0, "pretty_display_name": "Multi-step linear inequalities"}, {"relative_url": "/exercise/compound_inequalities", "file_name": "", "covers": [], "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/compound_inequalities", "v_position": 11, "display_name": "Compound inequalities", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/solving-linear-equations-and-inequalities-250x250.png?7", "custom_stacks": [], "description": "Solve compound inequalities.", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "Comp Ineq", "author_name": "Julian Pulgarin", "h_position": 31, "kind": "Exercise", "sha1": "600fb12227545e5aee285b9a66a535d47f91fcd2", "name": "compound_inequalities", "prerequisites": ["one_step_inequalities"], "seconds_per_fast_problem": 20.0, "pretty_display_name": ""}, {"relative_url": "/exercise/absolute_value_equations", "file_name": "", "covers": ["absolute_value", "linear_equations_3"], "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/absolute_value_equations", "v_position": 8, "display_name": "Absolute value equations", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/solving-linear-equations-and-inequalities-250x250.png?7", "custom_stacks": [], "description": "Solve absolute value equations. Some have no solution.", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "Abs Val Eq.", "author_name": "Marcia Lee", "h_position": 31, "kind": "Exercise", "sha1": "833a5450c1fb041ea840332fd88174841c539060", "name": "absolute_value_equations", "prerequisites": ["linear_equations_3"], "seconds_per_fast_problem": 37.0, "pretty_display_name": ""}, {"relative_url": "/exercise/solving_for_a_variable", "file_name": "", "covers": [], "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/solving_for_a_variable", "v_position": 7, "display_name": "Solving equations in terms of a variable", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/solving-linear-equations-and-inequalities-250x250.png?7", "custom_stacks": [], "description": "Solve an equation in terms of a variable.", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "Solving Var", "author_name": "Jeff Ruberg", "h_position": 32, "kind": "Exercise", "sha1": "7ce9ab6144ffd5682ac6fcc4515ef13b22e43d11", "name": "solving_for_a_variable", "prerequisites": ["linear_equations_4"], "seconds_per_fast_problem": 58.0, "pretty_display_name": "Solving equations in terms of a variable"}, {"relative_url": "/exercise/evaluating_expressions_2", "file_name": "", "covers": [], "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/evaluating_expressions_2", "v_position": 6, "display_name": "Evaluating expressions in 2 variables", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/solving-linear-equations-and-inequalities-250x250.png?7", "custom_stacks": [], "description": "Evaluate expressions in 2 variables for given values. Includes some exponents.", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "Eval Exp2", "author_name": "Omar Rizwan", "h_position": 26, "kind": "Exercise", "sha1": "15bc38973a223293664e9d8d694070ebe05158c2", "name": "evaluating_expressions_2", "prerequisites": ["evaluating_expressions_1"], "seconds_per_fast_problem": 20.0, "pretty_display_name": "Evaluating expressions in 2 variables"}, {"relative_url": "/exercise/evaluating_expressions_1", "file_name": "", "covers": ["addition_1", "multiplication_1"], "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/evaluating_expressions_1", "v_position": 6, "display_name": "Evaluating expressions in one variable", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/solving-linear-equations-and-inequalities-250x250.png?7", "custom_stacks": [], "description": "Evaluate equations in one variable for a given value.", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "Eval Exp1", "author_name": "Marcia Lee", "h_position": 25, "kind": "Exercise", "sha1": "61c7568ba2524bd4b6da5691c9a72ea0376f3865", "name": "evaluating_expressions_1", "prerequisites": ["multiplying_radicals", "adding_and_subtracting_fractions"], "seconds_per_fast_problem": 7.0, "pretty_display_name": "Evaluating expressions in one variable"}, {"relative_url": "/exercise/combining_like_terms_1", "file_name": "", "covers": [], "creation_date": "2012-04-11T23:23:52Z", "ka_url": "http://www.khanacademy.org/exercise/combining_like_terms_1", "v_position": 4, "display_name": "Combining like terms", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/solving-linear-equations-and-inequalities-250x250.png?7", "custom_stacks": [], "description": "Combining like terms with positive and negative numbers", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "Cmbn terms1", "author_name": "Scott Menke", "h_position": 25, "kind": "Exercise", "sha1": "09091f7bbf7591dff1d086b2918641c91cf99150", "name": "combining_like_terms_1", "prerequisites": ["multiplying_radicals"], "seconds_per_fast_problem": 9.0, "pretty_display_name": "Combining like terms"}, {"relative_url": "/exercise/combining_like_terms_2", "file_name": "", "covers": [], "creation_date": "2012-04-11T23:24:09Z", "ka_url": "http://www.khanacademy.org/exercise/combining_like_terms_2", "v_position": 4, "display_name": "Combining like terms with distribution", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/solving-linear-equations-and-inequalities-250x250.png?7", "custom_stacks": [], "description": "Combine like terms with positive and negative numbers using distribution", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "Cmbn terms1", "author_name": "Scott Menke", "h_position": 27, "kind": "Exercise", "sha1": "eef0576affb99c7b6d6ef7b6512d3c7ac8d7e576", "name": "combining_like_terms_2", "prerequisites": ["combining_like_terms_1"], "seconds_per_fast_problem": 18.0, "pretty_display_name": "Combining like terms with distribution"}]
+[
+  {
+    "kind": "Exercise", 
+    "display_name": "Evaluating expressions in one variable", 
+    "description": "Evaluate equations in one variable for a given value.", 
+    "title": "Evaluating expressions in one variable", 
+    "seconds_per_fast_problem": 8.0, 
+    "related_video_readable_ids": [
+      "evaluating-exponential-expressions-2"
+    ], 
+    "slug": "evaluating_expressions_1", 
+    "prerequisites": [
+      "multiplying_radicals", 
+      "adding_and_subtracting_fractions"
+    ], 
+    "live": true, 
+    "h_position": 25, 
+    "v_position": 9, 
+    "path": "/math/algebra/solving-linear-equations-and-inequalities/variable-and-expressions/e/evaluating_expressions_1/", 
+    "id": "evaluating_expressions_1", 
+    "name": "evaluating_expressions_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Evaluating expressions in 2 variables", 
+    "description": "Evaluate expressions in 2 variables for given values. Includes some exponents.", 
+    "title": "Evaluating expressions in 2 variables", 
+    "seconds_per_fast_problem": 24.0, 
+    "related_video_readable_ids": [
+      "evaluating-expressions-with-two-variables"
+    ], 
+    "slug": "evaluating_expressions_2", 
+    "prerequisites": [
+      "evaluating_expressions_1"
+    ], 
+    "live": true, 
+    "h_position": 26, 
+    "v_position": 9, 
+    "path": "/math/algebra/solving-linear-equations-and-inequalities/variable-and-expressions/e/evaluating_expressions_2/", 
+    "id": "evaluating_expressions_2", 
+    "name": "evaluating_expressions_2"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "One step equation intuition", 
+    "description": "Explore why we do the same things to both sides of an equation", 
+    "title": "One step equation intuition", 
+    "seconds_per_fast_problem": 8.0, 
+    "related_video_readable_ids": [
+      "one-step-equation-intuition-exercise-intro"
+    ], 
+    "slug": "one_step_equation_intuition", 
+    "prerequisites": [
+      "evaluating_expressions_1"
+    ], 
+    "live": true, 
+    "h_position": 26, 
+    "v_position": 10, 
+    "path": "/math/algebra/solving-linear-equations-and-inequalities/why-of-algebra/e/one_step_equation_intuition/", 
+    "id": "one_step_equation_intuition", 
+    "name": "one_step_equation_intuition"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "One step equations 0.5", 
+    "description": "", 
+    "title": "One step equations 0.5", 
+    "seconds_per_fast_problem": 5.0, 
+    "related_video_readable_ids": [], 
+    "slug": "one_step_equations_0.5", 
+    "prerequisites": [], 
+    "live": false, 
+    "h_position": 63, 
+    "v_position": -20, 
+    "path": "/math/algebra/solving-linear-equations-and-inequalities/why-of-algebra/e/one_step_equations_0.5/", 
+    "id": "one_step_equations_0.5", 
+    "name": "one_step_equations_0.5"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Combining like terms", 
+    "description": "Combining like terms with positive and negative numbers", 
+    "title": "Combining like terms", 
+    "seconds_per_fast_problem": 8.0, 
+    "related_video_readable_ids": [
+      "combining-like-terms"
+    ], 
+    "slug": "combining_like_terms_1", 
+    "prerequisites": [
+      "multiplying_radicals"
+    ], 
+    "live": true, 
+    "h_position": 25, 
+    "v_position": 7, 
+    "path": "/math/algebra/solving-linear-equations-and-inequalities/manipulating-expressions/e/combining_like_terms_1/", 
+    "id": "combining_like_terms_1", 
+    "name": "combining_like_terms_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Combining like terms with distribution", 
+    "description": "Combine like terms with positive and negative numbers using distribution", 
+    "title": "Combining like terms with distribution", 
+    "seconds_per_fast_problem": 12.0, 
+    "related_video_readable_ids": [
+      "combining-like-terms-and-the-distributive-property"
+    ], 
+    "slug": "combining_like_terms_2", 
+    "prerequisites": [
+      "combining_like_terms_1"
+    ], 
+    "live": true, 
+    "h_position": 27, 
+    "v_position": 7, 
+    "path": "/math/algebra/solving-linear-equations-and-inequalities/manipulating-expressions/e/combining_like_terms_2/", 
+    "id": "combining_like_terms_2", 
+    "name": "combining_like_terms_2"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Writing expressions", 
+    "description": "Write a mathematical expression from a sentence.", 
+    "title": "Writing expressions", 
+    "seconds_per_fast_problem": 7.0, 
+    "related_video_readable_ids": [
+      "combining-like-terms-and-the-distributive-property"
+    ], 
+    "slug": "writing_expressions_1", 
+    "prerequisites": [
+      "evaluating_expressions_1"
+    ], 
+    "live": true, 
+    "h_position": 26, 
+    "v_position": 8, 
+    "path": "/math/algebra/solving-linear-equations-and-inequalities/manipulating-expressions/e/writing_expressions_1/", 
+    "id": "writing_expressions_1", 
+    "name": "writing_expressions_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Writing expressions 2", 
+    "description": "Write a mathematical expression from sentences. Requires distribution.", 
+    "title": "Writing expressions 2", 
+    "seconds_per_fast_problem": 15.0, 
+    "related_video_readable_ids": [
+      "combining-like-terms-and-the-distributive-property"
+    ], 
+    "slug": "writing_expressions_2", 
+    "prerequisites": [
+      "writing_expressions_1"
+    ], 
+    "live": true, 
+    "h_position": 27, 
+    "v_position": 8, 
+    "path": "/math/algebra/solving-linear-equations-and-inequalities/manipulating-expressions/e/writing_expressions_2/", 
+    "id": "writing_expressions_2", 
+    "name": "writing_expressions_2"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "One step equations 0.5", 
+    "description": "", 
+    "title": "One step equations 0.5", 
+    "seconds_per_fast_problem": 5.0, 
+    "related_video_readable_ids": [], 
+    "slug": "one_step_equations_0.5", 
+    "prerequisites": [], 
+    "live": false, 
+    "h_position": 63, 
+    "v_position": -20, 
+    "path": "/math/algebra/solving-linear-equations-and-inequalities/equations_beginner/e/one_step_equations_0.5/", 
+    "id": "one_step_equations_0.5", 
+    "name": "one_step_equations_0.5"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "One step equations", 
+    "description": "Solve equations in one step.", 
+    "title": "One step equations", 
+    "seconds_per_fast_problem": 8.0, 
+    "related_video_readable_ids": [
+      "one-step-equations"
+    ], 
+    "slug": "one_step_equations", 
+    "prerequisites": [
+      "one_step_equation_intuition"
+    ], 
+    "live": true, 
+    "h_position": 27, 
+    "v_position": 11, 
+    "path": "/math/algebra/solving-linear-equations-and-inequalities/equations_beginner/e/one_step_equations/", 
+    "id": "one_step_equations", 
+    "name": "one_step_equations"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "One-step equations with multiplication", 
+    "description": "Solve equations in one step.", 
+    "title": "One-step equations with multiplication", 
+    "seconds_per_fast_problem": 5.0, 
+    "related_video_readable_ids": [
+      "one-step-equations"
+    ], 
+    "slug": "linear_equations_1", 
+    "prerequisites": [
+      "one_step_equations", 
+      "combining_like_terms_2", 
+      "evaluating-expressions-3"
+    ], 
+    "live": true, 
+    "h_position": 28, 
+    "v_position": 9, 
+    "path": "/math/algebra/solving-linear-equations-and-inequalities/equations_beginner/e/linear_equations_1/", 
+    "id": "linear_equations_1", 
+    "name": "linear_equations_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "2-step equations", 
+    "description": "Solve equations in two steps.", 
+    "title": "2-step equations", 
+    "seconds_per_fast_problem": 6.0, 
+    "related_video_readable_ids": [
+      "application-problems-with-equation-in-one-variable"
+    ], 
+    "slug": "linear_equations_2", 
+    "prerequisites": [
+      "linear_equations_1"
+    ], 
+    "live": true, 
+    "h_position": 29, 
+    "v_position": 9, 
+    "path": "/math/algebra/solving-linear-equations-and-inequalities/equations_beginner/e/linear_equations_2/", 
+    "id": "linear_equations_2", 
+    "name": "linear_equations_2"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Equations with variables on both sides", 
+    "description": "Solve equations with a variable on both sides.", 
+    "title": "Equations with variables on both sides", 
+    "seconds_per_fast_problem": 20.0, 
+    "related_video_readable_ids": [
+      "equation-special-cases"
+    ], 
+    "slug": "linear_equations_3", 
+    "prerequisites": [
+      "linear_equations_2"
+    ], 
+    "live": true, 
+    "h_position": 30, 
+    "v_position": 9, 
+    "path": "/math/algebra/solving-linear-equations-and-inequalities/basic-equation-practice/e/linear_equations_3/", 
+    "id": "linear_equations_3", 
+    "name": "linear_equations_3"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Linear equation word problems", 
+    "description": "Word problems that require setting up multi-step equations to solve", 
+    "title": "Linear equation word problems", 
+    "seconds_per_fast_problem": 21.0, 
+    "related_video_readable_ids": [
+      "basic-linear-equation-word-problem"
+    ], 
+    "slug": "linear_equation_word_problems", 
+    "prerequisites": [
+      "linear_equations_2"
+    ], 
+    "live": true, 
+    "h_position": 30, 
+    "v_position": 8, 
+    "path": "/math/algebra/solving-linear-equations-and-inequalities/basic-equation-practice/e/linear_equation_word_problems/", 
+    "id": "linear_equation_word_problems", 
+    "name": "linear_equation_word_problems"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Percentage word problems 1", 
+    "description": "", 
+    "title": "Percentage word problems 1", 
+    "seconds_per_fast_problem": 18.5, 
+    "related_video_readable_ids": [
+      "word-problem-solving-3"
+    ], 
+    "slug": "percentage_word_problems_1", 
+    "prerequisites": [
+      "converting_decimals_to_percents", 
+      "converting_percents_to_decimals"
+    ], 
+    "live": true, 
+    "h_position": 28, 
+    "v_position": -5, 
+    "path": "/math/algebra/solving-linear-equations-and-inequalities/percent_word_problems/e/percentage_word_problems_1/", 
+    "id": "percentage_word_problems_1", 
+    "name": "percentage_word_problems_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Percentage word problems 2", 
+    "description": null, 
+    "title": "Percentage word problems 2", 
+    "seconds_per_fast_problem": 26.0, 
+    "related_video_readable_ids": [
+      "word-problem-solving-3"
+    ], 
+    "slug": "percentage_word_problems_2", 
+    "prerequisites": [
+      "percentage_word_problems_1"
+    ], 
+    "live": true, 
+    "h_position": 29, 
+    "v_position": -5, 
+    "path": "/math/algebra/solving-linear-equations-and-inequalities/percent_word_problems/e/percentage_word_problems_2/", 
+    "id": "percentage_word_problems_2", 
+    "name": "percentage_word_problems_2"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Solving equations in terms of a variable", 
+    "description": "Solve an equation in terms of a variable.", 
+    "title": "Solving equations in terms of a variable", 
+    "seconds_per_fast_problem": 59.0, 
+    "related_video_readable_ids": [
+      "example-of-solving-for-a-variable"
+    ], 
+    "slug": "solving_for_a_variable", 
+    "prerequisites": [
+      "multistep_equations_with_distribution"
+    ], 
+    "live": true, 
+    "h_position": 33, 
+    "v_position": 10, 
+    "path": "/math/algebra/solving-linear-equations-and-inequalities/solving_for_variable/e/solving_for_a_variable/", 
+    "id": "solving_for_a_variable", 
+    "name": "solving_for_a_variable"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Converting 1-digit repeating decimals to fractions", 
+    "description": "Convert 1-digit repeating decimals to fractions", 
+    "title": "Converting 1-digit repeating decimals to fractions", 
+    "seconds_per_fast_problem": 8.0, 
+    "related_video_readable_ids": [
+      "coverting-repeating-decimals-to-fractions-1"
+    ], 
+    "slug": "converting_repeating_decimals_to_fractions_1", 
+    "prerequisites": [
+      "linear_equations_4"
+    ], 
+    "live": true, 
+    "h_position": 32, 
+    "v_position": 11, 
+    "path": "/math/algebra/solving-linear-equations-and-inequalities/conv_rep_decimals/e/converting_repeating_decimals_to_fractions_1/", 
+    "id": "converting_repeating_decimals_to_fractions_1", 
+    "name": "converting_repeating_decimals_to_fractions_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Converting multi-digit repeating decimals to fractions", 
+    "description": "Convert multi-digit repeating decimals to fractions", 
+    "title": "Converting multi-digit repeating decimals to fractions", 
+    "seconds_per_fast_problem": 28.0, 
+    "related_video_readable_ids": [
+      "coverting-repeating-decimals-to-fractions-2"
+    ], 
+    "slug": "converting_repeating_decimals_to_fractions_2", 
+    "prerequisites": [
+      "converting_repeating_decimals_to_fractions_1"
+    ], 
+    "live": true, 
+    "h_position": 33, 
+    "v_position": 11, 
+    "path": "/math/algebra/solving-linear-equations-and-inequalities/conv_rep_decimals/e/converting_repeating_decimals_to_fractions_2/", 
+    "id": "converting_repeating_decimals_to_fractions_2", 
+    "name": "converting_repeating_decimals_to_fractions_2"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Age word problems", 
+    "description": "Solve age word problems with a system of equations.", 
+    "title": "Age word problems", 
+    "seconds_per_fast_problem": 38.0, 
+    "related_video_readable_ids": [
+      "ex-3-age-word-problem"
+    ], 
+    "slug": "age_word_problems", 
+    "prerequisites": [
+      "linear_equations_3"
+    ], 
+    "live": true, 
+    "h_position": 31, 
+    "v_position": 10, 
+    "path": "/math/algebra/solving-linear-equations-and-inequalities/age_word_problems_tut/e/age_word_problems/", 
+    "id": "age_word_problems", 
+    "name": "age_word_problems"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Absolute value equations", 
+    "description": "Solve absolute value equations. Some have no solution.", 
+    "title": "Absolute value equations", 
+    "seconds_per_fast_problem": 44.0, 
+    "related_video_readable_ids": [
+      "absolute-value-equations-1"
+    ], 
+    "slug": "absolute_value_equations", 
+    "prerequisites": [
+      "linear_equations_3"
+    ], 
+    "live": true, 
+    "h_position": 31, 
+    "v_position": 12, 
+    "path": "/math/algebra/solving-linear-equations-and-inequalities/absolute-value-equations/e/absolute_value_equations/", 
+    "id": "absolute_value_equations", 
+    "name": "absolute_value_equations"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Multi-step equations", 
+    "description": "Solve equations with variables in numerator and denominator. Solutions can be fractions.", 
+    "title": "Multi-step equations", 
+    "seconds_per_fast_problem": 38.0, 
+    "related_video_readable_ids": [
+      "ex-2-multi-step-equation"
+    ], 
+    "slug": "linear_equations_4", 
+    "prerequisites": [
+      "linear_equations_3"
+    ], 
+    "live": true, 
+    "h_position": 31, 
+    "v_position": 11, 
+    "path": "/math/algebra/solving-linear-equations-and-inequalities/complicated_equations/e/linear_equations_4/", 
+    "id": "linear_equations_4", 
+    "name": "linear_equations_4"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Multistep equations with distribution", 
+    "description": "Solve linear equations like -(5x+1)=9x-5", 
+    "title": "Multistep equations with distribution", 
+    "seconds_per_fast_problem": 38.25, 
+    "related_video_readable_ids": [
+      "equations-with-variables-on-both-sides"
+    ], 
+    "slug": "multistep_equations_with_distribution", 
+    "prerequisites": [
+      "linear_equations_4"
+    ], 
+    "live": true, 
+    "h_position": 32, 
+    "v_position": 10, 
+    "path": "/math/algebra/solving-linear-equations-and-inequalities/complicated_equations/e/multistep_equations_with_distribution/", 
+    "id": "multistep_equations_with_distribution", 
+    "name": "multistep_equations_with_distribution"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Expressions with unknown variables", 
+    "description": "Multiplying variable expressions given their sums.", 
+    "title": "Expressions with unknown variables", 
+    "seconds_per_fast_problem": 9.0, 
+    "related_video_readable_ids": [
+      "evaluating-expressions-with-unknown-variables-2"
+    ], 
+    "slug": "expressions_with_unknown_variables", 
+    "prerequisites": [
+      "linear_equations_4"
+    ], 
+    "live": true, 
+    "h_position": 32, 
+    "v_position": 12, 
+    "path": "/math/algebra/solving-linear-equations-and-inequalities/exp_unknown_vars/e/expressions_with_unknown_variables/", 
+    "id": "expressions_with_unknown_variables", 
+    "name": "expressions_with_unknown_variables"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Expressions with unknown variables 2", 
+    "description": null, 
+    "title": "Expressions with unknown variables 2", 
+    "seconds_per_fast_problem": 13.0, 
+    "related_video_readable_ids": [
+      "evaluating-expressions-with-unknown-variables-2"
+    ], 
+    "slug": "expressions_with_unknown_variables_2", 
+    "prerequisites": [
+      "expressions_with_unknown_variables"
+    ], 
+    "live": true, 
+    "h_position": 33, 
+    "v_position": 12, 
+    "path": "/math/algebra/solving-linear-equations-and-inequalities/exp_unknown_vars/e/expressions_with_unknown_variables_2/", 
+    "id": "expressions_with_unknown_variables_2", 
+    "name": "expressions_with_unknown_variables_2"
+  }
+]

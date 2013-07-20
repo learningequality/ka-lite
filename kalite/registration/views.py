@@ -2,9 +2,12 @@
 Views which allow users to create and activate accounts.
 
 """
+
+import copy
+
 from django.contrib import messages
-from django.contrib.auth import logout, REDIRECT_FIELD_NAME
-from django.contrib.auth import views as auth_views
+from django.contrib.auth import logout as auth_logout, views as auth_views, REDIRECT_FIELD_NAME
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError, transaction
 from django.http import HttpResponse
@@ -210,12 +213,8 @@ def register(request, backend, success_url=None, form_class=None,
 
         # Could register
         if form.is_valid() and org_form.is_valid():
-            form.cleaned_data['username'] = form.cleaned_data['email']
+            assert form.cleaned_data.get("username") == form.cleaned_data.get("email"), "Should be set equal in the call to clean()"
 
-            # TODO (bcipolli): should do all this in one transaction,
-            #   so that if any one part fails, it all rolls back.
-            #   For now, unlikely to happen, and consequence is only
-            #   a user without an org/zone
             try:
                 # Create the user
                 new_user = backend.register(request, **form.cleaned_data)
@@ -243,7 +242,7 @@ def register(request, backend, success_url=None, form_class=None,
                 else:
                     return redirect(success_url)
 
-            except IntegrityError, e:
+            except IntegrityError as e:
                 if e.message=='column username is not unique':
                     form._errors['__all__'] = _("An account with this email address has already been created.  Please login at the link above.")
                 else:
@@ -271,14 +270,23 @@ def register(request, backend, success_url=None, form_class=None,
     )
 
 
-
 @central_server_only
 def login_view(request, *args, **kwargs):
-    """Force lowercase of the username.
+    """
+    Force lowercase of the username.
 
     Since we don't want things to change to the user (if something fails),
-    we should try the new way first, then fall back to the old way"""
-
+    we should try the new way first, then fall back to the old way
+    """
+    if request.method=="POST":
+        users = User.objects.filter(username__iexact=request.POST["username"])
+        nusers = users.count()
+    
+        # Coerce
+        if nusers == 1 and users[0].username != request.POST["username"]:
+            request.POST = copy.deepcopy(request.POST)
+            request.POST['username'] = request.POST['username'].lower()
+    
     extra_context = {
         "redirect": {
             "name": REDIRECT_FIELD_NAME,
@@ -287,13 +295,10 @@ def login_view(request, *args, **kwargs):
     }
     kwargs["extra_context"] = extra_context
 
-    template_response = auth_views.login(request, *args, **kwargs)
-
-    # Return the logged in version, or failed to login using lcased version
-    return template_response
+    return auth_views.login(request, *args, **kwargs)
 
 
 @central_server_only
 def logout_view(request):
-    logout(request)
-    return redirect("landing_page")
+    auth_logout(request)
+    return redirect("homepage")

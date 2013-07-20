@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 import cgi
 import json
 import re
@@ -288,6 +286,7 @@ def status(request):
             "text": msg_txt,
         })
 
+    # Default data
     data = {
         "is_logged_in": request.is_logged_in,
         "registered": bool(Settings.get("registered")),
@@ -296,11 +295,13 @@ def status(request):
         "points": 0,
         "messages": message_dicts,
     }
+    # Override properties using facility data
     if "facility_user" in request.session:
         user = request.session["facility_user"]
         data["is_logged_in"] = True
         data["username"] = user.get_name()
         data["points"] = VideoLog.get_points_for_user(user) + ExerciseLog.get_points_for_user(user)
+    # Override data using django data
     if request.user.is_authenticated():
         data["is_logged_in"] = True
         data["username"] = request.user.username

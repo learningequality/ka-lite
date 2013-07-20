@@ -2,9 +2,7 @@ function drawChart(chart_div, dataTable, options) {
     // Used for Google visualizations
     options["legend"] = 'none';
     options["tooltip"] = { isHtml: 'true', trigger: 'selection' };
-    var chart = new google.visualization.ScatterChart($(chart_div)[0]);
-
-    chart.draw(dataTable, options);
+    d3_scatter(dataTable, options["xaxis"], options["yaxis"], chart_div);
 }
 
 function obj2num(row, stat, json) {
@@ -40,17 +38,14 @@ function obj2num(row, stat, json) {
 
 function json2dataTable(json, xaxis, yaxis) {
     // Given a dictionary, create a data table, one row at a time.
-    var dataTable = new google.visualization.DataTable();
+    var dataTable = [];
 
-    // 2 data rows and a tooltip.
-    dataTable.addColumn(stat2type(xaxis), xaxis);
-    dataTable.addColumn(stat2type(yaxis), yaxis);
-    dataTable.addColumn({'type': 'string', 'role': 'tooltip', 'p': {'html': true}});
-    //
-    for (var user in json['data']) {
-        var xdata = obj2num(json['data'][user][xaxis], xaxis, json);
-        var ydata = obj2num(json['data'][user][yaxis], yaxis, json);
-        dataTable.addRows([[xdata, ydata, user2tooltip(json, user, xaxis, yaxis)]]);
+    for (var user in json["data"]) {
+        var entry = json["data"][user]
+        entry["user"] = json['users'][user];
+        entry["userid"] = user;
+        entry["tooltip"] = user2tooltip(json, user, xaxis, yaxis);
+        dataTable.push(entry);
     }
     return dataTable;
   }
@@ -156,7 +151,9 @@ function drawJsonChart(chart_div, json, xaxis, yaxis) {
       title: stat2name(xaxis) + ' vs. ' + stat2name(yaxis) + ' comparison',
       hAxis: {title: stat2name(xaxis) },
       vAxis: {title: stat2name(yaxis) },
+      xaxis: xaxis,
+      yaxis: yaxis,
     };
-
-    drawChart(chart_div, json2dataTable(json, xaxis, yaxis), options);
+    var dataTable = json2dataTable(json, xaxis, yaxis);
+    drawChart("#chart_div", dataTable, options);
 }

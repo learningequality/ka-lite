@@ -2,12 +2,14 @@
 
 {% load i18n %}
 
-{% block title %}Add facility user{% endblock title %}
+{% block title %}{% trans "Register device to a zone" %}{% endblock title %}
 
 {% block headjs %}
 <script>
     $(function() {
         $("#id_public_key").val(decodeURIComponent(window.location.search.slice(1)));
+        $('#id_public_key').attr('readonly',true);
+        $('#id_public_key').css('color','grey');
     });
 </script>
 {% endblock headjs %}

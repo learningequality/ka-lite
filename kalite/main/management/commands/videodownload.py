@@ -3,10 +3,10 @@ import time
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
-from kalite.main.models import VideoFile
-from kalite.utils.videos import download_video, DownloadCancelled
-from utils.jobs import force_job
+from main.models import VideoFile
 from utils import caching
+from utils.jobs import force_job
+from utils.videos import download_video, DownloadCancelled
 
 
 def download_progress_callback(self, videofile):
@@ -74,7 +74,7 @@ class Command(BaseCommand):
             
             # Expire, but don't regenerate until the very end, for efficiency.
             if hasattr(settings, "CACHES"):
-                caching.invalidate_cached_topic_hierarchy(video_id=video.youtube_id)
+                caching.invalidate_cached_topic_hierarchies(video_id=video.youtube_id)
     
         # Regenerate all pages, efficiently
         if hasattr(settings, "CACHES"):
