@@ -60,6 +60,12 @@
         a.green_button:hover,input.green_button:hover{
             background-color:#C0C0C0;
         }
+
+        .titlebar__buttons{
+            float: right;
+            margin: 0;
+        }
+
     </style>
 {% endblock headcss %}
 
@@ -74,9 +80,11 @@
     </div>
     {% endif %}
     {% endblock navbar_user %}
+        <ul class="titlebar__buttons">
                 <li>
                     <a class="green_button" href="{% url update_all %}">{% trans "Download data from Khan Academy" %}</a>
                 </li>
+        </ul>
 {% endblock navbar_groups %}
 
 {% block content %}
