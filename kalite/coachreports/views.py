@@ -19,6 +19,7 @@ from main.models import VideoLog, ExerciseLog, VideoFile
 from securesync.models import Facility, FacilityUser,FacilityGroup, DeviceZone, Device
 from securesync.views import facility_required
 from utils.decorators import require_login, require_admin
+from utils.general import max_none
 from utils.internet import StatusException
 from utils.topic_tools import get_topic_exercises, get_topic_videos, get_all_midlevel_topics
 
@@ -168,13 +169,6 @@ def student_view(request, facility, xaxis="pct_mastery", yaxis="ex:attempts"):
             {"key": "vid:last_completed",      "title": "Last Completed",       "type": "date"},
         ]
     }
-
-def max_none(data):
-    non_none_data = []
-    for d in data:
-        if d is not None:
-            non_none_data.append(d)
-    return max(non_none_data) if non_none_data or not data else None
 
 
 @require_admin

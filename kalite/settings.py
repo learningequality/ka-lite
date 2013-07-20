@@ -216,3 +216,7 @@ MESSAGE_STORAGE = 'utils.django_utils.NoDuplicateMessagesSessionStorage'
 TEST_RUNNER = 'kalite.utils.testing.testrunner.KALiteTestRunner'
 
 CRONSERVER_FREQUENCY = getattr(local_settings, "CRONSERVER_FREQUENCY", 600) # 10 mins (in seconds)
+
+# Used for accessing the KA API.  By default, things won't work--local_settings needs to specify good values.
+KHAN_API_CONSUMER_KEY = getattr(local_settings, "KHAN_API_CONSUMER_KEY", "")
+KHAN_API_CONSUMER_SECRET = getattr(local_settings, "KHAN_API_CONSUMER_SECRET", "")

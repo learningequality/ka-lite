@@ -10,42 +10,34 @@ from oauth import OAuthToken
 
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
+from django.utils.datastructures import MultiValueDictKeyError
 
+import settings
 from main.models import ExerciseLog, VideoLog
 from main.topicdata import NODE_CACHE, ID2SLUG_MAP
 from settings import LOG as logging
 from utils.decorators import require_login
 
 
-# This is a quick, gross little interactive script for testing our OAuth API.
-
-CONSUMER_KEY = "vrwxbbWvh7PwTkzk"
-CONSUMER_SECRET = "xLxMgDKEj5EMdThf"
 SERVER_URL = "http://www.khanacademy.org"
 
 
-REQUEST_TOKEN = None
-ACCESS_TOKEN = None
-
-
 def get_request_token(request):
-    redirect_url = request.META.get("HTTP_REFERER", "") or reverse("homepage")
+    redirect_url = request.next or request.META.get("HTTP_REFERER", "") or reverse("homepage")
     callback_url = request.build_absolute_uri(reverse('update_all_callback')) + ("?next=%s" % redirect_url)
-    client = TestOAuthClient(SERVER_URL, CONSUMER_KEY, CONSUMER_SECRET)
+    client = TestOAuthClient(SERVER_URL, settings.KHAN_API_CONSUMER_KEY, settings.KHAN_API_CONSUMER_SECRET)
     return HttpResponseRedirect(client.start_fetch_request_token(callback_url))
 
 
 def get_access_token(request):
-    global ACCESS_TOKEN
-
-    client = TestOAuthClient(SERVER_URL, CONSUMER_KEY, CONSUMER_SECRET)
-    ACCESS_TOKEN = client.fetch_access_token(REQUEST_TOKEN)
+    client = TestOAuthClient(SERVER_URL, settings.KHAN_API_CONSUMER_KEY, settings.KHAN_API_CONSUMER_SECRET)
+    request.session["ACCESS_TOKEN"] = client.fetch_access_token(request.session["REQUEST_TOKEN"])
 
 
-def get_api_resource(resource_url):
-    client = TestOAuthClient(SERVER_URL, CONSUMER_KEY, CONSUMER_SECRET)
+def get_api_resource(request, resource_url):
+    client = TestOAuthClient(SERVER_URL, settings.KHAN_API_CONSUMER_KEY, settings.KHAN_API_CONSUMER_SECRET)
     start = time.time()
-    response = client.access_resource(resource_url, ACCESS_TOKEN)
+    response = client.access_resource(resource_url, request.session["ACCESS_TOKEN"])
     end = time.time()
 
 #    logging.debug(response)
@@ -59,31 +51,34 @@ def update_all(request):
     # Will enter the callback, when it completes.
     return get_request_token(request)
 
+
 @require_login
 def update_all_callback(request):
     """
     Parses out the request token verification.
     Then finishes the request by getting an auth token.
     """
-    global REQUEST_TOKEN
-
     params = request.GET
-    REQUEST_TOKEN = OAuthToken(params['oauth_token'], params['oauth_token_secret'])
-    REQUEST_TOKEN.set_verifier(params['oauth_verifier'])
-
+    try:
+        request.session["REQUEST_TOKEN"] = OAuthToken(params['oauth_token'], params['oauth_token_secret'])
+        request.session["REQUEST_TOKEN"].set_verifier(params['oauth_verifier'])
+    except MultiValueDictKeyError as e:
+        # we just want to generate a 500 anyway; 
+        #   nothing we could do here except give a slightly more meaningful error
+        raise e
 
     logging.debug("Getting access token.")
     get_access_token(request)
-    if not ACCESS_TOKEN:
+    if not request.session["ACCESS_TOKEN"]:
         logging.debug("Did not get access token.")
     
     else:
         logging.debug("Getting exercise data.")
-        exercises = get_api_resource("/api/v1/user/exercises")
+        exercises = get_api_resource(request, "/api/v1/user/exercises")
         logging.debug("Got %d exercises" % len(exercises))
 
         logging.debug("Getting video data.")
-        videos = get_api_resource("/api/v1/user/videos")
+        videos = get_api_resource(request, "/api/v1/user/videos")
         logging.debug("Got %d videos" % len(videos))
 
         user = request.session["facility_user"]
