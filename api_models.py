@@ -30,7 +30,10 @@ class APIModel(AttrDict):
             super.__getattr__(self, name)
         else:
             if name in API_attributes:
-                self[name] = APIcall(API_attributes[name])
+                self[name] = api_call("v1", self.API_url(name))
+                convert_items(name, self)
+                return self[name]
+
 
 
     def __init__(self, *args, **kwargs):
@@ -39,12 +42,10 @@ class APIModel(AttrDict):
                 
         for name in getattr(self, "_related_field_types", {}):
             if name in self:
-                # convert dicts to the related type
-                if type(self[name]) == dict:
-                    self[name] = self._related_field_types[name](self[name])
-                # convert every item in related list to correct type
-                elif type(self[name]) == list:
-                    convert_list_to_classes(self[name], class_converter=self._related_field_types[name])
+                convert_items(name, self)
+
+    def API_url(self, name):
+        return self.base_url + "/" + self.id + self.API_attributes[name]
 
 # usage : api_call("v1", "/badges")
 def api_call(target_version, target_api_url):
@@ -68,7 +69,20 @@ def convert_list_to_classes(nodelist, class_converter=class_by_kind):
         nodelist[i] = class_converter(nodelist[i])
     
     return nodelist # just for good measure; it's already been changed
-    
+
+def convert_items(name, self):
+    """
+    Convert attributes of an object to related object types.
+    If in a list call to convert each element of the list.
+    """
+
+    # convert dicts to the related type
+    if type(self[name]) == dict:
+        self[name] = self._related_field_types[name](self[name])
+    # convert every item in related list to correct type
+    elif type(self[name]) == list:
+        convert_list_to_classes(self[name], class_converter=self._related_field_types[name])
+
 
 class Video(APIModel):
     pass
