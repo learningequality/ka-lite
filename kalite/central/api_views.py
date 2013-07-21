@@ -21,7 +21,6 @@ def get_subtitle_counts(request):
 
 def download_subtitle_zip(request, locale):
 	"""Return a zip of the subtitles for the correct locale"""
-	import pdb; pdb.set_trace()
 	zip_file = "%s/subtitles/%s_subtitles.zip" % (settings.MEDIA_ROOT, locale)  
 	zh = open(zip_file, "rb")
 	return HttpResponse(content=zh, mimetype='application/zip', content_type='application/zip')
