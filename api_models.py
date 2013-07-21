@@ -179,21 +179,6 @@ def convert_items(name, self):
                                 name], class_converter=self._related_field_types[name])
 
 
-class Video(APIModel):
-
-    base_url = "/videos"
-
-    _related_field_types = {
-        "related_exercises": class_by_kind,
-    }
-
-    API_attributes = {"related_exercises": "/exercises"}
-
-    @classmethod
-    def get_video(cls, video_id):
-        return Video(api_call("v1", cls.base_url + "/" + video_id))
-
-
 class Exercise(APIModel):
 
     base_url = "/exercises"
@@ -208,11 +193,85 @@ class Exercise(APIModel):
 
     @classmethod
     def get_exercises(cls):
-        return convert_list_to_classes(api_call("v1", cls.base_url), Exercise)
+        return convert_list_to_classes(api_call("v1", cls.base_url))
 
     @classmethod
     def get_exercise(cls, exercise_id):
         return Exercise(api_call("v1", cls.base_url + "/" + exercise_id))
+
+
+class Badge(APIModel):
+
+    base_url = "/badges"
+
+    _related_field_types = {
+        "user_badges": class_by_kind,
+    }
+
+    @classmethod
+    def get_badges(cls):
+        return convert_list_to_classes(api_call("v1", cls.base_url), Badge)
+
+    @classmethod
+    def get_category(cls, category_id=None):
+        if category_id is not None:
+            return BadgeCategory(api_call("v1", cls.base_url + "/categories/" + str(category_id))[0])
+        else:
+            return convert_list_to_classes(api_call("v1", cls.base_url + "/categories"), BadgeCategory)
+
+
+class BadgeCategory(APIModel):
+    pass
+
+
+class User(APIModel):
+
+    base_url = "/user"
+
+    _related_field_types = {
+        "videos": class_by_kind,
+        "exercises": class_by_kind,
+    }
+
+    @require_authentication
+    def __getattr__(self, name):
+        return super(User, self).__getattr__(name)
+
+    API_attributes = {"videos": "/videos",
+                      "exercises": "/exercises"}
+
+    @classmethod
+    @require_authentication
+    def get_user(cls, user_id=""):
+        """
+        Download user data for a particular user.
+        If no user specified, download logged in user's data.
+        """
+        return User(api_call("v1", cls.base_url + "?" + user_id))
+
+
+class UserExercise(APIModel):
+    _related_field_types = {
+        "exercise_model": class_by_kind,
+    }
+
+
+class UserVideo(APIModel):
+    pass
+
+
+class UserBadge(APIModel):
+    pass
+
+# ProblemLog and VideoLog API calls return multiple entities in a list
+
+
+class ProblemLog(APIModel):
+    pass
+
+
+class VideoLog(APIModel):
+    pass
 
 
 class Topic(APIModel):
@@ -250,80 +309,6 @@ class Topic(APIModel):
         return convert_list_to_classes(api_call("v1", cls.base_url + "/" + topic_slug + "/videos"))
 
 
-class User(APIModel):
-
-    base_url = "/user"
-
-    _related_field_types = {
-        "videos": class_by_kind,
-        "exercises": class_by_kind,
-    }
-
-    @require_authentication
-    def __getattr__(self, name):
-        return super(User, self).__getattr__(name)
-
-    API_attributes = {"videos": "/videos",
-                      "exercises": "/exercises"}
-
-    @classmethod
-    @require_authentication
-    def get_user(cls, user_id=""):
-        """
-        Download user data for a particular user.
-        If no user specified, download logged in user's data.
-        """
-        return User(api_call("v1", cls.base_url + "?" + user_id))
-
-
-class Badge(APIModel):
-
-    base_url = "/badges"
-
-    _related_field_types = {
-        "user_badges": class_by_kind,
-    }
-
-    @classmethod
-    def get_badges(cls):
-        return convert_list_to_classes(api_call("v1", cls.base_url), Badge)
-
-    @classmethod
-    def get_category(cls, category_id=None):
-        if category_id is not None:
-            return BadgeCategory(api_call("v1", cls.base_url + "/categories/" + str(category_id))[0])
-        else:
-            return convert_list_to_classes(api_call("v1", cls.base_url + "/categories"), BadgeCategory)
-
-
-class BadgeCategory(APIModel):
-    pass
-
-
-class UserExercise(APIModel):
-    _related_field_types = {
-        "exercise_model": class_by_kind,
-    }
-
-
-class UserVideo(APIModel):
-    pass
-
-
-class UserBadge(APIModel):
-    pass
-
-# ProblemLog and VideoLog API calls return multiple entities in a list
-
-
-class ProblemLog(APIModel):
-    pass
-
-
-class VideoLog(APIModel):
-    pass
-
-
 class Separator(APIModel):
     pass
 
@@ -334,6 +319,22 @@ class Scratchpad(APIModel):
 
 class Article(APIModel):
     pass
+
+
+class Video(APIModel):
+
+    base_url = "/videos"
+
+    _related_field_types = {
+        "related_exercises": class_by_kind,
+    }
+
+    API_attributes = {"related_exercises": "/exercises"}
+
+    @classmethod
+    def get_video(cls, video_id):
+        return Video(api_call("v1", cls.base_url + "/" + video_id))
+
 
 # kind_to_class_map maps from the kinds of data found in the topic tree,
 # and other nested data structures to particular classes.
