@@ -129,7 +129,7 @@ class APIModel(AttrDict):
         return self.base_url + id + self.API_attributes[name]
 
 
-def api_call(target_version, target_api_url, debug=True, authenticate=True):
+def api_call(target_version, target_api_url, debug=False, authenticate=True):
     # usage : api_call("v1", "/badges")
     resource_url = "/api/" + target_version + target_api_url
     try:
