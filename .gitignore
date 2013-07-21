@@ -24,3 +24,6 @@ content/*.png
 content/*.mp4
 content/*.json
 content/*.srt
+/bin/
+/lib/
+/local/
