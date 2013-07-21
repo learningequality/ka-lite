@@ -9,7 +9,6 @@ from utils.internet import JsonResponse
 import settings
 
 
-@require_admin_api
 def get_subtitle_counts(request):
     """
     Sort and return a dict in the following format that gives the count of srt files available by language:
@@ -23,14 +22,19 @@ def get_subtitle_counts(request):
         raise Http404
     subtitle_counts = json.loads(open(subtitledata_path + "subtitle_counts.json").read())
 
+
     # Return an appropriate response
     if request.GET.get("callback",None):
         # JSONP response
-        return HttpResponse("%s(%s);" % (request.GET["callback"], json.dumps(subtitle_counts, sort_keys=True)))
+        response = HttpResponse("%s(%s);" % (request.GET["callback"], json.dumps(subtitle_counts, sort_keys=True)))
+        response["Access-Control-Allow-Headers"] = "*"
+        response["Content-Type"] = "text/javascript"
+        return response
+
     else:
         # Regular request
-        return JsonResponse(json.dumps(subtitle_counts, sort_keys=True), status=200)
-
+        response = JsonResponse(json.dumps(subtitle_counts, sort_keys=True), status=200)
+        return response
 
 def download_subtitle_zip(request, locale):
     """
