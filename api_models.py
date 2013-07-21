@@ -26,9 +26,12 @@ class APIError(Exception):
         self.obj = obj
 
     def __str__(self):
-        for id in id_to_kind_map:
-            if getattr(self.obj, id, ""):
-                inspection = "This occurred in an object of kind %s." % self.obj[id_to_kind_map[id]]
+        inspection = ""
+        if self.obj:
+            for id in id_to_kind_map:
+                if id(self.obj):
+                    inspection = "This occurred in an object of kind %s, called %s." % (
+                        id_to_kind_map[id], id(self.obj))
         return "Khan API Error: %s %s" % (self.msg, inspection)
 
 
@@ -123,15 +126,15 @@ class APIModel(AttrDict):
             convert_items(name, self)
             return self[name]
         else:
-            return super(APIModel, self).__getattr__(name)
+            if name in self._related_field_types:
+                convert_items(name, self)
+                return self[name]
+            else:
+                return super(APIModel, self).__getattr__(name)
 
     def __init__(self, *args, **kwargs):
 
         super(APIModel, self).__init__(*args, **kwargs)
-
-        for name in getattr(self, "_related_field_types", {}):
-            if name in self:
-                convert_items(name, self)
 
     def API_url(self, name):
         """
@@ -139,11 +142,15 @@ class APIModel(AttrDict):
         """
         id = ""
         if self.kind in kind_to_id_map:
-            id = "/" + self[kind_to_id_map[self.kind]]
+            try:
+                id = "/" + kind_to_id_map[self.kind](self)
+            except:
+                import pdb
+                pdb.set_trace()
         return self.base_url + id + self.API_attributes[name]
 
 
-def api_call(target_version, target_api_url, debug=True, authenticate=True):
+def api_call(target_version, target_api_url, debug=False, authenticate=True):
     # usage : api_call("v1", "/badges")
     resource_url = "/api/" + target_version + target_api_url
     try:
@@ -168,6 +175,7 @@ def class_by_kind(node):
     except KeyError:
         raise APIError(
             "This kind of object should have a 'kind' attribute.", node)
+
 
 def class_by_name(node, name):
     return kind_to_class_map[name](node)
@@ -200,6 +208,19 @@ def convert_items(name, self):
                                 name], class_converter=self._related_field_types[name])
 
 
+def n_deep(obj, names):
+    """
+    A function to descend len(names) levels in an object and retrieve the attribute there.
+    """
+    for name in names:
+        try:
+            obj = getattr(obj, name)
+        except KeyError:
+            raise APIError(
+                "This object is missing the %s attribute." % name, obj)
+    return obj
+
+
 class Exercise(APIModel):
 
     base_url = "/exercises"
@@ -209,8 +230,10 @@ class Exercise(APIModel):
         "followup_exercises": partial(class_by_name, name="Exercise"),
     }
 
-    API_attributes = {"related_videos": "/videos",
-                      "followup_exercises": "/followup_exercises"}
+    API_attributes = {
+        "related_videos": "/videos",
+        "followup_exercises": "/followup_exercises"
+    }
 
     @classmethod
     def get_exercises(cls):
@@ -245,21 +268,26 @@ class BadgeCategory(APIModel):
     pass
 
 
-class User(APIModel):
+class APIAuthModel(APIModel):
+
+    @require_authentication
+    def __getattr__(self, name):
+        return super(APIAuthModel, self).__getattr__(name)
+
+
+class User(APIAuthModel):
 
     base_url = "/user"
 
     _related_field_types = {
-        "videos": partial(class_by_name, name="Video"),
-        "exercises": partial(class_by_name, name="Exercise"),
+        "videos": partial(class_by_name, name="UserVideo"),
+        "exercises": partial(class_by_name, name="UserExercise"),
     }
 
-    @require_authentication
-    def __getattr__(self, name):
-        return super(User, self).__getattr__(name)
-
-    API_attributes = {"videos": "/videos",
-                      "exercises": "/exercises"}
+    API_attributes = {
+        "videos": "/videos",
+        "exercises": "/exercises"
+    }
 
     @classmethod
     @require_authentication
@@ -271,27 +299,46 @@ class User(APIModel):
         return User(api_call("v1", cls.base_url + "?" + user_id))
 
 
-class UserExercise(APIModel):
+class UserExercise(APIAuthModel):
+
+    base_url = "/user/exercises"
+
     _related_field_types = {
         "exercise_model": class_by_kind,
+        "followup_exercises": class_by_kind,
+        "log": partial(class_by_name, name="ProblemLog"),
+    }
+
+    API_attributes = {
+        "log": "/log",
+        "followup_exercises": "/followup_exercises",
     }
 
 
-class UserVideo(APIModel):
-    pass
+class UserVideo(APIAuthModel):
+    base_url = "/user/videos"
+
+    _related_field_types = {
+        "video": class_by_kind,
+        "log": partial(class_by_name, name="VideoLog"),
+    }
+
+    API_attributes = {
+        "log": "/log",
+    }
 
 
-class UserBadge(APIModel):
+class UserBadge(APIAuthModel):
     pass
 
 # ProblemLog and VideoLog API calls return multiple entities in a list
 
 
-class ProblemLog(APIModel):
+class ProblemLog(APIAuthModel):
     pass
 
 
-class VideoLog(APIModel):
+class VideoLog(APIAuthModel):
     pass
 
 
@@ -373,6 +420,8 @@ kind_to_class_map = {
     "UserBadge": UserBadge,
     "UserVideo": UserVideo,
     "UserExercise": UserExercise,
+    "ProblemLog": ProblemLog,
+    "VideoLog": VideoLog,
 }
 
 
@@ -382,14 +431,14 @@ kind_to_class_map = {
 
 
 kind_to_id_map = {
-    "Video": "readable_id",
-    "Exercise": "name",
-    "Topic": "slug",
-    "User": "user_id",
-    "UserExercise": "exercise",
-    "UserVideo": "video",
-    "ProblemLog": "exercise",
-    "VideoLog": "video_title",
+    "Video": partial(n_deep, names=["readable_id"]),
+    "Exercise": partial(n_deep, names=["name"]),
+    "Topic": partial(n_deep, names=["slug"]),
+    "User": partial(n_deep, names=["user_id"]),
+    "UserExercise": partial(n_deep, names=["exercise"]),
+    "UserVideo": partial(n_deep, names=["video", "youtube_id"]),
+    "ProblemLog": partial(n_deep, names=["exercise"]),
+    "VideoLog": partial(n_deep, names=["video_title"]),
 }
 
 id_to_kind_map = {value: key for key, value in kind_to_id_map.items()}
