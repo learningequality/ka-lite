@@ -2,6 +2,7 @@ from django.http import HttpResponseRedirect
 from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
 
+import central.api_urls
 import securesync.urls
 from kalite import settings
 from feeds import RssSiteNewsFeed, AtomSiteNewsFeed
@@ -55,12 +56,11 @@ urlpatterns += patterns('central.views',
     url(r'^contact/', include('contact.urls')),
     url(r'^wiki/(?P<path>\w+)/$', redirect_to, {'base_url': settings.CENTRAL_WIKI_URL}, 'wiki'),
     url(r'^about/$', redirect_to, { 'base_url': 'http://learningequality.org/' }, 'about'),
-)   
-
-urlpatterns += patterns('central.api_views',
-    url(r'^download/subtitles/(?P<locale>\w+)$', 'download_subtitle_zip', {}, 'download_subtitle_zip'),
 )
-   
+urlpatterns += patterns('central.api_views',
+    url(r'^api/', include(central.api_urls)),
+)
+
 handler404 = 'central.views.handler_404'
 handler500 = 'central.views.handler_500'
 
