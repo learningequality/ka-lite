@@ -24,20 +24,14 @@ class Command(BaseCommand):
         else:
             max_retries = 5
 
-        try:
-            client = SyncClient(**kwargs)
-        except Exception as e:
-            raise CommandError(e)
+        client = SyncClient(**kwargs)
 
         if client.test_connection() != "success":
             self.stderr_writeln(("KA Lite host is currently unreachable")+": %s" % client.url)
             return
 
         self.stdout_writeln(("Initiating SyncSession")+"...")
-        try:
-            result = client.start_session()
-        except Exception as e:
-            raise CommandError(e)
+        result = client.start_session()
         if result != "success":
             self.stderr_writeln(("Unable to initiate session")+": %s" % result.content)
             return

@@ -1,6 +1,5 @@
 # based on: http://www.djangosnippets.org/snippets/1926/
 from django.template import Library, Node, TemplateSyntaxError
-from django.core.serializers import serialize
 from django.db.models.query import QuerySet
 from django.utils import simplejson
 from django.utils.safestring import mark_safe
