@@ -96,18 +96,34 @@ def percent(value, precision):
 
 @register.filter
 def format_name(user, format="first_last"):
+    """
+    Can be used for objects or dictionaries.
+    """
+    last_name = getattr(user, "last_name", None) or user.get("last_name", None)
+    first_name = getattr(user, "first_name", None) or user.get("first_name", None)
+    username = getattr(user, "username", None) or user.get("username", None)
+
     if format == "first_last":
-        return user.get_name()
+        # When firstname first, then try to use both, otherwise try firstname, then scramble for anything.
+        if last_name and first_name:
+            return "%s %s" % (first_name, last_name)
+        elif first_name:
+            return first_name
+        elif last_name:
+            return last_name
+        else:
+            return username
 
     elif format == "last_first":
-        if user.last_name and user.first_name:
-            return "%s, %s" % (user.last_name, user.first_name)
-        elif user.last_name:
-            return user.last_name
-        elif user.first_name:
-            return user.first_name
+        # When lastnmae, then try to use both, otherwise try lastname, then scramble for anything.
+        if last_name and first_name:
+            return "%s, %s" % (last_name, first_name)
+        elif last_name:
+            return last_name
+        elif first_name:
+            return first_name
         else:
-            return user.username
+            return username
 
     else:
         raise NotImplementedError("Unrecognized format string: %s" % format)
