@@ -149,7 +149,6 @@ def save_serialized_models(data, increment_counters=True, src_version=version.VE
                 saved_model_count += 1
 
             except ValidationError as e: # the model could not be saved
-                import pdb; pdb.set_trace()
 
                 # keep a running list of models and exceptions, to be stored in purgatory
                 exceptions += "%s: %s\n" % (model.pk, e)
