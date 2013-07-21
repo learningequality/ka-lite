@@ -180,10 +180,7 @@ def get_video_download_list(request):
 def start_subtitle_download(request):
     import pdb;pdb.set_trace()
     language = simplejson.loads(request.raw_post_data or "{}").get("language", "")
-    subtitle_counts = json.loads(open(os.path.join(settings.DATA_PATH, "subtitledata/subtitle_counts.json")).read())
-    language_list = []
-    for subtitle_data in subtitle_counts.values():
-        language_list.append(subtitle_data["code"])
+    language_list = topicdata.LANGUAGE_LIST 
     # this is updated because it is used by subtitledownload command
     current_language = Settings.get("subtitle_language")
     if language in language_list:
