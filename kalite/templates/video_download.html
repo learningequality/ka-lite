@@ -179,7 +179,7 @@ ul.dynatree-container li, .ui-widget-content {
         }, 200);
         
         setTimeout(function() {
-            doRequest("/central_api/get_subtitle_counts/", {}).success(function(subtitleCounts) {
+            doRequest("/api/get_subtitle_counts/", {}).success(function(subtitleCounts) {
                 // api returns an 2d array of the following format to show counts of srt files 
                 // {"gu": {"count": 45, "name": "Gujarati"}, etc}
                 var defaultLanguage = "{{ default_language }}";
@@ -245,12 +245,11 @@ ul.dynatree-container li, .ui-widget-content {
             var langCode = $("#language option:selected").val();
             
             if (langCode) {
+                // Question: this is pointing to the distributed server, which then points to the central server, is that the best way?
                 doRequest("/api/start_subtitle_download", {language: langCode}).success(
                     startSubtitleDownloadChecks
-                    console.log("success")
                 ).fail(function(resp) {
-                    console.log("Shit");
-                    window.resp= resp;
+                    // TODO(Ben): this is where we broke last time.
                 });
                 $(".progress-waiting").show();
             } else {
