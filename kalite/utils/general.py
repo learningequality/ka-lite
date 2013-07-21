@@ -1,3 +1,8 @@
+"""
+General string, integer, date functions.
+"""
+
+
 def break_into_chunks(bigiterator, chunksize=500):
     """
     Given an iterator, separates the iterator into a list of iterators,
