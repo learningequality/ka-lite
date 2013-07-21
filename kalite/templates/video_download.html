@@ -121,6 +121,23 @@ ul.dynatree-container li, .ui-widget-content {
 {% block headjs %}
 <script src="{% static 'js/jquery-ui.custom.min.js' %}"></script>
 <script src="{% static 'js/jquery.dynatree.min.js' %}"></script>
+<script>
+function show_subtitle_counts(subtitleCounts) {
+    // api returns an 2d array of the following format to show counts of srt files 
+    // {"gu": {"count": 45, "name": "Gujarati"}, etc}
+    var defaultLanguage = "{{ default_language }}";
+    $.each(subtitleCounts, function(langName, langData) {
+        var langCode = langData["code"];
+        var srtCount = langData["count"];
+        if(langCode === defaultLanguage) {
+            $('#language').append('<option value="' + langCode + '" selected>' + langName + ' (' + srtCount +')</option>')    
+        } else {
+            $('#language').append('<option value="' + langCode + '">'+ langName + ' (' + srtCount +')</option>')
+        }
+    });
+}
+</script>
+
 
 <script type="text/javascript">
     window.downloading_videos = [];
@@ -177,24 +194,7 @@ ul.dynatree-container li, .ui-widget-content {
                         
             });
         }, 200);
-        
-        setTimeout(function() {
-            doRequest("/central_api/get_subtitle_counts/", {}).success(function(subtitleCounts) {
-                // api returns an 2d array of the following format to show counts of srt files 
-                // {"gu": {"count": 45, "name": "Gujarati"}, etc}
-                var defaultLanguage = "{{ default_language }}";
-                $.each(subtitleCounts, function(langName, langData) {
-                    var langCode = langData["code"];
-                    var srtCount = langData["count"];
-                    if(langCode === defaultLanguage) {
-                        $('#language').append('<option value="' + langCode + '" selected>' + langName + ' (' + srtCount +')</option>')    
-                    } else {
-                        $('#language').append('<option value="' + langCode + '">'+ langName + ' (' + srtCount +')</option>')
-                    }
-                });     
-            });
-        }, 200);
-    
+
         $("#progressbar-overall").progressbar({
             value: 0,
             max: 10000000
@@ -245,12 +245,12 @@ ul.dynatree-container li, .ui-widget-content {
             var langCode = $("#language option:selected").val();
             
             if (langCode) {
-                doRequest("/api/start_subtitle_download", {language: langCode}).success(
-                    startSubtitleDownloadChecks
-                    console.log("success")
-                ).fail(function(resp) {
-                    console.log("Shit");
-                    window.resp= resp;
+                doRequest("/api/start_subtitle_download", {language: langCode}).success( function(resp) {
+                    startSubtitleDownloadChecks();
+                    console.log("success");
+                }).fail(function(resp) {
+            	    show_message("error", "Error downloading subtitles: " + resp.responseText);
+            	    return
                 });
                 $(".progress-waiting").show();
             } else {
@@ -570,4 +570,5 @@ ul.dynatree-container li, .ui-widget-content {
 <button id="cancel-download" type="button">{% trans "Cancel All Downloads" %}</button>
 
 <div id="content_tree"><br/><h2>{% trans " Loading topic tree... Please wait!" %}</h2></div>
+<script src="http://{{ central_server_host }}/api/subtitles/counts/?callback=show_subtitle_counts"></script>
 {% endblock content %}
