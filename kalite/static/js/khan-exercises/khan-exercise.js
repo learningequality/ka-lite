@@ -744,6 +744,8 @@ var Khan = (function() {
 
         Khan.require(document.documentElement.getAttribute("data-require"));
 
+
+
         // Initialize to an empty jQuery set
         exercises = jQuery();
 
