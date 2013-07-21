@@ -1,1 +1,82 @@
-[{"relative_url": "/exercise/similar_triangles_1", "guaranteed_file_name": "similar_triangles_1.html", "file_name": null, "author_name": "Igor Terzic", "creation_date": "2011-09-16T22:59:45Z", "ka_url": "http://www.khanacademy.org/exercise/similar_triangles_1", "v_position": -33, "h_position": 36, "node_slug": "e/similar_triangles_1", "progress_key": "e251603956", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/similarity-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/similar_triangles_1.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "SimTri1", "covers": [], "display_name": "Similar triangles 1", "kind": "Exercise", "sha1": "8cede15fbef31fe318e2605a1df72562a11f5fad", "name": "similar_triangles_1", "seconds_per_fast_problem": 6.0, "prerequisites": ["congruent_triangles_2"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/similar_triangles_1_256.png"}, {"relative_url": "/exercise/similar_triangles_2", "guaranteed_file_name": "similar_triangles_2.html", "file_name": null, "author_name": "Matt Wahl", "creation_date": "2012-02-14T13:01:19Z", "ka_url": "http://www.khanacademy.org/exercise/similar_triangles_2", "v_position": -33, "h_position": 37, "node_slug": "e/similar_triangles_2", "progress_key": "e574955549", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/similarity-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/similar_triangles_2.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "SimTri2", "covers": [], "display_name": "Similar triangles 2", "kind": "Exercise", "sha1": "0916b99855fc7e0b0cb55d9a02151758255ad148", "name": "similar_triangles_2", "seconds_per_fast_problem": 7.0, "prerequisites": ["similar_triangles_1"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/similar_triangles_2_256.png"}, {"relative_url": "/exercise/solving_similar_triangles_1", "guaranteed_file_name": "solving_similar_triangles_1.html", "file_name": null, "author_name": "Matt Wahl", "creation_date": "2012-02-14T15:26:57Z", "ka_url": "http://www.khanacademy.org/exercise/solving_similar_triangles_1", "v_position": -33, "h_position": 38, "node_slug": "e/solving_similar_triangles_1", "progress_key": "e575147721", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/similarity-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/solving_similar_triangles_1.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "SolvSimTri1", "covers": [], "display_name": "Solving similar triangles 1", "kind": "Exercise", "sha1": "8c4cc2cdc144728cd479688088e6223afc578273", "name": "solving_similar_triangles_1", "seconds_per_fast_problem": 15.0, "prerequisites": ["similar_triangles_2"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/solving_similar_triangles_1_256.png"}, {"relative_url": "/exercise/solving_similar_triangles_2", "guaranteed_file_name": "solving_similar_triangles_2.html", "file_name": null, "author_name": "Jon Hoye", "creation_date": "2012-04-18T05:50:23Z", "ka_url": "http://www.khanacademy.org/exercise/solving_similar_triangles_2", "v_position": -33, "h_position": 39, "node_slug": "e/solving_similar_triangles_2", "progress_key": "e729523853", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/similarity-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/solving_similar_triangles_2.png", "custom_stacks": [], "description": "", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "SolvSimTri2", "covers": [], "display_name": "Solving similar triangles 2", "kind": "Exercise", "sha1": "1d4a99de0f6a12c5ded36915af8737a999bca6c0", "name": "solving_similar_triangles_2", "seconds_per_fast_problem": 17.0, "prerequisites": ["solving_similar_triangles_1"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/solving_similar_triangles_2_256.png"}]
+[
+  {
+    "kind": "Exercise", 
+    "display_name": "Similar triangles 1", 
+    "description": null, 
+    "title": "Similar triangles 1", 
+    "seconds_per_fast_problem": 8.0, 
+    "related_video_readable_ids": [
+      "similarity-postulates"
+    ], 
+    "slug": "similar_triangles_1", 
+    "prerequisites": [
+      "congruent_triangles_2"
+    ], 
+    "live": true, 
+    "h_position": 36, 
+    "v_position": -33, 
+    "path": "/math/geometry/similarity/triangle_similarlity/e/similar_triangles_1/", 
+    "id": "similar_triangles_1", 
+    "name": "similar_triangles_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Similar triangles 2", 
+    "description": null, 
+    "title": "Similar triangles 2", 
+    "seconds_per_fast_problem": 8.0, 
+    "related_video_readable_ids": [
+      "similarity-postulates"
+    ], 
+    "slug": "similar_triangles_2", 
+    "prerequisites": [
+      "similar_triangles_1"
+    ], 
+    "live": true, 
+    "h_position": 37, 
+    "v_position": -33, 
+    "path": "/math/geometry/similarity/triangle_similarlity/e/similar_triangles_2/", 
+    "id": "similar_triangles_2", 
+    "name": "similar_triangles_2"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Solving similar triangles 1", 
+    "description": null, 
+    "title": "Solving similar triangles 1", 
+    "seconds_per_fast_problem": 13.0, 
+    "related_video_readable_ids": [
+      "similarity-example-problems"
+    ], 
+    "slug": "solving_similar_triangles_1", 
+    "prerequisites": [
+      "similar_triangles_2"
+    ], 
+    "live": true, 
+    "h_position": 38, 
+    "v_position": -33, 
+    "path": "/math/geometry/similarity/triangle_similarlity/e/solving_similar_triangles_1/", 
+    "id": "solving_similar_triangles_1", 
+    "name": "solving_similar_triangles_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Solving similar triangles 2", 
+    "description": "", 
+    "title": "Solving similar triangles 2", 
+    "seconds_per_fast_problem": 21.0, 
+    "related_video_readable_ids": [
+      "similarity-example-where-same-side-plays-different-roles"
+    ], 
+    "slug": "solving_similar_triangles_2", 
+    "prerequisites": [
+      "solving_similar_triangles_1"
+    ], 
+    "live": true, 
+    "h_position": 39, 
+    "v_position": -33, 
+    "path": "/math/geometry/similarity/triangle_similarlity/e/solving_similar_triangles_2/", 
+    "id": "solving_similar_triangles_2", 
+    "name": "solving_similar_triangles_2"
+  }
+]

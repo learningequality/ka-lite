@@ -1,1 +1,430 @@
-[{"relative_url": "/exercise/probability_1", "guaranteed_file_name": "probability_1.html", "file_name": null, "author_name": "Ben Alpert", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/probability_1", "v_position": 0, "h_position": 28, "node_slug": "e/probability_1", "progress_key": "e13179429", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/probability-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/probability_1.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Prob. 1", "covers": [], "display_name": "Probability 1", "kind": "Exercise", "sha1": "b6505c32788bc8ce040e00310bf8b06defa1000a", "name": "probability_1", "seconds_per_fast_problem": 11.0, "prerequisites": ["counting_2"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/probability_1_256.png"}, {"relative_url": "/exercise/independent_probability", "guaranteed_file_name": "independent_probability.html", "file_name": null, "author_name": "Ben Eater", "creation_date": "2012-05-02T00:01:59Z", "ka_url": "http://www.khanacademy.org/exercise/independent_probability", "v_position": 0, "h_position": 29, "node_slug": "e/independent_probability", "progress_key": "e757444186", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/probability-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/independent_probability.png", "custom_stacks": [], "description": "", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Indep. Prob", "covers": [], "display_name": "Independent probability", "kind": "Exercise", "sha1": "570cb8e0448645ebfc895fe98d8addb6addd494e", "name": "independent_probability", "seconds_per_fast_problem": 10.0, "prerequisites": ["probability_1"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/independent_probability_256.png"}, {"relative_url": "/exercise/dependent_probability", "guaranteed_file_name": "dependent_probability.html", "file_name": null, "author_name": "Omar Rizwan", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/dependent_probability", "v_position": 0, "h_position": 30, "node_slug": "e/dependent_probability", "progress_key": "e13179407", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/probability-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/dependent_probability.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Dep. Prob.", "covers": [], "display_name": "Dependent probability", "kind": "Exercise", "sha1": "4dd056b36cc229fc82d4df2ed81c45d4213cf6f7", "name": "dependent_probability", "seconds_per_fast_problem": 23.0, "prerequisites": ["independent_probability"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/dependent_probability_256.png"}, {"relative_url": "/exercise/counting_2", "guaranteed_file_name": "counting_2.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-10-07T23:45:04Z", "ka_url": "http://www.khanacademy.org/exercise/counting_2", "v_position": 0, "h_position": 27, "node_slug": "e/counting_2", "progress_key": "e297933680", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/probability-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/counting_2.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Counting 2", "covers": [], "display_name": "Counting 2", "kind": "Exercise", "sha1": "7af678f4a3f795dfe0e51e35daaa1b1e0b5b5582", "name": "counting_2", "seconds_per_fast_problem": 8.0, "prerequisites": ["exponents_1", "adding_and_subtracting_fractions"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/counting_2_256.png"}, {"relative_url": "/exercise/permutations_1", "guaranteed_file_name": "permutations_1.html", "file_name": "permutations_1.html", "author_name": "Mark Wittels", "creation_date": "2012-07-25T02:32:49Z", "ka_url": "http://www.khanacademy.org/exercise/permutations_1", "v_position": -1, "h_position": 28, "node_slug": "e/permutations_1", "progress_key": "e917305998", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/probability-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/permutations_1.png", "custom_stacks": [], "description": "Introductory permutation problems.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Permute 1", "covers": [], "display_name": "Permutations", "kind": "Exercise", "sha1": "9acddbd5b6a067047c2504d40333eddce5306b16", "name": "permutations_1", "seconds_per_fast_problem": 6.0, "prerequisites": ["counting_2"], "pretty_display_name": "Permutations", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/permutations_1_256.png"}, {"relative_url": "/exercise/combinations_1", "guaranteed_file_name": "combinations_1.html", "file_name": "combinations_1.html", "author_name": "Mark Wittels", "creation_date": "2012-08-02T21:34:15Z", "ka_url": "http://www.khanacademy.org/exercise/combinations_1", "v_position": -1, "h_position": 29, "node_slug": "e/combinations_1", "progress_key": "e937485754", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/probability-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/combinations_1.png", "custom_stacks": [], "description": "Introductory combination problems", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "combinat 1", "covers": [], "display_name": "Combinations", "kind": "Exercise", "sha1": "bf1742dca7654510418a4e175bd0a9409f9f7e8a", "name": "combinations_1", "seconds_per_fast_problem": 12.0, "prerequisites": ["permutations_1"], "pretty_display_name": "Combinations", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/combinations_1_256.png"}, {"relative_url": "/exercise/permutations_and_combinations_2", "guaranteed_file_name": "permutations_and_combinations_2.html", "file_name": "permutations_and_combinations_2.html", "author_name": "Mark Wittels", "creation_date": "2012-08-02T21:35:16Z", "ka_url": "http://www.khanacademy.org/exercise/permutations_and_combinations_2", "v_position": -1, "h_position": 30, "node_slug": "e/permutations_and_combinations_2", "progress_key": "e937561152", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/probability-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/permutations_and_combinations_2.png", "custom_stacks": [], "description": "Permutations and Combinations with overcounting", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "perm com 2", "covers": [], "display_name": "Permutations and combinations", "kind": "Exercise", "sha1": "24817a78ea80b500dd8cc4f06a132b189df37021", "name": "permutations_and_combinations_2", "seconds_per_fast_problem": 12.0, "prerequisites": ["combinations_1"], "pretty_display_name": "Permutations and combinations", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/permutations_and_combinations_2_256.png"}, {"relative_url": "/exercise/probability_with_perm_comb", "guaranteed_file_name": "probability_with_perm_comb.html", "file_name": "probability_with_perm_comb.html", "author_name": "Mark Wittels", "creation_date": "2012-08-10T23:53:45Z", "ka_url": "http://www.khanacademy.org/exercise/probability_with_perm_comb", "v_position": -1, "h_position": 31, "node_slug": "e/probability_with_perm_comb", "progress_key": "e956845911", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/probability-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/probability_with_perm_comb.png", "custom_stacks": [], "description": "Probability questions using permutations and combinations of objects", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "prb per com", "covers": [], "display_name": "Probability with permutations and combinations", "kind": "Exercise", "sha1": "f4918f9d021854e86ace05bad1854f4105727fcf", "name": "probability_with_perm_comb", "seconds_per_fast_problem": 29.0, "prerequisites": ["permutations_and_combinations_2"], "pretty_display_name": "Probability with permutations and combinations", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/probability_with_perm_comb_256.png"}, {"relative_url": "/exercise/expected_value", "guaranteed_file_name": "expected_value.html", "file_name": "expected_value.html", "author_name": "Mark Wittels", "creation_date": "2012-08-10T23:51:29Z", "ka_url": "http://www.khanacademy.org/exercise/expected_value", "v_position": 1, "h_position": 29, "node_slug": "e/expected_value", "progress_key": "e957212277", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/probability-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/expected_value.png", "custom_stacks": [], "description": "Compute the expected value given a set of outcomes, probabilities, and payoffs", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "expect val", "covers": [], "display_name": "Expected value", "kind": "Exercise", "sha1": "cbfb18a3f048b9e78b00148ff33dc69b9b880e35", "name": "expected_value", "seconds_per_fast_problem": 14.0, "prerequisites": ["probability_1"], "pretty_display_name": "Expected value", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/expected_value_256.png"}]
+[
+  {
+    "kind": "Exercise", 
+    "display_name": "Probability 1", 
+    "description": null, 
+    "title": "Probability 1", 
+    "seconds_per_fast_problem": 11.0, 
+    "related_video_readable_ids": [
+      "events-and-outcomes-1", 
+      "events-and-outcomes-1"
+    ], 
+    "slug": "probability_1", 
+    "prerequisites": [
+      "dice_probability"
+    ], 
+    "live": true, 
+    "h_position": 30, 
+    "v_position": 0, 
+    "path": "/math/probability/independent-dependent-probability/basic_probability/e/probability_1/", 
+    "id": "probability_1", 
+    "name": "probability_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Independent probability", 
+    "description": "", 
+    "title": "Independent probability", 
+    "seconds_per_fast_problem": 11.0, 
+    "related_video_readable_ids": [
+      "independent-events-3", 
+      "independent-events-3"
+    ], 
+    "slug": "independent_probability", 
+    "prerequisites": [
+      "probability_1"
+    ], 
+    "live": true, 
+    "h_position": 31, 
+    "v_position": 0, 
+    "path": "/math/probability/independent-dependent-probability/independent_events/e/independent_probability/", 
+    "id": "independent_probability", 
+    "name": "independent_probability"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Dependent probability", 
+    "description": null, 
+    "title": "Dependent probability", 
+    "seconds_per_fast_problem": 25.0, 
+    "related_video_readable_ids": [
+      "dependent-probability-example-2", 
+      "dependent-probability-example-2"
+    ], 
+    "slug": "dependent_probability", 
+    "prerequisites": [
+      "independent_probability"
+    ], 
+    "live": true, 
+    "h_position": 32, 
+    "v_position": 0, 
+    "path": "/math/probability/independent-dependent-probability/dependent_probability/e/dependent_probability/", 
+    "id": "dependent_probability", 
+    "name": "dependent_probability"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Counting 2", 
+    "description": null, 
+    "title": "Counting 2", 
+    "seconds_per_fast_problem": 8.0, 
+    "related_video_readable_ids": [
+      "combinations", 
+      "combinations"
+    ], 
+    "slug": "counting_2", 
+    "prerequisites": [
+      "exponents_1"
+    ], 
+    "live": true, 
+    "h_position": 28, 
+    "v_position": 0, 
+    "path": "/math/probability/probability-and-combinatorics-topic/permutations_and_combinations/e/counting_2/", 
+    "id": "counting_2", 
+    "name": "counting_2"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Permutations", 
+    "description": "Introductory permutation problems.", 
+    "title": "Permutations", 
+    "seconds_per_fast_problem": 6.0, 
+    "related_video_readable_ids": [
+      "permutations-and-combinations-2", 
+      "permutations-and-combinations-2"
+    ], 
+    "slug": "permutations_1", 
+    "prerequisites": [
+      "dice_probability"
+    ], 
+    "live": true, 
+    "h_position": 30, 
+    "v_position": -1, 
+    "path": "/math/probability/probability-and-combinatorics-topic/permutations_and_combinations/e/permutations_1/", 
+    "id": "permutations_1", 
+    "name": "permutations_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Combinations", 
+    "description": "Introductory combination problems", 
+    "title": "Combinations", 
+    "seconds_per_fast_problem": 14.0, 
+    "related_video_readable_ids": [
+      "permutations-and-combinations-2", 
+      "permutations-and-combinations-2"
+    ], 
+    "slug": "combinations_1", 
+    "prerequisites": [
+      "permutations_1"
+    ], 
+    "live": true, 
+    "h_position": 31, 
+    "v_position": -1, 
+    "path": "/math/probability/probability-and-combinatorics-topic/permutations_and_combinations/e/combinations_1/", 
+    "id": "combinations_1", 
+    "name": "combinations_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Permutations and combinations", 
+    "description": "Permutations and Combinations with overcounting", 
+    "title": "Permutations and combinations", 
+    "seconds_per_fast_problem": 12.0, 
+    "related_video_readable_ids": [
+      "permutations-and-combinations-2", 
+      "permutations-and-combinations-2"
+    ], 
+    "slug": "permutations_and_combinations_2", 
+    "prerequisites": [
+      "combinations_1"
+    ], 
+    "live": true, 
+    "h_position": 32, 
+    "v_position": -1, 
+    "path": "/math/probability/probability-and-combinatorics-topic/permutations_and_combinations/e/permutations_and_combinations_2/", 
+    "id": "permutations_and_combinations_2", 
+    "name": "permutations_and_combinations_2"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Probability with permutations and combinations", 
+    "description": "Probability questions using permutations and combinations of objects", 
+    "title": "Probability with permutations and combinations", 
+    "seconds_per_fast_problem": 29.0, 
+    "related_video_readable_ids": [
+      "birthday-probability-problem", 
+      "birthday-probability-problem"
+    ], 
+    "slug": "probability_with_perm_comb", 
+    "prerequisites": [
+      "permutations_and_combinations_2"
+    ], 
+    "live": true, 
+    "h_position": 33, 
+    "v_position": -1, 
+    "path": "/math/probability/probability-and-combinatorics-topic/probability_combinatorics/e/probability_with_perm_comb/", 
+    "id": "probability_with_perm_comb", 
+    "name": "probability_with_perm_comb"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Expected value", 
+    "description": "Compute the expected value given a set of outcomes, probabilities, and payoffs", 
+    "title": "Expected value", 
+    "seconds_per_fast_problem": 16.0, 
+    "related_video_readable_ids": [
+      "expected-value--e-x"
+    ], 
+    "slug": "expected_value", 
+    "prerequisites": [
+      "probability_1"
+    ], 
+    "live": true, 
+    "h_position": 31, 
+    "v_position": 1, 
+    "path": "/math/probability/random-variables-topic/random_variables_prob_dist/e/expected_value/", 
+    "id": "expected_value", 
+    "name": "expected_value"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Mean median and mode", 
+    "description": null, 
+    "title": "Mean median and mode", 
+    "seconds_per_fast_problem": 9.0, 
+    "related_video_readable_ids": [
+      "mean-median-and-mode"
+    ], 
+    "slug": "mean_median_and_mode", 
+    "prerequisites": [
+      "exploring_mean_and_median"
+    ], 
+    "live": true, 
+    "h_position": 18, 
+    "v_position": -23, 
+    "path": "/math/probability/descriptive-statistics/central_tendency/e/mean_median_and_mode/", 
+    "id": "mean_median_and_mode", 
+    "name": "mean_median_and_mode"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Exploring mean and median", 
+    "description": null, 
+    "title": "Exploring mean and median", 
+    "seconds_per_fast_problem": 33.0, 
+    "related_video_readable_ids": [
+      "exploring-mean-and-median-module"
+    ], 
+    "slug": "exploring_mean_and_median", 
+    "prerequisites": [
+      "order_of_operations"
+    ], 
+    "live": true, 
+    "h_position": 17, 
+    "v_position": -23, 
+    "path": "/math/probability/descriptive-statistics/central_tendency/e/exploring_mean_and_median/", 
+    "id": "exploring_mean_and_median", 
+    "name": "exploring_mean_and_median"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Average word problems", 
+    "description": null, 
+    "title": "Average word problems", 
+    "seconds_per_fast_problem": 25.0, 
+    "related_video_readable_ids": [
+      "exploring-mean-and-median-module"
+    ], 
+    "slug": "average_word_problems", 
+    "prerequisites": [
+      "mean_median_and_mode"
+    ], 
+    "live": true, 
+    "h_position": 19, 
+    "v_position": -22, 
+    "path": "/math/probability/descriptive-statistics/central_tendency/e/average_word_problems/", 
+    "id": "average_word_problems", 
+    "name": "average_word_problems"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Creating box and whisker plots", 
+    "description": null, 
+    "title": "Creating box and whisker plots", 
+    "seconds_per_fast_problem": 50.25, 
+    "related_video_readable_ids": [
+      "box-and-whisker-plots"
+    ], 
+    "slug": "creating_box_and_whisker_plots", 
+    "prerequisites": [
+      "mean_median_and_mode"
+    ], 
+    "live": true, 
+    "h_position": 19, 
+    "v_position": -23, 
+    "path": "/math/probability/descriptive-statistics/Box-and-whisker plots/e/creating_box_and_whisker_plots/", 
+    "id": "creating_box_and_whisker_plots", 
+    "name": "creating_box_and_whisker_plots"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Variance", 
+    "description": null, 
+    "title": "Variance", 
+    "seconds_per_fast_problem": 53.0, 
+    "related_video_readable_ids": [
+      "simulation-providing-evidence-that--n-1--gives-us-unbiased-estimate"
+    ], 
+    "slug": "variance", 
+    "prerequisites": [
+      "mean_median_and_mode"
+    ], 
+    "live": true, 
+    "h_position": 19, 
+    "v_position": -21, 
+    "path": "/math/probability/descriptive-statistics/variance_std_deviation/e/variance/", 
+    "id": "variance", 
+    "name": "variance"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Exploring standard deviation 1", 
+    "description": null, 
+    "title": "Exploring standard deviation 1", 
+    "seconds_per_fast_problem": 14.0, 
+    "related_video_readable_ids": [
+      "exploring-standard-deviation-1-module"
+    ], 
+    "slug": "exploring_standard_deviation_1", 
+    "prerequisites": [
+      "variance"
+    ], 
+    "live": true, 
+    "h_position": 20, 
+    "v_position": -21, 
+    "path": "/math/probability/descriptive-statistics/variance_std_deviation/e/exploring_standard_deviation_1/", 
+    "id": "exploring_standard_deviation_1", 
+    "name": "exploring_standard_deviation_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Standard deviation", 
+    "description": null, 
+    "title": "Standard deviation", 
+    "seconds_per_fast_problem": 44.0, 
+    "related_video_readable_ids": [
+      "exploring-standard-deviation-1-module"
+    ], 
+    "slug": "standard_deviation", 
+    "prerequisites": [
+      "variance"
+    ], 
+    "live": true, 
+    "h_position": 20, 
+    "v_position": -22, 
+    "path": "/math/probability/descriptive-statistics/variance_std_deviation/e/standard_deviation/", 
+    "id": "standard_deviation", 
+    "name": "standard_deviation"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Estimating the line of best fit", 
+    "description": "Given a random assortment of points, find the best fit line for them.", 
+    "title": "Estimating the line of best fit", 
+    "seconds_per_fast_problem": 6.0, 
+    "related_video_readable_ids": [], 
+    "slug": "plotting_the_line_of_best_fit", 
+    "prerequisites": [
+      "reading_line_charts_1"
+    ], 
+    "live": true, 
+    "h_position": 18, 
+    "v_position": -26, 
+    "path": "/math/probability/regression/regression-correlation/e/plotting_the_line_of_best_fit/", 
+    "id": "plotting_the_line_of_best_fit", 
+    "name": "plotting_the_line_of_best_fit"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Empirical rule", 
+    "description": null, 
+    "title": "Empirical rule", 
+    "seconds_per_fast_problem": 25.0, 
+    "related_video_readable_ids": [
+      "ck12-org-exercise--standard-normal-distribution-and-the-empirical-rule"
+    ], 
+    "slug": "empirical_rule", 
+    "prerequisites": [
+      "exploring_standard_deviation_1", 
+      "standard_deviation"
+    ], 
+    "live": true, 
+    "h_position": 21, 
+    "v_position": -21, 
+    "path": "/math/probability/statistics-inferential/normal_distribution/e/empirical_rule/", 
+    "id": "empirical_rule", 
+    "name": "empirical_rule"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Z scores 1", 
+    "description": "Find the z-score of a particular measurement given the mean and standard deviation.", 
+    "title": "Z scores 1", 
+    "seconds_per_fast_problem": 13.0, 
+    "related_video_readable_ids": [
+      "ck12-org--more-empirical-rule-and-z-score-practice"
+    ], 
+    "slug": "z_scores_1", 
+    "prerequisites": [
+      "exploring_standard_deviation_1", 
+      "standard_deviation"
+    ], 
+    "live": true, 
+    "h_position": 21, 
+    "v_position": -22, 
+    "path": "/math/probability/statistics-inferential/normal_distribution/e/z_scores_1/", 
+    "id": "z_scores_1", 
+    "name": "z_scores_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Z scores 2", 
+    "description": "Use a z-table to find the probability of a particular measurement.", 
+    "title": "Z scores 2", 
+    "seconds_per_fast_problem": 22.0, 
+    "related_video_readable_ids": [
+      "ck12-org--more-empirical-rule-and-z-score-practice"
+    ], 
+    "slug": "z_scores_2", 
+    "prerequisites": [
+      "z_scores_1"
+    ], 
+    "live": true, 
+    "h_position": 22, 
+    "v_position": -22, 
+    "path": "/math/probability/statistics-inferential/normal_distribution/e/z_scores_2/", 
+    "id": "z_scores_2", 
+    "name": "z_scores_2"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Z scores 3", 
+    "description": "Use a z-table to find the probability that a particular measurement is in a range.", 
+    "title": "Z scores 3", 
+    "seconds_per_fast_problem": 48.0, 
+    "related_video_readable_ids": [
+      "ck12-org--more-empirical-rule-and-z-score-practice"
+    ], 
+    "slug": "z_scores_3", 
+    "prerequisites": [
+      "z_scores_2"
+    ], 
+    "live": true, 
+    "h_position": 23, 
+    "v_position": -22, 
+    "path": "/math/probability/statistics-inferential/normal_distribution/e/z_scores_3/", 
+    "id": "z_scores_3", 
+    "name": "z_scores_3"
+  }
+]

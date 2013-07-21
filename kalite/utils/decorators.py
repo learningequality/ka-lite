@@ -11,7 +11,6 @@ from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 
 import settings
-from central.models import Organization
 from config.models import Settings
 from securesync.models import Device, DeviceZone, Zone, Facility
 #from securesync.views import facility_selection
@@ -26,7 +25,7 @@ def require_admin_api(handler):
 
 def require_admin_shared(handler, api_request=False):
     """Require admin, different behavior for api_request or not"""
-    
+
     def wrapper_fn(request, api_request, *args, **kwargs):
         if (settings.CENTRAL_SERVER and request.user.is_authenticated()) or getattr(request, "is_admin", False):
             return handler(request, *args, **kwargs)
@@ -51,7 +50,7 @@ def require_login(handler):
         messages.error(request, mark_safe(_("To view the page you were trying to view, you need to be logged in. Please login as one below, or <a href='%s'>go to home.</a>") % reverse("homepage")))
         return HttpResponseRedirect(reverse("login") + "?next=" + request.path)
     return wrapper_fn
-    
+
 
 
 def central_server_only(handler):
@@ -68,28 +67,28 @@ def distributed_server_only(handler):
             return HttpResponseNotFound(_("This path is only available on distributed servers."))
         return handler(*args, **kwargs)
     return wrapper_fn
-    
+
 
 
 def authorized_login_required(handler):
     """A generic function that determines whether a user has permissions to view a page.
-    
+
     Central server: this is by organization permissions.
     Distributed server: you have to be an admin.
     """
-    
+
     def wrapper_fn(request, *args, **kwargs):
         user = request.user
         assert not user.is_anonymous(), "Wrapped by login_required!"
 
         if user.is_superuser:
             return handler(request, *args, **kwargs)
-        
-        org = None; org_id      = kwargs.get("org_id", None)
-        zone = None; zone_id     = kwargs.get("zone_id", None)
-        device = None; device_id   = kwargs.get("device_id", None)
-        facility = None; facility_id = kwargs.get("facility_id", None)
-        
+
+        org = None; org_id      = kwargs.get("org", None)
+        zone = None; zone_id     = kwargs.get("zone", None)
+        device = None; device_id   = kwargs.get("device", None)
+        facility = None; facility_id = kwargs.get("facility", None)
+
         # Validate device through zone
         if device_id:
             device = get_object_or_404(Device, pk=device_id)
@@ -98,7 +97,7 @@ def authorized_login_required(handler):
                 if not zone:
                     return HttpResponseForbidden("Device, no zone, no DeviceZone")
                 zone_id = zone.pk
-                
+
         # Validate device through zone
         if facility_id:
             facility = get_object_or_404(Facility, pk=facility_id)
@@ -107,29 +106,30 @@ def authorized_login_required(handler):
                 if not zone:
                     return HttpResponseForbidden("Facility, no zone")
                 zone_id = zone.pk
-                
-        # Validate zone through org
-        if zone_id:
-            zone = get_object_or_404(Zone, pk=zone_id)
-            if not org_id:
-                orgs = Organization.from_zone(zone)
-                if len(orgs) != 1:
-                    return HttpResponseForbidden("Zone, no org")
-                org = orgs[0]
-                org_id = org.pk
 
-        if org_id:
-            if org_id=="new":
-                return HttpResponseForbidden("Org")
-            org = get_object_or_404(Organization, pk=org_id)
-            if not org.is_member(request.user):
-                return HttpResponseForbidden("Org")
-            elif zone_id and zone and org.zones.filter(pk=zone.pk).count() == 0:
-                return HttpResponseForbidden("This organization does not have permissions for this zone.")
-    
+        if settings.CENTRAL_SERVER:
+            from central.models import Organization
+            # Validate zone through org
+            if zone_id:
+                zone = get_object_or_404(Zone, pk=zone_id)
+                if not org_id:
+                    orgs = Organization.from_zone(zone)
+                    if len(orgs) != 1:
+                        return HttpResponseForbidden("Zone, no org")
+                    org = orgs[0]
+                    org_id = org.pk
+
+            if org_id:
+                if org_id=="new":
+                    return HttpResponseForbidden("Org")
+                org = get_object_or_404(Organization, pk=org_id)
+                if not org.is_member(request.user):
+                    return HttpResponseForbidden("Org")
+                elif zone_id and zone and org.zones.filter(pk=zone.pk).count() == 0:
+                    return HttpResponseForbidden("This organization does not have permissions for this zone.")
+
         # Made it through, we're safe!
         return handler(request, *args, **kwargs)
-        
-    
+
+
     return wrapper_fn if settings.CENTRAL_SERVER else require_admin(handler)
-    

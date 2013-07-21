@@ -1,1 +1,54 @@
-[{"relative_url": "/exercise/telling_time_0.5", "guaranteed_file_name": "telling_time_0.5.html", "file_name": null, "author_name": "Kori Roys", "creation_date": "2011-10-20T18:49:27Z", "ka_url": "http://www.khanacademy.org/exercise/telling_time_0.5", "v_position": 11, "h_position": 1, "node_slug": "e/telling_time_0.5", "progress_key": "e324885543", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/telling-time-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/telling_time_0.5.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Tell time", "covers": [], "display_name": "Telling time 0.5", "kind": "Exercise", "sha1": "09e10b3017bf6cfbc0f3543ac1a549f8bc22adc7", "name": "telling_time_0.5", "seconds_per_fast_problem": 6.0, "prerequisites": [], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/telling_time_0.5_256.png"}, {"relative_url": "/exercise/telling_time", "guaranteed_file_name": "telling_time.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/telling_time", "v_position": 11, "h_position": 2, "node_slug": "e/telling_time", "progress_key": "e213165631", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/telling-time-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/telling_time.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Tell time", "covers": [], "display_name": "Telling time", "kind": "Exercise", "sha1": "60c80823ac389e8d00947a45467fb147a63c373a", "name": "telling_time", "seconds_per_fast_problem": 7.0, "prerequisites": ["telling_time_0.5"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/telling_time_256.png"}, {"relative_url": "/exercise/telling_time_2", "guaranteed_file_name": "telling_time_2.html", "file_name": "", "author_name": "Stephanie Chang", "creation_date": "2012-01-13T07:54:34Z", "ka_url": "http://www.khanacademy.org/exercise/telling_time_2", "v_position": 11, "h_position": 3, "node_slug": "e/telling_time_2", "progress_key": "e498106090", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/telling-time-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/telling_time_2.png", "custom_stacks": [], "description": "", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Tell time 2", "covers": [], "display_name": "Telling time 2", "kind": "Exercise", "sha1": "74f6e76d43f5c97eb9afeb9d5341cfdbc60489dc", "name": "telling_time_2", "seconds_per_fast_problem": 7.0, "prerequisites": ["telling_time"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/telling_time_2_256.png"}]
+[
+  {
+    "kind": "Exercise", 
+    "display_name": "Telling time 0.5", 
+    "description": "", 
+    "title": "Telling time 0.5", 
+    "seconds_per_fast_problem": 6.0, 
+    "related_video_readable_ids": [], 
+    "slug": "telling_time_0.5", 
+    "prerequisites": [], 
+    "live": true, 
+    "h_position": 1, 
+    "v_position": 11, 
+    "path": "/math/arithmetic/telling-time/e/telling_time_0.5/", 
+    "id": "telling_time_0.5", 
+    "name": "telling_time_0.5"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Telling time", 
+    "description": null, 
+    "title": "Telling time", 
+    "seconds_per_fast_problem": 6.0, 
+    "related_video_readable_ids": [], 
+    "slug": "telling_time", 
+    "prerequisites": [
+      "telling_time_0.5"
+    ], 
+    "live": true, 
+    "h_position": 2, 
+    "v_position": 11, 
+    "path": "/math/arithmetic/telling-time/e/telling_time/", 
+    "id": "telling_time", 
+    "name": "telling_time"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Telling time 2", 
+    "description": "", 
+    "title": "Telling time 2", 
+    "seconds_per_fast_problem": 7.0, 
+    "related_video_readable_ids": [], 
+    "slug": "telling_time_2", 
+    "prerequisites": [
+      "telling_time"
+    ], 
+    "live": true, 
+    "h_position": 3, 
+    "v_position": 11, 
+    "path": "/math/arithmetic/telling-time/e/telling_time_2/", 
+    "id": "telling_time_2", 
+    "name": "telling_time_2"
+  }
+]

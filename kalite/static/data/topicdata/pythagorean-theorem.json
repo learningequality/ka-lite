@@ -1,1 +1,66 @@
-[{"relative_url": "/exercise/pythagorean_theorem_1", "guaranteed_file_name": "pythagorean_theorem_1.html", "file_name": "", "author_name": "Ben Alpert", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/pythagorean_theorem_1", "v_position": -13, "h_position": 38, "node_slug": "e/pythagorean_theorem_1", "progress_key": "e3032", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/pythagorean-theorem-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/pythagorean_theorem_1.png", "custom_stacks": [], "description": "Find the leg or hypotenuse of a right triangle using the Pythagorean theorem.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Pythag. 1", "covers": [], "display_name": "Pythagorean theorem", "kind": "Exercise", "sha1": "8c587bd88dd26d3507151dd267874af64b6b8e20", "name": "pythagorean_theorem_1", "seconds_per_fast_problem": 15.0, "prerequisites": ["adding_and_subtracting_radicals"], "pretty_display_name": "Pythagorean theorem", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/pythagorean_theorem_1_256.png"}, {"relative_url": "/exercise/distance_formula", "guaranteed_file_name": "distance_formula.html", "file_name": "", "author_name": "Dave Sescleifer", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/distance_formula", "v_position": -13, "h_position": 39, "node_slug": "e/distance_formula", "progress_key": "e4514693", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/pythagorean-theorem-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/distance_formula.png", "custom_stacks": [], "description": "Use the Pythagorean theorem to find the distance between two points on the coordinate plane.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Dist. Form.", "covers": [], "display_name": "Distance formula", "kind": "Exercise", "sha1": "85c9a12e67d93f35a77e6fe47a8df6198770ccd9", "name": "distance_formula", "seconds_per_fast_problem": 21.0, "prerequisites": ["pythagorean_theorem_1"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/distance_formula_256.png"}, {"relative_url": "/exercise/midpoint_formula", "guaranteed_file_name": "midpoint_formula.html", "file_name": "", "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/midpoint_formula", "v_position": -12, "h_position": 40, "node_slug": "e/midpoint_formula", "progress_key": "e13090861", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/pythagorean-theorem-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/midpoint_formula.png", "custom_stacks": [], "description": "Find the midpoint of a segment on the coordinate plane, or find the endpoint of a segment given one point and the midpoint.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Midpoint F.", "covers": ["adding_decimals"], "display_name": "Midpoint formula", "kind": "Exercise", "sha1": "550f9a53ee75267d13165184070c253d60fc62b6", "name": "midpoint_formula", "seconds_per_fast_problem": 19.0, "prerequisites": ["distance_formula"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/midpoint_formula_256.png"}]
+[
+  {
+    "kind": "Exercise", 
+    "display_name": "Pythagorean theorem", 
+    "description": "Find the leg or hypotenuse of a right triangle using the Pythagorean theorem.", 
+    "title": "Pythagorean theorem", 
+    "seconds_per_fast_problem": 15.0, 
+    "related_video_readable_ids": [
+      "pythagorean-theorem"
+    ], 
+    "slug": "pythagorean_theorem_1", 
+    "prerequisites": [
+      "adding_and_subtracting_radicals"
+    ], 
+    "live": true, 
+    "h_position": 38, 
+    "v_position": -13, 
+    "path": "/math/algebra/pythagorean-theorem/e/pythagorean_theorem_1/", 
+    "id": "pythagorean_theorem_1", 
+    "name": "pythagorean_theorem_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Distance formula", 
+    "description": "Use the Pythagorean theorem to find the distance between two points on the coordinate plane.", 
+    "title": "Distance formula", 
+    "seconds_per_fast_problem": 26.0, 
+    "related_video_readable_ids": [
+      "pythagorean-theorem", 
+      "distance-formula", 
+      "distance-formula"
+    ], 
+    "slug": "distance_formula", 
+    "prerequisites": [
+      "pythagorean_theorem_1"
+    ], 
+    "live": true, 
+    "h_position": 39, 
+    "v_position": -13, 
+    "path": "/math/algebra/pythagorean-theorem/e/distance_formula/", 
+    "id": "distance_formula", 
+    "name": "distance_formula"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Midpoint formula", 
+    "description": "Find the midpoint of a segment on the coordinate plane, or find the endpoint of a segment given one point and the midpoint.", 
+    "title": "Midpoint formula", 
+    "seconds_per_fast_problem": 22.0, 
+    "related_video_readable_ids": [
+      "pythagorean-theorem", 
+      "midpoint-formula", 
+      "midpoint-formula"
+    ], 
+    "slug": "midpoint_formula", 
+    "prerequisites": [
+      "distance_formula"
+    ], 
+    "live": true, 
+    "h_position": 40, 
+    "v_position": -12, 
+    "path": "/math/algebra/pythagorean-theorem/e/midpoint_formula/", 
+    "id": "midpoint_formula", 
+    "name": "midpoint_formula"
+  }
+]

@@ -1,12 +1,14 @@
-""" Used for labeling models that use securesync.  This is where the heavy lifting happens!"""
-
-import logging
+"""
+Used for labeling models that use securesync.  This is where the heavy lifting happens!
+"""
 from annoying.functions import get_object_or_None
 
 from django.core.exceptions import ValidationError
 from django.core import serializers
 
+import settings
 import version
+from settings import LOG as logging
 
 
 _syncing_models = [] # all models we want to sync

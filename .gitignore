@@ -1,3 +1,5 @@
+kalite-*.zip
+tmp/
 *.prof
 *.pyc
 *.sublime-*

@@ -1,1 +1,105 @@
-[{"relative_url": "/exercise/adding_and_subtracting_polynomials", "guaranteed_file_name": "adding_and_subtracting_polynomials.html", "file_name": "", "author_name": "Julian Pulgarin", "creation_date": "2011-11-04T23:30:43Z", "ka_url": "http://www.khanacademy.org/exercise/adding_and_subtracting_polynomials", "v_position": -7, "h_position": 45, "node_slug": "e/adding_and_subtracting_polynomials", "progress_key": "e357414238", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/polynomials-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/adding_and_subtracting_polynomials.png", "custom_stacks": [], "description": "Add or subtract polynomials", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "+- polynomi", "covers": [], "display_name": "Adding and subtracting polynomials", "kind": "Exercise", "sha1": "7aa42e253e1168d876d2d082d4b4c0972d449fdc", "name": "adding_and_subtracting_polynomials", "seconds_per_fast_problem": 16.0, "prerequisites": ["equation_of_a_line"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/adding_and_subtracting_polynomials_256.png"}, {"relative_url": "/exercise/multiplying_expressions_0.5", "guaranteed_file_name": "multiplying_expressions_0.5.html", "file_name": "", "author_name": "Ben Eater", "creation_date": "2012-03-02T03:30:14Z", "ka_url": "http://www.khanacademy.org/exercise/multiplying_expressions_0.5", "v_position": -7, "h_position": 46, "node_slug": "e/multiplying_expressions_0.5", "progress_key": "e617857186", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/polynomials-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/multiplying_expressions_0.5.png", "custom_stacks": [], "description": "Multiplying expressions in the form (x+b)(x-b), (x+b)^2, or (x-b)^2", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "MultExp 0.5", "covers": [], "display_name": "Multiplying expressions 0.5", "kind": "Exercise", "sha1": "66e9fc692f44f0cad315221e6cd6b862a9dd8c42", "name": "multiplying_expressions_0.5", "seconds_per_fast_problem": 10.0, "prerequisites": ["adding_and_subtracting_polynomials"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/multiplying_expressions_0.5_256.png"}, {"relative_url": "/exercise/multiplying_expressions_1", "guaranteed_file_name": "multiplying_expressions_1.html", "file_name": "", "author_name": "Jeff Ruberg", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/multiplying_expressions_1", "v_position": -7, "h_position": 47, "node_slug": "e/multiplying_expressions_1", "progress_key": "e3023", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/polynomials-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/multiplying_expressions_1.png", "custom_stacks": [], "description": "Multiplying expressions in the form of polynomials (not perfect squares).", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Mult. Ex. 1", "covers": ["multiplying_expressions_0.5"], "display_name": "Multiplying expressions 1", "kind": "Exercise", "sha1": "c1d66002664b3a04726d09c3a7af46fec1cbad65", "name": "multiplying_expressions_1", "seconds_per_fast_problem": 12.0, "prerequisites": ["multiplying_expressions_0.5"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/multiplying_expressions_1_256.png"}, {"relative_url": "/exercise/factoring_linear_binomials", "guaranteed_file_name": "factoring_linear_binomials.html", "file_name": "", "author_name": "Jamie Wong", "creation_date": "2012-11-06T21:58:31Z", "ka_url": "http://www.khanacademy.org/exercise/factoring_linear_binomials", "v_position": -6, "h_position": 48, "node_slug": "e/factoring_linear_binomials", "progress_key": "e1126131850", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/polynomials-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/factoring_linear_binomials.png", "custom_stacks": [], "description": "Factor expressions like 3x-9", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "FactLinBino", "covers": [], "display_name": "Factoring linear binomials", "kind": "Exercise", "sha1": "f74432afd1030f019063f4e7b8b5063c68d7fcb7", "name": "factoring_linear_binomials", "seconds_per_fast_problem": 9.0, "prerequisites": ["multiplying_expressions_1", "multiplying_polynomials"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/factoring_linear_binomials_256.png"}, {"relative_url": "/exercise/multiplying_polynomials", "guaranteed_file_name": "multiplying_polynomials.html", "file_name": "", "author_name": "Julian Pulgarin", "creation_date": "2011-11-04T23:45:46Z", "ka_url": "http://www.khanacademy.org/exercise/multiplying_polynomials", "v_position": -6, "h_position": 47, "node_slug": "e/multiplying_polynomials", "progress_key": "e357437094", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/polynomials-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/multiplying_polynomials.png", "custom_stacks": [], "description": "Multiply two expressions with variables and exponents to get a polynomial", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "* polynomia", "covers": [], "display_name": "Multiplying polynomials", "kind": "Exercise", "sha1": "b3f31af7bb7cc8c0ead2eb7f017ca9c422e8465c", "name": "multiplying_polynomials", "seconds_per_fast_problem": 11.0, "prerequisites": ["multiplying_expressions_0.5"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/multiplying_polynomials_256.png"}, {"relative_url": "/exercise/factoring_polynomials_1", "guaranteed_file_name": "factoring_polynomials_1.html", "file_name": "", "author_name": "Ben Eater", "creation_date": "2012-02-01T04:51:05Z", "ka_url": "http://www.khanacademy.org/exercise/factoring_polynomials_1", "v_position": -6, "h_position": 49, "node_slug": "e/factoring_polynomials_1", "progress_key": "e541466377", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/polynomials-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/factoring_polynomials_1.png", "custom_stacks": [], "description": "Factor polynomials that are not perfect squares, where A=1", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Fact Poly 1", "covers": [], "display_name": "Factoring polynomials 1", "kind": "Exercise", "sha1": "5463c037d2632915e6623e6e035bb221bd68f49b", "name": "factoring_polynomials_1", "seconds_per_fast_problem": 21.75, "prerequisites": ["factoring_linear_binomials"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/factoring_polynomials_1_256.png"}, {"relative_url": "/exercise/factoring_difference_of_squares_1", "guaranteed_file_name": "factoring_difference_of_squares_1.html", "file_name": "", "author_name": "Ben Eater", "creation_date": "2012-02-01T05:15:19Z", "ka_url": "http://www.khanacademy.org/exercise/factoring_difference_of_squares_1", "v_position": -8, "h_position": 49, "node_slug": "e/factoring_difference_of_squares_1", "progress_key": "e541518385", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/polynomials-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/factoring_difference_of_squares_1.png", "custom_stacks": [], "description": "Factoring differences of squares into the form (x+b)*(x-b)", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Diff Sqrs 1", "covers": [], "display_name": "Factoring difference of squares 1", "kind": "Exercise", "sha1": "d345f5a0a812736022268c3054f2e9fe6d136e5f", "name": "factoring_difference_of_squares_1", "seconds_per_fast_problem": 10.0, "prerequisites": ["multiplying_expressions_1", "multiplying_polynomials"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/factoring_difference_of_squares_1_256.png"}, {"relative_url": "/exercise/factoring_polynomials_with_two_variables", "guaranteed_file_name": "factoring_polynomials_with_two_variables.html", "file_name": "", "author_name": "Mathias Hiron", "creation_date": "2012-03-28T03:44:28Z", "ka_url": "http://www.khanacademy.org/exercise/factoring_polynomials_with_two_variables", "v_position": -6, "h_position": 51, "node_slug": "e/factoring_polynomials_with_two_variables", "progress_key": "e688778053", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/polynomials-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/factoring_polynomials_with_two_variables.png", "custom_stacks": [], "description": "Factor a polynomial with two variables into expressions", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "F poly 2var", "covers": [], "display_name": "Factoring polynomials with two variables", "kind": "Exercise", "sha1": "2d7031c1ad13fca479612d366d007f91fa2de834", "name": "factoring_polynomials_with_two_variables", "seconds_per_fast_problem": 20.0, "prerequisites": ["factoring_polynomials_2"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/factoring_polynomials_with_two_variables_256.png"}, {"relative_url": "/exercise/factoring_polynomials_2", "guaranteed_file_name": "factoring_polynomials_2.html", "file_name": "", "author_name": "Mathias Hiron", "creation_date": "2012-03-28T03:42:33Z", "ka_url": "http://www.khanacademy.org/exercise/factoring_polynomials_2", "v_position": -6, "h_position": 50, "node_slug": "e/factoring_polynomials_2", "progress_key": "e688726305", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/polynomials-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/factoring_polynomials_2.png", "custom_stacks": [], "description": "Factor polynomials that are not perfect squares, where A is not 1", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Fact poly 2", "covers": ["solving_for_the_y-intercept", "line_graph_intuition"], "display_name": "Factoring polynomials 2", "kind": "Exercise", "sha1": "b69a92849e93fa1dfde6420516bdab7c6a1b87ff", "name": "factoring_polynomials_2", "seconds_per_fast_problem": 47.0, "prerequisites": ["factoring_polynomials_1"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/factoring_polynomials_2_256.png"}, {"relative_url": "/exercise/factoring_polynomials_by_grouping_1", "guaranteed_file_name": "factoring_polynomials_by_grouping_1.html", "file_name": "", "author_name": "Ben Eater", "creation_date": "2012-04-18T05:48:12Z", "ka_url": "http://www.khanacademy.org/exercise/factoring_polynomials_by_grouping_1", "v_position": -5, "h_position": 51, "node_slug": "e/factoring_polynomials_by_grouping_1", "progress_key": "e729514670", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/polynomials-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/factoring_polynomials_by_grouping_1.png", "custom_stacks": [], "description": "Factor polynomials by grouping", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "F poly grp1", "covers": [], "display_name": "Factoring polynomials by grouping", "kind": "Exercise", "sha1": "fb6cd426fec501e9b624460cb7b1bc1d44e55fc1", "name": "factoring_polynomials_by_grouping_1", "seconds_per_fast_problem": 59.0, "prerequisites": ["factoring_polynomials_2"], "pretty_display_name": "Factoring polynomials by grouping", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/factoring_polynomials_by_grouping_1_256.png"}, {"relative_url": "/exercise/factoring_difference_of_squares_2", "guaranteed_file_name": "factoring_difference_of_squares_2.html", "file_name": "", "author_name": "Ben Eater", "creation_date": "2012-02-01T05:15:38Z", "ka_url": "http://www.khanacademy.org/exercise/factoring_difference_of_squares_2", "v_position": -8, "h_position": 50, "node_slug": "e/factoring_difference_of_squares_2", "progress_key": "e541433013", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/polynomials-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/factoring_difference_of_squares_2.png", "custom_stacks": [], "description": "Factoring differences of squares into the form (Ax+b)*(Ax-b)", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Diff Sqrs 1", "covers": ["factoring_difference_of_squares_1"], "display_name": "Factoring difference of squares 2", "kind": "Exercise", "sha1": "b12233840616ef5db9ecad312e041af6ff78c966", "name": "factoring_difference_of_squares_2", "seconds_per_fast_problem": 14.0, "prerequisites": ["factoring_difference_of_squares_1"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/factoring_difference_of_squares_2_256.png"}, {"relative_url": "/exercise/factoring_difference_of_squares_3", "guaranteed_file_name": "factoring_difference_of_squares_3.html", "file_name": "", "author_name": "Ben Eater", "creation_date": "2012-04-16T19:33:32Z", "ka_url": "http://www.khanacademy.org/exercise/factoring_difference_of_squares_3", "v_position": -8, "h_position": 51, "node_slug": "e/factoring_difference_of_squares_3", "progress_key": "e725546801", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/polynomials-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/factoring_difference_of_squares_3.png", "custom_stacks": [], "description": "Factoring a difference of squares in the format C(Ax+b)*(Ax-b)", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Diff Sqrs 3", "covers": [], "display_name": "Factoring difference of squares 3", "kind": "Exercise", "sha1": "e4191e0d477fd3dc83f86b0f9aca7c31c84f1eb7", "name": "factoring_difference_of_squares_3", "seconds_per_fast_problem": 26.0, "prerequisites": ["factoring_difference_of_squares_2"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/factoring_difference_of_squares_3_256.png"}]
+[
+  {
+    "kind": "Exercise", 
+    "display_name": "Adding and subtracting polynomials", 
+    "description": "Add or subtract polynomials", 
+    "title": "Adding and subtracting polynomials", 
+    "seconds_per_fast_problem": 17.0, 
+    "related_video_readable_ids": [
+      "addition-and-subtraction-of-polynomials", 
+      "subtracting-polynomials-with-multiple-variables"
+    ], 
+    "slug": "adding_and_subtracting_polynomials", 
+    "prerequisites": [
+      "equation_of_a_line"
+    ], 
+    "live": true, 
+    "h_position": 45, 
+    "v_position": -7, 
+    "path": "/math/algebra/polynomials/polynomial_basics/e/adding_and_subtracting_polynomials/", 
+    "id": "adding_and_subtracting_polynomials", 
+    "name": "adding_and_subtracting_polynomials"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Multiplying expressions 0.5", 
+    "description": "Multiplying expressions in the form (x+b)(x-b), (x+b)^2, or (x-b)^2", 
+    "title": "Multiplying expressions 0.5", 
+    "seconds_per_fast_problem": 9.0, 
+    "related_video_readable_ids": [
+      "special-products-of-polynomials-2"
+    ], 
+    "slug": "multiplying_expressions_0.5", 
+    "prerequisites": [
+      "adding_and_subtracting_polynomials"
+    ], 
+    "live": true, 
+    "h_position": 46, 
+    "v_position": -7, 
+    "path": "/math/algebra/polynomials/multiplying_polynomials/e/multiplying_expressions_0.5/", 
+    "id": "multiplying_expressions_0.5", 
+    "name": "multiplying_expressions_0.5"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Factoring linear binomials", 
+    "description": "Factor expressions like 3x-9", 
+    "title": "Factoring linear binomials", 
+    "seconds_per_fast_problem": 8.0, 
+    "related_video_readable_ids": [
+      "special-products-of-polynomials-2"
+    ], 
+    "slug": "factoring_linear_binomials", 
+    "prerequisites": [
+      "multiplying_expressions_1", 
+      "multiplying_polynomials"
+    ], 
+    "live": true, 
+    "h_position": 48, 
+    "v_position": -6, 
+    "path": "/math/algebra/polynomials/multiplying_polynomials/e/factoring_linear_binomials/", 
+    "id": "factoring_linear_binomials", 
+    "name": "factoring_linear_binomials"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Multiplying expressions 1", 
+    "description": "Multiplying expressions in the form of polynomials (not perfect squares).", 
+    "title": "Multiplying expressions 1", 
+    "seconds_per_fast_problem": 12.0, 
+    "related_video_readable_ids": [
+      "special-products-of-polynomials-2"
+    ], 
+    "slug": "multiplying_expressions_1", 
+    "prerequisites": [
+      "multiplying_expressions_0.5"
+    ], 
+    "live": true, 
+    "h_position": 47, 
+    "v_position": -7, 
+    "path": "/math/algebra/polynomials/multiplying_polynomials/e/multiplying_expressions_1/", 
+    "id": "multiplying_expressions_1", 
+    "name": "multiplying_expressions_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Multiplying polynomials", 
+    "description": "Multiply two expressions with variables and exponents to get a polynomial", 
+    "title": "Multiplying polynomials", 
+    "seconds_per_fast_problem": 14.0, 
+    "related_video_readable_ids": [
+      "more-multiplying-polynomials", 
+      "multiplying-polynomials-3"
+    ], 
+    "slug": "multiplying_polynomials", 
+    "prerequisites": [
+      "multiplying_expressions_0.5"
+    ], 
+    "live": true, 
+    "h_position": 47, 
+    "v_position": -6, 
+    "path": "/math/algebra/polynomials/multiplying_polynomials/e/multiplying_polynomials/", 
+    "id": "multiplying_polynomials", 
+    "name": "multiplying_polynomials"
+  }
+]

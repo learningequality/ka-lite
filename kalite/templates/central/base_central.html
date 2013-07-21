@@ -35,7 +35,7 @@ article {
         {% if user.is_superuser %}
         <a href="{% url admin:index %}" id="nav_admin" class="{% block admin_active %}{% endblock admin_active %}">Admin</a>
         {% endif %}
-        <a href="{% url auth_logout %}">{{ user.username }} &nbsp; (Logout)</a>
+        <a id="logout" href="{% url auth_logout %}">{{ user.username }} &nbsp; (Logout)</a>
     {% else %}
     {% comment %}
         <a href="{% url registration_register %}" id="nav_signup" class="{% block register_active %}{% endblock register_active %}">Sign Up</a>
