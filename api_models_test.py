@@ -48,7 +48,6 @@ class ApiCallUserTest(unittest.TestCase):
 	def setUp(self):
 		self.user_get_user_object = User.get_user()
 
-	#@unittest.skip("Need login...")
 	def test_get_user(self):
 		self.assertIsInstance(self.user_get_user_object, User)
 
@@ -92,21 +91,26 @@ class ApiCallVideoTest(unittest.TestCase):
 
 
 
-ApiCallExerciseTestSuite = unittest.TestLoader().loadTestsFromTestCase(ApiCallExerciseTest)
-ApiCallBadgeTestSuite = unittest.TestLoader().loadTestsFromTestCase(ApiCallBadgeTest)
-ApiCallUserTestSuite = unittest.TestLoader().loadTestsFromTestCase(ApiCallUserTest)
-ApiCallTopicTestSuite = unittest.TestLoader().loadTestsFromTestCase(ApiCallTopicTest)
-ApiCallVideoTestSuite = unittest.TestLoader().loadTestsFromTestCase(ApiCallVideoTest)
+def prepare_suites_from_test_cases(case_class_list):
+	test_suites = []
+	for cls in case_class_list:
+		test_suites.append(unittest.TestLoader().loadTestsFromTestCase(cls))
+	return test_suites
 
-test_suites = [
-	ApiCallExerciseTestSuite,
-	ApiCallBadgeTestSuite,
-	ApiCallUserTestSuite,
-	ApiCallTopicTestSuite,
-	ApiCallVideoTestSuite,
+
+# test_cases contain the classes that will be tested. 
+test_cases = [
+
+	#ApiCallExerciseTest,
+	#ApiCallBadgeTest,
+	#ApiCallUserTest,
+	#ApiCallTopicTest,
+	#ApiCallVideoTest,
+
 ]
 
-alltests = unittest.TestSuite(test_suites)
 
-unittest.TextTestRunner(verbosity=2).run(alltests)
+all_tests = unittest.TestSuite(prepare_suites_from_test_cases(test_cases))
+
+unittest.TextTestRunner(verbosity=2).run(all_tests)
 		
