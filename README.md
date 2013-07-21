@@ -1,4 +1,4 @@
-KA-API-Py
+Khan Academy API (Py)
 =========
 
 Python wrapper for Khan Academy API
