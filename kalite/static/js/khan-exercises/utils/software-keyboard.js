@@ -26,7 +26,7 @@ jQuery.fn["software-keyboardPost"] = function() {
 			.attr( "id", "software-keyboard" )
 			.prependTo( ".answer-buttons" );
 
-		var keys = [ [ "1", "2", "3" ], [ "4", "5", "6" ], [ "7", "8", "9" ], [ ".", "0", "bs" ] ];
+		var keys = [ [ "1", "2", "3" ], [ "4", "5", "6" ], [ "7", "8", "9" ], ["%", "0", "-" ],[ ".", "/", "bs" ] ];
 		var corners = {
 			"1": "ui-corner-tl",
 			"3": "ui-corner-tr",
@@ -43,7 +43,7 @@ jQuery.fn["software-keyboardPost"] = function() {
 				var keyClass = "key key-" + ( { ".": "dot" }[ key ] || key );
 				var corner = corners[ key ] || "";
 				var keySpan = jQuery( "<span class='ui-btn " + corner + " ui-btn-up-c'><span class='ui-btn-inner " + corner + "'>" +
-				 	"<span class='ui-btn-text'>" + (key === "bs" ? "&nbsp;" : key) + "</span>" +
+				 	"<span class='ui-btn-text'>" + (key === "bs" ? "Del" : key) + "</span>" +
 					(key === "bs" ? "<span class='ui-icon ui-icon-back ui-icon-shadow'></span>" : "") + "</span></span>" )
 					.addClass( keyClass )
 					.appendTo( rowDiv );
