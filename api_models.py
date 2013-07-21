@@ -123,7 +123,10 @@ class APIModel(AttrDict):
         """
         Generate the url from which to make API calls.
         """
-        return self.base_url + "/" + self[kind_to_id_map[self.kind]] + self.API_attributes[name]
+        id = ""
+        if self.kind in kind_to_id_map:
+            id = "/" + self[kind_to_id_map[self.kind]]
+        return self.base_url + id + self.API_attributes[name]
 
 
 def api_call(target_version, target_api_url, debug=True, authenticate=True):
@@ -249,6 +252,20 @@ class Topic(APIModel):
 class User(APIModel):
 
     base_url = "/user"
+
+    _related_field_types = {
+        "videos": class_by_kind,
+        "exercises": class_by_kind,
+    }
+
+    @require_authentication
+    def __getattr__(self, name):
+        return super(User, self).__getattr__(name)
+
+    #TODO: Add UserData to kind_to_id_map, or parameterization, as need to change
+
+    API_attributes = {"videos": "/videos",
+                      "exercises": "/exercises"}
 
     @classmethod
     @require_authentication
