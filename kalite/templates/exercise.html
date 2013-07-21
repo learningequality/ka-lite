@@ -20,25 +20,18 @@
 /* BEGIN styles for software-keyboard */
 
 
-#solutionarea input.number {
-    font-size: 16px;
-    text-align: right;
-    
-    -webkit-animation-name: pulse;
-    -webkit-animation-duration: 1.5s;
-    -webkit-animation-iteration-count: infinite;
-    -webkit-animation-timing-function: ease-in-out;
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
-    box-shadow: none;
- }
+/* comment out the following few lines to make the keyboard appear on the sidebar */
+#software-keyboard {
+    position: fixed;
+    right: 10px;
+    top: 60px;
+}
+
+
  
 #software-keyboard {
     width: 186px;
     font-size: 26px;
-    position: fixed;
-    right: 10px;
-    top: 90px;
     border: 5px solid #000;
     background: #000;
     -moz-border-radius: 8px;
@@ -47,25 +40,13 @@
     -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 1);
 }
 
-#software-keyboard .triangle {
-    position: absolute;
-    top: -22px;
-    right: 0px;
-    font-size: 0px;
-    line-height: 0%;
-    width: 0px;
-    border-top: 10px solid rgba(0,0,0,0);
-    border-left: 10px solid rgba(0,0,0,0);
-    border-right: 10px solid rgba(0,0,0,0);
-    border-bottom: 10px solid black;
-}
-
 #software-keyboard .key {
     text-align: center;
     width: 60px;
-    line-height: 30px;
+    line-height: 40px;
     display: inline-block;
     margin: 0;
+    color: white;
 }
 
 #software-keyboard .key-bs {
@@ -80,6 +61,8 @@
 
 #software-keyboard .simple-button {
     font-size: 16px;
+    height: 40px;
+    margin-top: 10px;
     width: 100%;
 }
 

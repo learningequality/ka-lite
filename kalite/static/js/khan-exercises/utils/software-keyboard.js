@@ -24,8 +24,7 @@ jQuery.fn["software-keyboardPost"] = function() {
 	if ( !softwareKeyboard.length ) {
 		softwareKeyboard = jQuery( "<div>" )
 			.attr( "id", "software-keyboard" )
-			.append( "<div class='triangle'></div>" )
-			.prependTo( "#problemarea" );
+			.prependTo( ".answer-buttons" );
 
 		var keys = [ [ "1", "2", "3" ], [ "4", "5", "6" ], [ "7", "8", "9" ], [ ".", "0", "bs" ] ];
 		var corners = {
