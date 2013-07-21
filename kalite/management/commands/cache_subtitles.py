@@ -14,7 +14,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core.management import call_command
 
 from generate_subtitle_map import data_path, SRTS_JSON_FILENAME, LANGUAGE_SRT_FILENAME, headers
-from utils.subtitles import subtitle_utils 
+from utils.subtitles import subtitle_utils, generate_subtitle_counts 
 import settings
 
 logger = subtitle_utils.setup_logging("cache_subtitles")
@@ -219,6 +219,9 @@ class Command(BaseCommand):
             raise CommandError(
                 "Invalid input. Please read the usage instructions more carefully and try again. Remember to specify a response code! (-r)")
 
+        logger.info("Executed successfully! Generating new subtitle counts!")
+        generate_subtitle_counts.get_new_counts()
+        
         logger.info("Executed successfully! Re-zipping changed language packs!")
         generate_zipped_srts(options.get("language"))
 
