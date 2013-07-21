@@ -7,6 +7,7 @@ import SocketServer
 import SimpleHTTPServer
 import sys
 from decorator import decorator
+from functools import partial
 
 from secrets import CONSUMER_KEY, CONSUMER_SECRET
 from test_oauth_client import TestOAuthClient
@@ -16,6 +17,19 @@ SERVER_URL = "http://www.khanacademy.org"
 
 REQUEST_TOKEN = None
 ACCESS_TOKEN = None
+
+
+class APIError(Exception):
+
+    def __init__(self, msg, obj=None):
+        self.msg = msg
+        self.obj = obj
+
+    def __str__(self):
+        for id in id_to_kind_map:
+            if getattr(self.obj, id, ""):
+                inspection = "This occurred in an object of kind %s." % self.obj[id_to_kind_map[id]]
+        return "Khan API Error: %s %s" % (self.msg, inspection)
 
 
 @decorator
@@ -149,7 +163,14 @@ def api_call(target_version, target_api_url, debug=False, authenticate=True):
 
 def class_by_kind(node):
     # TODO: Fail better or prevent failure when "kind" is missing.
-    return kind_to_class_map[node["kind"]](node)
+    try:
+        return kind_to_class_map[node["kind"]](node)
+    except KeyError:
+        raise APIError(
+            "This kind of object should have a 'kind' attribute.", node)
+
+def class_by_name(node, name):
+    return kind_to_class_map[name](node)
 
 
 def convert_list_to_classes(nodelist, class_converter=class_by_kind):
@@ -184,8 +205,8 @@ class Exercise(APIModel):
     base_url = "/exercises"
 
     _related_field_types = {
-        "related_videos": class_by_kind,
-        "followup_exercises": class_by_kind,
+        "related_videos": partial(class_by_name, name="Video"),
+        "followup_exercises": partial(class_by_name, name="Exercise"),
     }
 
     API_attributes = {"related_videos": "/videos",
@@ -229,8 +250,8 @@ class User(APIModel):
     base_url = "/user"
 
     _related_field_types = {
-        "videos": class_by_kind,
-        "exercises": class_by_kind,
+        "videos": partial(class_by_name, name="Video"),
+        "exercises": partial(class_by_name, name="Exercise"),
     }
 
     @require_authentication
@@ -364,7 +385,14 @@ kind_to_id_map = {
     "Video": "readable_id",
     "Exercise": "name",
     "Topic": "slug",
+    "User": "user_id",
+    "UserExercise": "exercise",
+    "UserVideo": "video",
+    "ProblemLog": "exercise",
+    "VideoLog": "video_title",
 }
+
+id_to_kind_map = {value: key for key, value in kind_to_id_map.items()}
 
 if __name__ == "__main__":
     # print t.name
