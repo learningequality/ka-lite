@@ -15,11 +15,17 @@ from oauth import OAuthToken
 
 SERVER_URL = "http://www.khanacademy.org"
 
+#Set authorization objects to prevent errors when checking for Auth.
+
 REQUEST_TOKEN = None
 ACCESS_TOKEN = None
 
 
 class APIError(Exception):
+    """
+    Custom Exception Class for returning meaningful errors which are caused by changes
+    in the Khan Academy API.
+    """
 
     def __init__(self, msg, obj=None):
         self.msg = msg
@@ -32,6 +38,8 @@ class APIError(Exception):
                 if id(self.obj):
                     inspection = "This occurred in an object of kind %s, called %s." % (
                         id_to_kind_map[id], id(self.obj))
+        if not inspection:
+            inspection = "Object could not be inspected. Summary of object keys here: %s" % str(self.obj.keys())
         return "Khan API Error: %s %s" % (self.msg, inspection)
 
 
@@ -47,6 +55,12 @@ def require_authentication(func, *args, **kwargs):
 
 
 def authenticate():
+    """
+    Adapted from https://github.com/Khan/khan-api/blob/master/examples/test_client/test.py
+    First pass at browser based OAuth authentication.
+    """
+    #TODO: Allow PIN access for non-browser enabled devices.
+
     server = create_callback_server()
 
     client = TestOAuthClient(SERVER_URL, CONSUMER_KEY, CONSUMER_SECRET)
@@ -64,6 +78,11 @@ def authenticate():
 
 
 def create_callback_server():
+    """
+    Adapted from https://github.com/Khan/khan-api/blob/master/examples/test_client/test.py
+    Simple server to handle callbacks from OAuth request to browser.
+    """
+
     class CallbackHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 
         def do_GET(self):
@@ -89,6 +108,11 @@ def create_callback_server():
 
 
 class AttrDict(dict):
+    """
+    Base class to give dictionary values from JSON objects are object properties.
+    Recursively turn all dictionary sub-objects, and lists of dictionaries
+    into AttrDicts also.
+    """
 
     def __init__(self, *args, **kwargs):
         super(AttrDict, self).__init__(*args, **kwargs)
@@ -151,6 +175,11 @@ class APIModel(AttrDict):
 
 
 def api_call(target_version, target_api_url, debug=False, authenticate=True):
+    """
+    Generic API call function, that will try to use an authenticated request if available,
+    otherwise will fall back to non-authenticated request.
+    """
+    # TODO : Use requests for both kinds of authentication.
     # usage : api_call("v1", "/badges")
     resource_url = "/api/" + target_version + target_api_url
     try:
@@ -169,6 +198,10 @@ def api_call(target_version, target_api_url, debug=False, authenticate=True):
 
 
 def class_by_kind(node):
+    """
+    Function to turn a dictionary into a Python object of the appropriate kind,
+    based on the "kind" attribute found in the dictionary.
+    """
     # TODO: Fail better or prevent failure when "kind" is missing.
     try:
         return kind_to_class_map[node["kind"]](node)
@@ -178,6 +211,9 @@ def class_by_kind(node):
 
 
 def class_by_name(node, name):
+    """
+    Function to turn a dictionary into a Python object of the kind given by name.
+    """
     return kind_to_class_map[name](node)
 
 
