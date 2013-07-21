@@ -128,6 +128,10 @@ class Exercise(APIModel):
                       "followup_exercises": "/followup_exercises"}
 
     @classmethod
+    def get_exercises(cls):
+        return convert_list_to_classes(api_call("v1", cls.base_url), Exercise)
+
+    @classmethod
     def get_exercise(cls, exercise_id):
         return Exercise(api_call("v1", cls.base_url + "/" + exercise_id))
 
@@ -266,4 +270,4 @@ if __name__ == "__main__":
     # print api_call("nothing");
     # Video.get_video("adding-subtracting-negative-numbers")
     # Video.get_video("C38B33ZywWs")
-    Topic.get_tree("addition-subtraction")
+    Topic.get_tree()
