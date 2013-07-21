@@ -1,12 +1,16 @@
 jQuery.fn["software-keyboardPost"] = function() {
 	var softwareKeyboard = jQuery( "#software-keyboard" ),
 		solutionarea = jQuery( "#solutionarea" ),
+		// inputs = solutionarea.find( ":input" )
+		// 	.prop( "readonly", true )
+		// 	.css( "-webkit-tap-highlight-color", "rgba(0, 0, 0, 0)" ),
+		// field = inputs.first();
+
+	var keyPressed = function( key ) {
 		inputs = solutionarea.find( ":input" )
 			.prop( "readonly", true )
 			.css( "-webkit-tap-highlight-color", "rgba(0, 0, 0, 0)" ),
 		field = inputs.first();
-
-	var keyPressed = function( key ) {
 		// backspace key
 		if ( key == "bs" ) {
 			field.val( field.val().slice( 0, -1 ) );
@@ -22,26 +26,6 @@ jQuery.fn["software-keyboardPost"] = function() {
 
 		return false;
 	};
-
-
-
-	// var keyPressed = function( key ) {
-	// 	// Normal key
-	// 	if ( key !== "bs" ) {
-	// 		field.val( field.val() + key );
-	// 	//clear key
-	// 	} else {
-	// 		// Assume for now that it is backspace
-	// 		field.val( field.val().slice( 0, -1 ) );
-	// 	}
-
- //        field.trigger("keypress");
-
-	// 	return false;
-	// };
-
-
-
 
 
 	if ( !softwareKeyboard.length ) {

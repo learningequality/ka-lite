@@ -992,7 +992,6 @@ var Khan = (function() {
                     finishRender();
                 });
         }
-
     }
 
     /**
