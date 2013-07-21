@@ -1,0 +1,32 @@
+{% extends "control_panel/base_management.html" %}
+
+{% load i18n %}
+{% load staticfiles %}
+{% load my_filters %}
+{% load include_block %}
+
+{% block control_panel_active %}{% endblock control_panel_active %}
+{% block account_management_active %}active{% endblock account_management_active %}
+{% block title %}User Management{% endblock title%}
+
+{% block headcss %}{{ block.super }}
+    {% include_block "coachreports/student_view.html" "headcss" %}
+{% endblock headcss %}
+
+
+{% block titlebar_title %}
+<li>
+Account Management Page for {{ student.get_name }}
+</li>
+{% endblock titlebar_title %}
+
+{% block buttons %}
+                <li>
+                    <a class="green_button" href="{% url update_all_distributed %}">{% trans "Download data from Khan Academy" %}</a>
+                </li>
+{% endblock buttons %}
+
+{% block content %}
+    {% block titlebar %}{{ block.super }}{% endblock titlebar %}
+    {% include_block "coachreports/student_view.html" "student_report" %}
+{% endblock content %}
