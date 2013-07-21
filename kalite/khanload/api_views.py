@@ -1,3 +1,4 @@
+import datetime
 import json
 import oauth
 import os
@@ -114,6 +115,8 @@ def update_all_central(request):
         logging.debug("using cached authorization handshake")
         return update_all_central_callback(request)
 
+def convert_ka_date(date_str):
+    return datetime.datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%SZ")
 
 @central_server_only
 def update_all_central_callback(request):
@@ -149,6 +152,7 @@ def update_all_central_callback(request):
                 "total_seconds_watched": video['seconds_watched'],
                 "points": video['points'],
                 "complete": video['completed'],
+                "completion_timestamp": convert_ka_date(video['last_watched']) if video['completed'] else None,
             })
             logging.debug("Got video log for %s: %s" % (youtube_id, video_logs[-1]))
         except KeyError:  # 
@@ -168,28 +172,30 @@ def update_all_central_callback(request):
             continue
 
         try:
+            completed = exercise['streak'] >= 10
             exercise_logs.append({
                 "exercise_id": slug,
                 "streak_progress": min(100, 100*exercise['streak']/10),  # duplicates logic elsewhere
                 "attempts": exercise['total_done'],
-                "points": exercise['mastery_points'],
-                "complete": exercise['mastered'],
+                "points": exercise['total_correct'] * 12,
+                "complete": completed,
                 "attempts_before_completion": exercise['total_done'] if not exercise['practiced'] else None,  #can't figure this out if they practiced after mastery.
-                "completion_timestamp": exercise['proficient_date'] if exercise['mastered'] else None,
+                "completion_timestamp": convert_ka_date(exercise['proficient_date']) if completed else None,
             })
             logging.debug("Got exercise log for %s: %s" % (slug, exercise_logs[-1]))
         except KeyError:
             logging.debug("Could not save exercise log for data with missing values: %s" % exercise)
 
     # TODO(bcipolli): validate response
+    dthandler = lambda obj: obj.isoformat() if isinstance(obj, datetime.datetime) else None
     logging.debug("POST'ing to %s" % request.session["distributed_callback_url"])
     response = requests.post(
         request.session["distributed_callback_url"],
         cookies={ "csrftoken": request.session["distributed_csrf_token"] },
         data = {
             "csrfmiddlewaretoken": request.session["distributed_csrf_token"],
-            "video_logs": json.dumps(video_logs),
-            "exercise_logs": json.dumps(exercise_logs),
+            "video_logs": json.dumps(video_logs, default=dthandler),
+            "exercise_logs": json.dumps(exercise_logs, default=dthandler),
             "user_id": request.session["distributed_user_id"],
         }
     )
