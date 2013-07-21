@@ -7,13 +7,15 @@ jQuery.fn["software-keyboardPost"] = function() {
 		field = inputs.first();
 
 	var keyPressed = function( key ) {
-		// Normal key
-		if ( key !== "bs" ) {
-			field.val( field.val() + key );
-
-		} else {
-			// Assume for now that it is backspace
+		// backspace key
+		if ( key == "bs" ) {
 			field.val( field.val().slice( 0, -1 ) );
+		//clear key
+		} else if(key == "c"){
+			field.val('');
+		} else {
+			//normal key
+			field.val( field.val() + key );
 		}
 
         field.trigger("keypress");
@@ -21,12 +23,33 @@ jQuery.fn["software-keyboardPost"] = function() {
 		return false;
 	};
 
+
+
+	// var keyPressed = function( key ) {
+	// 	// Normal key
+	// 	if ( key !== "bs" ) {
+	// 		field.val( field.val() + key );
+	// 	//clear key
+	// 	} else {
+	// 		// Assume for now that it is backspace
+	// 		field.val( field.val().slice( 0, -1 ) );
+	// 	}
+
+ //        field.trigger("keypress");
+
+	// 	return false;
+	// };
+
+
+
+
+
 	if ( !softwareKeyboard.length ) {
 		softwareKeyboard = jQuery( "<div>" )
 			.attr( "id", "software-keyboard" )
 			.prependTo( ".answer-buttons" );
 
-		var keys = [ [ "1", "2", "3" ], [ "4", "5", "6" ], [ "7", "8", "9" ], ["%", "0", "-" ],[ ".", "/", "bs" ] ];
+		var keys = [ [ "1", "2", "3" ], [ "4", "5", "6" ], [ "7", "8", "9" ], ["/", "0", "-" ],[ ".", "c", "bs" ] ];
 		var corners = {
 			"1": "ui-corner-tl",
 			"3": "ui-corner-tr",
