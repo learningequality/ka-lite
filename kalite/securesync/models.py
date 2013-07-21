@@ -5,7 +5,6 @@ from annoying.functions import get_object_or_None
 from pbkdf2 import crypt
 
 from django.contrib.auth.models import check_password
-from django.core import serializers
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models, transaction
 from django.db.models import Q
@@ -103,6 +102,12 @@ class SyncedModelManager(models.Manager):
             Q(signed_by__devicemetadata__is_trusted=True, zone_fallback=zone))
 
 class SyncedModel(models.Model):
+    """
+    The main class that makes this engine go.
+    
+    A model that is cross-computer syncable.  All models sync'd across computers
+    should inherit from this base class.
+    """
     id = models.CharField(primary_key=True, max_length=32, editable=False)
     counter = models.IntegerField(default=0)
     signature = models.CharField(max_length=360, blank=True, editable=False)
@@ -115,8 +120,12 @@ class SyncedModel(models.Model):
     _unhashable_fields = ["signature", "signed_by"] # fields of this class to avoid serializing
     _always_hash_fields = ["signed_version", "id"]  # fields of this class to always serialize
 
-
     def sign(self, device=None):
+        """
+        Get all of the relevant fields of this model into a single string (self._hashable_representation()),
+        then sign it with the specified device (if specified), or the current device.
+        """
+        self.full_clean()  # make sure the model data is of the appropriate types
         if not self.id:
             self.id = self.get_uuid()
         self.signed_by = device or Device.get_own_device()
@@ -195,21 +204,29 @@ class SyncedModel(models.Model):
         return "&".join(chunks)
 
     def save(self, own_device=None, imported=False, increment_counters=True, *args, **kwargs):
+        """
+        Some of the heavy lifting happens here.  There are two saving scenarios:
+        (a) We are saving an imported model.
+            In this case, we need to make sure that the data check out (but nothing we mark on the object)
+        (b) We are saving our own model
+            In this case, we need to mark the model with appropriate fields, so that
+            it can be sync'd (self.counter), and that it will verify (self.signature)
+        """
 
         # we allow for the "own device" to be passed in so that a device can sign itself (before existing)
         own_device = own_device or Device.get_own_device()
+        assert own_device, "own_device is None--this should never happen, as get_own_device should create if not found."
 
-        # this will probably never happen (since getting the device creates it), but just to be safe
-        if not own_device:
-            raise ValidationError("Cannot save any synced models before registering this Device.")
-
-        # imported models are signed by other devices; make sure they check out
         if imported:
+            # imported models are signed by other devices; make sure they check out
             if not self.signed_by_id:
                 raise ValidationError("Imported models must be signed.")
             if not self.verify():
                 raise ValidationError("Imported model's signature did not match.")
-        else: # local models need to be signed by us
+        else:
+            # Two critical things to do:
+            # 1. local models need to be signed by us
+            # 2. and get our counter position
             self.counter = own_device.increment_and_get_counter()
             self.sign(device=own_device)
 
