@@ -4,6 +4,7 @@ from django.contrib import admin
 
 import central.api_urls
 import securesync.urls
+import central.api_urls
 from kalite import settings
 from feeds import RssSiteNewsFeed, AtomSiteNewsFeed
 

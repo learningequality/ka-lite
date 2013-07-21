@@ -1,4 +1,4 @@
-import re, json
+import re, json, os
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse, HttpResponseNotAllowed
 from django.utils import simplejson
@@ -15,6 +15,7 @@ from utils.decorators import require_admin_api
 from utils.general import break_into_chunks
 from utils.orderedset import OrderedSet
 from utils.internet import JsonResponse
+
 
 
 def save_video_log(request):
@@ -177,8 +178,9 @@ def get_video_download_list(request):
 
 @require_admin_api
 def start_subtitle_download(request):
+    import pdb;pdb.set_trace()
     language = simplejson.loads(request.raw_post_data or "{}").get("language", "")
-    language_list = topicdata.LANGUAGE_LIST # TODO(dylan): (import this list from the subtitle counts json file instead of hardcoded version)
+    language_list = topicdata.LANGUAGE_LIST 
     # this is updated because it is used by subtitledownload command
     current_language = Settings.get("subtitle_language")
     if language in language_list:
