@@ -1,5 +1,74 @@
 import requests
 import json
+import cgi
+import os
+import readline
+import SocketServer
+import SimpleHTTPServer
+import sys
+from decorator import decorator
+
+from secrets import CONSUMER_KEY, CONSUMER_SECRET
+from test_oauth_client import TestOAuthClient
+from oauth import OAuthToken
+
+SERVER_URL = "http://www.khanacademy.org"
+
+REQUEST_TOKEN = None
+ACCESS_TOKEN = None
+
+
+@decorator
+def require_authentication(func, *args, **kwargs):
+    """
+    Decorator to require authentication for particular request events.
+    """
+    if not (REQUEST_TOKEN and ACCESS_TOKEN):
+        print "This data requires authentication."
+        authenticate()
+    return func(*args, **kwargs)
+
+
+def authenticate():
+    server = create_callback_server()
+
+    client = TestOAuthClient(SERVER_URL, CONSUMER_KEY, CONSUMER_SECRET)
+
+    client.start_fetch_request_token(
+        'http://127.0.0.1:%d/' % server.server_address[1])
+
+    server.handle_request()
+
+    server.server_close()
+
+    global ACCESS_TOKEN
+
+    ACCESS_TOKEN = client.fetch_access_token(REQUEST_TOKEN)
+
+
+def create_callback_server():
+    class CallbackHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
+
+        def do_GET(self):
+            global REQUEST_TOKEN
+
+            params = cgi.parse_qs(self.path.split(
+                '?', 1)[1], keep_blank_values=False)
+            REQUEST_TOKEN = OAuthToken(params['oauth_token'][
+                                       0], params['oauth_token_secret'][0])
+            REQUEST_TOKEN.set_verifier(params['oauth_verifier'][0])
+
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/plain')
+            self.end_headers()
+            self.wfile.write(
+                'OAuth request token fetched; you can close this window.')
+
+        def log_request(self, code='-', size='-'):
+            pass
+
+    server = SocketServer.TCPServer(('127.0.0.1', 0), CallbackHandler)
+    return server
 
 
 class AttrDict(dict):
@@ -57,12 +126,18 @@ class APIModel(AttrDict):
         return self.base_url + "/" + self[kind_to_id_map[self.kind]] + self.API_attributes[name]
 
 
-def api_call(target_version, target_api_url, debug=False):
+def api_call(target_version, target_api_url, debug=True, authenticate=True):
     # usage : api_call("v1", "/badges")
+    resource_url = "/api/" + target_version + target_api_url
     try:
-        json_object = json.loads(requests.get(
-            "http://www.khanacademy.org/api/" + target_version + target_api_url).content)
-    except:
+        if authenticate and REQUEST_TOKEN and ACCESS_TOKEN:
+            client = TestOAuthClient(SERVER_URL, CONSUMER_KEY, CONSUMER_SECRET)
+            response = client.access_resource(resource_url, ACCESS_TOKEN)
+        else:
+            response = requests.get(SERVER_URL + resource_url).content
+        json_object = json.loads(response)
+    except Exception as e:
+        print e
         return {}
     if(debug):
         print json_object
@@ -168,7 +243,17 @@ class Topic(APIModel):
 
 
 class User(APIModel):
-    pass
+
+    base_url = "/user"
+
+    @classmethod
+    @require_authentication
+    def get_user(cls, user_id=""):
+        """
+        Download user data for a particular user.
+        If no user specified, download logged in user's data.
+        """
+        return User(api_call("v1", cls.base_url + "?" + user_id))
 
 
 class Badge(APIModel):
@@ -228,7 +313,8 @@ class Scratchpad(APIModel):
 class Article(APIModel):
     pass
 
-# kind_to_class_map maps from the kinds of data found in the topic tree to particular classes.
+# kind_to_class_map maps from the kinds of data found in the topic tree,
+# and other nested data structures to particular classes.
 # If Khan Academy add any new types of data to topic tree, this will break
 # the topic tree rendering.
 
