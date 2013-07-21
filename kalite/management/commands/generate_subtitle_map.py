@@ -1,26 +1,34 @@
-# updates the file in static/data/subtitledata/video_srts.json
-# can completely remap from Amara API or only re-check the ones
-# from our data file that had HTTP errors during the previous API request
+# gen new subtitle mapping
 
-import argparse
 import datetime
 import json
 import logging
 import os
-import pdb
 import sys
+import tempfile
 
-import subtitle_utils 
-import paths_and_headers # paths and headers that are shared across the central/utils folder 
+from optparse import make_option
 
-headers = paths_and_headers.headers
+from django.core.management.base import BaseCommand, CommandError
+from django.core.management import call_command
 
-data_path = paths_and_headers.data_path
+import settings
+from utils.subtitles import subtitle_utils 
+
+headers = {
+    # "X-api-username": "kalite",
+    # "X-apikey": "9931eb077687297823e8a23fd6c2bfafae25c543",
+    "X-api-username": "dyl",
+    "X-apikey": "6a7e0af81ce95d6b810761041b72412043851804",
+}
+
+data_path = settings.DATA_PATH + "subtitledata/"
 
 logger = subtitle_utils.setup_logging("generate_subtitle_map")
 
-SRTS_JSON_FILENAME = paths_and_headers.api_info_filename
+SRTS_JSON_FILENAME = "srts_api_info.json"
 
+LANGUAGE_SRT_FILENAME = "language_srts_map.json"
 
 class OutDatedSchema(Exception):
 
@@ -58,8 +66,9 @@ def update_subtitle_map(code_to_check, date_to_check):
     for youtube_id, data in srts_dict.items():
         # ensure response code and date exists
         response_code = data.get("api_response")
-        # TODO(dylan): make sure this conversion is ok here (e.g. there will never be an empty date string will there?)
-        last_attempt = datetime.datetime.strptime(data.get("last_attempt"), '%Y-%m-%d')
+        last_attempt = data.get("last_attempt")
+        if last_attempt:
+            last_attempt = datetime.datetime.strptime(last_attempt, '%Y-%m-%d')
         if not (response_code or last_attempt):
             raise OutDatedSchema()
 
@@ -106,7 +115,7 @@ def update_video_entry(youtube_id):
     """
     request_url = "https://www.amara.org/api2/partners/videos/?format=json&video_url=http://www.youtube.com/watch?v=%s" % (
         youtube_id)
-    r = subtitle_utils.make_request(request_url)
+    r = subtitle_utils.make_request(headers, request_url)
     # add api response first to prevent empty json on errors
     entry = {}
     entry["last_attempt"] = unicode(datetime.datetime.now().date())
@@ -132,31 +141,79 @@ def update_video_entry(youtube_id):
                 entry["amara_code"] = amara_code
     return entry
 
+def update_language_srt_map():
+    """Update the language_srt_map from the api_info_map"""
 
-def create_parser():
-    # parses command line args
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-N', '--new', action='store_true',
-                        help="Force a new mapping. Cannot be run with other options. Fetches new data for every one of our videos and overwrites current data with fresh data from Amara. Should really only ever be run once, because data can be updated from then on with '-s all'.")
-    parser.add_argument('-r', '--response_code', default=None,
-                        help="Which api-response code to recheck. Can be combined with -d. USAGE: '-r all', '-r client-error', or '-r server-error'. ")
-    parser.add_argument('-d', '--date_since_attempt',
-                        help="Setting a date flag will update only those entries which have not been attempted since that date. Can be combined with -r. This could potentially be useful for updating old subtitles. USAGE: '-d MM/DD/YYYY'")
-    return parser
+    # Create file if first time being run
+    language_srt_filepath = data_path + LANGUAGE_SRT_FILENAME
+    if not subtitle_utils.file_already_exists(language_srt_filepath):
+        with open(language_srt_filepath, 'w') as outfile:
+            json.dump({}, outfile)
+
+    language_srt_map = json.loads(open(language_srt_filepath).read())
+    api_info_map = json.loads(open(data_path + SRTS_JSON_FILENAME).read())
+
+    for youtube_id, content in api_info_map.items():
+        lang_list = content.get("language_codes") or []
+        for code in lang_list:
+            # create language section if it doesn't exist
+            language_srt_map.get(code)
+            if not language_srt_map.get(code):
+                logger.info("Creating language section '%s'" % code)
+                language_srt_map[code] = {}
+            # create empty entry for video entry if it doesn't exist
+            if not language_srt_map[code].get(youtube_id):
+                logger.info("Creating entry in '%s' for YouTube video: '%s'" % (
+                    code, youtube_id))
+                language_srt_map[code][youtube_id] = {
+                    "downloaded": False,
+                    "api_response": "",
+                    "last_attempt": "",
+                    "last_success": "",
+                }
+
+    logger.info("Writing updates to %s" % language_srt_filepath)
+    with open(language_srt_filepath, 'wb') as fp:
+            json.dump(language_srt_map, fp)
 
 
-if __name__ == '__main__':
-    parser = create_parser()
-    args = parser.parse_args()
-    if args.new and not (args.response_code or args.date_since_attempt):
-        create_new_mapping()
-    elif not args.new and (args.response_code or args.date_since_attempt):
-        converted_date = subtitle_utils.convert_date_input(args.date_since_attempt)
-        update_subtitle_map(args.response_code, converted_date)
-    else:
-        logger.info(
-            "Invalid input. Please read the usage instructions more carefully and try again.")
-        parser.print_help()
+class Command(BaseCommand):
+    help = "Update the mapping of subtitles available by language for each video. Location: static/data/subtitledata/video_srts.json"
+
+    option_list = BaseCommand.option_list + (
+        # Basic options
+        make_option('-N', '--new',
+                    action='store_true',
+                    dest='new',
+                    default=False,
+                    help="Force a new mapping. Cannot be run with other options. Fetches new data for every one of our videos and overwrites current data with fresh data from Amara. Should really only ever be run once, because data can be updated from then on with '-s all'.",
+                    metavar="NEW"),
+        make_option('-r', '--response_code',
+                    action='store',
+                    dest='response_code',
+                    default=None,
+                    help="Which api-response code to recheck. Can be combined with -d. USAGE: '-r all', '-r client-error', or '-r server-error'.",
+                    metavar="RESPONSE_CODE"),
+        make_option('-d', '--date_since_attempt',
+                    action='store',
+                    dest='date_since_attempt',
+                    default=None,
+                    help="Setting a date flag will update only those entries which have not been attempted since that date. Can be combined with -r. This could potentially be useful for updating old subtitles. USAGE: '-d MM/DD/YYYY'"),
+    )
+
+    def handle(self, *args, **options):
+        if options.get("new") and not (options.get("response_code") or options.get("date_since_attempt")):
+            create_new_mapping()
+        elif not options.get("new") and (options.get("response_code") or options.get("date_since_attempt")):
+            converted_date = subtitle_utils.convert_date_input(
+                options.get("date_since_attempt"))
+            update_subtitle_map(options.get("response_code"), converted_date)
+        else:
+            raise CommandError(
+                "Invalid input. Please read the usage instructions more carefully and try again.")
+            
+        logger.info("Executed successfully. Updating language => subtitle mapping to record any changes!")
+        update_language_srt_map()
+
+        logger.info("Process complete.")
         sys.exit(1)
-    logger.info("Process complete.")
-    sys.exit(1)
