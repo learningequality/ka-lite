@@ -738,6 +738,10 @@ var Khan = (function() {
         // Base modules required for every problem
         Khan.require(["answer-types", "tmpl", "underscore", "jquery.adhesion", "hints", "calculator"]);
 
+        if ( true || typeof userExercise !== "undefined" && userExercise.tablet ) {
+            Khan.require( [ "software-keyboard" ] );
+        }
+
         Khan.require(document.documentElement.getAttribute("data-require"));
 
         // Initialize to an empty jQuery set
@@ -1281,6 +1285,8 @@ var Khan = (function() {
         // Remove the solution and choices elements from the display
         solution.remove();
         choices.remove();
+
+        problem.runModules(problem, "Post");
 
         // Add the problem into the page
         Khan.scratchpad.resize();
