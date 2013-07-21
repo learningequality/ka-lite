@@ -23,7 +23,7 @@ class ApiCallExerciseTest(unittest.TestCase):
 			self.assertEqual(self.exercises_list_object, [])
 		else:
 			for obj in self.exercises_list_object:
-				self.assertIsInstance(obj, Exercice)
+				self.assertIsInstance(obj, Exercise)
 	
 	#@unittest.skip("Skiping get exercise test...")
 	def test_get_exercise(self):
