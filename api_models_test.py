@@ -223,11 +223,11 @@ def prepare_suites_from_test_cases(case_class_list):
 # Add or remove test cases as needed.
 test_cases = [
 
-	#ApiCallExerciseTest,
-	#ApiCallBadgeTest,
+	ApiCallExerciseTest,
+	ApiCallBadgeTest,
 	ApiCallUserTest,
-	#ApiCallTopicTest,
-	#ApiCallVideoTest,
+	ApiCallTopicTest,
+	ApiCallVideoTest,
 
 ]
 
