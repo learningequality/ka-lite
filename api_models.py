@@ -148,6 +148,7 @@ def api_call(target_version, target_api_url, debug=True, authenticate=True):
 
 
 def class_by_kind(node):
+    # TODO: Fail better or prevent failure when "kind" is missing.
     return kind_to_class_map[node["kind"]](node)
 
 
@@ -262,8 +263,6 @@ class User(APIModel):
     def __getattr__(self, name):
         return super(User, self).__getattr__(name)
 
-    #TODO: Add UserData to kind_to_id_map, or parameterization, as need to change
-
     API_attributes = {"videos": "/videos",
                       "exercises": "/exercises"}
 
@@ -302,7 +301,9 @@ class BadgeCategory(APIModel):
 
 
 class UserExercise(APIModel):
-    pass
+    _related_field_types = {
+        "exercise_model": class_by_kind,
+    }
 
 
 class UserVideo(APIModel):
