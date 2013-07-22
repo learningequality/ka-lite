@@ -107,7 +107,7 @@ def update_all_central(request):
     request.session["distributed_redirect_url"] = request.next or request.META.get("HTTP_REFERER", "") or "/"
     request.session["distributed_csrf_token"] = request._cookies["csrftoken"]
 
-    if not "ACCESS_TOKEN" in request.session:
+    if True or not "ACCESS_TOKEN" in request.session:
         # Will enter the callback, when it completes.
         logging.debug("starting new authorization handshake")
         return start_auth(request)
