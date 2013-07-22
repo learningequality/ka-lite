@@ -1,5 +1,6 @@
 jQuery.fn["software-keyboardPost"] = function() {
 	var isAndroid = /android/i.test(navigator.userAgent.toLowerCase());
+	
 	if (isAndroid){
 	var softwareKeyboard = jQuery( "#software-keyboard" ),
 		solutionarea = jQuery( "#solutionarea" ),
@@ -7,7 +8,7 @@ jQuery.fn["software-keyboardPost"] = function() {
 			.prop( "readonly", true )
 			.css( "-webkit-tap-highlight-color", "rgba(0, 0, 0, 0)" ),
 		field = inputs.first();
-};
+	};
 	
 
 	var keyPressed = function( key ) {
@@ -30,7 +31,6 @@ jQuery.fn["software-keyboardPost"] = function() {
 
 		return false;
 	};
-
 
 
 	if ( !softwareKeyboard.length ) {
