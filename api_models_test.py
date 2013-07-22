@@ -71,7 +71,7 @@ class ApiCallBadgeTest(unittest.TestCase):
 		self.assertEqual(self.badges_category_object.category, 1)
 
 	def test_get_category_list(self):
-		"""Tests if the result is an emty list or if it is a list of BadgeCategory objects."""
+		"""Tests if the result is an empty list or if it is a list of BadgeCategory objects."""
 		if not self.badges_category_list_object:
 			self.assertListEqual(self.badges_category_list_object, [])
 		else:
@@ -100,7 +100,7 @@ class ApiCallUserTest(unittest.TestCase):
 		self.assertIsInstance(self.user_object, User)
 
 	def test_get_user_videos(self):
-		"""Tests if the result is an emty list or if it is a list of UserVideo objects.
+		"""Tests if the result is an empty list or if it is a list of UserVideo objects.
 		   For each UserVideo object check if log contains VideoLog objects.
 		"""
 		if not self.user_object.videos:
@@ -115,7 +115,7 @@ class ApiCallUserTest(unittest.TestCase):
 						self.assertIsInstance(l_obj, VideoLog)
 
 	def test_get_user_exercises(self):
-		"""Tests if the result is an emty list or if it is a list of UserExercise objects.
+		"""Tests if the result is an empty list or if it is a list of UserExercise objects.
 		   For each UserExercise object, checks if log attribute only contains ProblemLog objects
 		   and if followup_exercises attribute only contains UserExercise objects.
 		"""
@@ -136,7 +136,7 @@ class ApiCallUserTest(unittest.TestCase):
 						self.assertIsInstance(f_obj, UserExercise)
 
 	def test_get_user_badges(self):
-		"""Tests if the result is an emty list or if it is a list of Badge objects. 
+		"""Tests if the result is an empty list or if it is a list of Badge objects. 
 		   Then for each Badge, if it contains the user_badges key, it must be an instance of User Badges.
 		"""
 		if not self.badges_object:
@@ -174,7 +174,7 @@ class ApiCallTopicTest(unittest.TestCase):
 		self.assertEqual("addition-subtraction", self.topic_subtree_object.slug)
 
 	def test_get_topic_exercises(self):
-		"""Tests if the result is an emty list or if it is a list of Exercise objects."""
+		"""Tests if the result is an empty list or if it is a list of Exercise objects."""
 		if not self.topic_exercises_list_object:
 			self.assertListEqual(self.topic_exercises_list_object, [])
 		else:
@@ -182,7 +182,7 @@ class ApiCallTopicTest(unittest.TestCase):
 				self.assertIsInstance(obj, Exercise)	
 
 	def test_get_topic_videos(self):
-		"""Tests if the result is an emty list or if it is a list of Video objects."""
+		"""Tests if the result is an emtpy list or if it is a list of Video objects."""
 		if not self.topic_videos_list_object:
 			self.assertListEqual(self.topic_videos_list_object, [])
 		else:
