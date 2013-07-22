@@ -204,7 +204,7 @@ def exercise_dashboard(request):
     return context
 
 @check_setup_status
-@cache_page(settings.CACHE_TIME)
+#@cache_page(settings.CACHE_TIME)
 @render_to("homepage.html")
 def homepage(request):
     # TODO(bcipolli): video counts on the distributed server homepage
