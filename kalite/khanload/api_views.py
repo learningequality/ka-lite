@@ -177,7 +177,7 @@ def update_all_central_callback(request):
                 "exercise_id": slug,
                 "streak_progress": min(100, 100*exercise['streak']/10),  # duplicates logic elsewhere
                 "attempts": exercise['total_done'],
-                "points": exercise['total_correct'] * 12,
+                "points": min(10, exercise['total_correct']) * 12,
                 "complete": completed,
                 "attempts_before_completion": exercise['total_done'] if not exercise['practiced'] else None,  #can't figure this out if they practiced after mastery.
                 "completion_timestamp": convert_ka_date(exercise['proficient_date']) if completed else None,

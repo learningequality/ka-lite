@@ -144,7 +144,6 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
             "vid:average_points":   0. if not n_videos_touched else float(sum([vl.points for vl in video_logs[topic['id']]])/float(n_videos_touched)),
             "vid:average_points":   0 if not n_videos_touched else sum([vl.points for vl in video_logs[topic['id']]])/float(n_videos_touched),
             "vid:last_completed":None if not n_videos_touched else max_none([vl.completion_timestamp or None for vl in video_logs[topic['id']]]),
-            "vid:last_completed":None if not n_videos_touched else max([vl.completion_timestamp or None for vl in video_logs[topic['id']]]),
         }
         any_data = any_data or n_exercises_touched>0 or n_videos_touched>0
 
