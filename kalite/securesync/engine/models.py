@@ -42,7 +42,7 @@ class SyncSession(models.Model):
     timestamp = models.DateTimeField(auto_now=True)
     models_uploaded = models.IntegerField(default=0)
     models_downloaded = models.IntegerField(default=0)
-    errors = models.IntegerField(default=0); errors.version="0.9.3" # kalite version
+    errors = models.IntegerField(default=0); errors.minversion="0.9.3" # kalite version
     closed = models.BooleanField(default=False)
 
     class Meta:

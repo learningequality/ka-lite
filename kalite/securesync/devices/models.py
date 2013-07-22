@@ -132,7 +132,7 @@ class Device(SyncedModel):
     name = models.CharField(max_length=100, blank=True)
     description = models.TextField(blank=True)
     public_key = models.CharField(max_length=500, db_index=True)
-    version = models.CharField(max_length=len("10.10.100"), default="0.9.2", blank=True); version.version="0.9.3"  # default comes from knowing when this feature was implemented!
+    version = models.CharField(max_length=len("10.10.100"), default="0.9.2", blank=True); version.minversion="0.9.3"  # default comes from knowing when this feature was implemented!
 
     objects = DeviceManager()
     key = None
