@@ -94,7 +94,7 @@ class ExerciseLog(SyncedModel):
 class UserLogSummary(SyncedModel):
     """Like UserLogs, but summarized over a longer period of time.
     Also sync'd across devices.  Unique per user, device, activity_type, and time period."""
-    version = "0.9.4"
+    minversion = "0.9.4"
 
     device = models.ForeignKey(Device, blank=False, null=False)
     user = models.ForeignKey(FacilityUser, blank=False, null=False, db_index=True)
@@ -206,7 +206,7 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
 
     # Currently, all activity is used just to update logged-in-time.
     KNOWN_TYPES={"login": 1}
-    version = "0.9.4"
+    minversion = "0.9.4"
 
     user = models.ForeignKey(FacilityUser, blank=False, null=False, db_index=True)
     activity_type = models.IntegerField(blank=False, null=False)
