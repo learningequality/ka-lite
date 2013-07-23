@@ -130,8 +130,6 @@ MIDDLEWARE_CLASSES = (
     "django.middleware.csrf.CsrfViewMiddleware",
 )
 
-ROOT_URLCONF = "kalite.urls"
-
 INSTALLED_APPS = (
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -158,6 +156,7 @@ if DEBUG:
     MIDDLEWARE_CLASSES += ('django_snippets.profiling_middleware.ProfileMiddleware',)
 
 if CENTRAL_SERVER:
+    ROOT_URLCONF = "central.urls"
     ACCOUNT_ACTIVATION_DAYS = getattr(local_settings, "ACCOUNT_ACTIVATION_DAYS", 7)
     DEFAULT_FROM_EMAIL      = getattr(local_settings, "DEFAULT_FROM_EMAIL", CENTRAL_FROM_EMAIL)
     INSTALLED_APPS         += ("postmark", "kalite.registration", "central", "faq", "contact",)
@@ -165,6 +164,7 @@ if CENTRAL_SERVER:
     AUTH_PROFILE_MODULE     = 'central.UserProfile'
 
 else:
+    ROOT_URLCONF = "main.urls"
     INSTALLED_APPS         += ("coachreports",)
     # Include optionally installed apps
     if os.path.exists(PROJECT_PATH + "/tests/loadtesting/"):
