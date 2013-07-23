@@ -68,9 +68,13 @@ class SyncClient(object):
         r = self.post("register", {
             "client_device": serializers.serialize("json", [own_device], ensure_ascii=False)
         })
+
         # If they don't understand, our assumption is broken.
-        if r.status_code == 500 and "Device has no field named 'version'" in r.content:
-            raise Exception("Central server is of an older version than us?")
+        if r.status_code == 500:
+            if "Device has no field named 'version'" in r.content:
+                raise Exception("Central server is of an older version than us?")
+            elif r.headers.get("content-type", "") == "text/html":
+                raise Exception("Unhandled server-side exception: %s" % r.content)
 
         elif r.status_code == 200:
             # Save to our local store.  By NOT passing a src_version,
