@@ -133,3 +133,21 @@ def authorized_login_required(handler):
 
 
     return wrapper_fn if settings.CENTRAL_SERVER else require_admin(handler)
+
+def return_jsonp(handler):
+    """A general wrapper to functions that return json.
+
+    Args:
+        The target funtion.
+
+    Returns:
+        The original function 'wrapped'.
+    """
+    def wrapper_fn(request, *args, **kwargs):
+        json = handler(request, *args, **kwargs)
+
+        if 'callback' in request.REQUEST:
+            jsonp = '%s(%s);' % (request.REQUEST['callback'], json.content)
+            return JsonResponse(jsonp)
+        return JsonResponse(json.content)
+    return wrapper_fn

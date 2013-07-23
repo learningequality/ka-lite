@@ -97,3 +97,42 @@ function setGetParamDict(href, dict) {
     }
     return href;
 }
+
+/**
+ * This function gets the status of any KA Lite server. By default it will call the central server.
+ *
+ * @param {options} An object containing the parameterized options. If omitted, it will use the default options.
+ * @param {function} A function to handle the callback operation.
+ *
+ * @return {object} Returns a jsonp object containing data from the server.
+ * @return {boolean} If it fails, it will return false.
+ */
+function get_server_status(options, callback) {
+    var defaults = {
+        protocol : "http",
+        hostname : "",
+        port: 8008,
+        path : "/securesync/api/info"
+    };
+
+    var args = $.extend(defaults, options || {});
+
+    var prefix = "";
+    if(arguments.hostname) {
+        prefix = (args.protocol ? args.protocol + ":" : "") + "//" + args.hostname + (args.port ? ":" + args.port : "");
+    }
+
+    var target_url = prefix + args.path 
+
+    var request = $.ajax({
+            url : target_url,
+            type : "POST",
+            dataType : "jsonp"
+        });
+        request.success(function(data){
+            callback(data);
+        });
+        request.error(function(error){
+            callback(false);
+        });
+}

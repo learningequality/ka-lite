@@ -307,3 +307,25 @@ def status(request):
         data["username"] = request.user.username
 
     return JsonResponse(data)
+
+@return_jsonp
+def get_server_info(request):
+    """This function handles the server status request.
+
+    Args:
+        The http request.
+
+    Returns:
+        A json object containing general data from the server.
+    """
+    device = Device.get_own_device()
+
+    device_info = {
+        "version" : version.VERSION,
+        "video_count" : VideoFile.objects.filter(percent_complete=100).count(),
+        "name" : device.name if device.name else "Device was not registered",
+        "description" : device.description if device.description else "Device has no description",
+        "zone" : device.get_zone().name if device.get_zone() and not settings.CENTRAL_SERVER else "Zone was not registered",
+    }
+
+    return JsonResponse(device_info)

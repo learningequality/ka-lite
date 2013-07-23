@@ -493,7 +493,10 @@ ul.dynatree-container li, .ui-widget-content {
         {% endif %}
     </div>
     
+    {% if am_i_online %}
     <button id="download-videos" type="button">{% trans "Download " %}<span class="new-video-count">0</span>{% trans " new selected videos" %}</button>
+    {% endif %}
+
     <button id="delete-videos" type="button">{% trans "Delete " %}<span class="old-video-count">0</span>{% trans " selected videos" %}</button>
 </div>
 
@@ -508,8 +511,15 @@ ul.dynatree-container li, .ui-widget-content {
             {% endif %}
         </select>
     </span>
+
+    {% if am_i_online %}
     <button class="download-subtitles" type="button">{% trans "Get/Update All Subtitles" %}</button>
     <button class="download-subtitles" new_only=true type="button">{% trans "Get Missing Subtitles Only" %}</button>
+    {% else %}
+    <button class="download-subtitles" type="button" disabled>{% trans "Get/Update All Subtitles" %}</button>
+    <button class="download-subtitles" new_only=true type="button" disabled>{% trans "Get Missing Subtitles Only" %}</button>
+    {% endif %}
+
 </div>
 
 <div style="clear: both;"></div>
