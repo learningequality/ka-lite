@@ -70,7 +70,7 @@
                     <tr>
                         <td>
                             <a href="{% url student_view %}?user={{ id }}">
-                                {% user|format_name:"last_first" %}
+                                {{ user|format_name:"last_first" }}
                             </a>
                         </td>
                         <td>

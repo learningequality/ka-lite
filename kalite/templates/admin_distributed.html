@@ -52,7 +52,7 @@ td.title {
         </tr>
         {% if in_a_zone %}
         <tr>
-            <td class="link"><a href="{% url zone_discovery %}">{% trans "Zone management" %}</a></td>
+            <td class="link"><a href="{% url zone_redirect %}">{% trans "Zone management" %}</a></td>
             <td class="desc">{%trans "Access to summary data over all facilities and devices" %}</td>
         </tr>
         {% endif %}
@@ -62,7 +62,7 @@ td.title {
         </tr>
         {% if in_a_zone %}
         <tr>
-            <td class="link"><a href="{% url device_discovery %}">{% trans "Sync stats" %}</a></td>
+            <td class="link"><a href="{% url device_redirect %}">{% trans "Sync stats" %}</a></td>
             <td class="desc">{%trans "Information about syncing," %}</td>
         </tr>
         {% else %}
