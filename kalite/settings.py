@@ -29,7 +29,7 @@ LOG.setLevel(logging.DEBUG*DEBUG + logging.INFO*(1-DEBUG))
 INTERNAL_IPS   = getattr(local_settings, "INTERNAL_IPS", ("127.0.0.1",))
 
 # TODO(jamalex): currently this only has an effect on Linux/OSX
-PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 8008)
+PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 8008 if not CENTRAL_SERVER else 8001)
 
 CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
 
