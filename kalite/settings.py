@@ -28,10 +28,10 @@ LOG.setLevel(logging.DEBUG*DEBUG + logging.INFO*(1-DEBUG))
 
 INTERNAL_IPS   = getattr(local_settings, "INTERNAL_IPS", ("127.0.0.1",))
 
+CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
+
 # TODO(jamalex): currently this only has an effect on Linux/OSX
 PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 8008 if not CENTRAL_SERVER else 8001)
-
-CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
 
 AUTO_LOAD_TEST = getattr(local_settings, "AUTO_LOAD_TEST", False)
 assert not AUTO_LOAD_TEST or not CENTRAL_SERVER, "AUTO_LOAD_TEST only on local server"
