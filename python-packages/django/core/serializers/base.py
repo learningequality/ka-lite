@@ -43,27 +43,13 @@ class Serializer(object):
 
         self.start_serialization()
         for obj in queryset:
-            # See logic below.  We selectively skip serializing
-            #   objects that have a (starting) version greater than the
-            #   version we're serializing for.
-            v_diff = version_diff(dest_version, getattr(obj, "version", None))
-            if v_diff is not None and v_diff < 0:
-                continue
-
             self.start_object(obj)
             # Use the concrete parent class' _meta instead of the object's _meta
             # This is to avoid local_fields problems for proxy models. Refs #17717.
             concrete_model = obj._meta.concrete_model
             for field in concrete_model._meta.local_fields:
 
-                # "and" condition added by KA Lite.
-                #
-                # Serialize the field UNLESS all of the following are true:
-                #   * we've passed in a specific dest_version
-                #   * the field is marked with a version
-                #   * that version is later than the dest_version
-                v_diff = version_diff(dest_version, getattr(field, "version", None))
-                if field.serialize and (v_diff is None or v_diff >= 0):
+                if field.serialize:
                     if field.rel is None:
                         if self.selected_fields is None or field.attname in self.selected_fields:
                             self.handle_field(obj, field)
@@ -71,9 +57,7 @@ class Serializer(object):
                         if self.selected_fields is None or field.attname[:-3] in self.selected_fields:
                             self.handle_fk_field(obj, field)
             for field in concrete_model._meta.many_to_many:
-                # "and" condition added by KA Lite.  Logic the same as above.
-                v_diff = version_diff(dest_version, getattr(field, "version", None))
-                if field.serialize and (v_diff >= 0 or v_diff is None):
+                if field.serialize:
                     if self.selected_fields is None or field.attname in self.selected_fields:
                         self.handle_m2m_field(obj, field)
             self.end_object(obj)
