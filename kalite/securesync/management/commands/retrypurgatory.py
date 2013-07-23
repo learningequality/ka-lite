@@ -22,9 +22,6 @@ class Command(BaseCommand):
             return
 
         for purgatory in purgatories:
-            if unsaved:
-                self.stdout.write("\t%d models still did not save. :(\n" % unsaved)
-
             self.stdout_writeln("%s (%d %s, %s #%d)..." %
                 (("Attempting to save models"), 
                  purgatory.model_count, ("models"), 
