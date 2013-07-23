@@ -19,7 +19,7 @@ from config.models import Settings
 from main.models import VideoLog, ExerciseLog
 from securesync import crypto, model_sync
 from securesync.models import *
-from utils.decorators import distributed_server_only
+from utils.decorators import distributed_server_only, return_jsonp
 from utils.internet import JsonResponse
 
 
