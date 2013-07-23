@@ -15,13 +15,14 @@ from oauth import OAuthToken
 
 SERVER_URL = "http://www.khanacademy.org"
 
-#Set authorization objects to prevent errors when checking for Auth.
+# Set authorization objects to prevent errors when checking for Auth.
 
 REQUEST_TOKEN = None
 ACCESS_TOKEN = None
 
 
 class APIError(Exception):
+
     """
     Custom Exception Class for returning meaningful errors which are caused by changes
     in the Khan Academy API.
@@ -39,7 +40,8 @@ class APIError(Exception):
                     inspection = "This occurred in an object of kind %s, called %s." % (
                         id_to_kind_map[id], id(self.obj))
         if not inspection:
-            inspection = "Object could not be inspected. Summary of object keys here: %s" % str(self.obj.keys())
+            inspection = "Object could not be inspected. Summary of object keys here: %s" % str(
+                self.obj.keys())
         return "Khan API Error: %s %s" % (self.msg, inspection)
 
 
@@ -59,7 +61,7 @@ def authenticate():
     Adapted from https://github.com/Khan/khan-api/blob/master/examples/test_client/test.py
     First pass at browser based OAuth authentication.
     """
-    #TODO: Allow PIN access for non-browser enabled devices.
+    # TODO: Allow PIN access for non-browser enabled devices.
 
     server = create_callback_server()
 
@@ -108,6 +110,7 @@ def create_callback_server():
 
 
 class AttrDict(dict):
+
     """
     Base class to give dictionary values from JSON objects are object properties.
     Recursively turn all dictionary sub-objects, and lists of dictionaries
@@ -318,11 +321,13 @@ class User(APIAuthModel):
     _related_field_types = {
         "videos": partial(class_by_name, name="UserVideo"),
         "exercises": partial(class_by_name, name="UserExercise"),
+        "students": partial(class_by_name, name="User"),
     }
 
     API_attributes = {
         "videos": "/videos",
-        "exercises": "/exercises"
+        "exercises": "/exercises",
+        "students": "/students",
     }
 
     @classmethod
@@ -453,6 +458,7 @@ kind_to_class_map = {
     "Separator": Separator,
     "Scratchpad": Scratchpad,
     "Article": Article,
+    "User": User,
     "UserBadge": UserBadge,
     "UserVideo": UserVideo,
     "UserExercise": UserExercise,
