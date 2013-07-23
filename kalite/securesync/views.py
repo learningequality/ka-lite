@@ -118,12 +118,23 @@ def register_public_key_server(request):
         form = RegisteredDevicePublicKeyForm(request.user, data=request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, _("The device's public key has been successfully registered. You may now close this window."))
             zone_id = form.data["zone"]
             org_id = Zone.objects.get(id=zone_id).get_org().id
-            return HttpResponseRedirect(reverse("zone_management", kwargs={'org_id': org_id, 'zone_id': zone_id}))
+
+            callback_url = form.cleaned_data.get("callback_url", None)
+            if callback_url:
+                # New style: go directly to the origin page, which will force a sync to occur (no reason to ping refresh)
+                #   This is better for the current force_job
+                return HttpResponseRedirect(callback_url)
+            else:
+                # Old style, for clients that don't send a callback url
+                messages.success(request, _("The device's public key has been successfully registered. You may now close this window."))
+                return (HttpResponseRedirect(reverse("zone_management", kwargs={'org_id': org_id, 'zone_id': zone_id}))
     else:
-        form = RegisteredDevicePublicKeyForm(request.user)
+        form = RegisteredDevicePublicKeyForm(
+            request.user, 
+            callback_url = request.REQUEST.get("callback_url", request.META.get("HTTP_REFERER", "")),
+        )
     return {
         "form": form,
     }
