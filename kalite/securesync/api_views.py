@@ -16,10 +16,10 @@ from django.views.decorators.gzip import gzip_page
 import settings
 import version
 from config.models import Settings
-from main.models import VideoLog, ExerciseLog
+from main.models import VideoLog, ExerciseLog, VideoFile
 from securesync import crypto, model_sync
 from securesync.models import *
-from utils.decorators import distributed_server_only
+from utils.decorators import distributed_server_only, return_jsonp
 from utils.internet import JsonResponse
 
 
@@ -310,7 +310,7 @@ def status(request):
 
 @return_jsonp
 def get_server_info(request):
-    """This function handles the server status request.
+    """This function is used to check connection to central or local server and also to get specific data from server.
 
     Args:
         The http request.
@@ -320,12 +320,22 @@ def get_server_info(request):
     """
     device = Device.get_own_device()
 
-    device_info = {
-        "version" : version.VERSION,
-        "video_count" : VideoFile.objects.filter(percent_complete=100).count(),
-        "name" : device.name if device.name else "Device was not registered",
-        "description" : device.description if device.description else "Device has no description",
-        "zone" : device.get_zone().name if device.get_zone() and not settings.CENTRAL_SERVER else "Zone was not registered",
-    }
+    device_info = { "status": "OK" }
+
+    for value in json.loads(request.POST.get("requested_data")):
+        if value == "version":
+            device_info["version"] = version.VERSION
+
+        if value == "video_count":
+            device_info["video_count"] = VideoFile.objects.filter(percent_complete=100).count() if not settings.CENTRAL_SERVER else "Central server does not have videos."
+
+        if value == "name":
+            device_info["name"] = device.name if device.name else "Device was not registered"
+
+        if value == "description":
+            device_info["description"] = device.description if device.description else "Device has no description"
+
+        if value == "zone":
+            device_info["zone"] = device.get_zone().name if device.get_zone() and not settings.CENTRAL_SERVER else "Zone was not registered"
 
     return JsonResponse(device_info)

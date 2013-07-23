@@ -102,12 +102,14 @@ function setGetParamDict(href, dict) {
  * This function gets the status of any KA Lite server. By default it will call the central server.
  *
  * @param {options} An object containing the parameterized options. If omitted, it will use the default options.
+ * @param {requested_data} An array of strings. They refer to the extra data that we want from the server. Example ["name", "version"] .
  * @param {function} A function to handle the callback operation.
  *
- * @return {object} Returns a jsonp object containing data from the server.
+ * @return {object} Returns a jsonp object containing data from the server or status OK. For testing, you can use alert(JSON.stringify(eval(result))).
  * @return {boolean} If it fails, it will return false.
  */
-function get_server_status(options, callback) {
+function get_server_status(options, requested_data, callback) {
+
     var defaults = {
         protocol : "http",
         hostname : "",
@@ -118,7 +120,7 @@ function get_server_status(options, callback) {
     var args = $.extend(defaults, options || {});
 
     var prefix = "";
-    if(arguments.hostname) {
+    if(args.hostname) {
         prefix = (args.protocol ? args.protocol + ":" : "") + "//" + args.hostname + (args.port ? ":" + args.port : "");
     }
 
@@ -126,8 +128,10 @@ function get_server_status(options, callback) {
 
     var request = $.ajax({
             url : target_url,
+            traditional : true,
             type : "POST",
-            dataType : "jsonp"
+            dataType : "jsonp",
+            data : requested_data ? {requested_data:JSON.stringify(requested_data)} : {requested_data:""},
         });
         request.success(function(data){
             callback(data);

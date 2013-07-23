@@ -13,6 +13,7 @@ from django.utils.translation import ugettext as _
 import settings
 from config.models import Settings
 from securesync.models import Device, DeviceZone, Zone, Facility
+from utils.internet import JsonResponse
 #from securesync.views import facility_selection
 
 

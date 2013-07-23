@@ -42,7 +42,7 @@ td.title {
 <script>
 
 $(function(){
-    get_server_status({hostname: "{{ central_server_host }}"}, function(status){
+    get_server_status({hostname: "{{ central_server_host }}"}, [], function(status){
         // We assume the server is offline.
         //   if it's online, then we show all tools only usable when online.
         //
@@ -79,7 +79,6 @@ $(function(){
             <td class="desc">{% trans "Summary stats for this installation" %}</td>
         </tr>
         
-        {% if am_i_online %}
         <tr id="online-tools-title" style="display:none">
             <td class="title" colspan="2">
                 <h2>{% trans "(Online) help documents" %}</h2>
@@ -93,7 +92,6 @@ $(function(){
             <td class="link"><a href="http://{{central_server_host}}/faq">FAQ</a></td>
             <td class="desc">{% trans "Contains the latest FAQ for troubleshooting" %}</td>
         </tr>
-        {% endif %}
 
         {% if user.is_superuser and settings.DEBUG %}{% comment "Django-admins and in debug mode" %}{% endcomment %}
         
