@@ -245,7 +245,6 @@ function show_subtitle_counts(subtitleCounts) {
             var langCode = $("#language option:selected").val();
             
             if (langCode) {
-                // Question: this is pointing to the distributed server, which then points to the central server, is that the best way?
                 doRequest("/api/start_subtitle_download", {language: langCode}).success(
                     startSubtitleDownloadChecks
                 ).fail(function(resp) {

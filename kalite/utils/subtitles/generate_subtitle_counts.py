@@ -5,9 +5,16 @@ import sys
 from django.core.management.base import BaseCommand, CommandError
 from django.core.management import call_command
 
-from utils.subtitles import subtitle_utils 
+import subtitle_utils 
 
+PROJECT_PATH = os.path.dirname(os.path.realpath(__file__)) + "/../../"
+sys.path = [PROJECT_PATH] + sys.path
+
+from main import topicdata
 import settings
+
+LANGUAGE_LOOKUP = topicdata.LANGUAGE_LOOKUP
+LANGUAGE_LIST   = topicdata.LANGUAGE_LIST
 
 data_path = settings.DATA_PATH + "subtitledata/"
 
@@ -40,12 +47,12 @@ def get_new_counts():
                 subtitle_counts[lang_name]["count"] = count
                 subtitle_counts[lang_name]["code"] = lang_code
     write_new_json(subtitle_counts)
+    update_language_list(subtitle_counts)
 
 
 def get_language_name(lang_code):
     """Return full language name from ISO 639-1 language code, raise exception if it isn't hardcoded yet"""
-    languages = json.loads(open(data_path + "../languages.json").read())
-    language_name = languages.get(lang_code)
+    language_name = LANGUAGE_LOOKUP.get(lang_code)
     if language_name:
         logger.info("%s: %s" %(lang_code, language_name))
         return language_name
@@ -59,5 +66,21 @@ def write_new_json(subtitle_counts):
     filepath = data_path + filename
     logger.info("Writing fresh srt counts to %s" % filepath)
     with open(filepath, 'wb') as fp:
-            json.dump(subtitle_counts, fp)
+        json.dump(subtitle_counts, fp)
+
+
+def update_language_list(sub_counts):
+    """Update hardcoded language codes if any supported subtitle languages aren't there."""
+    for data in sub_counts.values():
+        lang_code = data.get("code")
+        if lang_code not in LANGUAGE_LIST:
+            logger.info("Adding %s to language code list" % lang_code)
+            LANGUAGE_LIST.append(lang_code)
+    with open(os.path.join(settings.DATA_PATH, "listedlanguages.json"), 'wb') as fp:
+        json.dump(LANGUAGE_LIST, fp)
+
+
+if __name__ == "__main__":
+    get_new_counts()
+
 
