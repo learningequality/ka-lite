@@ -4,36 +4,28 @@ from django.http import HttpResponse
 from django.utils import simplejson
 from django.db.models import Q
 from annoying.functions import get_object_or_None
+from functools import partial
 import settings
 from main import topicdata
 from utils.jobs import force_job, job_status
 from utils.videos import delete_downloaded_files
-from models import FacilityUser, VideoLog, ExerciseLog, VideoFile
+from models import FacilityUser, VideoLog, ExerciseLog, VideoFile, POINTS_PER_VIDEO
 from securesync.models import FacilityGroup
 from config.models import Settings
 from utils.decorators import require_admin
 from utils.general import break_into_chunks
 from utils.orderedset import OrderedSet
 from utils.internet import JsonResponse
+from utils.mplayer_launcher import play_video_in_new_thread
 
 
 def save_video_log(request):
     if "facility_user" not in request.session:
         return JsonResponse({})
     data = simplejson.loads(request.raw_post_data or "{}")
-    videolog = VideoLog()
-    videolog.user = request.session["facility_user"]
-    videolog.youtube_id = data.get("youtube_id", "")
-    old_videolog = videolog.get_existing_instance() or VideoLog()
-    videolog.total_seconds_watched = old_videolog.total_seconds_watched + data.get("seconds_watched", 0)
-    videolog.points = max(old_videolog.points or 0, data.get("points", 0)) or 0
     try:
-        videolog.full_clean()
-        videolog.save()
-        return JsonResponse({
-            "points": videolog.points,
-            "complete": videolog.complete,
-        })
+        result = VideoLog.update_video_log(request.session["facility_user"], data.get("youtube_id", ""), data.get("seconds_watched", 0), data.get("points", 0))
+        return JsonResponse(result)
     except ValidationError as e:
         return JsonResponse({"error": "Could not save VideoLog: %s" % e}, status=500)
 
@@ -308,3 +300,30 @@ def get_annotated_topic_tree():
 @require_admin
 def get_topic_tree(request):
     return JsonResponse(get_annotated_topic_tree())
+
+def launch_mplayer(request):
+    """ Launch an mplayer instance in a new thread, to play the video requested via the API. """
+    youtube_id = request.REQUEST.get("youtube_id")
+    if youtube_id:
+        facility_user = request.session.get("facility_user")
+        callback = None
+        if facility_user:
+            callback = partial(
+                _update_video_log_with_points,
+                youtube_id=youtube_id,
+                facility_user=facility_user,
+            )
+        play_video_in_new_thread(youtube_id, callback=callback)
+    return JsonResponse({})
+
+def _update_video_log_with_points(seconds_watched, video_length, youtube_id, facility_user):
+    """ Handle the callback from the mplayer thread, saving the VideoLog. """
+    try: # while it's unlikely that these calls would fail, it wouldn't be worth killing mplayer over
+        new_points = (float(seconds_watched) / video_length) * POINTS_PER_VIDEO
+        video_log_data = VideoLog.update_video_log(facility_user, youtube_id, seconds_watched, new_points=new_points)
+    except:
+        video_log_data = {
+            "points": 0,
+            "complete": False,
+        }
+    return video_log_data

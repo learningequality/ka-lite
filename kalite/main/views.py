@@ -28,7 +28,7 @@ from securesync.api_client import SyncClient
 from securesync.models import Facility, FacilityUser,FacilityGroup, Device
 from securesync.views import require_admin, facility_required
 from utils import topic_tools
-from utils.internet import am_i_online
+from utils.internet import am_i_online, is_loopback_connection
 from utils.jobs import force_job
 from utils.decorators import require_admin
 from utils.videos import video_connection_is_available
@@ -147,6 +147,7 @@ def video_handler(request, video, prev=None, next=None):
         "video_exists": video_exists,
         "prev": prev,
         "next": next,
+        "use_mplayer": settings.USE_MPLAYER and is_loopback_connection(request),
     }
     return context
 
