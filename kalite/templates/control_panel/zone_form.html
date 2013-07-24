@@ -1,0 +1,42 @@
+{% extends "control_panel/base_management.html" %}
+
+{% block title %}{{ zone.name }} - Zone Management Console{% endblock title %}
+
+{% block inner_content %}
+<div id="zone_container">
+    <style>
+    h2 { 
+        margin-bottom: 25px;
+    }
+
+    input, textarea {
+        width: 275px;
+    }
+
+    input.submit{
+        margin-bottom: 100px;
+        margin-top: 10px;
+    }
+
+    </style>
+
+    <form method="post" class="basic-form">
+    {% csrf_token %}
+
+    <div>
+        <h2>
+            {% if form.instance.pk %}Update Your Zone{% else %}Create A Zone{% endif %}
+            <span class="glossary-link nudge-left" title="A Zone is the area in which multiple devices may connect to share content with each other."></span>
+        </h2>
+    
+    {{ form.as_p }}
+
+    {% if form.instance.pk %}
+    <input type="submit" value="Update Zone" class="submit"/>
+    {% else %}
+    <input type="submit" value="Create Zone" class="submit"/>
+    {% endif %}
+
+    </form>
+
+{% endblock inner_content %}

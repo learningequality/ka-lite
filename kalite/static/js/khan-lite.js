@@ -20,15 +20,6 @@ function csrfSafeMethod(method) {
     // these HTTP methods do not require CSRF protection
     return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
 }
-$.ajaxSetup({
-    cache: false,
-    crossDomain: false, // obviates need for sameOrigin test
-    beforeSend: function(xhr, settings) {
-        if (!csrfSafeMethod(settings.type)) {
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        }
-    }
-});
 
 function doRequest(url, data) {
     return $.ajax({
@@ -48,7 +39,7 @@ function show_message(msg_class, msg_text, msg_id) {
     // This function is generic--can be called with server-side messages,
     //    or to display purely client-side messages.
     // msg_class includes error, warning, and success
-    
+
     msg_html = "<div class='message " + msg_class + "'";
     if (msg_id) {
         msg_html += " id='" + msg_id + "'"
@@ -137,3 +128,18 @@ function get_server_status(options, requested_data, callback) {
             callback(false);
         });
 }
+
+
+// Globally run code
+var csrftoken = getCookie("csrftoken") || "";
+
+$.ajaxSetup({
+    cache: false,
+    crossDomain: false, // obviates need for sameOrigin test
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type)) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
+
