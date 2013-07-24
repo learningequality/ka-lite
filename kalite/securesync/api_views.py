@@ -4,6 +4,7 @@ import re
 import uuid
 
 from django.core import serializers
+from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.contrib.messages.api import get_messages
 from django.db import models as db_models
@@ -16,11 +17,11 @@ from django.views.decorators.gzip import gzip_page
 import settings
 import version
 from config.models import Settings
-from main.models import VideoLog, ExerciseLog
+from main.models import VideoLog, ExerciseLog, VideoFile
 from securesync import crypto, model_sync
 from securesync.models import *
-from utils.decorators import distributed_server_only
-from utils.internet import JsonResponse
+from utils.decorators import distributed_server_only, return_jsonp
+from utils.internet import JsonResponse, am_i_online
 
 
 def require_sync_session(handler):
@@ -178,7 +179,7 @@ def device_download(data, session):
     devicezones = list(DeviceZone.objects.filter(zone=zone, device__in=data["devices"]))
     devices = [devicezone.device for devicezone in devicezones]
     session.models_downloaded += len(devices) + len(devicezones)
-    
+
     # Return the objects serialized to the version of the other device.
     return JsonResponse({"devices": serializers.serialize("json", devices + devicezones, dest_version=session.client_version, ensure_ascii=False)})
 
@@ -195,7 +196,7 @@ def device_upload(data, session):
         result = model_sync.save_serialized_models(data.get("devices", "[]"), src_version=session.client_version)
     except Exception as e:
         result = { "error": e.message, "saved_model_count": 0 }
-        
+
     session.models_uploaded += result["saved_model_count"]
     session.errors += result.has_key("error")
     return JsonResponse(result)
@@ -278,7 +279,7 @@ def status(request):
         # Make sure to escape strings not marked as safe.
         # Note: this duplicates a bit of Django template logic.
         msg_txt = message.message
-        if not (isinstance(message.message, SafeString) or isinstance(message.message, SafeUnicode)):
+        if not (isinstance(msg_txt, SafeString) or isinstance(msg_txt, SafeUnicode)):
             msg_txt = cgi.escape(str(msg_txt))
 
         message_dicts.append({
@@ -307,3 +308,47 @@ def status(request):
         data["username"] = request.user.username
 
     return JsonResponse(data)
+
+@return_jsonp
+def get_server_info(request):
+    """This function is used to check connection to central or local server and also to get specific data from server.
+
+    Args:
+        The http request.
+
+    Returns:
+        A json object containing general data from the server.
+    """
+    device = None
+
+    device_info = { "status": "OK" }
+
+    for value in json.loads(request.POST.get("requested_data", "{}")):
+        if value.lower() == "version":
+            device_info[value] = version.VERSION
+
+        elif value.lower() == "video_count":
+            device_info[value] = VideoFile.objects.filter(percent_complete=100).count() if not settings.CENTRAL_SERVER else "Central server does not have videos."
+
+        elif value.lower() == "name":
+            device = device or Device.get_own_device()
+            device_info[value] = device.name if device.name else "Device was not registered"
+
+        elif value.lower() == "description":
+            device = device or Device.get_own_device()
+            device_info[value] = device.description if device.description else "Device has no description"
+
+        elif value.lower() == "zone":
+            device = device or Device.get_own_device()
+            device_info[value] = device.get_zone().name if device.get_zone() and not settings.CENTRAL_SERVER else "Zone was not registered"
+        
+        elif value.lower() == "online":
+            if settings.CENTRAL_SERVER:
+                device_info[value] =  True
+            else:
+                device_info[value] = am_i_online(url="%s://%s%s" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST, reverse("get_server_info")))
+
+        else:
+            raise Exception("Unknown parameter: %s" % value)
+
+    return JsonResponse(device_info)

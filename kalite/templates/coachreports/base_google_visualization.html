@@ -25,8 +25,9 @@ You must:
 
 
 {% block headcss %} {{ block.super }}
-<link rel="stylesheet" type="text/css" href="{% static 'css/ui.dynatree.css' %}" />
-<link rel="stylesheet" type="text/css" href="{% static 'css/ui.dynatree.defaultoff.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/jquery-ui.min.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/plugins/ui.dynatree.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/plugins/ui.dynatree.defaultoff.css' %}" />
 
 <style>
 #loading {
@@ -46,7 +47,7 @@ You must:
 
 
 {% block headjs %}{{ block.super }}
-<script type="text/javascript" src="{% static 'js/jquery-ui.custom.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/jquery-ui/jquery-ui.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/jquery.dynatree.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/jquery.dynatree.extensions.js' %}"></script>
 

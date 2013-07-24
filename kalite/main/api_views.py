@@ -1,6 +1,6 @@
 import re, json
 from django.core.exceptions import ValidationError
-from django.http import HttpResponse, HttpResponseNotAllowed
+from django.http import HttpResponse
 from django.utils import simplejson
 from django.db.models import Q
 from annoying.functions import get_object_or_None
@@ -11,7 +11,7 @@ from utils.videos import delete_downloaded_files
 from models import FacilityUser, VideoLog, ExerciseLog, VideoFile
 from securesync.models import FacilityGroup
 from config.models import Settings
-from utils.decorators import require_admin_api
+from utils.decorators import require_admin
 from utils.general import break_into_chunks
 from utils.orderedset import OrderedSet
 from utils.internet import JsonResponse
@@ -57,7 +57,7 @@ def save_exercise_log(request):
     exerciselog.attempts = old_exerciselog.attempts + 1
     exerciselog.streak_progress = data.get("streak_progress", None)
     exerciselog.points = data.get("points", None)
-    
+
     try:
         exerciselog.full_clean()
         exerciselog.save()
@@ -83,7 +83,7 @@ def get_video_logs(request):
         if response:
             responses.append(response)
     return JsonResponse(responses)
-    
+
 
 def _get_video_log_dict(request, user, youtube_id):
     """
@@ -120,7 +120,7 @@ def get_exercise_logs(request):
         if response:
             responses.append(response)
     return JsonResponse(responses)
-    
+
 
 def _get_exercise_log_dict(request, user, exercise_id):
     """
@@ -140,18 +140,18 @@ def _get_exercise_log_dict(request, user, exercise_id):
         "struggling": exerciselog.struggling,
     }
 
-@require_admin_api
+@require_admin
 def start_video_download(request):
     """
     API endpoint for launching the videodownload job.
     """
     youtube_ids = OrderedSet(simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", []))
-    
+
     video_files_to_create = [id for id in youtube_ids if not get_object_or_None(VideoFile, youtube_id=id)]
     video_files_to_update = youtube_ids - OrderedSet(video_files_to_create)
-    
+
     VideoFile.objects.bulk_create([VideoFile(youtube_id=id, flagged_for_download=True) for id in video_files_to_create])
-    
+
     for chunk in break_into_chunks(youtube_ids):
         video_files_needing_model_update = VideoFile.objects.filter(download_in_progress=False, youtube_id__in=chunk).exclude(percent_complete=100)
         video_files_needing_model_update.update(percent_complete=0, cancel_download=False, flagged_for_download=True)
@@ -159,7 +159,7 @@ def start_video_download(request):
     force_job("videodownload", "Download Videos")
     return JsonResponse({})
 
-@require_admin_api
+@require_admin
 def delete_videos(request):
     """
     API endpoint for deleting videos.
@@ -180,7 +180,7 @@ def delete_videos(request):
         delete_downloaded_files(id)
     return JsonResponse({})
 
-@require_admin_api
+@require_admin
 def check_video_download(request):
     """
     API endpoint for getting progress data on downloads.
@@ -193,13 +193,13 @@ def check_video_download(request):
         percentages[id] = videofile.percent_complete
     return JsonResponse(percentages)
 
-@require_admin_api
+@require_admin
 def get_video_download_list(request):
     videofiles = VideoFile.objects.filter(flagged_for_download=True).values("youtube_id")
     video_ids = [video["youtube_id"] for video in videofiles]
     return JsonResponse(video_ids)
 
-@require_admin_api
+@require_admin
 def start_subtitle_download(request):
     new_only = simplejson.loads(request.raw_post_data or "{}").get("new_only", False)
     language = simplejson.loads(request.raw_post_data or "{}").get("language", "")
@@ -225,37 +225,37 @@ def start_subtitle_download(request):
     force_job("subtitledownload", "Download Subtitles")
     return JsonResponse({})
 
-@require_admin_api
+@require_admin
 def check_subtitle_download(request):
     videofiles = VideoFile.objects.filter(flagged_for_subtitle_download=True)
     return JsonResponse(videofiles.count())
 
-@require_admin_api
+@require_admin
 def get_subtitle_download_list(request):
     videofiles = VideoFile.objects.filter(flagged_for_subtitle_download=True).values("youtube_id")
     video_ids = [video["youtube_id"] for video in videofiles]
     return JsonResponse(video_ids)
 
-@require_admin_api
+@require_admin
 def cancel_downloads(request):
-    
+
     # clear all download in progress flags, to make sure new downloads will go through
     VideoFile.objects.all().update(download_in_progress=False)
-    
+
     # unflag all video downloads
     VideoFile.objects.filter(flagged_for_download=True).update(cancel_download=True, flagged_for_download=False)
-    
+
     # unflag all subtitle downloads
     VideoFile.objects.filter(flagged_for_subtitle_download=True).update(cancel_download=True, flagged_for_subtitle_download=False)
 
     force_job("videodownload", stop=True)
     force_job("subtitledownload", stop=True)
+    return JsonResponse({})
 
-    return JsonResponse({}) 
-    
 
 # Functions below here focused on users
-@require_admin_api
+
+@require_admin
 def remove_from_group(request):
     """
     API endpoint for removing users from group
@@ -265,8 +265,8 @@ def remove_from_group(request):
     users_to_remove = FacilityUser.objects.filter(username__in=users)
     users_to_remove.update(group=None)
     return JsonResponse({})
-    
-@require_admin_api
+
+@require_admin
 def move_to_group(request):
     users = simplejson.loads(request.raw_post_data or "{}").get("users", [])
     group = simplejson.loads(request.raw_post_data or "{}").get("group", "")
@@ -274,8 +274,8 @@ def move_to_group(request):
     users_to_move = FacilityUser.objects.filter(username__in=users)
     users_to_move.update(group=group_update)
     return JsonResponse({})
-    
-@require_admin_api
+
+@require_admin
 def delete_users(request):
     users = simplejson.loads(request.raw_post_data or "{}").get("users", [])
     users_to_delete = FacilityUser.objects.filter(username__in=users)
@@ -301,7 +301,7 @@ def annotate_topic_tree(node, level=0, statusdict=None):
                     complete = False
                     unstarted = False
                 if child["addClass"] == "complete":
-                    unstarted = False       
+                    unstarted = False
                 children.append(child)
         return {
             "title": node["title"],
@@ -330,11 +330,11 @@ def annotate_topic_tree(node, level=0, statusdict=None):
         }
     return None
 
-#@require_admin_api
+#@require_admin
 def get_annotated_topic_tree():
     statusdict = dict(VideoFile.objects.values_list("youtube_id", "percent_complete"))
     return annotate_topic_tree(topicdata.TOPICS, statusdict=statusdict)
 
-@require_admin_api
+@require_admin
 def get_topic_tree(request):
     return JsonResponse(get_annotated_topic_tree())
