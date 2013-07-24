@@ -18,6 +18,10 @@ from utils.internet import JsonResponse
 
 
 def save_video_log(request):
+    """
+    API endpoint called by the browser (in the background), 
+    while a user is viewing a video.
+    """
     if "facility_user" not in request.session:
         return JsonResponse({})
     data = simplejson.loads(request.raw_post_data or "{}")
@@ -39,6 +43,10 @@ def save_video_log(request):
 
 
 def save_exercise_log(request):
+    """
+    API endpoint called by the browser, 
+    while a user submits an answer to a question.
+    """
     if "facility_user" not in request.session:
         return JsonResponse({})
     data = simplejson.loads(request.raw_post_data or "{}")
@@ -59,6 +67,10 @@ def save_exercise_log(request):
 
 
 def get_video_logs(request):
+    """
+    API endpoint called on page-load for topic pages containing videos;
+    returns video progress for all videos on that page.
+    """
     data = simplejson.loads(request.raw_post_data or "[]")
     if not isinstance(data, list):
         return JsonResponse([])
@@ -74,6 +86,9 @@ def get_video_logs(request):
     
 
 def _get_video_log_dict(request, user, youtube_id):
+    """
+    Utility that converts a video log to a dictionary
+    """
     if not youtube_id:
         return {}
     try:
@@ -89,6 +104,10 @@ def _get_video_log_dict(request, user, youtube_id):
 
 
 def get_exercise_logs(request):
+    """
+    API endpoint called on page-load for topic pages containing exercises;
+    returns exercise progress for all exercises on that page.
+    """
     data = simplejson.loads(request.raw_post_data or "[]")
     if not isinstance(data, list):
         return JsonResponse([])
@@ -104,6 +123,9 @@ def get_exercise_logs(request):
     
 
 def _get_exercise_log_dict(request, user, exercise_id):
+    """
+    Utility that converts a video log to a dictionary
+    """
     if not exercise_id:
         return {}
     try:
@@ -120,6 +142,9 @@ def _get_exercise_log_dict(request, user, exercise_id):
 
 @require_admin_api
 def start_video_download(request):
+    """
+    API endpoint for launching the videodownload job.
+    """
     youtube_ids = OrderedSet(simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", []))
     
     video_files_to_create = [id for id in youtube_ids if not get_object_or_None(VideoFile, youtube_id=id)]
@@ -136,9 +161,13 @@ def start_video_download(request):
 
 @require_admin_api
 def delete_videos(request):
+    """
+    API endpoint for deleting videos.
+    """
     youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
     for id in youtube_ids:
-        delete_downloaded_files(id)
+        # We should mark all metadata first, to avoid conflicts
+        #   across processes (not currently an issue, but could be)
         videofile = get_object_or_None(VideoFile, youtube_id=id)
         if not videofile:
             continue
@@ -146,10 +175,16 @@ def delete_videos(request):
         videofile.flagged_for_download = False
         videofile.flagged_for_subtitle_download = False
         videofile.save()
+
+        # Now nobody should be touching this file.
+        delete_downloaded_files(id)
     return JsonResponse({})
 
 @require_admin_api
 def check_video_download(request):
+    """
+    API endpoint for getting progress data on downloads.
+    """
     youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
     percentages = {}
     percentages["downloading"] = job_status("videodownload")
@@ -157,17 +192,6 @@ def check_video_download(request):
         videofile = get_object_or_None(VideoFile, youtube_id=id) or VideoFile(youtube_id=id)
         percentages[id] = videofile.percent_complete
     return JsonResponse(percentages)
-
-def get_video_download_status(youtube_id):
-    videofile = get_object_or_None(VideoFile, youtube_id=youtube_id)
-    if not videofile:
-        return "unstarted"
-    if videofile.percent_complete == 0 and not videofile.download_in_progress:
-        return "unstarted"
-    if videofile.percent_complete == 100 and not videofile.download_in_progress:
-        return "complete"
-    else:
-        return "partial"
 
 @require_admin_api
 def get_video_download_list(request):
@@ -229,9 +253,14 @@ def cancel_downloads(request):
 
     return JsonResponse({}) 
     
-    
+
+# Functions below here focused on users
 @require_admin_api
 def remove_from_group(request):
+    """
+    API endpoint for removing users from group
+    """
+    (from user management page)
     users = simplejson.loads(request.raw_post_data or "{}").get("users", "")
     users_to_remove = FacilityUser.objects.filter(username__in=users)
     users_to_remove.update(group=None)
@@ -253,6 +282,7 @@ def delete_users(request):
     users_to_delete.delete()
     return JsonResponse({})
 
+# Functions below here focused on topic tree (used for dynatree js code)
 def annotate_topic_tree(node, level=0, statusdict=None):
     if not statusdict:
         statusdict = {}
