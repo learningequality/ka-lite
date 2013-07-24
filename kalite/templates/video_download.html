@@ -99,6 +99,10 @@ ul.dynatree-container li, .ui-widget-content {
     color: #52A852;
 }
 
+#download-videos:disabled {
+    color: #AAA;
+}
+
 #delete-videos {
     color: #AC4343;
     padding: 0 10px 0 10px;
@@ -110,9 +114,7 @@ ul.dynatree-container li, .ui-widget-content {
     display: none;
     margin-top: 15px;
 }
-#help-info, #download-videos {
-    display:none;
-}
+
 </style>
 {% endblock headcss %}
 {% block headjs %}
@@ -127,71 +129,63 @@ ul.dynatree-container li, .ui-widget-content {
     window.download_check_interval = null;
     window.download_subtitle_check_interval = null;
     
+    function server_online_status_callback(server_is_online){
+        // We assume the distributed server is offline; if it's online, then we show all the tools that are only usable when online.
+        // Best to assume offline, as online check returns much faster than offline check.
+        if(!server_is_online){
+            show_message("error", "{% trans 'The server does not have internet access; cannot download new content at this time.' %}", "id_offline_message");
+        } else {
+            $(".enable-when-server-online").removeAttr("disabled");
+            clear_message("id_offline_message");
+        }
+    }
+
     $(function() {
 
-        setTimeout(function() {
-
-            get_server_status({path: "{% url get_server_info %}"}, ["online"], function(status){
-                // We assume the distributed server is offline.
-                //   if it's online, then we show all tools only usable when online.
-                //
-                // Best to assume offline, as online check returns much faster than offline check.
-                if(!status || !status["online"]){
-                    show_message("error", "{% trans 'Distributed server is offline; cannot access video nor subtitle updates.' %}", " id_offline_message")
-                } else {
-                    $("#help-info").show();
-                    $("#download-videos").removeAttr("disabled");
-                    $(".download-subtitles").removeAttr("disabled");
-                    clear_message("id_offline_message")
+        doRequest("/api/get_topic_tree", {}).success(function(treeData) {
+            
+            $("#content_tree").dynatree({
+                imagePath:"../images/",
+                checkbox: true,
+                selectMode: 3,
+                children: treeData,
+                debugLevel: 0,
+                onSelect: function(select, node) {
+                
+                    var newVideoCount = findSelectedIncompleteVideos().length;
+                    var oldVideoCount = findSelectedStartedVideos().length;
+                    
+                    $("#download-videos").hide();
+                    $("#delete-videos").hide();
+                    $("#download-legend-unselected").toggle((newVideoCount + oldVideoCount) == 0);
+                    $("#help-info").toggle((newVideoCount + oldVideoCount) == 0);
+                    
+                    if (newVideoCount > 0) {
+                        $(".new-video-count").text(newVideoCount);
+                        $("#download-videos").show();                                
+                    }
+                    if (oldVideoCount > 0) {
+                        $(".old-video-count").text(oldVideoCount);
+                        $("#delete-videos").show();
+                    }
+                },
+                onDblClick: function(node, event) {
+                    node.toggleSelect();
+                },
+                onKeydown: function(node, event) {
+                    if( event.which == 32 ) {
+                        node.toggleSelect();
+                        return false;
+                    }
+                },
+                onPostInit: function() {
+            		startDownloadChecks();
+                    startSubtitleDownloadChecks();
                 }
             });
-
-            doRequest("/api/get_topic_tree", {}).success(function(treeData) {
-                
-                $("#content_tree").dynatree({
-                    imagePath:"../images/",
-                    checkbox: true,
-                    selectMode: 3,
-                    children: treeData,
-                    debugLevel: 0,
-                    onSelect: function(select, node) {
                     
-                        var newVideoCount = findSelectedIncompleteVideos().length;
-                        var oldVideoCount = findSelectedStartedVideos().length;
-                        
-                        $("#download-videos").hide();
-                        $("#delete-videos").hide();
-                        $("#download-legend-unselected").toggle((newVideoCount + oldVideoCount) == 0);
-                        $("#help-info").toggle((newVideoCount + oldVideoCount) == 0);
-                        
-                        if (newVideoCount > 0) {
-                            $(".new-video-count").text(newVideoCount);
-                            $("#download-videos").show();                                
-                        }
-                        if (oldVideoCount > 0) {
-                            $(".old-video-count").text(oldVideoCount);
-                            $("#delete-videos").show();
-                        }
-                    },
-                    onDblClick: function(node, event) {
-                        node.toggleSelect();
-                    },
-                    onKeydown: function(node, event) {
-                        if( event.which == 32 ) {
-                            node.toggleSelect();
-                            return false;
-                        }
-                    },
-                    onPostInit: function() {
-                		startDownloadChecks();
-                        startSubtitleDownloadChecks();
-                    }
-                });
-                        
-            });
-        }, 200);
+        });
         
-    
         $("#progressbar-overall").progressbar({
             value: 0,
             max: 10000000
@@ -498,21 +492,24 @@ ul.dynatree-container li, .ui-widget-content {
     <h2 id="download-legend-unselected" class="button_text">
         {% trans "Please select videos to download (below)" %}
     </h2>
-    <div id="help-info">
-        <a id="download-help-link" target="_new" href="http://{{ central_server_host }}/faq/installation/bittorrent/">
-            {% trans "Q: How do I bulk-download videos?" %}
-        </a>
+    
+    <div class="client-online-only">
+        <div id="help-info">
+            <a id="download-help-link" target="_new" href="http://{{ central_server_host }}/faq/installation/bittorrent/">
+                {% trans "Q: How do I bulk-download videos?" %}
+            </a>
+        </div>
     </div>
     
-    <button id="download-videos" type="button" disabled>{% trans "Download " %}<span class="new-video-count">0</span>{% trans " new selected videos" %}</button>
+    <button id="download-videos" type="button" class="enable-when-server-online" disabled>{% trans "Download " %}<span class="new-video-count">0</span>{% trans " new selected videos" %}</button>
 
     <button id="delete-videos" type="button">{% trans "Delete " %}<span class="old-video-count">0</span>{% trans " selected videos" %}</button>
 </div>
 
 <div class="download-actions subtitles-download vertical-shadow">
     <h2 class="button_text">{% trans "Download/update subtitles for existing videos" %}</h2>
-    <span class= "button_style">
-        <select id="language">
+    <span class="button_style">
+        <select id="language" class="enable-when-server-online" disabled>
             {% if languages %}
                 {% for language in languages %}
                     <option value="{{ language.id }}" {% ifequal language.id default_language %} selected {% endifequal %}>{{ language.name }}</option>
@@ -521,8 +518,8 @@ ul.dynatree-container li, .ui-widget-content {
         </select>
     </span>
 
-    <button class="download-subtitles" type="button" disabled>{% trans "Get/Update All Subtitles" %}</button>
-    <button class="download-subtitles" new_only=true type="button" disabled>{% trans "Get Missing Subtitles Only" %}</button>
+    <button class="download-subtitles enable-when-server-online" type="button" disabled>{% trans "Get/Update All Subtitles" %}</button>
+    <button class="download-subtitles enable-when-server-online" new_only=true type="button" disabled>{% trans "Get Missing Subtitles Only" %}</button>
 
 </div>
 

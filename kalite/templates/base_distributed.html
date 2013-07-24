@@ -4,8 +4,14 @@
 {% load staticfiles %}
 
 {% block basejs %}{{ block.super }}
+    
+    <script>
+        var SERVER_INFO_PATH = "{% url get_server_info %}";
+        var CENTRAL_SERVER_HOST = "{{ central_server_host }}";
+    </script>
+    
     <script type="text/javascript" src="{% static 'js/distributed-server.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/purl.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/purl.js' %}"></script>    
 {% endblock basejs %}
 
 
