@@ -110,7 +110,7 @@ ul.dynatree-container li, .ui-widget-content {
     display: none;
     margin-top: 15px;
 }
-#help-info, #download-videos, .download-subtitles {
+#help-info, #download-videos {
     display:none;
 }
 </style>
@@ -131,21 +131,20 @@ ul.dynatree-container li, .ui-widget-content {
 
         setTimeout(function() {
 
-
-        get_server_status({path: "{% url get_server_info %}"}, ["online"], function(status){
-            // We assume the server is offline.
-            //   if it's online, then we show all tools only usable when online.
-            //
-            // Best to assume offline, as online check returns much faster than offline check.
-            if(!status || !status["online"]){
-                show_message("error", "{% trans 'Distributed server is offline; cannot access video nor subtitle updates.' %}", " id_offline_message")
-            } else {
-                $("#help-info").show();
-                $("#download-videos").show();
-                $(".download-subtitles").show();
-                clear_message("id_offline_message")
-            }
-        });
+            get_server_status({path: "{% url get_server_info %}"}, ["online"], function(status){
+                // We assume the distributed server is offline.
+                //   if it's online, then we show all tools only usable when online.
+                //
+                // Best to assume offline, as online check returns much faster than offline check.
+                if(!status || !status["online"]){
+                    show_message("error", "{% trans 'Distributed server is offline; cannot access video nor subtitle updates.' %}", " id_offline_message")
+                } else {
+                    $("#help-info").show();
+                    $("#download-videos").removeAttr("disabled");
+                    $(".download-subtitles").removeAttr("disabled");
+                    clear_message("id_offline_message")
+                }
+            });
 
             doRequest("/api/get_topic_tree", {}).success(function(treeData) {
                 
@@ -500,10 +499,12 @@ ul.dynatree-container li, .ui-widget-content {
         {% trans "Please select videos to download (below)" %}
     </h2>
     <div id="help-info">
-        <a id="download-help-link" target="_new" href="http://{{ central_server_host }}/faq/installation/bittorrent/"></a>
+        <a id="download-help-link" target="_new" href="http://{{ central_server_host }}/faq/installation/bittorrent/">
+            {% trans "Q: How do I bulk-download videos?" %}
+        </a>
     </div>
     
-    <button id="download-videos" type="button">{% trans "Download " %}<span class="new-video-count">0</span>{% trans " new selected videos" %}</button>
+    <button id="download-videos" type="button" disabled>{% trans "Download " %}<span class="new-video-count">0</span>{% trans " new selected videos" %}</button>
 
     <button id="delete-videos" type="button">{% trans "Delete " %}<span class="old-video-count">0</span>{% trans " selected videos" %}</button>
 </div>

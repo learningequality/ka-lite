@@ -52,7 +52,7 @@ $(function(){
         port: central_server_port,
         path: "{% url get_server_info %}"
     }, [], function(status){
-        // We assume the server is offline.
+        // We assume the client is offline.
         //   if it's online, then we show all tools only usable when online.
         //
         // Best to assume offline, as online check returns much faster than offline check.
