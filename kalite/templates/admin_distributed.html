@@ -42,7 +42,7 @@ td.title {
 <script>
 
 $(function(){
-    get_server_status({hostname: "{{ central_server_host }}"}, [], function(status){
+    get_server_status({hostname: "{{ central_server_host }}", path: "{% url get_server_info %}"}, [], function(status){
         // We assume the server is offline.
         //   if it's online, then we show all tools only usable when online.
         //
