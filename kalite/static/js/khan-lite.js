@@ -156,6 +156,20 @@ function check_if_client_is_online(callback) {
 }
 
 
+// Globally run code
+
+var csrftoken = getCookie("csrftoken") || "";
+
+$.ajaxSetup({
+    cache: false,
+    crossDomain: false, // obviates need for sameOrigin test
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type)) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
+
 // automatically detect whether we need to do checks for online status of the server/client, and if so, do them
 $(function() {
 
@@ -181,18 +195,5 @@ $(function() {
                 window.client_online_status_callback(client_is_online);
             }
         });
-    }
-});
-
-// Globally run code
-var csrftoken = getCookie("csrftoken") || "";
-
-$.ajaxSetup({
-    cache: false,
-    crossDomain: false, // obviates need for sameOrigin test
-    beforeSend: function(xhr, settings) {
-        if (!csrfSafeMethod(settings.type)) {
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        }
     }
 });
