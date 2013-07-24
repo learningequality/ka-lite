@@ -4,6 +4,7 @@ import re
 import uuid
 
 from django.core import serializers
+from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.contrib.messages.api import get_messages
 from django.db import models as db_models
@@ -20,7 +21,7 @@ from main.models import VideoLog, ExerciseLog, VideoFile
 from securesync import crypto, model_sync
 from securesync.models import *
 from utils.decorators import distributed_server_only, return_jsonp
-from utils.internet import JsonResponse
+from utils.internet import JsonResponse, am_i_online
 
 
 def require_sync_session(handler):
@@ -318,24 +319,36 @@ def get_server_info(request):
     Returns:
         A json object containing general data from the server.
     """
-    device = Device.get_own_device()
+    device = None
 
     device_info = { "status": "OK" }
 
-    for value in json.loads(request.POST.get("requested_data")):
-        if value == "version":
-            device_info["version"] = version.VERSION
+    for value in json.loads(request.POST.get("requested_data", "{}")):
+        if value.lower() == "version":
+            device_info[value] = version.VERSION
 
-        if value == "video_count":
-            device_info["video_count"] = VideoFile.objects.filter(percent_complete=100).count() if not settings.CENTRAL_SERVER else "Central server does not have videos."
+        elif value.lower() == "video_count":
+            device_info[value] = VideoFile.objects.filter(percent_complete=100).count() if not settings.CENTRAL_SERVER else "Central server does not have videos."
 
-        if value == "name":
-            device_info["name"] = device.name if device.name else "Device was not registered"
+        elif value.lower() == "name":
+            device = device or Device.get_own_device()
+            device_info[value] = device.name if device.name else "Device was not registered"
 
-        if value == "description":
-            device_info["description"] = device.description if device.description else "Device has no description"
+        elif value.lower() == "description":
+            device = device or Device.get_own_device()
+            device_info[value] = device.description if device.description else "Device has no description"
 
-        if value == "zone":
-            device_info["zone"] = device.get_zone().name if device.get_zone() and not settings.CENTRAL_SERVER else "Zone was not registered"
+        elif value.lower() == "zone":
+            device = device or Device.get_own_device()
+            device_info[value] = device.get_zone().name if device.get_zone() and not settings.CENTRAL_SERVER else "Zone was not registered"
+        
+        elif value.lower() == "online":
+            if settings.CENTRAL_SERVER:
+                device_info[value] =  True
+            else:
+                device_info[value] = am_i_online(url="%s://%s%s" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST, reverse("get_server_info")))
+
+        else:
+            raise Exception("Unknown parameter: %s" % value)
 
     return JsonResponse(device_info)
