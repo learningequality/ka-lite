@@ -1,7 +1,5 @@
 // Functions related to loading the page
 
-var csrftoken = getCookie("csrftoken") || "";
-
 function toggle_state(state, status){
     $("." + (status ? "not-" : "") + state + "-only").hide();
     $("." + (!status ? "not-" : "") + state + "-only").show();

@@ -145,8 +145,11 @@ INSTALLED_APPS = (
     "securesync",
     "config",
     "main", # in order for securesync to work, this needs to be here.
+    "control_panel", # in both apps
+    "coachreports", # in both apps; reachable on central via control_panel
     "kalite", # contains commands
 )
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 if DEBUG or CENTRAL_SERVER:
     INSTALLED_APPS += ("django_snippets",)   # used in contact form and (debug) profiling middleware
@@ -165,7 +168,6 @@ if CENTRAL_SERVER:
 
 else:
     ROOT_URLCONF = "main.urls"
-    INSTALLED_APPS         += ("coachreports",)
     # Include optionally installed apps
     if os.path.exists(PROJECT_PATH + "/tests/loadtesting/"):
         INSTALLED_APPS     += ("kalite.tests.loadtesting"),
