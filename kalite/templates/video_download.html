@@ -144,49 +144,53 @@ ul.dynatree-container li, .ui-widget-content {
 
     $(function() {
 
-        doRequest("/api/get_topic_tree", {}).success(function(treeData) {
-            
-            $("#content_tree").dynatree({
-                imagePath:"../images/",
-                checkbox: true,
-                selectMode: 3,
-                children: treeData,
-                debugLevel: 0,
-                onSelect: function(select, node) {
+        // put a delay on the topic tree request/rendering, so the rest of the page has time to load before getting bogged down in this
+        setTimeout(function() {
+
+            doRequest("/api/get_topic_tree", {}).success(function(treeData) {
                 
-                    var newVideoCount = findSelectedIncompleteVideos().length;
-                    var oldVideoCount = findSelectedStartedVideos().length;
+                $("#content_tree").dynatree({
+                    imagePath:"../images/",
+                    checkbox: true,
+                    selectMode: 3,
+                    children: treeData,
+                    debugLevel: 0,
+                    onSelect: function(select, node) {
                     
-                    $("#download-videos").hide();
-                    $("#delete-videos").hide();
-                    $("#download-legend-unselected").toggle((newVideoCount + oldVideoCount) == 0);
-                    $("#help-info").toggle((newVideoCount + oldVideoCount) == 0);
-                    
-                    if (newVideoCount > 0) {
-                        $(".new-video-count").text(newVideoCount);
-                        $("#download-videos").show();                                
-                    }
-                    if (oldVideoCount > 0) {
-                        $(".old-video-count").text(oldVideoCount);
-                        $("#delete-videos").show();
-                    }
-                },
-                onDblClick: function(node, event) {
-                    node.toggleSelect();
-                },
-                onKeydown: function(node, event) {
-                    if( event.which == 32 ) {
+                        var newVideoCount = findSelectedIncompleteVideos().length;
+                        var oldVideoCount = findSelectedStartedVideos().length;
+                        
+                        $("#download-videos").hide();
+                        $("#delete-videos").hide();
+                        $("#download-legend-unselected").toggle((newVideoCount + oldVideoCount) == 0);
+                        $("#help-info").toggle((newVideoCount + oldVideoCount) == 0);
+                        
+                        if (newVideoCount > 0) {
+                            $(".new-video-count").text(newVideoCount);
+                            $("#download-videos").show();                                
+                        }
+                        if (oldVideoCount > 0) {
+                            $(".old-video-count").text(oldVideoCount);
+                            $("#delete-videos").show();
+                        }
+                    },
+                    onDblClick: function(node, event) {
                         node.toggleSelect();
-                        return false;
+                    },
+                    onKeydown: function(node, event) {
+                        if( event.which == 32 ) {
+                            node.toggleSelect();
+                            return false;
+                        }
+                    },
+                    onPostInit: function() {
+                		startDownloadChecks();
+                        startSubtitleDownloadChecks();
                     }
-                },
-                onPostInit: function() {
-            		startDownloadChecks();
-                    startSubtitleDownloadChecks();
-                }
+                });
+                        
             });
-                    
-        });
+        }, 200);
         
         $("#progressbar-overall").progressbar({
             value: 0,

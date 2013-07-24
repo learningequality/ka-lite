@@ -362,7 +362,7 @@ def handler_403(request, *args, **kwargs):
     if request.is_ajax():
         return HttpResponseForbidden(message)
     else:
-        messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page..")))
+        messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page.")))
         return HttpResponseRedirect(reverse("login") + "?next=" + request.path)
 
 
