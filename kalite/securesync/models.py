@@ -125,10 +125,11 @@ class SyncedModel(models.Model):
         Get all of the relevant fields of this model into a single string (self._hashable_representation()),
         then sign it with the specified device (if specified), or the current device.
         """
-        self.full_clean()  # make sure the model data is of the appropriate types
         if not self.id:
             self.id = self.get_uuid()
         self.signed_by = device or Device.get_own_device()
+
+        self.full_clean()  # make sure the model data is of the appropriate types
         self.signature = self.signed_by.get_key().sign(self._hashable_representation())
 
     def verify(self):
