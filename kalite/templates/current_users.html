@@ -13,7 +13,10 @@
 
 {% block content %}
 <div id="content">
+    {% block navbar %}
     <div class="facility"><h2>{% blocktrans %}User List for {{ facility }}{% endblocktrans %} (<a href="?facility=select">{% trans "Change Facility" %}</a>)</h2></div>
+    {% endblock %}
+    {% block selectionbar %}
     <div id="selection-bar">
         <div class="selection">
             <div class="subtitle">
@@ -33,7 +36,8 @@
             </select>
         </div>
     </div>
-
+    {% endblock selectionbar %}
+    {% block users_table %}
     {% if not users %}
         <div style="clear: both;"></div>
         {% if not groups %}
@@ -59,7 +63,7 @@
     </div>
     <div class="pagination">
         <span class="step-links">
-            <a {% if users.has_previous %}href="{{ pageurls.prev_page }}"{% endif %}>&lt&lt</a>         
+            <a {% if users.has_previous %}href="{{ pageurls.prev_page }}"{% endif %}>&lt&lt</a>
             <span class="current">
                 {% trans "Page" %} {{ users.number }} {% trans "of" %} {{ users.paginator.num_pages }}
             </span>
@@ -120,7 +124,9 @@
                 <div style="clear: both;"></div>
         </div>
     {% endif %}
-</div> 
+    {% endblock users_table %}
+</div>
+{% block endjs %}{{ block.super }}
 <script>
 
 function setGetParams(params) {
@@ -137,7 +143,7 @@ function setGetParams(params) {
         }
     }
     url = "?" + $.param(vars);
-    window.location.href = url;    
+    window.location.href = url;
 }
 
 function getUsers() {
@@ -152,17 +158,17 @@ $(function() {
     $("#group").change(function(){
         setGetParams({"group": $("#group option:selected").val(),"page": ""});
     });
-    
+
     $("#all").click(function(){
         $("[type=checkbox]").prop("checked",true)
     })
-    
+
     $("#none").click(function(){
         $("[type=checkbox]").prop("checked",false)
     })
-    
+
     $("#movegroup").click(function(event) {
-        
+
         var users = getUsers();
         var group = $('#movegrouplist option:selected').val()
         if (users.length>0 && group!="----") {
@@ -175,13 +181,13 @@ $(function() {
         } else {
             alert("{% trans 'Please choose a group to move users to' %}")
         }
-    
+
     });
-    
+
     $("#removegroup").click(function(event) {
-    
+
         var users = getUsers();
-        
+
         if (users.length>0) {
             if(!confirm("{% trans 'You are about to remove selected users from their current group.' %}")) {
                 return;
@@ -190,13 +196,13 @@ $(function() {
         } else {
             alert("{% trans 'Please select users first' %}");
         }
-    
+
     });
-    
+
     $("#delete").click(function(event) {
-    
+
         var users = getUsers();
-        
+
         if (users.length>0) {
             if(!confirm("{% trans 'You are about to delete selected users, they will be permanently deleted.' %}")) {
                 return;
@@ -205,8 +211,9 @@ $(function() {
         } else {
             alert("{% trans 'Please select users first' %}");
         }
-    
+
     });
 });
 </script>
+{% endblock endjs %}
 {% endblock content %}
