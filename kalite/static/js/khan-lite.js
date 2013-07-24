@@ -136,5 +136,4 @@ function get_server_status(options, requested_data, callback) {
         }).error(function() {
             callback(false);
         });
-    window.request = request
 }
