@@ -20,15 +20,6 @@ function csrfSafeMethod(method) {
     // these HTTP methods do not require CSRF protection
     return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
 }
-$.ajaxSetup({
-    cache: false,
-    crossDomain: false, // obviates need for sameOrigin test
-    beforeSend: function(xhr, settings) {
-        if (!csrfSafeMethod(settings.type)) {
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        }
-    }
-});
 
 function doRequest(url, data) {
     return $.ajax({
@@ -190,5 +181,18 @@ $(function() {
                 window.client_online_status_callback(client_is_online);
             }
         });
+    }
+});
+
+// Globally run code
+var csrftoken = getCookie("csrftoken") || "";
+
+$.ajaxSetup({
+    cache: false,
+    crossDomain: false, // obviates need for sameOrigin test
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type)) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
     }
 });

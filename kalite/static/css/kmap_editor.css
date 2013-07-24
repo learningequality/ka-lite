@@ -1,10 +1,3 @@
-body {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 12px;
-    margin: 0;
-    color: #444;
-}
-
 div#map-container {
     position: relative;
     top: 0;
@@ -43,37 +36,6 @@ a.topic-button:visited {
     color: white;
 }
 
-div.zoom-select {
-    background: #ccc;
-}
-
-div#sidebar {
-    position: relative;
-    float: left;
-    top: 0;
-    left: 0;
-    width: 350px;
-    max-height: 100%;
-    min-height: 100%;
-}
-
-div#controls {
-    position: absolute;
-    top: 0;
-    width: 330px;
-    min-height: 115px;
-    padding: 10px;
-}
-
-div#info {
-    position: absolute;
-    top: 125px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    width: 100%;
-    bottom: 0;
-}
-
 div#map {
     position: absolute;
     left: 0;
@@ -99,14 +61,4 @@ div.exercise {
 
 div.exercise-label {
     background-color: rgba(0, 0, 0, 0.8);
-}
-
-div.exercise-selected {
-    background: #6495ed
-}
-
-p#ex-title {
-    font-size: 16px;
-    font-weight: bold;
-    margin-top: 0;
 }
