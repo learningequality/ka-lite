@@ -40,22 +40,19 @@ td.title {
 
 {% block headjs %}
 <script>
-
-$(function(){
-    get_server_status({hostname: "{{ central_server_host }}"}, [], function(status){
-        // We assume the server is offline.
+    function store_status(status) {
+        // We assume the client is offline.
         //   if it's online, then we show all tools only usable when online.
         //
         // Best to assume offline, as online check returns much faster than offline check.
-        if(status){
+        if (status) {
             $("#online-tools-title").show();
             $("#online-tools-wiki-link").show();
             $("#online-tools-faq-link").show();
         }
-    });
-});
-
+    }
 </script>
+
 {% endblock headjs %}
 
 {% block title %}{% trans "Administration Panel" %}{% endblock title %}
@@ -113,4 +110,5 @@ $(function(){
         {% endif %}
     </table>
 </div>
+<script src="{{ settings.SECURESYNC_PROTOCOL }}://{{ central_server_host}}{% url get_server_info %}?callback=store_status"></script>
 {% endblock content %}
