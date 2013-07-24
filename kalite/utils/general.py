@@ -1,5 +1,7 @@
 """
 Miscellaneous utility functions (no dependence on non-standard packages, such as Django) 
+
+General string, integer, date functions.
 """
 
 

@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 import datetime
 import uuid
 import zlib
@@ -8,13 +10,13 @@ from django.contrib.auth.models import check_password
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models, transaction
 from django.db.models import Q
+from django.utils.text import compress_string
 from django.utils.translation import ugettext_lazy as _
 
 import kalite
 import settings
 from config.models import Settings
 from securesync import crypto, model_sync
-from pbkdf2 import crypt
 
 
 # Note: this MUST be hard-coded for backwards-compatibility reasons.
@@ -53,7 +55,6 @@ class SyncSession(models.Model):
 
     def sign(self):
         return Device.get_own_device().get_key().sign(self._hashable_representation())
-
 
     def save(self, *args, **kwargs):
         """
@@ -125,10 +126,11 @@ class SyncedModel(models.Model):
         Get all of the relevant fields of this model into a single string (self._hashable_representation()),
         then sign it with the specified device (if specified), or the current device.
         """
-        self.full_clean()  # make sure the model data is of the appropriate types
         if not self.id:
             self.id = self.get_uuid()
         self.signed_by = device or Device.get_own_device()
+
+        self.full_clean()  # make sure the model data is of the appropriate types
         self.signature = self.signed_by.get_key().sign(self._hashable_representation())
 
     def verify(self):
@@ -282,6 +284,25 @@ class Zone(SyncedModel):
     def __unicode__(self):
         return self.name
 
+    #@central_server_only  # causes circular loop, to include here
+    def get_org(self):
+        """
+        Reverse lookup of organization containing this zone.
+        """
+        orgs = self.organization_set.all()
+        assert orgs.count() <= 1, "Zone must be contained by 0 or 1 organization(s)."
+
+        return orgs[0] if orgs else None
+
+
+    @classmethod
+    def get_headless_zones(cls):
+        """
+        Method for getting all zones that aren't connected to at least one organization.
+        """
+        # Must import inline (not in header) to avoid import loop
+        return Zone.objects.filter(organization=None)
+
 
 class Facility(SyncedModel):
     name = models.CharField(verbose_name=_("Name"), help_text=_("(This is the name that students/teachers will see when choosing their facility; it can be in the local language.)"), max_length=100)
@@ -306,6 +327,19 @@ class Facility(SyncedModel):
 
     def is_default(self):
         return self.id == Settings.get("default_facility")
+
+
+    @classmethod
+    def from_zone(cls, zone):
+        """Our best approximation of how to map facilities to zones"""
+
+        facilities = set(Facility.objects.filter(zone_fallback=zone))
+
+        for device_zone in DeviceZone.objects.filter(zone=zone):
+            device = device_zone.device
+            facilities = facilities.union(set(Facility.objects.filter(signed_by=device)))
+
+        return facilities
 
 
 class FacilityGroup(SyncedModel):
