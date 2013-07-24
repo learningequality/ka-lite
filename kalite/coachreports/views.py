@@ -19,7 +19,7 @@ from main import topicdata
 from main.models import VideoLog, ExerciseLog, VideoFile
 from securesync.models import Facility, FacilityUser,FacilityGroup, DeviceZone, Device
 from securesync.views import facility_required
-from utils.decorators import require_authorized_login, require_authorized_admin, get_user_from_request
+from utils.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
 from utils.internet import StatusException
 from utils.topic_tools import get_topic_exercises, get_topic_videos, get_all_midlevel_topics
 
@@ -85,7 +85,7 @@ def scatter_view(request, facility, xaxis="", yaxis=""):
     return plotting_metadata_context(request, facility=facility, xaxis=xaxis, yaxis=yaxis)
 
 
-@require_authorized_login
+@require_authorized_access_to_student_data
 @render_to("coachreports/student_view.html")
 def student_view(request, xaxis="pct_mastery", yaxis="ex:attempts"):
     """
