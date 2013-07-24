@@ -42,8 +42,17 @@ td.title {
 <script>
 
 $(function(){
-    get_server_status({hostname: "{{ central_server_host }}", path: "{% url get_server_info %}"}, [], function(status){
-        // We assume the server is offline.
+    central_server_host = "{{ central_server_host }}";
+    central_server_parts = central_server_host.split(":", 2);
+    central_server_hostname = central_server_parts[0];
+    central_server_port = central_server_parts.length == 2 ? central_server_parts[1] : 80;
+
+    get_server_status({
+        hostname: central_server_hostname, 
+        port: central_server_port,
+        path: "{% url get_server_info %}"
+    }, [], function(status){
+        // We assume the client is offline.
         //   if it's online, then we show all tools only usable when online.
         //
         // Best to assume offline, as online check returns much faster than offline check.
