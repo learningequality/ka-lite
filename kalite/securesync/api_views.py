@@ -326,16 +326,16 @@ def get_server_info(request):
         if value == "version":
             device_info["version"] = version.VERSION
 
-        if value == "video_count":
+        elif value == "video_count":
             device_info["video_count"] = VideoFile.objects.filter(percent_complete=100).count() if not settings.CENTRAL_SERVER else "Central server does not have videos."
 
-        if value == "name":
+        elif value == "name":
             device_info["name"] = device.name if device.name else "Device was not registered"
 
-        if value == "description":
+        elif value == "description":
             device_info["description"] = device.description if device.description else "Device has no description"
 
-        if value == "zone":
+        elif value == "zone":
             device_info["zone"] = device.get_zone().name if device.get_zone() and not settings.CENTRAL_SERVER else "Zone was not registered"
 
     return JsonResponse(device_info)
