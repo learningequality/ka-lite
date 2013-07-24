@@ -118,25 +118,23 @@ function get_server_status(options, requested_data, callback) {
     };
 
     var args = $.extend(defaults, options || {});
-
+    // Build the prefix only for absolute urls
     var prefix = "";
-    if(args.hostname) {
+    if (args.hostname) {
         prefix = (args.protocol ? args.protocol + ":" : "") + "//" + args.hostname + (args.port ? ":" + args.port : "");
     }
 
-    var target_url = prefix + args.path 
-
+    // If prefix is empty, gives an absolute url.  If prefix, then FQ url
     var request = $.ajax({
-            url : target_url,
+            url :  prefix + args.path,
             traditional : true,
             type : "POST",
             dataType : "jsonp",
-            data : requested_data ? {requested_data:JSON.stringify(requested_data)} : {requested_data:""},
-        });
-        request.success(function(data){
+            data : (requested_data ? {requested_data:JSON.stringify(requested_data)} : ""),
+        }).success(function(data) {
             callback(data);
-        });
-        request.error(function(error){
+        }).error(function() {
             callback(false);
         });
+    window.request = request
 }
