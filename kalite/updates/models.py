@@ -107,3 +107,30 @@ class UpdateProgressLog(models.Model):
         self.end_time = datetime.datetime.now()
         self.completed = True
         self.save()
+
+    @classmethod
+    def get_active_log(cls, create_new=True, force_new=False, overlapping=False, *args, **kwargs):
+        """
+        For a given query, return the most recently opened, non-closed log.
+        """
+        #assert not args, "no positional args allowed to this method."
+    
+        if not force_new:
+            logs = cls.objects.filter(end_time=None, completed=False, **kwargs).order_by("-start_time")
+            if logs.count() > 0:
+                return logs[0]
+            elif not create_new:
+                return None
+
+        if not "process_name" in kwargs:
+            raise Exception("You better specify process_name if your log is not found!  Otherwise, how could we create one??")
+        process_name = kwargs["process_name"]
+
+        # Most of the time, we want exclusivity.
+        if not overlapping:
+            for old_log in cls.objects.filter(process_name=process_name, end_time=None):
+                old_log.cancel_progress()
+
+        log = cls(**kwargs)
+        log.save()
+        return log

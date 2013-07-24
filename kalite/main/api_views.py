@@ -181,25 +181,6 @@ def delete_videos(request):
     return JsonResponse({})
 
 @require_admin
-def check_video_download(request):
-    """
-    API endpoint for getting progress data on downloads.
-    """
-    youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
-    percentages = {}
-    percentages["downloading"] = job_status("videodownload")
-    for id in youtube_ids:
-        videofile = get_object_or_None(VideoFile, youtube_id=id) or VideoFile(youtube_id=id)
-        percentages[id] = videofile.percent_complete
-    return JsonResponse(percentages)
-
-@require_admin
-def get_video_download_list(request):
-    videofiles = VideoFile.objects.filter(flagged_for_download=True).values("youtube_id")
-    video_ids = [video["youtube_id"] for video in videofiles]
-    return JsonResponse(video_ids)
-
-@require_admin
 def start_subtitle_download(request):
     new_only = simplejson.loads(request.raw_post_data or "{}").get("new_only", False)
     language = simplejson.loads(request.raw_post_data or "{}").get("language", "")
@@ -259,8 +240,8 @@ def cancel_downloads(request):
 def remove_from_group(request):
     """
     API endpoint for removing users from group
-    """
     (from user management page)
+    """
     users = simplejson.loads(request.raw_post_data or "{}").get("users", "")
     users_to_remove = FacilityUser.objects.filter(username__in=users)
     users_to_remove.update(group=None)

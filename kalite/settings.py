@@ -167,7 +167,7 @@ if CENTRAL_SERVER:
     AUTH_PROFILE_MODULE     = 'central.UserProfile'
 
 else:
-    INSTALLED_APPS         += ("updates")
+    INSTALLED_APPS         += ("updates",)
     ROOT_URLCONF = "main.urls"
     # Include optionally installed apps
     if os.path.exists(PROJECT_PATH + "/tests/loadtesting/"):
