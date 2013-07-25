@@ -79,6 +79,8 @@ def set_as_registered():
     force_job("syncmodels", "Secure Sync", "HOURLY")  # now launches asynchronously
     Settings.set("registered", True)
 
+def central_server_url(path):
+    return "%s://%s%s" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST, path)
 
 @require_admin
 @render_to("securesync/register_public_key_client.html")
@@ -100,10 +102,10 @@ def register_public_key_client(request):
     if reg_status == "public_key_unregistered":
         return {
             "unregistered": True,
-            "registration_url": client.path_to_url(
+            "registration_url": central_server_url(
                 reverse("register_public_key") + "?" + urllib.quote(crypto.get_own_key().get_public_key_string())
             ),
-            "login_url": client.path_to_url(reverse("login")),
+            "login_url": central_server_url(reverse("login")),
             "callback_url": request.build_absolute_uri(reverse("register_public_key")),
         }
     error_msg = reg_response.get("error", "")
