@@ -39,7 +39,7 @@ def create_all_mappings(force=False, frequency_to_save=100):
     videos = get_node_cache('Video')
 
     # Initialize the data
-    out_file = settings.SUBTITLES_ROOT + SRTS_JSON_FILENAME
+    out_file = settings.SUBTITLES_DATA_ROOT + SRTS_JSON_FILENAME
     if os.path.exists(out_file):
         with open(out_file, "r") as fp:
             new_json = json.load(fp)
@@ -79,7 +79,7 @@ def create_all_mappings(force=False, frequency_to_save=100):
 
 def update_subtitle_map(code_to_check, date_to_check):
     """Update JSON dictionary of subtitle information based on arguments provided"""
-    srts_dict = json.loads(open(settings.SUBTITLES_ROOT + SRTS_JSON_FILENAME).read())
+    srts_dict = json.loads(open(settings.SUBTITLES_DATA_ROOT + SRTS_JSON_FILENAME).read())
     for youtube_id, data in srts_dict.items():
         # ensure response code and date exists
         response_code = data.get("api_response")
@@ -105,7 +105,7 @@ def update_subtitle_map(code_to_check, date_to_check):
                 srts_dict[youtube_id].update(new_entry)
 
     logging.info("Great success! Re-writing JSON file.")
-    with open(settings.SUBTITLES_ROOT + SRTS_JSON_FILENAME, 'wb') as fp:
+    with open(settings.SUBTITLES_DATA_ROOT + SRTS_JSON_FILENAME, 'wb') as fp:
         json.dump(srts_dict, fp)
 
 def update_video_entry(youtube_id):
@@ -151,13 +151,13 @@ def update_language_srt_map(languages=None):
     """Update the language_srt_map from the api_info_map"""
 
     # Create file if first time being run
-    language_srt_filepath = settings.SUBTITLES_ROOT + LANGUAGE_SRT_FILENAME
+    language_srt_filepath = settings.SUBTITLES_DATA_ROOT + LANGUAGE_SRT_FILENAME
     if not subtitle_utils.file_already_exists(language_srt_filepath):
         with open(language_srt_filepath, 'w') as outfile:
             json.dump({}, outfile)
 
     language_srt_map = json.loads(open(language_srt_filepath).read())
-    api_info_map = json.loads(open(settings.SUBTITLES_ROOT + SRTS_JSON_FILENAME).read())
+    api_info_map = json.loads(open(settings.SUBTITLES_DATA_ROOT + SRTS_JSON_FILENAME).read())
 
     for youtube_id, content in api_info_map.items():
         languages = languages or content.get("language_codes") or []

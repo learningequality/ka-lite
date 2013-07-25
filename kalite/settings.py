@@ -72,7 +72,7 @@ DATABASES      = getattr(local_settings, "DATABASES", {
 
 DATA_PATH      = os.path.realpath(getattr(local_settings, "DATA_PATH", PROJECT_PATH + "/static/data/")) + "/"
 
-SUBTITLES_ROOT = os.path.realpath(getattr(local_settings, "SUBTITLES_ROOT", DATA_PATH + "subtitles/")) + "/"
+SUBTITLES_DATA_ROOT = os.path.realpath(getattr(local_settings, "SUBTITLES_DATA_ROOT", DATA_PATH + "subtitles/")) + "/"
 
 CONTENT_ROOT   = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", PROJECT_PATH + "/../content/")) + "/"
 CONTENT_URL    = getattr(local_settings, "CONTENT_URL", "/content/")
