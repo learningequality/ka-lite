@@ -79,7 +79,8 @@ ul.dynatree-container li, .ui-widget-content {
 
 function video_start_callback(progress_log, resp) {
     if (!progress_log) {
-        show_message("error", resp.responseText);
+        clear_messages()
+        show_message("error", resp.status_code + resp.responseText);
     }
 }
 
@@ -215,14 +216,13 @@ var video_callbacks = {
                 return node.data.key;
             });
 
+            updatesStart("videodownload", 5000, video_callbacks)
             // Start the download and updating process
             doRequest("{% url start_video_download %}", {youtube_ids: video_queue}).success(function() {
-                updatesStart("videodownload")
+                updatesStart("videodownload", 5000, video_callbacks)
             }).fail(function(response) {
                 show_message("error", "Error starting video download (" + response.status_code + ": " + response.responseText);
             });
-
-            updatesStart("videodownload")
 
             // Update the UI to reflect that we're waiting to start
             unselectAllNodes();

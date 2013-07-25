@@ -20,6 +20,9 @@ $(".progressbar-current").progressbar({
   updatesCheck - checks (in a callback loop)
   updatesReset - resets
 */
+function has_a_val(key, obj) {
+    return key in obj && obj[key];
+}
 
 function updatesStart(process_name, interval, callbacks) {
     // Starts looking for updates
@@ -32,7 +35,7 @@ function updatesStart(process_name, interval, callbacks) {
     process_callbacks[process_name] = callbacks;
 
     // Make sure to reset any old intervals
-    if (process_name in process_interval_handles) {
+    if (has_a_val(process_name, process_interval_handles)) {
         clearInterval(process_interval_handles[process_name]);
     }
 
@@ -48,19 +51,19 @@ function updatesStart_callback(process_name) {
         // Start the background process
         doRequest("/api/updates/progress?process_name=" + process_name).success(function(progress_log) {
             // Store the info
-            var process_name = progress_log.process_name
+            ///var process_name = progress_log.process_name
             if (!process_name) {
                 // Start failed; can exit because this will repeat.
                 return;
             }
-            if (!(process_name in process_ids) || !process_name[process_ids]) {
+            if (!has_a_val(process_name, process_ids)) {
                 process_ids[process_name] = progress_log.process_id
             }
 
             // Launch a looping timer to call into the update check function
             if (!progress_log.completed) {
                 // Clear interval for start
-                if (process_name in process_interval_handles && process_interval_handles[process_name]) {
+                if (has_a_val(process_name, process_interval_handles)) {
                     clearInterval(process_interval_handles[process_name]);
                 }
                 // Create interval for check
@@ -84,7 +87,7 @@ function updatesStart_callback(process_name) {
 }
 
 function updatesCheck(process_name, interval) {
-    var path = "/api/updates/progress?process_" + (process_name in process_ids ? ("id=" + process_ids[process_name]) : ("name=" + process_name));
+    var path = "/api/updates/progress?process_" + (has_a_val(process_name, process_ids) ? ("id=" + process_ids[process_name]) : ("name=" + process_name));
 
     doRequest(path).success(function(progress_log) {
         var process_name = progress_log.process_name;
