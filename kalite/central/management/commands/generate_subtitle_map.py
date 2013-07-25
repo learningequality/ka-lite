@@ -2,7 +2,6 @@
 
 import datetime
 import json
-import logging
 import os
 import sys
 import tempfile
@@ -13,7 +12,10 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core.management import call_command
 
 import settings
+from settings import LOG as logging
 from utils.subtitles import subtitle_utils 
+from utils.topic_tools import get_node_cache
+
 
 headers = {
     # "X-api-username": "kalite",
@@ -22,13 +24,9 @@ headers = {
     "X-apikey": "6a7e0af81ce95d6b810761041b72412043851804",
 }
 
-data_path = settings.DATA_PATH + "subtitledata/"
-
-logger = subtitle_utils.setup_logging("generate_subtitle_map")
-
 SRTS_JSON_FILENAME = "srts_api_info.json"
-
 LANGUAGE_SRT_FILENAME = "language_srts_map.json"
+
 
 class OutDatedSchema(Exception):
 
@@ -36,58 +34,66 @@ class OutDatedSchema(Exception):
         return "The current data schema is outdated and doesn't store the important bits. Please run 'generate_subtitles_map.py -N' to generate a totally new file and the correct schema."
 
 
-def create_new_mapping():
+def create_all_mappings(force=False, frequency_to_save=100):
     """Write a new JSON file of mappings from YouTube ID to Amara code"""
-    nodecache = json.load(open(data_path + '../nodecache.json', 'r'))
-    videos = nodecache['Video']
-    new_json = {}
-    counter = 0
+    videos = get_node_cache('Video')
+
+    # Initialize the data
+    out_file = settings.SUBTITLES_ROOT + SRTS_JSON_FILENAME
+    if os.path.exists(out_file):
+        with open(out_file, "r") as fp:
+            new_json = json.load(fp)
+        logging.info("Loaded %d mappings." % (len(new_json)))
+    else:
+        new_json = {}
+    logging.info("Querying %d mappings." % (len(videos) - (0 if force else len(new_json))))
+
+    n_new_entries = 0
+    n_failures = 0
     for video, data in videos.iteritems():
         youtube_id = data['youtube_id']
-        new_json[youtube_id] = update_video_entry(youtube_id)
-        # TODO(dylan) 3000+ videos - can't expect process to complete before
-        # saving. HELP: is this the best interim step?
-        if counter%200 == 0:
-            temp_file = "temp_video_srts.json"
-            logger.info("On loop %s dumping dictionary into temp file static/data/subtitledata/: %s" %(str(counter), temp_file))
-            with open(data_path + temp_file, 'wb') as fp:
+        if youtube_id in new_json and not force:  # allow caching of old results, for easy restart
+            continue
+        try:
+            new_json[youtube_id] = update_video_entry(youtube_id)
+        except Exception as e:
+            logging.warn("Error updating video %s: %s" % (youtube_id, e))
+            n_failures += 1
+            continue
+
+        if n_new_entries % frequency_to_save == 0:
+            if frequency_to_save > 10:
+                logging.info("On loop %d dumping dictionary into %s" %(n_new_entries, out_file))
+            with open(out_file, 'wb') as fp:
                 json.dump(new_json, fp)
-        counter += 1
-    logger.info("Great success! Stored %s fresh entries." % str(counter))
-    with open(data_path + SRTS_JSON_FILENAME, 'wb') as fp:
+        n_new_entries += 1
+
+    # Finished the loop: save and report
+    with open(out_file, 'wb') as fp:
         json.dump(new_json, fp)
-    logger.info("Deleting temp file....")
-    os.remove(data_path + temp_file)
+    if n_failures == 0:
+        logging.info("Great success! Stored %d fresh entries, %d total." % (n_new_entries, len(new_json)))
+    else:
+        logging.warn("Stored %s fresh entries, but with %s failures." % (n_new_entries, n_failures))
 
 
 def update_subtitle_map(code_to_check, date_to_check):
     """Update JSON dictionary of subtitle information based on arguments provided"""
-    srts_dict = json.loads(open(data_path + SRTS_JSON_FILENAME).read())
+    srts_dict = json.loads(open(settings.SUBTITLES_ROOT + SRTS_JSON_FILENAME).read())
     for youtube_id, data in srts_dict.items():
         # ensure response code and date exists
         response_code = data.get("api_response")
         last_attempt = data.get("last_attempt")
         if last_attempt:
             last_attempt = datetime.datetime.strptime(last_attempt, '%Y-%m-%d')
-        if not (response_code or last_attempt):
-            raise OutDatedSchema()
 
         # HELP: why does the below if statement suck so much? does it suck? it feels like it sucks
         # case: -d AND -s
-        flag_filter = False
-        if date_to_check and code_to_check:
-            if date_to_check < last_attempt and code_to_check == "all" or code_to_check == response_code:
-                flag_filter = True
-        # case: -d only
-        elif date_to_check and not code_to_check:
-            if date_to_check < last_attempt:
-                flag_filter = True
-        # case: -s only
-        elif code_to_check and not date_to_check:
-            if code_to_check == "all" or code_to_check == response_code:
-                flag_filter = True
+        flag_for_refresh = not (response_code or last_attempt)
+        flag_for_refresh = flag_for_refresh and (not date_to_check or date_to_check > last_attempt)
+        flag_for_refresh = flag_for_refresh and (code_to_check == "all" or code_to_check == response_code)
 
-        if flag_filter:
+        if flag_for_refresh:
             new_entry = update_video_entry(youtube_id)
             # here we are checking that the original data isn't overwritten by an error response, which only returns last-attempt and api-response
             new_api_response = new_entry["api_response"]
@@ -98,8 +104,8 @@ def update_subtitle_map(code_to_check, date_to_check):
             else: 
                 srts_dict[youtube_id].update(new_entry)
 
-    logger.info("Great success! Re-writing JSON file.")
-    with open(data_path + SRTS_JSON_FILENAME, 'wb') as fp:
+    logging.info("Great success! Re-writing JSON file.")
+    with open(settings.SUBTITLES_ROOT + SRTS_JSON_FILENAME, 'wb') as fp:
         json.dump(srts_dict, fp)
 
 def update_video_entry(youtube_id):
@@ -120,10 +126,10 @@ def update_video_entry(youtube_id):
     entry = {}
     entry["last_attempt"] = unicode(datetime.datetime.now().date())
     if r == "client_error" or r == "server_error":
-        logger.info("%s at %s" %(r, request_url))
+        logging.info("%s at %s" %(r, request_url))
         entry["api_response"] = r
     else:
-        logger.info("Success at %s" % request_url)
+        logging.info("Success at %s" % request_url)
         entry["api_response"] = "success"
         entry["last_success"] = unicode(datetime.datetime.now().date())
         content = json.loads(r.content)
@@ -141,29 +147,29 @@ def update_video_entry(youtube_id):
                 entry["amara_code"] = amara_code
     return entry
 
-def update_language_srt_map():
+def update_language_srt_map(languages=None):
     """Update the language_srt_map from the api_info_map"""
 
     # Create file if first time being run
-    language_srt_filepath = data_path + LANGUAGE_SRT_FILENAME
+    language_srt_filepath = settings.SUBTITLES_ROOT + LANGUAGE_SRT_FILENAME
     if not subtitle_utils.file_already_exists(language_srt_filepath):
         with open(language_srt_filepath, 'w') as outfile:
             json.dump({}, outfile)
 
     language_srt_map = json.loads(open(language_srt_filepath).read())
-    api_info_map = json.loads(open(data_path + SRTS_JSON_FILENAME).read())
+    api_info_map = json.loads(open(settings.SUBTITLES_ROOT + SRTS_JSON_FILENAME).read())
 
     for youtube_id, content in api_info_map.items():
-        lang_list = content.get("language_codes") or []
-        for code in lang_list:
+        languages = languages or content.get("language_codes") or []
+        for code in languages:
             # create language section if it doesn't exist
             language_srt_map.get(code)
             if not language_srt_map.get(code):
-                logger.info("Creating language section '%s'" % code)
+                logging.info("Creating language section '%s'" % code)
                 language_srt_map[code] = {}
             # create empty entry for video entry if it doesn't exist
             if not language_srt_map[code].get(youtube_id):
-                logger.info("Creating entry in '%s' for YouTube video: '%s'" % (
+                logging.info("Creating entry in '%s' for YouTube video: '%s'" % (
                     code, youtube_id))
                 language_srt_map[code][youtube_id] = {
                     "downloaded": False,
@@ -172,7 +178,7 @@ def update_language_srt_map():
                     "last_success": "",
                 }
 
-    logger.info("Writing updates to %s" % language_srt_filepath)
+    logging.info("Writing updates to %s" % language_srt_filepath)
     with open(language_srt_filepath, 'wb') as fp:
             json.dump(language_srt_map, fp)
 
@@ -182,12 +188,12 @@ class Command(BaseCommand):
 
     option_list = BaseCommand.option_list + (
         # Basic options
-        make_option('-N', '--new',
+        make_option('-f', '--force',
                     action='store_true',
-                    dest='new',
+                    dest='force',
                     default=False,
                     help="Force a new mapping. Cannot be run with other options. Fetches new data for every one of our videos and overwrites current data with fresh data from Amara. Should really only ever be run once, because data can be updated from then on with '-s all'.",
-                    metavar="NEW"),
+                    metavar="FORCE"),
         make_option('-r', '--response_code',
                     action='store',
                     dest='response_code',
@@ -199,21 +205,21 @@ class Command(BaseCommand):
                     dest='date_since_attempt',
                     default=None,
                     help="Setting a date flag will update only those entries which have not been attempted since that date. Can be combined with -r. This could potentially be useful for updating old subtitles. USAGE: '-d MM/DD/YYYY'"),
+        make_option('-l', '--language',
+                    action='store',
+                    dest='language',
+                    default=None,
+                    help="Generate for a specific mapping."),
     )
 
     def handle(self, *args, **options):
-        if options.get("new") and not (options.get("response_code") or options.get("date_since_attempt")):
-            create_new_mapping()
-        elif not options.get("new") and (options.get("response_code") or options.get("date_since_attempt")):
-            converted_date = subtitle_utils.convert_date_input(
-                options.get("date_since_attempt"))
-            update_subtitle_map(options.get("response_code"), converted_date)
-        else:
-            raise CommandError(
-                "Invalid input. Please read the usage instructions more carefully and try again.")
-            
-        logger.info("Executed successfully. Updating language => subtitle mapping to record any changes!")
-        update_language_srt_map()
 
-        logger.info("Process complete.")
+        converted_date = subtitle_utils.convert_date_input(options.get("date_since_attempt"))
+
+        create_all_mappings(force=options.get("force"), frequency_to_save=5)
+        update_subtitle_map(options.get("response_code"), converted_date)
+        logging.info("Executed successfully. Updating language => subtitle mapping to record any changes!")
+
+        update_language_srt_map(languages=[options.get("language")] if options.get("language") else None)
+        logging.info("Process complete.")
         sys.exit(1)
