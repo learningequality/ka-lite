@@ -16,7 +16,7 @@ class NoSubs(Exception):
 def get_subtitles(youtube_id, language, format="srt"):
     
     # use the Amara video id to get the subtitles and translated metadata in the target language
-    r = requests.get("http://%s/static/srt/%s/subtitles/%s.srt" % (settings.CENTRAL_SERVER_HOST, language, youtube_id))
+    r = requests.get("http://%s/static/srt/%s/subtitles/%s.srt" % ("playground.learningequality.org:56211", language, youtube_id))
     if r.status_code > 399:
         raise NoSubs()
 
