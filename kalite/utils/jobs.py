@@ -31,7 +31,7 @@ def force_job(command, name="", frequency="YEARLY", stop=False, launch_cron=True
         # you probably want to avoid doing this on every call.
         if get_count() and not job_status(command):
             logging.debug("Ready to launch command '%s'" % command)
-            call_command_async("cron")
+            #call_command_async("cron")
 
 
 def job_status(command):

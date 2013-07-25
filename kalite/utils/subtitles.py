@@ -5,6 +5,7 @@ PROJECT_PATH = os.path.dirname(os.path.realpath(__file__)) + "/../"
 sys.path = [PROJECT_PATH] + sys.path
 
 import settings
+import version
 
 download_path = settings.CONTENT_ROOT
 
@@ -13,36 +14,24 @@ headers = {
     "X-apikey": "9931eb077687297823e8a23fd6c2bfafae25c543",
 }
 
-base_url = "http://www.universalsubtitles.org/api2/partners/videos"
+base_url = "http://%s/static/data/subtitles" % settings.CENTRAL_SERVER_HOST
 
 class NoSubs(Exception):
     
     def __str__(value):
         return "No Subtitles for this video"
 
-def get_subtitles(youtube_id, language, format="json"):
-    
-    # use the base video endpoint to get the Amara video id from the Youtube ID
-    r = requests.get("%s?video_url=http://www.youtube.com/watch?v=%s" % (base_url, youtube_id), headers=headers)
-    content = json.loads(r.text)
-    if content.get("objects", None):
-        video_id = content["objects"][0]["id"]
-    else:
-        return False
-    
+def get_subtitles(youtube_id, language):
+    import pdb; pdb.set_trace()
+
     # use the Amara video id to get the subtitles and translated metadata in the target language
-    if format=="json":
-        r = requests.get("%s/%s/languages/%s/subtitles/" % (base_url, video_id, language), headers=headers)
-        subtitles = json.loads(r.text)
-        return subtitles
-    elif format=="srt":
-        r = requests.get("%s/%s/languages/%s/subtitles/?format=srt" % (base_url, video_id, language), headers=headers)
-        # return the subtitle text, replacing empty subtitle lines with spaces to make the FLV player happy
-        return (r.text or "").replace("\n\n\n", "\n   \n\n").replace("\r\n\r\n\r\n", "\r\n   \r\n\r\n")
+    r = requests.get("%s/%s/%s.srt" % (base_url, language, youtube_id), headers={ "User-Agent": "KA-Lite %s" % version.VERSION})
+    # return the subtitle text, replacing empty subtitle lines with spaces to make the FLV player happy
+    return (r.text or "").replace("\n\n\n", "\n   \n\n").replace("\r\n\r\n\r\n", "\r\n   \r\n\r\n")
 
 def download_subtitles(youtube_id, language):
     
-    subtitles = get_subtitles(youtube_id, language, format="srt")
+    subtitles = get_subtitles(youtube_id, language)
     
     if subtitles:
     

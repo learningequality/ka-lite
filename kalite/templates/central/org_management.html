@@ -1,0 +1,268 @@
+{% extends "central/base_central.html" %}
+
+{% block control_panel_active %}active{% endblock control_panel_active %}
+
+{% block headjs %}
+	<script>
+		// makes correct link submit form for removing admin & revoking invites
+		$(function() {
+			$('.remove-admin-submit, .remove-invite-submit').click(function(ev) {
+				$(ev.srcElement).parents('form').submit();
+				return false;
+			});
+
+			$('.glossary-link').wrap('<a href="{% url glossary %}"></a>');
+		});
+	    
+	</script>
+{% endblock headjs %}
+
+{% block headcss %}
+
+	<style>
+	body {
+		min-height: 500px;
+	}
+
+	ul, li {
+	    list-style: none;
+	    margin-left: 15px;
+	}
+
+	h1.title {
+		font-size: 30px;
+	}
+
+	h2, h3, h4 {
+		margin-bottom: 5px;
+	}
+
+	.title-bar {
+		margin-bottom: .7em;
+		padding-bottom: 5px;
+		border-bottom: 1px dotted gray;
+		width: 100%;
+
+	}
+
+	.title-bar > a {
+		position: relative;
+		top: 2px;
+	}
+
+	.title-contents {
+		padding: 10px 0px 0px 20px;
+	}
+
+	.nudge-left {
+		margin-left: 5px;
+	}
+
+	h2.title {
+		float: left;
+		margin-right: 5px;
+	}
+
+	.floatleft {
+		float:left;
+	}
+
+	h2.title {
+		font-size: 25px;
+	}
+
+	h4.title {
+		font-weight: bold;
+	}
+
+	#container .h3 !important{
+		border-bottom: none;
+	}
+
+
+	#last {
+		margin-top: 25px;
+	}
+
+	.organization, .org-invite {
+		width: 90%;
+		margin: 20px 0px;
+		border: 1px dotted gray;
+		border-radius: 5px;
+		background-color: #F8F8F8;
+	}
+
+	#invite-text > p {
+		margin: 15px 0 10px 15px;
+		padding: 0;
+	}
+
+	#invite-text > .inputs {
+		margin: 0px 0 10px 15px;
+	}
+
+	.organization > li {
+		list-style-type: none;
+		margin: 0px;
+		padding: 0px;
+	}
+
+	#new-zone {
+		margin-top: 10px;
+	}
+
+	.zones, .members {
+		min-width: 300px;
+		float: left;
+		padding: 6px 0px 10px 20px;
+	}
+
+	#form-label {
+		float: left;
+		margin-top: 3px;
+		margin-right: 5px;
+	}
+
+	.clearfix {
+		width: 100%;
+		clear: both; 
+	}
+
+	#invited-tag {
+		color: gray;
+	}
+
+	</style>
+
+{% endblock headcss %}
+
+{% block content %}
+
+<div id="org_container">
+	<h1 class="title">My Organizations<span class="glossary-link nudge-left" title="An Organization is an entity responsible for administering zones."></span></h1>
+	{% for invite in invitations %}
+		<div class="org-invite">
+			<form method="post" action="{% url org_invite_action invite_id=invite.pk %}"> 
+				{% csrf_token %}
+				<div id="invite-text">
+					<p>You have been invited by <a href="mailto:{{invite.invited_by.email}}">{% firstof invite.invited_by.get_full_name invite.invited_by.username %}</a> to help administer "<span style="font-weight:bold">{{ invite.organization }}</span>". Please click below to join the organization or to decline this invitation.</p> 
+					<div class="inputs">
+						<input type="submit" name="join" value="Join">
+						<input type="submit" name="decline" value="Decline">
+					</div>
+				</div>
+			</form>
+		</div>
+	{% endfor %}
+	<div id="organizations">
+			{% if organizations %}
+				{% for pk,org in organizations.items %}
+					<div class="organization">
+						<div class="title-bar">
+							<div class="title-contents">
+								<h2 class="title">
+									{{ org.name }}
+									{% if org.name == HEADLESS_ORG_NAME %}
+                                        <span class="glossary-link nudge-left" title="Headless zones are (auto-registered) zones not linked to any account."></span>
+									{% endif %}
+								</h2>
+								{% if org.name != HEADLESS_ORG_NAME %}
+								<a href="{% url organization_form org_id=org.id %}">
+									(Edit)
+								</a>
+								{% endif %}
+							<div class="clearfix"></div>
+						</div>
+						</div>
+						<div class="zones">
+							<h4 class="title floatleft">Affiliated Zones</h4><span class="glossary-link nudge-left" title="A Zone is the area in which multiple devices may connect to share content with each other."></span>
+							<div class="clearfix"></div>
+							{% for zone in org.get_zones %}
+								<h4 class="floatleft">
+									{{ zone.name }}
+								</h4>
+								<div class="nudge-left floatleft">
+									<a href="{% url zone_management org_id=org.id zone_id=zone.id %}">
+										(manage)
+									</a>
+								</div>
+								<div class="clearfix"></div>
+							{% endfor %}
+							<div class="clearfix"></div>
+							<form method="link" action="{% url zone_form org_id=org.id zone_id='new' %}">
+								<input class="add" type="submit" value="Create a new zone">
+							</form>
+						</div>
+						<div class="members">
+							<h4 class="title floatleft">Organization Admins</h4><span class="glossary-link nudge-left" title="An Organization Admin is a user responsible for overseeing an organization."></span>
+							<div class="clearfix"></div>
+							{% for member in org.get_members %}
+								<h4 title="{{member.email }}" class="floatleft">
+									{% firstof member.get_full_name member.username %}
+								</h4>
+								<div class="nudge-left floatleft">
+									{% if org.owner == member and member == request.user %}
+										(You are the owner)
+									{% elif member == request.user %}
+										(You)
+									{% elif org.owner == member %}
+										(Owner)
+									{% else %}
+										<form method="post" action="{% url delete_admin org_id=org.id user_id=member.id %}">
+												{% csrf_token %}
+												(<a href="" class="remove-admin-submit">Remove Admin</a>)
+										</form>
+									{% endif %}
+								</div>
+								<div class="clearfix"></div>
+							{% endfor %}
+							{% for invite in org.invitations.all %}
+								<h4 id="invited-tag" class="floatleft">
+									{{ invite.email_to_invite }} (invited)
+								</h4>
+								<div class="nudge-left floatleft">
+									<form method="post" action="{% url delete_invite org_id=org.id invite_id=invite.pk %}">
+										{% csrf_token %}
+										<a href="" class="remove-invite-submit">(Revoke Invite)</a>
+									</form>
+								</div>
+								<div class="clearfix"></div>
+							{% endfor %}
+							<div class="add">
+								<form method="post">
+									{% csrf_token %}
+									<input type="hidden" name="organization" value="{{ org.pk }}">
+									{{ org.form.invited_by }}
+									<h4 id="form-label">Add Admin: </h4><input type="text" placeholder="example@email.com" name="email_to_invite">
+									<input type="submit" value="Send invite!">
+									{% for error in org.form.non_field_errors %}
+										<div class="errors">{{ error }}</div>
+									{% endfor %}
+								</form>
+							</div>
+					</div>
+					<div class="clearfix"></div>
+					</div>
+				{% endfor %}
+				<div id="last">
+					<form method="link" action="/organization/new/">
+						<input type="submit" value="Create a new organization">
+					</form>
+				</div>
+			{% else %}
+				<h2>You currently have no organizations. Would you like to <a href="/organization/new/">create a new organization</a>?</h2>
+				<h2>To join an existing organization, contact one of its administrators to have them add you.</h2>
+			{% endif %}
+	</div>
+</div>
+
+<div>	
+    {% if not organizations %}
+	<p>After creating an organization and adding a zone to it, above, you'll be 
+	{% else %}
+	<p>You're
+	{% endif %}
+    ready to <a href="/install/">install KA Lite</a> (either on this machine, or to download the installation package to install offline on another machine)</p>
+</div>
+
+{% endblock content %}

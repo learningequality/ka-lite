@@ -71,6 +71,7 @@ input {
 	{{ form.password }}
 </dd>
 <dt>
+    <input type="hidden" name="{{ redirect.name }}" value="{{ redirect.url }}" />
 	<input type="submit" class="submit" value="Log in" />
 </dt>
 </dl>
