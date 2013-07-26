@@ -41,8 +41,8 @@ class FacilityUserForm(forms.ModelForm):
         }
 
     def clean(self):
-        facility = self.cleaned_data.get('facility')
-        username = self.cleaned_data.get('username')
+        facility = self.cleaned_data.get('facility', "")
+        username = self.cleaned_data.get('username', "")
         
         # Now validate again, as lowercase
         if FacilityUser.objects.filter(username__iexact=username, facility=facility).count() > 0:
@@ -70,7 +70,7 @@ class FacilityGroupForm(forms.ModelForm):
         fields = ("name",)
         
     def clean(self):
-        name = self.cleaned_data.get("name")
+        name = self.cleaned_data.get("name", "")
         ungrouped = re.compile("[uU]+ngroup")
         
         if ungrouped.match(name):
@@ -92,9 +92,9 @@ class LoginForm(forms.ModelForm):
         self.fields['facility'].queryset = Facility.objects.all()
 
     def clean(self):
-        username = self.cleaned_data.get('username')
-        facility = self.cleaned_data.get('facility')
-        password = self.cleaned_data.get('password')
+        username = self.cleaned_data.get('username', "")
+        facility = self.cleaned_data.get('facility', "")
+        password = self.cleaned_data.get('password', "")
 
         # Coerce
         users = FacilityUser.objects.filter(username__iexact=username, facility=facility)
