@@ -412,6 +412,9 @@ class DeviceZone(SyncedModel):
 
 
 class SyncedLog(SyncedModel):
+    """
+    This is not used, but for backwards compatibility, we need to keep it.
+    """
     category = models.CharField(max_length=50)
     value = models.CharField(max_length=250, blank=True)
     data = models.TextField(blank=True)
