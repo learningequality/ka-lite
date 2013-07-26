@@ -3,10 +3,13 @@ This is a command-line tool to execute functions helpful to testing.
 """
 from django.core.management.base import BaseCommand, CommandError
 
+import settings
 from config.models import Settings
 from securesync.models import Device, DeviceZone, Zone
+#from utils.decorators import distributed_server_only
 
 
+#@distributed_server_only 
 def unregister_distributed_server():
     """
     All local steps necessary for unregistering a server with a central server.
@@ -14,6 +17,8 @@ def unregister_distributed_server():
     Note that the remote steps (central-server-side) are NOT done.
       * Login as Django admin, go to admin page, select "devices", find your device and delete.
     """
+    if settings.CENTRAL_SERVER:
+        raise CommandError("'Unregister' does not make sense for a central server.  Aborting!")
 
     own_device = Device.get_own_device()
     
