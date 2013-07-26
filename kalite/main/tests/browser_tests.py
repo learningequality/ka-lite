@@ -397,44 +397,22 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
         points = self.browser_submit_answer('this is a wrong answer')
         self.assertTrue(points == '', "points text should be empty")  # somehow we can't use the truthiness of string, so we use ==
 
-class EmptyFormSubmitCaseTest(KALiteDistributedWithFacilityBrowserTestCase):
+class MainEmptyFormSubmitCaseTest(KALiteDistributedWithFacilityBrowserTestCase):
     """
     Submit forms with no values, make sure there are no errors.
+    
+    Note: these are functions on securesync, but 
     """
 
     def test_login_form(self):
-        self.browse_to(self.reverse("login"))
-        self.browser_activate_element(id="id_username") # explicitly set the focus, to start
-        self.browser_send_keys(Keys.RETURN)
-        # how to wait for page change?  Will reload the same page.
-        time.sleep(1)
-        # Note that if there's a server error, this will assert.
-        self.assertNotEqual(self.browser.find_element_by_css_selector(".errorlist"), None, "Make sure there's an error.")
+        self.empty_form_test(url=self.reverse("login"), submission_element_id="id_username")
 
     def test_add_student_form(self):
-        self.browse_to(self.reverse("add_facility_student"))
-        self.browser_activate_element(id="id_username") # explicitly set the focus, to start
-        self.browser_send_keys(Keys.RETURN)
-        # how to wait for page change?  Will reload the same page.
-        time.sleep(1)
-        # Note that if there's a server error, this will assert.
-        self.assertNotEqual(self.browser.find_element_by_css_selector(".errorlist"), None, "Make sure there's an error.")
+        self.empty_form_test(url=self.reverse("add_facility_student"), submission_element_id="id_username")
 
     def test_add_teacher_form(self):
-        self.browse_to(self.reverse("add_facility_teacher"))
-        self.browser_activate_element(id="id_username") # explicitly set the focus, to start
-        self.browser_send_keys(Keys.RETURN)
-        # how to wait for page change?  Will reload the same page.
-        time.sleep(1)
-        # Note that if there's a server error, this will assert.
-        self.assertNotEqual(self.browser.find_element_by_css_selector(".errorlist"), None, "Make sure there's an error.")
+        self.empty_form_test(url=self.reverse("add_facility_teacher"), submission_element_id="id_username")
 
     def test_add_group_form(self):
         self.browser_login_admin()
-        self.browse_to(self.reverse("add_group"))
-        self.browser_activate_element(id="id_name") # explicitly set the focus, to start
-        self.browser_send_keys(Keys.RETURN)
-        # how to wait for page change?  Will reload the same page.
-        time.sleep(1)
-        # Note that if there's a server error, this will assert.
-        self.assertNotEqual(self.browser.find_element_by_css_selector(".errorlist"), None, "Make sure there's an error.")
+        self.empty_form_test(url=self.reverse("add_group"), submission_element_id="id_name")

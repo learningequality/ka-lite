@@ -240,43 +240,15 @@ class UserRegistrationCaseTest(KALiteCentralBrowserTestCase):
         
 
 @central_server_test
-class EmptyFormSubmitCaseTest(KALiteCentralBrowserTestCase):
+class CentralEmptyFormSubmitCaseTest(KALiteCentralBrowserTestCase):
     """
     Submit forms with no values, make sure there are no errors.
     """
-
     def test_login_form(self):
-        self.browse_to(self.reverse("auth_login"))
-        self.browser_activate_element(id="id_username") # explicitly set the focus, to start
-        self.browser_send_keys(Keys.RETURN)
-        # how to wait for page change?  Will reload the same page.
-        time.sleep(1)
-        # Note that if there's a server error, this will assert.
-        self.assertNotEqual(self.browser.find_element_by_css_selector(".errorlist"), None, "Make sure there's an error.")
+        self.empty_form_test(url=self.reverse("auth_login"), submission_element_id="id_username")
 
     def test_registration_form(self):
-        self.browse_to(self.reverse("registration_register"))
-        self.browser_activate_element(id="id_first_name") # explicitly set the focus, to start
-        self.browser_send_keys(Keys.RETURN)
-        # how to wait for page change?  Will reload the same page.
-        time.sleep(1)
-        # Note that if there's a server error, this will assert.
-        self.assertNotEqual(self.browser.find_element_by_css_selector(".errorlist"), None, "Make sure there's an error.")
-
-    def test_contact_form(self):
-        self.browse_to(self.reverse("contact_wizard"))
-        self.browser_activate_element(id="id_contact_form-name") # explicitly set the focus, to start
-        self.browser_send_keys(Keys.RETURN)
-        # how to wait for page change?  Will reload the same page.
-        time.sleep(1)
-        # Note that if there's a server error, this will assert.
-        self.assertNotEqual(self.browser.find_element_by_css_selector(".errorlist"), None, "Make sure there's an error.")
+        self.empty_form_test(url=self.reverse("registration_register"), submission_element_id="id_first_name")
 
     def test_password_reset(self):
-        self.browse_to(self.reverse("auth_password_reset"))
-        self.browser_activate_element(id="id_email") # explicitly set the focus, to start
-        self.browser_send_keys(Keys.RETURN)
-        # how to wait for page change?  Will reload the same page.
-        time.sleep(1)
-        # Note that if there's a server error, this will assert.
-        self.assertNotEqual(self.browser.find_element_by_css_selector(".errorlist"), None, "Make sure there's an error.")
+        self.empty_form_test(url=self.reverse("auth_password_reset"), submission_element_id="id_email")
