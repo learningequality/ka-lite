@@ -126,10 +126,12 @@ class SyncedModel(models.Model):
         Get all of the relevant fields of this model into a single string (self._hashable_representation()),
         then sign it with the specified device (if specified), or the current device.
         """
-        if not self.id:
-            self.id = self.get_uuid()
-        self.signed_by = device or Device.get_own_device()
+        device = device or Device.get_own_device()
+        if not device.get_key():
+            raise Exception("Cannot sign with device %s: key does not exist." % device.name)
 
+        self.id = self.id or self.get_uuid()
+        self.signed_by = device
         self.full_clean()  # make sure the model data is of the appropriate types
         self.signature = self.signed_by.get_key().sign(self._hashable_representation())
 
@@ -272,7 +274,9 @@ class SyncedModel(models.Model):
         abstract = True
 
     def __unicode__(self):
-        return u"%s... (Signed by: %s...)" % (self.pk[0:5], self.signed_by.pk[0:5])
+        pk = self.pk[0:5] if len(getattr(self, "pk", "")) >= 5 else "[unsaved]"
+        signed_by_pk = self.signed_by.pk[0:5] if self.signed_by and self.signed_by.pk else "[None]"
+        return u"%s... (Signed by: %s...)" % (pk, signed_by_pk)
 
 
 class Zone(SyncedModel):

@@ -41,8 +41,9 @@ class VideoLog(SyncedModel):
         super(VideoLog, self).save(*args, **kwargs)
 
     def get_uuid(self, *args, **kwargs):
+        self.full_clean()
         namespace = uuid.UUID(self.user.id)
-        return uuid.uuid5(namespace, str(self.youtube_id)).hex
+        return uuid.uuid5(namespace, self.youtube_id.encode("utf-8")).hex
 
     @staticmethod
     def get_points_for_user(user):
@@ -83,8 +84,9 @@ class ExerciseLog(SyncedModel):
         super(ExerciseLog, self).save(*args, **kwargs)
 
     def get_uuid(self, *args, **kwargs):
+        self.full_clean()
         namespace = uuid.UUID(self.user.id)
-        return uuid.uuid5(namespace, str(self.exercise_id)).hex
+        return uuid.uuid5(namespace, self.exercise_id.encode("utf-8")).hex
 
     @staticmethod
     def get_points_for_user(user):
@@ -105,6 +107,7 @@ class UserLogSummary(SyncedModel):
     total_seconds = models.IntegerField(default=0, blank=False, null=False)
 
     def __unicode__(self):
+        self.full_clean()  # make sure everything that has to be there, is there.
         return u"%d seconds over %d logins for %s/%s/%d, period %s to %s" % (self.total_seconds, self.total_logins, self.device.name, self.user.username, self.activity_type, self.start_datetime, self.end_datetime)
 
 
