@@ -2,13 +2,12 @@
 This is a command-line tool to execute functions helpful to testing.
 """
 
-import logging
 from optparse import make_option
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
-from config.models import Settings
+from settings import LOG as logging
 from securesync.models import Device, DeviceZone, Zone, Facility
 
 
@@ -37,13 +36,14 @@ def clean_db():
     Delete kalite data associated with Zone, Facility and Device
     Does not remove the django admin accounts etc.
     """
-    settings.LOG.info("Cleaning Zone")
+    logging.info("Cleaning Zone")
     Zone.objects.all().delete()
-    settings.LOG.info("Cleaning Facility")
+    logging.info("Cleaning Facility")
     Facility.objects.all().delete()
-    settings.LOG.info("Cleaning Device")
+    logging.info("Cleaning Device")
     Device.objects.all().delete()
-        
+
+           
     
 class Command(BaseCommand):
     help = "KA Lite test help"
@@ -52,7 +52,7 @@ class Command(BaseCommand):
             help='Tells Django to NOT prompt the user for input of any kind.'),)
 
     def handle(self, *args, **options):
-        interactive = options.get('interactive')
+        
         if not args:
             raise CommandError("Must specify a test-only method to run..")
 
@@ -60,15 +60,16 @@ class Command(BaseCommand):
             unregister_distributed_server()
             
         elif args[0] == "clean_db":
-            if interactive:
-                confirm = raw_input("""Confirm data will be deleted
-    Type 'yes' to continue, or 'no' to cancel: """)
-            else:
-                confirm = 'yes'
-            if confirm == 'yes':
+            if self.confirm(options.get('interactive'), "clean_db will permanently delete data"):
                 clean_db()
 
         else:
             raise CommandError("Unrecognized test-only method: %s" % args[0])
 
-
+    def confirm(self, interactive=True, info_message=""):
+        """helper function to prompt for confirmation if running in interactive mode"""
+        if interactive:
+            confirm = raw_input(("%s \n Type 'yes' to continue, or 'no' to cancel: ") % (info_message))
+            return confirm == "yes"
+        else:
+            return True  #not interactive, so default to confirmed 
