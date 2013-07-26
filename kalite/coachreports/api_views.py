@@ -217,6 +217,8 @@ def compute_data(types, who, where):
             else:
                 raise Exception("Unknown type: '%s' not in %s" % (type, str([f.name for f in ExerciseLog._meta.fields])))
 
+    # Returning empty list instead of None allows javascript on client
+    # side to read 'length' property without error.
     exercises = exercises or []
 
     videos = videos or []
