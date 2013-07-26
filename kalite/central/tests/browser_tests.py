@@ -5,6 +5,7 @@ These require a test server to be running, and multiple ports
 ./manage.py test central --liveserver=localhost:8004-8010
 ".
 """
+import time
 from selenium.webdriver.common.keys import Keys
 
 from django.contrib.auth.models import User
@@ -217,22 +218,65 @@ class UserRegistrationCaseTest(KALiteCentralBrowserTestCase):
         
         # First, make sure that user 1 can only log in with user 1's email/password
         self.browser_login_user( username=user1_uname, password=user1_password) # succeeds
-        errors = self.browser.find_elements_by_class_name("login_error")
+        errors = self.browser.find_elements_by_class_name("errorlist")
         self.assertEqual(len(errors), 0, "No login errors on successful login.")
         self.browser_logout_user()
         
         self.browser_login_user( username=user2_uname, password=user1_password, expect_success=False) # fails
-        errors = self.browser.find_elements_by_class_name("login_error")
+        errors = self.browser.find_elements_by_class_name("errorlist")
         self.assertEqual(len(errors), 1, "Login errors on failed login.")
         self.assertIn("Incorrect user name or password", errors[0].text, "Error text on failed login.")
         
         # Now, check the same in the opposite direction.
         self.browser_login_user( username=user2_uname, password=user2_password) # succeeds
-        errors = self.browser.find_elements_by_class_name("login_error")
+        errors = self.browser.find_elements_by_class_name("errorlist")
         self.assertEqual(len(errors), 0, "No login errors on successful login.")
         self.browser_logout_user()
 
         self.browser_login_user( username=user1_uname, password=user2_password, expect_success=False) # fails
-        errors = self.browser.find_elements_by_class_name("login_error")
+        errors = self.browser.find_elements_by_class_name("errorlist")
         self.assertEqual(len(errors), 1, "Login errors on failed login.")
         self.assertIn("Incorrect user name or password", errors[0].text, "Error text on failed login.")
+        
+
+@central_server_test
+class EmptyFormSubmitCaseTest(KALiteCentralBrowserTestCase):
+    """
+    Submit forms with no values, make sure there are no errors.
+    """
+
+    def test_login_form(self):
+        self.browse_to(self.reverse("auth_login"))
+        self.browser_activate_element(id="id_username") # explicitly set the focus, to start
+        self.browser_send_keys(Keys.RETURN)
+        # how to wait for page change?  Will reload the same page.
+        time.sleep(1)
+        # Note that if there's a server error, this will assert.
+        self.assertNotEqual(self.browser.find_element_by_css_selector(".errorlist"), None, "Make sure there's an error.")
+
+    def test_registration_form(self):
+        self.browse_to(self.reverse("registration_register"))
+        self.browser_activate_element(id="id_first_name") # explicitly set the focus, to start
+        self.browser_send_keys(Keys.RETURN)
+        # how to wait for page change?  Will reload the same page.
+        time.sleep(1)
+        # Note that if there's a server error, this will assert.
+        self.assertNotEqual(self.browser.find_element_by_css_selector(".errorlist"), None, "Make sure there's an error.")
+
+    def test_contact_form(self):
+        self.browse_to(self.reverse("contact_wizard"))
+        self.browser_activate_element(id="id_contact_form-name") # explicitly set the focus, to start
+        self.browser_send_keys(Keys.RETURN)
+        # how to wait for page change?  Will reload the same page.
+        time.sleep(1)
+        # Note that if there's a server error, this will assert.
+        self.assertNotEqual(self.browser.find_element_by_css_selector(".errorlist"), None, "Make sure there's an error.")
+
+    def test_password_reset(self):
+        self.browse_to(self.reverse("auth_password_reset"))
+        self.browser_activate_element(id="id_email") # explicitly set the focus, to start
+        self.browser_send_keys(Keys.RETURN)
+        # how to wait for page change?  Will reload the same page.
+        time.sleep(1)
+        # Note that if there's a server error, this will assert.
+        self.assertNotEqual(self.browser.find_element_by_css_selector(".errorlist"), None, "Make sure there's an error.")

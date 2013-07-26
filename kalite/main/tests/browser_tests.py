@@ -169,7 +169,7 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
 
 
 
-class KALiteRegisteredDistributedBrowserTestCase(KALiteDistributedBrowserTestCase):
+class KALiteDistributedWithFacilityBrowserTestCase(KALiteDistributedBrowserTestCase):
     """
     Same thing, but do the setup steps to register a facility.
     """
@@ -177,7 +177,7 @@ class KALiteRegisteredDistributedBrowserTestCase(KALiteDistributedBrowserTestCas
     
     def setUp(self):
         """Add a facility, so users can begin registering / logging in immediately."""
-        super(KALiteRegisteredDistributedBrowserTestCase,self).setUp() # sets up admin, etc
+        super(KALiteDistributedWithFacilityBrowserTestCase,self).setUp() # sets up admin, etc
         self.create_facility(facility_name=self.facility_name)        
 
 
@@ -265,7 +265,7 @@ class ChangeLocalUserPassword(KALiteDistributedBrowserTestCase):
 
 
 @distributed_server_test
-class UserRegistrationCaseTest(KALiteRegisteredDistributedBrowserTestCase):
+class UserRegistrationCaseTest(KALiteDistributedWithFacilityBrowserTestCase):
     username   = "user1"
     password   = "password"
 
@@ -345,7 +345,7 @@ class UserRegistrationCaseTest(KALiteRegisteredDistributedBrowserTestCase):
         self.browser_check_django_message("error", contains="There was an error logging you in.")
 
 
-class StudentExerciseTest(KALiteRegisteredDistributedBrowserTestCase):
+class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
     """
     Test exercises.
     """
@@ -354,7 +354,7 @@ class StudentExerciseTest(KALiteRegisteredDistributedBrowserTestCase):
         """
         Create a student, log the student in, and go to the exercise page.
         """
-        super(KALiteRegisteredDistributedBrowserTestCase, self).setUp()
+        super(StudentExerciseTest, self).setUp()
         self.create_student()
         self.browser_login_student(self.student_username, self.student_password)
         self.browse_to(self.live_server_url + '/math/arithmetic/addition-subtraction/basic_addition/e/addition_1/') 
@@ -396,3 +396,45 @@ class StudentExerciseTest(KALiteRegisteredDistributedBrowserTestCase):
         """
         points = self.browser_submit_answer('this is a wrong answer')
         self.assertTrue(points == '', "points text should be empty")  # somehow we can't use the truthiness of string, so we use ==
+
+class EmptyFormSubmitCaseTest(KALiteDistributedWithFacilityBrowserTestCase):
+    """
+    Submit forms with no values, make sure there are no errors.
+    """
+
+    def test_login_form(self):
+        self.browse_to(self.reverse("login"))
+        self.browser_activate_element(id="id_username") # explicitly set the focus, to start
+        self.browser_send_keys(Keys.RETURN)
+        # how to wait for page change?  Will reload the same page.
+        time.sleep(1)
+        # Note that if there's a server error, this will assert.
+        self.assertNotEqual(self.browser.find_element_by_css_selector(".errorlist"), None, "Make sure there's an error.")
+
+    def test_add_student_form(self):
+        self.browse_to(self.reverse("add_facility_student"))
+        self.browser_activate_element(id="id_username") # explicitly set the focus, to start
+        self.browser_send_keys(Keys.RETURN)
+        # how to wait for page change?  Will reload the same page.
+        time.sleep(1)
+        # Note that if there's a server error, this will assert.
+        self.assertNotEqual(self.browser.find_element_by_css_selector(".errorlist"), None, "Make sure there's an error.")
+
+    def test_add_teacher_form(self):
+        self.browse_to(self.reverse("add_facility_teacher"))
+        self.browser_activate_element(id="id_username") # explicitly set the focus, to start
+        self.browser_send_keys(Keys.RETURN)
+        # how to wait for page change?  Will reload the same page.
+        time.sleep(1)
+        # Note that if there's a server error, this will assert.
+        self.assertNotEqual(self.browser.find_element_by_css_selector(".errorlist"), None, "Make sure there's an error.")
+
+    def test_add_group_form(self):
+        self.browser_login_admin()
+        self.browse_to(self.reverse("add_group"))
+        self.browser_activate_element(id="id_name") # explicitly set the focus, to start
+        self.browser_send_keys(Keys.RETURN)
+        # how to wait for page change?  Will reload the same page.
+        time.sleep(1)
+        # Note that if there's a server error, this will assert.
+        self.assertNotEqual(self.browser.find_element_by_css_selector(".errorlist"), None, "Make sure there's an error.")
