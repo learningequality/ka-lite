@@ -105,7 +105,7 @@ class UserLogSummary(SyncedModel):
     total_seconds = models.IntegerField(default=0, blank=False, null=False)
 
     def __unicode__(self):
-        return "%d seconds over %d logins for %s/%s/%d, period %s to %s" % (self.total_seconds, self.total_logins, self.device.name, self.user.username, self.activity_type, self.start_datetime, self.end_datetime)
+        return u"%d seconds over %d logins for %s/%s/%d, period %s to %s" % (self.total_seconds, self.total_logins, self.device.name, self.user.username, self.activity_type, self.start_datetime, self.end_datetime)
 
 
     @classmethod
@@ -255,9 +255,9 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
 
     def __unicode__(self):
         if self.end_datetime:
-            return "%s: logged in @ %s; for %s seconds"%(self.user.username,self.start_datetime, self.total_seconds)
+            return u"%s: logged in @ %s; for %s seconds"%(self.user.username,self.start_datetime, self.total_seconds)
         else:
-            return "%s: logged in @ %s; last active @ %s"%(self.user.username, self.start_datetime, self.last_active_datetime)
+            return u"%s: logged in @ %s; last active @ %s"%(self.user.username, self.start_datetime, self.last_active_datetime)
 
 
     @classmethod

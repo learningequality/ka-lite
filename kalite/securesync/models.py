@@ -69,7 +69,7 @@ class SyncSession(models.Model):
             SyncSession.objects.filter(pk__in=to_discard).delete()
 
     def __unicode__(self):
-        return "%s... -> %s..." % (self.client_device.pk[0:5],
+        return u"%s... -> %s..." % (self.client_device.pk[0:5],
             (self.server_device and self.server_device.pk[0:5] or "?????"))
 
 
@@ -78,7 +78,7 @@ class RegisteredDevicePublicKey(models.Model):
     zone = models.ForeignKey("Zone")
 
     def __unicode__(self):
-        return "%s... (Zone: %s)" % (self.public_key[0:5], self.zone)
+        return u"%s... (Zone: %s)" % (self.public_key[0:5], self.zone)
 
 
 class DeviceMetadata(models.Model):
@@ -91,7 +91,7 @@ class DeviceMetadata(models.Model):
         verbose_name_plural = "Device metadata"
 
     def __unicode__(self):
-        return "(Device: %s)" % (self.device)
+        return u"(Device: %s)" % (self.device)
 
 
 class SyncedModelManager(models.Manager):
@@ -272,7 +272,7 @@ class SyncedModel(models.Model):
         abstract = True
 
     def __unicode__(self):
-        return "%s... (Signed by: %s...)" % (self.pk[0:5], self.signed_by.pk[0:5])
+        return u"%s... (Signed by: %s...)" % (self.pk[0:5], self.signed_by.pk[0:5])
 
 
 class Zone(SyncedModel):
@@ -323,7 +323,7 @@ class Facility(SyncedModel):
     def __unicode__(self):
         if not self.id:
             return self.name
-        return "%s (#%s)" % (self.name, int(self.id[:3], 16))
+        return u"%s (#%s)" % (self.name, int(self.id[:3], 16))
 
     def is_default(self):
         return self.id == Settings.get("default_facility")
@@ -370,7 +370,7 @@ class FacilityUser(SyncedModel):
         unique_together = ("facility", "username")
 
     def __unicode__(self):
-        return "%s (Facility: %s)" % (self.get_name(), self.facility)
+        return u"%s (Facility: %s)" % (self.get_name(), self.facility)
 
     def check_password(self, raw_password):
         if self.password.split("$", 1)[0] == "sha1":
@@ -408,7 +408,7 @@ class DeviceZone(SyncedModel):
     requires_trusted_signature = True
 
     def __unicode__(self):
-        return "Device: %s, assigned to Zone: %s" % (self.device, self.zone)
+        return u"Device: %s, assigned to Zone: %s" % (self.device, self.zone)
 
 
 class SyncedLog(SyncedModel):
