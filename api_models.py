@@ -167,14 +167,11 @@ class APIModel(AttrDict):
         """
         Generate the url from which to make API calls.
         """
-        id = ""
-        if self.kind in kind_to_id_map:
-            try:
-                id = "/" + kind_to_id_map[self.kind](self)
-            except:
-                import pdb
-                pdb.set_trace()
-        return self.base_url + id + self.API_attributes[name]
+        id = "/" + kind_to_id_map.get(self.kind)(
+            self) if kind_to_id_map.get(self.kind) else ""
+        get_param = "?" + get_key_to_get_param_map.get(kind_to_get_key_map.get(
+            self.kind)) + "=" + self.get(kind_to_get_key_map.get(self.kind)) if kind_to_get_key_map.get(self.kind) else ""
+        return self.base_url + id + self.API_attributes[name] + get_param
 
 
 def api_call(target_version, target_api_url, debug=False, authenticate=True):
@@ -313,6 +310,9 @@ class APIAuthModel(APIModel):
     def __getattr__(self, name):
         return super(APIAuthModel, self).__getattr__(name)
 
+    # TODO: Add API_url function to add "?userID=" + user_id to each item
+    # Check that classes other than User have user_id field.
+
 
 class User(APIAuthModel):
 
@@ -337,7 +337,7 @@ class User(APIAuthModel):
         Download user data for a particular user.
         If no user specified, download logged in user's data.
         """
-        return User(api_call("v1", cls.base_url + "?" + user_id))
+        return User(api_call("v1", cls.base_url + "?userId=" + user_id))
 
 
 class UserExercise(APIAuthModel):
@@ -459,6 +459,7 @@ kind_to_class_map = {
     "Scratchpad": Scratchpad,
     "Article": Article,
     "User": User,
+    "UserData": User,
     "UserBadge": UserBadge,
     "UserVideo": UserVideo,
     "UserExercise": UserExercise,
@@ -476,11 +477,24 @@ kind_to_id_map = {
     "Video": partial(n_deep, names=["readable_id"]),
     "Exercise": partial(n_deep, names=["name"]),
     "Topic": partial(n_deep, names=["slug"]),
-    "User": partial(n_deep, names=["user_id"]),
+    # "User": partial(n_deep, names=["user_id"]),
+    # "UserData": partial(n_deep, names=["user_id"]),
     "UserExercise": partial(n_deep, names=["exercise"]),
     "UserVideo": partial(n_deep, names=["video", "youtube_id"]),
     "ProblemLog": partial(n_deep, names=["exercise"]),
     "VideoLog": partial(n_deep, names=["video_title"]),
+}
+
+kind_to_get_key_map = {
+    "User": "user_id",
+    "UserData": "user_id",
+    "UserExercise": "user",
+    "UserVideo": "user",
+}
+
+get_key_to_get_param_map = {
+    "user_id": "userId",
+    "user": "username",
 }
 
 id_to_kind_map = {value: key for key, value in kind_to_id_map.items()}
