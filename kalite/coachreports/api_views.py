@@ -217,6 +217,10 @@ def compute_data(types, who, where):
             else:
                 raise Exception("Unknown type: '%s' not in %s" % (type, str([f.name for f in ExerciseLog._meta.fields])))
 
+    exercises = exercises or []
+
+    videos = videos or []
+
     return {
         "data": data,
         "topics": topics,
