@@ -1,4 +1,5 @@
 import sys
+from datetime import datetime  # main.models imports this way, so we have this hacky dependency.
 
 from django.utils import unittest
 
@@ -20,7 +21,7 @@ class UnicodeModelsTest(unittest.TestCase):
         self.assertTrue(not set(found_classes) - set(known_classes), "test for unknown classes in the module.")
 
         # Dependencies
-        dev = Device(name=self.korean_string)
+        dev = Device.get_own_device()
         self.assertNotIn(unicode(dev), "Bad Unicode data", "Device: Bad conversion to unicode.")
         
         fac = Facility(name=self.korean_string)
@@ -44,21 +45,26 @@ class UnicodeModelsTest(unittest.TestCase):
         self.assertNotIn(unicode(user), "Bad Unicode data", "FacilityUser: Bad conversion to unicode.")
 
         known_classes = [ExerciseLog, UserLog, UserLogSummary, VideoLog]
-        """
+
         # 
         elog = ExerciseLog(user=user, exercise_id=self.korean_string)
+        self.assertNotIn(unicode(elog), "Bad Unicode data", "ExerciseLog: Bad conversion to unicode (before saving).")
         elog.save()
-        elog.sign(dev)
-        self.assertNotIn(unicode(elog), "Bad Unicode data", "ExerciseLog: Bad conversion to unicode.")
+        self.assertNotIn(unicode(elog), "Bad Unicode data", "ExerciseLog: Bad conversion to unicode (after saving).")
 
         vlog = VideoLog(user=user, youtube_id=self.korean_string)
+        self.assertNotIn(unicode(vlog), "Bad Unicode data", "VideoLog: Bad conversion to unicode (before saving).")
         vlog.save()
-        vlog.sign(dev)
-        self.assertNotIn(unicode(vlog), "Bad Unicode data", "VideoLog: Bad conversion to unicode.")
-        """
+        self.assertNotIn(unicode(vlog), "Bad Unicode data", "VideoLog: Bad conversion to unicode (after saving).")
 
         ulog = UserLog(user=user)
         self.assertNotIn(unicode(ulog), "Bad Unicode data", "UserLog: Bad conversion to unicode.")
 
-        ulogsum = UserLogSummary(user=user, device=dev)
+        ulogsum = UserLogSummary(
+            user=user, 
+            device=dev, 
+            activity_type=1, 
+            start_datetime=datetime.now(),
+            end_datetime=datetime.now(),
+        )
         self.assertNotIn(unicode(ulogsum), "Bad Unicode data", "UserLogSummary: Bad conversion to unicode.")
