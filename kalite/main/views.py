@@ -297,10 +297,26 @@ Available stats:
     return val
 
 @require_admin
-@render_to("video_download.html")
+@render_to("update.html")
 def update(request):
+    return {}
+
+
+@require_admin
+@render_to("update_videos.html")
+def update_videos(request):
     call_command("videoscan")  # Could potentially be very slow, blocking request.
     force_job("videodownload", "Download Videos")
+
+    context = {
+        "am_i_online": True,
+    }
+    return context
+
+
+@require_admin
+@render_to("update_subtitles.html")
+def update_subtitles(request):
     force_job("subtitledownload", "Download Subtitles")
     language_lookup = topicdata.LANGUAGE_LOOKUP
     language_list = topicdata.LANGUAGE_LIST
@@ -313,7 +329,16 @@ def update(request):
     context = {
         "languages": languages,
         "default_language": default_language,
-        "am_i_online": am_i_online,
+        "am_i_online": True,
+    }
+    return context
+
+
+@require_admin
+@render_to("update_software.html")
+def update_software(request):
+    context = {
+        "am_i_online": True,
     }
     return context
 

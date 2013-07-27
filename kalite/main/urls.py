@@ -41,6 +41,10 @@ urlpatterns += patterns('main.views',
 
     # For admins
     url(r'^update/$', 'update', {}, 'update'),
+    url(r'^update/videos/$', 'update_videos', {}, 'update_videos'),
+    url(r'^update/subtitles/$', 'update_subtitles', {}, 'update_subtitles'),
+    url(r'^update/software/$', 'update_software', {}, 'update_software'),
+
     url(r'^easyadmin/$', 'easy_admin', {}, 'easy_admin'),
     url(r'^userlist/$', 'user_list', {}, 'user_list'),
     url(r'^stats/$', 'summary_stats', {}, 'summary_stats'),

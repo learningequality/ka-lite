@@ -82,7 +82,7 @@ class Command(BaseCommand):
 
 
     def handle(self, *args, **options):
-
+        import pdb; pdb.set_trace()
         if len(args)==1 and args[0]== "test":
             # Callback for "weak" test--checks at least that the django project compiles (local_settings is OK)
             sys.stdout.write("Success!\n")

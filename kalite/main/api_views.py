@@ -1,21 +1,23 @@
 import re, json
+from annoying.functions import get_object_or_None
+
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 from django.utils import simplejson
 from django.db.models import Q
-from annoying.functions import get_object_or_None
+
 import settings
-from main import topicdata
-from utils.jobs import force_job, job_status
-from utils.videos import delete_downloaded_files
-from models import FacilityUser, VideoLog, ExerciseLog, VideoFile
-from securesync.models import FacilityGroup
 from config.models import Settings
+from main import topicdata
+from main.models import FacilityUser, VideoLog, ExerciseLog, VideoFile
+from securesync.models import FacilityGroup
+from updates.models import UpdateProgressLog
 from utils.decorators import require_admin
 from utils.general import break_into_chunks
-from utils.orderedset import OrderedSet
 from utils.internet import JsonResponse
-
+from utils.jobs import force_job, job_status
+from utils.orderedset import OrderedSet
+from utils.videos import delete_downloaded_files
 
 def save_video_log(request):
     """
@@ -180,45 +182,9 @@ def delete_videos(request):
         delete_downloaded_files(id)
     return JsonResponse({})
 
-@require_admin
-def start_subtitle_download(request):
-    new_only = simplejson.loads(request.raw_post_data or "{}").get("new_only", False)
-    language = simplejson.loads(request.raw_post_data or "{}").get("language", "")
-    language_list = topicdata.LANGUAGE_LIST
-    current_language = Settings.get("subtitle_language")
-    new_only = new_only and (current_language == language)
-    if language in language_list:
-        Settings.set("subtitle_language", language)
-    else:
-        return JsonResponse({"error": "This language is not currently supported - please update the language list"}, status=500)
-    if new_only:
-        videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True), subtitles_downloaded=False)
-    else:
-        videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True))
-    for videofile in videofiles:
-        videofile.cancel_download = False
-        if videofile.subtitle_download_in_progress:
-            continue
-        videofile.flagged_for_subtitle_download = True
-        if not new_only:
-            videofile.subtitles_downloaded = False
-        videofile.save()
-    force_job("subtitledownload", "Download Subtitles")
-    return JsonResponse({})
 
 @require_admin
-def check_subtitle_download(request):
-    videofiles = VideoFile.objects.filter(flagged_for_subtitle_download=True)
-    return JsonResponse(videofiles.count())
-
-@require_admin
-def get_subtitle_download_list(request):
-    videofiles = VideoFile.objects.filter(flagged_for_subtitle_download=True).values("youtube_id")
-    video_ids = [video["youtube_id"] for video in videofiles]
-    return JsonResponse(video_ids)
-
-@require_admin
-def cancel_downloads(request):
+def cancel_video_download(request):
 
     # clear all download in progress flags, to make sure new downloads will go through
     VideoFile.objects.all().update(download_in_progress=False)
@@ -226,42 +192,14 @@ def cancel_downloads(request):
     # unflag all video downloads
     VideoFile.objects.filter(flagged_for_download=True).update(cancel_download=True, flagged_for_download=False)
 
-    # unflag all subtitle downloads
-    VideoFile.objects.filter(flagged_for_subtitle_download=True).update(cancel_download=True, flagged_for_subtitle_download=False)
-
     force_job("videodownload", stop=True)
-    force_job("subtitledownload", stop=True)
+    log = UpdateProgressLog.get_active_log(process_name="videodownload", create_new=False)
+    if log:
+        log.cancel_progress()
+
     return JsonResponse({})
 
 
-# Functions below here focused on users
-
-@require_admin
-def remove_from_group(request):
-    """
-    API endpoint for removing users from group
-    (from user management page)
-    """
-    users = simplejson.loads(request.raw_post_data or "{}").get("users", "")
-    users_to_remove = FacilityUser.objects.filter(username__in=users)
-    users_to_remove.update(group=None)
-    return JsonResponse({})
-
-@require_admin
-def move_to_group(request):
-    users = simplejson.loads(request.raw_post_data or "{}").get("users", [])
-    group = simplejson.loads(request.raw_post_data or "{}").get("group", "")
-    group_update = FacilityGroup.objects.get(pk=group)
-    users_to_move = FacilityUser.objects.filter(username__in=users)
-    users_to_move.update(group=group_update)
-    return JsonResponse({})
-
-@require_admin
-def delete_users(request):
-    users = simplejson.loads(request.raw_post_data or "{}").get("users", [])
-    users_to_delete = FacilityUser.objects.filter(username__in=users)
-    users_to_delete.delete()
-    return JsonResponse({})
 
 # Functions below here focused on topic tree (used for dynatree js code)
 def annotate_topic_tree(node, level=0, statusdict=None):
@@ -311,11 +249,118 @@ def annotate_topic_tree(node, level=0, statusdict=None):
         }
     return None
 
-#@require_admin
-def get_annotated_topic_tree():
+@require_admin
+def get_annotated_topic_tree(request):
     statusdict = dict(VideoFile.objects.values_list("youtube_id", "percent_complete"))
-    return annotate_topic_tree(topicdata.TOPICS, statusdict=statusdict)
+    att = annotate_topic_tree(topicdata.TOPICS, statusdict=statusdict)
+    return JsonResponse(att)
+
+
+"""
+Subtitles
+"""
+@require_admin
+def start_subtitle_download(request):
+    new_only = simplejson.loads(request.raw_post_data or "{}").get("new_only", False)
+    language = simplejson.loads(request.raw_post_data or "{}").get("language", "")
+    language_list = topicdata.LANGUAGE_LIST
+    current_language = Settings.get("subtitle_language")
+    new_only = new_only and (current_language == language)
+    if language in language_list:
+        Settings.set("subtitle_language", language)
+    else:
+        return JsonResponse({"error": "This language is not currently supported - please update the language list"}, status=500)
+    if new_only:
+        videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True), subtitles_downloaded=False)
+    else:
+        videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True))
+    for videofile in videofiles:
+        videofile.cancel_download = False
+        if videofile.subtitle_download_in_progress:
+            continue
+        videofile.flagged_for_subtitle_download = True
+        if not new_only:
+            videofile.subtitles_downloaded = False
+        videofile.save()
+    force_job("subtitledownload", "Download Subtitles")
+    return JsonResponse({})
 
 @require_admin
-def get_topic_tree(request):
-    return JsonResponse(get_annotated_topic_tree())
+def check_subtitle_download(request):
+    videofiles = VideoFile.objects.filter(flagged_for_subtitle_download=True)
+    return JsonResponse(videofiles.count())
+
+@require_admin
+def get_subtitle_download_list(request):
+    videofiles = VideoFile.objects.filter(flagged_for_subtitle_download=True).values("youtube_id")
+    video_ids = [video["youtube_id"] for video in videofiles]
+    return JsonResponse(video_ids)
+
+@require_admin
+def cancel_subtitle_download(request):
+    # unflag all subtitle downloads
+    VideoFile.objects.filter(flagged_for_subtitle_download=True).update(cancel_download=True, flagged_for_subtitle_download=False)
+
+    force_job("subtitledownload", stop=True)
+    return JsonResponse({})
+
+
+"""
+Software updates
+"""
+
+@require_admin
+def start_update_kalite(request):
+    import pdb; pdb.set_trace()
+    call_command("update")
+    return JsonResponse({})
+
+@require_admin
+def check_update_kalite(request):
+    videofiles = VideoFile.objects.filter(flagged_for_subtitle_download=True)
+    return JsonResponse(videofiles.count())
+
+@require_admin
+def get_update_kalite_list(request):
+    videofiles = VideoFile.objects.filter(flagged_for_subtitle_download=True).values("youtube_id")
+    video_ids = [video["youtube_id"] for video in videofiles]
+    return JsonResponse(video_ids)
+
+@require_admin
+def cancel_update_kalite(request):
+    # unflag all subtitle downloads
+    VideoFile.objects.filter(flagged_for_subtitle_download=True).update(cancel_download=True, flagged_for_subtitle_download=False)
+
+    force_job("subtitledownload", stop=True)
+    return JsonResponse({})
+
+
+# Functions below here focused on users
+
+@require_admin
+def remove_from_group(request):
+    """
+    API endpoint for removing users from group
+    (from user management page)
+    """
+    users = simplejson.loads(request.raw_post_data or "{}").get("users", "")
+    users_to_remove = FacilityUser.objects.filter(username__in=users)
+    users_to_remove.update(group=None)
+    return JsonResponse({})
+
+@require_admin
+def move_to_group(request):
+    users = simplejson.loads(request.raw_post_data or "{}").get("users", [])
+    group = simplejson.loads(request.raw_post_data or "{}").get("group", "")
+    group_update = FacilityGroup.objects.get(pk=group)
+    users_to_move = FacilityUser.objects.filter(username__in=users)
+    users_to_move.update(group=group_update)
+    return JsonResponse({})
+
+@require_admin
+def delete_users(request):
+    users = simplejson.loads(request.raw_post_data or "{}").get("users", [])
+    users_to_delete = FacilityUser.objects.filter(username__in=users)
+    users_to_delete.delete()
+    return JsonResponse({})
+

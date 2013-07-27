@@ -1,0 +1,46 @@
+{% extends 'base_distributed.html' %}
+
+{% load i18n %}
+{% load repeatblock %}
+{% load staticfiles %}
+
+{% block update_active %}active{% endblock update_active %}
+{% block title %}{% trans "Update" %}{% endblock %}
+
+{% block headcss %}{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% static 'css/landing-page.css' %}" />
+{% endblock headcss %}
+
+{% block content %}
+
+<div>
+    <div class="wrapit">
+        <div class="clearfix">
+            <div class="separate">
+                <div class="vertical-shadow suggested-action">
+                    <a href="{% url update_videos %}?{% block topic_paths %}{% for path in form.topic_path %}topic_path={{ path }}&{% endfor %}{% endblock topic_paths %}">
+                        <h2 class="suggested-action-title">{% trans "Update Videos" %}</h2>
+                        <div class="suggested-action-image-link" style="background-image: url({% static 'images/update_videos.png' %});"></div>
+                    </a>
+                </div>
+            </div>
+            <div class="separate">
+                <div class="vertical-shadow suggested-action">
+                    <a href="{% url update_subtitles %}?{% repeatblock topic_paths %}">
+                        <h2 class="suggested-action-title">{% trans "Update Subtitles" %}</h2>
+                        <div class="suggested-action-image-link" style="background-image: url({% static 'images/update_subtitles.jpeg' %});"></div>
+                    </a>
+                </div>
+            </div>
+            <div class="separate">
+                <div class="vertical-shadow suggested-action">
+                    <a href="{% url update_software %}?{% repeatblock topic_paths %}">
+                        <h2 class="suggested-action-title">{% trans "Update KA Lite" %}</h2>
+                        <div class="suggested-action-image-link" style="background-image: url({% static 'images/update_software.jpg' %});"></div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
