@@ -181,13 +181,6 @@
                                     {% else %}
                                         <td class="status data partial" title="{% trans "Attempted" %}">
                                     {% endif %}
-                                    {% if not log %}
-                                            &nbsp;
-                                    {% else %}
-                                            <div class="attempts">{{log.attempts}} {% trans "attempts" %}</div>
-                                            <div class="points">{{log.points}} {% trans "points" %}</div>
-                                            <div class="streak_progress">{% if not log.complete %}{{log.streak_progress}}% {% trans "streak" %}{% else %}&nbsp;{% endif %}</div>
-                                    {% endif %}
                                         </td>
                                 {% endfor %}
                             </tr>
@@ -284,7 +277,7 @@ $(function() {
     });
         
     $(window).resize(function() {
-        $('.headrowuser').height($('.headrow.data').height()+1);
+        $('.headrowuser').height($('.headrow.data').height());
     }).resize();
     
     

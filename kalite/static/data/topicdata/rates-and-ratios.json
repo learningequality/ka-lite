@@ -8,6 +8,7 @@
     "related_video_readable_ids": [
       "ratios-as-fractions-in-simplest-form"
     ], 
+    "slug": "expressing_ratios_as_fractions", 
     "prerequisites": [
       "simplifying_fractions"
     ], 
@@ -15,7 +16,7 @@
     "h_position": 28, 
     "v_position": -10, 
     "path": "/math/arithmetic/rates-and-ratios/ratios_and_proportions/e/expressing_ratios_as_fractions/", 
-    "slug": "expressing_ratios_as_fractions", 
+    "id": "expressing_ratios_as_fractions", 
     "name": "expressing_ratios_as_fractions"
   }, 
   {
@@ -27,6 +28,7 @@
     "related_video_readable_ids": [
       "simplifying-rates-and-ratios"
     ], 
+    "slug": "ratio_word_problems", 
     "prerequisites": [
       "expressing_ratios_as_fractions"
     ], 
@@ -34,7 +36,7 @@
     "h_position": 29, 
     "v_position": -8, 
     "path": "/math/arithmetic/rates-and-ratios/ratios_and_proportions/e/ratio_word_problems/", 
-    "slug": "ratio_word_problems", 
+    "id": "ratio_word_problems", 
     "name": "ratio_word_problems"
   }, 
   {
@@ -46,6 +48,7 @@
     "related_video_readable_ids": [
       "understanding-proportions"
     ], 
+    "slug": "writing_proportions", 
     "prerequisites": [
       "expressing_ratios_as_fractions"
     ], 
@@ -53,7 +56,7 @@
     "h_position": 29, 
     "v_position": -10, 
     "path": "/math/arithmetic/rates-and-ratios/ratios_and_proportions/e/writing_proportions/", 
-    "slug": "writing_proportions", 
+    "id": "writing_proportions", 
     "name": "writing_proportions"
   }, 
   {
@@ -65,6 +68,7 @@
     "related_video_readable_ids": [
       "understanding-proportions"
     ], 
+    "slug": "proportions_1", 
     "prerequisites": [
       "proportions_1", 
       "expressing_ratios_as_fractions"
@@ -73,7 +77,7 @@
     "h_position": 29, 
     "v_position": -9, 
     "path": "/math/arithmetic/rates-and-ratios/ratios_and_proportions/e/proportions_1/", 
-    "slug": "proportions_1", 
+    "id": "proportions_1", 
     "name": "proportions_1"
   }, 
   {
@@ -85,6 +89,7 @@
     "related_video_readable_ids": [
       "understanding-proportions"
     ], 
+    "slug": "proportions_2", 
     "prerequisites": [
       "proportions_1"
     ], 
@@ -92,7 +97,7 @@
     "h_position": 30, 
     "v_position": -9, 
     "path": "/math/arithmetic/rates-and-ratios/ratios_and_proportions/e/proportions_2/", 
-    "slug": "proportions_2", 
+    "id": "proportions_2", 
     "name": "proportions_2"
   }, 
   {
@@ -104,6 +109,7 @@
     "related_video_readable_ids": [
       "finding-unit-prices"
     ], 
+    "slug": "rate_problems_0.5", 
     "prerequisites": [
       "units"
     ], 
@@ -111,7 +117,7 @@
     "h_position": 29, 
     "v_position": -11, 
     "path": "/math/arithmetic/rates-and-ratios/rates_tutorial/e/rate_problems_0.5/", 
-    "slug": "rate_problems_0.5", 
+    "id": "rate_problems_0.5", 
     "name": "rate_problems_0.5"
   }, 
   {
@@ -123,6 +129,7 @@
     "related_video_readable_ids": [
       "finding-unit-prices"
     ], 
+    "slug": "rate_problems_1", 
     "prerequisites": [
       "rate_problems_0.5"
     ], 
@@ -130,7 +137,7 @@
     "h_position": 30, 
     "v_position": -11, 
     "path": "/math/arithmetic/rates-and-ratios/rates_tutorial/e/rate_problems_1/", 
-    "slug": "rate_problems_1", 
+    "id": "rate_problems_1", 
     "name": "rate_problems_1"
   }, 
   {
@@ -142,6 +149,7 @@
     "related_video_readable_ids": [
       "finding-unit-prices"
     ], 
+    "slug": "rate_problems_2", 
     "prerequisites": [
       "rate_problems_1"
     ], 
@@ -149,7 +157,7 @@
     "h_position": 31, 
     "v_position": -11, 
     "path": "/math/arithmetic/rates-and-ratios/rates_tutorial/e/rate_problems_2/", 
-    "slug": "rate_problems_2", 
+    "id": "rate_problems_2", 
     "name": "rate_problems_2"
   }, 
   {
@@ -161,6 +169,7 @@
     "related_video_readable_ids": [
       "unit-conversion-with-fractions"
     ], 
+    "slug": "units", 
     "prerequisites": [
       "multiplying_fractions"
     ], 
@@ -168,7 +177,7 @@
     "h_position": 28, 
     "v_position": -11, 
     "path": "/math/arithmetic/rates-and-ratios/unit_conversion/e/units/", 
-    "slug": "units", 
+    "id": "units", 
     "name": "units"
   }
 ]

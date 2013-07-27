@@ -9,6 +9,7 @@
       "addition-and-subtraction-of-polynomials", 
       "subtracting-polynomials-with-multiple-variables"
     ], 
+    "slug": "adding_and_subtracting_polynomials", 
     "prerequisites": [
       "equation_of_a_line"
     ], 
@@ -16,7 +17,7 @@
     "h_position": 45, 
     "v_position": -7, 
     "path": "/math/algebra/polynomials/polynomial_basics/e/adding_and_subtracting_polynomials/", 
-    "slug": "adding_and_subtracting_polynomials", 
+    "id": "adding_and_subtracting_polynomials", 
     "name": "adding_and_subtracting_polynomials"
   }, 
   {
@@ -28,6 +29,7 @@
     "related_video_readable_ids": [
       "special-products-of-polynomials-2"
     ], 
+    "slug": "multiplying_expressions_0.5", 
     "prerequisites": [
       "adding_and_subtracting_polynomials"
     ], 
@@ -35,7 +37,7 @@
     "h_position": 46, 
     "v_position": -7, 
     "path": "/math/algebra/polynomials/multiplying_polynomials/e/multiplying_expressions_0.5/", 
-    "slug": "multiplying_expressions_0.5", 
+    "id": "multiplying_expressions_0.5", 
     "name": "multiplying_expressions_0.5"
   }, 
   {
@@ -47,6 +49,7 @@
     "related_video_readable_ids": [
       "special-products-of-polynomials-2"
     ], 
+    "slug": "factoring_linear_binomials", 
     "prerequisites": [
       "multiplying_expressions_1", 
       "multiplying_polynomials"
@@ -55,7 +58,7 @@
     "h_position": 48, 
     "v_position": -6, 
     "path": "/math/algebra/polynomials/multiplying_polynomials/e/factoring_linear_binomials/", 
-    "slug": "factoring_linear_binomials", 
+    "id": "factoring_linear_binomials", 
     "name": "factoring_linear_binomials"
   }, 
   {
@@ -67,6 +70,7 @@
     "related_video_readable_ids": [
       "special-products-of-polynomials-2"
     ], 
+    "slug": "multiplying_expressions_1", 
     "prerequisites": [
       "multiplying_expressions_0.5"
     ], 
@@ -74,7 +78,7 @@
     "h_position": 47, 
     "v_position": -7, 
     "path": "/math/algebra/polynomials/multiplying_polynomials/e/multiplying_expressions_1/", 
-    "slug": "multiplying_expressions_1", 
+    "id": "multiplying_expressions_1", 
     "name": "multiplying_expressions_1"
   }, 
   {
@@ -87,6 +91,7 @@
       "more-multiplying-polynomials", 
       "multiplying-polynomials-3"
     ], 
+    "slug": "multiplying_polynomials", 
     "prerequisites": [
       "multiplying_expressions_0.5"
     ], 
@@ -94,7 +99,7 @@
     "h_position": 47, 
     "v_position": -6, 
     "path": "/math/algebra/polynomials/multiplying_polynomials/e/multiplying_polynomials/", 
-    "slug": "multiplying_polynomials", 
+    "id": "multiplying_polynomials", 
     "name": "multiplying_polynomials"
   }
 ]

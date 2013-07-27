@@ -4,21 +4,21 @@ from annoying.functions import get_object_or_None
 from functools import partial
 from collections import OrderedDict
 
-from django.utils import simplejson
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, HttpResponseNotFound, HttpResponseServerError
+from django.core.exceptions import PermissionDenied
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.utils import simplejson
+from django.utils.translation import ugettext as _
 
+from coachreports.forms import DataForm
+from config.models import Settings
+from main import topicdata
 from main.models import VideoLog, ExerciseLog, VideoFile
 from securesync.models import Facility, FacilityUser,FacilityGroup, DeviceZone, Device
 from securesync.views import facility_required
-#from shared.views import group_report_context
-from coachreports.forms import DataForm
-from main import topicdata
-from config.models import Settings
 from utils.internet import StatusException, JsonResponse
 from utils.topic_tools import get_topic_by_path
 
@@ -26,15 +26,15 @@ from utils.topic_tools import get_topic_by_path
 # Global variable of all the known stats, their internal and external names,
 #    and their "datatype" (which is a value that Google Visualizations uses)
 stats_dict = [
-    { "key": "pct_mastery",        "name": "% Mastery",          "type": "number", "description": "Percent of exercises mastered (at least 10 consecutive correct answers)" },
-    { "key": "effort",             "name": "% Effort",           "type": "number", "description": "Combination of attempts on exercises and videos watched." },
-    { "key": "ex:attempts",        "name": "Average attempts",   "type": "number", "description": "Number of times submitting an answer to an exercise." },
-    { "key": "ex:streak_progress", "name": "Average streak",     "type": "number", "description": "Maximum number of consecutive correct answers on an exercise." },
-    { "key": "ex:points",          "name": "Exercise points",    "type": "number", "description": "[Pointless at the moment; tracks mastery linearly]" },
-    { "key": "ex:completion_timestamp", "name": "Time exercise completed","type": "datetime", "description": "Day/time the exercise was completed."},
-    { "key": "vid:points",          "name": "Video points",      "type": "number", "description": "Points earned while watching a video (750 max / video)." },
-    { "key": "vid:total_seconds_watched","name": "Video time",   "type": "number", "description": "Total seconds spent watching a video." },
-    { "key": "vid:completion_timestamp", "name": "Time video completed","type": "datetime", "description": "Day/time the video was completed." },
+    { "key": "pct_mastery",        "name": _("% Mastery"),          "type": "number", "description": _("Percent of exercises mastered (at least 10 consecutive correct answers)") },
+    { "key": "effort",             "name": _("% Effort"),           "type": "number", "description": _("Combination of attempts on exercises and videos watched.") },
+    { "key": "ex:attempts",        "name": _("Average attempts"),   "type": "number", "description": _("Number of times submitting an answer to an exercise.") },
+    { "key": "ex:streak_progress", "name": _("Average streak"),     "type": "number", "description": _("Maximum number of consecutive correct answers on an exercise.") },
+    { "key": "ex:points",          "name": _("Exercise points"),    "type": "number", "description": _("[Pointless at the moment; tracks mastery linearly]") },
+    { "key": "ex:completion_timestamp", "name": _("Time exercise completed"),"type": "datetime", "description": _("Day/time the exercise was completed.") },
+    { "key": "vid:points",          "name": _("Video points"),      "type": "number", "description": _("Points earned while watching a video (750 max / video).") },
+    { "key": "vid:total_seconds_watched","name": _("Video time"),   "type": "number", "description": _("Total seconds spent watching a video.") },
+    { "key": "vid:completion_timestamp", "name": _("Time video completed"),"type": "datetime", "description": _("Day/time the video was completed.") },
 ]
 
 
@@ -42,7 +42,7 @@ def get_data_form(request, *args, **kwargs):
     """Get the basic data form, by combining information from
     keyword arguments and the request.REQUEST object.
     Along the way, check permissions to make sure whatever's being requested is OK.
-    
+
     Request objects get priority over keyword args.
     """
     assert not args, "all non-request args should be keyword args"
@@ -97,22 +97,22 @@ def get_data_form(request, *args, **kwargs):
         if not request.is_admin:
             if group and form.data["group"] and group.id != form.data["group"]: # can't go outside group
                 # We could also redirect
-                HttpResponseForbidden("You cannot choose a group outside of your group.")
+                raise PermissionDenied("You cannot choose a group outside of your group.")
             elif facility and form.data["facility"] and facility.id != form.data["facility"]:
                 # We could also redirect
-                HttpResponseForbidden("You cannot choose a facility outside of your own facility.")
+                raise PermissionDenied("You cannot choose a facility outside of your own facility.")
             elif not request.is_admin:
                 if not form.data["user"]:
                     # We could also redirect
-                    HttpResponseForbidden("You cannot choose facility/group-wide data.")
+                    raise PermissionDenied("You cannot choose facility/group-wide data.")
                 elif user and form.data["user"] and user.id != form.data["user"]:
                     # We could also redirect
-                    HttpResponseForbidden("You cannot choose a user outside of yourself.")
+                    raise PermissionDenied("You cannot choose a user outside of yourself.")
 
     # Fill in backwards: a user implies a group
     if form.data.get("user") and not form.data.get("group"):
          user = get_object_or_404(FacilityUser, id=form.data["user"])
-         form.data["group"] = getattr(user.group, "id")
+         form.data["group"] = getattr(user.group, "id", None)
 
     if form.data.get("group") and not form.data.get("facility"):
          group = get_object_or_404(FacilityGroup, id=form.data["group"])
@@ -217,6 +217,12 @@ def compute_data(types, who, where):
             else:
                 raise Exception("Unknown type: '%s' not in %s" % (type, str([f.name for f in ExerciseLog._meta.fields])))
 
+    # Returning empty list instead of None allows javascript on client
+    # side to read 'length' property without error.
+    exercises = exercises or []
+
+    videos = videos or []
+
     return {
         "data": data,
         "topics": topics,
@@ -226,9 +232,9 @@ def compute_data(types, who, where):
 
 
 def convert_topic_tree_for_dynatree(node, level=0):
-    """Converts topic tree from standard dictionary nodes 
+    """Converts topic tree from standard dictionary nodes
     to dictionary nodes usable by the dynatree app"""
-    
+
     if node["kind"] == "Topic":
         if "Exercise" not in node["contains"]:
             return None
@@ -237,7 +243,7 @@ def convert_topic_tree_for_dynatree(node, level=0):
             child = convert_topic_tree_for_dynatree(child_node, level=level+1)
             if child:
                 children.append(child)
-                
+
         return {
             "title": node["title"],
             "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
@@ -258,7 +264,7 @@ def get_topic_tree(request, topic_path):
 @csrf_exempt
 def api_data(request, xaxis="", yaxis=""):
     """Request contains information about what data are requested (who, what, and how).
-    
+
     Response should be a JSON object
     * data contains the data, structred by user and then datatype
     * the rest of the data is metadata, useful for displaying detailed info about data.
@@ -285,7 +291,7 @@ def api_data(request, xaxis="", yaxis=""):
 
     # Query out the data: where?
     if not form.data.get("topic_path"):
-        return HttpResponseServerError("Must specify a topic path")
+        return HttpResponseNotFound("Must specify a topic path")
 
     # Query out the data: what?
     try:

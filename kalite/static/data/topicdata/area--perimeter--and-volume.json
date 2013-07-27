@@ -6,6 +6,7 @@
     "title": "Shaded areas", 
     "seconds_per_fast_problem": 22.0, 
     "related_video_readable_ids": [], 
+    "slug": "shaded_areas", 
     "prerequisites": [
       "circles_and_arcs", 
       "areas_of_circles_and_sectors"
@@ -14,7 +15,7 @@
     "h_position": 38, 
     "v_position": -19, 
     "path": "/math/geometry/area--perimeter--and-volume/e/shaded_areas/", 
-    "slug": "shaded_areas", 
+    "id": "shaded_areas", 
     "name": "shaded_areas"
   }
 ]

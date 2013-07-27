@@ -1,3 +1,3 @@
 from central.tests.browser_tests import *
 from central.tests.fixture_tests import *
-from central.tests.urls_test import *
+from central.tests.url_tests import *
