@@ -7,16 +7,16 @@ import os
 import sys
 import time
 import zipfile
-
+from functools import partial
 from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
 from django.core.management import call_command
 
-from generate_subtitle_map import SRTS_JSON_FILENAME, LANGUAGE_SRT_FILENAME, headers
-from utils.subtitles import subtitle_utils, generate_subtitle_counts 
 import settings
+from generate_subtitle_map import SRTS_JSON_FILENAME, LANGUAGE_SRT_FILENAME, headers
 from settings import LOG as logging
+from utils.subtitles import subtitle_utils, generate_subtitle_counts 
 
 
 download_path = settings.STATIC_ROOT + "srt/"  # kalite/static/
@@ -42,80 +42,75 @@ def download_srt_from_3rd_party(*args, **kwargs):
     # if language specified, do those, if not do all
     if lang_code:
         try:
-            vids_in_language = language_srt_map.get(lang_code)
+            vids_in_language = language_srt_map[lang_code]
         except:
             raise LanguageCodeDoesNotExist()
         download_if_criteria_met(vids_in_language, *args, **kwargs)
 
     else:
-        import pdb; pdb.set_trace()
         for lang_code, videos in language_srt_map.items():
             kwargs["lang_code"] = lang_code
             download_if_criteria_met(videos, *args, **kwargs)
 
 
-def download_if_criteria_met(videos, lang_code, force, response_code, date_since_attempt, *args, **kwargs):
+def get_srt_path(download_path, lang_code):
+    return download_path + lang_code + "/subtitles/"
 
-    """Execute download of subtitle if it meets the criteria specified by the command line args"""
+
+def download_if_criteria_met(videos, lang_code, force, response_code, date_since_attempt, *args, **kwargs):
+    """Execute download of subtitle if it meets the criteria specified by the command line args
+    
+    Note: videos are a dict; keys=youtube_id, values=data
+    """
 
     date_specified = subtitle_utils.convert_date_input(date_since_attempt)
 
+    # Filter up front, for efficiency (& reporting's sake)
+    n_videos = len(videos)
+
+    # Filter based on response code
+    if response_code.lower() != "all":
+        logging.info("Filtering based on response code...")
+        response_code_filter = partial(lambda vid, rcode: rcode == vid["api_response"], rcode=response_code)
+        videos = dict([(k, v) for k, v in videos.items() if response_code_filter(v)])
+        logging.info("%4d of %4d videos match your specified response code (%s)" % (len(videos), n_videos, response_code))
+
+    if date_specified:
+        logging.info("Filtering based on date...")
+        date_filter = partial(lambda vid, dat: not vid["last_attempt"] or datetime.datetime.strptime(last_attempt, '%Y-%m-%d') < dat, date_specified)
+        videos = dict([(k, v) for k, v in videos.items() if date_filter(v)])
+        logging.info("%4d of %4d videos need refreshing (last refresh < %s)" % (len(videos), n_videos, date_specified))
+
+    # Loop over good videos
     for youtube_id, entry in videos.items():
-        last_attempt = entry.get("last_attempt")
-        api_response = entry.get("api_response")
         previously_downloaded = entry.get("downloaded")
 
-        # HELP: I feel like this set of logic gates could be more efficient or
-        # easier to read
-        date_test_passed = False
-        response_code_test = False
+        if previously_downloaded and not force:
+            logging.info("Already downloaded %s/%s. To redownload, run again with -R." % (lang_code, youtube_id))
+            continue
 
-        if date_specified:
-            if not last_attempt or datetime.datetime.strptime(last_attempt, '%Y-%m-%d') < date_specified:
-                date_test_passed = True
-            else:
-                logging.info(
-                    "Last attempt more recent than specified date. Moving on.")
-        # response code must be specified, so it must exist
-        if response_code == "all" or response_code == api_response:
-            response_code_test = True
+        logging.info("Attempting to download subtitle for lang: %s and YouTube ID: %s" % (lang_code, youtube_id))
+        response = download_subtitle(youtube_id, lang_code, format="srt")
+        time_of_attempt = unicode(datetime.datetime.now().date())
+
+        if response == "client-error" or response == "server-error":
+            # Couldn't download
+            logging.info("Updating JSON file to record %s." % response)
+            update_json(youtube_id, lang_code, previously_downloaded, response, time_of_attempt)
+
         else:
-            logging.info(
-                "API response doesn't match specified HTTP status code. Moving on.")
+            dirpath = get_srt_path(download_path, lang_code)
+            filename = youtube_id + ".srt"
+            fullpath = dirpath + filename
+            logging.info("Writing file to %s" % fullpath)
 
-        # HELP: not feeling to good stylistically for having this extra block 
-        download_it = False
-        if date_specified and date_test_passed and response_code_test:
-            download_it = True
-        elif not date_specified and response_code_test:
-            download_it = True
+            if not os.path.exists(dirpath):
+                os.makedirs(dirpath)
+            with open(fullpath, 'w') as fp:
+                fp.write(response.encode('UTF-8'))
 
-        if download_it:
-            if not previously_downloaded or force:
-                logging.info("Attempting to download subtitle for lang: %s and YouTube ID: %s" % (lang_code, youtube_id))
-                response = download_subtitle(youtube_id, lang_code, format="srt")
-                time_of_attempt = unicode(datetime.datetime.now().date())
-                if response == "client-error" or response == "server-error":
-                    logging.info("Updating JSON file to record %s." % response)
-                    update_json(
-                        youtube_id, lang_code, previously_downloaded, response, time_of_attempt)
-                else:
-                    dirpath = download_path + lang_code + "/subtitles/"
-                    filename = youtube_id + ".srt"
-                    fullpath = dirpath + filename
-                    logging.info("Writing file to %s" % fullpath)
-
-                    if not os.path.exists(dirpath):
-                        os.makedirs(dirpath)
-
-                    with open(fullpath, 'w') as fp:
-                        fp.write(response.encode('UTF-8'))
-
-                    logging.info("Updating JSON file to record xe.")
-                    update_json(youtube_id, lang_code, True, "success", time_of_attempt)
-            else:
-                logging.info(
-                    "Already downloaded. To redownload, run again with -R.")
+            logging.info("Updating JSON file to record xe.")
+            update_json(youtube_id, lang_code, True, "success", time_of_attempt)
 
 
 def download_subtitle(youtube_id, lang_code, format="srt"):
@@ -166,23 +161,29 @@ def update_json(youtube_id, lang_code, downloaded, api_response, time_of_attempt
     json_file.write(json.dumps(language_srt_map))
     json_file.close()
 
-def generate_zipped_srts(lang_code_to_update):
+
+def generate_zipped_srts(lang_code_to_update, download_path):
+    
     # Create media directory if it doesn't yet exist
-    media_root = settings.MEDIA_ROOT
-    subtitle_utils.ensure_dir(media_root)
-    zip_path = media_root + "subtitles/"
+    subtitle_utils.ensure_dir(settings.MEDIA_ROOT)
+    zip_path = settings.MEDIA_ROOT + "subtitles/"
     subtitle_utils.ensure_dir(zip_path)
-    locale_path = settings.LOCALE_PATHS[0]
-    lang_dirs = os.listdir(locale_path)
+
+    if not os.path.exists(download_path):
+        logging.info("Nothing to zip; exiting.")
+        return;
+
+    lang_dirs = os.listdir(download_path)
     for lang_code in lang_dirs:
         if (lang_code_to_update and lang_code_to_update == lang_code) or (not lang_code_to_update):
-            if "subtitles" in os.listdir(locale_path + lang_code):
+            if "subtitles" in os.listdir(download_path + lang_code):
                 zf = zipfile.ZipFile('%s%s_subtitles.zip' % (zip_path, lang_code), 'w')
-                for root, dirs, files in os.walk("%s%s/subtitles/" % (locale_path, lang_code)):
+                for root, dirs, files in os.walk(get_srt_path(download_path, lang_code)):
                     for f in files:
                         zf.write(os.path.join(root, f), arcname=f)
                 zf.close()
                 logging.info("Zipped up a new pack for language code: %s" % lang_code)
+
 
 class Command(BaseCommand):
     help = "Update the mapping of subtitles available by language for each video. Location: static/data/subtitledata/video_srts.json"
@@ -209,23 +210,22 @@ class Command(BaseCommand):
         make_option('-r', '--response_code', 
                     action='store',
                     dest='response_code',
-                    default=None,
+                    default="",
                     metavar="RESP_CODE",
-                    help="Which api-response code to recheck. Can be combined with -d. USAGE: '-r all', '-r client-error', or '-r server-error'. This option is required!"),
+                    help="Which api-response code to recheck. Can be combined with -d. USAGE: '-r success', '-r client-error',  '-r server-error', or '-r all'  Default: -r (empty)"),
     )
 
     def handle(self, *args, **options):
-        if not options.get("response_code"):
-            raise CommandError(
-                "Response code not specified (-r flag). Please read the usage instructions more carefully and try again.")
+        try:
+            logging.info("Downloading...")
+            download_srt_from_3rd_party(**options)
 
-        download_srt_from_3rd_party(**options)
-
-        logging.info("Executed successfully! Generating new subtitle counts!")
-        generate_subtitle_counts.get_new_counts()
+            logging.info("Executed successfully! Generating new subtitle counts!")
+            generate_subtitle_counts.get_new_counts(data_path=settings.SUBTITLES_DATA_ROOT, download_path=download_path)
         
-        logging.info("Executed successfully! Re-zipping changed language packs!")
-        generate_zipped_srts(lanaguage=options.get("language"))
+            logging.info("Executed successfully! Re-zipping changed language packs!")
+            generate_zipped_srts(lang_code_to_update=options.get("language"), download_path=download_path)
 
-        logging.info("Process complete.")
-        sys.exit(1)
+            logging.info("Process complete.")
+        except Exception as e:
+            raise CommandError(e)

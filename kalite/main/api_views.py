@@ -178,7 +178,6 @@ def get_video_download_list(request):
 
 @require_admin_api
 def start_subtitle_download(request):
-    import pdb;pdb.set_trace()
     language = simplejson.loads(request.raw_post_data or "{}").get("language", "")
     language_list = topicdata.LANGUAGE_LIST 
     # this is updated because it is used by subtitledownload command

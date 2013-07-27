@@ -22,7 +22,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         logging.info("Inside subtitle_download")
-        import pdb; pdb.set_trace()
         language = Settings.get("subtitle_language")
             
         #  Create database entry 

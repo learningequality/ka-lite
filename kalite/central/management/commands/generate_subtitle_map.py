@@ -79,6 +79,7 @@ def create_all_mappings(force=False, frequency_to_save=100):
 
 def update_subtitle_map(code_to_check, date_to_check):
     """Update JSON dictionary of subtitle information based on arguments provided"""
+
     srts_dict = json.loads(open(settings.SUBTITLES_DATA_ROOT + SRTS_JSON_FILENAME).read())
     for youtube_id, data in srts_dict.items():
         # ensure response code and date exists
@@ -89,24 +90,26 @@ def update_subtitle_map(code_to_check, date_to_check):
 
         # HELP: why does the below if statement suck so much? does it suck? it feels like it sucks
         # case: -d AND -s
-        flag_for_refresh = not (response_code or last_attempt)
+        flag_for_refresh = True#not (response_code or last_attempt)
         flag_for_refresh = flag_for_refresh and (not date_to_check or date_to_check > last_attempt)
         flag_for_refresh = flag_for_refresh and (code_to_check == "all" or code_to_check == response_code)
+        if not flag_for_refresh:
+            continue
 
-        if flag_for_refresh:
-            new_entry = update_video_entry(youtube_id)
-            # here we are checking that the original data isn't overwritten by an error response, which only returns last-attempt and api-response
-            new_api_response = new_entry["api_response"]
-            if new_api_response is not "success":
-                srts_dict[youtube_id]["api_response"] = new_api_response
-                srts_dict[youtube_id]["last_attempt"] = new_entry["last_attempt"]
-            # if it wasn't an error, we simply update the old information with the new
-            else: 
-                srts_dict[youtube_id].update(new_entry)
+        new_entry = update_video_entry(youtube_id)
+        # here we are checking that the original data isn't overwritten by an error response, which only returns last-attempt and api-response
+        new_api_response = new_entry["api_response"]
+        if new_api_response is not "success":
+            srts_dict[youtube_id]["api_response"] = new_api_response
+            srts_dict[youtube_id]["last_attempt"] = new_entry["last_attempt"]
+        # if it wasn't an error, we simply update the old information with the new
+        else: 
+            srts_dict[youtube_id].update(new_entry)
 
     logging.info("Great success! Re-writing JSON file.")
     with open(settings.SUBTITLES_DATA_ROOT + SRTS_JSON_FILENAME, 'wb') as fp:
         json.dump(srts_dict, fp)
+
 
 def update_video_entry(youtube_id):
     """Return a dictionary to be appended to the current schema:
@@ -125,9 +128,11 @@ def update_video_entry(youtube_id):
     # add api response first to prevent empty json on errors
     entry = {}
     entry["last_attempt"] = unicode(datetime.datetime.now().date())
-    if r == "client_error" or r == "server_error":
+
+    if isinstance(r, basestring):  # string responses mean some type of error
         logging.info("%s at %s" %(r, request_url))
         entry["api_response"] = r
+
     else:
         logging.info("Success at %s" % request_url)
         entry["api_response"] = "success"
@@ -145,6 +150,7 @@ def update_video_entry(youtube_id):
                 amara_code = languages[0].get("subtitles_uri").split("/")[4]
                 assert len(amara_code) == 12  # in case of future API change
                 entry["amara_code"] = amara_code
+
     return entry
 
 def update_language_srt_map(languages=None):

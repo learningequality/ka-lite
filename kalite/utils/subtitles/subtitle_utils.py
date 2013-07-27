@@ -12,7 +12,11 @@ class InvalidDateFormat(Exception):
 
 
 def make_request(headers, url, max_retries=5):
-    """Return response from url; retry up to 5 times for server errors; when returning an error, return human-readable status code."""
+    """Return response from url; retry up to 5 times for server errors.
+    When returning an error, return human-readable status code.
+    
+    codes: server-error, client-error
+    """
     for retries in range(1, 1+max_retries):
         try:
             r = requests.get(url, headers=headers)
