@@ -53,7 +53,10 @@
                     {% endif %}
                 {% endfor %}
         </select>
-        <button id="removegroup">{% trans "Remove Users from Group" %}</button>
+        
+         {% if not request.GET.group == "Ungrouped" %}
+         	     <button id="removegroup">{% trans "Remove Users from Group" %}</button>
+         {% endif %} 
 <!--         <button id="newuser">{% trans "Add New User to Group" %}</button> -->
         <button id="delete">{% trans "Delete Users" %}</button>
     </div>
