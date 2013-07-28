@@ -27,7 +27,26 @@ class JsonResponse(HttpResponse):
             content = simplejson.dumps(content, ensure_ascii=False)
         super(JsonResponse, self).__init__(content, content_type='application/json', *args, **kwargs)
 
-    
+
+def return_jsonp(handler):
+    """A general wrapper to functions that return json.
+
+    Args:
+        The target funtion.
+
+    Returns:
+        The original function 'wrapped'.
+    """
+    def wrapper_fn(request, *args, **kwargs):
+        json = handler(request, *args, **kwargs)
+
+        if 'callback' in request.REQUEST:
+            jsonp = '%s(%s);' % (request.REQUEST['callback'], json.content)
+            return JsonResponse(jsonp)
+        return JsonResponse(json.content)
+    return wrapper_fn
+
+
 def am_i_online(url, expected_val=None, search_string=None, timeout=5, allow_redirects=True):
     """Test whether we are online or not.
     returns True or False.  
