@@ -1,7 +1,7 @@
 """
 General string, integer, date functions.
 """
-
+import os
 
 def break_into_chunks(bigiterator, chunksize=500):
     """
@@ -58,6 +58,21 @@ def datediff(*args, **kwargs):
         return diff_secs/(7*24*3600.)
     else:
         raise NotImplementedError("Unrecognized units: '%s'" % units)
+
+
+def get_host_name():
+    """
+    Cross-platform way to get the current computer name.
+    """
+    name = ""
+    try:
+        name = eval("os.uname()[1]")
+    except:
+        try:
+            name = eval("os.getenv('HOSTNAME', os.getenv('COMPUTERNAME') or '').lower()")
+        except:
+            name = ""
+    return name
 
 
 if __name__ == "__main__":
