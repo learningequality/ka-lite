@@ -87,16 +87,26 @@ function updatesStart_callback(process_name) {
 }
 
 function updatesCheck(process_name, interval) {
+    // Check on current updates progress
+
+    // Get progress either generically (by the process_name, giving us the latest progress available),
+    //    or by the process_id (connecting us to a specific process.)
     var path = "/api/updates/progress?process_" + (has_a_val(process_name, process_ids) ? ("id=" + process_ids[process_name]) : ("name=" + process_name));
-
     doRequest(path).success(function(progress_log) {
-        var process_name = progress_log.process_name;
+        var completed = !progress_log.process_name || progress_log.completed;
 
-        // If cancelled, stop the madness!
-        if (!process_intervals[process_name]) {
-            return;
-        } else if (progress_log.completed) {
+        // Reasons to exit
+        if (completed) {
+            // 
             updatesReset(process_name);
+            //return
+        } else if (!process_intervals[process_name]) {
+            // If cancelled, stop the madness!
+            return;
+        }
+
+        if (!has_a_val(process_name, process_ids)) {
+            process_ids[process_name] = progress_log.process_id
         }
 
         // Update the UI
@@ -137,8 +147,8 @@ function updateDisplay(process_name, progress_log) {
     select_update_elements(process_name, ".stage-current").text(progress_log.cur_stage_num);
     select_update_elements(process_name, ".stage-total").text(progress_log.total_stages);
 
-    select_update_elements(process_name, ".stage-header").text(progress_log.process_name);
-    select_update_elements(process_name, ".stage-name").text(progress_log.stage_name);
+    select_update_elements(process_name, ".stage-header").text(progress_log.notes);
+    select_update_elements(process_name, ".stage-name").text("");
 
     // Do callbacks
     if (process_callbacks[process_name] && "display" in process_callbacks[process_name]) {

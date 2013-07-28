@@ -35,6 +35,7 @@ def check_update_progress(request):
 
     return JsonResponse(_process_log_to_dict(process_log))
 
+
 def _process_log_to_dict(process_log):
     """
     Utility function to convert a process log to a dict
@@ -48,6 +49,7 @@ def _process_log_to_dict(process_log):
         "stage_percent": process_log.stage_percent,
         "cur_stage_num": 1 + int(math.floor(process_log.total_stages * process_log.process_percent)),
         "total_stages": process_log.total_stages,
+        "notes": process_log.notes,
         "completed": process_log.completed or (process_log.end_time is not None),
         #"start_time": process_log.start_time,
     }

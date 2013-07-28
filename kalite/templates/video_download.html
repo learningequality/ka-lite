@@ -125,24 +125,9 @@ function video_check_callback(progress_log, resp) {
     }
 }
 
-function video_display_callback(progress_log) {
-    if (!progress_log) {
-        return;
-    }
-    //     Update the progress text
-    var currentKey = progress_log.stage_name;
-    if (!currentKey) {
-        return;
-    }
-    var currentNode = $("#content_tree").dynatree("getTree").getNodeByKey(currentKey);
-    $("#videodownload-progressbar .stage-header").text("Downloading video");
-    $("#videodownload-progressbar .stage-name").text(currentNode.data.title);
-}
-
 var video_callbacks = {
     start: video_start_callback,
     check: video_check_callback,
-    display: video_display_callback
 };
 </script>
 

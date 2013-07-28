@@ -6,6 +6,7 @@ from main.models import VideoFile
 from updates.utils import UpdatesDynamicCommand
 from utils import caching
 from utils.jobs import force_job
+from utils.topic_tools import get_video_by_youtube_id
 from utils.videos import download_video, DownloadCancelled
 
 
@@ -26,9 +27,12 @@ def download_progress_callback(self, videofile):
             raise DownloadCancelled()
 
         elif (percent - video.percent_complete) >= 1 or percent == 100:
-            self.stdout.write("%d\n" % percent)
 
-            # Update video data
+            # Update to output (saved in chronograph log, so be a bit more efficient
+            if int(percent) % 5 == 0 or percent == 100:
+                self.stdout.write("%d\n" % percent)
+
+            # Update video data in the database
             if percent == 100:
                 video.flagged_for_download = False
                 video.download_in_progress = False
@@ -36,7 +40,9 @@ def download_progress_callback(self, videofile):
             video.save()
 
             # update progress data
-            self.update_stage(stage_name=video.youtube_id, stage_percent=percent/100.)
+            video_node = get_video_by_youtube_id(video.youtube_id)
+            video_title = video_node["title"] if video_node else video.youtube_id
+            self.update_stage(stage_name=video.youtube_id, stage_percent=percent/100., notes="Downloading '%s'" % video_title)
 
     return inner_fn
             
