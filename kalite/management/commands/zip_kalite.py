@@ -39,7 +39,7 @@ def select_package_dirs(dirnames, key_base, **kwargs):
     if key_base == "":  # base directory
         in_dirs = set(('docs', 'kalite', 'locale', 'python-packages'))
 
-    elif base_name in ["locale", "localflavor"] and kwargs.get("locale", ""):
+    elif base_name in ["locale", "localflavor"] and kwargs.get("locale", "") not in [None, "", "all"]:
         # ONLY include files for the particular locale
 
         in_dirs = set((kwargs['locale'],))
@@ -128,7 +128,7 @@ def create_local_settings_file(location, server_type="local", locale=None):
 
     ls.write("\n") # never trust the previous file ended with a newline!
     ls.write("CENTRAL_SERVER = %s\n" % (server_type=="central"))
-    if locale:
+    if locale and locale != "all":
         ls.write("LANGUAGE_CODE = '%s'\n" % locale)
     ls.close()
 
