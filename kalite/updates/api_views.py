@@ -6,9 +6,9 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseServerError
 
 from updates.models import UpdateProgressLog
-from utils.decorators import require_admin
-from utils.general import isnumeric
-from utils.internet import JsonResponse
+from kalite.utils.decorators import require_admin
+from kalite.utils.general import isnumeric
+from kalite.utils.internet import JsonResponse
 
 @require_admin
 def check_update_progress(request):

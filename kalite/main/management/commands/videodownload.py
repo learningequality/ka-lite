@@ -1,16 +1,15 @@
+import sys
 import time
-
-from django.core.management.base import BaseCommand, CommandError
 
 import settings
 from main.models import VideoFile
-from updates.models import UpdateProgressLog
+from updates.utils import UpdatesDynamicCommand
 from utils import caching
 from utils.jobs import force_job
 from utils.videos import download_video, DownloadCancelled
 
 
-def download_progress_callback(self, videofile, progress_log=None):
+def download_progress_callback(self, videofile):
     def inner_fn(percent):
         video = VideoFile.objects.get(pk=videofile.pk)
 
@@ -22,11 +21,8 @@ def download_progress_callback(self, videofile, progress_log=None):
             video.flagged_for_download = False
             video.download_in_progress = False
             video.save()
-            
-            # Update progress info
-            if progress_log:
-                progress_log.cancel_current_stage()
 
+            # Progress info will be updated when this exception is caught.
             raise DownloadCancelled()
 
         elif (percent - video.percent_complete) >= 1 or percent == 100:
@@ -40,19 +36,16 @@ def download_progress_callback(self, videofile, progress_log=None):
             video.save()
 
             # update progress data
-            if progress_log:
-                progress_log.update_stage(stage_name=video.youtube_id, stage_percent=percent/100.)
+            self.update_stage(stage_name=video.youtube_id, stage_percent=percent/100.)
 
     return inner_fn
             
 
-class Command(BaseCommand):
+class Command(UpdatesDynamicCommand):
     help = "Download all videos marked to be downloaded"
 
     def handle(self, *args, **options):
-        
         handled_video_ids = []
-        progress_log = None
         try:
             while True: # loop until the method is aborted
             
@@ -75,15 +68,14 @@ class Command(BaseCommand):
                 video.save()
             
                 # Update the progress logging
-                if not progress_log:
-                    progress_log = UpdateProgressLog.get_active_log(process_name="videodownload")
-                    progress_log.stage_name = video.youtube_id
-                    progress_log.save()
-                progress_log.update_total_stages(videos.count() + len(handled_video_ids) + 1)  # add one for the currently handed video
-            
+                
+                self.set_stages(num_stages=videos.count() + len(handled_video_ids) + 1)  # add one for the currently handed video
+                if not self.started():
+                    self.start(stage_name=video.youtube_id)
+
                 # Initiate the download process
                 try:
-                    download_video(video.youtube_id, callback=download_progress_callback(self, video, progress_log=progress_log))
+                    download_video(video.youtube_id, callback=download_progress_callback(self, video))
                     self.stdout.write("Download is complete!\n")
                 except Exception as e:
                     self.stderr.write("Error in downloading: %s\n" % str(e))
@@ -99,14 +91,11 @@ class Command(BaseCommand):
                     caching.invalidate_cached_topic_hierarchies(video_id=video.youtube_id)
         except Exception as e:
             sys.stderr.write("Error: %s\n" % e)
-            progress_log.cancel_progress()
-            progress_log = None  # no further updates
+            self.cancel()
 
-            # Update
-        if progress_log:
-            progress_log.mark_as_completed()
+        # Update
+        self.complete()
 
         # Regenerate all pages, efficiently
         if hasattr(settings, "CACHES"):
             caching.regenerate_cached_topic_hierarchies(handled_video_ids)
-        
