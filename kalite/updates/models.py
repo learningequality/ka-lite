@@ -8,6 +8,7 @@ from settings import LOG as logging
 
 class UpdateProgressLog(models.Model):
     """
+    Gets progress
     """
     process_name = models.CharField(verbose_name="process name", max_length=100)
     process_percent = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(1.0)], default=0)
@@ -78,8 +79,12 @@ class UpdateProgressLog(models.Model):
         Need to be careful, as this affects the computation of process_percent.
         """
         assert self.end_time is None and self.completed == False, "Cannot update processes that have been ended."
-        logging.debug("Updating %s from %d to %d stages." % (self.process_name, self.total_stages, total_stages))
 
+        # Wouldn't hurt to execute the logic below, but that debug message is ANNOYING :)
+        if total_stages == self.total_stages:
+            return
+
+        logging.debug("Updating %s from %d to %d stages." % (self.process_name, self.total_stages, total_stages))
         self.process_percent *= self.total_stages / float(total_stages) if total_stages > 0 else 0
         self.total_stages = total_stages
         self.save()
@@ -107,6 +112,7 @@ class UpdateProgressLog(models.Model):
         self.end_time = datetime.datetime.now()
         self.completed = True
         self.save()
+
 
     @classmethod
     def get_active_log(cls, create_new=True, force_new=False, overlapping=False, *args, **kwargs):

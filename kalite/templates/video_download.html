@@ -90,6 +90,7 @@ function video_check_callback(progress_log, resp) {
 
         if (progress_log.stage_percent == 1.) {
             // 100% done with the video
+            var currentKey = progress_log.stage_name;
             setNodeClass(currentKey, "complete");
             if (progress_log.process_percent == 1.) {
                 // 100% done with ALL videos.

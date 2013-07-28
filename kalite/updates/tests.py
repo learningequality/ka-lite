@@ -6,7 +6,7 @@ import datetime
 from django.utils import unittest
 
 from updates.models import UpdateProgressLog
-from utils.general import datediff
+from kalite.utils.general import datediff
 
 
 class TestSingleStageUpdate(unittest.TestCase):
@@ -94,8 +94,6 @@ class TestSingleStageUpdate(unittest.TestCase):
         self.assertEqual(progress_log.stage_percent, 1., "stage_percent==1")
         self.assertEqual(progress_log.process_percent, 1., "proces_percent==1")
         self.assertEqual(progress_log.completed, True, "completed is False")
-
-
 
 
 class TestMultiStageUpdate(unittest.TestCase):
@@ -217,3 +215,5 @@ class TestMultiStageUpdate(unittest.TestCase):
         self.assertEqual(progress_log.process_percent, 1., "proces_percent==1")
         self.assertEqual(progress_log.completed, True, "completed is False")
 
+
+#class TestUpdatesDynamicCommand(unittest.TestCase):
