@@ -2,6 +2,7 @@ import re, json
 from annoying.functions import get_object_or_None
 
 from django.core.exceptions import ValidationError
+from django.core.management import call_command
 from django.http import HttpResponse
 from django.utils import simplejson
 from django.db.models import Q
@@ -18,6 +19,8 @@ from utils.internet import JsonResponse
 from utils.jobs import force_job, job_status
 from utils.orderedset import OrderedSet
 from utils.videos import delete_downloaded_files
+from utils.django_utils import call_command_async
+
 
 def save_video_log(request):
     """
@@ -311,8 +314,19 @@ Software updates
 
 @require_admin
 def start_update_kalite(request):
-    import pdb; pdb.set_trace()
-    call_command("update")
+    data = json.loads(request.raw_post_data)
+
+    if request.META.get("CONTENT_TYPE", "") == "application/json" and "url" in data:
+        # Got a download url
+        call_command_async("update", url=data["url"])
+
+    elif request.META.get("CONTENT_TYPE", "") == "application/zip":
+        # Streamed a file; save and call
+        fp, tempfile = tempfile.mkstmp()
+        with fp:
+            write(request.content)
+        call_command_async("update", zip_file=tempfile)
+
     return JsonResponse({})
 
 @require_admin

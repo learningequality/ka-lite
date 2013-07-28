@@ -19,6 +19,7 @@ from django.utils.translation import ugettext as _
 from django.views.decorators.cache import cache_control
 from django.views.decorators.cache import cache_page
 
+import kalite
 import settings
 from config.models import Settings
 from control_panel.views import user_management_context
@@ -339,6 +340,7 @@ def update_subtitles(request):
 def update_software(request):
     context = {
         "am_i_online": True,
+        "software_version": kalite.VERSION,
     }
     return context
 

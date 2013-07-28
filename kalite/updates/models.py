@@ -54,11 +54,13 @@ class UpdateProgressLog(models.Model):
             if self.stage_name:
                 self.process_percent += (1 - self.stage_percent) / float(self.total_stages)
                 self.stage_percent = 0
+                self.notes = None  # reset notes after each stage
             self.stage_name = stage_name
 
         self.process_percent += (stage_percent - self.stage_percent) / float(self.total_stages)
         self.stage_percent = stage_percent
-        self.notes = notes
+        if notes is not None:
+            self.notes = notes
         self.save()
 
 

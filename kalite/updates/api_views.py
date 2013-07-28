@@ -15,26 +15,29 @@ def check_update_progress(request):
     """
     API endpoint for getting progress data on downloads.
     """
-    if request.GET.get("process_id", None):
-        # Get by ID--direct!
-        if not isnumeric(request.GET["process_id"]):
-            return JsonResponse({"error": "process_id is not numeric."}, status=500);
+    try:
+        if request.GET.get("process_id", None):
+            # Get by ID--direct!
+            if not isnumeric(request.GET["process_id"]):
+                return JsonResponse({"error": "process_id is not numeric."}, status=500);
+            else:
+                process_log = get_object_or_404(UpdateProgressLog, id=request.GET["process_id"])
+
+        elif request.GET.get("process_name", None):
+            # Get the latest one of a particular name--indirect
+            try:
+                process_log = UpdateProgressLog.get_active_log(process_name=request.GET["process_name"], create_new=False)
+            except Exception as e:
+                # The process finished before we started checking, or it's been deleted.
+                #   Best to complete silently, but for debugging purposes, will make noise for now.
+                return JsonResponse({"error": str(e)}, status=500);
         else:
-            process_log = get_object_or_404(UpdateProgressLog, id=request.GET["process_id"])
+            raise Exception("Must specify process_id or process_name")
 
-    elif request.GET.get("process_name", None):
-        # Get the latest one of a particular name--indirect
-        try:
-            process_log = UpdateProgressLog.get_active_log(process_name=request.GET["process_name"], create_new=False)
-        except Exception as e:
-            # The process finished before we started checking, or it's been deleted.
-            #   Best to complete silently, but for debugging purposes, will make noise for now.
-            return JsonResponse({"error": str(e)}, status=500);
-    else:
-        raise Exception("Must specify process_id or process_name")
-
-    return JsonResponse(_process_log_to_dict(process_log))
-
+        return JsonResponse(_process_log_to_dict(process_log))
+    except Exception as e:
+        import pdb; pdb.set_trace()
+        raise e
 
 def _process_log_to_dict(process_log):
     """

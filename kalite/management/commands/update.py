@@ -90,7 +90,7 @@ class Command(UpdatesStaticCommand):
 
 
     def handle(self, *args, **options):
-        import pdb; pdb.set_trace()
+
         if len(args)==1 and args[0]== "test":
             # Callback for "weak" test--checks at least that the django project compiles (local_settings is OK)
             sys.stdout.write("Success!\n")
@@ -194,7 +194,7 @@ class Command(UpdatesStaticCommand):
         # current_dir === base dir for current installation
         self.current_dir = os.path.realpath(settings.PROJECT_PATH + "/../")
 
-        import pdb; pdb.set_trace()
+        #import pdb; pdb.set_trace()
 
         if url:
             self.start(notes="Downloading zip file from %s" % url)
@@ -356,6 +356,7 @@ class Command(UpdatesStaticCommand):
 
             if fi>0 and fi%round(nfiles/10)==0:
                 pct_done = round(100.*(fi+1.)/nfiles)
+                self.update_stage(stage_percent=pct_done/100.)
                 sys.stdout.write(" %d%%" % pct_done)
 
             zip.extract(afile, path=self.working_dir)

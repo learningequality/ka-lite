@@ -19,7 +19,8 @@ class StatusException(Exception):
         super(StatusException, self).__init__(message)
         self.args = (status_code,)
         self.status_code = status_code
-        
+
+
 class JsonResponse(HttpResponse):
     """Wrapper class for generating a HTTP response with JSON data"""
     def __init__(self, content, *args, **kwargs):

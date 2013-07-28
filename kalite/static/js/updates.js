@@ -26,7 +26,7 @@ function has_a_val(key, obj) {
 
 function updatesStart(process_name, interval, callbacks) {
     // Starts looking for updates
-
+    clear_message("id_" + process_name)
     // Store the info
     if (process_names.indexOf(process_name) == -1) {
         process_names = process_names.concat(process_name)
@@ -98,7 +98,14 @@ function updatesCheck(process_name, interval) {
         // Reasons to exit
         if (completed) {
             // 
-            updatesReset(process_name);
+            if (progress_log.process_percent == 1.) {
+                show_message("info", "Completed update '" + process_name + "' successfully.", "id_" + process_name)
+                updatesReset(process_name);
+            } else if (progress_log.process_name) {
+                show_message("error", "Error during update: " + progress_log.notes, "id_" + process_name);
+                updatesReset(process_name);
+            } else {
+            }
             //return
         } else if (!process_intervals[process_name]) {
             // If cancelled, stop the madness!

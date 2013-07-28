@@ -29,6 +29,9 @@ class UpdatesDynamicCommand(BaseCommand):
 
         self.progress_log.update_stage(stage_name=stage_name, stage_percent=0, notes=notes)
 
+        if notes:
+            sys.stdout.write("%s\n" % notes)
+
 
     def started(self):
         return self.progress_log.total_stages and not self.progress_log.completed
@@ -40,6 +43,9 @@ class UpdatesDynamicCommand(BaseCommand):
         """
         self.progress_log.update_total_stages(num_stages)
 
+        if notes:
+            sys.stdout.write("%s\n" % notes)
+
 
     def next_stage(self, stage_name=None, notes=None):
         """
@@ -48,17 +54,29 @@ class UpdatesDynamicCommand(BaseCommand):
         assert self.started(), "Must call start() before moving to a next stage!"
         self.progress_log.update_stage(stage_name=self.stage_name, stage_percent=1., notes=notes)
 
+        if notes:
+            sys.stdout.write("%s\n" % notes)
+
 
     def update_stage(self, stage_name, stage_percent, notes=None):
         self.progress_log.update_stage(stage_name=stage_name, stage_percent=stage_percent, notes=notes)
+
+        if notes:
+            sys.stdout.write("%s\n" % notes)
 
 
     def cancel(self, notes=None):
         self.progress_log.cancel_progress(notes=notes)
 
+        if notes:
+            sys.stdout.write("%s\n" % notes)
+
 
     def complete(self, notes=None):
         self.progress_log.mark_as_completed(notes=notes)
+
+        if notes:
+            sys.stdout.write("%s\n" % notes)
 
 
 class UpdatesStaticCommand(BaseCommand):
@@ -80,7 +98,7 @@ class UpdatesStaticCommand(BaseCommand):
 
         self.stage_index = 0
         self.progress_log.update_total_stages(len(self.stages))
-        self.progress_log.update_stage(stage_name=self.stages[self.stage_index], stage_percent=0)
+        self.progress_log.update_stage(stage_name=self.stages[self.stage_index], stage_percent=0, notes=notes)
 
         if notes:
             sys.stdout.write("%s\n" % notes)
@@ -96,14 +114,15 @@ class UpdatesStaticCommand(BaseCommand):
         """
         assert self.stage_index is not None, "Must call start function before next_stage()"
         self.stage_index += 1
-        self.progress_log.update_stage(stage_name=self.stages[self.stage_index], stage_percent=0)
+        self.progress_log.update_stage(stage_name=self.stages[self.stage_index], stage_percent=0, notes=notes)
 
         if notes:
             sys.stdout.write("%s\n" % notes)
 
 
     def update_stage(self, stage_percent, notes=None):
-        self.progress_log.update_stage(stage_name=self.stages[self.stage_index], stage_percent=stage_percent)
+        self.progress_log.update_stage(stage_name=self.stages[self.stage_index], stage_percent=stage_percent, notes=notes)
+
         if notes:
             sys.stdout.write("%s\n" % notes)
 
@@ -112,8 +131,13 @@ class UpdatesStaticCommand(BaseCommand):
         self.progress_log.cancel_progress(notes=notes)
         self.stage_index = None
 
+        if notes:
+            sys.stdout.write("%s\n" % notes)
+
 
     def complete(self, notes=None):
         self.progress_log.mark_as_completed(notes=notes)
         self.stage_index = None
 
+        if notes:
+            sys.stdout.write("%s\n" % notes)
