@@ -46,13 +46,13 @@ def get_accessible_objects_from_request(request, facility):
         else:
             facilities = [user.facility]
             if user.group:
-                groups = [{user.facility.id: request.session[
-                    "facility_user"].group}]
+                groups = [{"facility": user.facility.id, "groups": FacilityGroup.objects.filter(id=request.session[
+                    "facility_user"].group)}]
             else:
                 groups = [{}]
     else:
         facilities = [facility]
-        groups = [{facility.id: FacilityGroup.objects.filter(
+        groups = [{"facility": facility.id, "groups": FacilityGroup.objects.filter(
             facility=facility)}]
 
     return (groups, facilities)
