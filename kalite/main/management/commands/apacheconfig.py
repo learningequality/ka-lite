@@ -1,5 +1,9 @@
+import os
+
 from django.core.management.base import BaseCommand, CommandError
+
 import settings
+
 
 config_template = """
 
@@ -26,3 +30,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.stdout.write(config_template % {"project_path": settings.PROJECT_PATH})
+
+        # set the database permissions so that Apache will be able to access them
+        import pdb; pdb.set_trace()
+        database_file = settings.DATABASES["default"]["NAME"]
+        if os.path.exists(database_file):
+            database_dir = os.path.dirname(database_file)
+            os.chmod(database_dir, 0777)
+            os.chmod(database_file, 0766)
