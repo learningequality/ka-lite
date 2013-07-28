@@ -31,22 +31,23 @@ def get_accessible_objects_from_request(request, facility):
 
     # Options to select.  Note that this depends on the user.
     if request.user.is_superuser:
-        groups = FacilityGroup.objects.filter(facility=facility)
         facilities = Facility.objects.all()
+        #Groups is now a list of objects with a key for facility id, and a key for the list of groups at that facility.
+        groups = [{"facility": facilitie.id, "groups": FacilityGroup.objects.filter(facility=facilitie)} for facilitie in facilities]
     elif "facility_user" in request.session:
         user = request.session["facility_user"]
         if user.is_teacher:
-            groups = FacilityGroup.objects.filter(facility=facility)
             facilities = Facility.objects.all()
+            groups = [{"facility": facilitie.id, "groups": FacilityGroup.objects.filter(facility=facilitie)} for facilitie in facilities]
         else:
             facilities = [user.facility]
             if user.group:
-                groups = [request.session["facility_user"].group]
+                groups = [{user.facility.id: request.session["facility_user"].group}]
             else:
-                groups = []
+                groups = [{}]
     else:
         facilities = [facility]
-        groups = FacilityGroup.objects.filter(facility=facility)
+        groups = [{facility.id: FacilityGroup.objects.filter(facility=facility)}]
 
     return (groups, facilities)
 

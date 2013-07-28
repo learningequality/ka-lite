@@ -17,7 +17,7 @@ select {
 .subtitle {
     float:left;
 }
-#facility, #group {
+#facility, .group {
     display:none;
 }
 h2 {
@@ -28,6 +28,11 @@ h2 {
 h3 {
     margin-left: 25px;
     margin-bottom: 0px;
+}
+
+.group_div {
+    position: absolute;
+    margin-left: 20px;
 }
 </style>
 {% endblock headcss %}
@@ -55,9 +60,17 @@ function generate_current_link() {
 function changeData(type) {
     var opt = $("#" + type + " option:selected");
     $("#" + type + "_editable").text(opt.text());
+    var linktype = /group/i.test(type) ? "group" : type
     $(".changeable-link").each(function () {
-        this.href = setGetParam(this.href, type, opt.val());
+        this.href = setGetParam(this.href, linktype, opt.val());
     });
+    $("#" + type + "_editable").show();
+    $("#" + type).hide();
+    if (type==="facility") {
+        $(".group_div").hide();
+        $("#" + $("#facility").val()).show();
+        changeData($("#facility").val() + "group")
+    };
 }
 function make_editable(type) {
     if ($("#" + type + " option").length>1) {
@@ -102,20 +115,26 @@ function make_editable(type) {
         {% block navbar_groups %}
         <div id="select-groups" class="selection">
             <div class="subtitle"> {% if facilities and groups %}/&nbsp;{% endif %}</div>
-            <select id="group">
             {% if groups %}
-                <option value="">[all groups]</option>
-                {% for group in groups %}
-                <option value="{{ group.id }}">{{ group }}</option>
+                {% for groupobject in groups %}
+                <div id="{{ groupobject.facility }}" class="group_div">
+                    <select id="{{ groupobject.facility }}group" class="group">
+                        {% if groupobject.groups %}
+                                <option value="">[all groups]</option>
+                                {% for group in groupobject.groups %}
+                                <option value="{{ group.id }}">{{ group }}</option>
+                                {% endfor %}
+                        {% else %}
+                            <option value="" selected></option>
+                        {% endif %}
+                    </select>
+                    {% if groupobject.groups|length > 1 %}
+                    <a id="{{ groupobject.facility }}group_editable" href="javascript:make_editable('{{ groupobject.facility }}group')"></a>
+                    {% else %}
+                    <span id="{{ groupobject.facility }}group_editable"></span>
+                    {% endif %}
+                </div>
                 {% endfor %}
-            {% else %}
-                <option value="" selected></option>
-            {% endif %}
-            </select>
-            {% if groups|length > 1 %}
-            <a id="group_editable" href="javascript:make_editable('group')"></a>
-            {% else %}
-            <span id="group_editable"></span>
             {% endif %}
         </div>
         {% endblock navbar_groups %}
@@ -145,11 +164,10 @@ function make_editable(type) {
     $(function() {
         // Make sure that each dropdown has a callback
         //   to replot upon selection.
-        $("#group").change(   function() { changeData("group"); });
+        $(".group").change(   function(event) { changeData(event.target.id); });
         $("#facility").change(function() { changeData("facility"); });
-
         // Select the values in the dropdowns
-        $("#group").val("{{ form.group }}").change();
+        $("#{{ form.facility }}group").val("{{ form.group }}").change();
         $("#facility").val("{{ form.facility }}").change();
     });
 </script>
