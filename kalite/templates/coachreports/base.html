@@ -17,7 +17,7 @@ select {
 .subtitle {
     float:left;
 }
-#facility, .group {
+#facility, .group_select {
     display:none;
 }
 h2 {
@@ -52,7 +52,7 @@ function generate_current_link() {
     url = setGetParam(url, "xaxis", $("#xaxis option:selected").val());
     url = setGetParam(url, "yaxis", $("#yaxis option:selected").val());
     url = setGetParam(url, "facility", $("#facility option:selected").val());
-    url = setGetParam(url, "group", $("#group option:selected").val());
+    url = setGetParam(url, "group", $("#" + $("#facility option:selected").val() + "_group_select option:selected").val());
 
     return url;
 }
@@ -67,9 +67,10 @@ function changeData(type) {
     $("#" + type + "_editable").show();
     $("#" + type).hide();
     if (type==="facility") {
+        // Show the appropriate group selection for a particular facility when the facility is changed.
         $(".group_div").hide();
         $("#" + $("#facility").val()).show();
-        changeData($("#facility").val() + "group")
+        changeData($("#facility").val() + "_group_select")
     };
 }
 function make_editable(type) {
@@ -118,7 +119,7 @@ function make_editable(type) {
             {% if groups %}
                 {% for groupobject in groups %}
                 <div id="{{ groupobject.facility }}" class="group_div">
-                    <select id="{{ groupobject.facility }}group" class="group">
+                    <select id="{{ groupobject.facility }}_group_select" class="group_select">
                         {% if groupobject.groups %}
                                 <option value="">[all groups]</option>
                                 {% for group in groupobject.groups %}
@@ -129,9 +130,9 @@ function make_editable(type) {
                         {% endif %}
                     </select>
                     {% if groupobject.groups|length > 1 %}
-                    <a id="{{ groupobject.facility }}group_editable" href="javascript:make_editable('{{ groupobject.facility }}group')"></a>
+                    <a id="{{ groupobject.facility }}_group_select_editable" href="javascript:make_editable('{{ groupobject.facility }}_group_select')"></a>
                     {% else %}
-                    <span id="{{ groupobject.facility }}group_editable"></span>
+                    <span id="{{ groupobject.facility }}_group_select_editable"></span>
                     {% endif %}
                 </div>
                 {% endfor %}
@@ -164,10 +165,11 @@ function make_editable(type) {
     $(function() {
         // Make sure that each dropdown has a callback
         //   to replot upon selection.
-        $(".group").change(   function(event) { changeData(event.target.id); });
+        // Dynamically read the group id from the change event.
+        $(".group_select").change(   function(event) { changeData(event.target.id); });
         $("#facility").change(function() { changeData("facility"); });
         // Select the values in the dropdowns
-        $("#{{ form.facility }}group").val("{{ form.group }}").change();
+        $("#{{ form.facility }}_group_select").val("{{ form.group }}").change();
         $("#facility").val("{{ form.facility }}").change();
     });
 </script>

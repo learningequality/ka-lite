@@ -239,6 +239,10 @@
 <script>
 $(function() {
 
+    // Note: Unlike other coach reports, the tabular view is generated in server side templates.
+    // As such, changing any of the values of the items requires a change of URL and subsequent
+    // navigation event in order to produce the new report.
+
     $("#report_type").change(function(){
         window.location.href="{% url tabular_view %}"+$("#report_type option:selected").val()+window.location.search;
     });
@@ -252,10 +256,10 @@ $(function() {
     });
 
     $("#facility").change(function(){
-        window.location.href = setGetParam(window.location.href, "facility", $("#facility option:selected").val());
+        window.location.href = setGetParamDict(window.location.href, {"facility": $("#facility option:selected").val(), "group": $("#" + $("#facility option:selected").val() + "_group_select").val()});
     });
 
-    $(".group").change(function(event){
+    $(".group_select").change(function(event){
         window.location.href = setGetParam(window.location.href, "group", $(event.target).val());
     });
 

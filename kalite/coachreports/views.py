@@ -35,25 +35,22 @@ def get_accessible_objects_from_request(request, facility):
         facilities = Facility.objects.all()
         # Groups is now a list of objects with a key for facility id, and a key
         # for the list of groups at that facility.
-        groups = [{"facility": facilitie.id, "groups": FacilityGroup.objects.filter(
-            facility=facilitie)} for facilitie in facilities]
+        # TODO: Make this more efficient.
+        groups = [{"facility": facilitie.id, "groups": FacilityGroup.objects.filter(facility=facilitie)} for facilitie in facilities]
     elif "facility_user" in request.session:
         user = request.session["facility_user"]
         if user.is_teacher:
             facilities = Facility.objects.all()
-            groups = [{"facility": facilitie.id, "groups": FacilityGroup.objects.filter(
-                facility=facilitie)} for facilitie in facilities]
+            groups = [{"facility": facilitie.id, "groups": FacilityGroup.objects.filter(facility=facilitie)} for facilitie in facilities]
         else:
             facilities = [user.facility]
             if user.group:
-                groups = [{"facility": user.facility.id, "groups": FacilityGroup.objects.filter(id=request.session[
-                    "facility_user"].group)}]
+                groups = [{"facility": user.facility.id, "groups": FacilityGroup.objects.filter(id=request.session["facility_user"].group)}]
             else:
                 groups = [{}]
     else:
         facilities = [facility]
-        groups = [{"facility": facility.id, "groups": FacilityGroup.objects.filter(
-            facility=facility)}]
+        groups = [{"facility": facility.id, "groups": FacilityGroup.objects.filter(facility=facility)}]
 
     return (groups, facilities)
 
@@ -63,11 +60,9 @@ def plotting_metadata_context(request, facility=None, topic_path=[], *args, **kw
     and the full gamut of facility/group objects relevant to the request."""
 
     # Get the form, and retrieve the API data
-    form = get_data_form(
-        request, facility=facility, topic_path=topic_path, *args, **kwargs)
+    form = get_data_form(request, facility=facility, topic_path=topic_path, *args, **kwargs)
 
-    (groups, facilities) = get_accessible_objects_from_request(
-        request, facility)
+    (groups, facilities) = get_accessible_objects_from_request(request, facility)
 
     return {
         "form": form.data,
@@ -107,8 +102,7 @@ def student_view(request, xaxis="pct_mastery", yaxis="ex:attempts"):
 
     topics = get_all_midlevel_topics()
     topic_ids = [t['id'] for t in topics]
-    topics = filter(partial(lambda n, ids: n['id'] in ids, ids=topic_ids), topicdata.NODE_CACHE[
-                    'Topic'].values())  # real data, like paths
+    topics = filter(partial(lambda n, ids: n['id'] in ids, ids=topic_ids), topicdata.NODE_CACHE['Topic'].values())  # real data, like paths
 
     any_data = False  # whether the user has any data at all.
     exercise_logs = dict()
@@ -119,18 +113,15 @@ def student_view(request, xaxis="pct_mastery", yaxis="ex:attempts"):
     for topic in topics:
         topic_exercises[topic['id']] = get_topic_exercises(path=topic['path'])
         n_exercises = len(topic_exercises[topic['id']])
-        exercise_logs[topic['id']] = ExerciseLog.objects.filter(user=user, exercise_id__in=[
-                                                                t['name'] for t in topic_exercises[topic['id']]]).order_by("completion_timestamp")
+        exercise_logs[topic['id']] = ExerciseLog.objects.filter(user=user, exercise_id__in=[t['name'] for t in topic_exercises[topic['id']]]).order_by("completion_timestamp")
         n_exercises_touched = len(exercise_logs[topic['id']])
 
         topic_videos = get_topic_videos(topic_id=topic['id'])
         n_videos = len(topic_videos)
-        video_logs[topic['id']] = VideoLog.objects.filter(user=user, youtube_id__in=[
-                                                          tv['youtube_id'] for tv in topic_videos]).order_by("completion_timestamp")
+        video_logs[topic['id']] = VideoLog.objects.filter(user=user, youtube_id__in=[tv['youtube_id'] for tv in topic_videos]).order_by("completion_timestamp")
         n_videos_touched = len(video_logs[topic['id']])
 
-        exercise_sparklines[topic['id']] = [el.completion_timestamp for el in filter(
-            lambda n: n.complete, exercise_logs[topic['id']])]
+        exercise_sparklines[topic['id']] = [el.completion_timestamp for el in filter(lambda n: n.complete, exercise_logs[topic['id']])]
 
          # total streak currently a pct, but expressed in max 100; convert to
          # proportion (like other percentages here)
@@ -166,29 +157,18 @@ def student_view(request, xaxis="pct_mastery", yaxis="ex:attempts"):
         "no_data": not any_data,
         "stats": stats,
         "stat_defs": [  # this order determines the order of display
-            {"key": "ex:pct_mastery",      "title": _(
-                "% Mastery"),        "type": "pct"},
-            {"key": "ex:pct_started",      "title": _(
-                "% Started"),        "type": "pct"},
-            {"key": "ex:average_points",   "title": _(
-                "Average Points"),   "type": "float"},
-            {"key": "ex:average_attempts", "title": _(
-                "Average Attempts"), "type": "float"},
-            {"key": "ex:average_streak",   "title": _(
-                "Average Streak"),   "type": "pct"},
-            {"key": "ex:total_struggling", "title": _(
-                "Struggling"),       "type": "int"},
-            {"key": "ex:last_completed",   "title": _(
-                "Last Completed"),   "type": "date"},
-            {"key": "vid:pct_completed",   "title": _(
-                "% Completed"),      "type": "pct"},
-            {"key": "vid:pct_started",     "title": _(
-                "% Started"),        "type": "pct"},
+            {"key": "ex:pct_mastery",      "title": _("% Mastery"),        "type": "pct"},
+            {"key": "ex:pct_started",      "title": _("% Started"),        "type": "pct"},
+            {"key": "ex:average_points",   "title": _("Average Points"),   "type": "float"},
+            {"key": "ex:average_attempts", "title": _("Average Attempts"), "type": "float"},
+            {"key": "ex:average_streak",   "title": _("Average Streak"),   "type": "pct"},
+            {"key": "ex:total_struggling", "title": _("Struggling"),       "type": "int"},
+            {"key": "ex:last_completed",   "title": _("Last Completed"),   "type": "date"},
+            {"key": "vid:pct_completed",   "title": _("% Completed"),      "type": "pct"},
+            {"key": "vid:pct_started",     "title": _("% Started"),        "type": "pct"},
             {"key": "vid:total_minutes",   "title": _("Average Minutes Watched"),"type": "float"},
-            {"key": "vid:average_points",  "title": _(
-                "Average Points"),   "type": "float"},
-            {"key": "vid:last_completed",  "title": _(
-                "Last Completed"),   "type": "date"},
+            {"key": "vid:average_points",  "title": _("Average Points"),   "type": "float"},
+            {"key": "vid:last_completed",  "title": _("Last Completed"),   "type": "date"},
         ]
     }
 
@@ -209,8 +189,7 @@ def tabular_view(request, facility, report_type="exercise"):
 
     # Get a list of topics (sorted) and groups
     topics = get_all_midlevel_topics()
-    (groups, facilities) = get_accessible_objects_from_request(
-        request, facility)
+    (groups, facilities) = get_accessible_objects_from_request(request, facility)
     context = plotting_metadata_context(request, facility=facility)
     context.update({
         "report_types": ("exercise", "video"),
@@ -244,8 +223,7 @@ def tabular_view(request, facility, report_type="exercise"):
         # Get students
         context["students"] = []
         for user in users:
-            exlogs = ExerciseLog.objects.filter(
-                user=user, exercise_id__in=exercise_names)
+            exlogs = ExerciseLog.objects.filter(user=user, exercise_id__in=exercise_names)
             log_ids = [log.exercise_id for log in exlogs]
             log_table = []
             for en in exercise_names:
@@ -271,8 +249,7 @@ def tabular_view(request, facility, report_type="exercise"):
         # Get students
         context["students"] = []
         for user in users:
-            vidlogs = VideoLog.objects.filter(
-                user=user, youtube_id__in=video_ids)
+            vidlogs = VideoLog.objects.filter(user=user, youtube_id__in=video_ids)
             log_ids = [log.youtube_id for log in vidlogs]
             log_table = []
             for yid in video_ids:

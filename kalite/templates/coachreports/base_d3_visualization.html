@@ -139,7 +139,7 @@ function plotTopics(topic_paths) {
             "xaxis":       $("#xaxis option:selected").val(),
             "yaxis":       $("#yaxis option:selected").val(),
             "user":        "",
-            "group":       $("#" + $("#facility option:selected").val() + "group option:selected").val(), 
+            "group":       $("#" + $("#facility option:selected").val() + "_group_select option:selected").val(), 
             "facility":    $("#facility option:selected").val(),
             "topic_path":  topic_paths
         }
@@ -217,7 +217,7 @@ function plotTopics(topic_paths) {
             //   to replot upon selection.
             $("#xaxis").change(   function() { plotTopics(null); });
             $("#yaxis").change(   function() { plotTopics(null); });
-            $(".group").change(   function(event) { changeData(event.target.id); plotTopics(null); });
+            $(".group_select").change(   function(event) { changeData(event.target.id); plotTopics(null); });
             $("#facility").change(function() { changeData("facility"); plotTopics(null); });
 
             // When the button is clicked, toggle the view style
