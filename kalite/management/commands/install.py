@@ -105,7 +105,7 @@ class Command(BaseCommand):
             help='Superuser password'),
         make_option('-o', '--hostname',
             action='store',
-            dest='hostame',
+            dest='hostname',
             default=get_host_name(),
             help='Computer hostname'),
         make_option('-d', '--description',
