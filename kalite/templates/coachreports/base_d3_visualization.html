@@ -95,8 +95,6 @@ function plotJsonData(chart_div, base_url, props) {
        NOTE: you have to implement drawJsonChart(chart_div, json, xaxis, yaxis); */
     
     // Scrub data
-    if (!props["facility"]) { props["facility"] = "{{ form.facility|escapejs }}"; }
-    if (!props["group"])    { props["group"]    = "{{ form.group|escapejs }}"; }
     if (!props["user"])     { props["user"]     = "{{ form.user|escapejs }}"; }
     if (!props["topic_path"])  { props["topic_path"]  = {{ form.topic_path|jsonify }}; }
 
@@ -139,7 +137,7 @@ function plotTopics(topic_paths) {
             "xaxis":       $("#xaxis option:selected").val(),
             "yaxis":       $("#yaxis option:selected").val(),
             "user":        "",
-            "group":       $("#group option:selected").val(), 
+            "group":       $("#" + $("#facility option:selected").val() + "_group_select option:selected").val(), 
             "facility":    $("#facility option:selected").val(),
             "topic_path":  topic_paths
         }
@@ -199,14 +197,12 @@ function plotTopics(topic_paths) {
 {% block endjs %}{{ block.super }}
 <script type="text/javascript">
 
-    $(function() {        
+    $(function() {  
         window.showing_tree = false;
 
         // Select the values in the 
         $("#xaxis").val("{{ form.xaxis }}").change();
         $("#yaxis").val("{{ form.yaxis }}").change();
-        $("#group").val("{{ form.group }}").change();
-        $("#facility").val("{{ form.facility }}").change();
         
         
         setTimeout(function() {
@@ -219,7 +215,7 @@ function plotTopics(topic_paths) {
             //   to replot upon selection.
             $("#xaxis").change(   function() { plotTopics(null); });
             $("#yaxis").change(   function() { plotTopics(null); });
-            $("#group").change(   function() { changeData("group"); plotTopics(null); });
+            $(".group_select").change(function(event) { changeData(event.target.id); plotTopics(null); });
             $("#facility").change(function() { changeData("facility"); plotTopics(null); });
 
             // When the button is clicked, toggle the view style
