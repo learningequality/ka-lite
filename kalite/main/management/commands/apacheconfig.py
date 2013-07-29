@@ -32,7 +32,6 @@ class Command(BaseCommand):
         self.stdout.write(config_template % {"project_path": settings.PROJECT_PATH})
 
         # set the database permissions so that Apache will be able to access them
-        import pdb; pdb.set_trace()
         database_file = settings.DATABASES["default"]["NAME"]
         if os.path.exists(database_file):
             database_dir = os.path.dirname(database_file)

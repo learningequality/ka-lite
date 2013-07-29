@@ -227,5 +227,5 @@ class Command(BaseCommand):
         sys.stdout.write("\n")
         sys.stdout.write("CONGRATULATIONS! You've finished installing the KA Lite server software.\n")
         sys.stdout.write("\tPlease run './start.%s' to start the server, and then load the url\n" % script_ext)
-        sys.stdout.write("\thttp://127.0.0.1:8008/ to complete the device configuration.\n")
+        sys.stdout.write("\thttp://127.0.0.1:%d/ to complete the device configuration.\n" % settings.PRODUCTION_PORT)
         sys.stdout.write("\n")
