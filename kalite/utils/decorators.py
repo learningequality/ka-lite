@@ -13,6 +13,7 @@ from django.utils.translation import ugettext as _
 import settings
 from config.models import Settings
 from securesync.models import Device, DeviceZone, Zone, Facility, FacilityUser
+from utils.internet import JsonResponse
 
 
 def central_server_only(handler):
@@ -269,4 +270,23 @@ def require_superuser(handler):
             return handler(request, *args, **kwargs)
         else:
             raise PermissionDenied(_("Must be logged in as a superuser to access this endpoint."))
+    return wrapper_fn
+
+
+def return_jsonp(handler):
+    """A general wrapper to functions that return json.
+
+    Args:
+        The target funtion.
+
+    Returns:
+        The original function 'wrapped'.
+    """
+    def wrapper_fn(request, *args, **kwargs):
+        json = handler(request, *args, **kwargs)
+
+        if 'callback' in request.REQUEST:
+            jsonp = '%s(%s);' % (request.REQUEST['callback'], json.content)
+            return JsonResponse(jsonp)
+        return JsonResponse(json.content)
     return wrapper_fn
