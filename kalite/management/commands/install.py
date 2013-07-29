@@ -218,7 +218,9 @@ class Command(BaseCommand):
         call_command("generatekeys", verbosity=options.get("verbosity"))
 
         call_command("createsuperuser", username=username, email="dummy@learningequality.org", interactive=False, verbosity=options.get("verbosity"))
-        User.objects.get(username=username).set_password(password)
+        admin = User.objects.get(username=username)
+        admin.set_password(password)
+        admin.save()
 
         call_command("initdevice", hostname, description, verbosity=options.get("verbosity"))
 
