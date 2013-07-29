@@ -60,6 +60,7 @@ function generate_current_link() {
 function changeData(type) {
     var opt = $("#" + type + " option:selected");
     $("#" + type + "_editable").text(opt.text());
+    // Check to see if the item being passed is a group item - regex match against group in the item.
     var linktype = /group/i.test(type) ? "group" : type
     $(".changeable-link").each(function () {
         this.href = setGetParam(this.href, linktype, opt.val());
