@@ -3,8 +3,10 @@ from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 from django.utils import simplejson
 from django.db.models import Q
+from django.utils.translation import ugettext as _
 from annoying.functions import get_object_or_None
 import settings
+from api_forms import ExerciseLogForm, VideoLogForm
 from main import topicdata
 from utils.jobs import force_job, job_status
 from utils.videos import delete_downloaded_files
@@ -18,16 +20,21 @@ from utils.internet import JsonResponse
 
 
 def save_video_log(request):
-    if "facility_user" not in request.session:
-        return JsonResponse({})
-    data = simplejson.loads(request.raw_post_data or "{}")
-    videolog = VideoLog()
-    videolog.user = request.session["facility_user"]
-    videolog.youtube_id = data.get("youtube_id", "")
-    old_videolog = videolog.get_existing_instance() or VideoLog()
-    videolog.total_seconds_watched = old_videolog.total_seconds_watched + data.get("seconds_watched", 0)
-    videolog.points = max(old_videolog.points or 0, data.get("points", 0)) or 0
     try:
+        if "facility_user" not in request.session:
+            return JsonResponse({"info": _("Progress not saved.")}, status=500)
+
+        form = VideoLogForm(data=simplejson.loads(request.raw_post_data))
+        if not form.is_valid():
+            raise Exception(form.errors)
+        data = form.data
+
+        videolog = get_object_or_None(VideoLog, user=request.session["facility_user"], youtube_id=data["youtube_id"])
+        videolog = videolog or VideoLog(user=request.session["facility_user"], youtube_id=data["youtube_id"])
+
+        videolog.total_seconds_watched  += data["seconds_watched"]
+        videolog.points = max(videolog.points or 0, data["points"])
+
         videolog.full_clean()
         videolog.save()
         return JsonResponse({
@@ -36,26 +43,38 @@ def save_video_log(request):
         })
     except ValidationError as e:
         return JsonResponse({"error": "Could not save VideoLog: %s" % e}, status=500)
+    except Exception as e:
+        return JsonResponse({"error": "Unexepcted exception: %s" % e}, status=500)
 
 
 def save_exercise_log(request):
-    if "facility_user" not in request.session:
-        return JsonResponse({})
-    data = simplejson.loads(request.raw_post_data or "{}")
-    exerciselog = ExerciseLog()
-    exerciselog.user = request.session["facility_user"]
-    exerciselog.exercise_id = data.get("exercise_id", "")
-    old_exerciselog = exerciselog.get_existing_instance() or ExerciseLog()
-    exerciselog.attempts = old_exerciselog.attempts + 1
-    exerciselog.streak_progress = data.get("streak_progress", None)
-    exerciselog.points = data.get("points", None)
-
     try:
+        if "facility_user" not in request.session:
+            return JsonResponse({"info": _("Progress not saved.")}, status=500)
+
+        form = ExerciseLogForm(data=simplejson.loads(request.raw_post_data))
+        if not form.is_valid():
+            raise Exception(form.errors)
+        data = form.data
+
+        exerciselog = get_object_or_None(ExerciseLog, user=request.session["facility_user"], exercise_id=data["exercise_id"])
+        exerciselog = exerciselog or ExerciseLog(user=request.session["facility_user"], exercise_id=data["exercise_id"])
+        previously_complete = exerciselog.complete
+
+        exerciselog.attempts += 1
+        exerciselog.streak_progress = data["streak_progress"]
+        exerciselog.points = data["points"]
+
         exerciselog.full_clean()
         exerciselog.save()
-        return JsonResponse({})
+
+        if not previously_complete and exerciselog.complete:
+            return JsonResponse({"success": _("You've mastered this exercise!")})
+        return JsonResponse({} if not settings.DEBUG else {"success": "data saved."})
     except ValidationError as e:
         return JsonResponse({"error": "Could not save ExerciseLog: %s" % e}, status=500)
+    except Exception as e:
+        return JsonResponse({"error": "Unexepcted exception: %s" % e}, status=500)
 
 
 def get_video_logs(request):

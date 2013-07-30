@@ -42,7 +42,21 @@ function updatePercentCompleted(correct) {
         correct: correct
     };
 
-    doRequest("/api/save_exercise_log", data);
+    doRequest(
+        "/api/save_exercise_log", 
+        data
+    ).success(function(data) {
+        clear_message("id_save_exercise_log")
+        for (key in data) {
+            show_message(key, data[key], "id_save_exercise_log");
+        }
+    }).fail(function(resp) {
+        data = ($.parseJSON(resp.responseText))
+        clear_message("id_save_exercise_log")
+        for (key in data) {
+            show_message(key, data[key], "id_save_exercise_log");
+        }
+    });
 
 };
 
