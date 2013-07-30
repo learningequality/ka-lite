@@ -231,21 +231,31 @@ $(document).ready(function() {
         vars[key] = value;
     });
 
-    if (vars["topic"]) {
+    if (!vars["topic"]) {
+        // Top level of the topic tree
+        $(".topic-button").hide();
+        $.getJSON("/static/data/maplayout_data.json", function(defaultMapLayout) {
+            KMapEditor.init([], defaultMapLayout, {}, 6);
+        });
+
+    } else {
+        // Second level of the topic tree
+
         $.getJSON("/static/data/topicdata/" + vars["topic"] + ".json", function(exerciseLayout) {
             var exercise_ids = $.map(exerciseLayout, function(exercise) { return exercise.name });
-            doRequest("/api/get_exercise_logs", exercise_ids).success(function(data) {
+            doRequest(
+                "/api/get_exercise_logs", 
+                exercise_ids
+            ).success(function(data) {
                 var exercisesCompleted = {};
                 $.each(data, function(ind, status) {
                     exercisesCompleted[status.exercise_id] = status.complete ? "complete" : "partial";
                 });
                 KMapEditor.init(exerciseLayout, [], exercisesCompleted, 8);
+            }).fail(function (resp) {
+                show_failure_messages(resp, "id_get_exercise_logs");
+                KMapEditor.init(exerciseLayout, [], [], 8);
             });
-        });
-    } else {
-        $(".topic-button").hide();
-        $.getJSON("/static/data/maplayout_data.json", function(defaultMapLayout) {
-            KMapEditor.init([], defaultMapLayout, {}, 6);
         });
     }
 });

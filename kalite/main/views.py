@@ -361,10 +361,10 @@ def device_redirect(request):
 
 def handler_403(request, *args, **kwargs):
     context = RequestContext(request)
-    message = None  # Need to retrieve, but can't figure it out yet.
+    #message = None  # Need to retrieve, but can't figure it out yet.
 
     if request.is_ajax():
-        return HttpResponseForbidden(message)
+        return JsonResponse({ "error": "You must be logged in with an account authorized to view this page." }, status=403)
     else:
         messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page..")))
         return HttpResponseRedirect(reverse("login") + "?next=" + request.path)
