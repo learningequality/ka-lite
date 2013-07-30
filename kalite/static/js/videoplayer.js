@@ -53,8 +53,7 @@ window.VideoPlayerModel = Backbone.Model.extend({
             });
             self.pointsSaved = data[0].points;
         }).fail(function(data, resp) {
-            // Show messages (expected in ({ type: message }) format
-            show_failure_messages(resp, "id_get_video_logs");
+            communicate_api_failure(resp, "id_get_video_logs");
         });
     },
 
@@ -86,16 +85,12 @@ window.VideoPlayerModel = Backbone.Model.extend({
             self.pointsSaved = data.points;
             self.saving = false;
             // Show all messages in "messages" object
-            clear_message("id_save_video_log")
-            for (key in self.messages) {
-                show_message(key, self.messages[key], "id_save_video_log");
-            }
+            show_api_messages(data.messages, "id_save_video_log");
         }).fail(function(resp) {
             self.set({ wall_time_last_saved: lastSavedBeforeError });
             self.saving = false;
 
-            // On error, messages should be returned in ({ type: message }) format
-            show_failure_messages(resp, "id_save_video_logs");
+            communicate_api_failure(resp, "id_save_video_logs");
         });
 
         this.set({

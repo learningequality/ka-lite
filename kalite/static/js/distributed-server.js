@@ -5,7 +5,7 @@ function toggle_state(state, status){
     $("." + (!status ? "not-" : "") + state + "-only").show();
 }
 
-function show_messages(messages) {
+function show_django_messages(messages) {
     // This function knows to loop through the server-side messages,
     //   received in the format from the status object
     for (var mi in messages) {
@@ -13,17 +13,24 @@ function show_messages(messages) {
     }
 }
 
-function show_failure_messages(resp, msg_id) {
+function show_api_messages(messages, msg_id) {
     // When receiving an error response object,
     //   show errors reported in that object
     if (msg_id) {
         clear_message(msg_id)
     }
-    var messages = $.parseJSON(resp.responseText);
     for (msg_type in messages) {
         show_message(msg_type, messages[msg_type], msg_id);
     }
 }
+
+function communicate_api_failure(resp, msg_id) {
+    // When receiving an error response object,
+    //   show errors reported in that object
+    var messages = $.parseJSON(resp.responseText);
+    show_api_messages(messages, msg_id)
+}
+
 
 $(function(){
     // Do the AJAX request to async-load user and message data
@@ -44,9 +51,9 @@ $(function(){
                 }
             }
         }
-        show_messages(data.messages);
+        show_django_messages(data.messages);
     }).fail(function(resp) {
-        show_failure_messages(resp, "id_status")
+        communicate_api_failure(resp, "id_status")
     });
 
     // load progress data for all videos linked on page, and render progress circles
@@ -61,7 +68,7 @@ $(function(){
                 $("[data-youtube-id='" + video.youtube_id + "']").addClass(newClass);
             });
         }).fail(function(resp) {
-            show_failure_messages(resp, "id_get_video_log")
+            communicate_api_failure(resp, "id_get_video_log")
         });
     }
 
@@ -77,7 +84,7 @@ $(function(){
                 $("[data-exercise-id='" + exercise.exercise_id + "']").addClass(newClass);
             });
         }).fail(function(resp) {
-            show_failure_messages(resp, "id_get_exercise_logs");
+            communicate_api_failure(resp, "id_get_exercise_logs");
         });
     }
 

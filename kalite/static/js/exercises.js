@@ -46,14 +46,9 @@ function updatePercentCompleted(correct) {
         "/api/save_exercise_log", 
         data
     ).success(function(data) {
-        // Expects to receive messages ({ type: message } format) about success (or empty if silent)
-        clear_message("id_save_exercise_log")
-        for (key in data) {
-            show_message(key, data[key], "id_save_exercise_log");
-        }
+        show_api_messages("id_save_exercise_log")
     }).fail(function(resp) {
-        // Expects to receive messages ({ type: message } format) about failures
-        show_failure_messages(resp, "id_save_exercise_log");
+        communicate_api_failure(resp, "id_save_exercise_log");
     });
 
 };
@@ -93,12 +88,9 @@ $(function() {
         updateStreakBar();
 
         // Show all messages in "messages" object
-        clear_message("id_get_exercise_logs")
-        for (key in self.messages) {
-            show_message(key, self.messages[key], "id_get_exercise_logs");
-        }
+        show_api_messages(data.messages, "id_get_exercise_logs")
     }).fail(function (resp) {
         // Expects to receive messages ({ type: message } format) about failures
-        show_failure_messages(resp, "id_get_exercise_logs");
+        communicate_api_failure(resp, "id_get_exercise_logs");
     });
 });
