@@ -43,16 +43,20 @@ function generate_current_link() {
     var url = window.location.href + (window.location.search ? window.location.search : "?");
 
     // Add topic paths
-    var topic_paths = get_topic_paths_from_tree();
-    for (pi in topic_paths) {
-        url += "&topic_path=" + topic_paths[pi];
-    }
+    if (typeof get_topic_paths_from_tree != 'undefined') {
+        var topic_paths = get_topic_paths_from_tree();
+        for (pi in topic_paths) {
+            url += "&topic_path=" + topic_paths[pi];
+        }
 
-    // Add axis information
-    url = setGetParam(url, "xaxis", $("#xaxis option:selected").val());
-    url = setGetParam(url, "yaxis", $("#yaxis option:selected").val());
-    url = setGetParam(url, "facility", $("#facility option:selected").val());
-    url = setGetParam(url, "group", $("#" + $("#facility option:selected").val() + "_group_select option:selected").val());
+        // Add axis information
+        url = setGetParam(url, "xaxis", $("#xaxis option:selected").val());
+        url = setGetParam(url, "yaxis", $("#yaxis option:selected").val());
+        url = setGetParam(url, "facility", $("#facility option:selected").val());
+        url = setGetParam(url, "group", $("#" + $("#facility option:selected").val() + "_group_select option:selected").val());
+    } else {
+        url = window.location.href
+    }
 
     return url;
 }
