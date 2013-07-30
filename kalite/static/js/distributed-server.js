@@ -19,8 +19,22 @@ function show_api_messages(messages, msg_id) {
     if (msg_id) {
         clear_message(msg_id)
     }
-    for (msg_type in messages) {
-        show_message(msg_type, messages[msg_type], msg_id);
+    if (!messages) {
+        return
+    } 
+    switch (typeof messages) {
+        case "object":
+            for (msg_type in messages) {
+                show_message(msg_type, messages[msg_type], msg_id);
+            }
+            break;
+        case "string":
+            // Should throw an exception, but try to handle gracefully
+            show_message("info", messages, msg_id);
+            break;
+        default:
+            // Programming error; this should not happent
+            throw "do not call show_api_messages object of type " + (typeof messages)
     }
 }
 

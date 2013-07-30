@@ -46,7 +46,7 @@ function updatePercentCompleted(correct) {
         "/api/save_exercise_log", 
         data
     ).success(function(data) {
-        show_api_messages("id_student_logs")
+        show_api_messages(data, "id_student_logs")
     }).fail(function(resp) {
         communicate_api_failure(resp, "id_student_logs");
     });
