@@ -253,7 +253,7 @@ $(document).ready(function() {
                 });
                 KMapEditor.init(exerciseLayout, [], exercisesCompleted, 8);
             }).fail(function (resp) {
-                communicate_api_failure(resp, "id_get_exercise_logs");
+                communicate_api_failure(resp, "id_student_logs");
                 KMapEditor.init(exerciseLayout, [], [], 8);
             });
         });

@@ -33,14 +33,14 @@ class student_log_api(object):
                 #   allowing cross-checking of user information
                 #   and better error reporting
                 if "facility_user" not in request.session:
-                    return JsonResponse({"warning": self.logged_out_message}, status=500)
+                    return JsonResponse({"warning": self.logged_out_message + "  " + _("You must be logged in as a facility user to view/save progress.")}, status=500)
                 else:
                     return handler(request)
             except Exception as e:
                 return JsonResponse({"error": "Unexpected exception: %s" % e}, status=500)
         return wrapper_fn
 
-@student_log_api(logged_out_message=_("Video progress not saved.  You must be logged in as a facility user to save video progress."))
+@student_log_api(logged_out_message=_("Video progress not saved."))
 def save_video_log(request):
     """
     Receives a youtube_id and relevant data,
@@ -73,7 +73,7 @@ def save_video_log(request):
     })
 
 
-@student_log_api(logged_out_message=_("Exercise progress not saved.  You must be logged in as a facility user to save progress."))
+@student_log_api(logged_out_message=_("Exercise progress not saved."))
 def save_exercise_log(request):
     """
     Receives an exercise_id and relevant data,
@@ -110,7 +110,7 @@ def save_exercise_log(request):
     return JsonResponse({} if not settings.DEBUG else {"success": "data saved."})
 
 
-@student_log_api(logged_out_message=_("Video progress not loaded.  You must be logged in as a facility user to track progress."))
+@student_log_api(logged_out_message=_("Progress not loaded."))
 def get_video_logs(request):
     """
     Given a list of youtube_ids, retrieve a list of video logs for this user.
@@ -144,7 +144,7 @@ def _get_video_log_dict(request, user, youtube_id):
     }
 
 
-@student_log_api(logged_out_message=_("Exercise progress not loaded.  You must be logged in as a facility user to track progress."))
+@student_log_api(logged_out_message=_("Progress not loaded."))
 def get_exercise_logs(request):
     """
     Given a list of exercise_ids, retrieve a list of video logs for this user.

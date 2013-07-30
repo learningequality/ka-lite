@@ -46,9 +46,9 @@ function updatePercentCompleted(correct) {
         "/api/save_exercise_log", 
         data
     ).success(function(data) {
-        show_api_messages("id_save_exercise_log")
+        show_api_messages("id_student_logs")
     }).fail(function(resp) {
-        communicate_api_failure(resp, "id_save_exercise_log");
+        communicate_api_failure(resp, "id_student_logs");
     });
 
 };
@@ -88,9 +88,9 @@ $(function() {
         updateStreakBar();
 
         // Show all messages in "messages" object
-        show_api_messages(data.messages, "id_get_exercise_logs")
+        show_api_messages(data.messages, "id_student_logs")
     }).fail(function (resp) {
         // Expects to receive messages ({ type: message } format) about failures
-        communicate_api_failure(resp, "id_get_exercise_logs");
+        communicate_api_failure(resp, "id_student_logs");
     });
 });

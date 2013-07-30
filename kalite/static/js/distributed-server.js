@@ -68,7 +68,7 @@ $(function(){
                 $("[data-youtube-id='" + video.youtube_id + "']").addClass(newClass);
             });
         }).fail(function(resp) {
-            communicate_api_failure(resp, "id_get_video_log")
+            communicate_api_failure(resp, "id_student_logs")
         });
     }
 
@@ -84,7 +84,7 @@ $(function(){
                 $("[data-exercise-id='" + exercise.exercise_id + "']").addClass(newClass);
             });
         }).fail(function(resp) {
-            communicate_api_failure(resp, "id_get_exercise_logs");
+            communicate_api_failure(resp, "id_student_logs");
         });
     }
 
