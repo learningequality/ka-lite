@@ -1,72 +1,14 @@
 """
-A Python "serializer". Doesn't do much serializing per se -- just converts to
-and from basic Python data types (lists, dicts, strings, etc.). Useful as a basis for
-other serializers.
+Like django.core.serializers.python, but allows serialization/deserialization based on src/dest version
 """
-
 from django.conf import settings
 from django.core.serializers import base
+from django.core.serializers.python import Serializer, _get_model
 from django.db import models, DEFAULT_DB_ALIAS
 from django.utils.encoding import smart_unicode, is_protected_type
 
+from utils.general import version_diff
 
-class Serializer(base.Serializer):
-    """
-    Serializes a QuerySet to basic Python objects.
-    """
-
-    internal_use_only = True
-
-    def start_serialization(self):
-        self._current = None
-        self.objects = []
-
-    def end_serialization(self):
-        pass
-
-    def start_object(self, obj):
-        self._current = {}
-
-    def end_object(self, obj):
-        self.objects.append({
-            "model"  : smart_unicode(obj._meta),
-            "pk"     : smart_unicode(obj._get_pk_val(), strings_only=True),
-            "fields" : self._current
-        })
-        self._current = None
-
-    def handle_field(self, obj, field):
-        value = field._get_val_from_obj(obj)
-        # Protected types (i.e., primitives like None, numbers, dates,
-        # and Decimals) are passed through as is. All other values are
-        # converted to string first.
-        if is_protected_type(value):
-            self._current[field.name] = value
-        else:
-            self._current[field.name] = field.value_to_string(obj)
-
-    def handle_fk_field(self, obj, field):
-        if self.use_natural_keys and hasattr(field.rel.to, 'natural_key'):
-            related = getattr(obj, field.name)
-            if related:
-                value = related.natural_key()
-            else:
-                value = None
-        else:
-            value = getattr(obj, field.get_attname())
-        self._current[field.name] = value
-
-    def handle_m2m_field(self, obj, field):
-        if field.rel.through._meta.auto_created:
-            if self.use_natural_keys and hasattr(field.rel.to, 'natural_key'):
-                m2m_value = lambda value: value.natural_key()
-            else:
-                m2m_value = lambda value: smart_unicode(value._get_pk_val(), strings_only=True)
-            self._current[field.name] = [m2m_value(related)
-                               for related in getattr(obj, field.name).iterator()]
-
-    def getvalue(self):
-        return self.objects
 
 def Deserializer(object_list, **options):
     """
@@ -77,10 +19,22 @@ def Deserializer(object_list, **options):
     """
     db = options.pop('using', DEFAULT_DB_ALIAS)
 
+    #
+    src_version = options.pop("src_version", None)  # version that was serialized
+    dest_version = options.pop("dest_version", None)  # version that we're deserializing to
+    assert dest_version, "For KA Lite, we should always set the dest version to the current device."
+
     models.get_apps()
     for d in object_list:
         # Look up the model and starting build a dict of data for it.
         Model = _get_model(d["model"])
+
+        # See comment below for versioned fields; same logic
+        #   applies here as well.
+        if hasattr(Model, "version"):
+            v_diff = version_diff(Model.version, dest_version)
+            if v_diff > 0 or v_diff is None:
+                continue
 
         data = {Model._meta.pk.attname : Model._meta.pk.to_python(d["pk"])}
         m2m_data = {}
@@ -90,7 +44,22 @@ def Deserializer(object_list, **options):
             if isinstance(field_value, str):
                 field_value = smart_unicode(field_value, options.get("encoding", settings.DEFAULT_CHARSET), strings_only=True)
 
-            field = Model._meta.get_field(field_name)
+            try:
+                field = Model._meta.get_field(field_name)
+            except models.FieldDoesNotExist as fdne:
+                # If src version is newer than dest version,
+                #   or if it's unknown, then assume that the field
+                #   is a new one and skip it.
+                # We can't know for sure, because
+                #   we don't have that field (we are the dest!),
+                #   so we don't know what version it came in on.
+                v_diff = version_diff(src_version, dest_version)
+                if v_diff > 0 or v_diff is None:
+                    continue
+
+                # Something else must be going on, so re-raise.
+                else:
+                    raise fdne
 
             # Handle M2M relations
             if field.rel and isinstance(field.rel, models.ManyToManyRel):
@@ -128,15 +97,3 @@ def Deserializer(object_list, **options):
                 data[field.name] = field.to_python(field_value)
 
         yield base.DeserializedObject(Model(**data), m2m_data)
-
-def _get_model(model_identifier):
-    """
-    Helper to look up a model from an "app_label.module_name" string.
-    """
-    try:
-        Model = models.get_model(*model_identifier.split("."))
-    except TypeError:
-        Model = None
-    if Model is None:
-        raise base.DeserializationError(u"Invalid model identifier: '%s'" % model_identifier)
-    return Model
