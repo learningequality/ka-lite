@@ -17,7 +17,7 @@ if [ $initd_available ]; then
         case $CONFIRM in
             y|Y)
                 echo
-                sudo ./runatboot.sh
+                sudo "$SCRIPT_DIR/kalite/runatboot.sh"
                 echo
                 break
                 ;;

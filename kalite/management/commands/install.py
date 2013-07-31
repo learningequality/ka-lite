@@ -54,7 +54,7 @@ def find_owner(file):
 
 
 def validate_username(username):
-    return not re.match(r'^[^a-zA-Z]', username) and not re.match(r'[^a-zA-Z0-9_]+', username)
+    return not username or (not re.match(r'^[^a-zA-Z]', username) and not re.match(r'[^a-zA-Z0-9_]+', username))
 
 def get_username(current_user):
     while True:
@@ -188,12 +188,12 @@ class Command(BaseCommand):
                 raise CommandError("You must have Python version 2.6.x or 2.7.x installed. Your version is: %s\n" % sys.version_info)
 
         # Do all input at once, at the beginning
-        sys.stdout.write("\n")
-        sys.stdout.write("Please choose a username and password for the admin account on this device.\n")
-        sys.stdout.write("\tYou must remember this login information, as you will need to enter it to\n")
-        sys.stdout.write("\tadminister this installation of KA Lite.\n")
-        sys.stdout.write("\n")
         if options["interactive"]:
+            sys.stdout.write("\n")
+            sys.stdout.write("Please choose a username and password for the admin account on this device.\n")
+            sys.stdout.write("\tYou must remember this login information, as you will need to enter it to\n")
+            sys.stdout.write("\tadminister this installation of KA Lite.\n")
+            sys.stdout.write("\n")
             (username, password) = get_username_password(current_user)
             (hostname, description) = get_hostname_and_description()
         else:
@@ -203,11 +203,14 @@ class Command(BaseCommand):
             description = options["description"]
 
             if not validate_username(username):
-                raise CommandException("\tError: Username must contain only letters, digits, and underscores, and start with a letter.\n")
-            elif not validate_username(password):
-                raise CommandException("\tError: Password cannot be blank.\n")
+                raise CommandError("Username must contain only letters, digits, and underscores, and start with a letter.\n")
+            elif not password:
+                raise CommandError("Password cannot be blank.\n")
 
         # Now do stuff
+
+        # Got this far, it's OK to stop the server.
+        import serverstop
 
         # Should clean_pyc for (clean) reinstall purposes
         call_command("clean_pyc", migrate=True, interactive=False, verbosity=options.get("verbosity"))
