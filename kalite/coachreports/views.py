@@ -8,6 +8,7 @@ from annoying.functions import get_object_or_None
 from functools import partial
 
 from django.core.urlresolvers import reverse
+from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
@@ -25,7 +26,7 @@ from utils.internet import StatusException
 from utils.topic_tools import get_topic_exercises, get_topic_videos, get_all_midlevel_topics
 
 
-def get_accessible_objects_from_request(request, facility):
+def get_accessible_objects_from_logged_in_user(request):
     """Given a request, get all the facility/group/user objects relevant to the request,
     subject to the permissions of the user type.
     """
@@ -43,11 +44,12 @@ def get_accessible_objects_from_request(request, facility):
             facilities = Facility.objects.all()
             groups = [{"facility": facilitie.id, "groups": FacilityGroup.objects.filter(facility=facilitie)} for facilitie in facilities]
         else:
+            # Students can only access their group
             facilities = [user.facility]
-            if user.group:
-                groups = [{"facility": user.facility.id, "groups": FacilityGroup.objects.filter(id=request.session["facility_user"].group)}]
+            if not user.group:
+                groups = []
             else:
-                groups = [{}]
+                groups = [{"facility": user.facility.id, "groups": FacilityGroup.objects.filter(id=request.session["facility_user"].group)}]
     else:
         facilities = [facility]
         groups = [{"facility": facility.id, "groups": FacilityGroup.objects.filter(facility=facility)}]
@@ -62,7 +64,7 @@ def plotting_metadata_context(request, facility=None, topic_path=[], *args, **kw
     # Get the form, and retrieve the API data
     form = get_data_form(request, facility=facility, topic_path=topic_path, *args, **kwargs)
 
-    (groups, facilities) = get_accessible_objects_from_request(request, facility)
+    (groups, facilities) = get_accessible_objects_from_logged_in_user(request)
 
     return {
         "form": form.data,
@@ -189,7 +191,7 @@ def tabular_view(request, facility, report_type="exercise"):
 
     # Get a list of topics (sorted) and groups
     topics = get_all_midlevel_topics()
-    (groups, facilities) = get_accessible_objects_from_request(request, facility)
+    (groups, facilities) = get_accessible_objects_from_logged_in_user(request)
     context = plotting_metadata_context(request, facility=facility)
     context.update({
         "report_types": ("exercise", "video"),
@@ -205,11 +207,26 @@ def tabular_view(request, facility, report_type="exercise"):
 
     group_id = request.GET.get("group", "")
     if group_id:
+        # Narrow by group
         users = FacilityUser.objects.filter(
             group=group_id, is_teacher=False).order_by("last_name", "first_name")
-    else:
+
+    elif facility:
+        # Narrow by facility
+        search_groups = [dict["groups"] for dict in groups if dict["facility"] == facility.id]
+        assert len(search_groups) <= 1, "should only have one or zero matches."
+
+        # Return groups and ungrouped
+        search_groups = search_groups[0]  # make sure to include ungrouped students
         users = FacilityUser.objects.filter(
-            group__in=groups, is_teacher=False).order_by("last_name", "first_name")
+            Q(group__in=search_groups) | Q(group=None, facility=facility), is_teacher=False).order_by("last_name", "first_name")
+
+    else:
+        # Show all (including ungrouped)
+        for groups_dict in groups:
+            search_groups += groups_dict["groups"]
+        users = FacilityUser.objects.filter(
+            Q(group__in=search_groups) | Q(group=None), is_teacher=False).order_by("last_name", "first_name")
 
     # We have enough data to render over a group of students
     # Get type-specific information
