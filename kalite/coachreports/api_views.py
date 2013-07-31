@@ -5,6 +5,7 @@ from functools import partial
 from collections import OrderedDict
 
 from django.core.exceptions import PermissionDenied
+from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
@@ -285,7 +286,7 @@ def api_data(request, xaxis="", yaxis=""):
     elif form.data.get("facility"):
         facility = get_object_or_404(Facility, id=form.data.get("facility"))
         groups = FacilityGroup.objects.filter(facility__in=[form.data.get("facility")])
-        users = FacilityUser.objects.filter(group__in=groups, is_teacher=False).order_by("last_name", "first_name")
+        users = FacilityUser.objects.filter(facility__in=[form.data.get("facility")], is_teacher=False).order_by("last_name", "first_name")
     else:
         return HttpResponseNotFound("Did not specify facility, group, nor user.")
 
