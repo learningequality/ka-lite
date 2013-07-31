@@ -50,7 +50,7 @@ def save_video_log(request):
     # Form does all the data validation, including the youtube_id
     form = VideoLogForm(data=simplejson.loads(request.raw_post_data))
     if not form.is_valid():
-        raise Exception(form.errors)
+        raise ValidationError(form.errors)
     data = form.data
 
     # More robust extraction of previous object
@@ -69,7 +69,7 @@ def save_video_log(request):
     return JsonResponse({
         "points": videolog.points,
         "complete": videolog.complete,
-        "messages": {} if not settings.debug else { "success": "Video data saved." },
+        "messages": {} if not settings.DEBUG else { "success": "Video data saved." },
     })
 
 
