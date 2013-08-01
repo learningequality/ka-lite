@@ -2,7 +2,7 @@ from django import forms
 from django.forms import ModelForm
 
 from central.models import Organization, OrganizationInvitation
-
+from django.core.validators import validate_email
 
 class OrganizationForm(ModelForm):
     class Meta:
@@ -24,6 +24,8 @@ class OrganizationInvitationForm(ModelForm):
         organization = self.cleaned_data.get('organization')
         user = self.cleaned_data.get('invited_by')
 
+        validate_email(email_to_invite)
+        
         if email_to_invite == user.email:
             raise forms.ValidationError("You are already a part of this organization.")
         if OrganizationInvitation.objects.filter(organization=organization, email_to_invite=email_to_invite).count() > 0:
