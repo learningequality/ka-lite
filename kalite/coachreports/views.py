@@ -233,6 +233,7 @@ def tabular_view(request, facility, report_type="exercise"):
     if report_type == "exercise":
         # Fill in exercises
         exercises = get_topic_exercises(topic_id=topic_id)
+        exercises = sorted(exercises, key=lambda e: (e["h_position"], e["v_position"]))
         context["exercises"] = exercises
 
         # More code, but much faster
