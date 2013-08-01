@@ -29,7 +29,7 @@ class TestSaveExerciseLog(TestCase):
         self.user.set_password(self.PASSWORD)
         self.user.save()
 
-        # create an initial ExerciseLog instance so we have something to collide with later
+        # create an initial ExerciseLog instance so we have something to update later
         self.original_exerciselog = ExerciseLog(exercise_id=self.EXERCISE_ID, user=self.user)
         self.original_exerciselog.points = self.ORIGINAL_POINTS
         self.original_exerciselog.attempts = self.ORIGINAL_ATTEMPTS
@@ -96,8 +96,8 @@ class TestSaveExerciseLog(TestCase):
         exerciselog = ExerciseLog.objects.get(exercise_id=self.EXERCISE_ID, user__username=self.USERNAME)
         
         # make sure the ExerciseLog was properly updated
-        self.assertEqual(exerciselog.points, self.NEW_POINTS_LARGER, "The ExerciseLog's points were not saved correctly.")
-        self.assertEqual(exerciselog.streak_progress, self.NEW_STREAK_PROGRESS_LARGER, "The ExerciseLog's streak progress was not saved correctly.")
+        self.assertEqual(exerciselog.points, self.NEW_POINTS_LARGER, "The ExerciseLog's points were not updated correctly.")
+        self.assertEqual(exerciselog.streak_progress, self.NEW_STREAK_PROGRESS_LARGER, "The ExerciseLog's streak progress was not updated correctly.")
         self.assertEqual(exerciselog.attempts, self.ORIGINAL_ATTEMPTS + 1, "The ExerciseLog did not have the correct number of attempts.")
 
         # save a new record onto the exercise log, with an incorrect answer (decreasing the points and streak)
@@ -118,3 +118,89 @@ class TestSaveExerciseLog(TestCase):
         self.assertEqual(exerciselog.streak_progress, self.NEW_STREAK_PROGRESS_SMALLER, "The ExerciseLog's streak progress was not saved correctly.")
         self.assertEqual(exerciselog.attempts, self.ORIGINAL_ATTEMPTS + 2, "The ExerciseLog did not have the correct number of attempts.")        
 
+
+class TestSaveVideoLog(TestCase):
+    
+    ORIGINAL_POINTS = 84
+    ORIGINAL_SECONDS_WATCHED = 32
+    NEW_POINTS = 32
+    NEW_SECONDS_WATCHED = 15
+    YOUTUBE_ID = "aNqG4ChKShI"
+    YOUTUBE_ID2 = "b22tMEc6Kko"
+    USERNAME = "testuser"
+    PASSWORD = "dummy"
+    
+    def setUp(self):
+        # create a facility and user that can be referred to in models across tests
+        self.facility = Facility(name="Test Facility")
+        self.facility.save()
+        self.user = FacilityUser(username=self.USERNAME, facility=self.facility)
+        self.user.set_password(self.PASSWORD)
+        self.user.save()
+        
+        # create an initial VideoLog instance so we have something to update later
+        self.original_videolog = VideoLog(youtube_id=self.YOUTUBE_ID, user=self.user)
+        self.original_videolog.points = self.ORIGINAL_POINTS
+        self.original_videolog.total_seconds_watched = self.ORIGINAL_SECONDS_WATCHED
+        self.original_videolog.save()
+
+    def test_new_videolog(self):
+        
+        # make sure the target video log does not already exist
+        videologs = VideoLog.objects.filter(youtube_id=self.YOUTUBE_ID2, user__username=self.USERNAME)
+        self.assertEqual(videologs.count(), 0, "The target video log to be newly created already exists")
+
+        c = KALiteClient()
+        
+        # login
+        success = c.login(username=self.USERNAME, password=self.PASSWORD, facility=self.facility.id)
+        self.assertTrue(success, "Was not able to login as the test user")
+        
+        # save a new video log
+        data = json.dumps({
+            "youtube_id": self.YOUTUBE_ID2,
+            "seconds_watched": self.NEW_SECONDS_WATCHED,
+            "points": self.NEW_POINTS,
+        })
+        result = c.post("/api/save_video_log", data=data, content_type="application/json")
+        self.assertEqual(result.status_code, 200, "An error (%d) was thrown while saving the video log." % result.status_code)
+        
+        # get a reference to the newly created VideoLog
+        videolog = VideoLog.objects.get(youtube_id=self.YOUTUBE_ID2, user__username=self.USERNAME)
+        
+        # make sure the VideoLog was properly created
+        self.assertEqual(videolog.points, self.NEW_POINTS, "The VideoLog's points were not saved correctly.")
+        self.assertEqual(videolog.total_seconds_watched, self.NEW_SECONDS_WATCHED, "The VideoLog's seconds watched was not saved correctly.")
+
+    def test_update_videolog(self):
+
+        # get a new reference to the existing VideoLog
+        videolog = VideoLog.objects.get(id=self.original_videolog.id)
+        
+        # make sure the VideoLog hasn't already been changed
+        self.assertEqual(videolog.points, self.ORIGINAL_POINTS, "The VideoLog's points have already changed.")
+        self.assertEqual(videolog.total_seconds_watched, self.ORIGINAL_SECONDS_WATCHED, "The VideoLog's seconds watched already changed.")
+        
+        c = KALiteClient()
+        
+        # login
+        success = c.login(username=self.USERNAME, password=self.PASSWORD, facility=self.facility.id)
+        self.assertTrue(success, "Was not able to login as the test user")
+        
+        # save a new record onto the video log, with a correct answer (increasing the points and streak)
+        data = json.dumps({
+            "youtube_id": self.YOUTUBE_ID,
+            "seconds_watched": self.NEW_SECONDS_WATCHED,
+            "points": self.ORIGINAL_POINTS + self.NEW_POINTS,
+            "correct": True,
+        })
+        result = c.post("/api/save_video_log", data=data, content_type="application/json")
+        self.assertEqual(result.status_code, 200, "An error (%d) was thrown while saving the video log." % result.status_code)
+        
+        # get a reference to the updated VideoLog
+        videolog = VideoLog.objects.get(youtube_id=self.YOUTUBE_ID, user__username=self.USERNAME)
+        
+        # make sure the VideoLog was properly updated
+        self.assertEqual(videolog.points, self.ORIGINAL_POINTS + self.NEW_POINTS, "The VideoLog's points were not updated correctly.")
+        self.assertEqual(videolog.total_seconds_watched, self.ORIGINAL_SECONDS_WATCHED + self.NEW_SECONDS_WATCHED, "The VideoLog's seconds watched was not updated correctly.")
+    

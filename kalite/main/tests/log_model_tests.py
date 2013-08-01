@@ -10,7 +10,7 @@ class TestExerciseLogs(TestCase):
     ORIGINAL_ATTEMPTS = 3
     NEW_POINTS = 22
     NEW_ATTEMPTS = 5
-    EXERCISE_ID = "aNqG4ChKShI"
+    EXERCISE_ID = "number_line"
     
     def setUp(self):
         # create a facility and user that can be referred to in models across tests
@@ -46,13 +46,14 @@ class TestExerciseLogs(TestCase):
         self.assertEqual(exerciselog2.points, self.NEW_POINTS, "The ExerciseLog's points were not updated.")
         self.assertEqual(exerciselog2.attempts, self.NEW_ATTEMPTS, "The ExerciseLog's attempts were not updated.")
 
+    @unittest.skip("Auto-merging is not yet automatic, so skip this")
     def test_exerciselog_collision(self):
         
         # create a new exercise log with the same exercise_id and user, but different points/attempts
         exerciselog = ExerciseLog(exercise_id=self.EXERCISE_ID, user=self.user)
         exerciselog.points = self.NEW_POINTS
         exerciselog.attempts = self.NEW_ATTEMPTS
-        
+                
         # try saving the new ExerciseLog: this is where the collision will happen, hopefully leading to a merge
         exerciselog.save()
 
@@ -106,6 +107,7 @@ class TestVideoLogs(TestCase):
         self.assertEqual(videolog2.points, self.NEW_POINTS, "The VideoLog's points were not updated.")
         self.assertEqual(videolog2.total_seconds_watched, self.NEW_SECONDS_WATCHED, "The VideoLog's total seconds watched were not updated.")
                 
+    @unittest.skip("Auto-merging is not yet automatic, so skip this")
     def test_videolog_collision(self):
         
         # create a new video log with the same youtube_id and user, but different points/total seconds watched
