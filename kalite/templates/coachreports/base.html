@@ -40,7 +40,7 @@ h3 {
 {% block headjs %}{{ block.super }}
 <script>
 function generate_current_link() {
-    var url = window.location.href + (window.location.search ? window.location.search : "?");
+    var url = window.location.href;
 
     // Add topic paths
     if (typeof get_topic_paths_from_tree != 'undefined') {
@@ -48,14 +48,12 @@ function generate_current_link() {
         for (pi in topic_paths) {
             url += "&topic_path=" + topic_paths[pi];
         }
-
+        console.log(url);
         // Add axis information
         url = setGetParam(url, "xaxis", $("#xaxis option:selected").val());
         url = setGetParam(url, "yaxis", $("#yaxis option:selected").val());
         url = setGetParam(url, "facility", $("#facility option:selected").val());
         url = setGetParam(url, "group", $("#" + $("#facility option:selected").val() + "_group_select option:selected").val());
-    } else {
-        url = window.location.href
     }
 
     return url;
