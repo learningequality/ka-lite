@@ -4,3 +4,4 @@ from main.tests.fixture_tests import *
 from main.tests.internet_tests import *
 from main.tests.url_tests import *
 from main.tests.log_model_tests import *
+from main.tests.api_tests import *
