@@ -2,6 +2,7 @@ import git
 import os
 import glob
 import platform
+import requests
 import shutil
 import sys
 import subprocess
@@ -16,6 +17,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 import settings
 from settings import LOG as logging
+from updates.utils import UpdatesStaticCommand
 
 
 def call_outside_command_with_output(kalite_location, command, *args, **kwargs):
@@ -51,7 +53,7 @@ def call_outside_command_with_output(kalite_location, command, *args, **kwargs):
     return out + (1 if out[1] else 0,)
 
 
-class Command(BaseCommand):
+class Command(UpdatesStaticCommand):
     help = "Create a zip file with all code, that can be unpacked anywhere."
 
     option_list = BaseCommand.option_list + (
@@ -64,6 +66,12 @@ class Command(BaseCommand):
         make_option('-f', '--file',
             action='store',
             dest='zip_file',
+            default=None,
+            help='FILE to unzip from',
+            metavar="FILE"),
+        make_option('-u', '--url',
+            action='store',
+            dest='url',
             default=None,
             help='FILE to unzip from',
             metavar="FILE"),
@@ -82,76 +90,121 @@ class Command(BaseCommand):
 
 
     def handle(self, *args, **options):
-        import pdb; pdb.set_trace()
+
         if len(args)==1 and args[0]== "test":
             # Callback for "weak" test--checks at least that the django project compiles (local_settings is OK)
             sys.stdout.write("Success!\n")
             exit(0)
 
-        if options.get("repo", None):
-            # Specified a repo
-            self.update_via_git(**options)
+        try:
+            if options.get("repo", None):
+                # Specified a repo
+                self.update_via_git(**options)
 
-        elif options.get("zip_file", None):
-            # Specified a file
-            if not os.path.exists(options.get("zip_file")):
-                raise CommandError("Specified zip file does not exist: %s" % options.get("zip_file"))
-            self.update_via_zip(**options)
+            elif options.get("zip_file", None):
+                # Specified a file
+                if not os.path.exists(options.get("zip_file")):
+                    raise CommandError("Specified zip file does not exist: %s" % options.get("zip_file"))
+                self.update_via_zip(**options)
 
-        elif os.path.exists(settings.PROJECT_PATH + "/../.git"):
-            # Without params, if we detect a git repo, try git
-            self.update_via_git(**options)
+            elif options.get("url", None):
+                self.update_via_zip(**options)
+        
+            elif os.path.exists(settings.PROJECT_PATH + "/../.git"):
+                # Without params, if we detect a git repo, try git
+                self.update_via_git(**options)
 
-        elif len(args) > 1:
-            raise CommandError("Too many command-line arguments.")
+            elif len(args) > 1:
+                raise CommandError("Too many command-line arguments.")
 
-        elif len(args) == 1:
-            # Specify zip via first command-line arg
-            if options['zip_file'] is not None:
-                raise CommandError("Cannot specify a zipfile as unnamed and named command-line arguments at the same time.")
-            options['zip_file'] = args[0]
-            self.update_via_zip(**options)
+            elif len(args) == 1:
+                # Specify zip via first command-line arg
+                if options['zip_file'] is not None:
+                    raise CommandError("Cannot specify a zipfile as unnamed and named command-line arguments at the same time.")
+                options['zip_file'] = args[0]
+                self.update_via_zip(**options)
 
-        else:
-            # No params, no git repo: try to get a file online.
-            zip_file = tempfile.mkstemp()[1]
-            for url in ["https://github.com/learningequality/ka-lite/archive/master.zip",
-                        "http://%s/download/kalite/%s/%s/" % (settings.CENTRAL_SERVER_HOST, platform.system().lower(), "all")]:
-                logging.info("Downloading repo snapshot from %s to %s" % (url, zip_file))
-                try:
-                    urllib.urlretrieve(url, zip_file)
-                    sys.stdout.write("success @ %s\n" % url)
-                    break;
-                except Exception as e:
-                    logging.debug("Failed to get zipfile from %s: %s" % (url, e))
-                    continue
+            else:
+                # No params, no git repo: try to get a file online.
+                zip_file = tempfile.mkstemp()[1]
+                for url in ["http://%s/download/kalite/%s/%s/" % (settings.CENTRAL_SERVER_HOST, platform.system().lower(), "all")]:
+                    logging.info("Downloading repo snapshot from %s to %s" % (url, zip_file))
+                    try:
+                        urllib.urlretrieve(url, zip_file)
+                        sys.stdout.write("success @ %s\n" % url)
+                        break;
+                    except Exception as e:
+                        logging.debug("Failed to get zipfile from %s: %s" % (url, e))
+                        continue
 
-            self.update_via_zip(zip_file=zip_file, **options)
+                self.update_via_zip(zip_file=zip_file, **options)
+        except Exception as e:
+            if self.started():
+                self.cancel(notes=str(e))
+            raise CommandError(str(e))
 
-
-        self.stdout.write("Update is complete!\n")
-
+        assert not self.started(), "Subroutines should complete() if they start()!"
 
 
     def update_via_git(self, repo=".", *args, **kwargs):
-        # Step 1: update via git repo
-        sys.stdout.write("Updating via git repo: %s\n" % repo)
-        self.stdout.write(git.Repo(repo).git.pull() + "\n")
-        call_command("syncdb", migrate=True)
+        """
+        Full update via git
+        """
+        self.stages = [
+            "git pull", 
+            "syncdb",
+        ]
+
+        try:
+            # Step 1: update via git repo
+            self.start(notes = "Updating via git; repo=%s" % (repo or "[default]") )
+            self.stdout.write(git.Repo(repo).git.pull() + "\n")
+        
+            # step 2: syncdb
+            self.next_stage()
+            call_command("syncdb", migrate=True)
+
+            # Done!
+            self.complete()
+        except Exception as e:
+            self.cancel()
+            raise CommandError(str(e))
 
 
-    def update_via_zip(self, zip_file, interactive=True, test_port=8008, *args, **kwargs):
-        if not os.path.exists(zip_file):
-            raise CommandError("Zip file doesn't exist")
+    def update_via_zip(self, zip_file=None, url=None, interactive=True, test_port=8008, *args, **kwargs):
+        """
+        """
+        assert (zip_file or url) and not (zip_file and url)
+
         if not self.kalite_is_installed():
             raise CommandError("KA Lite not yet installed; cannot update.  Please install KA Lite first, then update.\n")
 
-        sys.stdout.write("Updating via zip file: %s\n" % zip_file)
+        self.stages = [
+            "download_zip" if url else "verify_zip",
+            "get_options",
+            "unpack_zip_file",
+            "copy in data",
+            "update_local_settings",
+            "move_video_files",
+            "test_server",
+            "move_to_final",
+            "start_server",
+        ]
 
         # current_dir === base dir for current installation
         self.current_dir = os.path.realpath(settings.PROJECT_PATH + "/../")
 
+        #import pdb; pdb.set_trace()
+
+        if url:
+            self.start(notes="Downloading zip file from %s" % url)
+            zip_file = self.download_zip(url)
+        else:
+            self.start(notes="Validating zip file.")
+            self.verify_zip(zip_file)
+
         # Prep
+        self.next_stage(notes="Getting options")
         self.print_header()
         self.get_dest_dir(
             zip_name=os.path.splitext(os.path.split(zip_file)[1])[0],
@@ -160,20 +213,47 @@ class Command(BaseCommand):
         self.get_move_videos(interactive)
 
         # Work
+        self.next_stage(notes="Extracting files from zip")
         self.extract_files(zip_file)
+
+        self.next_stage(notes="Copying database data")
         self.copy_in_data()
+
+        self.next_stage(notes="Updating local settings")
         self.update_local_settings()
+
+        self.next_stage(notes="Moving video files")
         self.move_video_files()
 
         # Validation & confirmation
+        self.next_stage("Testing the updated server")
         if platform.system() == "Windows":  # In Windows. serverstart is not async
             self.test_server_weak()
         else:
             self.test_server_full(test_port=test_port)
+
+        #raise CommandError("Don't replace--I need this code!")
+        self.next_stage("Replacing the current server with the updated server")
         self.move_to_final(interactive)
+
+        self.next_stage("Starting the updated server")
         self.start_server()
 
         self.print_footer()
+
+
+    def download_zip(self, url):
+        response = requests.get(url)
+        zip_file = tempfile.mkstemp()[1]
+        with open(zip_file,"wb") as fp:
+            fp.write(response.content)
+        return zip_file
+
+
+    def validate_zip(self, zip_file):
+        if not os.path.exists(zip_file):
+            raise CommandError("Zip file doesn't exist")
+        return True
 
 
     def print_header(self):
@@ -199,8 +279,8 @@ class Command(BaseCommand):
             sys.stdout.write("*\tOr any other path\n")
             sys.stdout.write("*\n")
 
-        dest_dir = "" if interactive else self.current_dir
         working_dir = "" if interactive else tempfile.mkdtemp()
+        dest_dir = "" if interactive else (tempfile.mkdtemp() if settings.DEBUG else self.current_dir)
         while not dest_dir:
             dest_dir=raw_input("*\tEnter a number, or path: ").strip()
 
@@ -276,6 +356,7 @@ class Command(BaseCommand):
 
             if fi>0 and fi%round(nfiles/10)==0:
                 pct_done = round(100.*(fi+1.)/nfiles)
+                self.update_stage(stage_percent=pct_done/100.)
                 sys.stdout.write(" %d%%" % pct_done)
 
             zip.extract(afile, path=self.working_dir)
