@@ -60,12 +60,16 @@ function generate_current_link() {
 }
 function display_link () {
     var url_field = $('input#url');
+    var link_box = $('#link-box');
     if(url_field.css("display") == 'none'){
         url_field.val(generate_current_link());
-        url_field.show();
+        url_field.show().focus().select();
+
+        link_box.find('a').text("(hide)");
     }
     else{
         url_field.hide();
+        link_box.find('a').text("(link)");
     }
 }
 function changeData(type) {
@@ -154,7 +158,7 @@ function make_editable(type) {
 
         <div class="clearfix">
             {% block navbar_makelink %}
-            <div  style="float:right;margin-right:25px;">
+            <div id="link-box" style="float:right;margin-right:25px;">
                 <a href="javascript:display_link()">(link)</a>
                 <input name="url" id="url" type="text" style="display:none"></input>
             </div>
