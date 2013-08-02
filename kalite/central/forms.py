@@ -24,7 +24,7 @@ class OrganizationInvitationForm(ModelForm):
         user = self.cleaned_data.get('invited_by')
 
         if not email_to_invite:
-            raise forms.ValidationError("The email you just entered is not valid.")
+            raise forms.ValidationError("The email address you entered is invalid.")
         if email_to_invite == user.email:
             raise forms.ValidationError("You are already a part of this organization.")
         if OrganizationInvitation.objects.filter(organization=organization, email_to_invite=email_to_invite).count() > 0:
