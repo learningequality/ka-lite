@@ -10,6 +10,7 @@ import logging
 from django.test.simple import DjangoTestSuiteRunner
 from django.core import management
 
+from settings import LOG as logging
 from kalite import settings
 
 
@@ -40,6 +41,7 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         """
 
         self.failfast = kwargs.get("failfast")  # overload
+        self.verbosity = int(kwargs.get("verbosity")) # verbosity level, default 1
 
         # If no liveserver specified, set some default.
         #   port range is the set of open ports that Django can use to 
@@ -56,8 +58,8 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         #   the orphan pyc's are discovered and run during testing
         # pyc's are not tracked by git, so orphans can happen when an
         #   older branch has been checked out
-        settings.LOG.info("Purging pyc files")
-        management.call_command('clean_pyc', verbosity=2)
+        logging.info("Purging pyc files")
+        management.call_command('clean_pyc', verbosity=self.verbosity)
 
         if not test_labels:
             test_labels = set(['main', 'central', 'securesync'])

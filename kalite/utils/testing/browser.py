@@ -189,3 +189,18 @@ class BrowserTestCase(KALiteTestCase):
         if keys:
             self.browser_send_keys(keys)
         self.browser_next_form_element(num_expected_links=num_expected_links)
+
+
+    # Actual testing methods
+    def empty_form_test(self, url, submission_element_id):
+        """
+        Submit forms with no values, make sure there are no errors.
+        """
+    
+        self.browse_to(url)
+        self.browser_activate_element(id=submission_element_id)  # explicitly set the focus, to start
+        self.browser_send_keys(Keys.RETURN)
+        # how to wait for page change?  Will reload the same page.
+        time.sleep(1)
+        # Note that if there's a server error, this will assert.
+        self.assertNotEqual(self.browser.find_element_by_css_selector(".errorlist"), None, "Make sure there's an error.")
