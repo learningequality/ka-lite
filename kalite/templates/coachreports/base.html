@@ -58,7 +58,16 @@ function generate_current_link() {
 
     return url;
 }
-
+function display_link () {
+    var url_field = $('input#url');
+    if(url_field.css("display") == 'none'){
+        url_field.val(generate_current_link());
+        url_field.show();
+    }
+    else{
+        url_field.hide();
+    }
+}
 function changeData(type) {
     var opt = $("#" + type + " option:selected");
     $("#" + type + "_editable").text(opt.text());
@@ -146,7 +155,7 @@ function make_editable(type) {
         <div class="clearfix">
             {% block navbar_makelink %}
             <div  style="float:right;margin-right:25px;">
-                <a href="javascript:alert(generate_current_link())">(link)</a>
+                <a href="javascript:display_link()">(link)</a>
                 <input name="url" id="url" type="text" style="display:none"></input>
             </div>
             {% endblock navbar_makelink %}
