@@ -1,5 +1,6 @@
 import json
 
+from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils import unittest
 
@@ -49,13 +50,12 @@ class TestSaveExerciseLog(TestCase):
         self.assertTrue(success, "Was not able to login as the test user")
         
         # save a new exercise log
-        data = json.dumps({
-            "exercise_id": self.EXERCISE_ID2,
-            "streak_progress": self.NEW_STREAK_PROGRESS_LARGER,
-            "points": self.NEW_POINTS_LARGER,
-            "correct": True,
-        })
-        result = c.post("/api/save_exercise_log", data=data, content_type="application/json")
+        result = c.save_exercise_log(
+            exercise_id=self.EXERCISE_ID2,
+            streak_progress=self.NEW_STREAK_PROGRESS_LARGER,
+            points=self.NEW_POINTS_LARGER,
+            correct=True,
+        )
         self.assertEqual(result.status_code, 200, "An error (%d) was thrown while saving the exercise log." % result.status_code)
         
         # get a reference to the newly created ExerciseLog
@@ -83,13 +83,12 @@ class TestSaveExerciseLog(TestCase):
         self.assertTrue(success, "Was not able to login as the test user")
         
         # save a new record onto the exercise log, with a correct answer (increasing the points and streak)
-        data = json.dumps({
-            "exercise_id": self.EXERCISE_ID,
-            "streak_progress": self.NEW_STREAK_PROGRESS_LARGER,
-            "points": self.NEW_POINTS_LARGER,
-            "correct": True,
-        })
-        result = c.post("/api/save_exercise_log", data=data, content_type="application/json")
+        result = c.save_exercise_log(
+            exercise_id=self.EXERCISE_ID,
+            streak_progress=self.NEW_STREAK_PROGRESS_LARGER,
+            points=self.NEW_POINTS_LARGER,
+            correct=True,
+        )
         self.assertEqual(result.status_code, 200, "An error (%d) was thrown while saving the exercise log." % result.status_code)
         
         # get a reference to the updated ExerciseLog
@@ -101,13 +100,12 @@ class TestSaveExerciseLog(TestCase):
         self.assertEqual(exerciselog.attempts, self.ORIGINAL_ATTEMPTS + 1, "The ExerciseLog did not have the correct number of attempts.")
 
         # save a new record onto the exercise log, with an incorrect answer (decreasing the points and streak)
-        data = json.dumps({
-            "exercise_id": self.EXERCISE_ID,
-            "streak_progress": self.NEW_STREAK_PROGRESS_SMALLER,
-            "points": self.NEW_POINTS_SMALLER,
-            "correct": False,
-        })
-        result = c.post("/api/save_exercise_log", data=data, content_type="application/json")
+        result = c.save_exercise_log(
+            exercise_id=self.EXERCISE_ID,
+            streak_progress=self.NEW_STREAK_PROGRESS_SMALLER,
+            points=self.NEW_POINTS_SMALLER,
+            correct=False,
+        )
         self.assertEqual(result.status_code, 200, "An error (%d) was thrown while saving the exercise log." % result.status_code)
         
         # get a reference to the updated ExerciseLog
@@ -157,12 +155,11 @@ class TestSaveVideoLog(TestCase):
         self.assertTrue(success, "Was not able to login as the test user")
         
         # save a new video log
-        data = json.dumps({
-            "youtube_id": self.YOUTUBE_ID2,
-            "seconds_watched": self.NEW_SECONDS_WATCHED,
-            "points": self.NEW_POINTS,
-        })
-        result = c.post("/api/save_video_log", data=data, content_type="application/json")
+        result = c.save_video_log(
+            youtube_id=self.YOUTUBE_ID2,
+            seconds_watched=self.NEW_SECONDS_WATCHED,
+            points=self.NEW_POINTS,
+        )
         self.assertEqual(result.status_code, 200, "An error (%d) was thrown while saving the video log." % result.status_code)
         
         # get a reference to the newly created VideoLog
@@ -188,13 +185,12 @@ class TestSaveVideoLog(TestCase):
         self.assertTrue(success, "Was not able to login as the test user")
         
         # save a new record onto the video log, with a correct answer (increasing the points and streak)
-        data = json.dumps({
-            "youtube_id": self.YOUTUBE_ID,
-            "seconds_watched": self.NEW_SECONDS_WATCHED,
-            "points": self.ORIGINAL_POINTS + self.NEW_POINTS,
-            "correct": True,
-        })
-        result = c.post("/api/save_video_log", data=data, content_type="application/json")
+        result = c.save_video_log(
+            youtube_id=self.YOUTUBE_ID,
+            seconds_watched=self.NEW_SECONDS_WATCHED,
+            points=self.ORIGINAL_POINTS + self.NEW_POINTS,
+            correct=True,
+        )
         self.assertEqual(result.status_code, 200, "An error (%d) was thrown while saving the video log." % result.status_code)
         
         # get a reference to the updated VideoLog

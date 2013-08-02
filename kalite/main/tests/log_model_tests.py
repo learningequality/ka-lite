@@ -24,16 +24,19 @@ class TestExerciseLogs(TestCase):
         self.original_exerciselog.points = self.ORIGINAL_POINTS
         self.original_exerciselog.attempts = self.ORIGINAL_ATTEMPTS
         self.original_exerciselog.save()
+
+        # get a new reference to the existing ExerciseLog
+        exerciselog = ExerciseLog.objects.get(id=self.original_exerciselog.id)
+        
+        # make sure the ExerciseLog was saved as intended
+        self.assertEqual(exerciselog.points, self.ORIGINAL_POINTS, "The ExerciseLog's points have already changed.")
+        self.assertEqual(exerciselog.attempts, self.ORIGINAL_ATTEMPTS, "The ExerciseLog's attempts have already changed.")
     
     def test_exerciselog_update(self):
         
         # get a new reference to the existing ExerciseLog
         exerciselog = ExerciseLog.objects.get(id=self.original_exerciselog.id)
-        
-        # make sure the ExerciseLog hasn't already been changed
-        self.assertEqual(exerciselog.points, self.ORIGINAL_POINTS, "The ExerciseLog's points have already changed.")
-        self.assertEqual(exerciselog.attempts, self.ORIGINAL_ATTEMPTS, "The ExerciseLog's attempts have already changed.")
-        
+                
         # update the ExerciseLog
         exerciselog.points = self.NEW_POINTS
         exerciselog.attempts = self.NEW_ATTEMPTS
@@ -42,7 +45,7 @@ class TestExerciseLogs(TestCase):
         # get a new reference to the existing ExerciseLog
         exerciselog2 = ExerciseLog.objects.get(id=self.original_exerciselog.id)
         
-        # make sure the ExerciseLog hasn't already been changed
+        # make sure the ExerciseLog was updated
         self.assertEqual(exerciselog2.points, self.NEW_POINTS, "The ExerciseLog's points were not updated.")
         self.assertEqual(exerciselog2.attempts, self.NEW_ATTEMPTS, "The ExerciseLog's attempts were not updated.")
 
@@ -85,16 +88,19 @@ class TestVideoLogs(TestCase):
         self.original_videolog.points = self.ORIGINAL_POINTS
         self.original_videolog.total_seconds_watched = self.ORIGINAL_SECONDS_WATCHED
         self.original_videolog.save()
+
+        # get a new reference to the existing VideoLog
+        videolog = VideoLog.objects.get(id=self.original_videolog.id)
+        
+        # make sure the VideoLog was created correctly
+        self.assertEqual(videolog.points, self.ORIGINAL_POINTS, "The VideoLog's points have already changed.")
+        self.assertEqual(videolog.total_seconds_watched, self.ORIGINAL_SECONDS_WATCHED, "The VideoLog's total seconds watched have already changed.")
     
     def test_videolog_update(self):
         
         # get a new reference to the existing VideoLog
         videolog = VideoLog.objects.get(id=self.original_videolog.id)
-        
-        # make sure the VideoLog hasn't already been changed
-        self.assertEqual(videolog.points, self.ORIGINAL_POINTS, "The VideoLog's points have already changed.")
-        self.assertEqual(videolog.total_seconds_watched, self.ORIGINAL_SECONDS_WATCHED, "The VideoLog's total seconds watched have already changed.")
-        
+                
         # update the VideoLog
         videolog.points = self.NEW_POINTS
         videolog.total_seconds_watched = self.NEW_SECONDS_WATCHED
@@ -103,7 +109,7 @@ class TestVideoLogs(TestCase):
         # get a new reference to the existing VideoLog
         videolog2 = VideoLog.objects.get(id=self.original_videolog.id)
         
-        # make sure the VideoLog hasn't already been changed
+        # make sure the VideoLog was updated
         self.assertEqual(videolog2.points, self.NEW_POINTS, "The VideoLog's points were not updated.")
         self.assertEqual(videolog2.total_seconds_watched, self.NEW_SECONDS_WATCHED, "The VideoLog's total seconds watched were not updated.")
                 
