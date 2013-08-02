@@ -5,6 +5,7 @@ These require a test server to be running, and multiple ports
 ./manage.py test central --liveserver=localhost:8004-8010
 ".
 """
+import time
 from selenium.webdriver.common.keys import Keys
 
 from django.contrib.auth.models import User
@@ -217,22 +218,37 @@ class UserRegistrationCaseTest(KALiteCentralBrowserTestCase):
         
         # First, make sure that user 1 can only log in with user 1's email/password
         self.browser_login_user( username=user1_uname, password=user1_password) # succeeds
-        errors = self.browser.find_elements_by_class_name("login_error")
+        errors = self.browser.find_elements_by_class_name("errorlist")
         self.assertEqual(len(errors), 0, "No login errors on successful login.")
         self.browser_logout_user()
         
         self.browser_login_user( username=user2_uname, password=user1_password, expect_success=False) # fails
-        errors = self.browser.find_elements_by_class_name("login_error")
+        errors = self.browser.find_elements_by_class_name("errorlist")
         self.assertEqual(len(errors), 1, "Login errors on failed login.")
         self.assertIn("Incorrect user name or password", errors[0].text, "Error text on failed login.")
         
         # Now, check the same in the opposite direction.
         self.browser_login_user( username=user2_uname, password=user2_password) # succeeds
-        errors = self.browser.find_elements_by_class_name("login_error")
+        errors = self.browser.find_elements_by_class_name("errorlist")
         self.assertEqual(len(errors), 0, "No login errors on successful login.")
         self.browser_logout_user()
 
         self.browser_login_user( username=user1_uname, password=user2_password, expect_success=False) # fails
-        errors = self.browser.find_elements_by_class_name("login_error")
+        errors = self.browser.find_elements_by_class_name("errorlist")
         self.assertEqual(len(errors), 1, "Login errors on failed login.")
         self.assertIn("Incorrect user name or password", errors[0].text, "Error text on failed login.")
+        
+
+@central_server_test
+class CentralEmptyFormSubmitCaseTest(KALiteCentralBrowserTestCase):
+    """
+    Submit forms with no values, make sure there are no errors.
+    """
+    def test_login_form(self):
+        self.empty_form_test(url=self.reverse("auth_login"), submission_element_id="id_username")
+
+    def test_registration_form(self):
+        self.empty_form_test(url=self.reverse("registration_register"), submission_element_id="id_first_name")
+
+    def test_password_reset(self):
+        self.empty_form_test(url=self.reverse("auth_password_reset"), submission_element_id="id_email")
