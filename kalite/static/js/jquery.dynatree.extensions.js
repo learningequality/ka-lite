@@ -5,10 +5,24 @@
 window.toggle_tree_callbacks = [];
 window.last_paths = [];
 function toggle_tree() {
+    // Toggle, and do callbacks when tree closes.
+    var window_will_close = window.showing_tree;   // when tree closes
+
+    if (get_topic_paths_from_tree().length == 0) {
+        // When nothing's selected, make sure it stays open
+        window.showing_tree = true;
+        $("#content_tree_toggle").toggle(true);
+        $("#content_tree").slideDown();
+        if (window_will_close) {
+            do_callbacks();
+        }
+        return;
+    }
+
     window.showing_tree = !window.showing_tree;
     $("#content_tree_toggle").toggle();
     $("#content_tree").slideToggle();
-    if (!window.showing_tree) {
+    if (window_will_close) {
         do_callbacks();
     }
 }
@@ -38,7 +52,7 @@ function do_callbacks(force) {
             topics += parts[parts.length-2]; // trailing slash leaves an empty at the end
         }
     }
-    $("#topic_paths").text(topics);
+    $("#topic_paths").text(topics != "" ? topics : "None");
         
     if (trigger_callbacks) {
         for (cbi in window.toggle_tree_callbacks) {
