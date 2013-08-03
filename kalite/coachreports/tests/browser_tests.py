@@ -1,9 +1,5 @@
 """
-These will be run when you run "manage.py test [main].
-These require a test server to be running, and multiple ports
-  need to be available.  Run like this:
-./manage.py test main --liveserver=localhost:8004-8010
-".
+Basic tests of coach reports, inside the browser
 """
 from selenium.common.exceptions import NoSuchElementException
 
@@ -13,10 +9,10 @@ from securesync.models import Facility, FacilityGroup, FacilityUser
 
 class TestTabularViewErrors(KALiteDistributedWithFacilityBrowserTestCase):
     """
+    In the tabular view, certain scenarios will cause different errors to occur.  Test them here.
     """
 
-    # First, make sure that user 1 can only log in with user 1's email/password
-    def test_no_groups(self):
+te    def test_no_groups(self):
         self.browser_login_admin()
         self.browse_to(url_name="tabular_view")
         self.browser.find_element_by_css_selector('#error_message')

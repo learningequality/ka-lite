@@ -28,7 +28,7 @@ def setup_test_env(browser_type="Firefox", test_user="testadmin", test_password=
     return (local_browser,admin_user,test_password)
             
 
-def browse_to(browser, dest_url=None, wait_time=0.1, max_retries=50):
+def browse_to(browser, dest_url, wait_time=0.1, max_retries=50):
     """Given a selenium browser, open the given url and wait until the browser has completed."""
     if dest_url == browser.current_url:
         return True
@@ -98,15 +98,26 @@ class BrowserTestCase(KALiteTestCase):
     def browse_to(self, *args, **kwargs):
         """
         When testing, we have to make sure that the page has loaded before testing the resulting page.
+        
+        Three ways to specify the url to browse to:
+        1. First positional argument
+        2. dest_url keyword argument
+        3. reverse lookup of url_name argument.
         """
-        if "url_name" in kwargs:
+        if args:
+            assert "dest_url" not in kwargs
+            dest_url = args[0]
+        elif "dest_url" in kwargs:
+            assert "url_name" not in kwargs
+            dest_url = kwargs["dest_url"]
+        elif "url_name" in kwargs:
             kwargs["dest_url"] = self.reverse(kwargs["url_name"])
             del kwargs["url_name"]
-        elif "dest_url" not in kwargs:
-            if len(args) > 0:
-                kwargs["dest_url"] = args[0]
-                args = args[1:]
-        self.assertTrue(browse_to(self.browser, *args, **kwargs), "Browsing to '%s'" % kwargs["dest_url"])
+            dest_url = kwargs["dest_url"]
+        else:
+            raise Exception("Must specify the destination url.")
+
+        self.assertTrue(browse_to(self.browser, *args, **kwargs), "Browsing to '%s'" % dest_url)
 
 
     def wait_for_page_change(self, source_url, wait_time=0.1, max_retries=None):
