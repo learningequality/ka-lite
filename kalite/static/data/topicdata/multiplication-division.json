@@ -1,14 +1,33 @@
 [
   {
     "kind": "Exercise", 
+    "display_name": "Number line 1", 
+    "description": "Drag a dot to a positive integer on the number line", 
+    "title": "Number line 1", 
+    "seconds_per_fast_problem": 7.0, 
+    "related_video_readable_ids": [
+      "number-line-1"
+    ], 
+    "prerequisites": [
+      "addition_2"
+    ], 
+    "live": true, 
+    "h_position": 2, 
+    "v_position": 3, 
+    "path": "/math/arithmetic/multiplication-division/multiplication_fun/e/number_line/", 
+    "slug": "number_line", 
+    "name": "number_line"
+  }, 
+  {
+    "kind": "Exercise", 
     "display_name": "Multiplying 1-digit numbers", 
     "description": "Multiply two 1-digit numbers. Some problems include multiplying by 10.", 
     "title": "Multiplying 1-digit numbers", 
     "seconds_per_fast_problem": 4.0, 
     "related_video_readable_ids": [
-      "basic-multiplication"
+      "basic-multiplication", 
+      "multiplication-2--the-multiplication-tables"
     ], 
-    "slug": "multiplication_0.5", 
     "prerequisites": [
       "addition_2"
     ], 
@@ -16,39 +35,18 @@
     "h_position": 3, 
     "v_position": -5, 
     "path": "/math/arithmetic/multiplication-division/multiplication_fun/e/multiplication_0.5/", 
-    "id": "multiplication_0.5", 
+    "slug": "multiplication_0.5", 
     "name": "multiplication_0.5"
-  }, 
-  {
-    "kind": "Exercise", 
-    "display_name": "Multiplying by multiples of 10", 
-    "description": "Multiply a 1-digit number by a multiple of 10.", 
-    "title": "Multiplying by multiples of 10", 
-    "seconds_per_fast_problem": 5.0, 
-    "related_video_readable_ids": [
-      "multiplication-2--the-multiplication-tables"
-    ], 
-    "slug": "multiplication_1", 
-    "prerequisites": [
-      "multiplication_0.5"
-    ], 
-    "live": true, 
-    "h_position": 4, 
-    "v_position": -5, 
-    "path": "/math/arithmetic/multiplication-division/multiplication_fun/e/multiplication_1/", 
-    "id": "multiplication_1", 
-    "name": "multiplication_1"
   }, 
   {
     "kind": "Exercise", 
     "display_name": "Basic division", 
     "description": "Divide by 1, 2, 3, 5, 10. No remainders", 
     "title": "Basic division", 
-    "seconds_per_fast_problem": 5.0, 
+    "seconds_per_fast_problem": 4.0, 
     "related_video_readable_ids": [
       "division-1"
     ], 
-    "slug": "division_0.5", 
     "prerequisites": [
       "multiplication_1"
     ], 
@@ -56,7 +54,7 @@
     "h_position": 5, 
     "v_position": -7, 
     "path": "/math/arithmetic/multiplication-division/delightful_division/e/division_0.5/", 
-    "id": "division_0.5", 
+    "slug": "division_0.5", 
     "name": "division_0.5"
   }, 
   {
@@ -66,9 +64,8 @@
     "title": "1-digit division", 
     "seconds_per_fast_problem": 5.0, 
     "related_video_readable_ids": [
-      "division-2"
+      "division-1"
     ], 
-    "slug": "division_1", 
     "prerequisites": [
       "division_0.5"
     ], 
@@ -76,7 +73,7 @@
     "h_position": 7, 
     "v_position": -7, 
     "path": "/math/arithmetic/multiplication-division/delightful_division/e/division_1/", 
-    "id": "division_1", 
+    "slug": "division_1", 
     "name": "division_1"
   }, 
   {
@@ -84,12 +81,12 @@
     "display_name": "Multiplication and division word problems", 
     "description": "Word problems with multiplication and division of positive numbers.", 
     "title": "Multiplication and division word problems", 
-    "seconds_per_fast_problem": 7.0, 
+    "seconds_per_fast_problem": 8.0, 
     "related_video_readable_ids": [
-      "division-word-problem-example-1", 
-      "multiplication-word-problem-example-1"
+      "multiplying-whole-numbers-and-applications-6", 
+      "multiplication-word-problem-example-1", 
+      "division-word-problem-example-1"
     ], 
-    "slug": "arithmetic_word_problems_2", 
     "prerequisites": [
       "multiplication_2", 
       "division_1"
@@ -98,8 +95,29 @@
     "h_position": 8, 
     "v_position": -4, 
     "path": "/math/arithmetic/multiplication-division/mult-div-word-problems/e/arithmetic_word_problems_2/", 
-    "id": "arithmetic_word_problems_2", 
+    "slug": "arithmetic_word_problems_2", 
     "name": "arithmetic_word_problems_2"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Multiplication and division word problems 2", 
+    "description": "Word problems with simple multiplication and division.", 
+    "title": "Multiplication and division word problems 2", 
+    "seconds_per_fast_problem": 10.0, 
+    "related_video_readable_ids": [
+      "multiplication-and-division-word-problems-2", 
+      "division-word-problem-example-1", 
+      "multiplication-word-problem-example-1"
+    ], 
+    "prerequisites": [
+      "arithmetic_word_problems_2"
+    ], 
+    "live": true, 
+    "h_position": 9, 
+    "v_position": -4, 
+    "path": "/math/arithmetic/multiplication-division/mult-div-word-problems/e/arithmetic_word_problems/", 
+    "slug": "arithmetic_word_problems", 
+    "name": "arithmetic_word_problems"
   }, 
   {
     "kind": "Exercise", 
@@ -108,9 +126,10 @@
     "title": "Distributive property", 
     "seconds_per_fast_problem": 16.0, 
     "related_video_readable_ids": [
-      "distributive-property-exercise"
+      "distributive-property-exercise", 
+      "the-distributive-property", 
+      "the-distributive-property-2"
     ], 
-    "slug": "distributive_property", 
     "prerequisites": [
       "multiplying_and_dividing_negative_numbers"
     ], 
@@ -118,7 +137,7 @@
     "h_position": 14, 
     "v_position": -3, 
     "path": "/math/arithmetic/multiplication-division/ditributive_property/e/distributive_property/", 
-    "id": "distributive_property", 
+    "slug": "distributive_property", 
     "name": "distributive_property"
   }, 
   {
@@ -132,7 +151,6 @@
       "order-of-operations", 
       "more-complicated-order-of-operations-example"
     ], 
-    "slug": "order_of_operations", 
     "prerequisites": [
       "properties_of_numbers_2", 
       "number_properties_terminology_1", 
@@ -142,7 +160,7 @@
     "h_position": 15, 
     "v_position": -4, 
     "path": "/math/arithmetic/multiplication-division/order_of_operations/e/order_of_operations/", 
-    "id": "order_of_operations", 
+    "slug": "order_of_operations", 
     "name": "order_of_operations"
   }, 
   {
@@ -156,7 +174,6 @@
       "place-value-2", 
       "place-value-3"
     ], 
-    "slug": "place_value", 
     "prerequisites": [
       "adding_decimals_2"
     ], 
@@ -164,7 +181,7 @@
     "h_position": 13, 
     "v_position": 4, 
     "path": "/math/arithmetic/multiplication-division/place_value/e/place_value/", 
-    "id": "place_value", 
+    "slug": "place_value", 
     "name": "place_value"
   }, 
   {
@@ -176,7 +193,6 @@
     "related_video_readable_ids": [
       "representing-numbers"
     ], 
-    "slug": "representing_numbers", 
     "prerequisites": [
       "multiplication_1"
     ], 
@@ -184,8 +200,27 @@
     "h_position": 5, 
     "v_position": -4, 
     "path": "/math/arithmetic/multiplication-division/place_value/e/representing_numbers/", 
-    "id": "representing_numbers", 
+    "slug": "representing_numbers", 
     "name": "representing_numbers"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Multiplying by multiples of 10", 
+    "description": "Multiply a 1-digit number by a multiple of 10.", 
+    "title": "Multiplying by multiples of 10", 
+    "seconds_per_fast_problem": 5.0, 
+    "related_video_readable_ids": [
+      "multiplying-by-multiples-of-10"
+    ], 
+    "prerequisites": [
+      "multiplication_0.5"
+    ], 
+    "live": true, 
+    "h_position": 4, 
+    "v_position": -5, 
+    "path": "/math/arithmetic/multiplication-division/multi_digit_multiplication/e/multiplication_1/", 
+    "slug": "multiplication_1", 
+    "name": "multiplication_1"
   }, 
   {
     "kind": "Exercise", 
@@ -197,7 +232,6 @@
       "2-digit-times-1-digit-example-no-carrying", 
       "3-digit-times-1-digit-example-no-carrying"
     ], 
-    "slug": "multiplication_1.5", 
     "prerequisites": [
       "multiplication_1"
     ], 
@@ -205,7 +239,7 @@
     "h_position": 5, 
     "v_position": -5, 
     "path": "/math/arithmetic/multiplication-division/multi_digit_multiplication/e/multiplication_1.5/", 
-    "id": "multiplication_1.5", 
+    "slug": "multiplication_1.5", 
     "name": "multiplication_1.5"
   }, 
   {
@@ -219,7 +253,6 @@
       "3-digit-times-1-digit-example", 
       "4-digit-times-1-digit-example"
     ], 
-    "slug": "multiplication_2", 
     "prerequisites": [
       "multiplication_1.5"
     ], 
@@ -227,7 +260,7 @@
     "h_position": 6, 
     "v_position": -5, 
     "path": "/math/arithmetic/multiplication-division/multi_digit_multiplication/e/multiplication_2/", 
-    "id": "multiplication_2", 
+    "slug": "multiplication_2", 
     "name": "multiplication_2"
   }, 
   {
@@ -235,12 +268,11 @@
     "display_name": "Multiplying 2 digits by 2 digits", 
     "description": "Multiply 2 digits by 2 digits with carrying.", 
     "title": "Multiplying 2 digits by 2 digits", 
-    "seconds_per_fast_problem": 16.0, 
+    "seconds_per_fast_problem": 15.0, 
     "related_video_readable_ids": [
       "multiplication-5---2-digit-times-a-2-digit-number", 
       "multiplying-whole-numbers-and-applications-2"
     ], 
-    "slug": "multiplication_3", 
     "prerequisites": [
       "multiplication_2"
     ], 
@@ -248,7 +280,7 @@
     "h_position": 7, 
     "v_position": -5, 
     "path": "/math/arithmetic/multiplication-division/multi_digit_multiplication/e/multiplication_3/", 
-    "id": "multiplication_3", 
+    "slug": "multiplication_3", 
     "name": "multiplication_3"
   }, 
   {
@@ -256,11 +288,10 @@
     "display_name": "Multi-digit multiplication", 
     "description": "Multiply 2-3 digits by 3-4 digits with carrying.", 
     "title": "Multi-digit multiplication", 
-    "seconds_per_fast_problem": 17.0, 
+    "seconds_per_fast_problem": 21.0, 
     "related_video_readable_ids": [
       "multiplication-6--multiple-digit-numbers"
     ], 
-    "slug": "multiplication_4", 
     "prerequisites": [
       "multiplication_3"
     ], 
@@ -268,28 +299,8 @@
     "h_position": 8, 
     "v_position": -5, 
     "path": "/math/arithmetic/multiplication-division/multi_digit_multiplication/e/multiplication_4/", 
-    "id": "multiplication_4", 
+    "slug": "multiplication_4", 
     "name": "multiplication_4"
-  }, 
-  {
-    "kind": "Exercise", 
-    "display_name": "Division with remainders", 
-    "description": "Divide 3-digit or 4-digits by 1 digit, with remainder.", 
-    "title": "Division with remainders", 
-    "seconds_per_fast_problem": 21.0, 
-    "related_video_readable_ids": [
-      "division-3--more-long-division-and-remainder-examples"
-    ], 
-    "slug": "division_2", 
-    "prerequisites": [
-      "division_1.5"
-    ], 
-    "live": true, 
-    "h_position": 9, 
-    "v_position": -7, 
-    "path": "/math/arithmetic/multiplication-division/long_division/e/division_2/", 
-    "id": "division_2", 
-    "name": "division_2"
   }, 
   {
     "kind": "Exercise", 
@@ -298,9 +309,9 @@
     "title": "Multi-digit division without remainders", 
     "seconds_per_fast_problem": 9.0, 
     "related_video_readable_ids": [
+      "division-2", 
       "division-3--more-long-division-and-remainder-examples"
     ], 
-    "slug": "division_1.5", 
     "prerequisites": [
       "division_1"
     ], 
@@ -308,19 +319,40 @@
     "h_position": 8, 
     "v_position": -7, 
     "path": "/math/arithmetic/multiplication-division/long_division/e/division_1.5/", 
-    "id": "division_1.5", 
+    "slug": "division_1.5", 
     "name": "division_1.5"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Division with remainders", 
+    "description": "Divide 3-digit or 4-digits by 1 digit, with remainder.", 
+    "title": "Division with remainders", 
+    "seconds_per_fast_problem": 21.0, 
+    "related_video_readable_ids": [
+      "introduction-to-remainders", 
+      "long-division-with-remainder-example", 
+      "division-3--more-long-division-and-remainder-examples", 
+      "division-2"
+    ], 
+    "prerequisites": [
+      "division_1.5"
+    ], 
+    "live": true, 
+    "h_position": 9, 
+    "v_position": -7, 
+    "path": "/math/arithmetic/multiplication-division/long_division/e/division_2/", 
+    "slug": "division_2", 
+    "name": "division_2"
   }, 
   {
     "kind": "Exercise", 
     "display_name": "Division by 2 digits", 
     "description": "Divide 3-digit and 4-digit numbers by a 2-digit number without remainders.", 
     "title": "Division by 2 digits", 
-    "seconds_per_fast_problem": 12.0, 
+    "seconds_per_fast_problem": 13.0, 
     "related_video_readable_ids": [
-      "division-3--more-long-division-and-remainder-examples"
+      "dividing-by-a-two-digit-number"
     ], 
-    "slug": "division_3", 
     "prerequisites": [
       "multiplication_2", 
       "division_2"
@@ -329,39 +361,18 @@
     "h_position": 10, 
     "v_position": -7, 
     "path": "/math/arithmetic/multiplication-division/long_division/e/division_3/", 
-    "id": "division_3", 
+    "slug": "division_3", 
     "name": "division_3"
-  }, 
-  {
-    "kind": "Exercise", 
-    "display_name": "Multiplication and division word problems 2", 
-    "description": "Word problems with simple multiplication and division. Some problems have remainders.", 
-    "title": "Multiplication and division word problems 2", 
-    "seconds_per_fast_problem": 13.0, 
-    "related_video_readable_ids": [
-      "division-3--more-long-division-and-remainder-examples"
-    ], 
-    "slug": "arithmetic_word_problems", 
-    "prerequisites": [
-      "arithmetic_word_problems_2"
-    ], 
-    "live": true, 
-    "h_position": 9, 
-    "v_position": -4, 
-    "path": "/math/arithmetic/multiplication-division/long_division/e/arithmetic_word_problems/", 
-    "id": "arithmetic_word_problems", 
-    "name": "arithmetic_word_problems"
   }, 
   {
     "kind": "Exercise", 
     "display_name": "Multi-digit division", 
     "description": "Divide multi-digit numbers.", 
     "title": "Multi-digit division", 
-    "seconds_per_fast_problem": 37.0, 
+    "seconds_per_fast_problem": 41.0, 
     "related_video_readable_ids": [
-      "division-3--more-long-division-and-remainder-examples"
+      "dividing-by-a-two-digit-number"
     ], 
-    "slug": "division_4", 
     "prerequisites": [
       "division_3"
     ], 
@@ -369,41 +380,20 @@
     "h_position": 11, 
     "v_position": -7, 
     "path": "/math/arithmetic/multiplication-division/long_division/e/division_4/", 
-    "id": "division_4", 
+    "slug": "division_4", 
     "name": "division_4"
-  }, 
-  {
-    "kind": "Exercise", 
-    "display_name": "Counting 1", 
-    "description": null, 
-    "title": "Counting 1", 
-    "seconds_per_fast_problem": 6.0, 
-    "related_video_readable_ids": [
-      "level-4-division"
-    ], 
-    "slug": "counting_1", 
-    "prerequisites": [
-      "division_2"
-    ], 
-    "live": true, 
-    "h_position": 10, 
-    "v_position": -8, 
-    "path": "/math/arithmetic/multiplication-division/long_division/e/counting_1/", 
-    "id": "counting_1", 
-    "name": "counting_1"
   }, 
   {
     "kind": "Exercise", 
     "display_name": "Rounding whole numbers", 
     "description": "", 
     "title": "Rounding whole numbers", 
-    "seconds_per_fast_problem": 6.0, 
+    "seconds_per_fast_problem": 7.0, 
     "related_video_readable_ids": [
       "rounding-whole-numbers-1", 
       "rounding-whole-numbers-2", 
       "rounding-whole-numbers-3"
     ], 
-    "slug": "rounding_whole_numbers", 
     "prerequisites": [
       "place_value"
     ], 
@@ -411,7 +401,7 @@
     "h_position": 14, 
     "v_position": 3, 
     "path": "/math/arithmetic/multiplication-division/rounding_whole_numbers/e/rounding_whole_numbers/", 
-    "id": "rounding_whole_numbers", 
+    "slug": "rounding_whole_numbers", 
     "name": "rounding_whole_numbers"
   }
 ]
