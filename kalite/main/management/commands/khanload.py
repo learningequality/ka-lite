@@ -274,7 +274,10 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
         Internal function for recursing the topic tree and building the knowledge map.
         Requires rebranding of metadata done by recurse_nodes function.
         """
+        assert node["kind"] == "Topic"
 
+        if node["slug"] in ["probability"]:
+            import pdb; pdb.set_trace()
         if node.get("in_knowledge_map", None):
             if node["slug"] not in knowledge_map["topics"]:
                 logging.debug("Not in knowledge map: %s" % node["slug"])
@@ -284,16 +287,19 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
             knowledge_topics[node["slug"]] = topic_tools.get_all_leaves(node, leaf_type="Exercise")
 
             if not knowledge_topics[node["slug"]]:
+                sys.stderr.write("Removing topic from topic tree: no exercises. %s" % node["slug"])
                 del knowledge_topics[node["slug"]]
                 del knowledge_map["topics"][node["slug"]]
                 node["in_knowledge_map"] = False
                 node_cache["Topic"][node["slug"]]["in_knowledge_map"] = False
         else:
             if node["slug"] in knowledge_map["topics"]:
+                sys.stderr.write("Removing topic from topic tree; does not belong. '%s'" % node["slug"])
                 logging.debug("Removing from knowledge map: %s" % node["slug"])
                 del knowledge_map["topics"][node["slug"]]
-            for child in node.get("children", []):
-                recurse_nodes_to_extract_knowledge_map(child, node_cache)
+
+        for child in [n for n in node.get("children", []) if n["kind"] == "Topic"]:
+            recurse_nodes_to_extract_knowledge_map(child, node_cache)
     recurse_nodes_to_extract_knowledge_map(topictree, node_cache)
     
     # Download icons
