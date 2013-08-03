@@ -129,8 +129,28 @@
             <div class="legend"><div class="struggle"></div>{% trans "Struggling" %}</div>
         </div>
     </div>
-    {% if students %}
+    {% if not students %}
+        <div style="clear: both;"></div>
+        <p><div class="subtitle error" id="error_message">
+        {% if not groups.0.groups and not groups.1 %}
+            {% comment %}No groups available: then "ungrouped" is selected, and "no students" returned.{% endcomment %}
+            {% trans "No users found." %}
+        {% elif not form.group %}
+            {% comment %}Groups are available, but none was specified, 
+            and no "ungrouped" users exist (otherwise they would have been returned).{% endcomment %}
+            {% trans "Please select a group above." %}
+        {% elif not request.GET.topic %}
+            {% comment %}Group was selected, but data not queried because a topic was not selected 
+            (NOTE: this required knowledge of how the view queries data){% endcomment %}
+            {% trans "Please select a topic above." %}
+        {% else %}
+            {% comment %}Everything specified, but no users fit the query.{% endcomment %}
+            {% trans "No users found." %}
+        {% endif %}
+        </div></p>
+    {% else %}
         {% block students_header %}
+
         <div style="clear: both;"></div>
         <div id="displaygrid">
             <div style="clear: both;"></div>
@@ -228,9 +248,6 @@
         </div>
         {% endblock video_data %}
         {% endif %}
-    {% else %}
-        <div style="clear: both;"></div>
-        <p><div class="subtitle">{% trans "Please select a group and topic above." %}</div></p>
     {% endif %}
 </div> 
 {% endblock content %}
