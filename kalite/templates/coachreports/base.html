@@ -29,7 +29,10 @@ h3 {
     margin-left: 25px;
     margin-bottom: 0px;
 }
-
+#link-box {
+    float:right;
+    margin-right:25px;
+}
 .group_div {
     position: absolute;
     margin-left: 20px;
@@ -63,7 +66,7 @@ function display_link () {
     var link_box = $('#link-box');
     if(url_field.css("display") == 'none'){
         url_field.val(generate_current_link());
-        url_field.show().focus().select();
+        url_field.show().focus().select().attr('readonly',true);
 
         link_box.find('a').text("(hide)");
     }
@@ -158,9 +161,9 @@ function make_editable(type) {
 
         <div class="clearfix">
             {% block navbar_makelink %}
-            <div id="link-box" style="float:right;margin-right:25px;">
-                <a href="javascript:display_link()">(link)</a>
+            <div id="link-box">
                 <input name="url" id="url" type="text" style="display:none"></input>
+                <a href="javascript:display_link()">(link)</a>
             </div>
             {% endblock navbar_makelink %}
         </div>
