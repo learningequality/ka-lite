@@ -1,62 +1,78 @@
 [
   {
-    "kind": "Exercise", 
-    "display_name": "Properties of numbers 1", 
-    "description": "", 
-    "title": "Properties of numbers 1", 
-    "seconds_per_fast_problem": 5.0, 
     "related_video_readable_ids": [
       "properties-of-numbers-1"
     ], 
-    "slug": "properties_of_numbers_1", 
-    "prerequisites": [
-      "multiplying_and_dividing_negative_numbers"
-    ], 
-    "live": true, 
-    "h_position": 13, 
     "v_position": -5, 
     "path": "/math/arithmetic/order-of-operations/arithmetic_properties/e/properties_of_numbers_1/", 
-    "id": "properties_of_numbers_1", 
-    "name": "properties_of_numbers_1"
+    "display_name": "Properties of numbers 1", 
+    "title": "Properties of numbers 1", 
+    "live": true, 
+    "description": "", 
+    "h_position": 13, 
+    "slug": "properties_of_numbers_1", 
+    "kind": "Exercise", 
+    "name": "properties_of_numbers_1", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "multiplying_and_dividing_negative_numbers"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Number properties terminology 1", 
-    "description": "", 
-    "title": "Number properties terminology 1", 
-    "seconds_per_fast_problem": 5.0, 
     "related_video_readable_ids": [
       "number-properties-terminology-1"
     ], 
-    "slug": "number_properties_terminology_1", 
-    "prerequisites": [
-      "multiplying_and_dividing_negative_numbers"
-    ], 
-    "live": true, 
-    "h_position": 14, 
     "v_position": -4, 
     "path": "/math/arithmetic/order-of-operations/arithmetic_properties/e/number_properties_terminology_1/", 
-    "id": "number_properties_terminology_1", 
-    "name": "number_properties_terminology_1"
+    "display_name": "Number properties terminology 1", 
+    "title": "Number properties terminology 1", 
+    "live": true, 
+    "description": "", 
+    "h_position": 14, 
+    "slug": "number_properties_terminology_1", 
+    "kind": "Exercise", 
+    "name": "number_properties_terminology_1", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "multiplying_and_dividing_negative_numbers"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Properties of numbers 2", 
-    "description": "", 
-    "title": "Properties of numbers 2", 
-    "seconds_per_fast_problem": 6.0, 
     "related_video_readable_ids": [
       "properties-of-numbers-2"
     ], 
-    "slug": "properties_of_numbers_2", 
-    "prerequisites": [
-      "properties_of_numbers_1"
-    ], 
-    "live": true, 
-    "h_position": 14, 
     "v_position": -5, 
     "path": "/math/arithmetic/order-of-operations/arithmetic_properties/e/properties_of_numbers_2/", 
-    "id": "properties_of_numbers_2", 
-    "name": "properties_of_numbers_2"
+    "display_name": "Properties of numbers 2", 
+    "title": "Properties of numbers 2", 
+    "live": true, 
+    "description": "", 
+    "h_position": 14, 
+    "slug": "properties_of_numbers_2", 
+    "kind": "Exercise", 
+    "name": "properties_of_numbers_2", 
+    "seconds_per_fast_problem": 6.0, 
+    "prerequisites": [
+      "properties_of_numbers_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "counting-1-exercise"
+    ], 
+    "v_position": -8, 
+    "path": "/math/arithmetic/order-of-operations/counting tutorial/e/counting_1/", 
+    "display_name": "Counting 1", 
+    "title": "Counting 1", 
+    "live": true, 
+    "description": "", 
+    "h_position": 10, 
+    "slug": "counting_1", 
+    "kind": "Exercise", 
+    "name": "counting_1", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "division_2"
+    ]
   }
 ]

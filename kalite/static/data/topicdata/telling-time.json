@@ -1,54 +1,51 @@
 [
   {
-    "kind": "Exercise", 
-    "display_name": "Telling time 0.5", 
-    "description": "", 
-    "title": "Telling time 0.5", 
-    "seconds_per_fast_problem": 6.0, 
     "related_video_readable_ids": [], 
-    "slug": "telling_time_0.5", 
-    "prerequisites": [], 
-    "live": true, 
-    "h_position": 1, 
     "v_position": 11, 
     "path": "/math/arithmetic/telling-time/e/telling_time_0.5/", 
-    "id": "telling_time_0.5", 
-    "name": "telling_time_0.5"
+    "display_name": "Telling time 0.5", 
+    "title": "Telling time 0.5", 
+    "live": true, 
+    "description": "", 
+    "h_position": 1, 
+    "slug": "telling_time_0.5", 
+    "kind": "Exercise", 
+    "name": "telling_time_0.5", 
+    "seconds_per_fast_problem": 6.0, 
+    "prerequisites": []
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Telling time", 
-    "description": null, 
-    "title": "Telling time", 
-    "seconds_per_fast_problem": 6.0, 
     "related_video_readable_ids": [], 
-    "slug": "telling_time", 
-    "prerequisites": [
-      "telling_time_0.5"
-    ], 
-    "live": true, 
-    "h_position": 2, 
     "v_position": 11, 
     "path": "/math/arithmetic/telling-time/e/telling_time/", 
-    "id": "telling_time", 
-    "name": "telling_time"
+    "display_name": "Telling time", 
+    "title": "Telling time", 
+    "live": true, 
+    "description": "", 
+    "h_position": 2, 
+    "slug": "telling_time", 
+    "kind": "Exercise", 
+    "name": "telling_time", 
+    "seconds_per_fast_problem": 7.0, 
+    "prerequisites": [
+      "telling_time_0.5"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Telling time 2", 
-    "description": "", 
-    "title": "Telling time 2", 
-    "seconds_per_fast_problem": 7.0, 
     "related_video_readable_ids": [], 
-    "slug": "telling_time_2", 
-    "prerequisites": [
-      "telling_time"
-    ], 
-    "live": true, 
-    "h_position": 3, 
     "v_position": 11, 
     "path": "/math/arithmetic/telling-time/e/telling_time_2/", 
-    "id": "telling_time_2", 
-    "name": "telling_time_2"
+    "display_name": "Telling time 2", 
+    "title": "Telling time 2", 
+    "live": true, 
+    "description": "", 
+    "h_position": 3, 
+    "slug": "telling_time_2", 
+    "kind": "Exercise", 
+    "name": "telling_time_2", 
+    "seconds_per_fast_problem": 6.0, 
+    "prerequisites": [
+      "telling_time"
+    ]
   }
 ]

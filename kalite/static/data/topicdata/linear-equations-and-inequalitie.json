@@ -1,491 +1,473 @@
 [
   {
-    "kind": "Exercise", 
-    "display_name": "Graphing points", 
-    "description": "Plot a given point on the coordinate plane.", 
-    "title": "Graphing points", 
-    "seconds_per_fast_problem": 6.0, 
     "related_video_readable_ids": [
+      "graphing-points-exercise", 
+      "the-coordinate-plane", 
       "plot-ordered-pairs", 
-      "plot-ordered-pairs"
+      "descartes-and-cartesian-coordinates"
     ], 
-    "slug": "graphing_points", 
-    "prerequisites": [
-      "linear_equations_3"
-    ], 
-    "live": true, 
-    "h_position": 34, 
     "v_position": 9, 
     "path": "/math/algebra/linear-equations-and-inequalitie/coordinate-plane/e/graphing_points/", 
-    "id": "graphing_points", 
-    "name": "graphing_points"
+    "display_name": "Graphing points", 
+    "title": "Graphing points", 
+    "live": true, 
+    "description": "Plot a given point on the coordinate plane.", 
+    "h_position": 34, 
+    "slug": "graphing_points", 
+    "kind": "Exercise", 
+    "name": "graphing_points", 
+    "seconds_per_fast_problem": 6.0, 
+    "prerequisites": [
+      "linear_equations_3"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Graphing points and naming quadrants", 
-    "description": "Graph a point and indicate which quadrant it is in on the coordinate plane.", 
-    "title": "Graphing points and naming quadrants", 
-    "seconds_per_fast_problem": 9.0, 
     "related_video_readable_ids": [
+      "graphing-points-and-naming-quadrants-exercise", 
       "quadrants-of-coordinate-plane", 
-      "quadrants-of-coordinate-plane"
+      "descartes-and-cartesian-coordinates"
     ], 
-    "slug": "graphing_points_2", 
-    "prerequisites": [
-      "graphing_points"
-    ], 
-    "live": true, 
-    "h_position": 35, 
     "v_position": 8, 
     "path": "/math/algebra/linear-equations-and-inequalitie/coordinate-plane/e/graphing_points_2/", 
-    "id": "graphing_points_2", 
-    "name": "graphing_points_2"
-  }, 
-  {
+    "display_name": "Graphing points and naming quadrants", 
+    "title": "Graphing points and naming quadrants", 
+    "live": true, 
+    "description": "Graph a point and indicate which quadrant it is in on the coordinate plane.", 
+    "h_position": 35, 
+    "slug": "graphing_points_2", 
     "kind": "Exercise", 
-    "display_name": "Points on the coordinate plane", 
-    "description": "Determine which of several given ordered pairs is not graphed on the coordinate plane.", 
-    "title": "Points on the coordinate plane", 
-    "seconds_per_fast_problem": 14.0, 
-    "related_video_readable_ids": [
-      "quadrants-of-coordinate-plane", 
-      "quadrants-of-coordinate-plane"
-    ], 
-    "slug": "identifying_points_1", 
+    "name": "graphing_points_2", 
+    "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "graphing_points"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "points-on-the-coordinate-plane", 
+      "descartes-and-cartesian-coordinates", 
+      "plot-ordered-pairs"
     ], 
-    "live": true, 
-    "h_position": 35, 
     "v_position": 9, 
     "path": "/math/algebra/linear-equations-and-inequalitie/coordinate-plane/e/identifying_points_1/", 
-    "id": "identifying_points_1", 
-    "name": "identifying_points_1"
-  }, 
-  {
+    "display_name": "Points on the coordinate plane", 
+    "title": "Points on the coordinate plane", 
+    "live": true, 
+    "description": "Determine which of several given ordered pairs is not graphed on the coordinate plane.", 
+    "h_position": 35, 
+    "slug": "identifying_points_1", 
     "kind": "Exercise", 
-    "display_name": "Ordered pair solutions to linear equations", 
-    "description": "Determine which ordered pair represents a solution to a graph or equation.", 
-    "title": "Ordered pair solutions to linear equations", 
-    "seconds_per_fast_problem": 17.0, 
-    "related_video_readable_ids": [
-      "application-problem-with-graph", 
-      "ordered-pair-solutions-of-equations-2"
-    ], 
-    "slug": "identifying_points_2", 
+    "name": "identifying_points_1", 
+    "seconds_per_fast_problem": 14.0, 
     "prerequisites": [
       "graphing_points"
-    ], 
-    "live": true, 
-    "h_position": 35, 
-    "v_position": 10, 
-    "path": "/math/algebra/linear-equations-and-inequalitie/graphing_solutions2/e/identifying_points_2/", 
-    "id": "identifying_points_2", 
-    "name": "identifying_points_2"
+    ]
   }, 
   {
+    "related_video_readable_ids": [], 
+    "v_position": 10, 
+    "path": "/math/algebra/linear-equations-and-inequalitie/graphing_solutions2/e/identifying_points_2/", 
+    "display_name": "Ordered pair solutions to linear equations", 
+    "title": "Ordered pair solutions to linear equations", 
+    "live": true, 
+    "description": "Determine which ordered pair represents a solution to a graph or equation.", 
+    "h_position": 35, 
+    "slug": "identifying_points_2", 
     "kind": "Exercise", 
+    "name": "identifying_points_2", 
+    "seconds_per_fast_problem": 16.0, 
+    "prerequisites": [
+      "graphing_points"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": 9, 
+    "path": "/math/algebra/linear-equations-and-inequalitie/graphing_solutions2/e/interpreting_linear_equations/", 
     "display_name": "Identifying linear relationships", 
-    "description": "Based on graphs of lines, determine whether one variable decreases, increases, or stays the same as the other increases.", 
     "title": "Identifying linear relationships", 
-    "seconds_per_fast_problem": 7.0, 
-    "related_video_readable_ids": [
-      "recognizing-linear-functions", 
-      "recognizing-linear-functions"
-    ], 
+    "live": true, 
+    "description": "Based on graphs of lines, determine whether one variable decreases, increases, or stays the same as the other increases.", 
+    "h_position": 36, 
     "slug": "interpreting_linear_equations", 
+    "kind": "Exercise", 
+    "name": "interpreting_linear_equations", 
+    "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "identifying_points_2", 
       "identifying_points_1", 
       "graphing_points_2"
-    ], 
-    "live": true, 
-    "h_position": 36, 
-    "v_position": 9, 
-    "path": "/math/algebra/linear-equations-and-inequalitie/graphing_solutions2/e/interpreting_linear_equations/", 
-    "id": "interpreting_linear_equations", 
-    "name": "interpreting_linear_equations"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Solving for the x-intercept", 
-    "description": "Solve linear equations for the x-intercept", 
-    "title": "Solving for the x-intercept", 
-    "seconds_per_fast_problem": 6.0, 
-    "related_video_readable_ids": [
-      "x-and-y-intercepts-2"
-    ], 
-    "slug": "solving_for_the_x-intercept", 
-    "prerequisites": [
-      "solving_for_the_y-intercept"
-    ], 
-    "live": true, 
-    "h_position": 38, 
+    "related_video_readable_ids": [], 
     "v_position": 10, 
     "path": "/math/algebra/linear-equations-and-inequalitie/graphing_with_intercepts/e/solving_for_the_x-intercept/", 
-    "id": "solving_for_the_x-intercept", 
-    "name": "solving_for_the_x-intercept"
+    "display_name": "Solving for the x-intercept", 
+    "title": "Solving for the x-intercept", 
+    "live": true, 
+    "description": "Solve linear equations for the x-intercept", 
+    "h_position": 38, 
+    "slug": "solving_for_the_x-intercept", 
+    "kind": "Exercise", 
+    "name": "solving_for_the_x-intercept", 
+    "seconds_per_fast_problem": 6.0, 
+    "prerequisites": [
+      "solving_for_the_y-intercept"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Identifying slope of a line", 
-    "description": "Select the graph that represents a given slope. ", 
-    "title": "Identifying slope of a line", 
-    "seconds_per_fast_problem": 9.0, 
     "related_video_readable_ids": [
-      "hairier-slope-of-line", 
-      "slope-of-a-line-3"
+      "rate-problem-with-fractions-1", 
+      "unit-cost-with-fractions-1"
     ], 
-    "slug": "slope_of_a_line", 
-    "prerequisites": [
-      "interpreting_linear_equations"
-    ], 
+    "v_position": -11, 
+    "path": "/math/algebra/linear-equations-and-inequalitie/rates-of-change-algebra/e/rate_problems_1/", 
+    "display_name": "Rate problems 1", 
+    "title": "Rate problems 1", 
     "live": true, 
-    "h_position": 37, 
+    "description": "", 
+    "h_position": 30, 
+    "slug": "rate_problems_1", 
+    "kind": "Exercise", 
+    "name": "rate_problems_1", 
+    "seconds_per_fast_problem": 17.0, 
+    "prerequisites": [
+      "rate_problems_0.5"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
     "v_position": 9, 
     "path": "/math/algebra/linear-equations-and-inequalitie/slope-and-intercepts/e/slope_of_a_line/", 
-    "id": "slope_of_a_line", 
-    "name": "slope_of_a_line"
-  }, 
-  {
-    "kind": "Exercise", 
-    "display_name": "Line graph intuition", 
-    "description": "Adjust the slope and y-intercept of a line to make it go through given points.", 
-    "title": "Line graph intuition", 
-    "seconds_per_fast_problem": 7.0, 
-    "related_video_readable_ids": [
-      "slope-and-y-intercept-intuition", 
-      "slope-and-y-intercept-intuition"
-    ], 
-    "slug": "line_graph_intuition", 
-    "prerequisites": [
-      "slope_of_a_line"
-    ], 
+    "display_name": "Identifying slope of a line", 
+    "title": "Identifying slope of a line", 
     "live": true, 
-    "h_position": 38, 
-    "v_position": 9, 
-    "path": "/math/algebra/linear-equations-and-inequalitie/slope-and-intercepts/e/line_graph_intuition/", 
-    "id": "line_graph_intuition", 
-    "name": "line_graph_intuition"
-  }, 
-  {
+    "description": "Select the graph that represents a given slope. ", 
+    "h_position": 37, 
+    "slug": "slope_of_a_line", 
     "kind": "Exercise", 
-    "display_name": "Graphing linear equations", 
-    "description": "Graph a linear equation on the coordinate plane.", 
-    "title": "Graphing linear equations", 
-    "seconds_per_fast_problem": 14.0, 
-    "related_video_readable_ids": [
-      "converting-to-slope-intercept-form", 
-      "converting-to-slope-intercept-form"
-    ], 
-    "slug": "graphing_linear_equations", 
-    "prerequisites": [
-      "equation_of_a_line"
-    ], 
-    "live": true, 
-    "h_position": 42, 
-    "v_position": 9, 
-    "path": "/math/algebra/linear-equations-and-inequalitie/equation-of-a-line/e/graphing_linear_equations/", 
-    "id": "graphing_linear_equations", 
-    "name": "graphing_linear_equations"
-  }, 
-  {
-    "kind": "Exercise", 
-    "display_name": "Solving for the y-intercept", 
-    "description": "Solve linear equations for the y-intercept.", 
-    "title": "Solving for the y-intercept", 
-    "seconds_per_fast_problem": 12.0, 
-    "related_video_readable_ids": [
-      "equation-of-a-line-3", 
-      "equation-of-a-line-3"
-    ], 
-    "slug": "solving_for_the_y-intercept", 
+    "name": "slope_of_a_line", 
+    "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "interpreting_linear_equations"
-    ], 
-    "live": true, 
-    "h_position": 37, 
-    "v_position": 10, 
-    "path": "/math/algebra/linear-equations-and-inequalitie/equation-of-a-line/e/solving_for_the_y-intercept/", 
-    "id": "solving_for_the_y-intercept", 
-    "name": "solving_for_the_y-intercept"
+    ]
   }, 
   {
+    "related_video_readable_ids": [], 
+    "v_position": 9, 
+    "path": "/math/algebra/linear-equations-and-inequalitie/slope-and-intercepts/e/line_graph_intuition/", 
+    "display_name": "Line graph intuition", 
+    "title": "Line graph intuition", 
+    "live": true, 
+    "description": "Adjust the slope and y-intercept of a line to make it go through given points.", 
+    "h_position": 38, 
+    "slug": "line_graph_intuition", 
     "kind": "Exercise", 
+    "name": "line_graph_intuition", 
+    "seconds_per_fast_problem": 7.0, 
+    "prerequisites": [
+      "slope_of_a_line"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": 9, 
+    "path": "/math/algebra/linear-equations-and-inequalitie/equation-of-a-line/e/graphing_linear_equations/", 
+    "display_name": "Graphing linear equations", 
+    "title": "Graphing linear equations", 
+    "live": true, 
+    "description": "Graph a linear equation on the coordinate plane.", 
+    "h_position": 42, 
+    "slug": "graphing_linear_equations", 
+    "kind": "Exercise", 
+    "name": "graphing_linear_equations", 
+    "seconds_per_fast_problem": 12.0, 
+    "prerequisites": [
+      "equation_of_a_line"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": 10, 
+    "path": "/math/algebra/linear-equations-and-inequalitie/equation-of-a-line/e/solving_for_the_y-intercept/", 
+    "display_name": "Solving for the y-intercept", 
+    "title": "Solving for the y-intercept", 
+    "live": true, 
+    "description": "Solve linear equations for the y-intercept.", 
+    "h_position": 37, 
+    "slug": "solving_for_the_y-intercept", 
+    "kind": "Exercise", 
+    "name": "solving_for_the_y-intercept", 
+    "seconds_per_fast_problem": 10.0, 
+    "prerequisites": [
+      "interpreting_linear_equations"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": 11, 
+    "path": "/math/algebra/linear-equations-and-inequalitie/equation-of-a-line/e/slope_intercept_form/", 
     "display_name": "Slope intercept form", 
-    "description": "Write an equation in slope-intercept form based on values given in a table.", 
     "title": "Slope intercept form", 
-    "seconds_per_fast_problem": 32.0, 
-    "related_video_readable_ids": [
-      "equation-of-a-line-3", 
-      "equation-of-a-line-3"
-    ], 
+    "live": true, 
+    "description": "Write an equation in slope-intercept form based on values given in a table.", 
+    "h_position": 39, 
     "slug": "slope_intercept_form", 
+    "kind": "Exercise", 
+    "name": "slope_intercept_form", 
+    "seconds_per_fast_problem": 28.0, 
     "prerequisites": [
       "solving_for_the_x-intercept", 
       "line_graph_intuition"
-    ], 
-    "live": true, 
-    "h_position": 39, 
-    "v_position": 11, 
-    "path": "/math/algebra/linear-equations-and-inequalitie/equation-of-a-line/e/slope_intercept_form/", 
-    "id": "slope_intercept_form", 
-    "name": "slope_intercept_form"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Point slope form", 
-    "description": "Given 2 points, write an equation in point-slope form.", 
-    "title": "Point slope form", 
-    "seconds_per_fast_problem": 24.0, 
-    "related_video_readable_ids": [
-      "linear-equations-in-point-slope-form", 
-      "linear-equations-in-point-slope-form"
-    ], 
-    "slug": "point_slope_form", 
-    "prerequisites": [
-      "line_graph_intuition"
-    ], 
-    "live": true, 
-    "h_position": 39, 
+    "related_video_readable_ids": [], 
     "v_position": 9, 
     "path": "/math/algebra/linear-equations-and-inequalitie/equation-of-a-line/e/point_slope_form/", 
-    "id": "point_slope_form", 
-    "name": "point_slope_form"
+    "display_name": "Point slope form", 
+    "title": "Point slope form", 
+    "live": true, 
+    "description": "Given 2 points, write an equation in point-slope form.", 
+    "h_position": 39, 
+    "slug": "point_slope_form", 
+    "kind": "Exercise", 
+    "name": "point_slope_form", 
+    "seconds_per_fast_problem": 23.0, 
+    "prerequisites": [
+      "line_graph_intuition"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Converting between slope-intercept and standard form", 
-    "description": "Convert linear equations between slope-intercept and standard forms.", 
-    "title": "Converting between slope-intercept and standard form", 
-    "seconds_per_fast_problem": 18.0, 
-    "related_video_readable_ids": [
-      "point-slope-and-standard-form", 
-      "point-slope-and-standard-form"
-    ], 
-    "slug": "converting_between_slope_intercept_and_standard_form", 
-    "prerequisites": [
-      "slope_intercept_form"
-    ], 
-    "live": true, 
-    "h_position": 40, 
+    "related_video_readable_ids": [], 
     "v_position": 11, 
     "path": "/math/algebra/linear-equations-and-inequalitie/equation-of-a-line/e/converting_between_slope_intercept_and_standard_form/", 
-    "id": "converting_between_slope_intercept_and_standard_form", 
-    "name": "converting_between_slope_intercept_and_standard_form"
+    "display_name": "Converting between slope-intercept and standard form", 
+    "title": "Converting between slope-intercept and standard form", 
+    "live": true, 
+    "description": "Convert linear equations between slope-intercept and standard forms.", 
+    "h_position": 40, 
+    "slug": "converting_between_slope_intercept_and_standard_form", 
+    "kind": "Exercise", 
+    "name": "converting_between_slope_intercept_and_standard_form", 
+    "seconds_per_fast_problem": 16.0, 
+    "prerequisites": [
+      "slope_intercept_form"
+    ]
   }, 
   {
-    "kind": "Exercise", 
+    "related_video_readable_ids": [], 
+    "v_position": 9, 
+    "path": "/math/algebra/linear-equations-and-inequalitie/equation-of-a-line/e/converting_between_point_slope_and_slope_intercept/", 
     "display_name": "Converting between point-slope and slope-intercept", 
-    "description": "Convert linear equations between point-slop and slope-intercept forms.", 
     "title": "Converting between point-slope and slope-intercept", 
-    "seconds_per_fast_problem": 14.0, 
-    "related_video_readable_ids": [
-      "point-slope-and-standard-form", 
-      "point-slope-and-standard-form"
-    ], 
+    "live": true, 
+    "description": "Convert linear equations between point-slop and slope-intercept forms.", 
+    "h_position": 40, 
     "slug": "converting_between_point_slope_and_slope_intercept", 
+    "kind": "Exercise", 
+    "name": "converting_between_point_slope_and_slope_intercept", 
+    "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "point_slope_form", 
       "slope_intercept_form"
-    ], 
-    "live": true, 
-    "h_position": 40, 
-    "v_position": 9, 
-    "path": "/math/algebra/linear-equations-and-inequalitie/equation-of-a-line/e/converting_between_point_slope_and_slope_intercept/", 
-    "id": "converting_between_point_slope_and_slope_intercept", 
-    "name": "converting_between_point_slope_and_slope_intercept"
+    ]
   }, 
   {
-    "kind": "Exercise", 
+    "related_video_readable_ids": [], 
+    "v_position": 8, 
+    "path": "/math/algebra/linear-equations-and-inequalitie/equation-of-a-line/e/equation_of_a_line/", 
     "display_name": "Finding the equation of a line", 
-    "description": "Given x and y values, write the equation of a line.", 
     "title": "Finding the equation of a line", 
-    "seconds_per_fast_problem": 24.0, 
-    "related_video_readable_ids": [
-      "point-slope-and-standard-form", 
-      "point-slope-and-standard-form"
-    ], 
+    "live": true, 
+    "description": "Given x and y values, write the equation of a line.", 
+    "h_position": 41, 
     "slug": "equation_of_a_line", 
+    "kind": "Exercise", 
+    "name": "equation_of_a_line", 
+    "seconds_per_fast_problem": 23.0, 
     "prerequisites": [
       "converting_between_slope_intercept_and_standard_form", 
       "converting_between_point_slope_and_slope_intercept"
-    ], 
-    "live": true, 
-    "h_position": 41, 
-    "v_position": 8, 
-    "path": "/math/algebra/linear-equations-and-inequalitie/equation-of-a-line/e/equation_of_a_line/", 
-    "id": "equation_of_a_line", 
-    "name": "equation_of_a_line"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Equations from tables", 
-    "description": "Write a linear equation based on values in a given table.", 
-    "title": "Equations from tables", 
-    "seconds_per_fast_problem": 19.0, 
-    "related_video_readable_ids": [
-      "point-slope-and-standard-form"
-    ], 
-    "slug": "plugging_in_values", 
-    "prerequisites": [
-      "line_graph_intuition"
-    ], 
-    "live": true, 
-    "h_position": 39, 
+    "related_video_readable_ids": [], 
     "v_position": 10, 
     "path": "/math/algebra/linear-equations-and-inequalitie/equation-of-a-line/e/plugging_in_values/", 
-    "id": "plugging_in_values", 
-    "name": "plugging_in_values"
+    "display_name": "Equations from tables", 
+    "title": "Equations from tables", 
+    "live": true, 
+    "description": "Write a linear equation based on values in a given table.", 
+    "h_position": 39, 
+    "slug": "plugging_in_values", 
+    "kind": "Exercise", 
+    "name": "plugging_in_values", 
+    "seconds_per_fast_problem": 18.0, 
+    "prerequisites": [
+      "line_graph_intuition"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Midpoint formula", 
-    "description": "Find the midpoint of a segment on the coordinate plane, or find the endpoint of a segment given one point and the midpoint.", 
-    "title": "Midpoint formula", 
-    "seconds_per_fast_problem": 22.0, 
     "related_video_readable_ids": [
-      "pythagorean-theorem", 
-      "midpoint-formula", 
       "midpoint-formula"
     ], 
-    "slug": "midpoint_formula", 
-    "prerequisites": [
-      "distance_formula"
-    ], 
-    "live": true, 
-    "h_position": 40, 
     "v_position": -12, 
     "path": "/math/algebra/linear-equations-and-inequalitie/more-analytic-geometry/e/midpoint_formula/", 
-    "id": "midpoint_formula", 
-    "name": "midpoint_formula"
+    "display_name": "Midpoint formula", 
+    "title": "Midpoint formula", 
+    "live": true, 
+    "description": "Find the midpoint of a segment on the coordinate plane, or find the endpoint of a segment given one point and the midpoint.", 
+    "h_position": 40, 
+    "slug": "midpoint_formula", 
+    "kind": "Exercise", 
+    "name": "midpoint_formula", 
+    "seconds_per_fast_problem": 21.0, 
+    "prerequisites": [
+      "distance_formula"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Distance formula", 
-    "description": "Use the Pythagorean theorem to find the distance between two points on the coordinate plane.", 
-    "title": "Distance formula", 
-    "seconds_per_fast_problem": 26.0, 
     "related_video_readable_ids": [
+      "the-pythagorean-theorem", 
+      "pythagorean-theorem-1", 
+      "pythagorean-theorem-2", 
+      "pythagorean-theorem-3", 
       "pythagorean-theorem", 
-      "distance-formula", 
+      "using-the-pythagorean-theorem", 
+      "pythagorean-theorem-application"
+    ], 
+    "v_position": -13, 
+    "path": "/math/algebra/linear-equations-and-inequalitie/more-analytic-geometry/e/pythagorean_theorem_1/", 
+    "display_name": "Pythagorean theorem", 
+    "title": "Pythagorean theorem", 
+    "live": true, 
+    "description": "Find the leg or hypotenuse of a right triangle using the Pythagorean theorem.", 
+    "h_position": 38, 
+    "slug": "pythagorean_theorem_1", 
+    "kind": "Exercise", 
+    "name": "pythagorean_theorem_1", 
+    "seconds_per_fast_problem": 17.0, 
+    "prerequisites": [
+      "adding_and_subtracting_radicals"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
       "distance-formula"
     ], 
-    "slug": "distance_formula", 
-    "prerequisites": [
-      "pythagorean_theorem_1"
-    ], 
-    "live": true, 
-    "h_position": 39, 
     "v_position": -13, 
     "path": "/math/algebra/linear-equations-and-inequalitie/more-analytic-geometry/e/distance_formula/", 
-    "id": "distance_formula", 
-    "name": "distance_formula"
+    "display_name": "Distance formula", 
+    "title": "Distance formula", 
+    "live": true, 
+    "description": "Use the Pythagorean theorem to find the distance between two points on the coordinate plane.", 
+    "h_position": 39, 
+    "slug": "distance_formula", 
+    "kind": "Exercise", 
+    "name": "distance_formula", 
+    "seconds_per_fast_problem": 25.0, 
+    "prerequisites": [
+      "pythagorean_theorem_1"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Equations of parallel and perpendicular lines", 
-    "description": "Determine the equation of a line parallel or perpendicular to the given line. Determine the relationship between two linear equations.", 
-    "title": "Equations of parallel and perpendicular lines", 
-    "seconds_per_fast_problem": 21.0, 
     "related_video_readable_ids": [
+      "equations-of-parallel-and-perpendicular-lines", 
+      "parallel-line-equation", 
+      "perpendicular-lines", 
       "perpendicular-lines-2", 
-      "perpendicular-lines-2"
+      "parallel-lines", 
+      "parallel-lines-2", 
+      "parallel-lines-3"
     ], 
-    "slug": "line_relationships", 
-    "prerequisites": [
-      "equation_of_a_line"
-    ], 
-    "live": true, 
-    "h_position": 43, 
     "v_position": 8, 
     "path": "/math/algebra/linear-equations-and-inequalitie/more-analytic-geometry/e/line_relationships/", 
-    "id": "line_relationships", 
-    "name": "line_relationships"
+    "display_name": "Equations of parallel and perpendicular lines", 
+    "title": "Equations of parallel and perpendicular lines", 
+    "live": true, 
+    "description": "Determine the equation of a line parallel or perpendicular to the given line. Determine the relationship between two linear equations.", 
+    "h_position": 43, 
+    "slug": "line_relationships", 
+    "kind": "Exercise", 
+    "name": "line_relationships", 
+    "seconds_per_fast_problem": 22.0, 
+    "prerequisites": [
+      "equation_of_a_line"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Distance between point and line", 
-    "description": "Find the distance between a point and a line. Some horizontal and vertical lines.", 
-    "title": "Distance between point and line", 
-    "seconds_per_fast_problem": 24.0, 
     "related_video_readable_ids": [
-      "perpendicular-lines-2", 
-      "perpendicular-lines-2"
+      "distance-between-a-point-and-a-line", 
+      "equations-of-parallel-and-perpendicular-lines", 
+      "distance-formula"
     ], 
+    "v_position": 8, 
+    "path": "/math/algebra/linear-equations-and-inequalitie/more-analytic-geometry/e/distance_between_point_and_line/", 
+    "display_name": "Distance between point and line", 
+    "title": "Distance between point and line", 
+    "live": true, 
+    "description": "Find the distance between a point and a line. Some horizontal and vertical lines.", 
+    "h_position": 47, 
     "slug": "distance_between_point_and_line", 
+    "kind": "Exercise", 
+    "name": "distance_between_point_and_line", 
+    "seconds_per_fast_problem": 20.0, 
     "prerequisites": [
       "line_relationships", 
       "graphing_systems_of_equations"
-    ], 
-    "live": true, 
-    "h_position": 47, 
-    "v_position": 8, 
-    "path": "/math/algebra/linear-equations-and-inequalitie/more-analytic-geometry/e/distance_between_point_and_line/", 
-    "id": "distance_between_point_and_line", 
-    "name": "distance_between_point_and_line"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Graphs of inequalities", 
-    "description": "Write an inequality from a given graph", 
-    "title": "Graphs of inequalities", 
-    "seconds_per_fast_problem": 19.0, 
-    "related_video_readable_ids": [
-      "graphing-linear-inequalities-in-two-variables-3", 
-      "graphing-linear-inequalities-in-two-variables-3"
-    ], 
-    "slug": "graphs_of_inequalities", 
-    "prerequisites": [
-      "graphing_linear_equations"
-    ], 
-    "live": true, 
-    "h_position": 43, 
+    "related_video_readable_ids": [], 
     "v_position": 10, 
     "path": "/math/algebra/linear-equations-and-inequalitie/graphing-linear-inequalities/e/graphs_of_inequalities/", 
-    "id": "graphs_of_inequalities", 
-    "name": "graphs_of_inequalities"
-  }, 
-  {
+    "display_name": "Graphs of inequalities", 
+    "title": "Graphs of inequalities", 
+    "live": true, 
+    "description": "Write an inequality from a given graph", 
+    "h_position": 43, 
+    "slug": "graphs_of_inequalities", 
     "kind": "Exercise", 
-    "display_name": "Graphing linear inequalities", 
-    "description": "Graph a linear inequality on the coordinate plane. Determine whether the line should be solid or dotted, and shade the proper side.", 
-    "title": "Graphing linear inequalities", 
+    "name": "graphs_of_inequalities", 
     "seconds_per_fast_problem": 20.0, 
-    "related_video_readable_ids": [
-      "graphing-linear-inequalities-in-two-variables-3", 
-      "graphing-linear-inequalities-in-two-variables-3"
-    ], 
-    "slug": "graphing_inequalities", 
     "prerequisites": [
       "graphing_linear_equations"
-    ], 
-    "live": true, 
-    "h_position": 43, 
-    "v_position": 9, 
-    "path": "/math/algebra/linear-equations-and-inequalitie/graphing-linear-inequalities/e/graphing_inequalities/", 
-    "id": "graphing_inequalities", 
-    "name": "graphing_inequalities"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Graphing and solving linear inequalities", 
-    "description": "Graph a linear inequality on the coordinate plane. Determine whether given ordered pairs are solutions.", 
-    "title": "Graphing and solving linear inequalities", 
-    "seconds_per_fast_problem": 26.0, 
-    "related_video_readable_ids": [
-      "graphing-inequalities-1", 
-      "graphing-linear-inequalities-in-two-variables-3"
-    ], 
-    "slug": "graphing_inequalities_2", 
-    "prerequisites": [
-      "graphing_inequalities"
-    ], 
+    "related_video_readable_ids": [], 
+    "v_position": 9, 
+    "path": "/math/algebra/linear-equations-and-inequalitie/graphing-linear-inequalities/e/graphing_inequalities/", 
+    "display_name": "Graphing linear inequalities", 
+    "title": "Graphing linear inequalities", 
     "live": true, 
-    "h_position": 44, 
+    "description": "Graph a linear inequality on the coordinate plane. Determine whether the line should be solid or dotted, and shade the proper side.", 
+    "h_position": 43, 
+    "slug": "graphing_inequalities", 
+    "kind": "Exercise", 
+    "name": "graphing_inequalities", 
+    "seconds_per_fast_problem": 18.0, 
+    "prerequisites": [
+      "graphing_linear_equations"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
     "v_position": 9, 
     "path": "/math/algebra/linear-equations-and-inequalitie/graphing-linear-inequalities/e/graphing_inequalities_2/", 
-    "id": "graphing_inequalities_2", 
-    "name": "graphing_inequalities_2"
+    "display_name": "Graphing and solving linear inequalities", 
+    "title": "Graphing and solving linear inequalities", 
+    "live": true, 
+    "description": "Graph a linear inequality on the coordinate plane. Determine whether given ordered pairs are solutions.", 
+    "h_position": 44, 
+    "slug": "graphing_inequalities_2", 
+    "kind": "Exercise", 
+    "name": "graphing_inequalities_2", 
+    "seconds_per_fast_problem": 29.0, 
+    "prerequisites": [
+      "graphing_inequalities"
+    ]
   }
 ]
