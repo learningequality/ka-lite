@@ -178,7 +178,7 @@ class KALiteDistributedWithFacilityBrowserTestCase(KALiteDistributedBrowserTestC
     def setUp(self):
         """Add a facility, so users can begin registering / logging in immediately."""
         super(KALiteDistributedWithFacilityBrowserTestCase,self).setUp() # sets up admin, etc
-        self.create_facility(facility_name=self.facility_name)        
+        self.facility = self.create_facility(facility_name=self.facility_name)        
 
 
 @distributed_server_test

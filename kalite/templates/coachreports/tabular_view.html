@@ -129,8 +129,29 @@
             <div class="legend"><div class="struggle"></div>{% trans "Struggling" %}</div>
         </div>
     </div>
-    {% if students %}
+    {% if not students %}
+        <div style="clear: both;"></div>
+        <p><div class="subtitle error" id="error_message">
+        {% comment %}
+        Scenarios:
+            0. No groups available
+            1. No group specified
+            2. Group specified, no users
+            3. Group specified, no topic
+        {% endcomment %}
+        {% if not groups.0.groups and not groups.1 %}
+            {% trans "No users found." %}
+        {% elif not form.group %}
+            {% trans "Please select a group above." %}
+        {% elif not request.GET.topic %}
+            {% trans "Please select a topic above." %}
+        {% else %}
+            {% trans "No users found." %}
+        {% endif %}
+        </div></p>
+    {% else %}
         {% block students_header %}
+
         <div style="clear: both;"></div>
         <div id="displaygrid">
             <div style="clear: both;"></div>
@@ -228,9 +249,6 @@
         </div>
         {% endblock video_data %}
         {% endif %}
-    {% else %}
-        <div style="clear: both;"></div>
-        <p><div class="subtitle">{% trans "Please select a group and topic above." %}</div></p>
     {% endif %}
 </div> 
 {% endblock content %}
