@@ -68,7 +68,6 @@ window.VideoPlayerModel = Backbone.Model.extend({
 
         data = {
             youtube_id: this.get("youtube_id"),
-            total_seconds_watched: Math.floor(this.get("total_seconds_watched")),
             seconds_watched: this.get("seconds_watched_since_save"),
             points: this.get("points")
         }

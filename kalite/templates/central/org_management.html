@@ -236,7 +236,7 @@
 									<h4 id="form-label">Add Admin: </h4><input type="text" placeholder="example@email.com" name="email_to_invite">
 									<input type="submit" value="Send invite!">
 									{% for error in org.form.non_field_errors %}
-										<div class="errors">{{ error }}</div>
+										<div class="error">{{ error }}</div>
 									{% endfor %}
 								</form>
 							</div>
