@@ -1,6 +1,7 @@
 import glob
 import time
 from annoying.functions import get_object_or_None
+from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
 
@@ -14,6 +15,14 @@ from utils.videos import download_video
 class Command(BaseCommand):
     help = "Sync up the database's version of what videos have been downloaded with the actual folder contents"
 
+    option_list = BaseCommand.option_list + (
+        make_option('-c', '--cache',
+            action='store_true',
+            dest='auto_cache',
+            default=False,
+            help='Auto-generate cache files',
+        ),
+    )
     def handle(self, *args, **options):
         caching_enabled = (settings.CACHE_TIME != 0)
         touched_video_ids = []
@@ -22,10 +31,13 @@ class Command(BaseCommand):
         video_files_to_delete = VideoFile.objects.filter(download_in_progress=False, percent_complete__gt=0, percent_complete__lt=100)
         youtube_ids_to_delete = [d["youtube_id"] for d in video_files_to_delete.values("youtube_id")]
         video_files_to_delete.delete()
+
         if caching_enabled:
             for youtube_id in youtube_ids_to_delete:
                 caching.invalidate_cached_topic_hierarchies(video_id=youtube_id)
                 touched_video_ids.append(youtube_id)
+        if len(video_files_to_delete):
+            self.stdout.write("Deleted %d VideoFile models (to mark them as not downloaded, since they were in a bad state)\n" % len(video_files_to_delete))
 
         files = glob.glob(settings.CONTENT_ROOT + "*.mp4")
         subtitle_files = glob.glob(settings.CONTENT_ROOT + "*.srt")
@@ -70,9 +82,9 @@ class Command(BaseCommand):
             count += video_files_needing_model_deletion.count()
             video_files_needing_model_deletion.delete()
             if caching_enabled:
-                for vf in video_files_needing_model_deletion:
-                    caching.invalidate_cached_topic_hierarchies(video_id=vf.youtube_id)
-                    touched_video_ids.append(vf.youtube_id)
+                for video_id in chunk:
+                    caching.invalidate_cached_topic_hierarchies(video_id=video_id)
+                    touched_video_ids.append(video_id)
         if count:
             self.stdout.write("Deleted %d VideoFile models (because the videos didn't exist in the filesystem)\n" % count)
 
@@ -89,6 +101,10 @@ class Command(BaseCommand):
         if count:
             self.stdout.write("Updated %d VideoFile models (marked them as having subtitles)\n" % count)
         
-        # Regenerate all pages, efficiently
-        if caching_enabled:
+        # Regenerate all pages, efficiently IF:
+        # 1. auto-cache option enabled
+        # 2. Caching enabled
+        # 3. There are videos to cache
+        if options["auto_cache"] and caching_enabled and touched_video_ids:
+            self.stdout.write("Regenerating cache for %d videos & related pages\n" % touched_video_ids)
             caching.regenerate_cached_topic_hierarchies(touched_video_ids)
