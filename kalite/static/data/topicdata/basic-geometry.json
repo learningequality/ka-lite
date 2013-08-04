@@ -5,10 +5,7 @@
     "description": "Calculate the perimeter of a shape from its side lengths.", 
     "title": "Perimeter 1", 
     "seconds_per_fast_problem": 6.0, 
-    "related_video_readable_ids": [
-      "area-and-perimeter"
-    ], 
-    "slug": "perimeter_1", 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "order_of_operations"
     ], 
@@ -16,7 +13,7 @@
     "h_position": 18, 
     "v_position": -18, 
     "path": "/math/geometry/basic-geometry/perimeter_area_basics/e/perimeter_1/", 
-    "id": "perimeter_1", 
+    "slug": "perimeter_1", 
     "name": "perimeter_1"
   }, 
   {
@@ -25,10 +22,7 @@
     "description": "", 
     "title": "Perimeter of squares and rectangles", 
     "seconds_per_fast_problem": 6.0, 
-    "related_video_readable_ids": [
-      "area-and-perimeter"
-    ], 
-    "slug": "perimeter_of_squares_and_rectangles", 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "perimeter_1"
     ], 
@@ -36,7 +30,7 @@
     "h_position": 19, 
     "v_position": -18, 
     "path": "/math/geometry/basic-geometry/perimeter_area_basics/e/perimeter_of_squares_and_rectangles/", 
-    "id": "perimeter_of_squares_and_rectangles", 
+    "slug": "perimeter_of_squares_and_rectangles", 
     "name": "perimeter_of_squares_and_rectangles"
   }, 
   {
@@ -45,10 +39,7 @@
     "description": "Find the area of a rectangle given its length and width.", 
     "title": "Area 1", 
     "seconds_per_fast_problem": 5.0, 
-    "related_video_readable_ids": [
-      "area-and-perimeter"
-    ], 
-    "slug": "area_1", 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "order_of_operations"
     ], 
@@ -56,7 +47,7 @@
     "h_position": 18, 
     "v_position": -17, 
     "path": "/math/geometry/basic-geometry/perimeter_area_basics/e/area_1/", 
-    "id": "area_1", 
+    "slug": "area_1", 
     "name": "area_1"
   }, 
   {
@@ -65,10 +56,7 @@
     "description": "", 
     "title": "Area of squares and rectangles", 
     "seconds_per_fast_problem": 5.0, 
-    "related_video_readable_ids": [
-      "area-and-perimeter"
-    ], 
-    "slug": "area_of_squares_and_rectangles", 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "area_1"
     ], 
@@ -76,7 +64,7 @@
     "h_position": 19, 
     "v_position": -17, 
     "path": "/math/geometry/basic-geometry/perimeter_area_basics/e/area_of_squares_and_rectangles/", 
-    "id": "area_of_squares_and_rectangles", 
+    "slug": "area_of_squares_and_rectangles", 
     "name": "area_of_squares_and_rectangles"
   }, 
   {
@@ -84,11 +72,8 @@
     "display_name": "Area of triangles", 
     "description": "Find the area of right, acute, and obtuse triangles from a diagram.", 
     "title": "Area of triangles", 
-    "seconds_per_fast_problem": 5.0, 
-    "related_video_readable_ids": [
-      "triangle-area-proofs"
-    ], 
-    "slug": "area_of_triangles_1", 
+    "seconds_per_fast_problem": 6.0, 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "area_of_squares_and_rectangles"
     ], 
@@ -96,8 +81,26 @@
     "h_position": 21, 
     "v_position": -17, 
     "path": "/math/geometry/basic-geometry/perimeter_area_tutorial/e/area_of_triangles_1/", 
-    "id": "area_of_triangles_1", 
+    "slug": "area_of_triangles_1", 
     "name": "area_of_triangles_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Shaded areas", 
+    "description": "Find the areas of shaded regions which are combinations of squares, triangles, and circles.     ", 
+    "title": "Shaded areas", 
+    "seconds_per_fast_problem": 25.0, 
+    "related_video_readable_ids": [], 
+    "prerequisites": [
+      "circles_and_arcs", 
+      "areas_of_circles_and_sectors"
+    ], 
+    "live": true, 
+    "h_position": 38, 
+    "v_position": -19, 
+    "path": "/math/geometry/basic-geometry/perimeter_area_tutorial/e/shaded_areas/", 
+    "slug": "shaded_areas", 
+    "name": "shaded_areas"
   }, 
   {
     "kind": "Exercise", 
@@ -105,10 +108,7 @@
     "description": null, 
     "title": "Triangle inequality theorem", 
     "seconds_per_fast_problem": 9.0, 
-    "related_video_readable_ids": [
-      "triangle-inqequality-theorem"
-    ], 
-    "slug": "triangle_inequality_theorem", 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "triangle_angles_1"
     ], 
@@ -116,7 +116,7 @@
     "h_position": 32, 
     "v_position": -18, 
     "path": "/math/geometry/basic-geometry/triangle_inequality_theorem/e/triangle_inequality_theorem/", 
-    "id": "triangle_inequality_theorem", 
+    "slug": "triangle_inequality_theorem", 
     "name": "triangle_inequality_theorem"
   }, 
   {
@@ -124,11 +124,8 @@
     "display_name": "Heron's formula", 
     "description": null, 
     "title": "Heron's formula", 
-    "seconds_per_fast_problem": 47.0, 
-    "related_video_readable_ids": [
-      "heron-s-formula"
-    ], 
-    "slug": "herons_formula", 
+    "seconds_per_fast_problem": 48.0, 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "shaded_areas"
     ], 
@@ -136,7 +133,7 @@
     "h_position": 39, 
     "v_position": -19, 
     "path": "/math/geometry/basic-geometry/heron_formula_tutorial/e/herons_formula/", 
-    "id": "herons_formula", 
+    "slug": "herons_formula", 
     "name": "herons_formula"
   }, 
   {
@@ -145,10 +142,7 @@
     "description": "", 
     "title": "Radius diameter and circumference", 
     "seconds_per_fast_problem": 5.0, 
-    "related_video_readable_ids": [
-      "parts-of-a-circle"
-    ], 
-    "slug": "radius_diameter_and_circumference", 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "perimeter_of_squares_and_rectangles"
     ], 
@@ -156,7 +150,7 @@
     "h_position": 20, 
     "v_position": -18, 
     "path": "/math/geometry/basic-geometry/circum_area_circles/e/radius_diameter_and_circumference/", 
-    "id": "radius_diameter_and_circumference", 
+    "slug": "radius_diameter_and_circumference", 
     "name": "radius_diameter_and_circumference"
   }, 
   {
@@ -164,11 +158,8 @@
     "display_name": "Area of a circle", 
     "description": "", 
     "title": "Area of a circle", 
-    "seconds_per_fast_problem": 7.0, 
-    "related_video_readable_ids": [
-      "area-of-a-circle"
-    ], 
-    "slug": "area_of_a_circle", 
+    "seconds_per_fast_problem": 8.0, 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "radius_diameter_and_circumference", 
       "area_of_squares_and_rectangles"
@@ -177,7 +168,7 @@
     "h_position": 21, 
     "v_position": -18, 
     "path": "/math/geometry/basic-geometry/circum_area_circles/e/area_of_a_circle/", 
-    "id": "area_of_a_circle", 
+    "slug": "area_of_a_circle", 
     "name": "area_of_a_circle"
   }, 
   {
@@ -186,10 +177,7 @@
     "description": "Find the area of parallelograms given base and height.", 
     "title": "Area of parallelograms", 
     "seconds_per_fast_problem": 5.0, 
-    "related_video_readable_ids": [
-      "area-of-a-parallelogram"
-    ], 
-    "slug": "area_of_parallelograms", 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "angles_2"
     ], 
@@ -197,7 +185,7 @@
     "h_position": 36, 
     "v_position": -20, 
     "path": "/math/geometry/basic-geometry/area_non_standard/e/area_of_parallelograms/", 
-    "id": "area_of_parallelograms", 
+    "slug": "area_of_parallelograms", 
     "name": "area_of_parallelograms"
   }, 
   {
@@ -206,10 +194,7 @@
     "description": "Find areas of trapezoids, rhombi, and kites given important lengths.", 
     "title": "Area of trapezoids, rhombi, and kites", 
     "seconds_per_fast_problem": 8.0, 
-    "related_video_readable_ids": [
-      "area-of-a-parallelogram"
-    ], 
-    "slug": "areas_of_trapezoids_rhombi_and_kites", 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "angles_2"
     ], 
@@ -217,7 +202,7 @@
     "h_position": 36, 
     "v_position": -19, 
     "path": "/math/geometry/basic-geometry/area_non_standard/e/areas_of_trapezoids_rhombi_and_kites/", 
-    "id": "areas_of_trapezoids_rhombi_and_kites", 
+    "slug": "areas_of_trapezoids_rhombi_and_kites", 
     "name": "areas_of_trapezoids_rhombi_and_kites"
   }, 
   {
@@ -225,11 +210,8 @@
     "display_name": "Solid geometry", 
     "description": null, 
     "title": "Solid geometry", 
-    "seconds_per_fast_problem": 11.0, 
-    "related_video_readable_ids": [
-      "volume-of-a-sphere"
-    ], 
-    "slug": "solid_geometry", 
+    "seconds_per_fast_problem": 12.0, 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "area_of_parallelograms", 
       "areas_of_trapezoids_rhombi_and_kites"
@@ -238,7 +220,7 @@
     "h_position": 37, 
     "v_position": -18, 
     "path": "/math/geometry/basic-geometry/volume_tutorial/e/solid_geometry/", 
-    "id": "solid_geometry", 
+    "slug": "solid_geometry", 
     "name": "solid_geometry"
   }
 ]

@@ -11,6 +11,7 @@ import requests
 import shutil
 import sys
 import time
+from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
 
@@ -68,8 +69,8 @@ def download_khan_data(url, debug_cache_file=None, debug_cache_dir="json"):
     # Use the cache file if:
     # a) We're in DEBUG mode
     # b) The debug cache file exists
-    # c) It's less than 7 days old.
-    if settings.DEBUG and os.path.exists(debug_cache_file) and datediff(datetime.datetime.now(), datetime.datetime.fromtimestamp(os.path.getctime(debug_cache_file)), units="days") <= 7.0:
+    # c) It's less than a day old.
+    if settings.DEBUG and os.path.exists(debug_cache_file) and datediff(datetime.datetime.now(), datetime.datetime.fromtimestamp(os.path.getctime(debug_cache_file)), units="days")<=7.0:
         # Slow to debug, so keep a local cache in the debug case only.
         sys.stdout.write("Using cached file: %s\n" % debug_cache_file)
         data = json.loads(open(debug_cache_file).read())
@@ -114,12 +115,12 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
         # Fix up data
         if slug_key[kind] not in node:
             logging.warn("Could not find expected slug key (%s) on node: %s" % (slug_key[kind], node))
-            node[slug_key[kind]] = node["id"]  # put it SOMEWHERE.
-        node["slug"] = node[slug_key[kind]] if node[slug_key[kind]] != "root" else ""
-        node["id"] = node["slug"]  # these used to be the same; now not. Easier if they stay the same (issue #233)
-
-        node["path"] = path + topic_tools.kind_slugs[kind] + node["slug"] + "/"
+        else:
+            node["slug"] = node[slug_key[kind]]
+            if node["slug"] == "root":
+                node["slug"] = ""
         node["title"] = node[title_key[kind]]
+        node["path"] = path + topic_tools.kind_slugs[kind] + node["slug"] + "/"
 
         kinds = set([kind])
 
@@ -188,7 +189,11 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
                 recurse_nodes_to_delete_exercise(child, OLD_NODE_CACHE)
                 # Delete children without children (all their children were removed)
                 if not child.get("children", None):
+                    logging.debug("Removing now-childless topic node '%s'" % child["slug"])
                     children_to_delete.append(ci)
+                # If there are no longer exercises, be honest about it
+                elif not any([ch["kind"] == "Exercise" or "Exercise" in ch.get("contains", []) for ch in child["children"]]):
+                    child["contains"] = list(set(child["contains"]) - set(["Exercise"]))
 
         # Do the actual deletion
         for i in reversed(children_to_delete):
@@ -198,7 +203,10 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
     recurse_nodes(topictree)
     if remove_unknown_exercises:
         OLD_NODE_CACHE = topic_tools.get_node_cache()
-        recurse_nodes_to_delete_exercise(topictree, OLD_NODE_CACHE)
+        recurse_nodes_to_delete_exercise(topictree, OLD_NODE_CACHE) # do this before [add related]
+        for vid, ex in related_exercise.items():
+            if ex and ex["slug"] not in OLD_NODE_CACHE["Exercise"].keys():
+                related_exercise[vid] = None
     recurse_nodes_to_add_related_exercise(topictree)
 
     with open(os.path.join(data_path, topic_tools.topics_file), "w") as fp:
@@ -220,8 +228,6 @@ def rebuild_knowledge_map(topictree, data_path=settings.PROJECT_PATH + "/static/
     # Download icons
     for key, value in knowledge_map["topics"].items():
         if "icon_url" in value:
-            # Note: id here is retrieved from knowledge_map, so we're OK
-            #   that we blew away ID in the topic tree earlier.
             value["icon_url"] = iconfilepath + value["id"] + iconextension
             knowledge_map["topics"][key] = value
 
@@ -255,6 +261,25 @@ def rebuild_knowledge_map(topictree, data_path=settings.PROJECT_PATH + "/static/
             for child in node.get("children", []):
                 recurse_nodes_to_extract_knowledge_map(child)
     recurse_nodes_to_extract_knowledge_map(topictree)
+    
+    # Clean the knowledge map
+    def clean_orphaned_polylines(knowledge_map):
+        """
+        We remove some topics (without leaves); need to remove polylines associated with these topics.
+        """
+        all_topic_points = [(km["x"],km["y"]) for km in knowledge_map["topics"].values()]
+
+        polylines_to_delete = []
+        for li, polyline in enumerate(knowledge_map["polylines"]):
+            if any(["x" for pt in polyline["path"] if (pt["x"], pt["y"]) not in all_topic_points]):
+                polylines_to_delete.append(li)
+
+        logging.debug("Removing %s of %s polylines" % (len(polylines_to_delete), len(knowledge_map["polylines"])))
+        for i in reversed(polylines_to_delete):
+            del knowledge_map["polylines"][i]
+
+        return knowledge_map
+    clean_orphaned_polylines(knowledge_map)
 
     # Dump the knowledge map
     with open(os.path.join(data_path, topic_tools.map_layout_file), "w") as fp:
@@ -281,18 +306,54 @@ def generate_node_cache(topictree=None, output_dir=settings.DATA_PATH):
         topictree = topic_tools.get_topic_tree(force=True)
     node_cache = {}
 
+
     def recurse_nodes(node, path="/"):
         # Add the node to the node cache
         kind = node["kind"]
         node_cache[kind] = node_cache.get(kind, {})
-        if node["slug"] not in node_cache[kind]:
+        
+        if node["slug"] in node_cache[kind]:
+            # Existing node, so append the path to the set of paths
+            assert kind in topic_tools.multipath_kinds, "Make sure we expect to see multiple nodes map to the same slug (%s unexpected)" % kind
+
+            # Before adding, let's validate some basic properties of the 
+            #   stored node and the new node:
+            # 1. Compare the keys, and make sure that they overlap 
+            #      (except the stored node will not have 'path', but instead 'paths')
+            # 2. For string args, check that values are the same
+            #      (most/all args are strings, and ... I feel we're already being darn
+            #      careful here.  So, I think it's enough.
+            node_shared_keys = set(node.keys()) - set(["path"])
+            stored_shared_keys = set(node_cache[kind][node["slug"]]) - set(["paths"])
+            unshared_keys = node_shared_keys.symmetric_difference(stored_shared_keys)
+            shared_keys = node_shared_keys.intersection(stored_shared_keys)
+            assert not unshared_keys, "Node and stored node should have all the same keys."
+            for key in shared_keys:
+                # A cursory check on values, for strings only (avoid unsafe types)
+                if isinstance(node[key], basestring):
+                    assert node[key] == node_cache[kind][node["slug"]][key]
+
+            # We already added this node, it's just found at multiple paths.
+            #   So, save the new path
+            node_cache[kind][node["slug"]]["paths"].append(node["path"])
+
+        else:
             # New node, so copy off, massage, and store.
             node_copy = copy.copy(node)
             if "children" in node_copy:
                 del node_copy["children"]
+            if kind in topic_tools.multipath_kinds:
+                # If multiple paths can map to a single slug, need to store all paths.
+                node_copy["paths"] = [node_copy["path"]]
+                del node_copy["path"]
             node_cache[kind][node["slug"]] = node_copy
+
+        # Do the recursion
         for child in node.get("children", []):
+            assert "path" in node and "paths" not in node, "This code can't handle nodes with multiple paths; it just generates them!"
             recurse_nodes(child, node["path"])
+
+
     recurse_nodes(topictree)
 
     with open(os.path.join(output_dir, topic_tools.node_cache_file), "w") as fp:
@@ -322,6 +383,27 @@ def create_youtube_id_to_slug_map(node_cache=None, data_path=settings.PROJECT_PA
         fp.write(json.dumps(id2slug_map, indent=2))
 
 
+def validate_data(topictree, node_cache):
+
+    # Validate related videos
+    for exercise in node_cache['Exercise'].values():
+        for vid in exercise.get("related_video_readable_ids", []):
+            if not vid in node_cache["Video"]:
+                sys.stderr.write("Could not find related video %s in node_cache (from exercise %s)\n" % (vid, exercise["slug"]))
+
+    # Validate related exercises
+    for video in node_cache["Video"].values():
+        ex = video["related_exercise"]
+        if ex and not ex["slug"] in node_cache["Exercise"]:
+            sys.stderr.write("Could not find related exercise %s in node_cache (from video %s)\n" % (ex["slug"], video["slug"]))
+            
+    # Validate all topics have leaves
+    for topic in node_cache["Topic"].values():
+        n_children = topic_tools.get_all_leaves(topic_node=topic)
+        if n_children == 0:
+            sys.stderr.write("Could not find any children for topic %s\n" % (topic["path"]))
+
+
 class Command(BaseCommand):
     help = """**WARNING** not intended for use outside of the FLE; use at your own risk!
     Update the topic tree caches from Khan Academy.
@@ -330,17 +412,33 @@ class Command(BaseCommand):
         id2slug - regenerate the id2slug map file.
 """
 
+    option_list = BaseCommand.option_list + (
+        # Basic options
+        make_option('-i', '--force-icons',
+            action='store_true',
+            dest='force_icons',
+            default=False,
+            help='Force the download of each icon'),
+        make_option('-k', '--keep-new-exercises',
+            action='store_true',
+            dest='keep_new_exercises',
+            default=False,
+            help="Keep data on new exercises (if not specified, these are stripped out, as we don't have code to download/use them)"),
+    )
+
     def handle(self, *args, **options):
         if len(args) != 0:
             raise CommandError("Unknown argument list: %s" % args)
 
         # TODO(bcipolli)
         # Make remove_unknown_exercises and force_icons into command-line arguments
-        topictree = rebuild_topictree(remove_unknown_exercises=True)
-        rebuild_knowledge_map(topictree, force_icons=True)
+        topictree = rebuild_topictree(remove_unknown_exercises=not options["keep_new_exercises"])
+        rebuild_knowledge_map(topictree, force_icons=options["force_icons"])
 
         node_cache = generate_node_cache(topictree)
         create_youtube_id_to_slug_map(node_cache)
+
+        validate_data(topictree, node_cache)
 
         sys.stdout.write("Downloaded topictree data for %d topics, %d videos, %d exercises\n" % (
             len(node_cache["Topic"]),
