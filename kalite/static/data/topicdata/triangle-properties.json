@@ -4,11 +4,8 @@
     "display_name": "Angle bisector theorem", 
     "description": null, 
     "title": "Angle bisector theorem", 
-    "seconds_per_fast_problem": 20.0, 
-    "related_video_readable_ids": [
-      "angle-bisector-theorem-examples"
-    ], 
-    "slug": "angle_bisector_theorem", 
+    "seconds_per_fast_problem": 19.0, 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "triangle_angles_1"
     ], 
@@ -16,7 +13,7 @@
     "h_position": 32, 
     "v_position": -19, 
     "path": "/math/geometry/triangle-properties/angle_bisectors/e/angle_bisector_theorem/", 
-    "id": "angle_bisector_theorem", 
+    "slug": "angle_bisector_theorem", 
     "name": "angle_bisector_theorem"
   }
 ]
