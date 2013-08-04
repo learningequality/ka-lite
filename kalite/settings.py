@@ -195,7 +195,7 @@ CACHE_TIME = getattr(local_settings, "CACHE_TIME", _max_cache_time)
 
 # Cache is activated in every case,
 #   EXCEPT: if CACHE_TIME=0
-if CACHE_TIME or CACHE_TIME is None: # None can mean infinite caching to some functions
+if CACHE_TIME != 0:  # None can mean infinite caching to some functions
     CACHES = {
         'default': {
             'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
