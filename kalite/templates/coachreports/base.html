@@ -64,15 +64,15 @@ function generate_current_link() {
 function display_link () {
     var url_field = $('input#url');
     var link_box = $('#link-box');
-    if(url_field.css("display") == 'none'){
+    if(url_field.is(":visible")){
+        url_field.hide();
+        link_box.find('a').text("(link)");
+    }
+    else{
         url_field.val(generate_current_link());
         url_field.show().focus().select().attr('readonly',true);
 
         link_box.find('a').text("(hide)");
-    }
-    else{
-        url_field.hide();
-        link_box.find('a').text("(link)");
     }
 }
 function changeData(type) {
