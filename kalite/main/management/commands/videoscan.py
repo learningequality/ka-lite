@@ -24,15 +24,17 @@ class Command(BaseCommand):
         ),
     )
     def handle(self, *args, **options):
+        caching_enabled = (settings.CACHE_TIME != 0)
         touched_video_ids = []
         
         # delete VideoFile objects that are not marked as in progress, but are neither 0% nor 100% done; they're broken
         video_files_to_delete = VideoFile.objects.filter(download_in_progress=False, percent_complete__gt=0, percent_complete__lt=100)
         youtube_ids_to_delete = [d["youtube_id"] for d in video_files_to_delete.values("youtube_id")]
         video_files_to_delete.delete()
-        for youtube_id in youtube_ids_to_delete:
-            caching.invalidate_cached_topic_hierarchies(video_id=youtube_id)
-            touched_video_ids.append(youtube_id)
+        if caching_enabled:
+            for youtube_id in youtube_ids_to_delete:
+                caching.invalidate_cached_topic_hierarchies(video_id=youtube_id)
+                touched_video_ids.append(youtube_id)
         if len(video_files_to_delete):
             self.stdout.write("Deleted %d VideoFile models (to mark them as not downloaded, since they were in a bad state)\n" % len(video_files_to_delete))
 
@@ -55,9 +57,10 @@ class Command(BaseCommand):
             video_files_needing_model_update = VideoFile.objects.filter(percent_complete=0, download_in_progress=False, youtube_id__in=chunk)
             count += video_files_needing_model_update.count()
             video_files_needing_model_update.update(percent_complete=100, flagged_for_download=False)
-            for vf in video_files_needing_model_update:
-                caching.invalidate_cached_topic_hierarchies(video_id=vf.youtube_id)
-                touched_video_ids.append(vf.youtube_id)
+            if caching_enabled:
+                for vf in video_files_needing_model_update:
+                    caching.invalidate_cached_topic_hierarchies(video_id=vf.youtube_id)
+                    touched_video_ids.append(vf.youtube_id)
         if count:
             self.stdout.write("Updated %d VideoFile models (to mark them as complete, since the files exist)\n" % count)
         
@@ -65,9 +68,10 @@ class Command(BaseCommand):
         count = len(video_ids_needing_model_creation)
         if count:
             VideoFile.objects.bulk_create([VideoFile(youtube_id=youtube_id, percent_complete=100) for youtube_id in video_ids_needing_model_creation])
-            for vid in video_ids_needing_model_creation:
-                caching.invalidate_cached_topic_hierarchies(video_id=vid)
-                touched_video_ids.append(vid)
+            if caching_enabled:
+                for vid in video_ids_needing_model_creation:
+                    caching.invalidate_cached_topic_hierarchies(video_id=vid)
+                    touched_video_ids.append(vid)
             self.stdout.write("Created %d VideoFile models (to mark them as complete, since the files exist)\n" % count)
         
         count = 0
@@ -76,9 +80,10 @@ class Command(BaseCommand):
             video_files_needing_model_deletion = VideoFile.objects.filter(youtube_id__in=chunk)
             count += video_files_needing_model_deletion.count()
             video_files_needing_model_deletion.delete()
-            for video_id in chunk:
-                caching.invalidate_cached_topic_hierarchies(video_id=video_id)
-                touched_video_ids.append(video_id)
+            if caching_enabled:
+                for video_id in chunk:
+                    caching.invalidate_cached_topic_hierarchies(video_id=video_id)
+                    touched_video_ids.append(video_id)
         if count:
             self.stdout.write("Deleted %d VideoFile models (because the videos didn't exist in the filesystem)\n" % count)
 
@@ -87,9 +92,10 @@ class Command(BaseCommand):
             video_files_needing_model_update = VideoFile.objects.filter(subtitle_download_in_progress=False, subtitles_downloaded=False, youtube_id__in=chunk)
             count += video_files_needing_model_update.count()
             video_files_needing_model_update.update(subtitles_downloaded=True)
-            for vf in video_files_needing_model_update:
-                caching.invalidate_cached_topic_hierarchies(video_id=vf.youtube_id)
-                touched_video_ids.append(vf.youtube_id)
+            if caching_enabled:
+                for vf in video_files_needing_model_update:
+                    caching.invalidate_cached_topic_hierarchies(video_id=vf.youtube_id)
+                    touched_video_ids.append(vf.youtube_id)
                     
         if count:
             self.stdout.write("Updated %d VideoFile models (marked them as having subtitles)\n" % count)
@@ -98,6 +104,6 @@ class Command(BaseCommand):
         # 1. auto-cache option enabled
         # 2. Caching enabled
         # 3. There are videos to cache
-        if options["auto_cache"] and hasattr(settings, "CACHES") and touched_video_ids:
+        if options["auto_cache"] and caching_enabled and touched_video_ids:
             self.stdout.write("Regenerating cache for %d videos & related pages\n" % touched_video_ids)
             caching.regenerate_cached_topic_hierarchies(touched_video_ids)
