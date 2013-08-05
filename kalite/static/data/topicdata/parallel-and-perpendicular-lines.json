@@ -5,10 +5,7 @@
     "description": null, 
     "title": "Measuring angles", 
     "seconds_per_fast_problem": 13.0, 
-    "related_video_readable_ids": [
-      "measuring-angles"
-    ], 
-    "slug": "measuring_angles", 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "recognizing_rays_lines_and_line_segments"
     ], 
@@ -16,7 +13,7 @@
     "h_position": 26, 
     "v_position": -21, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/Angle_basics/e/measuring_angles/", 
-    "id": "measuring_angles", 
+    "slug": "measuring_angles", 
     "name": "measuring_angles"
   }, 
   {
@@ -25,10 +22,7 @@
     "description": null, 
     "title": "Angle types", 
     "seconds_per_fast_problem": 4.0, 
-    "related_video_readable_ids": [
-      "acute-right-and-obtuse-angles"
-    ], 
-    "slug": "angle_types", 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "recognizing_rays_lines_and_line_segments"
     ], 
@@ -36,7 +30,7 @@
     "h_position": 26, 
     "v_position": -20, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/Angle_basics/e/angle_types/", 
-    "id": "angle_types", 
+    "slug": "angle_types", 
     "name": "angle_types"
   }, 
   {
@@ -45,10 +39,7 @@
     "description": "Find vertical angles, adjacent angles, and linearly paired angles.", 
     "title": "Exploring angle pairs", 
     "seconds_per_fast_problem": 11.0, 
-    "related_video_readable_ids": [
-      "complementary-and-supplementary-angles"
-    ], 
-    "slug": "exploring_angle_pairs_1", 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "measuring_angles", 
       "angle_types"
@@ -57,7 +48,7 @@
     "h_position": 27, 
     "v_position": -21, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/Angle_basics/e/exploring_angle_pairs_1/", 
-    "id": "exploring_angle_pairs_1", 
+    "slug": "exploring_angle_pairs_1", 
     "name": "exploring_angle_pairs_1"
   }, 
   {
@@ -66,10 +57,7 @@
     "description": null, 
     "title": "Complementary and supplementary angles", 
     "seconds_per_fast_problem": 8.0, 
-    "related_video_readable_ids": [
-      "complementary-and-supplementary-angles"
-    ], 
-    "slug": "complementary_and_supplementary_angles", 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "measuring_angles", 
       "angle_types"
@@ -78,7 +66,7 @@
     "h_position": 27, 
     "v_position": -20, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/Angle_basics/e/complementary_and_supplementary_angles/", 
-    "id": "complementary_and_supplementary_angles", 
+    "slug": "complementary_and_supplementary_angles", 
     "name": "complementary_and_supplementary_angles"
   }, 
   {
@@ -86,11 +74,8 @@
     "display_name": "Angle addition postulate", 
     "description": "", 
     "title": "Angle addition postulate", 
-    "seconds_per_fast_problem": 41.0, 
-    "related_video_readable_ids": [
-      "complementary-and-supplementary-angles"
-    ], 
-    "slug": "angle_addition_postulate", 
+    "seconds_per_fast_problem": 43.0, 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "vertical_angles", 
       "vertical_angles_2"
@@ -99,7 +84,7 @@
     "h_position": 29, 
     "v_position": -21, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/Angle_basics/e/angle_addition_postulate/", 
-    "id": "angle_addition_postulate", 
+    "slug": "angle_addition_postulate", 
     "name": "angle_addition_postulate"
   }, 
   {
@@ -108,10 +93,7 @@
     "description": null, 
     "title": "Vertical angles", 
     "seconds_per_fast_problem": 4.0, 
-    "related_video_readable_ids": [
-      "angles-at-the-intersection-of-two-lines"
-    ], 
-    "slug": "vertical_angles", 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "exploring_angle_pairs_1", 
       "complementary_and_supplementary_angles"
@@ -120,7 +102,7 @@
     "h_position": 28, 
     "v_position": -21, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/vertical_angles/", 
-    "id": "vertical_angles", 
+    "slug": "vertical_angles", 
     "name": "vertical_angles"
   }, 
   {
@@ -128,11 +110,8 @@
     "display_name": "Vertical angles 2", 
     "description": null, 
     "title": "Vertical angles 2", 
-    "seconds_per_fast_problem": 21.0, 
-    "related_video_readable_ids": [
-      "angles-at-the-intersection-of-two-lines"
-    ], 
-    "slug": "vertical_angles_2", 
+    "seconds_per_fast_problem": 23.0, 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "exploring_angle_pairs_1", 
       "complementary_and_supplementary_angles"
@@ -141,7 +120,7 @@
     "h_position": 28, 
     "v_position": -20, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/vertical_angles_2/", 
-    "id": "vertical_angles_2", 
+    "slug": "vertical_angles_2", 
     "name": "vertical_angles_2"
   }, 
   {
@@ -150,10 +129,7 @@
     "description": null, 
     "title": "Parallel lines 1", 
     "seconds_per_fast_problem": 5.0, 
-    "related_video_readable_ids": [
-      "ca-geometry--deducing-angle-measures"
-    ], 
-    "slug": "parallel_lines_1", 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "angle_addition_postulate", 
       "segment_addition"
@@ -162,7 +138,7 @@
     "h_position": 30, 
     "v_position": -25, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/parallel_lines_1/", 
-    "id": "parallel_lines_1", 
+    "slug": "parallel_lines_1", 
     "name": "parallel_lines_1"
   }, 
   {
@@ -171,10 +147,7 @@
     "description": "", 
     "title": "Parallel lines 2", 
     "seconds_per_fast_problem": 23.0, 
-    "related_video_readable_ids": [
-      "ca-geometry--deducing-angle-measures"
-    ], 
-    "slug": "parallel_lines_2", 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "alternate_exterior_angles_2", 
       "alternate_interior_angles_2", 
@@ -186,7 +159,7 @@
     "h_position": 32, 
     "v_position": -26, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/parallel_lines_2/", 
-    "id": "parallel_lines_2", 
+    "slug": "parallel_lines_2", 
     "name": "parallel_lines_2"
   }, 
   {
@@ -194,11 +167,8 @@
     "display_name": "Corresponding angles 2", 
     "description": "", 
     "title": "Corresponding angles 2", 
-    "seconds_per_fast_problem": 15.0, 
-    "related_video_readable_ids": [
-      "ca-geometry--deducing-angle-measures"
-    ], 
-    "slug": "corresponding_angles_2", 
+    "seconds_per_fast_problem": 14.0, 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "parallel_lines_1", 
       "congruent_angles"
@@ -207,7 +177,7 @@
     "h_position": 31, 
     "v_position": -27, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/corresponding_angles_2/", 
-    "id": "corresponding_angles_2", 
+    "slug": "corresponding_angles_2", 
     "name": "corresponding_angles_2"
   }, 
   {
@@ -215,11 +185,8 @@
     "display_name": "Same side exterior angles 2", 
     "description": null, 
     "title": "Same side exterior angles 2", 
-    "seconds_per_fast_problem": 24.0, 
-    "related_video_readable_ids": [
-      "ca-geometry--deducing-angle-measures"
-    ], 
-    "slug": "same_side_exterior_angles_2", 
+    "seconds_per_fast_problem": 25.0, 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "parallel_lines_1", 
       "congruent_angles"
@@ -228,7 +195,7 @@
     "h_position": 31, 
     "v_position": -24, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/same_side_exterior_angles_2/", 
-    "id": "same_side_exterior_angles_2", 
+    "slug": "same_side_exterior_angles_2", 
     "name": "same_side_exterior_angles_2"
   }, 
   {
@@ -236,11 +203,8 @@
     "display_name": "Same side interior angles 2", 
     "description": null, 
     "title": "Same side interior angles 2", 
-    "seconds_per_fast_problem": 19.0, 
-    "related_video_readable_ids": [
-      "ca-geometry--deducing-angle-measures"
-    ], 
-    "slug": "same_side_interior_angles_2", 
+    "seconds_per_fast_problem": 20.0, 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "parallel_lines_1", 
       "congruent_angles"
@@ -249,7 +213,7 @@
     "h_position": 31, 
     "v_position": -25, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/same_side_interior_angles_2/", 
-    "id": "same_side_interior_angles_2", 
+    "slug": "same_side_interior_angles_2", 
     "name": "same_side_interior_angles_2"
   }, 
   {
@@ -258,10 +222,7 @@
     "description": null, 
     "title": "Alternate interior angles 2", 
     "seconds_per_fast_problem": 14.0, 
-    "related_video_readable_ids": [
-      "ca-geometry--deducing-angle-measures"
-    ], 
-    "slug": "alternate_interior_angles_2", 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "parallel_lines_1", 
       "congruent_angles"
@@ -270,7 +231,7 @@
     "h_position": 31, 
     "v_position": -28, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/alternate_interior_angles_2/", 
-    "id": "alternate_interior_angles_2", 
+    "slug": "alternate_interior_angles_2", 
     "name": "alternate_interior_angles_2"
   }, 
   {
@@ -278,11 +239,8 @@
     "display_name": "Alternate exterior angles 2", 
     "description": null, 
     "title": "Alternate exterior angles 2", 
-    "seconds_per_fast_problem": 10.0, 
-    "related_video_readable_ids": [
-      "ca-geometry--deducing-angle-measures"
-    ], 
-    "slug": "alternate_exterior_angles_2", 
+    "seconds_per_fast_problem": 11.0, 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "parallel_lines_1", 
       "congruent_angles"
@@ -291,7 +249,7 @@
     "h_position": 31, 
     "v_position": -26, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/alternate_exterior_angles_2/", 
-    "id": "alternate_exterior_angles_2", 
+    "slug": "alternate_exterior_angles_2", 
     "name": "alternate_exterior_angles_2"
   }, 
   {
@@ -300,10 +258,7 @@
     "description": "Determine which angles must be congruent when parallel lines are crossed by a transversal.", 
     "title": "Congruent angles", 
     "seconds_per_fast_problem": 4.0, 
-    "related_video_readable_ids": [
-      "ca-geometry--deducing-angle-measures"
-    ], 
-    "slug": "congruent_angles", 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "angle_addition_postulate", 
       "segment_addition"
@@ -312,7 +267,7 @@
     "h_position": 30, 
     "v_position": -27, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/congruent_angles/", 
-    "id": "congruent_angles", 
+    "slug": "congruent_angles", 
     "name": "congruent_angles"
   }, 
   {
@@ -321,10 +276,7 @@
     "description": null, 
     "title": "Angles 1", 
     "seconds_per_fast_problem": 14.0, 
-    "related_video_readable_ids": [
-      "finding-more-angles"
-    ], 
-    "slug": "angles_1", 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "triangle_types"
     ], 
@@ -332,7 +284,7 @@
     "h_position": 31, 
     "v_position": -20, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/triang_prop_tut/e/angles_1/", 
-    "id": "angles_1", 
+    "slug": "angles_1", 
     "name": "angles_1"
   }, 
   {
@@ -340,11 +292,8 @@
     "display_name": "Angles 2", 
     "description": null, 
     "title": "Angles 2", 
-    "seconds_per_fast_problem": 12.0, 
-    "related_video_readable_ids": [
-      "finding-more-angles"
-    ], 
-    "slug": "angles_2", 
+    "seconds_per_fast_problem": 13.0, 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "angles_1"
     ], 
@@ -352,7 +301,7 @@
     "h_position": 32, 
     "v_position": -20, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/triang_prop_tut/e/angles_2/", 
-    "id": "angles_2", 
+    "slug": "angles_2", 
     "name": "angles_2"
   }, 
   {
@@ -361,10 +310,7 @@
     "description": null, 
     "title": "Angles of a polygon", 
     "seconds_per_fast_problem": 6.0, 
-    "related_video_readable_ids": [
-      "sum-of-interior-angles-of-a-polygon"
-    ], 
-    "slug": "angles_of_a_polygon", 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "quadrilateral_types"
     ], 
@@ -372,7 +318,7 @@
     "h_position": 34, 
     "v_position": -13, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/triang_prop_tut/e/angles_of_a_polygon/", 
-    "id": "angles_of_a_polygon", 
+    "slug": "angles_of_a_polygon", 
     "name": "angles_of_a_polygon"
   }
 ]

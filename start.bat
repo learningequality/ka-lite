@@ -1,11 +1,12 @@
 @echo off
+cd kalite
+
 if "%1" == "" (
-  set PORT=8008
+  for /f "delims=" %%a in ('start /b python.exe -c "import settings; print settings.PRODUCTION_PORT"') do set PORT=%%a
 ) else (
   set PORT=%1
 )
 
-cd kalite
 if exist database\data.sqlite (
   REM transfer any previously downloaded content from the old location to the new
 	move static\videos\* ..\content > nul 2> nul
