@@ -1,6 +1,6 @@
 rem @echo off
 if "%1" == "" (
-    set PORT=8008
+    for /f "delims=" %%a in ('start /b python.exe -c "import settings; print settings.PRODUCTION_PORT"') do set PORT=%%a
 ) else (
     set PORT=%1
 )
