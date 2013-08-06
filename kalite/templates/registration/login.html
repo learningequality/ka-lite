@@ -36,12 +36,12 @@ input {
 
 {% if form.errors %}
   {% if debug %}
-    <p class="login_error">Debug-only info: {{ form.non_field_errors }}</p>
+    <p class="errorlist">Debug-only info: {{ form.non_field_errors }}</p>
   {% endif %}
   {% if "inactive" in form.non_field_errors.0 %}
-<p class="login_error">{% trans "This account has not been activated." %}</p>
+<p class="errorlist">{% trans "This account has not been activated." %}</p>
   {% else %}
-<p class="login_error">{% trans "Incorrect user name or password." %}</p>
+<p class="errorlist">{% trans "Incorrect user name or password." %}</p>
   {% endif %}
 {% endif %}
 <form method="post" action="?next={{ next|default:"/" }}">{% csrf_token %}

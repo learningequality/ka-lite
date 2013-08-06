@@ -169,7 +169,7 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
 
 
 
-class KALiteRegisteredDistributedBrowserTestCase(KALiteDistributedBrowserTestCase):
+class KALiteDistributedWithFacilityBrowserTestCase(KALiteDistributedBrowserTestCase):
     """
     Same thing, but do the setup steps to register a facility.
     """
@@ -177,7 +177,7 @@ class KALiteRegisteredDistributedBrowserTestCase(KALiteDistributedBrowserTestCas
     
     def setUp(self):
         """Add a facility, so users can begin registering / logging in immediately."""
-        super(KALiteRegisteredDistributedBrowserTestCase,self).setUp() # sets up admin, etc
+        super(KALiteDistributedWithFacilityBrowserTestCase,self).setUp() # sets up admin, etc
         self.create_facility(facility_name=self.facility_name)        
 
 
@@ -265,7 +265,7 @@ class ChangeLocalUserPassword(KALiteDistributedBrowserTestCase):
 
 
 @distributed_server_test
-class UserRegistrationCaseTest(KALiteRegisteredDistributedBrowserTestCase):
+class UserRegistrationCaseTest(KALiteDistributedWithFacilityBrowserTestCase):
     username   = "user1"
     password   = "password"
 
@@ -345,7 +345,7 @@ class UserRegistrationCaseTest(KALiteRegisteredDistributedBrowserTestCase):
         self.browser_check_django_message("error", contains="There was an error logging you in.")
 
 
-class StudentExerciseTest(KALiteRegisteredDistributedBrowserTestCase):
+class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
     """
     Test exercises.
     """
@@ -354,7 +354,7 @@ class StudentExerciseTest(KALiteRegisteredDistributedBrowserTestCase):
         """
         Create a student, log the student in, and go to the exercise page.
         """
-        super(KALiteRegisteredDistributedBrowserTestCase, self).setUp()
+        super(StudentExerciseTest, self).setUp()
         self.create_student()
         self.browser_login_student(self.student_username, self.student_password)
         self.browse_to(self.live_server_url + '/math/arithmetic/addition-subtraction/basic_addition/e/addition_1/') 
@@ -396,3 +396,23 @@ class StudentExerciseTest(KALiteRegisteredDistributedBrowserTestCase):
         """
         points = self.browser_submit_answer('this is a wrong answer')
         self.assertTrue(points == '', "points text should be empty")  # somehow we can't use the truthiness of string, so we use ==
+
+class MainEmptyFormSubmitCaseTest(KALiteDistributedWithFacilityBrowserTestCase):
+    """
+    Submit forms with no values, make sure there are no errors.
+    
+    Note: these are functions on securesync, but 
+    """
+
+    def test_login_form(self):
+        self.empty_form_test(url=self.reverse("login"), submission_element_id="id_username")
+
+    def test_add_student_form(self):
+        self.empty_form_test(url=self.reverse("add_facility_student"), submission_element_id="id_username")
+
+    def test_add_teacher_form(self):
+        self.empty_form_test(url=self.reverse("add_facility_teacher"), submission_element_id="id_username")
+
+    def test_add_group_form(self):
+        self.browser_login_admin()
+        self.empty_form_test(url=self.reverse("add_group"), submission_element_id="id_name")
