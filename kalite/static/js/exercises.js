@@ -79,21 +79,24 @@ $(function() {
     });
 });
 
-$(function(){
+function adjust_scratchpad_margin(){
     if (Khan.scratchpad.isVisible()) {
         $(".current-card-contents #problemarea").css("margin-top","50px");
     } else {
         $(".current-card-contents #problemarea").css("margin-top","10px");
-    } 
+    }
+}
+
+$(function(){
+
+    adjust_scratchpad_margin();
+     
     $("#scratchpad-show").click(function(){
         _.defer(function() {
-            if (Khan.scratchpad.isVisible()) {
-                $(".current-card-contents #problemarea").css("margin-top","50px");
-            } else {
-                $(".current-card-contents #problemarea").css("margin-top","10px");
-            };
+            adjust_scratchpad_margin();
         });
     });
+    
     $(".return-link").click(function() {
         window.history.go(-1);
         return false;

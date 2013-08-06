@@ -368,9 +368,9 @@ window.VideoView = Backbone.View.extend({
 
 });
 
-function initializeVideo(video_youtube_id){ 
+function initialize_video(video_youtube_id){ 
     
-    var initialize_video = _.once(function(width, height) {
+    var create_video_view = _.once(function(width, height) {
         
         window.videoView = new VideoView({
             el: $("#video-player"),
@@ -396,7 +396,7 @@ function initializeVideo(video_youtube_id){
         var width = $(this).prop("videoWidth");
         var height = $(this).prop("videoHeight");
         
-        initialize_video(width, height);
+        create_video_view(width, height);
         
     });
 
@@ -405,7 +405,7 @@ function initializeVideo(video_youtube_id){
         var width = $(".video-thumb").width();
         var height = $(".video-thumb").height();
         
-        initialize_video(width, height);
+        create_video_view(width, height);
                             
     });
     
