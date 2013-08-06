@@ -2,11 +2,10 @@
   {
     "kind": "Exercise", 
     "display_name": "Axis of symmetry", 
-    "description": null, 
+    "description": "", 
     "title": "Axis of symmetry", 
     "seconds_per_fast_problem": 4.0, 
     "related_video_readable_ids": [], 
-    "slug": "axis_of_symmetry", 
     "prerequisites": [
       "similar_triangles_1"
     ], 
@@ -14,7 +13,7 @@
     "h_position": 43, 
     "v_position": -30, 
     "path": "/math/geometry/transformations/e/axis_of_symmetry/", 
-    "id": "axis_of_symmetry", 
+    "slug": "axis_of_symmetry", 
     "name": "axis_of_symmetry"
   }, 
   {
@@ -24,7 +23,6 @@
     "title": "Translations of polygons", 
     "seconds_per_fast_problem": 11.0, 
     "related_video_readable_ids": [], 
-    "slug": "translations_of_points_and_polygons", 
     "prerequisites": [
       "axis_of_symmetry"
     ], 
@@ -32,7 +30,7 @@
     "h_position": 44, 
     "v_position": -31, 
     "path": "/math/geometry/transformations/e/translations_of_points_and_polygons/", 
-    "id": "translations_of_points_and_polygons", 
+    "slug": "translations_of_points_and_polygons", 
     "name": "translations_of_points_and_polygons"
   }, 
   {
@@ -42,7 +40,6 @@
     "title": "Rotation of polygons", 
     "seconds_per_fast_problem": 7.0, 
     "related_video_readable_ids": [], 
-    "slug": "rotation_of_polygons", 
     "prerequisites": [
       "axis_of_symmetry"
     ], 
@@ -50,7 +47,7 @@
     "h_position": 44, 
     "v_position": -29, 
     "path": "/math/geometry/transformations/e/rotation_of_polygons/", 
-    "id": "rotation_of_polygons", 
+    "slug": "rotation_of_polygons", 
     "name": "rotation_of_polygons"
   }
 ]

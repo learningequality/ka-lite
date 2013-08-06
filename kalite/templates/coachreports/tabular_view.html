@@ -126,7 +126,9 @@
         <div id="legend">
             <div class="legend"><div class="partial"></div>{% trans "In Progress" %}</div>
             <div class="legend"><div class="complete"></div>{% trans "Completed" %}</div>
+            {% if request_report_type != "video" %}
             <div class="legend"><div class="struggle"></div>{% trans "Struggling" %}</div>
+            {% endif %}
         </div>
     </div>
     {% if students %}
