@@ -127,8 +127,7 @@ class SyncedModel(models.Model):
         then sign it with the specified device (if specified), or the current device.
         """
         device = device or Device.get_own_device()
-        if not device.get_key():
-            raise Exception("Cannot sign with device %s: key does not exist." % device.name)
+        assert device.get_key(), "Cannot sign with device %s: key does not exist." % (device.name or "")
 
         self.id = self.id or self.get_uuid()
         self.signed_by = device
@@ -242,6 +241,8 @@ class SyncedModel(models.Model):
             self.signed_by.set_counter_position(self.counter)
 
     def get_uuid(self):
+        assert self.counter is not None, "counter required for get_uuid"
+
         own_device = Device.get_own_device()
         namespace = own_device.id and uuid.UUID(own_device.id) or ROOT_UUID_NAMESPACE
         return uuid.uuid5(namespace, str(self.counter)).hex
@@ -542,6 +543,8 @@ class Device(SyncedModel):
             metadata.save()
 
     def get_uuid(self):
+        assert self.public_key is not None, "public_key required for get_uuid"
+
         return uuid.uuid5(ROOT_UUID_NAMESPACE, str(self.public_key)).hex
 
     @staticmethod

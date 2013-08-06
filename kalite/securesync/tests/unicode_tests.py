@@ -3,21 +3,20 @@ import sys
 from django.utils import unittest
 
 from securesync.models import *
-from utils.testing.general import all_classes_in_module
+from utils.testing.unicode import UnicodeModelsTest
 
+class SecuresyncUnicodeModelsTest(UnicodeModelsTest):
 
-@unittest.skipIf(sys.version_info < (2,7), "Test requires python version >= 2.7")
-class UnicodeModelsTest(unittest.TestCase):
-    korean_string = unichr(54392)
+    @unittest.skipIf(sys.version_info < (2,7), "Test requires python version >= 2.7")
+    def test_unicode_class_coverage(self):
+        # Make sure we're testing all classes
+        self.check_unicode_class_coverage(
+            models_module="securesync.models",
+            known_classes = [Device, DeviceMetadata, DeviceZone, Facility, FacilityGroup, FacilityUser, RegisteredDevicePublicKey, SyncSession, SyncedLog, SyncedModel, Zone],
+        )
+
 
     def test_unicode_string(self):
-
-        # Make sure we're testing all classes
-        #   NOTE: we're not testing SyncedLog, nor SyncedModel
-        found_classes = filter(lambda class_obj: "__unicode__" in dir(class_obj), all_classes_in_module("securesync.models"))
-        known_classes = [Device, DeviceMetadata, DeviceZone, Facility, FacilityGroup, FacilityUser, RegisteredDevicePublicKey, SyncSession, SyncedLog, SyncedModel, Zone]
-        self.assertTrue(not set(found_classes) - set(known_classes), "test for unknown classes in the module.")
-
         # Stand-alone classes
         dev = Device(name=self.korean_string)
         self.assertNotIn(unicode(dev), "Bad Unicode data", "Device: Bad conversion to unicode.")

@@ -3,21 +3,20 @@ import sys
 from django.utils import unittest
 
 from contact.models import *
-from utils.testing.general import all_classes_in_module
+from utils.testing.unicode import UnicodeModelsTest
 
+class ContactUnicodeModelsTest(UnicodeModelsTest):
 
-@unittest.skipIf(sys.version_info < (2,7), "Test requires python version >= 2.7")
-class UnicodeModelsTest(unittest.TestCase):
-    korean_string = unichr(54392)
+    @unittest.skipIf(sys.version_info < (2,7), "Test requires python version >= 2.7")
+    def test_unicode_class_coverage(self):
+        # Make sure we're testing all classes
+        self.check_unicode_class_coverage(
+            models_module="contact.models",
+            known_classes = [Contact, Contribute, Deployment, Info, Support],
+        )
+
 
     def test_unicode_string(self):
-
-        # Make sure we're testing all classes
-        #   NOTE: we're not testing SyncedLog, nor SyncedModel
-        found_classes = filter(lambda class_obj: "__unicode__" in dir(class_obj), all_classes_in_module("contact.models"))
-        known_classes = [Contact, Contribute, Deployment, Info, Support]
-        self.assertTrue(not set(found_classes) - set(known_classes), "test for unknown classes in the module.")
-
         # Stand-alone classes
         contact = Contact(name=self.korean_string, type=self.korean_string, org_name=self.korean_string)
         self.assertNotIn(unicode(contact), "Bad Unicode data", "Contact: Bad conversion to unicode.")

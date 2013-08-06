@@ -45,7 +45,9 @@ class VideoLog(SyncedModel):
         super(VideoLog, self).save(*args, **kwargs)
 
     def get_uuid(self, *args, **kwargs):
-        self.full_clean()
+        assert self.user is not None and self.user.id is not None, "User ID required for get_uuid"
+        assert self.youtube_id is not None, "Youtube ID required for get_uuid"
+
         namespace = uuid.UUID(self.user.id)
         return uuid.uuid5(namespace, self.youtube_id.encode("utf-8")).hex
 
@@ -90,7 +92,9 @@ class ExerciseLog(SyncedModel):
             super(ExerciseLog, self).save(*args, **kwargs)
 
     def get_uuid(self, *args, **kwargs):
-        self.full_clean()
+        assert self.user is not None and self.user.id is not None, "User ID required for get_uuid"
+        assert self.exercise_id is not None, "Exercise ID required for get_uuid"
+
         namespace = uuid.UUID(self.user.id)
         return uuid.uuid5(namespace, self.exercise_id.encode("utf-8")).hex
 

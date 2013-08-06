@@ -3,20 +3,21 @@ import sys
 from django.utils import unittest
 
 from central.models import *
-from utils.testing.general import all_classes_in_module
+from utils.testing.unicode import UnicodeModelsTest
 
+class CentralUnicodeModelsTest(UnicodeModelsTest):
 
-@unittest.skipIf(sys.version_info < (2,7), "Test requires python version >= 2.7")
-class UnicodeModelsTest(unittest.TestCase):
-    korean_string = unichr(54392)
+    @unittest.skipIf(sys.version_info < (2,7), "Test requires python version >= 2.7")
+    def test_unicode_class_coverage(self):
+        # Make sure we're testing all classes
+        self.check_unicode_class_coverage(
+            models_module="central.models",
+            known_classes = [Organization, UserProfile],
+        )
+
 
     def test_unicode_string(self):
-
-        # Make sure we're testing all classes
         #   NOTE: we're not testing UserProfile
-        found_classes = filter(lambda class_obj: "__unicode__" in dir(class_obj), all_classes_in_module("central.models"))
-        known_classes = [Organization, UserProfile]
-        self.assertTrue(not set(found_classes) - set(known_classes), "test for unknown classes in the module.")
 
         # Stand-alone classes
         org = Organization(
