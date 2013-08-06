@@ -13,7 +13,7 @@ from django.utils.translation import ugettext as _
 import settings
 from config.models import Settings
 from securesync.models import Device, DeviceZone, Zone, Facility, FacilityUser
-from utils.internet import JsonResponse
+from utils.internet import JsonResponse, JsonpResponse
 
 
 def central_server_only(handler):
@@ -275,20 +275,28 @@ def require_superuser(handler):
     return wrapper_fn
 
 
-def return_jsonp(handler):
-    """A general wrapper to functions that return json.
+def allow_jsonp(handler):
+    """A general wrapper for API views that should be permitted to return JSONP.
+    
+    Note: do not use this on views that return sensitive user-specific data, as it
+    could allow a 3rd-party attacker site to retrieve and store a user's information.
 
     Args:
-        The target funtion.
+        The api view, which must return a JsonResponse object, under normal circumstances.
 
-    Returns:
-        The original function 'wrapped'.
     """
     def wrapper_fn(request, *args, **kwargs):
-        json = handler(request, *args, **kwargs)
+        
+        response = handler(request, *args, **kwargs)
+        
+        # in case another type of response was returned for some reason, just pass it through
+        if not isinstance(response, JsonResponse):
+            return response
 
-        if 'callback' in request.REQUEST:
-            jsonp = '%s(%s);' % (request.REQUEST['callback'], json.content)
-            return JsonResponse(jsonp)
-        return JsonResponse(json.content)
+        if "callback" in request.REQUEST:
+            # wrap the JSON data as a JSONP response, and then return that response
+            return JsonpResponse(response.content, request.REQUEST["callback"])
+        
+        return response
+        
     return wrapper_fn

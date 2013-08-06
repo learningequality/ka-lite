@@ -21,7 +21,7 @@ from main.models import VideoLog, ExerciseLog, VideoFile
 from securesync import crypto, model_sync
 from securesync.models import *
 from shared import serializers
-from utils.decorators import distributed_server_only, return_jsonp
+from utils.decorators import distributed_server_only, allow_jsonp
 from utils.internet import JsonResponse, am_i_online
 
 
@@ -310,7 +310,7 @@ def status(request):
 
     return JsonResponse(data)
 
-@return_jsonp
+@allow_jsonp
 def get_server_info(request):
     """This function is used to check connection to central or local server and also to get specific data from server.
 
