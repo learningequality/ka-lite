@@ -78,3 +78,24 @@ $(function() {
         updateStreakBar();
     });
 });
+
+$(function(){
+    if (Khan.scratchpad.isVisible()) {
+        $(".current-card-contents #problemarea").css("margin-top","50px");
+    } else {
+        $(".current-card-contents #problemarea").css("margin-top","10px");
+    } 
+    $("#scratchpad-show").click(function(){
+        _.defer(function() {
+            if (Khan.scratchpad.isVisible()) {
+                $(".current-card-contents #problemarea").css("margin-top","50px");
+            } else {
+                $(".current-card-contents #problemarea").css("margin-top","10px");
+            };
+        });
+    });
+    $(".return-link").click(function() {
+        window.history.go(-1);
+        return false;
+    });
+});
