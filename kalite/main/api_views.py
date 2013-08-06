@@ -20,6 +20,7 @@ from utils.decorators import require_admin
 from utils.general import break_into_chunks
 from utils.internet import JsonResponse
 from utils.orderedset import OrderedSet
+from utils.decorators import api_handle_error_with_json
 
 
 class student_log_api(object):
@@ -27,18 +28,17 @@ class student_log_api(object):
         self.logged_out_message = logged_out_message
     
     def __call__(self, handler):
+        @api_handle_error_with_json
         def wrapper_fn(request, *args, **kwargs):
-            try:
-                # TODO(bcipolli): send user info in the post data,
-                #   allowing cross-checking of user information
-                #   and better error reporting
-                if "facility_user" not in request.session:
-                    return JsonResponse({"warning": self.logged_out_message + "  " + _("You must be logged in as a facility user to view/save progress.")}, status=500)
-                else:
-                    return handler(request)
-            except Exception as e:
-                return JsonResponse({"error": "Unexpected exception: %s" % e}, status=500)
+            # TODO(bcipolli): send user info in the post data,
+            #   allowing cross-checking of user information
+            #   and better error reporting
+            if "facility_user" not in request.session:
+                return JsonResponse({"warning": self.logged_out_message + "  " + _("You must be logged in as a facility user to view/save progress.")}, status=500)
+            else:
+                return handler(request)
         return wrapper_fn
+
 
 @student_log_api(logged_out_message=_("Video progress not saved."))
 def save_video_log(request):
@@ -180,6 +180,7 @@ def _get_exercise_log_dict(request, user, exercise_id):
 
 
 @require_admin
+@api_handle_error_with_json
 def start_video_download(request):
     youtube_ids = OrderedSet(simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", []))
 
@@ -196,6 +197,7 @@ def start_video_download(request):
     return JsonResponse({})
 
 @require_admin
+@api_handle_error_with_json
 def delete_videos(request):
     youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
     for id in youtube_ids:
@@ -210,6 +212,7 @@ def delete_videos(request):
     return JsonResponse({})
 
 @require_admin
+@api_handle_error_with_json
 def check_video_download(request):
     youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
     percentages = {}
@@ -219,24 +222,15 @@ def check_video_download(request):
         percentages[id] = videofile.percent_complete
     return JsonResponse(percentages)
 
-def get_video_download_status(youtube_id):
-    videofile = get_object_or_None(VideoFile, youtube_id=youtube_id)
-    if not videofile:
-        return "unstarted"
-    if videofile.percent_complete == 0 and not videofile.download_in_progress:
-        return "unstarted"
-    if videofile.percent_complete == 100 and not videofile.download_in_progress:
-        return "complete"
-    else:
-        return "partial"
-
 @require_admin
+@api_handle_error_with_json
 def get_video_download_list(request):
     videofiles = VideoFile.objects.filter(flagged_for_download=True).values("youtube_id")
     video_ids = [video["youtube_id"] for video in videofiles]
     return JsonResponse(video_ids)
 
 @require_admin
+@api_handle_error_with_json
 def start_subtitle_download(request):
     new_only = simplejson.loads(request.raw_post_data or "{}").get("new_only", False)
     language = simplejson.loads(request.raw_post_data or "{}").get("language", "")
@@ -263,17 +257,20 @@ def start_subtitle_download(request):
     return JsonResponse({})
 
 @require_admin
+@api_handle_error_with_json
 def check_subtitle_download(request):
     videofiles = VideoFile.objects.filter(flagged_for_subtitle_download=True)
     return JsonResponse(videofiles.count())
 
 @require_admin
+@api_handle_error_with_json
 def get_subtitle_download_list(request):
     videofiles = VideoFile.objects.filter(flagged_for_subtitle_download=True).values("youtube_id")
     video_ids = [video["youtube_id"] for video in videofiles]
     return JsonResponse(video_ids)
 
 @require_admin
+@api_handle_error_with_json
 def cancel_downloads(request):
 
     # clear all download in progress flags, to make sure new downloads will go through
@@ -292,6 +289,7 @@ def cancel_downloads(request):
 
 
 @require_admin
+@api_handle_error_with_json
 def remove_from_group(request):
     users = simplejson.loads(request.raw_post_data or "{}").get("users", "")
     users_to_remove = FacilityUser.objects.filter(username__in=users)
@@ -299,6 +297,7 @@ def remove_from_group(request):
     return JsonResponse({})
 
 @require_admin
+@api_handle_error_with_json
 def move_to_group(request):
     users = simplejson.loads(request.raw_post_data or "{}").get("users", [])
     group = simplejson.loads(request.raw_post_data or "{}").get("group", "")
@@ -308,6 +307,7 @@ def move_to_group(request):
     return JsonResponse({})
 
 @require_admin
+@api_handle_error_with_json
 def delete_users(request):
     users = simplejson.loads(request.raw_post_data or "{}").get("users", [])
     users_to_delete = FacilityUser.objects.filter(username__in=users)
@@ -367,5 +367,6 @@ def get_annotated_topic_tree():
     return annotate_topic_tree(topicdata.TOPICS, statusdict=statusdict)
 
 @require_admin
+@api_handle_error_with_json
 def get_topic_tree(request):
     return JsonResponse(get_annotated_topic_tree())
