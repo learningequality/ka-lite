@@ -2,7 +2,7 @@
 cd kalite
 
 if "%1" == "" (
-  for /f "delims=" %%a in ('start /b python.exe -c "import settings; print settings.PRODUCTION_PORT"') do set PORT=%%a
+  for /f %%a in ('start /b python.exe -c "import settings; print settings.PRODUCTION_PORT"') do set PORT=%%a
 ) else (
   set PORT=%1
 )
