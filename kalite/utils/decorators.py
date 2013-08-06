@@ -108,9 +108,7 @@ def get_user_from_request(handler=None, request=None, *args, **kwargs):
     """
     Gets ID of requested user (not necessarily the user logged in)
     """
-    assert handler or request, "must specify handler or request."
-    assert not args, "positional arguments screw things up--don't use them here."
-
+    assert handler or request
     if not handler:
         handler = lambda request, user, *args, **kwargs: user
 
@@ -177,7 +175,7 @@ def require_authorized_access_to_student_data(handler):
         if getattr(request, "is_admin", False):
             return handler(request, *args, **kwargs)
         else: 
-            user = get_user_from_request(request=request)
+            user = get_user_from_request(request)
             if request.session.get("facility_user", None) == user:
                 return handler(request, *args, **kwargs)
             else:
