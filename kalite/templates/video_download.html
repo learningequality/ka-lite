@@ -131,18 +131,17 @@ ul.dynatree-container li, .ui-widget-content {
     window.download_check_interval = null;
     window.download_subtitle_check_interval = null;
     
-    function server_online_status_callback(server_is_online){
-        // We assume the distributed server is offline; if it's online, then we show all the tools that are only usable when online.
-        // Best to assume offline, as online check returns much faster than offline check.
-        if(!server_is_online){
-            show_message("error", "{% trans 'The server does not have internet access; cannot download new content at this time.' %}", "id_offline_message");
-        } else {
-            $(".enable-when-server-online").removeAttr("disabled");
-            clear_message("id_offline_message");
-        }
-    }
-
     $(function() {
+
+        with_online_status("server", function(server_is_online) {
+            // We assume the distributed server is offline; if it's online, then we enable buttons that only work with internet.
+            // Best to assume offline, as online check returns much faster than offline check.
+            if(!server_is_online){
+                show_message("error", "{% trans 'The server does not have internet access; cannot download new content at this time.' %}", "id_offline_message");
+            } else {
+                $(".enable-when-server-online").removeAttr("disabled");
+            }
+        });
 
         // put a delay on the topic tree request/rendering, so the rest of the page has time to load before getting bogged down in this
         setTimeout(function() {

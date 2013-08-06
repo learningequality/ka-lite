@@ -311,19 +311,19 @@ def status(request):
 
 @return_jsonp
 def get_server_info(request):
-    """
-    This function is used to check connection to central or local server and also to get specific data from server.
+    """This function is used to check connection to central or local server and also to get specific data from server.
 
     Args:
         The http request.
 
     Returns:
         A json object containing general data from the server.
+    
     """
     device = None
     zone = None
 
-    device_info = {"status": "OK"}
+    device_info = {"status": "OK", "invalid_fields": []}
 
     for field in request.GET.get("fields", "").split(","):
         
@@ -354,21 +354,23 @@ def get_server_info(request):
                 continue
             device = device or Device.get_own_device()
             zone = zone or device.get_zone()
-            if zone:
-                device_info[field] = zone.name
+            device_info[field] = zone.name if zone else None
 
         elif field == "zone_id":
             if settings.CENTRAL_SERVER:
                 continue
             device = device or Device.get_own_device()
             zone = zone or device.get_zone()
-            if zone:
-                device_info[field] = zone.id
+            device_info[field] = zone.id if zone else None
         
         elif field == "online":
             if settings.CENTRAL_SERVER:
                 device_info[field] =  True
             else:
                 device_info[field] = am_i_online(url="%s://%s%s" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST, reverse("get_server_info")))
-
+                
+        else:
+            # the field isn't one we know about, so add it to the list of invalid fields
+            device_info["invalid_fields"].append(field)
+            
     return JsonResponse(device_info)

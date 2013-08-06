@@ -38,23 +38,6 @@ td.title {
 </style>
 {% endblock headcss %}
 
-{% block headjs %}
-<script>
-    function store_status(status) {
-        // We assume the client is offline.
-        //   if it's online, then we show all tools only usable when online.
-        //
-        // Best to assume offline, as online check returns much faster than offline check.
-        if (status) {
-            $("#online-tools-title").show();
-            $("#online-tools-wiki-link").show();
-            $("#online-tools-faq-link").show();
-        }
-    }
-</script>
-
-{% endblock headjs %}
-
 {% block title %}{% trans "Administration Panel" %}{% endblock title %}
 
 {% block content %}
@@ -89,16 +72,16 @@ td.title {
         </tr>
         {% endif %}
         
-        <tr id="online-tools-title" style="display:none">
+        <tr class="client-online-only">
             <td class="title" colspan="2">
                 <h2>{% trans "(Online) help documents" %}</h2>
             </td>
         </tr>
-        <tr id="online-tools-wiki-link" style="display:none">
+        <tr class="client-online-only">
             <td class="link"><a href="{{wiki_url}}">KA Lite Wiki</a></td>
             <td class="desc"> {% trans "Contains the latest information setting up and using KA Lite." %}</td>
         </tr>
-        <tr id="online-tools-faq-link" style="display:none">
+        <tr class="client-online-only">
             <td class="link"><a href="http://{{central_server_host}}/faq">FAQ</a></td>
             <td class="desc">{% trans "Contains the latest FAQ for troubleshooting" %}</td>
         </tr>
@@ -123,5 +106,4 @@ td.title {
         {% endif %}
     </table>
 </div>
-<script src="{{ settings.SECURESYNC_PROTOCOL }}://{{ central_server_host}}{% url get_server_info %}?callback=store_status"></script>
 {% endblock content %}
