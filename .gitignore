@@ -6,6 +6,7 @@ tmp/
 notes.txt
 kalite/static/videos/
 kalite/static/presentation/
+kalite/static/data/subtitledata/*
 kalite/private_key.pem
 kalite/secrets.py
 .project
