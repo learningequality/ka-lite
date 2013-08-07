@@ -129,7 +129,9 @@
     {% endif %}
     {% endblock users_table %}
 </div>
-{% block endjs %}{{ block.super }}
+
+{% endblock content %}{{ block.super }}
+{% block endjs %}
 <script>
 
 function setGetParams(params) {
@@ -182,9 +184,9 @@ $(function() {
         } else if (users.length==0) {
             alert("{% trans 'Please select users first' %}");
         } else {
-            alert("{% trans 'Please choose a group to move users to' %}")
+            alert("{% trans 'Please choose a group to move users to' %}");
         }
-
+        
     });
 
     $("#removegroup").click(function(event) {
@@ -219,4 +221,3 @@ $(function() {
 });
 </script>
 {% endblock endjs %}
-{% endblock content %}
