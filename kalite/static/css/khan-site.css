@@ -720,4 +720,6 @@ a.big-button:active > div {
 .exercises-card {
     width: 753px;
 }
-
+.sitewide-navigation a:hover {
+	color: #2F92A5!important;
+}
