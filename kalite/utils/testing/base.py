@@ -3,13 +3,19 @@ Contains test wrappers and helper functions for
 automated of KA Lite using selenium
 for automated browser-based testing.
 """
+import glob
+import shutil
+import tempfile
 
+from django import conf
 from django.contrib.auth.models import User
+from django.core import cache
 from django.test.client import Client
 from django.core.urlresolvers import reverse
 from django.test import LiveServerTestCase
 
-from kalite import settings
+import settings
+from shared import caching
 
 
 def create_test_admin(username="admin", password="pass", email="admin@example.com"):
@@ -35,9 +41,50 @@ class KALiteTestCase(LiveServerTestCase):
     """The base class for KA Lite test cases."""
     
     def __init__(self, *args, **kwargs):
-        #create_test_admin()
+        self.content_root = tempfile.mkdtemp() + "/"
+        self.cache_dir = tempfile.mkdtemp() + "/"
+
         return super(KALiteTestCase, self).__init__(*args, **kwargs)
-        
+
+
+    def setUp(self, *args, **kwargs):
+        self.setUp_fake_contentroot()
+        self.setUp_fake_cache()
+        return super(KALiteTestCase, self).setUp(*args, **kwargs)
+
+
+    def setUp_fake_contentroot(self):
+        """
+        Set up a location for the content folder that won't mess with the actual application.
+        Because we're using call_command, the value of settings should persist
+        into the videoscan command.
+        """
+        settings.CONTENT_ROOT = self.content_root
+
+    def setUp_fake_cache(self):
+        if settings.CACHE_TIME != 0:
+            # Hackish way to create a temporary new file cache
+            settings.CACHES["web_cache"]["LOCATION"] = self.cache_dir
+            conf.settings.CACHES["web_cache"]["LOCATION"] = self.cache_dir
+            reload(cache)
+            reload(caching)
+            self.web_cache = cache.get_cache("web_cache")
+            self.web_cache.clear()
+            self.assertEqual(self.web_cache._num_entries, 0, "Check that cache is empty.")
+
+    def cleanUp(self):
+        cleanUp_fake_contentroot()
+        cleanUp_fake_cache()
+
+    def cleanUp_fake_contentroot(self):
+
+        for path in glob.glob(os.path.join(self.content_root, "*.mp4")):
+            shutil.rmtree(path)
+
+    def cleanUp_fake_cache(self):
+        for path in glob.glob(os.path.join(self.cache_dir, "*")):
+            shutil.rmtree(path)
+
     def reverse(self, url_name, args=None, kwargs=None):
         """Given a URL name, returns the full central URL to that URL"""
 

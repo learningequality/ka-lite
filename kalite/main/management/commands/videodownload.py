@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 import settings
 from main.models import VideoFile
-from utils import caching
+from shared import caching
 from utils.jobs import force_job
 from utils.videos import download_video, DownloadCancelled
 
@@ -75,9 +75,4 @@ class Command(BaseCommand):
             
             # Expire, but don't regenerate until the very end, for efficiency.
             if caching_enabled:
-                caching.invalidate_cached_topic_hierarchies(video_id=video.youtube_id)
-    
-        # Regenerate all pages, efficiently
-        if caching_enabled:
-            caching.regenerate_cached_topic_hierarchies(handled_video_ids)
-        
+                caching.invalidate_all_pages_related_to_video(video_id=video.youtube_id)

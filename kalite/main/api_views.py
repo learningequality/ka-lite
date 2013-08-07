@@ -14,6 +14,7 @@ from .models import FacilityUser, VideoLog, ExerciseLog, VideoFile
 from config.models import Settings
 from main import topicdata
 from securesync.models import FacilityGroup
+from shared.caching import invalidate_all_pages_related_to_video
 from utils.jobs import force_job, job_status
 from utils.videos import delete_downloaded_files
 from utils.decorators import require_admin
@@ -198,14 +199,20 @@ def start_video_download(request):
 def delete_videos(request):
     youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
     for id in youtube_ids:
+        # Delete the file on disk
         delete_downloaded_files(id)
+
+        # Delete the file in the database
         videofile = get_object_or_None(VideoFile, youtube_id=id)
-        if not videofile:
-            continue
-        videofile.cancel_download = True
-        videofile.flagged_for_download = False
-        videofile.flagged_for_subtitle_download = False
-        videofile.save()
+        if videofile:
+            videofile.cancel_download = True
+            videofile.flagged_for_download = False
+            videofile.flagged_for_subtitle_download = False
+            videofile.save()
+
+        # Refresh the cache
+        invalidate_all_pages_related_to_video(video_id=id)
+
     return JsonResponse({})
 
 @require_admin
