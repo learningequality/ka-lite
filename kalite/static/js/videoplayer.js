@@ -39,7 +39,10 @@ window.VideoPlayerModel = Backbone.Model.extend({
 
         var self = this;
 
-        doRequest("/api/get_video_logs", [this.get("youtube_id")]).success(function(data) {
+        doRequest(
+            "/api/get_video_logs", 
+            [this.get("youtube_id")]
+        ).success(function(data) {
             if (data.length === 0) {
                 return;
             }
@@ -49,6 +52,8 @@ window.VideoPlayerModel = Backbone.Model.extend({
                 complete: data[0].complete
             });
             self.pointsSaved = data[0].points;
+        }).fail(function(data, resp) {
+            communicate_api_failure(resp, "id_student_logs");
         });
     },
 
@@ -72,15 +77,20 @@ window.VideoPlayerModel = Backbone.Model.extend({
             points: this.get("points")
         }
 
-        var xhr = doRequest("/api/save_video_log", data)
-            .success(function(data) {
-                self.pointsSaved = data.points;
-                self.saving = false;
-            })
-            .error(function() {
-                self.set({ wall_time_last_saved: lastSavedBeforeError });
-                self.saving = false;
-            });
+        var xhr = doRequest(
+            "/api/save_video_log",
+            data
+        ).success(function(data) {
+            self.pointsSaved = data.points;
+            self.saving = false;
+            // Show all messages in "messages" object
+            show_api_messages(data.messages, "id_student_logs");
+        }).fail(function(resp) {
+            self.set({ wall_time_last_saved: lastSavedBeforeError });
+            self.saving = false;
+
+            communicate_api_failure(resp, "id_student_logs");
+        });
 
         this.set({
             wall_time_last_saved: new Date(),

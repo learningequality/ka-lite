@@ -42,7 +42,14 @@ function updatePercentCompleted(correct) {
         correct: correct
     };
 
-    doRequest("/api/save_exercise_log", data);
+    doRequest(
+        "/api/save_exercise_log", 
+        data
+    ).success(function(data) {
+        show_api_messages(data, "id_student_logs")
+    }).fail(function(resp) {
+        communicate_api_failure(resp, "id_student_logs");
+    });
 
 };
 
@@ -69,12 +76,21 @@ $(function() {
             $(Exercises).trigger("readyForNextProblem", {userExercise: exerciseData});
         });
     });
-    doRequest("/api/get_exercise_logs", [exerciseData.exerciseModel.name]).success(function(data) {
+    doRequest(
+        "/api/get_exercise_logs", 
+        [exerciseData.exerciseModel.name]
+    ).success(function(data) {
         if (data.length === 0) {
             return;
         }
         exerciseData.percentCompleted = data[0].streak_progress;
         exerciseData.points = data[0].points;
         updateStreakBar();
+
+        // Show all messages in "messages" object
+        show_api_messages(data.messages, "id_student_logs")
+    }).fail(function (resp) {
+        // Expects to receive messages ({ type: message } format) about failures
+        communicate_api_failure(resp, "id_student_logs");
     });
 });
