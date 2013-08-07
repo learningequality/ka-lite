@@ -130,8 +130,9 @@
     {% endblock users_table %}
 </div>
 
-{% endblock content %}{{ block.super }}
+{% endblock content %}
 {% block endjs %}
+{{ block.super }}
 <script>
 
 function setGetParams(params) {
@@ -186,7 +187,7 @@ $(function() {
         } else {
             alert("{% trans 'Please choose a group to move users to' %}");
         }
-        
+
     });
 
     $("#removegroup").click(function(event) {
