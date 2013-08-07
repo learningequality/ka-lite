@@ -2,19 +2,11 @@ from django import forms
 from django.forms import ModelForm
 
 from central.models import Organization, OrganizationInvitation
-from securesync.models import Zone
-
 
 class OrganizationForm(ModelForm):
     class Meta:
         model = Organization
         fields = ('name', 'description', 'url', 'number', 'address', 'country')
-
-
-class ZoneForm(ModelForm):
-    class Meta:
-        model = Zone
-        fields = ('name', 'description')
 
 
 class OrganizationInvitationForm(ModelForm):
@@ -31,6 +23,8 @@ class OrganizationInvitationForm(ModelForm):
         organization = self.cleaned_data.get('organization')
         user = self.cleaned_data.get('invited_by')
 
+        if not email_to_invite:
+            raise forms.ValidationError("The email address you entered is invalid.")
         if email_to_invite == user.email:
             raise forms.ValidationError("You are already a part of this organization.")
         if OrganizationInvitation.objects.filter(organization=organization, email_to_invite=email_to_invite).count() > 0:

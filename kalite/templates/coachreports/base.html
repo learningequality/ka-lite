@@ -1,4 +1,4 @@
-{% extends 'base_distributed.html' %}
+{% extends base_template %}
 
 {% load i18n %}
 {% load my_filters %}
@@ -17,7 +17,7 @@ select {
 .subtitle {
     float:left;
 }
-#facility, #group {
+#facility, .group_select {
     display:none;
 }
 h2 {
@@ -29,35 +29,68 @@ h3 {
     margin-left: 25px;
     margin-bottom: 0px;
 }
+#link-box {
+    float:right;
+    margin-right:25px;
+}
+.group_div {
+    position: absolute;
+    margin-left: 20px;
+}
 </style>
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
 <script>
 function generate_current_link() {
-    var url = window.location.href + (window.location.search ? window.location.search : "?");
+    var url = window.location.href;
 
     // Add topic paths
-    var topic_paths = get_topic_paths_from_tree();
-    for (pi in topic_paths) {
-        url += "&topic_path=" + topic_paths[pi];
+    if (typeof get_topic_paths_from_tree != 'undefined') {
+        var topic_paths = get_topic_paths_from_tree();
+        for (pi in topic_paths) {
+            url += "&topic_path=" + topic_paths[pi];
+        }
+        console.log(url);
+        // Add axis information
+        url = setGetParam(url, "xaxis", $("#xaxis option:selected").val());
+        url = setGetParam(url, "yaxis", $("#yaxis option:selected").val());
+        url = setGetParam(url, "facility", $("#facility option:selected").val());
+        url = setGetParam(url, "group", $("#" + $("#facility option:selected").val() + "_group_select option:selected").val());
     }
-    
-    // Add axis information
-    url = setGetParam(url, "xaxis", $("#xaxis option:selected").val());
-    url = setGetParam(url, "yaxis", $("#yaxis option:selected").val());
-    url = setGetParam(url, "facility", $("#facility option:selected").val());
-    url = setGetParam(url, "group", $("#group option:selected").val());
-    
+
     return url;
 }
+function display_link () {
+    var url_field = $('input#url');
+    var link_box = $('#link-box');
+    if(url_field.is(":visible")){
+        url_field.hide();
+        link_box.find('a').text("(link)");
+    }
+    else{
+        url_field.val(generate_current_link());
+        url_field.show().focus().select().attr('readonly',true);
 
+        link_box.find('a').text("(hide)");
+    }
+}
 function changeData(type) {
     var opt = $("#" + type + " option:selected");
     $("#" + type + "_editable").text(opt.text());
-    $(".changeable-link").each(function () { 
-        this.href = setGetParam(this.href, type, opt.val());
+    // Check to see if the item being passed is a group item - regex match against group in the item.
+    var linktype = /group/i.test(type) ? "group" : type
+    $(".changeable-link").each(function () {
+        this.href = setGetParam(this.href, linktype, opt.val());
     });
+    $("#" + type + "_editable").show();
+    $("#" + type).hide();
+    if (type==="facility") {
+        // Show the appropriate group selection for a particular facility when the facility is changed.
+        $(".group_div").hide();
+        $("#" + $("#facility").val()).show();
+        changeData($("#facility").val() + "_group_select")
+    };
 }
 function make_editable(type) {
     if ($("#" + type + " option").length>1) {
@@ -102,29 +135,35 @@ function make_editable(type) {
         {% block navbar_groups %}
         <div id="select-groups" class="selection">
             <div class="subtitle"> {% if facilities and groups %}/&nbsp;{% endif %}</div>
-            <select id="group">
             {% if groups %}
-                <option value="">[all groups]</option>
-                {% for group in groups %}
-                <option value="{{ group.id }}">{{ group }}</option>
+                {% for groupobject in groups %}
+                <div id="{{ groupobject.facility }}" class="group_div">
+                    <select id="{{ groupobject.facility }}_group_select" class="group_select">
+                        {% if groupobject.groups %}
+                                <option value="">[all groups]</option>
+                                {% for group in groupobject.groups %}
+                                <option value="{{ group.id }}">{{ group }}</option>
+                                {% endfor %}
+                        {% else %}
+                            <option value="" selected></option>
+                        {% endif %}
+                    </select>
+                    {% if groupobject.groups|length > 1 %}
+                    <a id="{{ groupobject.facility }}_group_select_editable" href="javascript:make_editable('{{ groupobject.facility }}_group_select')"></a>
+                    {% else %}
+                    <span id="{{ groupobject.facility }}_group_select_editable"></span>
+                    {% endif %}
+                </div>
                 {% endfor %}
-            {% else %}
-                <option value="" selected></option>
-            {% endif %}
-            </select>
-            {% if groups|length > 1 %}
-            <a id="group_editable" href="javascript:make_editable('group')"></a>
-            {% else %}
-            <span id="group_editable"></span>
             {% endif %}
         </div>
         {% endblock navbar_groups %}
 
         <div class="clearfix">
             {% block navbar_makelink %}
-            <div  style="float:right;margin-right:25px;">
-                <a href="javascript:alert(generate_current_link())">(link)</a>
+            <div id="link-box">
                 <input name="url" id="url" type="text" style="display:none"></input>
+                <a href="javascript:display_link()">(link)</a>
             </div>
             {% endblock navbar_makelink %}
         </div>
@@ -142,14 +181,14 @@ function make_editable(type) {
 
 {% block endjs %}{{ block.super }}
 <script type="text/javascript">
-    $(function() {        
-        // Make sure that each dropdown has a callback 
+    $(function() {
+        // Make sure that each dropdown has a callback
         //   to replot upon selection.
-        $("#group").change(   function() { changeData("group"); });
+        // Dynamically read the group id from the change event.
+        $(".group_select").change(   function(event) { changeData(event.target.id); });
         $("#facility").change(function() { changeData("facility"); });
-
         // Select the values in the dropdowns
-        $("#group").val("{{ form.group }}").change();
+        $("#{{ form.facility }}_group_select").val("{{ form.group }}").change();
         $("#facility").val("{{ form.facility }}").change();
     });
 </script>

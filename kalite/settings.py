@@ -28,10 +28,10 @@ LOG.setLevel(logging.DEBUG*DEBUG + logging.INFO*(1-DEBUG))
 
 INTERNAL_IPS   = getattr(local_settings, "INTERNAL_IPS", ("127.0.0.1",))
 
-# TODO(jamalex): currently this only has an effect on Linux/OSX
-PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 8008)
-
 CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
+
+# TODO(jamalex): currently this only has an effect on Linux/OSX
+PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 8008 if not CENTRAL_SERVER else 8001)
 
 AUTO_LOAD_TEST = getattr(local_settings, "AUTO_LOAD_TEST", False)
 assert not AUTO_LOAD_TEST or not CENTRAL_SERVER, "AUTO_LOAD_TEST only on local server"
@@ -48,8 +48,6 @@ CENTRAL_DEV_EMAIL     = getattr(local_settings, "CENTRAL_DEV_EMAIL",        "dev
 CENTRAL_INFO_EMAIL    = getattr(local_settings, "CENTRAL_INFO_EMAIL",       "info@learningequality.org")
 CENTRAL_CONTACT_EMAIL = getattr(local_settings, "CENTRAL_CONTACT_EMAIL", "info@learningequality.org")#"kalite@%s"%CENTRAL_SERVER_DOMAIN
 CENTRAL_ADMIN_EMAIL   = getattr(local_settings, "CENTRAL_ADMIN_EMAIL",   "errors@learningequality.org")#"kalite@%s"%CENTRAL_SERVER_DOMAIN
-CENTRAL_FROM_EMAIL    = getattr(local_settings, "CENTRAL_FROM_EMAIL",    "kalite@%s"%CENTRAL_SERVER_DOMAIN)
-CENTRAL_CONTACT_EMAIL = getattr(local_settings, "CENTRAL_CONTACT_EMAIL", "info@learningequality.org")#"kalite@%s"%CENTRAL_SERVER_DOMAIN
 
 CENTRAL_SUBSCRIBE_URL    = getattr(local_settings, "CENTRAL_SUBSCRIBE_URL",    "http://adhocsync.us6.list-manage.com/subscribe/post?u=023b9af05922dfc7f47a4fffb&amp;id=97a379de16")
 
@@ -132,8 +130,6 @@ MIDDLEWARE_CLASSES = (
     "django.middleware.csrf.CsrfViewMiddleware",
 )
 
-ROOT_URLCONF = "kalite.urls"
-
 INSTALLED_APPS = (
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -146,12 +142,14 @@ INSTALLED_APPS = (
     "south",
     "chronograph",
     "django_cherrypy_wsgiserver",
-    "kalite",
     "securesync",
     "config",
     "main", # in order for securesync to work, this needs to be here.
+    "control_panel", # in both apps
+    "coachreports", # in both apps; reachable on central via control_panel
     "kalite", # contains commands
 )
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 if DEBUG or CENTRAL_SERVER:
     INSTALLED_APPS += ("django_snippets",)   # used in contact form and (debug) profiling middleware
@@ -161,6 +159,7 @@ if DEBUG:
     MIDDLEWARE_CLASSES += ('django_snippets.profiling_middleware.ProfileMiddleware',)
 
 if CENTRAL_SERVER:
+    ROOT_URLCONF = "central.urls"
     ACCOUNT_ACTIVATION_DAYS = getattr(local_settings, "ACCOUNT_ACTIVATION_DAYS", 7)
     DEFAULT_FROM_EMAIL      = getattr(local_settings, "DEFAULT_FROM_EMAIL", CENTRAL_FROM_EMAIL)
     INSTALLED_APPS         += ("postmark", "kalite.registration", "central", "faq", "contact",)
@@ -168,10 +167,10 @@ if CENTRAL_SERVER:
     AUTH_PROFILE_MODULE     = 'central.UserProfile'
 
 else:
-    INSTALLED_APPS         += ("coachreports",)
+    ROOT_URLCONF = "main.urls"
     # Include optionally installed apps
-    if os.path.exists(PROJECT_PATH + "/loadtesting/"):
-        INSTALLED_APPS     += ("loadtesting",)
+    if os.path.exists(PROJECT_PATH + "/tests/loadtesting/"):
+        INSTALLED_APPS     += ("kalite.tests.loadtesting"),
 
     MIDDLEWARE_CLASSES += (
         "securesync.middleware.DBCheck",
@@ -215,4 +214,6 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 MESSAGE_STORAGE = 'utils.django_utils.NoDuplicateMessagesSessionStorage'
 
-TEST_RUNNER = 'kalite.utils.testrunner.KALiteTestRunner'
+TEST_RUNNER = 'kalite.utils.testing.testrunner.KALiteTestRunner'
+
+CRONSERVER_FREQUENCY = getattr(local_settings, "CRONSERVER_FREQUENCY", 600) # 10 mins (in seconds)

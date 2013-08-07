@@ -1,1 +1,36 @@
-[{"relative_url": "/exercise/scaling_vectors", "guaranteed_file_name": "scaling_vectors.html", "file_name": null, "author_name": "Ben Alpert", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/scaling_vectors", "v_position": 18, "h_position": 32, "node_slug": "e/scaling_vectors", "progress_key": "e75894985", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/vectors-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/scaling_vectors.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Scaling Vec", "covers": [], "display_name": "Scaling vectors", "kind": "Exercise", "sha1": "7bfb5355e6b2315f7878fe55e193a59998387c66", "name": "scaling_vectors", "seconds_per_fast_problem": 7.0, "prerequisites": ["adding_vectors"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/scaling_vectors_256.png"}, {"relative_url": "/exercise/adding_vectors", "guaranteed_file_name": "adding_vectors.html", "file_name": null, "author_name": "Ben Alpert", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/adding_vectors", "v_position": 18, "h_position": 31, "node_slug": "e/adding_vectors", "progress_key": "e67078190", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/vectors-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/adding_vectors.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "+ Vectors", "covers": [], "display_name": "Adding vectors", "kind": "Exercise", "sha1": "88f86124a4734c8449985d721128431607d6bbc3", "name": "adding_vectors", "seconds_per_fast_problem": 8.0, "prerequisites": ["linear_equations_1"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/adding_vectors_256.png"}]
+[
+  {
+    "kind": "Exercise", 
+    "display_name": "Scaling vectors", 
+    "description": null, 
+    "title": "Scaling vectors", 
+    "seconds_per_fast_problem": 7.0, 
+    "related_video_readable_ids": [], 
+    "prerequisites": [
+      "adding_vectors"
+    ], 
+    "live": true, 
+    "h_position": 32, 
+    "v_position": 18, 
+    "path": "/math/linear-algebra/vectors_and_spaces/vectors/e/scaling_vectors/", 
+    "slug": "scaling_vectors", 
+    "name": "scaling_vectors"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Adding vectors", 
+    "description": null, 
+    "title": "Adding vectors", 
+    "seconds_per_fast_problem": 7.0, 
+    "related_video_readable_ids": [], 
+    "prerequisites": [
+      "linear_equations_1"
+    ], 
+    "live": true, 
+    "h_position": 31, 
+    "v_position": 18, 
+    "path": "/math/linear-algebra/vectors_and_spaces/vectors/e/adding_vectors/", 
+    "slug": "adding_vectors", 
+    "name": "adding_vectors"
+  }
+]

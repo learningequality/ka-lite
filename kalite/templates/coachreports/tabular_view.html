@@ -63,15 +63,11 @@
 }
 </style>
 {% endblock headcss %}
-{% block headjs %}
-{{ block.super }}
-{% endblock headjs %}
 
 {% block title %}{% trans "Coach Reports" %}{% endblock title %}
 
 {% block content %}
 {% block navbar_title %}{{ block.super }}{% endblock navbar_title %}
-
     <div id="selection-bar">
     {% comment %}Select the coach report type{% endcomment %}
     {% if report_types %}
@@ -130,7 +126,9 @@
         <div id="legend">
             <div class="legend"><div class="partial"></div>{% trans "In Progress" %}</div>
             <div class="legend"><div class="complete"></div>{% trans "Completed" %}</div>
+            {% if request_report_type != "video" %}
             <div class="legend"><div class="struggle"></div>{% trans "Struggling" %}</div>
+            {% endif %}
         </div>
     </div>
     {% if students %}
@@ -183,13 +181,6 @@
                                         <td class="status data complete" title="{% trans "Complete" %}">
                                     {% else %}
                                         <td class="status data partial" title="{% trans "Attempted" %}">
-                                    {% endif %}
-                                    {% if not log %}
-                                            &nbsp;
-                                    {% else %}
-                                            <div class="attempts">{{log.attempts}} {% trans "attempts" %}</div>
-                                            <div class="points">{{log.points}} {% trans "points" %}</div>
-                                            <div class="streak_progress">{% if not log.complete %}{{log.streak_progress}}% {% trans "streak" %}{% else %}&nbsp;{% endif %}</div>
                                     {% endif %}
                                         </td>
                                 {% endfor %}
@@ -244,10 +235,15 @@
         <p><div class="subtitle">{% trans "Please select a group and topic above." %}</div></p>
     {% endif %}
 </div> 
+{% endblock content %}
 
 {% block endjs %}{{ block.super }}
 <script>
 $(function() {
+
+    // Note: Unlike other coach reports, the tabular view is generated in server side templates.
+    // As such, changing any of the values of the items requires a change of URL and subsequent
+    // navigation event in order to produce the new report.
 
     $("#report_type").change(function(){
         window.location.href="{% url tabular_view %}"+$("#report_type option:selected").val()+window.location.search;
@@ -259,6 +255,14 @@ $(function() {
 
     $("#topic").change(function(){
         window.location.href = setGetParam(window.location.href, "topic", $("#topic option:selected").val());
+    });
+
+    $("#facility").change(function(){
+        window.location.href = setGetParamDict(window.location.href, {"facility": $("#facility option:selected").val(), "group": $("#" + $("#facility option:selected").val() + "_group_select").val()});
+    });
+
+    $(".group_select").change(function(event){
+        window.location.href = setGetParam(window.location.href, "group", $(event.target).val());
     });
 
     // Selector to toggle visible elements is stored in each option value
@@ -287,13 +291,12 @@ $(function() {
     });
         
     $(window).resize(function() {
-        $('.headrowuser').height($('.headrow.data').height()+1);
+        $('.headrowuser').height($('.headrow.data').height());
     }).resize();
     
     
 });
 </script>
 {% endblock endjs %}
-{% endblock content %}
 
   

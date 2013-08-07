@@ -1,0 +1,1 @@
+from securesync.tests.crypto_tests import *

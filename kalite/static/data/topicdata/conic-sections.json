@@ -1,1 +1,155 @@
-[{"relative_url": "/exercise/recognizing_conic_sections", "guaranteed_file_name": "recognizing_conic_sections.html", "file_name": "", "author_name": "Omar Rizwan", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/recognizing_conic_sections", "v_position": 4, "h_position": 46, "node_slug": "e/recognizing_conic_sections", "progress_key": "e213271375", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/conic-sections-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/recognizing_conic_sections.png", "custom_stacks": [], "description": "Determine if the graph of a conic section shows a circle, hyperbola, parabola, or ellipse.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Recog conic", "covers": [], "display_name": "Recognizing conic sections", "kind": "Exercise", "sha1": "1baa3642b178f624d7e96b8de778a7e9a9243800", "name": "recognizing_conic_sections", "seconds_per_fast_problem": 4.0, "prerequisites": ["adding_and_subtracting_polynomials"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/recognizing_conic_sections_256.png"}, {"relative_url": "/exercise/parabola_intuition_1", "guaranteed_file_name": "parabola_intuition_1.html", "file_name": "", "author_name": "Marcia Lee", "creation_date": "2011-09-19T21:11:48Z", "ka_url": "http://www.khanacademy.org/exercise/parabola_intuition_1", "v_position": 3, "h_position": 47, "node_slug": "e/parabola_intuition_1", "progress_key": "e257422323", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/conic-sections-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/parabola_intuition_1.png", "custom_stacks": [], "description": "Make one parabola overlap with another by adjusting the leading coefficient and vertex coordinates.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Parab Intu1", "covers": [], "display_name": "Parabola intuition 1", "kind": "Exercise", "sha1": "ba7e7a64530672c97d0fafc1547778deb9fd305b", "name": "parabola_intuition_1", "seconds_per_fast_problem": 14.0, "prerequisites": ["recognizing_conic_sections"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/parabola_intuition_1_256.png"}, {"relative_url": "/exercise/parabola_intuition_2", "guaranteed_file_name": "parabola_intuition_2.html", "file_name": "", "author_name": "Marcia Lee", "creation_date": "2011-09-19T21:23:54Z", "ka_url": "http://www.khanacademy.org/exercise/parabola_intuition_2", "v_position": 3, "h_position": 48, "node_slug": "e/parabola_intuition_2", "progress_key": "e257436637", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/conic-sections-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/parabola_intuition_2.png", "custom_stacks": [], "description": "Make one parabola overlap with another by adjusting the focus coordinates and directrix.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Parab Intu2", "covers": [], "display_name": "Parabola intuition 2", "kind": "Exercise", "sha1": "0fbc4daffaa43d64bf20b57a3ed9789793b26631", "name": "parabola_intuition_2", "seconds_per_fast_problem": 33.0, "prerequisites": ["parabola_intuition_1"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/parabola_intuition_2_256.png"}, {"relative_url": "/exercise/equation_of_a_circle_1", "guaranteed_file_name": "equation_of_a_circle_1.html", "file_name": "", "author_name": "Ben Alpert", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/equation_of_a_circle_1", "v_position": 5, "h_position": 47, "node_slug": "e/equation_of_a_circle_1", "progress_key": "e196139891", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/conic-sections-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/equation_of_a_circle_1.png", "custom_stacks": [], "description": "Find the center and radius of a circle given the equation in factored form.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Eq Circle 1", "covers": [], "display_name": "Equation of a circle in factored form", "kind": "Exercise", "sha1": "5e3db3e5e514fd58e7a4912124e3ff6b3ffbdb7d", "name": "equation_of_a_circle_1", "seconds_per_fast_problem": 7.0, "prerequisites": ["recognizing_conic_sections"], "pretty_display_name": "Equation of a circle in factored form", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/equation_of_a_circle_1_256.png"}, {"relative_url": "/exercise/equation_of_an_ellipse", "guaranteed_file_name": "equation_of_an_ellipse.html", "file_name": "", "author_name": "Igor Terzic", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/equation_of_an_ellipse", "v_position": 4, "h_position": 48, "node_slug": "e/equation_of_an_ellipse", "progress_key": "e213284163", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/conic-sections-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/equation_of_an_ellipse.png", "custom_stacks": [], "description": "Find the center and major and minor radius of an ellipse given its equation.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Eq ellipse", "covers": [], "display_name": "Equation of an ellipse", "kind": "Exercise", "sha1": "1d20a17beacd233a639a8d6942d27465048e251b", "name": "equation_of_an_ellipse", "seconds_per_fast_problem": 10.0, "prerequisites": ["equation_of_a_circle_1"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/equation_of_an_ellipse_256.png"}, {"relative_url": "/exercise/equation_of_a_circle_2", "guaranteed_file_name": "equation_of_a_circle_2.html", "file_name": "", "author_name": "Ben Alpert", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/equation_of_a_circle_2", "v_position": 5, "h_position": 48, "node_slug": "e/equation_of_a_circle_2", "progress_key": "e196157133", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/conic-sections-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/equation_of_a_circle_2.png", "custom_stacks": [], "description": "Find the center and radius of a circle given the equation in unfactored form.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Eq Circle 2", "covers": [], "display_name": "Equation of a circle in non-factored form", "kind": "Exercise", "sha1": "24efd98f61246890fee034be5ca3396cc36d5243", "name": "equation_of_a_circle_2", "seconds_per_fast_problem": 29.0, "prerequisites": ["equation_of_a_circle_1"], "pretty_display_name": "Equation of a circle in non-factored form", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/equation_of_a_circle_2_256.png"}, {"relative_url": "/exercise/equation_of_a_hyperbola", "guaranteed_file_name": "equation_of_a_hyperbola.html", "file_name": "", "author_name": "Igor Terzic", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/equation_of_a_hyperbola", "v_position": 6, "h_position": 48, "node_slug": "e/equation_of_a_hyperbola", "progress_key": "e213250823", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/conic-sections-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/equation_of_a_hyperbola.png", "custom_stacks": [], "description": "Find the asymptotes of a hyperbola based on the equation.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Eq hyperbol", "covers": [], "display_name": "Equation of a hyperbola", "kind": "Exercise", "sha1": "9fa8d9c6592763a6b2b43cd008edd552ba705b13", "name": "equation_of_a_hyperbola", "seconds_per_fast_problem": 13.0, "prerequisites": ["equation_of_a_circle_1"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/equation_of_a_hyperbola_256.png"}]
+[
+  {
+    "kind": "Exercise", 
+    "display_name": "Recognizing conic sections", 
+    "description": "Determine if the graph of a conic section shows a circle, hyperbola, parabola, or ellipse.", 
+    "title": "Recognizing conic sections", 
+    "seconds_per_fast_problem": 4.0, 
+    "related_video_readable_ids": [], 
+    "prerequisites": [
+      "adding_and_subtracting_polynomials"
+    ], 
+    "live": true, 
+    "h_position": 46, 
+    "v_position": 4, 
+    "path": "/math/algebra/conic-sections/conic_basics/e/recognizing_conic_sections/", 
+    "slug": "recognizing_conic_sections", 
+    "name": "recognizing_conic_sections"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Graphing circles", 
+    "description": "Graph circles from equations in standard form", 
+    "title": "Graphing circles", 
+    "seconds_per_fast_problem": 11.0, 
+    "related_video_readable_ids": [], 
+    "prerequisites": [
+      "circles_and_arcs"
+    ], 
+    "live": true, 
+    "h_position": 42, 
+    "v_position": -21, 
+    "path": "/math/algebra/conic-sections/conic_circles/e/graphing_circles/", 
+    "slug": "graphing_circles", 
+    "name": "graphing_circles"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Equation of a circle in factored form", 
+    "description": "Find the center and radius of a circle given the equation in factored form.", 
+    "title": "Equation of a circle in factored form", 
+    "seconds_per_fast_problem": 7.0, 
+    "related_video_readable_ids": [], 
+    "prerequisites": [
+      "recognizing_conic_sections"
+    ], 
+    "live": true, 
+    "h_position": 47, 
+    "v_position": 5, 
+    "path": "/math/algebra/conic-sections/conic_circles/e/equation_of_a_circle_1/", 
+    "slug": "equation_of_a_circle_1", 
+    "name": "equation_of_a_circle_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Equation of a circle in non-factored form", 
+    "description": "Find the center and radius of a circle given the equation in unfactored form.", 
+    "title": "Equation of a circle in non-factored form", 
+    "seconds_per_fast_problem": 32.0, 
+    "related_video_readable_ids": [], 
+    "prerequisites": [
+      "equation_of_a_circle_1"
+    ], 
+    "live": true, 
+    "h_position": 48, 
+    "v_position": 5, 
+    "path": "/math/algebra/conic-sections/conic_circles/e/equation_of_a_circle_2/", 
+    "slug": "equation_of_a_circle_2", 
+    "name": "equation_of_a_circle_2"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Graphing circles 2", 
+    "description": "Graph circles from equations in general form", 
+    "title": "Graphing circles 2", 
+    "seconds_per_fast_problem": 27.0, 
+    "related_video_readable_ids": [], 
+    "prerequisites": [
+      "graphing_circles"
+    ], 
+    "live": true, 
+    "h_position": 43, 
+    "v_position": -21, 
+    "path": "/math/algebra/conic-sections/conic_circles/e/graphing_circles_2/", 
+    "slug": "graphing_circles_2", 
+    "name": "graphing_circles_2"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Equation of an ellipse", 
+    "description": "Find the center and major and minor radius of an ellipse given its equation.", 
+    "title": "Equation of an ellipse", 
+    "seconds_per_fast_problem": 9.0, 
+    "related_video_readable_ids": [], 
+    "prerequisites": [
+      "equation_of_a_circle_1"
+    ], 
+    "live": true, 
+    "h_position": 48, 
+    "v_position": 4, 
+    "path": "/math/algebra/conic-sections/conic_ellipses/e/equation_of_an_ellipse/", 
+    "slug": "equation_of_an_ellipse", 
+    "name": "equation_of_an_ellipse"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Parabola intuition 1", 
+    "description": "Make one parabola overlap with another by adjusting the leading coefficient and vertex coordinates.", 
+    "title": "Parabola intuition 1", 
+    "seconds_per_fast_problem": 15.0, 
+    "related_video_readable_ids": [], 
+    "prerequisites": [
+      "recognizing_conic_sections"
+    ], 
+    "live": true, 
+    "h_position": 47, 
+    "v_position": 3, 
+    "path": "/math/algebra/conic-sections/conic_parabolas/e/parabola_intuition_1/", 
+    "slug": "parabola_intuition_1", 
+    "name": "parabola_intuition_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Parabola intuition 2", 
+    "description": "Make one parabola overlap with another by adjusting the focus coordinates and directrix.", 
+    "title": "Parabola intuition 2", 
+    "seconds_per_fast_problem": 33.0, 
+    "related_video_readable_ids": [], 
+    "prerequisites": [
+      "parabola_intuition_1"
+    ], 
+    "live": true, 
+    "h_position": 48, 
+    "v_position": 3, 
+    "path": "/math/algebra/conic-sections/conic_parabolas/e/parabola_intuition_2/", 
+    "slug": "parabola_intuition_2", 
+    "name": "parabola_intuition_2"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Equation of a hyperbola", 
+    "description": "Find the asymptotes of a hyperbola based on the equation.", 
+    "title": "Equation of a hyperbola", 
+    "seconds_per_fast_problem": 14.0, 
+    "related_video_readable_ids": [], 
+    "prerequisites": [
+      "equation_of_a_circle_1"
+    ], 
+    "live": true, 
+    "h_position": 48, 
+    "v_position": 6, 
+    "path": "/math/algebra/conic-sections/hyperbolas-conic/e/equation_of_a_hyperbola/", 
+    "slug": "equation_of_a_hyperbola", 
+    "name": "equation_of_a_hyperbola"
+  }
+]

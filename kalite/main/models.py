@@ -4,12 +4,14 @@ from annoying.functions import get_object_or_None
 from dateutil import relativedelta
 
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.db.models import Sum
 
 import settings
 from securesync import model_sync
 from securesync.models import SyncedModel, FacilityUser, Device
+from settings import LOG as logging
 from utils.general import datediff, isnumeric
 
 
@@ -33,9 +35,12 @@ class VideoLog(SyncedModel):
                 self.completion_timestamp = datetime.now()
                 self.completion_counter = Device.get_own_device().get_counter()
 
-            # Tell logins that they are still active.
+            # Tell logins that they are still active (ignoring validation failures).
             #   TODO(bcipolli): Could log video information in the future.
-            UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()))
+            try:
+                UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()))
+            except ValidationError as e:
+                logging.debug("Failed to update userlog during video: %s" % e)
 
         super(VideoLog, self).save(*args, **kwargs)
 
@@ -75,11 +80,13 @@ class ExerciseLog(SyncedModel):
                 self.completion_counter = Device.get_own_device().get_counter()
                 self.attempts_before_completion = self.attempts
 
-            # Tell logins that they are still active.
+            # Tell logins that they are still active (ignoring validation failures).
             #   TODO(bcipolli): Could log exercise information in the future.
-            UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()))
-
-        super(ExerciseLog, self).save(*args, **kwargs)
+            try:
+                UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()))
+            except ValidationError as e:
+                logging.debug("Failed to update userlog during exercise: %s" % e)
+            super(ExerciseLog, self).save(*args, **kwargs)
 
     def get_uuid(self, *args, **kwargs):
         namespace = uuid.UUID(self.user.id)
@@ -93,6 +100,8 @@ class ExerciseLog(SyncedModel):
 class UserLogSummary(SyncedModel):
     """Like UserLogs, but summarized over a longer period of time.
     Also sync'd across devices.  Unique per user, device, activity_type, and time period."""
+    minversion = "0.9.4"
+
     device = models.ForeignKey(Device, blank=False, null=False)
     user = models.ForeignKey(FacilityUser, blank=False, null=False, db_index=True)
     activity_type = models.IntegerField(blank=False, null=False)
@@ -168,7 +177,6 @@ class UserLogSummary(SyncedModel):
         device = device or Device.get_own_device()  # Must be done here, or install fails
 
         # Check for an existing object
-        import pdb; pdb.set_trace()
         log_summary = cls.objects.filter(
             device=device,
             user=user_log.user,
@@ -189,7 +197,7 @@ class UserLogSummary(SyncedModel):
             total_logins=0,
         )
 
-        settings.LOG.debug("Adding %d seconds for %s/%s/%d, period %s to %s" % (user_log.total_seconds, device.name, user_log.user.username, user_log.activity_type, log_summary.start_datetime, log_summary.end_datetime))
+        logging.debug("Adding %d seconds for %s/%s/%d, period %s to %s" % (user_log.total_seconds, device.name, user_log.user.username, user_log.activity_type, log_summary.start_datetime, log_summary.end_datetime))
 
         # Add the latest info
         log_summary.total_seconds += user_log.total_seconds
@@ -204,6 +212,7 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
 
     # Currently, all activity is used just to update logged-in-time.
     KNOWN_TYPES={"login": 1}
+    minversion = "0.9.4"
 
     user = models.ForeignKey(FacilityUser, blank=False, null=False, db_index=True)
     activity_type = models.IntegerField(blank=False, null=False)
@@ -236,7 +245,7 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
             self.total_seconds = 0 if not self.last_active_datetime else datediff(self.last_active_datetime, self.start_datetime, units="seconds")
 
             # Confirm the result (output info first for easier debugging)
-            settings.LOG.debug("%s: total learning time: %d seconds" % (self.user.username, self.total_seconds))
+            logging.debug("%s: total learning time: %d seconds" % (self.user.username, self.total_seconds))
             assert self.total_seconds >= 0, "Total learning time should always be non-negative."
 
             # Save only completed log items to the UserLogSummary
@@ -289,7 +298,7 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
         activity_type = cls.get_activity_int(activity_type)
         cur_user_log_entry = get_object_or_None(cls, user=user, end_datetime=None)
 
-        settings.LOG.debug("%s: BEGIN activity(%d) @ %s"%(user.username, activity_type, start_datetime))
+        logging.debug("%s: BEGIN activity(%d) @ %s"%(user.username, activity_type, start_datetime))
 
         # Seems we're logging in without logging out of the previous.
         #   Best thing to do is simulate a login
@@ -297,13 +306,13 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
         #
         # Note: this can be a recursive call
         if cur_user_log_entry:
-            settings.LOG.warn("%s: END activity on a begin @ %s"%(user.username,start_datetime))
+            logging.warn("%s: END activity on a begin @ %s"%(user.username,start_datetime))
             cls.end_user_activity(user=user, activity_type=activity_type, end_datetime=cur_user_log_entry.last_active_datetime)
 
         # Create a new entry
         cur_user_log_entry = cls(user=user, activity_type=activity_type, start_datetime=start_datetime, last_active_datetime=start_datetime)
-        cur_user_log_entry.save()
 
+        cur_user_log_entry.save()
         return cur_user_log_entry
 
 
@@ -325,11 +334,12 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
 
         # No unstopped starts.  Start should have been called first!
         if not cur_user_log_entry:
-            settings.LOG.warn("%s: Had to create a user log entry, but UPDATING('%d')! @ %s"%(user.username,activity_type,update_datetime))
+            logging.warn("%s: Had to create a user log entry, but UPDATING('%d')! @ %s"%(user.username,activity_type,update_datetime))
             cur_user_log_entry = cls.begin_user_activity(user=user, activity_type=activity_type, start_datetime=update_datetime)
 
-        settings.LOG.debug("%s: UPDATE activity (%d) @ %s"%(user.username,activity_type,update_datetime))
+        logging.debug("%s: UPDATE activity (%d) @ %s"%(user.username,activity_type,update_datetime))
         cur_user_log_entry.last_active_datetime = update_datetime
+
         cur_user_log_entry.save()
 
 
@@ -351,10 +361,10 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
 
         # No unstopped starts.  Start should have been called first!
         if not cur_user_log_entry:
-            settings.LOG.warn("%s: Had to create a user log entry, but STOPPING('%d')! @ %s"%(user.username,activity_type,end_datetime))
+            logging.warn("%s: Had to create a user log entry, but STOPPING('%d')! @ %s"%(user.username,activity_type,end_datetime))
             cur_user_log_entry = cls.begin_user_activity(user=user, activity_type=activity_type, start_datetime=end_datetime)
 
-        settings.LOG.debug("%s: Logging LOGOUT activity @ %s"%(user.username, end_datetime))
+        logging.debug("%s: Logging LOGOUT activity @ %s"%(user.username, end_datetime))
         cur_user_log_entry.end_datetime = end_datetime
         cur_user_log_entry.save()  # total-seconds will be computed here.
 
@@ -381,4 +391,4 @@ class LanguagePack(models.Model):
     lang_name = models.CharField(max_length=30)
 
 
-model_sync.add_syncing_models([VideoLog, ExerciseLog])
+model_sync.add_syncing_models([VideoLog, ExerciseLog, UserLogSummary])

@@ -1,1 +1,53 @@
-[{"relative_url": "/exercise/axis_of_symmetry", "guaranteed_file_name": "axis_of_symmetry.html", "file_name": null, "author_name": "Igor Terzic", "creation_date": "2011-10-13T21:01:00Z", "ka_url": "http://www.khanacademy.org/exercise/axis_of_symmetry", "v_position": -30, "h_position": 43, "node_slug": "e/axis_of_symmetry", "progress_key": "e310282900", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/transformations-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/axis_of_symmetry.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Axis symmet", "covers": [], "display_name": "Axis of symmetry", "kind": "Exercise", "sha1": "d83ba27166bc296c460ec076e7ee36ae8268539f", "name": "axis_of_symmetry", "seconds_per_fast_problem": 4.0, "prerequisites": ["similar_triangles_1"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/axis_of_symmetry_256.png"}, {"relative_url": "/exercise/translations_of_points_and_polygons", "guaranteed_file_name": "translations_of_points_and_polygons.html", "file_name": "translations_of_points_and_polygons.html", "author_name": "Mark Wittels", "creation_date": "2012-08-16T03:58:45Z", "ka_url": "http://www.khanacademy.org/exercise/translations_of_points_and_polygons", "v_position": -31, "h_position": 44, "node_slug": "e/translations_of_points_and_polygons", "progress_key": "e970556012", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/transformations-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/translations_of_points_and_polygons.png", "custom_stacks": [], "description": "Applying translations to polygons in the coordinate plane", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Trans polyg", "covers": [], "display_name": "Translations of polygons", "kind": "Exercise", "sha1": "82f00362ad0f8b42c98ef62d59c860bffb07171b", "name": "translations_of_points_and_polygons", "seconds_per_fast_problem": 11.0, "prerequisites": ["axis_of_symmetry"], "pretty_display_name": "Translations of polygons", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/translations_of_points_and_polygons_256.png"}, {"relative_url": "/exercise/rotation_of_polygons", "guaranteed_file_name": "rotation_of_polygons.html", "file_name": "rotation_of_polygons.html", "author_name": "Mark Wittels", "creation_date": "2012-08-22T01:16:07Z", "ka_url": "http://www.khanacademy.org/exercise/rotation_of_polygons", "v_position": -29, "h_position": 44, "node_slug": "e/rotation_of_polygons", "progress_key": "e986736446", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/transformations-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/rotation_of_polygons.png", "custom_stacks": [], "description": "Applying rotations to polygons in the coordinate plane", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Rotate Poly", "covers": [], "display_name": "Rotation of polygons", "kind": "Exercise", "sha1": "4ef8ea73176b82ccb2b053f38bea3ce3799e65b4", "name": "rotation_of_polygons", "seconds_per_fast_problem": 7.0, "prerequisites": ["axis_of_symmetry"], "pretty_display_name": "Rotation of polygons", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/rotation_of_polygons_256.png"}]
+[
+  {
+    "kind": "Exercise", 
+    "display_name": "Axis of symmetry", 
+    "description": "", 
+    "title": "Axis of symmetry", 
+    "seconds_per_fast_problem": 4.0, 
+    "related_video_readable_ids": [], 
+    "prerequisites": [
+      "similar_triangles_1"
+    ], 
+    "live": true, 
+    "h_position": 43, 
+    "v_position": -30, 
+    "path": "/math/geometry/transformations/e/axis_of_symmetry/", 
+    "slug": "axis_of_symmetry", 
+    "name": "axis_of_symmetry"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Translations of polygons", 
+    "description": "Applying translations to polygons in the coordinate plane", 
+    "title": "Translations of polygons", 
+    "seconds_per_fast_problem": 11.0, 
+    "related_video_readable_ids": [], 
+    "prerequisites": [
+      "axis_of_symmetry"
+    ], 
+    "live": true, 
+    "h_position": 44, 
+    "v_position": -31, 
+    "path": "/math/geometry/transformations/e/translations_of_points_and_polygons/", 
+    "slug": "translations_of_points_and_polygons", 
+    "name": "translations_of_points_and_polygons"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Rotation of polygons", 
+    "description": "Applying rotations to polygons in the coordinate plane", 
+    "title": "Rotation of polygons", 
+    "seconds_per_fast_problem": 7.0, 
+    "related_video_readable_ids": [], 
+    "prerequisites": [
+      "axis_of_symmetry"
+    ], 
+    "live": true, 
+    "h_position": 44, 
+    "v_position": -29, 
+    "path": "/math/geometry/transformations/e/rotation_of_polygons/", 
+    "slug": "rotation_of_polygons", 
+    "name": "rotation_of_polygons"
+  }
+]

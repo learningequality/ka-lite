@@ -1,279 +1,233 @@
 [
-    {
-        "relative_url": "/exercise/chain_rule_1", 
-        "file_name": null, 
-        "covers": [], 
-        "creation_date": "2011-08-29T00:00:00Z", 
-        "ka_url": "http://www.khanacademy.org/exercise/chain_rule_1", 
-        "v_position": -23, 
-        "display_name": "Chain rule 1", 
-        "live": true, 
-        "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/calculus-250x250.png?7", 
-        "custom_stacks": [], 
-        "description": null, 
-        "tags": [], 
-        "summative": false, 
-        "backup_timestamp": "2012-08-14T16:39:36Z", 
-        "short_display_name": "Chain Ru. 1", 
-        "author_name": "", 
-        "h_position": 54, 
-        "kind": "Exercise", 
-        "sha1": "dcf399dc0718b762a820dbace18f8a1c7e2a0b88", 
-        "name": "chain_rule_1", 
-        "prerequisites": [
-            "power_rule", 
-            "special_derivatives"
-        ], 
-        "seconds_per_fast_problem": 12.0, 
-        "pretty_display_name": null
-    }, 
-    {
-        "relative_url": "/exercise/lhopitals_rule", 
-        "file_name": "lhopitals_rule.html", 
-        "covers": [], 
-        "creation_date": "2011-12-07T20:46:26Z", 
-        "ka_url": "http://www.khanacademy.org/exercise/lhopitals_rule", 
-        "v_position": -19, 
-        "display_name": "L'Hôpital's rule", 
-        "live": true, 
-        "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/calculus-250x250.png?7", 
-        "custom_stacks": [], 
-        "description": "", 
-        "tags": [], 
-        "summative": false, 
-        "backup_timestamp": "2012-08-14T16:39:36Z", 
-        "short_display_name": "L'hop rule", 
-        "author_name": "ioddly", 
-        "h_position": 54, 
-        "kind": "Exercise", 
-        "sha1": "ed3837d60367b5650587ba75754688d35d6995ff", 
-        "name": "lhopitals_rule", 
-        "prerequisites": [
-            "power_rule", 
-            "special_derivatives"
-        ], 
-        "seconds_per_fast_problem": 7.0, 
-        "pretty_display_name": "L'Hôpital's rule"
-    }, 
-    {
-        "relative_url": "/exercise/special_derivatives", 
-        "file_name": null, 
-        "covers": [], 
-        "creation_date": "2011-08-29T00:00:00Z", 
-        "ka_url": "http://www.khanacademy.org/exercise/special_derivatives", 
-        "v_position": -20, 
-        "display_name": "Special derivatives", 
-        "live": true, 
-        "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/calculus-250x250.png?7", 
-        "custom_stacks": [], 
-        "description": null, 
-        "tags": [], 
-        "summative": false, 
-        "backup_timestamp": "2012-08-14T16:39:36Z", 
-        "short_display_name": "Spec. Deriv", 
-        "author_name": "", 
-        "h_position": 53, 
-        "kind": "Exercise", 
-        "sha1": "cec319866ca7056485cded0245d851def930be3f", 
-        "name": "special_derivatives", 
-        "prerequisites": [
-            "derivatives_1"
-        ], 
-        "seconds_per_fast_problem": 5.0, 
-        "pretty_display_name": null
-    }, 
-    {
-        "relative_url": "/exercise/quotient_rule", 
-        "file_name": null, 
-        "covers": [], 
-        "creation_date": "2011-08-29T00:00:00Z", 
-        "ka_url": "http://www.khanacademy.org/exercise/quotient_rule", 
-        "v_position": -21, 
-        "display_name": "Quotient rule", 
-        "live": true, 
-        "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/calculus-250x250.png?7", 
-        "custom_stacks": [], 
-        "description": null, 
-        "tags": [], 
-        "summative": false, 
-        "backup_timestamp": "2012-08-14T16:39:36Z", 
-        "short_display_name": "Quot Rule", 
-        "author_name": "", 
-        "h_position": 54, 
-        "kind": "Exercise", 
-        "sha1": "1ea0dd4f3479c63de7460955991886023c9a8e43", 
-        "name": "quotient_rule", 
-        "prerequisites": [
-            "power_rule", 
-            "special_derivatives"
-        ], 
-        "seconds_per_fast_problem": 13.0, 
-        "pretty_display_name": null
-    }, 
-    {
-        "relative_url": "/exercise/product_rule", 
-        "file_name": null, 
-        "covers": [], 
-        "creation_date": "2011-08-29T00:00:00Z", 
-        "ka_url": "http://www.khanacademy.org/exercise/product_rule", 
-        "v_position": -22, 
-        "display_name": "Product rule", 
-        "live": true, 
-        "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/calculus-250x250.png?7", 
-        "custom_stacks": [], 
-        "description": null, 
-        "tags": [], 
-        "summative": false, 
-        "backup_timestamp": "2012-08-14T16:39:36Z", 
-        "short_display_name": "Product Ru.", 
-        "author_name": "", 
-        "h_position": 54, 
-        "kind": "Exercise", 
-        "sha1": "0a88504dca7f5ecf6c383fd5bd232fc4212d8d42", 
-        "name": "product_rule", 
-        "prerequisites": [
-            "power_rule", 
-            "special_derivatives"
-        ], 
-        "seconds_per_fast_problem": 10.0, 
-        "pretty_display_name": null
-    }, 
-    {
-        "relative_url": "/exercise/power_rule", 
-        "file_name": null, 
-        "covers": [], 
-        "creation_date": "2011-08-29T00:00:00Z", 
-        "ka_url": "http://www.khanacademy.org/exercise/power_rule", 
-        "v_position": -22, 
-        "display_name": "Power rule", 
-        "live": true, 
-        "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/calculus-250x250.png?7", 
-        "custom_stacks": [], 
-        "description": null, 
-        "tags": [], 
-        "summative": false, 
-        "backup_timestamp": "2012-08-14T16:39:36Z", 
-        "short_display_name": "Power Rule", 
-        "author_name": "", 
-        "h_position": 53, 
-        "kind": "Exercise", 
-        "sha1": "8e1cefa5ee66ce6c494a6ebb2241c44d28cfb571", 
-        "name": "power_rule", 
-        "prerequisites": [
-            "derivatives_1"
-        ], 
-        "seconds_per_fast_problem": 11.0, 
-        "pretty_display_name": null
-    }, 
-    {
-        "relative_url": "/exercise/derivatives_1", 
-        "file_name": null, 
-        "covers": [], 
-        "creation_date": "2011-08-29T00:00:00Z", 
-        "ka_url": "http://www.khanacademy.org/exercise/derivatives_1", 
-        "v_position": -21, 
-        "display_name": "Derivatives 1", 
-        "live": true, 
-        "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/calculus-250x250.png?7", 
-        "custom_stacks": [], 
-        "description": null, 
-        "tags": [], 
-        "summative": false, 
-        "backup_timestamp": "2012-08-14T16:39:36Z", 
-        "short_display_name": "Deriv. 1", 
-        "author_name": "", 
-        "h_position": 52, 
-        "kind": "Exercise", 
-        "sha1": "c3776be9ac8cac375e8894905cc5e0577df72ba0", 
-        "name": "derivatives_1", 
-        "prerequisites": [
-            "derivative_intuition"
-        ], 
-        "seconds_per_fast_problem": 10.0, 
-        "pretty_display_name": null
-    }, 
-    {
-        "relative_url": "/exercise/derivative_intuition", 
-        "file_name": null, 
-        "covers": [], 
-        "creation_date": "2011-09-21T17:51:22Z", 
-        "ka_url": "http://www.khanacademy.org/exercise/derivative_intuition", 
-        "v_position": -21, 
-        "display_name": "Derivative intuition", 
-        "live": true, 
-        "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/calculus-250x250.png?7", 
-        "custom_stacks": [], 
-        "description": null, 
-        "tags": [], 
-        "summative": false, 
-        "backup_timestamp": "2012-08-14T16:39:36Z", 
-        "short_display_name": "Deriv Intui", 
-        "author_name": "Ben Eater", 
-        "h_position": 51, 
-        "kind": "Exercise", 
-        "sha1": "af1947c0309772bcae267122a427d34c14b66fe5", 
-        "name": "derivative_intuition", 
-        "prerequisites": [
-            "limits_2"
-        ], 
-        "seconds_per_fast_problem": 28.0, 
-        "pretty_display_name": null
-    }, 
-    {
-        "relative_url": "/exercise/limits_2", 
-        "file_name": null, 
-        "covers": [], 
-        "creation_date": "2011-08-29T00:00:00Z", 
-        "ka_url": "http://www.khanacademy.org/exercise/limits_2", 
-        "v_position": -21, 
-        "display_name": "Limits 2", 
-        "live": true, 
-        "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/calculus-250x250.png?7", 
-        "custom_stacks": [], 
-        "description": null, 
-        "tags": [], 
-        "summative": false, 
-        "backup_timestamp": "2012-08-14T16:39:36Z", 
-        "short_display_name": "Limits 2", 
-        "author_name": "", 
-        "h_position": 50, 
-        "kind": "Exercise", 
-        "sha1": "221e5728f1a1bdf97bb9f5d8602334831efa71d9", 
-        "name": "limits_2", 
-        "prerequisites": [
-            "limits_1"
-        ], 
-        "seconds_per_fast_problem": 7.0, 
-        "pretty_display_name": null
-    }, 
-    {
-        "relative_url": "/exercise/limits_1", 
-        "file_name": null, 
-        "covers": [], 
-        "creation_date": "2011-08-29T00:00:00Z", 
-        "ka_url": "http://www.khanacademy.org/exercise/limits_1", 
-        "v_position": -21, 
-        "display_name": "Limits 1", 
-        "live": true, 
-        "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/calculus-250x250.png?7", 
-        "custom_stacks": [], 
-        "description": null, 
-        "tags": [], 
-        "summative": false, 
-        "backup_timestamp": "2012-08-14T16:39:36Z", 
-        "short_display_name": "Limits 1", 
-        "author_name": "", 
-        "h_position": 49, 
-        "kind": "Exercise", 
-        "sha1": "657125cdbab9e10a29cd83e6d8646415e980059a", 
-        "name": "limits_1", 
-        "prerequisites": [
-            "quadratic_equation", 
-            "graphs_of_sine_and_cosine", 
-            "inverse_trig_functions", 
-            "trig_identities_1"
-        ], 
-        "seconds_per_fast_problem": 7.0, 
-        "pretty_display_name": null
-    }
+  {
+    "kind": "Exercise", 
+    "display_name": "Limits 1", 
+    "description": null, 
+    "title": "Limits 1", 
+    "seconds_per_fast_problem": 8.0, 
+    "related_video_readable_ids": [], 
+    "prerequisites": [
+      "quadratic_equation", 
+      "graphs_of_sine_and_cosine", 
+      "inverse_trig_functions", 
+      "trig_addition_identities"
+    ], 
+    "live": true, 
+    "h_position": 55, 
+    "v_position": -25, 
+    "path": "/math/calculus/limits_topic/limits_tutorial/e/limits_1/", 
+    "slug": "limits_1", 
+    "name": "limits_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Limits 1", 
+    "description": null, 
+    "title": "Limits 1", 
+    "seconds_per_fast_problem": 8.0, 
+    "related_video_readable_ids": [], 
+    "prerequisites": [
+      "quadratic_equation", 
+      "graphs_of_sine_and_cosine", 
+      "inverse_trig_functions", 
+      "trig_addition_identities"
+    ], 
+    "live": true, 
+    "h_position": 55, 
+    "v_position": -25, 
+    "path": "/math/calculus/limits_topic/old-limits-tutorial/e/limits_1/", 
+    "slug": "limits_1", 
+    "name": "limits_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Limits 2", 
+    "description": null, 
+    "title": "Limits 2", 
+    "seconds_per_fast_problem": 6.0, 
+    "related_video_readable_ids": [], 
+    "prerequisites": [
+      "limits_1"
+    ], 
+    "live": true, 
+    "h_position": 56, 
+    "v_position": -25, 
+    "path": "/math/calculus/limits_topic/limits-infinity/e/limits_2/", 
+    "slug": "limits_2", 
+    "name": "limits_2"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Derivatives 1", 
+    "description": null, 
+    "title": "Derivatives 1", 
+    "seconds_per_fast_problem": 10.0, 
+    "related_video_readable_ids": [], 
+    "prerequisites": [
+      "derivative_intuition", 
+      "recognizing_slope"
+    ], 
+    "live": true, 
+    "h_position": 59, 
+    "v_position": -25, 
+    "path": "/math/calculus/differential-calculus/derivative_intro/e/derivatives_1/", 
+    "slug": "derivatives_1", 
+    "name": "derivatives_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Derivative intuition", 
+    "description": null, 
+    "title": "Derivative intuition", 
+    "seconds_per_fast_problem": 31.0, 
+    "related_video_readable_ids": [], 
+    "prerequisites": [
+      "limits_2"
+    ], 
+    "live": true, 
+    "h_position": 57, 
+    "v_position": -25, 
+    "path": "/math/calculus/differential-calculus/visualizing-derivatives-tutorial/e/derivative_intuition/", 
+    "slug": "derivative_intuition", 
+    "name": "derivative_intuition"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Power rule", 
+    "description": null, 
+    "title": "Power rule", 
+    "seconds_per_fast_problem": 12.0, 
+    "related_video_readable_ids": [], 
+    "prerequisites": [
+      "derivatives_1"
+    ], 
+    "live": true, 
+    "h_position": 60, 
+    "v_position": -26, 
+    "path": "/math/calculus/differential-calculus/power_rule_tutorial/e/power_rule/", 
+    "slug": "power_rule", 
+    "name": "power_rule"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Special derivatives", 
+    "description": "", 
+    "title": "Special derivatives", 
+    "seconds_per_fast_problem": 5.0, 
+    "related_video_readable_ids": [
+      "derivatives-of-sin-x--cos-x--tan-x--e-x-and-ln-x"
+    ], 
+    "prerequisites": [
+      "derivatives_1"
+    ], 
+    "live": true, 
+    "h_position": 60, 
+    "v_position": -24, 
+    "path": "/math/calculus/differential-calculus/chain_rule/e/special_derivatives/", 
+    "slug": "special_derivatives", 
+    "name": "special_derivatives"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Chain rule 1", 
+    "description": "", 
+    "title": "Chain rule 1", 
+    "seconds_per_fast_problem": 12.0, 
+    "related_video_readable_ids": [
+      "chain-rule-introduction", 
+      "chain-rule-definition-and-example", 
+      "derivatives-of-sin-x--cos-x--tan-x--e-x-and-ln-x", 
+      "chain-rule-with-triple-composition"
+    ], 
+    "prerequisites": [
+      "power_rule", 
+      "special_derivatives"
+    ], 
+    "live": true, 
+    "h_position": 61, 
+    "v_position": -27, 
+    "path": "/math/calculus/differential-calculus/chain_rule/e/chain_rule_1/", 
+    "slug": "chain_rule_1", 
+    "name": "chain_rule_1"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Special derivatives", 
+    "description": "", 
+    "title": "Special derivatives", 
+    "seconds_per_fast_problem": 5.0, 
+    "related_video_readable_ids": [
+      "derivatives-of-sin-x--cos-x--tan-x--e-x-and-ln-x"
+    ], 
+    "prerequisites": [
+      "derivatives_1"
+    ], 
+    "live": true, 
+    "h_position": 60, 
+    "v_position": -24, 
+    "path": "/math/calculus/differential-calculus/product_rule/e/special_derivatives/", 
+    "slug": "special_derivatives", 
+    "name": "special_derivatives"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Product rule", 
+    "description": "", 
+    "title": "Product rule", 
+    "seconds_per_fast_problem": 12.0, 
+    "related_video_readable_ids": [
+      "applying-the-product-rule-for-derivatives", 
+      "product-rule-for-more-than-two-functions", 
+      "product-rule"
+    ], 
+    "prerequisites": [
+      "power_rule", 
+      "special_derivatives"
+    ], 
+    "live": true, 
+    "h_position": 61, 
+    "v_position": -26, 
+    "path": "/math/calculus/differential-calculus/product_rule/e/product_rule/", 
+    "slug": "product_rule", 
+    "name": "product_rule"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "Quotient rule", 
+    "description": "", 
+    "title": "Quotient rule", 
+    "seconds_per_fast_problem": 13.0, 
+    "related_video_readable_ids": [
+      "quotient-rule-for-derivative-of-tan-x", 
+      "quotient-rule-from-product-rule"
+    ], 
+    "prerequisites": [
+      "power_rule", 
+      "special_derivatives"
+    ], 
+    "live": true, 
+    "h_position": 61, 
+    "v_position": -25, 
+    "path": "/math/calculus/differential-calculus/product_rule/e/quotient_rule/", 
+    "slug": "quotient_rule", 
+    "name": "quotient_rule"
+  }, 
+  {
+    "kind": "Exercise", 
+    "display_name": "L'H\u00f4pital's rule", 
+    "description": "", 
+    "title": "L'H\u00f4pital's rule", 
+    "seconds_per_fast_problem": 7.0, 
+    "related_video_readable_ids": [], 
+    "prerequisites": [
+      "power_rule", 
+      "special_derivatives"
+    ], 
+    "live": true, 
+    "h_position": 61, 
+    "v_position": -23, 
+    "path": "/math/calculus/derivative_applications/lhopital_rule/e/lhopitals_rule/", 
+    "slug": "lhopitals_rule", 
+    "name": "lhopitals_rule"
+  }
 ]
