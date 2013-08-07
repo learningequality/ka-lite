@@ -184,6 +184,17 @@ USER_LOG_MAX_RECORDS = getattr(local_settings, "USER_LOG_MAX_RECORDS", 0)
 USER_LOG_SUMMARY_FREQUENCY = getattr(local_settings, "USER_LOG_SUMMARY_FREQUENCY", (1,"months"))
 
 
+# Sessions use the default cache, and we want a local memory cache for that.
+# Separate session caching from file caching.
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+CACHES = {
+    "default": {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}
+
+# Local memory cache is to expensive to use for the page cache.
+#   instead, use a file-based cache.
 # By default, cache for maximum possible time.
 #   Note: caching for 100 years can be too large a value
 #   sys.maxint also can be too large (causes ValueError), since it's added to the current time.
@@ -196,28 +207,14 @@ CACHE_TIME = getattr(local_settings, "CACHE_TIME", _max_cache_time)
 # Cache is activated in every case,
 #   EXCEPT: if CACHE_TIME=0
 if CACHE_TIME != 0:  # None can mean infinite caching to some functions
-    CACHES = {
-        'default': {
-            'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-            'LOCATION': getattr(local_settings, "CACHE_LOCATION", tempfile.gettempdir()), # this is kind of OS-specific, so dangerous.
-            'TIMEOUT': CACHE_TIME, # should be consistent
-            'OPTIONS': {
-                'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
-            },
-        }
+    CACHES["web_cache"] = {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': getattr(local_settings, "CACHE_LOCATION", tempfile.gettempdir()), # this is kind of OS-specific, so dangerous.
+        'TIMEOUT': CACHE_TIME, # should be consistent
+        'OPTIONS': {
+            'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
+        },
     }
-    SESSION_CACHE_ALIAS = "session_cache"
-
-else:
-    CACHES = {}
-    SESSION_CACHE_ALIAS = "default"
-
-# Separate session caching from file caching.
-CACHES[SESSION_CACHE_ALIAS] =  {
-    'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-#    'LOCATION': 'unique-snowflake'
-}
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 # Here, None === no limit
 SYNC_SESSIONS_MAX_RECORDS = getattr(local_settings, "SYNC_SESSIONS_MAX_RECORDS", None if CENTRAL_SERVER else 10)
