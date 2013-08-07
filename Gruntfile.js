@@ -26,10 +26,7 @@ module.exports = function(grunt) {
 				files: {
 					"./kalite/static/css/bootstrap/bootstrap.css": "./kalite/static/less/bootstrap/bootstrap.less",
 					"./kalite/static/css/bootstrap/responsive.css": "./kalite/static/less/bootstrap/responsive.less"
-
 				},
-				yuicompress: true,
-				strictImports: true
 			}
 		}
 	});
