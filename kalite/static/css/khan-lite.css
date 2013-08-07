@@ -44,6 +44,11 @@ footer.short .inner {
     margin: 0 auto;
 }
 
+a:link:focus,
+a:hover {
+    color: #2F92A5;
+}
+
 #language-preferences {
     position: relative; 
     top: 7px;
@@ -65,13 +70,13 @@ footer.short .inner {
     top: 21px;
 }
 
-
-.nav-subheader a:link,
-.nav-subheader a:visited,
-.nav-subheader a:link:focus,
-.nav-subheader a:visited:focus
-{
+/*Make the navigation item stay the same color*/
+.nav-subheader a:visited{
     color: #263500;
+}
+
+.nav-subheader a:visited:hover{
+    color: #2F92A5;
 }
 
 .nav-subheader a {
@@ -94,10 +99,6 @@ footer.short .inner {
     width: auto;
     /* Position this at 30 so the white triangle appears on top of the page_sub_nav breadcrumbs border */
     z-index: 30;
-}
-
-.sitewide-navigation a:hover {
-    color: #2F92A5;
 }
 
 .watch-navlink {
