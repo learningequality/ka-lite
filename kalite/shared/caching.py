@@ -1,46 +1,65 @@
 from django.core.cache import cache
 from django.http import HttpRequest
-from django.utils.cache import get_cache_key as django_get_cache_key
+from django.utils.cache import get_cache_key as django_get_cache_key, get_cache, _generate_cache_key
 from django.core.urlresolvers import reverse
 from django.utils import translation
 from django.test.client import Client
 
 import settings
+from settings import LOG as logging
 from utils.internet import generate_all_paths
 from utils import topic_tools
 
-def get_cache_key(path=None, url_name=None):
+
+_web_cache = get_cache("web_cache")
+
+def get_cache_key(path=None, url_name=None, cache=None, failure_ok=False):
     """Call into Django to retrieve a cache key for the given url, or given url name
     
     NOTE: ONLY RETURNS CACHE_KEY IF THE CACHE_ITEM HAS BEEN CREATED ELSEWHERE!!!"""
     
     assert (path or url_name) and not (path and url_name), "Must have path or url_name parameter, but not both"
 
+    if not cache:
+        cache = _web_cache
+
     request = HttpRequest()
-    request.path = path if path else reverse(url_name)
+    request.path = path or reverse(url_name)
     request.session = {'django_language': translation.get_language()}
-    
-    return django_get_cache_key(request)
+
+    cache_key = django_get_cache_key(request, cache=_web_cache)
+    if not cache_key and not failure_ok:
+        logging.warn("The cache item does not exist, and so could not be retrieved (path=%s)." % request.path)
+
+    return cache_key
 
 
-def has_cache_key(path=None, url_name=None):
+def has_cache_key(path=None, url_name=None, cache=None):
+    if not cache:
+        cache = _web_cache
+
     assert (path or url_name) and not (path and url_name), "Must have path or url_name parameter, but not both"
 
-    return cache.has_key( get_cache_key(path=path, url_name=url_name) )
+    return _web_cache.has_key( get_cache_key(path=path, url_name=url_name, failure_ok=True) )
 
 
-def create_cache(path=None, url_name=None, force=False):
+def create_cache(path=None, url_name=None, cache=None, force=False):
     """Create a cache entry"""
     
     assert (path or url_name) and not (path and url_name), "Must have path or url_name parameter, but not both"
+    if not cache:
+        cache = _web_cache
 
     if not path:
         path = reverse(url_name)
-
-    if force:
+    if force and has_cache_key(path=path):
         expire_page(path=path)
+        assert not has_cache_key(path=path)
     if not has_cache_key(path=path):
         Client().get(path)
+
+    if not has_cache_key(path=path):
+        logging.warn("Could not create cache entry for %s" % path)
 
 
 def expire_page(path=None,url_name=None):
@@ -48,8 +67,8 @@ def expire_page(path=None,url_name=None):
     
     key = get_cache_key(path=path, url_name=url_name)
     
-    if cache.has_key(key):
-        cache.delete(key)
+    if _web_cache.has_key(key):
+        _web_cache.delete(key)
 
 
 def get_video_page_paths(video_id=None, video_slug=None):
@@ -76,8 +95,10 @@ def get_exercise_page_paths(video_id=None, video_slug=None):
         return []
 
 
-def invalidate_cached_topic_hierarchies(video_id=None, video_slug=None):
-    """Given a video file, recurse backwards up the hierarchy and invaliate all pages"""
+def invalidate_all_pages_related_to_video(video_id=None, video_slug=None):
+    """Given a video file, recurse backwards up the hierarchy and invaliate all pages.
+    Also include video pages and related exercise pages.
+    """
     assert (video_id or video_slug) and not (video_id and video_slug), "One arg, not two" 
 
     # Expire all video files and related paths
@@ -86,11 +107,12 @@ def invalidate_cached_topic_hierarchies(video_id=None, video_slug=None):
     leaf_paths = set(video_paths).union(set(exercise_paths))
 
     for leaf_path in leaf_paths:
-        for path in generate_all_paths(path=leaf_path, base_path=topic_tools.get_topic_tree()['path']): # start at the root
+        all_paths = generate_all_paths(path=leaf_path, base_path=topic_tools.get_topic_tree()['path'])
+        for path in [p for p in all_paths if has_cache_key(p)]: # start at the root
             expire_page(path=path)
 
 
-def regenerate_cached_topic_hierarchies(video_ids):
+def regenerate_all_pages_related_to_video(video_ids):
     """Same as above, but on a list of videos"""
     paths_to_regenerate = set() # unique set
     for video_id in video_ids:
@@ -104,3 +126,4 @@ def regenerate_cached_topic_hierarchies(video_ids):
     for path in paths_to_regenerate:
         create_cache(path=path, force=True)
 
+    return paths_to_regenerate
