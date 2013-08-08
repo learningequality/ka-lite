@@ -82,8 +82,6 @@ def update_language_list(sub_counts):
 
 def update_srt_availability():
     """Update maps in srts_by_lanugage with ids of downloaded subs"""
-    import pdb
-    pdb.set_trace()
     srts_path = settings.STATIC_ROOT + "srt/"
     for (dirpath, languages, filenames) in os.walk(srts_path):
         for lang_code in languages:
@@ -93,12 +91,13 @@ def update_srt_availability():
             srts_dict = {
                 "srt_files": yt_ids
             }
-            base_path = data_path + "srts_by_lanugage/"
+            base_path = data_path + "srts_by_language/"
             subtitle_utils.ensure_dir(base_path)
             filename = "%s.json" % lang_code
             filepath = base_path + filename
             with open(filepath, 'wb') as fp:
                 json.dump(srts_dict, fp)
+
 
 if __name__ == "__main__":
     # get_new_counts()
