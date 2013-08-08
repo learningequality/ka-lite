@@ -11,7 +11,9 @@ from utils.internet import generate_all_paths
 from utils import topic_tools
 
 
-_web_cache = get_cache("web_cache")
+def get_web_cache():
+    return get_cache("web_cache") if settings.CACHE_TIME != 0 else None
+
 
 def get_cache_key(path=None, url_name=None, cache=None, failure_ok=False):
     """Call into Django to retrieve a cache key for the given url, or given url name
@@ -21,13 +23,13 @@ def get_cache_key(path=None, url_name=None, cache=None, failure_ok=False):
     assert (path or url_name) and not (path and url_name), "Must have path or url_name parameter, but not both"
 
     if not cache:
-        cache = _web_cache
+        cache = get_web_cache()
 
     request = HttpRequest()
     request.path = path or reverse(url_name)
     request.session = {'django_language': translation.get_language()}
 
-    cache_key = django_get_cache_key(request, cache=_web_cache)
+    cache_key = django_get_cache_key(request, cache=get_web_cache())
     if not cache_key and not failure_ok:
         logging.warn("The cache item does not exist, and so could not be retrieved (path=%s)." % request.path)
 
@@ -36,11 +38,11 @@ def get_cache_key(path=None, url_name=None, cache=None, failure_ok=False):
 
 def has_cache_key(path=None, url_name=None, cache=None):
     if not cache:
-        cache = _web_cache
+        cache = get_web_cache()
 
     assert (path or url_name) and not (path and url_name), "Must have path or url_name parameter, but not both"
 
-    return _web_cache.has_key( get_cache_key(path=path, url_name=url_name, failure_ok=True) )
+    return get_web_cache().has_key( get_cache_key(path=path, url_name=url_name, failure_ok=True) )
 
 
 def create_cache(path=None, url_name=None, cache=None, force=False):
@@ -48,7 +50,7 @@ def create_cache(path=None, url_name=None, cache=None, force=False):
     
     assert (path or url_name) and not (path and url_name), "Must have path or url_name parameter, but not both"
     if not cache:
-        cache = _web_cache
+        cache = get_web_cache()
 
     if not path:
         path = reverse(url_name)
@@ -67,8 +69,8 @@ def expire_page(path=None,url_name=None):
     
     key = get_cache_key(path=path, url_name=url_name)
     
-    if _web_cache.has_key(key):
-        _web_cache.delete(key)
+    if get_web_cache().has_key(key):
+        get_web_cache().delete(key)
 
 
 def get_video_page_paths(video_id=None, video_slug=None):
