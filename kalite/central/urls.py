@@ -5,6 +5,7 @@ from django.contrib import admin
 import coachreports.urls
 import control_panel.urls
 import securesync.urls
+import central.api_urls
 from kalite import settings
 from feeds import RssSiteNewsFeed, AtomSiteNewsFeed
 
@@ -61,6 +62,10 @@ urlpatterns += patterns('central.views',
     url(r'^contact/', include('contact.urls')),
     url(r'^wiki/(?P<path>\w+)/$', redirect_to, {'base_url': settings.CENTRAL_WIKI_URL}, 'wiki'),
     url(r'^about/$', redirect_to, { 'base_url': 'http://learningequality.org/' }, 'about'),
+)
+
+urlpatterns += patterns('central.api_views',
+    url(r'^api/', include(central.api_urls)),
 )
 
 handler403 = 'central.views.handler_403'
