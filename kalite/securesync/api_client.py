@@ -59,6 +59,11 @@ class SyncClient(object):
         """Register a device with the central server.  Happens outside of a session."""
 
         own_device = Device.get_own_device()
+        # Todo: registration process should always use one of these--and it needs to use
+        #   Device.public_key.  So, should migrate over the rest of the registration code
+        #   to do the same.
+        assert own_device.public_key == own_device.get_key().get_public_key_string(), "Make sure these somehow didn't get out of sync (can happen when people muck around with the data manually."
+
         # Since we can't know the version of the remote device (yet),
         #   we give it everything we possibly can (don't specify a dest_version)
         #
