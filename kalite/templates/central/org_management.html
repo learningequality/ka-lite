@@ -189,11 +189,14 @@
 								<div class="clearfix"></div>
 							{% endfor %}
 							<div class="clearfix"></div>
+                            {% if org.name != HEADLESS_ORG_NAME %}
 							<form method="link" action="{% url zone_form org_id=org.id zone_id='new' %}">
 								<input class="add" type="submit" value="Create a new zone">
 							</form>
+						    {% endif %}
 						</div>
 						<div class="members">
+                            {% if org.name != HEADLESS_ORG_NAME %}
 							<h4 class="title floatleft">Organization Admins</h4><span class="glossary-link nudge-left" title="An Organization Admin is a user responsible for overseeing an organization."></span>
 							<div class="clearfix"></div>
 							{% for member in org.get_members %}
@@ -240,6 +243,7 @@
 									{% endfor %}
 								</form>
 							</div>
+							{% endif %}
 					</div>
 					<div class="clearfix"></div>
 					</div>
