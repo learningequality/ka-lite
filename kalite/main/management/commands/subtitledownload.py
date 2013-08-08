@@ -14,17 +14,17 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         
         language = Settings.get("subtitle_language")
-        
+        failed_video_ids = []
         while True: # loop until the method is aborted
             
             if VideoFile.objects.filter(subtitle_download_in_progress=True).count() > 4:
                 self.stderr.write("Maximum downloads are in progress; aborting.\n")
                 return
             
-            videos = VideoFile.objects.filter(flagged_for_subtitle_download=True, subtitle_download_in_progress=False)
+            videos = VideoFile.objects.filter(flagged_for_subtitle_download=True, subtitle_download_in_progress=False).exclude(youtube_id__in=failed_video_ids)
             if videos.count() == 0:
                 self.stdout.write("Nothing to download; aborting.\n")
-                return
+                break
 
             video = videos[0]
             
@@ -50,5 +50,6 @@ class Command(BaseCommand):
                 video.subtitle_download_in_progress = False
                 video.flagged_for_subtitle_download = False
                 video.save()
-                force_job("subtitledownload", "Download Subtitles")
-                return
+                # Skip this video and move on.
+                failed_video_ids.append(video.youtube_id)
+                continue

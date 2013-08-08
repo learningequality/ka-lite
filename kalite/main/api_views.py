@@ -158,17 +158,6 @@ def check_video_download(request):
         percentages[id] = videofile.percent_complete
     return JsonResponse(percentages)
 
-def get_video_download_status(youtube_id):
-    videofile = get_object_or_None(VideoFile, youtube_id=youtube_id)
-    if not videofile:
-        return "unstarted"
-    if videofile.percent_complete == 0 and not videofile.download_in_progress:
-        return "unstarted"
-    if videofile.percent_complete == 100 and not videofile.download_in_progress:
-        return "complete"
-    else:
-        return "partial"
-
 @require_admin
 def get_video_download_list(request):
     videofiles = VideoFile.objects.filter(flagged_for_download=True).values("youtube_id")

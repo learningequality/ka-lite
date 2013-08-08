@@ -36,14 +36,15 @@ class Command(BaseCommand):
 
         caching_enabled = settings.CACHE_TIME != 0
         handled_video_ids = []
-        
+        failed_video_ids = []
+
         while True: # loop until the method is aborted
             
             if VideoFile.objects.filter(download_in_progress=True).count() > 0:
                 self.stderr.write("Another download is still in progress; aborting.\n")
                 break
             
-            videos = VideoFile.objects.filter(flagged_for_download=True, download_in_progress=False)
+            videos = VideoFile.objects.filter(flagged_for_download=True, download_in_progress=False).exclude(youtube_id__in=failed_video_ids)
             if videos.count() == 0:
                 self.stdout.write("Nothing to download; aborting.\n")
                 break
@@ -62,15 +63,17 @@ class Command(BaseCommand):
             
             self.stdout.write("Downloading video '%s'...\n" % video.youtube_id)
             try:
+                xxx
                 download_video(video.youtube_id, callback=download_progress_callback(self, video))
                 self.stdout.write("Download is complete!\n")
             except Exception as e:
-                self.stderr.write("Error in downloading: %s\n" % e)
+                self.stderr.write("Error in downloading %s: %s\n" % (video.youtube_id, e))
                 video.download_in_progress = False
                 video.save()
-                force_job("videodownload", "Download Videos")  # infinite recursive call? :(
-                break
-            
+                # Rather than getting stuck on one video, continue to the next video.
+                failed_video_ids.append(video.youtube_id)
+                continue
+
             handled_video_ids.append(video.youtube_id)
             
             # Expire, but don't regenerate until the very end, for efficiency.

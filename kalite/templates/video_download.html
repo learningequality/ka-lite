@@ -344,6 +344,8 @@ ul.dynatree-container li, .ui-widget-content {
                 }
                 checkVideoDownloadProgress();
             } else if (!progress["downloading"]) {
+                $(".progress-section, #cancel-download").hide();
+                $(".progress-waiting").hide();
                 $("#retry-video-download").show();
             } else {
                 $("#retry-video-download").hide();
@@ -372,12 +374,14 @@ ul.dynatree-container li, .ui-widget-content {
             	$(".progress-waiting").show();
                 $("#cancel-download").show();
         	}            
-        } else {
+        } else if ($("#retry-video-download :visible").length == 0) {
             $(".progress-section").hide();
             if ($(".subtitle-section:visible").length == 0) {
                 $("#cancel-download").hide();
             }
             return;
+        } else {
+            // retrying
         }
         
         $("#progressbar-current").progressbar({value: window.current_download_percent});
