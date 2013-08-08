@@ -2,13 +2,15 @@
   {
     "kind": "Exercise", 
     "display_name": "Divisibility tests", 
-    "description": "Use divisibility tests to check if large numbers are divisible by 2, 3, 4, 5, 9, or 10.", 
+    "description": "", 
     "title": "Divisibility tests", 
     "seconds_per_fast_problem": 5.0, 
     "related_video_readable_ids": [
+      "divisibility-tests-for-2--3--4--5--6--9--10", 
+      "recognizing-divisibility", 
+      "the-why-of-the-3-divisibility-rule", 
       "the-why-of-the-9-divisibility-rule"
     ], 
-    "slug": "divisibility_tests", 
     "prerequisites": [
       "divisibility_intuition"
     ], 
@@ -16,19 +18,18 @@
     "h_position": 11, 
     "v_position": -10, 
     "path": "/math/arithmetic/factors-multiples/divisibility_tests/e/divisibility_tests/", 
-    "id": "divisibility_tests", 
+    "slug": "divisibility_tests", 
     "name": "divisibility_tests"
   }, 
   {
     "kind": "Exercise", 
     "display_name": "Divisibility 0.5", 
-    "description": null, 
+    "description": "", 
     "title": "Divisibility 0.5", 
-    "seconds_per_fast_problem": 8.0, 
+    "seconds_per_fast_problem": 7.0, 
     "related_video_readable_ids": [
       "finding-factors-of-a-number"
     ], 
-    "slug": "divisibility_0.5", 
     "prerequisites": [
       "divisibility_intuition"
     ], 
@@ -36,19 +37,19 @@
     "h_position": 11, 
     "v_position": -12, 
     "path": "/math/arithmetic/factors-multiples/divisibility_and_factors/e/divisibility_0.5/", 
-    "id": "divisibility_0.5", 
+    "slug": "divisibility_0.5", 
     "name": "divisibility_0.5"
   }, 
   {
     "kind": "Exercise", 
     "display_name": "Divisibility intuition", 
-    "description": "Find the factors of a number using a visual tool.", 
+    "description": "", 
     "title": "Divisibility intuition", 
     "seconds_per_fast_problem": 8.0, 
     "related_video_readable_ids": [
-      "divisibility-intuition"
+      "divisibility-intuition", 
+      "finding-factors-of-a-number"
     ], 
-    "slug": "divisibility_intuition", 
     "prerequisites": [
       "division_2"
     ], 
@@ -56,19 +57,19 @@
     "h_position": 10, 
     "v_position": -11, 
     "path": "/math/arithmetic/factors-multiples/divisibility_and_factors/e/divisibility_intuition/", 
-    "id": "divisibility_intuition", 
+    "slug": "divisibility_intuition", 
     "name": "divisibility_intuition"
   }, 
   {
     "kind": "Exercise", 
     "display_name": "Prime numbers", 
-    "description": null, 
+    "description": "", 
     "title": "Prime numbers", 
     "seconds_per_fast_problem": 6.0, 
     "related_video_readable_ids": [
+      "prime-numbers", 
       "recognizing-prime-numbers"
     ], 
-    "slug": "prime_numbers", 
     "prerequisites": [
       "divisibility_0.5", 
       "divisibility_tests"
@@ -77,19 +78,19 @@
     "h_position": 12, 
     "v_position": -12, 
     "path": "/math/arithmetic/factors-multiples/prime_numbers/e/prime_numbers/", 
-    "id": "prime_numbers", 
+    "slug": "prime_numbers", 
     "name": "prime_numbers"
   }, 
   {
     "kind": "Exercise", 
     "display_name": "Composite numbers", 
-    "description": null, 
+    "description": "", 
     "title": "Composite numbers", 
     "seconds_per_fast_problem": 5.0, 
     "related_video_readable_ids": [
-      "recognizing-prime-numbers"
+      "recognizing-prime-numbers", 
+      "prime-numbers"
     ], 
-    "slug": "composite_numbers", 
     "prerequisites": [
       "divisibility_0.5", 
       "divisibility_tests"
@@ -98,19 +99,19 @@
     "h_position": 12, 
     "v_position": -10, 
     "path": "/math/arithmetic/factors-multiples/prime_numbers/e/composite_numbers/", 
-    "id": "composite_numbers", 
+    "slug": "composite_numbers", 
     "name": "composite_numbers"
   }, 
   {
     "kind": "Exercise", 
     "display_name": "Prime factorization", 
-    "description": null, 
+    "description": "", 
     "title": "Prime factorization", 
-    "seconds_per_fast_problem": 7.0, 
+    "seconds_per_fast_problem": 8.0, 
     "related_video_readable_ids": [
+      "prime-factorization-exercise", 
       "prime-factorization"
     ], 
-    "slug": "prime_factorization", 
     "prerequisites": [
       "prime_numbers", 
       "composite_numbers"
@@ -119,20 +120,18 @@
     "h_position": 13, 
     "v_position": -12, 
     "path": "/math/arithmetic/factors-multiples/prime_factorization/e/prime_factorization/", 
-    "id": "prime_factorization", 
+    "slug": "prime_factorization", 
     "name": "prime_factorization"
   }, 
   {
     "kind": "Exercise", 
     "display_name": "The fundamental theorem of arithmetic", 
-    "description": "Find the prime factorization of a number.", 
+    "description": "", 
     "title": "The fundamental theorem of arithmetic", 
     "seconds_per_fast_problem": 9.0, 
     "related_video_readable_ids": [
-      "the-fundamental-theorem-of-arithmetic", 
-      "the-fundamental-theorem-of-arithmetic-1"
+      "the-fundamental-theorem-of-arithmetic"
     ], 
-    "slug": "the_fundamental_theorem_of_arithmetic", 
     "prerequisites": [
       "prime_factorization"
     ], 
@@ -140,19 +139,18 @@
     "h_position": 14, 
     "v_position": -13, 
     "path": "/math/arithmetic/factors-multiples/prime_factorization/e/the_fundamental_theorem_of_arithmetic/", 
-    "id": "the_fundamental_theorem_of_arithmetic", 
+    "slug": "the_fundamental_theorem_of_arithmetic", 
     "name": "the_fundamental_theorem_of_arithmetic"
   }, 
   {
     "kind": "Exercise", 
     "display_name": "Divisibility", 
-    "description": null, 
+    "description": "", 
     "title": "Divisibility", 
     "seconds_per_fast_problem": 11.0, 
     "related_video_readable_ids": [
       "common-divisibility-examples"
     ], 
-    "slug": "divisibility", 
     "prerequisites": [
       "prime_factorization"
     ], 
@@ -160,19 +158,20 @@
     "h_position": 15, 
     "v_position": -12, 
     "path": "/math/arithmetic/factors-multiples/prime_factorization/e/divisibility/", 
-    "id": "divisibility", 
+    "slug": "divisibility", 
     "name": "divisibility"
   }, 
   {
     "kind": "Exercise", 
     "display_name": "Least common multiple", 
-    "description": null, 
+    "description": "", 
     "title": "Least common multiple", 
     "seconds_per_fast_problem": 8.0, 
     "related_video_readable_ids": [
+      "least-common-multiple-exercise", 
+      "least-common-multiple-exercise-2", 
       "least-common-multiple--lcm"
     ], 
-    "slug": "least_common_multiple", 
     "prerequisites": [
       "prime_factorization"
     ], 
@@ -180,19 +179,19 @@
     "h_position": 14, 
     "v_position": -11, 
     "path": "/math/arithmetic/factors-multiples/least_common_multiple/e/least_common_multiple/", 
-    "id": "least_common_multiple", 
+    "slug": "least_common_multiple", 
     "name": "least_common_multiple"
   }, 
   {
     "kind": "Exercise", 
     "display_name": "Greatest common divisor", 
-    "description": null, 
+    "description": "", 
     "title": "Greatest common divisor", 
-    "seconds_per_fast_problem": 6.0, 
+    "seconds_per_fast_problem": 5.0, 
     "related_video_readable_ids": [
+      "greatest-common-divisor-factor-exercise", 
       "greatest-common-divisor"
     ], 
-    "slug": "greatest_common_divisor", 
     "prerequisites": [
       "division_3", 
       "prime_factorization"
@@ -201,19 +200,18 @@
     "h_position": 14, 
     "v_position": -10, 
     "path": "/math/arithmetic/factors-multiples/greatest_common_divisor/e/greatest_common_divisor/", 
-    "id": "greatest_common_divisor", 
+    "slug": "greatest_common_divisor", 
     "name": "greatest_common_divisor"
   }, 
   {
     "kind": "Exercise", 
     "display_name": "LCM and GCD word problems", 
-    "description": "Least common multiple and greatest common divisor (or greatest common factor) word problems", 
+    "description": "", 
     "title": "LCM and GCD word problems", 
     "seconds_per_fast_problem": 15.0, 
     "related_video_readable_ids": [
-      "greatest-common-divisor"
+      "lcm-and-gcf-greatest-common-factor--word-problems"
     ], 
-    "slug": "least_common_multiple_and_greatest_common_divisor_word_problems", 
     "prerequisites": [
       "prime_factorization"
     ], 
@@ -221,7 +219,7 @@
     "h_position": 14, 
     "v_position": -9, 
     "path": "/math/arithmetic/factors-multiples/greatest_common_divisor/e/least_common_multiple_and_greatest_common_divisor_word_problems/", 
-    "id": "least_common_multiple_and_greatest_common_divisor_word_problems", 
+    "slug": "least_common_multiple_and_greatest_common_divisor_word_problems", 
     "name": "least_common_multiple_and_greatest_common_divisor_word_problems"
   }
 ]

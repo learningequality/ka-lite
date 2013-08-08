@@ -4,6 +4,7 @@ from annoying.functions import get_object_or_None
 from dateutil import relativedelta
 
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.db.models import Sum
 
@@ -34,9 +35,12 @@ class VideoLog(SyncedModel):
                 self.completion_timestamp = datetime.now()
                 self.completion_counter = Device.get_own_device().get_counter()
 
-            # Tell logins that they are still active.
+            # Tell logins that they are still active (ignoring validation failures).
             #   TODO(bcipolli): Could log video information in the future.
-            UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()))
+            try:
+                UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()))
+            except ValidationError as e:
+                logging.debug("Failed to update userlog during video: %s" % e)
 
         super(VideoLog, self).save(*args, **kwargs)
 
@@ -76,11 +80,13 @@ class ExerciseLog(SyncedModel):
                 self.completion_counter = Device.get_own_device().get_counter()
                 self.attempts_before_completion = self.attempts
 
-            # Tell logins that they are still active.
+            # Tell logins that they are still active (ignoring validation failures).
             #   TODO(bcipolli): Could log exercise information in the future.
-            UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()))
-
-        super(ExerciseLog, self).save(*args, **kwargs)
+            try:
+                UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()))
+            except ValidationError as e:
+                logging.debug("Failed to update userlog during exercise: %s" % e)
+            super(ExerciseLog, self).save(*args, **kwargs)
 
     def get_uuid(self, *args, **kwargs):
         namespace = uuid.UUID(self.user.id)
@@ -94,7 +100,7 @@ class ExerciseLog(SyncedModel):
 class UserLogSummary(SyncedModel):
     """Like UserLogs, but summarized over a longer period of time.
     Also sync'd across devices.  Unique per user, device, activity_type, and time period."""
-    version = "0.9.4"
+    minversion = "0.9.4"
 
     device = models.ForeignKey(Device, blank=False, null=False)
     user = models.ForeignKey(FacilityUser, blank=False, null=False, db_index=True)
@@ -206,7 +212,7 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
 
     # Currently, all activity is used just to update logged-in-time.
     KNOWN_TYPES={"login": 1}
-    version = "0.9.4"
+    minversion = "0.9.4"
 
     user = models.ForeignKey(FacilityUser, blank=False, null=False, db_index=True)
     activity_type = models.IntegerField(blank=False, null=False)
@@ -305,8 +311,8 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
 
         # Create a new entry
         cur_user_log_entry = cls(user=user, activity_type=activity_type, start_datetime=start_datetime, last_active_datetime=start_datetime)
-        cur_user_log_entry.save()
 
+        cur_user_log_entry.save()
         return cur_user_log_entry
 
 
@@ -333,6 +339,7 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
 
         logging.debug("%s: UPDATE activity (%d) @ %s"%(user.username,activity_type,update_datetime))
         cur_user_log_entry.last_active_datetime = update_datetime
+
         cur_user_log_entry.save()
 
 

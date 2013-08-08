@@ -5,13 +5,12 @@ import urllib
 import urllib2
 import uuid
 
-from django.core import serializers
-
 import kalite
 import settings
 from kalite.utils.internet import am_i_online
 from securesync import crypto, model_sync
 from securesync.models import *
+from shared import serializers
 
 
 class SyncClient(object):
@@ -66,7 +65,7 @@ class SyncClient(object):
         # Note that (currently) this should never fail--the central server (which we're sending
         #   these objects to) should always have a higher version.
         r = self.post("register", {
-            "client_device": serializers.serialize("json", [own_device], ensure_ascii=False)
+            "client_device": serializers.serialize("versioned-json", [own_device], ensure_ascii=False)
         })
 
         # If they don't understand, our assumption is broken.
@@ -79,7 +78,7 @@ class SyncClient(object):
         elif r.status_code == 200:
             # Save to our local store.  By NOT passing a src_version,
             #   we're saying it's OK to just store what we can.
-            models = serializers.deserialize("json", r.content, src_version=None, dest_version=own_device.version)
+            models = serializers.deserialize("versioned-json", r.content, src_version=None, dest_version=own_device.version)
             for model in models:
                 if not model.object.verify():
                     continue
@@ -123,7 +122,7 @@ class SyncClient(object):
         # Once again, we assume that (currently) the central server's version is >= ours,
         #   We just store what we can.
         own_device = self.session.client_device
-        session = serializers.deserialize("json", data["session"], src_version=None, dest_version=own_device.version).next().object
+        session = serializers.deserialize("versioned-json", data["session"], src_version=None, dest_version=own_device.version).next().object
         if not session.verify_server_signature(signature):
             raise Exception("Signature did not match.")
         if session.client_nonce != self.session.client_nonce:
