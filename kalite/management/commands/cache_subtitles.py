@@ -22,7 +22,6 @@ import settings
 
 logger = subtitle_utils.setup_logging("cache_subtitles")
 
-# NOTE: setting this to download to static folder for the playground instead of original locale folder 
 download_path = settings.STATIC_ROOT + "srt/"
 
 
@@ -216,7 +215,6 @@ class Command(BaseCommand):
                 "Invalid input. Please read the usage instructions more carefully and try again. Remember to specify a response code! (-r)")
 
         logger.info("Executed successfully! Generating new subtitle counts!")
-        # generate_srt_counts.get_new_counts()
         generate_srt_counts.update_srt_availability()
         
         # NOTE: not zipping for the time being, just exposing individually on the playground

@@ -28,24 +28,18 @@ class LanguageNameDoesNotExist(Exception):
 
 
 def get_new_counts():
-    """Return dictionary of srt file counts in respective locale folders"""
-    locale_path = settings.LOCALE_PATHS[0]  # ka-lite/locale/
-
+    """Return dictionary of srt file counts in static folder organized by language"""
+    srt_filepath = data_path + "srts_by_language/"
+    language_files = os.listdir(srt_filepath) 
     subtitle_counts = {}
-    # index into ka-lite/locale/
-    for (dirpath, languages, filenames) in os.walk(locale_path):
-        for lang_code in languages:
-            subtitles_path = "%s%s/subtitles/" % (locale_path, lang_code)
-            try:
-                count = len(os.listdir(subtitles_path))
-            except:
-                logger.info("No subs for %s" % lang_code)
-                continue
-            else:
-                lang_name = get_language_name(lang_code)
-                subtitle_counts[lang_name] = {}
-                subtitle_counts[lang_name]["count"] = count
-                subtitle_counts[lang_name]["code"] = lang_code
+
+    for f in language_files:
+        count = len(json.loads(open(srt_filepath + f).read())["srt_files"])
+        lang_code = f.rstrip(".json")
+        lang_name = get_language_name(lang_code)
+        subtitle_counts[lang_name] = {}
+        subtitle_counts[lang_name]["count"] = count
+        subtitle_counts[lang_name]["code"] = lang_code
     write_new_json(subtitle_counts)
     update_language_list(subtitle_counts)
 
@@ -97,8 +91,8 @@ def update_srt_availability():
             filepath = base_path + filename
             with open(filepath, 'wb') as fp:
                 json.dump(srts_dict, fp)
+    get_new_counts()
 
 
 if __name__ == "__main__":
-    # get_new_counts()
     update_srt_availability()
