@@ -14,7 +14,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core.management import call_command
 
 from generate_subtitle_map import data_path, SRTS_JSON_FILENAME, LANGUAGE_SRT_FILENAME, headers
-from utils.subtitles import subtitle_utils, generate_subtitle_counts 
+from utils.subtitles import subtitle_utils, generate_srt_counts 
 
 PROJECT_PATH = os.path.dirname(os.path.realpath(__file__)) + "/../../"
 sys.path = [PROJECT_PATH] + sys.path
@@ -216,7 +216,8 @@ class Command(BaseCommand):
                 "Invalid input. Please read the usage instructions more carefully and try again. Remember to specify a response code! (-r)")
 
         logger.info("Executed successfully! Generating new subtitle counts!")
-        generate_subtitle_counts.get_new_counts()
+        # generate_srt_counts.get_new_counts()
+        generate_srt_counts.update_srt_availability()
         
         # NOTE: not zipping for the time being, just exposing individually on the playground
         # logger.info("Executed successfully! Re-zipping changed language packs!")
