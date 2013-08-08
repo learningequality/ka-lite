@@ -28,9 +28,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        if not getattr(settings, "CACHES", None):
-            raise CommandError("caching is turned off (CACHES is None)")
-        elif not getattr(settings, "CACHE_TIME", None):
+        if settings.CACHE_TIME == 0:
             raise CommandError("caching is turned off (CACHE_TIME is zero or none)")
         elif len(args)<1:
             raise CommandError("No command specified.")        
