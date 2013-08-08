@@ -1,9 +1,5 @@
 """
-These will be run when you run "manage.py test [main].
-These require a test server to be running, and multiple ports
-  need to be available.  Run like this:
-./manage.py test main --liveserver=localhost:8004-8010
-".
+These use a web-browser, along selenium, to simulate user actions.
 """
 
 import logging
@@ -170,7 +166,7 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
 
 
 
-class KALiteRegisteredDistributedBrowserTestCase(KALiteDistributedBrowserTestCase):
+class KALiteDistributedWithFacilityBrowserTestCase(KALiteDistributedBrowserTestCase):
     """
     Same thing, but do the setup steps to register a facility.
     """
@@ -178,7 +174,7 @@ class KALiteRegisteredDistributedBrowserTestCase(KALiteDistributedBrowserTestCas
     
     def setUp(self):
         """Add a facility, so users can begin registering / logging in immediately."""
-        super(KALiteRegisteredDistributedBrowserTestCase,self).setUp() # sets up admin, etc
+        super(KALiteDistributedWithFacilityBrowserTestCase,self).setUp() # sets up admin, etc
         self.create_facility(facility_name=self.facility_name)        
 
 
@@ -266,7 +262,7 @@ class ChangeLocalUserPassword(KALiteDistributedBrowserTestCase):
 
 
 @distributed_server_test
-class UserRegistrationCaseTest(KALiteRegisteredDistributedBrowserTestCase):
+class UserRegistrationCaseTest(KALiteDistributedWithFacilityBrowserTestCase):
     username   = "user1"
     password   = "password"
 
@@ -346,7 +342,7 @@ class UserRegistrationCaseTest(KALiteRegisteredDistributedBrowserTestCase):
         self.browser_check_django_message("error", contains="There was an error logging you in.")
 
 
-class StudentExerciseTest(KALiteRegisteredDistributedBrowserTestCase):
+class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
     """
     Test exercises.
     """
@@ -356,7 +352,7 @@ class StudentExerciseTest(KALiteRegisteredDistributedBrowserTestCase):
         """
         Create a student, log the student in, and go to the exercise page.
         """
-        super(KALiteRegisteredDistributedBrowserTestCase, self).setUp()
+        super(StudentExerciseTest, self).setUp()
         self.student = self.create_student()
         self.browser_login_student(self.student_username, self.student_password)
         self.browse_to(self.live_server_url + NODE_CACHE["Exercise"][self.EXERCISE_SLUG]["paths"][0])
@@ -407,7 +403,7 @@ class StudentExerciseTest(KALiteRegisteredDistributedBrowserTestCase):
         Answer an exercise incorrectly.
         """
         points = self.browser_submit_answer('this is a wrong answer')
-        self.assertTrue(points == '', "points text should be empty")  # somehow we can't use the truthiness of string, so we use ==
+        self.assertEqual(points, "", "points text should be empty")
         self.browser_check_django_message(num_messages=0)  # make sure no messages
 
         elog = ExerciseLog.objects.get(exercise_id=self.EXERCISE_SLUG, user=self.student)
@@ -442,3 +438,24 @@ class StudentExerciseTest(KALiteRegisteredDistributedBrowserTestCase):
         self.assertEqual(elog.attempts, 10, "Student should have 10 attempts.")
         self.assertTrue(elog.complete, "Student should have completed the exercise.")
         self.assertEqual(elog.attempts_before_completion, 10, "Student should have 10 attempts for completion.")
+
+
+class MainEmptyFormSubmitCaseTest(KALiteDistributedWithFacilityBrowserTestCase):
+    """
+    Submit forms with no values, make sure there are no errors.
+    
+    Note: these are functions on securesync, but 
+    """
+
+    def test_login_form(self):
+        self.empty_form_test(url=self.reverse("login"), submission_element_id="id_username")
+
+    def test_add_student_form(self):
+        self.empty_form_test(url=self.reverse("add_facility_student"), submission_element_id="id_username")
+
+    def test_add_teacher_form(self):
+        self.empty_form_test(url=self.reverse("add_facility_teacher"), submission_element_id="id_username")
+
+    def test_add_group_form(self):
+        self.browser_login_admin()
+        self.empty_form_test(url=self.reverse("add_group"), submission_element_id="id_name")
