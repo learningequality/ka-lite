@@ -1,6 +1,7 @@
 import json
 import sys
 import os
+import requests
 import time
 
 from django.core.management.base import BaseCommand, CommandError
@@ -18,12 +19,12 @@ class Command(BaseCommand):
     help = "Download all subtitles marked to be downloaded"
 
     def handle(self, *args, **options):
-
         language = Settings.get("subtitle_language")
-        srt_path = settings.DATA_PATH + "subtitledata/srts_by_language/"
+        request_url = "http://%s/static/data/subtitledata/srts_by_language/%s.json" % (settings.CENTRAL_SERVER_HOST, language)
         try:
-            filepath = "%s%s.json" % (srt_path, language)
-            available_srts = set(json.loads(open(filepath).read())["srt_files"])
+            # TODO(dylan): better error handling here
+            r = requests.get(request_url)
+            available_srts = set((r.json)["srt_files"])
         except:
             self.stdout.write("No srts available on central server for langauge code %s; aborting.\n" % language)
             return
@@ -49,15 +50,15 @@ class Command(BaseCommand):
 
             try:
                 if video.youtube_id in available_srts:
-                    download_subtitles.download_subtitles(video.youtube_id, language)
+                    download_subtitles(video.youtube_id, language)
                     self.stdout.write("Download is complete!\n")
                     video.subtitles_downloaded = True
                     video.subtitle_download_in_progress = False
                     video.flagged_for_subtitle_download = False
                     video.save()
                 else: 
-                    raise download_subtitles.NoSubs
-            except download_subtitles.NoSubs as e:
+                    raise NoSubs
+            except NoSubs as e:
                 video.flagged_for_subtitle_download = False
                 video.subtitle_download_in_progress = False
                 video.subtitles_downloaded = True
