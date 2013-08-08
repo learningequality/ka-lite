@@ -31,7 +31,8 @@ class Command(BaseCommand):
             video.subtitle_download_in_progress = True
             video.save()
             
-            self.stdout.write("Downloading subtitles for video '%s'...\n" % video.youtube_id)
+            self.stdout.write("Downloading subtitles for video '%s'... " % video.youtube_id)
+            self.stdout.flush()
             try:
                 download_subtitles(video.youtube_id, language)
                 self.stdout.write("Download is complete!\n")
@@ -43,6 +44,7 @@ class Command(BaseCommand):
                 video.flagged_for_subtitle_download = False
                 video.subtitle_download_in_progress = False
                 video.subtitles_downloaded = True
+                self.stdout.write("\n");
                 video.save()
                 self.stderr.write("No subtitles available\n")
             except Exception as e:
