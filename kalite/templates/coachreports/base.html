@@ -25,6 +25,14 @@ h2 {
     margin: 0px;
     margin-top: 10px;
 }
+h3 {
+    margin-left: 25px;
+    margin-bottom: 0px;
+}
+#link-box {
+    float:right;
+    margin-right:25px;
+}
 .group_div {
     position: absolute;
     margin-left: 20px;
@@ -53,7 +61,20 @@ function generate_current_link() {
 
     return url;
 }
+function display_link () {
+    var url_field = $('input#url');
+    var link_box = $('#link-box');
+    if(url_field.is(":visible")){
+        url_field.hide();
+        link_box.find('a').text("(link)");
+    }
+    else{
+        url_field.val(generate_current_link());
+        url_field.show().focus().select().attr('readonly',true);
 
+        link_box.find('a').text("(hide)");
+    }
+}
 function changeData(type) {
     var opt = $("#" + type + " option:selected");
     $("#" + type + "_editable").text(opt.text());
@@ -140,9 +161,9 @@ function make_editable(type) {
 
         <div class="clearfix">
             {% block navbar_makelink %}
-            <div  style="float:right;margin-right:25px;">
-                <a href="javascript:alert(generate_current_link())">(link)</a>
+            <div id="link-box">
                 <input name="url" id="url" type="text" style="display:none"></input>
+                <a href="javascript:display_link()">(link)</a>
             </div>
             {% endblock navbar_makelink %}
         </div>
