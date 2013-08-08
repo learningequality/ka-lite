@@ -14,7 +14,7 @@ def get_subtitle_counts(request):
     Sort and return a dict in the following format that gives the count of srt files available by language:
         {"gu": {"count": 45, "name": "Gujarati"}, etc.. }
     """
-
+    
     # Get the subtitles file
     subtitledata_path = os.path.dirname(os.path.realpath(__file__)) + "/../static/data/subtitledata/"
     if not os.path.exists(subtitledata_path):

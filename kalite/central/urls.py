@@ -63,6 +63,10 @@ urlpatterns += patterns('central.views',
     url(r'^about/$', redirect_to, { 'base_url': 'http://learningequality.org/' }, 'about'),
 )
 
+urlpatterns += patterns('central.api_views',
+    url(r'^api/', include(central.api_urls)),
+)
+
 handler403 = 'central.views.handler_403'
 handler404 = 'central.views.handler_404'
 handler500 = 'central.views.handler_500'
