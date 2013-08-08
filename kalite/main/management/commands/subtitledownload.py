@@ -26,7 +26,7 @@ class Command(BaseCommand):
             r = requests.get(request_url)
             available_srts = set((r.json)["srt_files"])
         except:
-            self.stdout.write("No srts available on central server for langauge code %s; aborting.\n" % language)
+            self.stdout.write("No subtitles available on central server for language code %s; aborting.\n" % language)
             return
 
         while True: # loop until the method is aborted
