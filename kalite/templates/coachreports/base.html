@@ -171,10 +171,6 @@ function make_editable(type) {
     {% endblock navbar_title %}
 
     {% block navbar_topics %}
-    <h3 id="topic_header">
-        {% trans "Topics selected" %}:
-        <a id="topic_paths" href="javascript:toggle_tree()">{% if form.topic_path %}{{ form.topic_path|jsonify }}{% else %}None{% endif %}</a>
-    </h3>
     {% endblock navbar_topics %}
 </div>
 {% endblock navbar %}
