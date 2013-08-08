@@ -1,3 +1,6 @@
+import json
+import sys
+import os
 import time
 
 from django.core.management.base import BaseCommand, CommandError
@@ -5,16 +8,26 @@ from django.core.management.base import BaseCommand, CommandError
 from config.models import Settings
 from main.models import VideoFile
 from utils.jobs import force_job
-from utils.subtitles import download_subtitles, NoSubs
+from utils.subtitles.download_subtitles import download_subtitles, NoSubs
 
+PROJECT_PATH = os.path.dirname(os.path.realpath(__file__)) + "/../../"
+sys.path = [PROJECT_PATH] + sys.path
+import settings
 
 class Command(BaseCommand):
     help = "Download all subtitles marked to be downloaded"
 
     def handle(self, *args, **options):
-        
+
         language = Settings.get("subtitle_language")
-        
+        srt_path = settings.DATA_PATH + "subtitledata/srts_by_language/"
+        try:
+            filepath = "%s%s.json" % (srt_path, language)
+            available_srts = set(json.loads(open(filepath).read())["srt_files"])
+        except:
+            self.stdout.write("No srts available on central server for langauge code %s; aborting.\n" % language)
+            return
+
         while True: # loop until the method is aborted
             
             if VideoFile.objects.filter(subtitle_download_in_progress=True).count() > 4:
@@ -33,14 +46,18 @@ class Command(BaseCommand):
             
             self.stdout.write("Downloading subtitles for video '%s'... " % video.youtube_id)
             self.stdout.flush()
+
             try:
-                download_subtitles(video.youtube_id, language)
-                self.stdout.write("Download is complete!\n")
-                video.subtitles_downloaded = True
-                video.subtitle_download_in_progress = False
-                video.flagged_for_subtitle_download = False
-                video.save()
-            except NoSubs as e:
+                if video.youtube_id in available_srts:
+                    download_subtitles.download_subtitles(video.youtube_id, language)
+                    self.stdout.write("Download is complete!\n")
+                    video.subtitles_downloaded = True
+                    video.subtitle_download_in_progress = False
+                    video.flagged_for_subtitle_download = False
+                    video.save()
+                else: 
+                    raise download_subtitles.NoSubs
+            except download_subtitles.NoSubs as e:
                 video.flagged_for_subtitle_download = False
                 video.subtitle_download_in_progress = False
                 video.subtitles_downloaded = True
