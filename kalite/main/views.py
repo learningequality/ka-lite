@@ -42,20 +42,6 @@ from utils.decorators import require_admin
 from utils.videos import video_connection_is_available
 
 
-def calc_etag(request, *args, **kwargs):
-    """
-    Returns the cache key as the etag.
-    """
-    assert "cache_name" in kwargs, "Must specify cache_name as a keyword arg."
-
-    try:
-        cache = get_cache(kwargs["cache_name"])
-        key = get_cache_key(request, cache=cache)
-        return key
-    except InvalidCacheBackendError:
-        return None
-
-
 def calc_last_modified(request, *args, **kwargs):
     """
     Returns the file's modified time as the last-modified date
@@ -85,10 +71,7 @@ def kalite_cache_page(handler, cache_time=settings.CACHE_TIME, cache_name="web_c
     the settings we want, specified in settings
     """
     try:
-        @condition(
-            etag_func=partial(calc_etag, cache_name=cache_name),
-            last_modified_func=partial(calc_last_modified, cache_name=cache_name)
-        )
+        @condition(last_modified_func=partial(calc_last_modified, cache_name=cache_name))
         @cache_page(cache_time, cache=cache_name)
         def wrapper_fn(request, *args, **kwargs):
             return handler(request, *args, **kwargs)
