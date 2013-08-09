@@ -134,18 +134,14 @@
         <p><div class="subtitle error" id="error_message">
         {% if not groups.0.groups and not groups.1 %}
             {% comment %}No groups available: then "ungrouped" is selected, and "no students" returned.{% endcomment %}
-            {% trans "No users found." %}
-        {% elif not form.group %}
-            {% comment %}Groups are available, but none was specified, 
-            and no "ungrouped" users exist (otherwise they would have been returned).{% endcomment %}
-            {% trans "Please select a group above." %}
+            {% trans "No student accounts have been created." %}
         {% elif not request.GET.topic %}
             {% comment %}Group was selected, but data not queried because a topic was not selected 
             (NOTE: this required knowledge of how the view queries data){% endcomment %}
             {% trans "Please select a topic above." %}
         {% else %}
             {% comment %}Everything specified, but no users fit the query.{% endcomment %}
-            {% trans "No users found." %}
+            {% trans "No student accounts in this group have been created." %}
         {% endif %}
         </div></p>
     {% else %}
