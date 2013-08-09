@@ -1,9 +1,5 @@
 """
-These will be run when you run "manage.py test [main].
-These require a test server to be running, and multiple ports
-  need to be available.  Run like this:
-./manage.py test main --liveserver=localhost:8004-8010
-".
+These use a web-browser, along selenium, to simulate user actions.
 """
 
 import logging
@@ -19,12 +15,13 @@ from django.test import TestCase
 from django.core.urlresolvers import reverse
 
 import settings
-from kalite.utils.django_utils import call_command_with_output
+from main.models import ExerciseLog
+from main.topicdata import NODE_CACHE
 from securesync.models import Facility, FacilityGroup, FacilityUser
+from utils.django_utils import call_command_with_output
 from utils.general import isnumeric
 from utils.testing.browser import BrowserTestCase
 from utils.testing.decorators import distributed_server_test
-
 
 class KALiteDistributedBrowserTestCase(BrowserTestCase):
     """Base class for main server test cases.
@@ -349,15 +346,17 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
     """
     Test exercises.
     """
+    EXERCISE_SLUG = 'addition_1'
 
     def setUp(self):
         """
         Create a student, log the student in, and go to the exercise page.
         """
         super(StudentExerciseTest, self).setUp()
-        self.create_student()
+        self.student = self.create_student()
         self.browser_login_student(self.student_username, self.student_password)
-        self.browse_to(self.live_server_url + '/math/arithmetic/addition-subtraction/basic_addition/e/addition_1/') 
+        self.browse_to(self.live_server_url + NODE_CACHE["Exercise"][self.EXERCISE_SLUG]["paths"][0])
+        self.browser_check_django_message(num_messages=0)  # make sure no messages
 
 
     def browser_get_current_points(self):
@@ -376,6 +375,7 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
         self.browser_send_keys(Keys.RETURN)
 
         # Convert points to a number, when appropriate
+        time.sleep(0.25)
         points = self.browser_get_current_points()
         return float(points) if isnumeric(points) else points 
 
@@ -388,6 +388,14 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
         answer = sum(int(num.text) for num in numbers)
         points = self.browser_submit_answer(answer)
         self.assertTrue(points == 10, "point update is wrong: {}. Should be 10".format(points))
+        self.browser_check_django_message(num_messages=0)  # make sure no messages
+
+        elog = ExerciseLog.objects.get(exercise_id=self.EXERCISE_SLUG, user=self.student)
+        self.assertEqual(elog.streak_progress, 10, "Streak progress should be 10%")
+        self.assertFalse(elog.struggling, "Student is not struggling.")
+        self.assertEqual(elog.attempts, 1, "Student should have 1 attempt.")
+        self.assertFalse(elog.complete, "Student should not have completed the exercise.")
+        self.assertEqual(elog.attempts_before_completion, None, "Student should not have a value for attempts_before_completion.")
 
 
     def test_question_incorrect_no_points_are_added(self):
@@ -395,7 +403,42 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
         Answer an exercise incorrectly.
         """
         points = self.browser_submit_answer('this is a wrong answer')
-        self.assertTrue(points == '', "points text should be empty")  # somehow we can't use the truthiness of string, so we use ==
+        self.assertEqual(points, "", "points text should be empty")
+        self.browser_check_django_message(num_messages=0)  # make sure no messages
+
+        elog = ExerciseLog.objects.get(exercise_id=self.EXERCISE_SLUG, user=self.student)
+        self.assertEqual(elog.streak_progress, 0, "Streak progress should be 0%")
+        self.assertFalse(elog.struggling, "Student is not struggling.")
+        self.assertEqual(elog.attempts, 1, "Student should have 1 attempt.")
+        self.assertFalse(elog.complete, "Student should not have completed the exercise.")
+        self.assertEqual(elog.attempts_before_completion, None, "Student should not have a value for attempts_before_completion.")
+
+
+
+    def test_exercise_mastery(self):
+        """
+        Answer an exercise 10 times correctly; verify mastery message
+        """
+        for ai in range(10):
+            numbers = self.browser.find_elements_by_class_name('mn')[:-1] # last one is to be blank
+            answer = sum(int(num.text) for num in numbers)
+            points = self.browser_submit_answer(answer)
+            expected_points = (ai+1)*10
+            self.assertEqual(points, expected_points, "point update is wrong: %d != %d" % (points, expected_points))
+            if ai < 9:
+                self.browser_check_django_message(num_messages=0)  # make sure no messages
+            else:
+                self.browser_check_django_message(message_type="success", contains="You have mastered this exercise!")
+            self.browser_send_keys(Keys.RETURN)  # move on to next question.
+
+        # Now test the models
+        elog = ExerciseLog.objects.get(exercise_id=self.EXERCISE_SLUG, user=self.student)
+        self.assertEqual(elog.streak_progress, 100, "Streak progress should be 100%")
+        self.assertFalse(elog.struggling, "Student is not struggling.")
+        self.assertEqual(elog.attempts, 10, "Student should have 10 attempts.")
+        self.assertTrue(elog.complete, "Student should have completed the exercise.")
+        self.assertEqual(elog.attempts_before_completion, 10, "Student should have 10 attempts for completion.")
+
 
 class MainEmptyFormSubmitCaseTest(KALiteDistributedWithFacilityBrowserTestCase):
     """
