@@ -72,6 +72,7 @@ def kalite_cache_page(handler, cache_time=settings.CACHE_TIME, cache_name="web_c
     """
     try:
         @condition(last_modified_func=partial(calc_last_modified, cache_name=cache_name))
+        @cache_control(public=True, no_cache=True)  # must appear before @cache_page
         @cache_page(cache_time, cache=cache_name)
         def wrapper_fn(request, *args, **kwargs):
             return handler(request, *args, **kwargs)
