@@ -377,3 +377,46 @@ window.VideoView = Backbone.View.extend({
     }
 
 });
+
+function initialize_video(video_youtube_id){ 
+    
+    var create_video_view = _.once(function(width, height) {
+        
+        window.videoView = new VideoView({
+            el: $("#video-player"),
+            youtube_id: video_youtube_id,
+            width: width,
+            height: height
+        });
+
+        var resize_video = _.throttle(function() {
+            var available_width = $("article").width();
+            var available_height = $(window).height() * 0.9;
+            videoView.setContainerSize(available_width, available_height);
+        }, 500);
+        
+        $(window).resize(resize_video);
+        
+        resize_video();
+        
+    });
+
+    $("video").bind("loadedmetadata", function() {
+        
+        var width = $(this).prop("videoWidth");
+        var height = $(this).prop("videoHeight");
+        
+        create_video_view(width, height);
+        
+    });
+
+    $(".video-thumb").load(function() {
+
+        var width = $(".video-thumb").width();
+        var height = $(".video-thumb").height();
+        
+        create_video_view(width, height);
+                            
+    });
+    
+}
