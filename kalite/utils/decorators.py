@@ -49,7 +49,7 @@ def api_handle_error_with_json(handler):
         except PermissionDenied as pe:
             raise pe  # handled upstream
         except Exception as e:
-            return JsonResponse({"error": "Unexpected exception: %s" % e})
+            return JsonResponse({"error": "Unexpected exception: %s" % e}, status=500)
     return wrapper_fn
 
 
