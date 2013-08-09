@@ -7,11 +7,13 @@ from models import RegisteredDevicePublicKey, Zone, FacilityUser, Facility, Faci
 
 
 class RegisteredDevicePublicKeyForm(forms.ModelForm):
+    callback_url = forms.CharField(widget=forms.HiddenInput, required=False)
 
-    def __init__(self, user, *args, **kwargs):
+    def __init__(self, user, callback_url=None, *args, **kwargs):
         super(RegisteredDevicePublicKeyForm, self).__init__(*args, **kwargs)
         if not user.is_superuser:
             self.fields['zone'].queryset = Zone.objects.filter(organization__in=user.organization_set.all())
+        self.fields["callback_url"].initial = callback_url
 
     class Meta:
         model = RegisteredDevicePublicKey
