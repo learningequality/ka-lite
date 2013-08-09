@@ -328,39 +328,46 @@ ul.dynatree-container li, .ui-widget-content {
     
     function checkVideoDownloadProgress() {
         var currentKey = window.downloading_videos[window.download_index];
-        doRequest("/api/check_video_download", {youtube_ids: [currentKey]}).success(function(progress) {
-            if (!window.download_check_interval) {
-                return;
-            }
-            window.current_download_percent = progress[currentKey];
-            updateProgressDisplay();
-            if (window.current_download_percent == 100) {
-                setNodeClass(currentKey, "complete");
-                window.download_index++;
-                if (window.download_index >= window.downloading_videos.length) {
-                    clearInterval(window.download_check_interval);
-                    $(".progress-section, #cancel-download").hide();
+        doRequest("/api/check_video_download", {youtube_ids: [currentKey]})
+            .success(function(progress) {
+                if (!window.download_check_interval) {
                     return;
                 }
-                checkVideoDownloadProgress();
-            } else if (!progress["downloading"]) {
-                $(".progress-section, #cancel-download").hide();
-                $(".progress-waiting").hide();
-                $("#retry-video-download").show();
-            } else {
-                $("#retry-video-download").hide();
-            }
-    	}).fail(function(resp) {
-    	    switch (resp.status) {
-    	        case 403:
-    	            window.location.reload()
-    	            break;
-    	        default:
-            	    show_message("error", "Error downloading videos: " + resp.responseText);
-            	    clearInterval(window.download_subtitle_check_interval)
-            	    break;
-            }
-    	});
+                window.current_download_percent = progress[currentKey];
+                updateProgressDisplay();
+                if (window.current_download_percent == 100) {
+                    setNodeClass(currentKey, "complete");
+                    window.download_index++;
+                    if (window.download_index >= window.downloading_videos.length) {
+                        // Finished all downloads
+                        clearInterval(window.download_check_interval);
+                        $(".progress-section, #cancel-download").hide();
+                        return;
+                    }
+                    checkVideoDownloadProgress();
+                } else if (!progress["downloading"]) {
+                    // In-progress (error) case: 
+                    //   we're not done downloading, but the 
+                    //   job is no longer running.
+                    $(".progress-section, #cancel-download").hide();
+                    $(".progress-waiting").hide();
+                    $("#retry-video-download").show();
+                } else {
+                    // In progress case (happy).
+                    $("#retry-video-download").hide();
+                }
+            })
+            .fail(function(resp) {
+                switch (resp.status) {
+                    case 403:
+                        window.location.reload()
+                        break;
+                    default:
+                        show_message("error", "Error downloading videos: " + resp.responseText);
+                        clearInterval(window.download_subtitle_check_interval)
+                        break;
+                }
+            });
     }
     
     function updateProgressDisplay() {
@@ -375,13 +382,14 @@ ul.dynatree-container li, .ui-widget-content {
                 $("#cancel-download").show();
         	}            
         } else if ($("#retry-video-download :visible").length == 0) {
+            // Downloading completed.  Hide all
             $(".progress-section").hide();
             if ($(".subtitle-section:visible").length == 0) {
                 $("#cancel-download").hide();
             }
             return;
         } else {
-            // retrying
+            // retry button was pressed
         }
         
         $("#progressbar-current").progressbar({value: window.current_download_percent});
