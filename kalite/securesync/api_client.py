@@ -59,6 +59,11 @@ class SyncClient(object):
         """Register a device with the central server.  Happens outside of a session."""
 
         own_device = Device.get_own_device()
+        # Todo: registration process should always use one of these--and it needs to use
+        #   Device.public_key.  So, should migrate over the rest of the registration code
+        #   to do the same.
+        assert own_device.public_key == own_device.get_key().get_public_key_string(), "Make sure these somehow didn't get out of sync (can happen when people muck around with the data manually."
+
         # Since we can't know the version of the remote device (yet),
         #   we give it everything we possibly can (don't specify a dest_version)
         #
@@ -67,9 +72,13 @@ class SyncClient(object):
         r = self.post("register", {
             "client_device": serializers.serialize("versioned-json", [own_device], ensure_ascii=False)
         })
+
         # If they don't understand, our assumption is broken.
-        if r.status_code == 500 and "Device has no field named 'version'" in r.content:
-            raise Exception("Central server is of an older version than us?")
+        if r.status_code == 500:
+            if "Device has no field named 'version'" in r.content:
+                raise Exception("Central server is of an older version than us?")
+            elif r.headers.get("content-type", "") == "text/html":
+                raise Exception("Unhandled server-side exception: %s" % r.content)
 
         elif r.status_code == 200:
             # Save to our local store.  By NOT passing a src_version,
