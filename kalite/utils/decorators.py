@@ -21,7 +21,7 @@ def central_server_only(handler):
     """
     def wrapper_fn(*args, **kwargs):
         if not settings.CENTRAL_SERVER:
-            return Http404("This path is only available on the central server.")
+            raise Http404("This path is only available on the central server.")
         return handler(*args, **kwargs)
     return wrapper_fn
 
@@ -32,7 +32,7 @@ def distributed_server_only(handler):
     """
     def wrapper_fn(*args, **kwargs):
         if settings.CENTRAL_SERVER:
-            return Http404(_("This path is only available on distributed servers."))
+            raise Http404(_("This path is only available on distributed servers."))
         return handler(*args, **kwargs)
     return wrapper_fn
 
