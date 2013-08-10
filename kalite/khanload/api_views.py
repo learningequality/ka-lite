@@ -206,9 +206,10 @@ def update_all_central_callback(request):
     return HttpResponseRedirect(request.session["distributed_redirect_url"])
 
 
-@distributed_server_only
 @require_login
 def update_all_distributed(request):
+    """
+    """
     logging.debug("Getting data.")
 
     params = {

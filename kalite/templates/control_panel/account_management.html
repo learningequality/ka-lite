@@ -21,9 +21,11 @@ Account Management Page for {{ student.get_name }}
 {% endblock titlebar_title %}
 
 {% block buttons %}
+{% if not is_central %}
                 <li>
                     <a class="green_button" href="{% url update_all_distributed %}">{% trans "Download data from Khan Academy" %}</a>
                 </li>
+{% endif %}
 {% endblock buttons %}
 
 {% block content %}

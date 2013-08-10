@@ -13,6 +13,7 @@ from django.utils.translation import ugettext as _
 import settings
 from config.models import Settings
 from securesync.models import Device, DeviceZone, Zone, Facility, FacilityUser
+from utils.internet import JsonResponse
 
 
 def central_server_only(handler):
@@ -21,7 +22,7 @@ def central_server_only(handler):
     """
     def wrapper_fn(*args, **kwargs):
         if not settings.CENTRAL_SERVER:
-            return Http404("This path is only available on the central server.")
+            raise Http404("This path is only available on the central server.")
         return handler(*args, **kwargs)
     return wrapper_fn
 
@@ -32,8 +33,23 @@ def distributed_server_only(handler):
     """
     def wrapper_fn(*args, **kwargs):
         if settings.CENTRAL_SERVER:
-            return Http404(_("This path is only available on distributed servers."))
+            raise Http404(_("This path is only available on distributed servers."))
         return handler(*args, **kwargs)
+    return wrapper_fn
+
+
+def api_handle_error_with_json(handler):
+    """
+    All API requests should return JSON objects, even when unexpected errors occur.
+    This decorator makes sure that all uncaught errors are not returned as HTML to the user, but instead JSON errors.
+    """
+    def wrapper_fn(*args, **kwargs):
+        try:
+            return handler(*args, **kwargs)
+        except PermissionDenied as pe:
+            raise pe  # handled upstream
+        except Exception as e:
+            return JsonResponse({"error": "Unexpected exception: %s" % e}, status=500)
     return wrapper_fn
 
 
@@ -47,7 +63,7 @@ def facility_from_request(handler=None, request=None, *args, **kwargs):
 
     def wrapper_fn(request, *args, **kwargs):
         if kwargs.get("facility_id",None):
-            facility = get_object_or_None(pk=facility_id)
+            facility = get_object_or_None(pk=kwargs["facility_id"])
         elif "facility" in request.GET:
             facility = get_object_or_None(Facility, pk=request.GET["facility"])
             if "set_default" in request.GET and request.is_admin and facility:
@@ -103,7 +119,7 @@ def get_user_from_request(handler=None, request=None, *args, **kwargs):
     return wrapper_fn if not request else wrapper_fn(request=request, *args, **kwargs)
 
 
-@distributed_server_only
+#@distributed_server_only
 def require_login(handler):
     """
    (Level 1) Make sure that a user is logged in to the distributed server.
@@ -113,7 +129,7 @@ def require_login(handler):
             return handler(request, *args, **kwargs)
 
         # Failed.  Send different response for ajax vs non-ajax requests.
-        raise PermissionDenied(_("You access this page, you must be logged in"))
+        raise PermissionDenied(_("You must be logged in to access this page."))
     return wrapper_fn
 
 
@@ -132,34 +148,43 @@ def require_admin(handler):
 
         # Only here if user is not authenticated.
         # Don't redirect users to login for an API request.
-        raise PermissionDenied("You must be logged in as an admin to access page.")
+        raise PermissionDenied(_("You must be logged in as an admin to access this page."))
 
     return wrapper_fn
 
 
 
-def require_authorized_login(handler):
+def require_authorized_access_to_student_data(handler):
     """
+    WARNING: this is a crappy function with a crappy name.
+    
+    This should only be used for limiting data access to single-student data.
+    
+    Students requesting their own data (either implicitly, without querystring params)
+    or explicitly (specifying their own user ID) get through.
+    Admins and teachers also get through.
     """
+    if settings.CENTRAL_SERVER:
+        return require_authorized_admin(handler)
 
-    @distributed_server_only
-    @require_login
-    def wrapper_fn_distributed(request, *args, **kwargs):
-        """
-        Everything is allowed for admins on distributed server.
-        For students, they can only access their own account.
-        """
-        if getattr(request, "is_admin", False):
-            return handler(request, *args, **kwargs)
-        else: 
-            user = get_user_from_request(request=request)
-            if request.session.get("facility_user", None) == user:
+    else:
+        @distributed_server_only
+        @require_login
+        def wrapper_fn_distributed(request, *args, **kwargs):
+            """
+            Everything is allowed for admins on distributed server.
+            For students, they can only access their own account.
+            """
+            if getattr(request, "is_admin", False):
                 return handler(request, *args, **kwargs)
-            else:
-                raise PermissionDenied(_("You requested information for a user that you are not authorized to view."))
-        return require_admin(handler)
-
-    return require_authorized_admin(handler) if settings.CENTRAL_SERVER else wrapper_fn_distributed
+            else: 
+                user = get_user_from_request(request)
+                if request.session.get("facility_user", None) == user:
+                    return handler(request, *args, **kwargs)
+                else:
+                    raise PermissionDenied(_("You requested information for a user that you are not authorized to view."))
+            return require_admin(handler)
+        return wrapper_fn_distributed
 
 
 def require_authorized_admin(handler):
@@ -251,12 +276,15 @@ def require_authorized_admin(handler):
 def require_superuser(handler):
     """
     Level 4: require a Django admin (superuser)
+    
+    ***
+    *** Note: Not yet used, nor tested. ***
+    ***
+    
     """
     def wrapper_fn(request, *args, **kwargs):
-        if getattr(request.user, is_admin, False):
+        if getattr(request.user, is_superuser, False):
             return handler(request, *args, **kwargs)
-        elif request.is_ajax():
-            raise PermissionDenied(_("Must be logged in as a superuser to access this endpoint."))
         else:
-            return 
+            raise PermissionDenied(_("Must be logged in as a superuser to access this endpoint."))
     return wrapper_fn

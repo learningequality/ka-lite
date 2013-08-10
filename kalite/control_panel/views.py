@@ -18,7 +18,7 @@ from control_panel.forms import ZoneForm, UploadFileForm
 from main.models import ExerciseLog, VideoLog, UserLogSummary
 from securesync.forms import FacilityForm
 from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device, Zone, SyncSession
-from utils.decorators import require_authorized_admin, require_authorized_login
+from utils.decorators import require_authorized_admin, require_authorized_access_to_student_data
 
 
 @require_authorized_admin
@@ -245,7 +245,7 @@ def facility_user_management(request, facility_id, group_id="", org_id=None, zon
     return context
 
 
-@require_authorized_login
+@require_authorized_access_to_student_data
 @render_to("control_panel/account_management.html")
 def account_management(request, org_id=None):
     return student_view_context(request)
