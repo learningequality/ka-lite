@@ -3,10 +3,8 @@ import os
 
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404, HttpResponseServerError
 
-from utils.decorators import require_admin_api
-from utils.internet import JsonResponse
-
 import settings
+from utils.internet import JsonResponse
 
 
 def get_subtitle_counts(request):
