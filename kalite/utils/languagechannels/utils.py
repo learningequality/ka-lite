@@ -6,7 +6,6 @@ import logging
 import urllib2	
 from urllib2 import Request, urlopen, URLError, HTTPError
 import json 
-import pdb
 import csv
 import time 
 

@@ -477,6 +477,19 @@ ul.dynatree-container li, .ui-widget-content {
         }
     }
 
+    function show_subtitle_counts(subtitleCounts) {
+        var defaultLanguage = "{{ default_language }}";
+        $.each(subtitleCounts, function(langName, langData) {
+            var langCode = langData["code"];
+            var srtCount = langData["count"];
+            if(langCode === defaultLanguage) {
+                $('#language').append('<option value="' + langCode + '" selected>' + langName + ' (' + srtCount +')</option>')    
+            } else {
+                $('#language').append('<option value="' + langCode + '">'+ langName + ' (' + srtCount +')</option>')
+            }
+        });
+    }
+
 </script>
 
 {% endblock headjs %}
@@ -503,11 +516,6 @@ ul.dynatree-container li, .ui-widget-content {
     <h2 class="button_text">{% trans "Download/update subtitles for existing videos" %}</h2>
     <span class= "button_style">
         <select id="language">
-            {% if languages %}
-                {% for language in languages %}
-                    <option value="{{ language.id }}" {% ifequal language.id default_language %} selected {% endifequal %}>{{ language.name }}</option>
-                {% endfor %}
-            {% endif %}
         </select>
     </span>
     <button class="download-subtitles" type="button">{% trans "Get/Update All Subtitles" %}</button>
@@ -562,4 +570,5 @@ ul.dynatree-container li, .ui-widget-content {
 <button id="cancel-download" type="button">{% trans "Cancel All Downloads" %}</button>
 
 <div id="content_tree"><br/><h2>{% trans " Loading topic tree... Please wait!" %}</h2></div>
+<script src="http://{{ central_server_host }}/api/subtitles/counts/?callback=show_subtitle_counts"></script>
 {% endblock content %}
