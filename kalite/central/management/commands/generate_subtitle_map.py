@@ -40,12 +40,21 @@ def create_all_mappings(force=False, frequency_to_save=100):
 
     # Initialize the data
     out_file = settings.SUBTITLES_DATA_ROOT + SRTS_JSON_FILENAME
-    if os.path.exists(out_file):
+    if not os.path.exists(out_file):
+        new_json = {}
+    else:
+        # Open the file, read, and clean.
         with open(out_file, "r") as fp:
             new_json = json.load(fp)
         logging.info("Loaded %d mappings." % (len(new_json)))
-    else:
-        new_json = {}
+        
+        # Set of videos no longer used by KA Lite
+        removed_videos = set(new_json.keys()) - set([v["youtube_id"] for v in videos.values()])
+        if removed_videos:
+            logging.info("Removing subtitle information for %d videos (no longer used)." % len(removed_videos))
+            for vid in removed_videos:
+                del new_json[vid]
+
     logging.info("Querying %d mappings." % (len(videos) - (0 if force else len(new_json))))
 
     n_new_entries = 0
@@ -175,8 +184,8 @@ def update_language_srt_map(languages=None):
                 language_srt_map[code] = {}
             # create empty entry for video entry if it doesn't exist
             if not language_srt_map[code].get(youtube_id):
-                logging.info("Creating entry in '%s' for YouTube video: '%s'" % (
-                    code, youtube_id))
+                #logging.info("Creating entry in '%s' for YouTube video: '%s'" % (
+                #    code, youtube_id))
                 language_srt_map[code][youtube_id] = {
                     "downloaded": False,
                     "api_response": "",
