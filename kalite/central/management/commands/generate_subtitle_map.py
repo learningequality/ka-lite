@@ -24,8 +24,8 @@ headers = {
     "X-apikey": "6a7e0af81ce95d6b810761041b72412043851804",
 }
 
-SRTS_JSON_FILENAME = "srts_api_info.json"
-LANGUAGE_SRT_FILENAME = "language_srts_map.json"
+SRTS_JSON_FILENAME = "srts_remote_availability.json"
+LANGUAGE_SRT_FILENAME = "srts_download_status.json"
 
 
 class OutDatedSchema(Exception):
@@ -54,7 +54,6 @@ def create_all_mappings(force=False, frequency_to_save=100):
             logging.info("Removing subtitle information for %d videos (no longer used)." % len(removed_videos))
             for vid in removed_videos:
                 del new_json[vid]
-
     logging.info("Querying %d mappings." % (len(videos) - (0 if force else len(new_json))))
 
     n_new_entries = 0
@@ -162,7 +161,7 @@ def update_video_entry(youtube_id):
 
     return entry
 
-def update_language_srt_map(languages=None):
+def update_language_srt_map():
     """Update the language_srt_map from the api_info_map"""
 
     # Create file if first time being run
@@ -174,28 +173,66 @@ def update_language_srt_map(languages=None):
     language_srt_map = json.loads(open(language_srt_filepath).read())
     api_info_map = json.loads(open(settings.SUBTITLES_DATA_ROOT + SRTS_JSON_FILENAME).read())
 
-    for youtube_id, content in api_info_map.items():
-        languages = languages or content.get("language_codes") or []
-        for code in languages:
-            # create language section if it doesn't exist
-            language_srt_map.get(code)
-            if not language_srt_map.get(code):
-                logging.info("Creating language section '%s'" % code)
-                language_srt_map[code] = {}
-            # create empty entry for video entry if it doesn't exist
-            if not language_srt_map[code].get(youtube_id):
-                #logging.info("Creating entry in '%s' for YouTube video: '%s'" % (
-                #    code, youtube_id))
-                language_srt_map[code][youtube_id] = {
-                    "downloaded": False,
-                    "api_response": "",
-                    "last_attempt": "",
-                    "last_success": "",
-                }
+    # Build old dictionary, to be able to detect removed subtitles
+    #   (for example, if they were found to be crap)
+    #   Note: Faster to determine past languages up front
+    old_api_info_map = {}
+    for lang_code, dict in language_srt_map.iteritems():
+        for youtube_id in dict.keys():
+            if youtube_id not in old_api_info_map:
+                old_api_info_map[youtube_id] = {}
+                old_api_info_map[youtube_id]["language_codes"] = []
+            old_api_info_map[youtube_id]["language_codes"].append(lang_code)
+
+    for youtube_id, content in api_info_map.iteritems():
+
+        # Determining past_languages is very expensive and slow
+        cur_languages = set(content.get("language_codes", []))
+        past_languages = set(old_api_info_map.get(youtube_id, {}).get("language_codes", []))
+
+        # Remove languages that no longer have subtitles
+        for lang_code in (past_languages - cur_languages):
+            del language_srt_map[lang_code][youtube_id]
+
+        # Add languages that now have subtitles
+        for lang_code in (cur_languages - past_languages):
+            if not language_srt_map.get(lang_code):
+                # create empty entry for video entry if it doesn't exist
+                logging.info("Creating language section '%s'" % lang_code)
+                language_srt_map[lang_code] = {}
+
+            # Add any missing entries
+            language_srt_map[lang_code][youtube_id] = {
+                "downloaded": False,
+                "api_response": "",
+                "last_attempt": "",
+                "last_success": "",
+            }
+
+    # Final cleaning to clear any languages with no info
+    for lang_code in language_srt_map.keys():
+        if not language_srt_map[lang_code]:
+            logging.info("Subtitle support for %s has been terminated; removing." % lang_code)
+            del language_srt_map[lang_code]
 
     logging.info("Writing updates to %s" % language_srt_filepath)
     with open(language_srt_filepath, 'wb') as fp:
             json.dump(language_srt_map, fp)
+
+    return language_srt_map
+
+
+def print_language_availability_table(language_srt_map):
+    logging.info("=============================================")
+    logging.info("=\tLanguage\t=\tNum Videos\t=")
+    for lang_code in sorted(language_srt_map.keys()):
+        logging.info("=\t%-8s\t=\t%4d srts\t=" % (lang_code, len(language_srt_map[lang_code])))
+    logging.info("=============================================")
+
+    n_srts = sum([len(dict) for dict in language_srt_map.values()])
+    logging.info("Great success! Subtitles support found for %d languages, %d total dubbings!" % (len(language_srt_map), n_srts))
+
+
 
 
 class Command(BaseCommand):
@@ -223,14 +260,15 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
-        try:
+        #try:
             converted_date = subtitle_utils.convert_date_input(options.get("date_since_attempt"))
 
             create_all_mappings(force=options.get("force"), frequency_to_save=5)
             update_subtitle_map(options.get("response_code"), converted_date)
             logging.info("Executed successfully. Updating language => subtitle mapping to record any changes!")
 
-            update_language_srt_map()
+            language_srt_map = update_language_srt_map()
+            print_language_availability_table(language_srt_map)
             logging.info("Process complete.")
-        except Exception as e:
-            raise CommandError(str(e))
+        #except Exception as e:
+        #    raise CommandError(str(e))

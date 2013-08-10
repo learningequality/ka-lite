@@ -30,4 +30,5 @@ content/*.json
 content/*.srt
 locale/*
 kalite/static/data/subtitledata/*
+kalite/static/data/subtitles/srts_download_status.json
 kalite/media/*
