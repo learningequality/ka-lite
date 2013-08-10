@@ -190,7 +190,7 @@ def update_language_srt_map(languages=None):
 
 
 class Command(BaseCommand):
-    help = "Update the mapping of subtitles available by language for each video. Location: static/data/subtitledata/video_srts.json"
+    help = "Update the mapping of subtitles available by language for each video. Location: %s" % (settings.SUBTITLES_DATA_ROOT + LANGUAGE_SRT_FILENAME)
 
     option_list = BaseCommand.option_list + (
         # Basic options
@@ -204,28 +204,24 @@ class Command(BaseCommand):
                     action='store',
                     dest='response_code',
                     default=None,
-                    help="Which api-response code to recheck. Can be combined with -d. USAGE: '-r all', '-r client-error', or '-r server-error'.",
+                    help="Which api-response code to recheck. Can be combined with -d. USAGE: '-r all', '-r client-error', or '-r server-error' (default: None (only download new video info)).",
                     metavar="RESPONSE_CODE"),
         make_option('-d', '--date_since_attempt',
                     action='store',
                     dest='date_since_attempt',
                     default=None,
                     help="Setting a date flag will update only those entries which have not been attempted since that date. Can be combined with -r. This could potentially be useful for updating old subtitles. USAGE: '-d MM/DD/YYYY'"),
-        make_option('-l', '--language',
-                    action='store',
-                    dest='language',
-                    default=None,
-                    help="Generate for a specific mapping."),
     )
 
     def handle(self, *args, **options):
+        try:
+            converted_date = subtitle_utils.convert_date_input(options.get("date_since_attempt"))
 
-        converted_date = subtitle_utils.convert_date_input(options.get("date_since_attempt"))
+            create_all_mappings(force=options.get("force"), frequency_to_save=5)
+            update_subtitle_map(options.get("response_code"), converted_date)
+            logging.info("Executed successfully. Updating language => subtitle mapping to record any changes!")
 
-        create_all_mappings(force=options.get("force"), frequency_to_save=5)
-        update_subtitle_map(options.get("response_code"), converted_date)
-        logging.info("Executed successfully. Updating language => subtitle mapping to record any changes!")
-
-        update_language_srt_map(languages=[options.get("language")] if options.get("language") else None)
-        logging.info("Process complete.")
-        sys.exit(1)
+            update_language_srt_map()
+            logging.info("Process complete.")
+        except Exception as e:
+            raise CommandError(str(e))
