@@ -1,3 +1,4 @@
+import glob
 import json
 import os
 import sys
@@ -5,52 +6,57 @@ import sys
 from django.core.management.base import BaseCommand, CommandError
 from django.core.management import call_command
 
-import subtitle_utils 
-from main import topicdata
 import settings
+import subtitle_utils 
+from main.topicdata import LANGUAGE_LOOKUP, LANGUAGE_LIST
 from settings import LOG as logging
-
-LANGUAGE_LOOKUP = topicdata.LANGUAGE_LOOKUP
-LANGUAGE_LIST   = topicdata.LANGUAGE_LIST
 
 
 class LanguageNameDoesNotExist(Exception):
+    def __init__(self, lang_code):
+        self.lang_code = lang_code
 
-    def __str__(value):
-        return "The language name doesn't exist yet. Please add it to the lookup dictionary located at static/data/languages.json"
+    def __str__(self):
+        return "The language name for (%s) doesn't exist yet. Please add it to the lookup dictionary located at static/data/languages.json" % self.lang_code
 
 
-def get_new_counts(data_path, download_path):
+def get_new_counts(data_path, download_path, language_codes=None):
     """Return dictionary of srt file counts in respective download folders"""
 
     subtitle_counts = {}
-
+    language_codes = language_codes or os.listdir(download_path)
     # index into ka-lite/locale/
-    for (dirpath, languages, filenames) in os.walk(download_path):
-        for lang_code in languages:
-            subtitles_path = "%s%s/subtitles/" % (download_path, lang_code) 
-            try:      
-                count = len(os.listdir(subtitles_path))
-            except:
-                logging.info("No subs for %s" % lang_code)
-                continue
-            else: 
-                lang_name = get_language_name(lang_code) 
-                subtitle_counts[lang_name] = {}
-                subtitle_counts[lang_name]["count"] = count
-                subtitle_counts[lang_name]["code"] = lang_code
+    for lang_code in language_codes:
+        subtitles_path = "%s%s/subtitles/" % (download_path, lang_code) 
+        lang_name = get_language_name(lang_code) 
+
+        try:      
+            count = len(glob.glob("%s/*.srt" % subtitles_path))
+            logging.info("%4d subtitles for %-20s" % (count, lang_name))
+
+            subtitle_counts[lang_name] = {}
+            subtitle_counts[lang_name]["count"] = count
+            subtitle_counts[lang_name]["code"] = lang_code
+        except LanguageNameDoesNotExist as ldne:
+            logging.warn(ldne)
+        except:
+            logging.info("%-4s subtitles for %-20s" % ("No", lang_name))
+            continue
+
     write_new_json(subtitle_counts, data_path)
     update_language_list(subtitle_counts, data_path)
+
+    return subtitle_counts
 
 
 def get_language_name(lang_code):
     """Return full language name from ISO 639-1 language code, raise exception if it isn't hardcoded yet"""
     language_name = LANGUAGE_LOOKUP.get(lang_code)
     if language_name:
-        logging.info("%s: %s" %(lang_code, language_name))
+        #logging.info("%s: %s" %(lang_code, language_name))
         return language_name
     else: 
-        raise LanguageNameDoesNotExist()
+        raise LanguageNameDoesNotExist(lang_code)
 
 
 def write_new_json(subtitle_counts, data_path):

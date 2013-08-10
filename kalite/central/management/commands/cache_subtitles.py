@@ -1,8 +1,8 @@
 # Cache subtitles
 
 import datetime
+import glob
 import json
-import logging
 import os
 import sys
 import time
@@ -23,9 +23,10 @@ download_path = settings.STATIC_ROOT + "srt/"  # kalite/static/
 
 
 class LanguageCodeDoesNotExist(Exception):
-
-    def __str__(value):
-        return "The language code specified does not have any available subtitles for download."
+    def __init__(self, lang_code):
+        self.lang_code = lang_code
+    def __str__(self):
+        return "The language code specified (%s) does not have any available subtitles for download." % (self.lang_code)
 
 
 def download_srt_from_3rd_party(*args, **kwargs):
@@ -44,11 +45,11 @@ def download_srt_from_3rd_party(*args, **kwargs):
         try:
             vids_in_language = language_srt_map[lang_code]
         except:
-            raise LanguageCodeDoesNotExist()
+            raise LanguageCodeDoesNotExist(lang_code)
         download_if_criteria_met(vids_in_language, *args, **kwargs)
 
     else:
-        for lang_code, videos in language_srt_map.items():
+        for lang_code, videos in language_srt_map.iteritems():
             kwargs["lang_code"] = lang_code
             download_if_criteria_met(videos, *args, **kwargs)
 
@@ -69,8 +70,8 @@ def download_if_criteria_met(videos, lang_code, force, response_code, date_since
     n_videos = len(videos)
 
     # Filter based on response code
-    if response_code.lower() != "all":
-        logging.info("Filtering based on response code...")
+    if response_code and response_code != "all":
+        logging.info("Filtering based on response code (%s)..." % response_code)
         response_code_filter = partial(lambda vid, rcode: rcode == vid["api_response"], rcode=response_code)
         videos = dict([(k, v) for k, v in videos.items() if response_code_filter(v)])
         logging.info("%4d of %4d videos match your specified response code (%s)" % (len(videos), n_videos, response_code))
@@ -109,7 +110,7 @@ def download_if_criteria_met(videos, lang_code, force, response_code, date_since
             with open(fullpath, 'w') as fp:
                 fp.write(response.encode('UTF-8'))
 
-            logging.info("Updating JSON file to record xe.")
+            logging.info("Updating JSON file to record success.")
             update_json(youtube_id, lang_code, True, "success", time_of_attempt)
 
 
@@ -162,27 +163,36 @@ def update_json(youtube_id, lang_code, downloaded, api_response, time_of_attempt
     json_file.close()
 
 
-def generate_zipped_srts(lang_code_to_update, download_path):
+def generate_zipped_srts(lang_codes_to_update, download_path):
     
     # Create media directory if it doesn't yet exist
     subtitle_utils.ensure_dir(settings.MEDIA_ROOT)
     zip_path = settings.MEDIA_ROOT + "subtitles/"
     subtitle_utils.ensure_dir(zip_path)
+    lang_codes_to_update = lang_codes_to_update or os.listdir(download_path)
 
-    if not os.path.exists(download_path):
-        logging.info("Nothing to zip; exiting.")
-        return;
+    for lang_code in lang_codes_to_update:
+        srt_dir = os.path.join(download_path, lang_code, "subtitles")
+        zip_file = os.path.join(zip_path, "%s_subtitles.zip" % lang_code)
 
-    lang_dirs = os.listdir(download_path)
-    for lang_code in lang_dirs:
-        if (lang_code_to_update and lang_code_to_update == lang_code) or (not lang_code_to_update):
-            if "subtitles" in os.listdir(download_path + lang_code):
-                zf = zipfile.ZipFile('%s%s_subtitles.zip' % (zip_path, lang_code), 'w')
-                for root, dirs, files in os.walk(get_srt_path(download_path, lang_code)):
-                    for f in files:
-                        zf.write(os.path.join(root, f), arcname=f)
-                zf.close()
-                logging.info("Zipped up a new pack for language code: %s" % lang_code)
+        # Remove any old version (as we may not re-create)
+        if os.path.exists(zip_file):
+            os.remove(zip_file)
+
+        if not os.path.exists(srt_dir):
+            logging.warn("No srt directory for %s; skipping." % lang_code)
+            continue
+
+        srts = glob.glob(os.path.join(srt_dir, "*.srt"))
+        if len(srts) == 0:
+            logging.warn("No srts for %s; skipping." % lang_code)
+            continue
+
+        logging.info("Zipping up a new pack for language code: %s" % lang_code)
+        zf = zipfile.ZipFile(zip_file, 'w')
+        for f in srts:
+            zf.write(f, arcname=os.path.basename(f))
+        zf.close()
 
 
 class Command(BaseCommand):
@@ -207,7 +217,7 @@ class Command(BaseCommand):
                     default=None,
                     metavar="DATE",
                     help="Setting a date flag will update only those entries which have not been attempted since that date. Can be combined with -r. This could potentially be useful for updating old subtitles. USAGE: '-d MM/DD/YYYY'."),
-        make_option('-r', '--response_code', 
+        make_option('-r', '--response-code', 
                     action='store',
                     dest='response_code',
                     default="",
@@ -217,14 +227,16 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         try:
+            lang_codes = [options["lang_code"]] if options["lang_code"] else None
+
             logging.info("Downloading...")
             download_srt_from_3rd_party(**options)
 
             logging.info("Executed successfully! Generating new subtitle counts!")
-            generate_subtitle_counts.get_new_counts(data_path=settings.SUBTITLES_DATA_ROOT, download_path=download_path)
+            generate_subtitle_counts.get_new_counts(data_path=settings.SUBTITLES_DATA_ROOT, download_path=download_path, language_codes=lang_codes)
         
             logging.info("Executed successfully! Re-zipping changed language packs!")
-            generate_zipped_srts(lang_code_to_update=options.get("language"), download_path=download_path)
+            generate_zipped_srts(lang_codes_to_update=None, download_path=download_path)
 
             logging.info("Process complete.")
         except Exception as e:
