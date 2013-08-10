@@ -49,6 +49,14 @@ You must:
     position: absolute;
     background-color: white;
 }
+#topic_header {
+    margin-left: 25px;
+    margin-bottom: 0px;
+}
+#topic_paths_note {
+    font-weight:normal;
+    color:red;
+}
 
 </style>
 {% endblock headcss %}
@@ -95,8 +103,6 @@ function plotJsonData(chart_div, base_url, props) {
        NOTE: you have to implement drawJsonChart(chart_div, json, xaxis, yaxis); */
     
     // Scrub data
-    if (!props["facility"]) { props["facility"] = "{{ form.facility|escapejs }}"; }
-    if (!props["group"])    { props["group"]    = "{{ form.group|escapejs }}"; }
     if (!props["user"])     { props["user"]     = "{{ form.user|escapejs }}"; }
     if (!props["topic_path"])  { props["topic_path"]  = {{ form.topic_path|jsonify }}; }
 
@@ -139,7 +145,7 @@ function plotTopics(topic_paths) {
             "xaxis":       $("#xaxis option:selected").val(),
             "yaxis":       $("#yaxis option:selected").val(),
             "user":        "",
-            "group":       $("#group option:selected").val(), 
+            "group":       $("#" + $("#facility option:selected").val() + "_group_select option:selected").val(), 
             "facility":    $("#facility option:selected").val(),
             "topic_path":  topic_paths
         }
@@ -151,6 +157,13 @@ function plotTopics(topic_paths) {
 
 
 
+{% block navbar_topics %}
+<h3 id="topic_header">
+    {% trans "Topics selected" %}:
+    <a id="topic_paths" href="javascript:toggle_tree()"></a>
+    <span id="topic_paths_note"></span>
+</h3>
+{% endblock navbar_topics %}
 
 {% block content %}
     {% block navbar %}{{ block.super }}{% endblock navbar %}
@@ -199,14 +212,12 @@ function plotTopics(topic_paths) {
 {% block endjs %}{{ block.super }}
 <script type="text/javascript">
 
-    $(function() {        
+    $(function() {  
         window.showing_tree = false;
 
         // Select the values in the 
         $("#xaxis").val("{{ form.xaxis }}").change();
         $("#yaxis").val("{{ form.yaxis }}").change();
-        $("#group").val("{{ form.group }}").change();
-        $("#facility").val("{{ form.facility }}").change();
         
         
         setTimeout(function() {
@@ -219,7 +230,7 @@ function plotTopics(topic_paths) {
             //   to replot upon selection.
             $("#xaxis").change(   function() { plotTopics(null); });
             $("#yaxis").change(   function() { plotTopics(null); });
-            $("#group").change(   function() { changeData("group"); plotTopics(null); });
+            $(".group_select").change(function(event) { changeData(event.target.id); plotTopics(null); });
             $("#facility").change(function() { changeData("facility"); plotTopics(null); });
 
             // When the button is clicked, toggle the view style
@@ -252,7 +263,7 @@ function plotTopics(topic_paths) {
                         // Load the topics found in the querystring, when the topic_tree finishes initializing
                         topic_paths_in_querystring = {{ form.topic_path|jsonify }};
                         if (topic_paths_in_querystring.length == 0) {
-                            toggle_tree() // open tree
+                            toggle_tree(true) // open tree, force callbacks
                         }
                         else {
                             set_topic_paths_in_tree(this, topic_paths_in_querystring);

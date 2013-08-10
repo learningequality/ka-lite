@@ -44,6 +44,11 @@ footer.short .inner {
     margin: 0 auto;
 }
 
+a:link:focus,
+a:hover {
+    color: #2F92A5;
+}
+
 #language-preferences {
     position: relative; 
     top: 7px;
@@ -58,26 +63,88 @@ footer.short .inner {
     margin-top: 10px;
     margin-left: 5px;
 }
-
+/********** Top Navigation bar ***********/
 #nav-and-search {
     position: relative;
     right: 10px;
     top: 21px;
 }
 
+/*Make the navigation item stay the same color*/
+.nav-subheader a:visited{
+    color: #263500;
+}
+
+.nav-subheader a:visited:hover{
+    color: #2F92A5;
+}
+
+.nav-subheader a {
+    font-family: "MuseoSans500", Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    letter-spacing: -1px;
+    text-transform: uppercase;
+    margin-left: 23px;
+    display: block;
+    float: left;
+    background: transparent;
+}
+
+.sitewide-navigation {
+    float:right;
+    margin: 0;
+    padding: 3px 0;
+    height: 19px;
+    position: relative;
+    width: auto;
+    /* Position this at 30 so the white triangle appears on top of the page_sub_nav breadcrumbs border */
+    z-index: 30;
+}
+
 .watch-navlink {
     padding-left: 4px;
 }
 
-/*greeting styling*/
+#nav_registerdevice {
+    color: darkRed;
+}
 
+
+#nav_addstudent, #nav_addteacher, #nav_admin, #nav_coachreports, #nav_watch, #nav_practice, #nav_signup, #nav_login, #nav_update {
+    display: none;
+}
+
+.nav-subheader {
+    background: #75a400;
+    margin-bottom: 0;
+    height: 30px;
+    color: #fff;
+    font-weight: normal;
+    font-size: 12pt;
+}
+
+.nav-subheader a.active:after {
+    content: url(/static/images/nav-selector.gif);
+    position: relative;
+    top: -12px;
+    display: block;
+    left: 50%;
+    margin-left: -5px;
+}
+
+.nav-subheader a {
+    height: 20px;
+    display: block;
+}
+
+/********** End of Top Navigation bar ***********/
+
+
+/*greeting styling*/
 .sitewide-navigation {
     white-space: nowrap;
 }
 
-.nav-subheader {
-    background: transparent;
-}
 
 .top-header-links {
     position: absolute;
@@ -207,14 +274,6 @@ li .progress-circle {
     display: none;
 }
 
-.errors, .login_error {
-    color: red;
-}
-
-.login_error {
-    margin: 0;
-}
-
 #content_tree .complete span.dynatree-icon {
     margin-top: 2px;
     background: url(/static/images/circle-complete.png) no-repeat;
@@ -267,33 +326,11 @@ li .progress-circle {
     border-color: #330000;
 }
 
-.errorlist {
+.error, .errorlist {
 /*    padding-bottom: 10px;*/
     color: red;
 }
 
-#nav_registerdevice {
-    color: darkRed;
-}
-
-
-#nav_addstudent, #nav_addteacher, #nav_admin, #nav_coachreports, #nav_watch, #nav_practice, #nav_signup, #nav_login, #nav_update {
-    display: none;
-}
-
-.nav-subheader a.active:after {
-    content: url(/static/images/nav-selector.gif);
-    position: relative;
-    top: -12px;
-    display: block;
-    left: 50%;
-    margin-left: -5px;
-}
-
-.nav-subheader a {
-    height: 20px;
-    display: block;
-}
 
 #hint-remainder {
     line-height: 110%;
