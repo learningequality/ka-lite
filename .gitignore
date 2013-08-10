@@ -29,3 +29,5 @@ content/*.mp4
 content/*.json
 content/*.srt
 locale/*
+kalite/static/data/subtitledata/*
+kalite/media/*
