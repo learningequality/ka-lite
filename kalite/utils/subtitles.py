@@ -35,5 +35,3 @@ def download_subtitles(language):
     zipped_subs = requests.get("%s/download/subtitles/%s" % (central_url, language))
 
     return zipped_subs
-
-    

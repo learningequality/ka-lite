@@ -33,7 +33,8 @@ class Command(BaseCommand):
     help = "Download all videos marked to be downloaded"
 
     def handle(self, *args, **options):
-        
+
+        caching_enabled = settings.CACHE_TIME != 0
         handled_video_ids = []
         
         while True: # loop until the method is aborted
@@ -73,10 +74,10 @@ class Command(BaseCommand):
             handled_video_ids.append(video.youtube_id)
             
             # Expire, but don't regenerate until the very end, for efficiency.
-            if hasattr(settings, "CACHES"):
+            if caching_enabled:
                 caching.invalidate_cached_topic_hierarchies(video_id=video.youtube_id)
     
         # Regenerate all pages, efficiently
-        if hasattr(settings, "CACHES"):
+        if caching_enabled:
             caching.regenerate_cached_topic_hierarchies(handled_video_ids)
         
