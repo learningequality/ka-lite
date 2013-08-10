@@ -274,6 +274,17 @@ class SyncedModel(models.Model):
     def __unicode__(self):
         return "%s... (Signed by: %s...)" % (self.pk[0:5], self.signed_by.pk[0:5])
 
+    @classmethod
+    def get_or_initialize(cls, *args, **kwargs):
+        """
+        This is like Django's get_or_create method, but without calling save().
+        Allows for more efficient post-initialize updates.
+        """
+        assert not args, "No positional arguments allowed for this method."""
+
+        obj = get_object_or_None(cls, **kwargs)
+        return obj or cls(**kwargs)
+        
 
 class Zone(SyncedModel):
     name = models.CharField(max_length=100)

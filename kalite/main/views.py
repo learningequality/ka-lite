@@ -132,15 +132,12 @@ def video_handler(request, video, prev=None, next=None):
 
     if not video_exists:
         if request.is_admin:
+            # TODO(bcipolli): add a link, with querystring args that auto-checks this video in the topic tree
             messages.warning(request, _("This video was not found! You can download it by going to the Update page."))
         elif request.is_logged_in:
             messages.warning(request, _("This video was not found! Please contact your teacher or an admin to have it downloaded."))
         elif not request.is_logged_in:
             messages.warning(request, _("This video was not found! You must login as an admin/teacher to download the video."))
-    elif request.user.is_authenticated():
-        messages.warning(request, _("Note: You're logged in as an admin (not as a student/teacher), so your video progress and points won't be saved."))
-    elif not request.is_logged_in:
-        messages.warning(request, _("Friendly reminder: You are not currently logged in, so your video progress and points won't be saved."))
     context = {
         "video": video,
         "title": video["title"],
@@ -178,11 +175,6 @@ def exercise_handler(request, exercise):
         del video["paths"]
     for idx in reversed(videos_to_delete):
         del related_videos[idx]
-
-    if request.user.is_authenticated():
-        messages.warning(request, _("Note: You're logged in as an admin (not as a student/teacher), so your exercise progress and points won't be saved."))
-    elif not request.is_logged_in:
-        messages.warning(request, _("Friendly reminder: You are not currently logged in, so your exercise progress and points won't be saved."))
 
     context = {
         "exercise": exercise,
@@ -361,10 +353,10 @@ def device_redirect(request):
 
 def handler_403(request, *args, **kwargs):
     context = RequestContext(request)
-    message = None  # Need to retrieve, but can't figure it out yet.
+    #message = None  # Need to retrieve, but can't figure it out yet.
 
     if request.is_ajax():
-        return HttpResponseForbidden(message)
+        return JsonResponse({ "error": "You must be logged in with an account authorized to view this page." }, status=403)
     else:
         messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page..")))
         return HttpResponseRedirect(reverse("login") + "?next=" + request.path)
