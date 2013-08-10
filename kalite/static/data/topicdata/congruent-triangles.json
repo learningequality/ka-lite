@@ -1,143 +1,143 @@
 [
   {
-    "kind": "Exercise", 
-    "display_name": "Congruency postulates", 
-    "description": null, 
-    "title": "Congruency postulates", 
-    "seconds_per_fast_problem": 11.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "parallel_lines_2", 
-      "angles_2"
-    ], 
-    "live": true, 
-    "h_position": 34, 
     "v_position": -26, 
     "path": "/math/geometry/congruent-triangles/cong_triangle/e/congruency_postulates/", 
-    "slug": "congruency_postulates", 
-    "name": "congruency_postulates"
-  }, 
-  {
-    "kind": "Exercise", 
-    "display_name": "Congruent triangles 1", 
+    "display_name": "Congruency postulates", 
+    "title": "Congruency postulates", 
+    "live": true, 
     "description": null, 
-    "title": "Congruent triangles 1", 
-    "seconds_per_fast_problem": 5.0, 
-    "related_video_readable_ids": [], 
+    "h_position": 34, 
+    "slug": "congruency_postulates", 
+    "kind": "Exercise", 
+    "name": "congruency_postulates", 
+    "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "parallel_lines_2", 
       "angles_2"
-    ], 
-    "live": true, 
-    "h_position": 34, 
-    "v_position": -25, 
-    "path": "/math/geometry/congruent-triangles/cong_triangle/e/congruent_triangles_1/", 
-    "slug": "congruent_triangles_1", 
-    "name": "congruent_triangles_1"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Congruent triangles 2", 
-    "description": null, 
-    "title": "Congruent triangles 2", 
-    "seconds_per_fast_problem": 7.0, 
     "related_video_readable_ids": [], 
+    "v_position": -25, 
+    "path": "/math/geometry/congruent-triangles/cong_triangle/e/congruent_triangles_1/", 
+    "display_name": "Congruent triangles 1", 
+    "title": "Congruent triangles 1", 
+    "live": true, 
+    "description": null, 
+    "h_position": 34, 
+    "slug": "congruent_triangles_1", 
+    "kind": "Exercise", 
+    "name": "congruent_triangles_1", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "parallel_lines_2", 
+      "angles_2"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -25, 
+    "path": "/math/geometry/congruent-triangles/cong_triangle/e/congruent_triangles_2/", 
+    "display_name": "Congruent triangles 2", 
+    "title": "Congruent triangles 2", 
+    "live": true, 
+    "description": null, 
+    "h_position": 35, 
+    "slug": "congruent_triangles_2", 
+    "kind": "Exercise", 
+    "name": "congruent_triangles_2", 
+    "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "congruent_triangles_1", 
       "congruency_postulates"
-    ], 
-    "live": true, 
-    "h_position": 35, 
-    "v_position": -25, 
-    "path": "/math/geometry/congruent-triangles/cong_triangle/e/congruent_triangles_2/", 
-    "slug": "congruent_triangles_2", 
-    "name": "congruent_triangles_2"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Triangle types", 
-    "description": null, 
-    "title": "Triangle types", 
-    "seconds_per_fast_problem": 4.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "angle_addition_postulate"
-    ], 
-    "live": true, 
-    "h_position": 30, 
     "v_position": -19, 
     "path": "/math/geometry/congruent-triangles/isoscleles_equil/e/triangle_types/", 
+    "display_name": "Triangle types", 
+    "title": "Triangle types", 
+    "live": true, 
+    "description": null, 
+    "h_position": 30, 
     "slug": "triangle_types", 
-    "name": "triangle_types"
+    "kind": "Exercise", 
+    "name": "triangle_types", 
+    "seconds_per_fast_problem": 4.0, 
+    "prerequisites": [
+      "angle_addition_postulate"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Triangle angles 1", 
-    "description": null, 
-    "title": "Triangle angles 1", 
-    "seconds_per_fast_problem": 9.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "triangle_types"
-    ], 
-    "live": true, 
-    "h_position": 31, 
     "v_position": -19, 
     "path": "/math/geometry/congruent-triangles/isoscleles_equil/e/triangle_angles_1/", 
+    "display_name": "Triangle angles 1", 
+    "title": "Triangle angles 1", 
+    "live": true, 
+    "description": null, 
+    "h_position": 31, 
     "slug": "triangle_angles_1", 
-    "name": "triangle_angles_1"
+    "kind": "Exercise", 
+    "name": "triangle_angles_1", 
+    "seconds_per_fast_problem": 9.0, 
+    "prerequisites": [
+      "triangle_types"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Basic triangle proofs", 
-    "description": "1 and 2-step triangle congruency proofs.", 
-    "title": "Basic triangle proofs", 
-    "seconds_per_fast_problem": 53.0, 
     "related_video_readable_ids": [], 
+    "v_position": -26, 
+    "path": "/math/geometry/congruent-triangles/isoscleles_equil/e/geometry_proofs_intro/", 
+    "display_name": "Basic triangle proofs", 
+    "title": "Basic triangle proofs", 
+    "live": true, 
+    "description": "1 and 2-step triangle congruency proofs.", 
+    "h_position": 36, 
+    "slug": "geometry_proofs_intro", 
+    "kind": "Exercise", 
+    "name": "geometry_proofs_intro", 
+    "seconds_per_fast_problem": 53.0, 
     "prerequisites": [
       "congruent_triangles_2", 
       "logical_arguments_deductive_reasoning", 
       "conditional_statements_and_truth_value"
-    ], 
-    "live": true, 
-    "h_position": 36, 
-    "v_position": -26, 
-    "path": "/math/geometry/congruent-triangles/isoscleles_equil/e/geometry_proofs_intro/", 
-    "slug": "geometry_proofs_intro", 
-    "name": "geometry_proofs_intro"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Fill-in-the-blank triangle proofs", 
-    "description": "Fill in the blanks in a triangle congruency proof.", 
-    "title": "Fill-in-the-blank triangle proofs", 
-    "seconds_per_fast_problem": 60.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "geometry_proofs_intro"
-    ], 
-    "live": true, 
-    "h_position": 37, 
     "v_position": -26, 
     "path": "/math/geometry/congruent-triangles/isoscleles_equil/e/geometry_proofs_1/", 
+    "display_name": "Fill-in-the-blank triangle proofs", 
+    "title": "Fill-in-the-blank triangle proofs", 
+    "live": true, 
+    "description": "Fill in the blanks in a triangle congruency proof.", 
+    "h_position": 37, 
     "slug": "geometry_proofs_1", 
-    "name": "geometry_proofs_1"
+    "kind": "Exercise", 
+    "name": "geometry_proofs_1", 
+    "seconds_per_fast_problem": 60.0, 
+    "prerequisites": [
+      "geometry_proofs_intro"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Wrong statements in triangle proofs", 
-    "description": "Identify the wrong statement in a proof about triangle congruency.", 
-    "title": "Wrong statements in triangle proofs", 
-    "seconds_per_fast_problem": 33.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "geometry_proofs_1"
-    ], 
-    "live": true, 
-    "h_position": 38, 
     "v_position": -26, 
     "path": "/math/geometry/congruent-triangles/isoscleles_equil/e/geometry_proofs_2/", 
+    "display_name": "Wrong statements in triangle proofs", 
+    "title": "Wrong statements in triangle proofs", 
+    "live": true, 
+    "description": "Identify the wrong statement in a proof about triangle congruency.", 
+    "h_position": 38, 
     "slug": "geometry_proofs_2", 
-    "name": "geometry_proofs_2"
+    "kind": "Exercise", 
+    "name": "geometry_proofs_2", 
+    "seconds_per_fast_problem": 33.0, 
+    "prerequisites": [
+      "geometry_proofs_1"
+    ]
   }
 ]

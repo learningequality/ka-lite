@@ -1,108 +1,108 @@
 [
   {
-    "kind": "Exercise", 
-    "display_name": "Matrix dimensions", 
-    "description": "Identify the dimensions of a matrix", 
-    "title": "Matrix dimensions", 
-    "seconds_per_fast_problem": 5.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "systems_of_equations"
-    ], 
-    "live": true, 
-    "h_position": 51, 
     "v_position": 17, 
     "path": "/math/algebra/algebra-matrices/Basic_matrix_operations/e/matrix_dimensions/", 
+    "display_name": "Matrix dimensions", 
+    "title": "Matrix dimensions", 
+    "live": true, 
+    "description": "Identify the dimensions of a matrix", 
+    "h_position": 51, 
     "slug": "matrix_dimensions", 
-    "name": "matrix_dimensions"
-  }, 
-  {
     "kind": "Exercise", 
-    "display_name": "Scalar matrix multiplication", 
-    "description": "Multiply a matrix by a scalar", 
-    "title": "Scalar matrix multiplication", 
-    "seconds_per_fast_problem": 10.0, 
-    "related_video_readable_ids": [], 
+    "name": "matrix_dimensions", 
+    "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "systems_of_equations"
-    ], 
-    "live": true, 
-    "h_position": 51, 
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
     "v_position": 19, 
     "path": "/math/algebra/algebra-matrices/Basic_matrix_operations/e/scalar_matrix_multiplication/", 
+    "display_name": "Scalar matrix multiplication", 
+    "title": "Scalar matrix multiplication", 
+    "live": true, 
+    "description": "Multiply a matrix by a scalar", 
+    "h_position": 51, 
     "slug": "scalar_matrix_multiplication", 
-    "name": "scalar_matrix_multiplication"
-  }, 
-  {
     "kind": "Exercise", 
-    "display_name": "Matrix addition and subtraction", 
-    "description": "Add and subtract matrices", 
-    "title": "Matrix addition and subtraction", 
-    "seconds_per_fast_problem": 14.0, 
-    "related_video_readable_ids": [], 
+    "name": "scalar_matrix_multiplication", 
+    "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "systems_of_equations"
-    ], 
-    "live": true, 
-    "h_position": 51, 
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
     "v_position": 18, 
     "path": "/math/algebra/algebra-matrices/Basic_matrix_operations/e/matrix_addition_and_subtraction/", 
+    "display_name": "Matrix addition and subtraction", 
+    "title": "Matrix addition and subtraction", 
+    "live": true, 
+    "description": "Add and subtract matrices", 
+    "h_position": 51, 
     "slug": "matrix_addition_and_subtraction", 
-    "name": "matrix_addition_and_subtraction"
+    "kind": "Exercise", 
+    "name": "matrix_addition_and_subtraction", 
+    "seconds_per_fast_problem": 14.0, 
+    "prerequisites": [
+      "systems_of_equations"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Defined and undefined matrix operations", 
-    "description": "Determine whether the addition, subtraction, or multiplication of two matrices is defined", 
-    "title": "Defined and undefined matrix operations", 
-    "seconds_per_fast_problem": 5.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "matrix_dimensions"
-    ], 
-    "live": true, 
-    "h_position": 52, 
     "v_position": 17, 
     "path": "/math/algebra/algebra-matrices/matrix_multiplication/e/defined_and_undefined_matrix_operations/", 
+    "display_name": "Defined and undefined matrix operations", 
+    "title": "Defined and undefined matrix operations", 
+    "live": true, 
+    "description": "Determine whether the addition, subtraction, or multiplication of two matrices is defined", 
+    "h_position": 52, 
     "slug": "defined_and_undefined_matrix_operations", 
-    "name": "defined_and_undefined_matrix_operations"
+    "kind": "Exercise", 
+    "name": "defined_and_undefined_matrix_operations", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "matrix_dimensions"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Multiplying a matrix by a vector", 
-    "description": "Multiply a matrix by a vector", 
-    "title": "Multiplying a matrix by a vector", 
-    "seconds_per_fast_problem": 21.0, 
     "related_video_readable_ids": [], 
+    "v_position": 18, 
+    "path": "/math/algebra/algebra-matrices/matrix_multiplication/e/multiplying_a_matrix_by_a_vector/", 
+    "display_name": "Multiplying a matrix by a vector", 
+    "title": "Multiplying a matrix by a vector", 
+    "live": true, 
+    "description": "Multiply a matrix by a vector", 
+    "h_position": 52, 
+    "slug": "multiplying_a_matrix_by_a_vector", 
+    "kind": "Exercise", 
+    "name": "multiplying_a_matrix_by_a_vector", 
+    "seconds_per_fast_problem": 21.0, 
     "prerequisites": [
       "matrix_addition_and_subtraction", 
       "scalar_matrix_multiplication", 
       "matrix_dimensions"
-    ], 
-    "live": true, 
-    "h_position": 52, 
-    "v_position": 18, 
-    "path": "/math/algebra/algebra-matrices/matrix_multiplication/e/multiplying_a_matrix_by_a_vector/", 
-    "slug": "multiplying_a_matrix_by_a_vector", 
-    "name": "multiplying_a_matrix_by_a_vector"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Multiplying a matrix by a matrix", 
-    "description": "Multiply two matrices", 
-    "title": "Multiplying a matrix by a matrix", 
-    "seconds_per_fast_problem": 39.0, 
     "related_video_readable_ids": [], 
+    "v_position": 19, 
+    "path": "/math/algebra/algebra-matrices/matrix_multiplication/e/multiplying_a_matrix_by_a_matrix/", 
+    "display_name": "Multiplying a matrix by a matrix", 
+    "title": "Multiplying a matrix by a matrix", 
+    "live": true, 
+    "description": "Multiply two matrices", 
+    "h_position": 52, 
+    "slug": "multiplying_a_matrix_by_a_matrix", 
+    "kind": "Exercise", 
+    "name": "multiplying_a_matrix_by_a_matrix", 
+    "seconds_per_fast_problem": 39.0, 
     "prerequisites": [
       "matrix_dimensions", 
       "matrix_addition_and_subtraction", 
       "scalar_matrix_multiplication"
-    ], 
-    "live": true, 
-    "h_position": 52, 
-    "v_position": 19, 
-    "path": "/math/algebra/algebra-matrices/matrix_multiplication/e/multiplying_a_matrix_by_a_matrix/", 
-    "slug": "multiplying_a_matrix_by_a_matrix", 
-    "name": "multiplying_a_matrix_by_a_matrix"
+    ]
   }
 ]
