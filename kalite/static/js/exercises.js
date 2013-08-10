@@ -42,14 +42,13 @@ function updatePercentCompleted(correct) {
         correct: correct
     };
 
-    doRequest(
-        "/api/save_exercise_log", 
-        data
-    ).success(function(data) {
-        show_api_messages(data, "id_student_logs")
-    }).fail(function(resp) {
-        communicate_api_failure(resp, "id_student_logs");
-    });
+    doRequest("/api/save_exercise_log", data)
+        .success(function(data) {
+            show_api_messages(data, "id_student_logs")
+        })
+        .fail(function(resp) {
+            communicate_api_failure(resp, "id_student_logs");
+        });
 
 };
 
@@ -76,21 +75,44 @@ $(function() {
             $(Exercises).trigger("readyForNextProblem", {userExercise: exerciseData});
         });
     });
-    doRequest(
-        "/api/get_exercise_logs", 
-        [exerciseData.exerciseModel.name]
-    ).success(function(data) {
-        if (data.length === 0) {
-            return;
-        }
-        exerciseData.percentCompleted = data[0].streak_progress;
-        exerciseData.points = data[0].points;
-        updateStreakBar();
+    doRequest("/api/get_exercise_logs", [exerciseData.exerciseModel.name])
+        .success(function(data) {
+            if (data.length === 0) {
+                return;
+            }
+            exerciseData.percentCompleted = data[0].streak_progress;
+            exerciseData.points = data[0].points;
+            updateStreakBar();
 
-        // Show all messages in "messages" object
-        show_api_messages(data.messages, "id_student_logs")
-    }).fail(function (resp) {
-        // Expects to receive messages ({ type: message } format) about failures
-        communicate_api_failure(resp, "id_student_logs");
+            // Show all messages in "messages" object
+            show_api_messages(data.messages, "id_student_logs")
+        })
+        .fail(function (resp) {
+            // Expects to receive messages ({ type: message } format) about failures
+            communicate_api_failure(resp, "id_student_logs");
+        });
+});
+
+function adjust_scratchpad_margin(){
+    if (Khan.scratchpad.isVisible()) {
+        $(".current-card-contents #problemarea").css("margin-top","50px");
+    } else {
+        $(".current-card-contents #problemarea").css("margin-top","10px");
+    }
+}
+
+$(function(){
+
+    adjust_scratchpad_margin();
+     
+    $("#scratchpad-show").click(function(){
+        _.defer(function() {
+            adjust_scratchpad_margin();
+        });
+    });
+    
+    $(".return-link").click(function() {
+        window.history.go(-1);
+        return false;
     });
 });

@@ -63,7 +63,7 @@ def facility_from_request(handler=None, request=None, *args, **kwargs):
 
     def wrapper_fn(request, *args, **kwargs):
         if kwargs.get("facility_id",None):
-            facility = get_object_or_None(pk=facility_id)
+            facility = get_object_or_None(pk=kwargs["facility_id"])
         elif "facility" in request.GET:
             facility = get_object_or_None(Facility, pk=request.GET["facility"])
             if "set_default" in request.GET and request.is_admin and facility:
@@ -108,7 +108,9 @@ def get_user_from_request(handler=None, request=None, *args, **kwargs):
     """
     Gets ID of requested user (not necessarily the user logged in)
     """
-    assert handler or request
+    assert handler or request, "must specify handler or request."
+    assert not args, "positional arguments screw things up--don't use them here."
+
     if not handler:
         handler = lambda request, user, *args, **kwargs: user
 
@@ -175,7 +177,7 @@ def require_authorized_access_to_student_data(handler):
         if getattr(request, "is_admin", False):
             return handler(request, *args, **kwargs)
         else: 
-            user = get_user_from_request(request)
+            user = get_user_from_request(request=request)
             if request.session.get("facility_user", None) == user:
                 return handler(request, *args, **kwargs)
             else:
