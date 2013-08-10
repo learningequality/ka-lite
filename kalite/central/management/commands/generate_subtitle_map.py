@@ -159,12 +159,10 @@ def update_video_entry(youtube_id, entry={}):
         #import pdb; pdb.set_trace()
         return entry
 
-    logging.info("Success at %s" % request_url)
-    entry["api_response"] = "success"
-    entry["last_success"] = unicode(datetime.datetime.now().date())
-
     # Get all the languages
     try:
+        prev_languages = entry.get("language_codes")
+
         entry["language_codes"] = []
         entry["amara_code"] = None
         if languages:
@@ -175,6 +173,17 @@ def update_video_entry(youtube_id, entry={}):
             amara_code = languages[0]["subtitles_uri"].split("/")[4]
             assert len(amara_code) == 12  # in case of future API change
             entry["amara_code"] = amara_code
+
+        added_languages = set(entry["language_codes"]) - set(prev_languages)
+        removed_languages = set(prev_languages) - set(entry["language_codes"])
+        logging.info("Success for id=%s%s%s" % (
+            youtube_id,
+            "" if not added_languages else "; added languages=%s" % list(added_languages),
+            "" if not removed_languages else "; removed languages=%s" % list(removed_languages),
+        ))
+        entry["api_response"] = "success"
+        entry["last_success"] = unicode(datetime.datetime.now().date())
+
         return entry
     except Exception as e:
         logging.warn("Failed to grab language / amara codes for %s: %s" % (youtube_id, e))
@@ -188,12 +197,27 @@ def update_language_srt_map():
 
     # Create file if first time being run
     language_srt_filepath = settings.SUBTITLES_DATA_ROOT + LANGUAGE_SRT_FILENAME
+    srt_download_info_filepath = settings.SUBTITLES_DATA_ROOT + SRTS_JSON_FILENAME
+
     if not subtitle_utils.file_already_exists(language_srt_filepath):
         with open(language_srt_filepath, 'w') as outfile:
             json.dump({}, outfile)
 
-    language_srt_map = json.loads(open(language_srt_filepath).read())
-    api_info_map = json.loads(open(settings.SUBTITLES_DATA_ROOT + SRTS_JSON_FILENAME).read())
+    # Load the srt map
+    try:
+        language_srt_map = json.loads(open(language_srt_filepath).read())
+    except Exception as e:
+        # Probably corrupted.
+        logging.warn("Could not open %s for updates; aborting.  Error=%s" % (language_srt_filepath, e))
+        return{}
+
+    # Load the current download status
+    try:
+        api_info_map = json.loads(open(settings.SUBTITLES_DATA_ROOT + SRTS_JSON_FILENAME).read())
+    except Exception as e:
+        # Must be corrupted; start from scratch!
+        logging.warn("Could not open %s for updates; starting from scratch.  Error=%s" % (srt_download_info_filepath, e))
+        api_info_map = {}
 
     # Build old dictionary, to be able to detect removed subtitles
     #   (for example, if they were found to be crap)

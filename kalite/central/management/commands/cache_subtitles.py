@@ -236,7 +236,7 @@ class Command(BaseCommand):
             generate_subtitle_counts.get_new_counts(data_path=settings.SUBTITLES_DATA_ROOT, download_path=download_path, language_codes=lang_codes)
         
             logging.info("Executed successfully! Re-zipping changed language packs!")
-            generate_zipped_srts(lang_codes_to_update=None, download_path=download_path)
+            generate_zipped_srts(lang_codes_to_update=lang_codes, download_path=download_path)
 
             logging.info("Process complete.")
         except Exception as e:
