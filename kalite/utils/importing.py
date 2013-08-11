@@ -5,9 +5,9 @@ Contains helper functions for importing modules.
 import os, glob
 
 def import_all_from(path, locals, globals, pattern="*", exclude_special_modules=True):
-    """Import * from all the .py files in a particular directory.
+    """Import * from all the .py files in a particular directory whose names match a particular pattern.
     
-    This is currently only used for auto-import of test suites, but may be useful elsewhere.
+    This is currently only used for auto-import of test suites, but may also be useful elsewhere.
     """
 
     # load the names of all the modules in the directory
