@@ -69,8 +69,8 @@ def download_khan_data(url, debug_cache_file=None, debug_cache_dir="json"):
     # Use the cache file if:
     # a) We're in DEBUG mode
     # b) The debug cache file exists
-    # c) It's less than 7 days old.
-    if settings.DEBUG and os.path.exists(debug_cache_file) and datediff(datetime.datetime.now(), datetime.datetime.fromtimestamp(os.path.getctime(debug_cache_file)), units="days") <= 7.0:
+    # c) It's less than a day old.
+    if settings.DEBUG and os.path.exists(debug_cache_file) and datediff(datetime.datetime.now(), datetime.datetime.fromtimestamp(os.path.getctime(debug_cache_file)), units="days")<=7.0:
         # Slow to debug, so keep a local cache in the debug case only.
         sys.stdout.write("Using cached file: %s\n" % debug_cache_file)
         data = json.loads(open(debug_cache_file).read())
@@ -115,13 +115,12 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
         # Fix up data
         if slug_key[kind] not in node:
             logging.warn("Could not find expected slug key (%s) on node: %s" % (slug_key[kind], node))
-            node[slug_key[kind]] = node["id"]  # put it SOMEWHERE.
-        node["slug"] = node[slug_key[kind]] if node[slug_key[kind]] != "root" else ""
-        node["id"] = node["slug"]  # these used to be the same; now not. Easier if they stay the same (issue #233)
-
-        node["path"] = path + topic_tools.kind_slugs[kind] + node["slug"] + "/"
+        else:
+            node["slug"] = node[slug_key[kind]]
+            if node["slug"] == "root":
+                node["slug"] = ""
         node["title"] = node[title_key[kind]]
-
+        node["path"] = path + topic_tools.kind_slugs[kind] + node["slug"] + "/"
 
         kinds = set([kind])
 
@@ -229,8 +228,6 @@ def rebuild_knowledge_map(topictree, data_path=settings.PROJECT_PATH + "/static/
     # Download icons
     for key, value in knowledge_map["topics"].items():
         if "icon_url" in value:
-            # Note: id here is retrieved from knowledge_map, so we're OK
-            #   that we blew away ID in the topic tree earlier.
             value["icon_url"] = iconfilepath + value["id"] + iconextension
             knowledge_map["topics"][key] = value
 
@@ -264,6 +261,25 @@ def rebuild_knowledge_map(topictree, data_path=settings.PROJECT_PATH + "/static/
             for child in node.get("children", []):
                 recurse_nodes_to_extract_knowledge_map(child)
     recurse_nodes_to_extract_knowledge_map(topictree)
+    
+    # Clean the knowledge map
+    def clean_orphaned_polylines(knowledge_map):
+        """
+        We remove some topics (without leaves); need to remove polylines associated with these topics.
+        """
+        all_topic_points = [(km["x"],km["y"]) for km in knowledge_map["topics"].values()]
+
+        polylines_to_delete = []
+        for li, polyline in enumerate(knowledge_map["polylines"]):
+            if any(["x" for pt in polyline["path"] if (pt["x"], pt["y"]) not in all_topic_points]):
+                polylines_to_delete.append(li)
+
+        logging.debug("Removing %s of %s polylines" % (len(polylines_to_delete), len(knowledge_map["polylines"])))
+        for i in reversed(polylines_to_delete):
+            del knowledge_map["polylines"][i]
+
+        return knowledge_map
+    clean_orphaned_polylines(knowledge_map)
 
     # Dump the knowledge map
     with open(os.path.join(data_path, topic_tools.map_layout_file), "w") as fp:

@@ -1,0 +1,20 @@
+{% extends "control_panel/base_management_printable.html" %}
+{% load staticfiles %}
+{% load include_block %}
+
+{% block title %}{{ group.name }} - Group Report{% endblock title %}
+
+{% block headcss %}{{ block.super }}
+    {% include_block "coachreports/tabular_view.html" "headcss" %}
+{% endblock headcss %}
+
+{% block headjs %}{{ block.super }}
+    {% include_block "coachreports/tabular_view.html" "headjs" %}
+{% endblock headjs %}
+
+
+{% block inner_content %}
+<div id="group_container">
+    {% include_block "coachreports/tabular_view.html" "content" %}
+</div>
+{% endblock inner_content %}
