@@ -1,70 +1,122 @@
-import re, json
-from django.core.exceptions import ValidationError
-from django.http import HttpResponse, HttpResponseNotAllowed
-from django.utils import simplejson
-from django.db.models import Q
+import json
+import re
 from annoying.functions import get_object_or_None
+
+from django.core.exceptions import ValidationError
+from django.db.models import Q
+from django.http import HttpResponse
+from django.utils import simplejson
+from django.utils.translation import ugettext as _
+
 import settings
-from utils.topics import slug_key, title_key
+from .api_forms import ExerciseLogForm, VideoLogForm
+from .models import FacilityUser, VideoLog, ExerciseLog, VideoFile
+from config.models import Settings
 from main import topicdata
+from securesync.models import FacilityGroup
 from utils.jobs import force_job, job_status
 from utils.videos import delete_downloaded_files
-from models import FacilityUser, VideoLog, ExerciseLog, VideoFile
-from securesync.models import FacilityGroup
-from config.models import Settings
 from utils.decorators import require_admin
 from utils.general import break_into_chunks
-from utils.orderedset import OrderedSet
 from utils.internet import JsonResponse
+from utils.orderedset import OrderedSet
 
 
+class student_log_api(object):
+    def __init__(self, logged_out_message):
+        self.logged_out_message = logged_out_message
+    
+    def __call__(self, handler):
+        def wrapper_fn(request, *args, **kwargs):
+            try:
+                # TODO(bcipolli): send user info in the post data,
+                #   allowing cross-checking of user information
+                #   and better error reporting
+                if "facility_user" not in request.session:
+                    return JsonResponse({"warning": self.logged_out_message + "  " + _("You must be logged in as a facility user to view/save progress.")}, status=500)
+                else:
+                    return handler(request)
+            except Exception as e:
+                return JsonResponse({"error": "Unexpected exception: %s" % e}, status=500)
+        return wrapper_fn
+
+@student_log_api(logged_out_message=_("Video progress not saved."))
 def save_video_log(request):
-    if "facility_user" not in request.session:
-        return JsonResponse({})
-    data = simplejson.loads(request.raw_post_data or "{}")
-    videolog = VideoLog()
-    videolog.user = request.session["facility_user"]
-    videolog.youtube_id = data.get("youtube_id", "")
-    old_videolog = videolog.get_existing_instance() or VideoLog()
-    videolog.total_seconds_watched = old_videolog.total_seconds_watched + data.get("seconds_watched", 0)
-    videolog.points = max(old_videolog.points or 0, data.get("points", 0)) or 0
+    """
+    Receives a youtube_id and relevant data,
+    saves it to the currently authorized user.
+    """
+
+    # Form does all the data validation, including the youtube_id
+    form = VideoLogForm(data=simplejson.loads(request.raw_post_data))
+    if not form.is_valid():
+        raise ValidationError(form.errors)
+    data = form.data
+
+    # More robust extraction of previous object
+    videolog = VideoLog.get_or_initialize(user=request.session["facility_user"], youtube_id=data["youtube_id"])
+    videolog.total_seconds_watched  += data["seconds_watched"]
+    videolog.points = max(videolog.points, data["points"])  # videolog.points cannot be None
+
     try:
         videolog.full_clean()
         videolog.save()
-        return JsonResponse({
-            "points": videolog.points,
-            "complete": videolog.complete,
-        })
     except ValidationError as e:
         return JsonResponse({"error": "Could not save VideoLog: %s" % e}, status=500)
 
+    return JsonResponse({
+        "points": videolog.points,
+        "complete": videolog.complete,
+        "messages": {},
+    })
 
+
+@student_log_api(logged_out_message=_("Exercise progress not saved."))
 def save_exercise_log(request):
-    if "facility_user" not in request.session:
-        return JsonResponse({})
-    data = simplejson.loads(request.raw_post_data or "{}")
-    exerciselog = ExerciseLog()
-    exerciselog.user = request.session["facility_user"]
-    exerciselog.exercise_id = data.get("exercise_id", "")
-    old_exerciselog = exerciselog.get_existing_instance() or ExerciseLog()
-    exerciselog.attempts = old_exerciselog.attempts + 1
-    exerciselog.streak_progress = data.get("streak_progress", None)
-    exerciselog.points = data.get("points", None)
+    """
+    Receives an exercise_id and relevant data,
+    saves it to the currently authorized user.
+    """
+
+    # Form does all data validation, including of the exercise_id
+    form = ExerciseLogForm(data=simplejson.loads(request.raw_post_data))
+    if not form.is_valid():
+        raise Exception(form.errors)
+    data = form.data
+
+    # More robust extraction of previous object
+    exerciselog = ExerciseLog.get_or_initialize(user=request.session["facility_user"], exercise_id=data["exercise_id"])
+    previously_complete = exerciselog.complete
+
+    exerciselog.attempts += 1
+    exerciselog.streak_progress = data["streak_progress"]
+    exerciselog.points = data["points"]
 
     try:
         exerciselog.full_clean()
         exerciselog.save()
-        return JsonResponse({})
     except ValidationError as e:
         return JsonResponse({"error": "Could not save ExerciseLog: %s" % e}, status=500)
 
+    # Special message if you've just completed.
+    #   NOTE: it's important to check this AFTER calling save() above.
+    if not previously_complete and exerciselog.complete:
+        return JsonResponse({"success": _("You have mastered this exercise!")})
+    
+    # Return no message in release mode; "data saved" message in debug mode.
+    return JsonResponse({})
 
+
+@student_log_api(logged_out_message=_("Progress not loaded."))
 def get_video_logs(request):
+    """
+    Given a list of youtube_ids, retrieve a list of video logs for this user.
+    """
+
     data = simplejson.loads(request.raw_post_data or "[]")
     if not isinstance(data, list):
-        return JsonResponse([])
-    if "facility_user" not in request.session:
-        return JsonResponse([])
+        return JsonResponse({"error": "Could not load VideoLog objects: Unrecognized input data format." % e}, status=500)
+
     user = request.session["facility_user"]
     responses = []
     for youtube_id in data:
@@ -89,12 +141,16 @@ def _get_video_log_dict(request, user, youtube_id):
     }
 
 
+@student_log_api(logged_out_message=_("Progress not loaded."))
 def get_exercise_logs(request):
+    """
+    Given a list of exercise_ids, retrieve a list of video logs for this user.
+    """
+
     data = simplejson.loads(request.raw_post_data or "[]")
     if not isinstance(data, list):
-        return JsonResponse([])
-    if "facility_user" not in request.session:
-        return JsonResponse([])
+        return JsonResponse({"error": "Could not load ExerciseLog objects: Unrecognized input data format." % e}, status=500)
+
     user = request.session["facility_user"]
     responses = []
     for exercise_id in data:
@@ -118,6 +174,7 @@ def _get_exercise_log_dict(request, user, exercise_id):
         "points": exerciselog.points,
         "struggling": exerciselog.struggling,
     }
+
 
 @require_admin
 def start_video_download(request):
@@ -275,10 +332,10 @@ def annotate_topic_tree(node, level=0, statusdict=None):
                     unstarted = False
                 children.append(child)
         return {
-            "title": node[title_key["Topic"]],
+            "title": node["title"],
             "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
             "isFolder": True,
-            "key": node[slug_key["Topic"]],
+            "key": node["slug"],
             "children": children,
             "addClass": complete and "complete" or unstarted and "unstarted" or "partial",
             "expand": level < 1,
@@ -294,7 +351,7 @@ def annotate_topic_tree(node, level=0, statusdict=None):
         else:
             status = "partial"
         return {
-            "title": node[title_key["Video"]],
+            "title": node["title"],
             "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
             "key": node["youtube_id"],
             "addClass": status,

@@ -1,4 +1,5 @@
-from registration.tests.backends import *
-from registration.tests.forms import *
-from registration.tests.models import *
-from registration.tests.views import *
+import os
+
+from utils.importing import import_all_from
+
+import_all_from(os.path.dirname(__file__), locals(), globals())

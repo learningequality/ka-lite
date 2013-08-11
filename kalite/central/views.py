@@ -4,20 +4,21 @@ from annoying.decorators import render_to
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_exempt
 
-import kalite
 import settings
 from central.forms import OrganizationForm, OrganizationInvitationForm
 from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
 from securesync.api_client import SyncClient
-from utils.decorators import authorized_login_required
+from utils.decorators import require_authorized_admin
 
 
 @render_to("central/homepage.html")
@@ -38,7 +39,7 @@ def org_management(request):
     organizations = get_or_create_user_profile(request.user).get_organizations()
 
     # add invitation forms to each of the organizations
-    for pk,org in organizations.items():
+    for org in organizations.values():
         org.form = OrganizationInvitationForm(initial={"invited_by": request.user})
 
     # handle a submitted invitation form
@@ -47,7 +48,7 @@ def org_management(request):
         if form.is_valid():
             # ensure that the current user is a member of the organization to which someone is being invited
             if not form.instance.organization.is_member(request.user):
-                return HttpResponseForbidden("Unfortunately for you, you do not have permission to do that.")
+                raise PermissionDenied("Unfortunately for you, you do not have permission to do that.")
             # send the invitation email, and save the invitation record
             form.instance.send(request)
             form.save()
@@ -60,6 +61,7 @@ def org_management(request):
     return {
         "title": _("Account administration"),
         "organizations": organizations,
+        "HEADLESS_ORG_NAME": Organization.HEADLESS_ORG_NAME,
         "invitations": OrganizationInvitation.objects.filter(email_to_invite=request.user.email)
     }
 
@@ -78,7 +80,7 @@ def org_invite_action(request, invite_id):
     invite = OrganizationInvitation.objects.get(pk=invite_id)
     org = invite.organization
     if request.user.email != invite.email_to_invite:
-        return HttpResponseForbidden("It's not nice to force your way into groups.")
+        raise PermissionDenied("It's not nice to force your way into groups.")
     if request.method == "POST":
         data = request.POST
         if data.get("join"):
@@ -90,14 +92,14 @@ def org_invite_action(request, invite_id):
     return HttpResponseRedirect(reverse("org_management"))
 
 
-@authorized_login_required
+@require_authorized_admin
 def delete_admin(request, org_id, user_id):
     org = Organization.objects.get(pk=org_id)
     admin = org.users.get(pk=user_id)
     if org.owner == admin:
-        return HttpResponseForbidden("The owner of an organization cannot be removed.")
+        raise PermissionDenied("The owner of an organization cannot be removed.")
     if request.user == admin:
-        return HttpResponseForbidden("Your personal views are your own, but in this case " +
+        raise PermissionDenied("Your personal views are your own, but in this case " +
             "you are not allowed to delete yourself.")
     deletion = DeletionRecord(organization=org, deleter=request.user, deleted_user=admin)
     deletion.save()
@@ -106,7 +108,7 @@ def delete_admin(request, org_id, user_id):
     return HttpResponseRedirect(reverse("org_management"))
 
 
-@authorized_login_required
+@require_authorized_admin
 def delete_invite(request, org_id, invite_id):
     org = Organization.objects.get(pk=org_id)
     invite = OrganizationInvitation.objects.get(pk=invite_id)
@@ -117,7 +119,7 @@ def delete_invite(request, org_id, invite_id):
     return HttpResponseRedirect(reverse("org_management"))
 
 
-@authorized_login_required
+@require_authorized_admin
 @render_to("central/organization_form.html")
 def organization_form(request, org_id):
     if org_id != "new":
@@ -151,7 +153,7 @@ def glossary(request):
 @login_required
 def crypto_login(request):
     if not request.user.is_superuser:
-        return HttpResponseForbidden()
+        raise PermissionDenied()
     ip = request.GET.get("ip", "")
     if not ip:
         return HttpResponseNotFound("Please specify an IP (as a GET param).")
@@ -165,6 +167,15 @@ def crypto_login(request):
     return HttpResponseRedirect("%ssecuresync/cryptologin/?client_nonce=%s" % (host, client.session.client_nonce))
 
 
+def handler_403(request, *args, **kwargs):
+    context = RequestContext(request)
+    message = None  # Need to retrieve, but can't figure it out yet.
+
+    if request.is_ajax():
+        raise PermissionDenied(message)
+    else:
+        messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page..")))
+        return HttpResponseRedirect(reverse("auth_login") + "?next=" + request.path)
 
 def handler_404(request):
     return HttpResponseNotFound(render_to_string("central/404.html", {}, context_instance=RequestContext(request)))

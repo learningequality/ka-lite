@@ -4,11 +4,25 @@
 // open and close the topic tree, and call `display_selected_topics` when closed
 window.toggle_tree_callbacks = [];
 window.last_paths = [];
-function toggle_tree() {
+function toggle_tree(force_callbacks) {
+    // Toggle, and do callbacks when tree closes.
+    var window_will_close = window.showing_tree;   // when tree closes
+
+    if (get_topic_paths_from_tree().length == 0) {
+        // When nothing's selected, make sure it stays open
+        window.showing_tree = true;
+        $("#content_tree_toggle").toggle(true);
+        $("#content_tree").slideDown();
+        if (window_will_close || force_callbacks) {
+            do_callbacks();
+        }
+        return;
+    }
+
     window.showing_tree = !window.showing_tree;
     $("#content_tree_toggle").toggle();
     $("#content_tree").slideToggle();
-    if (!window.showing_tree) {
+    if (window_will_close) {
         do_callbacks();
     }
 }
@@ -38,8 +52,11 @@ function do_callbacks(force) {
             topics += parts[parts.length-2]; // trailing slash leaves an empty at the end
         }
     }
-    $("#topic_paths").text(topics);
-        
+    // Show linked topics (to reopen the tree if clicked) if some are selected,
+    //   or a non-clickable "None" if none are selected.
+    $("#topic_paths").text(topics != "" ? topics : "");
+    $("#topic_paths_note").text(topics == "" ? "[None; Please select below]" : "");
+
     if (trigger_callbacks) {
         for (cbi in window.toggle_tree_callbacks) {
             window.toggle_tree_callbacks[cbi](cur_paths);
@@ -60,6 +77,7 @@ function get_topic_paths_from_tree() {
 }
 
 function set_topic_paths_in_tree(dynatree, paths) {
+
     var cur_paths = get_topic_paths_from_tree();
     for (pi in paths) {
         dynatree.selectKey(paths[pi]);

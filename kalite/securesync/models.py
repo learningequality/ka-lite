@@ -7,7 +7,6 @@ from annoying.functions import get_object_or_None
 from pbkdf2 import crypt
 
 from django.contrib.auth.models import check_password
-from django.core import serializers
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models, transaction
 from django.db.models import Q
@@ -70,16 +69,16 @@ class SyncSession(models.Model):
             SyncSession.objects.filter(pk__in=to_discard).delete()
 
     def __unicode__(self):
-        return "%s... -> %s..." % (self.client_device.pk[0:5],
+        return u"%s... -> %s..." % (self.client_device.pk[0:5],
             (self.server_device and self.server_device.pk[0:5] or "?????"))
 
 
 class RegisteredDevicePublicKey(models.Model):
-    public_key = models.CharField(max_length=500, help_text="(this field should be filled in automatically; don't change it)")
+    public_key = models.CharField(max_length=500, help_text="(This field will be filled in automatically)")
     zone = models.ForeignKey("Zone")
 
     def __unicode__(self):
-        return "%s... (Zone: %s)" % (self.public_key[0:5], self.zone)
+        return u"%s... (Zone: %s)" % (self.public_key[0:5], self.zone)
 
 
 class DeviceMetadata(models.Model):
@@ -92,7 +91,7 @@ class DeviceMetadata(models.Model):
         verbose_name_plural = "Device metadata"
 
     def __unicode__(self):
-        return "(Device: %s)" % (self.device)
+        return u"(Device: %s)" % (self.device)
 
 
 class SyncedModelManager(models.Manager):
@@ -104,6 +103,12 @@ class SyncedModelManager(models.Manager):
             Q(signed_by__devicemetadata__is_trusted=True, zone_fallback=zone))
 
 class SyncedModel(models.Model):
+    """
+    The main class that makes this engine go.
+    
+    A model that is cross-computer syncable.  All models sync'd across computers
+    should inherit from this base class.
+    """
     id = models.CharField(primary_key=True, max_length=32, editable=False)
     counter = models.IntegerField(default=0)
     signature = models.CharField(max_length=360, blank=True, editable=False)
@@ -116,11 +121,17 @@ class SyncedModel(models.Model):
     _unhashable_fields = ["signature", "signed_by"] # fields of this class to avoid serializing
     _always_hash_fields = ["signed_version", "id"]  # fields of this class to always serialize
 
-
     def sign(self, device=None):
-        if not self.id:
-            self.id = self.get_uuid()
-        self.signed_by = device or Device.get_own_device()
+        """
+        Get all of the relevant fields of this model into a single string (self._hashable_representation()),
+        then sign it with the specified device (if specified), or the current device.
+        """
+        device = device or Device.get_own_device()
+        assert device.get_key(), "Cannot sign with device %s: key does not exist." % (device.name or "")
+
+        self.id = self.id or self.get_uuid()
+        self.signed_by = device
+        self.full_clean()  # make sure the model data is of the appropriate types
         self.signature = self.signed_by.get_key().sign(self._hashable_representation())
 
     def verify(self):
@@ -196,21 +207,29 @@ class SyncedModel(models.Model):
         return "&".join(chunks)
 
     def save(self, own_device=None, imported=False, increment_counters=True, *args, **kwargs):
+        """
+        Some of the heavy lifting happens here.  There are two saving scenarios:
+        (a) We are saving an imported model.
+            In this case, we need to make sure that the data check out (but nothing we mark on the object)
+        (b) We are saving our own model
+            In this case, we need to mark the model with appropriate fields, so that
+            it can be sync'd (self.counter), and that it will verify (self.signature)
+        """
 
         # we allow for the "own device" to be passed in so that a device can sign itself (before existing)
         own_device = own_device or Device.get_own_device()
+        assert own_device, "own_device is None--this should never happen, as get_own_device should create if not found."
 
-        # this will probably never happen (since getting the device creates it), but just to be safe
-        if not own_device:
-            raise ValidationError("Cannot save any synced models before registering this Device.")
-
-        # imported models are signed by other devices; make sure they check out
         if imported:
+            # imported models are signed by other devices; make sure they check out
             if not self.signed_by_id:
                 raise ValidationError("Imported models must be signed.")
             if not self.verify():
                 raise ValidationError("Imported model's signature did not match.")
-        else: # local models need to be signed by us
+        else:
+            # Two critical things to do:
+            # 1. local models need to be signed by us
+            # 2. and get our counter position
             self.counter = own_device.increment_and_get_counter()
             self.sign(device=own_device)
 
@@ -222,6 +241,8 @@ class SyncedModel(models.Model):
             self.signed_by.set_counter_position(self.counter)
 
     def get_uuid(self):
+        assert self.counter is not None, "counter required for get_uuid"
+
         own_device = Device.get_own_device()
         namespace = own_device.id and uuid.UUID(own_device.id) or ROOT_UUID_NAMESPACE
         return uuid.uuid5(namespace, str(self.counter)).hex
@@ -254,8 +275,21 @@ class SyncedModel(models.Model):
         abstract = True
 
     def __unicode__(self):
-        return "%s... (Signed by: %s...)" % (self.pk[0:5], self.signed_by.pk[0:5])
+        pk = self.pk[0:5] if len(getattr(self, "pk", "")) >= 5 else "[unsaved]"
+        signed_by_pk = self.signed_by.pk[0:5] if self.signed_by and self.signed_by.pk else "[None]"
+        return u"%s... (Signed by: %s...)" % (pk, signed_by_pk)
 
+    @classmethod
+    def get_or_initialize(cls, *args, **kwargs):
+        """
+        This is like Django's get_or_create method, but without calling save().
+        Allows for more efficient post-initialize updates.
+        """
+        assert not args, "No positional arguments allowed for this method."""
+
+        obj = get_object_or_None(cls, **kwargs)
+        return obj or cls(**kwargs)
+        
 
 class Zone(SyncedModel):
     name = models.CharField(max_length=100)
@@ -271,8 +305,7 @@ class Zone(SyncedModel):
         """
         Reverse lookup of organization containing this zone.
         """
-        from central.models import Organization  # inline import to avoid unnecessary dependence on central app
-        orgs = Organization.objects.filter(zones__in=[self])
+        orgs = self.organization_set.all()
         assert orgs.count() <= 1, "Zone must be contained by 0 or 1 organization(s)."
 
         return orgs[0] if orgs else None
@@ -280,17 +313,11 @@ class Zone(SyncedModel):
 
     @classmethod
     def get_headless_zones(cls):
+        """
+        Method for getting all zones that aren't connected to at least one organization.
+        """
         # Must import inline (not in header) to avoid import loop
-        from central.models import Organization
-
-        all_zones = Zone.objects.all()
-        headless_zones = []
-        for zone in all_zones:
-            orgs = Organization.objects.filter(zones__in=[zone])
-            if not orgs:
-                headless_zones.append(zone)
-
-        return headless_zones
+        return Zone.objects.filter(organization=None)
 
 
 class Facility(SyncedModel):
@@ -312,7 +339,7 @@ class Facility(SyncedModel):
     def __unicode__(self):
         if not self.id:
             return self.name
-        return "%s (#%s)" % (self.name, int(self.id[:3], 16))
+        return u"%s (#%s)" % (self.name, int(self.id[:3], 16))
 
     def is_default(self):
         return self.id == Settings.get("default_facility")
@@ -359,7 +386,7 @@ class FacilityUser(SyncedModel):
         unique_together = ("facility", "username")
 
     def __unicode__(self):
-        return "%s (Facility: %s)" % (self.get_name(), self.facility)
+        return u"%s (Facility: %s)" % (self.get_name(), self.facility)
 
     def check_password(self, raw_password):
         if self.password.split("$", 1)[0] == "sha1":
@@ -397,10 +424,13 @@ class DeviceZone(SyncedModel):
     requires_trusted_signature = True
 
     def __unicode__(self):
-        return "Device: %s, assigned to Zone: %s" % (self.device, self.zone)
+        return u"Device: %s, assigned to Zone: %s" % (self.device, self.zone)
 
 
 class SyncedLog(SyncedModel):
+    """
+    This is not used, but for backwards compatibility, we need to keep it.
+    """
     category = models.CharField(max_length=50)
     value = models.CharField(max_length=250, blank=True)
     data = models.TextField(blank=True)
@@ -524,6 +554,8 @@ class Device(SyncedModel):
             metadata.save()
 
     def get_uuid(self):
+        assert self.public_key is not None, "public_key required for get_uuid"
+
         return uuid.uuid5(ROOT_UUID_NAMESPACE, str(self.public_key)).hex
 
     @staticmethod

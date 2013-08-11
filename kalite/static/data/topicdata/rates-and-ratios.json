@@ -1,1 +1,87 @@
-[{"relative_url": "/exercise/expressing_ratios_as_fractions", "guaranteed_file_name": "expressing_ratios_as_fractions.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/expressing_ratios_as_fractions", "v_position": -10, "h_position": 28, "node_slug": "e/expressing_ratios_as_fractions", "progress_key": "e201382013", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/rates-and-ratios-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/expressing_ratios_as_fractions.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Ratios as F", "covers": [], "display_name": "Expressing ratios as fractions", "kind": "Exercise", "sha1": "66730cc96de1a3d21712998d0232fbfd1b87fed5", "name": "expressing_ratios_as_fractions", "seconds_per_fast_problem": 8.0, "prerequisites": ["simplifying_fractions"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/expressing_ratios_as_fractions_256.png"}, {"relative_url": "/exercise/ratio_word_problems", "guaranteed_file_name": "ratio_word_problems.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/ratio_word_problems", "v_position": -8, "h_position": 29, "node_slug": "e/ratio_word_problems", "progress_key": "e201415654", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/rates-and-ratios-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/ratio_word_problems.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Ratio WP", "covers": [], "display_name": "Ratio word problems", "kind": "Exercise", "sha1": "00e4f09372a2b2a7b31959edc2460071448e7f49", "name": "ratio_word_problems", "seconds_per_fast_problem": 10.0, "prerequisites": ["expressing_ratios_as_fractions"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/ratio_word_problems_256.png"}, {"relative_url": "/exercise/writing_proportions", "guaranteed_file_name": "writing_proportions.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/writing_proportions", "v_position": -10, "h_position": 29, "node_slug": "e/writing_proportions", "progress_key": "e201421177", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/rates-and-ratios-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/writing_proportions.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Writ Propor", "covers": [], "display_name": "Writing proportions", "kind": "Exercise", "sha1": "bf082eae57b25fcf71a5251c05ede7a8e8e493e7", "name": "writing_proportions", "seconds_per_fast_problem": 9.0, "prerequisites": ["expressing_ratios_as_fractions"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/writing_proportions_256.png"}, {"relative_url": "/exercise/rate_problems_0.5", "guaranteed_file_name": "rate_problems_0.5.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-09-13T01:47:43Z", "ka_url": "http://www.khanacademy.org/exercise/rate_problems_0.5", "v_position": -11, "h_position": 29, "node_slug": "e/rate_problems_0.5", "progress_key": "e243479663", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/rates-and-ratios-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/rate_problems_0.5.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "RateProb0.5", "covers": [], "display_name": "Rate problems 0.5", "kind": "Exercise", "sha1": "97c986b70ecd38f86976cc1d95c3925076718a27", "name": "rate_problems_0.5", "seconds_per_fast_problem": 12.0, "prerequisites": ["units"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/rate_problems_0.5_256.png"}, {"relative_url": "/exercise/rate_problems_1", "guaranteed_file_name": "rate_problems_1.html", "file_name": null, "author_name": "Christi Rockwell", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/rate_problems_1", "v_position": -11, "h_position": 30, "node_slug": "e/rate_problems_1", "progress_key": "e23890544", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/rates-and-ratios-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/rate_problems_1.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Rate Prob 1", "covers": [], "display_name": "Rate problems 1", "kind": "Exercise", "sha1": "128f7ca3464236eb246b98a2ce76fede7b252cef", "name": "rate_problems_1", "seconds_per_fast_problem": 60.0, "prerequisites": ["rate_problems_0.5"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/rate_problems_1_256.png"}, {"relative_url": "/exercise/rate_problems_2", "guaranteed_file_name": "rate_problems_2.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-10-07T23:47:55Z", "ka_url": "http://www.khanacademy.org/exercise/rate_problems_2", "v_position": -11, "h_position": 31, "node_slug": "e/rate_problems_2", "progress_key": "e297910578", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/rates-and-ratios-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/rate_problems_2.png", "custom_stacks": [], "description": "", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Rate Prob 2", "covers": [], "display_name": "Rate problems 2", "kind": "Exercise", "sha1": "1dbaa411cb0670d68ed6cdfdf1e18c51047747d6", "name": "rate_problems_2", "seconds_per_fast_problem": 12.0, "prerequisites": ["rate_problems_1"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/rate_problems_2_256.png"}, {"relative_url": "/exercise/proportions_1", "guaranteed_file_name": "proportions_1.html", "file_name": null, "author_name": "David Sissitka", "creation_date": "2012-02-06T17:20:39Z", "ka_url": "http://www.khanacademy.org/exercise/proportions_1", "v_position": -9, "h_position": 29, "node_slug": "e/proportions_1", "progress_key": "e554082156", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/rates-and-ratios-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/proportions_1.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Prop 1", "covers": [], "display_name": "Proportions 1", "kind": "Exercise", "sha1": "3a1846fe9b31cc4e90b54694b6119b10253f3ba1", "name": "proportions_1", "seconds_per_fast_problem": 7.0, "prerequisites": ["proportions_1", "expressing_ratios_as_fractions"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/proportions_1_256.png"}, {"relative_url": "/exercise/proportions_2", "guaranteed_file_name": "proportions_2.html", "file_name": null, "author_name": "Matt Wahl", "creation_date": "2012-02-08T12:24:38Z", "ka_url": "http://www.khanacademy.org/exercise/proportions_2", "v_position": -9, "h_position": 30, "node_slug": "e/proportions_2", "progress_key": "e559639459", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/rates-and-ratios-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/proportions_2.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Prop 2", "covers": ["proportions_1"], "display_name": "Proportions 2", "kind": "Exercise", "sha1": "a051e369f0a781ba28aa647806809c9ec8240569", "name": "proportions_2", "seconds_per_fast_problem": 16.0, "prerequisites": ["proportions_1"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/proportions_2_256.png"}, {"relative_url": "/exercise/units", "guaranteed_file_name": "units.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/units", "v_position": -11, "h_position": 28, "node_slug": "e/units", "progress_key": "e3020", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/rates-and-ratios-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/units.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Units", "covers": [], "display_name": "Units", "kind": "Exercise", "sha1": "2ae915750bd5e2adc5b84d8663e7746892bf2996", "name": "units", "seconds_per_fast_problem": 22.0, "prerequisites": ["multiplying_fractions"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/units_256.png"}]
+[
+  {
+    "related_video_readable_ids": [
+      "introduction-to-ratios--new-hd-version", 
+      "ratios-as-fractions-in-simplest-form", 
+      "simplifying-rates-and-ratios"
+    ], 
+    "v_position": -10, 
+    "path": "/math/arithmetic/rates-and-ratios/ratios_and_proportions/e/expressing_ratios_as_fractions/", 
+    "display_name": "Expressing ratios as fractions", 
+    "title": "Expressing ratios as fractions", 
+    "live": true, 
+    "description": "", 
+    "h_position": 28, 
+    "slug": "expressing_ratios_as_fractions", 
+    "kind": "Exercise", 
+    "name": "expressing_ratios_as_fractions", 
+    "seconds_per_fast_problem": 8.0, 
+    "prerequisites": [
+      "simplifying_fractions"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "ratio-word-problem-exercise-example-1", 
+      "ratio-word-problem-exercise-example-2"
+    ], 
+    "v_position": -8, 
+    "path": "/math/arithmetic/rates-and-ratios/ratios_and_proportions/e/ratio_word_problems/", 
+    "display_name": "Ratio word problems", 
+    "title": "Ratio word problems", 
+    "live": true, 
+    "description": "", 
+    "h_position": 29, 
+    "slug": "ratio_word_problems", 
+    "kind": "Exercise", 
+    "name": "ratio_word_problems", 
+    "seconds_per_fast_problem": 11.0, 
+    "prerequisites": [
+      "expressing_ratios_as_fractions"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "finding-unit-rates", 
+      "finding-unit-prices", 
+      "usain-bolt-s-average-speed"
+    ], 
+    "v_position": -11, 
+    "path": "/math/arithmetic/rates-and-ratios/rates_tutorial/e/rate_problems_0.5/", 
+    "display_name": "Rate problems 0.5", 
+    "title": "Rate problems 0.5", 
+    "live": true, 
+    "description": null, 
+    "h_position": 29, 
+    "slug": "rate_problems_0.5", 
+    "kind": "Exercise", 
+    "name": "rate_problems_0.5", 
+    "seconds_per_fast_problem": 13.0, 
+    "prerequisites": [
+      "units"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "unit-conversion-exercise-example-1", 
+      "can-a-squirrel-avoid-getting-run-over", 
+      "converting-units-of-length", 
+      "unit-conversion-example--drug-dosage", 
+      "unit-conversion-with-fractions"
+    ], 
+    "v_position": -11, 
+    "path": "/math/arithmetic/rates-and-ratios/unit_conversion/e/units/", 
+    "display_name": "Units", 
+    "title": "Units", 
+    "live": true, 
+    "description": "", 
+    "h_position": 28, 
+    "slug": "units", 
+    "kind": "Exercise", 
+    "name": "units", 
+    "seconds_per_fast_problem": 18.0, 
+    "prerequisites": [
+      "multiplying_fractions"
+    ]
+  }
+]

@@ -231,22 +231,32 @@ $(document).ready(function() {
         vars[key] = value;
     });
 
-    if (vars["topic"]) {
-        $.getJSON("/static/data/topicdata/" + vars["topic"] + ".json", function(exerciseLayout) {
-            console.log(exerciseLayout);
-            var exercise_ids = $.map(exerciseLayout, function(exercise) { return exercise.name });
-            doRequest("/api/get_exercise_logs", exercise_ids).success(function(data) {
-                var exercisesCompleted = {};
-                $.each(data, function(ind, status) {
-                    exercisesCompleted[status.exercise_id] = status.complete ? "complete" : "partial";
-                });
-                KMapEditor.init(exerciseLayout, [], exercisesCompleted, 8);
-            });
-        });
-    } else {
+    if (!vars["topic"]) {
+        // Top level of the topic tree
         $(".topic-button").hide();
-        $.getJSON("/static/data/maplayout_data.json", function(defaultMapLayout) {
-            KMapEditor.init([], defaultMapLayout, {}, 6);
-        });
+        $.getJSON("/static/data/maplayout_data.json")
+            .success(function(defaultMapLayout) {
+                KMapEditor.init([], defaultMapLayout, {}, 6);
+            });
+
+    } else {
+        // Second level of the topic tree
+
+        $.getJSON("/static/data/topicdata/" + vars["topic"] + ".json")
+            .success(function(exerciseLayout) {
+                var exercise_ids = $.map(exerciseLayout, function(exercise) { return exercise.name });
+                doRequest("/api/get_exercise_logs", exercise_ids)
+                    .success(function(data) {
+                        var exercisesCompleted = {};
+                        $.each(data, function(ind, status) {
+                            exercisesCompleted[status.exercise_id] = status.complete ? "complete" : "partial";
+                        });
+                        KMapEditor.init(exerciseLayout, [], exercisesCompleted, 8);
+                    })
+                    .fail(function (resp) {
+                        communicate_api_failure(resp, "id_student_logs");
+                        KMapEditor.init(exerciseLayout, [], [], 8);
+                    });
+            });
     }
 });

@@ -1,12 +1,19 @@
+import os
 import re
+import subprocess
 import sys
 from cStringIO import StringIO
 
 from django.core.management import call_command
 from django.contrib.messages.storage.session import SessionStorage
 
+import settings
+
+
 def call_command_with_output(cmd, *args, **kwargs): 
-    """Run call_command while capturing stdout/stderr and calls to sys.exit"""
+    """
+    Run call_command while capturing stdout/stderr and calls to sys.exit
+    """
     
     backups = [sys.stdout, sys.stderr, sys.exit]
     try:
@@ -37,6 +44,33 @@ def call_command_with_output(cmd, *args, **kwargs):
         sys.stdout = backups[0]
         sys.stderr = backups[1]
         sys.exit   = backups[2]
+
+
+def call_command_async(cmd, *args, **kwargs):
+    """
+    Runs a manage.py command asynchronously, by calling into
+    the subprocess module.
+
+    This may be finicky, as it requires stringifying kwargs, but
+    it works well for the current needs and should be safe for types
+    that stringify in a way that commands can parse
+    (which will work for str, bool, int, etc).
+    """
+    # Use sys to get the same executable running as is running this process.
+    # Make sure to call the manage.py from this project.
+    call_args = [sys.executable, os.path.join(settings.PROJECT_PATH, "manage.py"), cmd]
+    call_args += list(args)
+    for key,val in kwargs:
+        call_args.append("--%s=%s" % (key, val))
+
+    # We don't need to hold onto the process handle.
+    #    we expect all commands to return eventually, on their own--
+    #    we have no way to deal with a rogue process.
+    # But, because they're subprocesses of this process, when the
+    #    server stops, so do these processes.
+    # Note that this is also OK because chronograph does all "stopping"
+    #    using messaging through the database
+    subprocess.Popen(call_args)
 
 
 class NoDuplicateMessagesSessionStorage(SessionStorage):

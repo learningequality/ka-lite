@@ -4,21 +4,20 @@ Used for labeling models that use securesync.  This is where the heavy lifting h
 from annoying.functions import get_object_or_None
 
 from django.core.exceptions import ValidationError
-from django.core import serializers
 
 import settings
 import version
-
+from settings import LOG as logging
+from shared import serializers
 
 _syncing_models = [] # all models we want to sync
-#_json_serializer = serializers.get_serializer("json")()
 
 
 def add_syncing_models(models):
     """When sync is run, these models will be sync'd"""
     for model in models:
         if model in _syncing_models:
-            settings.LOG.warn("We are already syncing model %s" % str(model))
+            logging.warn("We are already syncing model %s" % str(model))
         else:
             _syncing_models.append(model)
 
@@ -87,7 +86,7 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
         boost += limit
 
     # serialize the models we found
-    serialized_models = serializers.serialize("json", models, ensure_ascii=False, dest_version=dest_version)
+    serialized_models = serializers.serialize("versioned-json", models, ensure_ascii=False, dest_version=dest_version)
 
     if include_count:
         return {"models": serialized_models, "count": len(models)}
@@ -118,9 +117,9 @@ def save_serialized_models(data, increment_counters=True, src_version=version.VE
 
     # deserialize the models, either from text or a list of dictionaries
     if isinstance(data, str) or isinstance(data, unicode):
-        models = serializers.deserialize("json", data, src_version=src_version, dest_version=version.VERSION)
+        models = serializers.deserialize("versioned-json", data, src_version=src_version, dest_version=version.VERSION)
     else:
-        models = serializers.deserialize("python", data, src_version=src_version, dest_version=version.VERSION)
+        models = serializers.deserialize("versioned-python", data, src_version=src_version, dest_version=version.VERSION)
 
     # try importing each of the models in turn
     unsaved_models = []
@@ -172,7 +171,7 @@ def save_serialized_models(data, increment_counters=True, src_version=version.VE
             purgatory = ImportPurgatory()
         
         # These models were successfully unserialized, so re-save in our own version.
-        purgatory.serialized_models = serializers.serialize("json", unsaved_models, ensure_ascii=False, dest_version=version.VERSION)
+        purgatory.serialized_models = serializers.serialize("versioned-json", unsaved_models, ensure_ascii=False, dest_version=version.VERSION)
         purgatory.exceptions = exceptions
         purgatory.model_count = len(unsaved_models)
         purgatory.retry_attempts += 1

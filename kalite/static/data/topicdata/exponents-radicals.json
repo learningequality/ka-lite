@@ -1,1 +1,251 @@
-[{"relative_url": "/exercise/exponents_4", "file_name": "", "covers": [], "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/exponents_4", "v_position": 4, "display_name": "Negative fractional exponents", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/exponents-and-radicals-250x250.png?7", "custom_stacks": [], "description": "Fractional bases raised to primarily negative fractional exponents.", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "Exponents 4", "author_name": "Jeff Ruberg", "h_position": 21, "kind": "Exercise", "sha1": "02f7d59d56c5928576cb76eb07f2a880950d2ff4", "name": "exponents_4", "prerequisites": ["exponents_3"], "seconds_per_fast_problem": 15.0, "pretty_display_name": "Negative fractional exponents"}, {"relative_url": "/exercise/exponents_1", "file_name": "", "covers": ["multiplying_and_dividing_negative_numbers"], "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/exponents_1", "v_position": 2, "display_name": "Positive and zero exponents", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/exponents-and-radicals-250x250.png?7", "custom_stacks": [], "description": "Integers raised to positive integers. Non-zero integers raised to the zero power. 0, -1, and 1 raised to very large positive integers.", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "Exponents 1", "author_name": "Jeff Ruberg", "h_position": 18, "kind": "Exercise", "sha1": "2d24927dc7a41d2cd16d7765babc84bf51608296", "name": "exponents_1", "prerequisites": ["multiplying_and_dividing_negative_numbers"], "seconds_per_fast_problem": 5.0, "pretty_display_name": "Positive and zero exponents"}, {"relative_url": "/exercise/scientific_notation", "file_name": "", "covers": [], "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/scientific_notation", "v_position": 2, "display_name": "Scientific notation", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/exponents-and-radicals-250x250.png?7", "custom_stacks": [], "description": "Express a number in scientific notation.", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "Sci. Notat.", "author_name": "Omar Rizwan", "h_position": 22, "kind": "Exercise", "sha1": "27344f64372cb0336e283f93739ef26541dbb69d", "name": "scientific_notation", "prerequisites": ["scientific_notation_intuition"], "seconds_per_fast_problem": 11.0, "pretty_display_name": ""}, {"relative_url": "/exercise/exponent_rules", "file_name": "", "covers": ["exponents_2"], "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/exponent_rules", "v_position": 7, "display_name": "Exponent rules", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/exponents-and-radicals-250x250.png?7", "custom_stacks": [], "description": "Solve exponent problems by adding, subtracting, or multiplying exponents.", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "Exp. Rules", "author_name": "Omar Rizwan", "h_position": 20, "kind": "Exercise", "sha1": "31a282f7265d3e00a34a11061d32a59ecefdd0f8", "name": "exponent_rules", "prerequisites": ["exponents_2"], "seconds_per_fast_problem": 7.0, "pretty_display_name": ""}, {"relative_url": "/exercise/simplifying_expressions_with_exponents", "file_name": "", "covers": [], "creation_date": "2012-01-13T08:00:11Z", "ka_url": "http://www.khanacademy.org/exercise/simplifying_expressions_with_exponents", "v_position": 7, "display_name": "Simplifying expressions with exponents", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/exponents-and-radicals-250x250.png?7", "custom_stacks": [], "description": "Combine like terms in expressions with variables using exponent rules.", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "Exp. Expr.", "author_name": "Daniel McLaury", "h_position": 21, "kind": "Exercise", "sha1": "f3904c7d6b1e2d89c18332521981c1aedea01a05", "name": "simplifying_expressions_with_exponents", "prerequisites": ["exponent_rules"], "seconds_per_fast_problem": 20.0, "pretty_display_name": ""}, {"relative_url": "/exercise/logarithms_2", "file_name": "", "covers": [], "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/logarithms_2", "v_position": 3, "display_name": "Operations with logarithms", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/exponents-and-radicals-250x250.png?7", "custom_stacks": [], "description": "Add, subtract, multiply, and divide with logarithms.", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "Log. 2", "author_name": "Rob Yates", "h_position": 22, "kind": "Exercise", "sha1": "d90ea1b2b1c576e94c3d72a62f018fa36533a1b8", "name": "logarithms_2", "prerequisites": ["logarithms_1"], "seconds_per_fast_problem": 6.0, "pretty_display_name": "Operations with logarithms"}, {"relative_url": "/exercise/logarithms_1", "file_name": "", "covers": ["multiplication_1"], "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/logarithms_1", "v_position": 3, "display_name": "Solving logarithms", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/exponents-and-radicals-250x250.png?7", "custom_stacks": [], "description": "Solve logarithms in the form log_base (number) = answer.", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "Log. 1", "author_name": "johnfn", "h_position": 21, "kind": "Exercise", "sha1": "2ce10a1887c7f2bde565c1605ff0905297cf8435", "name": "logarithms_1", "prerequisites": ["exponents_3"], "seconds_per_fast_problem": 5.0, "pretty_display_name": "Solving logarithms"}, {"relative_url": "/exercise/radical_equations", "file_name": "", "covers": ["linear_equations_3"], "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/radical_equations", "v_position": 7, "display_name": "Radical equations", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/exponents-and-radicals-250x250.png?7", "custom_stacks": [], "description": "Solve equations containing square roots of variables.", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "Rad Eq 1", "author_name": "Marcia Lee", "h_position": 22, "kind": "Exercise", "sha1": "877bd0d48eb9fb5208ca66cf97879b925767359b", "name": "radical_equations", "prerequisites": ["simplifying_radicals"], "seconds_per_fast_problem": 17.0, "pretty_display_name": ""}, {"relative_url": "/exercise/multiplying_radicals", "file_name": "", "covers": [], "creation_date": "2011-10-31T21:55:04Z", "ka_url": "http://www.khanacademy.org/exercise/multiplying_radicals", "v_position": 6, "display_name": "Multiplying radicals", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/exponents-and-radicals-250x250.png?7", "custom_stacks": [], "description": "Multiply expressions containing radicals.", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "* radicals", "author_name": "Scott Menke", "h_position": 23, "kind": "Exercise", "sha1": "eca1612b6906490cdadf6602cd0cd44c5c371d4c", "name": "multiplying_radicals", "prerequisites": ["adding_and_subtracting_radicals"], "seconds_per_fast_problem": 10.0, "pretty_display_name": ""}, {"relative_url": "/exercise/adding_and_subtracting_radicals", "file_name": "", "covers": [], "creation_date": "2011-10-31T21:46:36Z", "ka_url": "http://www.khanacademy.org/exercise/adding_and_subtracting_radicals", "v_position": 6, "display_name": "Adding and subtracting radicals", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/exponents-and-radicals-250x250.png?7", "custom_stacks": [], "description": "Add and subtract expressions containing radicals.", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "+- Radicals", "author_name": "Scott Menke", "h_position": 22, "kind": "Exercise", "sha1": "051d15d51d9e6679df01dd4f17f85f8e7a5a52cb", "name": "adding_and_subtracting_radicals", "prerequisites": ["simplifying_radicals"], "seconds_per_fast_problem": 18.0, "pretty_display_name": ""}, {"relative_url": "/exercise/simplifying_radicals", "file_name": "", "covers": [], "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/simplifying_radicals", "v_position": 6, "display_name": "Simplifying radicals", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/exponents-and-radicals-250x250.png?7", "custom_stacks": [], "description": "Express radicals in simplest form.", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "Simp. Rad.", "author_name": "Ben Alpert", "h_position": 21, "kind": "Exercise", "sha1": "8872f5070ab99025614722b077935d0fe2911c2f", "name": "simplifying_radicals", "prerequisites": ["exponent_rules", "square_roots", "cube_roots"], "seconds_per_fast_problem": 9.0, "pretty_display_name": ""}, {"relative_url": "/exercise/significant_figures_1", "file_name": "", "covers": [], "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/significant_figures_1", "v_position": 2, "display_name": "Significant figures", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/exponents-and-radicals-250x250.png?7", "custom_stacks": [], "description": "Determine how many significant figures a given number has.", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "Sig fig 1", "author_name": "Marcia Lee", "h_position": 23, "kind": "Exercise", "sha1": "b2390667e08f4e25c5db842ca5dde72230bd5a79", "name": "significant_figures_1", "prerequisites": ["scientific_notation"], "seconds_per_fast_problem": 5.0, "pretty_display_name": "Significant figures"}, {"relative_url": "/exercise/multiplying_and_dividing_scientific_notation", "file_name": "", "covers": [], "creation_date": "2012-03-12T16:00:40Z", "ka_url": "http://www.khanacademy.org/exercise/multiplying_and_dividing_scientific_notation", "v_position": 3, "display_name": "Multiplying and dividing scientific notation", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/exponents-and-radicals-250x250.png?7", "custom_stacks": [], "description": "Express a product or quotient in scientific notation.", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "x÷ Sci Not", "author_name": "Ben Eater", "h_position": 23, "kind": "Exercise", "sha1": "c645570e4e5ec9948ae8944b889f742d7359d8bb", "name": "multiplying_and_dividing_scientific_notation", "prerequisites": ["scientific_notation"], "seconds_per_fast_problem": 17.0, "pretty_display_name": ""}, {"relative_url": "/exercise/scientific_notation_intuition", "file_name": "", "covers": [], "creation_date": "2012-01-27T23:12:31Z", "ka_url": "http://www.khanacademy.org/exercise/scientific_notation_intuition", "v_position": 2, "display_name": "Scientific notation intuition", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/exponents-and-radicals-250x250.png?7", "custom_stacks": [], "description": "Move a decimal point to express a number in scientific notation.", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "Sci Not Int", "author_name": "Ben Eater", "h_position": 21, "kind": "Exercise", "sha1": "c15e68418c1d779399c5dfbda1c48cc5323b6300", "name": "scientific_notation_intuition", "prerequisites": ["exponents_3", "exponent_rules"], "seconds_per_fast_problem": 4.0, "pretty_display_name": ""}, {"relative_url": "/exercise/exponents_3", "file_name": "", "covers": ["exponents_2"], "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/exponents_3", "v_position": 4, "display_name": "Fractional exponents", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/exponents-and-radicals-250x250.png?7", "custom_stacks": [], "description": "Fractional and integer bases raised to positive and negative fractional exponents. ", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "Exponents 3", "author_name": "Jeff Ruberg", "h_position": 20, "kind": "Exercise", "sha1": "07bf928c9ad4f1d6d1ec2c8609bc3cff2a620e70", "name": "exponents_3", "prerequisites": ["exponents_2"], "seconds_per_fast_problem": 7.0, "pretty_display_name": "Fractional exponents"}, {"relative_url": "/exercise/exponents_2", "file_name": "", "covers": ["exponents_1"], "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/exponents_2", "v_position": 4, "display_name": "Negative exponents", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/exponents-and-radicals-250x250.png?7", "custom_stacks": [], "description": "Fractional and integer bases raised to negative integer exponents.", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "Exponents 2", "author_name": "Jeff Ruberg", "h_position": 19, "kind": "Exercise", "sha1": "22eae48891a94e5eafeaba9f04d6e2da1eb1513d", "name": "exponents_2", "prerequisites": ["exponents_1"], "seconds_per_fast_problem": 8.0, "pretty_display_name": "Negative exponents"}, {"relative_url": "/exercise/square_roots", "file_name": "", "covers": [], "creation_date": "2012-04-13T23:09:54Z", "ka_url": "http://www.khanacademy.org/exercise/square_roots", "v_position": 5, "display_name": "Square roots", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/exponents-and-radicals-250x250.png?7", "custom_stacks": [], "description": "Find the square root of a perfect square positive integer.", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "Sqr roots", "author_name": "Jeff Ruberg", "h_position": 20, "kind": "Exercise", "sha1": "e1f8824bd90ed1ac7ab378c780673493891143a7", "name": "square_roots", "prerequisites": ["exponents_2"], "seconds_per_fast_problem": 4.0, "pretty_display_name": ""}, {"relative_url": "/exercise/square_roots_2", "file_name": "square_roots_2.html", "covers": [], "creation_date": "2012-07-12T21:01:24Z", "ka_url": "http://www.khanacademy.org/exercise/square_roots_2", "v_position": 5, "display_name": "Estimating square roots", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/exponents-and-radicals-250x250.png?7", "custom_stacks": [], "description": "Approximate the square roots of numbers which are not perfect squares.", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "Est sqr rts", "author_name": "Christi Rockwell", "h_position": 21, "kind": "Exercise", "sha1": "462c960cb84d563c10948f1b889fa92b855c6cb1", "name": "square_roots_2", "prerequisites": ["square_roots"], "seconds_per_fast_problem": 6.0, "pretty_display_name": "Estimating square roots"}, {"relative_url": "/exercise/cube_roots", "file_name": "", "covers": [], "creation_date": "2012-04-13T23:10:01Z", "ka_url": "http://www.khanacademy.org/exercise/cube_roots", "v_position": 6, "display_name": "Cube roots", "live": true, "thumbnail_image": "http://www.khanacademy.org/images/power-mode/badges/exponents-and-radicals-250x250.png?7", "custom_stacks": [], "description": "Find the cube root of a perfect cube positive integer.", "tags": [], "summative": false, "backup_timestamp": "2012-08-14T16:39:36Z", "short_display_name": "Cube roots", "author_name": "Jeff Ruberg", "h_position": 20, "kind": "Exercise", "sha1": "094ffa5a05829716f4d737137ac835288edb4f81", "name": "cube_roots", "prerequisites": ["exponents_2"], "seconds_per_fast_problem": 6.0, "pretty_display_name": ""}]
+[
+  {
+    "related_video_readable_ids": [
+      "level-1-exponents", 
+      "understanding-exponents-2", 
+      "understanding-exponents"
+    ], 
+    "v_position": 3, 
+    "path": "/math/arithmetic/exponents-radicals/world-of-exponents/e/exponents_1/", 
+    "display_name": "Positive and zero exponents", 
+    "title": "Positive and zero exponents", 
+    "live": true, 
+    "description": "Integers raised to positive integers. Non-zero integers raised to the zero power. 0, -1, and 1 raised to very large positive integers.", 
+    "h_position": 18, 
+    "slug": "exponents_1", 
+    "kind": "Exercise", 
+    "name": "exponents_1", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "multiplying_and_dividing_negative_numbers"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": 5, 
+    "path": "/math/arithmetic/exponents-radicals/radical-radicals/e/square_roots/", 
+    "display_name": "Square roots", 
+    "title": "Square roots", 
+    "live": true, 
+    "description": "Find the square root of a perfect square positive integer.", 
+    "h_position": 20, 
+    "slug": "square_roots", 
+    "kind": "Exercise", 
+    "name": "square_roots", 
+    "seconds_per_fast_problem": 4.0, 
+    "prerequisites": [
+      "exponents_2"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": 5, 
+    "path": "/math/arithmetic/exponents-radicals/radical-radicals/e/square_roots_2/", 
+    "display_name": "Estimating square roots", 
+    "title": "Estimating square roots", 
+    "live": true, 
+    "description": "Approximate the square roots of numbers which are not perfect squares.", 
+    "h_position": 21, 
+    "slug": "square_roots_2", 
+    "kind": "Exercise", 
+    "name": "square_roots_2", 
+    "seconds_per_fast_problem": 7.0, 
+    "prerequisites": [
+      "square_roots"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": 6, 
+    "path": "/math/arithmetic/exponents-radicals/radical-radicals/e/cube_roots/", 
+    "display_name": "Cube roots", 
+    "title": "Cube roots", 
+    "live": true, 
+    "description": "Find the cube root of a perfect cube positive integer.", 
+    "h_position": 20, 
+    "slug": "cube_roots", 
+    "kind": "Exercise", 
+    "name": "cube_roots", 
+    "seconds_per_fast_problem": 7.0, 
+    "prerequisites": [
+      "exponents_2"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": 6, 
+    "path": "/math/arithmetic/exponents-radicals/radical-radicals/e/simplifying_radicals/", 
+    "display_name": "Simplifying radicals", 
+    "title": "Simplifying radicals", 
+    "live": true, 
+    "description": "Express radicals in simplest form.", 
+    "h_position": 21, 
+    "slug": "simplifying_radicals", 
+    "kind": "Exercise", 
+    "name": "simplifying_radicals", 
+    "seconds_per_fast_problem": 10.0, 
+    "prerequisites": [
+      "exponent_rules", 
+      "square_roots", 
+      "cube_roots"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": 6, 
+    "path": "/math/arithmetic/exponents-radicals/radical-radicals/e/multiplying_radicals/", 
+    "display_name": "Multiplying radicals", 
+    "title": "Multiplying radicals", 
+    "live": true, 
+    "description": "Multiply expressions containing radicals.", 
+    "h_position": 23, 
+    "slug": "multiplying_radicals", 
+    "kind": "Exercise", 
+    "name": "multiplying_radicals", 
+    "seconds_per_fast_problem": 12.0, 
+    "prerequisites": [
+      "adding_and_subtracting_radicals"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": 6, 
+    "path": "/math/arithmetic/exponents-radicals/radical-radicals/e/adding_and_subtracting_radicals/", 
+    "display_name": "Adding and subtracting radicals", 
+    "title": "Adding and subtracting radicals", 
+    "live": true, 
+    "description": "Add and subtract expressions containing radicals.", 
+    "h_position": 22, 
+    "slug": "adding_and_subtracting_radicals", 
+    "kind": "Exercise", 
+    "name": "adding_and_subtracting_radicals", 
+    "seconds_per_fast_problem": 20.0, 
+    "prerequisites": [
+      "simplifying_radicals"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": 7, 
+    "path": "/math/arithmetic/exponents-radicals/exponent-properties/e/exponent_rules/", 
+    "display_name": "Exponent rules", 
+    "title": "Exponent rules", 
+    "live": true, 
+    "description": "Solve exponent problems by adding, subtracting, or multiplying exponents.", 
+    "h_position": 20, 
+    "slug": "exponent_rules", 
+    "kind": "Exercise", 
+    "name": "exponent_rules", 
+    "seconds_per_fast_problem": 7.0, 
+    "prerequisites": [
+      "exponents_2"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": 3, 
+    "path": "/math/arithmetic/exponents-radicals/scientific-notation/e/scientific_notation_intuition/", 
+    "display_name": "Scientific notation intuition", 
+    "title": "Scientific notation intuition", 
+    "live": true, 
+    "description": "Move a decimal point to express a number in scientific notation.", 
+    "h_position": 21, 
+    "slug": "scientific_notation_intuition", 
+    "kind": "Exercise", 
+    "name": "scientific_notation_intuition", 
+    "seconds_per_fast_problem": 4.0, 
+    "prerequisites": [
+      "exponents_3", 
+      "exponent_rules"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": 3, 
+    "path": "/math/arithmetic/exponents-radicals/scientific-notation/e/scientific_notation/", 
+    "display_name": "Scientific notation", 
+    "title": "Scientific notation", 
+    "live": true, 
+    "description": "Express a number in scientific notation.", 
+    "h_position": 22, 
+    "slug": "scientific_notation", 
+    "kind": "Exercise", 
+    "name": "scientific_notation", 
+    "seconds_per_fast_problem": 12.0, 
+    "prerequisites": [
+      "scientific_notation_intuition"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "scientific-notation-3--new", 
+      "multiplying-in-scientific-notation", 
+      "scientific-notation-3"
+    ], 
+    "v_position": 3, 
+    "path": "/math/arithmetic/exponents-radicals/scientific-notation/e/multiplying_and_dividing_scientific_notation/", 
+    "display_name": "Multiplying and dividing scientific notation", 
+    "title": "Multiplying and dividing scientific notation", 
+    "live": true, 
+    "description": "Express a product or quotient in scientific notation.", 
+    "h_position": 23, 
+    "slug": "multiplying_and_dividing_scientific_notation", 
+    "kind": "Exercise", 
+    "name": "multiplying_and_dividing_scientific_notation", 
+    "seconds_per_fast_problem": 20.0, 
+    "prerequisites": [
+      "scientific_notation"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": 4, 
+    "path": "/math/arithmetic/exponents-radicals/negative-exponents-tutorial/e/exponents_2/", 
+    "display_name": "Negative exponents", 
+    "title": "Negative exponents", 
+    "live": true, 
+    "description": "Fractional and integer bases raised to negative integer exponents.", 
+    "h_position": 19, 
+    "slug": "exponents_2", 
+    "kind": "Exercise", 
+    "name": "exponents_2", 
+    "seconds_per_fast_problem": 7.0, 
+    "prerequisites": [
+      "exponents_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": 4, 
+    "path": "/math/arithmetic/exponents-radicals/negative-exponents-tutorial/e/exponents_3/", 
+    "display_name": "Fractional exponents", 
+    "title": "Fractional exponents", 
+    "live": true, 
+    "description": "Fractional and integer bases raised to positive and negative fractional exponents. ", 
+    "h_position": 20, 
+    "slug": "exponents_3", 
+    "kind": "Exercise", 
+    "name": "exponents_3", 
+    "seconds_per_fast_problem": 7.0, 
+    "prerequisites": [
+      "exponents_2"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": 4, 
+    "path": "/math/arithmetic/exponents-radicals/negative-exponents-tutorial/e/exponents_4/", 
+    "display_name": "Negative fractional exponents", 
+    "title": "Negative fractional exponents", 
+    "live": true, 
+    "description": "Fractional bases raised to primarily negative fractional exponents.", 
+    "h_position": 21, 
+    "slug": "exponents_4", 
+    "kind": "Exercise", 
+    "name": "exponents_4", 
+    "seconds_per_fast_problem": 16.0, 
+    "prerequisites": [
+      "exponents_3"
+    ]
+  }
+]

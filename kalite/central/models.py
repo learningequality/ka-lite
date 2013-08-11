@@ -29,9 +29,12 @@ class Organization(models.Model):
     country = models.CharField(max_length=100, blank=True)
     users = models.ManyToManyField(User)
     zones = models.ManyToManyField(Zone)
-    owner = models.ForeignKey(User, related_name="owned_organizations")
+    owner = models.ForeignKey(User, related_name="owned_organizations", null=True)
 
-    dummy_name = "Headless Zones"
+    HEADLESS_ORG_NAME = "Headless Zones"
+    HEADLESS_ORG_PK = None  # keep the primary key of the headless org around, for efficiency
+    HEADLESS_ORG_SAVE_FLAG = "internally_safe_headless_org_save"  # indicates safe save() call
+
 
     def get_zones(self):
         return list(self.zones.all())
@@ -49,46 +52,65 @@ class Organization(models.Model):
         return self.name
 
     def save(self, owner=None, *args, **kwargs):
-        if not self.owner_id:
+        # backwards compatibility
+        if not getattr(self, "owner_id", None):
             self.owner = owner
+            assert self.owner or self.name == Organization.HEADLESS_ORG_NAME, "Organization must have an owner (save for the 'headless' org)" 
 
-        # Make org unique by name, for dummy name only.
-        if self.name==Organization.dummy_name:
-            dummy_orgs = Organization.objects.filter(name=Organization.dummy_name)
-            if len(dummy_orgs)>0 and self.pk not in [d.pk for d in dummy_orgs]:
-                raise Exception("Cannot add more than one dummy org!")
-
+        # Make org unique by name, for headless name only.
+        #   So make sure that any save() call is coming either
+        #   from a trusted source (passing HEADLESS_ORG_SAVE_FLAG),
+        #   or doesn't overlap with our safe name
+        if self.name == Organization.HEADLESS_ORG_NAME:
+            if kwargs.get(Organization.HEADLESS_ORG_SAVE_FLAG, False):
+                del kwargs[Organization.HEADLESS_ORG_SAVE_FLAG]  # don't pass it on, it's an error
+            elif self.pk != Organization.get_or_create_headless_organization().pk:
+                raise Exception("Cannot save to reserved organization name: %s" % Organization.HEADLESS_ORG_NAME)
         super(Organization, self).save(*args, **kwargs)
+
 
     @classmethod
     def from_zone(cls, zone):
-        """Given a zone, figure out which organization is the parent."""
+        """
+        Given a zone, figure out which organizations contain it.
+        """
+        return Organization.objects.filter(zones=zone)
 
-        return Organization.objects.filter(zones__pk=zone.pk)
 
     @classmethod
-    def get_dummy_organization(cls, user):
-        assert user.is_superuser, "only super-users can call this method!"
+    def get_or_create_headless_organization(cls, refresh_zones=False):
+        """
+        Retrieve the organization encapsulating all headless zones.
+        """
+        if cls.HEADLESS_ORG_PK is not None:
+            # Already exists and cached, just query fast and return
+            headless_org = cls.objects.get(pk=cls.HEADLESS_ORG_PK)
 
-        orgs = cls.objects.filter(name=cls.dummy_name)
-        if not orgs:
-            org = Organization(name=cls.dummy_name, owner=user)
-            org.save()
-            return org
         else:
-            assert len(orgs)==1, "Cannot have multiple dummy organizations"
-            return orgs[0]
+            # Potentially inefficient query, so limit this to once per server thread
+            # by caching the results.  Here, we've had a cache miss
+            headless_orgs = cls.objects.filter(name=cls.HEADLESS_ORG_NAME)
+            if not headless_orgs:
+                # Cache miss because the org actually doesn't exist.  Create it!
+                headless_org = Organization(name=cls.HEADLESS_ORG_NAME)
+                headless_org.save(**({cls.HEADLESS_ORG_SAVE_FLAG: True}))
+                cls.HEADLESS_ORG_PK = headless_org.pk
 
-    @classmethod
-    def update_dummy_organization(cls, user):
-        assert user.is_superuser, "only super-users can call this method!"
-        dummy_org = Organization.get_dummy_organization(user)
-        headless_zones = Zone.get_headless_zones()
-        if headless_zones:
-            for zone in headless_zones:
-                dummy_org.zones.add(zone)
-            dummy_org.save()
-        return dummy_org
+            else:
+                # Cache miss because it's the first relevant query since this thread started.
+                assert len(headless_orgs) == 1, "Cannot have multiple HEADLESS ZONE organizations"
+                cls.HEADLESS_ORG_PK = headless_orgs[0].pk
+                headless_org = headless_orgs[0]
+        
+        # TODO(bcipolli): remove this code!
+        #
+        # In the future, when we self-register headless zones, we'll
+        #    add them directly to the headless organization.
+        #    For now, we'll have to do an exhaustive search.
+        if refresh_zones:
+            headless_org.zones.add(*Zone.get_headless_zones())
+
+        return headless_org
 
 
 class UserProfile(models.Model):
@@ -98,17 +120,21 @@ class UserProfile(models.Model):
         return self.user.username
 
     def get_organizations(self):
+        """
+        Return all organizations that this user manages.
+        
+        If this user is a super-user, then the headless org will be appended at the end.
+        """
         orgs = OrderedDict()  # no dictionary comprehensions, so have to loop
         for org in self.user.organization_set.all():  # add in order queries (alphabetical?)
             orgs[org.pk] = org
 
-        # Add a dummy organization for superusers, containing
+        # Add a headless organization for superusers, containing
         #   any headless zones.
         # Make sure this is at the END of the list, so it is clearly special.
         if self.user.is_superuser:
-            dummy_org = Organization.update_dummy_organization(self.user)
-            if dummy_org.zones:
-                orgs[dummy_org.pk] = dummy_org
+            headless_org = Organization.get_or_create_headless_organization(refresh_zones=True)
+            orgs[headless_org.pk] = headless_org
 
         return orgs
 
