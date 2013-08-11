@@ -4,7 +4,7 @@ Contains helper functions for importing modules.
 
 import os, glob
 
-def import_all_from(path, locals, globals, pattern="*", exclude_special_modules=True):
+def import_all_from(path, locals, globals, pattern="*"):
     """Import * from all the .py files in a particular directory whose names match a particular pattern.
     
     This is currently only used for auto-import of test suites, but may also be useful elsewhere.
@@ -16,8 +16,8 @@ def import_all_from(path, locals, globals, pattern="*", exclude_special_modules=
     # effectively do a `from <module> import *` for all the modules
     for module_name in module_names:
 
-        # skip special modules, if specified
-        if exclude_special_modules and module_name.startswith("_"):
+        # skip special modules
+        if module_name.startswith("_"):
             continue
 
         # import the module by name, passing globals so it can make use of Django stuff
