@@ -11,7 +11,7 @@ def import_all_from(path, locals, globals, pattern="*", exclude_special_modules=
     """
 
     # load the names of all the modules in the directory
-    module_names = [os.path.basename(f)[:-3] for f in glob.glob(os.path.dirname(path) + "/" + pattern + ".py")]
+    module_names = [os.path.basename(f)[:-3] for f in glob.glob("%s/%s.py" % (path, pattern))]
 
     # effectively do a `from <module> import *` for all the modules
     for module_name in module_names:
