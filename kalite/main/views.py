@@ -95,6 +95,14 @@ def check_setup_status(handler):
 @cache_page(settings.CACHE_TIME)
 @render_to("topic.html")
 def topic_handler(request, topic):
+    return topic_context(topic)
+
+
+def topic_context(topic):
+    """
+    Given a topic node, create all context related to showing that topic
+    in a template.
+    """
     videos    = topic_tools.get_videos(topic)
     exercises = topic_tools.get_exercises(topic)
     topics    = topic_tools.get_live_topics(topic)
@@ -199,17 +207,11 @@ def exercise_dashboard(request):
 @cache_page(settings.CACHE_TIME)
 @render_to("homepage.html")
 def homepage(request):
-    # TODO(bcipolli): video counts on the distributed server homepage
-    topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"], topicdata.TOPICS["children"])
-
-    # indexed by integer
-    my_topics = [dict([(k, t[k]) for k in ('title', 'path')]) for t in topics]
-
-    context = {
+    context = topic_context(topicdata.TOPICS)
+    context.update({
         "title": "Home",
-        "topics": my_topics,
         "registered": Settings.get("registered"),
-    }
+    })
     return context
 
 @require_admin

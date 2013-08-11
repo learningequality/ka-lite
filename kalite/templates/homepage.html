@@ -81,7 +81,6 @@ a:hover, a:hover .suggested-action-title {
 .front-page {
     padding-left: 7px;
 }
-
 </style>
 {% endblock headcss %}
 
@@ -104,7 +103,7 @@ if (window.parent.frames.length === 0) {
         <h2 class="suggested-action-title">{% trans "Learn by watching videos!" %}</h2>
         <p class="topic-list">
             {% for topic in topics %}
-            <a class="topic-link" href="{{ topic.path }}">{% trans topic.title %}</a>
+            <a href="{{ topic.path }}" class="topic-link topic-{% if topic.nvideos_local == 0 %}un{% endif %}available" title="{{topic.nvideos_local}}/{{topic.nvideos_known}} {% trans "video(s) are downloaded." %}">{% trans topic.title %}</a>
             {% endfor %}
         </p>
     </div>
