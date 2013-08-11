@@ -1,0 +1,72 @@
+[
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -21, 
+    "path": "/math/probability/statistics-inferential/normal_distribution/e/empirical_rule/", 
+    "display_name": "Empirical rule", 
+    "title": "Empirical rule", 
+    "live": true, 
+    "description": null, 
+    "h_position": 21, 
+    "slug": "empirical_rule", 
+    "kind": "Exercise", 
+    "name": "empirical_rule", 
+    "seconds_per_fast_problem": 25.0, 
+    "prerequisites": [
+      "exploring_standard_deviation_1", 
+      "standard_deviation"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -22, 
+    "path": "/math/probability/statistics-inferential/normal_distribution/e/z_scores_1/", 
+    "display_name": "Z scores 1", 
+    "title": "Z scores 1", 
+    "live": true, 
+    "description": "Find the z-score of a particular measurement given the mean and standard deviation.", 
+    "h_position": 21, 
+    "slug": "z_scores_1", 
+    "kind": "Exercise", 
+    "name": "z_scores_1", 
+    "seconds_per_fast_problem": 12.0, 
+    "prerequisites": [
+      "exploring_standard_deviation_1", 
+      "standard_deviation"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -22, 
+    "path": "/math/probability/statistics-inferential/normal_distribution/e/z_scores_2/", 
+    "display_name": "Z scores 2", 
+    "title": "Z scores 2", 
+    "live": true, 
+    "description": "Use a z-table to find the probability of a particular measurement.", 
+    "h_position": 22, 
+    "slug": "z_scores_2", 
+    "kind": "Exercise", 
+    "name": "z_scores_2", 
+    "seconds_per_fast_problem": 21.0, 
+    "prerequisites": [
+      "z_scores_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -22, 
+    "path": "/math/probability/statistics-inferential/normal_distribution/e/z_scores_3/", 
+    "display_name": "Z scores 3", 
+    "title": "Z scores 3", 
+    "live": true, 
+    "description": "Use a z-table to find the probability that a particular measurement is in a range.", 
+    "h_position": 23, 
+    "slug": "z_scores_3", 
+    "kind": "Exercise", 
+    "name": "z_scores_3", 
+    "seconds_per_fast_problem": 47.0, 
+    "prerequisites": [
+      "z_scores_2"
+    ]
+  }
+]
