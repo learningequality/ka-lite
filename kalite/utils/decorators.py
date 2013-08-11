@@ -113,7 +113,7 @@ def require_login(handler):
             return handler(request, *args, **kwargs)
 
         # Failed.  Send different response for ajax vs non-ajax requests.
-        raise PermissionDenied(_("You access this page, you must be logged in"))
+        raise PermissionDenied(_("You must be logged in to access this page."))
     return wrapper_fn
 
 
@@ -132,14 +132,21 @@ def require_admin(handler):
 
         # Only here if user is not authenticated.
         # Don't redirect users to login for an API request.
-        raise PermissionDenied("You must be logged in as an admin to access page.")
+        raise PermissionDenied(_("You must be logged in as an admin to access this page."))
 
     return wrapper_fn
 
 
 
-def require_authorized_login(handler):
+def require_authorized_access_to_student_data(handler):
     """
+    WARNING: this is a crappy function with a crappy name.
+    
+    This should only be used for limiting data access to single-student data.
+    
+    Students requesting their own data (either implicitly, without querystring params)
+    or explicitly (specifying their own user ID) get through.
+    Admins and teachers also get through.
     """
 
     @distributed_server_only
@@ -251,12 +258,15 @@ def require_authorized_admin(handler):
 def require_superuser(handler):
     """
     Level 4: require a Django admin (superuser)
+    
+    ***
+    *** Note: Not yet used, nor tested. ***
+    ***
+    
     """
     def wrapper_fn(request, *args, **kwargs):
-        if getattr(request.user, is_admin, False):
+        if getattr(request.user, is_superuser, False):
             return handler(request, *args, **kwargs)
-        elif request.is_ajax():
-            raise PermissionDenied(_("Must be logged in as a superuser to access this endpoint."))
         else:
-            return 
+            raise PermissionDenied(_("Must be logged in as a superuser to access this endpoint."))
     return wrapper_fn
