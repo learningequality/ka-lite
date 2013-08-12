@@ -375,7 +375,6 @@ ul.dynatree-container li, .ui-widget-content {
             default:
                 //communicate_api_failure(resp)
                 messages = $.parseJSON(resp.responseText);
-                window.messages = messages
                 if (!("error" in messages)) {
                     // this should be an assert--should never happen
                     show_message("error", error_text + ": " + "Uninterpretable message received.", error_id)
