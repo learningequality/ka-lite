@@ -1,129 +1,130 @@
 [
   {
-    "kind": "Exercise", 
-    "display_name": "Negative numbers on the number line", 
-    "description": "Identify positive and negative integers on the number line\n", 
-    "title": "Negative numbers on the number line", 
-    "seconds_per_fast_problem": 6.0, 
     "related_video_readable_ids": [
       "negative-numbers-introduction"
     ], 
-    "prerequisites": [
-      "addition_2"
-    ], 
-    "live": true, 
-    "h_position": 2, 
     "v_position": 1, 
     "path": "/math/arithmetic/absolute-value/add-sub-negatives/e/number_line_2/", 
+    "id": "number_line_2", 
+    "display_name": "Negative numbers on the number line", 
+    "title": "Negative numbers on the number line", 
+    "live": true, 
+    "description": "Identify positive and negative integers on the number line\n", 
+    "h_position": 2, 
     "slug": "number_line_2", 
-    "name": "number_line_2"
+    "kind": "Exercise", 
+    "name": "number_line_2", 
+    "seconds_per_fast_problem": 6.0, 
+    "prerequisites": [
+      "addition_2"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Number line 3", 
-    "description": "Identify positive and negative integers on the number line.\n", 
-    "title": "Number line 3", 
-    "seconds_per_fast_problem": 8.0, 
     "related_video_readable_ids": [
       "negative-numbers-introduction"
     ], 
-    "prerequisites": [
-      "number_line_2"
-    ], 
-    "live": true, 
-    "h_position": 3, 
     "v_position": 1, 
     "path": "/math/arithmetic/absolute-value/add-sub-negatives/e/number_line_3/", 
+    "id": "number_line_3", 
+    "display_name": "Number line 3", 
+    "title": "Number line 3", 
+    "live": true, 
+    "description": "Identify positive and negative integers on the number line.\n", 
+    "h_position": 3, 
     "slug": "number_line_3", 
-    "name": "number_line_3"
+    "kind": "Exercise", 
+    "name": "number_line_3", 
+    "seconds_per_fast_problem": 8.0, 
+    "prerequisites": [
+      "number_line_2"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Ordering negative numbers", 
-    "description": "Put negative integers in order\n", 
-    "title": "Ordering negative numbers", 
-    "seconds_per_fast_problem": 7.0, 
     "related_video_readable_ids": [
       "ordering-negative-numbers"
     ], 
-    "prerequisites": [
-      "number_line_3"
-    ], 
-    "live": true, 
-    "h_position": 4, 
     "v_position": 1, 
     "path": "/math/arithmetic/absolute-value/add-sub-negatives/e/ordering_negative_numbers/", 
+    "id": "ordering_negative_numbers", 
+    "display_name": "Ordering negative numbers", 
+    "title": "Ordering negative numbers", 
+    "live": true, 
+    "description": "Put negative integers in order\n", 
+    "h_position": 4, 
     "slug": "ordering_negative_numbers", 
-    "name": "ordering_negative_numbers"
+    "kind": "Exercise", 
+    "name": "ordering_negative_numbers", 
+    "seconds_per_fast_problem": 7.0, 
+    "prerequisites": [
+      "number_line_3"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Adding negative numbers", 
-    "description": "Adding positive and negative single-digit numbers", 
-    "title": "Adding negative numbers", 
-    "seconds_per_fast_problem": 5.0, 
     "related_video_readable_ids": [
       "negative-numbers-introduction", 
       "adding-negative-numbers", 
       "adding-integers-with-different-signs"
     ], 
+    "v_position": 1, 
+    "path": "/math/arithmetic/absolute-value/adding_subtracting_negatives/e/adding_negative_numbers/", 
+    "id": "adding_negative_numbers", 
+    "display_name": "Adding negative numbers", 
+    "title": "Adding negative numbers", 
+    "live": true, 
+    "description": "Adding positive and negative single-digit numbers", 
+    "h_position": 5, 
+    "slug": "adding_negative_numbers", 
+    "kind": "Exercise", 
+    "name": "adding_negative_numbers", 
+    "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "subtraction_1", 
       "ordering_negative_numbers"
-    ], 
-    "live": true, 
-    "h_position": 5, 
-    "v_position": 1, 
-    "path": "/math/arithmetic/absolute-value/adding_subtracting_negatives/e/adding_negative_numbers/", 
-    "slug": "adding_negative_numbers", 
-    "name": "adding_negative_numbers"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Adding and subtracting negative numbers", 
-    "description": "Add and subtract positive and negative single-digit integers", 
-    "title": "Adding and subtracting negative numbers", 
-    "seconds_per_fast_problem": 5.0, 
     "related_video_readable_ids": [
       "why-subtracting-a-negative-equivalent-to-adding-a-positive", 
       "adding-subtracting-negative-numbers"
     ], 
-    "prerequisites": [
-      "adding_negative_numbers"
-    ], 
-    "live": true, 
-    "h_position": 6, 
     "v_position": 1, 
     "path": "/math/arithmetic/absolute-value/adding_subtracting_negatives/e/adding_and_subtracting_negative_numbers/", 
+    "id": "adding_and_subtracting_negative_numbers", 
+    "display_name": "Adding and subtracting negative numbers", 
+    "title": "Adding and subtracting negative numbers", 
+    "live": true, 
+    "description": "Add and subtract positive and negative single-digit integers", 
+    "h_position": 6, 
     "slug": "adding_and_subtracting_negative_numbers", 
-    "name": "adding_and_subtracting_negative_numbers"
+    "kind": "Exercise", 
+    "name": "adding_and_subtracting_negative_numbers", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "adding_negative_numbers"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Negative number word problems", 
-    "description": "", 
-    "title": "Negative number word problems", 
-    "seconds_per_fast_problem": 13.0, 
     "related_video_readable_ids": [
       "negative-number-word-problems-1", 
       "u09-l1-t2-we4-adding-real-numbers-application"
     ], 
-    "prerequisites": [
-      "adding_and_subtracting_negative_numbers"
-    ], 
-    "live": true, 
-    "h_position": 7, 
     "v_position": 2, 
     "path": "/math/arithmetic/absolute-value/adding_subtracting_negatives/e/negative_number_word_problems/", 
+    "id": "negative_number_word_problems", 
+    "display_name": "Negative number word problems", 
+    "title": "Negative number word problems", 
+    "live": true, 
+    "description": "", 
+    "h_position": 7, 
     "slug": "negative_number_word_problems", 
-    "name": "negative_number_word_problems"
+    "kind": "Exercise", 
+    "name": "negative_number_word_problems", 
+    "seconds_per_fast_problem": 13.0, 
+    "prerequisites": [
+      "adding_and_subtracting_negative_numbers"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Multiplying and dividing negative numbers", 
-    "description": "Multiply or divide positive and negative integers. No remainder.\n", 
-    "title": "Multiplying and dividing negative numbers", 
-    "seconds_per_fast_problem": 5.0, 
     "related_video_readable_ids": [
       "multiplying-positive-and-negative-numbers", 
       "dividing-positive-and-negative-numbers", 
@@ -132,55 +133,63 @@
       "why-a-negative-times-a-negative-makes-intuitive-sense", 
       "multiplying-and-dividing-negative-numbers"
     ], 
+    "v_position": -4, 
+    "path": "/math/arithmetic/absolute-value/mult_div_negatives/e/multiplying_and_dividing_negative_numbers/", 
+    "id": "multiplying_and_dividing_negative_numbers", 
+    "display_name": "Multiplying and dividing negative numbers", 
+    "title": "Multiplying and dividing negative numbers", 
+    "live": true, 
+    "description": "Multiply or divide positive and negative integers. No remainder.\n", 
+    "h_position": 12, 
+    "slug": "multiplying_and_dividing_negative_numbers", 
+    "kind": "Exercise", 
+    "name": "multiplying_and_dividing_negative_numbers", 
+    "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "adding_and_subtracting_negative_numbers", 
       "division_4"
-    ], 
-    "live": true, 
-    "h_position": 12, 
-    "v_position": -4, 
-    "path": "/math/arithmetic/absolute-value/mult_div_negatives/e/multiplying_and_dividing_negative_numbers/", 
-    "slug": "multiplying_and_dividing_negative_numbers", 
-    "name": "multiplying_and_dividing_negative_numbers"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Finding absolute values", 
-    "description": "Find the absolute value of a given number.", 
-    "title": "Finding absolute values", 
-    "seconds_per_fast_problem": 4.0, 
     "related_video_readable_ids": [
       "absolute-value-and-number-lines", 
       "absolute-value-1", 
       "absolute-value-of-integers"
     ], 
-    "prerequisites": [
-      "adding_and_subtracting_negative_numbers"
-    ], 
-    "live": true, 
-    "h_position": 7, 
     "v_position": -1, 
     "path": "/math/arithmetic/absolute-value/abs_value_tutorial/e/absolute_value/", 
+    "id": "absolute_value", 
+    "display_name": "Finding absolute values", 
+    "title": "Finding absolute values", 
+    "live": true, 
+    "description": "Find the absolute value of a given number.", 
+    "h_position": 7, 
     "slug": "absolute_value", 
-    "name": "absolute_value"
+    "kind": "Exercise", 
+    "name": "absolute_value", 
+    "seconds_per_fast_problem": 4.0, 
+    "prerequisites": [
+      "adding_and_subtracting_negative_numbers"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Comparing absolute values", 
-    "description": "Compare the absolute values of two numbers, or compare the absolute value of one number to another number.", 
-    "title": "Comparing absolute values", 
-    "seconds_per_fast_problem": 4.0, 
     "related_video_readable_ids": [
       "comparing-absolute-values"
     ], 
-    "prerequisites": [
-      "absolute_value"
-    ], 
-    "live": true, 
-    "h_position": 8, 
     "v_position": -1, 
     "path": "/math/arithmetic/absolute-value/abs_value_tutorial/e/comparing_absolute_values/", 
+    "id": "comparing_absolute_values", 
+    "display_name": "Comparing absolute values", 
+    "title": "Comparing absolute values", 
+    "live": true, 
+    "description": "Compare the absolute values of two numbers, or compare the absolute value of one number to another number.", 
+    "h_position": 8, 
     "slug": "comparing_absolute_values", 
-    "name": "comparing_absolute_values"
+    "kind": "Exercise", 
+    "name": "comparing_absolute_values", 
+    "seconds_per_fast_problem": 4.0, 
+    "prerequisites": [
+      "absolute_value"
+    ]
   }
 ]
