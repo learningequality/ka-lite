@@ -17,7 +17,15 @@
         {% block basecss %}{% endblock basecss %}
         {% block headcss %}{% endblock headcss %}
         <link rel="shortcut icon" href="{% static "images/favicon.ico" %}">
+        
+        {# In some versions of IE, console isn't defined, which can lead to JS errors #}
+        <script type="text/javascript">
+            window.console = window.console || {log: function() {}};
+        </script>
+        
+        {# Older versions of IE didn't have a JSON object, so this library adds it back in if needed #}
         <script type="text/javascript" src="{% static "js/json2.js" %}"></script>
+        
         {% block jqueryjs %}
         <script type="text/javascript" src="{% static "js/jquery-1.7.1.min.js" %}"></script>
         {% endblock jqueryjs %}

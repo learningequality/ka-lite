@@ -57,7 +57,7 @@ $(function(){
             toggle_state("admin", data.is_admin);
             if (data.is_logged_in){
                 if (data.is_admin) {
-                    $('#logout').text(data.username + " (Logout)");
+                    $('#nav_logout').text(data.username + " (Logout)");
                 }
                 else {
                     $('#logged-in-name').text(data.username);

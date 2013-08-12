@@ -91,7 +91,6 @@ a:hover {
 }
 
 .sitewide-navigation {
-    float:right;
     margin: 0;
     padding: 3px 0;
     height: 19px;
@@ -99,6 +98,10 @@ a:hover {
     width: auto;
     /* Position this at 30 so the white triangle appears on top of the page_sub_nav breadcrumbs border */
     z-index: 30;
+}
+
+.sitewide-navigation span {
+    float: right;
 }
 
 .watch-navlink {
@@ -110,12 +113,11 @@ a:hover {
 }
 
 
-#nav_addstudent, #nav_addteacher, #nav_admin, #nav_coachreports, #nav_watch, #nav_practice, #nav_signup, #nav_login, #nav_update {
+#nav_addstudent, #nav_addteacher, #nav_admin, #nav_coachreports, #nav_watch, #nav_practice, #nav_signup, #nav_login, #nav_update, #nav_logout, #nav_registerdevice {
     display: none;
 }
 
 .nav-subheader {
-    background: #75a400;
     margin-bottom: 0;
     height: 30px;
     color: #fff;
