@@ -16,7 +16,7 @@ from config.models import Settings
 from main import topicdata
 from securesync.models import FacilityGroup
 from updates.models import UpdateProgressLog
-from utils.decorators import require_admin
+from utils.decorators import api_handle_error_with_json, require_admin
 from utils.django_utils import call_command_async
 from utils.general import break_into_chunks
 from utils.internet import JsonResponse
@@ -30,18 +30,17 @@ class student_log_api(object):
         self.logged_out_message = logged_out_message
     
     def __call__(self, handler):
+        @api_handle_error_with_json
         def wrapper_fn(request, *args, **kwargs):
-            try:
-                # TODO(bcipolli): send user info in the post data,
-                #   allowing cross-checking of user information
-                #   and better error reporting
-                if "facility_user" not in request.session:
-                    return JsonResponse({"warning": self.logged_out_message + "  " + _("You must be logged in as a facility user to view/save progress.")}, status=500)
-                else:
-                    return handler(request)
-            except Exception as e:
-                return JsonResponse({"error": "Unexpected exception: %s" % e}, status=500)
+            # TODO(bcipolli): send user info in the post data,
+            #   allowing cross-checking of user information
+            #   and better error reporting
+            if "facility_user" not in request.session:
+                return JsonResponse({"warning": self.logged_out_message + "  " + _("You must be logged in as a facility user to view/save progress.")}, status=500)
+            else:
+                return handler(request)
         return wrapper_fn
+
 
 @student_log_api(logged_out_message=_("Video progress not saved."))
 def save_video_log(request):
@@ -184,6 +183,7 @@ def _get_exercise_log_dict(request, user, exercise_id):
 
 
 @require_admin
+@api_handle_error_with_json
 def start_video_download(request):
     """
     API endpoint for launching the videodownload job.
@@ -203,6 +203,7 @@ def start_video_download(request):
     return JsonResponse({})
 
 
+@api_handle_error_with_json
 def check_video_download(request):
     youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
     percentages = {}
@@ -214,6 +215,7 @@ def check_video_download(request):
 
 
 @require_admin
+@api_handle_error_with_json
 def delete_videos(request):
     """
     API endpoint for deleting videos.
@@ -252,67 +254,11 @@ def cancel_video_download(request):
     return JsonResponse({})
 
 
-
-# Functions below here focused on topic tree (used for dynatree js code)
-def annotate_topic_tree(node, level=0, statusdict=None):
-    if not statusdict:
-        statusdict = {}
-    if node["kind"] == "Topic":
-        if "Video" not in node["contains"]:
-            return None
-        children = []
-        unstarted = True
-        complete = True
-        for child_node in node["children"]:
-            child = annotate_topic_tree(child_node, level=level+1, statusdict=statusdict)
-            if child:
-                if child["addClass"] == "unstarted":
-                    complete = False
-                if child["addClass"] == "partial":
-                    complete = False
-                    unstarted = False
-                if child["addClass"] == "complete":
-                    unstarted = False
-                children.append(child)
-        return {
-            "title": node["title"],
-            "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
-            "isFolder": True,
-            "key": node["slug"],
-            "children": children,
-            "addClass": complete and "complete" or unstarted and "unstarted" or "partial",
-            "expand": level < 1,
-        }
-    if node["kind"] == "Video":
-        #statusdict contains an item for each video registered in the database
-        # will be {} (empty dict) if there are no videos downloaded yet
-        percent = statusdict.get(node["youtube_id"], 0)
-        if not percent:
-            status = "unstarted"
-        elif percent == 100:
-            status = "complete"
-        else:
-            status = "partial"
-        return {
-            "title": node["title"],
-            "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
-            "key": node["youtube_id"],
-            "addClass": status,
-        }
-    return None
-
-
-@require_admin
-def get_annotated_topic_tree(request):
-    statusdict = dict(VideoFile.objects.values_list("youtube_id", "percent_complete"))
-    att = annotate_topic_tree(topicdata.TOPICS, statusdict=statusdict)
-    return JsonResponse(att)
-
-
 """
 Subtitles
 """
 @require_admin
+@api_handle_error_with_json
 def start_subtitle_download(request):
     new_only = simplejson.loads(request.raw_post_data or "{}").get("new_only", False)
     language = simplejson.loads(request.raw_post_data or "{}").get("language", "")
@@ -339,17 +285,20 @@ def start_subtitle_download(request):
     return JsonResponse({})
 
 @require_admin
+@api_handle_error_with_json
 def check_subtitle_download(request):
     videofiles = VideoFile.objects.filter(flagged_for_subtitle_download=True)
     return JsonResponse(videofiles.count())
 
 @require_admin
+@api_handle_error_with_json
 def get_subtitle_download_list(request):
     videofiles = VideoFile.objects.filter(flagged_for_subtitle_download=True).values("youtube_id")
     video_ids = [video["youtube_id"] for video in videofiles]
     return JsonResponse(video_ids)
 
 @require_admin
+@api_handle_error_with_json
 def cancel_subtitle_download(request):
     # unflag all subtitle downloads
     VideoFile.objects.filter(flagged_for_subtitle_download=True).update(cancel_download=True, flagged_for_subtitle_download=False)
@@ -402,6 +351,7 @@ def cancel_update_kalite(request):
 # Functions below here focused on users
 
 @require_admin
+@api_handle_error_with_json
 def remove_from_group(request):
     """
     API endpoint for removing users from group
@@ -413,6 +363,7 @@ def remove_from_group(request):
     return JsonResponse({})
 
 @require_admin
+@api_handle_error_with_json
 def move_to_group(request):
     users = simplejson.loads(request.raw_post_data or "{}").get("users", [])
     group = simplejson.loads(request.raw_post_data or "{}").get("group", "")
@@ -422,9 +373,66 @@ def move_to_group(request):
     return JsonResponse({})
 
 @require_admin
+@api_handle_error_with_json
 def delete_users(request):
     users = simplejson.loads(request.raw_post_data or "{}").get("users", [])
     users_to_delete = FacilityUser.objects.filter(username__in=users)
     users_to_delete.delete()
     return JsonResponse({})
 
+def annotate_topic_tree(node, level=0, statusdict=None):
+    if not statusdict:
+        statusdict = {}
+    if node["kind"] == "Topic":
+        if "Video" not in node["contains"]:
+            return None
+        children = []
+        unstarted = True
+        complete = True
+        for child_node in node["children"]:
+            child = annotate_topic_tree(child_node, level=level+1, statusdict=statusdict)
+            if child:
+                if child["addClass"] == "unstarted":
+                    complete = False
+                if child["addClass"] == "partial":
+                    complete = False
+                    unstarted = False
+                if child["addClass"] == "complete":
+                    unstarted = False
+                children.append(child)
+        return {
+            "title": node["title"],
+            "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
+            "isFolder": True,
+            "key": node["slug"],
+            "children": children,
+            "addClass": complete and "complete" or unstarted and "unstarted" or "partial",
+            "expand": level < 1,
+        }
+    if node["kind"] == "Video":
+        #statusdict contains an item for each video registered in the database
+        # will be {} (empty dict) if there are no videos downloaded yet
+        percent = statusdict.get(node["youtube_id"], 0)
+        if not percent:
+            status = "unstarted"
+        elif percent == 100:
+            status = "complete"
+        else:
+            status = "partial"
+        return {
+            "title": node["title"],
+            "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
+            "key": node["youtube_id"],
+            "addClass": status,
+        }
+    return None
+
+#@require_admin
+def get_annotated_topic_tree():
+    statusdict = dict(VideoFile.objects.values_list("youtube_id", "percent_complete"))
+    return annotate_topic_tree(topicdata.TOPICS, statusdict=statusdict)
+
+@require_admin
+@api_handle_error_with_json
+def get_topic_tree(request):
+    return JsonResponse(get_annotated_topic_tree())

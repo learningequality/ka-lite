@@ -11,7 +11,7 @@ import settings
 from utils.django_utils import call_command_with_output
 
 
-def package_offline_install_zip(version=kalite.VERSION, platform="all", locale="all", server_type="local", zone=None, central_server=""):
+def package_offline_install_zip(version=kalite.VERSION, platform="all", locale="all", server_type="local", zone=None, central_server="", force=False):
     """
     Does a bit of massaging to (efficiently, reusably) package the contents as requested, 
     and make the file requested available for download.
@@ -26,7 +26,7 @@ def package_offline_install_zip(version=kalite.VERSION, platform="all", locale="
     base_archive_path = settings.STATIC_ROOT+ "/zip/" + base_archive_name
 
     # Make sure the correct base zip is created, based on platform and locale
-    if not os.path.exists(base_archive_path):
+    if force or not os.path.exists(base_archive_path):
         # Cannot request a past version that we don't have an existing archive for
         #    (or a future version, for that matter!)
         if version != kalite.VERSION:

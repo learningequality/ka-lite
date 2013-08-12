@@ -36,7 +36,7 @@ def download_kalite(request, *args, **kwargs):
         if not zone_org or not zone_org[0].id in [org for org in get_or_create_user_profile(request.user).get_organizations()]:
             raise PermissionDenied("Requires authentication")
     
-    zip_file = package_offline_install_zip(version=version, platform=platform, locale=locale, zone=zone, central_server=get_central_server_host(request))
+    zip_file = package_offline_install_zip(version=version, platform=platform, locale=locale, zone=zone, central_server=get_central_server_host(request), force=settings.DEBUG)  # force to rebuild zip in debug mode
 
     # Build the outgoing filename."
     user_facing_filename = "kalite"
