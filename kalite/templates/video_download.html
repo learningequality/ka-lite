@@ -179,7 +179,7 @@ ul.dynatree-container li, .ui-widget-content {
                     });
                 })
                 .fail(function(resp) {
-                    handleFailedAPI(resp, "downloading topic tree");
+                    handleFailedAPI(resp, "Error downloading topic tree");
                 });
         }, 200);
         
@@ -211,7 +211,7 @@ ul.dynatree-container li, .ui-widget-content {
                     startDownloadChecks
                 )
                 .fail(function(resp) {
-                    handleFailedAPI(resp, "starting video download");
+                    handleFailedAPI(resp, "Error starting video download");
                 });
     	
             $(".progress-section").hide();
@@ -234,7 +234,7 @@ ul.dynatree-container li, .ui-widget-content {
                     });
                 })
                 .fail(function(resp) {
-                    handleFailedAPI(resp, "deleting videos");
+                    handleFailedAPI(resp, "Error deleting videos");
                 });
         });
 
@@ -256,7 +256,7 @@ ul.dynatree-container li, .ui-widget-content {
                         startSubtitleDownloadChecks
                     )
                     .fail(function(resp) {
-                        handleFailedAPI(resp, "downloading subtitles");
+                        handleFailedAPI(resp, "Error downloading subtitles");
                         $(".progress-waiting").hide();
                     });
                 $(".progress-waiting").show();
@@ -279,14 +279,14 @@ ul.dynatree-container li, .ui-widget-content {
 
                 })
                 .fail(function(resp) {
-                    handleFailedAPI(resp, "canceling downloads");
+                    handleFailedAPI(resp, "Error canceling downloads");
                 });
         });
        
         $("#retry-video-download").click(function() {
             doRequest("/api/start_video_download", {})
                 .fail(function(resp) {
-                    handleFailedAPI(resp, "canceling downloads");
+                    handleFailedAPI(resp, "Error canceling downloads");
                 });
         });
     
@@ -311,7 +311,7 @@ ul.dynatree-container li, .ui-widget-content {
                 checkVideoDownloadProgress();
             })
             .fail(function(resp) {
-                handleFailedAPI(resp, "getting video download list");
+                handleFailedAPI(resp, "Error getting video download list");
             });
     }
     
@@ -329,7 +329,7 @@ ul.dynatree-container li, .ui-widget-content {
                 checkSubtitleDownloadProgress();
             })
             .fail(function(resp) {
-                handleFailedAPI(resp, "downloading subtitles list");
+                handleFailedAPI(resp, "Error downloading subtitles list");
             });
     }
     
@@ -348,22 +348,39 @@ ul.dynatree-container li, .ui-widget-content {
                 }
             }).
             fail(function(resp) {
-                handleFailedAPI(resp, "checking subtitles progress");
+                handleFailedAPI(resp, "Error checking subtitles progress");
                 clearInterval(window.download_subtitle_check_interval)
             });
     }
     
 
-    function handleFailedAPI(resp, action_text) {
+    function handleFailedAPI(resp, error_text, error_id) {
+        if (error_id === undefined) {
+            error_id = "id_video_download";
+        }
+        clear_message(error_id);
+
         switch (resp.status) {
             case 403:
+                // 403 means that we're not authorized to do the action,
+                //   which means if we reload we should have to reauthenticate.
+                //
+                // TODO This is actually a bad idea--could lead to a reload loop (if 403 is
+                //   just on the API side), and users lose their settings.
+                //   Instead, a message with a link to the login page would be better
+                //   (could be opened in a new window, doesn't force things)
+                // 
                 window.location.reload()
                 break;
             default:
                 //communicate_api_failure(resp)
                 messages = $.parseJSON(resp.responseText);
-                for (msg_type in messages) {
-                    show_message(msg_type, "Error " + action_text + ": " + messages[msg_type]);
+                window.messages = messages
+                if (!("error" in messages)) {
+                    // this should be an assert--should never happen
+                    show_message("error", error_text + ": " + "Uninterpretable message received.", error_id)
+                } else {
+                    show_message("error", error_text + ": " + messages["error"], error_id);
                 }
                 break;
         }
@@ -394,7 +411,7 @@ ul.dynatree-container li, .ui-widget-content {
                 }
             })
             .fail(function(resp) {
-                handleFailedAPI(resp, "checking video download progress");
+                handleFailedAPI(resp, "Error checking video download progress");
             });
     }
     
