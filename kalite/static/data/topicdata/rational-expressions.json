@@ -1,0 +1,64 @@
+[
+  {
+    "related_video_readable_ids": [
+      "writing-proportions"
+    ], 
+    "v_position": -10, 
+    "path": "/math/algebra/rational-expressions/ratios_algebra/e/writing_proportions/", 
+    "id": "writing_proportions", 
+    "display_name": "Writing proportions", 
+    "title": "Writing proportions", 
+    "live": true, 
+    "description": "", 
+    "h_position": 29, 
+    "slug": "writing_proportions", 
+    "kind": "Exercise", 
+    "name": "writing_proportions", 
+    "seconds_per_fast_problem": 8.0, 
+    "prerequisites": [
+      "expressing_ratios_as_fractions"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "find-an-unknown-in-a-proportion", 
+      "find-an-unknown-in-a-proportion-2"
+    ], 
+    "v_position": -9, 
+    "path": "/math/algebra/rational-expressions/ratios_algebra/e/proportions_1/", 
+    "id": "proportions_1", 
+    "display_name": "Proportions 1", 
+    "title": "Proportions 1", 
+    "live": true, 
+    "description": null, 
+    "h_position": 29, 
+    "slug": "proportions_1", 
+    "kind": "Exercise", 
+    "name": "proportions_1", 
+    "seconds_per_fast_problem": 8.0, 
+    "prerequisites": [
+      "proportions_1", 
+      "expressing_ratios_as_fractions"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "proportions-2-exercise-examples"
+    ], 
+    "v_position": -9, 
+    "path": "/math/algebra/rational-expressions/ratios_algebra/e/proportions_2/", 
+    "id": "proportions_2", 
+    "display_name": "Proportions 2", 
+    "title": "Proportions 2", 
+    "live": true, 
+    "description": "", 
+    "h_position": 30, 
+    "slug": "proportions_2", 
+    "kind": "Exercise", 
+    "name": "proportions_2", 
+    "seconds_per_fast_problem": 18.0, 
+    "prerequisites": [
+      "proportions_1"
+    ]
+  }
+]

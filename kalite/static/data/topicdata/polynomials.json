@@ -1,100 +1,93 @@
 [
   {
-    "kind": "Exercise", 
-    "display_name": "Adding and subtracting polynomials", 
-    "description": "Add or subtract polynomials", 
-    "title": "Adding and subtracting polynomials", 
-    "seconds_per_fast_problem": 17.0, 
-    "related_video_readable_ids": [
-      "addition-and-subtraction-of-polynomials", 
-      "subtracting-polynomials-with-multiple-variables"
-    ], 
-    "prerequisites": [
-      "equation_of_a_line"
-    ], 
-    "live": true, 
-    "h_position": 45, 
+    "related_video_readable_ids": [], 
     "v_position": -7, 
     "path": "/math/algebra/polynomials/polynomial_basics/e/adding_and_subtracting_polynomials/", 
+    "id": "adding_and_subtracting_polynomials", 
+    "display_name": "Adding and subtracting polynomials", 
+    "title": "Adding and subtracting polynomials", 
+    "live": true, 
+    "description": "Add or subtract polynomials", 
+    "h_position": 45, 
     "slug": "adding_and_subtracting_polynomials", 
-    "name": "adding_and_subtracting_polynomials"
+    "kind": "Exercise", 
+    "name": "adding_and_subtracting_polynomials", 
+    "seconds_per_fast_problem": 18.0, 
+    "prerequisites": [
+      "equation_of_a_line"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Multiplying expressions 0.5", 
-    "description": "Multiplying expressions in the form (x+b)(x-b), (x+b)^2, or (x-b)^2", 
-    "title": "Multiplying expressions 0.5", 
-    "seconds_per_fast_problem": 9.0, 
-    "related_video_readable_ids": [
-      "special-products-of-polynomials-2"
-    ], 
-    "prerequisites": [
-      "adding_and_subtracting_polynomials"
-    ], 
-    "live": true, 
-    "h_position": 46, 
+    "related_video_readable_ids": [], 
     "v_position": -7, 
     "path": "/math/algebra/polynomials/multiplying_polynomials/e/multiplying_expressions_0.5/", 
+    "id": "multiplying_expressions_0.5", 
+    "display_name": "Multiplying expressions 0.5", 
+    "title": "Multiplying expressions 0.5", 
+    "live": true, 
+    "description": "Multiplying expressions in the form (x+b)(x-b), (x+b)^2, or (x-b)^2", 
+    "h_position": 46, 
     "slug": "multiplying_expressions_0.5", 
-    "name": "multiplying_expressions_0.5"
+    "kind": "Exercise", 
+    "name": "multiplying_expressions_0.5", 
+    "seconds_per_fast_problem": 8.0, 
+    "prerequisites": [
+      "adding_and_subtracting_polynomials"
+    ]
   }, 
   {
-    "kind": "Exercise", 
+    "related_video_readable_ids": [], 
+    "v_position": -6, 
+    "path": "/math/algebra/polynomials/multiplying_polynomials/e/factoring_linear_binomials/", 
+    "id": "factoring_linear_binomials", 
     "display_name": "Factoring linear binomials", 
-    "description": "Factor expressions like 3x-9", 
     "title": "Factoring linear binomials", 
+    "live": true, 
+    "description": "Factor expressions like 3x-9", 
+    "h_position": 48, 
+    "slug": "factoring_linear_binomials", 
+    "kind": "Exercise", 
+    "name": "factoring_linear_binomials", 
     "seconds_per_fast_problem": 8.0, 
-    "related_video_readable_ids": [
-      "special-products-of-polynomials-2"
-    ], 
     "prerequisites": [
       "multiplying_expressions_1", 
       "multiplying_polynomials"
-    ], 
-    "live": true, 
-    "h_position": 48, 
-    "v_position": -6, 
-    "path": "/math/algebra/polynomials/multiplying_polynomials/e/factoring_linear_binomials/", 
-    "slug": "factoring_linear_binomials", 
-    "name": "factoring_linear_binomials"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Multiplying expressions 1", 
-    "description": "Multiplying expressions in the form of polynomials (not perfect squares).", 
-    "title": "Multiplying expressions 1", 
-    "seconds_per_fast_problem": 12.0, 
-    "related_video_readable_ids": [
-      "special-products-of-polynomials-2"
-    ], 
-    "prerequisites": [
-      "multiplying_expressions_0.5"
-    ], 
-    "live": true, 
-    "h_position": 47, 
+    "related_video_readable_ids": [], 
     "v_position": -7, 
     "path": "/math/algebra/polynomials/multiplying_polynomials/e/multiplying_expressions_1/", 
+    "id": "multiplying_expressions_1", 
+    "display_name": "Multiplying expressions 1", 
+    "title": "Multiplying expressions 1", 
+    "live": true, 
+    "description": "Multiplying expressions in the form of polynomials (not perfect squares).", 
+    "h_position": 47, 
     "slug": "multiplying_expressions_1", 
-    "name": "multiplying_expressions_1"
-  }, 
-  {
     "kind": "Exercise", 
-    "display_name": "Multiplying polynomials", 
-    "description": "Multiply two expressions with variables and exponents to get a polynomial", 
-    "title": "Multiplying polynomials", 
-    "seconds_per_fast_problem": 14.0, 
-    "related_video_readable_ids": [
-      "more-multiplying-polynomials", 
-      "multiplying-polynomials-3"
-    ], 
+    "name": "multiplying_expressions_1", 
+    "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "multiplying_expressions_0.5"
-    ], 
-    "live": true, 
-    "h_position": 47, 
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
     "v_position": -6, 
     "path": "/math/algebra/polynomials/multiplying_polynomials/e/multiplying_polynomials/", 
+    "id": "multiplying_polynomials", 
+    "display_name": "Multiplying polynomials", 
+    "title": "Multiplying polynomials", 
+    "live": true, 
+    "description": "Multiply two expressions with variables and exponents to get a polynomial", 
+    "h_position": 47, 
     "slug": "multiplying_polynomials", 
-    "name": "multiplying_polynomials"
+    "kind": "Exercise", 
+    "name": "multiplying_polynomials", 
+    "seconds_per_fast_problem": 15.0, 
+    "prerequisites": [
+      "multiplying_expressions_0.5"
+    ]
   }
 ]

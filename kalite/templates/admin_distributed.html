@@ -50,14 +50,27 @@ td.title {
                 <h2>{% trans "(Offline) Management Tools" %}</h2>
             </td.
         </tr>
+        {% if in_a_zone %}
+        <tr>
+            <td class="link"><a href="{% url zone_redirect %}">{% trans "Zone management" %}</a></td>
+            <td class="desc">{%trans "Access to summary data over all facilities and devices" %}</td>
+        </tr>
+        {% endif %}
         <tr>
             <td class="link"><a href="{% url user_list %}">{% trans "User management" %}</a></td>
             <td class="desc">{% trans "Add/move/delete users across groups" %}</td>
         </tr>
+        {% if in_a_zone %}
+        <tr>
+            <td class="link"><a href="{% url device_redirect %}">{% trans "Sync stats" %}</a></td>
+            <td class="desc">{%trans "Information about syncing," %}</td>
+        </tr>
+        {% else %}
         <tr>
             <td class="link"><a href="{% url summary_stats %}">{% trans "Summary stats" %}</a></td>
             <td class="desc">{% trans "Summary stats for this installation" %}</td>
         </tr>
+        {% endif %}
         
         {% if am_i_online %}
         <tr>
@@ -66,11 +79,11 @@ td.title {
             </td>
         </tr>
         <tr>
-            <td class="link"><a href="{{wiki_url}}">KA Lite Wiki</a></td>
+            <td class="link"><a href="{{wiki_url}}" target="_blank">KA Lite Wiki</a></td>
             <td class="desc"> {% trans "Contains the latest information setting up and using KA Lite." %}</td>
         </tr>
         <tr>
-            <td class="link"><a href="http://{{central_server_host}}/faq">FAQ</a></td>
+            <td class="link"><a href="http://{{central_server_host}}/faq" target="_blank">FAQ</a></td>
             <td class="desc">{% trans "Contains the latest FAQ for troubleshooting" %}</td>
         </tr>
         {% endif %}

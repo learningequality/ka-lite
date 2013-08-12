@@ -1,0 +1,239 @@
+ /*==============================================================================
+
+   Based on: http://www.grc.com/mainmenu.css 
+   Discussed at: http://www.grc.com/menu2/invitro.htm
+    
+   GRC multi-level script-free pure-CSS menuing system stylesheet.
+   This code is hereby placed into the public domain by its author
+   Steve Gibson. It may be freely used for any purpose whatsoever.
+
+    Computed Geometries:    with a default 12px font, 1.0em == 12px and
+    1px == 0.08333em.
+    Thus, our 98px wide Freeware & Research buttons are 8.166666em wide.
+
+                      PUBLIC DOMAIN CONTRIBUTION NOTICE                          
+   This work has been explicitly placed into the Public Domain for the
+    benefit of anyone who may find it useful for any purpose whatsoever.
+    
+   Modified by Dean Brettle (dean@brettle.com) for the Khan Academy.
+==============================================================================*/
+
+/*========================= TOP OF THE MENU CASCADE =========================*/
+
+.css-menu {
+    position:relative;        /* establish a menu-relative positioning context */
+    float:left;                                     /* play nicely with others */
+    margin:0;
+    padding:0;
+    border:0;
+    width: auto;
+    z-index: 100;
+}
+
+.css-menu a {
+    text-decoration: none !important;
+}
+
+.css-menu img {
+    vertical-align: top;      /* prevent images from being pushed down by text */
+}
+
+.css-menu > ul, .css-menu > ul > li ul {
+    margin:0;
+    list-style-type:none;          /* we don't want to view the list as a list */
+    line-height:3ex;            /* globally set the menu's item spacing */
+}                               
+
+.css-menu > ul > li, .css-menu > ul > li > ul > li {
+    float:left;    /* this creates the side-by-side array of top-level buttons */
+    position:relative;    /* create local positioning contexts for each button */
+    margin: 0;
+    white-space: nowrap;    
+}
+
+/*======================== TOP LEVEL MENU DEFINITIONS ========================*/
+
+.css-menu > ul > li, .css-menu > ul > li > ul {
+    padding-left: 1ex;
+    padding-right: 1ex;
+}
+
+.css-menu > ul > li {
+    border-width: 1px 1px 0 1px;
+    border-style: solid;
+    border-color: transparent; 
+    color: white;
+    margin-left: 0ex;
+    margin-right: 0ex;
+    padding-top: .25ex;
+    padding-bottom: .25ex;
+    font-weight: bold;
+    z-index: 1;
+    cursor: pointer;
+    
+    -webkit-border-top-left-radius: 5px;
+    -webkit-border-top-right-radius: 5px;
+    -moz-border-radius-topleft: 5px;
+    -moz-border-radius-topright: 5px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.css-menu > ul > li:after {
+    content: "";
+    width: 13px;
+    height: 12px;
+    background-image: url(/static/images/non-repeating-sprites.4.png);
+    background-position: -72px -67px;
+    display: inline-block;
+    position: relative;
+    top: 1px;
+}
+.css-menu > ul > li.solo:after {
+    background: none;
+}
+
+.css-menu > ul > li:hover,
+.css-menu > ul > li > a:hover {
+    color: black;
+    cursor: pointer;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .8);
+}
+
+.css-menu.noscript > ul > li:hover,
+.css-menu.noscript > ul > li > a:hover,
+.css-menu > ul > li.css-menu-js-hover
+ {
+    z-index: 5;
+    background-color: #f7f7f7;
+    color: black;
+    outline: none;
+    border-color: #ddd;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .8);
+}
+
+.css-menu.noscript > ul > li.solo:hover,
+.css-menu.noscript > ul > li.solo > a:hover,
+.css-menu > ul > li.solo.css-menu-js-hover
+ {
+    z-index: 5;
+    background-color: transparent;
+    color: black;
+    outline: none;
+    border-color: transparent;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .8);
+}
+
+
+.css-menu > ul > li > ul {
+    clear:left;
+    position:absolute;
+    left: -999em;                  /* initially hide the entire list hierarchy */
+    padding:0;                               /* this is our box border width */
+    z-index: 3;
+    background-color: #f7f7f7;
+    color: black;
+}
+
+.css-menu > ul > li > a,
+.css-menu > ul > li > a:visited {                    /* unselected top-level menu items */
+    display:block;
+    float:left;
+    text-decoration:none;
+}
+
+/*======================== 2ND LEVEL MENU DEFINITIONS ========================*/
+
+.css-menu.noscript > ul > li:hover > ul,
+.css-menu.noscript > ul > li > a:hover > ul,
+.css-menu > ul > li.css-menu-js-hover > ul
+{                           /* 2nd level drop-down box */
+    border-top: 1px solid transparent;
+    display:block;
+    margin:0;
+    left: -1px;       /* left-align our drop-down to the previous button border */
+    height:auto;      /* the drop-down height will be determiend by line count */
+    width:auto;
+    min-width: 150px;
+    z-index: 4;
+}
+.lte7 .css-menu.noscript > ul > li:hover > ul,
+.lte7 .css-menu.noscript > ul > li > a:hover > ul,
+.lte7 .css-menu > ul > li.css-menu-js-hover > ul {
+    top: 3.5ex;  /* For IE7: line-height + padding-top + padding-bottom */
+    width: 30ex; /* For IE7: approx maximum chars in a menu item */
+}
+.css-menu > ul > li > ul {
+    overflow: hidden;
+    border: solid 1px #ddd;
+    -webkit-box-shadow: 1px 1px 2px rgba(0,0,0, .5);
+    -moz-box-shadow: 1px 1px 2px rgba(0,0,0, .5);
+    
+    -webkit-border-bottom-left-radius: 5px;
+    -webkit-border-bottom-right-radius: 5px;
+    -webkit-border-top-right-radius: 5px;
+    -moz-border-radius-bottomleft: 5px;
+    -moz-border-radius-bottomright: 5px;
+    -moz-border-radius-topright: 5px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.css-menu > ul > li > ul li,
+.css-menu > ul > li > ul li > a {
+    width: 100%;    
+}
+
+.css-menu > ul > li > ul li > p,
+.css-menu > ul > li > ul li > a {
+    display: block;    
+    padding-left: 1ex;    
+    padding-right: 1ex;
+    font-weight: normal;
+    background-color: #f7f7f7; /* IE7 needs this to workaround http://haslayout.net/css/Hover-White-Background-Ignore-Bug */
+    margin: 0;    
+    height:auto;
+    color: black;               /* this sets the unselected drop-down text color */
+}
+
+.css-menu > ul > li > ul > li > ul > li > a {
+    padding-left: 2ex !important;    
+}
+
+.css-menu > ul > li > ul > li > ul {
+    border-bottom: none;
+}
+
+.css-menu > ul > li > ul > li:last-child > ul {
+    border-bottom: none 0px;
+}
+
+.css-menu > ul > li > ul li > p {
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.css-menu > ul > li > ul li:hover > a,
+.css-menu > ul > li > ul li > a:hover,
+.css-menu > ul > li > ul li:focus > a,
+.css-menu > ul > li > ul li > a:focus,
+.css-menu > ul > li > ul li > a.css-menu-js-hover {                /* 2nd level selected item */
+    color: #e45c02;
+    background-color: white;
+}
+
+.css-menu > ul > li > ul > li  {
+    display: block;
+    clear: left;
+    padding: 0;
+    height:auto;      /* the drop-down height will be determiend by line count */
+    width: 100%;
+}
+.lte7 .css-menu > ul > li > ul > li  {
+    width: 30ex; /* For IE7: ~ maximum chars in a menu item */
+}
+
+.css-menu > ul > li > ul > li > ul {
+    padding: 0;
+}
