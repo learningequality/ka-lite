@@ -46,6 +46,10 @@ function communicate_api_failure(resp, msg_id) {
 }
 
 
+function get_server_status(a, b, c) {
+    c(true);
+}
+
 $(function(){
     // Do the AJAX request to async-load user and message data
     $("[class$=-only]").hide();
