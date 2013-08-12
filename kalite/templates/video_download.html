@@ -501,10 +501,12 @@ ul.dynatree-container li, .ui-widget-content {
 
     ga("create", "UA-36937407-3", {"cookieDomain": "none"});
 
-    function status_callback(data) {
-        ga("set", "dimension1", data.registered ? "Registered" : "Unregistered");
-        ga("send", "pageview");
-    }
+    ga("set", "dimension1", "{% if registered %}Registered{% else %}Unregistered{% endif %}");
+    ga("set", "dimension2", "{% if zone_id %}{{ zone_id }}{% endif %}");
+    ga("set", "dimension3", "{{ device_id }}");
+    ga('set', 'metric1', {{ video_count }});
+    
+    ga("send", "pageview");
     
 {% endif %}
 

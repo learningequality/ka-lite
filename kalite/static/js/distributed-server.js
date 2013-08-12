@@ -67,11 +67,6 @@ $(function(){
                 }
             }
             show_django_messages(data.messages);
-
-            // TODO(jamalex): refactor the success data using deferreds/Backbone.js, to make this cleaner
-            if (_.isFunction(window.status_callback)) {
-                status_callback(data);
-            }
         })
         .fail(function(resp) {
             communicate_api_failure(resp, "id_status")
