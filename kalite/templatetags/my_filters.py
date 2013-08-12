@@ -1,6 +1,5 @@
 # based on: http://www.djangosnippets.org/snippets/1926/
 from django.template import Library, Node, TemplateSyntaxError
-from django.core.serializers import serialize
 from django.db.models.query import QuerySet
 from django.utils import simplejson
 from django.utils.safestring import mark_safe
@@ -107,23 +106,15 @@ def format_name(user, format="first_last"):
         # When firstname first, then try to use both, otherwise try firstname, then scramble for anything.
         if last_name and first_name:
             return "%s %s" % (first_name, last_name)
-        elif first_name:
-            return first_name
-        elif last_name:
-            return last_name
         else:
-            return username
+            return first_name or last_name or username
 
     elif format == "last_first":
-        # When lastnmae, then try to use both, otherwise try lastname, then scramble for anything.
+        # When lastname, then try to use both, otherwise try lastname, then scramble for anything.
         if last_name and first_name:
             return "%s, %s" % (last_name, first_name)
-        elif last_name:
-            return last_name
-        elif first_name:
-            return first_name
         else:
-            return username
+            return last_name or first_name or username
 
     else:
         raise NotImplementedError("Unrecognized format string: %s" % format)

@@ -28,10 +28,10 @@ LOG.setLevel(logging.DEBUG*DEBUG + logging.INFO*(1-DEBUG))
 
 INTERNAL_IPS   = getattr(local_settings, "INTERNAL_IPS", ("127.0.0.1",))
 
-# TODO(jamalex): currently this only has an effect on Linux/OSX
-PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 8008)
-
 CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
+
+# TODO(jamalex): currently this only has an effect on Linux/OSX
+PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 8008 if not CENTRAL_SERVER else 8001)
 
 AUTO_LOAD_TEST = getattr(local_settings, "AUTO_LOAD_TEST", False)
 assert not AUTO_LOAD_TEST or not CENTRAL_SERVER, "AUTO_LOAD_TEST only on local server"
@@ -175,7 +175,6 @@ if CENTRAL_SERVER:
 
 else:
     ROOT_URLCONF = "main.urls"
-    INSTALLED_APPS         += ("coachreports",)
     # Include optionally installed apps
     if os.path.exists(PROJECT_PATH + "/tests/loadtesting/"):
         INSTALLED_APPS     += ("kalite.tests.loadtesting"),
@@ -192,6 +191,17 @@ USER_LOG_MAX_RECORDS = getattr(local_settings, "USER_LOG_MAX_RECORDS", 0)
 USER_LOG_SUMMARY_FREQUENCY = getattr(local_settings, "USER_LOG_SUMMARY_FREQUENCY", (1,"months"))
 
 
+# Sessions use the default cache, and we want a local memory cache for that.
+# Separate session caching from file caching.
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+CACHES = {
+    "default": {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}
+
+# Local memory cache is to expensive to use for the page cache.
+#   instead, use a file-based cache.
 # By default, cache for maximum possible time.
 #   Note: caching for 100 years can be too large a value
 #   sys.maxint also can be too large (causes ValueError), since it's added to the current time.
@@ -203,16 +213,14 @@ CACHE_TIME = getattr(local_settings, "CACHE_TIME", _max_cache_time)
 
 # Cache is activated in every case,
 #   EXCEPT: if CACHE_TIME=0
-if CACHE_TIME or CACHE_TIME is None: # None can mean infinite caching to some functions
-    CACHES = {
-        'default': {
-            'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-            'LOCATION': getattr(local_settings, "CACHE_LOCATION", tempfile.gettempdir()), # this is kind of OS-specific, so dangerous.
-            'TIMEOUT': CACHE_TIME, # should be consistent
-            'OPTIONS': {
-                'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
-            },
-        }
+if CACHE_TIME != 0:  # None can mean infinite caching to some functions
+    CACHES["web_cache"] = {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': getattr(local_settings, "CACHE_LOCATION", tempfile.gettempdir()), # this is kind of OS-specific, so dangerous.
+        'TIMEOUT': CACHE_TIME, # should be consistent
+        'OPTIONS': {
+            'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
+        },
     }
     SESSION_CACHE_ALIAS = "session_cache"
 
@@ -233,8 +241,6 @@ SYNC_SESSIONS_MAX_RECORDS = getattr(local_settings, "SYNC_SESSIONS_MAX_RECORDS",
 
 # enable this to use a background mplayer instance instead of playing the video in the browser, on loopback connections
 USE_MPLAYER = getattr(local_settings, "USE_MPLAYER", False)
-
-#SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 MESSAGE_STORAGE = 'utils.django_utils.NoDuplicateMessagesSessionStorage'
 

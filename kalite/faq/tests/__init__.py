@@ -1,4 +1,5 @@
-from faq.tests.test_admin import *
-from faq.tests.test_models import *
-from faq.tests.test_templatetags import *
-from faq.tests.test_views import *
+import os
+
+from utils.importing import import_all_from
+
+import_all_from(os.path.dirname(__file__), locals(), globals())
