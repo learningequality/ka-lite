@@ -156,7 +156,6 @@ def update_video_entry(youtube_id, entry={}):
     except Exception as e:
         logging.warn("%s: Could not load json response: %s" % (youtube_id, e))
         entry["api_response"] = "client-error"
-        #import pdb; pdb.set_trace()
         return entry
 
     # Get all the languages
@@ -188,7 +187,6 @@ def update_video_entry(youtube_id, entry={}):
     except Exception as e:
         logging.warn("Failed to grab language / amara codes for %s: %s" % (youtube_id, e))
         entry["api_response"] = "client-error"
-        #import pdb; pdb.set_trace()
         return entry
 
 
