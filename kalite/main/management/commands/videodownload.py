@@ -53,7 +53,9 @@ class Command(UpdatesDynamicCommand):
     def handle(self, *args, **options):
 
         caching_enabled = settings.CACHE_TIME != 0
-        handled_video_ids = []
+        handled_video_ids = []  # stored to deal with caching
+        failed_video_ids = []  # stored to avoid requerying failures.
+
         try:
             while True: # loop until the method is aborted
             
@@ -61,22 +63,21 @@ class Command(UpdatesDynamicCommand):
                     self.stderr.write("Another download is still in progress; aborting.\n")
                     break
             
-                videos = VideoFile.objects.filter(flagged_for_download=True, download_in_progress=False)
+                # Grab any video that hasn't been tried yet
+                videos = VideoFile.objects.filter(flagged_for_download=True, download_in_progress=False).exclude(youtube_id__in=failed_video_ids)
                 if videos.count() == 0:
                     self.stdout.write("Nothing to download; aborting.\n")
                     break
 
                 # Grab the next video
+                # Grab a video as OURS to handle, set fields to indicate to others that we're on it!
                 video = videos[0]
-                self.stdout.write("Downloading video '%s'...\n" % video.youtube_id)
-
-                # Update the video logging
                 video.download_in_progress = True
                 video.percent_complete = 0
                 video.save()
-            
+                self.stdout.write("Downloading video '%s'...\n" % video.youtube_id)
+
                 # Update the progress logging
-                
                 self.set_stages(num_stages=videos.count() + len(handled_video_ids) + 1)  # add one for the currently handed video
                 if not self.started():
                     self.start(stage_name=video.youtube_id)
@@ -84,15 +85,17 @@ class Command(UpdatesDynamicCommand):
                 # Initiate the download process
                 try:
                     download_video(video.youtube_id, callback=download_progress_callback(self, video))
+                    handled_video_ids.append(video.youtube_id)
                     self.stdout.write("Download is complete!\n")
                 except Exception as e:
-                    self.stderr.write("Error in downloading: %s\n" % str(e))
+                    # On error, report the error, mark the video as not downloaded,
+                    #   and allow the loop to try other videos.
+                    self.stderr.write("Error in downloading %s: %s\n" % (video.youtube_id, e))
                     video.download_in_progress = False
                     video.save()
-                    force_job("videodownload", "Download Videos")  # infinite recursive call? :(
+                    # Rather than getting stuck on one video, continue to the next video.
+                    failed_video_ids.append(video.youtube_id)
                     break
-            
-                handled_video_ids.append(video.youtube_id)
 
                 # Expire, but don't regenerate until the very end, for efficiency.
                 if caching_enabled:
