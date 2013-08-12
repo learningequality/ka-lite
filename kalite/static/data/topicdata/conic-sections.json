@@ -1,155 +1,164 @@
 [
   {
-    "kind": "Exercise", 
-    "display_name": "Recognizing conic sections", 
-    "description": "Determine if the graph of a conic section shows a circle, hyperbola, parabola, or ellipse.", 
-    "title": "Recognizing conic sections", 
-    "seconds_per_fast_problem": 4.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "adding_and_subtracting_polynomials"
-    ], 
-    "live": true, 
-    "h_position": 46, 
     "v_position": 4, 
     "path": "/math/algebra/conic-sections/conic_basics/e/recognizing_conic_sections/", 
+    "id": "recognizing_conic_sections", 
+    "display_name": "Recognizing conic sections", 
+    "title": "Recognizing conic sections", 
+    "live": true, 
+    "description": "Determine if the graph of a conic section shows a circle, hyperbola, parabola, or ellipse.", 
+    "h_position": 46, 
     "slug": "recognizing_conic_sections", 
-    "name": "recognizing_conic_sections"
+    "kind": "Exercise", 
+    "name": "recognizing_conic_sections", 
+    "seconds_per_fast_problem": 4.0, 
+    "prerequisites": [
+      "adding_and_subtracting_polynomials"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Graphing circles", 
-    "description": "Graph circles from equations in standard form", 
-    "title": "Graphing circles", 
-    "seconds_per_fast_problem": 11.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "circles_and_arcs"
-    ], 
-    "live": true, 
-    "h_position": 42, 
     "v_position": -21, 
     "path": "/math/algebra/conic-sections/conic_circles/e/graphing_circles/", 
+    "id": "graphing_circles", 
+    "display_name": "Graphing circles", 
+    "title": "Graphing circles", 
+    "live": true, 
+    "description": "Graph circles from equations in standard form", 
+    "h_position": 42, 
     "slug": "graphing_circles", 
-    "name": "graphing_circles"
+    "kind": "Exercise", 
+    "name": "graphing_circles", 
+    "seconds_per_fast_problem": 11.0, 
+    "prerequisites": [
+      "circles_and_arcs"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Equation of a circle in factored form", 
-    "description": "Find the center and radius of a circle given the equation in factored form.", 
-    "title": "Equation of a circle in factored form", 
-    "seconds_per_fast_problem": 7.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "recognizing_conic_sections"
-    ], 
-    "live": true, 
-    "h_position": 47, 
     "v_position": 5, 
     "path": "/math/algebra/conic-sections/conic_circles/e/equation_of_a_circle_1/", 
+    "id": "equation_of_a_circle_1", 
+    "display_name": "Equation of a circle in factored form", 
+    "title": "Equation of a circle in factored form", 
+    "live": true, 
+    "description": "Find the center and radius of a circle given the equation in factored form.", 
+    "h_position": 47, 
     "slug": "equation_of_a_circle_1", 
-    "name": "equation_of_a_circle_1"
-  }, 
-  {
     "kind": "Exercise", 
-    "display_name": "Equation of a circle in non-factored form", 
-    "description": "Find the center and radius of a circle given the equation in unfactored form.", 
-    "title": "Equation of a circle in non-factored form", 
-    "seconds_per_fast_problem": 32.0, 
-    "related_video_readable_ids": [], 
-    "prerequisites": [
-      "equation_of_a_circle_1"
-    ], 
-    "live": true, 
-    "h_position": 48, 
-    "v_position": 5, 
-    "path": "/math/algebra/conic-sections/conic_circles/e/equation_of_a_circle_2/", 
-    "slug": "equation_of_a_circle_2", 
-    "name": "equation_of_a_circle_2"
-  }, 
-  {
-    "kind": "Exercise", 
-    "display_name": "Graphing circles 2", 
-    "description": "Graph circles from equations in general form", 
-    "title": "Graphing circles 2", 
-    "seconds_per_fast_problem": 27.0, 
-    "related_video_readable_ids": [], 
-    "prerequisites": [
-      "graphing_circles"
-    ], 
-    "live": true, 
-    "h_position": 43, 
-    "v_position": -21, 
-    "path": "/math/algebra/conic-sections/conic_circles/e/graphing_circles_2/", 
-    "slug": "graphing_circles_2", 
-    "name": "graphing_circles_2"
-  }, 
-  {
-    "kind": "Exercise", 
-    "display_name": "Equation of an ellipse", 
-    "description": "Find the center and major and minor radius of an ellipse given its equation.", 
-    "title": "Equation of an ellipse", 
-    "seconds_per_fast_problem": 9.0, 
-    "related_video_readable_ids": [], 
-    "prerequisites": [
-      "equation_of_a_circle_1"
-    ], 
-    "live": true, 
-    "h_position": 48, 
-    "v_position": 4, 
-    "path": "/math/algebra/conic-sections/conic_ellipses/e/equation_of_an_ellipse/", 
-    "slug": "equation_of_an_ellipse", 
-    "name": "equation_of_an_ellipse"
-  }, 
-  {
-    "kind": "Exercise", 
-    "display_name": "Parabola intuition 1", 
-    "description": "Make one parabola overlap with another by adjusting the leading coefficient and vertex coordinates.", 
-    "title": "Parabola intuition 1", 
-    "seconds_per_fast_problem": 15.0, 
-    "related_video_readable_ids": [], 
+    "name": "equation_of_a_circle_1", 
+    "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "recognizing_conic_sections"
-    ], 
-    "live": true, 
-    "h_position": 47, 
-    "v_position": 3, 
-    "path": "/math/algebra/conic-sections/conic_parabolas/e/parabola_intuition_1/", 
-    "slug": "parabola_intuition_1", 
-    "name": "parabola_intuition_1"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Parabola intuition 2", 
-    "description": "Make one parabola overlap with another by adjusting the focus coordinates and directrix.", 
-    "title": "Parabola intuition 2", 
-    "seconds_per_fast_problem": 33.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "parabola_intuition_1"
-    ], 
+    "v_position": 5, 
+    "path": "/math/algebra/conic-sections/conic_circles/e/equation_of_a_circle_2/", 
+    "id": "equation_of_a_circle_2", 
+    "display_name": "Equation of a circle in non-factored form", 
+    "title": "Equation of a circle in non-factored form", 
     "live": true, 
+    "description": "Find the center and radius of a circle given the equation in unfactored form.", 
     "h_position": 48, 
-    "v_position": 3, 
-    "path": "/math/algebra/conic-sections/conic_parabolas/e/parabola_intuition_2/", 
-    "slug": "parabola_intuition_2", 
-    "name": "parabola_intuition_2"
-  }, 
-  {
+    "slug": "equation_of_a_circle_2", 
     "kind": "Exercise", 
-    "display_name": "Equation of a hyperbola", 
-    "description": "Find the asymptotes of a hyperbola based on the equation.", 
-    "title": "Equation of a hyperbola", 
-    "seconds_per_fast_problem": 14.0, 
-    "related_video_readable_ids": [], 
+    "name": "equation_of_a_circle_2", 
+    "seconds_per_fast_problem": 32.0, 
     "prerequisites": [
       "equation_of_a_circle_1"
-    ], 
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -21, 
+    "path": "/math/algebra/conic-sections/conic_circles/e/graphing_circles_2/", 
+    "id": "graphing_circles_2", 
+    "display_name": "Graphing circles 2", 
+    "title": "Graphing circles 2", 
     "live": true, 
+    "description": "Graph circles from equations in general form", 
+    "h_position": 43, 
+    "slug": "graphing_circles_2", 
+    "kind": "Exercise", 
+    "name": "graphing_circles_2", 
+    "seconds_per_fast_problem": 27.0, 
+    "prerequisites": [
+      "graphing_circles"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": 4, 
+    "path": "/math/algebra/conic-sections/conic_ellipses/e/equation_of_an_ellipse/", 
+    "id": "equation_of_an_ellipse", 
+    "display_name": "Equation of an ellipse", 
+    "title": "Equation of an ellipse", 
+    "live": true, 
+    "description": "Find the center and major and minor radius of an ellipse given its equation.", 
     "h_position": 48, 
+    "slug": "equation_of_an_ellipse", 
+    "kind": "Exercise", 
+    "name": "equation_of_an_ellipse", 
+    "seconds_per_fast_problem": 9.0, 
+    "prerequisites": [
+      "equation_of_a_circle_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": 3, 
+    "path": "/math/algebra/conic-sections/conic_parabolas/e/parabola_intuition_1/", 
+    "id": "parabola_intuition_1", 
+    "display_name": "Parabola intuition 1", 
+    "title": "Parabola intuition 1", 
+    "live": true, 
+    "description": "Make one parabola overlap with another by adjusting the leading coefficient and vertex coordinates.", 
+    "h_position": 47, 
+    "slug": "parabola_intuition_1", 
+    "kind": "Exercise", 
+    "name": "parabola_intuition_1", 
+    "seconds_per_fast_problem": 15.0, 
+    "prerequisites": [
+      "recognizing_conic_sections"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": 3, 
+    "path": "/math/algebra/conic-sections/conic_parabolas/e/parabola_intuition_2/", 
+    "id": "parabola_intuition_2", 
+    "display_name": "Parabola intuition 2", 
+    "title": "Parabola intuition 2", 
+    "live": true, 
+    "description": "Make one parabola overlap with another by adjusting the focus coordinates and directrix.", 
+    "h_position": 48, 
+    "slug": "parabola_intuition_2", 
+    "kind": "Exercise", 
+    "name": "parabola_intuition_2", 
+    "seconds_per_fast_problem": 33.0, 
+    "prerequisites": [
+      "parabola_intuition_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
     "v_position": 6, 
     "path": "/math/algebra/conic-sections/hyperbolas-conic/e/equation_of_a_hyperbola/", 
+    "id": "equation_of_a_hyperbola", 
+    "display_name": "Equation of a hyperbola", 
+    "title": "Equation of a hyperbola", 
+    "live": true, 
+    "description": "Find the asymptotes of a hyperbola based on the equation.", 
+    "h_position": 48, 
     "slug": "equation_of_a_hyperbola", 
-    "name": "equation_of_a_hyperbola"
+    "kind": "Exercise", 
+    "name": "equation_of_a_hyperbola", 
+    "seconds_per_fast_problem": 14.0, 
+    "prerequisites": [
+      "equation_of_a_circle_1"
+    ]
   }
 ]

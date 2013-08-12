@@ -8,9 +8,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
-from django.db import models
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError
 from django.shortcuts import get_object_or_404
 from django.utils.html import strip_tags
@@ -23,7 +21,6 @@ from securesync import crypto
 from securesync.api_client import SyncClient
 from securesync.forms import RegisteredDevicePublicKeyForm, FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
 from securesync.models import SyncSession, Device, Facility, FacilityGroup, Zone
-from settings import LOG as logging
 from utils.jobs import force_job
 from utils.decorators import require_admin, central_server_only, distributed_server_only, facility_required, facility_from_request
 from utils.internet import set_query_params
@@ -312,10 +309,7 @@ def login(request, facility):
         if form.is_valid():
             user = form.get_user()
 
-            try:
-                UserLog.begin_user_activity(user, activity_type="login")  # Success! Log the event (ignoring validation failures)
-            except ValidationError as e:
-                logging.debug("Failed to end_user_activity upon logout: %s" % e)
+            UserLog.begin_user_activity(user, activity_type="login")  # Success! Log the event
             request.session["facility_user"] = user
             messages.success(request, _("You've been logged in! We hope you enjoy your time with KA Lite ") +
                                         _("-- be sure to log out when you finish."))
@@ -343,12 +337,7 @@ def login(request, facility):
 @distributed_server_only
 def logout(request):
     if "facility_user" in request.session:
-        # Logout, ignore any errors.
-        try:
-            UserLog.end_user_activity(request.session["facility_user"], activity_type="login")
-        except ValidationError as e:
-            logging.debug("Failed to end_user_activity upon logout: %s" % e)
-
+        UserLog.end_user_activity(request.session["facility_user"], activity_type="login")
         del request.session["facility_user"]
     auth_logout(request)
     next = request.GET.get("next", reverse("homepage"))
