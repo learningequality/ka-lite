@@ -47,7 +47,7 @@ def facility_from_request(handler=None, request=None, *args, **kwargs):
 
     def wrapper_fn(request, *args, **kwargs):
         if kwargs.get("facility_id",None):
-            facility = get_object_or_None(pk=facility_id)
+            facility = get_object_or_None(pk=kwargs["facility_id"])
         elif "facility" in request.GET:
             facility = get_object_or_None(Facility, pk=request.GET["facility"])
             if "set_default" in request.GET and request.is_admin and facility:

@@ -23,7 +23,7 @@ if exist database\data.sqlite (
 		exit /b
 	)
 
-	reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths" /f "python.exe" /s /k /e /d > nul
+	reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths" | findstr /I "python.exe" > nul
 	if !ERRORLEVEL! EQU 1 (
 		echo -------------------------------------------------------------------
     	echo Error: You do not seem to have Python installed.

@@ -252,3 +252,34 @@ class CentralEmptyFormSubmitCaseTest(KALiteCentralBrowserTestCase):
 
     def test_password_reset(self):
         self.empty_form_test(url=self.reverse("auth_password_reset"), submission_element_id="id_email")
+        
+
+class RegressionTests(KALiteCentralBrowserTestCase):
+
+    def test_issue_300(self):
+        """Unauthorized access across central server accounts."""
+        user1_uname = "a@a.com"
+        user2_uname = "b@b.com"
+        user1_password = "a"
+        user2_password = "b"
+        
+        # Register & activate two users with different usernames / emails
+        self.browser_register_user(username=user1_uname, password=user1_password)
+        self.browser_activate_user(username=user1_uname)
+        self.browser_login_user(   username=user1_uname, password=user1_password)
+
+        # Verify that we can go to the page with the correct user
+        user1_zone_link = self.browser.find_element_by_css_selector(".zones a.zone-manage-link").get_attribute("href")
+        self.browse_to(user1_zone_link)
+        self.assertEqual(self.browser.current_url, user1_zone_link)
+
+        # Now create and log in user 2.
+        self.browser_logout_user()
+        self.browser_register_user(username=user2_uname, password=user2_password)
+        self.browser_activate_user(username=user2_uname)
+        self.browser_login_user(   username=user2_uname, password=user2_password)
+
+        # Now try 
+        self.assertNotEqual(self.browser.current_url, user1_zone_link)
+        self.browser_check_django_message(message_type="error", contains="You must be logged in with an account authorized to view this page.", num_messages=1)
+
