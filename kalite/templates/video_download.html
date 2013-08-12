@@ -362,7 +362,7 @@ ul.dynatree-container li, .ui-widget-content {
 
         switch (resp.status) {
             case 403:
-                show_message("error", error_text + ": " + "You are not authorized to complete the request.  Please <a href='{% url login %}' target='_new'>login</a> as an administrator, then retry.", error_id)
+                show_message("error", error_text + ": " + "You are not authorized to complete the request.  Please <a href='{% url login %}' target='_blank'>login</a> as an administrator, then retry.", error_id)
                 break;
             default:
                 //communicate_api_failure(resp)
