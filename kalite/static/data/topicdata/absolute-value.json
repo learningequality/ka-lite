@@ -1,1 +1,186 @@
-[{"relative_url": "/exercise/absolute_value", "guaranteed_file_name": "absolute_value.html", "file_name": "", "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/absolute_value", "v_position": -1, "h_position": 7, "node_slug": "e/absolute_value", "progress_key": "e12293397", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/absolute-value-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/absolute_value.png", "custom_stacks": [], "description": "Find the absolute value of a given number.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Abs. Value", "covers": [], "display_name": "Finding absolute values", "kind": "Exercise", "sha1": "5c649cdac3fd20afacd28ad30dfb4fadd331c3b6", "name": "absolute_value", "seconds_per_fast_problem": 4.0, "prerequisites": ["adding_and_subtracting_negative_numbers"], "pretty_display_name": "Finding absolute values", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/absolute_value_256.png"}, {"relative_url": "/exercise/comparing_absolute_values", "guaranteed_file_name": "comparing_absolute_values.html", "file_name": "", "author_name": "Julian Pulgarin", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/comparing_absolute_values", "v_position": -1, "h_position": 8, "node_slug": "e/comparing_absolute_values", "progress_key": "e205349198", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/absolute-value-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/comparing_absolute_values.png", "custom_stacks": [], "description": "Compare the absolute values of two numbers, or compare the absolute value of one number to another number.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Cmp abs val", "covers": [], "display_name": "Comparing absolute values", "kind": "Exercise", "sha1": "77b75dd55f1675e2cc95409488797f3e35a59ea9", "name": "comparing_absolute_values", "seconds_per_fast_problem": 4.0, "prerequisites": ["absolute_value"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/comparing_absolute_values_256.png"}]
+[
+  {
+    "related_video_readable_ids": [
+      "negative-numbers-introduction"
+    ], 
+    "v_position": 1, 
+    "path": "/math/arithmetic/absolute-value/add-sub-negatives/e/number_line_2/", 
+    "display_name": "Negative numbers on the number line", 
+    "title": "Negative numbers on the number line", 
+    "live": true, 
+    "description": "Identify positive and negative integers on the number line\n", 
+    "h_position": 2, 
+    "slug": "number_line_2", 
+    "kind": "Exercise", 
+    "name": "number_line_2", 
+    "seconds_per_fast_problem": 6.0, 
+    "prerequisites": [
+      "addition_2"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "negative-numbers-introduction"
+    ], 
+    "v_position": 1, 
+    "path": "/math/arithmetic/absolute-value/add-sub-negatives/e/number_line_3/", 
+    "display_name": "Number line 3", 
+    "title": "Number line 3", 
+    "live": true, 
+    "description": "Identify positive and negative integers on the number line.\n", 
+    "h_position": 3, 
+    "slug": "number_line_3", 
+    "kind": "Exercise", 
+    "name": "number_line_3", 
+    "seconds_per_fast_problem": 8.0, 
+    "prerequisites": [
+      "number_line_2"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "ordering-negative-numbers"
+    ], 
+    "v_position": 1, 
+    "path": "/math/arithmetic/absolute-value/add-sub-negatives/e/ordering_negative_numbers/", 
+    "display_name": "Ordering negative numbers", 
+    "title": "Ordering negative numbers", 
+    "live": true, 
+    "description": "Put negative integers in order\n", 
+    "h_position": 4, 
+    "slug": "ordering_negative_numbers", 
+    "kind": "Exercise", 
+    "name": "ordering_negative_numbers", 
+    "seconds_per_fast_problem": 7.0, 
+    "prerequisites": [
+      "number_line_3"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "negative-numbers-introduction", 
+      "adding-negative-numbers", 
+      "adding-integers-with-different-signs"
+    ], 
+    "v_position": 1, 
+    "path": "/math/arithmetic/absolute-value/adding_subtracting_negatives/e/adding_negative_numbers/", 
+    "display_name": "Adding negative numbers", 
+    "title": "Adding negative numbers", 
+    "live": true, 
+    "description": "Adding positive and negative single-digit numbers", 
+    "h_position": 5, 
+    "slug": "adding_negative_numbers", 
+    "kind": "Exercise", 
+    "name": "adding_negative_numbers", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "subtraction_1", 
+      "ordering_negative_numbers"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "why-subtracting-a-negative-equivalent-to-adding-a-positive", 
+      "adding-subtracting-negative-numbers"
+    ], 
+    "v_position": 1, 
+    "path": "/math/arithmetic/absolute-value/adding_subtracting_negatives/e/adding_and_subtracting_negative_numbers/", 
+    "display_name": "Adding and subtracting negative numbers", 
+    "title": "Adding and subtracting negative numbers", 
+    "live": true, 
+    "description": "Add and subtract positive and negative single-digit integers", 
+    "h_position": 6, 
+    "slug": "adding_and_subtracting_negative_numbers", 
+    "kind": "Exercise", 
+    "name": "adding_and_subtracting_negative_numbers", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "adding_negative_numbers"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "negative-number-word-problems-1", 
+      "u09-l1-t2-we4-adding-real-numbers-application"
+    ], 
+    "v_position": 2, 
+    "path": "/math/arithmetic/absolute-value/adding_subtracting_negatives/e/negative_number_word_problems/", 
+    "display_name": "Negative number word problems", 
+    "title": "Negative number word problems", 
+    "live": true, 
+    "description": "", 
+    "h_position": 7, 
+    "slug": "negative_number_word_problems", 
+    "kind": "Exercise", 
+    "name": "negative_number_word_problems", 
+    "seconds_per_fast_problem": 13.0, 
+    "prerequisites": [
+      "adding_and_subtracting_negative_numbers"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "multiplying-positive-and-negative-numbers", 
+      "dividing-positive-and-negative-numbers", 
+      "multiplying-negative-real-numbers", 
+      "why-a-negative-times-a-negative-is-a-positive", 
+      "why-a-negative-times-a-negative-makes-intuitive-sense", 
+      "multiplying-and-dividing-negative-numbers"
+    ], 
+    "v_position": -4, 
+    "path": "/math/arithmetic/absolute-value/mult_div_negatives/e/multiplying_and_dividing_negative_numbers/", 
+    "display_name": "Multiplying and dividing negative numbers", 
+    "title": "Multiplying and dividing negative numbers", 
+    "live": true, 
+    "description": "Multiply or divide positive and negative integers. No remainder.\n", 
+    "h_position": 12, 
+    "slug": "multiplying_and_dividing_negative_numbers", 
+    "kind": "Exercise", 
+    "name": "multiplying_and_dividing_negative_numbers", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "adding_and_subtracting_negative_numbers", 
+      "division_4"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "absolute-value-and-number-lines", 
+      "absolute-value-1", 
+      "absolute-value-of-integers"
+    ], 
+    "v_position": -1, 
+    "path": "/math/arithmetic/absolute-value/abs_value_tutorial/e/absolute_value/", 
+    "display_name": "Finding absolute values", 
+    "title": "Finding absolute values", 
+    "live": true, 
+    "description": "Find the absolute value of a given number.", 
+    "h_position": 7, 
+    "slug": "absolute_value", 
+    "kind": "Exercise", 
+    "name": "absolute_value", 
+    "seconds_per_fast_problem": 4.0, 
+    "prerequisites": [
+      "adding_and_subtracting_negative_numbers"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "comparing-absolute-values"
+    ], 
+    "v_position": -1, 
+    "path": "/math/arithmetic/absolute-value/abs_value_tutorial/e/comparing_absolute_values/", 
+    "display_name": "Comparing absolute values", 
+    "title": "Comparing absolute values", 
+    "live": true, 
+    "description": "Compare the absolute values of two numbers, or compare the absolute value of one number to another number.", 
+    "h_position": 8, 
+    "slug": "comparing_absolute_values", 
+    "kind": "Exercise", 
+    "name": "comparing_absolute_values", 
+    "seconds_per_fast_problem": 4.0, 
+    "prerequisites": [
+      "absolute_value"
+    ]
+  }
+]

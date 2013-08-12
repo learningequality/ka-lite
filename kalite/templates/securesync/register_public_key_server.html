@@ -8,6 +8,8 @@
 <script>
     $(function() {
         $("#id_public_key").val(decodeURIComponent(window.location.search.slice(1)));
+        $('#id_public_key').attr('readonly',true);
+        $('#id_public_key').css('color','grey');
     });
 </script>
 {% endblock headjs %}
@@ -20,5 +22,4 @@
 {{ form.as_p }}
 <input type="submit" value="Register" class="submit"/>
 </form>
-
 {% endblock content %}

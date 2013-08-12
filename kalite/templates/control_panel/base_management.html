@@ -24,7 +24,8 @@
                     {{ zone.name }}
                 {% if facility or device %}</a>
                 {% else %} <a class="edit-link" href="{% url zone_form org_id=org.id zone_id=zone.id %}">(edit)</a>
-                {% endif %}</li>
+                {% endif %}
+            </li>
             {% endif %}
 
             {% if device %}

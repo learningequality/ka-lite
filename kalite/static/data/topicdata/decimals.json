@@ -1,1 +1,445 @@
-[{"relative_url": "/exercise/place_value", "guaranteed_file_name": "place_value.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/place_value", "v_position": 4, "h_position": 13, "node_slug": "e/place_value", "progress_key": "e195728164", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/decimals-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/place_value.png", "custom_stacks": [], "description": "", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Place value", "covers": [], "display_name": "Place value", "kind": "Exercise", "sha1": "930d70248f0c2322595d8d6c4c77aa88645c14b9", "name": "place_value", "seconds_per_fast_problem": 5.0, "prerequisites": ["adding_decimals_2"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/place_value_256.png"}, {"relative_url": "/exercise/rounding_whole_numbers", "guaranteed_file_name": "rounding_whole_numbers.html", "file_name": null, "author_name": "Peter Kuperman", "creation_date": "2011-09-27T17:58:15Z", "ka_url": "http://www.khanacademy.org/exercise/rounding_whole_numbers", "v_position": 3, "h_position": 14, "node_slug": "e/rounding_whole_numbers", "progress_key": "e274889844", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/decimals-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/rounding_whole_numbers.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Rd whole #", "covers": [], "display_name": "Rounding whole numbers", "kind": "Exercise", "sha1": "ce905c0fc498a60f45be00a2e6026dd3e2d744e8", "name": "rounding_whole_numbers", "seconds_per_fast_problem": 6.0, "prerequisites": ["place_value"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/rounding_whole_numbers_256.png"}, {"relative_url": "/exercise/decimals_on_the_number_line_1", "guaranteed_file_name": "decimals_on_the_number_line_1.html", "file_name": null, "author_name": "Matt Wahl", "creation_date": "2011-12-23T16:37:32Z", "ka_url": "http://www.khanacademy.org/exercise/decimals_on_the_number_line_1", "v_position": 3, "h_position": 8, "node_slug": "e/decimals_on_the_number_line_1", "progress_key": "e460969021", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/decimals-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/decimals_on_the_number_line_1.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Dec no lin1", "covers": [], "display_name": "Decimals on the number line 1", "kind": "Exercise", "sha1": "c1cec8a4f70d6ffca6d0a847b62103f4f82d28e3", "name": "decimals_on_the_number_line_1", "seconds_per_fast_problem": 5.0, "prerequisites": ["number_line_2"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/decimals_on_the_number_line_1_256.png"}, {"relative_url": "/exercise/understanding_decimals_place_value", "guaranteed_file_name": "understanding_decimals_place_value.html", "file_name": null, "author_name": "Ben Eater", "creation_date": "2011-12-04T02:39:14Z", "ka_url": "http://www.khanacademy.org/exercise/understanding_decimals_place_value", "v_position": 4, "h_position": 14, "node_slug": "e/understanding_decimals_place_value", "progress_key": "e418343167", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/decimals-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/understanding_decimals_place_value.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "D place val", "covers": [], "display_name": "Understanding decimals place value", "kind": "Exercise", "sha1": "d8139feb0122cd9544bdefaf01152dbcff0a5b3e", "name": "understanding_decimals_place_value", "seconds_per_fast_problem": 19.0, "prerequisites": ["place_value"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/understanding_decimals_place_value_256.png"}, {"relative_url": "/exercise/rounding_numbers", "guaranteed_file_name": "rounding_numbers.html", "file_name": null, "author_name": "Ben Alpert", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/rounding_numbers", "v_position": 3, "h_position": 15, "node_slug": "e/rounding_numbers", "progress_key": "e66754977", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/decimals-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/rounding_numbers.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Rounding", "covers": [], "display_name": "Rounding numbers", "kind": "Exercise", "sha1": "defc3d1199bdb941908ae703a9d1e6e5b1981a8b", "name": "rounding_numbers", "seconds_per_fast_problem": 7.0, "prerequisites": ["rounding_whole_numbers"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/rounding_numbers_256.png"}, {"relative_url": "/exercise/estimation_with_decimals", "guaranteed_file_name": "estimation_with_decimals.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/estimation_with_decimals", "v_position": 3, "h_position": 16, "node_slug": "e/estimation_with_decimals", "progress_key": "e213288729", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/decimals-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/estimation_with_decimals.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Estim w dec", "covers": [], "display_name": "Estimation with decimals", "kind": "Exercise", "sha1": "a5e4aa414f8d604619e4add3fa0c68d1ce84eb65", "name": "estimation_with_decimals", "seconds_per_fast_problem": 13.0, "prerequisites": ["rounding_numbers"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/estimation_with_decimals_256.png"}, {"relative_url": "/exercise/adding_decimals_0.5", "guaranteed_file_name": "adding_decimals_0.5.html", "file_name": null, "author_name": "Elizabeth Slavitt", "creation_date": "2011-12-23T16:51:50Z", "ka_url": "http://www.khanacademy.org/exercise/adding_decimals_0.5", "v_position": 3, "h_position": 10, "node_slug": "e/adding_decimals_0.5", "progress_key": "e461013412", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/decimals-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/adding_decimals_0.5.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Add dec 0.5", "covers": [], "display_name": "Adding decimals 0.5", "kind": "Exercise", "sha1": "ee216e27658278252a016557073f964f8db42a86", "name": "adding_decimals_0.5", "seconds_per_fast_problem": 12.0, "prerequisites": ["decimals_on_the_number_line_2"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/adding_decimals_0.5_256.png"}, {"relative_url": "/exercise/subtracting_decimals_0.5", "guaranteed_file_name": "subtracting_decimals_0.5.html", "file_name": null, "author_name": "Elizabeth Slavitt", "creation_date": "2011-12-23T16:52:25Z", "ka_url": "http://www.khanacademy.org/exercise/subtracting_decimals_0.5", "v_position": 6, "h_position": 12, "node_slug": "e/subtracting_decimals_0.5", "progress_key": "e461015185", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/decimals-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/subtracting_decimals_0.5.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Sub dec 0.5", "covers": [], "display_name": "Subtracting decimals 0.5", "kind": "Exercise", "sha1": "ec23f3f9f9eec4f249c3d437a03a035b4eae01ee", "name": "subtracting_decimals_0.5", "seconds_per_fast_problem": 12.0, "prerequisites": ["subtraction_4", "adding_decimals"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/subtracting_decimals_0.5_256.png"}, {"relative_url": "/exercise/adding_decimals", "guaranteed_file_name": "adding_decimals.html", "file_name": null, "author_name": "Matt Wahl", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/adding_decimals", "v_position": 4, "h_position": 11, "node_slug": "e/adding_decimals", "progress_key": "e2009", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/decimals-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/adding_decimals.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Add. Dec.", "covers": ["addition_4"], "display_name": "Adding decimals", "kind": "Exercise", "sha1": "fb8bdd48c239315508d976295e6291de9afc113c", "name": "adding_decimals", "seconds_per_fast_problem": 13.0, "prerequisites": ["addition_4", "adding_decimals_0.5"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/adding_decimals_256.png"}, {"relative_url": "/exercise/subtracting_decimals", "guaranteed_file_name": "subtracting_decimals.html", "file_name": null, "author_name": "Lukas Domagala", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/subtracting_decimals", "v_position": 6, "h_position": 13, "node_slug": "e/subtracting_decimals", "progress_key": "e2031", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/decimals-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/subtracting_decimals.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Sub. Dec.", "covers": ["subtraction_4"], "display_name": "Subtracting decimals", "kind": "Exercise", "sha1": "7db3296c732b7766ab3dbd50c3dcd01542c51544", "name": "subtracting_decimals", "seconds_per_fast_problem": 15.0, "prerequisites": ["subtracting_decimals_0.5"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/subtracting_decimals_256.png"}, {"relative_url": "/exercise/adding_and_subtracting_decimals_word_problems", "guaranteed_file_name": "adding_and_subtracting_decimals_word_problems.html", "file_name": null, "author_name": "Elizabeth Slavitt", "creation_date": "2011-12-02T17:56:26Z", "ka_url": "http://www.khanacademy.org/exercise/adding_and_subtracting_decimals_word_problems", "v_position": 6, "h_position": 14, "node_slug": "e/adding_and_subtracting_decimals_word_problems", "progress_key": "e415951528", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/decimals-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/adding_and_subtracting_decimals_word_problems.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "+/- dec WP", "covers": [], "display_name": "Adding and subtracting decimals word problems", "kind": "Exercise", "sha1": "bb09523ddbaab170ac4b95eb65975135570586d1", "name": "adding_and_subtracting_decimals_word_problems", "seconds_per_fast_problem": 21.0, "prerequisites": ["subtracting_decimals"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/adding_and_subtracting_decimals_word_problems_256.png"}, {"relative_url": "/exercise/multiplying_decimals", "guaranteed_file_name": "multiplying_decimals.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/multiplying_decimals", "v_position": 2, "h_position": 13, "node_slug": "e/multiplying_decimals", "progress_key": "e2010", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/decimals-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/multiplying_decimals.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Mult. Dec.", "covers": ["multiplication_4"], "display_name": "Multiplying decimals", "kind": "Exercise", "sha1": "1d3c651f3a4b906016b7c72e0fb1149f92a938ff", "name": "multiplying_decimals", "seconds_per_fast_problem": 21.0, "prerequisites": ["adding_decimals", "multiplication_4"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/multiplying_decimals_256.png"}, {"relative_url": "/exercise/understanding_moving_the_decimal", "guaranteed_file_name": "understanding_moving_the_decimal.html", "file_name": null, "author_name": "Praveen Ramalingam", "creation_date": "2012-01-24T01:53:59Z", "ka_url": "http://www.khanacademy.org/exercise/understanding_moving_the_decimal", "v_position": 2, "h_position": 14, "node_slug": "e/understanding_moving_the_decimal", "progress_key": "e520461717", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/decimals-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/understanding_moving_the_decimal.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Und mov dec", "covers": [], "display_name": "Understanding moving the decimal", "kind": "Exercise", "sha1": "c78aa7dbcc6d7aba7f3da1e519e7f578fc681b50", "name": "understanding_moving_the_decimal", "seconds_per_fast_problem": 5.0, "prerequisites": ["multiplying_decimals"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/understanding_moving_the_decimal_256.png"}, {"relative_url": "/exercise/dividing_decimals_0.5", "guaranteed_file_name": "dividing_decimals_0.5.html", "file_name": null, "author_name": "Ben Eater", "creation_date": "2012-03-12T14:45:23Z", "ka_url": "http://www.khanacademy.org/exercise/dividing_decimals_0.5", "v_position": 0, "h_position": 12, "node_slug": "e/dividing_decimals_0.5", "progress_key": "e642900605", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/decimals-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/dividing_decimals_0.5.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Div dec 0.5", "covers": [], "display_name": "Dividing decimals 0.5", "kind": "Exercise", "sha1": "0ce0f107ae4aa2e44fba5fd4297ed98627db3e99", "name": "dividing_decimals_0.5", "seconds_per_fast_problem": 9.0, "prerequisites": ["division_3"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/dividing_decimals_0.5_256.png"}, {"relative_url": "/exercise/dividing_decimals_1", "guaranteed_file_name": "dividing_decimals_1.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-10-05T18:41:44Z", "ka_url": "http://www.khanacademy.org/exercise/dividing_decimals_1", "v_position": 1, "h_position": 13, "node_slug": "e/dividing_decimals_1", "progress_key": "e292987819", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/decimals-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/dividing_decimals_1.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Div dec 1", "covers": ["dividing_decimals_0.5"], "display_name": "Dividing decimals 1", "kind": "Exercise", "sha1": "68837c82453887af3bd5f5a99f16b816f95f698f", "name": "dividing_decimals_1", "seconds_per_fast_problem": 14.0, "prerequisites": ["dividing_decimals_0.5", "division_4"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/dividing_decimals_1_256.png"}, {"relative_url": "/exercise/dividing_decimals_2", "guaranteed_file_name": "dividing_decimals_2.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-10-05T18:47:01Z", "ka_url": "http://www.khanacademy.org/exercise/dividing_decimals_2", "v_position": 1, "h_position": 14, "node_slug": "e/dividing_decimals_2", "progress_key": "e293008404", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/decimals-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/dividing_decimals_2.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Div dec 2", "covers": [], "display_name": "Dividing decimals 2", "kind": "Exercise", "sha1": "1d75dbdc837f5d80a1f7de8d1ae44a6958cc2882", "name": "dividing_decimals_2", "seconds_per_fast_problem": 11.0, "prerequisites": ["dividing_decimals_1"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/dividing_decimals_2_256.png"}, {"relative_url": "/exercise/dividing_decimals", "guaranteed_file_name": "dividing_decimals.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/dividing_decimals", "v_position": 1, "h_position": 15, "node_slug": "e/dividing_decimals", "progress_key": "e3025", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/decimals-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/dividing_decimals.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Div. Dec.", "covers": ["division_4", "dividing_decimals_1", "dividing_decimals_2"], "display_name": "Dividing decimals", "kind": "Exercise", "sha1": "3b03aaee8d92eac649fcca9efa86cef65b10545c", "name": "dividing_decimals", "seconds_per_fast_problem": 15.0, "prerequisites": ["dividing_decimals_2"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/dividing_decimals_256.png"}, {"relative_url": "/exercise/decimals_on_the_number_line_2", "guaranteed_file_name": "decimals_on_the_number_line_2.html", "file_name": null, "author_name": "Matt Wahl", "creation_date": "2011-12-23T16:38:24Z", "ka_url": "http://www.khanacademy.org/exercise/decimals_on_the_number_line_2", "v_position": 3, "h_position": 9, "node_slug": "e/decimals_on_the_number_line_2", "progress_key": "e460994266", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/decimals-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/decimals_on_the_number_line_2.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Dec no lin2", "covers": ["decimals_on_the_number_line_1"], "display_name": "Decimals on the number line 2", "kind": "Exercise", "sha1": "1466a141f7426c0e36d79de9f3bb09eaa55abea7", "name": "decimals_on_the_number_line_2", "seconds_per_fast_problem": 5.0, "prerequisites": ["decimals_on_the_number_line_1"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/decimals_on_the_number_line_2_256.png"}, {"relative_url": "/exercise/adding_decimals_2", "guaranteed_file_name": "adding_decimals_2.html", "file_name": null, "author_name": "Elizabeth Slavitt", "creation_date": "2012-04-13T22:46:59Z", "ka_url": "http://www.khanacademy.org/exercise/adding_decimals_2", "v_position": 4, "h_position": 12, "node_slug": "e/adding_decimals_2", "progress_key": "e720725814", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/decimals-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/adding_decimals_2.png", "custom_stacks": [], "description": "", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Add. Dec. 2", "covers": ["adding_decimals"], "display_name": "Adding decimals 2", "kind": "Exercise", "sha1": "fbf33dc46dbb39d206c90d1c2ea832b8bc7715f0", "name": "adding_decimals_2", "seconds_per_fast_problem": 13.0, "prerequisites": ["adding_decimals"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/adding_decimals_2_256.png"}, {"relative_url": "/exercise/significant_figures_1", "guaranteed_file_name": "significant_figures_1.html", "file_name": "", "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/significant_figures_1", "v_position": 2, "h_position": 23, "node_slug": "e/significant_figures_1", "progress_key": "e76621206", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/decimals-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/significant_figures_1.png", "custom_stacks": [], "description": "Determine how many significant figures a given number has.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Sig fig 1", "covers": [], "display_name": "Significant figures", "kind": "Exercise", "sha1": "b2390667e08f4e25c5db842ca5dde72230bd5a79", "name": "significant_figures_1", "seconds_per_fast_problem": 5.0, "prerequisites": ["scientific_notation"], "pretty_display_name": "Significant figures", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/significant_figures_1_256.png"}]
+[
+  {
+    "related_video_readable_ids": [
+      "understanding-decimal-place-value-exercise", 
+      "decimal-place-value", 
+      "decimal-place-value-2"
+    ], 
+    "v_position": 4, 
+    "path": "/math/arithmetic/decimals/decimal_place_value/e/understanding_decimals_place_value/", 
+    "display_name": "Understanding decimals place value", 
+    "title": "Understanding decimals place value", 
+    "live": true, 
+    "description": "", 
+    "h_position": 14, 
+    "slug": "understanding_decimals_place_value", 
+    "kind": "Exercise", 
+    "name": "understanding_decimals_place_value", 
+    "seconds_per_fast_problem": 20.0, 
+    "prerequisites": [
+      "place_value"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "decimals-on-a-number-line"
+    ], 
+    "v_position": 3, 
+    "path": "/math/arithmetic/decimals/decimal_place_value/e/decimals_on_the_number_line_1/", 
+    "display_name": "Decimals on the number line 1", 
+    "title": "Decimals on the number line 1", 
+    "live": true, 
+    "description": "", 
+    "h_position": 8, 
+    "slug": "decimals_on_the_number_line_1", 
+    "kind": "Exercise", 
+    "name": "decimals_on_the_number_line_1", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "number_line_2"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "decimals-on-a-number-line", 
+      "points-on-a-number-line"
+    ], 
+    "v_position": 3, 
+    "path": "/math/arithmetic/decimals/decimal_place_value/e/decimals_on_the_number_line_2/", 
+    "display_name": "Decimals on the number line 2", 
+    "title": "Decimals on the number line 2", 
+    "live": true, 
+    "description": "", 
+    "h_position": 9, 
+    "slug": "decimals_on_the_number_line_2", 
+    "kind": "Exercise", 
+    "name": "decimals_on_the_number_line_2", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "decimals_on_the_number_line_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "adding-decimals-example-1", 
+      "adding-decimals-example-2", 
+      "adding-decimals", 
+      "adding-decimals--old"
+    ], 
+    "v_position": 3, 
+    "path": "/math/arithmetic/decimals/adding_decimals/e/adding_decimals_0.5/", 
+    "display_name": "Adding decimals 0.5", 
+    "title": "Adding decimals 0.5", 
+    "live": true, 
+    "description": "", 
+    "h_position": 10, 
+    "slug": "adding_decimals_0.5", 
+    "kind": "Exercise", 
+    "name": "adding_decimals_0.5", 
+    "seconds_per_fast_problem": 7.0, 
+    "prerequisites": [
+      "decimals_on_the_number_line_2"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "adding-decimals-example-1", 
+      "adding-decimals-example-2", 
+      "adding-decimals", 
+      "adding-decimals--old"
+    ], 
+    "v_position": 4, 
+    "path": "/math/arithmetic/decimals/adding_decimals/e/adding_decimals/", 
+    "display_name": "Adding decimals 1", 
+    "title": "Adding decimals 1", 
+    "live": true, 
+    "description": "", 
+    "h_position": 11, 
+    "slug": "adding_decimals", 
+    "kind": "Exercise", 
+    "name": "adding_decimals", 
+    "seconds_per_fast_problem": 12.0, 
+    "prerequisites": [
+      "addition_4", 
+      "adding_decimals_0.5"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "adding-decimals-example-1", 
+      "adding-decimals-example-2", 
+      "adding-decimals", 
+      "adding-decimals--old"
+    ], 
+    "v_position": 4, 
+    "path": "/math/arithmetic/decimals/adding_decimals/e/adding_decimals_2/", 
+    "display_name": "Adding decimals 2", 
+    "title": "Adding decimals 2", 
+    "live": true, 
+    "description": "", 
+    "h_position": 12, 
+    "slug": "adding_decimals_2", 
+    "kind": "Exercise", 
+    "name": "adding_decimals_2", 
+    "seconds_per_fast_problem": 13.0, 
+    "prerequisites": [
+      "adding_decimals"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "subtracting-decimals", 
+      "subtracting-decimals--old"
+    ], 
+    "v_position": 6, 
+    "path": "/math/arithmetic/decimals/adding_decimals/e/subtracting_decimals_0.5/", 
+    "display_name": "Subtracting decimals 0.5", 
+    "title": "Subtracting decimals 0.5", 
+    "live": true, 
+    "description": "", 
+    "h_position": 12, 
+    "slug": "subtracting_decimals_0.5", 
+    "kind": "Exercise", 
+    "name": "subtracting_decimals_0.5", 
+    "seconds_per_fast_problem": 12.0, 
+    "prerequisites": [
+      "subtraction_4", 
+      "adding_decimals"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "subtracting-decimals", 
+      "subtracting-decimals--old"
+    ], 
+    "v_position": 6, 
+    "path": "/math/arithmetic/decimals/adding_decimals/e/subtracting_decimals/", 
+    "display_name": "Subtracting decimals", 
+    "title": "Subtracting decimals", 
+    "live": true, 
+    "description": "", 
+    "h_position": 13, 
+    "slug": "subtracting_decimals", 
+    "kind": "Exercise", 
+    "name": "subtracting_decimals", 
+    "seconds_per_fast_problem": 12.0, 
+    "prerequisites": [
+      "subtracting_decimals_0.5"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "subtracting-decimals-word-problem", 
+      "adding-decimals-word-problem"
+    ], 
+    "v_position": 6, 
+    "path": "/math/arithmetic/decimals/adding_decimals/e/adding_and_subtracting_decimals_word_problems/", 
+    "display_name": "Adding and subtracting decimals word problems", 
+    "title": "Adding and subtracting decimals word problems", 
+    "live": true, 
+    "description": "", 
+    "h_position": 14, 
+    "slug": "adding_and_subtracting_decimals_word_problems", 
+    "kind": "Exercise", 
+    "name": "adding_and_subtracting_decimals_word_problems", 
+    "seconds_per_fast_problem": 21.0, 
+    "prerequisites": [
+      "subtracting_decimals"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "multiplying-decimals", 
+      "mulitplyling-decimals-3", 
+      "mulitplication-8--multiplying-decimals--old-video"
+    ], 
+    "v_position": 2, 
+    "path": "/math/arithmetic/decimals/multiplying_decimals/e/multiplying_decimals/", 
+    "display_name": "Multiplying decimals", 
+    "title": "Multiplying decimals", 
+    "live": true, 
+    "description": "", 
+    "h_position": 13, 
+    "slug": "multiplying_decimals", 
+    "kind": "Exercise", 
+    "name": "multiplying_decimals", 
+    "seconds_per_fast_problem": 19.0, 
+    "prerequisites": [
+      "adding_decimals", 
+      "multiplication_4"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "multiplying-a-decimal-by-a-power-of-10", 
+      "dividing-a-decimal-by-a-power-of-10", 
+      "dividing-decimals-2-1"
+    ], 
+    "v_position": 2, 
+    "path": "/math/arithmetic/decimals/multiplying_decimals/e/understanding_moving_the_decimal/", 
+    "display_name": "Understanding moving the decimal", 
+    "title": "Understanding moving the decimal", 
+    "live": true, 
+    "description": "", 
+    "h_position": 14, 
+    "slug": "understanding_moving_the_decimal", 
+    "kind": "Exercise", 
+    "name": "understanding_moving_the_decimal", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "multiplying_decimals"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "dividing-decimals", 
+      "dividing-decimal"
+    ], 
+    "v_position": 0, 
+    "path": "/math/arithmetic/decimals/dividing_decimals/e/dividing_decimals_0.5/", 
+    "display_name": "Dividing decimals 0.5", 
+    "title": "Dividing decimals 0.5", 
+    "live": true, 
+    "description": "", 
+    "h_position": 12, 
+    "slug": "dividing_decimals_0.5", 
+    "kind": "Exercise", 
+    "name": "dividing_decimals_0.5", 
+    "seconds_per_fast_problem": 8.0, 
+    "prerequisites": [
+      "division_3"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "dividing-decimals", 
+      "dividing-decimal"
+    ], 
+    "v_position": 1, 
+    "path": "/math/arithmetic/decimals/dividing_decimals/e/dividing_decimals_1/", 
+    "display_name": "Dividing decimals 1", 
+    "title": "Dividing decimals 1", 
+    "live": true, 
+    "description": "", 
+    "h_position": 13, 
+    "slug": "dividing_decimals_1", 
+    "kind": "Exercise", 
+    "name": "dividing_decimals_1", 
+    "seconds_per_fast_problem": 13.0, 
+    "prerequisites": [
+      "dividing_decimals_0.5", 
+      "division_4"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "dividing-decimals", 
+      "dividing-decimal"
+    ], 
+    "v_position": 1, 
+    "path": "/math/arithmetic/decimals/dividing_decimals/e/dividing_decimals_2/", 
+    "display_name": "Dividing decimals 2", 
+    "title": "Dividing decimals 2", 
+    "live": true, 
+    "description": "", 
+    "h_position": 14, 
+    "slug": "dividing_decimals_2", 
+    "kind": "Exercise", 
+    "name": "dividing_decimals_2", 
+    "seconds_per_fast_problem": 11.0, 
+    "prerequisites": [
+      "dividing_decimals_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "dividing-decimals", 
+      "dividing-decimal"
+    ], 
+    "v_position": 1, 
+    "path": "/math/arithmetic/decimals/dividing_decimals/e/dividing_decimals/", 
+    "display_name": "Dividing decimals", 
+    "title": "Dividing decimals", 
+    "live": true, 
+    "description": "", 
+    "h_position": 15, 
+    "slug": "dividing_decimals", 
+    "kind": "Exercise", 
+    "name": "dividing_decimals", 
+    "seconds_per_fast_problem": 15.0, 
+    "prerequisites": [
+      "dividing_decimals_2"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "converting-decimals-to-percents--ex-1", 
+      "converting-decimals-to-percents--ex-2"
+    ], 
+    "v_position": -5, 
+    "path": "/math/arithmetic/decimals/percent_tutorial/e/converting_decimals_to_percents/", 
+    "display_name": "Converting decimals to percents", 
+    "title": "Converting decimals to percents", 
+    "live": true, 
+    "description": "", 
+    "h_position": 27, 
+    "slug": "converting_decimals_to_percents", 
+    "kind": "Exercise", 
+    "name": "converting_decimals_to_percents", 
+    "seconds_per_fast_problem": 6.0, 
+    "prerequisites": [
+      "finding_percents"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "converting-percents-to-decimals--ex-1", 
+      "converting-percents-to-decimals--ex-2"
+    ], 
+    "v_position": -4, 
+    "path": "/math/arithmetic/decimals/percent_tutorial/e/converting_percents_to_decimals/", 
+    "display_name": "Converting percents to decimals", 
+    "title": "Converting percents to decimals", 
+    "live": true, 
+    "description": "", 
+    "h_position": 27, 
+    "slug": "converting_percents_to_decimals", 
+    "kind": "Exercise", 
+    "name": "converting_percents_to_decimals", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "finding_percents"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -4, 
+    "path": "/math/arithmetic/decimals/percent_word_probs/e/discount_tax_and_tip_word_problems/", 
+    "display_name": "Discount tax and tip word problems", 
+    "title": "Discount tax and tip word problems", 
+    "live": true, 
+    "description": null, 
+    "h_position": 28, 
+    "slug": "discount_tax_and_tip_word_problems", 
+    "kind": "Exercise", 
+    "name": "discount_tax_and_tip_word_problems", 
+    "seconds_per_fast_problem": 18.0, 
+    "prerequisites": [
+      "converting_decimals_to_percents", 
+      "converting_percents_to_decimals"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -3, 
+    "path": "/math/arithmetic/decimals/percent_word_probs/e/markup_and_commission_word_problems/", 
+    "display_name": "Markup and commission word problems", 
+    "title": "Markup and commission word problems", 
+    "live": true, 
+    "description": "", 
+    "h_position": 28, 
+    "slug": "markup_and_commission_word_problems", 
+    "kind": "Exercise", 
+    "name": "markup_and_commission_word_problems", 
+    "seconds_per_fast_problem": 18.0, 
+    "prerequisites": [
+      "converting_decimals_to_percents", 
+      "converting_percents_to_decimals"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "rounding-decimals"
+    ], 
+    "v_position": 3, 
+    "path": "/math/arithmetic/decimals/decimal_rounding_estimation/e/rounding_numbers/", 
+    "display_name": "Rounding numbers", 
+    "title": "Rounding numbers", 
+    "live": true, 
+    "description": "", 
+    "h_position": 15, 
+    "slug": "rounding_numbers", 
+    "kind": "Exercise", 
+    "name": "rounding_numbers", 
+    "seconds_per_fast_problem": 7.0, 
+    "prerequisites": [
+      "rounding_whole_numbers"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "estimation-with-decimals"
+    ], 
+    "v_position": 3, 
+    "path": "/math/arithmetic/decimals/decimal_rounding_estimation/e/estimation_with_decimals/", 
+    "display_name": "Estimation with decimals", 
+    "title": "Estimation with decimals", 
+    "live": true, 
+    "description": "", 
+    "h_position": 16, 
+    "slug": "estimation_with_decimals", 
+    "kind": "Exercise", 
+    "name": "estimation_with_decimals", 
+    "seconds_per_fast_problem": 13.0, 
+    "prerequisites": [
+      "rounding_numbers"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": 2, 
+    "path": "/math/arithmetic/decimals/significant_figures_tutorial/e/significant_figures_1/", 
+    "display_name": "Significant figures", 
+    "title": "Significant figures", 
+    "live": true, 
+    "description": "Determine how many significant figures a given number has.", 
+    "h_position": 23, 
+    "slug": "significant_figures_1", 
+    "kind": "Exercise", 
+    "name": "significant_figures_1", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "scientific_notation"
+    ]
+  }
+]

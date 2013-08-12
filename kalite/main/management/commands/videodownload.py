@@ -3,10 +3,10 @@ import time
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
-from kalite.main.models import VideoFile
-from kalite.utils.videos import download_video, DownloadCancelled
-from utils.jobs import force_job
+from main.models import VideoFile
 from utils import caching
+from utils.jobs import force_job
+from utils.videos import download_video, DownloadCancelled
 
 
 def download_progress_callback(self, videofile):
@@ -33,7 +33,8 @@ class Command(BaseCommand):
     help = "Download all videos marked to be downloaded"
 
     def handle(self, *args, **options):
-        
+
+        caching_enabled = settings.CACHE_TIME != 0
         handled_video_ids = []
         
         while True: # loop until the method is aborted
@@ -67,16 +68,16 @@ class Command(BaseCommand):
                 self.stderr.write("Error in downloading: %s\n" % e)
                 video.download_in_progress = False
                 video.save()
-                force_job("videodownload", "Download Videos") # infinite recursive call? :(
+                force_job("videodownload", "Download Videos")  # infinite recursive call? :(
                 break
             
             handled_video_ids.append(video.youtube_id)
             
             # Expire, but don't regenerate until the very end, for efficiency.
-            if hasattr(settings, "CACHES"):
-                caching.invalidate_cached_topic_hierarchy(video_id=video.youtube_id)
+            if caching_enabled:
+                caching.invalidate_cached_topic_hierarchies(video_id=video.youtube_id)
     
         # Regenerate all pages, efficiently
-        if hasattr(settings, "CACHES"):
+        if caching_enabled:
             caching.regenerate_cached_topic_hierarchies(handled_video_ids)
         

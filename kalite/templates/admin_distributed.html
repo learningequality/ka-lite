@@ -52,7 +52,7 @@ td.title {
         </tr>
         {% if in_a_zone %}
         <tr>
-            <td class="link"><a href="{% url zone_discovery %}">{% trans "Zone management" %}</a></td>
+            <td class="link"><a href="{% url zone_redirect %}">{% trans "Zone management" %}</a></td>
             <td class="desc">{%trans "Access to summary data over all facilities and devices" %}</td>
         </tr>
         {% endif %}
@@ -62,7 +62,7 @@ td.title {
         </tr>
         {% if in_a_zone %}
         <tr>
-            <td class="link"><a href="{% url device_discovery %}">{% trans "Sync stats" %}</a></td>
+            <td class="link"><a href="{% url device_redirect %}">{% trans "Sync stats" %}</a></td>
             <td class="desc">{%trans "Information about syncing," %}</td>
         </tr>
         {% else %}
@@ -79,16 +79,17 @@ td.title {
             </td>
         </tr>
         <tr>
-            <td class="link"><a href="{{wiki_url}}">KA Lite Wiki</a></td>
+            <td class="link"><a href="{{wiki_url}}" target="_blank">KA Lite Wiki</a></td>
             <td class="desc"> {% trans "Contains the latest information setting up and using KA Lite." %}</td>
         </tr>
         <tr>
-            <td class="link"><a href="http://{{central_server_host}}/faq">FAQ</a></td>
+            <td class="link"><a href="http://{{central_server_host}}/faq" target="_blank">FAQ</a></td>
             <td class="desc">{% trans "Contains the latest FAQ for troubleshooting" %}</td>
         </tr>
         {% endif %}
 
-        {% if user.is_superuser %}{% comment "Django-admins only" %}{% endcomment %}
+        {% if user.is_superuser and settings.DEBUG %}{% comment "Django-admins and in debug mode" %}{% endcomment %}
+        
         <tr>
             <td class="title" colspan="2">
                 <h2>{% trans "Advanced User Tools" %}</h2>

@@ -1,1 +1,334 @@
-[{"relative_url": "/exercise/solving_quadratics_by_factoring", "guaranteed_file_name": "solving_quadratics_by_factoring.html", "file_name": "", "author_name": "Ben Eater", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/solving_quadratics_by_factoring", "v_position": -2, "h_position": 50, "node_slug": "e/solving_quadratics_by_factoring", "progress_key": "e3024", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/quadratics-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/solving_quadratics_by_factoring.png", "custom_stacks": [], "description": "Factor quadratics to find the x-intercepts. Solve a polynomial by factoring.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Quadr. Fac.", "covers": [], "display_name": "Solving quadratics by factoring", "kind": "Exercise", "sha1": "1ebd47642d2702fdcdc9b0201094f3af8a218743", "name": "solving_quadratics_by_factoring", "seconds_per_fast_problem": 11.0, "prerequisites": ["factoring_polynomials_1"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/solving_quadratics_by_factoring_256.png"}, {"relative_url": "/exercise/solving_quadratics_by_factoring_2", "guaranteed_file_name": "solving_quadratics_by_factoring_2.html", "file_name": "", "author_name": "Ben Eater", "creation_date": "2012-02-01T05:05:36Z", "ka_url": "http://www.khanacademy.org/exercise/solving_quadratics_by_factoring_2", "v_position": -2, "h_position": 51, "node_slug": "e/solving_quadratics_by_factoring_2", "progress_key": "e541520116", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/quadratics-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/solving_quadratics_by_factoring_2.png", "custom_stacks": [], "description": "Solve quadratics by factoring, where A is not 1", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Quadr Fac 2", "covers": [], "display_name": "Solving quadratics by factoring 2", "kind": "Exercise", "sha1": "dc8df00702b2d05d12f2da9e6002a544cddc4d88", "name": "solving_quadratics_by_factoring_2", "seconds_per_fast_problem": 22.0, "prerequisites": ["solving_quadratics_by_factoring"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/solving_quadratics_by_factoring_2_256.png"}, {"relative_url": "/exercise/solving_quadratics_by_taking_the_square_root", "guaranteed_file_name": "solving_quadratics_by_taking_the_square_root.html", "file_name": "", "author_name": "Ben Eater", "creation_date": "2012-03-02T03:37:50Z", "ka_url": "http://www.khanacademy.org/exercise/solving_quadratics_by_taking_the_square_root", "v_position": -1, "h_position": 50, "node_slug": "e/solving_quadratics_by_taking_the_square_root", "progress_key": "e617819647", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/quadratics-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/solving_quadratics_by_taking_the_square_root.png", "custom_stacks": [], "description": "Solve quadratics by taking the square root.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Quadr. Sqrt", "covers": [], "display_name": "Solving quadratics by taking the square root", "kind": "Exercise", "sha1": "1ea4837d091bfcf7885f759821fdd95b5941e5e5", "name": "solving_quadratics_by_taking_the_square_root", "seconds_per_fast_problem": 19.0, "prerequisites": ["factoring_polynomials_1"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/solving_quadratics_by_taking_the_square_root_256.png"}, {"relative_url": "/exercise/completing_the_square_1", "guaranteed_file_name": "completing_the_square_1.html", "file_name": "", "author_name": "Scott Menke", "creation_date": "2011-11-09T22:27:32Z", "ka_url": "http://www.khanacademy.org/exercise/completing_the_square_1", "v_position": -1, "h_position": 51, "node_slug": "e/completing_the_square_1", "progress_key": "e369016246", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/quadratics-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/completing_the_square_1.png", "custom_stacks": [], "description": "Find the roots of a quadratic equation by completing the square. Can also be solved by factoring.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Comp sq1", "covers": [], "display_name": "Completing the square 1", "kind": "Exercise", "sha1": "c5265a889830c8d00ea2484073f7f80199591c3e", "name": "completing_the_square_1", "seconds_per_fast_problem": 16.0, "prerequisites": ["solving_quadratics_by_taking_the_square_root", "solving_quadratics_by_factoring"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/completing_the_square_1_256.png"}, {"relative_url": "/exercise/completing_the_square_2", "guaranteed_file_name": "completing_the_square_2.html", "file_name": "", "author_name": "Scott Menke", "creation_date": "2011-11-09T22:31:47Z", "ka_url": "http://www.khanacademy.org/exercise/completing_the_square_2", "v_position": -2, "h_position": 52, "node_slug": "e/completing_the_square_2", "progress_key": "e369017708", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/quadratics-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/completing_the_square_2.png", "custom_stacks": [], "description": "Find the roots of a quadratic by completing the square.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Comp sq2", "covers": [], "display_name": "Completing the square 2", "kind": "Exercise", "sha1": "f64fd7b1411edd2637085c912410fcb8a22003b8", "name": "completing_the_square_2", "seconds_per_fast_problem": 37.0, "prerequisites": ["solving_quadratics_by_factoring_2", "completing_the_square_1"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/completing_the_square_2_256.png"}, {"relative_url": "/exercise/graphing_parabolas_0.5", "guaranteed_file_name": "graphing_parabolas_0.5.html", "file_name": "", "author_name": "Ben Eater", "creation_date": "2012-03-12T15:35:22Z", "ka_url": "http://www.khanacademy.org/exercise/graphing_parabolas_0.5", "v_position": 0, "h_position": 51, "node_slug": "e/graphing_parabolas_0.5", "progress_key": "e643163590", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/quadratics-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/graphing_parabolas_0.5.png", "custom_stacks": [], "description": "Graph a parabola given the equation in the form ax^2+bx+c", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Gr Parab0.5", "covers": [], "display_name": "Graphing parabolas in standard form", "kind": "Exercise", "sha1": "953edc230a98b22dff5617601f910a21b93663ed", "name": "graphing_parabolas_0.5", "seconds_per_fast_problem": 36.0, "prerequisites": ["parabola_intuition_2"], "pretty_display_name": "Graphing parabolas in standard form", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/graphing_parabolas_0.5_256.png"}, {"relative_url": "/exercise/vertex_of_a_parabola", "guaranteed_file_name": "vertex_of_a_parabola.html", "file_name": "", "author_name": "Ben Eater", "creation_date": "2012-03-12T15:39:48Z", "ka_url": "http://www.khanacademy.org/exercise/vertex_of_a_parabola", "v_position": -1, "h_position": 52, "node_slug": "e/vertex_of_a_parabola", "progress_key": "e643274503", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/quadratics-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/vertex_of_a_parabola.png", "custom_stacks": [], "description": "Find the vertex of a parabola in standard form.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Vertx Parab", "covers": [], "display_name": "Vertex of a parabola", "kind": "Exercise", "sha1": "0de440d98b031a846bb0f0b083f1bf4ffb2067d6", "name": "vertex_of_a_parabola", "seconds_per_fast_problem": 35.0, "prerequisites": ["graphing_parabolas_0.5", "completing_the_square_1"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/vertex_of_a_parabola_256.png"}, {"relative_url": "/exercise/graphing_parabolas_1", "guaranteed_file_name": "graphing_parabolas_1.html", "file_name": "", "author_name": "Ben Eater", "creation_date": "2012-03-02T03:28:10Z", "ka_url": "http://www.khanacademy.org/exercise/graphing_parabolas_1", "v_position": 0, "h_position": 52, "node_slug": "e/graphing_parabolas_1", "progress_key": "e617781850", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/quadratics-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/graphing_parabolas_1.png", "custom_stacks": [], "description": "Graph a parabola given the equation in the form a(x+b)^2+c", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Grph Parab1", "covers": [], "display_name": "Graphing parabolas in vertex form", "kind": "Exercise", "sha1": "b0c3fadbe8480a45377b794694b1dd27d18b67d8", "name": "graphing_parabolas_1", "seconds_per_fast_problem": 27.0, "prerequisites": ["graphing_parabolas_0.5"], "pretty_display_name": "Graphing parabolas in vertex form", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/graphing_parabolas_1_256.png"}, {"relative_url": "/exercise/graphing_parabolas_2", "guaranteed_file_name": "graphing_parabolas_2.html", "file_name": "", "author_name": "Ben Eater", "creation_date": "2012-03-02T03:18:39Z", "ka_url": "http://www.khanacademy.org/exercise/graphing_parabolas_2", "v_position": -1, "h_position": 53, "node_slug": "e/graphing_parabolas_2", "progress_key": "e617787563", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/quadratics-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/graphing_parabolas_2.png", "custom_stacks": [], "description": "Graph a parabola in vertex or standard form.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Grph Parab2", "covers": [], "display_name": "Graphing parabolas in all forms", "kind": "Exercise", "sha1": "73b5a1fab8f01106ce8c31a862b4f499e39cf994", "name": "graphing_parabolas_2", "seconds_per_fast_problem": 57.0, "prerequisites": ["graphing_parabolas_1", "vertex_of_a_parabola"], "pretty_display_name": "Graphing parabolas in all forms", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/graphing_parabolas_2_256.png"}, {"relative_url": "/exercise/parabola_intuition_3", "guaranteed_file_name": "parabola_intuition_3.html", "file_name": "", "author_name": "Ben Eater", "creation_date": "2011-10-13T21:08:56Z", "ka_url": "http://www.khanacademy.org/exercise/parabola_intuition_3", "v_position": -1, "h_position": 54, "node_slug": "e/parabola_intuition_3", "progress_key": "e310321303", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/quadratics-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/parabola_intuition_3.png", "custom_stacks": [], "description": "Make one parabola overlap with another by adjusting the focus coordinates and directrix. Find the equation of the parabola.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Parab Intu3", "covers": [], "display_name": "Parabola intuition 3", "kind": "Exercise", "sha1": "2df38569351cf5ea00da67787ba1bfb36afd0f6e", "name": "parabola_intuition_3", "seconds_per_fast_problem": 49.0, "prerequisites": ["graphing_parabolas_2"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/parabola_intuition_3_256.png"}, {"relative_url": "/exercise/quadratic_equation", "guaranteed_file_name": "quadratic_equation.html", "file_name": "quadratic_equation.html", "author_name": "", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/quadratic_equation", "v_position": -2, "h_position": 53, "node_slug": "e/quadratic_equation", "progress_key": "e2020", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/quadratics-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/quadratic_equation.png", "custom_stacks": [], "description": "Use the quadratic formula to find the roots of a quadratic function.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Quad Frmula", "covers": [], "display_name": "Quadratic formula", "kind": "Exercise", "sha1": "83ee4fe85353eb975653cd8d423537b6958df20f", "name": "quadratic_equation", "seconds_per_fast_problem": 25.0, "prerequisites": ["completing_the_square_2"], "pretty_display_name": "Quadratic formula", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/quadratic_equation_256.png"}, {"relative_url": "/exercise/solutions_to_quadratic_equations", "guaranteed_file_name": "solutions_to_quadratic_equations.html", "file_name": "solutions_to_quadratic_equations.html", "author_name": "Ben Eater", "creation_date": "2012-08-10T23:48:28Z", "ka_url": "http://www.khanacademy.org/exercise/solutions_to_quadratic_equations", "v_position": -2, "h_position": 54, "node_slug": "e/solutions_to_quadratic_equations", "progress_key": "e957206558", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/quadratics-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/solutions_to_quadratic_equations.png", "custom_stacks": [], "description": "Determine how many solutions a quadratic equation has and whether they are rational, irrational, or complex", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "sol quad eq", "covers": [], "display_name": "Solutions to quadratic equations", "kind": "Exercise", "sha1": "67a66b24767ca67bea3537cee3342883b5f664b2", "name": "solutions_to_quadratic_equations", "seconds_per_fast_problem": 15.0, "prerequisites": ["quadratic_equation"], "pretty_display_name": "Solutions to quadratic equations", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/solutions_to_quadratic_equations_256.png"}]
+[
+  {
+    "related_video_readable_ids": [
+      "factoring-quadratic-expressions", 
+      "factoring-polynomials-1", 
+      "factoring-trinomials-with-a-leading-1-coefficient"
+    ], 
+    "v_position": -6, 
+    "path": "/math/algebra/quadratics/factoring_quadratics/e/factoring_polynomials_1/", 
+    "display_name": "Factoring polynomials 1", 
+    "title": "Factoring polynomials 1", 
+    "live": true, 
+    "description": "Factor polynomials that are not perfect squares, where A=1", 
+    "h_position": 49, 
+    "slug": "factoring_polynomials_1", 
+    "kind": "Exercise", 
+    "name": "factoring_polynomials_1", 
+    "seconds_per_fast_problem": 20.0, 
+    "prerequisites": [
+      "factoring_linear_binomials"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -2, 
+    "path": "/math/algebra/quadratics/factoring_quadratics/e/solving_quadratics_by_factoring/", 
+    "display_name": "Solving quadratics by factoring", 
+    "title": "Solving quadratics by factoring", 
+    "live": true, 
+    "description": "Factor quadratics to find the x-intercepts. Solve a polynomial by factoring.", 
+    "h_position": 50, 
+    "slug": "solving_quadratics_by_factoring", 
+    "kind": "Exercise", 
+    "name": "solving_quadratics_by_factoring", 
+    "seconds_per_fast_problem": 10.0, 
+    "prerequisites": [
+      "factoring_polynomials_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -6, 
+    "path": "/math/algebra/quadratics/factoring_quadratics/e/factoring_polynomials_2/", 
+    "display_name": "Factoring polynomials 2", 
+    "title": "Factoring polynomials 2", 
+    "live": true, 
+    "description": "Factor polynomials that are not perfect squares, where A is not 1", 
+    "h_position": 50, 
+    "slug": "factoring_polynomials_2", 
+    "kind": "Exercise", 
+    "name": "factoring_polynomials_2", 
+    "seconds_per_fast_problem": 46.0, 
+    "prerequisites": [
+      "factoring_polynomials_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -2, 
+    "path": "/math/algebra/quadratics/factoring_quadratics/e/solving_quadratics_by_factoring_2/", 
+    "display_name": "Solving quadratics by factoring 2", 
+    "title": "Solving quadratics by factoring 2", 
+    "live": true, 
+    "description": "Solve quadratics by factoring, where A is not 1", 
+    "h_position": 51, 
+    "slug": "solving_quadratics_by_factoring_2", 
+    "kind": "Exercise", 
+    "name": "solving_quadratics_by_factoring_2", 
+    "seconds_per_fast_problem": 24.0, 
+    "prerequisites": [
+      "solving_quadratics_by_factoring"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -8, 
+    "path": "/math/algebra/quadratics/factoring_quadratics/e/factoring_difference_of_squares_1/", 
+    "display_name": "Factoring difference of squares 1", 
+    "title": "Factoring difference of squares 1", 
+    "live": true, 
+    "description": "Factoring differences of squares into the form (x+b)*(x-b)", 
+    "h_position": 49, 
+    "slug": "factoring_difference_of_squares_1", 
+    "kind": "Exercise", 
+    "name": "factoring_difference_of_squares_1", 
+    "seconds_per_fast_problem": 9.0, 
+    "prerequisites": [
+      "multiplying_expressions_1", 
+      "multiplying_polynomials"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -8, 
+    "path": "/math/algebra/quadratics/factoring_quadratics/e/factoring_difference_of_squares_2/", 
+    "display_name": "Factoring difference of squares 2", 
+    "title": "Factoring difference of squares 2", 
+    "live": true, 
+    "description": "Factoring differences of squares into the form (Ax+b)*(Ax-b)", 
+    "h_position": 50, 
+    "slug": "factoring_difference_of_squares_2", 
+    "kind": "Exercise", 
+    "name": "factoring_difference_of_squares_2", 
+    "seconds_per_fast_problem": 12.0, 
+    "prerequisites": [
+      "factoring_difference_of_squares_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -8, 
+    "path": "/math/algebra/quadratics/factoring_quadratics/e/factoring_difference_of_squares_3/", 
+    "display_name": "Factoring difference of squares 3", 
+    "title": "Factoring difference of squares 3", 
+    "live": true, 
+    "description": "Factoring a difference of squares in the format C(Ax+b)*(Ax-b)", 
+    "h_position": 51, 
+    "slug": "factoring_difference_of_squares_3", 
+    "kind": "Exercise", 
+    "name": "factoring_difference_of_squares_3", 
+    "seconds_per_fast_problem": 22.0, 
+    "prerequisites": [
+      "factoring_difference_of_squares_2"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -5, 
+    "path": "/math/algebra/quadratics/factoring_quadratics/e/factoring_polynomials_by_grouping_1/", 
+    "display_name": "Factoring polynomials by grouping", 
+    "title": "Factoring polynomials by grouping", 
+    "live": true, 
+    "description": "Factor polynomials by grouping", 
+    "h_position": 51, 
+    "slug": "factoring_polynomials_by_grouping_1", 
+    "kind": "Exercise", 
+    "name": "factoring_polynomials_by_grouping_1", 
+    "seconds_per_fast_problem": 60.0, 
+    "prerequisites": [
+      "factoring_polynomials_2"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -6, 
+    "path": "/math/algebra/quadratics/factoring_quadratics/e/factoring_polynomials_with_two_variables/", 
+    "display_name": "Factoring polynomials with two variables", 
+    "title": "Factoring polynomials with two variables", 
+    "live": true, 
+    "description": "Factor a polynomial with two variables into expressions", 
+    "h_position": 51, 
+    "slug": "factoring_polynomials_with_two_variables", 
+    "kind": "Exercise", 
+    "name": "factoring_polynomials_with_two_variables", 
+    "seconds_per_fast_problem": 22.0, 
+    "prerequisites": [
+      "factoring_polynomials_2"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -1, 
+    "path": "/math/algebra/quadratics/completing_the_square/e/solving_quadratics_by_taking_the_square_root/", 
+    "display_name": "Solving quadratics by taking the square root", 
+    "title": "Solving quadratics by taking the square root", 
+    "live": true, 
+    "description": "Solve quadratics by taking the square root.", 
+    "h_position": 50, 
+    "slug": "solving_quadratics_by_taking_the_square_root", 
+    "kind": "Exercise", 
+    "name": "solving_quadratics_by_taking_the_square_root", 
+    "seconds_per_fast_problem": 18.0, 
+    "prerequisites": [
+      "factoring_polynomials_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -1, 
+    "path": "/math/algebra/quadratics/completing_the_square/e/completing_the_square_1/", 
+    "display_name": "Completing the square 1", 
+    "title": "Completing the square 1", 
+    "live": true, 
+    "description": "Find the roots of a quadratic equation by completing the square. Can also be solved by factoring.", 
+    "h_position": 51, 
+    "slug": "completing_the_square_1", 
+    "kind": "Exercise", 
+    "name": "completing_the_square_1", 
+    "seconds_per_fast_problem": 29.0, 
+    "prerequisites": [
+      "solving_quadratics_by_taking_the_square_root", 
+      "solving_quadratics_by_factoring"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -2, 
+    "path": "/math/algebra/quadratics/completing_the_square/e/completing_the_square_2/", 
+    "display_name": "Completing the square 2", 
+    "title": "Completing the square 2", 
+    "live": true, 
+    "description": "Find the roots of a quadratic by completing the square.", 
+    "h_position": 52, 
+    "slug": "completing_the_square_2", 
+    "kind": "Exercise", 
+    "name": "completing_the_square_2", 
+    "seconds_per_fast_problem": 60.0, 
+    "prerequisites": [
+      "solving_quadratics_by_factoring_2", 
+      "completing_the_square_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -2, 
+    "path": "/math/algebra/quadratics/quadratic_formula/e/quadratic_equation/", 
+    "display_name": "Quadratic formula", 
+    "title": "Quadratic formula", 
+    "live": true, 
+    "description": "Use the quadratic formula to find the roots of a quadratic function.", 
+    "h_position": 53, 
+    "slug": "quadratic_equation", 
+    "kind": "Exercise", 
+    "name": "quadratic_equation", 
+    "seconds_per_fast_problem": 22.0, 
+    "prerequisites": [
+      "completing_the_square_2"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -2, 
+    "path": "/math/algebra/quadratics/quadratic_formula/e/solutions_to_quadratic_equations/", 
+    "display_name": "Solutions to quadratic equations", 
+    "title": "Solutions to quadratic equations", 
+    "live": true, 
+    "description": "Determine how many solutions a quadratic equation has and whether they are rational, irrational, or complex", 
+    "h_position": 54, 
+    "slug": "solutions_to_quadratic_equations", 
+    "kind": "Exercise", 
+    "name": "solutions_to_quadratic_equations", 
+    "seconds_per_fast_problem": 17.0, 
+    "prerequisites": [
+      "quadratic_equation"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": 0, 
+    "path": "/math/algebra/quadratics/graphing_quadratics/e/graphing_parabolas_0.5/", 
+    "display_name": "Graphing parabolas in standard form", 
+    "title": "Graphing parabolas in standard form", 
+    "live": true, 
+    "description": "Graph a parabola given the equation in the form ax^2+bx+c", 
+    "h_position": 51, 
+    "slug": "graphing_parabolas_0.5", 
+    "kind": "Exercise", 
+    "name": "graphing_parabolas_0.5", 
+    "seconds_per_fast_problem": 35.0, 
+    "prerequisites": [
+      "parabola_intuition_2"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -1, 
+    "path": "/math/algebra/quadratics/graphing_quadratics/e/vertex_of_a_parabola/", 
+    "display_name": "Vertex of a parabola", 
+    "title": "Vertex of a parabola", 
+    "live": true, 
+    "description": "Find the vertex of a parabola in standard form.", 
+    "h_position": 52, 
+    "slug": "vertex_of_a_parabola", 
+    "kind": "Exercise", 
+    "name": "vertex_of_a_parabola", 
+    "seconds_per_fast_problem": 34.0, 
+    "prerequisites": [
+      "graphing_parabolas_0.5", 
+      "completing_the_square_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": 0, 
+    "path": "/math/algebra/quadratics/graphing_quadratics/e/graphing_parabolas_1/", 
+    "display_name": "Graphing parabolas in vertex form", 
+    "title": "Graphing parabolas in vertex form", 
+    "live": true, 
+    "description": "Graph a parabola given the equation in the form a(x+b)^2+c", 
+    "h_position": 52, 
+    "slug": "graphing_parabolas_1", 
+    "kind": "Exercise", 
+    "name": "graphing_parabolas_1", 
+    "seconds_per_fast_problem": 27.0, 
+    "prerequisites": [
+      "graphing_parabolas_0.5"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -1, 
+    "path": "/math/algebra/quadratics/graphing_quadratics/e/graphing_parabolas_2/", 
+    "display_name": "Graphing parabolas in all forms", 
+    "title": "Graphing parabolas in all forms", 
+    "live": true, 
+    "description": "Graph a parabola in vertex or standard form.", 
+    "h_position": 53, 
+    "slug": "graphing_parabolas_2", 
+    "kind": "Exercise", 
+    "name": "graphing_parabolas_2", 
+    "seconds_per_fast_problem": 57.75, 
+    "prerequisites": [
+      "graphing_parabolas_1", 
+      "vertex_of_a_parabola"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -1, 
+    "path": "/math/algebra/quadratics/graphing_quadratics/e/parabola_intuition_3/", 
+    "display_name": "Parabola intuition 3", 
+    "title": "Parabola intuition 3", 
+    "live": true, 
+    "description": "Make one parabola overlap with another by adjusting the focus coordinates and directrix. Find the equation of the parabola.", 
+    "h_position": 54, 
+    "slug": "parabola_intuition_3", 
+    "kind": "Exercise", 
+    "name": "parabola_intuition_3", 
+    "seconds_per_fast_problem": 56.0, 
+    "prerequisites": [
+      "graphing_parabolas_2"
+    ]
+  }
+]

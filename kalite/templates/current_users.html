@@ -57,7 +57,10 @@
                     {% endif %}
                 {% endfor %}
         </select>
-        <button id="removegroup">{% trans "Remove Users from Group" %}</button>
+        
+         {% if not request.GET.group == "Ungrouped" %}
+         	     <button id="removegroup">{% trans "Remove Users from Group" %}</button>
+         {% endif %} 
 <!--         <button id="newuser">{% trans "Add New User to Group" %}</button> -->
         <button id="delete">{% trans "Delete Users" %}</button>
     </div>
@@ -126,7 +129,10 @@
     {% endif %}
     {% endblock users_table %}
 </div>
-{% block endjs %}{{ block.super }}
+
+{% endblock content %}
+{% block endjs %}
+{{ block.super }}
 <script>
 
 function setGetParams(params) {
@@ -179,7 +185,7 @@ $(function() {
         } else if (users.length==0) {
             alert("{% trans 'Please select users first' %}");
         } else {
-            alert("{% trans 'Please choose a group to move users to' %}")
+            alert("{% trans 'Please choose a group to move users to' %}");
         }
 
     });
@@ -216,4 +222,3 @@ $(function() {
 });
 </script>
 {% endblock endjs %}
-{% endblock content %}

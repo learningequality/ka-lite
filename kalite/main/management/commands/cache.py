@@ -11,7 +11,7 @@ from main import topicdata
 from main.models import VideoFile
 from utils.videos import download_video, DownloadCancelled
 from utils.jobs import force_job
-from utils import caching
+from utils import caching, topic_tools
 
 
 class Command(BaseCommand):
@@ -28,9 +28,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        if not getattr(settings, "CACHES", None):
-            raise CommandError("caching is turned off (CACHES is None)")
-        elif not getattr(settings, "CACHE_TIME", None):
+        if settings.CACHE_TIME == 0:
             raise CommandError("caching is turned off (CACHE_TIME is zero or none)")
         elif len(args)<1:
             raise CommandError("No command specified.")        
@@ -50,8 +48,10 @@ class Command(BaseCommand):
         for node_type in ['Topic', 'Video', 'Exercise']:
             self.stdout.write("Caching %ss:\n" % node_type)
             for n in topicdata.NODE_CACHE[node_type].values():
-                self.create_page_cache(path=n['path'], force=force)
-        
+                for path in n["paths"] if node_type in topic_tools.multipath_kinds else [n["path"]]:
+                    self.create_page_cache(path=path, force=force)
+
+
     def create_page_cache(self, path, force=False):
         """Go through each cacheable page, and either:
         (a) Cache each page that is not
@@ -81,8 +81,9 @@ class Command(BaseCommand):
         for node_type in ['Topic', 'Video', 'Exercise']:
             self.stdout.write("Cached %ss:\n" % node_type)
             for n in topicdata.NODE_CACHE[node_type].values():
-                if caching.has_cache_key(path=n['path']):
-                    self.stdout.write("\t%s\n" % n['path'])
+                for path in n["paths"] if node_type in topic_tools.multipath_kinds else [n["path"]]:
+                    if caching.has_cache_key(path=path):
+                        self.stdout.write("\t%s\n" % path)
         
                 
     def clear_cache(self):
@@ -91,6 +92,7 @@ class Command(BaseCommand):
         for node_type in ['Topic', 'Video', 'Exercise']:
             self.stdout.write("Clearing %ss:\n" % node_type)
             for n in topicdata.NODE_CACHE[node_type].values():
-                if caching.has_cache_key(path=n['path']):
-                    self.stdout.write("\t%s\n" % n['path'])
-                    caching.expire_page(path=n['path'])
+                for path in n["paths"] if node_type in topic_tools.multipath_kinds else [n["path"]]:
+                    if caching.has_cache_key(path=path):
+                        self.stdout.write("\t%s\n" % path)
+                        caching.expire_page(path=path)

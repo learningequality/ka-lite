@@ -1,1 +1,143 @@
-[{"relative_url": "/exercise/congruency_postulates", "guaranteed_file_name": "congruency_postulates.html", "file_name": null, "author_name": "Ben Eater", "creation_date": "2011-10-31T22:43:22Z", "ka_url": "http://www.khanacademy.org/exercise/congruency_postulates", "v_position": -26, "h_position": 34, "node_slug": "e/congruency_postulates", "progress_key": "e348091349", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/congruent-triangles-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/congruency_postulates.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Congr tri p", "covers": [], "display_name": "Congruency postulates", "kind": "Exercise", "sha1": "e6ac5d6ad951875998f855fcc07d4d17533ae0cf", "name": "congruency_postulates", "seconds_per_fast_problem": 12.0, "prerequisites": ["parallel_lines_2", "angles_2"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/congruency_postulates_256.png"}, {"relative_url": "/exercise/congruent_triangles_1", "guaranteed_file_name": "congruent_triangles_1.html", "file_name": null, "author_name": "Igor Terzic", "creation_date": "2011-09-16T22:42:05Z", "ka_url": "http://www.khanacademy.org/exercise/congruent_triangles_1", "v_position": -25, "h_position": 34, "node_slug": "e/congruent_triangles_1", "progress_key": "e251567894", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/congruent-triangles-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/congruent_triangles_1.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Congr tri 1", "covers": [], "display_name": "Congruent triangles 1", "kind": "Exercise", "sha1": "cd3baf9ca1f4c33bbbea98a7e6e104f05f120f0e", "name": "congruent_triangles_1", "seconds_per_fast_problem": 5.0, "prerequisites": ["parallel_lines_2", "angles_2"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/congruent_triangles_1_256.png"}, {"relative_url": "/exercise/congruent_triangles_2", "guaranteed_file_name": "congruent_triangles_2.html", "file_name": null, "author_name": "Igor Terzic", "creation_date": "2011-09-16T22:43:37Z", "ka_url": "http://www.khanacademy.org/exercise/congruent_triangles_2", "v_position": -25, "h_position": 35, "node_slug": "e/congruent_triangles_2", "progress_key": "e251580500", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/congruent-triangles-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/congruent_triangles_2.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Congr tri 2", "covers": [], "display_name": "Congruent triangles 2", "kind": "Exercise", "sha1": "b836933df53d67e586071aa4432a1f7571dfea9c", "name": "congruent_triangles_2", "seconds_per_fast_problem": 7.0, "prerequisites": ["congruent_triangles_1", "congruency_postulates"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/congruent_triangles_2_256.png"}, {"relative_url": "/exercise/geometry_proofs_intro", "guaranteed_file_name": "geometry_proofs_intro.html", "file_name": "geometry_proofs_intro.html", "author_name": "Mark Wittels", "creation_date": "2012-07-25T02:13:38Z", "ka_url": "http://www.khanacademy.org/exercise/geometry_proofs_intro", "v_position": -26, "h_position": 36, "node_slug": "e/geometry_proofs_intro", "progress_key": "e917313596", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/congruent-triangles-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/geometry_proofs_intro.png", "custom_stacks": [], "description": "1 and 2-step triangle congruency proofs.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Triang Prfs", "covers": [], "display_name": "Basic triangle proofs", "kind": "Exercise", "sha1": "08343232d411a2472e62bb11bf0ddccca3aedbf8", "name": "geometry_proofs_intro", "seconds_per_fast_problem": 49.0, "prerequisites": ["congruent_triangles_2", "logical_arguments_deductive_reasoning", "conditional_statements_and_truth_value"], "pretty_display_name": "Basic triangle proofs", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/geometry_proofs_intro_256.png"}, {"relative_url": "/exercise/geometry_proofs_1", "guaranteed_file_name": "geometry_proofs_1.html", "file_name": "geometry_proofs_1.html", "author_name": "Mark Wittels", "creation_date": "2012-07-07T00:29:32Z", "ka_url": "http://www.khanacademy.org/exercise/geometry_proofs_1", "v_position": -26, "h_position": 37, "node_slug": "e/geometry_proofs_1", "progress_key": "e889739429", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/congruent-triangles-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/geometry_proofs_1.png", "custom_stacks": [], "description": "Fill in the blanks in a triangle congruency proof.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Tring Prfs2", "covers": [], "display_name": "Fill-in-the-blank triangle proofs", "kind": "Exercise", "sha1": "2838988bbb5f646af2ceb00b72a2d2bc02355904", "name": "geometry_proofs_1", "seconds_per_fast_problem": 60.0, "prerequisites": ["geometry_proofs_intro"], "pretty_display_name": "Fill-in-the-blank triangle proofs", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/geometry_proofs_1_256.png"}, {"relative_url": "/exercise/geometry_proofs_2", "guaranteed_file_name": "geometry_proofs_2.html", "file_name": "geometry_proofs_2.html", "author_name": "Mark Wittels", "creation_date": "2012-07-07T00:31:50Z", "ka_url": "http://www.khanacademy.org/exercise/geometry_proofs_2", "v_position": -26, "h_position": 38, "node_slug": "e/geometry_proofs_2", "progress_key": "e889814162", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/congruent-triangles-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/geometry_proofs_2.png", "custom_stacks": [], "description": "Identify the wrong statement in a proof about triangle congruency.", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "WrongProofs", "covers": [], "display_name": "Wrong statements in triangle proofs", "kind": "Exercise", "sha1": "ad362d29a4a09cffd7fd4bcaaf6a617e7f9ccffe", "name": "geometry_proofs_2", "seconds_per_fast_problem": 22.0, "prerequisites": ["geometry_proofs_1"], "pretty_display_name": "Wrong statements in triangle proofs", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/geometry_proofs_2_256.png"}]
+[
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -26, 
+    "path": "/math/geometry/congruent-triangles/cong_triangle/e/congruency_postulates/", 
+    "display_name": "Congruency postulates", 
+    "title": "Congruency postulates", 
+    "live": true, 
+    "description": null, 
+    "h_position": 34, 
+    "slug": "congruency_postulates", 
+    "kind": "Exercise", 
+    "name": "congruency_postulates", 
+    "seconds_per_fast_problem": 11.0, 
+    "prerequisites": [
+      "parallel_lines_2", 
+      "angles_2"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -25, 
+    "path": "/math/geometry/congruent-triangles/cong_triangle/e/congruent_triangles_1/", 
+    "display_name": "Congruent triangles 1", 
+    "title": "Congruent triangles 1", 
+    "live": true, 
+    "description": null, 
+    "h_position": 34, 
+    "slug": "congruent_triangles_1", 
+    "kind": "Exercise", 
+    "name": "congruent_triangles_1", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "parallel_lines_2", 
+      "angles_2"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -25, 
+    "path": "/math/geometry/congruent-triangles/cong_triangle/e/congruent_triangles_2/", 
+    "display_name": "Congruent triangles 2", 
+    "title": "Congruent triangles 2", 
+    "live": true, 
+    "description": null, 
+    "h_position": 35, 
+    "slug": "congruent_triangles_2", 
+    "kind": "Exercise", 
+    "name": "congruent_triangles_2", 
+    "seconds_per_fast_problem": 7.0, 
+    "prerequisites": [
+      "congruent_triangles_1", 
+      "congruency_postulates"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -19, 
+    "path": "/math/geometry/congruent-triangles/isoscleles_equil/e/triangle_types/", 
+    "display_name": "Triangle types", 
+    "title": "Triangle types", 
+    "live": true, 
+    "description": null, 
+    "h_position": 30, 
+    "slug": "triangle_types", 
+    "kind": "Exercise", 
+    "name": "triangle_types", 
+    "seconds_per_fast_problem": 4.0, 
+    "prerequisites": [
+      "angle_addition_postulate"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -19, 
+    "path": "/math/geometry/congruent-triangles/isoscleles_equil/e/triangle_angles_1/", 
+    "display_name": "Triangle angles 1", 
+    "title": "Triangle angles 1", 
+    "live": true, 
+    "description": null, 
+    "h_position": 31, 
+    "slug": "triangle_angles_1", 
+    "kind": "Exercise", 
+    "name": "triangle_angles_1", 
+    "seconds_per_fast_problem": 9.0, 
+    "prerequisites": [
+      "triangle_types"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -26, 
+    "path": "/math/geometry/congruent-triangles/isoscleles_equil/e/geometry_proofs_intro/", 
+    "display_name": "Basic triangle proofs", 
+    "title": "Basic triangle proofs", 
+    "live": true, 
+    "description": "1 and 2-step triangle congruency proofs.", 
+    "h_position": 36, 
+    "slug": "geometry_proofs_intro", 
+    "kind": "Exercise", 
+    "name": "geometry_proofs_intro", 
+    "seconds_per_fast_problem": 53.0, 
+    "prerequisites": [
+      "congruent_triangles_2", 
+      "logical_arguments_deductive_reasoning", 
+      "conditional_statements_and_truth_value"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -26, 
+    "path": "/math/geometry/congruent-triangles/isoscleles_equil/e/geometry_proofs_1/", 
+    "display_name": "Fill-in-the-blank triangle proofs", 
+    "title": "Fill-in-the-blank triangle proofs", 
+    "live": true, 
+    "description": "Fill in the blanks in a triangle congruency proof.", 
+    "h_position": 37, 
+    "slug": "geometry_proofs_1", 
+    "kind": "Exercise", 
+    "name": "geometry_proofs_1", 
+    "seconds_per_fast_problem": 60.0, 
+    "prerequisites": [
+      "geometry_proofs_intro"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -26, 
+    "path": "/math/geometry/congruent-triangles/isoscleles_equil/e/geometry_proofs_2/", 
+    "display_name": "Wrong statements in triangle proofs", 
+    "title": "Wrong statements in triangle proofs", 
+    "live": true, 
+    "description": "Identify the wrong statement in a proof about triangle congruency.", 
+    "h_position": 38, 
+    "slug": "geometry_proofs_2", 
+    "kind": "Exercise", 
+    "name": "geometry_proofs_2", 
+    "seconds_per_fast_problem": 33.0, 
+    "prerequisites": [
+      "geometry_proofs_1"
+    ]
+  }
+]

@@ -34,6 +34,7 @@ import securesync
 from main import topicdata
 from main.models import ExerciseLog, VideoLog, UserLog
 from securesync.models import Facility, FacilityUser, FacilityGroup, Device, DeviceMetadata
+from settings import LOG as logging
 from utils.general import datediff
 from utils.topic_tools import get_topic_videos, get_topic_exercises
 
@@ -96,11 +97,11 @@ def generate_fake_facilities(names=("Wilson Elementary",)):
     for name in names:
         try:
             facility = Facility.objects.get(name=name)
-            settings.LOG.info("Retrieved facility '%s'" % name)
+            logging.info("Retrieved facility '%s'" % name)
         except Facility.DoesNotExist as e:
             facility = Facility(name=name)
             facility.save()
-            settings.LOG.info("Created facility '%s'" % name)
+            logging.info("Created facility '%s'" % name)
 
         facilities.append(facility)
 
@@ -118,12 +119,12 @@ def generate_fake_facility_groups(names=("Class 4E", "Class 5B"), facilities=Non
         for name in names:
             try:
                 facility_group = FacilityGroup.objects.get(facility=facility, name=name)
-                settings.LOG.info("Retrieved facility group '%s'" % name)
+                logging.info("Retrieved facility group '%s'" % name)
             except FacilityGroup.DoesNotExist as e:
                 facility_group = FacilityGroup(facility=facility, name=name)
                 facility_group.full_clean()
                 facility_group.save()
-                settings.LOG.info("Created facility group '%s'" % name)
+                logging.info("Created facility group '%s'" % name)
 
             facility_groups.append(facility_group)
 
@@ -155,7 +156,7 @@ def generate_fake_facility_users(nusers=20, facilities=None, facility_groups=Non
                     facility_user = FacilityUser.objects.get(facility=facility, username=user_data["username"])
                     facility_user.group = facility_group
                     facility_user.save()
-                    settings.LOG.info("Retrieved facility user '%s/%s'" % (facility.name, user_data["username"]))
+                    logging.info("Retrieved facility user '%s/%s'" % (facility.name, user_data["username"]))
                 except FacilityUser.DoesNotExist as e:
                     notes = json.dumps(sample_user_settings())
 
@@ -170,7 +171,7 @@ def generate_fake_facility_users(nusers=20, facilities=None, facility_groups=Non
                     facility_user.set_password(password)  # set same password for every user
                     facility_user.full_clean()
                     facility_user.save()
-                    settings.LOG.info("Created facility user '%s/%s'" % (facility.name, user_data["username"]))
+                    logging.info("Created facility user '%s/%s'" % (facility.name, user_data["username"]))
 
                 facility_users.append(facility_user)
 
@@ -242,7 +243,7 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
 
             # Probability of doing any particular exercise
             p_exercise = probability_of(qty="exercise", user_settings=user_settings)
-            settings.LOG.debug("# exercises: %d; p(exercise)=%4.3f, user settings: %s\n" % (len(exercises), p_exercise, json.dumps(user_settings)))
+            logging.debug("# exercises: %d; p(exercise)=%4.3f, user settings: %s\n" % (len(exercises), p_exercise, json.dumps(user_settings)))
 
             # of exercises is related to
             for j, exercise in enumerate(exercises):
@@ -272,7 +273,7 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
                 date_completed = datetime.datetime.now() - time_delta_completed
 
                 # Always create new
-                settings.LOG.info("Creating exercise log: %-12s: %-25s (%d points, %d attempts, %d%% streak on %s)" % (
+                logging.info("Creating exercise log: %-12s: %-25s (%d points, %d attempts, %d%% streak on %s)" % (
                     facility_user.first_name,
                     exercise["name"],
                     points,
@@ -356,7 +357,7 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
 
             # Probability of watching a video, irrespective of the context
             p_video_outer = probability_of("video", user_settings=user_settings)
-            settings.LOG.debug("# videos: %d; p(videos)=%4.3f, user settings: %s\n" % (len(videos), p_video_outer, json.dumps(user_settings)))
+            logging.debug("# videos: %d; p(videos)=%4.3f, user settings: %s\n" % (len(videos), p_video_outer, json.dumps(user_settings)))
 
             for video in videos:
                 p_completed = probability_of("completed", user_settings=user_settings)
@@ -406,7 +407,7 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
                     time_delta_completed = datetime.timedelta(seconds=random.randint(int(time_for_watching), int(datediff(date_diff_started, units="seconds"))))
                     date_completed = datetime.datetime.now() - time_delta_completed
 
-                settings.LOG.info("Creating video log: %-12s: %-45s (%4.1f%% watched, %d points)%s" % (
+                logging.info("Creating video log: %-12s: %-45s (%4.1f%% watched, %d points)%s" % (
                     facility_user.first_name,
                     video["title"],
                     pct_completed,

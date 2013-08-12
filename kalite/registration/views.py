@@ -22,14 +22,18 @@ from central.models import Organization
 from contact.views import contact_subscribe
 from registration.backends import get_backend
 from securesync.models import Zone
+from utils.decorators import central_server_only
 from utils.mailchimp import mailchimp_subscribe
 
 
+@central_server_only
 def complete(request, *args, **kwargs):
     messages.success(request, "Congratulations! Your account is now active. To get started, "
         + "login to the central server below, to administer organizations and zones.")
     return redirect("auth_login")
 
+
+@central_server_only
 def activate(request, backend,
              template_name='registration/activate.html',
              success_url=None, extra_context=None, **kwargs):
@@ -69,7 +73,7 @@ def activate(request, backend,
         acivation. This is optional; if not specified, this will be
         obtained by calling the backend's
         ``post_activation_redirect()`` method.
-    
+
     ``template_name``
         A custom template to use. This is optional; if not specified,
         this will default to ``registration/activate.html``.
@@ -78,17 +82,17 @@ def activate(request, backend,
         Any keyword arguments captured from the URL, such as an
         activation key, which will be passed to the backend's
         ``activate()`` method.
-    
+
     **Context:**
-    
+
     The context will be populated from the keyword arguments captured
     in the URL, and any extra variables supplied in the
     ``extra_context`` argument (see above).
-    
+
     **Template:**
-    
+
     registration/activate.html or ``template_name`` keyword argument.
-    
+
     """
     backend = get_backend(backend)
     account = backend.activate(request, **kwargs)
@@ -110,7 +114,7 @@ def activate(request, backend,
                               kwargs,
                               context_instance=context)
 
-
+@central_server_only
 @transaction.commit_on_success
 def register(request, backend, success_url=None, form_class=None,
              disallowed_url='registration_disallowed',
@@ -145,11 +149,11 @@ def register(request, backend, success_url=None, form_class=None,
        the ``HttpRequest`` and the new ``User``, to determine the URL
        to redirect the user to. To override this, see the list of
        optional arguments for this view (below).
-    
+
     **Required arguments**
-    
+
     None.
-    
+
     **Optional arguments**
 
     ``backend``
@@ -161,11 +165,11 @@ def register(request, backend, success_url=None, form_class=None,
         passed to ``django.shortcuts.redirect``. If not supplied, this
         will be whatever URL corresponds to the named URL pattern
         ``registration_disallowed``.
-    
+
     ``form_class``
         The form class to use for registration. If not supplied, this
         will be retrieved from the registration backend.
-    
+
     ``extra_context``
         A dictionary of variables to add to the template context. Any
         callable object in this dictionary will be called to produce
@@ -176,24 +180,24 @@ def register(request, backend, success_url=None, form_class=None,
         value which can legally be passed to
         ``django.shortcuts.redirect``. If not supplied, this will be
         retrieved from the registration backend.
-    
+
     ``template_name``
         A custom template to use. If not supplied, this will default
         to ``registration/registration_form.html``.
-    
+
     **Context:**
-    
+
     ``form``
         The registration form.
-    
+
     Any extra variables supplied in the ``extra_context`` argument
     (see above).
-    
+
     **Template:**
-    
+
     registration/registration_form.html or ``template_name`` keyword
     argument.
-    
+
     """
     backend = get_backend(backend)
     if not backend.registration_allowed(request):
@@ -266,21 +270,23 @@ def register(request, backend, success_url=None, form_class=None,
     )
 
 
+@central_server_only
 def login_view(request, *args, **kwargs):
-    """Force lowercase of the username.
-    
+    """
+    Force lowercase of the username.
+
     Since we don't want things to change to the user (if something fails),
-    we should try the new way first, then fall back to the old way"""
+    we should try the new way first, then fall back to the old way
+    """
     if request.method=="POST":
         users = User.objects.filter(username__iexact=request.POST["username"])
         nusers = users.count()
-
+    
         # Coerce
         if nusers == 1 and users[0].username != request.POST["username"]:
             request.POST = copy.deepcopy(request.POST)
             request.POST['username'] = request.POST['username'].lower()
-
-    # Add redirection context, for smoother navigation
+    
     extra_context = {
         "redirect": {
             "name": REDIRECT_FIELD_NAME,
@@ -291,7 +297,8 @@ def login_view(request, *args, **kwargs):
 
     return auth_views.login(request, *args, **kwargs)
 
-    
+
+@central_server_only
 def logout_view(request):
     auth_logout(request)
     return redirect("homepage")

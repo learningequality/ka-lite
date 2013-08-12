@@ -1,5 +1,6 @@
+import copy
 import json
-import re
+import re 
 import sys
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
@@ -20,18 +21,17 @@ from django.views.decorators.cache import cache_page
 
 import settings
 from config.models import Settings
+from control_panel.views import user_management_context
 from main import topicdata
 from main.models import VideoLog, ExerciseLog, VideoFile
 from securesync.api_client import SyncClient
-from securesync.models import Facility, FacilityUser,FacilityGroup, DeviceZone, Device
-from securesync.views import facility_required
-from control_panel.views import user_management_context
+from securesync.models import Facility, FacilityUser,FacilityGroup, Device
+from securesync.views import require_admin, facility_required
 from utils import topic_tools
+from utils.internet import am_i_online
 from utils.jobs import force_job
 from utils.decorators import require_admin
 from utils.videos import video_connection_is_available
-from utils.internet import am_i_online
-from utils.topics import slug_key, title_key
 
 
 def splat_handler(request, splat):
@@ -41,17 +41,15 @@ def splat_handler(request, splat):
     for slug in slugs:
         # towards the end of the url, we switch from seeking a topic node
         #   to the particular type of node in the tree
-        if slug == "v":
-            seeking = "Video"
-        elif slug == "e":
-            seeking = "Exercise"
+        for kind, kind_slug in topic_tools.kind_slugs.items():
+            if slug == kind_slug.split("/")[0]:
+                seeking = kind
+                break
 
         # match each step in the topics hierarchy, with the url slug.
         else:
             children = [child for child in current_node['children'] if child['kind'] == seeking]
             if not children:
-                # return HttpResponseNotFound("No children of type '%s' found for node '%s'!" %
-                #     (seeking, current_node[title_key[current_node['kind']]]))
                 raise Http404
             match = None
             prev = None
@@ -60,13 +58,11 @@ def splat_handler(request, splat):
                 if match:
                     next = child
                     break
-                if child[slug_key[seeking]] == slug:
+                if child["slug"] == slug:
                     match = child
                 else:
                     prev = child
             if not match:
-                # return HttpResponseNotFound("Child with slug '%s' of type '%s' not found in node '%s'!" %
-                #     (slug, seeking, current_node[title_key[current_node['kind']]]))
                 raise Http404
             current_node = match
     if current_node["kind"] == "Topic":
@@ -99,9 +95,9 @@ def check_setup_status(handler):
 @cache_page(settings.CACHE_TIME)
 @render_to("topic.html")
 def topic_handler(request, topic):
-    videos    = topicdata.get_videos(topic)
-    exercises = topicdata.get_exercises(topic)
-    topics    = topicdata.get_live_topics(topic)
+    videos    = topic_tools.get_videos(topic)
+    exercises = topic_tools.get_exercises(topic)
+    topics    = topic_tools.get_live_topics(topic)
 
     # Get video counts if they'll be used, on-demand only.
     #
@@ -113,7 +109,7 @@ def topic_handler(request, topic):
 
     context = {
         "topic": topic,
-        "title": topic[title_key["Topic"]],
+        "title": topic["title"],
         "description": re.sub(r'<[^>]*?>', '', topic["description"] or ""),
         "videos": videos,
         "exercises": exercises,
@@ -136,18 +132,15 @@ def video_handler(request, video, prev=None, next=None):
 
     if not video_exists:
         if request.is_admin:
+            # TODO(bcipolli): add a link, with querystring args that auto-checks this video in the topic tree
             messages.warning(request, _("This video was not found! You can download it by going to the Update page."))
         elif request.is_logged_in:
             messages.warning(request, _("This video was not found! Please contact your teacher or an admin to have it downloaded."))
         elif not request.is_logged_in:
             messages.warning(request, _("This video was not found! You must login as an admin/teacher to download the video."))
-    elif request.user.is_authenticated():
-        messages.warning(request, _("Note: You're logged in as an admin (not as a student/teacher), so your video progress and points won't be saved."))
-    elif not request.is_logged_in:
-        messages.warning(request, _("Friendly reminder: You are not currently logged in, so your video progress and points won't be saved."))
     context = {
         "video": video,
-        "title": video[title_key["Video"]],
+        "title": video["title"],
         "video_exists": video_exists,
         "prev": prev,
         "next": next,
@@ -158,17 +151,35 @@ def video_handler(request, video, prev=None, next=None):
 @cache_page(settings.CACHE_TIME)
 @render_to("exercise.html")
 def exercise_handler(request, exercise):
-    related_videos = [topicdata.NODE_CACHE["Video"][key] for key in exercise["related_video_readable_ids"]]
+    """
+    Display an exercise
+    """
+    # Copy related videos (should be small), as we're going to tweak them
+    related_videos = [copy.copy(topicdata.NODE_CACHE["Video"].get(key, None)) for key in exercise["related_video_readable_ids"]]
 
-    if request.user.is_authenticated():
-        messages.warning(request, _("Note: You're logged in as an admin (not as a student/teacher), so your exercise progress and points won't be saved."))
-    elif not request.is_logged_in:
-        messages.warning(request, _("Friendly reminder: You are not currently logged in, so your exercise progress and points won't be saved."))
+    videos_to_delete = []
+    for idx, video in enumerate(related_videos):
+        # Remove all videos that were not recognized or 
+        #   simply aren't on disk.  
+        #   Check on disk is relatively cheap, also executed infrequently
+        if not video or not topic_tools.is_video_on_disk(video["youtube_id"]):
+            videos_to_delete.append(idx)
+            continue
+
+        # Resolve the most related path
+        video["path"] = video["paths"][0]  # default value
+        for path in video["paths"]:
+            if topic_tools.is_sibling({"path": path, "kind": "Video"}, exercise):
+                video["path"] = path
+                break
+        del video["paths"]
+    for idx in reversed(videos_to_delete):
+        del related_videos[idx]
 
     context = {
         "exercise": exercise,
-        "title": exercise[title_key["Exercise"]],
-        "exercise_template": "exercises/" + exercise[slug_key["Exercise"]] + ".html",
+        "title": exercise["title"],
+        "exercise_template": "exercises/" + exercise["slug"] + ".html",
         "related_videos": related_videos,
     }
     return context
@@ -176,7 +187,8 @@ def exercise_handler(request, exercise):
 @cache_page(settings.CACHE_TIME)
 @render_to("knowledgemap.html")
 def exercise_dashboard(request):
-    paths = dict((key, val["path"]) for key, val in topicdata.NODE_CACHE["Exercise"].items())
+    # Just grab the first path, whatever it is
+    paths = dict((key, val["paths"][0]) for key, val in topicdata.NODE_CACHE["Exercise"].items())
     context = {
         "title": "Knowledge map",
         "exercise_paths": json.dumps(paths),
@@ -279,7 +291,7 @@ Available stats:
 @require_admin
 @render_to("video_download.html")
 def update(request):
-    call_command("videoscan")
+    call_command("videoscan")  # Could potentially be very slow, blocking request.
     force_job("videodownload", "Download Videos")
     force_job("subtitledownload", "Download Subtitles")
     language_lookup = topicdata.LANGUAGE_LOOKUP
@@ -315,8 +327,10 @@ def user_list(request,facility):
 
 
 @require_admin
-def zone_discovery(request):
-    """Dummy view to generate a helpful dynamic redirect to interface with 'control_panel' app"""
+def zone_redirect(request):
+    """
+    Dummy view to generate a helpful dynamic redirect to interface with 'control_panel' app
+    """
     device = Device.get_own_device()
     zone = device.get_zone()
     if zone:
@@ -325,8 +339,10 @@ def zone_discovery(request):
         raise Http404(_("This device is not on any zone."))
 
 @require_admin
-def device_discovery(request):
-    """Dummy view to generate a helpful dynamic redirect to interface with 'control_panel' app"""
+def device_redirect(request):
+    """
+    Dummy view to generate a helpful dynamic redirect to interface with 'control_panel' app
+    """
     device = Device.get_own_device()
     zone = device.get_zone()
     if zone:
@@ -334,8 +350,21 @@ def device_discovery(request):
     else:
         raise Http404(_("This device is not on any zone."))
 
+
+def handler_403(request, *args, **kwargs):
+    context = RequestContext(request)
+    #message = None  # Need to retrieve, but can't figure it out yet.
+
+    if request.is_ajax():
+        return JsonResponse({ "error": "You must be logged in with an account authorized to view this page." }, status=403)
+    else:
+        messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page..")))
+        return HttpResponseRedirect(reverse("login") + "?next=" + request.path)
+
+
 def handler_404(request):
     return HttpResponseNotFound(render_to_string("404.html", {}, context_instance=RequestContext(request)))
+
 
 def handler_500(request):
     errortype, value, tb = sys.exc_info()

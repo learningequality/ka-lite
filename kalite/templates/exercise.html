@@ -52,30 +52,6 @@
 </script>
 <script src="{% static "js/exercises.js" %}"></script>
 
-<script>
-    $(function(){
-        if (Khan.scratchpad.isVisible()) {
-            $(".current-card-contents #problemarea").css("margin-top","50px");
-        } else {
-            $(".current-card-contents #problemarea").css("margin-top","10px");
-        } 
-        $("#scratchpad-show").click(function(){
-            console.log("entered the click function!");
-            _.defer(function() {
-                if (Khan.scratchpad.isVisible()) {
-                    $(".current-card-contents #problemarea").css("margin-top","50px");
-                } else {
-                    $(".current-card-contents #problemarea").css("margin-top","10px");
-                };
-            });
-        });
-        $(".return-link").click(function() {
-            window.history.go(-1);
-            return false;
-        });
-    });
-</script>
-
 {% endblock headjs %}
 
 {% block content %}
@@ -95,9 +71,6 @@
             <div class="current-card-container card-type-problem">
                 <div class="current-card-container-inner vertical-shadow">
                     <div class="current-card-contents">
-                        <div id="exercise-message-container" style="display: none;">
-                            <div class="exercise_message"></div>
-                        </div>
                         <div id="problem-and-answer">
                             <div id='problemarea'>
                                 <div id='scratchpad'><div></div></div>
@@ -123,7 +96,6 @@
                                         <input type="button" class="simple-button green" id="check-answer-button" value="{{ check_btn }}"/>
                                         {% trans "Correct! Next Question..." as next_btn %}
                                         <input type="button" class="simple-button green" id="next-question-button" style="display:none;" name="correctnextbutton" value="{{ next_btn }}"/>
-                                        <span id="show-solution-button-container"></span>
                                         <div id="check-answer-results"><p class="check-answer-message info-box-sub-description"></p></div>
                                         </div>
                                     </div>
@@ -136,6 +108,7 @@
                                         <span id="hint-remainder">{% trans "Note: this will reset your streak and points for this exercise!" %}</span>
                                     </div>
 
+                                    {% if related_videos %}
                                     <div class="info-box related-video-box">
                                         <div id="related-video-content">
                                             <span class="info-box-header">{% trans "Stuck? Watch a video." %}</span>
@@ -143,9 +116,8 @@
                                             <div id="related-video-list">
                                                 <span class="related-content-title">{% trans "Related videos:" %}</span>
                                                 <ul class="related-video-list">
-                                                    {% if related_videos %}
-                                                    {% for video in related_videos %}
-                                                    {% if forloop.first %}
+                                                {% for video in related_videos %}
+                                                {% if forloop.first %}
                                                     <li>
                                                         <div class="thumbnail">
                                                             <a class="related-video" href="{{ video.path }}" title="{% trans video.title %}" target="_blank">
@@ -162,7 +134,8 @@
                                                             </a>
                                                         </div>
                                                     </li>
-                                                    {% else %}
+                                                    
+                                                {% else %}
                                                     <li>
                                                         <a class="related-video related-video-inline" href="{{ video.path }}" title="{% trans video.title %}" target="_blank">
                                                             <span class="video-title">
@@ -171,23 +144,24 @@
                                                             </span>
                                                         </a>
                                                     </li>
-                                                    {% endif %}
-                                                    {% endfor %}
-                                                    {% endif %}
+                                                {% endif %}
+                                                {% endfor %}
                                                 </ul>
                                             </div>
                                             <div class="clear"></div>
                                         </div>
                                     </div>
+                                    {% endif %}
                                 </form>
                             </div></div>
                             <div class="clear"></div>
-                        </div>                        
+                        </div>
                     </div>
                 </div>
-                <div id="extras" class="single-exercise">
+                <div>
                     <ul>
-                        <li> <a id="scratchpad-show" href style>{% trans "Show scratchpad" %}</a>
+                        <li>
+                            <a id="scratchpad-show" href style>{% trans "Show scratchpad" %}</a>
                             <span id="scratchpad-not-available" style="display: none;">{% trans "Scratchpad not available" %}</span>
                         </li>
                     </ul>

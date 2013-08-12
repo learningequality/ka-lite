@@ -1,0 +1,62 @@
+[
+  {
+    "related_video_readable_ids": [
+      "one-step-inequalities-2", 
+      "inequalities-using-multiplication-and-division"
+    ], 
+    "v_position": 13, 
+    "path": "/math/algebra/linear_inequalities/inequalities/e/one_step_inequalities/", 
+    "display_name": "One step inequalities", 
+    "title": "One step inequalities", 
+    "live": true, 
+    "description": "Solve inequalities in one step.", 
+    "h_position": 30, 
+    "slug": "one_step_inequalities", 
+    "kind": "Exercise", 
+    "name": "one_step_inequalities", 
+    "seconds_per_fast_problem": 14.0, 
+    "prerequisites": [
+      "inequalities_on_a_number_line"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "solving-inequalities", 
+      "multi-step-inequalities-3", 
+      "multi-step-inequalities-2", 
+      "multi-step-inequalities"
+    ], 
+    "v_position": 13, 
+    "path": "/math/algebra/linear_inequalities/inequalities/e/linear_inequalities/", 
+    "display_name": "Multi-step linear inequalities", 
+    "title": "Multi-step linear inequalities", 
+    "live": true, 
+    "description": "Solve linear inequalities in multiple steps.", 
+    "h_position": 31, 
+    "slug": "linear_inequalities", 
+    "kind": "Exercise", 
+    "name": "linear_inequalities", 
+    "seconds_per_fast_problem": 27.0, 
+    "prerequisites": [
+      "linear_equations_3", 
+      "one_step_inequalities"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": 14, 
+    "path": "/math/algebra/linear_inequalities/compound_absolute_value_inequali/e/compound_inequalities/", 
+    "display_name": "Compound inequalities", 
+    "title": "Compound inequalities", 
+    "live": true, 
+    "description": "Solve compound inequalities.", 
+    "h_position": 31, 
+    "slug": "compound_inequalities", 
+    "kind": "Exercise", 
+    "name": "compound_inequalities", 
+    "seconds_per_fast_problem": 23.0, 
+    "prerequisites": [
+      "one_step_inequalities"
+    ]
+  }
+]

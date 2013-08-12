@@ -1,0 +1,14 @@
+# in one tab, run the following, which drops you into a transient instance
+docker run -i -t ka-lite-installed /bin/bash
+
+# make your changes in there, through the interactive shell.
+
+# When you want to save it, open another linux shell outside the docker instance.
+# Run
+docker ps
+# (or, within the docker, check the hostname)
+# to see the processes that are running -- identify yours, and copy its process ID
+
+# overwrite the "ka-lite-installed" image with the current state of your process
+# (you should NOT have the server running inside the image when you do this, or the pid will persist)
+docker commit <proc_id> ka-lite-installed

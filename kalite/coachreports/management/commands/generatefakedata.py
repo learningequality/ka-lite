@@ -6,6 +6,7 @@ import json
 from math import exp
 from main import topicdata
 import settings
+from utils.topic_tools import get_topic_exercises
 
 def sigmoid(theta, a, b):
     return 1.0 / (1.0 + exp(b - a * theta))
@@ -55,8 +56,7 @@ class Command(BaseCommand):
             facilityusers.append(newuser2)
         
         for topic in topics:
-            exercises = json.load(open(settings.STATIC_ROOT + "data/topicdata/" + topic + ".json","r"))
-            exercises = sorted(exercises, key = lambda k: (k["h_position"], k["v_position"]))
+            exercises = get_topic_exercises(topic_id=topic)
             exercises_a = [random.random() for i in range(len(exercises))]
             exercises_b = [float(i) / len(exercises) for i in range(len(exercises))]
             for i, user in enumerate(facilityusers):
