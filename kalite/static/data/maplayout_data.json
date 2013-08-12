@@ -272,14 +272,6 @@
       "standalone_title": "Functions", 
       "id": "algebra-functions"
     }, 
-    "chemistry": {
-      "icon_url": "/images/power-mode/badges/chemistry-40x40.png", 
-      "translated_standalone_title": "Chemistry", 
-      "y": 39.0, 
-      "x": 18.0, 
-      "standalone_title": "Chemistry", 
-      "id": "chemistry"
-    }, 
     "decimals": {
       "icon_url": "/images/power-mode/badges/decimals-40x40.png", 
       "translated_standalone_title": "Decimals", 

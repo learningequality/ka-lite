@@ -1,637 +1,672 @@
 [
   {
-    "kind": "Exercise", 
-    "display_name": "Recognizing fractions 0.5", 
-    "description": "", 
-    "title": "Recognizing fractions 0.5", 
-    "seconds_per_fast_problem": 7.0, 
     "related_video_readable_ids": [
       "recognizing-fractions-exercise", 
       "introduction-to-fractions", 
       "identifying-fraction-parts"
     ], 
-    "prerequisites": [
-      "order_of_operations"
-    ], 
-    "live": true, 
-    "h_position": 18, 
     "v_position": -2, 
     "path": "/math/arithmetic/fractions/understanding_fractions/e/recognizing_fractions_0.5/", 
+    "id": "recognizing_fractions_0.5", 
+    "display_name": "Recognizing fractions 0.5", 
+    "title": "Recognizing fractions 0.5", 
+    "live": true, 
+    "description": "", 
+    "h_position": 18, 
     "slug": "recognizing_fractions_0.5", 
-    "name": "recognizing_fractions_0.5"
+    "kind": "Exercise", 
+    "name": "recognizing_fractions_0.5", 
+    "seconds_per_fast_problem": 7.0, 
+    "prerequisites": [
+      "order_of_operations"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Identifying numerators and denominators", 
-    "description": "", 
-    "title": "Identifying numerators and denominators", 
-    "seconds_per_fast_problem": 4.0, 
     "related_video_readable_ids": [
       "numerator-and-denominator-of-a-fraction"
     ], 
-    "prerequisites": [
-      "recognizing_fractions_0.5"
-    ], 
-    "live": true, 
-    "h_position": 20, 
     "v_position": -1, 
     "path": "/math/arithmetic/fractions/understanding_fractions/e/recognizing_fractions/", 
+    "id": "recognizing_fractions", 
+    "display_name": "Identifying numerators and denominators", 
+    "title": "Identifying numerators and denominators", 
+    "live": true, 
+    "description": "", 
+    "h_position": 20, 
     "slug": "recognizing_fractions", 
-    "name": "recognizing_fractions"
-  }, 
-  {
     "kind": "Exercise", 
-    "display_name": "Fractions on the number line 1", 
-    "description": null, 
-    "title": "Fractions on the number line 1", 
-    "seconds_per_fast_problem": 5.0, 
-    "related_video_readable_ids": [], 
+    "name": "recognizing_fractions", 
+    "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "recognizing_fractions_0.5"
-    ], 
-    "live": true, 
-    "h_position": 20, 
-    "v_position": -2, 
-    "path": "/math/arithmetic/fractions/understanding_fractions/e/fractions_on_the_number_line_1/", 
-    "slug": "fractions_on_the_number_line_1", 
-    "name": "fractions_on_the_number_line_1"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Fraction word problems 1", 
-    "description": null, 
-    "title": "Fraction word problems 1", 
-    "seconds_per_fast_problem": 10.0, 
     "related_video_readable_ids": [], 
+    "v_position": -2, 
+    "path": "/math/arithmetic/fractions/understanding_fractions/e/fractions_on_the_number_line_1/", 
+    "id": "fractions_on_the_number_line_1", 
+    "display_name": "Fractions on the number line 1", 
+    "title": "Fractions on the number line 1", 
+    "live": true, 
+    "description": null, 
+    "h_position": 20, 
+    "slug": "fractions_on_the_number_line_1", 
+    "kind": "Exercise", 
+    "name": "fractions_on_the_number_line_1", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "recognizing_fractions_0.5"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -4, 
+    "path": "/math/arithmetic/fractions/understanding_fractions/e/fraction_word_problems_1/", 
+    "id": "fraction_word_problems_1", 
+    "display_name": "Fraction word problems 1", 
+    "title": "Fraction word problems 1", 
+    "live": true, 
+    "description": null, 
+    "h_position": 21, 
+    "slug": "fraction_word_problems_1", 
+    "kind": "Exercise", 
+    "name": "fraction_word_problems_1", 
+    "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "adding_fractions_with_common_denominators", 
       "subtracting_fractions_with_common_denominators"
-    ], 
-    "live": true, 
-    "h_position": 21, 
-    "v_position": -4, 
-    "path": "/math/arithmetic/fractions/understanding_fractions/e/fraction_word_problems_1/", 
-    "slug": "fraction_word_problems_1", 
-    "name": "fraction_word_problems_1"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Simplifying fractions", 
-    "description": null, 
-    "title": "Simplifying fractions", 
-    "seconds_per_fast_problem": 10.0, 
     "related_video_readable_ids": [], 
+    "v_position": -10, 
+    "path": "/math/arithmetic/fractions/Equivalent_fractions/e/simplifying_fractions/", 
+    "id": "simplifying_fractions", 
+    "display_name": "Simplifying fractions", 
+    "title": "Simplifying fractions", 
+    "live": true, 
+    "description": null, 
+    "h_position": 21, 
+    "slug": "simplifying_fractions", 
+    "kind": "Exercise", 
+    "name": "simplifying_fractions", 
+    "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "greatest_common_divisor", 
       "adding_fractions_with_common_denominators", 
       "equivalent_fractions_2", 
       "subtracting_fractions_with_common_denominators"
-    ], 
-    "live": true, 
-    "h_position": 21, 
-    "v_position": -10, 
-    "path": "/math/arithmetic/fractions/Equivalent_fractions/e/simplifying_fractions/", 
-    "slug": "simplifying_fractions", 
-    "name": "simplifying_fractions"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Comparing fractions 1", 
-    "description": null, 
-    "title": "Comparing fractions 1", 
-    "seconds_per_fast_problem": 5.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "simplifying_fractions"
-    ], 
-    "live": true, 
-    "h_position": 22, 
     "v_position": -14, 
     "path": "/math/arithmetic/fractions/Equivalent_fractions/e/comparing_fractions_1/", 
+    "id": "comparing_fractions_1", 
+    "display_name": "Comparing fractions 1", 
+    "title": "Comparing fractions 1", 
+    "live": true, 
+    "description": null, 
+    "h_position": 22, 
     "slug": "comparing_fractions_1", 
-    "name": "comparing_fractions_1"
+    "kind": "Exercise", 
+    "name": "comparing_fractions_1", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "simplifying_fractions"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Equivalent fractions", 
-    "description": null, 
-    "title": "Equivalent fractions", 
-    "seconds_per_fast_problem": 5.0, 
     "related_video_readable_ids": [], 
+    "v_position": -6, 
+    "path": "/math/arithmetic/fractions/Equivalent_fractions/e/equivalent_fractions/", 
+    "id": "equivalent_fractions", 
+    "display_name": "Equivalent fractions", 
+    "title": "Equivalent fractions", 
+    "live": true, 
+    "description": null, 
+    "h_position": 19, 
+    "slug": "equivalent_fractions", 
+    "kind": "Exercise", 
+    "name": "equivalent_fractions", 
+    "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "order_of_operations", 
       "recognizing_fractions_0.5"
-    ], 
-    "live": true, 
-    "h_position": 19, 
-    "v_position": -6, 
-    "path": "/math/arithmetic/fractions/Equivalent_fractions/e/equivalent_fractions/", 
-    "slug": "equivalent_fractions", 
-    "name": "equivalent_fractions"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Equivalent fractions 2", 
-    "description": null, 
-    "title": "Equivalent fractions 2", 
-    "seconds_per_fast_problem": 7.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "equivalent_fractions"
-    ], 
-    "live": true, 
-    "h_position": 20, 
     "v_position": -6, 
     "path": "/math/arithmetic/fractions/Equivalent_fractions/e/equivalent_fractions_2/", 
+    "id": "equivalent_fractions_2", 
+    "display_name": "Equivalent fractions 2", 
+    "title": "Equivalent fractions 2", 
+    "live": true, 
+    "description": null, 
+    "h_position": 20, 
     "slug": "equivalent_fractions_2", 
-    "name": "equivalent_fractions_2"
+    "kind": "Exercise", 
+    "name": "equivalent_fractions_2", 
+    "seconds_per_fast_problem": 7.0, 
+    "prerequisites": [
+      "equivalent_fractions"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Comparing fractions 2", 
-    "description": null, 
-    "title": "Comparing fractions 2", 
-    "seconds_per_fast_problem": 5.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "comparing_fractions_1"
-    ], 
-    "live": true, 
-    "h_position": 23, 
     "v_position": -14, 
     "path": "/math/arithmetic/fractions/Equivalent_fractions/e/comparing_fractions_2/", 
+    "id": "comparing_fractions_2", 
+    "display_name": "Comparing fractions 2", 
+    "title": "Comparing fractions 2", 
+    "live": true, 
+    "description": null, 
+    "h_position": 23, 
     "slug": "comparing_fractions_2", 
-    "name": "comparing_fractions_2"
+    "kind": "Exercise", 
+    "name": "comparing_fractions_2", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "comparing_fractions_1"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Ordering fractions", 
-    "description": null, 
-    "title": "Ordering fractions", 
-    "seconds_per_fast_problem": 13.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "comparing_fractions_2"
-    ], 
-    "live": true, 
-    "h_position": 24, 
     "v_position": -14, 
     "path": "/math/arithmetic/fractions/Equivalent_fractions/e/ordering_fractions/", 
+    "id": "ordering_fractions", 
+    "display_name": "Ordering fractions", 
+    "title": "Ordering fractions", 
+    "live": true, 
+    "description": null, 
+    "h_position": 24, 
     "slug": "ordering_fractions", 
-    "name": "ordering_fractions"
+    "kind": "Exercise", 
+    "name": "ordering_fractions", 
+    "seconds_per_fast_problem": 13.0, 
+    "prerequisites": [
+      "comparing_fractions_2"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Fractions cut and copy 1", 
-    "description": null, 
-    "title": "Fractions cut and copy 1", 
-    "seconds_per_fast_problem": 11.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "dividing_fractions"
-    ], 
-    "live": true, 
-    "h_position": 25, 
     "v_position": -12, 
     "path": "/math/arithmetic/fractions/Equivalent_fractions/e/fractions_cut_and_copy_1/", 
+    "id": "fractions_cut_and_copy_1", 
+    "display_name": "Fractions cut and copy 1", 
+    "title": "Fractions cut and copy 1", 
+    "live": true, 
+    "description": null, 
+    "h_position": 25, 
     "slug": "fractions_cut_and_copy_1", 
-    "name": "fractions_cut_and_copy_1"
+    "kind": "Exercise", 
+    "name": "fractions_cut_and_copy_1", 
+    "seconds_per_fast_problem": 11.0, 
+    "prerequisites": [
+      "dividing_fractions"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Adding fractions with common denominators", 
-    "description": "", 
-    "title": "Adding fractions with common denominators", 
-    "seconds_per_fast_problem": 6.0, 
     "related_video_readable_ids": [
       "adding-fractions-with-like-denominators"
     ], 
+    "v_position": -5, 
+    "path": "/math/arithmetic/fractions/Adding_and_subtracting_fractions/e/adding_fractions_with_common_denominators/", 
+    "id": "adding_fractions_with_common_denominators", 
+    "display_name": "Adding fractions with common denominators", 
+    "title": "Adding fractions with common denominators", 
+    "live": true, 
+    "description": "", 
+    "h_position": 20, 
+    "slug": "adding_fractions_with_common_denominators", 
+    "kind": "Exercise", 
+    "name": "adding_fractions_with_common_denominators", 
+    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "order_of_operations", 
       "recognizing_fractions_0.5"
-    ], 
-    "live": true, 
-    "h_position": 20, 
-    "v_position": -5, 
-    "path": "/math/arithmetic/fractions/Adding_and_subtracting_fractions/e/adding_fractions_with_common_denominators/", 
-    "slug": "adding_fractions_with_common_denominators", 
-    "name": "adding_fractions_with_common_denominators"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Subtracting fractions with common denominators", 
-    "description": "", 
-    "title": "Subtracting fractions with common denominators", 
-    "seconds_per_fast_problem": 5.0, 
     "related_video_readable_ids": [
       "subtracting--fractions"
     ], 
+    "v_position": -3, 
+    "path": "/math/arithmetic/fractions/Adding_and_subtracting_fractions/e/subtracting_fractions_with_common_denominators/", 
+    "id": "subtracting_fractions_with_common_denominators", 
+    "display_name": "Subtracting fractions with common denominators", 
+    "title": "Subtracting fractions with common denominators", 
+    "live": true, 
+    "description": "", 
+    "h_position": 20, 
+    "slug": "subtracting_fractions_with_common_denominators", 
+    "kind": "Exercise", 
+    "name": "subtracting_fractions_with_common_denominators", 
+    "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "order_of_operations", 
       "recognizing_fractions_0.5"
-    ], 
-    "live": true, 
-    "h_position": 20, 
-    "v_position": -3, 
-    "path": "/math/arithmetic/fractions/Adding_and_subtracting_fractions/e/subtracting_fractions_with_common_denominators/", 
-    "slug": "subtracting_fractions_with_common_denominators", 
-    "name": "subtracting_fractions_with_common_denominators"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Adding fractions", 
-    "description": "", 
-    "title": "Adding fractions", 
-    "seconds_per_fast_problem": 29.0, 
     "related_video_readable_ids": [
       "adding-fractions--ex-1", 
       "adding-fractions-with-unlike-denominators", 
       "addition-of-rational--numbers", 
       "adding-and-subtracting-fractions"
     ], 
+    "v_position": -5, 
+    "path": "/math/arithmetic/fractions/Adding_and_subtracting_fractions/e/adding_fractions/", 
+    "id": "adding_fractions", 
+    "display_name": "Adding fractions", 
+    "title": "Adding fractions", 
+    "live": true, 
+    "description": "", 
+    "h_position": 22, 
+    "slug": "adding_fractions", 
+    "kind": "Exercise", 
+    "name": "adding_fractions", 
+    "seconds_per_fast_problem": 29.0, 
     "prerequisites": [
       "adding_fractions_with_common_denominators", 
       "simplifying_fractions"
-    ], 
-    "live": true, 
-    "h_position": 22, 
-    "v_position": -5, 
-    "path": "/math/arithmetic/fractions/Adding_and_subtracting_fractions/e/adding_fractions/", 
-    "slug": "adding_fractions", 
-    "name": "adding_fractions"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Subtracting fractions", 
-    "description": "", 
-    "title": "Subtracting fractions", 
-    "seconds_per_fast_problem": 18.0, 
     "related_video_readable_ids": [
       "subtracting-fractions-with-unlike-denominators"
     ], 
+    "v_position": -3, 
+    "path": "/math/arithmetic/fractions/Adding_and_subtracting_fractions/e/subtracting_fractions/", 
+    "id": "subtracting_fractions", 
+    "display_name": "Subtracting fractions", 
+    "title": "Subtracting fractions", 
+    "live": true, 
+    "description": "", 
+    "h_position": 22, 
+    "slug": "subtracting_fractions", 
+    "kind": "Exercise", 
+    "name": "subtracting_fractions", 
+    "seconds_per_fast_problem": 18.0, 
     "prerequisites": [
       "subtracting_fractions_with_common_denominators", 
       "simplifying_fractions"
-    ], 
-    "live": true, 
-    "h_position": 22, 
-    "v_position": -3, 
-    "path": "/math/arithmetic/fractions/Adding_and_subtracting_fractions/e/subtracting_fractions/", 
-    "slug": "subtracting_fractions", 
-    "name": "subtracting_fractions"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Adding and subtracting fractions", 
-    "description": "", 
-    "title": "Adding and subtracting fractions", 
-    "seconds_per_fast_problem": 26.0, 
     "related_video_readable_ids": [
       "adding-fractions-with-unlike-denominators", 
       "subtracting-fractions-with-unlike-denominators", 
       "adding-fractions--ex-1", 
       "adding-and-subtracting-fractions"
     ], 
+    "v_position": -4, 
+    "path": "/math/arithmetic/fractions/Adding_and_subtracting_fractions/e/adding_and_subtracting_fractions/", 
+    "id": "adding_and_subtracting_fractions", 
+    "display_name": "Adding and subtracting fractions", 
+    "title": "Adding and subtracting fractions", 
+    "live": true, 
+    "description": "", 
+    "h_position": 23, 
+    "slug": "adding_and_subtracting_fractions", 
+    "kind": "Exercise", 
+    "name": "adding_and_subtracting_fractions", 
+    "seconds_per_fast_problem": 26.0, 
     "prerequisites": [
       "subtracting_fractions", 
       "adding_fractions"
-    ], 
-    "live": true, 
-    "h_position": 23, 
-    "v_position": -4, 
-    "path": "/math/arithmetic/fractions/Adding_and_subtracting_fractions/e/adding_and_subtracting_fractions/", 
-    "slug": "adding_and_subtracting_fractions", 
-    "name": "adding_and_subtracting_fractions"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Multiplying fractions 0.5", 
-    "description": "Multiplying positive fractions with simplification", 
-    "title": "Multiplying fractions 0.5", 
-    "seconds_per_fast_problem": 9.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "simplifying_fractions"
-    ], 
-    "live": true, 
-    "h_position": 22, 
     "v_position": -12, 
     "path": "/math/arithmetic/fractions/multiplying_and_dividing_frac/e/multiplying_fractions_0.5/", 
+    "id": "multiplying_fractions_0.5", 
+    "display_name": "Multiplying fractions 0.5", 
+    "title": "Multiplying fractions 0.5", 
+    "live": true, 
+    "description": "Multiplying positive fractions with simplification", 
+    "h_position": 22, 
     "slug": "multiplying_fractions_0.5", 
-    "name": "multiplying_fractions_0.5"
+    "kind": "Exercise", 
+    "name": "multiplying_fractions_0.5", 
+    "seconds_per_fast_problem": 9.0, 
+    "prerequisites": [
+      "simplifying_fractions"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Multiplying fractions", 
-    "description": "", 
-    "title": "Multiplying fractions", 
-    "seconds_per_fast_problem": 11.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "multiplying_fractions_0.5", 
-      "multiplying_fractions_by_integers"
-    ], 
-    "live": true, 
-    "h_position": 23, 
     "v_position": -11, 
     "path": "/math/arithmetic/fractions/multiplying_and_dividing_frac/e/multiplying_fractions/", 
+    "id": "multiplying_fractions", 
+    "display_name": "Multiplying fractions", 
+    "title": "Multiplying fractions", 
+    "live": true, 
+    "description": "", 
+    "h_position": 23, 
     "slug": "multiplying_fractions", 
-    "name": "multiplying_fractions"
-  }, 
-  {
     "kind": "Exercise", 
-    "display_name": "Multiplying fractions word problems", 
-    "description": null, 
-    "title": "Multiplying fractions word problems", 
+    "name": "multiplying_fractions", 
     "seconds_per_fast_problem": 11.0, 
-    "related_video_readable_ids": [], 
     "prerequisites": [
       "multiplying_fractions_0.5", 
       "multiplying_fractions_by_integers"
-    ], 
-    "live": true, 
-    "h_position": 23, 
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
     "v_position": -13, 
     "path": "/math/arithmetic/fractions/multiplying_and_dividing_frac/e/multiplying_fractions_word_problems/", 
+    "id": "multiplying_fractions_word_problems", 
+    "display_name": "Multiplying fractions word problems", 
+    "title": "Multiplying fractions word problems", 
+    "live": true, 
+    "description": null, 
+    "h_position": 23, 
     "slug": "multiplying_fractions_word_problems", 
-    "name": "multiplying_fractions_word_problems"
-  }, 
-  {
     "kind": "Exercise", 
-    "display_name": "Dividing fractions 0.5", 
-    "description": "Dividing positive fractions with simplification", 
-    "title": "Dividing fractions 0.5", 
+    "name": "multiplying_fractions_word_problems", 
     "seconds_per_fast_problem": 11.0, 
-    "related_video_readable_ids": [], 
     "prerequisites": [
       "multiplying_fractions_0.5", 
       "multiplying_fractions_by_integers"
-    ], 
-    "live": true, 
-    "h_position": 23, 
-    "v_position": -12, 
-    "path": "/math/arithmetic/fractions/multiplying_and_dividing_frac/e/dividing_fractions_0.5/", 
-    "slug": "dividing_fractions_0.5", 
-    "name": "dividing_fractions_0.5"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Dividing fractions", 
-    "description": "", 
-    "title": "Dividing fractions", 
-    "seconds_per_fast_problem": 13.0, 
     "related_video_readable_ids": [], 
+    "v_position": -12, 
+    "path": "/math/arithmetic/fractions/multiplying_and_dividing_frac/e/dividing_fractions_0.5/", 
+    "id": "dividing_fractions_0.5", 
+    "display_name": "Dividing fractions 0.5", 
+    "title": "Dividing fractions 0.5", 
+    "live": true, 
+    "description": "Dividing positive fractions with simplification", 
+    "h_position": 23, 
+    "slug": "dividing_fractions_0.5", 
+    "kind": "Exercise", 
+    "name": "dividing_fractions_0.5", 
+    "seconds_per_fast_problem": 11.0, 
+    "prerequisites": [
+      "multiplying_fractions_0.5", 
+      "multiplying_fractions_by_integers"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -12, 
+    "path": "/math/arithmetic/fractions/multiplying_and_dividing_frac/e/dividing_fractions/", 
+    "id": "dividing_fractions", 
+    "display_name": "Dividing fractions", 
+    "title": "Dividing fractions", 
+    "live": true, 
+    "description": "", 
+    "h_position": 24, 
+    "slug": "dividing_fractions", 
+    "kind": "Exercise", 
+    "name": "dividing_fractions", 
+    "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "multiplying_fractions", 
       "dividing_fractions_0.5"
-    ], 
-    "live": true, 
-    "h_position": 24, 
-    "v_position": -12, 
-    "path": "/math/arithmetic/fractions/multiplying_and_dividing_frac/e/dividing_fractions/", 
-    "slug": "dividing_fractions", 
-    "name": "dividing_fractions"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Dividing fractions word problems", 
-    "description": null, 
-    "title": "Dividing fractions word problems", 
-    "seconds_per_fast_problem": 17.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "dividing_fractions_0.5"
-    ], 
-    "live": true, 
-    "h_position": 24, 
     "v_position": -13, 
     "path": "/math/arithmetic/fractions/multiplying_and_dividing_frac/e/dividing_fractions_word_problems/", 
+    "id": "dividing_fractions_word_problems", 
+    "display_name": "Dividing fractions word problems", 
+    "title": "Dividing fractions word problems", 
+    "live": true, 
+    "description": null, 
+    "h_position": 24, 
     "slug": "dividing_fractions_word_problems", 
-    "name": "dividing_fractions_word_problems"
+    "kind": "Exercise", 
+    "name": "dividing_fractions_word_problems", 
+    "seconds_per_fast_problem": 17.0, 
+    "prerequisites": [
+      "dividing_fractions_0.5"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Fractions on the number line 2", 
-    "description": null, 
-    "title": "Fractions on the number line 2", 
-    "seconds_per_fast_problem": 6.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "converting_mixed_numbers_and_improper_fractions"
-    ], 
-    "live": true, 
-    "h_position": 24, 
     "v_position": -6, 
     "path": "/math/arithmetic/fractions/mixed_numbers/e/fractions_on_the_number_line_2/", 
-    "slug": "fractions_on_the_number_line_2", 
-    "name": "fractions_on_the_number_line_2"
-  }, 
-  {
-    "kind": "Exercise", 
-    "display_name": "Comparing improper fractions and mixed numbers", 
+    "id": "fractions_on_the_number_line_2", 
+    "display_name": "Fractions on the number line 2", 
+    "title": "Fractions on the number line 2", 
+    "live": true, 
     "description": null, 
-    "title": "Comparing improper fractions and mixed numbers", 
-    "seconds_per_fast_problem": 7.0, 
-    "related_video_readable_ids": [], 
+    "h_position": 24, 
+    "slug": "fractions_on_the_number_line_2", 
+    "kind": "Exercise", 
+    "name": "fractions_on_the_number_line_2", 
+    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "converting_mixed_numbers_and_improper_fractions"
-    ], 
-    "live": true, 
-    "h_position": 24, 
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
     "v_position": -8, 
     "path": "/math/arithmetic/fractions/mixed_numbers/e/comparing_improper_fractions_and_mixed_numbers/", 
+    "id": "comparing_improper_fractions_and_mixed_numbers", 
+    "display_name": "Comparing improper fractions and mixed numbers", 
+    "title": "Comparing improper fractions and mixed numbers", 
+    "live": true, 
+    "description": null, 
+    "h_position": 24, 
     "slug": "comparing_improper_fractions_and_mixed_numbers", 
-    "name": "comparing_improper_fractions_and_mixed_numbers"
+    "kind": "Exercise", 
+    "name": "comparing_improper_fractions_and_mixed_numbers", 
+    "seconds_per_fast_problem": 7.0, 
+    "prerequisites": [
+      "converting_mixed_numbers_and_improper_fractions"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Converting mixed numbers and improper fractions", 
-    "description": null, 
-    "title": "Converting mixed numbers and improper fractions", 
-    "seconds_per_fast_problem": 12.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "simplifying_fractions"
-    ], 
-    "live": true, 
-    "h_position": 22, 
     "v_position": -8, 
     "path": "/math/arithmetic/fractions/mixed_numbers/e/converting_mixed_numbers_and_improper_fractions/", 
+    "id": "converting_mixed_numbers_and_improper_fractions", 
+    "display_name": "Converting mixed numbers and improper fractions", 
+    "title": "Converting mixed numbers and improper fractions", 
+    "live": true, 
+    "description": null, 
+    "h_position": 22, 
     "slug": "converting_mixed_numbers_and_improper_fractions", 
-    "name": "converting_mixed_numbers_and_improper_fractions"
+    "kind": "Exercise", 
+    "name": "converting_mixed_numbers_and_improper_fractions", 
+    "seconds_per_fast_problem": 12.0, 
+    "prerequisites": [
+      "simplifying_fractions"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Ordering improper fractions and mixed numbers", 
-    "description": null, 
-    "title": "Ordering improper fractions and mixed numbers", 
-    "seconds_per_fast_problem": 22.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "comparing_improper_fractions_and_mixed_numbers"
-    ], 
-    "live": true, 
-    "h_position": 26, 
     "v_position": -8, 
     "path": "/math/arithmetic/fractions/mixed_numbers/e/ordering_improper_fractions_and_mixed_numbers/", 
+    "id": "ordering_improper_fractions_and_mixed_numbers", 
+    "display_name": "Ordering improper fractions and mixed numbers", 
+    "title": "Ordering improper fractions and mixed numbers", 
+    "live": true, 
+    "description": null, 
+    "h_position": 26, 
     "slug": "ordering_improper_fractions_and_mixed_numbers", 
-    "name": "ordering_improper_fractions_and_mixed_numbers"
+    "kind": "Exercise", 
+    "name": "ordering_improper_fractions_and_mixed_numbers", 
+    "seconds_per_fast_problem": 22.0, 
+    "prerequisites": [
+      "comparing_improper_fractions_and_mixed_numbers"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Fractions cut and copy 2", 
-    "description": null, 
-    "title": "Fractions cut and copy 2", 
-    "seconds_per_fast_problem": 23.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "fractions_cut_and_copy_1"
-    ], 
-    "live": true, 
-    "h_position": 26, 
     "v_position": -12, 
     "path": "/math/arithmetic/fractions/mixed_numbers/e/fractions_cut_and_copy_2/", 
+    "id": "fractions_cut_and_copy_2", 
+    "display_name": "Fractions cut and copy 2", 
+    "title": "Fractions cut and copy 2", 
+    "live": true, 
+    "description": null, 
+    "h_position": 26, 
     "slug": "fractions_cut_and_copy_2", 
-    "name": "fractions_cut_and_copy_2"
+    "kind": "Exercise", 
+    "name": "fractions_cut_and_copy_2", 
+    "seconds_per_fast_problem": 23.0, 
+    "prerequisites": [
+      "fractions_cut_and_copy_1"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Fractions on the number line 3", 
-    "description": null, 
-    "title": "Fractions on the number line 3", 
-    "seconds_per_fast_problem": 6.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "fractions_on_the_number_line_2"
-    ], 
-    "live": true, 
-    "h_position": 25, 
     "v_position": -6, 
     "path": "/math/arithmetic/fractions/mixed_numbers/e/fractions_on_the_number_line_3/", 
+    "id": "fractions_on_the_number_line_3", 
+    "display_name": "Fractions on the number line 3", 
+    "title": "Fractions on the number line 3", 
+    "live": true, 
+    "description": null, 
+    "h_position": 25, 
     "slug": "fractions_on_the_number_line_3", 
-    "name": "fractions_on_the_number_line_3"
+    "kind": "Exercise", 
+    "name": "fractions_on_the_number_line_3", 
+    "seconds_per_fast_problem": 6.0, 
+    "prerequisites": [
+      "fractions_on_the_number_line_2"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Adding subtracting mixed numbers 0.5", 
-    "description": null, 
-    "title": "Adding subtracting mixed numbers 0.5", 
-    "seconds_per_fast_problem": 10.0, 
     "related_video_readable_ids": [], 
+    "v_position": -7, 
+    "path": "/math/arithmetic/fractions/Mixed_number_add_sub/e/adding_subtracting_mixed_numbers_0.5/", 
+    "id": "adding_subtracting_mixed_numbers_0.5", 
+    "display_name": "Adding subtracting mixed numbers 0.5", 
+    "title": "Adding subtracting mixed numbers 0.5", 
+    "live": true, 
+    "description": null, 
+    "h_position": 24, 
+    "slug": "adding_subtracting_mixed_numbers_0.5", 
+    "kind": "Exercise", 
+    "name": "adding_subtracting_mixed_numbers_0.5", 
+    "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "adding_and_subtracting_fractions", 
       "converting_mixed_numbers_and_improper_fractions"
-    ], 
-    "live": true, 
-    "h_position": 24, 
-    "v_position": -7, 
-    "path": "/math/arithmetic/fractions/Mixed_number_add_sub/e/adding_subtracting_mixed_numbers_0.5/", 
-    "slug": "adding_subtracting_mixed_numbers_0.5", 
-    "name": "adding_subtracting_mixed_numbers_0.5"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Adding subtracting mixed numbers 1", 
-    "description": null, 
-    "title": "Adding subtracting mixed numbers 1", 
-    "seconds_per_fast_problem": 33.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "adding_subtracting_mixed_numbers_0.5"
-    ], 
-    "live": true, 
-    "h_position": 25, 
     "v_position": -7, 
     "path": "/math/arithmetic/fractions/Mixed_number_add_sub/e/adding_subtracting_mixed_numbers_1/", 
+    "id": "adding_subtracting_mixed_numbers_1", 
+    "display_name": "Adding subtracting mixed numbers 1", 
+    "title": "Adding subtracting mixed numbers 1", 
+    "live": true, 
+    "description": null, 
+    "h_position": 25, 
     "slug": "adding_subtracting_mixed_numbers_1", 
-    "name": "adding_subtracting_mixed_numbers_1"
+    "kind": "Exercise", 
+    "name": "adding_subtracting_mixed_numbers_1", 
+    "seconds_per_fast_problem": 33.0, 
+    "prerequisites": [
+      "adding_subtracting_mixed_numbers_0.5"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Multiplying mixed numbers 1", 
-    "description": null, 
-    "title": "Multiplying mixed numbers 1", 
-    "seconds_per_fast_problem": 32.0, 
     "related_video_readable_ids": [], 
+    "v_position": -9, 
+    "path": "/math/arithmetic/fractions/mixed_number_mult_div/e/multiplying_mixed_numbers_1/", 
+    "id": "multiplying_mixed_numbers_1", 
+    "display_name": "Multiplying mixed numbers 1", 
+    "title": "Multiplying mixed numbers 1", 
+    "live": true, 
+    "description": null, 
+    "h_position": 24, 
+    "slug": "multiplying_mixed_numbers_1", 
+    "kind": "Exercise", 
+    "name": "multiplying_mixed_numbers_1", 
+    "seconds_per_fast_problem": 32.0, 
     "prerequisites": [
       "converting_mixed_numbers_and_improper_fractions", 
       "multiplying_fractions"
-    ], 
-    "live": true, 
-    "h_position": 24, 
-    "v_position": -9, 
-    "path": "/math/arithmetic/fractions/mixed_number_mult_div/e/multiplying_mixed_numbers_1/", 
-    "slug": "multiplying_mixed_numbers_1", 
-    "name": "multiplying_mixed_numbers_1"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Converting fractions to decimals", 
-    "description": "Convert a fraction to decimal rounded to the nearest thousandth.", 
-    "title": "Converting fractions to decimals", 
-    "seconds_per_fast_problem": 13.0, 
     "related_video_readable_ids": [], 
+    "v_position": 0, 
+    "path": "/math/arithmetic/fractions/decimals_fractions/e/converting_fractions_to_decimals/", 
+    "id": "converting_fractions_to_decimals", 
+    "display_name": "Converting fractions to decimals", 
+    "title": "Converting fractions to decimals", 
+    "live": true, 
+    "description": "Convert a fraction to decimal rounded to the nearest thousandth.", 
+    "h_position": 20, 
+    "slug": "converting_fractions_to_decimals", 
+    "kind": "Exercise", 
+    "name": "converting_fractions_to_decimals", 
+    "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "dividing_decimals_0.5", 
       "recognizing_fractions_0.5"
-    ], 
-    "live": true, 
-    "h_position": 20, 
-    "v_position": 0, 
-    "path": "/math/arithmetic/fractions/decimals_fractions/e/converting_fractions_to_decimals/", 
-    "slug": "converting_fractions_to_decimals", 
-    "name": "converting_fractions_to_decimals"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Converting decimals to fractions 1", 
-    "description": null, 
-    "title": "Converting decimals to fractions 1", 
-    "seconds_per_fast_problem": 5.0, 
     "related_video_readable_ids": [], 
+    "v_position": -4, 
+    "path": "/math/arithmetic/fractions/decimals_fractions/e/converting_decimals_to_fractions_1/", 
+    "id": "converting_decimals_to_fractions_1", 
+    "display_name": "Converting decimals to fractions 1", 
+    "title": "Converting decimals to fractions 1", 
+    "live": true, 
+    "description": null, 
+    "h_position": 24, 
+    "slug": "converting_decimals_to_fractions_1", 
+    "kind": "Exercise", 
+    "name": "converting_decimals_to_fractions_1", 
+    "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "converting_fractions_to_decimals", 
       "adding_and_subtracting_fractions"
-    ], 
-    "live": true, 
-    "h_position": 24, 
-    "v_position": -4, 
-    "path": "/math/arithmetic/fractions/decimals_fractions/e/converting_decimals_to_fractions_1/", 
-    "slug": "converting_decimals_to_fractions_1", 
-    "name": "converting_decimals_to_fractions_1"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Converting decimals to fractions 2", 
-    "description": "Convert a decimal to an equivalent fraction. Convert a decimal to an equivalent mixed number. Reduce to lowest terms.", 
-    "title": "Converting decimals to fractions 2", 
-    "seconds_per_fast_problem": 12.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "converting_decimals_to_fractions_1"
-    ], 
-    "live": true, 
-    "h_position": 25, 
     "v_position": -4, 
     "path": "/math/arithmetic/fractions/decimals_fractions/e/converting_decimals_to_fractions_2/", 
+    "id": "converting_decimals_to_fractions_2", 
+    "display_name": "Converting decimals to fractions 2", 
+    "title": "Converting decimals to fractions 2", 
+    "live": true, 
+    "description": "Convert a decimal to an equivalent fraction. Convert a decimal to an equivalent mixed number. Reduce to lowest terms.", 
+    "h_position": 25, 
     "slug": "converting_decimals_to_fractions_2", 
-    "name": "converting_decimals_to_fractions_2"
+    "kind": "Exercise", 
+    "name": "converting_decimals_to_fractions_2", 
+    "seconds_per_fast_problem": 12.0, 
+    "prerequisites": [
+      "converting_decimals_to_fractions_1"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Ordering numbers", 
-    "description": null, 
-    "title": "Ordering numbers", 
-    "seconds_per_fast_problem": 14.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "ordering_fractions"
-    ], 
-    "live": true, 
-    "h_position": 25, 
     "v_position": -14, 
     "path": "/math/arithmetic/fractions/decimals_fractions/e/ordering_numbers/", 
+    "id": "ordering_numbers", 
+    "display_name": "Ordering numbers", 
+    "title": "Ordering numbers", 
+    "live": true, 
+    "description": null, 
+    "h_position": 25, 
     "slug": "ordering_numbers", 
-    "name": "ordering_numbers"
+    "kind": "Exercise", 
+    "name": "ordering_numbers", 
+    "seconds_per_fast_problem": 14.0, 
+    "prerequisites": [
+      "ordering_fractions"
+    ]
   }
 ]

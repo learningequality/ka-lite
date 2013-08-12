@@ -161,12 +161,16 @@ def get_video_counts(topic, videos_path, force=False):
     return (topic, nvideos_local, nvideos_known)
 
 
-def get_topic_by_path(path):
+def get_topic_by_path(path, root_node=None):
     """Given a topic path, return the corresponding topic node in the topic hierarchy"""
     # Make sure the root fits
-    root_node = get_topic_tree()
-    if not path.startswith(root_node["path"]):
-        return None
+    if not root_node:
+        root_node = get_topic_tree()
+    if path == root_node["path"]:
+        return root_node
+    elif not path.startswith(root_node["path"]):
+        return {}
+        
 
     # split into parts (remove trailing slash first)
     parts = path[len(root_node["path"]):-1].split("/")
@@ -180,7 +184,7 @@ def get_topic_by_path(path):
 
     assert not cur_node or cur_node["path"] == path, "Either didn't find it, or found the right thing."
 
-    return cur_node
+    return cur_node or {}
 
 
 def get_all_leaves(topic_node=None, leaf_type=None):
@@ -274,6 +278,7 @@ def get_all_midlevel_topics():
 def get_video_by_youtube_id(youtube_id):
     slug = get_id2slug_map().get(youtube_id, None)
     return get_node_cache("Video")[slug] if slug else None
+
 
 def is_sibling(node1, node2):
     """
