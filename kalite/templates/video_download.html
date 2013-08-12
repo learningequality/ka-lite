@@ -217,6 +217,9 @@ ul.dynatree-container li, .ui-widget-content {
             $(".progress-section").hide();
             $(".progress-waiting").show();
             $("#cancel-download").show();
+            
+            ga_track("send", "event", "update", "click-download-videos", "Download Videos", videos.length);
+            
         });
 
         $("#delete-videos").click(function() {
@@ -236,6 +239,8 @@ ul.dynatree-container li, .ui-widget-content {
                 .fail(function(resp) {
                     handleFailedAPI(resp, "Error deleting videos");
                 });
+
+            ga_track("send", "event", "update", "click-delete-videos", "Delete Videos", videos.length);
         });
 
         $(".download-subtitles").click(function(event) {
@@ -260,10 +265,11 @@ ul.dynatree-container li, .ui-widget-content {
                         $(".progress-waiting").hide();
                     });
                 $(".progress-waiting").show();
+
+                ga_track("send", "event", "update", "download-subtitles-click", "Download Subtitles (" + language + ")");
             }
-			
         });
-        
+
         $("#cancel-download").click(function() {
             doRequest("/api/cancel_downloads")
                 .success(function() {
@@ -281,6 +287,8 @@ ul.dynatree-container li, .ui-widget-content {
                 .fail(function(resp) {
                     handleFailedAPI(resp, "Error canceling downloads");
                 });
+
+            ga_track("send", "event", "update", "click-cancel-downloads", "Cancel Downloads");
         });
        
         $("#retry-video-download").click(function() {
@@ -288,10 +296,11 @@ ul.dynatree-container li, .ui-widget-content {
                 .fail(function(resp) {
                     handleFailedAPI(resp, "Error canceling downloads");
                 });
+
+            ga_track("send", "event", "update", "click-retry-download", "Retry Download");
         });
-    
     });
-    
+
     function unselectAllNodes() {
         $.each($("#content_tree").dynatree("getSelectedNodes"), function(ind, node) {
             node.select(false);
@@ -367,7 +376,6 @@ ul.dynatree-container li, .ui-widget-content {
             default:
                 //communicate_api_failure(resp)
                 messages = $.parseJSON(resp.responseText);
-                window.messages = messages
                 if (!("error" in messages)) {
                     // this should be an assert--should never happen
                     show_message("error", error_text + ": " + "Uninterpretable message received.", error_id)
@@ -523,6 +531,35 @@ ul.dynatree-container li, .ui-widget-content {
         }
     }
 
+</script>
+
+
+<script>
+
+{% if not debug %}
+
+    (function(i,s,o,g,r,a,m){i["GoogleAnalyticsObject"]=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,"script","//www.google-analytics.com/analytics.js","ga");
+
+    ga("create", "UA-36937407-3", {"cookieDomain": "none"});
+
+    ga("set", "dimension1", "{% if registered %}Registered{% else %}Unregistered{% endif %}");
+    ga("set", "dimension2", "{% if zone_id %}{{ zone_id }}{% endif %}");
+    ga("set", "dimension3", "{{ device_id }}");
+    ga('set', 'metric1', {{ video_count }});
+    
+    ga("send", "pageview");
+    
+{% endif %}
+
+    function ga_track() {
+        if (_.isFunction(window.ga)) {
+            ga.apply(this, arguments);
+        }
+    }
+    
 </script>
 
 {% endblock headjs %}
