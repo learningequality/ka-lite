@@ -182,18 +182,21 @@
 									{{ zone.name }}
 								</h4>
 								<div class="nudge-left floatleft">
-									<a href="{% url zone_management org_id=org.id zone_id=zone.id %}">
+									<a class="zone-manage-link" href="{% url zone_management org_id=org.id zone_id=zone.id %}">
 										(manage)
 									</a>
 								</div>
 								<div class="clearfix"></div>
 							{% endfor %}
 							<div class="clearfix"></div>
+                            {% if org.name != HEADLESS_ORG_NAME %}
 							<form method="link" action="{% url zone_form org_id=org.id zone_id='new' %}">
 								<input class="add" type="submit" value="Create a new zone">
 							</form>
+						    {% endif %}
 						</div>
 						<div class="members">
+                            {% if org.name != HEADLESS_ORG_NAME %}
 							<h4 class="title floatleft">Organization Admins</h4><span class="glossary-link nudge-left" title="An Organization Admin is a user responsible for overseeing an organization."></span>
 							<div class="clearfix"></div>
 							{% for member in org.get_members %}
@@ -236,10 +239,11 @@
 									<h4 id="form-label">Add Admin: </h4><input type="text" placeholder="example@email.com" name="email_to_invite">
 									<input type="submit" value="Send invite!">
 									{% for error in org.form.non_field_errors %}
-										<div class="errors">{{ error }}</div>
+										<div class="error">{{ error }}</div>
 									{% endfor %}
 								</form>
 							</div>
+							{% endif %}
 					</div>
 					<div class="clearfix"></div>
 					</div>

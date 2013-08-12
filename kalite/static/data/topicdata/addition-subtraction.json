@@ -4,17 +4,16 @@
     "display_name": "1-digit addition", 
     "description": "Add two 1-digit numbers", 
     "title": "1-digit addition", 
-    "seconds_per_fast_problem": 4.0, 
+    "seconds_per_fast_problem": 5.0, 
     "related_video_readable_ids": [
       "basic-addition"
     ], 
-    "slug": "addition_1", 
     "prerequisites": [], 
     "live": true, 
     "h_position": 0, 
     "v_position": 5, 
     "path": "/math/arithmetic/addition-subtraction/basic_addition/e/addition_1/", 
-    "id": "addition_1", 
+    "slug": "addition_1", 
     "name": "addition_1"
   }, 
   {
@@ -26,7 +25,6 @@
     "related_video_readable_ids": [
       "basic-subtraction"
     ], 
-    "slug": "subtraction_1", 
     "prerequisites": [
       "addition_1"
     ], 
@@ -34,28 +32,8 @@
     "h_position": 2, 
     "v_position": 6, 
     "path": "/math/arithmetic/addition-subtraction/basic_addition/e/subtraction_1/", 
-    "id": "subtraction_1", 
+    "slug": "subtraction_1", 
     "name": "subtraction_1"
-  }, 
-  {
-    "kind": "Exercise", 
-    "display_name": "Number line 1", 
-    "description": "Drag a dot to a positive integer on the number line", 
-    "title": "Number line 1", 
-    "seconds_per_fast_problem": 7.0, 
-    "related_video_readable_ids": [
-      "basic-subtraction"
-    ], 
-    "slug": "number_line", 
-    "prerequisites": [
-      "addition_2"
-    ], 
-    "live": true, 
-    "h_position": 2, 
-    "v_position": 3, 
-    "path": "/math/arithmetic/addition-subtraction/basic_addition/e/number_line/", 
-    "id": "number_line", 
-    "name": "number_line"
   }, 
   {
     "kind": "Exercise", 
@@ -66,7 +44,6 @@
     "related_video_readable_ids": [
       "adding-whole-numbers-and-applications-1"
     ], 
-    "slug": "addition_2", 
     "prerequisites": [
       "addition_1"
     ], 
@@ -74,7 +51,7 @@
     "h_position": 1, 
     "v_position": 4, 
     "path": "/math/arithmetic/addition-subtraction/two_dig_add_sub/e/addition_2/", 
-    "id": "addition_2", 
+    "slug": "addition_2", 
     "name": "addition_2"
   }, 
   {
@@ -82,11 +59,10 @@
     "display_name": "2 and 3-digit subtraction", 
     "description": "Subtract two 2-3 digit numbers without borrowing", 
     "title": "2 and 3-digit subtraction", 
-    "seconds_per_fast_problem": 5.0, 
+    "seconds_per_fast_problem": 6.0, 
     "related_video_readable_ids": [
       "subtracting-whole-numbers"
     ], 
-    "slug": "subtraction_2", 
     "prerequisites": [
       "subtraction_1"
     ], 
@@ -94,7 +70,7 @@
     "h_position": 3, 
     "v_position": 6, 
     "path": "/math/arithmetic/addition-subtraction/two_dig_add_sub/e/subtraction_2/", 
-    "id": "subtraction_2", 
+    "slug": "subtraction_2", 
     "name": "subtraction_2"
   }, 
   {
@@ -102,11 +78,11 @@
     "display_name": "Addition with carrying", 
     "description": "Add two 3-digit numbers with carrying", 
     "title": "Addition with carrying", 
-    "seconds_per_fast_problem": 8.0, 
+    "seconds_per_fast_problem": 9.0, 
     "related_video_readable_ids": [
+      "addition-2", 
       "addition-3"
     ], 
-    "slug": "addition_3", 
     "prerequisites": [
       "addition_2"
     ], 
@@ -114,7 +90,7 @@
     "h_position": 4, 
     "v_position": 4, 
     "path": "/math/arithmetic/addition-subtraction/addition_carrying/e/addition_3/", 
-    "id": "addition_3", 
+    "slug": "addition_3", 
     "name": "addition_3"
   }, 
   {
@@ -122,11 +98,10 @@
     "display_name": "4-digit addition with carrying", 
     "description": "Add two 3- or 4-digit numbers with carrying", 
     "title": "4-digit addition with carrying", 
-    "seconds_per_fast_problem": 12.0, 
+    "seconds_per_fast_problem": 13.0, 
     "related_video_readable_ids": [
       "addition-4"
     ], 
-    "slug": "addition_4", 
     "prerequisites": [
       "addition_3"
     ], 
@@ -134,7 +109,7 @@
     "h_position": 5, 
     "v_position": 4, 
     "path": "/math/arithmetic/addition-subtraction/addition_carrying/e/addition_4/", 
-    "id": "addition_4", 
+    "slug": "addition_4", 
     "name": "addition_4"
   }, 
   {
@@ -142,12 +117,13 @@
     "display_name": "Subtraction with borrowing", 
     "description": "Subtract two 3- or 4-digit numbers. Borrow once", 
     "title": "Subtraction with borrowing", 
-    "seconds_per_fast_problem": 12.0, 
+    "seconds_per_fast_problem": 13.0, 
     "related_video_readable_ids": [
       "borrowing-once-example-1", 
-      "borrowing-once-example-2"
+      "borrowing-once-example-2", 
+      "why-borrowing-works", 
+      "subtraction-3---introduction-to-borrowing-or-regrouping"
     ], 
-    "slug": "subtraction_3", 
     "prerequisites": [
       "subtraction_2"
     ], 
@@ -155,19 +131,22 @@
     "h_position": 4, 
     "v_position": 6, 
     "path": "/math/arithmetic/addition-subtraction/sub_borrowing/e/subtraction_3/", 
-    "id": "subtraction_3", 
+    "slug": "subtraction_3", 
     "name": "subtraction_3"
   }, 
   {
     "kind": "Exercise", 
-    "display_name": "4-digit subtraction with borrowing ", 
+    "display_name": "4-digit subtraction with borrowing", 
     "description": "Subtract two 4-digit numbers. Borrow twice", 
-    "title": "4-digit subtraction with borrowing ", 
-    "seconds_per_fast_problem": 14.0, 
+    "title": "4-digit subtraction with borrowing", 
+    "seconds_per_fast_problem": 15.0, 
     "related_video_readable_ids": [
-      "regrouping--borrowing--twice-example"
+      "regrouping--borrowing--twice-example", 
+      "why-borrowing-works", 
+      "subtraction-3---introduction-to-borrowing-or-regrouping", 
+      "alternate-mental-subtraction-method", 
+      "level-4-subtraction"
     ], 
-    "slug": "subtraction_4", 
     "prerequisites": [
       "subtraction_3"
     ], 
@@ -175,7 +154,7 @@
     "h_position": 5, 
     "v_position": 6, 
     "path": "/math/arithmetic/addition-subtraction/sub_borrowing/e/subtraction_4/", 
-    "id": "subtraction_4", 
+    "slug": "subtraction_4", 
     "name": "subtraction_4"
   }, 
   {
@@ -187,7 +166,6 @@
     "related_video_readable_ids": [
       "subtraction-word-problem"
     ], 
-    "slug": "arithmetic_word_problems_1", 
     "prerequisites": [
       "addition_2", 
       "subtraction_2"
@@ -196,7 +174,7 @@
     "h_position": 4, 
     "v_position": 5, 
     "path": "/math/arithmetic/addition-subtraction/add_sub_word_problems/e/arithmetic_word_problems_1/", 
-    "id": "arithmetic_word_problems_1", 
+    "slug": "arithmetic_word_problems_1", 
     "name": "arithmetic_word_problems_1"
   }
 ]

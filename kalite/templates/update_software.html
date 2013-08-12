@@ -2,6 +2,7 @@
 
 {% load i18n %}
 {% load staticfiles %}
+{% load my_filters %}
 
 {% block update_active %}active{% endblock update_active %}
 
@@ -87,7 +88,27 @@ var video_callbacks = {
 </script>
 
 <script type="text/javascript">
+function version_callback(data) {
+    // Check to see if the remote software matches the local software version.
+    //   If not, alert the user!
+    var current_version = "{{ software_version }}";
+    var remote_version = data.version;
+    if (current_version != remote_version) {
+        alert("update available!" + current_version + remote_version);
+    }
+}
+
+function download_urls_callback(data) {
+    window.data = data;
+    for (key in data) {
+         $("#software_available").append("<option value='" + data[key].url + "'>" + key + " (" + data[key].size + "MB)</option>");
+    }
+}
+</script>
+
+<script type="text/javascript">
     $(function() {
+        updatesStart("update", 5000, video_callbacks)
 
         setTimeout(function() {
             get_server_status({path: "{% url get_server_info %}"}, ["online"], function(status){
@@ -95,26 +116,27 @@ var video_callbacks = {
                 //   if it's online, then we show all tools only usable when online.
                 //
                 // Best to assume offline, as online check returns much faster than offline check.
-                if(!status || !status["online"]){
+                if(false && (!status || !status["online"])){
                     show_message("error", "{% trans 'Distributed server is offline; cannot access video nor subtitle updates.' %}", " id_offline_message")
                 } else {
-                    $("#help-info").show();
-                    $("#download-videos").removeAttr("disabled");
-                    $(".download-subtitles").removeAttr("disabled");
+                    $("#software_available").removeAttr("disabled");
+                    $("#download-update-kalite").removeAttr("disabled");
+                    $("#upload-update-kalite").removeAttr("disabled");
                     clear_message("id_offline_message")
                 }
             });
+
         }, 200);
 
-        $("#download-videos").click(function() {
+        $("#download-update-kalite").click(function() {
             // Get all videos to download
-            updatesStart("update_kalite", 5000, video_callbacks)
+            //updatesStart("update", 1000, video_callbacks)
 
             // Start the download and updating process
-            doRequest("{% url start_update_kalite %}").success(function() {
-                updatesStart("update_kalite", 5000, video_callbacks)
+            doRequest("{% url start_update_kalite %}", { "url": $("#software_available option:selected")[0].value }).success(function() {
+                updatesStart_callback("update")
             }).fail(function(response) {
-                show_message("error", "Error starting update process (" + response.status_code + ": " + response.responseText);
+                show_message("error", "Error starting update process (" + response.status + "): " + response.responseText);
             });
 
             // Update the UI to reflect that we're waiting to start
@@ -126,54 +148,22 @@ var video_callbacks = {
 {% endblock headjs %}
 
 {% block content %}
+<div>
+    <select id="software_available" disabled>
+    </select>
 
-<div class="download-actions vertical-shadow">
-    <h2 id="download-legend-unselected" class="button_text">
-        {% trans "Please select videos to download (below)" %}
-    </h2>
-    <div id="help-info">
-        <a id="download-help-link" target="_new" href="http://{{ central_server_host }}/faq/installation/bittorrent/">
-            {% trans "Q: How do I bulk-download videos?" %}
-        </a>
-    </div>
-    
-    <button id="download-videos" type="button" disabled>{% trans "Download " %}<span class="new-video-count">0</span>{% trans " new selected videos" %}</button>
-
-    <button id="delete-videos" type="button">{% trans "Delete " %}<span class="old-video-count">0</span>{% trans " selected videos" %}</button>
-</div>
-
-<div class="download-actions subtitles-download vertical-shadow">
-    <h2 class="button_text">{% trans "Download/update subtitles for existing videos" %}</h2>
-    <span class= "button_style">
-        <select id="language">
-            {% if languages %}
-                {% for language in languages %}
-                    <option value="{{ language.id }}" {% ifequal language.id default_language %} selected {% endifequal %}>{{ language.name }}</option>
-                {% endfor %}
-            {% endif %}
-        </select>
-    </span>
-
-    <button class="download-subtitles" type="button" disabled>{% trans "Get/Update All Subtitles" %}</button>
-    <button class="download-subtitles" new_only=true type="button" disabled>{% trans "Get Missing Subtitles Only" %}</button>
-
+    <button id="download-update-kalite" type="button" disabled>{% trans "Update KA Lite from remote download" %}</button>
+    <button id="upload-update-kalite" type="button" disabled>{% trans "Update KA Lite from file" %}</button>
 </div>
 
 <div style="clear: both;"></div>
 
 <!-- note: id must match the "updates" app process name -->
-<div id="videodownload-progressbar">
+<div id="update-progressbar">
     {% include "updates/progress-bar.html" %}
-    <button id="retry-video-download" type="button">{% trans "Video download error... click to retry" %}</button>
 </div>
 
-<!-- note: id must match the "updates" app process name -->
-<div id="subtitledownload-progressbar">
-	{% include "updates/progress-bar.html" %}
-    {# <button id="retry-subtitle-download" type="button">{% trans "Subtitle download error... click to retry" %}</button> #}
-</div>
+<script type="text/javascript" src="{% central_server_api path='/api/version' %}?callback=version_callback"></script>
+<script type="text/javascript" src="{% central_server_api path='/api/download/kalite/' %}?callback=download_urls_callback"></script>
 
-<div>
-    <button id="cancel-download" type="button">{% trans "Cancel All Downloads" %}</button>
-</div>
 {% endblock content %}

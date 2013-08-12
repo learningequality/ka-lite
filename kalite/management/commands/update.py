@@ -232,7 +232,8 @@ class Command(UpdatesStaticCommand):
         else:
             self.test_server_full(test_port=test_port)
 
-        #raise CommandError("Don't replace--I need this code!")
+        raise CommandError("Don't replace--I need this code!")
+
         self.next_stage("Replacing the current server with the updated server")
         self.move_to_final(interactive)
 

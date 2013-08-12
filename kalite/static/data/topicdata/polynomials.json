@@ -4,12 +4,8 @@
     "display_name": "Adding and subtracting polynomials", 
     "description": "Add or subtract polynomials", 
     "title": "Adding and subtracting polynomials", 
-    "seconds_per_fast_problem": 17.0, 
-    "related_video_readable_ids": [
-      "addition-and-subtraction-of-polynomials", 
-      "subtracting-polynomials-with-multiple-variables"
-    ], 
-    "slug": "adding_and_subtracting_polynomials", 
+    "seconds_per_fast_problem": 18.0, 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "equation_of_a_line"
     ], 
@@ -17,7 +13,7 @@
     "h_position": 45, 
     "v_position": -7, 
     "path": "/math/algebra/polynomials/polynomial_basics/e/adding_and_subtracting_polynomials/", 
-    "id": "adding_and_subtracting_polynomials", 
+    "slug": "adding_and_subtracting_polynomials", 
     "name": "adding_and_subtracting_polynomials"
   }, 
   {
@@ -25,11 +21,8 @@
     "display_name": "Multiplying expressions 0.5", 
     "description": "Multiplying expressions in the form (x+b)(x-b), (x+b)^2, or (x-b)^2", 
     "title": "Multiplying expressions 0.5", 
-    "seconds_per_fast_problem": 9.0, 
-    "related_video_readable_ids": [
-      "special-products-of-polynomials-2"
-    ], 
-    "slug": "multiplying_expressions_0.5", 
+    "seconds_per_fast_problem": 8.0, 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "adding_and_subtracting_polynomials"
     ], 
@@ -37,7 +30,7 @@
     "h_position": 46, 
     "v_position": -7, 
     "path": "/math/algebra/polynomials/multiplying_polynomials/e/multiplying_expressions_0.5/", 
-    "id": "multiplying_expressions_0.5", 
+    "slug": "multiplying_expressions_0.5", 
     "name": "multiplying_expressions_0.5"
   }, 
   {
@@ -46,10 +39,7 @@
     "description": "Factor expressions like 3x-9", 
     "title": "Factoring linear binomials", 
     "seconds_per_fast_problem": 8.0, 
-    "related_video_readable_ids": [
-      "special-products-of-polynomials-2"
-    ], 
-    "slug": "factoring_linear_binomials", 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "multiplying_expressions_1", 
       "multiplying_polynomials"
@@ -58,7 +48,7 @@
     "h_position": 48, 
     "v_position": -6, 
     "path": "/math/algebra/polynomials/multiplying_polynomials/e/factoring_linear_binomials/", 
-    "id": "factoring_linear_binomials", 
+    "slug": "factoring_linear_binomials", 
     "name": "factoring_linear_binomials"
   }, 
   {
@@ -66,11 +56,8 @@
     "display_name": "Multiplying expressions 1", 
     "description": "Multiplying expressions in the form of polynomials (not perfect squares).", 
     "title": "Multiplying expressions 1", 
-    "seconds_per_fast_problem": 12.0, 
-    "related_video_readable_ids": [
-      "special-products-of-polynomials-2"
-    ], 
-    "slug": "multiplying_expressions_1", 
+    "seconds_per_fast_problem": 11.0, 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "multiplying_expressions_0.5"
     ], 
@@ -78,7 +65,7 @@
     "h_position": 47, 
     "v_position": -7, 
     "path": "/math/algebra/polynomials/multiplying_polynomials/e/multiplying_expressions_1/", 
-    "id": "multiplying_expressions_1", 
+    "slug": "multiplying_expressions_1", 
     "name": "multiplying_expressions_1"
   }, 
   {
@@ -86,12 +73,8 @@
     "display_name": "Multiplying polynomials", 
     "description": "Multiply two expressions with variables and exponents to get a polynomial", 
     "title": "Multiplying polynomials", 
-    "seconds_per_fast_problem": 14.0, 
-    "related_video_readable_ids": [
-      "more-multiplying-polynomials", 
-      "multiplying-polynomials-3"
-    ], 
-    "slug": "multiplying_polynomials", 
+    "seconds_per_fast_problem": 15.0, 
+    "related_video_readable_ids": [], 
     "prerequisites": [
       "multiplying_expressions_0.5"
     ], 
@@ -99,7 +82,7 @@
     "h_position": 47, 
     "v_position": -6, 
     "path": "/math/algebra/polynomials/multiplying_polynomials/e/multiplying_polynomials/", 
-    "id": "multiplying_polynomials", 
+    "slug": "multiplying_polynomials", 
     "name": "multiplying_polynomials"
   }
 ]

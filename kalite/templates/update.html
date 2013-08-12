@@ -19,7 +19,7 @@
             <div class="separate">
                 <div class="vertical-shadow suggested-action">
                     <a href="{% url update_videos %}?{% block topic_paths %}{% for path in form.topic_path %}topic_path={{ path }}&{% endfor %}{% endblock topic_paths %}">
-                        <h2 class="suggested-action-title">{% trans "Update Videos" %}</h2>
+                        <h2 class="suggested-action-title">{% trans "Download Videos" %}</h2>
                         <div class="suggested-action-image-link" style="background-image: url({% static 'images/update_videos.png' %});"></div>
                     </a>
                 </div>
@@ -27,7 +27,7 @@
             <div class="separate">
                 <div class="vertical-shadow suggested-action">
                     <a href="{% url update_subtitles %}?{% repeatblock topic_paths %}">
-                        <h2 class="suggested-action-title">{% trans "Update Subtitles" %}</h2>
+                        <h2 class="suggested-action-title">{% trans "Update Languages" %}</h2>
                         <div class="suggested-action-image-link" style="background-image: url({% static 'images/update_subtitles.jpeg' %});"></div>
                     </a>
                 </div>

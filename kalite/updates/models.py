@@ -38,7 +38,7 @@ class UpdateProgressLog(models.Model):
         super(UpdateProgressLog, self).save(*args, **kwargs)
 
 
-    def update_stage(self, stage_name, stage_percent):
+    def update_stage(self, stage_name, stage_percent, notes=None):
         """
         Update a stage with it's percent, and process accordingly.
         
@@ -54,14 +54,17 @@ class UpdateProgressLog(models.Model):
             if self.stage_name:
                 self.process_percent += (1 - self.stage_percent) / float(self.total_stages)
                 self.stage_percent = 0
+                self.notes = None  # reset notes after each stage
             self.stage_name = stage_name
 
         self.process_percent += (stage_percent - self.stage_percent) / float(self.total_stages)
         self.stage_percent = stage_percent
+        if notes is not None:
+            self.notes = notes
         self.save()
 
 
-    def cancel_current_stage(self):
+    def cancel_current_stage(self, notes=None):
         """
         Delete the current stage--it's reported progress, and contribution to the total # of stages
         """
@@ -71,6 +74,7 @@ class UpdateProgressLog(models.Model):
         self.stage_percent = 0.
         self.update_total_stages(self.total_stages - 1)
         self.stage_name = None
+        self.notes = notes
         self.save()
 
 
@@ -90,7 +94,7 @@ class UpdateProgressLog(models.Model):
         self.save()
 
 
-    def cancel_progress(self):
+    def cancel_progress(self, notes=None):
         """
         Stamps end time.
         """
@@ -98,10 +102,11 @@ class UpdateProgressLog(models.Model):
 
         self.end_time = datetime.datetime.now()
         self.completed=False
+        self.notes = notes
         self.save()
 
 
-    def mark_as_completed(self):
+    def mark_as_completed(self, notes):
         """
         Completes stage and process percents, stamps end time.
         """
@@ -111,6 +116,7 @@ class UpdateProgressLog(models.Model):
         self.process_percent = 1.
         self.end_time = datetime.datetime.now()
         self.completed = True
+        self.notes = notes
         self.save()
 
 

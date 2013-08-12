@@ -1,11 +1,12 @@
 @echo off
+cd kalite
+
 if "%1" == "" (
-  set PORT=8008
+  for /f %%a in ('start /b python.exe -c "import settings; print settings.PRODUCTION_PORT"') do set PORT=%%a
 ) else (
   set PORT=%1
 )
 
-cd kalite
 if exist database\data.sqlite (
   REM transfer any previously downloaded content from the old location to the new
 	move static\videos\* ..\content > nul 2> nul
@@ -22,7 +23,7 @@ if exist database\data.sqlite (
 		exit /b
 	)
 
-	reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths" /f "python.exe" /s /k /e /d > nul
+	reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths" | findstr /I "python.exe" > nul
 	if !ERRORLEVEL! EQU 1 (
 		echo -------------------------------------------------------------------
     	echo Error: You do not seem to have Python installed.
