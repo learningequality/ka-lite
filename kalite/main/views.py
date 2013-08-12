@@ -208,7 +208,6 @@ def homepage(request):
     context = {
         "title": "Home",
         "topics": my_topics,
-        "registered": Settings.get("registered"),
     }
     return context
 
