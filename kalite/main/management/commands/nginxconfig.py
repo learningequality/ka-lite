@@ -17,6 +17,8 @@ proxy_temp_path /var/cache/nginx/tmp;
 
 server {
 
+    // You may change the following port (8008) to something else,
+    // if you want the website to be accessible at a different port:
     listen 8008;
 
     location /static {
