@@ -1,445 +1,467 @@
 [
   {
-    "kind": "Exercise", 
-    "display_name": "Understanding decimals place value", 
-    "description": "", 
-    "title": "Understanding decimals place value", 
-    "seconds_per_fast_problem": 20.0, 
     "related_video_readable_ids": [
       "understanding-decimal-place-value-exercise", 
       "decimal-place-value", 
       "decimal-place-value-2"
     ], 
-    "prerequisites": [
-      "place_value"
-    ], 
-    "live": true, 
-    "h_position": 14, 
     "v_position": 4, 
     "path": "/math/arithmetic/decimals/decimal_place_value/e/understanding_decimals_place_value/", 
+    "id": "understanding_decimals_place_value", 
+    "display_name": "Understanding decimals place value", 
+    "title": "Understanding decimals place value", 
+    "live": true, 
+    "description": "", 
+    "h_position": 14, 
     "slug": "understanding_decimals_place_value", 
-    "name": "understanding_decimals_place_value"
+    "kind": "Exercise", 
+    "name": "understanding_decimals_place_value", 
+    "seconds_per_fast_problem": 20.0, 
+    "prerequisites": [
+      "place_value"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Decimals on the number line 1", 
-    "description": "", 
-    "title": "Decimals on the number line 1", 
-    "seconds_per_fast_problem": 5.0, 
     "related_video_readable_ids": [
       "decimals-on-a-number-line"
     ], 
-    "prerequisites": [
-      "number_line_2"
-    ], 
-    "live": true, 
-    "h_position": 8, 
     "v_position": 3, 
     "path": "/math/arithmetic/decimals/decimal_place_value/e/decimals_on_the_number_line_1/", 
+    "id": "decimals_on_the_number_line_1", 
+    "display_name": "Decimals on the number line 1", 
+    "title": "Decimals on the number line 1", 
+    "live": true, 
+    "description": "", 
+    "h_position": 8, 
     "slug": "decimals_on_the_number_line_1", 
-    "name": "decimals_on_the_number_line_1"
+    "kind": "Exercise", 
+    "name": "decimals_on_the_number_line_1", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "number_line_2"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Decimals on the number line 2", 
-    "description": "", 
-    "title": "Decimals on the number line 2", 
-    "seconds_per_fast_problem": 5.0, 
     "related_video_readable_ids": [
       "decimals-on-a-number-line", 
       "points-on-a-number-line"
     ], 
-    "prerequisites": [
-      "decimals_on_the_number_line_1"
-    ], 
-    "live": true, 
-    "h_position": 9, 
     "v_position": 3, 
     "path": "/math/arithmetic/decimals/decimal_place_value/e/decimals_on_the_number_line_2/", 
+    "id": "decimals_on_the_number_line_2", 
+    "display_name": "Decimals on the number line 2", 
+    "title": "Decimals on the number line 2", 
+    "live": true, 
+    "description": "", 
+    "h_position": 9, 
     "slug": "decimals_on_the_number_line_2", 
-    "name": "decimals_on_the_number_line_2"
+    "kind": "Exercise", 
+    "name": "decimals_on_the_number_line_2", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "decimals_on_the_number_line_1"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Adding decimals 0.5", 
-    "description": "", 
-    "title": "Adding decimals 0.5", 
-    "seconds_per_fast_problem": 7.0, 
     "related_video_readable_ids": [
       "adding-decimals-example-1", 
       "adding-decimals-example-2", 
       "adding-decimals", 
       "adding-decimals--old"
     ], 
-    "prerequisites": [
-      "decimals_on_the_number_line_2"
-    ], 
-    "live": true, 
-    "h_position": 10, 
     "v_position": 3, 
     "path": "/math/arithmetic/decimals/adding_decimals/e/adding_decimals_0.5/", 
+    "id": "adding_decimals_0.5", 
+    "display_name": "Adding decimals 0.5", 
+    "title": "Adding decimals 0.5", 
+    "live": true, 
+    "description": "", 
+    "h_position": 10, 
     "slug": "adding_decimals_0.5", 
-    "name": "adding_decimals_0.5"
+    "kind": "Exercise", 
+    "name": "adding_decimals_0.5", 
+    "seconds_per_fast_problem": 7.0, 
+    "prerequisites": [
+      "decimals_on_the_number_line_2"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Adding decimals 1", 
-    "description": "", 
-    "title": "Adding decimals 1", 
-    "seconds_per_fast_problem": 12.0, 
     "related_video_readable_ids": [
       "adding-decimals-example-1", 
       "adding-decimals-example-2", 
       "adding-decimals", 
       "adding-decimals--old"
     ], 
+    "v_position": 4, 
+    "path": "/math/arithmetic/decimals/adding_decimals/e/adding_decimals/", 
+    "id": "adding_decimals", 
+    "display_name": "Adding decimals 1", 
+    "title": "Adding decimals 1", 
+    "live": true, 
+    "description": "", 
+    "h_position": 11, 
+    "slug": "adding_decimals", 
+    "kind": "Exercise", 
+    "name": "adding_decimals", 
+    "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
       "addition_4", 
       "adding_decimals_0.5"
-    ], 
-    "live": true, 
-    "h_position": 11, 
-    "v_position": 4, 
-    "path": "/math/arithmetic/decimals/adding_decimals/e/adding_decimals/", 
-    "slug": "adding_decimals", 
-    "name": "adding_decimals"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Adding decimals 2", 
-    "description": "", 
-    "title": "Adding decimals 2", 
-    "seconds_per_fast_problem": 13.0, 
     "related_video_readable_ids": [
       "adding-decimals-example-1", 
       "adding-decimals-example-2", 
       "adding-decimals", 
       "adding-decimals--old"
     ], 
-    "prerequisites": [
-      "adding_decimals"
-    ], 
-    "live": true, 
-    "h_position": 12, 
     "v_position": 4, 
     "path": "/math/arithmetic/decimals/adding_decimals/e/adding_decimals_2/", 
+    "id": "adding_decimals_2", 
+    "display_name": "Adding decimals 2", 
+    "title": "Adding decimals 2", 
+    "live": true, 
+    "description": "", 
+    "h_position": 12, 
     "slug": "adding_decimals_2", 
-    "name": "adding_decimals_2"
+    "kind": "Exercise", 
+    "name": "adding_decimals_2", 
+    "seconds_per_fast_problem": 13.0, 
+    "prerequisites": [
+      "adding_decimals"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Subtracting decimals 0.5", 
-    "description": "", 
-    "title": "Subtracting decimals 0.5", 
-    "seconds_per_fast_problem": 12.0, 
     "related_video_readable_ids": [
       "subtracting-decimals", 
       "subtracting-decimals--old"
     ], 
+    "v_position": 6, 
+    "path": "/math/arithmetic/decimals/adding_decimals/e/subtracting_decimals_0.5/", 
+    "id": "subtracting_decimals_0.5", 
+    "display_name": "Subtracting decimals 0.5", 
+    "title": "Subtracting decimals 0.5", 
+    "live": true, 
+    "description": "", 
+    "h_position": 12, 
+    "slug": "subtracting_decimals_0.5", 
+    "kind": "Exercise", 
+    "name": "subtracting_decimals_0.5", 
+    "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
       "subtraction_4", 
       "adding_decimals"
-    ], 
-    "live": true, 
-    "h_position": 12, 
-    "v_position": 6, 
-    "path": "/math/arithmetic/decimals/adding_decimals/e/subtracting_decimals_0.5/", 
-    "slug": "subtracting_decimals_0.5", 
-    "name": "subtracting_decimals_0.5"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Subtracting decimals", 
-    "description": "", 
-    "title": "Subtracting decimals", 
-    "seconds_per_fast_problem": 12.0, 
     "related_video_readable_ids": [
       "subtracting-decimals", 
       "subtracting-decimals--old"
     ], 
-    "prerequisites": [
-      "subtracting_decimals_0.5"
-    ], 
-    "live": true, 
-    "h_position": 13, 
     "v_position": 6, 
     "path": "/math/arithmetic/decimals/adding_decimals/e/subtracting_decimals/", 
+    "id": "subtracting_decimals", 
+    "display_name": "Subtracting decimals", 
+    "title": "Subtracting decimals", 
+    "live": true, 
+    "description": "", 
+    "h_position": 13, 
     "slug": "subtracting_decimals", 
-    "name": "subtracting_decimals"
+    "kind": "Exercise", 
+    "name": "subtracting_decimals", 
+    "seconds_per_fast_problem": 12.0, 
+    "prerequisites": [
+      "subtracting_decimals_0.5"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Adding and subtracting decimals word problems", 
-    "description": "", 
-    "title": "Adding and subtracting decimals word problems", 
-    "seconds_per_fast_problem": 21.0, 
     "related_video_readable_ids": [
       "subtracting-decimals-word-problem", 
       "adding-decimals-word-problem"
     ], 
-    "prerequisites": [
-      "subtracting_decimals"
-    ], 
-    "live": true, 
-    "h_position": 14, 
     "v_position": 6, 
     "path": "/math/arithmetic/decimals/adding_decimals/e/adding_and_subtracting_decimals_word_problems/", 
+    "id": "adding_and_subtracting_decimals_word_problems", 
+    "display_name": "Adding and subtracting decimals word problems", 
+    "title": "Adding and subtracting decimals word problems", 
+    "live": true, 
+    "description": "", 
+    "h_position": 14, 
     "slug": "adding_and_subtracting_decimals_word_problems", 
-    "name": "adding_and_subtracting_decimals_word_problems"
+    "kind": "Exercise", 
+    "name": "adding_and_subtracting_decimals_word_problems", 
+    "seconds_per_fast_problem": 21.0, 
+    "prerequisites": [
+      "subtracting_decimals"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Multiplying decimals", 
-    "description": "", 
-    "title": "Multiplying decimals", 
-    "seconds_per_fast_problem": 19.0, 
     "related_video_readable_ids": [
       "multiplying-decimals", 
       "mulitplyling-decimals-3", 
       "mulitplication-8--multiplying-decimals--old-video"
     ], 
+    "v_position": 2, 
+    "path": "/math/arithmetic/decimals/multiplying_decimals/e/multiplying_decimals/", 
+    "id": "multiplying_decimals", 
+    "display_name": "Multiplying decimals", 
+    "title": "Multiplying decimals", 
+    "live": true, 
+    "description": "", 
+    "h_position": 13, 
+    "slug": "multiplying_decimals", 
+    "kind": "Exercise", 
+    "name": "multiplying_decimals", 
+    "seconds_per_fast_problem": 19.0, 
     "prerequisites": [
       "adding_decimals", 
       "multiplication_4"
-    ], 
-    "live": true, 
-    "h_position": 13, 
-    "v_position": 2, 
-    "path": "/math/arithmetic/decimals/multiplying_decimals/e/multiplying_decimals/", 
-    "slug": "multiplying_decimals", 
-    "name": "multiplying_decimals"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Understanding moving the decimal", 
-    "description": "", 
-    "title": "Understanding moving the decimal", 
-    "seconds_per_fast_problem": 5.0, 
     "related_video_readable_ids": [
       "multiplying-a-decimal-by-a-power-of-10", 
       "dividing-a-decimal-by-a-power-of-10", 
       "dividing-decimals-2-1"
     ], 
-    "prerequisites": [
-      "multiplying_decimals"
-    ], 
-    "live": true, 
-    "h_position": 14, 
     "v_position": 2, 
     "path": "/math/arithmetic/decimals/multiplying_decimals/e/understanding_moving_the_decimal/", 
+    "id": "understanding_moving_the_decimal", 
+    "display_name": "Understanding moving the decimal", 
+    "title": "Understanding moving the decimal", 
+    "live": true, 
+    "description": "", 
+    "h_position": 14, 
     "slug": "understanding_moving_the_decimal", 
-    "name": "understanding_moving_the_decimal"
+    "kind": "Exercise", 
+    "name": "understanding_moving_the_decimal", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "multiplying_decimals"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Dividing decimals 0.5", 
-    "description": "", 
-    "title": "Dividing decimals 0.5", 
-    "seconds_per_fast_problem": 8.0, 
     "related_video_readable_ids": [
       "dividing-decimals", 
       "dividing-decimal"
     ], 
-    "prerequisites": [
-      "division_3"
-    ], 
-    "live": true, 
-    "h_position": 12, 
     "v_position": 0, 
     "path": "/math/arithmetic/decimals/dividing_decimals/e/dividing_decimals_0.5/", 
+    "id": "dividing_decimals_0.5", 
+    "display_name": "Dividing decimals 0.5", 
+    "title": "Dividing decimals 0.5", 
+    "live": true, 
+    "description": "", 
+    "h_position": 12, 
     "slug": "dividing_decimals_0.5", 
-    "name": "dividing_decimals_0.5"
+    "kind": "Exercise", 
+    "name": "dividing_decimals_0.5", 
+    "seconds_per_fast_problem": 8.0, 
+    "prerequisites": [
+      "division_3"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Dividing decimals 1", 
-    "description": "", 
-    "title": "Dividing decimals 1", 
-    "seconds_per_fast_problem": 13.0, 
     "related_video_readable_ids": [
       "dividing-decimals", 
       "dividing-decimal"
     ], 
+    "v_position": 1, 
+    "path": "/math/arithmetic/decimals/dividing_decimals/e/dividing_decimals_1/", 
+    "id": "dividing_decimals_1", 
+    "display_name": "Dividing decimals 1", 
+    "title": "Dividing decimals 1", 
+    "live": true, 
+    "description": "", 
+    "h_position": 13, 
+    "slug": "dividing_decimals_1", 
+    "kind": "Exercise", 
+    "name": "dividing_decimals_1", 
+    "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "dividing_decimals_0.5", 
       "division_4"
-    ], 
-    "live": true, 
-    "h_position": 13, 
-    "v_position": 1, 
-    "path": "/math/arithmetic/decimals/dividing_decimals/e/dividing_decimals_1/", 
-    "slug": "dividing_decimals_1", 
-    "name": "dividing_decimals_1"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Dividing decimals 2", 
-    "description": "", 
-    "title": "Dividing decimals 2", 
-    "seconds_per_fast_problem": 11.0, 
     "related_video_readable_ids": [
       "dividing-decimals", 
       "dividing-decimal"
     ], 
-    "prerequisites": [
-      "dividing_decimals_1"
-    ], 
-    "live": true, 
-    "h_position": 14, 
     "v_position": 1, 
     "path": "/math/arithmetic/decimals/dividing_decimals/e/dividing_decimals_2/", 
+    "id": "dividing_decimals_2", 
+    "display_name": "Dividing decimals 2", 
+    "title": "Dividing decimals 2", 
+    "live": true, 
+    "description": "", 
+    "h_position": 14, 
     "slug": "dividing_decimals_2", 
-    "name": "dividing_decimals_2"
+    "kind": "Exercise", 
+    "name": "dividing_decimals_2", 
+    "seconds_per_fast_problem": 11.0, 
+    "prerequisites": [
+      "dividing_decimals_1"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Dividing decimals", 
-    "description": "", 
-    "title": "Dividing decimals", 
-    "seconds_per_fast_problem": 15.0, 
     "related_video_readable_ids": [
       "dividing-decimals", 
       "dividing-decimal"
     ], 
-    "prerequisites": [
-      "dividing_decimals_2"
-    ], 
-    "live": true, 
-    "h_position": 15, 
     "v_position": 1, 
     "path": "/math/arithmetic/decimals/dividing_decimals/e/dividing_decimals/", 
+    "id": "dividing_decimals", 
+    "display_name": "Dividing decimals", 
+    "title": "Dividing decimals", 
+    "live": true, 
+    "description": "", 
+    "h_position": 15, 
     "slug": "dividing_decimals", 
-    "name": "dividing_decimals"
+    "kind": "Exercise", 
+    "name": "dividing_decimals", 
+    "seconds_per_fast_problem": 15.0, 
+    "prerequisites": [
+      "dividing_decimals_2"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Converting decimals to percents", 
-    "description": "", 
-    "title": "Converting decimals to percents", 
-    "seconds_per_fast_problem": 6.0, 
     "related_video_readable_ids": [
       "converting-decimals-to-percents--ex-1", 
       "converting-decimals-to-percents--ex-2"
     ], 
-    "prerequisites": [
-      "finding_percents"
-    ], 
-    "live": true, 
-    "h_position": 27, 
     "v_position": -5, 
     "path": "/math/arithmetic/decimals/percent_tutorial/e/converting_decimals_to_percents/", 
+    "id": "converting_decimals_to_percents", 
+    "display_name": "Converting decimals to percents", 
+    "title": "Converting decimals to percents", 
+    "live": true, 
+    "description": "", 
+    "h_position": 27, 
     "slug": "converting_decimals_to_percents", 
-    "name": "converting_decimals_to_percents"
+    "kind": "Exercise", 
+    "name": "converting_decimals_to_percents", 
+    "seconds_per_fast_problem": 6.0, 
+    "prerequisites": [
+      "finding_percents"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Converting percents to decimals", 
-    "description": "", 
-    "title": "Converting percents to decimals", 
-    "seconds_per_fast_problem": 5.0, 
     "related_video_readable_ids": [
       "converting-percents-to-decimals--ex-1", 
       "converting-percents-to-decimals--ex-2"
     ], 
-    "prerequisites": [
-      "finding_percents"
-    ], 
-    "live": true, 
-    "h_position": 27, 
     "v_position": -4, 
     "path": "/math/arithmetic/decimals/percent_tutorial/e/converting_percents_to_decimals/", 
+    "id": "converting_percents_to_decimals", 
+    "display_name": "Converting percents to decimals", 
+    "title": "Converting percents to decimals", 
+    "live": true, 
+    "description": "", 
+    "h_position": 27, 
     "slug": "converting_percents_to_decimals", 
-    "name": "converting_percents_to_decimals"
+    "kind": "Exercise", 
+    "name": "converting_percents_to_decimals", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "finding_percents"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Discount tax and tip word problems", 
-    "description": null, 
-    "title": "Discount tax and tip word problems", 
-    "seconds_per_fast_problem": 18.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "converting_decimals_to_percents", 
-      "converting_percents_to_decimals"
-    ], 
-    "live": true, 
-    "h_position": 28, 
     "v_position": -4, 
     "path": "/math/arithmetic/decimals/percent_word_probs/e/discount_tax_and_tip_word_problems/", 
+    "id": "discount_tax_and_tip_word_problems", 
+    "display_name": "Discount tax and tip word problems", 
+    "title": "Discount tax and tip word problems", 
+    "live": true, 
+    "description": null, 
+    "h_position": 28, 
     "slug": "discount_tax_and_tip_word_problems", 
-    "name": "discount_tax_and_tip_word_problems"
-  }, 
-  {
     "kind": "Exercise", 
-    "display_name": "Markup and commission word problems", 
-    "description": "", 
-    "title": "Markup and commission word problems", 
+    "name": "discount_tax_and_tip_word_problems", 
     "seconds_per_fast_problem": 18.0, 
-    "related_video_readable_ids": [], 
     "prerequisites": [
       "converting_decimals_to_percents", 
       "converting_percents_to_decimals"
-    ], 
-    "live": true, 
-    "h_position": 28, 
-    "v_position": -3, 
-    "path": "/math/arithmetic/decimals/percent_word_probs/e/markup_and_commission_word_problems/", 
-    "slug": "markup_and_commission_word_problems", 
-    "name": "markup_and_commission_word_problems"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Rounding numbers", 
+    "related_video_readable_ids": [], 
+    "v_position": -3, 
+    "path": "/math/arithmetic/decimals/percent_word_probs/e/markup_and_commission_word_problems/", 
+    "id": "markup_and_commission_word_problems", 
+    "display_name": "Markup and commission word problems", 
+    "title": "Markup and commission word problems", 
+    "live": true, 
     "description": "", 
-    "title": "Rounding numbers", 
-    "seconds_per_fast_problem": 7.0, 
+    "h_position": 28, 
+    "slug": "markup_and_commission_word_problems", 
+    "kind": "Exercise", 
+    "name": "markup_and_commission_word_problems", 
+    "seconds_per_fast_problem": 18.0, 
+    "prerequisites": [
+      "converting_decimals_to_percents", 
+      "converting_percents_to_decimals"
+    ]
+  }, 
+  {
     "related_video_readable_ids": [
       "rounding-decimals"
     ], 
-    "prerequisites": [
-      "rounding_whole_numbers"
-    ], 
-    "live": true, 
-    "h_position": 15, 
     "v_position": 3, 
     "path": "/math/arithmetic/decimals/decimal_rounding_estimation/e/rounding_numbers/", 
+    "id": "rounding_numbers", 
+    "display_name": "Rounding numbers", 
+    "title": "Rounding numbers", 
+    "live": true, 
+    "description": "", 
+    "h_position": 15, 
     "slug": "rounding_numbers", 
-    "name": "rounding_numbers"
+    "kind": "Exercise", 
+    "name": "rounding_numbers", 
+    "seconds_per_fast_problem": 7.0, 
+    "prerequisites": [
+      "rounding_whole_numbers"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Estimation with decimals", 
-    "description": "", 
-    "title": "Estimation with decimals", 
-    "seconds_per_fast_problem": 13.0, 
     "related_video_readable_ids": [
       "estimation-with-decimals"
     ], 
-    "prerequisites": [
-      "rounding_numbers"
-    ], 
-    "live": true, 
-    "h_position": 16, 
     "v_position": 3, 
     "path": "/math/arithmetic/decimals/decimal_rounding_estimation/e/estimation_with_decimals/", 
+    "id": "estimation_with_decimals", 
+    "display_name": "Estimation with decimals", 
+    "title": "Estimation with decimals", 
+    "live": true, 
+    "description": "", 
+    "h_position": 16, 
     "slug": "estimation_with_decimals", 
-    "name": "estimation_with_decimals"
+    "kind": "Exercise", 
+    "name": "estimation_with_decimals", 
+    "seconds_per_fast_problem": 13.0, 
+    "prerequisites": [
+      "rounding_numbers"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Significant figures", 
-    "description": "Determine how many significant figures a given number has.", 
-    "title": "Significant figures", 
-    "seconds_per_fast_problem": 5.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "scientific_notation"
-    ], 
-    "live": true, 
-    "h_position": 23, 
     "v_position": 2, 
     "path": "/math/arithmetic/decimals/significant_figures_tutorial/e/significant_figures_1/", 
+    "id": "significant_figures_1", 
+    "display_name": "Significant figures", 
+    "title": "Significant figures", 
+    "live": true, 
+    "description": "Determine how many significant figures a given number has.", 
+    "h_position": 23, 
     "slug": "significant_figures_1", 
-    "name": "significant_figures_1"
+    "kind": "Exercise", 
+    "name": "significant_figures_1", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "scientific_notation"
+    ]
   }
 ]

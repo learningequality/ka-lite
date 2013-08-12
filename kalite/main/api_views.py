@@ -202,6 +202,17 @@ def start_video_download(request):
     force_job("videodownload", "Download Videos")
     return JsonResponse({})
 
+
+def check_video_download(request):
+    youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
+    percentages = {}
+    percentages["downloading"] = job_status("videodownload")
+    for id in youtube_ids:
+        videofile = get_object_or_None(VideoFile, youtube_id=id) or VideoFile(youtube_id=id)
+        percentages[id] = videofile.percent_complete
+    return JsonResponse(percentages)
+
+
 @require_admin
 def delete_videos(request):
     """
@@ -289,6 +300,7 @@ def annotate_topic_tree(node, level=0, statusdict=None):
             "addClass": status,
         }
     return None
+
 
 @require_admin
 def get_annotated_topic_tree(request):

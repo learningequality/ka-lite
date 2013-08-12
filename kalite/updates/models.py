@@ -59,8 +59,7 @@ class UpdateProgressLog(models.Model):
 
         self.process_percent += (stage_percent - self.stage_percent) / float(self.total_stages)
         self.stage_percent = stage_percent
-        if notes is not None:
-            self.notes = notes
+        self.notes = notes or self.notes
         self.save()
 
 
@@ -106,7 +105,7 @@ class UpdateProgressLog(models.Model):
         self.save()
 
 
-    def mark_as_completed(self, notes):
+    def mark_as_completed(self, notes=None):
         """
         Completes stage and process percents, stamps end time.
         """

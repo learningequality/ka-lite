@@ -37,7 +37,7 @@ class UpdatesDynamicCommand(BaseCommand):
         return self.progress_log.total_stages and not self.progress_log.completed
 
 
-    def set_stages(self, num_stages=None):
+    def set_stages(self, num_stages=None, notes=None):
         """
         Allow dynamic resetting of stages.
         """
