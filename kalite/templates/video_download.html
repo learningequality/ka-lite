@@ -362,15 +362,7 @@ ul.dynatree-container li, .ui-widget-content {
 
         switch (resp.status) {
             case 403:
-                // 403 means that we're not authorized to do the action,
-                //   which means if we reload we should have to reauthenticate.
-                //
-                // TODO This is actually a bad idea--could lead to a reload loop (if 403 is
-                //   just on the API side), and users lose their settings.
-                //   Instead, a message with a link to the login page would be better
-                //   (could be opened in a new window, doesn't force things)
-                // 
-                window.location.reload()
+                show_message("error", error_text + ": " + "You are not authorized to complete the request.  Please <a href='{% url login %}' target='_new'>login</a> as an administrator, then retry.", error_id)
                 break;
             default:
                 //communicate_api_failure(resp)
