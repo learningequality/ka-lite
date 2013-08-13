@@ -27,10 +27,12 @@ class UpdatesDynamicCommand(BaseCommand):
         if not self.progress_log.total_stages:
             raise Exception("Must set num-stages (through __init__ or set_stages()) before starting.")
 
+        self.check_if_cancel_requested()
         self.progress_log.update_stage(stage_name=stage_name, stage_percent=0, notes=notes)
 
 
     def started(self):
+        self.check_if_cancel_requested()
         return self.progress_log.total_stages and not self.progress_log.completed
 
 
@@ -38,6 +40,7 @@ class UpdatesDynamicCommand(BaseCommand):
         """
         Allow dynamic resetting of stages.
         """
+        self.check_if_cancel_requested()
         self.progress_log.update_total_stages(num_stages)
 
 
@@ -46,19 +49,30 @@ class UpdatesDynamicCommand(BaseCommand):
         Allow dy
         """
         assert self.started(), "Must call start() before moving to a next stage!"
+        self.check_if_cancel_requested()
         self.progress_log.update_stage(stage_name=self.stage_name, stage_percent=1., notes=notes)
 
 
     def update_stage(self, stage_name, stage_percent, notes=None):
+        self.check_if_cancel_requested()
         self.progress_log.update_stage(stage_name=stage_name, stage_percent=stage_percent, notes=notes)
 
 
     def cancel(self, notes=None):
+        self.check_if_cancel_requested()
         self.progress_log.cancel_progress(notes=notes)
 
 
     def complete(self, notes=None):
+        self.check_if_cancel_requested()
         self.progress_log.mark_as_completed(notes=notes)
+
+
+    def check_if_cancel_requested(self):
+        if self.progress_log.cancel_requested:
+            self.progress_log.end_time = datetime.datetime.now()
+            self.progress_log.save()
+            raise CommandException("Process cancelled.")
 
 
 class UpdatesStaticCommand(BaseCommand):
