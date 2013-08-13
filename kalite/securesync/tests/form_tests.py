@@ -21,4 +21,4 @@ class UserRegistration(TestCase):
                 'password_recheck': 'doesntmatter',
         }
         response = self.client.post('/securesync/addstudent/', data)
-        self.assertFormError(response, 'form', 'username', 'An administrator with this username exists. Please choose a new username and try again.')
+        self.assertFormError(response, 'form', 'username', 'A user with this username exists. Please choose a new username and try again.')

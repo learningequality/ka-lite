@@ -49,10 +49,10 @@ class FacilityUserForm(forms.ModelForm):
 
         # check if given username is unique on both facility users and admins, whatever the casing
         if FacilityUser.objects.filter(username__iexact=username, facility=facility).count() > 0:
-            raise forms.ValidationError(_("A user with this username at this facility already exists. Please choose a new username and try again."))
+            raise forms.ValidationError(_("A user with this username at this facility already exists. Please choose a new username (or select a different facility) and try again."))
 
         if User.objects.filter(username__iexact=username).count() > 0:
-            raise forms.ValidationError("An administrator with this username exists. Please choose a new username and try again.")
+            raise forms.ValidationError(_("The specified username is unavailable. Please choose a new username and try again."))
 
         return self.cleaned_data
 
