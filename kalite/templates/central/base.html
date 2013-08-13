@@ -12,14 +12,18 @@
         {% block titletag %}
         <title>{% block title %}{{ title }}{% endblock title %} | KA Lite</title>
         {% endblock %}
+
+        {% if settings.DEBUG %}
         <link rel="stylesheet/less" type="text/css" href="{% static 'less/bootstrap/bootstrap.less' %}"></link>
         <link rel="stylesheet/less" type="text/css" href="{% static 'less/bootstrap/responsive.less' %}"></link>
         <link rel="stylesheet/less" type="text/css" href="{% static 'less/style.less' %}"></link>
-        <!--[if IE]>
-        <link rel="stylesheet/css" type="text/css" href="{% static 'css/bootstrap/bootstrap.css' %}"></link>
-        <link rel="stylesheet/css" type="text/css" href="{% static 'css/bootstrap/responsive.css' %}"></link>
-        <link rel="stylesheet/css" type="text/css" href="{% static 'css/style.css' %}"></link>
-        <![endif]-->
+        <script type="text/javascript" src="{% static 'js/less.js' %}"></script>
+        {% else %}
+        <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap/bootstrap.css' %}"></link>
+        <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap/responsive.css' %}"></link>
+        <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"></link>
+        {% endif %}
+
         {% block basecss %}{% endblock basecss %}
         {% block headcss %}{% endblock headcss %}
         <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
@@ -29,7 +33,6 @@
         <script type="text/javascript" src="{% static 'js/backbone-min.js' %}"></script>
         {% endblock jqueryjs %}
         <script type="text/javascript" src="{% static 'js/khan-lite.js' %}"></script>
-        <script type="text/javascript" src="{% static 'js/less.js' %}"></script>
 
         {% block headjs %}{% endblock headjs %}
         {% block basejs %}{% endblock basejs %}
