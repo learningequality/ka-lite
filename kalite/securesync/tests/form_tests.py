@@ -12,13 +12,13 @@ class UserRegistration(TestCase):
         password = make_password('insecure')
         self.admin = User.objects.create(username='testadmin',
                                               password=password)
-
-    def test_admin_and_user_no_common_username(self):
-        data = {'username': self.admin.username,
+        self.data = {'username': 'testuser',
                 'facility': self.f,
                 'group': None,
                 'password': 'doesntmatter',
                 'password_recheck': 'doesntmatter',
         }
-        response = self.client.post('/securesync/addstudent/', data)
-        self.assertFormError(response, 'form', 'username', 'A user with this username exists. Please choose a new username and try again.')
+
+    def test_admin_and_user_no_common_username(self):
+        response = self.client.post('/securesync/addstudent/', self.data)
+        self.assertFormError(response, 'form', 'username', 'The specified username is unavailable. Please choose a new username and try again.')
