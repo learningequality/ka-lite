@@ -140,7 +140,7 @@ var video_callbacks = {
                 //   if it's online, then we show all tools only usable when online.
                 //
                 // Best to assume offline, as online check returns much faster than offline check.
-                if(!status || !status["online"]){
+                if(!status){// || !status["online"]){
                     show_message("error", "{% trans 'Distributed server is offline; cannot access video nor subtitle updates.' %}", " id_offline_message")
                 } else {
                     $("#help-info").show();

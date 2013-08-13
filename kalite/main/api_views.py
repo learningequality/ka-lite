@@ -427,12 +427,8 @@ def annotate_topic_tree(node, level=0, statusdict=None):
         }
     return None
 
-#@require_admin
-def get_annotated_topic_tree():
-    statusdict = dict(VideoFile.objects.values_list("youtube_id", "percent_complete"))
-    return annotate_topic_tree(topicdata.TOPICS, statusdict=statusdict)
-
 @require_admin
 @api_handle_error_with_json
-def get_topic_tree(request):
-    return JsonResponse(get_annotated_topic_tree())
+def get_annotated_topic_tree(request):
+    statusdict = dict(VideoFile.objects.values_list("youtube_id", "percent_complete"))
+    return JsonResponse(annotate_topic_tree(topicdata.TOPICS, statusdict=statusdict))
