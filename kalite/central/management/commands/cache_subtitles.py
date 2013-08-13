@@ -17,8 +17,10 @@ from django.core.management import call_command
 
 import settings
 from generate_subtitle_map import SRTS_JSON_FILENAME, LANGUAGE_SRT_FILENAME, headers
+from main.topicdata import LANGUAGE_LOOKUP, LANGUAGE_LIST
 from settings import LOG as logging
-from utils.subtitles import subtitle_utils, generate_subtitle_counts
+from utils import general
+from utils.subtitles import subtitle_utils
 
 
 download_path = settings.STATIC_ROOT + "srt/"  # kalite/static/
@@ -31,6 +33,15 @@ class LanguageCodeDoesNotExist(Exception):
 
     def __str__(self):
         return "The language code specified (%s) does not have any available subtitles for download." % (self.lang_code)
+
+
+class LanguageNameDoesNotExist(Exception):
+
+    def __init__(self, lang_code):
+        self.lang_code = lang_code
+
+    def __str__(self):
+        return "The language name for (%s) doesn't exist yet. Please add it to the lookup dictionary located at static/data/languages.json" % self.lang_code
 
 
 def download_srt_from_3rd_party(*args, **kwargs):
@@ -69,7 +80,7 @@ def download_if_criteria_met(videos, lang_code, force, response_code, date_since
     Note: videos are a dict; keys=youtube_id, values=data
     """
 
-    date_specified = subtitle_utils.convert_date_input(date_since_attempt)
+    date_specified = general.convert_date_input(date_since_attempt)
 
     # Filter up front, for efficiency (& reporting's sake)
     n_videos = len(videos)
@@ -183,9 +194,9 @@ def update_json(youtube_id, lang_code, downloaded, api_response, time_of_attempt
 def generate_zipped_srts(lang_codes_to_update, download_path):
 
     # Create media directory if it doesn't yet exist
-    subtitle_utils.ensure_dir(settings.MEDIA_ROOT)
+    general.ensure_dir(settings.MEDIA_ROOT)
     zip_path = settings.MEDIA_ROOT + "subtitles/"
-    subtitle_utils.ensure_dir(zip_path)
+    general.ensure_dir(zip_path)
     lang_codes_to_update = lang_codes_to_update or os.listdir(download_path)
 
     for lang_code in lang_codes_to_update:
@@ -210,6 +221,84 @@ def generate_zipped_srts(lang_codes_to_update, download_path):
         for f in srts:
             zf.write(f, arcname=os.path.basename(f))
         zf.close()
+
+
+def get_new_counts(data_path, download_path, language_codes=None):
+    """Return dictionary of srt file counts in respective download folders"""
+
+    subtitle_counts = {}
+    language_codes = language_codes or os.listdir(download_path)
+    # index into ka-lite/locale/
+    for lang_code in language_codes:
+        subtitles_path = "%s%s/subtitles/" % (download_path, lang_code)
+        lang_name = get_language_name(lang_code)
+
+        try:
+            count = len(glob.glob("%s/*.srt" % subtitles_path))
+            logging.info("%4d subtitles for %-20s" % (count, lang_name))
+
+            subtitle_counts[lang_name] = {}
+            subtitle_counts[lang_name]["count"] = count
+            subtitle_counts[lang_name]["code"] = lang_code
+        except LanguageNameDoesNotExist as ldne:
+            logging.warn(ldne)
+        except:
+            logging.info("%-4s subtitles for %-20s" % ("No", lang_name))
+            continue
+
+    write_new_json(subtitle_counts, data_path)
+    update_language_list(subtitle_counts, data_path)
+
+    return subtitle_counts
+
+
+def get_language_name(lang_code):
+    """Return full language name from ISO 639-1 language code, raise exception if it isn't hardcoded yet"""
+    language_name = LANGUAGE_LOOKUP.get(lang_code)
+    if language_name:
+        # logging.info("%s: %s" %(lang_code, language_name))
+        return language_name
+    else:
+        raise LanguageNameDoesNotExist(lang_code)
+
+
+def write_new_json(subtitle_counts, data_path):
+    """Write JSON to file in static/data/subtitles/"""
+    filename = "subtitle_counts.json"
+    filepath = data_path + filename
+    logging.info("Writing fresh srt counts to %s" % filepath)
+    with open(filepath, 'wb') as fp:
+        json.dump(subtitle_counts, fp)
+
+
+def update_language_list(sub_counts, data_path):
+    """Update hardcoded language codes if any supported subtitle languages aren't there."""
+    for data in sub_counts.values():
+        lang_code = data.get("code")
+        if lang_code not in LANGUAGE_LIST:
+            logging.info("Adding %s to language code list" % lang_code)
+            LANGUAGE_LIST.append(lang_code)
+    with open(os.path.join(data_path, "listedlanguages.json"), 'wb') as fp:
+        json.dump(LANGUAGE_LIST, fp)
+
+
+def update_srt_availability():
+    """Update maps in srts_by_lanugage with ids of downloaded subs"""
+
+    srts_path = settings.STATIC_ROOT + "srt/"
+    for lang_code in os.listdir(srts_path):
+        lang_srts_path = srts_path + lang_code + "/"
+        files = os.listdir(lang_srts_path)
+        yt_ids = [f.rstrip(".srt") for f in files]
+        srts_dict = {
+            "srt_files": yt_ids
+        }
+        base_path = settings.SUBTITLES_DATA_ROOT + "languages/"
+        general.ensure_dir(base_path)
+        filename = "%s.json" % lang_code
+        filepath = base_path + filename
+        with open(filepath, 'wb') as fp:
+            json.dump(srts_dict, fp)
 
 
 class Command(BaseCommand):
@@ -252,9 +341,9 @@ class Command(BaseCommand):
 
             logging.info(
                 "Executed successfully! Generating new subtitle counts & updating availability!")
-            generate_subtitle_counts.get_new_counts(
-                data_path=settings.SUBTITLES_DATA_ROOT, download_path=download_path, language_codes=lang_codes)
-            generate_subtitle_counts.update_srt_availability()
+            get_new_counts(data_path=settings.SUBTITLES_DATA_ROOT,
+                           download_path=download_path, language_codes=lang_codes)
+            update_srt_availability()
 
             logging.info(
                 "Executed successfully! Re-zipping changed language packs!")
