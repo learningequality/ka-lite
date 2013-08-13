@@ -50,7 +50,6 @@ class Command(BaseCommand):
                 video.subtitle_download_in_progress = False
                 video.subtitles_downloaded = True
                 video.save()
-
                 self.stdout.write("No subtitles available\n")
 
             except Exception as e:

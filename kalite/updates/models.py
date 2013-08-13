@@ -20,6 +20,8 @@ class UpdateProgressLog(models.Model):
     end_time = models.DateTimeField(null=True)
     completed = models.BooleanField(default=False)
 
+    cancel_requested = models.BooleanField(default=False)
+
 #    @classmethod
 #    def get_or_create_log(process_name, *args, **kwargs):
 #        try:

@@ -20,6 +20,7 @@ from main import topicdata
 from main.models import VideoLog, ExerciseLog, VideoFile
 from securesync.models import Facility, FacilityUser,FacilityGroup, DeviceZone, Device
 from securesync.views import facility_required
+from utils.decorators import api_handle_error_with_json
 from utils.internet import StatusException, JsonResponse
 from utils.topic_tools import get_topic_by_path
 
@@ -258,11 +259,13 @@ def convert_topic_tree_for_dynatree(node, level=0):
 
 ####### view endpoints #######
 
+@api_handle_error_with_json
 def get_topic_tree(request, topic_path):
     return JsonResponse(convert_topic_tree_for_dynatree(get_topic_by_path(topic_path)));
 
 
 @csrf_exempt
+@api_handle_error_with_json
 def api_data(request, xaxis="", yaxis=""):
     """Request contains information about what data are requested (who, what, and how).
 

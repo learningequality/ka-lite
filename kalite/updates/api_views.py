@@ -6,16 +6,13 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseServerError
 
 from updates.models import UpdateProgressLog
-from kalite.utils.decorators import require_admin
+from kalite.utils.decorators import require_admin, api_handle_error_with_json
 from kalite.utils.general import isnumeric
 from kalite.utils.internet import JsonResponse
 
-@require_admin
-def check_update_progress(request):
-    """
-    API endpoint for getting progress data on downloads.
-    """
-    try:
+
+def process_log_from_request(handler):
+    def wrapper_fn_pfr(request, *args, **kwargs):
         if request.GET.get("process_id", None):
             # Get by ID--direct!
             if not isnumeric(request.GET["process_id"]):
@@ -32,12 +29,21 @@ def check_update_progress(request):
                 #   Best to complete silently, but for debugging purposes, will make noise for now.
                 return JsonResponse({"error": str(e)}, status=500);
         else:
-            raise Exception("Must specify process_id or process_name")
+            return JsonResponse({"error": "Must specify process_id or process_name"})
 
-        return JsonResponse(_process_log_to_dict(process_log))
-    except Exception as e:
-        import pdb; pdb.set_trace()
-        raise e
+        return handler(request, process_log, *args, **kwargs)
+    return wrapper_fn_pfr
+
+
+@require_admin
+@api_handle_error_with_json
+@process_log_from_request
+def check_update_progress(request, process_log):
+    """
+    API endpoint for getting progress data on downloads.
+    """
+    return JsonResponse(_process_log_to_dict(process_log))
+
 
 def _process_log_to_dict(process_log):
     """
@@ -56,3 +62,17 @@ def _process_log_to_dict(process_log):
         "completed": process_log.completed or (process_log.end_time is not None),
         #"start_time": process_log.start_time,
     }
+
+@require_admin
+@api_handle_error_with_json
+@process_log_from_request
+def cancel_update_progress(request, process_log):
+    """
+    API endpoint for getting progress data on downloads.
+    """
+    process_log.cancel_requested = True
+    process_log.save()
+
+    return JsonResponse({})
+
+

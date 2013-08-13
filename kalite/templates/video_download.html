@@ -10,9 +10,8 @@
 {% block headcss %}
 <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/jquery-ui.min.css' %}" />
 <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/plugins/ui.dynatree.css' %}" />
-
+<link rel="stylesheet" type="text/css" href="{% static 'css/updates.css' %}" />
 <style>
-
 ul.dynatree-container li, .ui-widget-content {
     background-image: none;
 }
@@ -28,57 +27,6 @@ ul.dynatree-container li, .ui-widget-content {
 
 .subtitles-download {
     width: 500px;
-}
-
-.progress-section {
-    padding: 5px 0px 0px 0px;
-    display: none;
-}
-
-.progress-waiting {
-    padding: 5px 0px 0px 0px;
-    display: none;
-}
-
-.subtitle-section {
-    padding: 5px 0px 0px 0px;
-    display: none;
-}
-
-.progress-text {
-    color: #005987;
-    margin-top: 1.5px;
-}
-
-#progressbar-current {
-    opacity: 0.9;
-    height: 7px;
-    margin-top: -7px;
-    margin-bottom: 9px;
-}
-
-#progressbar-overall {
-    opacity: 0.9;
-    height: 12px;
-    margin-top: -7px
-}
-
-#progressbar-subtitle {
-	opacity: 0.9;
-    height: 12px;
-    margin-top: -7px
-}
-
-#progressbar-overall .ui-widget-header {
-    background: #00A000;
-}
-
-#progressbar-current .ui-widget-header {
-    background: #00AFD0;
-}
-
-#progressbar-subtitle .ui-widget-header {
-    background: #C4D831;
 }
 
 #download-legend-selected, #download-videos, #delete-videos {
@@ -112,139 +60,204 @@ ul.dynatree-container li, .ui-widget-content {
     display: none;
     margin-top: 15px;
 }
-
-{% if am_i_online %}
-#download-help-link {
-    /* nothing yet! */
+#help-info, #download-videos {
+    display:none;
 }
-{% endif %}
+.progress-waiting {
+    padding: 5px 0px 0px 0px;
+    display: none;
+}
 </style>
 {% endblock headcss %}
 {% block headjs %}
 <script type="text/javascript" src="{% static 'js/jquery-ui/jquery-ui.min.js' %}"></script>
 <script src="{% static 'js/jquery.dynatree.min.js' %}"></script>
+<script src="{% static 'js/updates.js' %}"></script>
 
 <script type="text/javascript">
-    window.downloading_videos = [];
-    window.download_index = 0;
-    window.download_subtitle_index = 0;
-    
-    window.download_check_interval = null;
-    window.download_subtitle_check_interval = null;
-    
-    $(function() {
-        
-        setTimeout(function() {
-            doRequest("/api/get_topic_tree", {})
-                .success(function(treeData) {
+// Callback functions 
 
-                    $("#content_tree").dynatree({
-                        imagePath:"../images/",
-                        checkbox: true,
-                        selectMode: 3,
-                        children: treeData,
-                        debugLevel: 0,
-                        onSelect: function(select, node) {
+function video_start_callback(progress_log, resp) {
+    if (!progress_log) {
+        clear_messages()
+        show_message("error", resp.status_code + resp.responseText);
+    }
+}
+
+function video_check_callback(progress_log, resp) {
+    // When video status is checked
+    if (progress_log) { // check succeeded
+
+        if (progress_log.stage_percent == 1.) {
+            // 100% done with the video
+            var currentKey = progress_log.stage_name;
+            setNodeClass(currentKey, "complete");
+            if (progress_log.process_percent == 1.) {
+                // 100% done with ALL videos.
+                $(".progress-section, #cancel-download").hide();
+                updatesReset(progress_log.process_name);
+                if ($(".subtitle-section:visible").length == 0) {
+                    $("#cancel-download").hide();
+                }
+                return;
+            }
+
+        } else if (progress_log.completed) {
+            // Completed without 100% done means there was a problem.
+            $("#retry-video-download").show();
+            $("#cancel-download").hide();
+        } else {
+            // Everything's good for now!
+            $("#retry-video-download").hide();
+            $("#cancel-download").show();
+        }
+        $("#cancel-download").show();
+    } else { // check failed.
+        switch (resp.status) {
+            case 403:
+                window.location.reload()  // Only happens if we were remotely logged out.
+                break;
+            default:
+                show_message("error", "Error downloading videos: " + resp.responseText);
+                clearInterval(window.download_subtitle_check_interval)
+                break;
+        }
+    }
+}
+
+var video_callbacks = {
+    start: video_start_callback,
+    check: video_check_callback,
+};
+</script>
+
+<script type="text/javascript">
+    $(function() {
+
+        setTimeout(function() {
+            get_server_status({path: "{% url get_server_info %}"}, ["online"], function(status){
+                // We assume the distributed server is offline.
+                //   if it's online, then we show all tools only usable when online.
+                //
+                // Best to assume offline, as online check returns much faster than offline check.
+                if(!status || !status["online"]){
+                    show_message("error", "{% trans 'Distributed server is offline; cannot access video nor subtitle updates.' %}", " id_offline_message")
+                } else {
+                    $("#help-info").show();
+                    $("#download-videos").removeAttr("disabled");
+                    $(".download-subtitles").removeAttr("disabled");
+                    clear_message("id_offline_message")
+                }
+            });
+
+
+            doRequest("{% url get_topic_tree %}", {}).success(function(treeData) {
+                $("#content_tree").dynatree({
+                    imagePath:"../images/",
+                    checkbox: true,
+                    selectMode: 3,
+                    children: treeData,
+                    debugLevel: 0,
+                    onSelect: function(select, node) {
                     
-                            var newVideoCount = findSelectedIncompleteVideos().length;
-                            var oldVideoCount = findSelectedStartedVideos().length;
+                        var newVideoCount = findSelectedIncompleteVideos().length;
+                        var oldVideoCount = findSelectedStartedVideos().length;
                         
-                            $("#download-videos").hide();
-                            $("#delete-videos").hide();
-                            $("#download-legend-unselected").toggle((newVideoCount + oldVideoCount) == 0);
-                            $("#help-info").toggle((newVideoCount + oldVideoCount) == 0);
+                        $("#download-videos").hide();
+                        $("#delete-videos").hide();
+                        $("#download-legend-unselected").toggle((newVideoCount + oldVideoCount) == 0);
+                        $("#help-info").toggle((newVideoCount + oldVideoCount) == 0);
                         
-                            if (newVideoCount > 0) {
-                                $(".new-video-count").text(newVideoCount);
-                                $("#download-videos").show();                                
-                            }
-                            if (oldVideoCount > 0) {
-                                $(".old-video-count").text(oldVideoCount);
-                                $("#delete-videos").show();
-                            }
-                        },
-                        onDblClick: function(node, event) {
-                            node.toggleSelect();
-                        },
-                        onKeydown: function(node, event) {
-                            if( event.which == 32 ) {
-                                node.toggleSelect();
-                                return false;
-                            }
-                        },
-                        onPostInit: function() {
-                            startDownloadChecks();
-                            startSubtitleDownloadChecks();
+                        if (newVideoCount > 0) {
+                            $(".new-video-count").text(newVideoCount);
+                            $("#download-videos").show();                                
                         }
-                    });
-                })
-                .fail(function(resp) {
-                    handleFailedAPI(resp, "Error downloading topic tree");
+                        if (oldVideoCount > 0) {
+                            $(".old-video-count").text(oldVideoCount);
+                            $("#delete-videos").show();
+                        }
+                    },
+                    onDblClick: function(node, event) {
+                        node.toggleSelect();
+                    },
+                    onKeydown: function(node, event) {
+                        if( event.which == 32 ) {
+                            node.toggleSelect();
+                            return false;
+                        }
+                    },
+                    onPostInit: function() {
+                        updatesStart("videodownload", 5000, video_callbacks);
+                        //updatesStart("subtitledownload");
+                    }
                 });
+                        
+            });
         }, 200);
         
-    
-        $("#progressbar-overall").progressbar({
-            value: 0,
-            max: 10000000
-        });
-
-        $("#progressbar-current").progressbar({
-            value: 0,
-            max: 100
-        });
-        
-        $("#progressbar-subtitle").progressbar({
-            value: 0,
-            max: 10000000
-        });
-    
         $("#download-videos").click(function() {
-            var videos = findSelectedIncompleteVideos();            
+            // Get all videos to download
+            var videos = findSelectedIncompleteVideos();
             var video_queue = $.map(videos, function(node) {
                 return node.data.key;
             });
 
+            updatesStart("videodownload", 5000, video_callbacks)
+            // Start the download and updating process
+            doRequest("{% url start_video_download %}", {youtube_ids: video_queue}).success(function() {
+                updatesStart("videodownload", 5000, video_callbacks)
+            }).fail(function(response) {
+                show_message("error", "Error starting video download (" + response.status_code + ": " + response.responseText);
+            });
+
+            // Update the UI to reflect that we're waiting to start
             unselectAllNodes();
-            doRequest("/api/start_video_download", {youtube_ids: video_queue})
-                .success(
-                    startDownloadChecks
-                )
-                .fail(function(resp) {
-                    handleFailedAPI(resp, "Error starting video download");
-                });
-    	
-            $(".progress-section").hide();
-            $(".progress-waiting").show();
             $("#cancel-download").show();
-            
-            ga_track("send", "event", "update", "click-download-videos", "Download Videos", videos.length);
-            
         });
 
         $("#delete-videos").click(function() {
+            // This function can only get called when
+            //   no downloads are in progress.
+
+            // Get all videos marked for download
             var videos = findSelectedStartedVideos();
             var video_queue = $.map(videos, function(node) {
                 return node.data.key;
             });
 
-            unselectAllNodes();
-            
-            doRequest("/api/delete_videos", {youtube_ids: video_queue})
-                .complete(function() {
-                    $.each(video_queue, function(ind, id) {
-                        setNodeClass(id, "unstarted");
-                    });
-                })
-                .fail(function(resp) {
-                    handleFailedAPI(resp, "Error deleting videos");
+            // Do the action
+            doRequest("{% url delete_videos %}", {youtube_ids: video_queue}).complete(function() {
+                $.each(video_queue, function(ind, id) {
+                    setNodeClass(id, "unstarted");
                 });
+            });
 
-            ga_track("send", "event", "update", "click-delete-videos", "Delete Videos", videos.length);
+            // Update the UI        
+            unselectAllNodes();
         });
 
+
+        // Mixed stuff
+
+        $("#cancel-download").click(function() {
+            // Reset ALL of the progress tracking
+            updatesReset()
+
+            // Do the action
+            doRequest("{% url cancel_downloads %}");
+
+            // Update the UI
+            $(".subtitle-section, #cancel-download").hide();
+        });
+       
+        $("#retry-video-download").click(function() {
+            doRequest("{% url start_video_download %}", {});
+        });
+
+        // Subtitles stuff
+
         $(".download-subtitles").click(function(event) {
-        
+            // Confirm the action
             var new_only = $(event.target).attr("new_only");
             var language = $("#language option:selected").val();
             if (new_only!="true") {
@@ -252,236 +265,31 @@ ul.dynatree-container li, .ui-widget-content {
                     return;
                 }
             }
-            
             if (!language) {
                 alert("{% trans 'Please select a language first' %}");
-            } else {
-                doRequest("/api/start_subtitle_download", {language: language, new_only: new_only})
-                    .success(
-                        startSubtitleDownloadChecks
-                    )
-                    .fail(function(resp) {
-                        handleFailedAPI(resp, "Error downloading subtitles");
-                        $(".progress-waiting").hide();
-                    });
-                $(".progress-waiting").show();
-
-                ga_track("send", "event", "update", "download-subtitles-click", "Download Subtitles (" + language + ")");
+                return;
             }
-        });
 
-        $("#cancel-download").click(function() {
-            doRequest("/api/cancel_downloads")
-                .success(function() {
-                    clearInterval(window.download_check_interval);
-                    clearInterval(window.download_subtitle_check_interval);
-                    window.downloading_videos = [];
-                    window.download_index = 0;
-                    window.download_subtitle_index = 0;
+            // Do the action and start the updating process        
+            doRequest("{% url start_subtitle_download %}", {language: language, new_only: new_only}).success(startSubtitleDownloadChecks);
+            updatesStart("subtitledownload")
             
-                    window.download_check_interval = null;
-                    window.download_subtitle_check_interval = null;
-                    $(".progress-section, .progress-waiting, .subtitle-section, #cancel-download").hide();
-
-                })
-                .fail(function(resp) {
-                    handleFailedAPI(resp, "Error canceling downloads");
-                });
-
-            ga_track("send", "event", "update", "click-cancel-downloads", "Cancel Downloads");
+            // Update the UI
         });
-       
-        $("#retry-video-download").click(function() {
-            doRequest("/api/start_video_download", {})
-                .fail(function(resp) {
-                    handleFailedAPI(resp, "Error canceling downloads");
-                });
+        
 
-            ga_track("send", "event", "update", "click-retry-download", "Retry Download");
-        });
+
+        // onload    
     });
+</script>
 
+<script>
+    /* script functions for doing stuff with the topic tree*/    
     function unselectAllNodes() {
         $.each($("#content_tree").dynatree("getSelectedNodes"), function(ind, node) {
             node.select(false);
         });
     }
-    
-    function startDownloadChecks() {
-        doRequest("/api/get_video_download_list")
-            .success(function(video_ids) {
-                window.downloading_videos = video_ids;
-                window.download_index = 0;
-                clearInterval(window.download_check_interval);
-                if (video_ids.length == 0) {
-                    return;
-                }
-                window.download_check_interval = setInterval(checkVideoDownloadProgress, 5000);
-                checkVideoDownloadProgress();
-            })
-            .fail(function(resp) {
-                handleFailedAPI(resp, "Error getting video download list");
-            });
-    }
-    
-    function startSubtitleDownloadChecks() {
-    	doRequest("/api/get_subtitle_download_list")
-            .success(function(video_ids) {
-                window.downloading_subtitles = video_ids;
-                window.download_subtitle_index = 0;
-                clearInterval(window.download_subtitle_check_interval);
-                if (video_ids.length == 0) {
-                    $(".progress-waiting").hide();
-                    return;
-                }
-                window.download_subtitle_check_interval = setInterval(checkSubtitleDownloadProgress, 5000);
-                checkSubtitleDownloadProgress();
-            })
-            .fail(function(resp) {
-                handleFailedAPI(resp, "Error downloading subtitles list");
-            });
-    }
-    
-   	function checkSubtitleDownloadProgress() {
-        doRequest("/api/check_subtitle_download")
-            .success(function(remainder) {
-                if (!window.download_subtitle_check_interval) {
-                    return;
-                }
-                window.download_subtitle_index = window.downloading_subtitles.length - remainder;
-                updateSubtitleProgressDisplay();
-                if (remainder == 0) {
-                    clearInterval(window.download_subtitle_check_interval);
-                    $(".progress-subtitle, #cancel-download").hide();
-                    return;
-                }
-            }).
-            fail(function(resp) {
-                handleFailedAPI(resp, "Error checking subtitles progress");
-                clearInterval(window.download_subtitle_check_interval)
-            });
-    }
-    
-
-    function handleFailedAPI(resp, error_text, error_id) {
-        if (error_id === undefined) {
-            error_id = "id_video_download";
-        }
-        clear_message(error_id);
-
-        switch (resp.status) {
-            case 403:
-                show_message("error", error_text + ": " + "You are not authorized to complete the request.  Please <a href='{% url login %}' target='_blank'>login</a> as an administrator, then retry.", error_id)
-                break;
-            default:
-                //communicate_api_failure(resp)
-                messages = $.parseJSON(resp.responseText);
-                if (messages && !("error" in messages)) {
-                    // this should be an assert--should never happen
-                    show_message("error", error_text + ": " + "Uninterpretable message received.", error_id)
-                } else {
-                    show_message("error", error_text + ": " + messages["error"], error_id);
-                }
-                break;
-        }
-    }
-
-    function checkVideoDownloadProgress() {
-        var currentKey = window.downloading_videos[window.download_index];
-        doRequest("/api/check_video_download", {youtube_ids: [currentKey]})
-            .success(function(progress) {
-                if (!window.download_check_interval) {
-                    return;
-                }
-                window.current_download_percent = progress[currentKey];
-                updateProgressDisplay();
-                if (window.current_download_percent == 100) {
-                    setNodeClass(currentKey, "complete");
-                    window.download_index++;
-                    if (window.download_index >= window.downloading_videos.length) {
-                        // Finished all downloads
-                        clearInterval(window.download_check_interval);
-                        $(".progress-section, #cancel-download").hide();
-                        return;
-                    }
-                    checkVideoDownloadProgress();
-                } else if (!progress["downloading"]) {
-                    // In-progress (error) case: 
-                    //   we're not done downloading, but the 
-                    //   job is no longer running.
-                    $(".progress-section, #cancel-download").hide();
-                    $(".progress-waiting").hide();
-                    $("#retry-video-download").show();
-                } else {
-                    // In progress case (happy).
-                    $("#retry-video-download").hide();
-                }
-            })
-            .fail(function(resp) {
-                handleFailedAPI(resp, "Error checking video download progress");
-            });
-    }
-    
-    function updateProgressDisplay() {
-        if (window.download_index < window.downloading_videos.length) {
-            if (download_index > 0 || current_download_percent > 0) {
-            	$(".progress-section").show();
-            	$(".progress-waiting").hide();
-                $("#cancel-download").show();
-    	 	} else {
-                $(".progress-section").hide();
-            	$(".progress-waiting").show();
-                $("#cancel-download").show();
-        	}            
-        } else if ($("#retry-video-download :visible").length == 0) {
-            // Downloading completed.  Hide all
-            $(".progress-section").hide();
-            if ($(".subtitle-section:visible").length == 0) {
-                $("#cancel-download").hide();
-            }
-            return;
-        } else {
-            // retry button was pressed
-        }
-        
-        $("#progressbar-current").progressbar({value: window.current_download_percent});
-        $("#progressbar-overall").progressbar({
-            value: window.download_index * 100 + window.current_download_percent,
-            max: window.downloading_videos.length * 100
-        });
-
-        var currentKey = window.downloading_videos[window.download_index];
-        var currentNode = $("#content_tree").dynatree("getTree").getNodeByKey(currentKey);
-        $(".video-title").text(currentNode.data.title);
-        $(".video-downloading-current").text(window.download_index + 1);
-        $(".video-downloading-total").text(window.downloading_videos.length);
-   
-       
-    }
-    
-    function updateSubtitleProgressDisplay() {
-    	
-    	if (window.download_subtitle_index < window.downloading_subtitles.length) {
-     		$(".subtitle-section, #cancel-download").show();
-            $(".progress-waiting").hide();
-      	} else {
-        	$(".subtitle-section").hide();
-            if ($(".progress-section:visible").length == 0) {
-                $("#cancel-download").hide();
-            }
-        return;
-    	}
-    
-        $("#progressbar-subtitle").progressbar({
-            value: window.download_subtitle_index * 100,
-            max: window.downloading_subtitles.length * 100
-    	});
-    
-        $(".subtitle-downloading-current").text(window.download_subtitle_index);
-        $(".subtitle-downloading-total").text(window.downloading_subtitles.length);  
-    
-    }
-    
     function findSelectedIncompleteVideos() {
         var arr = $("#content_tree").dynatree("getSelectedNodes");
         return $.grep(arr, function(node) { 
@@ -540,36 +348,6 @@ ul.dynatree-container li, .ui-widget-content {
             }
         }
     }
-
-</script>
-
-
-<script>
-
-{% if not debug %}
-
-    (function(i,s,o,g,r,a,m){i["GoogleAnalyticsObject"]=r;i[r]=i[r]||function(){
-    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,"script","//www.google-analytics.com/analytics.js","ga");
-
-    ga("create", "UA-36937407-3", {"cookieDomain": "none"});
-
-    ga("set", "dimension1", "{% if registered %}Registered{% else %}Unregistered{% endif %}");
-    ga("set", "dimension2", "{% if zone_id %}{{ zone_id }}{% endif %}");
-    ga("set", "dimension3", "{{ device_id }}");
-    ga('set', 'metric1', {{ video_count }});
-    
-    ga("send", "pageview");
-    
-{% endif %}
-
-    function ga_track() {
-        if (_.isFunction(window.ga)) {
-            ga.apply(this, arguments);
-        }
-    }
-    
 </script>
 
 {% endblock headjs %}
@@ -581,14 +359,13 @@ ul.dynatree-container li, .ui-widget-content {
         {% trans "Please select videos to download (below)" %}
     </h2>
     <div id="help-info">
-        {% if am_i_online %}
         <a id="download-help-link" target="_new" href="http://{{ central_server_host }}/faq/installation/bittorrent/">
             {% trans "Q: How do I bulk-download videos?" %}
         </a>
-        {% endif %}
     </div>
     
-    <button id="download-videos" type="button">{% trans "Download " %}<span class="new-video-count">0</span>{% trans " new selected videos" %}</button>
+    <button id="download-videos" type="button" disabled>{% trans "Download " %}<span class="new-video-count">0</span>{% trans " new selected videos" %}</button>
+
     <button id="delete-videos" type="button">{% trans "Delete " %}<span class="old-video-count">0</span>{% trans " selected videos" %}</button>
 </div>
 
@@ -603,56 +380,29 @@ ul.dynatree-container li, .ui-widget-content {
             {% endif %}
         </select>
     </span>
-    <button class="download-subtitles" type="button">{% trans "Get/Update All Subtitles" %}</button>
-    <button class="download-subtitles" new_only=true type="button">{% trans "Get Missing Subtitles Only" %}</button>
+
+    <button class="download-subtitles" type="button" disabled>{% trans "Get/Update All Subtitles" %}</button>
+    <button class="download-subtitles" new_only=true type="button" disabled>{% trans "Get Missing Subtitles Only" %}</button>
+
 </div>
 
 <div style="clear: both;"></div>
 
-<div class="progress-waiting">
-	<h2 class="progress-text">
-        {% trans "Downloads will start soon... Please wait!" %}
-    </h2>
-</div>
-
-<div class="progress-section">
-    
-    <h2 class="progress-text">
-        {% trans "Downloading video:" %}
-        "<span class="video-title"> </span>"...
-    </h2>
-    
-        <div class="progressbar" id="progressbar-current"></div>
-        
-    <h2 class="progress-text">
-        {% trans "Overall video download progress:" %}
-        <span class="video-downloading-current">0</span>
-        {% trans "of" %}
-        <span class="video-downloading-total">0</span>
-    </h2>
-        
-    <div class="progressbar" id="progressbar-overall"></div>
-    
+<!-- note: id must match the "updates" app process name -->
+<div id="videodownload-progressbar">
+    {% include "updates/progress-bar.html" %}
     <button id="retry-video-download" type="button">{% trans "Video download error... click to retry" %}</button>
-    
 </div>
 
-<div class="subtitle-section">
-	
-    <h2 class="progress-text">
-        {% trans "Subtitle download progress:" %}
-        <span class="subtitle-downloading-current">5</span>
-        {% trans "of" context "e.g. '5 of 9'" %}
-        <span class="subtitle-downloading-total">21</span>
-    </h2> 
-    
-    <div class="progressbar" id="progressbar-subtitle"></div>
-    
+<!-- note: id must match the "updates" app process name -->
+<div id="subtitledownload-progressbar">
+	{% include "updates/progress-bar.html" %}
     {# <button id="retry-subtitle-download" type="button">{% trans "Subtitle download error... click to retry" %}</button> #}
-
 </div>
 
-<button id="cancel-download" type="button">{% trans "Cancel All Downloads" %}</button>
+<div>
+    <button id="cancel-download" type="button">{% trans "Cancel All Downloads" %}</button>
+</div>
 
 <div id="content_tree"><br/><h2>{% trans " Loading topic tree... Please wait!" %}</h2></div>
 {% endblock content %}

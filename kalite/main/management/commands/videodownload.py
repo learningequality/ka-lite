@@ -15,7 +15,7 @@ def download_progress_callback(self, videofile):
         video = VideoFile.objects.get(pk=videofile.pk)
 
         if video.cancel_download == True:
-            self.stderr.write("Download Cancelled!\n")
+            self.stdout.write("Download Cancelled!\n")
             
             # Update video info
             video.percent_complete = 0
@@ -55,7 +55,6 @@ class Command(UpdatesDynamicCommand):
         caching_enabled = settings.CACHE_TIME != 0
         handled_video_ids = []  # stored to deal with caching
         failed_video_ids = []  # stored to avoid requerying failures.
-
         try:
             while True: # loop until the method is aborted
             
@@ -69,8 +68,8 @@ class Command(UpdatesDynamicCommand):
                     self.stdout.write("Nothing to download; aborting.\n")
                     break
 
-                # Grab the next video
                 # Grab a video as OURS to handle, set fields to indicate to others that we're on it!
+                # Update the video logging
                 video = videos[0]
                 video.download_in_progress = True
                 video.percent_complete = 0
@@ -80,6 +79,7 @@ class Command(UpdatesDynamicCommand):
                 # Update the progress logging
                 self.set_stages(num_stages=videos.count() + len(handled_video_ids) + 1)  # add one for the currently handed video
                 if not self.started():
+                    self.stdout.write("Downloading video '%s'...\n" % video.youtube_id)
                     self.start(stage_name=video.youtube_id)
 
                 # Initiate the download process
@@ -95,11 +95,12 @@ class Command(UpdatesDynamicCommand):
                     video.save()
                     # Rather than getting stuck on one video, continue to the next video.
                     failed_video_ids.append(video.youtube_id)
-                    break
+                    continue
 
                 # Expire, but don't regenerate until the very end, for efficiency.
                 if caching_enabled:
                     caching.invalidate_cached_topic_hierarchies(video_id=video.youtube_id)
+
         except Exception as e:
             sys.stderr.write("Error: %s\n" % e)
             self.cancel()
