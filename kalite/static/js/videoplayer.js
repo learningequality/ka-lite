@@ -51,7 +51,7 @@ window.VideoPlayerModel = Backbone.Model.extend({
                 });
                 self.pointsSaved = data[0].points;
             })
-            .fail(function(data, resp) {
+            .fail(function(resp) {
                 communicate_api_failure(resp, "id_student_logs");
             });
     },
