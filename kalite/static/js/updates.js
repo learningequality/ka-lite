@@ -51,7 +51,7 @@ function updatesStart_callback(process_name) {
         // Start the background process
         doRequest("/api/updates/progress?process_name=" + process_name).success(function(progress_log) {
             // Store the info
-            ///var process_name = progress_log.process_name
+            var process_name = progress_log.process_name
             if (!process_name) {
                 // Start failed; can exit because this will repeat.
                 return;
