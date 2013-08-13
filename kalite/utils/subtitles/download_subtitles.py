@@ -1,8 +1,7 @@
-import requests, json, os, sys
-
-PROJECT_PATH = os.path.dirname(os.path.realpath(__file__)) + "/../"
-
-sys.path = [PROJECT_PATH] + sys.path
+import json
+import os
+import requests
+import sys
 
 import settings
 
@@ -35,16 +34,4 @@ def download_subtitles(youtube_id, language):
     
     else:
         raise NoSubs()
-
-
-if __name__ == '__main__':
-    language = "en"
-    if len(sys.argv) > 2:
-        language = sys.argv[2]
-    if len(sys.argv) > 1:
-        youtube_id = sys.argv[1]
-        download_subtitles(youtube_id, language)
-        print "Downloaded subtitles for video '%s' in language '%s'!" % (youtube_id, language)
-    else:
-        print "USAGE: python subtitles.py <youtube_id> [<language>]"
     

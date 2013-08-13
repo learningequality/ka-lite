@@ -6,7 +6,6 @@ import central.api_urls
 import coachreports.urls
 import control_panel.urls
 import securesync.urls
-import central.api_urls
 from kalite import settings
 from feeds import RssSiteNewsFeed, AtomSiteNewsFeed
 
