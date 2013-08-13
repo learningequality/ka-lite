@@ -19,14 +19,14 @@
 <script type="text/javascript">
 // Callback functions 
 
-function video_start_callback(progress_log, resp) {
+function software_start_callback(progress_log, resp) {
     if (!progress_log) {
         clear_messages()
         show_message("error", resp.status_code + resp.responseText);
     }
 }
 
-function video_check_callback(progress_log, resp) {
+function software_check_callback(progress_log, resp) {
     // When video status is checked
     if (progress_log) { // check succeeded
 
@@ -66,24 +66,9 @@ function video_check_callback(progress_log, resp) {
     }
 }
 
-function video_display_callback(progress_log) {
-    if (!progress_log) {
-        return;
-    }
-    //     Update the progress text
-    var currentKey = progress_log.stage_name;
-    if (!currentKey) {
-        return;
-    }
-    var currentNode = $("#content_tree").dynatree("getTree").getNodeByKey(currentKey);
-    $("#videodownload-progressbar .stage-header").text("Downloading video");
-    $("#videodownload-progressbar .stage-name").text(currentNode.data.title);
-}
-
-var video_callbacks = {
-    start: video_start_callback,
-    check: video_check_callback,
-    display: video_display_callback
+var software_callbacks = {
+    start: software_start_callback,
+    check: software_check_callback,
 };
 </script>
 
@@ -108,7 +93,7 @@ function download_urls_callback(data) {
 
 <script type="text/javascript">
     $(function() {
-        updatesStart("update", 5000, video_callbacks)
+        updatesStart("update", 5000, software_callbacks)
 
         setTimeout(function() {
             get_server_status({path: "{% url get_server_info %}"}, ["online"], function(status){
@@ -130,7 +115,7 @@ function download_urls_callback(data) {
 
         $("#download-update-kalite").click(function() {
             // Get all videos to download
-            //updatesStart("update", 1000, video_callbacks)
+            //updatesStart("update", 1000, software_callbacks)
 
             // Start the download and updating process
             doRequest("{% url start_update_kalite %}", { "url": $("#software_available option:selected")[0].value }).success(function() {
@@ -154,6 +139,7 @@ function download_urls_callback(data) {
 
     <button id="download-update-kalite" type="button" disabled>{% trans "Update KA Lite from remote download" %}</button>
     <button id="upload-update-kalite" type="button" disabled>{% trans "Update KA Lite from file" %}</button>
+    <button id="cancel-update-kalite" type="button" disabled>{% trans "Cancel update" %}</button>
 </div>
 
 <div style="clear: both;"></div>
@@ -162,7 +148,15 @@ function download_urls_callback(data) {
 <div id="update-progressbar">
     {% include "updates/progress-bar.html" %}
 </div>
+<div style="clear: both;"></div>
 
+<div>
+<span>Current version: {{ software_version }}</span><br />
+<span>Current install directory: {{ install_dir }}</span><br />
+<span>Current database last-updated: {{ database_last_updated }}</span><br />
+</div>
+<div style="clear: both;"></div>
+<!-- fake way to do JSONP -->
 <script type="text/javascript" src="{% central_server_api path='/api/version' %}?callback=version_callback"></script>
 <script type="text/javascript" src="{% central_server_api path='/api/download/kalite/' %}?callback=download_urls_callback"></script>
 

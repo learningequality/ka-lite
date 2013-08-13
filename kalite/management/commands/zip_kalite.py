@@ -112,7 +112,7 @@ def recursively_add_files(dirpath, files_dict=dict(), key_base="", **kwargs):
     return files_dict
 
 
-def create_local_settings_file(location, server_type="local", locale=None):
+def create_local_settings_file(location, server_type="local", locale=None, central_server=None):
     """Create an appropriate local_settings file for the installable server."""
 
     fil = tempfile.mkstemp()[1]
@@ -201,7 +201,7 @@ class Command(BaseCommand):
         # Step 2: Add a local_settings.py file.
         #   For distributed servers, this is a copy of the local local_settings.py,
         #   with a few properties (specified as command-line options) overridden
-        ls_file = create_local_settings_file(location=os.path.realpath(kalite_base+"/kalite/local_settings.py"), server_type=options['server_type'], locale=options['locale'])
+        ls_file = create_local_settings_file(location=os.path.realpath(kalite_base+"/kalite/local_settings.py"), server_type=options['server_type'], locale=options['locale'], central_server=options["central_server"])
         files_dict[ls_file] = { "dest_path": "kalite/local_settings.py" }
 
         # Step 3: select output file.

@@ -346,6 +346,9 @@ def update_software(request):
     context = {
         "am_i_online": True,
         "software_version": kalite.VERSION,
+        "install_dir": os.path.realpath(os.path.join(settings.PROJECT_PATH, "..")),
+        "database_last_updated": datetime.datetime.fromtimestamp(os.path.getctime(settings.DATABASES["default"]["NAME"]
+)),
     }
     return context
 
