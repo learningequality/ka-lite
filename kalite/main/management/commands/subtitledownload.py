@@ -20,7 +20,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         language = Settings.get("subtitle_language")
-        request_url = "http://%s/static/data/subtitledata/srts_by_language/%s.json" % (settings.CENTRAL_SERVER_HOST, language)
+        request_url = "http://%s/static/data/subtitles/srts_by_language/%s.json" % (settings.CENTRAL_SERVER_HOST, language)
         try:
             # TODO(dylan): better error handling here
             r = requests.get(request_url)

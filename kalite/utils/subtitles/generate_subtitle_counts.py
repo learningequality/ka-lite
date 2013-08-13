@@ -60,7 +60,7 @@ def get_language_name(lang_code):
 
 
 def write_new_json(subtitle_counts, data_path):
-    """Write JSON to file in static/data/subtitledata"""
+    """Write JSON to file in static/data/subtitles/"""
     filename = "subtitle_counts.json"
     filepath = data_path + filename
     logging.info("Writing fresh srt counts to %s" % filepath)
@@ -79,7 +79,21 @@ def update_language_list(sub_counts, data_path):
         json.dump(LANGUAGE_LIST, fp)
 
 
-if __name__ == "__main__":
-    get_new_counts()
+def update_srt_availability():
+    """Update maps in srts_by_lanugage with ids of downloaded subs"""
 
+    srts_path = settings.STATIC_ROOT + "srt/"
+    for lang_code in os.listdir(srts_path):
+        lang_srts_path = srts_path + lang_code + "/"
+        files = os.listdir(lang_srts_path)
+        yt_ids = [f.rstrip(".srt") for f in files]
+        srts_dict = {
+            "srt_files": yt_ids
+        }
+        base_path = settings.SUBTITLES_DATA_ROOT + "srts_by_language/"
+        subtitle_utils.ensure_dir(base_path)
+        filename = "%s.json" % lang_code
+        filepath = base_path + filename
+        with open(filepath, 'wb') as fp:
+            json.dump(srts_dict, fp)
 

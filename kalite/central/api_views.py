@@ -14,7 +14,7 @@ def get_subtitle_counts(request):
     """
 
     # Get the subtitles file
-    subtitledata_path = os.path.dirname(os.path.realpath(__file__)) + "/../static/data/subtitledata/"
+    subtitledata_path = settings.SUBTITLES_DATA_ROOT
     if not os.path.exists(subtitledata_path):
         # could call-command, but return 404 for now.
         raise Http404
