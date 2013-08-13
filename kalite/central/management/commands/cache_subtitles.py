@@ -196,7 +196,7 @@ def generate_zipped_srts(lang_codes_to_update, download_path):
 
 
 class Command(BaseCommand):
-    help = "Update the mapping of subtitles available by language for each video. Location: static/data/subtitledata/video_srts.json"
+    help = "Update the mapping of subtitles available by language for each video. Location: static/data/subtitles/srts_download_status.json"
 
     option_list = BaseCommand.option_list + (
         make_option('-l', '--language',
@@ -232,8 +232,9 @@ class Command(BaseCommand):
             logging.info("Downloading...")
             download_srt_from_3rd_party(**options)
 
-            logging.info("Executed successfully! Generating new subtitle counts!")
+            logging.info("Executed successfully! Generating new subtitle counts & updating availability!")
             generate_subtitle_counts.get_new_counts(data_path=settings.SUBTITLES_DATA_ROOT, download_path=download_path, language_codes=lang_codes)
+            generate_subtitle_counts.update_srt_availability()
         
             logging.info("Executed successfully! Re-zipping changed language packs!")
             generate_zipped_srts(lang_codes_to_update=lang_codes, download_path=download_path)
