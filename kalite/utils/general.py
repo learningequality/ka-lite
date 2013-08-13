@@ -5,6 +5,13 @@ General string, integer, date functions.
 """
 
 
+
+class InvalidDateFormat(Exception):
+
+    def __str__(value):
+        return "Invalid date format. Please format your date (-d) flag like this: 'MM/DD/YYYY'"
+
+
 def break_into_chunks(bigiterator, chunksize=500):
     """
     Given an iterator, separates the iterator into a list of iterators,
@@ -97,3 +104,27 @@ def version_diff(v1, v2):
             return cur_diff
 
     return 0
+
+
+def ensure_dir(path):
+    """Create the entire path, if it doesn't exist already."""
+    path_parts = path.split("/")
+    full_path = "/"
+    for part in path_parts:
+        if part is not '':
+            full_path += part + "/"
+            if not os.path.exists(full_path):
+                os.makedirs(full_path)
+
+
+def convert_date_input(date_to_convert):
+    """Convert from MM/DD/YYYY to Unix timestamp"""
+    if date_to_convert:
+        try:
+            converted_date = datetime.datetime.strptime(
+                date_to_convert, '%m/%d/%Y')
+        except:
+            raise InvalidDateFormat()
+        return converted_date
+    else:
+        return date_to_convert
