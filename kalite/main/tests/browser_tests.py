@@ -11,7 +11,7 @@ import re
 import time
 import unittest
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, WebDriverException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions, ui
 
@@ -24,7 +24,8 @@ from securesync.models import Facility, FacilityGroup, FacilityUser
 from utils.general import isnumeric
 from utils.testing.browser import BrowserTestCase
 from utils.testing.decorators import distributed_server_test
-
+from utils.exercises import get_exercises_urls
+from selenium.webdriver.firefox.webdriver import WebDriver
 
 class KALiteDistributedBrowserTestCase(BrowserTestCase):
     """Base class for main server test cases.
@@ -396,6 +397,29 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
         """
         points = self.browser_submit_answer('this is a wrong answer')
         self.assertTrue(points == '', "points text should be empty")  # somehow we can't use the truthiness of string, so we use ==
+
+
+class ExerciseDataStructureTest(KALiteDistributedWithFacilityBrowserTestCase):
+    """Tests if the exercise data structure is correctly initialized.
+
+    The test is run over all urls.
+    """
+    def setUp(self):
+        super(ExerciseDataStructureTest, self).setUp()
+        self.driver = WebDriver()
+
+    def test_get_exercise_data_structure(self):
+        for url in get_exercises_urls():
+            print "Testing url: " + url
+            try:
+                self.driver.get(self.live_server_url + url)
+                self.driver.execute_script("return (exerciseData && true);")
+                self.assertTrue(True, "")
+            except WebDriverException:
+                self.driver.close()
+                self.assertTrue(False, "Failed to initialize exerciseData in url: " + url)
+        self.driver.close()
+
 
 class MainEmptyFormSubmitCaseTest(KALiteDistributedWithFacilityBrowserTestCase):
     """
