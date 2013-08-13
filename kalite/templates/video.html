@@ -6,16 +6,33 @@
 {% block watch_active %}active{% endblock watch_active %}
 
 {% block headcss %}
+    <!--[if IE]>
     <link href="{% static "video-js-4/video-js.mod.css" %}" rel="stylesheet" type="text/css">
+    <![endif]-->
+    <!--[if IE lt 8]>
+    <link href="{% static "video-js-4/video-js-old-ie.css" %}" rel="stylesheet" type="text/css">
+    <![endif]-->
+    <!--[if !IE]> -->
+    <link href="{% static "video-js/video-js.css" %}" rel="stylesheet" type="text/css">
     <link href="{% static "video-js/video-speed.css" %}" rel="stylesheet" type="text/css">
+    <!-- <![endif]-->
 {% endblock headcss %}
 
 {% block headjs %}
+
+    <!--[if IE]>
     <script src="{% static "video-js-4/video.js" %}"></script>
-    {# <script src="{% static "video-js/video-speed.js" %}"></script> #}
     <script>
         _V_.options.flash.swf = "{% static "video-js-4/video-js.swf" %}?" + Math.random();
     </script>
+    <![endif]-->
+    <!--[if !IE]> -->
+    <script src="{% static "video-js/video.min.js" %}"></script>
+    <script src="{% static "video-js/video-speed.js" %}"></script>
+    <script>
+        _V_.options.flash.swf = "{% static "video-js/video-js.swf" %}";
+    </script>
+    <!-- <![endif]-->
 {% endblock headjs %}
 
 {% block content %}
