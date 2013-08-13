@@ -3,10 +3,10 @@ import json
 import re
 import uuid
 
-from django.core import serializers
-from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.contrib.messages.api import get_messages
+from django.core import serializers
+from django.core.urlresolvers import reverse
 from django.db import models as db_models
 from django.http import HttpResponse
 from django.utils import simplejson
@@ -20,10 +20,12 @@ from config.models import Settings
 from main.models import VideoLog, ExerciseLog, VideoFile
 from securesync import crypto, model_sync
 from securesync.models import *
-from utils.decorators import distributed_server_only, return_jsonp
+from shared import serializers
+from utils.decorators import api_handle_error_with_json, distributed_server_only, return_jsonp
 from utils.internet import JsonResponse, am_i_online
 
 
+@api_handle_error_with_json
 def require_sync_session(handler):
     def wrapper_fn(request):
         if request.raw_post_data:
@@ -46,6 +48,7 @@ def require_sync_session(handler):
     return wrapper_fn
 
 
+@api_handle_error_with_json
 @csrf_exempt
 def register_device(request):
     data = simplejson.loads(request.raw_post_data or "{}")
@@ -61,7 +64,7 @@ def register_device(request):
         #   this will only fail (currently) if the central server version
         #   is less than the version of a client--something that should never happen
         try:
-            models = serializers.deserialize("json", data["client_device"], src_version=version.VERSION, dest_version=version.VERSION)
+            models = serializers.deserialize("versioned-json", data["client_device"], src_version=version.VERSION, dest_version=version.VERSION)
         except db_models.FieldDoesNotExist as fdne:
             raise Exception("Central server version is lower than client version.  This is ... impossible!")
         client_device = models.next().object
@@ -111,10 +114,11 @@ def register_device(request):
 
     # return our local (server) Device, its Zone, and the newly created DeviceZone, to the client
     return JsonResponse(
-        serializers.serialize("json", [Device.get_own_device(), registration.zone, device_zone], dest_version=client_device.version, ensure_ascii=False)
+        serializers.serialize("versioned-json", [Device.get_own_device(), registration.zone, device_zone], dest_version=client_device.version, ensure_ascii=False)
     )
 
 
+@api_handle_error_with_json
 @csrf_exempt
 def create_session(request):
     data = simplejson.loads(request.raw_post_data or "{}")
@@ -158,11 +162,12 @@ def create_session(request):
 
     # Return the serializd session, in the version intended for the other device
     return JsonResponse({
-        "session": serializers.serialize("json", [session], dest_version=session.client_version, ensure_ascii=False ),
+        "session": serializers.serialize("versioned-json", [session], dest_version=session.client_version, ensure_ascii=False ),
         "signature": session.sign(),
     })
 
 
+@api_handle_error_with_json
 @csrf_exempt
 @require_sync_session
 def destroy_session(data, session):
@@ -170,6 +175,7 @@ def destroy_session(data, session):
     return JsonResponse({})
 
 
+@api_handle_error_with_json
 @csrf_exempt
 @gzip_page
 @require_sync_session
@@ -181,9 +187,10 @@ def device_download(data, session):
     session.models_downloaded += len(devices) + len(devicezones)
 
     # Return the objects serialized to the version of the other device.
-    return JsonResponse({"devices": serializers.serialize("json", devices + devicezones, dest_version=session.client_version, ensure_ascii=False)})
+    return JsonResponse({"devices": serializers.serialize("versioned-json", devices + devicezones, dest_version=session.client_version, ensure_ascii=False)})
 
 
+@api_handle_error_with_json
 @csrf_exempt
 @require_sync_session
 def device_upload(data, session):
@@ -202,6 +209,7 @@ def device_upload(data, session):
     return JsonResponse(result)
 
 
+@api_handle_error_with_json
 @csrf_exempt
 @gzip_page
 @require_sync_session
@@ -212,6 +220,7 @@ def device_counters(data, session):
     })
 
 
+@api_handle_error_with_json
 @csrf_exempt
 @require_sync_session
 def model_upload(data, session):
@@ -230,6 +239,7 @@ def model_upload(data, session):
     return JsonResponse(result)
 
 
+@api_handle_error_with_json
 @csrf_exempt
 @gzip_page
 @require_sync_session
@@ -248,6 +258,7 @@ def model_download(data, session):
     return JsonResponse(result)
 
 
+@api_handle_error_with_json
 @csrf_exempt
 def test_connection(request):
     return HttpResponse("OK")
@@ -255,6 +266,7 @@ def test_connection(request):
 
 # On pages with no forms, we want to ensure that the CSRF cookie is set, so that AJAX POST
 # requests will be possible. Since `status` is always loaded, it's a good place for this.
+@api_handle_error_with_json
 @ensure_csrf_cookie
 @distributed_server_only
 def status(request):

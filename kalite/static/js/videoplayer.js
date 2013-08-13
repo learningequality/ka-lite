@@ -39,17 +39,21 @@ window.VideoPlayerModel = Backbone.Model.extend({
 
         var self = this;
 
-        doRequest("/api/get_video_logs", [this.get("youtube_id")]).success(function(data) {
-            if (data.length === 0) {
-                return;
-            }
-            self.set({
-                total_seconds_watched: data[0].total_seconds_watched,
-                points: data[0].points,
-                complete: data[0].complete
+        doRequest("/api/get_video_logs", [this.get("youtube_id")])
+            .success(function(data) {
+                if (data.length === 0) {
+                    return;
+                }
+                self.set({
+                    total_seconds_watched: data[0].total_seconds_watched,
+                    points: data[0].points,
+                    complete: data[0].complete
+                });
+                self.pointsSaved = data[0].points;
+            })
+            .fail(function(resp) {
+                communicate_api_failure(resp, "id_student_logs");
             });
-            self.pointsSaved = data[0].points;
-        });
     },
 
     save: function() {
@@ -68,7 +72,6 @@ window.VideoPlayerModel = Backbone.Model.extend({
 
         data = {
             youtube_id: this.get("youtube_id"),
-            total_seconds_watched: Math.floor(this.get("total_seconds_watched")),
             seconds_watched: this.get("seconds_watched_since_save"),
             points: this.get("points")
         }
@@ -77,10 +80,14 @@ window.VideoPlayerModel = Backbone.Model.extend({
             .success(function(data) {
                 self.pointsSaved = data.points;
                 self.saving = false;
+                // Show all messages in "messages" object
+                show_api_messages(data.messages, "id_student_logs");
             })
-            .error(function() {
+            .fail(function(resp) {
                 self.set({ wall_time_last_saved: lastSavedBeforeError });
                 self.saving = false;
+
+                communicate_api_failure(resp, "id_student_logs");
             });
 
         this.set({
@@ -368,3 +375,46 @@ window.VideoView = Backbone.View.extend({
     }
 
 });
+
+function initialize_video(video_youtube_id){ 
+    
+    var create_video_view = _.once(function(width, height) {
+        
+        window.videoView = new VideoView({
+            el: $("#video-player"),
+            youtube_id: video_youtube_id,
+            width: width,
+            height: height
+        });
+
+        var resize_video = _.throttle(function() {
+            var available_width = $("article").width();
+            var available_height = $(window).height() * 0.9;
+            videoView.setContainerSize(available_width, available_height);
+        }, 500);
+        
+        $(window).resize(resize_video);
+        
+        resize_video();
+        
+    });
+
+    $("video").bind("loadedmetadata", function() {
+        
+        var width = $(this).prop("videoWidth");
+        var height = $(this).prop("videoHeight");
+        
+        create_video_view(width, height);
+        
+    });
+
+    $(".video-thumb").load(function() {
+
+        var width = $(".video-thumb").width();
+        var height = $(".video-thumb").height();
+        
+        create_video_view(width, height);
+                            
+    });
+    
+}

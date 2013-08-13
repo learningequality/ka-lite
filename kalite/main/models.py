@@ -41,8 +41,11 @@ class VideoLog(SyncedModel):
         super(VideoLog, self).save(*args, **kwargs)
 
     def get_uuid(self, *args, **kwargs):
+        assert self.user is not None and self.user.id is not None, "User ID required for get_uuid"
+        assert self.youtube_id is not None, "Youtube ID required for get_uuid"
+
         namespace = uuid.UUID(self.user.id)
-        return uuid.uuid5(namespace, str(self.youtube_id)).hex
+        return uuid.uuid5(namespace, self.youtube_id.encode("utf-8")).hex
 
     @staticmethod
     def get_points_for_user(user):
@@ -83,8 +86,11 @@ class ExerciseLog(SyncedModel):
         super(ExerciseLog, self).save(*args, **kwargs)
 
     def get_uuid(self, *args, **kwargs):
+        assert self.user is not None and self.user.id is not None, "User ID required for get_uuid"
+        assert self.exercise_id is not None, "Exercise ID required for get_uuid"
+
         namespace = uuid.UUID(self.user.id)
-        return uuid.uuid5(namespace, str(self.exercise_id)).hex
+        return uuid.uuid5(namespace, self.exercise_id.encode("utf-8")).hex
 
     @staticmethod
     def get_points_for_user(user):
@@ -105,7 +111,8 @@ class UserLogSummary(SyncedModel):
     total_seconds = models.IntegerField(default=0, blank=False, null=False)
 
     def __unicode__(self):
-        return "%d seconds over %d logins for %s/%s/%d, period %s to %s" % (self.total_seconds, self.total_logins, self.device.name, self.user.username, self.activity_type, self.start_datetime, self.end_datetime)
+        self.full_clean()  # make sure everything that has to be there, is there.
+        return u"%d seconds over %d logins for %s/%s/%d, period %s to %s" % (self.total_seconds, self.total_logins, self.device.name, self.user.username, self.activity_type, self.start_datetime, self.end_datetime)
 
 
     @classmethod
@@ -255,9 +262,9 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
 
     def __unicode__(self):
         if self.end_datetime:
-            return "%s: logged in @ %s; for %s seconds"%(self.user.username,self.start_datetime, self.total_seconds)
+            return u"%s: logged in @ %s; for %s seconds"%(self.user.username,self.start_datetime, self.total_seconds)
         else:
-            return "%s: logged in @ %s; last active @ %s"%(self.user.username, self.start_datetime, self.last_active_datetime)
+            return u"%s: logged in @ %s; last active @ %s"%(self.user.username, self.start_datetime, self.last_active_datetime)
 
 
     @classmethod

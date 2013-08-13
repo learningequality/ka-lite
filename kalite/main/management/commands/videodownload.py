@@ -51,6 +51,8 @@ class Command(UpdatesDynamicCommand):
     help = "Download all videos marked to be downloaded"
 
     def handle(self, *args, **options):
+
+        caching_enabled = settings.CACHE_TIME != 0
         handled_video_ids = []
         try:
             while True: # loop until the method is aborted
@@ -89,11 +91,11 @@ class Command(UpdatesDynamicCommand):
                     video.save()
                     force_job("videodownload", "Download Videos")  # infinite recursive call? :(
                     break
-            
+
                 handled_video_ids.append(video.youtube_id)
-            
+
                 # Expire, but don't regenerate until the very end, for efficiency.
-                if hasattr(settings, "CACHES"):
+                if caching_enabled:
                     caching.invalidate_cached_topic_hierarchies(video_id=video.youtube_id)
         except Exception as e:
             sys.stderr.write("Error: %s\n" % e)
@@ -103,5 +105,5 @@ class Command(UpdatesDynamicCommand):
         self.complete()
 
         # Regenerate all pages, efficiently
-        if hasattr(settings, "CACHES"):
+        if caching_enabled:
             caching.regenerate_cached_topic_hierarchies(handled_video_ids)
