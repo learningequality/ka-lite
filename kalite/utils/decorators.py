@@ -121,11 +121,11 @@ def get_user_from_request(handler=None, request=None, *args, **kwargs):
     return wrapper_fn if not request else wrapper_fn(request=request, *args, **kwargs)
 
 
-@distributed_server_only
 def require_login(handler):
     """
    (Level 1) Make sure that a user is logged in to the distributed server.
     """
+    @distributed_server_only
     def wrapper_fn(request, *args, **kwargs):
         if request.user.is_authenticated() or "facility_user" in request.session:
             return handler(request, *args, **kwargs)
