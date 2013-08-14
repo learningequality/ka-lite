@@ -309,8 +309,19 @@ def allow_jsonp(handler):
             return response
 
         if "callback" in request.REQUEST:
-            # wrap the JSON data as a JSONP response, and then return that response
-            return JsonpResponse(response.content, request.REQUEST["callback"])
+            
+            if request.method == "GET":
+                # wrap the JSON data as a JSONP response
+                response = JsonpResponse(response.content, request.REQUEST["callback"])
+            elif request.method == "OPTIONS":
+                # return an empty body, for OPTIONS requests, with the headers defined below included
+                response = HttpResponse("", content_type="text/plain")
+            
+            if request.method in ["OPTIONS", "GET"] and "HTTP_ORIGIN" in request.META:
+                response["Access-Control-Allow-Origin"] = request.META["HTTP_ORIGIN"]
+                response["Access-Control-Allow-Methods"] = "GET, OPTIONS"
+                response["Access-Control-Max-Age"] = "1000"
+                response["Access-Control-Allow-Headers"] = "Authorization,Content-Type,Accept,Origin,User-Agent,DNT,Cache-Control,X-Mx-ReqToken,Keep-Alive,X-Requested-With,If-Modified-Since"
         
         return response
         
