@@ -1,9 +1,5 @@
-from browser_tests import *
-from cache_tests import *
-from command_tests import *
-from fixture_tests import *
-from internet_tests import *
-from url_tests import *
-from log_model_tests import *
-from api_tests import *
-from utils_tests import *
+import os
+
+from utils.importing import import_all_from
+
+import_all_from(os.path.dirname(__file__), locals(), globals())

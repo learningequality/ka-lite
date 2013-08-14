@@ -32,7 +32,7 @@ def Deserializer(object_list, **options):
         # See comment below for versioned fields; same logic
         #   applies here as well.
         if hasattr(Model, "version"):
-            v_diff = version_diff(Model.minversion, dest_version)
+            v_diff = version_diff(Model.version, dest_version)
             if v_diff > 0 or v_diff is None:
                 continue
 

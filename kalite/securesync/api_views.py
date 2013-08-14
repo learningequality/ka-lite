@@ -19,6 +19,7 @@ from config.models import Settings
 from main.models import VideoLog, ExerciseLog
 from securesync import crypto, model_sync
 from securesync.models import *
+from shared import serializers
 from utils.decorators import api_handle_error_with_json, distributed_server_only
 from utils.internet import JsonResponse
 

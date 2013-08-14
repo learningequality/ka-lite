@@ -265,7 +265,6 @@ def homepage(request):
     context = {
         "title": "Home",
         "topics": my_topics,
-        "registered": Settings.get("registered"),
     }
     return context
 
@@ -364,10 +363,17 @@ def update(request):
     if not am_i_online:
         messages.warning(request, _("No internet connection was detected.  You must be online to download videos or subtitles."))
 
+    device = Device.get_own_device()
+    zone = device.get_zone()
+
     context = {
         "languages": languages,
         "default_language": default_language,
         "am_i_online": am_i_online,
+        "registered": Settings.get("registered"),
+        "zone_id": zone.id if zone else None,
+        "device_id": device.id,
+        "video_count": VideoFile.objects.filter(percent_complete=100).count(),
     }
     return context
 

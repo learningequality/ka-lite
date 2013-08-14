@@ -55,9 +55,7 @@ def save_video_log(request):
     data = form.data
 
     # More robust extraction of previous object
-    videolog = get_object_or_None(VideoLog, user=request.session["facility_user"], youtube_id=data["youtube_id"])
-    videolog = videolog or VideoLog(user=request.session["facility_user"], youtube_id=data["youtube_id"])
-
+    videolog = VideoLog.get_or_initialize(user=request.session["facility_user"], youtube_id=data["youtube_id"])
     videolog.total_seconds_watched  += data["seconds_watched"]
     videolog.points = max(videolog.points, data["points"])  # videolog.points cannot be None
 
@@ -70,7 +68,7 @@ def save_video_log(request):
     return JsonResponse({
         "points": videolog.points,
         "complete": videolog.complete,
-        "messages": {} if not settings.DEBUG else { "success": "Video data saved." },
+        "messages": {},
     })
 
 
@@ -88,8 +86,7 @@ def save_exercise_log(request):
     data = form.data
 
     # More robust extraction of previous object
-    exerciselog = get_object_or_None(ExerciseLog, user=request.session["facility_user"], exercise_id=data["exercise_id"])
-    exerciselog = exerciselog or ExerciseLog(user=request.session["facility_user"], exercise_id=data["exercise_id"])
+    exerciselog = ExerciseLog.get_or_initialize(user=request.session["facility_user"], exercise_id=data["exercise_id"])
     previously_complete = exerciselog.complete
 
     exerciselog.attempts += 1
@@ -105,10 +102,10 @@ def save_exercise_log(request):
     # Special message if you've just completed.
     #   NOTE: it's important to check this AFTER calling save() above.
     if not previously_complete and exerciselog.complete:
-        return JsonResponse({"success": _("You've mastered this exercise!")})
+        return JsonResponse({"success": _("You have mastered this exercise!")})
     
     # Return no message in release mode; "data saved" message in debug mode.
-    return JsonResponse({} if not settings.DEBUG else {"success": "data saved."})
+    return JsonResponse({})
 
 
 @student_log_api(logged_out_message=_("Progress not loaded."))

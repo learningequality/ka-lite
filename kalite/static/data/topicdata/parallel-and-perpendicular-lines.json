@@ -1,324 +1,342 @@
 [
   {
-    "kind": "Exercise", 
-    "display_name": "Measuring angles", 
-    "description": null, 
-    "title": "Measuring angles", 
-    "seconds_per_fast_problem": 13.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "recognizing_rays_lines_and_line_segments"
-    ], 
-    "live": true, 
-    "h_position": 26, 
     "v_position": -21, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/Angle_basics/e/measuring_angles/", 
-    "slug": "measuring_angles", 
-    "name": "measuring_angles"
-  }, 
-  {
-    "kind": "Exercise", 
-    "display_name": "Angle types", 
+    "id": "measuring_angles", 
+    "display_name": "Measuring angles", 
+    "title": "Measuring angles", 
+    "live": true, 
     "description": null, 
-    "title": "Angle types", 
-    "seconds_per_fast_problem": 4.0, 
-    "related_video_readable_ids": [], 
+    "h_position": 26, 
+    "slug": "measuring_angles", 
+    "kind": "Exercise", 
+    "name": "measuring_angles", 
+    "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "recognizing_rays_lines_and_line_segments"
-    ], 
-    "live": true, 
-    "h_position": 26, 
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
     "v_position": -20, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/Angle_basics/e/angle_types/", 
+    "id": "angle_types", 
+    "display_name": "Angle types", 
+    "title": "Angle types", 
+    "live": true, 
+    "description": null, 
+    "h_position": 26, 
     "slug": "angle_types", 
-    "name": "angle_types"
+    "kind": "Exercise", 
+    "name": "angle_types", 
+    "seconds_per_fast_problem": 4.0, 
+    "prerequisites": [
+      "recognizing_rays_lines_and_line_segments"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Exploring angle pairs", 
-    "description": "Find vertical angles, adjacent angles, and linearly paired angles.", 
-    "title": "Exploring angle pairs", 
-    "seconds_per_fast_problem": 11.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "measuring_angles", 
-      "angle_types"
-    ], 
-    "live": true, 
-    "h_position": 27, 
     "v_position": -21, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/Angle_basics/e/exploring_angle_pairs_1/", 
+    "id": "exploring_angle_pairs_1", 
+    "display_name": "Exploring angle pairs", 
+    "title": "Exploring angle pairs", 
+    "live": true, 
+    "description": "Find vertical angles, adjacent angles, and linearly paired angles.", 
+    "h_position": 27, 
     "slug": "exploring_angle_pairs_1", 
-    "name": "exploring_angle_pairs_1"
-  }, 
-  {
     "kind": "Exercise", 
-    "display_name": "Complementary and supplementary angles", 
-    "description": null, 
-    "title": "Complementary and supplementary angles", 
-    "seconds_per_fast_problem": 8.0, 
-    "related_video_readable_ids": [], 
+    "name": "exploring_angle_pairs_1", 
+    "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "measuring_angles", 
       "angle_types"
-    ], 
-    "live": true, 
-    "h_position": 27, 
-    "v_position": -20, 
-    "path": "/math/geometry/parallel-and-perpendicular-lines/Angle_basics/e/complementary_and_supplementary_angles/", 
-    "slug": "complementary_and_supplementary_angles", 
-    "name": "complementary_and_supplementary_angles"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Angle addition postulate", 
-    "description": "", 
-    "title": "Angle addition postulate", 
-    "seconds_per_fast_problem": 43.0, 
     "related_video_readable_ids": [], 
+    "v_position": -20, 
+    "path": "/math/geometry/parallel-and-perpendicular-lines/Angle_basics/e/complementary_and_supplementary_angles/", 
+    "id": "complementary_and_supplementary_angles", 
+    "display_name": "Complementary and supplementary angles", 
+    "title": "Complementary and supplementary angles", 
+    "live": true, 
+    "description": null, 
+    "h_position": 27, 
+    "slug": "complementary_and_supplementary_angles", 
+    "kind": "Exercise", 
+    "name": "complementary_and_supplementary_angles", 
+    "seconds_per_fast_problem": 8.0, 
+    "prerequisites": [
+      "measuring_angles", 
+      "angle_types"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -21, 
+    "path": "/math/geometry/parallel-and-perpendicular-lines/Angle_basics/e/angle_addition_postulate/", 
+    "id": "angle_addition_postulate", 
+    "display_name": "Angle addition postulate", 
+    "title": "Angle addition postulate", 
+    "live": true, 
+    "description": "", 
+    "h_position": 29, 
+    "slug": "angle_addition_postulate", 
+    "kind": "Exercise", 
+    "name": "angle_addition_postulate", 
+    "seconds_per_fast_problem": 43.0, 
     "prerequisites": [
       "vertical_angles", 
       "vertical_angles_2"
-    ], 
-    "live": true, 
-    "h_position": 29, 
-    "v_position": -21, 
-    "path": "/math/geometry/parallel-and-perpendicular-lines/Angle_basics/e/angle_addition_postulate/", 
-    "slug": "angle_addition_postulate", 
-    "name": "angle_addition_postulate"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Vertical angles", 
-    "description": null, 
-    "title": "Vertical angles", 
-    "seconds_per_fast_problem": 4.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "exploring_angle_pairs_1", 
-      "complementary_and_supplementary_angles"
-    ], 
-    "live": true, 
-    "h_position": 28, 
     "v_position": -21, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/vertical_angles/", 
-    "slug": "vertical_angles", 
-    "name": "vertical_angles"
-  }, 
-  {
-    "kind": "Exercise", 
-    "display_name": "Vertical angles 2", 
+    "id": "vertical_angles", 
+    "display_name": "Vertical angles", 
+    "title": "Vertical angles", 
+    "live": true, 
     "description": null, 
-    "title": "Vertical angles 2", 
-    "seconds_per_fast_problem": 23.0, 
-    "related_video_readable_ids": [], 
+    "h_position": 28, 
+    "slug": "vertical_angles", 
+    "kind": "Exercise", 
+    "name": "vertical_angles", 
+    "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "exploring_angle_pairs_1", 
       "complementary_and_supplementary_angles"
-    ], 
-    "live": true, 
-    "h_position": 28, 
-    "v_position": -20, 
-    "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/vertical_angles_2/", 
-    "slug": "vertical_angles_2", 
-    "name": "vertical_angles_2"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Parallel lines 1", 
-    "description": null, 
-    "title": "Parallel lines 1", 
-    "seconds_per_fast_problem": 5.0, 
     "related_video_readable_ids": [], 
+    "v_position": -20, 
+    "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/vertical_angles_2/", 
+    "id": "vertical_angles_2", 
+    "display_name": "Vertical angles 2", 
+    "title": "Vertical angles 2", 
+    "live": true, 
+    "description": null, 
+    "h_position": 28, 
+    "slug": "vertical_angles_2", 
+    "kind": "Exercise", 
+    "name": "vertical_angles_2", 
+    "seconds_per_fast_problem": 23.0, 
+    "prerequisites": [
+      "exploring_angle_pairs_1", 
+      "complementary_and_supplementary_angles"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -25, 
+    "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/parallel_lines_1/", 
+    "id": "parallel_lines_1", 
+    "display_name": "Parallel lines 1", 
+    "title": "Parallel lines 1", 
+    "live": true, 
+    "description": null, 
+    "h_position": 30, 
+    "slug": "parallel_lines_1", 
+    "kind": "Exercise", 
+    "name": "parallel_lines_1", 
+    "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "angle_addition_postulate", 
       "segment_addition"
-    ], 
-    "live": true, 
-    "h_position": 30, 
-    "v_position": -25, 
-    "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/parallel_lines_1/", 
-    "slug": "parallel_lines_1", 
-    "name": "parallel_lines_1"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Parallel lines 2", 
-    "description": "", 
-    "title": "Parallel lines 2", 
-    "seconds_per_fast_problem": 23.0, 
     "related_video_readable_ids": [], 
+    "v_position": -26, 
+    "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/parallel_lines_2/", 
+    "id": "parallel_lines_2", 
+    "display_name": "Parallel lines 2", 
+    "title": "Parallel lines 2", 
+    "live": true, 
+    "description": "", 
+    "h_position": 32, 
+    "slug": "parallel_lines_2", 
+    "kind": "Exercise", 
+    "name": "parallel_lines_2", 
+    "seconds_per_fast_problem": 23.0, 
     "prerequisites": [
       "alternate_exterior_angles_2", 
       "alternate_interior_angles_2", 
       "same_side_exterior_angles_2", 
       "same_side_interior_angles_2", 
       "corresponding_angles_2"
-    ], 
-    "live": true, 
-    "h_position": 32, 
-    "v_position": -26, 
-    "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/parallel_lines_2/", 
-    "slug": "parallel_lines_2", 
-    "name": "parallel_lines_2"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Corresponding angles 2", 
-    "description": "", 
-    "title": "Corresponding angles 2", 
-    "seconds_per_fast_problem": 14.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "parallel_lines_1", 
-      "congruent_angles"
-    ], 
-    "live": true, 
-    "h_position": 31, 
     "v_position": -27, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/corresponding_angles_2/", 
+    "id": "corresponding_angles_2", 
+    "display_name": "Corresponding angles 2", 
+    "title": "Corresponding angles 2", 
+    "live": true, 
+    "description": "", 
+    "h_position": 31, 
     "slug": "corresponding_angles_2", 
-    "name": "corresponding_angles_2"
-  }, 
-  {
     "kind": "Exercise", 
-    "display_name": "Same side exterior angles 2", 
-    "description": null, 
-    "title": "Same side exterior angles 2", 
-    "seconds_per_fast_problem": 25.0, 
-    "related_video_readable_ids": [], 
+    "name": "corresponding_angles_2", 
+    "seconds_per_fast_problem": 14.0, 
     "prerequisites": [
       "parallel_lines_1", 
       "congruent_angles"
-    ], 
-    "live": true, 
-    "h_position": 31, 
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
     "v_position": -24, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/same_side_exterior_angles_2/", 
-    "slug": "same_side_exterior_angles_2", 
-    "name": "same_side_exterior_angles_2"
-  }, 
-  {
-    "kind": "Exercise", 
-    "display_name": "Same side interior angles 2", 
+    "id": "same_side_exterior_angles_2", 
+    "display_name": "Same side exterior angles 2", 
+    "title": "Same side exterior angles 2", 
+    "live": true, 
     "description": null, 
-    "title": "Same side interior angles 2", 
-    "seconds_per_fast_problem": 20.0, 
-    "related_video_readable_ids": [], 
+    "h_position": 31, 
+    "slug": "same_side_exterior_angles_2", 
+    "kind": "Exercise", 
+    "name": "same_side_exterior_angles_2", 
+    "seconds_per_fast_problem": 25.0, 
     "prerequisites": [
       "parallel_lines_1", 
       "congruent_angles"
-    ], 
-    "live": true, 
-    "h_position": 31, 
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
     "v_position": -25, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/same_side_interior_angles_2/", 
-    "slug": "same_side_interior_angles_2", 
-    "name": "same_side_interior_angles_2"
-  }, 
-  {
-    "kind": "Exercise", 
-    "display_name": "Alternate interior angles 2", 
+    "id": "same_side_interior_angles_2", 
+    "display_name": "Same side interior angles 2", 
+    "title": "Same side interior angles 2", 
+    "live": true, 
     "description": null, 
-    "title": "Alternate interior angles 2", 
-    "seconds_per_fast_problem": 14.0, 
-    "related_video_readable_ids": [], 
+    "h_position": 31, 
+    "slug": "same_side_interior_angles_2", 
+    "kind": "Exercise", 
+    "name": "same_side_interior_angles_2", 
+    "seconds_per_fast_problem": 20.0, 
     "prerequisites": [
       "parallel_lines_1", 
       "congruent_angles"
-    ], 
-    "live": true, 
-    "h_position": 31, 
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
     "v_position": -28, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/alternate_interior_angles_2/", 
-    "slug": "alternate_interior_angles_2", 
-    "name": "alternate_interior_angles_2"
-  }, 
-  {
-    "kind": "Exercise", 
-    "display_name": "Alternate exterior angles 2", 
+    "id": "alternate_interior_angles_2", 
+    "display_name": "Alternate interior angles 2", 
+    "title": "Alternate interior angles 2", 
+    "live": true, 
     "description": null, 
-    "title": "Alternate exterior angles 2", 
-    "seconds_per_fast_problem": 11.0, 
-    "related_video_readable_ids": [], 
+    "h_position": 31, 
+    "slug": "alternate_interior_angles_2", 
+    "kind": "Exercise", 
+    "name": "alternate_interior_angles_2", 
+    "seconds_per_fast_problem": 14.0, 
     "prerequisites": [
       "parallel_lines_1", 
       "congruent_angles"
-    ], 
-    "live": true, 
-    "h_position": 31, 
-    "v_position": -26, 
-    "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/alternate_exterior_angles_2/", 
-    "slug": "alternate_exterior_angles_2", 
-    "name": "alternate_exterior_angles_2"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Congruent angles", 
-    "description": "Determine which angles must be congruent when parallel lines are crossed by a transversal.", 
-    "title": "Congruent angles", 
-    "seconds_per_fast_problem": 4.0, 
     "related_video_readable_ids": [], 
+    "v_position": -26, 
+    "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/alternate_exterior_angles_2/", 
+    "id": "alternate_exterior_angles_2", 
+    "display_name": "Alternate exterior angles 2", 
+    "title": "Alternate exterior angles 2", 
+    "live": true, 
+    "description": null, 
+    "h_position": 31, 
+    "slug": "alternate_exterior_angles_2", 
+    "kind": "Exercise", 
+    "name": "alternate_exterior_angles_2", 
+    "seconds_per_fast_problem": 11.0, 
+    "prerequisites": [
+      "parallel_lines_1", 
+      "congruent_angles"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -27, 
+    "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/congruent_angles/", 
+    "id": "congruent_angles", 
+    "display_name": "Congruent angles", 
+    "title": "Congruent angles", 
+    "live": true, 
+    "description": "Determine which angles must be congruent when parallel lines are crossed by a transversal.", 
+    "h_position": 30, 
+    "slug": "congruent_angles", 
+    "kind": "Exercise", 
+    "name": "congruent_angles", 
+    "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "angle_addition_postulate", 
       "segment_addition"
-    ], 
-    "live": true, 
-    "h_position": 30, 
-    "v_position": -27, 
-    "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/congruent_angles/", 
-    "slug": "congruent_angles", 
-    "name": "congruent_angles"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Angles 1", 
-    "description": null, 
-    "title": "Angles 1", 
-    "seconds_per_fast_problem": 14.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "triangle_types"
-    ], 
-    "live": true, 
-    "h_position": 31, 
     "v_position": -20, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/triang_prop_tut/e/angles_1/", 
+    "id": "angles_1", 
+    "display_name": "Angles 1", 
+    "title": "Angles 1", 
+    "live": true, 
+    "description": null, 
+    "h_position": 31, 
     "slug": "angles_1", 
-    "name": "angles_1"
+    "kind": "Exercise", 
+    "name": "angles_1", 
+    "seconds_per_fast_problem": 14.0, 
+    "prerequisites": [
+      "triangle_types"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Angles 2", 
-    "description": null, 
-    "title": "Angles 2", 
-    "seconds_per_fast_problem": 13.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "angles_1"
-    ], 
-    "live": true, 
-    "h_position": 32, 
     "v_position": -20, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/triang_prop_tut/e/angles_2/", 
+    "id": "angles_2", 
+    "display_name": "Angles 2", 
+    "title": "Angles 2", 
+    "live": true, 
+    "description": null, 
+    "h_position": 32, 
     "slug": "angles_2", 
-    "name": "angles_2"
+    "kind": "Exercise", 
+    "name": "angles_2", 
+    "seconds_per_fast_problem": 13.0, 
+    "prerequisites": [
+      "angles_1"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Angles of a polygon", 
-    "description": null, 
-    "title": "Angles of a polygon", 
-    "seconds_per_fast_problem": 6.0, 
     "related_video_readable_ids": [], 
-    "prerequisites": [
-      "quadrilateral_types"
-    ], 
-    "live": true, 
-    "h_position": 34, 
     "v_position": -13, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/triang_prop_tut/e/angles_of_a_polygon/", 
+    "id": "angles_of_a_polygon", 
+    "display_name": "Angles of a polygon", 
+    "title": "Angles of a polygon", 
+    "live": true, 
+    "description": null, 
+    "h_position": 34, 
     "slug": "angles_of_a_polygon", 
-    "name": "angles_of_a_polygon"
+    "kind": "Exercise", 
+    "name": "angles_of_a_polygon", 
+    "seconds_per_fast_problem": 6.0, 
+    "prerequisites": [
+      "quadrilateral_types"
+    ]
   }
 ]
