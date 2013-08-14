@@ -71,7 +71,7 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
         youtube_id = data['youtube_id']
         # Only check logic if force specified
         if not force:
-            if youtube_id not in srts_dict:
+            if youtube_id not in srts_dict or not srts_dict[youtube_id]: 
                 cached = False
                 srts_dict[youtube_id] = {}  # Create an empty entry if nothing there to prevent errors in logic gates 
             else: 
@@ -95,7 +95,7 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
                 logging.debug("Skipping %s because it is cached and -f not given." % youtube_id)
                 continue 
 
-        # If it makes it to here without hitting a continue, then update
+        # If it makes it to here without hitting a continue, then update the entry 
         try:
             srts_dict[youtube_id] = update_video_entry(youtube_id, entry=srts_dict.get(youtube_id, {}))
         except Exception as e:
@@ -104,8 +104,7 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
             continue
 
         if n_new_entries % frequency_to_save == 0:
-            if frequency_to_save > 10:
-                logging.info("On loop %d dumping dictionary into %s" %(n_new_entries, out_file))
+            logging.info("On loop %d dumping dictionary into %s" %(n_new_entries, out_file))
             with open(out_file, 'wb') as fp:
                 json.dump(srts_dict, fp)
         n_new_entries += 1
