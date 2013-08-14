@@ -130,7 +130,7 @@ function get_server_status(options, fields, callback) {
         path: SERVER_INFO_PATH
     };
 
-    var args = $.extend(defaults, options || {});
+    var args = $.extend(defaults, options);
 
     // build the prefix only when a hostname was specified
     var prefix = "";
@@ -172,7 +172,9 @@ function check_now_whether_server_is_online(callback) {
  * @return {boolean} The callback function will be passed true if the client is online, and false otherwise.
  */
 function check_now_whether_client_is_online(callback) {
-    get_server_status({protocol: SECURESYNC_PROTOCOL, hostname: CENTRAL_SERVER_HOST, port: null}, [], function(data) {
+    var hostname = CENTRAL_SERVER_HOST.split(":")[0];
+    var port = CENTRAL_SERVER_HOST.split(":")[1] || null;
+    get_server_status({protocol: SECURESYNC_PROTOCOL, hostname: hostname, port: port}, [], function(data) {
         callback(data["status"] === "OK");
     });
 }
