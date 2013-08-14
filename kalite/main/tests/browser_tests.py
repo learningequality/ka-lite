@@ -25,6 +25,7 @@ from utils.testing.decorators import distributed_server_test
 
 from utils.exercises import get_exercise_paths
 from selenium.webdriver.firefox.webdriver import WebDriver
+from settings import LOG as logging
 
 
 class KALiteDistributedBrowserTestCase(BrowserTestCase):
@@ -456,9 +457,9 @@ class LoadExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
 
     def test_get_exercise_load_status(self):
         for path in get_exercise_paths():
-            settings.LOG.debug("Testing path : " + path)
+            logging.debug("Testing path : " + path)
             self.driver.get(self.live_server_url + path)
-            self.assertEqual(False, self.driver.execute_script("return document.body.hasAttribute('JSerror');"), "Found JS error(s) while loading path: " + path)
+            self.assertFalse(self.driver.execute_script("return document.body.hasAttribute('JSError');"), "Found JS error(s) while loading path: " + path)
         self.driver.close()
 
 
