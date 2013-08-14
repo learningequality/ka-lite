@@ -21,7 +21,7 @@ function show_api_messages(messages, msg_id) {
     }
     if (!messages) {
         return
-    } 
+    }
     switch (typeof messages) {
         case "object":
             for (msg_type in messages) {
