@@ -1,6 +1,6 @@
 import copy
 import json
-import re 
+import re
 import sys
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
@@ -95,6 +95,14 @@ def check_setup_status(handler):
 @cache_page(settings.CACHE_TIME)
 @render_to("topic.html")
 def topic_handler(request, topic):
+    return topic_context(topic)
+
+
+def topic_context(topic):
+    """
+    Given a topic node, create all context related to showing that topic
+    in a template.
+    """
     videos    = topic_tools.get_videos(topic)
     exercises = topic_tools.get_exercises(topic)
     topics    = topic_tools.get_live_topics(topic)
@@ -159,8 +167,8 @@ def exercise_handler(request, exercise):
 
     videos_to_delete = []
     for idx, video in enumerate(related_videos):
-        # Remove all videos that were not recognized or 
-        #   simply aren't on disk.  
+        # Remove all videos that were not recognized or
+        #   simply aren't on disk.
         #   Check on disk is relatively cheap, also executed infrequently
         if not video or not topic_tools.is_video_on_disk(video["youtube_id"]):
             videos_to_delete.append(idx)
@@ -199,16 +207,10 @@ def exercise_dashboard(request):
 @cache_page(settings.CACHE_TIME)
 @render_to("homepage.html")
 def homepage(request):
-    # TODO(bcipolli): video counts on the distributed server homepage
-    topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"], topicdata.TOPICS["children"])
-
-    # indexed by integer
-    my_topics = [dict([(k, t[k]) for k in ('title', 'path')]) for t in topics]
-
-    context = {
+    context = topic_context(topicdata.TOPICS)
+    context.update({
         "title": "Home",
-        "topics": my_topics,
-    }
+    })
     return context
 
 @require_admin
