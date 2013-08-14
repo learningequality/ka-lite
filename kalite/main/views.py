@@ -1,6 +1,6 @@
 import copy
 import json
-import re 
+import re
 import sys
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
@@ -10,7 +10,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.db.models import Sum
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound, HttpResponseRedirect, Http404, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
@@ -28,7 +28,7 @@ from securesync.api_client import SyncClient
 from securesync.models import Facility, FacilityUser,FacilityGroup, Device
 from securesync.views import require_admin, facility_required
 from utils import topic_tools
-from utils.internet import am_i_online
+from utils.internet import am_i_online, JsonResponse
 from utils.jobs import force_job
 from utils.decorators import require_admin
 from utils.videos import video_connection_is_available
@@ -167,8 +167,8 @@ def exercise_handler(request, exercise):
 
     videos_to_delete = []
     for idx, video in enumerate(related_videos):
-        # Remove all videos that were not recognized or 
-        #   simply aren't on disk.  
+        # Remove all videos that were not recognized or
+        #   simply aren't on disk.
         #   Check on disk is relatively cheap, also executed infrequently
         if not video or not topic_tools.is_video_on_disk(video["youtube_id"]):
             videos_to_delete.append(idx)
@@ -210,7 +210,6 @@ def homepage(request):
     context = topic_context(topicdata.TOPICS)
     context.update({
         "title": "Home",
-        "registered": Settings.get("registered"),
     })
     return context
 
@@ -308,10 +307,17 @@ def update(request):
     if not am_i_online:
         messages.warning(request, _("No internet connection was detected.  You must be online to download videos or subtitles."))
 
+    device = Device.get_own_device()
+    zone = device.get_zone()
+
     context = {
         "languages": languages,
         "default_language": default_language,
         "am_i_online": am_i_online,
+        "registered": Settings.get("registered"),
+        "zone_id": zone.id if zone else None,
+        "device_id": device.id,
+        "video_count": VideoFile.objects.filter(percent_complete=100).count(),
     }
     return context
 

@@ -35,7 +35,7 @@ class SyncSession(models.Model):
     timestamp = models.DateTimeField(auto_now=True)
     models_uploaded = models.IntegerField(default=0)
     models_downloaded = models.IntegerField(default=0)
-    errors = models.IntegerField(default=0);  errors.minversion="0.9.3" # kalite version
+    errors = models.IntegerField(default=0); errors.version="0.9.3" # kalite version
     closed = models.BooleanField(default=False)
 
     def _hashable_representation(self):
@@ -447,7 +447,7 @@ class Device(SyncedModel):
     name = models.CharField(max_length=100, blank=True)
     description = models.TextField(blank=True)
     public_key = models.CharField(max_length=500, db_index=True)
-    version = models.CharField(max_length=len("10.10.100"), default="0.9.2", blank=True);  version.minversion="0.9.3"
+    version = models.CharField(max_length=len("10.10.100"), default="0.9.2", blank=True); version.version="0.9.3"  # default comes from knowing when this feature was implemented!
 
     objects = DeviceManager()
 

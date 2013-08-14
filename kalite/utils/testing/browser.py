@@ -95,12 +95,29 @@ class BrowserTestCase(KALiteTestCase):
         return super(BrowserTestCase, self).tearDown()
 
 
-    def browse_to(self, dest_url, wait_time=0.1, max_retries=50):
+    def browse_to(self, *args, **kwargs):
         """
         When testing, we have to make sure that the page has loaded before testing the resulting page.
+        
+        Three ways to specify the url to browse to:
+        1. First positional argument
+        2. dest_url keyword argument
+        3. reverse lookup of url_name argument.
         """
+        if args:
+            assert "dest_url" not in kwargs
+            dest_url = args[0]
+        elif "dest_url" in kwargs:
+            assert "url_name" not in kwargs
+            dest_url = kwargs["dest_url"]
+        elif "url_name" in kwargs:
+            kwargs["dest_url"] = self.reverse(kwargs["url_name"])
+            del kwargs["url_name"]
+            dest_url = kwargs["dest_url"]
+        else:
+            raise Exception("Must specify the destination url.")
 
-        self.assertTrue(browse_to(self.browser, dest_url=dest_url, wait_time=wait_time, max_retries=max_retries), "Browsing to '%s'" % dest_url)
+        self.assertTrue(browse_to(self.browser, *args, **kwargs), "Browsing to '%s'" % dest_url)
 
 
     def wait_for_page_change(self, source_url, wait_time=0.1, max_retries=None):
