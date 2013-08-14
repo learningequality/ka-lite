@@ -22,6 +22,7 @@ def get_subtitle_counts(request):
 
 
     # Return an appropriate response
+    # TODO(dylan): Use jsonp decorator once it becomes available
     if request.GET.get("callback",None):
         # JSONP response
         response = HttpResponse("%s(%s);" % (request.GET["callback"], json.dumps(subtitle_counts, sort_keys=True)))

@@ -532,10 +532,12 @@ ul.dynatree-container li, .ui-widget-content {
     }
 
     function show_subtitle_counts(subtitleCounts) {
+        // gets the current number of subs per language 
         var defaultLanguage = "{{ default_language }}";
         $.each(subtitleCounts, function(langName, langData) {
             var langCode = langData["code"];
             var srtCount = langData["count"];
+            // adds it to update page
             if(srtCount > 0){
                 if(langCode === defaultLanguage) {
                     $('#language').append('<option value="' + langCode + '" selected>' + langName + ' (' + srtCount +')</option>')    
