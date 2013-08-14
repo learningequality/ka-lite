@@ -454,11 +454,11 @@ class ExerciseLoadTest(KALiteDistributedWithFacilityBrowserTestCase):
         super(ExerciseLoadTest, self).setUp()
         self.driver = WebDriver()
 
-    def test_get_exercise_data_structure(self):
-        for url in get_exercise_paths():
-            settings.LOG.debug("Testing url : " + url)
-            self.driver.get(self.live_server_url + url)
-            self.assertEqual(False, self.driver.execute_script("return document.body.hasAttribute('JSerror');"), "Failed to initialize exerciseData in url: " + url)
+    def test_get_exercise_load_status(self):
+        for path in get_exercise_paths():
+            settings.LOG.debug("Testing path : " + path)
+            self.driver.get(self.live_server_url + path)
+            self.assertEqual(False, self.driver.execute_script("return document.body.hasAttribute('JSerror');"), "Found JS error(s) while loading path: " + path)
         self.driver.close()
 
 
