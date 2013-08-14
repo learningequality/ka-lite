@@ -317,6 +317,7 @@ def allow_jsonp(handler):
                 # return an empty body, for OPTIONS requests, with the headers defined below included
                 response = HttpResponse("", content_type="text/plain")
             
+            # add CORS-related headers, if the Origin header was included in the request
             if request.method in ["OPTIONS", "GET"] and "HTTP_ORIGIN" in request.META:
                 response["Access-Control-Allow-Origin"] = request.META["HTTP_ORIGIN"]
                 response["Access-Control-Allow-Methods"] = "GET, OPTIONS"
