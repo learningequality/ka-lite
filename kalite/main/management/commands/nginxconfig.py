@@ -5,8 +5,8 @@ import settings
 
 config_template = """
 
-// In your local_settings.py file, set PRODUCTION_PORT = 7007
-// Then, add the following to /etc/nginx/sites-enabled/kalite:
+# In your local_settings.py file, set PRODUCTION_PORT = 7007
+# Then, add the following to /etc/nginx/sites-enabled/kalite:
 
 upstream kalite {
     server 127.0.0.1:7007;
@@ -17,8 +17,8 @@ proxy_temp_path /var/cache/nginx/tmp;
 
 server {
 
-    // You may change the following port (8008) to something else,
-    // if you want the website to be accessible at a different port:
+    # You may change the following port (8008) to something else,
+    # if you want the website to be accessible at a different port:
     listen 8008;
 
     location /static {
@@ -43,7 +43,6 @@ server {
     }
 
 }
-
 
 """
 
