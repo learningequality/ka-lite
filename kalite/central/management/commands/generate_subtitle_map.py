@@ -1,4 +1,4 @@
-"""Retrieve and store information from Amara's API that we can use 
+"""Retrieve and store information from Amara's API that we can use
 to somewhat intelligently download subtitles from them"""
 
 import datetime
@@ -15,7 +15,7 @@ from django.core.management import call_command
 import settings
 from settings import LOG as logging
 from utils import general
-from utils.subtitles import subtitle_utils 
+from utils.subtitles import subtitle_utils
 from utils.topic_tools import get_node_cache
 
 
@@ -52,7 +52,7 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
             srts_dict = {}
         else:
             logging.info("Loaded %d mappings." % (len(srts_dict)))
-        
+
         # Set of videos no longer used by KA Lite
         removed_videos = set(srts_dict.keys()) - set([v["youtube_id"] for v in videos.values()])
         if removed_videos:
@@ -74,20 +74,18 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
             last_attempt = srts_dict[youtube_id].get("last_attempt")
             last_attempt = None if not last_attempt else datetime.datetime.strptime(last_attempt, '%Y-%m-%d')
             flag_for_refresh = flag_for_refresh and (not date_to_check or date_to_check > last_attempt)
-            if not flag_for_refresh: 
+            if not flag_for_refresh:
                 logging.debug("Skipping %s for date-check" % youtube_id)
                 continue
-            # Second, check against response code 
-            response_code = srts_dict[youtube_id].get("api_response") 
+            # Second, check against response code
+            response_code = srts_dict[youtube_id].get("api_response")
             flag_for_refresh = flag_for_refresh and (not response_to_check or response_to_check == "all" or response_to_check == response_code)
             if not (flag_for_refresh):
                 logging.debug("Skipping %s for response-code" % youtube_id)
                 continue
-
             if not response_to_check and not date_to_check and cached: # no flags specified and already cached - skip
                 logging.debug("Skipping %s for already-cached and no flags specified" % youtube_id)
                 continue
-
         else:
             if force and not cached:
                 logging.debug("Updating %s because force flag (-f) given and video not cached." % youtube_id)
@@ -96,7 +94,7 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
             else: 
                 logging.debug("Updating %s because video not yet cached." % youtube_id)
 
-        # If it makes it to here without hitting a continue, then update the entry 
+        # If it makes it to here without hitting a continue, then update the entry
         try:
             srts_dict[youtube_id] = update_video_entry(youtube_id, entry=srts_dict.get(youtube_id, {}))
         except Exception as e:

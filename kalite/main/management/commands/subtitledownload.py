@@ -3,7 +3,6 @@ import sys
 import os
 import requests
 import time
-from requests.exceptions import ConnectionError, HTTPError
 
 from django.core.management.base import BaseCommand, CommandError
 
@@ -19,18 +18,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         language = Settings.get("subtitle_language")
-        request_url = "http://%s/static/data/subtitles/languages/%s.json" % (settings.CENTRAL_SERVER_HOST, language)
-        try:
-            # TODO(dylan): better error handling here
-            r = requests.get(request_url)
-            r.raise_for_status() # will return none if 200, otherwise will raise HTTP error
-            available_srts = set((r.json)["srt_files"])
-        except ConnectionError:
-            self.stdout.write("The central server is currently offline.\n")
-            return
-        except HTTPError:
-            self.stdout.write("No subtitles available on central server for language code %s; aborting.\n" % language)
-            return
 
         while True: # loop until the method is aborted
             
