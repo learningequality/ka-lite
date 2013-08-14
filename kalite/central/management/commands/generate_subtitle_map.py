@@ -1,4 +1,4 @@
-"""Retrieve and store information from Amara's API that we can use 
+"""Retrieve and store information from Amara's API that we can use
 to somewhat intelligently download subtitles from them"""
 
 import datetime
@@ -15,7 +15,7 @@ from django.core.management import call_command
 import settings
 from settings import LOG as logging
 from utils import general
-from utils.subtitles import subtitle_utils 
+from utils.subtitles import subtitle_utils
 from utils.topic_tools import get_node_cache
 
 
@@ -52,7 +52,7 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
             srts_dict = {}
         else:
             logging.info("Loaded %d mappings." % (len(srts_dict)))
-        
+
         # Set of videos no longer used by KA Lite
         removed_videos = set(srts_dict.keys()) - set([v["youtube_id"] for v in videos.values()])
         if removed_videos:
@@ -62,40 +62,40 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
     logging.info("Querying %d mappings." % (len(videos) - (0 if (force or date_to_check) else len(srts_dict))))
 
 
-    
+
     # Once we have the current mapping, proceed through logic to update the mapping
     n_new_entries = 0
     n_failures = 0
     for video, data in videos.iteritems():
-        # Decide whether or not to update this entry based on the arguments provided at the command line 
+        # Decide whether or not to update this entry based on the arguments provided at the command line
         youtube_id = data['youtube_id']
         # Only check logic if force specified
         if not force:
-            if youtube_id not in srts_dict or not srts_dict[youtube_id]: 
+            if youtube_id not in srts_dict or not srts_dict[youtube_id]:
                 cached = False
-                srts_dict[youtube_id] = {}  # Create an empty entry if nothing there to prevent errors in logic gates 
-            else: 
-                cached = True # store this so you know later, because we will check at the end before we update 
+                srts_dict[youtube_id] = {}  # Create an empty entry if nothing there to prevent errors in logic gates
+            else:
+                cached = True # store this so you know later, because we will check at the end before we update
             # First, check against date
             flag_for_refresh = True # not (response_code or last_attempt)
             last_attempt = srts_dict[youtube_id].get("last_attempt")
             last_attempt = None if not last_attempt else datetime.datetime.strptime(last_attempt, '%Y-%m-%d')
             flag_for_refresh = flag_for_refresh and (not date_to_check or date_to_check > last_attempt)
-            if not flag_for_refresh: 
+            if not flag_for_refresh:
                 logging.debug("Skipping %s for date-check" % youtube_id)
                 continue
-            # Second, check against response code 
-            response_code = srts_dict[youtube_id].get("api_response") 
+            # Second, check against response code
+            response_code = srts_dict[youtube_id].get("api_response")
             flag_for_refresh = flag_for_refresh and (not response_to_check or response_to_check == "all" or response_to_check == response_code)
             if not (flag_for_refresh):
                 logging.debug("Skipping %s for response-code" % youtube_id)
                 continue
             # Last, to allow caching for more efficient restarting of script
-            if cached: 
+            if cached:
                 logging.debug("Skipping %s because it is cached and -f not given." % youtube_id)
-                continue 
+                continue
 
-        # If it makes it to here without hitting a continue, then update the entry 
+        # If it makes it to here without hitting a continue, then update the entry
         try:
             srts_dict[youtube_id] = update_video_entry(youtube_id, entry=srts_dict.get(youtube_id, {}))
         except Exception as e:

@@ -51,7 +51,7 @@ def download_srt_from_3rd_party(*args, **kwargs):
     if not os.path.exists(srt_list_path):
         raise CommandError(
             "%s not found. Please run the 'generate_subtitle_map' command before calling this command." % srt_list_path)
-    
+
     language_srt_map = json.loads(open(srt_list_path).read())
 
     lang_code = kwargs.get("lang_code", None)
@@ -84,6 +84,8 @@ def download_if_criteria_met(videos, lang_code, force, response_code, date_since
 
     # Filter up front, for efficiency (& reporting's sake)
     n_videos = len(videos)
+
+    logging.info("There are (up to) %s total videos with subtitles for language '%s'.  Let's go get them!" % (n_videos, lang_code))
 
     # Filter based on response code
     if response_code and response_code != "all":
@@ -139,7 +141,7 @@ def download_if_criteria_met(videos, lang_code, force, response_code, date_since
             logging.info("Updating JSON file to record success.")
             update_json(
                 youtube_id, lang_code, True, "success", time_of_attempt)
-        
+
         # Update srt availability mapping
         n_loops += 1
         if n_loops % frequency_to_save == 0:
@@ -147,7 +149,13 @@ def download_if_criteria_met(videos, lang_code, force, response_code, date_since
                 "On loop %d - generating new subtitle counts & updating srt availability!" % n_loops)
             get_new_counts(data_path=settings.SUBTITLES_DATA_ROOT,
                            download_path=download_path, language_code=lang_code)
-            update_srt_availability()
+            update_srt_availability(lang_code=lang_code)
+
+    # One last call, to make sure we didn't miss anything.
+    srt_availability = update_srt_availability(lang_code=lang_code)
+
+    # Summarize output
+    logging.info("We now have %d subtitles (amara thought they had %d) for language '%s'!" % (len(srt_availability), n_videos, lang_code))
 
 
 def download_subtitle(youtube_id, lang_code, format="srt"):
@@ -196,7 +204,7 @@ def update_json(youtube_id, lang_code, downloaded, api_response, time_of_attempt
 
     # write it to file
     logging.info("File updated.")
-    json_file = open(filepath, "w+")
+    json_file = open(filepath, "a+")
     json_file.write(json.dumps(language_srt_map))
     json_file.close()
 
@@ -288,23 +296,30 @@ def update_language_list(sub_counts, data_path):
         json.dump(LANGUAGE_LIST, fp)
 
 
-def update_srt_availability():
+def update_srt_availability(lang_code):
     """Update maps in srts_by_lanugage with ids of downloaded subs"""
 
     srts_path = settings.STATIC_ROOT + "srt/"
-    for lang_code in os.listdir(srts_path):
-        lang_srts_path = srts_path + lang_code + "/subtitles/"
+
+    # Get a list of all srt files
+    lang_srts_path = srts_path + lang_code + "/subtitles/"
+    if not os.path.exists(lang_srts_path):
+        # this happens when we tried to get srts, but none existed.
+        yt_ids = []
+    else:
         files = os.listdir(lang_srts_path)
         yt_ids = [f.rstrip(".srt") for f in files]
-        srts_dict = {
-            "srt_files": yt_ids
-        }
-        base_path = settings.SUBTITLES_DATA_ROOT + "languages/"
-        general.ensure_dir(base_path)
-        filename = "%s.json" % lang_code
-        filepath = base_path + filename
-        with open(filepath, 'wb') as fp:
-            json.dump(srts_dict, fp)
+    srts_dict = { "srt_files": yt_ids }
+
+    # Dump that to the language path
+    base_path = settings.SUBTITLES_DATA_ROOT + "languages/"
+    general.ensure_dir(base_path)
+    filename = "%s.json" % lang_code
+    filepath = base_path + filename
+    with open(filepath, 'wb') as fp:
+        json.dump(srts_dict, fp)
+
+    return yt_ids
 
 
 class Command(BaseCommand):
