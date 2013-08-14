@@ -24,7 +24,7 @@ from securesync.models import Facility, FacilityGroup, FacilityUser
 from utils.general import isnumeric
 from utils.testing.browser import BrowserTestCase
 from utils.testing.decorators import distributed_server_test
-from utils.exercises import get_exercises_urls
+from utils.exercises import get_exercise_paths
 from selenium.webdriver.firefox.webdriver import WebDriver
 
 class KALiteDistributedBrowserTestCase(BrowserTestCase):
@@ -403,18 +403,20 @@ class ExerciseDataStructureTest(KALiteDistributedWithFacilityBrowserTestCase):
     """Tests if the exercise data structure is correctly initialized.
 
     The test is run over all urls.
+
+    # TODO(ruimalheiro) Check for any JS error.
     """
     def setUp(self):
         super(ExerciseDataStructureTest, self).setUp()
         self.driver = WebDriver()
 
     def test_get_exercise_data_structure(self):
-        for url in get_exercises_urls():
-            print "Testing url: " + url
+        for url in get_exercise_paths():
+            settings.LOG.debug("Testing url : " + url)
             try:
                 self.driver.get(self.live_server_url + url)
-                self.driver.execute_script("return (exerciseData && true);")
-                self.assertTrue(True, "")
+                #self.driver.execute_script("return (exerciseData && true);")
+                self.assertEqual(False, self.driver.execute_script("return document.body.hasAttribute('JSerror');"))
             except WebDriverException:
                 self.driver.close()
                 self.assertTrue(False, "Failed to initialize exerciseData in url: " + url)
