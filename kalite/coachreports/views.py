@@ -15,7 +15,6 @@ from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext as _
 
-from coachreports.forms import DataForm
 from coachreports.api_views import get_data_form, stats_dict
 from main import topicdata
 from main.models import VideoLog, ExerciseLog, VideoFile
