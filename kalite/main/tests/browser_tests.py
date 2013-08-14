@@ -7,7 +7,7 @@ import re
 import time
 import unittest
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException, WebDriverException
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions, ui
 
@@ -445,27 +445,20 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
 
 
 
-class ExerciseDataStructureTest(KALiteDistributedWithFacilityBrowserTestCase):
-    """Tests if the exercise data structure is correctly initialized.
+class ExerciseLoadTest(KALiteDistributedWithFacilityBrowserTestCase):
+    """Tests if the exercise is loaded without any JS error.
 
-    The test is run over all urls.
-
-    # TODO(ruimalheiro) Check for any JS error.
+    The test is run over all urls and check for any JS error.
     """
     def setUp(self):
-        super(ExerciseDataStructureTest, self).setUp()
+        super(ExerciseLoadTest, self).setUp()
         self.driver = WebDriver()
 
     def test_get_exercise_data_structure(self):
         for url in get_exercise_paths():
             settings.LOG.debug("Testing url : " + url)
-            try:
-                self.driver.get(self.live_server_url + url)
-                #self.driver.execute_script("return (exerciseData && true);")
-                self.assertEqual(False, self.driver.execute_script("return document.body.hasAttribute('JSerror');"))
-            except WebDriverException:
-                self.driver.close()
-                self.assertTrue(False, "Failed to initialize exerciseData in url: " + url)
+            self.driver.get(self.live_server_url + url)
+            self.assertEqual(False, self.driver.execute_script("return document.body.hasAttribute('JSerror');"), "Failed to initialize exerciseData in url: " + url)
         self.driver.close()
 
 
