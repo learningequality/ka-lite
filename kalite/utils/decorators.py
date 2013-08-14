@@ -22,7 +22,7 @@ def central_server_only(handler):
     """
     def wrapper_fn(*args, **kwargs):
         if not settings.CENTRAL_SERVER:
-            return Http404("This path is only available on the central server.")
+            raise Http404("This path is only available on the central server.")
         return handler(*args, **kwargs)
     return wrapper_fn
 
@@ -33,7 +33,7 @@ def distributed_server_only(handler):
     """
     def wrapper_fn(*args, **kwargs):
         if settings.CENTRAL_SERVER:
-            return Http404(_("This path is only available on distributed servers."))
+            raise Http404(_("This path is only available on distributed servers."))
         return handler(*args, **kwargs)
     return wrapper_fn
 
@@ -121,11 +121,11 @@ def get_user_from_request(handler=None, request=None, *args, **kwargs):
     return wrapper_fn if not request else wrapper_fn(request=request, *args, **kwargs)
 
 
-@distributed_server_only
 def require_login(handler):
     """
    (Level 1) Make sure that a user is logged in to the distributed server.
     """
+    @distributed_server_only
     def wrapper_fn(request, *args, **kwargs):
         if request.user.is_authenticated() or "facility_user" in request.session:
             return handler(request, *args, **kwargs)
