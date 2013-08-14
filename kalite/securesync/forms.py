@@ -54,7 +54,7 @@ class FacilityUserForm(forms.ModelForm):
         if User.objects.filter(username__iexact=username).count() > 0:
             raise forms.ValidationError(_("The specified username is unavailable. Please choose a new username and try again."))
 
-        return self.cleaned_data
+        return self.cleaned_data['username']
 
     def clean_password_recheck(self):
 
