@@ -182,7 +182,7 @@
 									{{ zone.name }}
 								</h4>
 								<div class="nudge-left floatleft">
-									<a href="{% url zone_management org_id=org.id zone_id=zone.id %}">
+									<a class="zone-manage-link" href="{% url zone_management org_id=org.id zone_id=zone.id %}">
 										(manage)
 									</a>
 								</div>
@@ -236,7 +236,7 @@
 									<h4 id="form-label">Add Admin: </h4><input type="text" placeholder="example@email.com" name="email_to_invite">
 									<input type="submit" value="Send invite!">
 									{% for error in org.form.non_field_errors %}
-										<div class="error">{{ error }}</div>
+										<div class="errors">{{ error }}</div>
 									{% endfor %}
 								</form>
 							</div>

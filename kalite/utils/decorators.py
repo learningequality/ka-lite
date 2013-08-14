@@ -22,7 +22,7 @@ def central_server_only(handler):
     """
     def wrapper_fn(*args, **kwargs):
         if not settings.CENTRAL_SERVER:
-            return Http404("This path is only available on the central server.")
+            raise Http404("This path is only available on the central server.")
         return handler(*args, **kwargs)
     return wrapper_fn
 
@@ -33,8 +33,23 @@ def distributed_server_only(handler):
     """
     def wrapper_fn(*args, **kwargs):
         if settings.CENTRAL_SERVER:
-            return Http404(_("This path is only available on distributed servers."))
+            raise Http404(_("This path is only available on distributed servers."))
         return handler(*args, **kwargs)
+    return wrapper_fn
+
+
+def api_handle_error_with_json(handler):
+    """
+    All API requests should return JSON objects, even when unexpected errors occur.
+    This decorator makes sure that all uncaught errors are not returned as HTML to the user, but instead JSON errors.
+    """
+    def wrapper_fn(*args, **kwargs):
+        try:
+            return handler(*args, **kwargs)
+        except PermissionDenied as pe:
+            raise pe  # handled upstream
+        except Exception as e:
+            return JsonResponse({"error": "Unexpected exception: %s" % e}, status=500)
     return wrapper_fn
 
 
@@ -48,7 +63,7 @@ def facility_from_request(handler=None, request=None, *args, **kwargs):
 
     def wrapper_fn(request, *args, **kwargs):
         if kwargs.get("facility_id",None):
-            facility = get_object_or_None(pk=facility_id)
+            facility = get_object_or_None(pk=kwargs["facility_id"])
         elif "facility" in request.GET:
             facility = get_object_or_None(Facility, pk=request.GET["facility"])
             if "set_default" in request.GET and request.is_admin and facility:
