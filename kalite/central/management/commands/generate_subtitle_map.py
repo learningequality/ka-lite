@@ -61,21 +61,14 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
                 del srts_dict[vid]
     logging.info("Querying %d mappings." % (len(videos) - (0 if (force or date_to_check) else len(srts_dict))))
 
-
-    
     # Once we have the current mapping, proceed through logic to update the mapping
     n_new_entries = 0
     n_failures = 0
     for video, data in videos.iteritems():
-        # Decide whether or not to update this entry based on the arguments provided at the command line 
+        # Decide whether or not to update this video based on the arguments provided at the command line 
         youtube_id = data['youtube_id']
-        # Only check logic if force specified
-        if not force:
-            if youtube_id not in srts_dict or not srts_dict[youtube_id]: 
-                cached = False
-                srts_dict[youtube_id] = {}  # Create an empty entry if nothing there to prevent errors in logic gates 
-            else: 
-                cached = True # store this so you know later, because we will check at the end before we update 
+        cached = youtube_id in srts_dict
+        if not force and cached: 
             # First, check against date
             flag_for_refresh = True # not (response_code or last_attempt)
             last_attempt = srts_dict[youtube_id].get("last_attempt")
@@ -90,10 +83,18 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
             if not (flag_for_refresh):
                 logging.debug("Skipping %s for response-code" % youtube_id)
                 continue
-            # Last, to allow caching for more efficient restarting of script
-            if cached: 
-                logging.debug("Skipping %s because it is cached and -f not given." % youtube_id)
-                continue 
+
+            if not response_to_check and not date_to_check and cached: # no flags specified and already cached - skip
+                logging.debug("Skipping %s for already-cached and no flags specified" % youtube_id)
+                continue
+
+        else:
+            if force and not cached:
+                logging.debug("Updating %s because force flag (-f) given and video not cached." % youtube_id)
+            elif force and cached:
+                logging.debug("Updating %s because force flag (-f) given. Video was previously cached." % youtube_id)
+            else: 
+                logging.debug("Updating %s because video not yet cached." % youtube_id)
 
         # If it makes it to here without hitting a continue, then update the entry 
         try:
