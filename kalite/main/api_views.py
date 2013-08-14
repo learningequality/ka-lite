@@ -1,6 +1,8 @@
 import json
 import re
+import requests
 from annoying.functions import get_object_or_None
+from requests.exceptions import ConnectionError, HTTPError
 
 from django.core.exceptions import ValidationError
 from django.db.models import Q
@@ -232,16 +234,32 @@ def start_subtitle_download(request):
     new_only = simplejson.loads(request.raw_post_data or "{}").get("new_only", False)
     language = simplejson.loads(request.raw_post_data or "{}").get("language", "")
     language_list = topicdata.LANGUAGE_LIST
+
+    # Reset the language
     current_language = Settings.get("subtitle_language")
     new_only = new_only and (current_language == language)
     if language in language_list:
         Settings.set("subtitle_language", language)
     else:
         return JsonResponse({"error": "This language is not currently supported - please update the language list"}, status=500)
+
+    # Get the json file with all srts
+    request_url = "http://%s/static/data/subtitles/srts_by_language/%s.json" % (settings.CENTRAL_SERVER_HOST, language)
+    try:
+        # TODO(dylan): better error handling here
+        r = requests.get(request_url)
+        r.raise_for_status() # will return none if 200, otherwise will raise HTTP error
+        available_srts = set((r.json)["srt_files"])
+    except ConnectionError:
+        return JsonResponse({"error": "The central server is currently offline."}, status=500)
+    except HTTPError:
+        return JsonResponse({"error": "No subtitles available on central server for language code '%s'; aborting." % language}, status=500)
+
     if new_only:
-        videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True), subtitles_downloaded=False)
+        videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True), subtitles_downloaded=False, youtube_id__in=available_srts)
     else:
-        videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True))
+        videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True), youtube_id__in=available_srts)
+
     for videofile in videofiles:
         videofile.cancel_download = False
         if videofile.subtitle_download_in_progress:
