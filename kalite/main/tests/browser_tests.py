@@ -445,13 +445,13 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
 
 
 
-class ExerciseLoadTest(KALiteDistributedWithFacilityBrowserTestCase):
+class LoadExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
     """Tests if the exercise is loaded without any JS error.
 
     The test is run over all urls and check for any JS error.
     """
     def setUp(self):
-        super(ExerciseLoadTest, self).setUp()
+        super(LoadExerciseTest, self).setUp()
         self.driver = WebDriver()
 
     def test_get_exercise_load_status(self):
