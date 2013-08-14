@@ -12,6 +12,11 @@ class InvalidDateFormat(Exception):
     def __str__(value):
         return "Invalid date format. Please format your date (-d) flag like this: 'MM/DD/YYYY'"
 
+class InvalidDirectoryFormat(Exception):
+
+    def __str__(value):
+        return "Invalid directory format. Please ensure you are passing in a directory path, not a filepath."
+
 
 def break_into_chunks(bigiterator, chunksize=500):
     """
@@ -108,10 +113,12 @@ def version_diff(v1, v2):
 
 
 def ensure_dir(path):
-    """Create the entire path, if it doesn't exist already."""
+    """Create the entire directory path, if it doesn't exist already."""
     path_parts = path.split("/")
     full_path = "/"
     for part in path_parts:
+        if "." in part:
+            raise InvalidDirectoryFormat()
         if part is not '':
             full_path += part + "/"
             if not os.path.exists(full_path):
