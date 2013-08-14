@@ -172,7 +172,7 @@ else:
     ROOT_URLCONF = "main.urls"
     # Include optionally installed apps
     if os.path.exists(PROJECT_PATH + "/tests/loadtesting/"):
-        INSTALLED_APPS     += ("kalite.tests.loadtesting"),
+        INSTALLED_APPS += ("kalite.tests.loadtesting",)
 
     MIDDLEWARE_CLASSES += (
         "securesync.middleware.DBCheck",
