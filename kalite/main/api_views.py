@@ -243,7 +243,7 @@ def start_subtitle_download(request):
         return JsonResponse({"error": "This language is not currently supported - please update the language list"}, status=500)
 
     # Get the json file with all srts
-    request_url = "http://%s/static/data/subtitles/srts_by_language/%s.json" % (settings.CENTRAL_SERVER_HOST, language)
+    request_url = "http://%s/static/data/subtitles/languages/%s.json" % (settings.CENTRAL_SERVER_HOST, language)
     try:
         # TODO(dylan): better error handling here
         r = requests.get(request_url)
