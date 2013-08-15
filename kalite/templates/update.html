@@ -19,9 +19,23 @@
 
 <style>
 
+.vertical-shadow{
+    margin-left: 5px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+}
 
+h2{
+    font-size: 24px;
+}
 
+img{
+    margin-left: 15px;
+}
 
+.container{
+    margin-left: 130px;
+}
 
 </style>
 {% endblock headcss %}
@@ -29,33 +43,59 @@
 {% block content %}
 
 <div>
-    <div class="wrapit">
-        <div class="clearfix">
-            <div class="separate">
-                <div class="vertical-shadow suggested-action">
-                    <a href="{% url update_videos %}?{% block topic_paths %}{% for path in form.topic_path %}topic_path={{ path }}&{% endfor %}{% endblock topic_paths %}">
-                        <h2 class="suggested-action-title">{% trans "Download Videos" %}</h2>
-                        <div class="suggested-action-image-link" style="background-image: url({% static 'images/update_videos.png' %});"></div>
-                    </a>
+            <div class="vertical-shadow suggested-action">
+                <div class= "row">
+                        <h2 class="text-center">{% trans "System Updates" %}</h2>
                 </div>
-            </div>
-            <div class="separate">
-                <div class="vertical-shadow suggested-action">
-                    <a href="{% url update_subtitles %}?{% repeatblock topic_paths %}">
-                        <h2 class="suggested-action-title">{% trans "Update Languages" %}</h2>
-                        <div class="suggested-action-image-link" style="background-image: url({% static 'images/update_subtitles.jpeg' %});"></div>
-                    </a>
+
+                <div class= "row">
+                    <div class="span3">
+                        <img src="http://placehold.it/300x200">
+                    </div>
+
+                    <div class="span4">
+                        <div class="container">
+                        <h4 >Current Version: 0.092</h4>
+                        <h4 >Latest Version: 0.10</h4>
+                    </div>
+
+                    </div>
+
+                    <div class="span2">
+                    </div>
                 </div>
+
             </div>
-            <div class="separate">
+
+
+            <div class="vertical-shadow">
+                <div class= "row">
+                        <h2 class="text-center">{% trans "System Updates" %}</h2>
+                </div>
+
+                <div class= "row">
+                    <div class="span3">
+                        <img src="http://placehold.it/300x200">
+                    </div>
+
+                    <div class="span4">
+                        <h4>Current Version: 0.092</h4>
+                        <h4>Current Version: 0.10</h4>
+
+                    </div>
+
+                    <div class="span2">
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row vertical-shadow">
                 <div class="vertical-shadow suggested-action">
-                    <a href="{% url update_software %}?{% repeatblock topic_paths %}">
-                        <h2 class="suggested-action-title">{% trans "Update KA Lite" %}</h2>
+                        <h2 class="suggested-action-title">{% trans "Video Download" %}</h2>
                         <div class="suggested-action-image-link" style="background-image: url({% static 'images/update_software.jpg' %});"></div>
                     </a>
                 </div>
             </div>
-        </div>
-    </div>
 </div>
 {% endblock content %}
