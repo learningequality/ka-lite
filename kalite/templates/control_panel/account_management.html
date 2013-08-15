@@ -9,7 +9,7 @@
 {% block account_management_active %}active{% endblock account_management_active %}
 {% block title %}User Management{% endblock title%}
 
-{% block headcss %}{{ block.super }}
+{% block headcss %}{% comment %}Don't insert block.super here, because block.super is WEIRD and isn't the super for student_view IN student view, but instead THIS super.{% endcomment %}
     {% include_block "coachreports/student_view.html" "headcss" %}
 {% endblock headcss %}
 
@@ -22,8 +22,8 @@ Account Management Page for {{ student.get_name }}
 
 {% block buttons %}
 {% if not is_central %}
-                <li>
-                    <a class="green_button" href="{% url update_all_distributed %}">{% trans "Download data from Khan Academy" %}</a>
+                <li class="client-online-only">
+                    <a class="server-online-only green_button" href="{% url update_all_distributed %}">{% trans "Download data from Khan Academy" %}</a>
                 </li>
 {% endif %}
 {% endblock buttons %}
