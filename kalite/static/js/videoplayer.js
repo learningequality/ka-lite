@@ -51,7 +51,7 @@ window.VideoPlayerModel = Backbone.Model.extend({
                 });
                 self.pointsSaved = data[0].points;
             })
-            .fail(function(data, resp) {
+            .fail(function(resp) {
                 communicate_api_failure(resp, "id_student_logs");
             });
     },
@@ -376,7 +376,6 @@ window.VideoView = Backbone.View.extend({
 
 });
 
-
 window.PointView = Backbone.View.extend({
     /*
     Passively display the point count to the user (and listen to changes on the model to know when to update).
@@ -400,3 +399,60 @@ window.PointView = Backbone.View.extend({
     }
 
 });
+
+
+function initialize_video(video_youtube_id){ 
+    // Code called on page load, to initialize video
+    var initialize_video = _.once(function(width, height) {
+        
+        window.videoView = new VideoView({
+            el: $("#video-player"),
+            youtube_id: video_youtube_id,
+            width: width,
+            height: height
+        });
+
+        var resize_video = _.throttle(function() {
+            var available_width = $("article").width();
+            var available_height = $(window).height() * 0.9;
+            videoView.setContainerSize(available_width, available_height);
+        }, 500);
+        
+        $(window).resize(resize_video);
+        
+        resize_video();
+        
+    });
+
+    $("video").bind("loadedmetadata", function() {
+        
+        var width = $(this).prop("videoWidth");
+        var height = $(this).prop("videoHeight");
+        
+        initialize_video(width, height);
+        
+    });
+
+    $(".video-thumb").load(function() {
+
+        var width = $(".video-thumb").width();
+        var height = $(".video-thumb").height();
+        
+        initialize_video(width, height);
+                            
+    });
+
+    $("#launch_mplayer").click(_.throttle(function() {
+        // launch mplayer in the background to play the video
+        doRequest("/api/launch_mplayer?youtube_id=" + video_youtube_id)
+            .fail(function(resp) {
+                communicate_api_failure(resp, "id_mplayer");
+            });
+        // after mplayer closes and focus returns to the website, refresh the points from the server
+        $(window).focus(function() {
+            $(window).unbind("focus");
+            videoView.model.fetch();
+        });
+        return false;
+    }, 5000));
+}

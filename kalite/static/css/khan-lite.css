@@ -425,3 +425,13 @@ li .progress-circle {
 #answer_area .answer-buttons input.simple-button, #answer_area input.simple-button.full-width {
     white-space: normal;
 }
+
+.video-unavailable,
+.topic-unavailable,
+a:active.topic-unavailable,
+a:hover.topic-unavailable,
+a:link.topic-unavailable,
+a:visited.topic-unavailable {
+    color: #bbb;
+    text-decoration: none;
+}

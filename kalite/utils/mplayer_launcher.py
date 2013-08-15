@@ -27,7 +27,7 @@ def play_video_in_new_thread(*args, **kwargs):
 def _video_thread(*args, **kwargs):
     # optional arguments
     save_interval = kwargs.get("save_interval", 10)
-    callback = kwargs.get("callback", None)
+    callback = kwargs.get("callback")
     has_callback = callable(callback)
     
     # start mplayer, and get a handle for the player
@@ -44,6 +44,10 @@ def _video_thread(*args, **kwargs):
             timestamp = player.time_pos
             if timestamp > last_timestamp:
                 seconds_watched = min(timestamp - last_timestamp, save_interval)
-                callback(seconds_watched, video_length)
+                try:  # never trust a callback
+                    callback(seconds_watched, video_length)  # does nothing with output from callback
+                except Exception as e:
+                    if kwargs.get("logger"):
+                        kwargs["logger"].debug("Callback failed: %s" % e)
             last_timestamp = timestamp
         time.sleep(save_interval)

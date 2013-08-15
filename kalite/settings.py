@@ -248,3 +248,6 @@ TEST_RUNNER = 'kalite.utils.testing.testrunner.KALiteTestRunner'
 
 CRONSERVER_FREQUENCY = getattr(local_settings, "CRONSERVER_FREQUENCY", 600) # 10 mins (in seconds)
 
+# Add additional mimetypes to avoid errors/warnings
+import mimetypes
+mimetypes.add_type("font/opentype", ".otf", True)
