@@ -152,7 +152,7 @@ def download_if_criteria_met(videos, lang_code, force, response_code, date_since
 
         # Update srt availability mapping
         n_loops += 1
-        if n_loops % frequency_to_save == 0:
+        if n_loops % frequency_to_save == 0 or n_loops == len(videos.keys())-1:
             logging.info(
                 "On loop %d - generating new subtitle counts & updating srt availability!" % n_loops)
             get_new_counts(data_path=settings.SUBTITLES_DATA_ROOT,
@@ -289,11 +289,18 @@ def get_language_name(lang_code):
 
 def write_new_json(subtitle_counts, data_path):
     """Write JSON to file in static/data/subtitles/"""
+    language_name = subtitle_counts.keys()[0]
     filename = "subtitle_counts.json"
     filepath = data_path + filename
+    try:
+        current_counts = json.loads(open(filepath).read())
+    except:
+        logging.debug("Subtitle counts file appears to be corrupted. Starting from scratch.")
+        current_counts = {}
+    current_counts.update(subtitle_counts)
     logging.info("Writing fresh srt counts to %s" % filepath)
     with open(filepath, 'wb') as fp:
-        json.dump(subtitle_counts, fp)
+        json.dump(current_counts, fp)
 
 
 def update_language_list(sub_counts, data_path):
@@ -303,7 +310,7 @@ def update_language_list(sub_counts, data_path):
         if lang_code not in LANGUAGE_LIST:
             logging.info("Adding %s to language code list" % lang_code)
             LANGUAGE_LIST.append(lang_code)
-    with open(os.path.join(data_path, "listedlanguages.json"), 'ab') as fp:
+    with open(os.path.join(data_path, "listedlanguages.json"), 'wb') as fp:
         json.dump(LANGUAGE_LIST, fp)
 
 

@@ -253,14 +253,6 @@ def update_language_srt_map():
         # Update the big mapping with the most accurate numbers 
         remote_availability_map[lang_code].update(lang_map)
 
-    # Finally, remove any files not found in the current map at all.
-    for file in os.listdir(os.path.dirname(lang_map_filepath)):
-        lang_code = file[0:(len(file) - len(LANGUAGE_SRT_SUFFIX))]
-        if not lang_code in remote_availability_map:
-            file_to_remove = get_lang_map_filepath(lang_code)
-            logging.info("Subtitle support for %s has been terminated; removing." % lang_code)
-            os.remove(file_to_remove)
-
     return remote_availability_map
 
 
