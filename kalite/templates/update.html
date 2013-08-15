@@ -15,8 +15,6 @@
 
 {% block headcss %}{{ block.super }}
 <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}" />
-<!-- <link rel="stylesheet" type="text/css" href="{% static 'css/landing-page.css' %}" /> -->
-
 <style>
 
 /*.vertical-shadow{
@@ -25,21 +23,11 @@
     padding-bottom: 10px;
 }
 
-.container{
-    margin-left: 130px;
-}
-
-.btn{
-    margin-left: 40px;
-    margin-top: 130px;
-}*/
 
 h2{
     font-size: 24px;
 }
 
-/*img{
-    margin-left: 15px;
 }*/
 
 </style>
@@ -52,7 +40,7 @@ h2{
             <ul class="thumbnails">
               <li class="span4">
                 <div class="thumbnail">
-                  <img src="http://placehold.it/300x200"/> 
+                  <img src="{% static 'images/system_update.png' %}" />
                   <div class="caption">
                     <h2>System Updates</h2>
                     <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
@@ -63,7 +51,7 @@ h2{
 
               <li class="span4">
                 <div class="thumbnail">
-                  <img src="http://placehold.it/300x200"/> 
+                  <img src="{% static 'images/subtitle_download.png' %}" />
                   <div class="caption">
                     <h2>Language Pakcs</h2>
                     <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
@@ -74,7 +62,7 @@ h2{
 
               <li class="span4">
                 <div class="thumbnail">
-                  <img src="http://placehold.it/300x200"/>
+                  <img src="{% static 'images/video_download.png' %}" />
                   <div class="caption">
                     <h2>Video Manage</h2>
                     <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
