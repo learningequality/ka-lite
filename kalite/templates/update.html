@@ -19,7 +19,7 @@
 
 <style>
 
-.vertical-shadow{
+/*.vertical-shadow{
     margin-left: 5px;
     margin-bottom: 10px;
     padding-bottom: 10px;
@@ -32,16 +32,15 @@
 .btn{
     margin-left: 40px;
     margin-top: 130px;
-}
+}*/
 
 h2{
     font-size: 24px;
-    margin-left: 45px;
 }
 
-img{
+/*img{
     margin-left: 15px;
-}
+}*/
 
 </style>
 {% endblock headcss %}
@@ -49,73 +48,42 @@ img{
 {% block content %}
 
 <div>
-    <div class="vertical-shadow">
-        <div class= "row">
-                <h2>{% trans "System Updates" %}</h2>
-        </div>
-
-        <div class= "row">
-            <div class="span3">
-                <img src="http://placehold.it/300x250">
-            </div>
-
-            <div class="span6">
-                <dl class="dl-horizontal">
-                    <dt>Current Version</dt>
-                    <dd>0.092</dd>
-                    <dt>Latest Version</dt>
-                    <dd>0.10 <span class="label label-info">New</span> </dd>
-                    <dt>Release Date</dt>
-                    <dd>Sep 3, 2013</dd>
-                    <dt>Description</dt>
-                    <dd>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec cursus nunc et est rutrum feugiat. Cras fermentum odio ac ante placerat, ut pharetra mi dignissim. Fusce sed urna aliquam, placerat ipsum at, pretiumtortor ac, bibendum turpis.</dd>
-                    </dl>
-            </div>
-
-            <div class="span3">
-                <button class="btn btn-large btn-primary" type="button">Update System</button>
-            </div>
-
-        </div>
-    </div>
-
-
-    <div class="vertical-shadow">
-        <div class= "row">
-                <h2>{% trans "Language Packs" %}</h2>
-        </div>
-
-        <div class= "row">
-            <div class="span3">
-                <img src="http://placehold.it/300x250">
-            </div>
-
-            <div class="span6">
-                <dl class="dl-horizontal">
-                    <dt>Current Version</dt>
-                    <dd>0.092</dd>
-                    <dt>Latest Version</dt>
-                    <dd>0.10</dd>
-                    <dt>Release Date</dt>
-                    <dd>Sep 3, 2013</dd>
-                    <dt>Description</dt>
-                    <dd>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec cursus nunc et est rutrum feugiat. Cras fermentum odio ac ante placerat, ut pharetra mi dignissim. Fusce sed urna aliquam, placerat ipsum at, pretiumtortor ac, bibendum turpis.</dd>
-                    </dl>
-            </div>
-
-            <div class="span3">
-                <button class="btn btn-large btn-primary" type="button">Update System</button>
-            </div>
-
-        </div>
-    </div>
-
-            <div class="row vertical-shadow">
-                <div class="vertical-shadow suggested-action">
-                        <h2 class="suggested-action-title">{% trans "Video Download" %}</h2>
-                        <div class="suggested-action-image-link" style="background-image: url({% static 'images/update_software.jpg' %});"></div>
-                    </a>
+<div class="row-fluid">
+            <ul class="thumbnails">
+              <li class="span4">
+                <div class="thumbnail">
+                  <img src="http://placehold.it/300x200"/> 
+                  <div class="caption">
+                    <h2>System Updates</h2>
+                    <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                    <p><a class="btn btn-large btn-primary">Update KA Lite</a> </p>
+                  </div>
                 </div>
-            </div>
+              </li>
+
+              <li class="span4">
+                <div class="thumbnail">
+                  <img src="http://placehold.it/300x200"/> 
+                  <div class="caption">
+                    <h2>Language Pakcs</h2>
+                    <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                    <p><a class="btn btn-large btn-primary">Get Subtitles</a> </p>
+                  </div>
+                </div>
+              </li>
+
+              <li class="span4">
+                <div class="thumbnail">
+                  <img src="http://placehold.it/300x200"/>
+                  <div class="caption">
+                    <h2>Video Manage</h2>
+                    <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                    <p><a class="btn btn-large btn-primary">Download Video</a></p>
+                  </div>
+                </div>
+              </li>
+            </ul>
+</div>
+
 </div>
 {% endblock content %}
