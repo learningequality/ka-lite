@@ -101,6 +101,10 @@ ul.dynatree-container li, .ui-widget-content {
     color: #52A852;
 }
 
+#download-videos:disabled {
+    color: #AAA;
+}
+
 #delete-videos {
     color: #AC4343;
     padding: 0 10px 0 10px;
@@ -113,11 +117,6 @@ ul.dynatree-container li, .ui-widget-content {
     margin-top: 15px;
 }
 
-{% if am_i_online %}
-#download-help-link {
-    /* nothing yet! */
-}
-{% endif %}
 </style>
 {% endblock headcss %}
 {% block headjs %}
@@ -133,7 +132,18 @@ ul.dynatree-container li, .ui-widget-content {
     window.download_subtitle_check_interval = null;
     
     $(function() {
-        
+
+        with_online_status("server", function(server_is_online) {
+            // We assume the distributed server is offline; if it's online, then we enable buttons that only work with internet.
+            // Best to assume offline, as online check returns much faster than offline check.
+            if(!server_is_online){
+                show_message("error", "{% trans 'The server does not have internet access; new content cannot be downloaded at this time.' %}", "id_offline_message");
+            } else {
+                $(".enable-when-server-online").removeAttr("disabled");
+            }
+        });
+
+        // put a delay on the topic tree request/rendering, so the rest of the page has time to load before getting bogged down in this
         setTimeout(function() {
             doRequest("/api/get_topic_tree", {})
                 .success(function(treeData) {
@@ -145,7 +155,6 @@ ul.dynatree-container li, .ui-widget-content {
                         children: treeData,
                         debugLevel: 0,
                         onSelect: function(select, node) {
-                    
                             var newVideoCount = findSelectedIncompleteVideos().length;
                             var oldVideoCount = findSelectedStartedVideos().length;
                         
@@ -183,7 +192,6 @@ ul.dynatree-container li, .ui-widget-content {
                 });
         }, 200);
         
-    
         $("#progressbar-overall").progressbar({
             value: 0,
             max: 10000000
@@ -570,22 +578,24 @@ ul.dynatree-container li, .ui-widget-content {
     <h2 id="download-legend-unselected" class="button_text">
         {% trans "Please select videos to download (below)" %}
     </h2>
-    <div id="help-info">
-        {% if am_i_online %}
-        <a id="download-help-link" target="_new" href="http://{{ central_server_host }}/faq/installation/bittorrent/">
-            {% trans "Q: How do I bulk-download videos?" %}
-        </a>
-        {% endif %}
+    
+    <div class="client-online-only">
+        <div id="help-info">
+            <a id="download-help-link" target="_new" href="http://{{ central_server_host }}/faq/installation/bittorrent/">
+                {% trans "Q: How do I bulk-download videos?" %}
+            </a>
+        </div>
     </div>
     
-    <button id="download-videos" type="button">{% trans "Download " %}<span class="new-video-count">0</span>{% trans " new selected videos" %}</button>
+    <button id="download-videos" type="button" class="enable-when-server-online" disabled>{% trans "Download " %}<span class="new-video-count">0</span>{% trans " new selected videos" %}</button>
+
     <button id="delete-videos" type="button">{% trans "Delete " %}<span class="old-video-count">0</span>{% trans " selected videos" %}</button>
 </div>
 
 <div class="download-actions subtitles-download vertical-shadow">
     <h2 class="button_text">{% trans "Download/update subtitles for existing videos" %}</h2>
-    <span class= "button_style">
-        <select id="language">
+    <span class="button_style">
+        <select id="language" class="enable-when-server-online" disabled>
             {% if languages %}
                 {% for language in languages %}
                     <option value="{{ language.id }}" {% ifequal language.id default_language %} selected {% endifequal %}>{{ language.name }}</option>
@@ -593,8 +603,10 @@ ul.dynatree-container li, .ui-widget-content {
             {% endif %}
         </select>
     </span>
-    <button class="download-subtitles" type="button">{% trans "Get/Update All Subtitles" %}</button>
-    <button class="download-subtitles" new_only=true type="button">{% trans "Get Missing Subtitles Only" %}</button>
+
+    <button class="download-subtitles enable-when-server-online" type="button" disabled>{% trans "Get/Update All Subtitles" %}</button>
+    <button class="download-subtitles enable-when-server-online" new_only=true type="button" disabled>{% trans "Get Missing Subtitles Only" %}</button>
+
 </div>
 
 <div style="clear: both;"></div>
