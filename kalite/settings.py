@@ -72,6 +72,8 @@ DATABASES      = getattr(local_settings, "DATABASES", {
 
 DATA_PATH      = os.path.realpath(getattr(local_settings, "DATA_PATH", PROJECT_PATH + "/static/data/")) + "/"
 
+SUBTITLES_DATA_ROOT = os.path.realpath(getattr(local_settings, "SUBTITLES_DATA_ROOT", DATA_PATH + "subtitles/")) + "/"
+
 CONTENT_ROOT   = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", PROJECT_PATH + "/../content/")) + "/"
 CONTENT_URL    = getattr(local_settings, "CONTENT_URL", "/content/")
 
@@ -225,3 +227,7 @@ MESSAGE_STORAGE = 'utils.django_utils.NoDuplicateMessagesSessionStorage'
 TEST_RUNNER = 'kalite.utils.testing.testrunner.KALiteTestRunner'
 
 CRONSERVER_FREQUENCY = getattr(local_settings, "CRONSERVER_FREQUENCY", 600) # 10 mins (in seconds)
+
+# Add additional mimetypes to avoid errors/warnings
+import mimetypes
+mimetypes.add_type("font/opentype", ".otf", True)
