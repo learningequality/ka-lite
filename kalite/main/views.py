@@ -303,17 +303,12 @@ def update(request):
     languages = [{"id": key, "name": language_lookup[key]} for key in language_list]
     languages = sorted(languages, key=lambda k: k["name"])
 
-    am_i_online = video_connection_is_available()
-    if not am_i_online:
-        messages.warning(request, _("No internet connection was detected.  You must be online to download videos or subtitles."))
-
     device = Device.get_own_device()
     zone = device.get_zone()
 
     context = {
         "languages": languages,
         "default_language": default_language,
-        "am_i_online": am_i_online,
         "registered": Settings.get("registered"),
         "zone_id": zone.id if zone else None,
         "device_id": device.id,
@@ -366,7 +361,7 @@ def handler_403(request, *args, **kwargs):
     if request.is_ajax():
         return JsonResponse({ "error": "You must be logged in with an account authorized to view this page." }, status=403)
     else:
-        messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page..")))
+        messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page.")))
         return HttpResponseRedirect(reverse("login") + "?next=" + request.path)
 
 
