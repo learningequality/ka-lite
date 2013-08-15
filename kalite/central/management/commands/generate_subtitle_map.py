@@ -25,7 +25,7 @@ headers = {
 }
 
 SRTS_JSON_FILENAME = "srts_remote_availability.json"
-LANGUAGE_SRT_FILENAME = "srts_download_status.json"
+LANGUAGE_SRT_SUFFIX = "download_status.json"
 
 
 class OutDatedSchema(Exception):
@@ -183,23 +183,6 @@ def update_video_entry(youtube_id, entry={}):
 
 def update_language_srt_map():
     """Update the language_srt_map from the api_info_map"""
-
-    # Create file if first time being run
-    language_srt_filepath = settings.SUBTITLES_DATA_ROOT + LANGUAGE_SRT_FILENAME
-    srt_download_info_filepath = settings.SUBTITLES_DATA_ROOT + SRTS_JSON_FILENAME
-
-    if not os.path.exists(language_srt_filepath):
-        with open(language_srt_filepath, 'w') as outfile:
-            json.dump({}, outfile)
-
-    # Load the srt map
-    try:
-        language_srt_map = json.loads(open(language_srt_filepath).read())
-    except Exception as e:
-        # Probably corrupted.
-        logging.warn("Could not open %s for updates; aborting.  Error=%s" % (language_srt_filepath, e))
-        return{}
-
     # Load the current download status
     try:
         api_info_map = json.loads(open(settings.SUBTITLES_DATA_ROOT + SRTS_JSON_FILENAME).read())
@@ -208,53 +191,65 @@ def update_language_srt_map():
         logging.warn("Could not open %s for updates; starting from scratch.  Error=%s" % (srt_download_info_filepath, e))
         api_info_map = {}
 
-    # Build old dictionary, to be able to detect removed subtitles
-    #   (for example, if they were found to be crap)
-    #   Note: Faster to determine past languages up front
-    old_api_info_map = {}
-    for lang_code, dict in language_srt_map.iteritems():
-        for youtube_id in dict.keys():
-            if youtube_id not in old_api_info_map:
-                old_api_info_map[youtube_id] = {}
-                old_api_info_map[youtube_id]["language_codes"] = []
-            old_api_info_map[youtube_id]["language_codes"].append(lang_code)
-
-    for youtube_id, content in api_info_map.iteritems():
-
-        # Determining past_languages is very expensive and slow
-        cur_languages = set(content.get("language_codes", []))
-        past_languages = set(old_api_info_map.get(youtube_id, {}).get("language_codes", []))
-
-        # Remove languages that no longer have subtitles
-        for lang_code in (past_languages - cur_languages):
-            del language_srt_map[lang_code][youtube_id]
-
-        # Add languages that now have subtitles
-        for lang_code in (cur_languages - past_languages):
-            if not language_srt_map.get(lang_code):
-                # create empty entry for video entry if it doesn't exist
+    # Next we want to iterate through those and create a big srt dictionary organized by language code
+    remote_availability_map = {}
+    for youtube_id, data in api_info_map.items():
+        languages = data.get("language_codes", [])
+        for lang_code in languages:
+            if not remote_availability_map.get(lang_code):
                 logging.info("Creating language section '%s'" % lang_code)
-                language_srt_map[lang_code] = {}
-
-            # Add any missing entries
-            language_srt_map[lang_code][youtube_id] = {
+                remote_availability_map[lang_code] = {}
+            # This entry will be valid if it's new, otherwise it will be overwitten later
+            remote_availability_map[lang_code][youtube_id] = {
                 "downloaded": False,
                 "api_response": "",
                 "last_attempt": "",
                 "last_success": "",
             }
 
-    # Final cleaning to clear any languages with no info
-    for lang_code in language_srt_map.keys():
-        if not language_srt_map[lang_code]:
+    # Finally we need to iterate through that dictionary and create individual files for each language code 
+    for lang_code, new_data in remote_availability_map.items():
+
+        # Try to open previous language file 
+        lang_map_filepath = settings.SUBTITLES_DATA_ROOT + "/languages/" + lang_code + "_" + LANGUAGE_SRT_SUFFIX 
+        try:
+            lang_map = json.loads(open(lang_map_filepath).read())
+        except:
+            logging.debug("Language download status mapping for (%s) doesn't exist or is corrupted, rewriting it." % lang_code)
+            lang_map = {}
+
+        # First, check to see if it's empty (e.g. no subtitles available for any videos)
+        if not new_data:
             logging.info("Subtitle support for %s has been terminated; removing." % lang_code)
-            del language_srt_map[lang_code]
+            if os.path.exists(lang_map_filepath):
+                os.remove(lang_map_filepath)
+            continue
 
-    logging.info("Writing updates to %s" % language_srt_filepath)
-    with open(language_srt_filepath, 'wb') as fp:
-            json.dump(language_srt_map, fp)
+        # Compare how many empty entries you are adding and add them to master map 
+        old_yt_ids = set(new_data.keys())
+        new_yt_ids = set(lang_map.keys())
+        yt_ids_to_add = set(new_data.keys()) - set(lang_map.keys())
+        yt_ids_to_delete = set(lang_map.keys()) - set(new_data.keys())
 
-    return language_srt_map
+        if yt_ids_to_add:
+            logging.info("Adding %d new YouTube IDs to language (%s)" % (len(yt_ids_to_add), lang_code))
+            for yt_id in yt_ids_to_add:
+                lang_map[yt_id] = new_data.get(yt_id)
+
+        if yt_ids_to_delete:
+            logging.info("Deleting %d old YouTube IDs from language (%s) because they are no longer supported." %(len(yt_ids_to_delete), lang_code))
+            for yt_id in yt_ids_to_delete:
+                lang_map.pop(yt_id, None)
+
+        # Write the new file to the correct location 
+        logging.info("Writing %s" % lang_map_filepath)
+        with open(lang_map_filepath, 'w') as outfile:
+            json.dump(lang_map, outfile)
+
+        # Update the big mapping with the most accurate numbers 
+        remote_availability_map[lang_code].update(lang_map)
+
+    return remote_availability_map
 
 
 def print_language_availability_table(language_srt_map):
@@ -269,9 +264,8 @@ def print_language_availability_table(language_srt_map):
 
 
 
-
 class Command(BaseCommand):
-    help = "Update the mapping of subtitles available by language for each video. Location: %s" % (settings.SUBTITLES_DATA_ROOT + LANGUAGE_SRT_FILENAME)
+    help = "Update the mapping of subtitles available by language for each video. Location: %s" % (settings.SUBTITLES_DATA_ROOT + "<lang_code>_" + LANGUAGE_SRT_SUFFIX)
 
     option_list = BaseCommand.option_list + (
         # Basic options
