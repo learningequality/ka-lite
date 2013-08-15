@@ -6,6 +6,7 @@ import coachreports.urls
 import control_panel.urls
 import main.api_urls
 import securesync.urls
+import updates.urls
 from kalite import settings
 
 admin.autodiscover()
@@ -40,10 +41,7 @@ urlpatterns += patterns('main.views',
     url(r'^coachreports/', include(coachreports.urls)),
 
     # For admins
-    url(r'^update/$', 'update', {}, 'update'),
-    url(r'^update/videos/$', 'update_videos', {}, 'update_videos'),
-    url(r'^update/subtitles/$', 'update_subtitles', {}, 'update_subtitles'),
-    url(r'^update/software/$', 'update_software', {}, 'update_software'),
+    url(r'^update/', include(updates.urls)),
 
     url(r'^easyadmin/$', 'easy_admin', {}, 'easy_admin'),
     url(r'^userlist/$', 'user_list', {}, 'user_list'),
