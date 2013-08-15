@@ -25,16 +25,22 @@
     padding-bottom: 10px;
 }
 
+.container{
+    margin-left: 130px;
+}
+
+.btn{
+    margin-left: 40px;
+    margin-top: 130px;
+}
+
 h2{
     font-size: 24px;
+    margin-left: 45px;
 }
 
 img{
     margin-left: 15px;
-}
-
-.container{
-    margin-left: 130px;
 }
 
 </style>
@@ -43,52 +49,66 @@ img{
 {% block content %}
 
 <div>
-            <div class="vertical-shadow suggested-action">
-                <div class= "row">
-                        <h2 class="text-center">{% trans "System Updates" %}</h2>
-                </div>
+    <div class="vertical-shadow">
+        <div class= "row">
+                <h2>{% trans "System Updates" %}</h2>
+        </div>
 
-                <div class= "row">
-                    <div class="span3">
-                        <img src="http://placehold.it/300x200">
-                    </div>
-
-                    <div class="span4">
-                        <div class="container">
-                        <h4 >Current Version: 0.092</h4>
-                        <h4 >Latest Version: 0.10</h4>
-                    </div>
-
-                    </div>
-
-                    <div class="span2">
-                    </div>
-                </div>
-
+        <div class= "row">
+            <div class="span3">
+                <img src="http://placehold.it/300x250">
             </div>
 
-
-            <div class="vertical-shadow">
-                <div class= "row">
-                        <h2 class="text-center">{% trans "System Updates" %}</h2>
-                </div>
-
-                <div class= "row">
-                    <div class="span3">
-                        <img src="http://placehold.it/300x200">
-                    </div>
-
-                    <div class="span4">
-                        <h4>Current Version: 0.092</h4>
-                        <h4>Current Version: 0.10</h4>
-
-                    </div>
-
-                    <div class="span2">
-                    </div>
-                </div>
-
+            <div class="span6">
+                <dl class="dl-horizontal">
+                    <dt>Current Version</dt>
+                    <dd>0.092</dd>
+                    <dt>Latest Version</dt>
+                    <dd>0.10 <span class="label label-info">New</span> </dd>
+                    <dt>Release Date</dt>
+                    <dd>Sep 3, 2013</dd>
+                    <dt>Description</dt>
+                    <dd>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec cursus nunc et est rutrum feugiat. Cras fermentum odio ac ante placerat, ut pharetra mi dignissim. Fusce sed urna aliquam, placerat ipsum at, pretiumtortor ac, bibendum turpis.</dd>
+                    </dl>
             </div>
+
+            <div class="span3">
+                <button class="btn btn-large btn-primary" type="button">Update System</button>
+            </div>
+
+        </div>
+    </div>
+
+
+    <div class="vertical-shadow">
+        <div class= "row">
+                <h2>{% trans "Language Packs" %}</h2>
+        </div>
+
+        <div class= "row">
+            <div class="span3">
+                <img src="http://placehold.it/300x250">
+            </div>
+
+            <div class="span6">
+                <dl class="dl-horizontal">
+                    <dt>Current Version</dt>
+                    <dd>0.092</dd>
+                    <dt>Latest Version</dt>
+                    <dd>0.10</dd>
+                    <dt>Release Date</dt>
+                    <dd>Sep 3, 2013</dd>
+                    <dt>Description</dt>
+                    <dd>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec cursus nunc et est rutrum feugiat. Cras fermentum odio ac ante placerat, ut pharetra mi dignissim. Fusce sed urna aliquam, placerat ipsum at, pretiumtortor ac, bibendum turpis.</dd>
+                    </dl>
+            </div>
+
+            <div class="span3">
+                <button class="btn btn-large btn-primary" type="button">Update System</button>
+            </div>
+
+        </div>
+    </div>
 
             <div class="row vertical-shadow">
                 <div class="vertical-shadow suggested-action">
