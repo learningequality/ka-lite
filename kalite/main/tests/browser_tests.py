@@ -455,6 +455,7 @@ class LoadExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
         super(LoadExerciseTest, self).setUp()
         self.driver = WebDriver()
 
+    @unittest.skipIf(settings.FAST_TESTS_ONLY, "Skipping slow test")
     def test_get_exercise_load_status(self):
         for path in get_exercise_paths():
             logging.debug("Testing path : " + path)
