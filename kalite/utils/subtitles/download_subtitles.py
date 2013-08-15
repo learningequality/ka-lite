@@ -1,8 +1,7 @@
-import requests, json, os, sys
-
-PROJECT_PATH = os.path.dirname(os.path.realpath(__file__)) + "/../"
-
-sys.path = [PROJECT_PATH] + sys.path
+import json
+import os
+import requests
+import sys
 
 import settings
 
@@ -15,8 +14,7 @@ class NoSubs(Exception):
 
 def get_subtitles(youtube_id, language, format="srt"):
     
-    # use the Amara video id to get the subtitles and translated metadata in the target language
-    r = requests.get("http://%s/static/srt/%s/subtitles/%s.srt" % ("playground.learningequality.org:56211", language, youtube_id))
+    r = requests.get("http://%s/static/srt/%s/subtitles/%s.srt" % (settings.CENTRAL_SERVER_HOST, language, youtube_id))
     if r.status_code > 399:
         raise NoSubs()
 
@@ -24,7 +22,7 @@ def get_subtitles(youtube_id, language, format="srt"):
     return (r.text or "").replace("\n\n\n", "\n   \n\n").replace("\r\n\r\n\r\n", "\r\n   \r\n\r\n")
 
 def download_subtitles(youtube_id, language):
-    
+
     subtitles = get_subtitles(youtube_id, language, format="srt")
     
     if subtitles:
@@ -36,16 +34,4 @@ def download_subtitles(youtube_id, language):
     
     else:
         raise NoSubs()
-
-
-if __name__ == '__main__':
-    language = "en"
-    if len(sys.argv) > 2:
-        language = sys.argv[2]
-    if len(sys.argv) > 1:
-        youtube_id = sys.argv[1]
-        download_subtitles(youtube_id, language)
-        print "Downloaded subtitles for video '%s' in language '%s'!" % (youtube_id, language)
-    else:
-        print "USAGE: python subtitles.py <youtube_id> [<language>]"
     
