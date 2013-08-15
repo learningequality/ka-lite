@@ -33,7 +33,7 @@ from oauth import OAuthToken
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseServerError
 from django.utils.datastructures import MultiValueDictKeyError
 from django.views.decorators.csrf import csrf_exempt
 
@@ -219,13 +219,17 @@ def update_all_central_callback(request):
             "user_id": request.session["distributed_user_id"],
         }
     )
+    logging.debug("Response (%d): %s" % (response.status_code, response.content))
+    message = json.loads(response.content)
+
     # If something broke on the distribute d server, we are SCREWED.
     #   For now, just show the error to users.
-    #if response.status_code != 200:
-    #    raise Exception("Status code == %d:\n%s" % (response.status_code, response.content))
-    logging.debug("Response (%d): %s" % (response.status_code, response.content))
+    #
+    # Ultimately, we have a message, would like to share with the distributed server.
+#    if response.status_code != 200:
+#        return HttpResponseServerError(response.content)
 
-    return HttpResponseRedirect(request.session["distributed_redirect_url"])
+    return HttpResponseRedirect(request.session["distributed_redirect_url"] + "?message_type=%s&message=%s&message_id=id_khanload" % (message.keys()[0], message.values()[0]))
 
 
 @require_login
@@ -278,9 +282,7 @@ def update_all_distributed_callback(request):
         except KeyError:  # 
             logging.debug("Could not save video log for data with missing values: %s" % video)
         except Exception as e:
-            # Notify both the central and distributed servers
             error_message = "Unexpected error importing videos: %s" % e
-            messages.warning(request, mark_safe(error_message))
             return JsonResponse({"error": error_message}, status=500)
 
     # Save exercises
@@ -301,9 +303,7 @@ def update_all_distributed_callback(request):
         except KeyError:
             logging.debug("Could not save exercise log for data with missing values: %s" % exercise)
         except Exception as e:
-            # Notify both the central and distributed servers
             error_message = "Unexpected error importing exercises: %s" % e
-            messages.warning(request, mark_safe(error_message))
             return JsonResponse({"error": error_message}, status=500)
 
-    return HttpResponse("Uploaded %d exercises and %d videos" % (n_exercises_uploaded, n_videos_uploaded))
+    return JsonResponse({"success": "Uploaded %d exercises and %d videos" % (n_exercises_uploaded, n_videos_uploaded)})

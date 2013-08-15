@@ -47,6 +47,15 @@ function communicate_api_failure(resp, msg_id) {
 
 
 $(function(){
+    // Process any direct messages, from the url querystring
+    if ($.url().param('message')) {
+        show_message(
+            $.url().param('message_type') || "info",
+            $.url().param('message'),
+            $.url().param('message_id') || ""
+        );
+    }
+
     // Do the AJAX request to async-load user and message data
     $("[class$=-only]").hide();
     doRequest("/securesync/api/status")
