@@ -211,7 +211,7 @@ def update_language_srt_map():
     for lang_code, new_data in remote_availability_map.items():
 
         # Try to open previous language file 
-        lang_map_filepath = settings.SUBTITLES_DATA_ROOT + "/languages/" + lang_code + "_" + LANGUAGE_SRT_SUFFIX 
+        lang_map_filepath = get_lang_map_filepath(lang_code)
         try:
             lang_map = json.loads(open(lang_map_filepath).read())
         except:
@@ -262,7 +262,8 @@ def print_language_availability_table(language_srt_map):
     n_srts = sum([len(dict) for dict in language_srt_map.values()])
     logging.info("Great success! Subtitles support found for %d languages, %d total dubbings!" % (len(language_srt_map), n_srts))
 
-
+def get_lang_map_filepath(lang_code):
+    return settings.SUBTITLES_DATA_ROOT + "languages/" + lang_code + "_" + LANGUAGE_SRT_SUFFIX
 
 class Command(BaseCommand):
     help = "Update the mapping of subtitles available by language for each video. Location: %s" % (settings.SUBTITLES_DATA_ROOT + "<lang_code>_" + LANGUAGE_SRT_SUFFIX)
