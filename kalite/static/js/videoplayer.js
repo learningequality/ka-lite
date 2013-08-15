@@ -407,7 +407,7 @@ function initialize_video(video_youtube_id){
         
         window.videoView = new VideoView({
             el: $("#video-player"),
-            youtube_id: "{{ video.youtube_id }}",
+            youtube_id: video_youtube_id,
             width: width,
             height: height
         });
@@ -444,7 +444,7 @@ function initialize_video(video_youtube_id){
 
     $("#launch_mplayer").click(_.throttle(function() {
         // launch mplayer in the background to play the video
-        doRequest("{% url launch_mplayer %}?youtube_id={{ video.youtube_id }}")
+        doRequest("/api/launch_mplayer?youtube_id=" + video_youtube_id)
             .fail(function(resp) {
                 communicate_api_failure(resp, "id_mplayer");
             });
