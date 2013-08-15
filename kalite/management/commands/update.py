@@ -242,6 +242,8 @@ class Command(UpdatesStaticCommand):
 
         self.print_footer()
 
+        self.complete()
+
 
     def download_zip(self, url):
         response = requests.get(url)
