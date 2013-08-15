@@ -11,7 +11,7 @@ from django.utils.translation import ugettext as _
 
 import settings
 from .api_forms import ExerciseLogForm, VideoLogForm
-from .models import FacilityUser, VideoLog, ExerciseLog, VideoFile, POINTS_PER_VIDEO
+from .models import FacilityUser, VideoLog, ExerciseLog, VideoFile
 from config.models import Settings
 from main import topicdata  # must import this way to cache across processes
 from securesync.models import FacilityGroup
