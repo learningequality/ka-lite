@@ -7,6 +7,7 @@ from django.core.serializers.python import Serializer, _get_model
 from django.db import models, DEFAULT_DB_ALIAS
 from django.utils.encoding import smart_unicode, is_protected_type
 
+import kalite
 from utils.general import version_diff
 
 
@@ -20,8 +21,8 @@ def Deserializer(object_list, **options):
     db = options.pop('using', DEFAULT_DB_ALIAS)
 
     #
-    src_version = options.pop("src_version", None)  # version that was serialized
-    dest_version = options.pop("dest_version", None)  # version that we're deserializing to
+    src_version = options.pop("src_version", kalite.VERSION)  # version that was serialized
+    dest_version = options.pop("dest_version", kalite.VERSION)  # version that we're deserializing to
     assert dest_version, "For KA Lite, we should always set the dest version to the current device."
 
     models.get_apps()

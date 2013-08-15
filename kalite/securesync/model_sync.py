@@ -116,7 +116,7 @@ def save_serialized_models(data, increment_counters=True, src_version=version.VE
         purgatory = None
 
     # deserialize the models, either from text or a list of dictionaries
-    if isinstance(data, str) or isinstance(data, unicode):
+    if isinstance(data, basestring):
         models = serializers.deserialize("versioned-json", data, src_version=src_version, dest_version=version.VERSION)
     else:
         models = serializers.deserialize("versioned-python", data, src_version=src_version, dest_version=version.VERSION)

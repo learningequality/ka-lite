@@ -1,6 +1,5 @@
-from __future__ import absolute_import
-
 import datetime
+import os
 import uuid
 import zlib
 from annoying.functions import get_object_or_None
@@ -16,6 +15,7 @@ from django.utils.translation import ugettext_lazy as _
 import kalite
 import settings
 from config.models import Settings
+from shared import serializers
 from securesync import crypto, model_sync
 
 
@@ -319,6 +319,30 @@ class Zone(SyncedModel):
         # Must import inline (not in header) to avoid import loop
         return Zone.objects.filter(organization=None)
 
+    @classmethod
+    def load_zone_for_offline_install(cls, in_file):
+        """
+        Receives a serialized file for import.
+        Import the file--nothing more!
+        
+        File should contain:
+        * Zone object
+        * Device and DeviceZone / ZoneInvitation objects (chain of trust)
+        * Central server object
+        """
+        assert os.path.exists(in_file), "in_file must exist."
+        with open(in_file, "r") as fp:
+            models = serializers.deserialize("json", fp.read())  # all must be in a consistent version
+        for model in models:
+            model.save()
+
+
+class ZoneInvitation(SyncedModel):
+    zone = models.ForeignKey("Zone")
+    device = models.ForeignKey("Device")
+    public_key = models.CharField(max_length=500)
+    private_key = models.CharField(max_length=500)
+
 
 class Facility(SyncedModel):
     name = models.CharField(verbose_name=_("Name"), help_text=_("(This is the name that students/teachers will see when choosing their facility; it can be in the local language.)"), max_length=100)
@@ -496,17 +520,24 @@ class Device(SyncedModel):
     def get_own_device():
         devices = DeviceMetadata.objects.filter(is_own_device=True)
         if devices.count() == 0:
-            own_device = Device.initialize_own_device(version=kalite.VERSION) # why don't we need name or description here?
+            own_device = Device.initialize_own_device() # why don't we need name or description here?
         else:
             own_device = devices[0].device
         return own_device
 
     @staticmethod
     def initialize_own_device(**kwargs):
+        """
+        Create a device object for the installed device.  Part of installation.
+        """
+        if not "version" in kwargs:
+            kwargs["version"] = kalite.VERSION  # this should not be passed as an arg.
+
         own_device = Device(**kwargs)
         own_device.set_key(crypto.get_own_key())
         own_device.sign(device=own_device)
         own_device.save(own_device=own_device)
+
         metadata = own_device.get_metadata()
         metadata.is_own_device = True
         metadata.is_trusted = settings.CENTRAL_SERVER
@@ -558,6 +589,24 @@ class Device(SyncedModel):
 
         return uuid.uuid5(ROOT_UUID_NAMESPACE, str(self.public_key)).hex
 
+    def register_offline(self, zone, invitation=None):
+        """
+        """
+        if invitation:
+            if invitation.zone != zone:
+                raise CommandError("Zone invitation does not match the zone requested to register to.")
+            invitation.device = self
+            invitation.save()
+
+        elif not zone.signed_by == self:
+            raise CommandError("Must register to a zone with an invitation, or must have generated the zone.")
+
+        # Create a DeviceZone, and self-sign it.
+        devicezone = DeviceZone(device=self, zone=zone)
+        devicezone.sign(device=self)
+        devicezone.save()
+
+
     @staticmethod
     def get_device_counters(zone):
         device_counters = {}
@@ -566,6 +615,86 @@ class Device(SyncedModel):
                 device_counters[device.id] = device.get_metadata().counter_position
         return device_counters
 
+    def chain_of_trust(self, track_back_to_device):
+        return self.__class__.chain_of_trust_generic(from_device=self, to_device=track_back_to_device)
+
+    @classmethod
+    def get_central_server(cls):
+        devices = Device.objects.filter(devicemetadata__is_trusted=True)
+        return devices[0] if devices else None
+
+    def serialize_chain_of_trust(self):
+        originator = self.zone.signed_by
+        models = chain_of_trust(track_back_to_device) 
+
+    @classmethod
+    def chain_of_trust_generic(cls, from_device, to_device):
+        """
+        Track from one DeviceZone to whomever originally signed the zone
+        (the zone creator--either the central server, or a device)
+
+        Returns an (ordered) list of dictionaries (Device, DeviceZone), defining the chain of trust.
+        """
+        chain_to_originator = cls.chain_of_trust_one_way(from_device)
+        chain_to_device = cls.chain_of_trust_one_way(to_device)[::-1]
+        
+        # Make sure the devices at the ends are either on the same zone,
+        #   or trusted
+
+        chain = chain_to_originator + chain_to_device[1:]
+        return chain
+
+    @classmethod
+    def chain_of_trust_one_way(cls, from_device):
+        """
+        """
+        # Trace back from this device to the zone-trusted device.
+        chain = [{"device": from_device}]
+
+        while True:
+            chain[-1]["device_zone"] = get_object_or_None(DeviceZone, device=chain[-1]["device"].signed_by)
+            chain[-1]["zone_invitation"] = get_object_or_None(ZoneInvitation, device=chain[-1]["device"].signed_by)
+
+            if not chain[-1]["device_zone"] and not chain[-1]["zone_invitation"]:
+                break
+
+            for obj_type in ["device_zone", "zone_invitation"]:
+                if not chain[-1][obj_type]:
+                    continue
+                if chain[-1][obj_type].signed_by == chain[-1]["device"]:
+                    break
+            chain.append({"device": signed_by})
+
+        # Validate the chain of trust to the zone originator
+        for obj_type in ["device_zone", "zone_invitation"]:
+            terminal_link = chain[-1]
+            terminal_device = terminal_link["device"]
+            obj = terminal_link[obj_type]
+            if obj and not (terminal_device.is_originator(obj) or terminal_device.is_trusted()):
+                raise Exception("Could not verify chain of trust.")
+        return chain
+
+        
+        @classmethod
+        def is_valid_chain_of_trust(cls, chain, from_device=None, to_device=None):
+            """
+            """
+            is_valid = True
+            is_valid = is_valid and chain
+            is_valid = is_valid and (not from_device or from_device == chain[0]["device"])
+            is_valid = is_valid and (not to_device or to_device == chain[-1]["device"])
+
+            idx = 1
+            while is_valid and idx < len(chain):
+                prev_link = chain[idx-1]
+                cur_link = chain[idx]
+                owner_in_chain = None
+
+    def is_originator(self, model):
+        return self == model.signed_by
+
+    def is_trusted(self):
+        return self.devicemetadata.is_trusted
 
 class ImportPurgatory(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)

@@ -35,15 +35,15 @@ def package_offline_install_zip(version=kalite.VERSION, platform="all", locale="
         if not os.path.exists(os.path.split(base_archive_path)[0]):
             os.mkdir(os.path.split(base_archive_path)[0])
 
-        out = call_command_with_output("package_for_download", version=version, platform=platform, locale=locale, server_type=server_type, central_server=central_server, file=base_archive_path)
+        out = call_command_with_output("zip_kalite", version=version, platform=platform, locale=locale, server_type=server_type, central_server=central_server, file=base_archive_path)
         if out[1] or out[2]:
             raise Exception("Failed to create zip file(%d): %s" % (out[2], out[1]))
 
     # Append into the zip, on disk
     zip_file = tempfile.mkstemp()[1]
     shutil.copy(base_archive_path, zip_file) # duplicate the archive
-#    if settings.DEBUG: # avoid "caching" "problem" in DEBUG mode
-#        try: os.remove(base_archive_path)# clean up
-#        except: pass
 
+    # Add local settings?
+    
+    # Slip in zone info
     return zip_file

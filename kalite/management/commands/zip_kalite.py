@@ -168,6 +168,12 @@ class Command(BaseCommand):
             dest='server_type',
             default="local",
             help='KA Lite server type'),
+        make_option('-c', '--central-server',
+            action='store',
+            dest='central_server',
+            default="127.0.0.1:8001",#settings.CENTRAL_SERVER_HOST if ,
+            help='Central server host and port',
+            metavar="CENTRAL_SERVER"),
 
         # Functional options
         make_option('-r', '--remove-test',
@@ -183,7 +189,7 @@ class Command(BaseCommand):
         make_option('-f', '--file',
             action='store',
             dest='file',
-            default="__default__",
+            default=None,
             help='FILE to save zip to',
             metavar="FILE"),
         )
@@ -205,7 +211,7 @@ class Command(BaseCommand):
         files_dict[ls_file] = { "dest_path": "kalite/local_settings.py" }
 
         # Step 3: select output file.
-        if options['file']=="__default__":
+        if not options['file']:
             options['file'] = create_default_archive_filename(options)
 
         # Step 4: package into a zip file

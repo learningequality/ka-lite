@@ -248,12 +248,16 @@ class Command(UpdatesStaticCommand):
         zip_file = tempfile.mkstemp()[1]
         with open(zip_file,"wb") as fp:
             fp.write(response.content)
+        self.validate_zip(zip_file)
         return zip_file
 
 
     def validate_zip(self, zip_file):
+        """
+        Peek inside.  If it has the signature of the zip, then unpack and replace.
+        """
         if not os.path.exists(zip_file):
-            raise CommandError("Zip file doesn't exist")
+            raise CommandError("Zip file doesn't exist.")
         return True
 
 
