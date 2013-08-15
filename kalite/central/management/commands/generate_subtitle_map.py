@@ -253,6 +253,14 @@ def update_language_srt_map():
         # Update the big mapping with the most accurate numbers 
         remote_availability_map[lang_code].update(lang_map)
 
+    # Finally, remove any files not found in the current map at all.
+    for filename in os.listdir(os.path.dirname(lang_map_filepath)):
+        lang_code = lang_code = filename.split("_")[0]
+        if not lang_code in remote_availability_map:
+            file_to_remove = get_lang_map_filepath(lang_code)
+            logging.info("Subtitle support for %s has been terminated; removing." % lang_code)
+            os.remove(file_to_remove)
+
     return remote_availability_map
 
 
@@ -296,7 +304,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         try:
             converted_date = convert_date_input(options.get("date_since_attempt"))
-            create_all_mappings(force=options.get("force"), frequency_to_save=5, response_to_check=options.get("response_code"), date_to_check=converted_date)
+            # create_all_mappings(force=options.get("force"), frequency_to_save=5, response_to_check=options.get("response_code"), date_to_check=converted_date)
             logging.info("Executed successfully. Updating language => subtitle mapping to record any changes!")
 
             language_srt_map = update_language_srt_map()
