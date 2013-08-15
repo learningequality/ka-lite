@@ -14,7 +14,7 @@ class NoSubs(Exception):
 
 def get_subtitles(youtube_id, language, format="srt"):
     
-    r = requests.get("http://%s/static/srt/%s/%s.srt" % (settings.CENTRAL_SERVER_HOST, language, youtube_id))
+    r = requests.get("http://%s/static/srt/%s/subtitles/%s.srt" % (settings.CENTRAL_SERVER_HOST, language, youtube_id))
     if r.status_code > 399:
         raise NoSubs()
 

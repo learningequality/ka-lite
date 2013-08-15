@@ -39,15 +39,12 @@ class Command(BaseCommand):
             self.stdout.flush()
 
             try:
-                if video.youtube_id not in available_srts:
-                    raise NoSubs
-                else: 
-                    download_subtitles(video.youtube_id, language)
-                    self.stdout.write("Download is complete!\n")
-                    video.subtitles_downloaded = True
-                    video.subtitle_download_in_progress = False
-                    video.flagged_for_subtitle_download = False
-                    video.save()
+                download_subtitles(video.youtube_id, language)
+                self.stdout.write("Download is complete!\n")
+                video.subtitles_downloaded = True
+                video.subtitle_download_in_progress = False
+                video.flagged_for_subtitle_download = False
+                video.save()
             except NoSubs as e:
                 video.flagged_for_subtitle_download = False
                 video.subtitle_download_in_progress = False
