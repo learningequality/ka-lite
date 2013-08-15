@@ -14,7 +14,7 @@ from django.core.management import call_command
 
 import settings
 from settings import LOG as logging
-from utils import general
+from utils.general import convert_date_input, ensure_dir
 from utils.subtitles import subtitle_utils
 from utils.topic_tools import get_node_cache
 
@@ -25,7 +25,7 @@ headers = {
 }
 
 SRTS_JSON_FILENAME = "srts_remote_availability.json"
-LANGUAGE_SRT_SUFFIX = "download_status.json"
+LANGUAGE_SRT_SUFFIX = "_download_status.json"
 
 
 class OutDatedSchema(Exception):
@@ -196,8 +196,8 @@ def update_language_srt_map():
     for youtube_id, data in api_info_map.items():
         languages = data.get("language_codes", [])
         for lang_code in languages:
-            if not remote_availability_map.get(lang_code):
-                logging.info("Creating language section '%s'" % lang_code)
+            if not lang_code in remote_availability_map:
+                #logging.info("Creating language section '%s'" % lang_code)
                 remote_availability_map[lang_code] = {}
             # This entry will be valid if it's new, otherwise it will be overwitten later
             remote_availability_map[lang_code][youtube_id] = {
@@ -212,11 +212,14 @@ def update_language_srt_map():
 
         # Try to open previous language file 
         lang_map_filepath = get_lang_map_filepath(lang_code)
-        try:
-            lang_map = json.loads(open(lang_map_filepath).read())
-        except:
-            logging.debug("Language download status mapping for (%s) doesn't exist or is corrupted, rewriting it." % lang_code)
+        if not os.path.exists(lang_map_filepath):
             lang_map = {}
+        else:
+            try:
+                lang_map = json.loads(open(lang_map_filepath).read())
+            except:
+                logging.debug("Language download status mapping for (%s) is corrupted, rewriting it." % lang_code)
+                lang_map = {}
 
         # First, check to see if it's empty (e.g. no subtitles available for any videos)
         if not new_data:
@@ -243,11 +246,20 @@ def update_language_srt_map():
 
         # Write the new file to the correct location 
         logging.info("Writing %s" % lang_map_filepath)
+        ensure_dir(os.path.dirname(lang_map_filepath))
         with open(lang_map_filepath, 'w') as outfile:
             json.dump(lang_map, outfile)
 
         # Update the big mapping with the most accurate numbers 
         remote_availability_map[lang_code].update(lang_map)
+
+    # Finally, remove any files not found in the current map at all.
+    for file in os.listdir(os.path.dirname(lang_map_filepath)):
+        lang_code = file[0:(len(file) - len(LANGUAGE_SRT_SUFFIX))]
+        if not lang_code in remote_availability_map:
+            file_to_remove = get_lang_map_filepath(lang_code)
+            logging.info("Subtitle support for %s has been terminated; removing." % lang_code)
+            os.remove(file_to_remove)
 
     return remote_availability_map
 
@@ -263,10 +275,10 @@ def print_language_availability_table(language_srt_map):
     logging.info("Great success! Subtitles support found for %d languages, %d total dubbings!" % (len(language_srt_map), n_srts))
 
 def get_lang_map_filepath(lang_code):
-    return settings.SUBTITLES_DATA_ROOT + "languages/" + lang_code + "_" + LANGUAGE_SRT_SUFFIX
+    return settings.SUBTITLES_DATA_ROOT + "languages/" + lang_code + LANGUAGE_SRT_SUFFIX
 
 class Command(BaseCommand):
-    help = "Update the mapping of subtitles available by language for each video. Location: %s" % (settings.SUBTITLES_DATA_ROOT + "<lang_code>_" + LANGUAGE_SRT_SUFFIX)
+    help = "Update the mapping of subtitles available by language for each video. Location: %s" % (settings.SUBTITLES_DATA_ROOT + "<lang_code>" + LANGUAGE_SRT_SUFFIX)
 
     option_list = BaseCommand.option_list + (
         # Basic options
@@ -291,7 +303,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         try:
-            converted_date = general.convert_date_input(options.get("date_since_attempt"))
+            converted_date = convert_date_input(options.get("date_since_attempt"))
             create_all_mappings(force=options.get("force"), frequency_to_save=5, response_to_check=options.get("response_code"), date_to_check=converted_date)
             logging.info("Executed successfully. Updating language => subtitle mapping to record any changes!")
 
