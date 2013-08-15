@@ -358,9 +358,12 @@ ul.dynatree-container li, .ui-widget-content {
                 window.download_subtitle_index = window.downloading_subtitles.length - remainder;
                 updateSubtitleProgressDisplay();
                 if (remainder == 0) {
+                    // This is the success case
+                    show_message("success", "All available subtitles have been downloaded successfully.")
                     clearInterval(window.download_subtitle_check_interval);
                     $(".progress-subtitle, #cancel-download").hide();
                     return;
+
                 }
             }).
             fail(function(resp) {
