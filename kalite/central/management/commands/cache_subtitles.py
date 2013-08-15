@@ -16,10 +16,10 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core.management import call_command
 
 import settings
-from generate_subtitle_map import SRTS_JSON_FILENAME, LANGUAGE_SRT_SUFFIX, headers, get_lang_map_filepath
+from generate_subtitle_map import SRTS_JSON_FILENAME, headers, get_lang_map_filepath
 from main.topicdata import LANGUAGE_LOOKUP, LANGUAGE_LIST
 from settings import LOG as logging
-from utils import general
+from utils.general import convert_date_input, ensure_dir
 from utils.subtitles import subtitle_utils
 
 
@@ -53,10 +53,10 @@ def download_srt_from_3rd_party(*args, **kwargs):
     if lang_code:
         srt_list_path = get_lang_map_filepath(lang_code)
         try:
-            language_srt_map = json.loads(open(srt_list_path).read())
+            videos = json.loads(open(srt_list_path).read())
         except:
             raise LanguageCodeDoesNotExist(lang_code)
-        download_if_criteria_met(vids_in_language, *args, **kwargs)
+        download_if_criteria_met(videos, *args, **kwargs)
 
     else:
         base_path = settings.SUBTITLES_DATA_ROOT + "languages/"
@@ -88,7 +88,7 @@ def download_if_criteria_met(videos, lang_code, force, response_code, date_since
     Note: videos are a dict; keys=youtube_id, values=data
     """
 
-    date_specified = general.convert_date_input(date_since_attempt)
+    date_specified = convert_date_input(date_since_attempt)
 
     # Filter up front, for efficiency (& reporting's sake)
     n_videos = len(videos)
@@ -223,9 +223,9 @@ def update_json(youtube_id, lang_code, downloaded, api_response, time_of_attempt
 def generate_zipped_srts(lang_codes_to_update, download_path):
 
     # Create media directory if it doesn't yet exist
-    general.ensure_dir(settings.MEDIA_ROOT)
+    ensure_dir(settings.MEDIA_ROOT)
     zip_path = settings.MEDIA_ROOT + "subtitles/"
-    general.ensure_dir(zip_path)
+    ensure_dir(zip_path)
     lang_codes_to_update = lang_codes_to_update or os.listdir(download_path)
 
     for lang_code in lang_codes_to_update:
@@ -303,7 +303,7 @@ def update_language_list(sub_counts, data_path):
         if lang_code not in LANGUAGE_LIST:
             logging.info("Adding %s to language code list" % lang_code)
             LANGUAGE_LIST.append(lang_code)
-    with open(os.path.join(data_path, "listedlanguages.json"), 'wb') as fp:
+    with open(os.path.join(data_path, "listedlanguages.json"), 'ab') as fp:
         json.dump(LANGUAGE_LIST, fp)
 
 
@@ -324,10 +324,10 @@ def update_srt_availability(lang_code):
 
     # Dump that to the language path
     base_path = settings.SUBTITLES_DATA_ROOT + "languages/"
-    general.ensure_dir(base_path)
+    ensure_dir(base_path)
     filename = "%s_available_srts.json" % lang_code
     filepath = base_path + filename
-    with open(filepath, 'wb') as fp:
+    with open(filepath, 'wb') as fp:  # overwrite file
         json.dump(srts_dict, fp)
 
     return yt_ids
