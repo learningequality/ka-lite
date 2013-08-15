@@ -260,7 +260,9 @@ def start_subtitle_download(request):
     else:
         videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True), youtube_id__in=available_srts)
 
-    if videofiles:
+    if not videofiles:
+        return JsonResponse({"info": "There aren't any subtitles available in %s (language code: %s) for your current videos." % (language_name, language)}, status=200)
+    else:   
         for videofile in videofiles:
             videofile.cancel_download = False
             if videofile.subtitle_download_in_progress:
@@ -269,8 +271,7 @@ def start_subtitle_download(request):
             if update_set == "all":
                 videofile.subtitles_downloaded = False
             videofile.save()
-    else:
-        return JsonResponse({"error": "There aren't any subtitles available in %s (language code: %s) for your current videos." % (language_name, language)}, status=500)
+        
     force_job("subtitledownload", "Download Subtitles")
     return JsonResponse({})
 

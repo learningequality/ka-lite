@@ -264,9 +264,12 @@ ul.dynatree-container li, .ui-widget-content {
                 alert("{% trans 'Please select a language first' %}");
             } else {
                 doRequest("/api/start_subtitle_download", {language: language, update_set: update_set})
-                    .success(
-                        startSubtitleDownloadChecks
-                    )
+                    .success(function(message) {
+                        if (message && "info" in message) {
+                            show_message("info", message.info, "id_subtitles");
+                        }
+                        startSubtitleDownloadChecks();
+                    })
                     .fail(function(resp) {
                         handleFailedAPI(resp, "Error downloading subtitles");
                         $(".progress-waiting").hide();
