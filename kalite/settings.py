@@ -223,6 +223,8 @@ MESSAGE_STORAGE = 'utils.django_utils.NoDuplicateMessagesSessionStorage'
 
 TEST_RUNNER = 'kalite.utils.testing.testrunner.KALiteTestRunner'
 
+FAST_TESTS_ONLY = getattr(local_settings, "FAST_TESTS_ONLY", False)
+
 CRONSERVER_FREQUENCY = getattr(local_settings, "CRONSERVER_FREQUENCY", 600) # 10 mins (in seconds)
 
 # Add additional mimetypes to avoid errors/warnings
