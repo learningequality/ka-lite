@@ -13,9 +13,10 @@ from securesync.models import SyncedModel, FacilityUser, Device
 from settings import LOG as logging
 from utils.general import datediff, isnumeric
 
-POINTS_PER_VIDEO = 750
 
 class VideoLog(SyncedModel):
+    POINTS_PER_VIDEO = 750
+
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
     youtube_id = models.CharField(max_length=20, db_index=True)
     total_seconds_watched = models.IntegerField(default=0)
@@ -30,7 +31,7 @@ class VideoLog(SyncedModel):
 
             # Compute learner status
             already_complete = self.complete
-            self.complete = (self.points >= POINTS_PER_VIDEO)
+            self.complete = (self.points >= VideoLog.POINTS_PER_VIDEO)
             if not already_complete and self.complete:
                 self.completion_timestamp = datetime.now()
                 self.completion_counter = Device.get_own_device().get_counter()
@@ -52,32 +53,23 @@ class VideoLog(SyncedModel):
     def get_points_for_user(user):
         return VideoLog.objects.filter(user=user).aggregate(Sum("points")).get("points__sum", 0) or 0
         
-    @staticmethod
-    def update_video_log(facility_user, youtube_id, seconds_watched, points=0, new_points=0):
+    @classmethod
+    def update_video_log(cls, facility_user, youtube_id, additional_seconds_watched, total_points=0):
+        assert facility_user and youtube_id, "Updating a video log requires both a facility user and a YouTube ID"
         
-        if not facility_user or not youtube_id:
-            raise Exception("Updating a video log requires both a facility user and a YouTube ID!")
-        
-        # start a replacement video log
-        videolog = VideoLog(user=facility_user, youtube_id=youtube_id)
-        
-        # get an old video log for this combination of user and youtube_id, or a dummy if there isn't one
-        old_videolog = videolog.get_existing_instance() or VideoLog()
+        # More robust extraction of previous object
+        videolog = cls.get_or_initialize(user=facility_user, youtube_id=youtube_id)
         
         # combine the previously watched counts with the new counts
-        videolog.total_seconds_watched += seconds_watched
-        videolog.points = min(max((old_videolog.points or 0) + new_points, points), POINTS_PER_VIDEO)
+        videolog.total_seconds_watched += additional_seconds_watched
+        videolog.points = min(max(videolog.points, total_points), cls.POINTS_PER_VIDEO)
         
         # write the video log to the database, overwriting any old video log with the same ID
         # (and since the ID is computed from the user ID and YouTube ID, this will behave sanely)
         videolog.full_clean()
         videolog.save()
-        
-        return {
-            "points": videolog.points,
-            "complete": videolog.complete,
-        }
 
+        return videolog
 
 
 class ExerciseLog(SyncedModel):
