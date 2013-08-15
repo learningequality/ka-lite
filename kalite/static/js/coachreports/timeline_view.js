@@ -8,8 +8,8 @@ function json2dataTable_timeline(json, xaxis, yaxis) {
     var dataTable = [];
 
     nusers = Object.keys(json['data']).length;
-    
-    nexercises = json['exercises'].length;
+
+    nobjects = json['exercises'].length || json['videos'].length;
 
     var timeScale = []
     
@@ -39,7 +39,7 @@ function json2dataTable_timeline(json, xaxis, yaxis) {
         for (ri=0; ri<good_xdata.length; ++ri) {
 
             values.push({
-                date: good_xdata[ri], pctmastery: 100*good_ydata[ri]/nexercises
+                date: good_xdata[ri], pctmastery: 100*good_ydata[ri]/nobjects
             })
         }
         
