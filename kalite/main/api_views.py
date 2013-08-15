@@ -1,6 +1,8 @@
 import json
 import re
+import requests
 from annoying.functions import get_object_or_None
+from requests.exceptions import ConnectionError, HTTPError
 
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse
@@ -173,6 +175,7 @@ def _get_exercise_log_dict(request, user, exercise_id):
         "points": exerciselog.points,
         "struggling": exerciselog.struggling,
     }
+
 
 
 # Functions below here focused on users

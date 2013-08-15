@@ -21,7 +21,7 @@ from main.models import VideoLog, ExerciseLog, VideoFile
 from securesync import crypto, model_sync
 from securesync.models import *
 from shared import serializers
-from utils.decorators import api_handle_error_with_json, distributed_server_only, return_jsonp
+from utils.decorators import allow_jsonp, api_handle_error_with_json, distributed_server_only
 from utils.internet import JsonResponse, am_i_online
 
 
@@ -321,7 +321,7 @@ def status(request):
 
     return JsonResponse(data)
 
-@return_jsonp
+@allow_jsonp
 def get_server_info(request):
     """This function is used to check connection to central or local server and also to get specific data from server.
 
@@ -330,37 +330,59 @@ def get_server_info(request):
 
     Returns:
         A json object containing general data from the server.
+    
     """
     device = None
+    zone = None
 
-    device_info = { "status": "OK" }
+    device_info = {"status": "OK", "invalid_fields": []}
 
-    for value in json.loads(request.POST.get("requested_data", "{}")):
-        if value.lower() == "version":
-            device_info[value] = version.VERSION
-
-        elif value.lower() == "video_count":
-            device_info[value] = VideoFile.objects.filter(percent_complete=100).count() if not settings.CENTRAL_SERVER else "Central server does not have videos."
-
-        elif value.lower() == "name":
-            device = device or Device.get_own_device()
-            device_info[value] = device.name if device.name else "Device was not registered"
-
-        elif value.lower() == "description":
-            device = device or Device.get_own_device()
-            device_info[value] = device.description if device.description else "Device has no description"
-
-        elif value.lower() == "zone":
-            device = device or Device.get_own_device()
-            device_info[value] = device.get_zone().name if device.get_zone() and not settings.CENTRAL_SERVER else "Zone was not registered"
+    for field in request.GET.get("fields", "").split(","):
         
-        elif value.lower() == "online":
+        if field == "version":
+            device_info[field] = version.VERSION
+
+        elif field == "video_count":
+            device_info[field] = VideoFile.objects.filter(percent_complete=100).count() if not settings.CENTRAL_SERVER else 0
+
+        elif field == "device_name":
+            device = device or Device.get_own_device()
+            device_info[field] = device.name
+
+        elif field == "device_description":
+            device = device or Device.get_own_device()
+            device_info[field] = device.description
+
+        elif field == "device_description":
+            device = device or Device.get_own_device()
+            device_info[field] = device.description
+
+        elif field == "device_id":
+            device = device or Device.get_own_device()
+            device_info[field] = device.id
+
+        elif field == "zone_name":
             if settings.CENTRAL_SERVER:
-                device_info[value] =  True
+                continue
+            device = device or Device.get_own_device()
+            zone = zone or device.get_zone()
+            device_info[field] = zone.name if zone else None
+
+        elif field == "zone_id":
+            if settings.CENTRAL_SERVER:
+                continue
+            device = device or Device.get_own_device()
+            zone = zone or device.get_zone()
+            device_info[field] = zone.id if zone else None
+        
+        elif field == "online":
+            if settings.CENTRAL_SERVER:
+                device_info[field] =  True
             else:
-                device_info[value] = am_i_online(url="%s://%s%s" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST, reverse("get_server_info")))
-
-        else:
-            raise Exception("Unknown parameter: %s" % value)
-
+                device_info[field] = am_i_online(url="%s://%s%s" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST, reverse("get_server_info")))
+                
+        elif field:
+            # the field isn't one we know about, so add it to the list of invalid fields
+            device_info["invalid_fields"].append(field)
+            
     return JsonResponse(device_info)

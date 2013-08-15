@@ -1,15 +1,17 @@
+import json
+import os
 from annoying.functions import get_object_or_None
 from decorator.decorator import decorator
 
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseForbidden, HttpResponseServerError
+from django.http import HttpResponse, Http404
 
 import kalite
 import settings
-from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
-from securesync.models import Zone
+from central.models import Organization, get_or_create_user_profile
 from shared.packaging import package_offline_install_zip
-from utils.internet import JsonResponse, return_jsonp
+from utils.decorators import allow_jsonp, api_handle_error_with_json
+from utils.internet import JsonResponse
 
 
 def get_central_server_host(request):
@@ -51,13 +53,17 @@ def download_kalite(request, *args, **kwargs):
 
     return response
 
-@return_jsonp
+
+@allow_jsonp
+@api_handle_error_with_json
 def get_kalite_version(request):
     return JsonResponse({
         "version": kalite.VERSION,
     })
 
-@return_jsonp
+
+@allow_jsonp
+@api_handle_error_with_json
 def get_download_urls(request):
     base_url = "%s://%s" % ("https" if request.is_secure() else "http", get_central_server_host(request))
 
@@ -82,3 +88,33 @@ def get_download_urls(request):
         }
 
     return JsonResponse(downloads)
+
+
+@api_handle_error_with_json
+def get_subtitle_counts(request):
+    """
+    Sort and return a dict in the following format that gives the count of srt files available by language:
+        {"gu": {"count": 45, "name": "Gujarati"}, etc.. }
+    """
+
+    # Get the subtitles file
+    subtitledata_path = settings.SUBTITLES_DATA_ROOT
+    if not os.path.exists(subtitledata_path):
+        # could call-command, but return 404 for now.
+        raise Http404
+    subtitle_counts = json.loads(open(subtitledata_path + "subtitle_counts.json").read())
+
+
+    # Return an appropriate response
+    # TODO(dylan): Use jsonp decorator once it becomes available
+    if request.GET.get("callback",None):
+        # JSONP response
+        response = HttpResponse("%s(%s);" % (request.GET["callback"], json.dumps(subtitle_counts, sort_keys=True)))
+        response["Access-Control-Allow-Headers"] = "*"
+        response["Content-Type"] = "text/javascript"
+        return response
+
+    else:
+        # Regular request
+        response = JsonResponse(json.dumps(subtitle_counts, sort_keys=True), status=200)
+        return response

@@ -162,32 +162,54 @@ def cancel_video_download(request):
 """
 Subtitles
 """
+
 @require_admin
 @api_handle_error_with_json
 def start_subtitle_download(request):
-    new_only = simplejson.loads(request.raw_post_data or "{}").get("new_only", False)
+    update_set = simplejson.loads(request.raw_post_data or "{}").get("update_set", "existing")
     language = simplejson.loads(request.raw_post_data or "{}").get("language", "")
     language_list = topicdata.LANGUAGE_LIST
+    language_lookup = topicdata.LANGUAGE_LOOKUP
+
+    # Reset the language
     current_language = Settings.get("subtitle_language")
-    new_only = new_only and (current_language == language)
     if language in language_list:
         Settings.set("subtitle_language", language)
     else:
         return JsonResponse({"error": "This language is not currently supported - please update the language list"}, status=500)
-    if new_only:
-        videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True), subtitles_downloaded=False)
+
+    language_name = language_lookup.get(language)
+    # Get the json file with all srts
+    request_url = "http://%s/static/data/subtitles/languages/%s_available_srts.json" % (settings.CENTRAL_SERVER_HOST, language)
+    try:
+        r = requests.get(request_url)
+        r.raise_for_status() # will return none if 200, otherwise will raise HTTP error
+        available_srts = set((r.json)["srt_files"])
+    except ConnectionError:
+        return JsonResponse({"error": "The central server is currently offline."}, status=500)
+    except HTTPError:
+        return JsonResponse({"error": "No subtitles available on central server for %s (language code: %s); aborting." % (language_name, language)}, status=500)
+
+    if update_set == "existing":
+        videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True), subtitles_downloaded=False, youtube_id__in=available_srts)
     else:
-        videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True))
-    for videofile in videofiles:
-        videofile.cancel_download = False
-        if videofile.subtitle_download_in_progress:
-            continue
-        videofile.flagged_for_subtitle_download = True
-        if not new_only:
-            videofile.subtitles_downloaded = False
-        videofile.save()
+        videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True), youtube_id__in=available_srts)
+
+    if not videofiles:
+        return JsonResponse({"info": "There aren't any subtitles available in %s (language code: %s) for your current videos." % (language_name, language)}, status=200)
+    else:   
+        for videofile in videofiles:
+            videofile.cancel_download = False
+            if videofile.subtitle_download_in_progress:
+                continue
+            videofile.flagged_for_subtitle_download = True
+            if update_set == "all":
+                videofile.subtitles_downloaded = False
+            videofile.save()
+        
     force_job("subtitledownload", "Download Subtitles")
     return JsonResponse({})
+
 
 @require_admin
 @api_handle_error_with_json
@@ -195,12 +217,14 @@ def check_subtitle_download(request):
     videofiles = VideoFile.objects.filter(flagged_for_subtitle_download=True)
     return JsonResponse(videofiles.count())
 
+
 @require_admin
 @api_handle_error_with_json
 def get_subtitle_download_list(request):
     videofiles = VideoFile.objects.filter(flagged_for_subtitle_download=True).values("youtube_id")
     video_ids = [video["youtube_id"] for video in videofiles]
     return JsonResponse(video_ids)
+
 
 @require_admin
 @api_handle_error_with_json
