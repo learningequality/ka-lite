@@ -253,9 +253,9 @@ def generate_zipped_srts(lang_codes_to_update, download_path):
 
 
 def get_new_counts(data_path, download_path, language_code):
-    """Return dictionary of srt file counts in respective download folders"""
+    """Write a new dictionary of srt file counts in respective download folders"""
 
-    subtitle_counts = {}
+    language_subtitle_count = {}
     subtitles_path = "%s%s/subtitles/" % (download_path, language_code)
     lang_name = get_language_name(language_code)
 
@@ -263,18 +263,16 @@ def get_new_counts(data_path, download_path, language_code):
         count = len(glob.glob("%s/*.srt" % subtitles_path))
         logging.info("%4d subtitles for %-20s" % (count, lang_name))
 
-        subtitle_counts[lang_name] = {}
-        subtitle_counts[lang_name]["count"] = count
-        subtitle_counts[lang_name]["code"] = language_code
+        language_subtitle_count[lang_name] = {}
+        language_subtitle_count[lang_name]["count"] = count
+        language_subtitle_count[lang_name]["code"] = language_code
     except LanguageNameDoesNotExist as ldne:
         logging.warn(ldne)
     except:
         logging.info("%-4s subtitles for %-20s" % ("No", lang_name))
 
-    write_new_json(subtitle_counts, data_path)
-    update_language_list(subtitle_counts, data_path)
-
-    return subtitle_counts
+    write_new_json(language_subtitle_count, data_path)
+    update_language_list(language_subtitle_count, data_path)
 
 
 def get_language_name(lang_code):
@@ -289,7 +287,6 @@ def get_language_name(lang_code):
 
 def write_new_json(subtitle_counts, data_path):
     """Write JSON to file in static/data/subtitles/"""
-    language_name = subtitle_counts.keys()[0]
     filename = "subtitle_counts.json"
     filepath = data_path + filename
     try:
