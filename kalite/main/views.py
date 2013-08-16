@@ -1,7 +1,6 @@
 import copy
 import datetime
 import json
-import os
 import re 
 import sys
 from annoying.decorators import render_to
@@ -98,6 +97,14 @@ def check_setup_status(handler):
 @cache_page(settings.CACHE_TIME)
 @render_to("topic.html")
 def topic_handler(request, topic):
+    return topic_context(topic)
+
+
+def topic_context(topic):
+    """
+    Given a topic node, create all context related to showing that topic
+    in a template.
+    """
     videos    = topic_tools.get_videos(topic)
     exercises = topic_tools.get_exercises(topic)
     topics    = topic_tools.get_live_topics(topic)
@@ -162,8 +169,8 @@ def exercise_handler(request, exercise):
 
     videos_to_delete = []
     for idx, video in enumerate(related_videos):
-        # Remove all videos that were not recognized or 
-        #   simply aren't on disk.  
+        # Remove all videos that were not recognized or
+        #   simply aren't on disk.
         #   Check on disk is relatively cheap, also executed infrequently
         if not video or not topic_tools.is_video_on_disk(video["youtube_id"]):
             videos_to_delete.append(idx)
@@ -202,16 +209,10 @@ def exercise_dashboard(request):
 @cache_page(settings.CACHE_TIME)
 @render_to("homepage.html")
 def homepage(request):
-    # TODO(bcipolli): video counts on the distributed server homepage
-    topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"], topicdata.TOPICS["children"])
-
-    # indexed by integer
-    my_topics = [dict([(k, t[k]) for k in ('title', 'path')]) for t in topics]
-
-    context = {
+    context = topic_context(topicdata.TOPICS)
+    context.update({
         "title": "Home",
-        "topics": my_topics,
-    }
+    })
     return context
 
 @require_admin
@@ -290,70 +291,6 @@ Available stats:
 
     return val
 
-@require_admin
-@render_to("update.html")
-def update(request):
-
-    am_i_online = video_connection_is_available()
-    if not am_i_online:
-        messages.warning(request, _("No internet connection was detected.  You must be online to download videos or subtitles."))
-
-    device = Device.get_own_device()
-    zone = device.get_zone()
-
-    context = {
-        "am_i_online": am_i_online,
-        "registered": Settings.get("registered"),
-        "zone_id": zone.id if zone else None,
-        "device_id": device.id,
-        "video_count": VideoFile.objects.filter(percent_complete=100).count(),
-    }
-    return context
-
-@require_admin
-@render_to("update_videos.html")
-def update_videos(request):
-    call_command("videoscan")  # Could potentially be very slow, blocking request.
-    force_job("videodownload", "Download Videos")
-
-    context = {
-        "am_i_online": True,
-    }
-    return context
-
-
-@require_admin
-@render_to("update_subtitles.html")
-def update_subtitles(request):
-    force_job("subtitledownload", "Download Subtitles")
-    language_lookup = topicdata.LANGUAGE_LOOKUP
-    language_list = topicdata.LANGUAGE_LIST
-    default_language = Settings.get("subtitle_language") or "en"
-    if default_language not in language_list:
-        language_list.append(default_language)
-    languages = [{"id": key, "name": language_lookup[key]} for key in language_list]
-    languages = sorted(languages, key=lambda k: k["name"])
-
-    context = {
-        "languages": languages,
-        "default_language": default_language,
-        "am_i_online": True,
-    }
-    return context
-
-
-@require_admin
-@render_to("update_software.html")
-def update_software(request):
-    context = {
-        "am_i_online": True,
-        "software_version": kalite.VERSION,
-        "install_dir": os.path.realpath(os.path.join(settings.PROJECT_PATH, "..")),
-        "database_last_updated": datetime.datetime.fromtimestamp(os.path.getctime(settings.DATABASES["default"]["NAME"]
-)),
-    }
-    return context
-
 
 @require_admin
 @facility_required
@@ -399,7 +336,7 @@ def handler_403(request, *args, **kwargs):
     if request.is_ajax():
         return JsonResponse({ "error": "You must be logged in with an account authorized to view this page." }, status=403)
     else:
-        messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page..")))
+        messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page.")))
         return HttpResponseRedirect(reverse("login") + "?next=" + request.path)
 
 

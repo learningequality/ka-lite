@@ -1,14 +1,26 @@
 """
 """
+import json
+import re
 import math
+from annoying.functions import get_object_or_None
 
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseServerError
+from django.utils import simplejson
+from django.core.management import call_command
+from django.db.models import Q
 
 from updates.models import UpdateProgressLog
+from main.models import VideoFile
+from main import topicdata
 from kalite.utils.decorators import require_admin, api_handle_error_with_json
-from kalite.utils.general import isnumeric
+from kalite.utils.general import isnumeric, break_into_chunks
 from kalite.utils.internet import JsonResponse
+from kalite.utils.orderedset import OrderedSet
+from kalite.utils.jobs import force_job, job_status
+from kalite.utils.videos import delete_downloaded_files
+from kalite.utils.django_utils import call_command_async
 
 
 def process_log_from_request(handler):
@@ -76,3 +88,244 @@ def cancel_update_progress(request, process_log):
     return JsonResponse({})
 
 
+@require_admin
+@api_handle_error_with_json
+def start_video_download(request):
+    """
+    API endpoint for launching the videodownload job.
+    """
+    youtube_ids = OrderedSet(simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", []))
+
+    video_files_to_create = [id for id in youtube_ids if not get_object_or_None(VideoFile, youtube_id=id)]
+    video_files_to_update = youtube_ids - OrderedSet(video_files_to_create)
+
+    VideoFile.objects.bulk_create([VideoFile(youtube_id=id, flagged_for_download=True) for id in video_files_to_create])
+
+    for chunk in break_into_chunks(youtube_ids):
+        video_files_needing_model_update = VideoFile.objects.filter(download_in_progress=False, youtube_id__in=chunk).exclude(percent_complete=100)
+        video_files_needing_model_update.update(percent_complete=0, cancel_download=False, flagged_for_download=True)
+
+    force_job("videodownload", "Download Videos")
+    return JsonResponse({})
+
+
+@api_handle_error_with_json
+def check_video_download(request):
+    youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
+    percentages = {}
+    percentages["downloading"] = job_status("videodownload")
+    for id in youtube_ids:
+        videofile = get_object_or_None(VideoFile, youtube_id=id) or VideoFile(youtube_id=id)
+        percentages[id] = videofile.percent_complete
+    return JsonResponse(percentages)
+
+
+@require_admin
+@api_handle_error_with_json
+def delete_videos(request):
+    """
+    API endpoint for deleting videos.
+    """
+    youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
+    for id in youtube_ids:
+        # We should mark all metadata first, to avoid conflicts
+        #   across processes (not currently an issue, but could be)
+        videofile = get_object_or_None(VideoFile, youtube_id=id)
+        if not videofile:
+            continue
+        videofile.cancel_download = True
+        videofile.flagged_for_download = False
+        videofile.flagged_for_subtitle_download = False
+        videofile.save()
+
+        # Now nobody should be touching this file.
+        delete_downloaded_files(id)
+    return JsonResponse({})
+
+
+@require_admin
+def cancel_video_download(request):
+
+    # clear all download in progress flags, to make sure new downloads will go through
+    VideoFile.objects.all().update(download_in_progress=False)
+
+    # unflag all video downloads
+    VideoFile.objects.filter(flagged_for_download=True).update(cancel_download=True, flagged_for_download=False)
+
+    force_job("videodownload", stop=True)
+    log = UpdateProgressLog.get_active_log(process_name="videodownload", create_new=False)
+    if log:
+        log.cancel_progress()
+
+    return JsonResponse({})
+
+
+"""
+Subtitles
+"""
+
+@require_admin
+@api_handle_error_with_json
+def start_subtitle_download(request):
+    update_set = simplejson.loads(request.raw_post_data or "{}").get("update_set", "existing")
+    language = simplejson.loads(request.raw_post_data or "{}").get("language", "")
+    language_list = topicdata.LANGUAGE_LIST
+    language_lookup = topicdata.LANGUAGE_LOOKUP
+
+    # Reset the language
+    current_language = Settings.get("subtitle_language")
+    if language in language_list:
+        Settings.set("subtitle_language", language)
+    else:
+        return JsonResponse({"error": "This language is not currently supported - please update the language list"}, status=500)
+
+    language_name = language_lookup.get(language)
+    # Get the json file with all srts
+    request_url = "http://%s/static/data/subtitles/languages/%s_available_srts.json" % (settings.CENTRAL_SERVER_HOST, language)
+    try:
+        r = requests.get(request_url)
+        r.raise_for_status() # will return none if 200, otherwise will raise HTTP error
+        available_srts = set((r.json)["srt_files"])
+    except ConnectionError:
+        return JsonResponse({"error": "The central server is currently offline."}, status=500)
+    except HTTPError:
+        return JsonResponse({"error": "No subtitles available on central server for %s (language code: %s); aborting." % (language_name, language)}, status=500)
+
+    if update_set == "existing":
+        videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True), subtitles_downloaded=False, youtube_id__in=available_srts)
+    else:
+        videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True), youtube_id__in=available_srts)
+
+    if not videofiles:
+        return JsonResponse({"info": "There aren't any subtitles available in %s (language code: %s) for your current videos." % (language_name, language)}, status=200)
+    else:   
+        for videofile in videofiles:
+            videofile.cancel_download = False
+            if videofile.subtitle_download_in_progress:
+                continue
+            videofile.flagged_for_subtitle_download = True
+            if update_set == "all":
+                videofile.subtitles_downloaded = False
+            videofile.save()
+        
+    force_job("subtitledownload", "Download Subtitles")
+    return JsonResponse({})
+
+
+@require_admin
+@api_handle_error_with_json
+def check_subtitle_download(request):
+    videofiles = VideoFile.objects.filter(flagged_for_subtitle_download=True)
+    return JsonResponse(videofiles.count())
+
+
+@require_admin
+@api_handle_error_with_json
+def get_subtitle_download_list(request):
+    videofiles = VideoFile.objects.filter(flagged_for_subtitle_download=True).values("youtube_id")
+    video_ids = [video["youtube_id"] for video in videofiles]
+    return JsonResponse(video_ids)
+
+
+@require_admin
+@api_handle_error_with_json
+def cancel_subtitle_download(request):
+    # unflag all subtitle downloads
+    VideoFile.objects.filter(flagged_for_subtitle_download=True).update(cancel_download=True, flagged_for_subtitle_download=False)
+
+    force_job("subtitledownload", stop=True)
+    return JsonResponse({})
+
+
+"""
+Software updates
+"""
+
+@require_admin
+def start_update_kalite(request):
+    data = json.loads(request.raw_post_data)
+
+    if request.META.get("CONTENT_TYPE", "") == "application/json" and "url" in data:
+        # Got a download url
+        call_command_async("update", url=data["url"])
+
+    elif request.META.get("CONTENT_TYPE", "") == "application/zip":
+        # Streamed a file; save and call
+        fp, tempfile = tempfile.mkstmp()
+        with fp:
+            write(request.content)
+        call_command_async("update", zip_file=tempfile)
+
+    return JsonResponse({})
+
+@require_admin
+def check_update_kalite(request):
+    videofiles = VideoFile.objects.filter(flagged_for_subtitle_download=True)
+    return JsonResponse(videofiles.count())
+
+@require_admin
+def get_update_kalite_list(request):
+    videofiles = VideoFile.objects.filter(flagged_for_subtitle_download=True).values("youtube_id")
+    video_ids = [video["youtube_id"] for video in videofiles]
+    return JsonResponse(video_ids)
+
+@require_admin
+def cancel_update_kalite(request):
+    # unflag all subtitle downloads
+    VideoFile.objects.filter(flagged_for_subtitle_download=True).update(cancel_download=True, flagged_for_subtitle_download=False)
+
+    force_job("subtitledownload", stop=True)
+    return JsonResponse({})
+
+def annotate_topic_tree(node, level=0, statusdict=None):
+    if not statusdict:
+        statusdict = {}
+    if node["kind"] == "Topic":
+        if "Video" not in node["contains"]:
+            return None
+        children = []
+        unstarted = True
+        complete = True
+        for child_node in node["children"]:
+            child = annotate_topic_tree(child_node, level=level+1, statusdict=statusdict)
+            if child:
+                if child["addClass"] == "unstarted":
+                    complete = False
+                if child["addClass"] == "partial":
+                    complete = False
+                    unstarted = False
+                if child["addClass"] == "complete":
+                    unstarted = False
+                children.append(child)
+        return {
+            "title": node["title"],
+            "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
+            "isFolder": True,
+            "key": node["slug"],
+            "children": children,
+            "addClass": complete and "complete" or unstarted and "unstarted" or "partial",
+            "expand": level < 1,
+        }
+    if node["kind"] == "Video":
+        #statusdict contains an item for each video registered in the database
+        # will be {} (empty dict) if there are no videos downloaded yet
+        percent = statusdict.get(node["youtube_id"], 0)
+        if not percent:
+            status = "unstarted"
+        elif percent == 100:
+            status = "complete"
+        else:
+            status = "partial"
+        return {
+            "title": node["title"],
+            "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
+            "key": node["youtube_id"],
+            "addClass": status,
+        }
+    return None
+
+@require_admin
+@api_handle_error_with_json
+def get_annotated_topic_tree(request):
+    statusdict = dict(VideoFile.objects.values_list("youtube_id", "percent_complete"))
+    return JsonResponse(annotate_topic_tree(topicdata.TOPICS, statusdict=statusdict))

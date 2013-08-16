@@ -3,7 +3,6 @@ Test support harness to make setup.py test work.
 """
 import functools
 import os
-import pdb
 import sys
 import logging
 
