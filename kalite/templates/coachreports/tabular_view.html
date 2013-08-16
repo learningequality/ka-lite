@@ -2,6 +2,7 @@
 
 {% load i18n %}
 {% load staticfiles %}
+{% load my_filters %}
 
 {% block coachreports_active %}active{% endblock coachreports_active %}
 
@@ -186,12 +187,12 @@
                         </tr>
                         {% for student in students %}
                             <tr>
-                                {% for log in student.exercise_logs %}
-                                    {% if not log %}
+                                {% for exercise in exercises %}
+                                    {% if not student.exercise_logs|get_item:exercise.slug %}
                                         <td class="status data" title="{% trans "Not Attempted" %}">
-                                    {% elif log.struggling %}
+                                    {% elif student.exercise_logs|get_item:exercise.slug|get_item:"struggling" %}
                                         <td class="status data struggle" title="{% trans "Struggling" %}">
-                                    {% elif log.complete %}
+                                    {% elif student.exercise_logs|get_item:exercise.slug|get_item:"complete" %}
                                         <td class="status data complete" title="{% trans "Complete" %}">
                                     {% else %}
                                         <td class="status data partial" title="{% trans "Attempted" %}">
