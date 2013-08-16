@@ -255,7 +255,12 @@ li .progress-circle {
     float: left;
 }
 
-.unregistered-only {
+.admin-only, .not-admin-only,
+.unregistered-only, .not-unregistered-only,
+.logged-in-only, .not-logged-in-only,
+.client-online-only, .not-client-online-only,
+.server-online-only, .not-server-online-only,
+{
     display: none;
 }
 
