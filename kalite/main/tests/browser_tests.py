@@ -425,14 +425,15 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
         """
         Answer an exercise 10 times correctly; verify mastery message
         """
+        points = 0
         for ai in range(10):
             numbers = self.browser.find_elements_by_class_name('mn')[:-1] # last one is to be blank
             answer = sum(int(num.text) for num in numbers)
+            expected_min_points = points + 10
+            expected_max_points = points + 20
             points = self.browser_submit_answer(answer)
-            expected_min_points = (ai+1)*10
-            expected_max_points = (ai+1)*20
-            self.assertGreaterEqual(points, expected_min_points, "point update is wrong: %d < %d" % (points, expected_min_points))
-            self.assertLessEqual(points, expected_max_points, "point update is wrong: %d > %d" % (points, expected_max_points))
+            self.assertGreaterEqual(points, expected_min_points, "Too few points were given: %d < %d" % (points, expected_min_points))
+            self.assertLessEqual(points, expected_max_points, "Too many points were given: %d > %d" % (points, expected_max_points))
             if ai < 9:
                 self.browser_check_django_message(num_messages=0)  # make sure no messages
             else:
