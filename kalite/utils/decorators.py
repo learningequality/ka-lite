@@ -13,7 +13,7 @@ from django.utils.translation import ugettext as _
 import settings
 from config.models import Settings
 from securesync.models import Device, DeviceZone, Zone, Facility, FacilityUser
-from utils.internet import JsonResponse
+from utils.internet import JsonResponse, JsonpResponse
 
 
 def central_server_only(handler):
@@ -285,4 +285,43 @@ def require_superuser(handler):
             return handler(request, *args, **kwargs)
         else:
             raise PermissionDenied(_("Must be logged in as a superuser to access this endpoint."))
+    return wrapper_fn
+
+
+def allow_jsonp(handler):
+    """A general wrapper for API views that should be permitted to return JSONP.
+    
+    Note: do not use this on views that return sensitive user-specific data, as it
+    could allow a 3rd-party attacker site to retrieve and store a user's information.
+
+    Args:
+        The api view, which must return a JsonResponse object, under normal circumstances.
+
+    """
+    def wrapper_fn(request, *args, **kwargs):
+        
+        response = handler(request, *args, **kwargs)
+        
+        # in case another type of response was returned for some reason, just pass it through
+        if not isinstance(response, JsonResponse):
+            return response
+
+        if "callback" in request.REQUEST:
+            
+            if request.method == "GET":
+                # wrap the JSON data as a JSONP response
+                response = JsonpResponse(response.content, request.REQUEST["callback"])
+            elif request.method == "OPTIONS":
+                # return an empty body, for OPTIONS requests, with the headers defined below included
+                response = HttpResponse("", content_type="text/plain")
+            
+            # add CORS-related headers, if the Origin header was included in the request
+            if request.method in ["OPTIONS", "GET"] and "HTTP_ORIGIN" in request.META:
+                response["Access-Control-Allow-Origin"] = request.META["HTTP_ORIGIN"]
+                response["Access-Control-Allow-Methods"] = "GET, OPTIONS"
+                response["Access-Control-Max-Age"] = "1000"
+                response["Access-Control-Allow-Headers"] = "Authorization,Content-Type,Accept,Origin,User-Agent,DNT,Cache-Control,X-Mx-ReqToken,Keep-Alive,X-Requested-With,If-Modified-Since"
+        
+        return response
+        
     return wrapper_fn

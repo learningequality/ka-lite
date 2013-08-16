@@ -270,7 +270,12 @@ li .progress-circle {
     float: left;
 }
 
-.unregistered-only {
+.admin-only, .not-admin-only,
+.unregistered-only, .not-unregistered-only,
+.logged-in-only, .not-logged-in-only,
+.client-online-only, .not-client-online-only,
+.server-online-only, .not-server-online-only,
+{
     display: none;
 }
 
@@ -424,4 +429,14 @@ li .progress-circle {
 
 #answer_area .answer-buttons input.simple-button, #answer_area input.simple-button.full-width {
     white-space: normal;
+}
+
+.video-unavailable,
+.topic-unavailable,
+a:active.topic-unavailable,
+a:hover.topic-unavailable,
+a:link.topic-unavailable,
+a:visited.topic-unavailable {
+    color: #bbb;
+    text-decoration: none;
 }

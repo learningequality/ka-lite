@@ -3,9 +3,10 @@ import json
 import re
 import uuid
 
-from django.core import serializers
 from django.contrib import messages
 from django.contrib.messages.api import get_messages
+from django.core import serializers
+from django.core.urlresolvers import reverse
 from django.db import models as db_models
 from django.http import HttpResponse
 from django.utils import simplejson
@@ -16,12 +17,12 @@ from django.views.decorators.gzip import gzip_page
 import settings
 import version
 from config.models import Settings
-from main.models import VideoLog, ExerciseLog
+from main.models import VideoLog, ExerciseLog, VideoFile
 from securesync import crypto, model_sync
 from securesync.models import *
 from shared import serializers
-from utils.decorators import api_handle_error_with_json, distributed_server_only
-from utils.internet import JsonResponse
+from utils.decorators import distributed_server_only, allow_jsonp, api_handle_error_with_json
+from utils.internet import JsonResponse, am_i_online
 
 
 @api_handle_error_with_json
@@ -319,3 +320,69 @@ def status(request):
         data["username"] = request.user.username
 
     return JsonResponse(data)
+
+@allow_jsonp
+def get_server_info(request):
+    """This function is used to check connection to central or local server and also to get specific data from server.
+
+    Args:
+        The http request.
+
+    Returns:
+        A json object containing general data from the server.
+    
+    """
+    device = None
+    zone = None
+
+    device_info = {"status": "OK", "invalid_fields": []}
+
+    for field in request.GET.get("fields", "").split(","):
+        
+        if field == "version":
+            device_info[field] = version.VERSION
+
+        elif field == "video_count":
+            device_info[field] = VideoFile.objects.filter(percent_complete=100).count() if not settings.CENTRAL_SERVER else 0
+
+        elif field == "device_name":
+            device = device or Device.get_own_device()
+            device_info[field] = device.name
+
+        elif field == "device_description":
+            device = device or Device.get_own_device()
+            device_info[field] = device.description
+
+        elif field == "device_description":
+            device = device or Device.get_own_device()
+            device_info[field] = device.description
+
+        elif field == "device_id":
+            device = device or Device.get_own_device()
+            device_info[field] = device.id
+
+        elif field == "zone_name":
+            if settings.CENTRAL_SERVER:
+                continue
+            device = device or Device.get_own_device()
+            zone = zone or device.get_zone()
+            device_info[field] = zone.name if zone else None
+
+        elif field == "zone_id":
+            if settings.CENTRAL_SERVER:
+                continue
+            device = device or Device.get_own_device()
+            zone = zone or device.get_zone()
+            device_info[field] = zone.id if zone else None
+        
+        elif field == "online":
+            if settings.CENTRAL_SERVER:
+                device_info[field] =  True
+            else:
+                device_info[field] = am_i_online(url="%s://%s%s" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST, reverse("get_server_info")))
+                
+        elif field:
+            # the field isn't one we know about, so add it to the list of invalid fields
+            device_info["invalid_fields"].append(field)
+            
+    return JsonResponse(device_info)
