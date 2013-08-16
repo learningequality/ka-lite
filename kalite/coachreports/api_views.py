@@ -20,6 +20,7 @@ from main import topicdata
 from main.models import VideoLog, ExerciseLog, VideoFile
 from securesync.models import Facility, FacilityUser,FacilityGroup, DeviceZone, Device
 from securesync.views import facility_required
+from utils.decorators import allow_api_profiling
 from utils.internet import StatusException, JsonResponse
 from utils.topic_tools import get_topic_by_path
 
@@ -263,6 +264,7 @@ def get_topic_tree(request, topic_path):
 
 
 @csrf_exempt
+@allow_api_profiling
 def api_data(request, xaxis="", yaxis=""):
     """Request contains information about what data are requested (who, what, and how).
 

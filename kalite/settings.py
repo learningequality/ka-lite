@@ -122,7 +122,8 @@ TEMPLATE_LOADERS = (
 #     "django.template.loaders.eggs.Loader",
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE_CLASSES = getattr(local_settings, 'MIDDLEWARE_CLASSES', tuple())
+MIDDLEWARE_CLASSES += (
     "django.contrib.sessions.middleware.SessionMiddleware",
     'django.middleware.locale.LocaleMiddleware',
     "django.middleware.common.CommonMiddleware",
@@ -132,7 +133,10 @@ MIDDLEWARE_CLASSES = (
     "django.middleware.csrf.CsrfViewMiddleware",
 )
 
-INSTALLED_APPS = (
+ROOT_URLCONF = "kalite.urls"
+
+INSTALLED_APPS = getattr(local_settings, 'INSTALLED_APPS', tuple())
+INSTALLED_APPS += (
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -230,3 +234,24 @@ CRONSERVER_FREQUENCY = getattr(local_settings, "CRONSERVER_FREQUENCY", 600) # 10
 # Add additional mimetypes to avoid errors/warnings
 import mimetypes
 mimetypes.add_type("font/opentype", ".otf", True)
+
+# Django debug_toolbar config
+if DEBUG:
+    INSTALLED_APPS += ('debug_toolbar',)
+    MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
+    DEBUG_TOOLBAR_PANELS = (
+        'debug_toolbar.panels.version.VersionDebugPanel',
+        'debug_toolbar.panels.timer.TimerDebugPanel',
+        'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
+        'debug_toolbar.panels.headers.HeaderDebugPanel',
+        'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
+        'debug_toolbar.panels.template.TemplateDebugPanel',
+        'debug_toolbar.panels.sql.SQLDebugPanel',
+        'debug_toolbar.panels.signals.SignalDebugPanel',
+        'debug_toolbar.panels.logger.LoggingPanel',
+    )
+    DEBUG_TOOLBAR_CONFIG = {
+        'INTERCEPT_REDIRECTS': False,
+        'HIDE_DJANGO_SQL': False,
+        'ENABLE_STACKTRACES' : True,
+    }
