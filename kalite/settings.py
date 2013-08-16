@@ -192,7 +192,8 @@ USER_LOG_SUMMARY_FREQUENCY = getattr(local_settings, "USER_LOG_SUMMARY_FREQUENCY
 
 # Sessions use the default cache, and we want a local memory cache for that.
 # Separate session caching from file caching.
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_ENGINE = getattr(local_settings, "SESSION_ENGINE", 'django.contrib.sessions.backends.cache' if not DEBUG else 'django.contrib.sessions.backends.cached_db')
+
 CACHES = {
     "default": {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
