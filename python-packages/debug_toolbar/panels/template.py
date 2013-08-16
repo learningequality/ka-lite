@@ -82,7 +82,7 @@ class TemplateDebugPanel(DebugPanel):
                     else:
                         try:
                             recording(False)
-                            pformat(value)  # this MAY trigger a db query
+                            value="[KA Lite: Disabling pretty printing for efficiency]"#pformat(value)  # this MAY trigger a db query
                         except SQLQueryTriggered:
                             temp_layer[key] = '<<triggers database query>>'
                         except UnicodeEncodeError:

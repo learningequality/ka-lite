@@ -236,7 +236,7 @@ import mimetypes
 mimetypes.add_type("font/opentype", ".otf", True)
 
 # Django debug_toolbar config
-if DEBUG:
+if getattr(local_settings, "USE_DEBUG_TOOLBAR", False):
     INSTALLED_APPS += ('debug_toolbar',)
     MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
     DEBUG_TOOLBAR_PANELS = (

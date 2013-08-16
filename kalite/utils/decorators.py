@@ -158,7 +158,7 @@ def require_admin(handler):
 def allow_api_profiling(handler):
     """
     For API requests decorated with this decorator,
-    if 'sqlprof' is passed in with DEBUG=True,
+    if 'debug' is passed in with DEBUG=True,
     it will add a BODY tag to the json response--allowing
     the debug_toolbar to be used.
     """
@@ -168,7 +168,7 @@ def allow_api_profiling(handler):
     else:
         def aap_wrapper_fn(request, *args, **kwargs):
             response = handler(request, *args, **kwargs)
-            if "sqlprof" in request.GET and response["Content-Type"] == "application/json":
+            if "debug" in request.GET and response["Content-Type"] == "application/json":
                 # Add the "body" tag, which allows the debug_toolbar to attach
                 response.content = "<body>%s</body>" % response.content
                 response["Content-Type"] = "text/html"
