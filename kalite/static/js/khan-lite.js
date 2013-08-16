@@ -89,7 +89,6 @@ function setGetParamDict(href, dict) {
     return href;
 }
 
-// Globally run code
 var csrftoken = getCookie("csrftoken") || "";
 
 $.ajaxSetup({
@@ -101,4 +100,3 @@ $.ajaxSetup({
         }
     }
 });
-

@@ -4,6 +4,15 @@
 {% load staticfiles %}
 
 {% block basejs %}{{ block.super }}
+    
+    <script>
+        // the following variables are used by functions in distributed-server.js
+        // TODO(jamalex): include these in some Backbone Model state instead, synced via AJAX
+        var SERVER_INFO_PATH = "{% url get_server_info %}";
+        var CENTRAL_SERVER_HOST = "{{ central_server_host }}";
+        var SECURESYNC_PROTOCOL = "{{ securesync_protocol }}";
+    </script>
+    
     <script type="text/javascript" src="{% static 'js/distributed-server.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/purl.js' %}"></script>
 {% endblock basejs %}
