@@ -143,7 +143,7 @@ def compute_data(types, who, where):
     # Initialize an empty dictionary of data, video logs, exercise logs, for each user
     data     = OrderedDict(zip([w.id for w in who], [dict() for i in range(len(who))])) #maintain the order of the users
     vid_logs = dict(zip([w.id for w in who], [None   for i in range(len(who))]))
-    ex_logs  = dict(zip([w.id for w in who], [None   for i in range(len(who))]))
+    ex_logs  = dict(zip([w.id for w in who], [[]   for i in range(len(who))]))
 
     # Set up queries (but don't run them), so we have really easy aliases.
     #   Only do them if they haven't been done yet (tell this by passing in a value to the lambda function)
@@ -165,71 +165,84 @@ def compute_data(types, who, where):
     # Exercise log and video log dictionary (key: user)
     query_exlogs    = lambda u,ex,el:  el if el is not None else ExerciseLog.objects.filter(user=u, exercise_id__in=ex).order_by("completion_timestamp")
     query_vidlogs   = lambda u,vid,vl: vl if vl is not None else VideoLog.objects.filter(user=u, youtube_id__in=vid).order_by("completion_timestamp")
-
+    try:
     # No users, don't bother.
-    if len(who)>0:
-        for type in (types if not hasattr(types,"lower") else [types]): # convert list from string, if necessary
-            if type in data[data.keys()[0]]: # if the first user has it, then all do; no need to calc again.
-                continue
+        if len(who)>0:
+            for type in (types if not hasattr(types,"lower") else [types]): # convert list from string, if necessary
+                if type in data[data.keys()[0]]: # if the first user has it, then all do; no need to calc again.
+                    continue
 
-            #
-            # These are summary stats: you only get one per user
-            #
-            if type == "pct_mastery":
-                exercises = query_exercises(exercises)
+                #
+                # These are summary stats: you only get one per user
+                #
+                if type == "pct_mastery":
+                    exercises = query_exercises(exercises)
+                    
+                    all_exercise_logs = ExerciseLog.objects.filter(user__in=data.keys(), exercise_id__in=exercises).values('user', 'complete', 'exercise_id', 'attempts')
 
-                # Efficient query out, spread out to dict
-                # ExerciseLog.filter(user__in=who, exercise_id__in=exercises).order_by("user.id")
-                for user in data.keys():
-                    ex_logs[user] = query_exlogs(user, exercises, ex_logs[user])
-                    data[user][type] = 0 if not ex_logs[user] else 100.*sum([el.complete for el in ex_logs[user]])/float(len(exercises))
+                    try:
+                        for log in all_exercise_logs:
+                            ex_logs[log['user']].append(log)
+                    except Exception as e:
+                        import pdb; pdb.set_trace()
 
-            elif type == "effort":
-                if "ex:attempts" in data[data.keys()[0]] and "vid:total_seconds_watched" in data[data.keys()[0]]:
-                    # exercises and videos would be initialized already
+                    # Efficient query out, spread out to dict
+                    # ExerciseLog.filter(user__in=who, exercise_id__in=exercises).order_by("user.id")
+                    try:
+                        for user in data.keys():
+                            # ex_logs[user] = ex_logs[user] or all_exercise_logs.filter(user=user)
+                            data[user][type] = 0 if not ex_logs[user] else 100.*sum([el['complete'] for el in ex_logs[user]])/float(len(exercises))
+                    except Exception as e:
+                        import pdb; pdb.set_trace()
+
+                elif type == "effort":
+                    if "ex:attempts" in data[data.keys()[0]] and "vid:total_seconds_watched" in data[data.keys()[0]]:
+                        # exercises and videos would be initialized already
+                        for user in data.keys():
+                            avg_attempts = 0 if len(exercises)==0 else sum(data[user]["ex:attempts"].values())/float(len(exercises))
+                            avg_video_points = 0 if len(videos)==0 else sum(data[user]["vid:total_seconds_watched"].values())/float(len(videos))
+                            data[user][type] = 100. * (0.5*avg_attempts/10. + 0.5*avg_video_points/750.)
+                    else:
+                        types += ["ex:attempts", "vid:total_seconds_watched", "effort"]
+
+
+                #
+                # These are detail stats: you get many per user
+                #
+
+
+                # Just querying out data directly: Video
+                elif type.startswith("vid:") and type[4:] in [f.name for f in VideoLog._meta.fields]:
+                    videos = query_videos(videos)
                     for user in data.keys():
-                        avg_attempts = 0 if len(exercises)==0 else sum(data[user]["ex:attempts"].values())/float(len(exercises))
-                        avg_video_points = 0 if len(videos)==0 else sum(data[user]["vid:total_seconds_watched"].values())/float(len(videos))
-                        data[user][type] = 100. * (0.5*avg_attempts/10. + 0.5*avg_video_points/750.)
+                        vid_logs[user] = query_vidlogs(user, videos, vid_logs[user])
+                        data[user][type] = OrderedDict([(v.youtube_id, getattr(v, type[4:])) for v in vid_logs[user]])
+
+                # Just querying out data directly: Exercise
+                elif type.startswith("ex:") and type[3:] in [f.name for f in ExerciseLog._meta.fields]:
+                    exercises = query_exercises(exercises)
+                    for user in data.keys():
+                        ex_logs[user] = query_exlogs(user, exercises, ex_logs[user])
+                        data[user][type] = OrderedDict([(el['exercise_id'], el[type[3:]]) for el in ex_logs[user]])
+
+                # Unknown requested quantity
                 else:
-                    types += ["ex:attempts", "vid:total_seconds_watched", "effort"]
+                    raise Exception("Unknown type: '%s' not in %s" % (type, str([f.name for f in ExerciseLog._meta.fields])))
 
+        # Returning empty list instead of None allows javascript on client
+        # side to read 'length' property without error.
+        exercises = exercises or []
 
-            #
-            # These are detail stats: you get many per user
-            #
+        videos = videos or []
 
-
-            # Just querying out data directly: Video
-            elif type.startswith("vid:") and type[4:] in [f.name for f in VideoLog._meta.fields]:
-                videos = query_videos(videos)
-                for user in data.keys():
-                    vid_logs[user] = query_vidlogs(user, videos, vid_logs[user])
-                    data[user][type] = OrderedDict([(v.youtube_id, getattr(v, type[4:])) for v in vid_logs[user]])
-
-            # Just querying out data directly: Exercise
-            elif type.startswith("ex:") and type[3:] in [f.name for f in ExerciseLog._meta.fields]:
-                exercises = query_exercises(exercises)
-                for user in data.keys():
-                    ex_logs[user] = query_exlogs(user, exercises, ex_logs[user])
-                    data[user][type] = OrderedDict([(el.exercise_id, getattr(el,type[3:])) for el in ex_logs[user]])
-
-            # Unknown requested quantity
-            else:
-                raise Exception("Unknown type: '%s' not in %s" % (type, str([f.name for f in ExerciseLog._meta.fields])))
-
-    # Returning empty list instead of None allows javascript on client
-    # side to read 'length' property without error.
-    exercises = exercises or []
-
-    videos = videos or []
-
-    return {
-        "data": data,
-        "topics": topics,
-        "exercises": exercises,
-        "videos": videos,
-    }
+        return {
+            "data": data,
+            "topics": topics,
+            "exercises": exercises,
+            "videos": videos,
+        }
+    except Exception as e:
+        import pdb; pdb.set_trace()
 
 
 def convert_topic_tree_for_dynatree(node, level=0):
