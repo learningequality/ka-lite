@@ -142,7 +142,7 @@ def compute_data(types, who, where):
 
     # Initialize an empty dictionary of data, video logs, exercise logs, for each user
     data     = OrderedDict(zip([w.id for w in who], [dict() for i in range(len(who))])) #maintain the order of the users
-    vid_logs = dict(zip([w.id for w in who], [None   for i in range(len(who))]))
+    vid_logs = dict(zip([w.id for w in who], [[]   for i in range(len(who))]))
     ex_logs  = dict(zip([w.id for w in who], [[]   for i in range(len(who))]))
 
     # Set up queries (but don't run them), so we have really easy aliases.
@@ -178,22 +178,16 @@ def compute_data(types, who, where):
                 if type == "pct_mastery":
                     exercises = query_exercises(exercises)
                     
-                    all_exercise_logs = ExerciseLog.objects.filter(user__in=data.keys(), exercise_id__in=exercises).values('user', 'complete', 'exercise_id', 'attempts')
+                    all_exercise_logs = ExerciseLog.objects.filter(user__in=data.keys(), exercise_id__in=exercises).values('user', 'complete', 'exercise_id', 'attempts', 'points','struggling')
 
-                    try:
-                        for log in all_exercise_logs:
-                            ex_logs[log['user']].append(log)
-                    except Exception as e:
-                        import pdb; pdb.set_trace()
+                    for log in all_exercise_logs:
+                        ex_logs[log['user']].append(log)
 
                     # Efficient query out, spread out to dict
                     # ExerciseLog.filter(user__in=who, exercise_id__in=exercises).order_by("user.id")
-                    try:
-                        for user in data.keys():
-                            # ex_logs[user] = ex_logs[user] or all_exercise_logs.filter(user=user)
-                            data[user][type] = 0 if not ex_logs[user] else 100.*sum([el['complete'] for el in ex_logs[user]])/float(len(exercises))
-                    except Exception as e:
-                        import pdb; pdb.set_trace()
+                    for user in data.keys():
+                        # ex_logs[user] = ex_logs[user] or all_exercise_logs.filter(user=user)
+                        data[user][type] = 0 if not ex_logs[user] else 100.*sum([el['complete'] for el in ex_logs[user]])/float(len(exercises))
 
                 elif type == "effort":
                     if "ex:attempts" in data[data.keys()[0]] and "vid:total_seconds_watched" in data[data.keys()[0]]:
@@ -214,9 +208,15 @@ def compute_data(types, who, where):
                 # Just querying out data directly: Video
                 elif type.startswith("vid:") and type[4:] in [f.name for f in VideoLog._meta.fields]:
                     videos = query_videos(videos)
+
+                    all_video_logs = VideoLog.objects.filter(user__in=data.keys(), youtube_id__in=videos).values('user', 'complete', 'youtube_id', 'total_seconds_watched')
+
+                    for log in all_video_logs:
+                        vid_logs[log['user']].append(log)
+
                     for user in data.keys():
-                        vid_logs[user] = query_vidlogs(user, videos, vid_logs[user])
-                        data[user][type] = OrderedDict([(v.youtube_id, getattr(v, type[4:])) for v in vid_logs[user]])
+                        # vid_logs[user] = query_vidlogs(user, videos, vid_logs[user])
+                        data[user][type] = OrderedDict([(v['youtube_id'], v[type[4:]]) for v in vid_logs[user]])
 
                 # Just querying out data directly: Exercise
                 elif type.startswith("ex:") and type[3:] in [f.name for f in ExerciseLog._meta.fields]:
