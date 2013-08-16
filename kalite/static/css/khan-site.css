@@ -252,27 +252,6 @@ footer {
         margin: 0 auto;
     }
 
-#top-header {
-    height: 85px;
-    position: relative;
-}
-
-#top-header #logo {
-    height: 100px;
-    position: relative;
-    background-image: url(/static/images/non-repeating-sprites.4.png);
-    background-position: -10px -261px;
-    width: 317px;
-}
-
-
-nav {
-    display: block;
-    clear: both;
-    width: 100%;
-    margin: 0;
-}
-
 article, section {
     display: block;
 }
