@@ -211,13 +211,13 @@ CACHE_TIME = getattr(local_settings, "CACHE_TIME", _max_cache_time)
 if CACHE_TIME != 0:  # None can mean infinite caching to some functions
     CACHES["web_cache"] = {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': getattr(local_settings, "CACHE_LOCATION", tempfile.gettempdir()), # this is kind of OS-specific, so dangerous.
+        'LOCATION': getattr(local_settings, "CACHE_LOCATION", os.path.join(tempfile.gettempdir(), "kalite_web_cache/")), # this is kind of OS-specific, so dangerous.
         'TIMEOUT': CACHE_TIME, # should be consistent
         'OPTIONS': {
             'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
         },
     }
-
+    print CACHES["web_cache"]["LOCATION"]
 # Here, None === no limit
 SYNC_SESSIONS_MAX_RECORDS = getattr(local_settings, "SYNC_SESSIONS_MAX_RECORDS", None if CENTRAL_SERVER else 10)
 
