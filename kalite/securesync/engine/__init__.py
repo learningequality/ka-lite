@@ -30,7 +30,7 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
     Default is our own version--i.e. include all known fields.
     If serializing for a device of a lower version, pass in that device's version!
     """
-    from models import Device # cannot be top-level, otherwise inter-dependency of this and models fouls things up
+    from securesync.devices.models import Device # cannot be top-level, otherwise inter-dependency of this and models fouls things up
 
     # use the current device's zone if one was not specified
     if not zone:
@@ -106,7 +106,7 @@ def save_serialized_models(data, increment_counters=True, src_version=version.VE
 
     Returns a dictionary of the # of saved models, # unsaved, and any exceptions during saving"""
     
-    from models import ImportPurgatory # cannot be top-level, otherwise inter-dependency of this and models fouls things up
+    from .models import ImportPurgatory # cannot be top-level, otherwise inter-dependency of this and models fouls things up
 
     # if data is from a purgatory object, load it up
     if isinstance(data, ImportPurgatory):
