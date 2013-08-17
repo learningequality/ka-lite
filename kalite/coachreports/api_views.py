@@ -146,13 +146,13 @@ def query_logs(users, items, logtype, logdict):
     return logdict
 
 
-def compute_data(types, who, where):
+def compute_data(data_types, who, where):
     """
-    Compute the data in "types" for each user in "who", for the topics selected by "where"
+    Compute the data in "data_types" for each user in "who", for the topics selected by "where"
 
     who: list of users
     where: topic_path
-    types can include:
+    data_types can include:
         pct_mastery
         effort
         attempts
@@ -188,14 +188,14 @@ def compute_data(types, who, where):
 
     # No users, don't bother.
     if len(who) > 0:
-        for type in (types if not hasattr(types, "lower") else [types]):  # convert list from string, if necessary
-            if type in data[data.keys()[0]]:  # if the first user has it, then all do; no need to calc again.
+        for data_type in (data_types if not hasattr(data_types, "lower") else [data_types]):  # convert list from string, if necessary
+            if data_type in data[data.keys()[0]]:  # if the first user has it, then all do; no need to calc again.
                 continue
 
             #
             # These are summary stats: you only get one per user
             #
-            if type == "pct_mastery":
+            if data_type == "pct_mastery":
                 exercises = query_exercises(exercises)
 
                 ex_logs = query_logs(data.keys(), exercises, "exercise", ex_logs)
@@ -203,42 +203,42 @@ def compute_data(types, who, where):
                 # Efficient query out, spread out to dict
                 # ExerciseLog.filter(user__in=who, exercise_id__in=exercises).order_by("user.id")
                 for user in data.keys():
-                    data[user][type] = 0 if not ex_logs[user] else 100. * sum([el['complete'] for el in ex_logs[user]]) / float(len(exercises))
+                    data[user][data_type] = 0 if not ex_logs[user] else 100. * sum([el['complete'] for el in ex_logs[user]]) / float(len(exercises))
 
-            elif type == "effort":
+            elif data_type == "effort":
                 if "ex:attempts" in data[data.keys()[0]] and "vid:total_seconds_watched" in data[data.keys()[0]]:
                     # exercises and videos would be initialized already
                     for user in data.keys():
                         avg_attempts = 0 if len(exercises) == 0 else sum(data[user]["ex:attempts"].values()) / float(len(exercises))
                         avg_video_points = 0 if len(videos) == 0 else sum(data[user]["vid:total_seconds_watched"].values()) / float(len(videos))
-                        data[user][type] = 100. * (0.5 * avg_attempts / 10. + 0.5 * avg_video_points / 750.)
+                        data[user][data_type] = 100. * (0.5 * avg_attempts / 10. + 0.5 * avg_video_points / 750.)
                 else:
-                    types += ["ex:attempts", "vid:total_seconds_watched", "effort"]
+                    data_types += ["ex:attempts", "vid:total_seconds_watched", "effort"]
 
             #
             # These are detail stats: you get many per user
             #
             # Just querying out data directly: Video
-            elif type.startswith("vid:") and type[4:] in [f.name for f in VideoLog._meta.fields]:
+            elif data_type.startswith("vid:") and data_type[4:] in [f.name for f in VideoLog._meta.fields]:
                 videos = query_videos(videos)
 
                 vid_logs = query_logs(data.keys(), videos, "video", vid_logs)
 
                 for user in data.keys():
-                    data[user][type] = OrderedDict([(v['youtube_id'], v[type[4:]]) for v in vid_logs[user]])
+                    data[user][data_type] = OrderedDict([(v['youtube_id'], v[data_type[4:]]) for v in vid_logs[user]])
 
             # Just querying out data directly: Exercise
-            elif type.startswith("ex:") and type[3:] in [f.name for f in ExerciseLog._meta.fields]:
+            elif data_type.startswith("ex:") and data_type[3:] in [f.name for f in ExerciseLog._meta.fields]:
                 exercises = query_exercises(exercises)
 
                 ex_logs = query_logs(data.keys(), exercises, "exercise", ex_logs)
 
                 for user in data.keys():
-                    data[user][type] = OrderedDict([(el['exercise_id'], el[type[3:]]) for el in ex_logs[user]])
+                    data[user][data_type] = OrderedDict([(el['exercise_id'], el[data_type[3:]]) for el in ex_logs[user]])
 
             # Unknown requested quantity
             else:
-                raise Exception("Unknown type: '%s' not in %s" % (type, str([f.name for f in ExerciseLog._meta.fields])))
+                raise Exception("Unknown type: '%s' not in %s" % (data_type, str([f.name for f in ExerciseLog._meta.fields])))
 
     # Returning empty list instead of None allows javascript on client
     # side to read 'length' property without error.
@@ -318,7 +318,7 @@ def api_data(request, xaxis="", yaxis=""):
 
     # Query out the data: what?
     try:
-        computed_data = compute_data(types=[form.data.get("xaxis"), form.data.get("yaxis")], who=users, where=form.data.get("topic_path"))
+        computed_data = compute_data(data_types=[form.data.get("xaxis"), form.data.get("yaxis")], who=users, where=form.data.get("topic_path"))
         json_data = {
             "data": computed_data["data"],
             "exercises": computed_data["exercises"],
