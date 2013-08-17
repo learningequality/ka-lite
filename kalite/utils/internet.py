@@ -19,13 +19,24 @@ class StatusException(Exception):
         super(StatusException, self).__init__(message)
         self.args = (status_code,)
         self.status_code = status_code
+
         
 class JsonResponse(HttpResponse):
     """Wrapper class for generating a HTTP response with JSON data"""
     def __init__(self, content, *args, **kwargs):
-        if not isinstance(content, str) and not isinstance(content, unicode):
+        if not isinstance(content, basestring):
             content = simplejson.dumps(content, ensure_ascii=False)
         super(JsonResponse, self).__init__(content, content_type='application/json', *args, **kwargs)
+
+
+class JsonpResponse(HttpResponse):
+    """Wrapper class for generating a HTTP response with JSONP data"""
+    def __init__(self, content, callback, *args, **kwargs):
+        if not isinstance(content, basestring):
+            content = simplejson.dumps(content, ensure_ascii=False)
+        # wrap the content in the callback function, to turn it into JSONP
+        content = "%s(%s);" % (callback, content)
+        super(JsonpResponse, self).__init__(content, content_type='application/javascript', *args, **kwargs)
 
     
 def am_i_online(url, expected_val=None, search_string=None, timeout=5, allow_redirects=True):
@@ -58,7 +69,6 @@ def am_i_online(url, expected_val=None, search_string=None, timeout=5, allow_red
     except Exception as e:
         logging.debug("am_i_online: %s" % e)
         return False
-
 
 
 def generate_all_paths(path, base_path="/"):

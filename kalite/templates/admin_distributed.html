@@ -72,21 +72,19 @@ td.title {
         </tr>
         {% endif %}
         
-        {% if am_i_online %}
-        <tr>
+        <tr class="client-online-only">
             <td class="title" colspan="2">
                 <h2>{% trans "(Online) help documents" %}</h2>
             </td>
         </tr>
-        <tr>
+        <tr class="client-online-only">
             <td class="link"><a href="{{wiki_url}}" target="_blank">KA Lite Wiki</a></td>
             <td class="desc"> {% trans "Contains the latest information setting up and using KA Lite." %}</td>
         </tr>
-        <tr>
+        <tr class="client-online-only">
             <td class="link"><a href="http://{{central_server_host}}/faq" target="_blank">FAQ</a></td>
             <td class="desc">{% trans "Contains the latest FAQ for troubleshooting" %}</td>
         </tr>
-        {% endif %}
 
         {% if user.is_superuser and settings.DEBUG %}{% comment "Django-admins and in debug mode" %}{% endcomment %}
         
