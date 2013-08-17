@@ -9,6 +9,9 @@ from utils.testing.base import KALiteTestCase
 class MainTestCase(KALiteTestCase):
 
     def create_random_video_file(self):
+        """
+        Helper function for testing video files.
+        """
         video_id = ID2SLUG_MAP.keys()[0]#random.choice(ID2SLUG_MAP.keys())
         fake_video_file = os.path.join(settings.CONTENT_ROOT, "%s.mp4" % video_id)
         with open(fake_video_file, "w") as fh:

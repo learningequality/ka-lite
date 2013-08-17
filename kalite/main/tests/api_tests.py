@@ -1,4 +1,5 @@
 import json
+import os
 
 from django.contrib.auth.models import User
 from django.core.management import call_command
@@ -6,6 +7,7 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils import unittest
 
+import settings
 from .base import MainTestCase
 from .command_tests import VideoScanTests
 from main.models import VideoLog, ExerciseLog, VideoFile
@@ -212,15 +214,12 @@ class TestAdminApiCalls(MainTestCase):
     """
     ADMIN_USERNAME = "testadmin"
     ADMIN_PASSWORD = "password"
-    YOUTUBE_ID = "aNqG4ChKShI"
 
     def __init__(self, *args, **kwargs):
         super(TestAdminApiCalls, self).__init__(*args, **kwargs)
-#        VideoScanTests.__init__(self, *args, **kwargs)
 
     def setUp(self, *args, **kwargs):
         super(TestAdminApiCalls, self).setUp(*args, **kwargs)
-#        VideoScanTests.setUp(self, *args, **kwargs)
 
         call_command("createsuperuser", username=self.ADMIN_USERNAME, email="a@b.com", interactive=False)
         admin_user = User.objects.get(username=self.ADMIN_USERNAME)
@@ -231,18 +230,58 @@ class TestAdminApiCalls(MainTestCase):
         self.fake_video_file, self.video_id = self.create_random_video_file()
         self.assertEqual(VideoFile.objects.all().count(), 0, "Make sure there are no VideoFile objects, to start.")
 
+        # login
+        self.client = KALiteClient()
+        success = self.client.login(username=self.ADMIN_USERNAME, password=self.ADMIN_PASSWORD)
+        self.assertTrue(success, "Was not able to login as the admin user")
 
-    def test_delete_video(self):
+    def tearDown(self, *args, **kwargs):
+        super(TestAdminApiCalls, self).tearDown(*args, **kwargs)
+        if os.path.exists(self.fake_video_file):
+            os.remove(self.fake_video_file)
+
+
+    @unittest.skipIf(settings.CACHE_TIME == 0, "Caching is disabled.")
+    def test_delete_non_existing_video(self):
         """
         Delete a video through the API
         """
-        c = KALiteClient()
-        
-        # login
-        success = c.login(username=self.ADMIN_USERNAME, password=self.ADMIN_PASSWORD)
-        self.assertTrue(success, "Was not able to login as the admin user")
-        
-        # save a new record onto the video log, with a correct answer (increasing the points and streak)
-        result = c.delete_videos(youtube_ids=[self.YOUTUBE_ID])
-        self.assertEqual(result.status_code, 200, "An error (%d) was thrown while saving the video log." % result.status_code)
+        os.remove(self.fake_video_file)
+        self.assertFalse(os.path.exists(self.fake_video_file), "Video file should not exist on disk.")
 
+        # Delete a video file, make sure 
+        result = self.client.delete_videos(youtube_ids=[self.video_id])
+        self.assertEqual(result.status_code, 200, "An error (%d) was thrown while saving the video log." % result.status_code)
+        self.assertEqual(VideoFile.objects.all().count(), 0, "Should have zero objects; found %d" % VideoFile.objects.all().count())
+        self.assertFalse(os.path.exists(self.fake_video_file), "Video file should not exist on disk.")
+
+    @unittest.skipIf(settings.CACHE_TIME == 0, "Caching is disabled.")
+    def test_delete_existing_video_object(self):
+        """
+        Delete a video through the API
+        """
+        VideoFile(youtube_id=self.video_id).save()
+        os.remove(self.fake_video_file)
+        self.assertEqual(VideoFile.objects.all().count(), 1, "Should have 1 object; found %d" % VideoFile.objects.all().count())
+        self.assertFalse(os.path.exists(self.fake_video_file), "Video file should not exist on disk.")
+
+        # Delete a video file, make sure 
+        result = self.client.delete_videos(youtube_ids=[self.video_id])
+        self.assertEqual(result.status_code, 200, "An error (%d) was thrown while saving the video log." % result.status_code)
+        self.assertEqual(VideoFile.objects.all().count(), 1, "Should have 1 object; found %d" % VideoFile.objects.all().count())
+        self.assertFalse(os.path.exists(self.fake_video_file), "Video file should not exist on disk.")
+
+
+    @unittest.skipIf(settings.CACHE_TIME == 0, "Caching is disabled.")
+    def test_delete_existing_video_file(self):
+        """
+        Delete a video through the API
+        """
+        self.assertEqual(VideoFile.objects.all().count(), 0, "Should have zero objects; found %d" % VideoFile.objects.all().count())
+        self.assertTrue(os.path.exists(self.fake_video_file), "Video file should exist on disk.")
+
+        # Delete a video file, make sure 
+        result = self.client.delete_videos(youtube_ids=[self.video_id])
+        self.assertEqual(result.status_code, 200, "An error (%d) was thrown while saving the video log." % result.status_code)
+        self.assertEqual(VideoFile.objects.all().count(), 0, "Should have zero objects; found %d" % VideoFile.objects.all().count())
+        self.assertFalse(os.path.exists(self.fake_video_file), "Video file should not exist on disk.")
