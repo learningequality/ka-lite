@@ -52,7 +52,6 @@ urlpatterns += patterns('central.views',
     # Reporting
     url(r'^coachreports/', include(coachreports.urls)),
 
-    url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'),
     url(r'^glossary/$', 'glossary', {}, 'glossary'),
     url(r'^addsubscription/$', 'add_subscription', {}, 'add_subscription'),
     url(r'^feeds/rss/$', RssSiteNewsFeed(), {}, 'rss_feed'),

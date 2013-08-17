@@ -17,7 +17,6 @@ from django.views.decorators.csrf import csrf_exempt
 import settings
 from central.forms import OrganizationForm, OrganizationInvitationForm
 from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
-from securesync.api_client import SyncClient
 from utils.decorators import require_authorized_admin
 
 
@@ -148,23 +147,6 @@ def organization_form(request, org_id):
 @render_to("central/glossary.html")
 def glossary(request):
     return {}
-
-
-@login_required
-def crypto_login(request):
-    if not request.user.is_superuser:
-        raise PermissionDenied()
-    ip = request.GET.get("ip", "")
-    if not ip:
-        return HttpResponseNotFound("Please specify an IP (as a GET param).")
-    host = "http://%s/" % ip
-    client = SyncClient(host=host, require_trusted=False)
-    if client.test_connection() != "success":
-        return HttpResponse("Unable to connect to a KA Lite server at %s" % host)
-    client.start_session()
-    if not client.session or not client.session.client_nonce:
-        return HttpResponse("Unable to establish a session with KA Lite server at %s" % host)
-    return HttpResponseRedirect("%ssecuresync/cryptologin/?client_nonce=%s" % (host, client.session.client_nonce))
 
 
 def handler_403(request, *args, **kwargs):
