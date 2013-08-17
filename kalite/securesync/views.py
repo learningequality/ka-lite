@@ -345,22 +345,3 @@ def logout(request):
         next = "/"
     return HttpResponseRedirect(next)
 
-
-@distributed_server_only
-def crypto_login(request):
-    if "client_nonce" in request.GET:
-        client_nonce = request.GET["client_nonce"]
-        try:
-            session = SyncSession.objects.get(client_nonce=client_nonce)
-        except SyncSession.DoesNotExist:
-            return HttpResponseServerError("Session not found.")
-        if session.server_device.get_metadata().is_trusted:
-            user = get_object_or_None(User, username="centraladmin")
-            if not user:
-                user = User(username="centraladmin", is_superuser=True, is_staff=True, is_active=True)
-                user.set_unusable_password()
-                user.save()
-            user.backend = "django.contrib.auth.backends.ModelBackend"
-            auth_login(request, user)
-        session.delete()
-    return HttpResponseRedirect(reverse("homepage"))
