@@ -13,7 +13,7 @@
         <title>{% block title %}{{ title }}{% endblock title %} | KA Lite</title>
         {% endblock %}
 
-        {% if settings.DEBUG = True %}
+        {% if debug  %}
             <link rel="stylesheet/less" type="text/css" href="{% static 'less/bootstrap/bootstrap.less' %}"></link>
             <link rel="stylesheet/less" type="text/css" href="{% static 'less/bootstrap/responsive.less' %}"></link>
             <link rel="stylesheet/less" type="text/css" href="{% static 'less/style.less' %}"></link>
