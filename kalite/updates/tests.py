@@ -6,7 +6,7 @@ import datetime
 from django.utils import unittest
 
 from updates.models import UpdateProgressLog
-from kalite.utils.general import datediff
+from utils.general import datediff
 
 
 class TestSingleStageUpdate(unittest.TestCase):

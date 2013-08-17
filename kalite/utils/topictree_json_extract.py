@@ -4,7 +4,6 @@ Utility for extracting app-specific data.
 Not usually run.
 """
 import json
-import pdb
 import polib
 
 rootnode = json.loads(open("../static/data/topics.json").read())

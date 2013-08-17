@@ -1,10 +1,10 @@
 import json
 import re
+import requests
 from annoying.functions import get_object_or_None
+from requests.exceptions import ConnectionError, HTTPError
 
 from django.core.exceptions import ValidationError
-from django.core.management import call_command
-from django.db.models import Q
 from django.http import HttpResponse
 from django.utils import simplejson
 from django.utils.translation import ugettext as _
@@ -13,22 +13,17 @@ import settings
 from .api_forms import ExerciseLogForm, VideoLogForm
 from .models import FacilityUser, VideoLog, ExerciseLog, VideoFile
 from config.models import Settings
-from main import topicdata
 from securesync.models import FacilityGroup
 from updates.models import UpdateProgressLog
 from utils.decorators import api_handle_error_with_json, require_admin
-from utils.django_utils import call_command_async
-from utils.general import break_into_chunks
 from utils.internet import JsonResponse
-from utils.jobs import force_job, job_status
-from utils.orderedset import OrderedSet
-from utils.videos import delete_downloaded_files
 
 
 class student_log_api(object):
+
     def __init__(self, logged_out_message):
         self.logged_out_message = logged_out_message
-    
+
     def __call__(self, handler):
         @api_handle_error_with_json
         def wrapper_fn(request, *args, **kwargs):
@@ -57,7 +52,7 @@ def save_video_log(request):
 
     # More robust extraction of previous object
     videolog = VideoLog.get_or_initialize(user=request.session["facility_user"], youtube_id=data["youtube_id"])
-    videolog.total_seconds_watched  += data["seconds_watched"]
+    videolog.total_seconds_watched += data["seconds_watched"]
     videolog.points = max(videolog.points, data["points"])  # videolog.points cannot be None
 
     try:
@@ -104,7 +99,7 @@ def save_exercise_log(request):
     #   NOTE: it's important to check this AFTER calling save() above.
     if not previously_complete and exerciselog.complete:
         return JsonResponse({"success": _("You have mastered this exercise!")})
-    
+
     # Return no message in release mode; "data saved" message in debug mode.
     return JsonResponse({})
 
@@ -182,171 +177,6 @@ def _get_exercise_log_dict(request, user, exercise_id):
     }
 
 
-@require_admin
-@api_handle_error_with_json
-def start_video_download(request):
-    """
-    API endpoint for launching the videodownload job.
-    """
-    youtube_ids = OrderedSet(simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", []))
-
-    video_files_to_create = [id for id in youtube_ids if not get_object_or_None(VideoFile, youtube_id=id)]
-    video_files_to_update = youtube_ids - OrderedSet(video_files_to_create)
-
-    VideoFile.objects.bulk_create([VideoFile(youtube_id=id, flagged_for_download=True) for id in video_files_to_create])
-
-    for chunk in break_into_chunks(youtube_ids):
-        video_files_needing_model_update = VideoFile.objects.filter(download_in_progress=False, youtube_id__in=chunk).exclude(percent_complete=100)
-        video_files_needing_model_update.update(percent_complete=0, cancel_download=False, flagged_for_download=True)
-
-    force_job("videodownload", "Download Videos")
-    return JsonResponse({})
-
-
-@api_handle_error_with_json
-def check_video_download(request):
-    youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
-    percentages = {}
-    percentages["downloading"] = job_status("videodownload")
-    for id in youtube_ids:
-        videofile = get_object_or_None(VideoFile, youtube_id=id) or VideoFile(youtube_id=id)
-        percentages[id] = videofile.percent_complete
-    return JsonResponse(percentages)
-
-
-@require_admin
-@api_handle_error_with_json
-def delete_videos(request):
-    """
-    API endpoint for deleting videos.
-    """
-    youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
-    for id in youtube_ids:
-        # We should mark all metadata first, to avoid conflicts
-        #   across processes (not currently an issue, but could be)
-        videofile = get_object_or_None(VideoFile, youtube_id=id)
-        if not videofile:
-            continue
-        videofile.cancel_download = True
-        videofile.flagged_for_download = False
-        videofile.flagged_for_subtitle_download = False
-        videofile.save()
-
-        # Now nobody should be touching this file.
-        delete_downloaded_files(id)
-    return JsonResponse({})
-
-
-@require_admin
-def cancel_video_download(request):
-
-    # clear all download in progress flags, to make sure new downloads will go through
-    VideoFile.objects.all().update(download_in_progress=False)
-
-    # unflag all video downloads
-    VideoFile.objects.filter(flagged_for_download=True).update(cancel_download=True, flagged_for_download=False)
-
-    force_job("videodownload", stop=True)
-    log = UpdateProgressLog.get_active_log(process_name="videodownload", create_new=False)
-    if log:
-        log.cancel_progress()
-
-    return JsonResponse({})
-
-
-"""
-Subtitles
-"""
-@require_admin
-@api_handle_error_with_json
-def start_subtitle_download(request):
-    new_only = simplejson.loads(request.raw_post_data or "{}").get("new_only", False)
-    language = simplejson.loads(request.raw_post_data or "{}").get("language", "")
-    language_list = topicdata.LANGUAGE_LIST
-    current_language = Settings.get("subtitle_language")
-    new_only = new_only and (current_language == language)
-    if language in language_list:
-        Settings.set("subtitle_language", language)
-    else:
-        return JsonResponse({"error": "This language is not currently supported - please update the language list"}, status=500)
-    if new_only:
-        videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True), subtitles_downloaded=False)
-    else:
-        videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True))
-    for videofile in videofiles:
-        videofile.cancel_download = False
-        if videofile.subtitle_download_in_progress:
-            continue
-        videofile.flagged_for_subtitle_download = True
-        if not new_only:
-            videofile.subtitles_downloaded = False
-        videofile.save()
-    force_job("subtitledownload", "Download Subtitles")
-    return JsonResponse({})
-
-@require_admin
-@api_handle_error_with_json
-def check_subtitle_download(request):
-    videofiles = VideoFile.objects.filter(flagged_for_subtitle_download=True)
-    return JsonResponse(videofiles.count())
-
-@require_admin
-@api_handle_error_with_json
-def get_subtitle_download_list(request):
-    videofiles = VideoFile.objects.filter(flagged_for_subtitle_download=True).values("youtube_id")
-    video_ids = [video["youtube_id"] for video in videofiles]
-    return JsonResponse(video_ids)
-
-@require_admin
-@api_handle_error_with_json
-def cancel_subtitle_download(request):
-    # unflag all subtitle downloads
-    VideoFile.objects.filter(flagged_for_subtitle_download=True).update(cancel_download=True, flagged_for_subtitle_download=False)
-
-    force_job("subtitledownload", stop=True)
-    return JsonResponse({})
-
-
-"""
-Software updates
-"""
-
-@require_admin
-def start_update_kalite(request):
-    data = json.loads(request.raw_post_data)
-
-    if request.META.get("CONTENT_TYPE", "") == "application/json" and "url" in data:
-        # Got a download url
-        call_command_async("update", url=data["url"])
-
-    elif request.META.get("CONTENT_TYPE", "") == "application/zip":
-        # Streamed a file; save and call
-        fp, tempfile = tempfile.mkstmp()
-        with fp:
-            write(request.content)
-        call_command_async("update", zip_file=tempfile)
-
-    return JsonResponse({})
-
-@require_admin
-def check_update_kalite(request):
-    videofiles = VideoFile.objects.filter(flagged_for_subtitle_download=True)
-    return JsonResponse(videofiles.count())
-
-@require_admin
-def get_update_kalite_list(request):
-    videofiles = VideoFile.objects.filter(flagged_for_subtitle_download=True).values("youtube_id")
-    video_ids = [video["youtube_id"] for video in videofiles]
-    return JsonResponse(video_ids)
-
-@require_admin
-def cancel_update_kalite(request):
-    # unflag all subtitle downloads
-    VideoFile.objects.filter(flagged_for_subtitle_download=True).update(cancel_download=True, flagged_for_subtitle_download=False)
-
-    force_job("subtitledownload", stop=True)
-    return JsonResponse({})
-
 
 # Functions below here focused on users
 
@@ -362,6 +192,7 @@ def remove_from_group(request):
     users_to_remove.update(group=None)
     return JsonResponse({})
 
+
 @require_admin
 @api_handle_error_with_json
 def move_to_group(request):
@@ -372,6 +203,7 @@ def move_to_group(request):
     users_to_move.update(group=group_update)
     return JsonResponse({})
 
+
 @require_admin
 @api_handle_error_with_json
 def delete_users(request):
@@ -379,56 +211,3 @@ def delete_users(request):
     users_to_delete = FacilityUser.objects.filter(username__in=users)
     users_to_delete.delete()
     return JsonResponse({})
-
-def annotate_topic_tree(node, level=0, statusdict=None):
-    if not statusdict:
-        statusdict = {}
-    if node["kind"] == "Topic":
-        if "Video" not in node["contains"]:
-            return None
-        children = []
-        unstarted = True
-        complete = True
-        for child_node in node["children"]:
-            child = annotate_topic_tree(child_node, level=level+1, statusdict=statusdict)
-            if child:
-                if child["addClass"] == "unstarted":
-                    complete = False
-                if child["addClass"] == "partial":
-                    complete = False
-                    unstarted = False
-                if child["addClass"] == "complete":
-                    unstarted = False
-                children.append(child)
-        return {
-            "title": node["title"],
-            "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
-            "isFolder": True,
-            "key": node["slug"],
-            "children": children,
-            "addClass": complete and "complete" or unstarted and "unstarted" or "partial",
-            "expand": level < 1,
-        }
-    if node["kind"] == "Video":
-        #statusdict contains an item for each video registered in the database
-        # will be {} (empty dict) if there are no videos downloaded yet
-        percent = statusdict.get(node["youtube_id"], 0)
-        if not percent:
-            status = "unstarted"
-        elif percent == 100:
-            status = "complete"
-        else:
-            status = "partial"
-        return {
-            "title": node["title"],
-            "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
-            "key": node["youtube_id"],
-            "addClass": status,
-        }
-    return None
-
-@require_admin
-@api_handle_error_with_json
-def get_annotated_topic_tree(request):
-    statusdict = dict(VideoFile.objects.values_list("youtube_id", "percent_complete"))
-    return JsonResponse(annotate_topic_tree(topicdata.TOPICS, statusdict=statusdict))
