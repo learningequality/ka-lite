@@ -102,4 +102,4 @@ class Command(BaseCommand):
             self.stdout.write("Updated %d VideoFile models (marked them as having subtitles)\n" % count)
 
         if options["auto_cache"] and caching_enabled and touched_video_ids:
-            caching.regenerate_all_pages_related_to_video(video_ids=touched_video_ids)
+            caching.regenerate_all_pages_related_to_videos(video_ids=touched_video_ids)

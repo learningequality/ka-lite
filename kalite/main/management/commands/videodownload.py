@@ -1,4 +1,5 @@
 import time
+from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
 
@@ -31,6 +32,15 @@ def download_progress_callback(self, videofile):
 
 class Command(BaseCommand):
     help = "Download all videos marked to be downloaded"
+
+    option_list = BaseCommand.option_list + (
+        make_option('-c', '--cache',
+            action='store_true',
+            dest='auto_cache',
+            default=False,
+            help='Create cached files',
+            metavar="AUTO_CACHE"),
+    )
 
     def handle(self, *args, **options):
 
@@ -76,3 +86,6 @@ class Command(BaseCommand):
             # Expire, but don't regenerate until the very end, for efficiency.
             if caching_enabled:
                 caching.invalidate_all_pages_related_to_video(video_id=video.youtube_id)
+
+        if options["auto_cache"] and caching_enabled and handled_video_ids:
+            caching.regenerate_all_pages_related_to_videos(video_ids=handled_video_ids)

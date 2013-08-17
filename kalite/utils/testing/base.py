@@ -4,6 +4,7 @@ automated of KA Lite using selenium
 for automated browser-based testing.
 """
 import glob
+import os
 import shutil
 import tempfile
 
@@ -72,18 +73,19 @@ class KALiteTestCase(LiveServerTestCase):
             self.web_cache.clear()
             self.assertEqual(self.web_cache._num_entries, 0, "Check that cache is empty.")
 
-    def cleanUp(self):
-        cleanUp_fake_contentroot()
-        cleanUp_fake_cache()
+    def tearDown(self):
+        self.tearDown_fake_contentroot()
+        self.tearDown_fake_cache()
 
-    def cleanUp_fake_contentroot(self):
+    def tearDown_fake_contentroot(self):
+        shutil.rmtree(self.content_root)
+        #for path in glob.glob(os.path.join(self.content_root, "*.mp4")):
+        #    os.remove(path)
 
-        for path in glob.glob(os.path.join(self.content_root, "*.mp4")):
-            shutil.rmtree(path)
-
-    def cleanUp_fake_cache(self):
-        for path in glob.glob(os.path.join(self.cache_dir, "*")):
-            shutil.rmtree(path)
+    def tearDown_fake_cache(self):
+        shutil.rmtree(self.cache_dir)
+        #for path in glob.glob(os.path.join(self.cache_dir, "*")):
+        #    os.remove(path)
 
     def reverse(self, url_name, args=None, kwargs=None):
         """Given a URL name, returns the full central URL to that URL"""
