@@ -174,12 +174,6 @@ def compute_data(data_types, who, where):
     # Topics: topics.
     # Exercises: names (ids for ExerciseLog objects)
     # Videos: youtube_id (ids for VideoLog objects)
-    #
-    # TODO(bcipolli):
-    #
-    # This code is massively inefficient (good demo code, bad production code).
-    #   Use smarter queries (i.e. query out all props at once, instead of individually)
-    #   to make this go faster.
 
     #This lambda partial creates a function to return all items with a particular path from the NODECACHE.
     search_fun_single_path = partial(lambda t, p: t["path"].startswith(p), p=tuple(where))
