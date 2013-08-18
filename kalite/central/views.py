@@ -1,22 +1,25 @@
 import re
 import json
 from annoying.decorators import render_to
+from annoying.functions import get_object_or_None
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError
-from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404, HttpResponseServerError
+from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_exempt
 
+import kalite
 import settings
 from central.forms import OrganizationForm, OrganizationInvitationForm
 from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
+from securesync.models import Zone
 from utils.decorators import require_authorized_admin
 
 
@@ -154,55 +157,74 @@ def get_request_var(request, var_name, default_val="__empty__"):
 
 
 @render_to("central/install_wizard.html")
-def install_wizard(request):
+def install_wizard(request, edition=None):
+    if not edition and request.user.is_anonymous():
+        return {}
 
+    elif edition == "multiple-server" or not request.user.is_anonymous():
+        return install_multiple_server_edition(request)
+
+    elif edition == "single-server":
+        return install_single_server_edition(request)
+
+    else:
+        raise Http404("Unknown server edition: %s" % edition)
+
+
+def install_single_server_edition(request):
+    """
+    """
+    version = get_request_var(request, "version",  kalite.VERSION)
+    platform = get_request_var(request, "platform", "all")
+    locale = get_request_var(request, "locale", "en")
+    return HttpResponseRedirect(reverse("download_kalite_public", kwargs={
+        "version": kalite.VERSION,
+        "platform": platform,
+        "locale": locale,
+    }))
+
+
+@login_required
+def install_multiple_server_edition(request):
     # get a list of all the organizations this user helps administer,
     #   then choose the selected organization (if possible)
-    if request.user.is_anonymous():
-        organizations = []
-        organization = None
-        organization_id = None
-        zones = []
-        zone = None
-        zoneid = None
-        num_certificates = 1
-        
+    # Get all data
+    organization_id = get_request_var(request, "organization", None)
+    zone_id = get_request_var(request, "zone", None)
+    num_certificates = int(get_request_var(request, "num_certificates", 1))
+    
+    organization = None
+    if organization_id and organization_id != "__empty__":
+        organizations = request.user.organization_set.filter(id=organization_id)
+        organization = organizations[0] if organizations else None
     else:
-        # Get all data
-        organization_id = get_request_var(request, "organization", None)
-        zone_id = get_request_var(request, "zone", None)
-        num_certificates = int(get_request_var(request, "num_certificates", 1))
-        
-        organization = None
-        if organization_id and organization_id != "__empty__":
-            organizations = request.user.organization_set.filter(id=organization_id)
-            organization = organizations[0] if organizations else None
-        else:
-            organizations = request.user.organization_set.all()
-            if len(organizations) == 1:
-                organization_id = organizations[0].id
-                organization = organizations[0]
-        
-        # If a zone is selected grab it
-        zones = []
-        zone = None
-        if organization_id and len(organizations)==1:
-            zones = organizations[0].zones.all()
-            if zone_id and zone_id != "__empty__": 
-                zone = get_object_or_None(Zone, id=zone_id)
-            zone = zone or (zones[0] if len(zones)==1 else None)              
-            
+        organizations = request.user.organization_set.all()
+        if len(organizations) == 1:
+            organization_id = organizations[0].id
+            organization = organizations[0]
+    
+    # If a zone is selected grab it
+    zones = []
+    zone = None
+    if organization_id and len(organizations)==1:
+        zones = organizations[0].zones.all()
+        if zone_id and zone_id != "__empty__": 
+            zone = get_object_or_None(Zone, id=zone_id)
+        zone = zone or (zones[0] if len(zones)==1 else None)              
 
     # Generate install certificates
     if request.method == "POST":
-        platform = get_request_var(request, "platform", "all")
-        locale = get_request_var(request, "locale", "en")
-        
-        return HttpResponseRedirect(reverse("download_kalite_public", kwargs={
+        kwargs={
             "version": kalite.VERSION,
-            "platform": platform,
-            "locale": locale,
-        }))
+            "platform": get_request_var(request, "platform", "all"),
+            "locale": get_request_var(request, "locale", "all"),
+        }
+        zone_id = get_request_var(request, "zone", None)
+        if not zone_id:
+            return HttpResponseRedirect(reverse("download_kalite_public", kwargs=kwargs))
+        else:
+            kwargs["zone_id"] = zone_id
+            return HttpResponseRedirect(reverse("download_kalite_private", kwargs=kwargs))
 
     else: # GET
         return {
@@ -211,7 +233,8 @@ def install_wizard(request):
             "zones": zones,
             "selected_zone": zone,
             "num_certificates": num_certificates,  
-            "internet": get_request_var(request, "internet") 
+            "internet": get_request_var(request, "internet"),
+            "edition": "multiple-server",
         }
 
 

@@ -13,167 +13,170 @@
 {% endblock headjs %}
 
 {% block headcss %}
-
 <link rel="stylesheet" type="text/css" href="{% static "css/bootstrap.min.css" %}"></link>
 
-
 <style>
+    select { 
+        width:200px;
+    }
+    #instructions {
+        font-size:12pt;
+        margin-left: 10px;
+        margin-top: 20px;
+    }
+    ul {
+        margin-top:5px;
+    }
 
-select { 
-    width:200px;
-}
-#instructions {
-    font-size:12pt;
-    margin-left: 10px;
-    margin-top: 20px;
-}
-ul {
-    margin-top:5px;
-}
+    h2{
+        font-size: 33px;
+        margin-left: 200px;
+    }
 
-h2{
-    font-size: 33px;
-    margin-left: 200px;
-}
+    h4{
+        font-size: 16px;
+    }
 
-h4{
-    font-size: 16px;
-}
+    #python-instructions {
+        margin-top:25px;
+    }
 
-#python-instructions {
-    margin-top:25px;
-}
+    .basic-form label{
+        width: auto;
+        clear: both;
+        font-weight: normal;
+    }
 
-.basic-form label{
-    width: auto;
-    clear: both;
-    font-weight: normal;
-}
+    .form-label {
+        float: left;
+        color: #678D00;
+        /*text-align: right;*/
+        padding-right: 6px;
+        width: 250px;
+    }
 
-.form-label {
-    float: left;
-    color: #678D00;
-    /*text-align: right;*/
-    padding-right: 6px;
-    width: 250px;
-}
+    .form-section {
+        width: 100%;
+        text-align:left;
+        float: left;
+        margin-bottom:5px;
+    }
 
-.form-section {
-    width: 100%;
-    text-align:left;
-    float: left;
-    margin-bottom:5px;
-}
+    #submit-section{
+        margin-left: 60px;
+        padding-bottom: 30px;
+    }
+    .information{
+        font-size: 13px;
+        color: #666;
+        margin-top: -10px;
+        margin-bottom: 20px;
+    }
 
-#submit-section{
-    margin-left: 60px;
-    padding-bottom: 30px;
-}
-.information{
-    font-size: 13px;
-    color: #666;
-    margin-top: -10px;
-    margin-bottom: 20px;
-}
+    .suggestion{
+        clear: both;
+        margin-left: 30px;
+        font-size: 13px;
+        color: #666;
+    }
 
-.suggestion{
-    clear: both;
-    margin-left: 30px;
-    font-size: 13px;
-    color: #666;
-}
-
-.internet-suggestion{
-    clear: both;
-    margin-left: 30px;
-    margin-top: -5px;
-    font-size: 13px;
-    color: orange;
-}
-.asterisk{
-    color: orange;
-    display: none;
-}
-
-
-select{
-    margin-left: 15px;
-    margin-top: 5px;
-}
-
-.radio{
-    margin-left: 15px;
-}
-
-.radio-selections{
-    margin-top: 11px;
-    display: inline-block;
-    position: relative;
-}
+    .internet-suggestion{
+        clear: both;
+        margin-left: 30px;
+        margin-top: -5px;
+        font-size: 13px;
+        color: orange;
+    }
+    .asterisk{
+        color: orange;
+        display: none;
+    }
 
 
-#user-registration-info,
-#internet-info,
-#linux-instructions,
-#darwin-instructions,
-/*#platform-section,*/
-/*#submit-section,*/
-#internet-section,
-#install-form {
-    display:none;
-}
+    select{
+        margin-left: 15px;
+        margin-top: 5px;
+    }
 
-#internet-info,
-#user-registration-info {
-    font-weight:bold;
-    color:red;
-}
+    .radio{
+        margin-left: 15px;
+    }
+
+    .radio-selections{
+        margin-top: 11px;
+        display: inline-block;
+        position: relative;
+    }
 
 
-.instructions{
-    margin-left: 200px;
-}
-.download-buttons{
-    margin-bottom: 5px;
+    #user-registration-info,
+    #internet-info,
+    #linux-instructions,
+    #darwin-instructions,
+    /*#platform-section,*/
+    /*#submit-section,*/
+    #internet-section,
+    #install-form {
+        display:nonee;
+    }
 
-}
-#submit-section{
-    display: none;
-}
-.features{
-    margin-left: 290px;
-    margin-bottom: 50px;
-    color: green;
-    font-size: 14px;
-}
-
-#platform-section{
-    margin-left: 10px;
-}
-#platform{
-    margin-left: -170px;
-}
+    #internet-info,
+    #user-registration-info {
+        font-weight:bold;
+        color:red;
+    }
 
 
+    .instructions{
+        margin-left: 200px;
+    }
+    .download-buttons{
+        margin-bottom: 5px;
+
+    }
+    #submit-section{
+        display: nonee;
+    }
+    .features{
+        margin-left: 290px;
+        margin-bottom: 50px;
+        color: green;
+        font-size: 14px;
+    }
+
+    #platform-section{
+        margin-left: 10px;
+    }
+    #platform{
+        margin-left: -170px;
+    }
 </style>
 {% endblock headcss %}
 
 {% block content %}
     {% comment "Header instructions" %}{% endcomment %}
-        <div class="instructions">
-            <h2>Installation</h2>
-<!--             <div class="information">
-            Tell us about your infrastructure, we will provide you a corresponding download link.
-            </div> -->
+    <div class="installation">
+        <h2>Installation</h2>
 
-        
         <form name="test" method="post" class="basic-form">
         {% csrf_token %} 
 
-
         <div class="download-buttons">
-        <button class="btn btn-large btn-large btn-primary" type="button">Download Single-server Edition</button>
-        <button class="btn btn-large btn-large btn-success" type="button">Login to get Multiple-servers Edition -> </button>
+            {% if edition == "single-server" or not edition %}
+            <button class="btn btn-large btn-primary" type="button" onclick="javascript:window.location.href='single-server/'">
+                Download Single-server Edition
+            </button>
+            {% endif %}
+            {% if edition == "multiple-server" or not edition %}
+            <button class="btn btn-large btn-success" type="button" onclick="javascript:window.location.href='single-server/'">
+                {% if user.is_anonymous %}
+                    Login to get Multiple-servers Edition
+                {% else %}
+                    Download Multiple-servers Edition
+                {% endif %}
+                &gt;
+            </button>
+            {% endif %}
         </div>
 
         <div class="features">
@@ -183,53 +186,11 @@ select{
                 <li>Share students and teachers data across multiple installs</li>
             </ul>
         </div>
-
-        <div class="form-section" id="platform-section">
-            <div class="form-label"><h4>Server OS:</h4></div>
-            <div class="form-selection">
-                <select name="platform" id="platform">
-                    <option value="windows">Windows</option>
-                    <option value="darwin">Mac</option>
-                    <option value="linux">Linux</option>
-                </select>
-            <span id="platform_info"></span>
-            </div>
-        </div>
-
-<!--         <div class="form-section" id="server">
-            <div class="form-label"><h4>I would like run KA Lite on:</h4></div>
-            <div class= "radio-selections">
-                <label class="radio">
-                        <input type="radio" name="depolyment-section" value="single">
-                            A single server (stand-alone)
-                </label>
-                <label class="radio">
-                        <input type="radio" name="depolyment-section" value="multi-independent">
-                            Multiple independent servers <span class="asterisk">*</span>
-                </label>
-                <label class="radio">
-                        <input type="radio" name="depolyment-section" value="multi-sharing">
-                            Multiple servers sharing student data <span class="asterisk">*</span>
-                </label>
-                <div class="suggestion" style="display:none"> 
-                    <span class="asterisk">*</span><a href="{% url auth_login %}">Login</a> to download multiple servers edition of KA Lite.
-                </div>
-            </div>
-         </div>  -->
-
-        <div class="form-section" id="locale-section" style="display:none">
-            <div class="form-label">Server operating system:</div>
-            <div class="form-selection">
-                <select name="locale" id="locale">
-                    <option value="en">English</option>
-                </select>
-                <span id="locale_info"></span>
-            </div>
-        </div>        
-        
+    </div>
 
     {% comment "Form for downloading KALite is accessible only to authenticatd users" %}{% endcomment %}
-    {% if request.user.is_authenticated %}
+    {% if edition == "multiple-server" or True %}
+    ben
     <div id="install-form">
         <div class="errors">{% for err in errors %}{{ err }}{% endfor %}</div>
             <div class="form-section" id="select_organization">
@@ -237,13 +198,14 @@ select{
                 <div class="form-selection">
                     <select name="organization" id="organization">
                             {% for org in organizations %}
-                            <option value="{{ org.id }}" {% if selected_organization.id == org.id %}selected{% endif %}>{{ org }} : {{org.id}}</option>
+                            <option value="{{ org.id }}" {% if selected_organization.id == org.id %}selected{% endif %}>{{ org }}</option>
                             {% endfor %}
                     </select>
                 </div>
             </div>
         
             {% if selected_organization %}
+            boo {{ selected_zone }}
             <div class="form-section" id="select_zone">
                 <div class="form-label"><h4>{% trans "Select Zone:" %}</h4></div>
                 <div class="form-selection">
@@ -256,56 +218,19 @@ select{
                 </div>
             </div>
             {% endif %}
-
-            {% if selected_organization and selected_zone %}
-            <div class="form-section" id="select_num_certificates" style="display:none">
-                <div class="form-label"># of desired installs<br/>(download can be reused)</div>
-                <div class="form-selection">
-                    <select name="num_certificates" id="num_certificates">
-                        {% mkrange 1 10 as some_range %}
-                        {% for n in some_range %}
-                        <option value="{{ n }}"{% if num_certificates == n|stringformat:"d" %}selected{% endif %}>{{ n }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-            {% endif %}
         </div>
+    </div>
+
+    <div class="form-section" id="submit-section">
+            <div class="form-label">&nbsp;</div>
+            <div class="form-selection">
+                <button type="submit" class="btn" {% if not selected_zone %}disabled="disabled"{% endif %}>Download!</button>
+            </div>
     </div>
     {% endif %}
     </form>
 
-    <div class="form-section" id="internet-section">
-        <div class="form-label"><h4>Internet access at server:</h4></div>
-        <div class="radio-selections">
-            <label class="radio">
-                    <input type="radio" name="internet" value="never">
-                        Servers will never have internet access<span style="color: orange">*</span>
-            </label>
-            <label class="radio">
-                    <input type="radio" name="internet" value="some">
-                        At least one server will have occasional internet access<span style="color: orange">*</span>
-            </label>
-            <label class="radio">
-                    <input type="radio" name="internet" value="all">
-                        All servers will have occasional internet access
-            </label>
-
-            <div class="internet-suggestion">
-               *Only supports manual syncing user data through export/import external storage.
-            </div>
-        </div>
-    </div>
-    
-    <div class="form-section" id="submit-section">
-            <div class="form-label">&nbsp;</div>
-            <div class="form-selection">
-                <button type="submit" class="btn" disabled>Download!</button>
-               <!--  <input type="submit" value="{% trans "Download now!"%}" /> -->
-            </div>
-    </div>
-
-    <div id="instructions">
+    <div id="instructions" style="display:none">
         <div id="windows-instructions">
             Windows installation instructions:
             <ul>
@@ -345,165 +270,4 @@ select{
                 <li>Make sure to add Python to your PATH (<a target="_new" href="https://www.google.com/search?q=add+python+to+path+tutorial+windows">Windows</a>, <a target="_new" href="https://www.google.com/search?q=add+python+to+path+tutorial+linux">Linux</a>, <a target="_new" href="https://www.google.com/search?q=add+python+to+path+tutorial+mac">MacOS</a>)</li>
         </div>  
     </div>
-
-    
-<script>
-
-function qparts(name) {
-    var vars = {};
-
-    var parts = window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m, key, value) {
-        vars[key] = value;
-    });
-    
-    if (name) {
-        return vars[name];
-    }
-    else
-        return vars;
-}
-function setGetParam(name, val) {
-    var vars = qparts();
-    
-    vars["server"] = $('input:radio[name=depolyment-section]:checked').val();
-    vars["internet"] = $('input:radio[name=internet]:checked').val();
-    vars["platform"] = $("#platform option:selected").val();
-
-    if (vars[name] == val || (typeof val === "undefined") || val=="__empty__") {
-       return;
-    }
-        
-    if (val != "" && val != "__empty__") {
-        vars[name] = val;
-    } else {
-        delete vars[name];
-    }
-    url = "?" + $.param(vars);
-
-    window.location.href = url;
-}
-
-function select_valof(name) {
-    return $("#" + name + " option:selected" ).val();
-    //$('#platform option:selected').val();
-}
-
-function radio_valof(name) {
-    return $("input[name=" + name + "]:checked").val();
-    //$('input[name=depolyment-section]:checked').val()
-}
-
-function RadioHasChecked(name) {
-    //$("input:radio[name='depolyment-section']").is(":checked");
-    return $("input:radio[name=" + name + "]").is(":checked");
-} // to check wether radio choices have selected
-
-
-function HasSelected(name) {
-    //$('#platform option').is(':selected');
-    return $("#" + name + " option").is(':selected');
-}// to check wether select choices have selected
-
-
-function select_instructions(platform) {
-    $("#instructions div").each(function(idx){
-        $(this).hide();
-    })
-    $("#"+ platform + "-instructions").show()
-    $("#python-instructions").show()
-}
-
-$(function() {
-    // Show a section, and alert users
-    user_logged_in = {{ user.is_authenticated|lower }};
-
-    // If user has not login, Gery out and disable Deployment option, and showing suggestion for login to active multile account
-    if (!user_logged_in){
-    $('input[value=multi-independent]').attr('disabled', 'true')
-                                       .parent().css("color", "#C0C0C0");
-
-    $('input[value=multi-sharing]').attr('disabled', 'true')
-                                   .parent().css("color", "#C0C0C0");
-    $('.suggestion').show();
-    $('.asterisk').show();
-    }
-
-    // Deployment option
-    $("#server").change(function(){
-        var server_option = $('input:radio[name=depolyment-section]:checked').val();
-        if (server_option == "single") {
-            $("#platform-section").show();
-            $("#internet-section").hide();
-            $("#install-form").hide();
-            $('#submit-section .btn').addClass('btn-primary').removeAttr('disabled');//To active 'download' button
-
-        }
-        else {            
-            if (server_option == "multi-independent") {
-                $("#platform-section").show();
-                $("#internet-section").hide();
-                $("#install-form").show();
-                $('#submit-section .btn').removeClass("btn-primary").attr('disabled','disabled');
-            }
-            else {
-                $("#platform-section").show();
-                $("#install-form").show();
-                $("#internet-section").show();
-                $('#submit-section .btn').removeClass("btn-primary").attr('disabled','disabled');
-            }
-        }
-        
-    });//.val(qparts("server")).change();
-    
-
-        
-    // Platform options
-    $("#platform").change(function(){
-        select_instructions($("#platform option:selected").val());
-        if ($("#server option:selected").val()!="single")
-            $("#install-form").show();
-        prep_download_if_ready()
-    });//.val(qparts("platform")).change();
-    
-    
-    // When selected, refresh the page
-    $("#organization").change(function(){
-       setGetParam("organization", $("#organization option:selected").val()); 
-        prep_download_if_ready()
-    }).val("{{selected_organization.id}}").change();
-    
-    $("#zone").change(function(){
-       setGetParam("zone", $("#zone option:selected").val()); 
-        prep_download_if_ready()
-    }).val("{{selected_zone.id}}").change();
-
-        // Internet access optionss
-    $("#internet").change(function(){
-
-        if(RadioHasChecked('internet')){
-            $('#submit-section .btn').addClass('btn-primary').removeAttr('disabled'); //to active button
-        }
-        else {
-            $('#submit-section .btn').removeClass("btn-primary").attr('disabled','disabled');
-        }
-            prep_download_if_ready()
-    });//.val("{{ internet }}").change();
-    
-    $("#num_certificates").change(function(){
-//       setGetParam("num_certificates", $("#num_certificates option:selected").val()); 
-        prep_download_if_ready()
-    }).val("{{num_certificates}}").change();
-    
-});
-
-
-// function prep_download_if_ready() {
-//     if ( RadioHasChecked('platform') || HasSelected('organization') || select_valof("zone") != "__empty__" || RadioHasChecked('internet'){
-//         $('#submit-section .btn').addClass('btn-primary').removeAttr('disabled'); //active
-//     }
-//     else{
-//        $('#submit-section .btn').removeClass("btn-primary").attr('disabled','disabled'); 
-//     }
-// }
-</script>
 {% endblock %}
