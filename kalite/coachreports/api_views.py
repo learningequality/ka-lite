@@ -180,14 +180,29 @@ def compute_data(data_types, who, where):
     # This code is massively inefficient (good demo code, bad production code).
     #   Use smarter queries (i.e. query out all props at once, instead of individually)
     #   to make this go faster.
+
+    #This lambda partial creates a function to return all items with a particular path from the NODECACHE.
     search_fun_single_path = partial(lambda t, p: t["path"].startswith(p), p=tuple(where))
+    #This lambda partial creates a function to return all items with paths matching a list of paths from NODECACHE.
     search_fun_multi_path = partial(lambda t, p: any([tp.startswith(p) for tp in t["paths"]]),  p=tuple(where))
+    #Functions that use the functions defined above to return topics, exercises, and videos based on paths.
     query_topics = partial(lambda t, sf: t if t is not None else [t for t in filter(sf, topicdata.NODE_CACHE['Topic'].values())], sf=search_fun_single_path)
     query_exercises = partial(lambda e, sf: e if e is not None else [ex["name"] for ex in filter(sf, topicdata.NODE_CACHE['Exercise'].values())], sf=search_fun_multi_path)
     query_videos = partial(lambda v, sf: v if v is not None else [vid["youtube_id"] for vid in filter(sf, topicdata.NODE_CACHE['Video'].values())], sf=search_fun_multi_path)
 
     # No users, don't bother.
     if len(who) > 0:
+
+        #Query out all exercises, videos, exercise logs, and video logs before looping to limit requests.
+        #This means we could pull data for n-dimensional coach report displays with the same number of requests!
+        exercises = query_exercises(exercises)
+
+        ex_logs = query_logs(data.keys(), exercises, "exercise", ex_logs)
+
+        videos = query_videos(videos)
+
+        vid_logs = query_logs(data.keys(), videos, "video", vid_logs)
+
         for data_type in (data_types if not hasattr(data_types, "lower") else [data_types]):  # convert list from string, if necessary
             if data_type in data[data.keys()[0]]:  # if the first user has it, then all do; no need to calc again.
                 continue
@@ -196,9 +211,6 @@ def compute_data(data_types, who, where):
             # These are summary stats: you only get one per user
             #
             if data_type == "pct_mastery":
-                exercises = query_exercises(exercises)
-
-                ex_logs = query_logs(data.keys(), exercises, "exercise", ex_logs)
 
                 # Efficient query out, spread out to dict
                 # ExerciseLog.filter(user__in=who, exercise_id__in=exercises).order_by("user.id")
@@ -220,18 +232,12 @@ def compute_data(data_types, who, where):
             #
             # Just querying out data directly: Video
             elif data_type.startswith("vid:") and data_type[4:] in [f.name for f in VideoLog._meta.fields]:
-                videos = query_videos(videos)
-
-                vid_logs = query_logs(data.keys(), videos, "video", vid_logs)
 
                 for user in data.keys():
                     data[user][data_type] = OrderedDict([(v['youtube_id'], v[data_type[4:]]) for v in vid_logs[user]])
 
             # Just querying out data directly: Exercise
             elif data_type.startswith("ex:") and data_type[3:] in [f.name for f in ExerciseLog._meta.fields]:
-                exercises = query_exercises(exercises)
-
-                ex_logs = query_logs(data.keys(), exercises, "exercise", ex_logs)
 
                 for user in data.keys():
                     data[user][data_type] = OrderedDict([(el['exercise_id'], el[data_type[3:]]) for el in ex_logs[user]])
