@@ -88,11 +88,12 @@
 			<div class="span6 padding-left-20">
 			<h3>Organization Admins</h3>
 			{% for member in org.get_members %}
-			<ul class="horizontal-list">
-			<li title="{{member.email }}" >
+			<table class="table">
+				<tr>
+			<td title="{{member.email }}" >
 				{% firstof member.get_full_name member.username %}
-			</li>
-			<li>
+			</td>
+			<td>
 				{% if org.owner == member and member == request.user %}
 				(You are the owner)
 				{% elif member == request.user %}
@@ -105,20 +106,29 @@
 					(<a href="" class="remove-admin-submit">Remove Admin</a>)
 				</form>
 				{% endif %}
-			</li>
-			</ul>
+			</td>
+			</tr>
 			{% endfor %}
+			
 			{% for invite in org.invitations.all %}
-			<h4 id="invited-tag" class="floatleft">
+			
+
+			<tr id="invited-tag">	
+				<td>
 				{{ invite.email_to_invite }} (invited)
-			</h4>
-			<div class="nudge-left floatleft">
+					
+				</td>
+
+				<td>			
 				<form method="post" action="{% url delete_invite org_id=org.id invite_id=invite.pk %}">
 					{% csrf_token %}
 					<a href="" class="remove-invite-submit">(Revoke Invite)</a>
+
 				</form>
-			</div>
+				</td>
+			</tr>
 			{% endfor %}
+			</table
 			<div class="add">
 				<form method="post">
 					{% csrf_token %}
@@ -135,7 +145,7 @@
 					{% endfor %}
 				</form>
 			</div>
-				</div><!-- .span6 -->
+			</div><!-- .span6 -->
 		</div> <!-- .row -->
 		<br>
 		{% endfor %}
