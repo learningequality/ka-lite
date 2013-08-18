@@ -3,7 +3,7 @@
 {% load staticfiles %}
 
 {% block title %}Home{% endblock %}
-
+{% block home_active %}active{% endblock home_active %}
 {% block jqueryjs %}
 <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.8.3.min.js"></script> 
 {% endblock jqueryjs %}
@@ -47,7 +47,7 @@
     <div class="content__box">
         <img src="{% static 'images/landing-page/contact.png' %}" alt="">
         <p>Want deployment advice?</p>
-        <a href="https://docs.google.com/spreadsheet/viewform?formkey=dEhEOWRNVDBzWTdsUnFQYWlCWnZoWWc6MQ">
+        <a href="contact/deployment/">
             <button type="button" name="" value="" class="button-green">Contact Us</button>
         </a>
     </div>

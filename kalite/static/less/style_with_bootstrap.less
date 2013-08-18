@@ -140,8 +140,11 @@ ul{
     a{
       color:black;
       text-decoration: none;
+      &.active{
+          border-bottom: 3px solid @dark-green;
+      }
       &:hover{
-        color:rgb(115, 136, 112);
+        color:@darkest-green;
       }
     }
   }
@@ -150,7 +153,7 @@ ul{
 // Content
 // --------------------------------------------------
 .content{ 
-  background-color: rgb(255, 255, 255);
+  background-color: @white;
   border-top: 3px solid @dark-green;
 }
 
