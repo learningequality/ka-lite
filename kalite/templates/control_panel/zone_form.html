@@ -4,21 +4,7 @@
 
 {% block inner_content %}
 <div id="zone_container">
-    <style>
-    h2 { 
-        margin-bottom: 25px;
-    }
 
-    input, textarea {
-        width: 275px;
-    }
-
-    input.submit{
-        margin-bottom: 100px;
-        margin-top: 10px;
-    }
-
-    </style>
 
     <form method="post" class="basic-form">
     {% csrf_token %}
@@ -32,9 +18,9 @@
     {{ form.as_p }}
 
     {% if form.instance.pk %}
-    <input type="submit" value="Update Zone" class="submit"/>
+    <input type="submit" value="Update Zone" class="button-green"/>
     {% else %}
-    <input type="submit" value="Create Zone" class="submit"/>
+    <input type="submit" value="Create Zone" class="button-green"/>
     {% endif %}
 
     </form>
