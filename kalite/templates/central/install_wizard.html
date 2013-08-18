@@ -21,12 +21,10 @@
     ul {
         margin-top:5px;
     }
-
     h2{
         font-size: 33px;
-        margin-left: 200px;
+        text-align: center;
     }
-
     h4{
         font-size: 16px;
     }
@@ -34,13 +32,6 @@
     #python-instructions {
         margin-top:25px;
     }
-
-    .basic-form label{
-        width: auto;
-        clear: both;
-        font-weight: normal;
-    }
-
     .form-label {
         float: left;
         color: #678D00;
@@ -48,7 +39,6 @@
         padding-right: 6px;
         width: 250px;
     }
-
     .form-section {
         width: 100%;
         text-align:left;
@@ -85,51 +75,11 @@
         color: orange;
         display: none;
     }
-
-
-    select{
-        margin-left: 15px;
-        margin-top: 5px;
-    }
-
-    .radio{
-        margin-left: 15px;
-    }
-
-    .radio-selections{
-        margin-top: 11px;
-        display: inline-block;
-        position: relative;
-    }
-
-
-    #user-registration-info,
-    #internet-info,
-    #linux-instructions,
-    #darwin-instructions,
-    /*#platform-section,*/
-    /*#submit-section,*/
-    #internet-section,
-    #install-form {
-        display:nonee;
-    }
-
-    #internet-info,
-    #user-registration-info {
-        font-weight:bold;
-        color:red;
-    }
-
-
     .instructions{
         margin-left: 200px;
     }
     .download-buttons{
         margin-bottom: 5px;
-
-    }
-    #submit-section{
-        display: nonee;
     }
     .features{
         margin-left: 290px;
@@ -137,92 +87,113 @@
         color: green;
         font-size: 14px;
     }
-
-    #platform-section{
-        margin-left: 10px;
-    }
-    #platform{
-        margin-left: -170px;
-    }
 </style>
 {% endblock headcss %}
 
 {% block content %}
     {% comment "Header instructions" %}{% endcomment %}
+    <div class="instructions"></div>
+
+    {% comment "Form for downloading KALite is accessible only to authenticatd users" %}{% endcomment %}
     <div class="installation">
         <h2>Installation</h2>
-
         <form name="test" method="post" class="basic-form">
         {% csrf_token %} 
 
-        <div class="download-buttons">
+        {% if edition == "multiple-server" %}
+        <div id="zone_section">
+
+            <div class="errors">{% for err in errors %}{{ err }}{% endfor %}</div>
+
+            <div class="form-section">
+            <div class="form-label"><h4>{% trans "Select Organization:" %}</h4></div>
+            <div class="form-selection">
+                <select name="organization" id="organization">
+                        {% for org in organizations %}
+                        <option value="{{ org.id }}" {% if selected_organization.id == org.id %}selected{% endif %}>
+                            {{ org }}
+                        </option>
+                        {% endfor %}
+                </select>
+            </div>
+            </div>
+
+            <div class="form-section">
+            <div class="form-label"><h4>{% trans "Select Zone:" %}</h4></div>
+            <div class="form-selection">
+                <select name="zone" id="zone">
+                    <option disabled="disabled" value="__empty__" {% if not selected_zone %}selected{% endif %}>
+                        --select your zone--
+                    </option>
+                    {% for zone in zones %}
+                    <option value="{{ zone.id }}"{% if selected_zone.id == zone.id %}selected{% endif %}>
+                        {{ zone }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            </div>
+        </div><!-- zone_section -->
+        {% endif %}
+
+        <table>
+            {% if not edition %}
+            <tr>
+                <td rowspan="3" width="200px">
+                <td><h3>Single server edition</h3></td>
+                <td><h3>Multiple server edition</h3></td>
+            </tr>
+            <tr>
+                <td><img width="300" src="{% static 'images/single-server.png' %}" /></td>
+                <td><img width="300" src="{% static 'images/multiple-server.png' %}" /></td>
+            </tr>
+            {% endif %}
+            <tr>
+                <td>
             {% if edition == "single-server" or not edition %}
             <button class="btn btn-large btn-primary" type="button" onclick="javascript:window.location.href='single-server/'">
                 Download Single-server Edition
             </button>
             {% endif %}
+            </td>
+            <td>
             {% if edition == "multiple-server" or not edition %}
-            <button class="btn btn-large btn-success" type="button" onclick="javascript:window.location.href='single-server/'">
                 {% if user.is_anonymous %}
-                    Login to get Multiple-servers Edition
+                <button class="btn btn-large btn-success" type="button" onclick="javascript:window.location.href='multiple-server/'">
+                    Login to get Multiple-servers Edition -&gt;
+                </button>
                 {% else %}
+                <button class="btn btn-large btn-success" type="submit">
                     Download Multiple-servers Edition
+                </button>
                 {% endif %}
-                &gt;
-            </button>
             {% endif %}
-        </div>
+                </td>
+            </tr>
+            {% if not edition %}
+            <tr>
+                <td><h3>Features</h3></td>
+                <td colspan="2">&nbsp;</td>
+            </tr>
+            <tr>
+                <td>Students can log in and record progress.</td>
+                <td><img width="75" src="{% static 'images/check.jpg' %}" /></td>
+                <td><img width="75" src="{% static 'images/check.jpg' %}" /></td>
+            </tr>
+            <tr>
+                <td>Share student and teacher data across multiple installs</td>
+                <td>&nbsp;</td>
+                <td><img width="75" src="{% static 'images/check.jpg' %}" /></td>
+            </tr>
+            <tr>
+                <td>View usage data online</td>
+                <td>&nbsp;</td>
+                <td><img width="75" src="{% static 'images/check.jpg' %}" /></td>
+            </tr>
+        {% endif %}
+        </table>
+    </div><!-- installation -->
 
-        <div class="features">
-            <ul>
-                <li>Generate a customerized package for your organization </li>
-                <li>View usage data online through this website</li>
-                <li>Share students and teachers data across multiple installs</li>
-            </ul>
-        </div>
-    </div>
-
-    {% comment "Form for downloading KALite is accessible only to authenticatd users" %}{% endcomment %}
-    {% if edition == "multiple-server" or True %}
-    ben
-    <div id="install-form">
-        <div class="errors">{% for err in errors %}{{ err }}{% endfor %}</div>
-            <div class="form-section" id="select_organization">
-                <div class="form-label"><h4>{% trans "Select Organization:" %}</h4></div>
-                <div class="form-selection">
-                    <select name="organization" id="organization">
-                            {% for org in organizations %}
-                            <option value="{{ org.id }}" {% if selected_organization.id == org.id %}selected{% endif %}>{{ org }}</option>
-                            {% endfor %}
-                    </select>
-                </div>
-            </div>
-        
-            {% if selected_organization %}
-            boo {{ selected_zone }}
-            <div class="form-section" id="select_zone">
-                <div class="form-label"><h4>{% trans "Select Zone:" %}</h4></div>
-                <div class="form-selection">
-                    <select name="zone" id="zone">
-                        <option disabled="disabled" value="__empty__" {% if not selected_zone %}selected{% endif %}>--select your zone--</option>
-                        {% for zone in zones %}
-                        <option value="{{ zone.id }}"{% if selected_zone.id == zone.id %}selected{% endif %}>{{ zone }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-            {% endif %}
-        </div>
-    </div>
-
-    <div class="form-section" id="submit-section">
-            <div class="form-label">&nbsp;</div>
-            <div class="form-selection">
-                <button type="submit" class="btn" {% if not selected_zone %}disabled="disabled"{% endif %}>Download!</button>
-            </div>
-    </div>
-    {% endif %}
-    </form>
 
     <div id="instructions" style="display:none">
         <div id="windows-instructions">

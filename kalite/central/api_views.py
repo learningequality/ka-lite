@@ -1,9 +1,7 @@
 import json
 import os
-from annoying.functions import get_object_or_None
 from decorator.decorator import decorator
 
-from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, Http404
 
@@ -14,65 +12,6 @@ from securesync.models import Zone
 from shared.packaging import package_offline_install_zip
 from utils.decorators import allow_jsonp, api_handle_error_with_json
 from utils.internet import JsonResponse
-
-
-def get_central_server_host(request):
-    return request.get_host() or getattr(settings, CENTRAL_SERVER_HOST, "")
-
-
-def download_kalite_public(request, *args, **kwargs):
-    """
-    """
-    if "zone_id" in kwargs or "zone" in request.REQUEST:
-        raise PermissionDenied("Must be logged in to download with zone information.")
-    return download_kalite(request, *args, **kwargs)
-
-
-@login_required
-def download_kalite_private(request, *args, **kwargs):
-    """
-    """
-    zone_id = kwargs.get("zone_id") or request.REQUEST.get("zone")
-    if not zone_id:
-        # No zone information = bad request (400)
-        return HttpResponse("Must specify zone information.", status=400)
-    kwargs["zone_id"] = zone_id
-    return download_kalite(request, *args, **kwargs)
-
-
-def download_kalite(request, *args, **kwargs):
-    """
-    """
-
-    # Parse args
-    zone = get_object_or_None(Zone, id=kwargs.get('zone_id', None))
-    version = kwargs.get("version", kalite.VERSION)
-    platform = kwargs.get("platform", "all")
-    locale = kwargs.get("locale", "all")
-
-    # Make sure this user has permission to admin this zone
-    if zone and not request.user.is_authenticated():
-        raise PermissionDenied("Requires authentication")
-    elif zone:
-        zone_org = Organization.from_zone(zone)
-        if not zone_org or not zone_org[0].id in [org for org in get_or_create_user_profile(request.user).get_organizations()]:
-            raise PermissionDenied("Requires authentication")
-
-    # Generate the zip file
-    zip_file = package_offline_install_zip(version=version, platform=platform, locale=locale, zone=zone, central_server=get_central_server_host(request), force=settings.DEBUG)  # force to rebuild zip in debug mode
-
-    # Build the outgoing filename."
-    user_facing_filename = "kalite"
-    for val in [platform, locale, kalite.VERSION, zone.name if zone else None]:
-        user_facing_filename +=  ("-%s" % val) if val not in [None, "", "all"] else ""
-    user_facing_filename += ".zip"
-
-    # Stream it back to the user
-    zh = open(zip_file,"rb")
-    response = HttpResponse(content=zh, mimetype='application/zip', content_type='application/zip')
-    response['Content-Disposition'] = 'attachment; filename="%s"' % user_facing_filename
-
-    return response
 
 
 @allow_jsonp

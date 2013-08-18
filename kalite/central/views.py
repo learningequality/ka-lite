@@ -1,11 +1,14 @@
 import re
 import json
+import tempfile
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 
+from annoying.functions import get_object_or_None
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404
@@ -21,6 +24,10 @@ from central.forms import OrganizationForm, OrganizationInvitationForm
 from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
 from securesync.models import Zone
 from utils.decorators import require_authorized_admin
+
+
+def get_central_server_host(request):
+    return request.get_host() or getattr(settings, CENTRAL_SERVER_HOST, "")
 
 
 @render_to("central/homepage.html")
@@ -158,6 +165,7 @@ def get_request_var(request, var_name, default_val="__empty__"):
 
 @render_to("central/install_wizard.html")
 def install_wizard(request, edition=None):
+    
     if not edition and request.user.is_anonymous():
         return {}
 
@@ -236,6 +244,62 @@ def install_multiple_server_edition(request):
             "internet": get_request_var(request, "internet"),
             "edition": "multiple-server",
         }
+
+
+def download_kalite_public(request, *args, **kwargs):
+    """
+    """
+    if "zone_id" in kwargs or "zone" in request.REQUEST:
+        raise PermissionDenied("Must be logged in to download with zone information.")
+    return download_kalite(request, *args, **kwargs)
+
+
+@login_required
+def download_kalite_private(request, *args, **kwargs):
+    """
+    """
+    zone_id = kwargs.get("zone_id") or request.REQUEST.get("zone")
+    if not zone_id:
+        # No zone information = bad request (400)
+        return HttpResponse("Must specify zone information.", status=400)
+    kwargs["zone_id"] = zone_id
+    return download_kalite(request, *args, **kwargs)
+
+
+def download_kalite(request, *args, **kwargs):
+    """
+    """
+
+    # Parse args
+    zone = get_object_or_None(Zone, id=kwargs.get('zone_id', None))
+    version = kwargs.get("version", kalite.VERSION)
+    platform = kwargs.get("platform", "all")
+    locale = kwargs.get("locale", "all")
+
+    # Make sure this user has permission to admin this zone
+    if zone and not request.user.is_authenticated():
+        raise PermissionDenied("Requires authentication")
+    elif zone:
+        zone_org = Organization.from_zone(zone)
+        if not zone_org or not zone_org[0].id in [org for org in get_or_create_user_profile(request.user).get_organizations()]:
+            raise PermissionDenied("Requires authentication")
+
+    # Generate the zip file
+    zip_file = tempfile.mkstemp()[1]
+    call_command("package_for_download", file=zip_file, central_server=get_central_server_host(request), **kwargs)
+
+    # Build the outgoing filename."
+    user_facing_filename = "kalite"
+    for val in [platform, locale, kalite.VERSION, zone.name if zone else None]:
+        user_facing_filename +=  ("-%s" % val) if val not in [None, "", "all"] else ""
+    user_facing_filename += ".zip"
+
+    # Stream it back to the user
+    zh = open(zip_file,"rb")
+    response = HttpResponse(content=zh, mimetype='application/zip', content_type='application/zip')
+    response['Content-Disposition'] = 'attachment; filename="%s"' % user_facing_filename
+
+    return response
 
 
 def handler_403(request, *args, **kwargs):
