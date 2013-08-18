@@ -26,7 +26,7 @@ from config.models import Settings
 from control_panel.views import user_management_context
 from main import topicdata
 from main.models import VideoLog, ExerciseLog, VideoFile
-from securesync.engine.api_client import SyncClient
+from securesync.api_client import BaseClient
 from securesync.models import Facility, FacilityUser,FacilityGroup, Device
 from securesync.views import require_admin, facility_required
 from utils import topic_tools
@@ -80,13 +80,12 @@ def splat_handler(request, splat):
 
 def check_setup_status(handler):
     def wrapper_fn(request, *args, **kwargs):
-        client = SyncClient()
         if not request.is_admin and Facility.objects.count() == 0:
             messages.warning(request, mark_safe(
                 "Please <a href='%s?next=%s'>login</a> with the account you created while running the installation script, \
                 to complete the setup." % (reverse("login"), reverse("register_public_key"))))
         if request.is_admin:
-            if not Settings.get("registered") and client.test_connection() == "success":
+            if not Settings.get("registered") and SyncClient().test_connection() == "success":
                 messages.warning(request, mark_safe("Please <a href='%s'>follow the directions to register your device</a>, so that it can synchronize with the central server." % reverse("register_public_key")))
             elif Facility.objects.count() == 0:
                 messages.warning(request, mark_safe("Please <a href='%s'>create a facility</a> now. Users will not be able to sign up for accounts until you have made a facility." % reverse("add_facility")))
