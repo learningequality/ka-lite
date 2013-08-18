@@ -59,13 +59,10 @@ urlpatterns += patterns('central.views',
     url(r'^faq/', include('faq.urls')),
 
     url(r'^contact/', include('contact.urls')),
+    url(r'^install/$', 'install_wizard', {}, 'install_wizard'),
     url(r'^wiki/(?P<path>\w+)/$', redirect_to, {'base_url': settings.CENTRAL_WIKI_URL}, 'wiki'),
     url(r'^about/$', redirect_to, { 'base_url': 'http://learningequality.org/' }, 'about'),
 
-    url(r'^api/', include(api_urls)),
-)
-
-urlpatterns += patterns('central.api_views',
     url(r'^api/', include(central.api_urls)),
 )
 

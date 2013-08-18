@@ -149,6 +149,72 @@ def glossary(request):
     return {}
 
 
+def get_request_var(request, var_name, default_val="__empty__"):
+    return  request.POST.get(var_name, request.GET.get(var_name, default_val))
+
+
+@render_to("central/install_wizard.html")
+def install_wizard(request):
+
+    # get a list of all the organizations this user helps administer,
+    #   then choose the selected organization (if possible)
+    if request.user.is_anonymous():
+        organizations = []
+        organization = None
+        organization_id = None
+        zones = []
+        zone = None
+        zoneid = None
+        num_certificates = 1
+        
+    else:
+        # Get all data
+        organization_id = get_request_var(request, "organization", None)
+        zone_id = get_request_var(request, "zone", None)
+        num_certificates = int(get_request_var(request, "num_certificates", 1))
+        
+        organization = None
+        if organization_id and organization_id != "__empty__":
+            organizations = request.user.organization_set.filter(id=organization_id)
+            organization = organizations[0] if organizations else None
+        else:
+            organizations = request.user.organization_set.all()
+            if len(organizations) == 1:
+                organization_id = organizations[0].id
+                organization = organizations[0]
+        
+        # If a zone is selected grab it
+        zones = []
+        zone = None
+        if organization_id and len(organizations)==1:
+            zones = organizations[0].zones.all()
+            if zone_id and zone_id != "__empty__": 
+                zone = get_object_or_None(Zone, id=zone_id)
+            zone = zone or (zones[0] if len(zones)==1 else None)              
+            
+
+    # Generate install certificates
+    if request.method == "POST":
+        platform = get_request_var(request, "platform", "all")
+        locale = get_request_var(request, "locale", "en")
+        
+        return HttpResponseRedirect(reverse("download_kalite_public", kwargs={
+            "version": kalite.VERSION,
+            "platform": platform,
+            "locale": locale,
+        }))
+
+    else: # GET
+        return {
+            "organizations": organizations,
+            "selected_organization": organization,
+            "zones": zones,
+            "selected_zone": zone,
+            "num_certificates": num_certificates,  
+            "internet": get_request_var(request, "internet") 
+        }
+
+
 def handler_403(request, *args, **kwargs):
     context = RequestContext(request)
     message = None  # Need to retrieve, but can't figure it out yet.
