@@ -60,7 +60,7 @@ def zone_management(request, zone_id, org_id=None):
         user_activity = UserLogSummary.objects.filter(device=device)
 
         device_data[device.id] = {
-            "name": device.name,
+            "name": device.name or device.id,
             "num_times_synced": sync_sessions.count(),
             "last_time_synced": sync_sessions.aggregate(Max("timestamp"))["timestamp__max"],
             "last_time_used":   None if user_activity.count() == 0 else user_activity.order_by("-end_datetime")[0],
