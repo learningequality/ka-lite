@@ -6,6 +6,10 @@ tmp/
 notes.txt
 kalite/static/videos/
 kalite/static/presentation/
+kalite/static/data/subtitles/srts_download_status.json
+kalite/static/data/subtitles/subtitle_counts.json
+kalite/static/data/subtitles/languages/*
+kalite/static/srt/*
 kalite/private_key.pem
 kalite/secrets.py
 .project
@@ -27,3 +31,5 @@ content/*.mp4
 content/*.json
 content/*.srt
 node_modules
+locale/*
+kalite/media/*

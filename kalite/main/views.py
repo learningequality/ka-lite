@@ -1,6 +1,6 @@
 import copy
 import json
-import re 
+import re
 import sys
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
@@ -28,7 +28,7 @@ from securesync.api_client import SyncClient
 from securesync.models import Facility, FacilityUser,FacilityGroup, Device
 from securesync.views import require_admin, facility_required
 from utils import topic_tools
-from utils.internet import am_i_online
+from utils.internet import am_i_online, JsonResponse
 from utils.jobs import force_job
 from utils.decorators import require_admin
 from utils.videos import video_connection_is_available
@@ -95,6 +95,14 @@ def check_setup_status(handler):
 @cache_page(settings.CACHE_TIME)
 @render_to("topic.html")
 def topic_handler(request, topic):
+    return topic_context(topic)
+
+
+def topic_context(topic):
+    """
+    Given a topic node, create all context related to showing that topic
+    in a template.
+    """
     videos    = topic_tools.get_videos(topic)
     exercises = topic_tools.get_exercises(topic)
     topics    = topic_tools.get_live_topics(topic)
@@ -159,8 +167,8 @@ def exercise_handler(request, exercise):
 
     videos_to_delete = []
     for idx, video in enumerate(related_videos):
-        # Remove all videos that were not recognized or 
-        #   simply aren't on disk.  
+        # Remove all videos that were not recognized or
+        #   simply aren't on disk.
         #   Check on disk is relatively cheap, also executed infrequently
         if not video or not topic_tools.is_video_on_disk(video["youtube_id"]):
             videos_to_delete.append(idx)
@@ -199,17 +207,10 @@ def exercise_dashboard(request):
 @cache_page(settings.CACHE_TIME)
 @render_to("homepage.html")
 def homepage(request):
-    # TODO(bcipolli): video counts on the distributed server homepage
-    topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"], topicdata.TOPICS["children"])
-
-    # indexed by integer
-    my_topics = [dict([(k, t[k]) for k in ('title', 'path')]) for t in topics]
-
-    context = {
+    context = topic_context(topicdata.TOPICS)
+    context.update({
         "title": "Home",
-        "topics": my_topics,
-        "registered": Settings.get("registered"),
-    }
+    })
     return context
 
 @require_admin
@@ -302,14 +303,16 @@ def update(request):
     languages = [{"id": key, "name": language_lookup[key]} for key in language_list]
     languages = sorted(languages, key=lambda k: k["name"])
 
-    am_i_online = video_connection_is_available()
-    if not am_i_online:
-        messages.warning(request, _("No internet connection was detected.  You must be online to download videos or subtitles."))
+    device = Device.get_own_device()
+    zone = device.get_zone()
 
     context = {
         "languages": languages,
         "default_language": default_language,
-        "am_i_online": am_i_online,
+        "registered": Settings.get("registered"),
+        "zone_id": zone.id if zone else None,
+        "device_id": device.id,
+        "video_count": VideoFile.objects.filter(percent_complete=100).count(),
     }
     return context
 
@@ -358,7 +361,7 @@ def handler_403(request, *args, **kwargs):
     if request.is_ajax():
         return JsonResponse({ "error": "You must be logged in with an account authorized to view this page." }, status=403)
     else:
-        messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page..")))
+        messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page.")))
         return HttpResponseRedirect(reverse("login") + "?next=" + request.path)
 
 
