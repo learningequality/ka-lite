@@ -23,7 +23,16 @@
     {% csrf_token %} 
 
     {% if user.is_anonymous %}
-        
+    <div class="row-fluid">
+        <div class="span6"><img width="300" src="{% static 'images/single-server.png' %}" />
+        <p>EXPLANATION</p>
+        </div>
+        <div class="span6">
+        <img width="300" src="{% static 'images/multiple-server.png' %}" />
+        <p>EXPLANATION</p>
+        </div>
+    </div>
+                
         <table class="table">
             <tr>
                 <th>Features</th>
@@ -48,13 +57,13 @@
             <tr>
                 <td></td>
                 <td>                
-                <button class="button-green--large" type="button" onclick="javascript:window.location.href='single-server/'">
-                Download Single-server Edition
+                <button class="button-green" type="button" onclick="javascript:window.location.href='single-server/'">
+                Download <br>Single-server Edition
                 </button>
                 </td>
                 <td>                
-                <button class="button-green--large" type="button" onclick="javascript:window.location.href='multiple-server/'">
-                Login to get Multiple-servers Edition
+                <button class="button-green" type="button" onclick="javascript:window.location.href='multiple-server/'">
+                Login to get <br>Multiple-servers Edition
                 </button>
                 </td>
             </tr>
