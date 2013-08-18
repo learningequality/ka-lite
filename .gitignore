@@ -34,5 +34,6 @@ kalite/static/srt/
 kalite/static/data/subtitles/
 kalite/media/
 *.zip
+node_modules
 locale/*
 kalite/media/*

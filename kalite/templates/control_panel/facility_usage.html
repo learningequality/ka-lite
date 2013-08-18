@@ -1,10 +1,11 @@
-{% extends "control_panel/base_management_printable.html" %}
+{% extends "control_panel/base_printable.html" %}
 {% load i18n %}
 {% load my_filters %}
 
 {% block title %}{{ facility.name }} - Facility Usage{% endblock title %}
+{% block control_panel_active %}active{% endblock control_panel_active %}
 
-{% block inner_content %}
+{% block control_panel_content %}
 <div id="facility_container">
     <div class="groups">
         <h2>Groups</h2>
@@ -44,7 +45,7 @@
                 {% endfor %}
             </table>
         {% endif %}
-    </div>
+    </div><!-- groups -->
 
 
     <div class="users">
@@ -91,6 +92,6 @@
 
         </table>
         {% endif %}
-    </div>
-
-{% endblock inner_content %}
+    </div><!-- users -->
+</div><!-- facility -->
+{% endblock control_panel_content %}

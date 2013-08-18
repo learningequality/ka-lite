@@ -1,17 +1,18 @@
-{% extends "control_panel/base_management.html" %}
+{% extends "control_panel/base.html" %}
 {% load staticfiles %}
 {% load include_block %}
 
 {% block title %}{{ group.name }} - User Management{% endblock title %}
+{% block control_panel_active %}active{% endblock control_panel_active %}
 
-{% block headcss %}
-{{ block.super }}
+{% block headcss %}{{ block.super }}
 <link rel="stylesheet" type="text/css" href="{% static 'css/current_users.css' %}" />
 {% endblock headcss %}
 
 
-{% block inner_content %}
+{% block control_panel_content %}
 <div id="content">
     {% include_block "current_users.html" "users_table" %}
     {% include_block "current_users.html" "endjs" %}
-{% endblock inner_content %}
+</div>
+{% endblock control_panel_content %}
