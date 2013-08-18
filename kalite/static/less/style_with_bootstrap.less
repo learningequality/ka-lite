@@ -1,22 +1,14 @@
+// style_with_bootstrap.less 
+// --------------------------------------------------
+
+// Body, Container and Resets
+// --------------------------------------------------
+
 body {
-  background: @green-bg-color;
+  background: @light-green;
   font:@body-font;
 }
 
-//Idea from designing for the web
-h1,h2,h3,h4,h5,h6{
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-weight: normal;
-}
-h1{font-size: 218%;
-line-height: 25pt;}
-h2{font-size: 164%;}
-h3{font-size: 145%;}
-h4{font-size: 118%;}
-
-a:hover{
-  text-decoration: none;
-}
 .container{
   max-width: @container-max-width; // Puts a hard limit on the width of the layout 
   margin: 0 auto;
@@ -24,11 +16,109 @@ a:hover{
   background-repeat: no-repeat;
 }
 
-p{
-  .normal-text-font; // Resets the font of all the text (definition in mixins.less)
+label,p{
+  .normal-text-font;// Resets the font of all the text (definition in mixins.less)
 }
 
-/* Header */
+a:hover{
+  text-decoration: none;
+}
+
+input{
+  margin:0!important;
+}
+
+.symbol, a.symbol:before { // Makes the icons look nice on all the browsers
+  font-family: 'Mono Social Icons Font';
+  -webkit-text-rendering: optimizeLegibility;
+  -moz-text-rendering: optimizeLegibility;
+  -ms-text-rendering: optimizeLegibility;
+  -o-text-rendering: optimizeLegibility;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-font-smoothing: antialiased;
+  -ms-font-smoothing: antialiased;
+  -o-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+}
+
+a.symbol:before {
+  content: attr(title);
+  font-size: 130%;
+}
+
+// Headings & Titles
+// --------------------------------------------------
+
+h1,h2,h3,h4,h5,h6{
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: normal;
+}
+h1{font-size: 218%;
+  line-height: 25pt;}
+  h2,.organization-title{font-size: 164%;}
+  h3{font-size: 145%;}
+  h4{font-size: 118%;}
+
+  .organization-title{
+    background-color: #E7E7E7;
+    padding-left: 20px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
+
+// Paddings
+// --------------------------------------------------
+  .padding-left-20{
+    padding-left: 20px;
+  }
+
+// Buttons
+// --------------------------------------------------
+
+// Helper: .green_button(@width,@border_radius, @font_size, @paddingvertical, @paddinghorizontal)
+
+
+  .button-green--large{
+     .green_button(190px,5px, 14px, 10px, 20px);
+  }
+  .button-green{
+    .green_button(190px,5px, 14px, 10px, 20px);
+  }
+
+  .button-green--small{
+    .green_button(100%,2px, 13px, 5px, 20px); 
+  }
+
+  .neworg-button{
+    margin-top:16px;
+  }
+// List
+// --------------------------------------------------
+
+ul{
+  padding:0;
+  &.nostyle-list li{
+    list-style-type: none;
+  }
+ &.horizontal-list {
+  margin: 0;
+  li{
+    display: inline!important; 
+    a, a:hover{
+      text-decoration: none;
+    }
+  }
+
+  }
+}
+
+.hr-gray{
+  border-bottom: 1px #E7E7E7 solid;
+  margin-bottom: 20px;
+}
+// Header (horizontal menu)
+// --------------------------------------------------
 
 .header__horizontal-menu__right{
   float:right;
@@ -46,25 +136,31 @@ p{
     list-style-type: none;
     padding-right:20px;
 
-    a, a:hover{
+    a{
       color:black;
       text-decoration: none;
+      &:hover{
+        color:rgb(115, 136, 112);
+      }
     }
   }
 }
 
-/* Content */
+// Content
+// --------------------------------------------------
 .content{ 
   background-color: rgb(255, 255, 255);
   border-top: 3px solid @dark-green;
-
 }
+
 .content-padding{
   padding: 20px 30px 0px 30px;
 }
+
 .content__box-container{
   background-color: rgb(211,211,211);
 }
+
 .center { float: none; margin-left: auto; margin-right: auto; }
 
 .content__box{
@@ -109,18 +205,8 @@ p{
 
 }
 
-button{
-
-  &.green{
-    .green_button(190px,5px, 14px, 10px, 20px); //.green_button(@width,@border_radius, @font_size, @paddingv, @paddingh)
-  }
-
-  &.green--small{
-    .green_button(100%,2px, 12px, 5px, 20px); //.green_button(@width,@border_radius, @font_size, @paddingv, @paddingh)
-  }
-}
-
-/* Footer */
+// Footer (only visible on the landing page)
+// --------------------------------------------------
 .footer{
   padding-top: 10px;
   padding-bottom: 10px;
@@ -154,14 +240,14 @@ input.footer__email__input{
 .footer__news-list{
   margin-top: 15px;
   padding-left: 0px;
-    li{
-      border-bottom: 1px rgb(126,126,126) solid;
-      list-style: none;
-      line-height: 30px;
-      a{  
-        color:rgb(194,194,194);
-      }
-      
+  li{
+    border-bottom: 1px rgb(126,126,126) solid;
+    list-style: none;
+    line-height: 30px;
+    a{  
+      color:rgb(194,194,194);
+    }
+
   }
 }
 .footer__second-line{
@@ -171,35 +257,16 @@ input.footer__email__input{
   padding-left: 40px;
   padding-right: 40px;
 }
-.symbol, a.symbol:before {
-    font-family: 'Mono Social Icons Font';
-    -webkit-text-rendering: optimizeLegibility;
-    -moz-text-rendering: optimizeLegibility;
-    -ms-text-rendering: optimizeLegibility;
-    -o-text-rendering: optimizeLegibility;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-font-smoothing: antialiased;
-    -ms-font-smoothing: antialiased;
-    -o-font-smoothing: antialiased;
-    font-smoothing: antialiased;
-}
-
-a.symbol:before {
-    content: attr(title);
-    font-size: 130%;
-}
-
 
 .list-icons{
-  margin: 0; //Oh webkit
+  margin: 0; // Webkit has an inital margin of 40px
   font-size: 45px;
   line-height: 10px;
   padding: 0px;
-    li{
+  li{
     display: inline;
     list-style-type: none;
-  
+
     a, a:hover{
       color:white;
       text-decoration: none;
