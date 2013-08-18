@@ -1,5 +1,10 @@
 // style_with_bootstrap.less 
 // --------------------------------------------------
+@import "bootstrap/variables.less";
+@import "bootstrap/mixins.less";
+@import "bootstrap/buttons.less"; //Mandatory for alerts.less
+
+@import "bootstrap/alerts.less"; //Just include what you need
 
 // Body, Container and Resets
 // --------------------------------------------------
@@ -66,6 +71,10 @@ h1{font-size: 218%;
     padding-top: 15px;
     padding-bottom: 15px;
   }
+.errorlist{
+  .alert;
+  .alert-error;
+}
 
 // Paddings
 // --------------------------------------------------
