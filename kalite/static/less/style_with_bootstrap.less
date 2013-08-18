@@ -1,10 +1,5 @@
 // style_with_bootstrap.less 
 // --------------------------------------------------
-@import "bootstrap/variables.less";
-@import "bootstrap/mixins.less";
-@import "bootstrap/buttons.less"; //Mandatory for alerts.less
-
-@import "bootstrap/alerts.less"; //Just include what you need
 
 // Body, Container and Resets
 // --------------------------------------------------
@@ -71,10 +66,6 @@ h1{font-size: 218%;
     padding-top: 15px;
     padding-bottom: 15px;
   }
-.errorlist{
-  .alert;
-  .alert-error;
-}
 
 // Paddings
 // --------------------------------------------------
@@ -110,10 +101,9 @@ ul{
   &.nostyle-list li{
     list-style-type: none;
   }
-
  &.horizontal-list {
   margin: 0;
-  li,form{
+  li{
     display: inline!important; 
     a, a:hover{
       text-decoration: none;
@@ -149,11 +139,8 @@ ul{
     a{
       color:black;
       text-decoration: none;
-      &.active{
-          border-bottom: 3px solid @dark-green;
-      }
       &:hover{
-        color:@darkest-green;
+        color:rgb(115, 136, 112);
       }
     }
   }
@@ -162,7 +149,7 @@ ul{
 // Content
 // --------------------------------------------------
 .content{ 
-  background-color: @white;
+  background-color: rgb(255, 255, 255);
   border-top: 3px solid @dark-green;
 }
 
@@ -285,7 +272,4 @@ input.footer__email__input{
       text-decoration: none;
     }
   }
-}
-.cc-logo{
-  height:14px;
 }
