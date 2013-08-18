@@ -1,16 +1,17 @@
-{% extends "control_panel/base_management.html" %}
-
+{% extends "control_panel/base.html" %}
 {% load i18n %}
 
-{% if not is_central %}
-    {% block buttons %}
-        <li>
-            <a class="green_button" href="javascript:alert('NYI; sorry!');">{% trans "Sync device now!" %}</a>
-        </li>
-    {% endblock buttons %}
-{% endif %}
+{% block control_panel_active %}active{% endblock control_panel_active %}
 
-{% block inner_content %}
+{% block buttons %}{{ block.super }}
+    {% if not is_central %}
+    <li>
+        <a class="green_button" href="javascript:alert('NYI; sorry!');">{% trans "Sync device now!" %}</a>
+    </li>
+    {% endif %}
+{% endblock buttons %}
+
+{% block control_panel_content %}
 <div id="zone_container">
         
     <div class="sync_sessions">
@@ -41,5 +42,5 @@
             </table>
         {% endif %}
     </div>
-
-{% endblock inner_content %}
+</div><!-- zone_container -->
+{% endblock control_panel_content %}

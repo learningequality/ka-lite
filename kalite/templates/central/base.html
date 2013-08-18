@@ -60,7 +60,7 @@
                         {% if user.is_superuser %}
                         <li><a href="{% url admin:index %}" >{% trans "Admin" %}</a></li>
                         {% endif %}
-                        <li><a href="{% url org_management %}" class="{% block org-management_active %}{% endblock org-management_active %}">{{ user.username }}</a></li>
+                        <li><a href="{% url org_management %}" class="{% block control_panel_active %}{% endblock control_panel_active %}">{{ user.username }}</a></li>
                         <li><a href="{% url auth_logout %}" id="logout">{% trans "Logout" %}</a></li>
                     {% endif %}
                     </ul>

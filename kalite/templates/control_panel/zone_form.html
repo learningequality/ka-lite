@@ -1,11 +1,10 @@
-{% extends "control_panel/base_management.html" %}
+{% extends "control_panel/base.html" %}
 
 {% block title %}{{ zone.name }} - Zone Management Console{% endblock title %}
+{% block control_panel_active %}active{% endblock control_panel_active %}
 
-{% block inner_content %}
+{% block control_panel_content %}
 <div id="zone_container">
-
-
     <form method="post" class="basic-form">
     {% csrf_token %}
 
@@ -15,14 +14,14 @@
             <span class="glossary-link nudge-left" title="A Zone is the area in which multiple devices may connect to share content with each other."></span>
         </h2>
     
-    {{ form.as_p }}
+        {{ form.as_p }}
 
-    {% if form.instance.pk %}
-    <input type="submit" value="Update Zone" class="button-green"/>
-    {% else %}
-    <input type="submit" value="Create Zone" class="button-green"/>
-    {% endif %}
-
+        {% if form.instance.pk %}
+        <input type="submit" value="Update Zone" class="button-green"/>
+        {% else %}
+        <input type="submit" value="Create Zone" class="button-green"/>
+        {% endif %}
+    </div>
     </form>
-
-{% endblock inner_content %}
+</div>
+{% endblock control_panel_content %}
