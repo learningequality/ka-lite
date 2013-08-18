@@ -9,189 +9,107 @@
 {% block install_active %}active{% endblock install_active %}
 
 {% block headcss %}{{ block.super }}
-<style>
-    select { 
-        width:200px;
-    }
-    #instructions {
-        font-size:12pt;
-        margin-left: 10px;
-        margin-top: 20px;
-    }
-    ul {
-        margin-top:5px;
-    }
-    h2{
-        font-size: 33px;
-        text-align: center;
-    }
-    h4{
-        font-size: 16px;
-    }
 
-    #python-instructions {
-        margin-top:25px;
-    }
-    .form-label {
-        float: left;
-        color: #678D00;
-        /*text-align: right;*/
-        padding-right: 6px;
-        width: 250px;
-    }
-    .form-section {
-        width: 100%;
-        text-align:left;
-        float: left;
-        margin-bottom:5px;
-    }
-
-    #submit-section{
-        margin-left: 60px;
-        padding-bottom: 30px;
-    }
-    .information{
-        font-size: 13px;
-        color: #666;
-        margin-top: -10px;
-        margin-bottom: 20px;
-    }
-
-    .suggestion{
-        clear: both;
-        margin-left: 30px;
-        font-size: 13px;
-        color: #666;
-    }
-
-    .internet-suggestion{
-        clear: both;
-        margin-left: 30px;
-        margin-top: -5px;
-        font-size: 13px;
-        color: orange;
-    }
-    .asterisk{
-        color: orange;
-        display: none;
-    }
-    .instructions{
-        margin-left: 200px;
-    }
-    .download-buttons{
-        margin-bottom: 5px;
-    }
-    .features{
-        margin-left: 290px;
-        margin-bottom: 50px;
-        color: green;
-        font-size: 14px;
-    }
-</style>
 {% endblock headcss %}
 
 {% block content %}
-    {% comment "Header instructions" %}{% endcomment %}
-    <div class="instructions"></div>
+{% comment "Header instructions" %}{% endcomment %}
+<div class="instructions"></div>
 
-    {% comment "Form for downloading KALite is accessible only to authenticatd users" %}{% endcomment %}
-    <div class="installation">
-        <h2>Installation</h2>
-        <form name="test" method="post" class="basic-form">
-        {% csrf_token %} 
+{% comment "Form for downloading KALite is accessible only to authenticatd users" %}{% endcomment %}
+<div class="installation">
+    <h1>Installation</h1>
+    <form name="test" method="post" class="basic-form">
+    {% csrf_token %} 
 
-        {% if edition == "multiple-server" %}
-        <div id="zone_section">
-
+    {% if user.is_anonymous %}
+        
+        <table class="table">
+            <tr>
+                <th>Features</th>
+                <th>Single server edition</th>
+                <th>Multiple server edition</th>
+            </tr>
+            <tr>
+                <td>Students can log in and record progress.</td>
+                <td>&#x2713;</td>
+                <td>&#x2713;</td>
+            </tr>
+            <tr>
+                <td>Share student and teacher data across multiple installs</td>
+                <td>&nbsp;</td>
+                <td>&#x2713;</td>
+            </tr>
+            <tr>
+                <td>View usage data online</td>
+                <td>&nbsp;</td>
+                <td>&#x2713;</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>                
+                <button class="button-green--large" type="button" onclick="javascript:window.location.href='single-server/'">
+                Download Single-server Edition
+                </button>
+                </td>
+                <td>                
+                <button class="button-green--large" type="button" onclick="javascript:window.location.href='multiple-server/'">
+                Login to get Multiple-servers Edition
+                </button>
+                </td>
+            </tr>
+        </table>
+    {% else %}
+    <div id="zone_section">
             <div class="errors">{% for err in errors %}{{ err }}{% endfor %}</div>
-
-            <div class="form-section">
-            <div class="form-label"><h4>{% trans "Select Organization:" %}</h4></div>
-            <div class="form-selection">
-                <select name="organization" id="organization">
+            <div class="row-fluid">
+                <div class="span2">
+                    <p class="form-dropdown-label">{% trans "Select Organization:" %}</p>
+                </div>
+                <div class="span10">
+                    <select name="organization" id="organization">
                         {% for org in organizations %}
                         <option value="{{ org.id }}" {% if selected_organization.id == org.id %}selected{% endif %}>
                             {{ org }}
                         </option>
                         {% endfor %}
-                </select>
-            </div>
-            </div>
+                    </select>
+                </div>
+            </div> <!-- .row-fluid -->
 
             <div class="form-section">
-            <div class="form-label"><h4>{% trans "Select Zone:" %}</h4></div>
-            <div class="form-selection">
-                <select name="zone" id="zone">
-                    <option disabled="disabled" value="__empty__" {% if not selected_zone %}selected{% endif %}>
-                        --select your zone--
-                    </option>
-                    {% for zone in zones %}
-                    <option value="{{ zone.id }}"{% if selected_zone.id == zone.id %}selected{% endif %}>
-                        {{ zone }}
-                    </option>
-                    {% endfor %}
-                </select>
+                <div class="row-fluid">
+
+                    <div class="span2">
+                        <p class="form-dropdown-label">{% trans "Select Zone:" %}</p>
+                    </div>
+                    <div class="span10">
+                        <div class="form-selection">
+                            <select name="zone" id="zone">
+                                <option disabled="disabled" value="__empty__" {% if not selected_zone %}selected{% endif %}>
+                                    --select your zone--
+                                </option>
+                                {% for zone in zones %}
+                                <option value="{{ zone.id }}"{% if selected_zone.id == zone.id %}selected{% endif %}>
+                                    {{ zone }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
             </div>
+            <div class="row-fluid">
+                <div class="span12"> 
+                    <button class="button-green--large" type="submit">
+                        Download Multiple-servers Edition
+                    </button>
+                </div>
             </div>
         </div><!-- zone_section -->
-        {% endif %}
+    {% endif %}
 
-        <table>
-            {% if not edition %}
-            <tr>
-                <td rowspan="3" width="200px">
-                <td><h3>Single server edition</h3></td>
-                <td><h3>Multiple server edition</h3></td>
-            </tr>
-            <tr>
-                <td><img width="300" src="{% static 'images/single-server.png' %}" /></td>
-                <td><img width="300" src="{% static 'images/multiple-server.png' %}" /></td>
-            </tr>
-            {% endif %}
-            <tr>
-                <td>
-            {% if edition == "single-server" or not edition %}
-            <button class="btn btn-large btn-primary" type="button" onclick="javascript:window.location.href='single-server/'">
-                Download Single-server Edition
-            </button>
-            {% endif %}
-            </td>
-            <td>
-            {% if edition == "multiple-server" or not edition %}
-                {% if user.is_anonymous %}
-                <button class="btn btn-large btn-success" type="button" onclick="javascript:window.location.href='multiple-server/'">
-                    Login to get Multiple-servers Edition -&gt;
-                </button>
-                {% else %}
-                <button class="btn btn-large btn-success" type="submit">
-                    Download Multiple-servers Edition
-                </button>
-                {% endif %}
-            {% endif %}
-                </td>
-            </tr>
-            {% if not edition %}
-            <tr>
-                <td><h3>Features</h3></td>
-                <td colspan="2">&nbsp;</td>
-            </tr>
-            <tr>
-                <td>Students can log in and record progress.</td>
-                <td><img width="75" src="{% static 'images/check.jpg' %}" /></td>
-                <td><img width="75" src="{% static 'images/check.jpg' %}" /></td>
-            </tr>
-            <tr>
-                <td>Share student and teacher data across multiple installs</td>
-                <td>&nbsp;</td>
-                <td><img width="75" src="{% static 'images/check.jpg' %}" /></td>
-            </tr>
-            <tr>
-                <td>View usage data online</td>
-                <td>&nbsp;</td>
-                <td><img width="75" src="{% static 'images/check.jpg' %}" /></td>
-            </tr>
-        {% endif %}
-        </table>
+        
     </div><!-- installation -->
 
 
@@ -201,38 +119,38 @@
             <ul>
                 <li>Click "download" to download the Windows installer</li>
                 <li>When the download completes, copy the file to your server(s).
-                <li>From the server(s), unzip the zip file.</li>
-                <li>From the server(s), double-click the install.bat script (inside the ka-lite folder).</li>
-                <li>After installation completes, double-click the start.bat script (inside the ka-lite folder) .</li>
-            </ul>                
-        </div>
-        <div id="linux-instructions">
-            Linux installation instructions:
-            <ul>
-                <li>Click "download" to download  the KA Lite zip file.</li>
-                <li>When the download completes, copy the file to your server(s).</li>
-                <li>From the server(s), unzip the zip file.</li>
-                <li>From the server(s), run the install.sh script (inside the ka-lite folder).</li>
-                <li>From the server(s), run the start.sh script (inside the ka-lite folder).</li>
-            </ul>
-        </div>
-        <div id="darwin-instructions">
-            Mac installation instructions:
-            <ul>
-                <li>Click "download" to download  the KA Lite zip file.</li>
-                <li>When the download completes, copy the file to your server(s).</li>
-                <li>From the server(s), unzip the zip file.</li>
-                <li>From the server(s), run the install.sh script (inside the ka-lite folder).</li>
-                <li>From the server(s), run the start.sh script (inside the ka-lite folder).</li>
-            </ul>
-        </div>
-        <div id="python-instructions">
-            Python - this is the program that runs KA Lite; please install as well!
-            <ul>
-                <li><a target="_new" href="http://www.python.org/getit/releases/2.7.5/#download">Download Python</a>.</li>
-                <li>Copy the Python installer over to your server.</li>
-                <li>Install Python</li>
-                <li>Make sure to add Python to your PATH (<a target="_new" href="https://www.google.com/search?q=add+python+to+path+tutorial+windows">Windows</a>, <a target="_new" href="https://www.google.com/search?q=add+python+to+path+tutorial+linux">Linux</a>, <a target="_new" href="https://www.google.com/search?q=add+python+to+path+tutorial+mac">MacOS</a>)</li>
-        </div>  
-    </div>
-{% endblock %}
+                    <li>From the server(s), unzip the zip file.</li>
+                    <li>From the server(s), double-click the install.bat script (inside the ka-lite folder).</li>
+                    <li>After installation completes, double-click the start.bat script (inside the ka-lite folder) .</li>
+                </ul>                
+            </div>
+            <div id="linux-instructions">
+                Linux installation instructions:
+                <ul>
+                    <li>Click "download" to download  the KA Lite zip file.</li>
+                    <li>When the download completes, copy the file to your server(s).</li>
+                    <li>From the server(s), unzip the zip file.</li>
+                    <li>From the server(s), run the install.sh script (inside the ka-lite folder).</li>
+                    <li>From the server(s), run the start.sh script (inside the ka-lite folder).</li>
+                </ul>
+            </div>
+            <div id="darwin-instructions">
+                Mac installation instructions:
+                <ul>
+                    <li>Click "download" to download  the KA Lite zip file.</li>
+                    <li>When the download completes, copy the file to your server(s).</li>
+                    <li>From the server(s), unzip the zip file.</li>
+                    <li>From the server(s), run the install.sh script (inside the ka-lite folder).</li>
+                    <li>From the server(s), run the start.sh script (inside the ka-lite folder).</li>
+                </ul>
+            </div>
+            <div id="python-instructions">
+                Python - this is the program that runs KA Lite; please install as well!
+                <ul>
+                    <li><a target="_new" href="http://www.python.org/getit/releases/2.7.5/#download">Download Python</a>.</li>
+                    <li>Copy the Python installer over to your server.</li>
+                    <li>Install Python</li>
+                    <li>Make sure to add Python to your PATH (<a target="_new" href="https://www.google.com/search?q=add+python+to+path+tutorial+windows">Windows</a>, <a target="_new" href="https://www.google.com/search?q=add+python+to+path+tutorial+linux">Linux</a>, <a target="_new" href="https://www.google.com/search?q=add+python+to+path+tutorial+mac">MacOS</a>)</li>
+                </div>  
+            </div>
+            {% endblock %}
