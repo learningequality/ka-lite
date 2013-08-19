@@ -2,6 +2,7 @@ from django.http import HttpResponseRedirect
 from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
 
+import main.api_urls
 import central.api_urls
 import coachreports.urls
 import control_panel.urls
@@ -63,7 +64,6 @@ urlpatterns += patterns('central.views',
     url(r'^wiki/(?P<path>\w+)/$', redirect_to, {'base_url': settings.CENTRAL_WIKI_URL}, 'wiki'),
     url(r'^about/$', redirect_to, { 'base_url': 'http://learningequality.org/' }, 'about'),
 
-    url(r'^api/', include(api_urls)),
 )
 
 urlpatterns += patterns('central.api_views',
