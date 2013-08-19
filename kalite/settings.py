@@ -123,7 +123,7 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = getattr(local_settings, 'MIDDLEWARE_CLASSES', tuple())
-MIDDLEWARE_CLASSES += (
+MIDDLEWARE_CLASSES = (
     "django.contrib.sessions.middleware.SessionMiddleware",
     'django.middleware.locale.LocaleMiddleware',
     "django.middleware.common.CommonMiddleware",
@@ -131,12 +131,12 @@ MIDDLEWARE_CLASSES += (
     "django.contrib.messages.middleware.MessageMiddleware",
     "main.middleware.GetNextParam",
     "django.middleware.csrf.CsrfViewMiddleware",
-)
+) + MIDDLEWARE_CLASSES  # append local_settings middleware, in case of dependencies
 
 ROOT_URLCONF = "kalite.urls"
 
 INSTALLED_APPS = getattr(local_settings, 'INSTALLED_APPS', tuple())
-INSTALLED_APPS += (
+INSTALLED_APPS = (
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -154,7 +154,8 @@ INSTALLED_APPS += (
     "control_panel", # in both apps
     "coachreports", # in both apps; reachable on central via control_panel
     "kalite", # contains commands
-)
+) + INSTALLED_APPS  # append local_settings installed_apps, in case of dependencies
+
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 if DEBUG or CENTRAL_SERVER:
@@ -192,7 +193,7 @@ USER_LOG_SUMMARY_FREQUENCY = getattr(local_settings, "USER_LOG_SUMMARY_FREQUENCY
 
 # Sessions use the default cache, and we want a local memory cache for that.
 # Separate session caching from file caching.
-SESSION_ENGINE = getattr(local_settings, "SESSION_ENGINE", 'django.contrib.sessions.backends.cache' if not DEBUG else 'django.contrib.sessions.backends.cached_db')
+SESSION_ENGINE = getattr(local_settings, "SESSION_ENGINE", 'django.contrib.sessions.backends.cached_db')
 
 CACHES = {
     "default": {
