@@ -137,9 +137,10 @@ def query_logs(users, items, logtype, logdict):
 
     if logtype == "exercise":
         all_logs = ExerciseLog.objects.filter(user__in=users, exercise_id__in=items).values(
-                        'user', 'complete', 'exercise_id', 'attempts', 'points', 'struggling', 'completion_timestamp', 'streak_progress')
+                        'user', 'complete', 'exercise_id', 'attempts', 'points', 'struggling', 'completion_timestamp', 'streak_progress').order_by('completion_timestamp')
     elif logtype == "video":
-        all_logs = VideoLog.objects.filter(user__in=users, youtube_id__in=items).values('user', 'complete', 'youtube_id', 'total_seconds_watched', 'completion_timestamp', 'points')
+        all_logs = VideoLog.objects.filter(user__in=users, youtube_id__in=items).values(
+            'user', 'complete', 'youtube_id', 'total_seconds_watched', 'completion_timestamp', 'points').order_by('completion_timestamp')
     else:
         raise Exception("Unknown log type: '%s'" % logtype)
     for log in all_logs:
@@ -176,11 +177,11 @@ def compute_data(data_types, who, where):
     # Exercises: names (ids for ExerciseLog objects)
     # Videos: youtube_id (ids for VideoLog objects)
 
-    #This lambda partial creates a function to return all items with a particular path from the NODECACHE.
+    # This lambda partial creates a function to return all items with a particular path from the NODECACHE.
     search_fun_single_path = partial(lambda t, p: t["path"].startswith(p), p=tuple(where))
-    #This lambda partial creates a function to return all items with paths matching a list of paths from NODECACHE.
+    # This lambda partial creates a function to return all items with paths matching a list of paths from NODECACHE.
     search_fun_multi_path = partial(lambda t, p: any([tp.startswith(p) for tp in t["paths"]]),  p=tuple(where))
-    #Functions that use the functions defined above to return topics, exercises, and videos based on paths.
+    # Functions that use the functions defined above to return topics, exercises, and videos based on paths.
     query_topics = partial(lambda t, sf: t if t is not None else [t for t in filter(sf, topicdata.NODE_CACHE['Topic'].values())], sf=search_fun_single_path)
     query_exercises = partial(lambda e, sf: e if e is not None else [ex["name"] for ex in filter(sf, topicdata.NODE_CACHE['Exercise'].values())], sf=search_fun_multi_path)
     query_videos = partial(lambda v, sf: v if v is not None else [vid["youtube_id"] for vid in filter(sf, topicdata.NODE_CACHE['Video'].values())], sf=search_fun_multi_path)
@@ -188,8 +189,8 @@ def compute_data(data_types, who, where):
     # No users, don't bother.
     if len(who) > 0:
 
-        #Query out all exercises, videos, exercise logs, and video logs before looping to limit requests.
-        #This means we could pull data for n-dimensional coach report displays with the same number of requests!
+        # Query out all exercises, videos, exercise logs, and video logs before looping to limit requests.
+        # This means we could pull data for n-dimensional coach report displays with the same number of requests!
         exercises = query_exercises(exercises)
 
         ex_logs = query_logs(data.keys(), exercises, "exercise", ex_logs)
