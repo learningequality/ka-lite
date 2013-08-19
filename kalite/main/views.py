@@ -65,10 +65,12 @@ def calc_last_modified(request, *args, **kwargs):
     return last_modified
 
 
-def kalite_cache_page(handler, cache_time=settings.CACHE_TIME, cache_name="web_cache"):
+def backend_cache_page(handler, cache_time=settings.CACHE_TIME, cache_name="web_cache"):
     """
-    Applies all logic for getting a page to cache properly with 
-    the settings we want, specified in settings
+    Applies all logic for getting a page to cache in our backend,
+    and never in the browser, so we can control things from Django/Python.
+
+    This function does this all with the settings we want, specified in settings.
     """
     try:
         @condition(last_modified_func=partial(calc_last_modified, cache_name=cache_name))
@@ -88,7 +90,7 @@ def kalite_cache_page(handler, cache_time=settings.CACHE_TIME, cache_name="web_c
 def check_setup_status(handler):
     """
     Decorator for validating that KA Lite post-install setup has completed.
-    NOTE that this decorator must appear before the kalite_cache_page decorator,
+    NOTE that this decorator must appear before the backend_cache_page decorator,
     so that it is run even when there is a cache hit.
     """
     def wrapper_fn(request, *args, **kwargs):
@@ -105,7 +107,7 @@ def check_setup_status(handler):
     return wrapper_fn
 
 
-@kalite_cache_page
+@backend_cache_page
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
     current_node = topicdata.TOPICS
@@ -147,7 +149,7 @@ def splat_handler(request, splat):
         raise Http404
 
 
-@kalite_cache_page
+@backend_cache_page
 @render_to("topic.html")
 def topic_handler(request, topic):
     return topic_context(topic)
@@ -181,7 +183,7 @@ def topic_context(topic):
     return context
 
 
-@kalite_cache_page
+@backend_cache_page
 @render_to("video.html")
 def video_handler(request, video, prev=None, next=None):
     video_exists = VideoFile.objects.filter(pk=video['youtube_id']).exists()
@@ -211,7 +213,7 @@ def video_handler(request, video, prev=None, next=None):
     return context
 
 
-@kalite_cache_page
+@backend_cache_page
 @render_to("exercise.html")
 def exercise_handler(request, exercise):
     """
@@ -248,7 +250,7 @@ def exercise_handler(request, exercise):
     return context
 
 
-@kalite_cache_page
+@backend_cache_page
 @render_to("knowledgemap.html")
 def exercise_dashboard(request):
     # Just grab the first path, whatever it is
@@ -261,7 +263,7 @@ def exercise_dashboard(request):
 
 
 @check_setup_status  # this must appear BEFORE caching logic, so that it isn't blocked by a cache hit
-@kalite_cache_page
+@backend_cache_page
 @render_to("homepage.html")
 def homepage(request):
     context = topic_context(topicdata.TOPICS)
