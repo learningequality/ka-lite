@@ -9,9 +9,10 @@ from django.utils import translation
 import settings
 from main import topicdata
 from main.models import VideoFile
+from shared import caching
 from utils.videos import download_video, DownloadCancelled
 from utils.jobs import force_job
-from utils import caching, topic_tools
+from utils import topic_tools
 
 
 class Command(BaseCommand):
