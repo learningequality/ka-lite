@@ -37,7 +37,10 @@ AUTO_LOAD_TEST = getattr(local_settings, "AUTO_LOAD_TEST", False)
 assert not AUTO_LOAD_TEST or not CENTRAL_SERVER, "AUTO_LOAD_TEST only on local server"
 
 # info about the central server(s)
+# Note: this MUST be hard-coded for backwards-compatibility reasons.
+ROOT_UUID_NAMESPACE = "a8f052c7-8790-5bed-ab15-fe2d3b1ede41"  #import uuid; print uuid.uuid5(uuid.NAMESPACE_URL, "https://kalite.adhocsync.com/")
 SECURESYNC_PROTOCOL   = getattr(local_settings, "SECURESYNC_PROTOCOL",   "https")
+
 CENTRAL_SERVER_DOMAIN = getattr(local_settings, "CENTRAL_SERVER_DOMAIN", "adhocsync.com")
 CENTRAL_SERVER_HOST   = getattr(local_settings, "CENTRAL_SERVER_HOST",   "kalite.%s"%CENTRAL_SERVER_DOMAIN)
 CENTRAL_WIKI_URL      = getattr(local_settings, "CENTRAL_WIKI_URL",      "http://kalitewiki.learningequality.org/")#http://%kalitewiki.s/%CENTRAL_SERVER_DOMAIN
