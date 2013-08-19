@@ -217,7 +217,7 @@ if CACHE_TIME != 0:  # None can mean infinite caching to some functions
             'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
         },
     }
-    print CACHES["web_cache"]["LOCATION"]
+
 # Here, None === no limit
 SYNC_SESSIONS_MAX_RECORDS = getattr(local_settings, "SYNC_SESSIONS_MAX_RECORDS", None if CENTRAL_SERVER else 10)
 
