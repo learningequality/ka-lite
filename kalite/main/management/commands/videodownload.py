@@ -1,10 +1,11 @@
 import sys
 import time
+from optparse import make_option
 
 import settings
 from main.models import VideoFile
+from shared import caching
 from updates.utils import UpdatesDynamicCommand
-from utils import caching
 from utils.jobs import force_job
 from utils.topic_tools import get_video_by_youtube_id
 from utils.videos import download_video, DownloadCancelled
@@ -49,6 +50,15 @@ def download_progress_callback(self, videofile):
 
 class Command(UpdatesDynamicCommand):
     help = "Download all videos marked to be downloaded"
+
+    option_list = BaseCommand.option_list + (
+        make_option('-c', '--cache',
+            action='store_true',
+            dest='auto_cache',
+            default=False,
+            help='Create cached files',
+            metavar="AUTO_CACHE"),
+    )
 
     def handle(self, *args, **options):
 
@@ -99,11 +109,15 @@ class Command(UpdatesDynamicCommand):
 
                 # Expire, but don't regenerate until the very end, for efficiency.
                 if caching_enabled:
-                    caching.invalidate_cached_topic_hierarchies(video_id=video.youtube_id)
+                    caching.invalidate_all_pages_related_to_video(video_id=video.youtube_id)
 
         except Exception as e:
             sys.stderr.write("Error: %s\n" % e)
             self.cancel()
+
+        # This can take a long time, without any further update, so ... best to avoid.
+        if options["auto_cache"] and caching_enabled and handled_video_ids:
+            caching.regenerate_all_pages_related_to_videos(video_ids=handled_video_ids)
 
         # Update
         self.complete()
