@@ -1,7 +1,7 @@
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
-from securesync.api_client import SyncClient
+from securesync.engine.api_client import SyncClient
 
 
 class Command(BaseCommand):
