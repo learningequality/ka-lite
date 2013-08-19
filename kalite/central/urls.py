@@ -73,6 +73,9 @@ urlpatterns += patterns('central.views',
     url(r'^about/$', redirect_to, { 'base_url': 'http://learningequality.org/' }, 'about'),
 
     url(r'^api/', include(central.api_urls)),
+
+    # Endpoint for remote admin
+    url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'),
 )
 
 handler403 = 'central.views.handler_403'
