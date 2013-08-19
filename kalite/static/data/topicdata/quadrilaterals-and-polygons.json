@@ -1,40 +1,38 @@
 [
   {
-    "kind": "Exercise", 
-    "display_name": "Quadrilateral types", 
-    "description": null, 
-    "title": "Quadrilateral types", 
-    "seconds_per_fast_problem": 5.0, 
-    "related_video_readable_ids": [
-      "quadrilateral-properties"
-    ], 
-    "prerequisites": [
-      "angles_2"
-    ], 
-    "live": true, 
-    "h_position": 33, 
+    "related_video_readable_ids": [], 
     "v_position": -14, 
     "path": "/math/geometry/quadrilaterals-and-polygons/e/quadrilateral_types/", 
+    "id": "quadrilateral_types", 
+    "display_name": "Quadrilateral types", 
+    "title": "Quadrilateral types", 
+    "live": true, 
+    "description": null, 
+    "h_position": 33, 
     "slug": "quadrilateral_types", 
-    "name": "quadrilateral_types"
+    "kind": "Exercise", 
+    "name": "quadrilateral_types", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "angles_2"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Quadrilateral angles", 
-    "description": null, 
-    "title": "Quadrilateral angles", 
-    "seconds_per_fast_problem": 6.0, 
-    "related_video_readable_ids": [
-      "proof---opposite-angles-of-parallelogram-congruent"
-    ], 
-    "prerequisites": [
-      "quadrilateral_types"
-    ], 
-    "live": true, 
-    "h_position": 34, 
+    "related_video_readable_ids": [], 
     "v_position": -15, 
     "path": "/math/geometry/quadrilaterals-and-polygons/e/quadrilateral_angles/", 
+    "id": "quadrilateral_angles", 
+    "display_name": "Quadrilateral angles", 
+    "title": "Quadrilateral angles", 
+    "live": true, 
+    "description": null, 
+    "h_position": 34, 
     "slug": "quadrilateral_angles", 
-    "name": "quadrilateral_angles"
+    "kind": "Exercise", 
+    "name": "quadrilateral_angles", 
+    "seconds_per_fast_problem": 6.0, 
+    "prerequisites": [
+      "quadrilateral_types"
+    ]
   }
 ]

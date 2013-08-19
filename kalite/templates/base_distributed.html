@@ -4,10 +4,18 @@
 {% load staticfiles %}
 
 {% block basejs %}{{ block.super }}
+    
+    <script>
+        // the following variables are used by functions in distributed-server.js
+        // TODO(jamalex): include these in some Backbone Model state instead, synced via AJAX
+        var SERVER_INFO_PATH = "{% url get_server_info %}";
+        var CENTRAL_SERVER_HOST = "{{ central_server_host }}";
+        var SECURESYNC_PROTOCOL = "{{ securesync_protocol }}";
+    </script>
+    
     <script type="text/javascript" src="{% static 'js/distributed-server.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/purl.js' %}"></script>
 {% endblock basejs %}
-
 
 {% block sitewide_navigation %}
 
@@ -21,7 +29,7 @@
     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it a short as possible.{% endcomment %}
     <a href="{% url add_facility_teacher %}" id="nav_addteacher" class="admin-only {% block addteacher_active %}{% endblock addteacher_active %}" title="Add a teacher">{% trans "Add Teacher" %}</a>
     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it a short as possible.{% endcomment %}
-    <a href="{% url easy_admin %}" id="nav_admin" class="admin-only {% block easyadmin_active %}{% endblock easyadmin_active %}" title="Visit the admin panel">{% trans "Admin" %}</a>
+    <a href="{% url easy_admin %}" id="nav_admin" class="admin-only {% block easyadmin_active %}{% endblock easyadmin_active %}{% block control_panel_active %}{% endblock control_panel_active %}" title="Visit the admin panel">{% trans "Admin" %}</a>
     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it a short as possible.{% endcomment %}
     <a href="{% url update %}" id="nav_update" class="admin-only {% block update_active %}{% endblock update_active %}" title="Update this server with new videos and subtitles">{% trans "Update" %}</a>
     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it a short as possible.{% endcomment %}

@@ -1,0 +1,96 @@
+{% extends "control_panel/base_management_printable.html" %}
+{% load i18n %}
+{% load my_filters %}
+
+{% block title %}{{ facility.name }} - Facility Usage{% endblock title %}
+
+{% block inner_content %}
+<div id="facility_container">
+    <div class="groups">
+        <h2>Groups</h2>
+
+        {% if not groups %}
+            <p>You currently have no data available</p>
+
+        {% else %}
+            <table class="simple-table">
+                <tr>
+                    <th width="100px">Group name</th>
+                    <th width="150px"></th>
+                    <th width="100px"># Users</th>
+                    <th width="100px">Logins</th>
+                    <th width="100px">Login Time</th>
+                    <th width="100px">Videos Viewed</th>
+                    <th width="100px">Exercises Completed</th>
+                    <th width="100px">Mastery</th>
+                </tr>
+                {% for id, group in groups.items %}
+                    <tr>
+                        <td>{{ group.name }}</td>
+                        <td>
+                            <span class="actions">[
+                                <a href="{% url coach_reports %}?facility={{ facility.id }}&group={{ id }}">{% trans "coach" %}</a>
+                                / <a href="{% url facility_user_management org_id=org.id zone_id=zone.id facility_id=facility.id group_id=id %}">{% trans "manage" %}</a>
+                            ]</span>
+                        </td>
+                        <td>{{ group.total_users }}</td>
+                        <td>{{ group.total_logins }}</td>
+                        <td>{{ group.total_hours|floatformat }}</td>
+                        <td>{{ group.total_videos }}</td>
+                        <td>{{ group.total_exercises }}</td>
+                        <td>{{ group.pct_mastery|percent:1 }}</td>
+                    </tr>
+
+                {% endfor %}
+            </table>
+        {% endif %}
+    </div>
+
+
+    <div class="users">
+        <h2>User Usage Reports</h2>
+
+        {% if not users %}
+            <p>You currently have no data available</p>
+
+        {% else %}
+
+         <table class="simple-table">
+            <tr>
+                <tr>
+                    <th width="250px">User name</th>
+                    <th width="100px">Group</th>
+                    <th width="100px">Logins</th>
+                    <th width="100px">Login Time</th>
+                    <th width="100px">Videos Viewed</th>
+                    <th width="100px">Exercises Begun</th>
+                    <th width="100px">Mastery</th>
+                </tr>
+                {% for id, user in users.items %}
+                    <tr>
+                        <td>
+                            <a href="{% url student_view %}?user={{ id }}">
+                                {{ user|format_name:"last_first" }}
+                            </a>
+                        </td>
+                        <td>
+                            {% if user.group %}
+                                <a href="{% url coach_reports %}?facility={{ facility.id }}&group={{ user.group.id }}">{{ user.group.name }}</a>
+                            {% else %}
+                                [{% trans "None" %}]
+                            {% endif %}
+                        </td>
+                        <td>{{ user.total_logins }}</td>
+                        <td>{{ user.total_hours|floatformat }}</td>
+                        <td>{{ user.total_videos }}</td>
+                        <td>{{ user.total_exercises }}</td>
+                        <td>{{ user.pct_mastery|percent:1  }}</td>
+                    </tr>
+
+            {% endfor %}
+
+        </table>
+        {% endif %}
+    </div>
+
+{% endblock inner_content %}

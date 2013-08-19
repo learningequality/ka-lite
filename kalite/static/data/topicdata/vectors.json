@@ -1,40 +1,38 @@
 [
   {
-    "kind": "Exercise", 
-    "display_name": "Scaling vectors", 
-    "description": null, 
-    "title": "Scaling vectors", 
-    "seconds_per_fast_problem": 7.0, 
-    "related_video_readable_ids": [
-      "linear-algebra--vector-examples"
-    ], 
-    "prerequisites": [
-      "adding_vectors"
-    ], 
-    "live": true, 
-    "h_position": 32, 
+    "related_video_readable_ids": [], 
     "v_position": 18, 
     "path": "/math/linear-algebra/vectors_and_spaces/vectors/e/scaling_vectors/", 
+    "id": "scaling_vectors", 
+    "display_name": "Scaling vectors", 
+    "title": "Scaling vectors", 
+    "live": true, 
+    "description": null, 
+    "h_position": 32, 
     "slug": "scaling_vectors", 
-    "name": "scaling_vectors"
+    "kind": "Exercise", 
+    "name": "scaling_vectors", 
+    "seconds_per_fast_problem": 7.0, 
+    "prerequisites": [
+      "adding_vectors"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Adding vectors", 
-    "description": null, 
-    "title": "Adding vectors", 
-    "seconds_per_fast_problem": 7.0, 
-    "related_video_readable_ids": [
-      "linear-algebra--vector-examples"
-    ], 
-    "prerequisites": [
-      "linear_equations_1"
-    ], 
-    "live": true, 
-    "h_position": 31, 
+    "related_video_readable_ids": [], 
     "v_position": 18, 
     "path": "/math/linear-algebra/vectors_and_spaces/vectors/e/adding_vectors/", 
+    "id": "adding_vectors", 
+    "display_name": "Adding vectors", 
+    "title": "Adding vectors", 
+    "live": true, 
+    "description": null, 
+    "h_position": 31, 
     "slug": "adding_vectors", 
-    "name": "adding_vectors"
+    "kind": "Exercise", 
+    "name": "adding_vectors", 
+    "seconds_per_fast_problem": 7.0, 
+    "prerequisites": [
+      "linear_equations_1"
+    ]
   }
 ]

@@ -4,6 +4,7 @@ import re
 import uuid
 
 from django.core import serializers
+from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.contrib.messages.api import get_messages
 from django.db import models as db_models
@@ -16,13 +17,15 @@ from django.views.decorators.gzip import gzip_page
 import settings
 import version
 from config.models import Settings
-from main.models import VideoLog, ExerciseLog
+from main.models import VideoLog, ExerciseLog, VideoFile
 from securesync import crypto, model_sync
 from securesync.models import *
-from utils.decorators import distributed_server_only
-from utils.internet import JsonResponse
+from shared import serializers
+from utils.decorators import distributed_server_only, allow_jsonp, api_handle_error_with_json
+from utils.internet import JsonResponse, am_i_online
 
 
+@api_handle_error_with_json
 def require_sync_session(handler):
     def wrapper_fn(request):
         if request.raw_post_data:
@@ -46,6 +49,7 @@ def require_sync_session(handler):
 
 
 @csrf_exempt
+@api_handle_error_with_json
 def register_device(request):
     data = simplejson.loads(request.raw_post_data or "{}")
 
@@ -60,7 +64,7 @@ def register_device(request):
         #   this will only fail (currently) if the central server version
         #   is less than the version of a client--something that should never happen
         try:
-            models = serializers.deserialize("json", data["client_device"], src_version=version.VERSION, dest_version=version.VERSION)
+            models = serializers.deserialize("versioned-json", data["client_device"], src_version=version.VERSION, dest_version=version.VERSION)
         except db_models.FieldDoesNotExist as fdne:
             raise Exception("Central server version is lower than client version.  This is ... impossible!")
         client_device = models.next().object
@@ -110,11 +114,12 @@ def register_device(request):
 
     # return our local (server) Device, its Zone, and the newly created DeviceZone, to the client
     return JsonResponse(
-        serializers.serialize("json", [Device.get_own_device(), registration.zone, device_zone], dest_version=client_device.version, ensure_ascii=False)
+        serializers.serialize("versioned-json", [Device.get_own_device(), registration.zone, device_zone], dest_version=client_device.version, ensure_ascii=False)
     )
 
 
 @csrf_exempt
+@api_handle_error_with_json
 def create_session(request):
     data = simplejson.loads(request.raw_post_data or "{}")
     if "client_nonce" not in data:
@@ -157,13 +162,14 @@ def create_session(request):
 
     # Return the serializd session, in the version intended for the other device
     return JsonResponse({
-        "session": serializers.serialize("json", [session], dest_version=session.client_version, ensure_ascii=False ),
+        "session": serializers.serialize("versioned-json", [session], dest_version=session.client_version, ensure_ascii=False ),
         "signature": session.sign(),
     })
 
 
 @csrf_exempt
 @require_sync_session
+@api_handle_error_with_json
 def destroy_session(data, session):
     session.closed = True
     return JsonResponse({})
@@ -172,19 +178,21 @@ def destroy_session(data, session):
 @csrf_exempt
 @gzip_page
 @require_sync_session
+@api_handle_error_with_json
 def device_download(data, session):
     """This device is having its own devices downloaded"""
     zone = session.client_device.get_zone()
     devicezones = list(DeviceZone.objects.filter(zone=zone, device__in=data["devices"]))
     devices = [devicezone.device for devicezone in devicezones]
     session.models_downloaded += len(devices) + len(devicezones)
-    
+
     # Return the objects serialized to the version of the other device.
-    return JsonResponse({"devices": serializers.serialize("json", devices + devicezones, dest_version=session.client_version, ensure_ascii=False)})
+    return JsonResponse({"devices": serializers.serialize("versioned-json", devices + devicezones, dest_version=session.client_version, ensure_ascii=False)})
 
 
 @csrf_exempt
 @require_sync_session
+@api_handle_error_with_json
 def device_upload(data, session):
     """This device is getting device-related objects from another device"""
     # TODO(jamalex): check that the uploaded devices belong to the client device's zone and whatnot
@@ -195,7 +203,7 @@ def device_upload(data, session):
         result = model_sync.save_serialized_models(data.get("devices", "[]"), src_version=session.client_version)
     except Exception as e:
         result = { "error": e.message, "saved_model_count": 0 }
-        
+
     session.models_uploaded += result["saved_model_count"]
     session.errors += result.has_key("error")
     return JsonResponse(result)
@@ -204,6 +212,7 @@ def device_upload(data, session):
 @csrf_exempt
 @gzip_page
 @require_sync_session
+@api_handle_error_with_json
 def device_counters(data, session):
     device_counters = Device.get_device_counters(session.client_device.get_zone())
     return JsonResponse({
@@ -213,6 +222,7 @@ def device_counters(data, session):
 
 @csrf_exempt
 @require_sync_session
+@api_handle_error_with_json
 def model_upload(data, session):
     """This device is getting data-related objects from another device."""
     if "models" not in data:
@@ -232,6 +242,7 @@ def model_upload(data, session):
 @csrf_exempt
 @gzip_page
 @require_sync_session
+@api_handle_error_with_json
 def model_download(data, session):
     """This device is having its own data downloaded"""
     if "device_counters" not in data:
@@ -248,6 +259,7 @@ def model_download(data, session):
 
 
 @csrf_exempt
+@api_handle_error_with_json
 def test_connection(request):
     return HttpResponse("OK")
 
@@ -256,6 +268,7 @@ def test_connection(request):
 # requests will be possible. Since `status` is always loaded, it's a good place for this.
 @ensure_csrf_cookie
 @distributed_server_only
+@api_handle_error_with_json
 def status(request):
     """In order to promote (efficient) caching on (low-powered)
     distributed devices, we do not include ANY user data in our
@@ -278,7 +291,7 @@ def status(request):
         # Make sure to escape strings not marked as safe.
         # Note: this duplicates a bit of Django template logic.
         msg_txt = message.message
-        if not (isinstance(message.message, SafeString) or isinstance(message.message, SafeUnicode)):
+        if not (isinstance(msg_txt, SafeString) or isinstance(msg_txt, SafeUnicode)):
             msg_txt = cgi.escape(str(msg_txt))
 
         message_dicts.append({
@@ -307,3 +320,69 @@ def status(request):
         data["username"] = request.user.username
 
     return JsonResponse(data)
+
+@allow_jsonp
+def get_server_info(request):
+    """This function is used to check connection to central or local server and also to get specific data from server.
+
+    Args:
+        The http request.
+
+    Returns:
+        A json object containing general data from the server.
+    
+    """
+    device = None
+    zone = None
+
+    device_info = {"status": "OK", "invalid_fields": []}
+
+    for field in request.GET.get("fields", "").split(","):
+        
+        if field == "version":
+            device_info[field] = version.VERSION
+
+        elif field == "video_count":
+            device_info[field] = VideoFile.objects.filter(percent_complete=100).count() if not settings.CENTRAL_SERVER else 0
+
+        elif field == "device_name":
+            device = device or Device.get_own_device()
+            device_info[field] = device.name
+
+        elif field == "device_description":
+            device = device or Device.get_own_device()
+            device_info[field] = device.description
+
+        elif field == "device_description":
+            device = device or Device.get_own_device()
+            device_info[field] = device.description
+
+        elif field == "device_id":
+            device = device or Device.get_own_device()
+            device_info[field] = device.id
+
+        elif field == "zone_name":
+            if settings.CENTRAL_SERVER:
+                continue
+            device = device or Device.get_own_device()
+            zone = zone or device.get_zone()
+            device_info[field] = zone.name if zone else None
+
+        elif field == "zone_id":
+            if settings.CENTRAL_SERVER:
+                continue
+            device = device or Device.get_own_device()
+            zone = zone or device.get_zone()
+            device_info[field] = zone.id if zone else None
+        
+        elif field == "online":
+            if settings.CENTRAL_SERVER:
+                device_info[field] =  True
+            else:
+                device_info[field] = am_i_online(url="%s://%s%s" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST, reverse("get_server_info")))
+                
+        elif field:
+            # the field isn't one we know about, so add it to the list of invalid fields
+            device_info["invalid_fields"].append(field)
+            
+    return JsonResponse(device_info)

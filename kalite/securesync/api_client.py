@@ -5,13 +5,12 @@ import urllib
 import urllib2
 import uuid
 
-from django.core import serializers
-
 import kalite
 import settings
 from kalite.utils.internet import am_i_online
 from securesync import crypto, model_sync
 from securesync.models import *
+from shared import serializers
 
 
 class SyncClient(object):
@@ -60,22 +59,31 @@ class SyncClient(object):
         """Register a device with the central server.  Happens outside of a session."""
 
         own_device = Device.get_own_device()
+        # Todo: registration process should always use one of these--and it needs to use
+        #   Device.public_key.  So, should migrate over the rest of the registration code
+        #   to do the same.
+        assert own_device.public_key == own_device.get_key().get_public_key_string(), "Make sure these somehow didn't get out of sync (can happen when people muck around with the data manually."
+
         # Since we can't know the version of the remote device (yet),
         #   we give it everything we possibly can (don't specify a dest_version)
         #
         # Note that (currently) this should never fail--the central server (which we're sending
         #   these objects to) should always have a higher version.
         r = self.post("register", {
-            "client_device": serializers.serialize("json", [own_device], ensure_ascii=False)
+            "client_device": serializers.serialize("versioned-json", [own_device], ensure_ascii=False)
         })
+
         # If they don't understand, our assumption is broken.
-        if r.status_code == 500 and "Device has no field named 'version'" in r.content:
-            raise Exception("Central server is of an older version than us?")
+        if r.status_code == 500:
+            if "Device has no field named 'version'" in r.content:
+                raise Exception("Central server is of an older version than us?")
+            elif r.headers.get("content-type", "") == "text/html":
+                raise Exception("Unhandled server-side exception: %s" % r.content)
 
         elif r.status_code == 200:
             # Save to our local store.  By NOT passing a src_version,
             #   we're saying it's OK to just store what we can.
-            models = serializers.deserialize("json", r.content, src_version=None, dest_version=own_device.version)
+            models = serializers.deserialize("versioned-json", r.content, src_version=None, dest_version=own_device.version)
             for model in models:
                 if not model.object.verify():
                     continue
@@ -119,7 +127,7 @@ class SyncClient(object):
         # Once again, we assume that (currently) the central server's version is >= ours,
         #   We just store what we can.
         own_device = self.session.client_device
-        session = serializers.deserialize("json", data["session"], src_version=None, dest_version=own_device.version).next().object
+        session = serializers.deserialize("versioned-json", data["session"], src_version=None, dest_version=own_device.version).next().object
         if not session.verify_server_signature(signature):
             raise Exception("Signature did not match.")
         if session.client_nonce != self.session.client_nonce:

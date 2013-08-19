@@ -1,119 +1,126 @@
 [
   {
-    "kind": "Exercise", 
-    "display_name": "Measuring segments", 
-    "description": null, 
-    "title": "Measuring segments", 
-    "seconds_per_fast_problem": 5.0, 
     "related_video_readable_ids": [
-      "lines--line-segments--and-rays"
-    ], 
-    "prerequisites": [
-      "recognizing_rays_lines_and_line_segments"
-    ], 
-    "live": true, 
-    "h_position": 26, 
-    "v_position": -23, 
-    "path": "/math/geometry/segments-and-angles/intro_euclid/e/measuring_segments/", 
-    "slug": "measuring_segments", 
-    "name": "measuring_segments"
-  }, 
-  {
-    "kind": "Exercise", 
-    "display_name": "Points, lines, and planes", 
-    "description": "", 
-    "title": "Points, lines, and planes", 
-    "seconds_per_fast_problem": 7.0, 
-    "related_video_readable_ids": [
-      "lines--line-segments--and-rays"
-    ], 
-    "prerequisites": [
-      "recognizing_rays_lines_and_line_segments"
-    ], 
-    "live": true, 
-    "h_position": 26, 
-    "v_position": -24, 
-    "path": "/math/geometry/segments-and-angles/intro_euclid/e/points_lines_and_planes/", 
-    "slug": "points_lines_and_planes", 
-    "name": "points_lines_and_planes"
-  }, 
-  {
-    "kind": "Exercise", 
-    "display_name": "Recognizing rays lines and line segments", 
-    "description": null, 
-    "title": "Recognizing rays lines and line segments", 
-    "seconds_per_fast_problem": 4.0, 
-    "related_video_readable_ids": [
+      "lines--line-segments--and-rays", 
       "identifying-rays"
     ], 
+    "v_position": -22, 
+    "path": "/math/geometry/segments-and-angles/intro_euclid/e/recognizing_rays_lines_and_line_segments/", 
+    "id": "recognizing_rays_lines_and_line_segments", 
+    "display_name": "Recognizing rays lines and line segments", 
+    "title": "Recognizing rays lines and line segments", 
+    "live": true, 
+    "description": null, 
+    "h_position": 25, 
+    "slug": "recognizing_rays_lines_and_line_segments", 
+    "kind": "Exercise", 
+    "name": "recognizing_rays_lines_and_line_segments", 
+    "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "area_of_a_circle", 
       "area_of_triangles_1"
-    ], 
-    "live": true, 
-    "h_position": 25, 
-    "v_position": -22, 
-    "path": "/math/geometry/segments-and-angles/intro_euclid/e/recognizing_rays_lines_and_line_segments/", 
-    "slug": "recognizing_rays_lines_and_line_segments", 
-    "name": "recognizing_rays_lines_and_line_segments"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Congruent segments", 
-    "description": null, 
-    "title": "Congruent segments", 
-    "seconds_per_fast_problem": 5.0, 
     "related_video_readable_ids": [
-      "identifying-rays"
+      "lines--line-segments--and-rays", 
+      "specifying-planes-in-three-dimensions"
     ], 
+    "v_position": -24, 
+    "path": "/math/geometry/segments-and-angles/intro_euclid/e/points_lines_and_planes/", 
+    "id": "points_lines_and_planes", 
+    "display_name": "Points, lines, and planes", 
+    "title": "Points, lines, and planes", 
+    "live": true, 
+    "description": "", 
+    "h_position": 26, 
+    "slug": "points_lines_and_planes", 
+    "kind": "Exercise", 
+    "name": "points_lines_and_planes", 
+    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "recognizing_rays_lines_and_line_segments"
-    ], 
-    "live": true, 
-    "h_position": 26, 
-    "v_position": -22, 
-    "path": "/math/geometry/segments-and-angles/intro_euclid/e/congruent_segments/", 
-    "slug": "congruent_segments", 
-    "name": "congruent_segments"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Segment addition", 
-    "description": null, 
-    "title": "Segment addition", 
-    "seconds_per_fast_problem": 30.0, 
     "related_video_readable_ids": [
-      "identifying-rays"
+      "measuring-segments", 
+      "language-and-notation-of-basic-geometry"
     ], 
-    "prerequisites": [
-      "measuring_segments", 
-      "congruent_segments"
-    ], 
-    "live": true, 
-    "h_position": 27, 
     "v_position": -23, 
-    "path": "/math/geometry/segments-and-angles/intro_euclid/e/segment_addition/", 
-    "slug": "segment_addition", 
-    "name": "segment_addition"
+    "path": "/math/geometry/segments-and-angles/measuring-segments-tutorial/e/measuring_segments/", 
+    "id": "measuring_segments", 
+    "display_name": "Measuring segments", 
+    "title": "Measuring segments", 
+    "live": true, 
+    "description": null, 
+    "h_position": 26, 
+    "slug": "measuring_segments", 
+    "kind": "Exercise", 
+    "name": "measuring_segments", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "recognizing_rays_lines_and_line_segments"
+    ]
   }, 
   {
-    "kind": "Exercise", 
-    "display_name": "Midpoint of a segment", 
-    "description": null, 
-    "title": "Midpoint of a segment", 
-    "seconds_per_fast_problem": 26.0, 
     "related_video_readable_ids": [
-      "identifying-rays"
+      "congruent-segments"
     ], 
+    "v_position": -22, 
+    "path": "/math/geometry/segments-and-angles/measuring-segments-tutorial/e/congruent_segments/", 
+    "id": "congruent_segments", 
+    "display_name": "Congruent segments", 
+    "title": "Congruent segments", 
+    "live": true, 
+    "description": null, 
+    "h_position": 26, 
+    "slug": "congruent_segments", 
+    "kind": "Exercise", 
+    "name": "congruent_segments", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "recognizing_rays_lines_and_line_segments"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "segment-addition"
+    ], 
+    "v_position": -23, 
+    "path": "/math/geometry/segments-and-angles/line-segment-algebra/e/segment_addition/", 
+    "id": "segment_addition", 
+    "display_name": "Segment addition", 
+    "title": "Segment addition", 
+    "live": true, 
+    "description": null, 
+    "h_position": 27, 
+    "slug": "segment_addition", 
+    "kind": "Exercise", 
+    "name": "segment_addition", 
+    "seconds_per_fast_problem": 29.0, 
     "prerequisites": [
       "measuring_segments", 
       "congruent_segments"
-    ], 
-    "live": true, 
-    "h_position": 27, 
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
     "v_position": -22, 
-    "path": "/math/geometry/segments-and-angles/intro_euclid/e/midpoint_of_a_segment/", 
+    "path": "/math/geometry/segments-and-angles/line-segment-algebra/e/midpoint_of_a_segment/", 
+    "id": "midpoint_of_a_segment", 
+    "display_name": "Midpoint of a segment", 
+    "title": "Midpoint of a segment", 
+    "live": true, 
+    "description": null, 
+    "h_position": 27, 
     "slug": "midpoint_of_a_segment", 
-    "name": "midpoint_of_a_segment"
+    "kind": "Exercise", 
+    "name": "midpoint_of_a_segment", 
+    "seconds_per_fast_problem": 29.0, 
+    "prerequisites": [
+      "measuring_segments", 
+      "congruent_segments"
+    ]
   }
 ]

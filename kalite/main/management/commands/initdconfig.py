@@ -20,12 +20,12 @@ script_template = """
 case "$1" in
     start)
         echo "Starting ka-lite!"
-        %(project_path)s/../start.sh
+        "%(project_path)s/../start.sh"
         ;;
     stop)
         echo "Shutting down ka-lite!"
         echo
-        %(project_path)s/../stop.sh
+        "%(project_path)s/../stop.sh"
         ;;
 esac
 
