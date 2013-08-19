@@ -180,7 +180,7 @@
                         <tr>
                             {% for exercise in exercises %}
                                 <th class="headrow data">
-                                    <a href="{{ exercise.path }}"><span title='"{{ exercise.display_name }}"{% if exercise.description %} ({{ exercise.description }}){% endif %}'>{{ exercise.name }}</span></a>
+                                    <a href="{{ exercise.path }}"><span title='"{{ exercise.display_name }}"{% if exercise.description %} ({{ exercise.description }}){% endif %}'>{{ exercise.title }}</span></a>
                                 </th>
                             {% endfor %}
                         </tr>
