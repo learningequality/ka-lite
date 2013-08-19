@@ -1,18 +1,22 @@
+import json
+import sys
+import os
+import requests
 import time
 
 from django.core.management.base import BaseCommand, CommandError
 
+import settings
 from config.models import Settings
 from main.models import VideoFile
 from utils.jobs import force_job
-from utils.subtitles import download_subtitles, NoSubs
+from utils.subtitles.download_subtitles import download_subtitles, NoSubs
 
 
 class Command(BaseCommand):
     help = "Download all subtitles marked to be downloaded"
 
     def handle(self, *args, **options):
-        
         language = Settings.get("subtitle_language")
         failed_video_ids = []  # stored to avoid requerying failures.
 
@@ -32,7 +36,9 @@ class Command(BaseCommand):
             video.subtitle_download_in_progress = True
             video.save()
 
-            self.stdout.write("Downloading subtitles for video '%s'...\n" % video.youtube_id)
+            self.stdout.write("Downloading subtitles for video '%s'... " % video.youtube_id)
+            self.stdout.flush()
+
             try:
                 download_subtitles(video.youtube_id, language)
                 video.subtitles_downloaded = True
@@ -47,6 +53,7 @@ class Command(BaseCommand):
                 video.flagged_for_subtitle_download = False
                 video.subtitle_download_in_progress = False
                 video.subtitles_downloaded = True
+                self.stdout.write("\n");
                 video.save()
                 self.stdout.write("No subtitles available\n")
 
