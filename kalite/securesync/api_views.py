@@ -63,7 +63,7 @@ def register_device(request):
         #   this will only fail (currently) if the central server version
         #   is less than the version of a client--something that should never happen
         try:
-            models = serializers.deserialize("json", data["client_device"], src_version=version.VERSION, dest_version=version.VERSION)
+            models = serializers.deserialize("versioned-json", data["client_device"], src_version=version.VERSION, dest_version=version.VERSION)
         except db_models.FieldDoesNotExist as fdne:
             raise Exception("Central server version is lower than client version.  This is ... impossible!")
         client_device = models.next().object
@@ -113,7 +113,7 @@ def register_device(request):
 
     # return our local (server) Device, its Zone, and the newly created DeviceZone, to the client
     return JsonResponse(
-        serializers.serialize("json", [Device.get_own_device(), registration.zone, device_zone], dest_version=client_device.version, ensure_ascii=False)
+        serializers.serialize("versioned-json", [Device.get_own_device(), registration.zone, device_zone], dest_version=client_device.version, ensure_ascii=False)
     )
 
 
@@ -161,7 +161,7 @@ def create_session(request):
 
     # Return the serializd session, in the version intended for the other device
     return JsonResponse({
-        "session": serializers.serialize("json", [session], dest_version=session.client_version, ensure_ascii=False ),
+        "session": serializers.serialize("versioned-json", [session], dest_version=session.client_version, ensure_ascii=False ),
         "signature": session.sign(),
     })
 
@@ -186,7 +186,7 @@ def device_download(data, session):
     session.models_downloaded += len(devices) + len(devicezones)
 
     # Return the objects serialized to the version of the other device.
-    return JsonResponse({"devices": serializers.serialize("json", devices + devicezones, dest_version=session.client_version, ensure_ascii=False)})
+    return JsonResponse({"devices": serializers.serialize("versioned-json", devices + devicezones, dest_version=session.client_version, ensure_ascii=False)})
 
 
 @csrf_exempt
