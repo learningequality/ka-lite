@@ -238,10 +238,8 @@ $(document).ready(function() {
             .success(function(defaultMapLayout) {
                 KMapEditor.init([], defaultMapLayout, {}, 6);
             });
-
     } else {
         // Second level of the topic tree
-
         $.getJSON("/static/data/topicdata/" + vars["topic"] + ".json")
             .success(function(exerciseLayout) {
                 var exercise_ids = $.map(exerciseLayout, function(exercise) { return exercise.name });

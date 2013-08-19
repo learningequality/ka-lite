@@ -1,11 +1,16 @@
 import copy
+import datetime
 import json
-import re
+import os
+import re 
 import sys
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
+from functools import partial
 
 from django.contrib import messages
+from django.core.cache import InvalidCacheBackendError
+from django.core.cache.backends.filebased import FileBasedCache
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
@@ -14,10 +19,12 @@ from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
+from django.utils.cache import get_cache_key, get_cache
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import cache_control
 from django.views.decorators.cache import cache_page
+from django.views.decorators.http import condition 
 
 import settings
 from config.models import Settings
@@ -27,6 +34,7 @@ from main.models import VideoLog, ExerciseLog, VideoFile
 from securesync.api_client import SyncClient
 from securesync.models import Facility, FacilityUser,FacilityGroup, Device
 from securesync.views import require_admin, facility_required
+from settings import LOG as logging
 from utils import topic_tools
 from utils.internet import am_i_online, JsonResponse
 from utils.jobs import force_job
@@ -34,6 +42,72 @@ from utils.decorators import require_admin
 from utils.videos import video_connection_is_available
 
 
+def calc_last_modified(request, *args, **kwargs):
+    """
+    Returns the file's modified time as the last-modified date
+    """
+    assert "cache_name" in kwargs, "Must specify cache_name as a keyword arg."
+    
+    try:
+        cache = get_cache(kwargs["cache_name"])
+        assert isinstance(cache, FileBasedCache), "requires file-based cache."
+    except InvalidCacheBackendError:
+        return None
+
+    key = get_cache_key(request, cache=cache)
+    if key is None:
+        return None
+
+    fname = cache._key_to_file(cache.make_key(key))
+    if not os.path.exists(fname):  # would happen only if cache expired AFTER getting the key
+        return None
+    last_modified = datetime.datetime.fromtimestamp(os.path.getmtime(fname))
+    return last_modified
+
+
+def backend_cache_page(handler, cache_time=settings.CACHE_TIME, cache_name="web_cache"):
+    """
+    Applies all logic for getting a page to cache in our backend,
+    and never in the browser, so we can control things from Django/Python.
+
+    This function does this all with the settings we want, specified in settings.
+    """
+    try:
+        @condition(last_modified_func=partial(calc_last_modified, cache_name=cache_name))
+        @cache_control(no_cache=True)  # must appear before @cache_page
+        @cache_page(cache_time, cache=cache_name)
+        def wrapper_fn(request, *args, **kwargs):
+            return handler(request, *args, **kwargs)
+
+    except InvalidCacheBackendError:
+        # Would happen if caching was disabled
+        def wrapper_fn(request, *args, **kwargs):
+            return handler(request, *args, **kwargs)
+
+    return wrapper_fn
+
+
+def check_setup_status(handler):
+    """
+    Decorator for validating that KA Lite post-install setup has completed.
+    NOTE that this decorator must appear before the backend_cache_page decorator,
+    so that it is run even when there is a cache hit.
+    """
+    def wrapper_fn(request, *args, **kwargs):
+        if not request.is_admin and Facility.objects.count() == 0:
+            messages.warning(request, mark_safe(
+                "Please <a href='%s?next=%s'>login</a> with the account you created while running the installation script, \
+                to complete the setup." % (reverse("login"), reverse("register_public_key"))))
+        if request.is_admin:
+            if not Settings.get("registered") and SyncClient().test_connection() == "success":
+                messages.warning(request, mark_safe("Please <a href='%s'>follow the directions to register your device</a>, so that it can synchronize with the central server." % reverse("register_public_key")))
+            elif Facility.objects.count() == 0:
+                messages.warning(request, mark_safe("Please <a href='%s'>create a facility</a> now. Users will not be able to sign up for accounts until you have made a facility." % reverse("add_facility")))
+        return handler(request, *args, **kwargs)
+    return wrapper_fn
+
+
+@backend_cache_page
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
     current_node = topicdata.TOPICS
@@ -72,27 +146,10 @@ def splat_handler(request, splat):
     elif current_node["kind"] == "Exercise":
         return exercise_handler(request, current_node)
     else:
-        # return HttpResponseNotFound("No valid item found at this address!")
         raise Http404
 
 
-def check_setup_status(handler):
-    def wrapper_fn(request, *args, **kwargs):
-        client = SyncClient()
-        if not request.is_admin and Facility.objects.count() == 0:
-            messages.warning(request, mark_safe(
-                "Please <a href='%s?next=%s'>login</a> with the account you created while running the installation script, \
-                to complete the setup." % (reverse("login"), reverse("register_public_key"))))
-        if request.is_admin:
-            if not Settings.get("registered") and client.test_connection() == "success":
-                messages.warning(request, mark_safe("Please <a href='%s'>follow the directions to register your device</a>, so that it can synchronize with the central server." % reverse("register_public_key")))
-            elif Facility.objects.count() == 0:
-                messages.warning(request, mark_safe("Please <a href='%s'>create a facility</a> now. Users will not be able to sign up for accounts until you have made a facility." % reverse("add_facility")))
-        return handler(request, *args, **kwargs)
-    return wrapper_fn
-
-
-@cache_page(settings.CACHE_TIME)
+@backend_cache_page
 @render_to("topic.html")
 def topic_handler(request, topic):
     return topic_context(topic)
@@ -126,7 +183,7 @@ def topic_context(topic):
     return context
 
 
-@cache_page(settings.CACHE_TIME)
+@backend_cache_page
 @render_to("video.html")
 def video_handler(request, video, prev=None, next=None):
     video_exists = VideoFile.objects.filter(pk=video['youtube_id']).exists()
@@ -156,7 +213,7 @@ def video_handler(request, video, prev=None, next=None):
     return context
 
 
-@cache_page(settings.CACHE_TIME)
+@backend_cache_page
 @render_to("exercise.html")
 def exercise_handler(request, exercise):
     """
@@ -192,7 +249,8 @@ def exercise_handler(request, exercise):
     }
     return context
 
-@cache_page(settings.CACHE_TIME)
+
+@backend_cache_page
 @render_to("knowledgemap.html")
 def exercise_dashboard(request):
     # Just grab the first path, whatever it is
@@ -203,8 +261,9 @@ def exercise_dashboard(request):
     }
     return context
 
-@check_setup_status
-@cache_page(settings.CACHE_TIME)
+
+@check_setup_status  # this must appear BEFORE caching logic, so that it isn't blocked by a cache hit
+@backend_cache_page
 @render_to("homepage.html")
 def homepage(request):
     context = topic_context(topicdata.TOPICS)
@@ -214,6 +273,7 @@ def homepage(request):
     return context
 
 @require_admin
+@check_setup_status
 @render_to("admin_distributed.html")
 def easy_admin(request):
 
@@ -303,17 +363,12 @@ def update(request):
     languages = [{"id": key, "name": language_lookup[key]} for key in language_list]
     languages = sorted(languages, key=lambda k: k["name"])
 
-    am_i_online = video_connection_is_available()
-    if not am_i_online:
-        messages.warning(request, _("No internet connection was detected.  You must be online to download videos or subtitles."))
-
     device = Device.get_own_device()
     zone = device.get_zone()
 
     context = {
         "languages": languages,
         "default_language": default_language,
-        "am_i_online": am_i_online,
         "registered": Settings.get("registered"),
         "zone_id": zone.id if zone else None,
         "device_id": device.id,
@@ -366,7 +421,7 @@ def handler_403(request, *args, **kwargs):
     if request.is_ajax():
         return JsonResponse({ "error": "You must be logged in with an account authorized to view this page." }, status=403)
     else:
-        messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page..")))
+        messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page.")))
         return HttpResponseRedirect(reverse("login") + "?next=" + request.path)
 
 

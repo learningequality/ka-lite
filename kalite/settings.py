@@ -72,6 +72,8 @@ DATABASES      = getattr(local_settings, "DATABASES", {
 
 DATA_PATH      = os.path.realpath(getattr(local_settings, "DATA_PATH", PROJECT_PATH + "/static/data/")) + "/"
 
+SUBTITLES_DATA_ROOT = os.path.realpath(getattr(local_settings, "SUBTITLES_DATA_ROOT", DATA_PATH + "subtitles/")) + "/"
+
 CONTENT_ROOT   = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", PROJECT_PATH + "/../content/")) + "/"
 CONTENT_URL    = getattr(local_settings, "CONTENT_URL", "/content/")
 
@@ -170,7 +172,7 @@ else:
     ROOT_URLCONF = "main.urls"
     # Include optionally installed apps
     if os.path.exists(PROJECT_PATH + "/tests/loadtesting/"):
-        INSTALLED_APPS     += ("kalite.tests.loadtesting"),
+        INSTALLED_APPS += ("kalite.tests.loadtesting",)
 
     MIDDLEWARE_CLASSES += (
         "securesync.middleware.DBCheck",
@@ -209,7 +211,7 @@ CACHE_TIME = getattr(local_settings, "CACHE_TIME", _max_cache_time)
 if CACHE_TIME != 0:  # None can mean infinite caching to some functions
     CACHES["web_cache"] = {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': getattr(local_settings, "CACHE_LOCATION", tempfile.gettempdir()), # this is kind of OS-specific, so dangerous.
+        'LOCATION': getattr(local_settings, "CACHE_LOCATION", os.path.join(tempfile.gettempdir(), "kalite_web_cache/")), # this is kind of OS-specific, so dangerous.
         'TIMEOUT': CACHE_TIME, # should be consistent
         'OPTIONS': {
             'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
