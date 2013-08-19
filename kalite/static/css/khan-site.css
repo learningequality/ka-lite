@@ -46,8 +46,8 @@ table {
     border-collapse: collapse;
     border-spacing: 0;
 }
-
 /* End Reset */
+
 /* Clearfix */
 .clearfix:before,
 .clearfix:after {
@@ -89,15 +89,21 @@ body {
     height: 100%;
     margin: 0 0 -77px;
 }
+
 #page-container, #page-container-inner {
-    background: transparent url(/static/images/content-border.1.png) no-repeat right 85px; /*! data-uri(/images/content-border.1.png) */
+    background: transparent url(/static/images/content-border.1.png) no-repeat right 85px;
 }
+
 #page-container {
     background-position: 0 85px;
     min-width: 1000px;
     max-width: 1200px;
     position: relative;
     margin: 0 auto;
+}
+
+.ie6 #page-container {
+    width: 1000px; /* IE6 doesn't support min/max-width, so hard-code */
 }
 
 article {
@@ -251,27 +257,9 @@ footer {
         max-width: 1200px;
         margin: 0 auto;
     }
-
-#top-header {
-    height: 85px;
-    position: relative;
-}
-
-#top-header #logo {
-    height: 100px;
-    position: relative;
-    background-image: url(/static/images/non-repeating-sprites.4.png);
-    background-position: -10px -261px;
-    width: 317px;
-}
-
-
-nav {
-    display: block;
-    clear: both;
-    width: 100%;
-    margin: 0;
-}
+    .ie6 footer.short .inner {
+        width: 1000px; /* IE6 doesn't support min/max-width, so hard-code */
+    }
 
 article, section {
     display: block;
@@ -564,7 +552,7 @@ article, section {
 .simple-button.warning:active,
 .simple-button.orange.active,
 .simple-button.warning.active {
-    background-color: #8d3a03 \9;
+    background-color: #8d3a03;
 }
 /* Modifications for IE8 and under */
 .lte8 .simple-button:active,

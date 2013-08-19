@@ -72,11 +72,10 @@ def am_i_online(url, expected_val=None, search_string=None, timeout=5, allow_red
 
 
 def generate_all_paths(path, base_path="/"):
-
     if not base_path.endswith("/"):   # Must have trailing slash to work.
         base_path += "/"
         
-    if not path.endswith("/"):        # Must NOT have trailing slash to work.
+    if path.endswith("/"):        # Must NOT have trailing slash to work.
         path = path[0:-1]
         
     all_paths = []
