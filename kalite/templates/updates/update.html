@@ -20,7 +20,30 @@
 p{
     min-height: 100px;
     max-height: 130px;
+    margin-left: 10px;
 }
+
+h2{
+text-align: center;
+}
+
+.thumbnail>a>img{
+  display: block;
+  max-width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.download{
+  display: block;
+  /*text-align: center;*/
+}
+
+/*button{
+  width: 60%;
+  margin-left: auto;
+  margin-right: auto;
+}*/
 
 
 </style>
@@ -33,34 +56,40 @@ p{
             <ul class="thumbnails">
               <li class="span4">
                 <div class="thumbnail">
-                  <img src="{% static 'images/system_update.png' %}" />
-                  <div class="caption">
-                    <h2>System Updates</h2>
-                    <p>Update KA Lite to the latest version and see more features. </p>
-                    <button href="{% url update_software %}" class="btn btn-large btn-primary">Update KA Lite</button>
-                  </div>
+                  <a href="{% url update_software %}">
+                    <img src="{% static 'images/system_update.png' %}" />
+                  </a>
+                    <div class="caption">
+                      <h2>System Updates</h2>
+                      <p>Update KA Lite to the latest version and see more features. </p>
+                      <span class="download"><button href="{% url update_software %}" class="btn btn-large btn-primary">Update KA Lite</button></span>
+                    </div>
                 </div>
               </li>
 
               <li class="span4">
                 <div class="thumbnail">
-                  <img src="{% static 'images/subtitle_download.png' %}" />
-                  <div class="caption">
-                    <h2>Language Packs</h2>
-                    <p>Offer more than 50 languages subtitles! Select and download your language packs to assist global learner.</p>
-                    <button href="{% url update_subtitles %}" class="btn btn-large btn-primary">Get Subtitles</button>
-                  </div>
+                  <a href="{% url update_subtitles %}">
+                    <img src="{% static 'images/subtitle_download.jpg' %}" />
+                  </a>
+                    <div class="caption">
+                      <h2>Language Packs</h2>
+                      <p>Offer more than 50 languages subtitles! Select and download your language packs to assist global learner.</p>
+                      <span class="download"><button href="{% url update_subtitles %}" class="btn btn-large btn-primary">Get Subtitles</button></span>
+                    </div>
                 </div>
               </li>
 
               <li class="span4">
                 <div class="thumbnail">
-                  <img src="{% static 'images/video_download.png' %}" />
-                  <div class="caption">
-                    <h2>Video Manage</h2>
-                    <p>Dowload and delete videos.</p>
-                    <button href="{% url update_videos %}" class="btn btn-large btn-primary">Download Videos</button>
-                  </div>
+                  <a href="{% url update_videos %}">
+                    <img src="{% static 'images/video_download.png' %}" />
+                  </a>
+                    <div class="caption">
+                      <h2>Video Manage</h2>
+                      <p>Dowload and delete videos on this KA Lite server. </p>
+                      <span class="download"><button href="{% url update_videos %}" class="btn btn-large btn-primary">Download Videos</button></span>
+                    </div>
                 </div>
               </li>
             </ul>
