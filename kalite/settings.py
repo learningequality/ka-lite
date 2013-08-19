@@ -4,6 +4,7 @@ import logging
 import sys
 import time
 import tempfile
+import uuid
 
 # suppress warnings here.
 try:
@@ -38,7 +39,7 @@ assert not AUTO_LOAD_TEST or not CENTRAL_SERVER, "AUTO_LOAD_TEST only on local s
 
 # info about the central server(s)
 # Note: this MUST be hard-coded for backwards-compatibility reasons.
-ROOT_UUID_NAMESPACE = "a8f052c7-8790-5bed-ab15-fe2d3b1ede41"  #import uuid; print uuid.uuid5(uuid.NAMESPACE_URL, "https://kalite.adhocsync.com/")
+ROOT_UUID_NAMESPACE = uuid.UUID("a8f052c7-8790-5bed-ab15-fe2d3b1ede41")  # print uuid.uuid5(uuid.NAMESPACE_URL, "https://kalite.adhocsync.com/")
 SECURESYNC_PROTOCOL   = getattr(local_settings, "SECURESYNC_PROTOCOL",   "https")
 
 CENTRAL_SERVER_DOMAIN = getattr(local_settings, "CENTRAL_SERVER_DOMAIN", "adhocsync.com")
