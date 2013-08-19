@@ -3,10 +3,9 @@ import json
 import re
 import uuid
 
-from django.core import serializers
-from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.contrib.messages.api import get_messages
+from django.core.urlresolvers import reverse
 from django.db import models as db_models
 from django.http import HttpResponse
 from django.utils import simplejson
