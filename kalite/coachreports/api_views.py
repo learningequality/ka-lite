@@ -20,6 +20,7 @@ from main import topicdata
 from main.models import VideoLog, ExerciseLog, VideoFile
 from securesync.models import Facility, FacilityUser,FacilityGroup, DeviceZone, Device
 from securesync.views import facility_required
+from utils.decorators import api_handle_error_with_json
 from utils.internet import StatusException, JsonResponse
 from utils.topic_tools import get_topic_by_path
 
