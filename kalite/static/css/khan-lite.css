@@ -56,6 +56,12 @@ a:hover {
 
 #top-header {
     height: 50px;
+    position: relative;
+}
+
+#top-header #logo {
+    position: absolute;
+    top: 0;
 }
 
 #logo-image-small img {
@@ -63,64 +69,57 @@ a:hover {
     margin-top: 10px;
     margin-left: 5px;
 }
+
 /********** Top Navigation bar ***********/
-#nav-and-search {
-    position: relative;
+
+.top-header-links {
+    position: absolute;
+    top: 0;
     right: 10px;
-    top: 21px;
+    min-width: 280px;
+    height: 50px;
 }
 
-/*Make the navigation item stay the same color*/
-.nav-subheader a:visited{
-    color: #263500;
-}
-
-.nav-subheader a:visited:hover{
-    color: #2F92A5;
-}
-
-.nav-subheader a {
-    font-family: "MuseoSans500", Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    letter-spacing: -1px;
-    text-transform: uppercase;
-    margin-left: 23px;
+nav {
     display: block;
-    float: left;
-    background: transparent;
-}
-
-.sitewide-navigation {
-    float:right;
+    clear: both;
+    width: 100%;
     margin: 0;
     padding: 3px 0;
-    height: 19px;
-    position: relative;
-    width: auto;
+    white-space: nowrap;
     /* Position this at 30 so the white triangle appears on top of the page_sub_nav breadcrumbs border */
-    z-index: 30;
-}
-
-.watch-navlink {
-    padding-left: 4px;
-}
-
-#nav_registerdevice {
-    color: darkRed;
-}
-
-
-#nav_addstudent, #nav_addteacher, #nav_admin, #nav_coachreports, #nav_watch, #nav_practice, #nav_signup, #nav_login, #nav_update {
-    display: none;
+    height: 30px;
+    z-index: 50;
+    position: relative;
+    right: 10px;
+    top: 22px;
 }
 
 .nav-subheader {
-    background: #75a400;
+    font-family: "MuseoSans500", Helvetica, Arial, sans-serif;
+    font-weight: normal;
+    font-size: 16px;
+    letter-spacing: -1px;
+    text-transform: uppercase;    
     margin-bottom: 0;
     height: 30px;
     color: #fff;
-    font-weight: normal;
-    font-size: 12pt;
+}
+
+.nav-subheader a {
+    color: #263500;
+    height: 20px;
+    display: block;
+}
+
+.nav-subheader a:hover {
+    color: #2F92A5;
+}
+
+.nav-subheader > a, .nav-subheader > span {
+    margin-left: 20px;
+    display: block;
+    float: right;
 }
 
 .nav-subheader a.active:after {
@@ -132,29 +131,15 @@ a:hover {
     margin-left: -5px;
 }
 
-.nav-subheader a {
-    height: 20px;
-    display: block;
+#nav_registerdevice {
+    color: darkRed;
+}
+
+#nav_addstudent, #nav_addteacher, #nav_admin, #nav_coachreports, #nav_watch, #nav_practice, #nav_signup, #nav_login, #nav_update, #nav_logout, #nav_registerdevice {
+    display: none;
 }
 
 /********** End of Top Navigation bar ***********/
-
-
-/*greeting styling*/
-.sitewide-navigation {
-    white-space: nowrap;
-}
-
-
-.top-header-links {
-    position: absolute;
-    top: 0;
-    right: 10px;
-    left: 0;
-    margin-left: 290px;
-    min-width: 280px;
-    height: 50px;
-}
 
 h2 {
     margin-bottom: 10px;

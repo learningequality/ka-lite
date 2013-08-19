@@ -261,27 +261,6 @@ footer {
         width: 1000px; /* IE6 doesn't support min/max-width, so hard-code */
     }
 
-#top-header {
-    height: 85px;
-    position: relative;
-}
-
-#top-header #logo {
-    height: 50px;
-    position: relative;
-    background-image: url(/static/images/non-repeating-sprites.4.png);
-    background-position: -10px -261px;
-    width: 317px;
-}
-
-
-nav {
-    display: block;
-    clear: both;
-    width: 100%;
-    margin: 0;
-}
-
 article, section {
     display: block;
 }
