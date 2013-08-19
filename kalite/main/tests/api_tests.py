@@ -219,6 +219,9 @@ class TestAdminApiCalls(MainTestCase):
         super(TestAdminApiCalls, self).__init__(*args, **kwargs)
 
     def setUp(self, *args, **kwargs):
+        """
+        Create a superuser, then log in.  Add a fake video file.
+        """
         super(TestAdminApiCalls, self).setUp(*args, **kwargs)
 
         call_command("createsuperuser", username=self.ADMIN_USERNAME, email="a@b.com", interactive=False)
@@ -236,15 +239,17 @@ class TestAdminApiCalls(MainTestCase):
         self.assertTrue(success, "Was not able to login as the admin user")
 
     def tearDown(self, *args, **kwargs):
+        """
+        Remove the fake video file.
+        """
         super(TestAdminApiCalls, self).tearDown(*args, **kwargs)
         if os.path.exists(self.fake_video_file):
             os.remove(self.fake_video_file)
 
 
-    @unittest.skipIf(settings.CACHE_TIME == 0, "Caching is disabled.")
     def test_delete_non_existing_video(self):
         """
-        Delete a video through the API
+        "Delete" a video through the API that never existed.
         """
         os.remove(self.fake_video_file)
         self.assertFalse(os.path.exists(self.fake_video_file), "Video file should not exist on disk.")
@@ -255,10 +260,9 @@ class TestAdminApiCalls(MainTestCase):
         self.assertEqual(VideoFile.objects.all().count(), 0, "Should have zero objects; found %d" % VideoFile.objects.all().count())
         self.assertFalse(os.path.exists(self.fake_video_file), "Video file should not exist on disk.")
 
-    @unittest.skipIf(settings.CACHE_TIME == 0, "Caching is disabled.")
     def test_delete_existing_video_object(self):
         """
-        Delete a video through the API
+        Delete a video through the API, when only the videofile object exists
         """
         VideoFile(youtube_id=self.video_id).save()
         os.remove(self.fake_video_file)
@@ -272,10 +276,9 @@ class TestAdminApiCalls(MainTestCase):
         self.assertFalse(os.path.exists(self.fake_video_file), "Video file should not exist on disk.")
 
 
-    @unittest.skipIf(settings.CACHE_TIME == 0, "Caching is disabled.")
     def test_delete_existing_video_file(self):
         """
-        Delete a video through the API
+        Delete a video through the API, when only the video exists on disk (not as an object)
         """
         self.assertEqual(VideoFile.objects.all().count(), 0, "Should have zero objects; found %d" % VideoFile.objects.all().count())
         self.assertTrue(os.path.exists(self.fake_video_file), "Video file should exist on disk.")

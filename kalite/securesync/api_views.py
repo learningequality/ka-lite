@@ -5,7 +5,6 @@ import uuid
 
 from django.contrib import messages
 from django.contrib.messages.api import get_messages
-from django.core import serializers
 from django.core.urlresolvers import reverse
 from django.db import models as db_models
 from django.http import HttpResponse
@@ -48,8 +47,8 @@ def require_sync_session(handler):
     return wrapper_fn
 
 
-@api_handle_error_with_json
 @csrf_exempt
+@api_handle_error_with_json
 def register_device(request):
     data = simplejson.loads(request.raw_post_data or "{}")
 
@@ -118,8 +117,8 @@ def register_device(request):
     )
 
 
-@api_handle_error_with_json
 @csrf_exempt
+@api_handle_error_with_json
 def create_session(request):
     data = simplejson.loads(request.raw_post_data or "{}")
     if "client_nonce" not in data:
@@ -167,18 +166,18 @@ def create_session(request):
     })
 
 
-@api_handle_error_with_json
 @csrf_exempt
 @require_sync_session
+@api_handle_error_with_json
 def destroy_session(data, session):
     session.closed = True
     return JsonResponse({})
 
 
-@api_handle_error_with_json
 @csrf_exempt
 @gzip_page
 @require_sync_session
+@api_handle_error_with_json
 def device_download(data, session):
     """This device is having its own devices downloaded"""
     zone = session.client_device.get_zone()
@@ -190,9 +189,9 @@ def device_download(data, session):
     return JsonResponse({"devices": serializers.serialize("json", devices + devicezones, dest_version=session.client_version, ensure_ascii=False)})
 
 
-@api_handle_error_with_json
 @csrf_exempt
 @require_sync_session
+@api_handle_error_with_json
 def device_upload(data, session):
     """This device is getting device-related objects from another device"""
     # TODO(jamalex): check that the uploaded devices belong to the client device's zone and whatnot
@@ -209,10 +208,10 @@ def device_upload(data, session):
     return JsonResponse(result)
 
 
-@api_handle_error_with_json
 @csrf_exempt
 @gzip_page
 @require_sync_session
+@api_handle_error_with_json
 def device_counters(data, session):
     device_counters = Device.get_device_counters(session.client_device.get_zone())
     return JsonResponse({
@@ -220,9 +219,9 @@ def device_counters(data, session):
     })
 
 
-@api_handle_error_with_json
 @csrf_exempt
 @require_sync_session
+@api_handle_error_with_json
 def model_upload(data, session):
     """This device is getting data-related objects from another device."""
     if "models" not in data:
@@ -239,10 +238,10 @@ def model_upload(data, session):
     return JsonResponse(result)
 
 
-@api_handle_error_with_json
 @csrf_exempt
 @gzip_page
 @require_sync_session
+@api_handle_error_with_json
 def model_download(data, session):
     """This device is having its own data downloaded"""
     if "device_counters" not in data:
@@ -258,17 +257,17 @@ def model_download(data, session):
     return JsonResponse(result)
 
 
-@api_handle_error_with_json
 @csrf_exempt
+@api_handle_error_with_json
 def test_connection(request):
     return HttpResponse("OK")
 
 
 # On pages with no forms, we want to ensure that the CSRF cookie is set, so that AJAX POST
 # requests will be possible. Since `status` is always loaded, it's a good place for this.
-@api_handle_error_with_json
 @ensure_csrf_cookie
 @distributed_server_only
+@api_handle_error_with_json
 def status(request):
     """In order to promote (efficient) caching on (low-powered)
     distributed devices, we do not include ANY user data in our

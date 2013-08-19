@@ -32,6 +32,7 @@ class Command(BaseCommand):
         video_files_to_delete = VideoFile.objects.filter(download_in_progress=False, percent_complete__gt=0, percent_complete__lt=100)
         youtube_ids_to_delete = [d["youtube_id"] for d in video_files_to_delete.values("youtube_id")]
         video_files_to_delete.delete()
+
         if caching_enabled:
             for youtube_id in youtube_ids_to_delete:
                 caching.invalidate_all_pages_related_to_video(video_id=youtube_id)
