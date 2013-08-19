@@ -34,16 +34,15 @@ text-align: center;
   margin-left: auto;
 }
 
+.thumbnail>a:link,a:visited{
+  color: #fff;
+}
+
 .download{
   display: block;
   text-align: center;
 }
 
-/*button{
-  width: 60%;
-  margin-left: auto;
-  margin-right: auto;
-}*/
 
 
 </style>
@@ -62,7 +61,7 @@ text-align: center;
                     <div class="caption">
                       <h2>System Updates</h2>
                       <p>Update KA Lite to the latest version and see more features. </p>
-                      <span class="download"><button href="{% url update_software %}" class="btn btn-large btn-primary">Update KA Lite</button></span>
+                      <span class="download"><a href="{% url update_software %}" class="btn btn-large btn-primary">Update KA Lite</a></span>
                     </div>
                 </div>
               </li>
@@ -75,7 +74,7 @@ text-align: center;
                     <div class="caption">
                       <h2>Language Packs</h2>
                       <p>Offer more than 50 languages subtitles! Select and download your language packs to assist global learner.</p>
-                      <span class="download"><button href="{% url update_subtitles %}" class="btn btn-large btn-primary">Get Subtitles</button></span>
+                      <span class="download"><a href="{% url update_subtitles %}" class="btn btn-large btn-primary">Get Subtitles</a></span>
                     </div>
                 </div>
               </li>
@@ -88,7 +87,7 @@ text-align: center;
                     <div class="caption">
                       <h2>Video Manage</h2>
                       <p>Dowload and delete videos on this KA Lite server. </p>
-                      <span class="download"><button href="{% url update_videos %}" class="btn btn-large btn-primary">Download Videos</button></span>
+                      <span class="download"><a href="{% url update_videos %}" class="btn btn-large btn-primary">Download Videos</a></span>
                     </div>
                 </div>
               </li>
