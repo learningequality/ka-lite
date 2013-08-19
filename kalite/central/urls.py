@@ -61,6 +61,9 @@ urlpatterns += patterns('central.views',
     url(r'^contact/', include('contact.urls')),
     url(r'^wiki/(?P<path>\w+)/$', redirect_to, {'base_url': settings.CENTRAL_WIKI_URL}, 'wiki'),
     url(r'^about/$', redirect_to, { 'base_url': 'http://learningequality.org/' }, 'about'),
+
+    # Endpoint for remote admin
+    url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'),
 )
 
 urlpatterns += patterns('central.api_views',

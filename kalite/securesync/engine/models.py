@@ -130,10 +130,7 @@ class SyncedModel(models.Model):
 
         self.id = self.id or self.get_uuid()
         self.signed_by = device
-        try:
-            self.full_clean()  # make sure the model data is of the appropriate types
-        except ValidationError as e:
-            import pdb; pdb.set_trace()
+        self.full_clean()  # make sure the model data is of the appropriate types
         self.signature = self.signed_by.get_key().sign(self._hashable_representation())
 
     def verify(self):
