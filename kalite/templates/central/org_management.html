@@ -1,4 +1,5 @@
 {% extends "central/base.html" %}
+{% load staticfiles %}
 
 {% block control_panel_active %}active{% endblock control_panel_active %}
 
@@ -23,7 +24,12 @@
 		
 		<div class="row-fluid">
 			<div class="span9">
-				<h1 class="title">My Organization</h1>
+				<div class="tooltip-container">
+					<h1 >My Organization</h1>
+					<div id="button-popover-org" class="button-popover" data-toggle="popover" data-placement="right" data-content="An Organization is a group of people responsible for administering a set of Zones and Facilities." title="" data-original-title="Organization">?</div>
+				</div>
+
+				 
 			</div>
 			<div class="span3">
 				<form method="link" action="/organization/new/" class="neworg-button">
@@ -50,23 +56,24 @@
 			{% for pk,org in organizations.items %}		
 			<div class="row-fluid">
 			<div class="span12 organization-title">
-			<ul class="horizontal-list">
-				<li>			
-						{{ org.name }}
+	
+					<div class="tooltip-container">
+						<h2>{{ org.name }}</h2>
 						{% if org.name == HEADLESS_ORG_NAME %}
-						<span class="glossary-link nudge-left" title="Headless zones are (auto-registered) zones not linked to any account."></span>
+						<div id="button-popover-headless" class="button-popover" data-toggle="popover" data-placement="right" data-content="Headless zones are (auto-registered) zones not linked to any account." title="" data-original-title="Headless Zones">?</div>
+			
 						{% endif %}
 
-				</li>
-					<li>
+				
+				
 					{% if org.name != HEADLESS_ORG_NAME %}
 					<a href="{% url organization_form org_id=org.id %}">
 						(Edit)
 					</a>
-				</li>
-			</ul>
-			{% endif %}
-		</div>
+					{% endif %}
+				</div>
+			</div>
+
 			<div class="row-fluid">
 			<div class="span6 padding-left-20">
 			<h3>Affiliated Zones</h3>
@@ -130,15 +137,15 @@
 			{% endfor %}
 			</table
 			<div class="add">
-				<form method="post">
+				<form method="post" class="form-inline">
 					{% csrf_token %}
 					<input type="hidden" name="organization" value="{{ org.pk }}">
 					{{ org.form.invited_by }}
-					<ul class="horizontal-list">
-						<li class="addadmin-title">Add Admin</li>
-						<li><input type="text" placeholder="example@email.com" name="email_to_invite"></li>
-						<li><input type="submit" class="button-green--small" value="Send invite!"></li>
-					</ul>
+					
+						<h4>Add Admin</h4>
+						<input type="text" placeholder="example@email.com" name="email_to_invite">
+						<input type="submit" class="button-green--small" value="Send invite!">
+					
 
 					{% for error in org.form.non_field_errors %}
 					<div class="errors">{{ error }}</div>
@@ -163,3 +170,16 @@
 		ready to <a href="/install/">install KA Lite</a> (either on this machine, or to download the installation package to install offline on another machine)</p>
 
 {% endblock content %}
+
+
+{% block bodyjs %}
+
+
+<script src="{% static 'js/bootstrap/tooltip.js' %}"></script>
+<script src="{% static 'js/bootstrap/popover.js' %}"></script>
+<script>
+	$('#button-popover-org').popover()
+	$('#button-popover-headless').popover()
+
+</script>
+{% endblock bodyjs %}
