@@ -190,7 +190,7 @@ def install_single_server_edition(request):
         "version": kalite.VERSION,
         "platform": platform,
         "locale": locale,
-    }))
+    })+ "?auto_unpack")
 
 
 @login_required
@@ -226,14 +226,14 @@ def install_multiple_server_edition(request):
         kwargs={
             "version": kalite.VERSION,
             "platform": get_request_var(request, "platform", "all"),
-            "locale": get_request_var(request, "locale", "all"),
+            "locale": get_request_var(request, "locale", "en"),
         }
         zone_id = get_request_var(request, "zone", None)
-        if not zone_id:
-            return HttpResponseRedirect(reverse("download_kalite_public", kwargs=kwargs))
+        if not zone_id:  # TODO(bcipolli): remove debug querystring arg for unpacking automatically
+            return HttpResponseRedirect(reverse("download_kalite_public", kwargs=kwargs) + "?auto_unpack")
         else:
             kwargs["zone_id"] = zone_id
-            return HttpResponseRedirect(reverse("download_kalite_private", kwargs=kwargs))
+            return HttpResponseRedirect(reverse("download_kalite_private", kwargs=kwargs) + "?auto_unpack")
 
     else: # GET
         return {
@@ -273,9 +273,11 @@ def download_kalite(request, *args, **kwargs):
 
     # Parse args
     zone = get_object_or_None(Zone, id=kwargs.get('zone_id', None))
-    version = kwargs.get("version", kalite.VERSION)
     platform = kwargs.get("platform", "all")
-    locale = kwargs.get("locale", "all")
+    locale = kwargs.get("locale", "en")
+    version = kwargs.get("version", kalite.VERSION)
+    if version == "latest":
+        version = kalite.VERSION
 
     # Make sure this user has permission to admin this zone
     if zone and not request.user.is_authenticated():
@@ -283,11 +285,16 @@ def download_kalite(request, *args, **kwargs):
     elif zone:
         zone_org = Organization.from_zone(zone)
         if not zone_org or not zone_org[0].id in [org for org in get_or_create_user_profile(request.user).get_organizations()]:
-            raise PermissionDenied("Requires authentication")
+            raise PermissionDenied("You are not authorized to access this zone information.")
 
     # Generate the zip file
     zip_file = tempfile.mkstemp()[1]
-    call_command("package_for_download", file=zip_file, central_server=get_central_server_host(request), **kwargs)
+    call_command(
+        "package_for_download",
+        file=zip_file,
+        central_server=get_central_server_host(request),
+        auto_unpack="auto_unpack" in request.REQUEST and settings.DEBUG,  # don't auto-unpack for API requests
+    **kwargs)
 
     # Build the outgoing filename."
     user_facing_filename = "kalite"

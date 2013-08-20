@@ -9,7 +9,14 @@
 {% block install_active %}active{% endblock install_active %}
 
 {% block headcss %}{{ block.super }}
-
+<style>
+    .checkmark {
+        font-size:200%;
+        text-align: center;
+        margin: auto;
+        padding: auto;
+    }
+</style>
 {% endblock headcss %}
 
 {% block content %}
@@ -23,52 +30,59 @@
     {% csrf_token %} 
 
     {% if user.is_anonymous %}
-    <div class="row-fluid">
-        <div class="span6"><img width="300" src="{% static 'images/single-server.png' %}" />
-        <p>EXPLANATION</p>
-        </div>
-        <div class="span6">
-        <img width="300" src="{% static 'images/multiple-server.png' %}" />
-        <p>EXPLANATION</p>
-        </div>
-    </div>
-                
         <table class="table">
+            <tr >
+                <th>&nbsp;</th>
+                <th><h2>Single server edition</h2></th>
+                <th><h2>Multiple server edition</h2></th>
+            </tr>
             <tr>
-                <th>Features</th>
-                <th>Single server edition</th>
-                <th>Multiple server edition</th>
+                <th style="vertical-align:bottom">Features</th>
+                <td>
+                    <img width="200" src="{% static 'images/single-server.png' %}" />
+                    <p>
+                        Explanation
+                    </p>
+                </td>
+                <td>
+                    <img width="200" src="{% static 'images/multiple-server2.png' %}" />
+                    <p>
+                        Explanation
+                    </p>
+                </td>
             </tr>
             <tr>
                 <td>Students can log in and record progress.</td>
-                <td>&#x2713;</td>
-                <td>&#x2713;</td>
+                <td class="checkmark">&#x2713;</td>
+                <td class="checkmark">&#x2713;</td>
             </tr>
             <tr>
                 <td>Share student and teacher data across multiple installs</td>
                 <td>&nbsp;</td>
-                <td>&#x2713;</td>
+                <td class="checkmark">&#x2713;</td>
             </tr>
             <tr>
                 <td>View usage data online</td>
                 <td>&nbsp;</td>
-                <td>&#x2713;</td>
+                <td class="checkmark">&#x2713;</td>
             </tr>
             <tr>
                 <td></td>
-                <td>                
+                <td>
                 <button class="button-green" type="button" onclick="javascript:window.location.href='single-server/'">
-                Download <br>Single-server Edition
+                Download <br/>Single-server Edition
                 </button>
                 </td>
-                <td>                
+                <td>
                 <button class="button-green" type="button" onclick="javascript:window.location.href='multiple-server/'">
-                Login to get <br>Multiple-servers Edition
+                Login to get <br/>Multiple-servers Edition
                 </button>
                 </td>
             </tr>
         </table>
+
     {% else %}
+
     <div id="zone_section">
             <div class="errors">{% for err in errors %}{{ err }}{% endfor %}</div>
             <div class="row-fluid">
@@ -110,7 +124,7 @@
             </div>
             <div class="row-fluid">
                 <div class="span12"> 
-                    <button class="button-green--large" type="submit">
+                    <button class="button-green--large" type="submit" style="width:300px">
                         Download Multiple-servers Edition
                     </button>
                 </div>
