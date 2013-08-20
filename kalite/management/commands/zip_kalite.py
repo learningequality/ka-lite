@@ -127,9 +127,14 @@ def create_local_settings_file(location, server_type="local", locale=None, centr
     ls = open(fil, "a") #append, to keep those settings, but override SOME
 
     ls.write("\n") # never trust the previous file ended with a newline!
+    if settings.DEBUG:
+        ls.write("DEBUG = %s\n" % settings.DEBUG)
     ls.write("CENTRAL_SERVER = %s\n" % (server_type=="central"))
     if locale and locale != "all":
         ls.write("LANGUAGE_CODE = '%s'\n" % locale)
+    if server_type == "local" and central_server:
+        ls.write("CENTRAL_SERVER_HOST = '%s'\n" % central_server)
+        ls.write("SECURESYNC_PROTOCOL = '%s'\n" % "http" if settings.DEBUG or "playground" in central_server else "https")
     ls.close()
 
     return fil
@@ -171,7 +176,7 @@ class Command(BaseCommand):
         make_option('-c', '--central-server',
             action='store',
             dest='central_server',
-            default="127.0.0.1:8001",#settings.CENTRAL_SERVER_HOST if ,
+            default=getattr(settings, "CENTRAL_SERVER_HOST", None),
             help='Central server host and port',
             metavar="CENTRAL_SERVER"),
 
@@ -217,15 +222,17 @@ class Command(BaseCommand):
         # Step 4: package into a zip file
         with ZipFile(options['file'], "w", ZIP_DEFLATED if options['compress'] else ZIP_STORED) as zfile:
             for srcpath,fdict in files_dict.items():
-                if options['verbosity'] >= 1:
-                    print "Adding to zip: %s" % srcpath
-                # Add without setting exec perms
-                if os.path.splitext(fdict["dest_path"])[1] != ".sh":
-                    zfile.write(srcpath, arcname=fdict["dest_path"])
-                # Add with exec perms
-                else:
-                    info = ZipInfo(fdict["dest_path"])
-                    info.external_attr = 0755 << 16L # give full access to included file
-                    with open(srcpath, "r") as fh:
-                        zfile.writestr(info, fh.read())
-
+                try:
+                    if options['verbosity'] >= 1:
+                        print "Adding to zip: %s" % srcpath
+                    # Add without setting exec perms
+                    if os.path.splitext(fdict["dest_path"])[1] != ".sh":
+                        zfile.write(srcpath, arcname=fdict["dest_path"])
+                    # Add with exec perms
+                    else:
+                        info = ZipInfo(fdict["dest_path"])
+                        info.external_attr = 0755 << 16L # give full access to included file
+                        with open(srcpath, "r") as fh:
+                            zfile.writestr(info, fh.read())
+                except Exception as e:
+                    sys.stderr.write("Failed to add file %s: %s\n" % (srcpath, e))

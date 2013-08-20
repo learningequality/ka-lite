@@ -7,6 +7,7 @@ import settings
 from . import get_serialized_models, save_serialized_models
 from .models import *
 from securesync.api_client import BaseClient
+from securesync.devices.api_client import RegistrationClient
 from securesync.devices.models import *
 from shared import serializers
 
@@ -60,7 +61,7 @@ class SyncClient(BaseClient):
             raise Exception("Client session nonce did not match.")
         if session.client_device != self.session.client_device:
             raise Exception("Client session device did not match.")
-        if self.require_trusted and not session.server_device.get_metadata().is_trusted:
+        if self.require_trusted and not session.server_device.is_trusted():
             raise Exception("The server is not trusted, don't make a session with THAT.")
         self.session.verified = True
         self.session.timestamp = session.timestamp

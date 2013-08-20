@@ -114,8 +114,6 @@ class SyncedModel(models.Model):
     _unhashable_fields = ["signature", "signed_by"] # fields of this class to avoid serializing
     _always_hash_fields = ["signed_version", "id"]  # fields of this class to always serialize
 
-    requires_trusted_signature = False
-
     class Meta:
         abstract = True
         app_label = "securesync"
@@ -125,7 +123,7 @@ class SyncedModel(models.Model):
         Get all of the relevant fields of this model into a single string (self._hashable_representation()),
         then sign it with the specified device (if specified), or the current device.
         """
-        device = device or Device.get_own_device()
+        device = device or _get_own_device()
         assert device.get_key(), "Cannot sign with device %s: key does not exist." % (device.name or "")
 
         self.id = self.id or self.get_uuid()
@@ -133,23 +131,31 @@ class SyncedModel(models.Model):
         self.full_clean()  # make sure the model data is of the appropriate types
         self.signature = self.signed_by.get_key().sign(self._hashable_representation())
 
-    def verify(self):
-        # if nobody signed it, verification fails
-        if not self.signed_by_id:
-            return False
-        # if it's not a trusted device...
-        if not self.signed_by.get_metadata().is_trusted:
-            # but it's a model class that requires trusted signatures, verification fails
-            if self.requires_trusted_signature:
-                return False
-            if settings.CENTRAL_SERVER:
-                # if it's not in a zone at all (or its DeviceZone was revoked), verification fails
-                if not self.signed_by.get_zone():
-                    return False
+    def validate(self):
+        try:
+            # if nobody signed it, verification fails
+            if not self.signed_by_id:
+                raise ValidationError("This model was not signed.")
+            # if it's not a trusted device...
+            if not self.signed_by.is_trusted():
+                if settings.CENTRAL_SERVER:
+                    if not self.signed_by.get_zone():
+                        import pdb; pdb.set_trace()
+                        raise ValidationError("This model was signed by a Device with no zone, but somehow synced to the central server.")
+                elif not _get_own_device().get_zone().is_member(self.signed_by):
+                    # distributed server
+                    raise ValidationError("This model is on a different zone than this device.")
+            return True
+        except ValidationError as ve:
+            if settings.DEBUG:  # throw in debug mode, as validation errors should not be happening
+                raise ve
             else:
-                # or if it's not in the same zone as our device (or the DeviceZone was revoked), verification fails
-                if self.signed_by.get_zone() != _get_own_device().get_zone():
-                    return False
+                return False
+
+    def verify(self):
+        if not self.validate():
+            return False
+            
         # by this point, we know that we're ok with accepting this model from the device that it says signed it
         # now, we just need to check whether or not it is actually signed by that model's private key
         try:
@@ -214,17 +220,17 @@ class SyncedModel(models.Model):
             In this case, we need to mark the model with appropriate fields, so that
             it can be sync'd (self.counter), and that it will verify (self.signature)
         """
-        # we allow for the "own device" to be passed in so that a device can sign itself (before existing)
-        own_device = own_device or _get_own_device()
-        assert own_device, "own_device is None--this should never happen, as get_own_device should create if not found."
-
         if imported:
             # imported models are signed by other devices; make sure they check out
             if not self.signed_by_id:
                 raise ValidationError("Imported models must be signed.")
             if not self.verify():
-                raise ValidationError("Imported model's signature did not match.")
+                raise ValidationError("Could not verify the imported model.")#Imported model's signature did not match.")
         else:
+            # we allow for the "own device" to be passed in so that a device can sign itself (before existing)
+            own_device = own_device or _get_own_device()
+            assert own_device, "own_device is None--this should never happen, as get_own_device should create if not found."
+
             # Two critical things to do:
             # 1. local models need to be signed by us
             # 2. and get our counter position
@@ -259,7 +265,7 @@ class SyncedModel(models.Model):
         if not zone and self.signed_by:
             zone = self.signed_by.get_zone()
         # otherwise, if it's signed by a trusted authority, try getting the fallback zone
-        if not zone and self.signed_by and self.signed_by.get_metadata().is_trusted:
+        if not zone and self.signed_by and self.signed_by.is_trusted():
             zone = self.zone_fallback
         return zone
     get_zone.short_description = "Zone"

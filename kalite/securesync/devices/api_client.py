@@ -30,7 +30,6 @@ class RegistrationClient(BaseClient):
             public key of this device has been registered to be accepted
             onto that zone.
         """
-
         # Get the required model data by registering (online and offline options available)
         try:
             if prove_self:
@@ -72,20 +71,19 @@ class RegistrationClient(BaseClient):
         own_device = Device.get_own_device()
         own_devicezone = DeviceZone.objects.get(device=own_device)  # We exit if not found
         own_zone = own_devicezone.zone
-        chain_of_trust = own_zone.chain_of_trust(own_device)
+        chain_of_trust = ChainOfTrust(device=own_device, zone=own_zone)
 
-        assert Zone.is_valid_chain_of_trust(chain_of_trust)
+        assert chain_of_trust.validate()
 
         # For now, just try with one certificate
         #
         # Serialize for any version; in the current implementation, we assume the central server has
         #   a version at least as new as ours, so can handle whatever data we send.
+        #
+        # the other side will have to reconstruct the chain from the object list
+        object_list = [own_device] + chain_of_trust.objects()
         r = self.post("register", {
-            "client_device": serializers.serialize(
-                "versioned-json", 
-                [own_device, own_zone] + chain_of_trust, 
-                ensure_ascii=False
-            ),
+            "client_device": serializers.serialize("versioned-json", object_list, ensure_ascii=False),
         })
 
         # Failed to register with any certificate

@@ -22,11 +22,13 @@ from utils.internet import JsonResponse, am_i_online
 
 
 @csrf_exempt
-@api_handle_error_with_json
+#@api_handle_error_with_json
 def register_device(request):
-    data = simplejson.loads(request.raw_post_data or "{}")
-
+    """Receives the client device info from the distributed server.
+    Tries to register either because the device has been pre-registered,
+    or because it has a valid INSTALL_CERTIFICATE."""
     # attempt to load the client device data from the request data
+    data = simplejson.loads(request.raw_post_data or "{}")
     if "client_device" not in data:
         return JsonResponse({"error": "Serialized client device must be provided."}, status=500)
     try:
@@ -37,7 +39,7 @@ def register_device(request):
         #   this will only fail (currently) if the central server version
         #   is less than the version of a client--something that should never happen
         try:
-            models = serializers.deserialize("versioned-json", data["client_device"], src_version=version.VERSION, dest_version=version.VERSION)
+            models = serializers.deserialize("json", data["client_device"], src_version=version.VERSION, dest_version=version.VERSION)
         except db_models.FieldDoesNotExist as fdne:
             raise Exception("Central server version is lower than client version.  This is ... impossible!")
         client_device = models.next().object
@@ -46,6 +48,8 @@ def register_device(request):
             "error": "Could not decode the client device model: %r" % e,
             "code": "client_device_corrupted",
         }, status=500)
+
+    # Validate the loaded data
     if not isinstance(client_device, Device):
         return JsonResponse({
             "error": "Client device must be an instance of the 'Device' model.",
@@ -57,38 +61,81 @@ def register_device(request):
             "code": "client_device_invalid_signature",
         }, status=500)
 
-    # we have a valid self-signed Device, so now check if its public key has been registered
-    try:
-        registration = RegisteredDevicePublicKey.objects.get(public_key=client_device.public_key)
-    except RegisteredDevicePublicKey.DoesNotExist:
+    #try:
+    zone = register_self_registered_device(client_device, models)
+#    except Exception as e:
+#        return JsonResponse({
+#            "error": "Failed to validate the chain of trust (%s)." % e,
+#            "code": "chain_of_trust_invalid",
+#        }, status=500)
+
+    if not zone: # old code-path
         try:
-            device = Device.objects.get(public_key=client_device.public_key)
-            return JsonResponse({
-                "error": "This device has already been registered",
-                "code": "device_already_registered",
-            }, status=500)
-        except Device.DoesNotExist:
-            return JsonResponse({
-                "error": "Device registration with public key not found; login and register first?",
-                "code": "public_key_unregistered",
-            }, status=500)
+            registration = RegisteredDevicePublicKey.objects.get(public_key=client_device.public_key)
+            zone = registration.zone
+            registration.delete()
+        except RegisteredDevicePublicKey.DoesNotExist:
+            try:
+                device = Device.objects.get(public_key=client_device.public_key)
+                return JsonResponse({
+                    "error": "This device has already been registered",
+                    "code": "device_already_registered",
+                }, status=500)            
+            except Device.DoesNotExist:
+                return JsonResponse({
+                    "error": "Device registration with public key not found; login and register first?",
+                    "code": "public_key_unregistered",
+                }, status=500)
 
-    client_device.signed_by = client_device
-
-    # the device checks out; let's save it!
+    client_device.signed_by = client_device  # the device checks out; let's save it!
     client_device.save(imported=True)
 
-    # create the DeviceZone for the new device
-    device_zone = DeviceZone(device=client_device, zone=registration.zone)
-    device_zone.save()
-
-    # delete the RegisteredDevicePublicKey, now that we've initialized the device and put it in its zone
-    registration.delete()
+    try:
+        device_zone = DeviceZone(device=client_device, zone=zone)
+        if not device_zone.get_existing_instance():
+            device_zone.save()     # create the DeviceZone for the new device, with an 'upgraded' signature
+    except Exception as e:
+        pass#import pdb; pdb.set_trace()
 
     # return our local (server) Device, its Zone, and the newly created DeviceZone, to the client
     return JsonResponse(
-        serializers.serialize("versioned-json", [Device.get_own_device(), registration.zone, device_zone], dest_version=client_device.version, ensure_ascii=False)
+        serializers.serialize("json", [Device.get_own_device(), zone, device_zone], dest_version=client_device.version, ensure_ascii=False)
     )
+
+
+@transaction.commit_on_success
+def register_self_registered_device(client_device, serialized_models):
+    
+    try:
+        model_count = 0
+        models = []
+        for model in serialized_models:
+            model_count += 1
+            models.append(model.object)
+            # HACK(bcipolli): DeviceZone fails to verify (for a few reasons),
+            #   and I don't think making it requires_trusted_signature makes 
+            #   sense.  For now, short-circuit the verify function--the
+            #   verification is the ChainOfTrust verification below.
+            model.object.save(imported=True)
+            if model_count > 3 * ChainOfTrust.MAX_CHAIN_LENGTH:
+                raise Exception("Chain of trust is too long.")
+
+        # Now try to build a chain of from the device to the (claimed) zone
+        client_zone = client_device.get_zone()
+        if not client_zone.is_member(client_device):
+            raise Exception("Chain of trust could not be established.")
+
+        # If that works, then we just need to prove that the device has
+        #   the private key of the ZoneInvitation.
+        #
+
+        # we got through!  we got the zone, either recognized it or added it,
+        #   and validated the certificate!
+        return client_zone
+
+    except StopIteration:
+        # Old codepath has no objects here; signal to the outside that we've hit it
+        return None
 
 
 @csrf_exempt

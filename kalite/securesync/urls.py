@@ -10,6 +10,6 @@ urlpatterns = patterns('securesync.views',
 
 # An endpoint for remote administration of the distributed server
 if not settings.CENTRAL_SERVER:
-    urlpatterns = patterns('securesync.views',
+    urlpatterns += patterns('securesync.views',
         url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'),
     )

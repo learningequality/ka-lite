@@ -109,6 +109,7 @@ def destroy_session(data, session):
 @api_handle_error_with_json
 def device_download(data, session):
     """This device is having its own devices downloaded"""
+    import pdb; pdb.set_trace()
     zone = session.client_device.get_zone()
     devicezones = list(DeviceZone.objects.filter(zone=zone, device__in=data["devices"]))
     devices = [devicezone.device for devicezone in devicezones]
@@ -123,6 +124,7 @@ def device_download(data, session):
 @api_handle_error_with_json
 def device_upload(data, session):
     """This device is getting device-related objects from another device"""
+    import pdb; pdb.set_trace()
     # TODO(jamalex): check that the uploaded devices belong to the client device's zone and whatnot
     # (although it will only save zones from here if centrally signed, and devices if registered in a zone)
     try:
@@ -142,6 +144,7 @@ def device_upload(data, session):
 @require_sync_session
 @api_handle_error_with_json
 def device_counters(data, session):
+    import pdb; pdb.set_trace()
     device_counters = Device.get_device_counters(session.client_device.get_zone())
     return JsonResponse({
         "device_counters": device_counters,
@@ -153,6 +156,7 @@ def device_counters(data, session):
 @api_handle_error_with_json
 def model_upload(data, session):
     """This device is getting data-related objects from another device."""
+    import pdb; pdb.set_trace()
     if "models" not in data:
         return JsonResponse({"error": "Must provide models.", "saved_model_count": 0}, status=500)
     try:
@@ -173,6 +177,7 @@ def model_upload(data, session):
 @api_handle_error_with_json
 def model_download(data, session):
     """This device is having its own data downloaded"""
+    import pdb; pdb.set_trace()
     if "device_counters" not in data:
         return JsonResponse({"error": "Must provide device counters.", "count": 0}, status=500)
     try:

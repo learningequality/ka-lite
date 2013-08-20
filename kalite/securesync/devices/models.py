@@ -1,10 +1,5 @@
-from __future__ import absolute_import
-
-import datetime
 import uuid
-import zlib
 from annoying.functions import get_object_or_None
-from pbkdf2 import crypt
 
 from django.contrib.auth.models import check_password
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
@@ -17,6 +12,8 @@ import kalite
 import settings
 from securesync import crypto
 from securesync.engine.models import SyncedModel
+from settings import LOG as logging
+from utils.general import get_host_name
 
 
 class RegisteredDevicePublicKey(models.Model):
@@ -48,8 +45,6 @@ class Zone(SyncedModel):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
 
-    requires_trusted_signature = True
-
     class Meta:
         app_label = "securesync"
 
@@ -63,6 +58,14 @@ class Zone(SyncedModel):
 
         return orgs[0] if orgs else None
 
+    def is_member(self, device):
+        """
+        """
+        try:
+            return ChainOfTrust(zone=self, device=device).verify()
+        except:
+            return False
+
 
     @classmethod
     def get_headless_zones(cls):
@@ -72,35 +75,19 @@ class Zone(SyncedModel):
         # Must import inline (not in header) to avoid import loop
         return Zone.objects.filter(organization=None)
 
-
-    @classmethod
-    def load_zone_for_offline_install(cls, in_file):
-        """
-        Receives a serialized file for import.
-        Import the file--nothing more!
-        
-        File should contain:
-        * Zone object
-        * Device and DeviceZone / ZoneInvitation objects (chain of trust)
-        * Central server object
-        """
-        assert os.path.exists(in_file), "in_file must exist."
-        with open(in_file, "r") as fp:
-            models = serializers.deserialize("json", fp.read())  # all must be in a consistent version
-        for model in models:
-            model.save()
-
-
     def __unicode__(self):
         return self.name
 
-
-class ZoneInvitation(SyncedModel):
-    zone = models.ForeignKey("Zone")
-    device = models.ForeignKey("Device")
-    public_key = models.CharField(max_length=500)
-    private_key = models.CharField(max_length=500)
-
+def throw_on_debug(handler):
+    def tod_wrapper_fn(*args, **kwargs):
+        try:
+            return handler(*args, **kwargs)
+        except ValidationError as ve:
+            if settings.DEBUG:
+                raise ve
+            else:
+                return False
+    return tod_wrapper_fn
 
 class DeviceZone(SyncedModel):
     device = models.ForeignKey("Device", unique=True)
@@ -108,10 +95,18 @@ class DeviceZone(SyncedModel):
     revoked = models.BooleanField(default=False)
     max_counter = models.IntegerField(blank=True, null=True)
 
-    requires_trusted_signature = True
-
     class Meta:
         app_label = "securesync"
+
+    @throw_on_debug
+    def validate(self):
+        """
+        Zone and DeviceZone: if we made it, then it auto-verifies.
+        """
+        if self.signed_by.is_trusted():
+            return True
+        invitation =  get_object_or_None(ZoneInvitation, used_by=self.device, zone=self.zone)
+        return self.device == self.signed_by and invitation and invitation.verify()
 
     def __unicode__(self):
         return u"Device: %s, assigned to Zone: %s" % (self.device, self.zone)
@@ -141,6 +136,7 @@ class Device(SyncedModel):
         app_label = "securesync"
 
     def set_key(self, key):
+        assert isinstance(key, crypto.Key), "key must be a crypto Key object"
         self.public_key = key.get_public_key_string()
         self.key = key
 
@@ -179,32 +175,33 @@ class Device(SyncedModel):
         """Accessor method to probe the default version of a device (or field)"""
         return cls._meta.get_field("version").default
 
-    @staticmethod
-    def get_own_device():
+    @classmethod
+    def get_own_device(cls):
         devices = DeviceMetadata.objects.filter(is_own_device=True)
         if devices.count() == 0:
-            own_device = Device.initialize_own_device() # why don't we need name or description here?
+            own_device = cls.initialize_own_device() # why don't we need name or description here?
         else:
             own_device = devices[0].device
         return own_device
 
-    @staticmethod
-    def initialize_own_device(**kwargs):
+    @classmethod
+    def initialize_own_device(cls, **kwargs):
         """
         Create a device object for the installed device.  Part of installation.
         """
-        if not "version" in kwargs:
-            kwargs["version"] = kalite.VERSION  # this should not be passed as an arg.
-
-        own_device = Device(**kwargs)
+        kwargs["version"] = kwargs.get("version", kalite.VERSION)
+        kwargs["name"] = kwargs.get("name", get_host_name())
+        own_device = cls(**kwargs)
         own_device.set_key(crypto.get_own_key())
-        own_device.sign(device=own_device)
-        own_device.save(own_device=own_device)
+        own_device.save(
+            is_trusted=settings.CENTRAL_SERVER,
+            own_device=own_device,  # all objects must be signed by this device and increment counters;
+        )                           #   allowing passing this parameter breaks an infinite loop.
 
         metadata = own_device.get_metadata()
         metadata.is_own_device = True
-        metadata.is_trusted = settings.CENTRAL_SERVER
         metadata.save()
+
         return own_device
 
     @transaction.commit_on_success
@@ -230,8 +227,19 @@ class Device(SyncedModel):
         return zones and zones[0].zone or None
     get_zone.short_description = "Zone"
 
+    def validate(self):
+        try:
+            if self.signed_by_id != self.id:
+                raise ValidationError("Device is not self-signed.")
+            return True
+        except ValidationError as ve:
+            if settings.DEBUG:
+                raise ve
+            else:
+                return False
+
     def verify(self):
-        if self.signed_by_id != self.id:
+        if not self.validate():
             return False
         return self.get_key().verify(self._hashable_representation(), self.signature)
 
@@ -248,26 +256,11 @@ class Device(SyncedModel):
             metadata.save()
 
     def get_uuid(self):
+        """
+        Device's UUID is dependent only on its public key.
+        """
         assert self.public_key is not None, "public_key required for get_uuid"
-
         return uuid.uuid5(settings.ROOT_UUID_NAMESPACE, str(self.public_key)).hex
-
-    def register_offline(self, zone, invitation=None):
-        """
-        """
-        if invitation:
-            if invitation.zone != zone:
-                raise CommandError("Zone invitation does not match the zone requested to register to.")
-            invitation.device = self
-            invitation.save()
-
-        elif not zone.signed_by == self:
-            raise CommandError("Must register to a zone with an invitation, or must have generated the zone.")
-
-        # Create a DeviceZone, and self-sign it.
-        devicezone = DeviceZone(device=self, zone=zone)
-        devicezone.sign(device=self)
-        devicezone.save()
 
     @staticmethod
     def get_device_counters(zone):
@@ -277,86 +270,264 @@ class Device(SyncedModel):
                 device_counters[device.id] = device.get_metadata().counter_position
         return device_counters
 
-    def chain_of_trust(self, track_back_to_device):
-        return self.__class__.chain_of_trust_generic(from_device=self, to_device=track_back_to_device)
-
     @classmethod
     def get_central_server(cls):
-        devices = Device.objects.filter(devicemetadata__is_trusted=True)
-        return devices[0] if devices else None
+        if settings.CENTRAL_SERVER:
+            return Device.get_own_device()
+        else:
+            devices = Device.objects.filter(devicemetadata__is_trusted=True)
+            return devices[0] if devices else None  # none if old computer, hasn't registered.
 
-    def serialize_chain_of_trust(self):
-        originator = self.zone.signed_by
-        models = chain_of_trust(track_back_to_device) 
+    def is_originator(self, model):
+        return self == model.signed_by
+
+    def is_trusted(self):
+        return self.get_metadata().is_trusted
+
+
+class ZoneInvitation(SyncedModel):
+    """
+    Public/private keypair, with the public key signed by
+    the inviting party.
+    """
+    zone = models.ForeignKey("Zone")
+    invited_by = models.ForeignKey("Device", related_name="+")
+    used_by = models.ForeignKey("Device", blank=True, null=True, related_name="+")
+    public_key = models.CharField(max_length=500)
+    public_key_signature = models.CharField(max_length=500)
+    private_key = models.CharField(max_length=2500, blank=True, null=True)
+    revoked = models.BooleanField(default=False)
+
+    key = None
+
+    def _hashable_representation(self):
+        fields = ["zone", "public_key", "public_key_signature"]
+        return super(ZoneInvitation, self)._hashable_representation(fields=fields)
+
+    def get_uuid(self):
+        """
+        ZoneInvitation's UUID is dependent only on its public key.
+        """
+        assert self.public_key is not None, "public_key required for get_uuid"
+        return uuid.uuid5(settings.ROOT_UUID_NAMESPACE, str(self.public_key)).hex
+
+    def set_key(self, key, invited_by=None):
+        assert isinstance(key, crypto.Key), "key must be a crypto Key object"
+        self.key = key
+        self.public_key = key.get_public_key_string()
+        self.private_key = key.get_private_key_string()
+        
+        self.invited_by = invited_by or self.invited_by
+        assert self.invited_by, "must set invited_by, or pass in as parameter."
+        assert self.invited_by.get_key(), "inviting Device must have a valid key."
+        assert self.invited_by.get_key().get_private_key_string(), "inviting Device must have a valid key for signing."
+
+        self.public_key_signature = self.invited_by.get_key().sign(self.public_key)
+        if not self.verify():
+            logging.debug("Created invalid ZoneInvitation.")
+
+    def get_key(self):
+        if not self.key:
+            self.key = crypto.Key(public_key_string=self.public_key, private_key_string=self.private_key)
+        return self.key
+
+    def validate(self):
+        """
+        Verify that this Invitation is valid and set up properly.
+        """
+        try:
+            if not self.public_key_signature:
+                raise ValidationError("Public key signature does not exist")
+            elif not self.invited_by:
+                raise ValidationError("Public key signee does not exist")
+            elif not self.is_authorized(self.invited_by):
+                raise ValidationError("Public key signee is on a different zone than this invitation, did not create the zone, and is not trusted.")
+            elif self.revoked:
+                raise ValidationError("ZoneInvitation was revoked.")
+            return True
+        except ValidationError as ve:
+            if settings.DEBUG:
+                raise ve
+            else:
+                return False
+
+    def verify(self):
+        if not self.validate():
+            return False
+        return self.invited_by.get_key().verify(self.public_key, self.public_key_signature)
+
+    def claim(self, used_by):
+        """
+        Use this certificate to put Device used_by on this zone.
+        """
+        if self.used_by:
+            raise Exception("This ZoneInvitation has already been used.")
+        elif not self.private_key:
+            raise Exception("Can only use a zone invitation with a private key.")
+        elif ZoneInvitation.objects.filter(used_by=used_by).count():
+            raise Exception("Device %s has already used %s zone invitation(s)." % (used_by, ZoneInvitation.objects.filter(used_by=used_by).count()))
+
+        self.used_by = used_by
+        self.save()
+
+        # Create the device zone.  As the zone owner, self-signing is OK!
+        logging.debug("Successfully claimed the zone invitation, generating a DeviceZone")
+        devicezone = DeviceZone(device=used_by, zone=self.zone)
+        devicezone.save()  # sign this ourselves--we authorize this claim
+
+    def is_authorized(self, device=None):
+        """
+        Authorized to be in the chain / generate Invitations
+        """
+        is_auth = False
+        is_auth = is_auth or self.zone.signed_by == device 
+        is_auth = is_auth or self.zone == device.get_zone()
+        is_auth = is_auth or device.is_trusted()
+        return is_auth
+
 
     @classmethod
-    def chain_of_trust_generic(cls, from_device, to_device):
+    def generate(cls, zone=None, invited_by=None):
+        """
+        Returns an unsaved object.
+        """
+        invited_by = invited_by or Device.get_own_device()
+        zone = zone or invited_by.get_zone()
+        assert zone and invited_by
+
+        invitation = ZoneInvitation(zone=zone, invited_by=invited_by)
+        invitation.set_key(crypto.Key())
+        invitation.verify()
+
+        return invitation
+
+
+class ChainOfTrust(object):
+    """
+    Object for computing and validating a chain of signatures
+    linking a device to a zone through a set of ZoneInvitations or DeviceZones.
+    
+    Note: This currently subclasses object, but a version subclassing Model
+    could act as a ChainOfTrust cache, so that _compute would not need
+    to be called every time, but instead only when a Model didn't exist in the
+    database.
+    """
+    MAX_CHAIN_LENGTH = 100
+
+    def __init__(self, zone=None, device=None):
+        """
+        Represents a chain of trust, establishing membership of a device on a zone.
+        
+        Output
+        """
+        self.device = device or Device.get_own_device()
+        self.zone = zone or Device.get_own_device().get_zone()
+        self.originator = zone.signed_by
+        self.chain = self._compute()
+
+    def objects(self):
+        """
+        Return a list of objects without their relationships,
+        as well as supporting objects (such as DeviceMetadata)
+        """
+        device_list = [dict["device"] for dict in self.chain]
+        invitation_list = [dict["zone_invitation"] for dict in self.chain if dict["zone_invitation"]]
+        devicezone_list = [dict["device_zone"] for dict in self.chain if dict["device_zone"]]
+
+        # We return in this order because we know this order is necessary for serializing
+        #   objects (due to interdependencies)
+        return device_list + [self.zone] + invitation_list + devicezone_list
+
+    def validate(self):
+        import pdb; pdb.set_trace()
+        return self.verify()
+
+    def verify(self):
+        is_valid = True
+        is_valid = is_valid and self.device
+        is_valid = is_valid and self.zone
+        is_valid = is_valid and self.originator
+        is_valid = is_valid and self.chain
+
+        first_link = self.chain[0]
+        last_link = self.chain[-1]
+        is_valid = is_valid and self.device == first_link["device"]
+        is_valid = is_valid and self.originator == last_link["device"] or last_link["device"].is_trusted()
+
+        # Make sure they're all on the same zone
+        prev_invitation = None
+        for link in self.chain:
+            device = link["device"]
+            invitation = link["zone_invitation"]
+            devicezone = link["device_zone"]
+
+            is_valid = is_valid and device.is_trusted() or device.get_zone() == self.zone
+
+            if invitation:
+                is_valid = is_valid and invitation.is_authorized(device)
+                is_valid = is_valid and (not prev_invitation or device.get_key().verify(prev_invitation.public_key, prev_invitation.public_key_signature))
+
+            if devicezone:
+                is_valid = is_valid and device.get_zone() == devicezone.zone
+
+            prev_invitation = invitation
+
+        return bool(is_valid)   
+
+    def _compute(self):
         """
         Track from one DeviceZone to whomever originally signed the zone
         (the zone creator--either the central server, or a device)
 
         Returns an (ordered) list of dictionaries (Device, DeviceZone), defining the chain of trust.
         """
-        chain_to_originator = cls.chain_of_trust_one_way(from_device)
-        chain_to_device = cls.chain_of_trust_one_way(to_device)[::-1]
-        
-        # Make sure the devices at the ends are either on the same zone,
-        #   or trusted
-
-        chain = chain_to_originator + chain_to_device[1:]
-        return chain
+        return self.__class__.compute_one_way(zone=self.zone, from_device=self.device, to_device=self.originator)
 
     @classmethod
-    def chain_of_trust_one_way(cls, from_device):
+    def compute_one_way(cls, zone, from_device, to_device):
         """
         """
+        assert from_device.is_trusted() or from_device.get_zone() == zone
         # Trace back from this device to the zone-trusted device.
         chain = [{"device": from_device}]
+        devices_in_chain = set([])
 
-        while True:
-            chain[-1]["device_zone"] = get_object_or_None(DeviceZone, device=chain[-1]["device"].signed_by)
-            chain[-1]["zone_invitation"] = get_object_or_None(ZoneInvitation, device=chain[-1]["device"].signed_by)
+        for i in range(cls.MAX_CHAIN_LENGTH):  # max chain size: 1000 (avoids infinite loops)
+            # We're going to traverse the chain backwards, until we get to
+            #   the originator (to_device), or a trusted device.
+            cur_link = chain[-1]
 
-            if not chain[-1]["device_zone"] and not chain[-1]["zone_invitation"]:
+            # Get a devicezone and/or zone invitation for the current device.
+            cur_link["zone_invitation"] = get_object_or_None(ZoneInvitation, used_by=cur_link["device"].signed_by, revoked=False)
+            if cur_link["zone_invitation"]:
+                cur_link["zone_invitation"].verify()  # make sure it's a valid invitation
+            cur_link["device_zone"] = get_object_or_None(DeviceZone, device=cur_link["device"].signed_by, revoked=False)
+
+            # Determine the next step.  Three terminal steps, one continuing step
+            if not cur_link["zone_invitation"] and not cur_link["device_zone"]:
+                # A break in the chain.  No connection between the device and the zone.
                 break
-
-            for obj_type in ["device_zone", "zone_invitation"]:
-                if not chain[-1][obj_type]:
-                    continue
-                if chain[-1][obj_type].signed_by == chain[-1]["device"]:
-                    break
-            chain.append({"device": signed_by})
+            elif cur_link["device"] == to_device or cur_link["device"].is_trusted():
+                logging.debug("Found end of chain!")
+                break;
+            next_device = getattr(cur_link["zone_invitation"], "invited_by", None)
+            next_device = next_device or getattr(cur_link["device_zone"], "signed_by")
+            if next_device in devices_in_chain:
+                logging.warn("loop detected.")
+                break
+            else:
+                # So far, we're OK--keep looking for the (valid) end of the chain
+                assert next_device.is_trusted() or next_device.get_zone() == zone
+                devices_in_chain.add(next_device)
+                chain.append({"device": next_device})
 
         # Validate the chain of trust to the zone originator
-        for obj_type in ["device_zone", "zone_invitation"]:
-            terminal_link = chain[-1]
-            terminal_device = terminal_link["device"]
-            obj = terminal_link[obj_type]
-            if obj and not (terminal_device.is_originator(obj) or terminal_device.is_trusted()):
-                raise Exception("Could not verify chain of trust.")
+        terminal_link = chain[-1]
+        terminal_device = terminal_link["device"]
+        obj = terminal_link["zone_invitation"] or terminal_link["device_zone"]
+        if obj and not (terminal_device.is_originator(obj) or terminal_device.is_trusted()):
+            logging.warn("Could not verify chain of trust.")
         return chain
-
-        
-        @classmethod
-        def is_valid_chain_of_trust(cls, chain, from_device=None, to_device=None):
-            """
-            """
-            is_valid = True
-            is_valid = is_valid and chain
-            is_valid = is_valid and (not from_device or from_device == chain[0]["device"])
-            is_valid = is_valid and (not to_device or to_device == chain[-1]["device"])
-
-            idx = 1
-            while is_valid and idx < len(chain):
-                prev_link = chain[idx-1]
-                cur_link = chain[idx]
-                owner_in_chain = None
-
-    def is_originator(self, model):
-        return self == model.signed_by
-
-    def is_trusted(self):
-        return self.devicemetadata.is_trusted
 
 # No device data gets "synced" through the same sync mechanism as data--it is only synced 
 #   through the special hand-shaking mechanism

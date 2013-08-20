@@ -4,6 +4,7 @@ Used for labeling models that use securesync.  This is where the heavy lifting h
 from annoying.functions import get_object_or_None
 
 from django.core.exceptions import ValidationError
+#from django.db import models, transaction
 
 import settings
 import version
@@ -43,7 +44,7 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
     # remove all requested devices that either don't exist or aren't in the correct zone
     for device_id in device_counters.keys():
         device = get_object_or_None(Device, pk=device_id)
-        if not device or not (device.in_zone(zone) or device.get_metadata().is_trusted):
+        if not device or not (device.in_zone(zone) or device.is_trusted()):
             del device_counters[device_id]
 
     models = []
@@ -66,7 +67,7 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
 
                 # for trusted (central) device, only include models with the correct fallback zone
                 if not device.in_zone(zone):
-                    if device.get_metadata().is_trusted:
+                    if device.is_trusted():
                         queryset = queryset.filter(zone_fallback=zone)
                     else:
                         continue
@@ -94,6 +95,7 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
         return serialized_models
 
 
+#@transaction.commit_on_success
 def save_serialized_models(data, increment_counters=True, src_version=version.VERSION):
     """Unserializes models (from a device of version=src_version) in data and saves them to the django database.
     If src_version is None, all unrecognized fields are (silently) stripped off.  
