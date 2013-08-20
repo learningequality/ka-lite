@@ -21,17 +21,12 @@ body {
   background-repeat: no-repeat;
 }
 
-label,p{
-  .normal-text-font;// Resets the font of all the text (definition in mixins.less)
-}
 
 a:hover{
   text-decoration: none;
 }
 
-input{
-  margin:0!important;
-}
+
 
 .symbol, a.symbol:before { // Makes the icons look nice on all the browsers
   font-family: 'Mono Social Icons Font';
@@ -50,6 +45,10 @@ input{
 a.symbol:before {
   content: attr(title);
   font-size: 130%;
+}
+
+p{
+  font:@body-font;
 }
 
 // Headings & Titles
@@ -107,6 +106,10 @@ h1{font-size: 218%;
 
 ul{
   padding:0;
+  &.list li{
+    margin:0;
+    font: @body-font;
+  }
   &.nostyle-list li{
     list-style-type: none;
   }
@@ -310,4 +313,8 @@ input.footer__email__input{
 }
 .cc-logo{
   height:14px;
+}
+
+.form-section li{
+list-style: none;
 }

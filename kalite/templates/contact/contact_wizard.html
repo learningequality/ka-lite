@@ -7,7 +7,8 @@
 {% block contact_active %}active{% endblock contact_active %}
 
 
-{% block headcss %}{% endblock headcss %}
+{% block headcss %}
+{% endblock headcss %}
 
 {% block content %}
 
@@ -25,14 +26,14 @@
 <div class="form-section toggle-section" id="deployment_section">
     <h2>Deployment Scenario</h2>
     <p>The more you tell us about your deployment scenario (how you would be using KA Lite), the better advice we can give about getting set up.</p>
-
+    
     {{ deployment_form.as_p }}
 </div>
 
 <div class="form-section toggle-section" id="support_section">
     <p>Thanks for your interest in KA Lite!  We are happy to offer support!  Due to an overwhelming response to KA Lite, it may take some time to respond.</p>
     <p>Please check our available documentation to see if your questions might be answered.
-        <ul>
+        <ul class="list">
           <li><a href="/faq/">FAQ</a> - Answers to our most frequently asked questions</li>
           <li><a href="https://groups.google.com/a/learningequality.org/forum/?hl=en&fromgroups#!forum/support">Support Google Group</a> - search previously submitted questions, and our answers.</li>
           <li><a href="/wiki/">KA Lite User's manual</a> - Our wiki contains the latest documentation on installing, setting up, and using KA Lite!</li>
@@ -54,14 +55,13 @@
 </div>
 
 <div class="form-section">
-    
-    <div>
+     
       <label class="checkbox"> 
         <input type="checkbox" name="hack_cc_email"/>Please send a copy of this contact request to my email address above.
       </label>
-    </div>
+
   
-	<div><p><input type="submit" class="btn" value="Contact us!" /></p></div>
+	<div><p><input type="submit" class="button-green" value="Contact us!" /></p></div>
 </div>
 
 </form>
