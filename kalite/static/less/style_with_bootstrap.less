@@ -9,11 +9,14 @@
 // Body, Container and Resets
 // --------------------------------------------------
 
-body {
+body{
   background: @light-green;
   font:@body-font;
 }
 
+body,p,td{
+  font:@body-font;
+}
 .container{
   max-width: @container-max-width; // Puts a hard limit on the width of the layout 
   margin: 0 auto;
@@ -24,9 +27,6 @@ body {
 a:hover{
   text-decoration: none;
 }
-
-
-
 
 .symbol, a.symbol:before { // Makes the icons look nice on all the browsers
   font-family: 'Mono Social Icons Font';
@@ -47,9 +47,7 @@ a.symbol:before {
   font-size: 130%;
 }
 
-p,td{
-  font:@body-font;
-}
+
 
 // Headings & Titles
 // --------------------------------------------------
@@ -110,6 +108,7 @@ h1{font-size: 218%;
   }
   .neworg-button{
     margin-top:16px;
+    float:right;
   }
 // List
 // --------------------------------------------------
