@@ -105,7 +105,6 @@ class UpdatesStaticCommand(BaseCommand):
 
         super(UpdatesStaticCommand, self).__init__(*args, **kwargs)
 
-
     def start(self, notes=None):
         assert self.stages
         assert self.stage_index is None
@@ -117,6 +116,9 @@ class UpdatesStaticCommand(BaseCommand):
         if notes:
             sys.stdout.write("%s\n" % notes)
 
+    def restart(self, notes=None):
+        self.progress_log.restart()
+        self.start(notes=notes)
 
     def started(self):
         return self.stage_index is not None
