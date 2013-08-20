@@ -50,6 +50,36 @@ function communicate_api_failure(resp, msg_id) {
     show_api_messages(messages, msg_id)
 }
 
+var UserModel = Backbone.Model.extend({
+    defaults: {
+        points: 0,
+        newpoints: 0
+    }
+});
+
+var TotalPointView = Backbone.View.extend({
+
+    initialize: function() {
+        _.bindAll(this);
+        this.model.bind("change:points", this.render);
+        this.model.bind("change:newpoints", this.render);
+        this.render();
+    },
+
+    render: function() {
+        var points = this.model.get("points") + this.model.get("newpoints");
+        if (points > 0) {
+            this.$el.text("Points: " + points);
+            this.$el.show();
+        } else {
+            this.$el.hide();
+        }
+    }
+
+});
+
+window.userModel = new UserModel();
+
 $(function(){
     // Do the AJAX request to async-load user and message data
     $("[class$=-only]").hide();
@@ -65,9 +95,8 @@ $(function(){
                 }
                 else {
                     $('#logged-in-name').text(data.username);
-                    if (data.points!=0) {
-                        $('#sitepoints').text("Points: " + data.points);
-                    }
+                    window.userModel.set(data);
+                    window.totalPointView = new TotalPointView({model: userModel, el: $('#sitepoints')});
                 }
             }
             show_django_messages(data.messages);

@@ -6,6 +6,7 @@ function updateStreakBar() {
         $("#streakbar .progress-bar").addClass("completed");
         $("#hint-remainder").hide();
     }
+    userModel.set("newpoints", exerciseData.points - exerciseData.starting_points);
 }
 
 function updateQuestionPoints(points) {
@@ -81,7 +82,8 @@ $(function() {
                 return;
             }
             exerciseData.percentCompleted = data[0].streak_progress;
-            exerciseData.points = data[0].points;
+            exerciseData.points = exerciseData.starting_points = data[0].points;
+
             updateStreakBar();
 
             // Show all messages in "messages" object
@@ -104,13 +106,13 @@ function adjust_scratchpad_margin(){
 $(function(){
 
     adjust_scratchpad_margin();
-     
+
     $("#scratchpad-show").click(function(){
         _.defer(function() {
             adjust_scratchpad_margin();
         });
     });
-    
+
     $(".return-link").click(function() {
         window.history.go(-1);
         return false;

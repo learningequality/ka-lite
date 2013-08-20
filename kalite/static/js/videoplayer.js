@@ -16,6 +16,7 @@ window.VideoPlayerModel = Backbone.Model.extend({
         seconds_watched_since_save: 0.0,
         points: 0,
         possible_points: 750,
+        starting_points: 0,
         youtube_id: "",
         player_state: VideoPlayerState.UNSTARTED,
         seconds_between_saves: 30,
@@ -47,6 +48,7 @@ window.VideoPlayerModel = Backbone.Model.extend({
                 self.set({
                     total_seconds_watched: data[0].total_seconds_watched,
                     points: data[0].points,
+                    starting_points: data[0].points,
                     complete: data[0].complete
                 });
                 self.pointsSaved = data[0].points;
@@ -396,6 +398,13 @@ function initialize_video(video_youtube_id) {
         $(window).resize(resize_video);
 
         resize_video();
+
+        function update_video_points() {
+            userModel.set("newpoints", videoView.model.get("points") - videoView.model.get("starting_points"));
+        }
+
+        videoView.model.bind("change:starting_points", update_video_points);
+        videoView.model.bind("change:points", update_video_points);
 
     });
 
