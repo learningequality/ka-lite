@@ -49,41 +49,43 @@ function updatesStart(process_name, interval, callbacks) {
 
 function updatesStart_callback(process_name) {
         // Start the background process
-        doRequest("/api/updates/progress?process_name=" + process_name).success(function(progress_log) {
-            // Store the info
-            var process_name = progress_log.process_name
-            if (!process_name) {
-                // Start failed; can exit because this will repeat.
-                return;
-            }
-            if (!has_a_val(process_name, process_ids)) {
-                process_ids[process_name] = progress_log.process_id
-            }
-
-            // Launch a looping timer to call into the update check function
-            if (!progress_log.completed) {
-                // Clear interval for start
-                if (has_a_val(process_name, process_interval_handles)) {
-                    clearInterval(process_interval_handles[process_name]);
+        doRequest("/api/updates/progress?process_name=" + process_name)
+            .success(function(progress_log) {
+                // Store the info
+                var process_name = progress_log.process_name
+                if (!process_name) {
+                    // Start failed; can exit because this will repeat.
+                    return;
                 }
-                // Create interval for check
-                process_interval_handles[process_name] = setInterval( // call it soon
-                    function() { updatesCheck(process_name); }, 
-                    process_intervals[process_name]
-                );
-                updatesCheck(process_name);  // call it once directly
-            }
+                if (!has_a_val(process_name, process_ids)) {
+                    process_ids[process_name] = progress_log.process_id
+                }
 
-            // Do callbacks
-            if (process_callbacks[process_name] && "start" in process_callbacks[process_name]) {
-                process_callbacks[process_name]["start"](progress_log);
-            }
-        }).fail(function(resp) {
-            // Do callbacks
-            if (process_callbacks[process_name] && "start" in process_callbacks[process_name]) {
-                process_callbacks[process_name]["start"](null, resp);
-            }
-        });
+                // Launch a looping timer to call into the update check function
+                if (!progress_log.completed) {
+                    // Clear interval for start
+                    if (has_a_val(process_name, process_interval_handles)) {
+                        clearInterval(process_interval_handles[process_name]);
+                    }
+                    // Create interval for check
+                    process_interval_handles[process_name] = setInterval( // call it soon
+                        function() { updatesCheck(process_name); }, 
+                        process_intervals[process_name]
+                    );
+                    updatesCheck(process_name);  // call it once directly
+                }
+
+                // Do callbacks
+                if (process_callbacks[process_name] && "start" in process_callbacks[process_name]) {
+                    process_callbacks[process_name]["start"](progress_log);
+                }
+            }).fail(function(resp) {
+                show_message("error", "Error during updatesStart_callback: " + resp.responseText);
+                // Do callbacks
+                if (process_callbacks[process_name] && "start" in process_callbacks[process_name]) {
+                    process_callbacks[process_name]["start"](null, resp);
+                }
+            });
 }
 
 function updatesCheck(process_name, interval) {
@@ -92,44 +94,46 @@ function updatesCheck(process_name, interval) {
     // Get progress either generically (by the process_name, giving us the latest progress available),
     //    or by the process_id (connecting us to a specific process.)
     var path = "/api/updates/progress?process_" + (has_a_val(process_name, process_ids) ? ("id=" + process_ids[process_name]) : ("name=" + process_name));
-    doRequest(path).success(function(progress_log) {
-        var completed = !progress_log.process_name || progress_log.completed;
+    doRequest(path)
+        .success(function(progress_log) {
+            var completed = !progress_log.process_name || progress_log.completed;
 
-        // Reasons to exit
-        if (completed) {
-            // 
-            if (progress_log.process_percent == 1.) {
-                show_message("info", "Completed update '" + process_name + "' successfully.", "id_" + process_name)
-                updatesReset(process_name);
-            } else if (progress_log.process_name) {
-                show_message("error", "Error during update: " + progress_log.notes, "id_" + process_name);
-                updatesReset(process_name);
-            } else {
+            // Reasons to exit
+            if (completed) {
+                // 
+                if (progress_log.process_percent == 1.) {
+                    show_message("info", "Completed update '" + process_name + "' successfully.", "id_" + process_name)
+                    updatesReset(process_name);
+                } else if (progress_log.process_name) {
+                    show_message("error", "Error during update: " + progress_log.notes, "id_" + process_name);
+                    updatesReset(process_name);
+                } else {
+                }
+                //return
+            } else if (!process_intervals[process_name]) {
+                // If cancelled, stop the madness!
+                return;
             }
-            //return
-        } else if (!process_intervals[process_name]) {
-            // If cancelled, stop the madness!
-            return;
-        }
 
-        if (!has_a_val(process_name, process_ids)) {
-            process_ids[process_name] = progress_log.process_id
-        }
+            if (!has_a_val(process_name, process_ids)) {
+                process_ids[process_name] = progress_log.process_id
+            }
 
-        // Update the UI
-        updateDisplay(process_name, progress_log);
+            // Update the UI
+            updateDisplay(process_name, progress_log);
 
-        // Do callbacks
-        if (process_callbacks[process_name] && "check" in process_callbacks[process_name]) {
-            process_callbacks[process_name]["check"](progress_log);
-        }
-    }).fail(function(resp) {
-        updatesReset(process_name);
-        // Do callbacks
-        if (process_callbacks[process_name] && "check" in process_callbacks[process_name]) {
-            process_callbacks[process_name]["check"](null, resp);
-        }
-    });
+            // Do callbacks
+            if (process_callbacks[process_name] && "check" in process_callbacks[process_name]) {
+                process_callbacks[process_name]["check"](progress_log);
+            }
+        }).fail(function(resp) {
+            show_message("error", "Error during updatesCheck: " + resp.responseText);
+            updatesReset(process_name);
+            // Do callbacks
+            if (process_callbacks[process_name] && "check" in process_callbacks[process_name]) {
+                process_callbacks[process_name]["check"](null, resp);
+            }
+        });
 }
 
 function select_update_elements(process_name, selector) {

@@ -39,6 +39,13 @@ class UpdateProgressLog(models.Model):
         assert 0 <= self.process_percent and self.process_percent <= 1
         super(UpdateProgressLog, self).save(*args, **kwargs)
 
+    def restart(self):
+        self.process_percent = 0
+        self.stage_percent = 0
+        self.start_time = datetime.datetime.now()
+        self.end_time = None
+        self.completed = False
+        self.save()
 
     def update_stage(self, stage_name, stage_percent, notes=None):
         """

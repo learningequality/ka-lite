@@ -118,11 +118,12 @@ function download_urls_callback(data) {
             //updatesStart("update", 1000, software_callbacks)
 
             // Start the download and updating process
-            doRequest("{% url start_update_kalite %}", { "url": $("#software_available option:selected")[0].value }).success(function() {
-                updatesStart_callback("update")
-            }).fail(function(response) {
-                show_message("error", "Error starting update process (" + response.status + "): " + response.responseText);
-            });
+            doRequest("{% url start_update_kalite %}", { "url": $("#software_available option:selected")[0].value })
+                .success(function() {
+                    updatesStart_callback("update")
+                }).fail(function(response) {
+                    show_message("error", "Error starting update process (" + response.status + "): " + response.responseText);
+                });
 
             // Update the UI to reflect that we're waiting to start
             $("#cancel-update").show();
