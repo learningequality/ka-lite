@@ -145,7 +145,7 @@ function make_editable(type) {
                                 <option value="{{ group.id }}">{{ group }}</option>
                                 {% endfor %}
                         {% else %}
-                            <option value="" selected></option>
+                            <option value="" selected>[no groups]</option>
                         {% endif %}
                     </select>
                     {% if groupobject.groups|length > 1 %}
