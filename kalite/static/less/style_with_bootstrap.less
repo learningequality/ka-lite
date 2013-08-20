@@ -21,10 +21,10 @@ body {
   background-repeat: no-repeat;
 }
 
-
 a:hover{
   text-decoration: none;
 }
+
 
 
 
@@ -47,7 +47,7 @@ a.symbol:before {
   font-size: 130%;
 }
 
-p{
+p,td{
   font:@body-font;
 }
 
@@ -60,19 +60,26 @@ h1,h2,h3,h4,h5,h6{
 }
 h1{font-size: 218%;
   line-height: 25pt;}
-  h2,.organization-title{font-size: 164%;}
+  h2{font-size: 164%;}
   h3{font-size: 145%;}
   h4{font-size: 118%;}
 
   .organization-title{
-    background-color: #E7E7E7;
+    background-color: @light-gray;
     padding-left: 20px;
-    padding-top: 15px;
-    padding-bottom: 15px;
+
   }
 .errorlist{
   .alert;
   .alert-error;
+}
+.tooltip-container{
+  h1,.button-popover,h2{
+    display:inline;
+    vertical-align: middle;
+    line-height: 3.0;
+  }
+
 }
 
 // Paddings
@@ -95,9 +102,12 @@ h1{font-size: 218%;
   }
 
   .button-green--small{
-    .green_button(100%,2px, 13px, 5px, 20px); 
+    .green_button(100px,3px, 13px, 5px, 20px); 
   }
-
+  .button-popover{
+     .green_button(100px,3px, 13px, 5px, 10px); 
+     margin-left: 10px;
+  }
   .neworg-button{
     margin-top:16px;
   }
