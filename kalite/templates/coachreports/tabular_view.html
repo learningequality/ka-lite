@@ -2,6 +2,7 @@
 
 {% load i18n %}
 {% load staticfiles %}
+{% load my_filters %}
 
 {% block coachreports_active %}active{% endblock coachreports_active %}
 
@@ -188,12 +189,12 @@
                         </tr>
                         {% for student in students %}
                             <tr>
-                                {% for log in student.exercise_logs %}
-                                    {% if not log %}
+                                {% for exercise in exercises %}
+                                    {% if not student.exercise_logs|get_item:exercise.slug %}
                                         <td class="status data" title="{% trans "Not Attempted" %}">
-                                    {% elif log.struggling %}
+                                    {% elif student.exercise_logs|get_item:exercise.slug|get_item:"struggling" %}
                                         <td class="status data struggle" title="{% trans "Struggling" %}">
-                                    {% elif log.complete %}
+                                    {% elif student.exercise_logs|get_item:exercise.slug|get_item:"complete" %}
                                         <td class="status data complete" title="{% trans "Complete" %}">
                                     {% else %}
                                         <td class="status data partial" title="{% trans "Attempted" %}">
@@ -222,21 +223,21 @@
                         </tr>
                         {% for student in students %}
                             <tr>
-                                {% for log in student.video_logs %}
-                                    {% if not log %}
+                                {% for video in videos %}
+                                    {% if not student.video_logs|get_item:video.youtube_id %}
                                         <td class="status data" title="{% trans "Not Viewed" %}">
                                             &nbsp;
-                                    {% elif not log.complete %}
+                                    {% elif not student.video_logs|get_item:video.youtube_id|get_item:"complete" %}
                                         <td class="status data partial" title="{% trans "Viewing" %}">
-                                            <div class="total_seconds_watched">100%</div>
+                                            <div class="total_seconds_watched">{{ student.video_logs|get_item:video.youtube_id|get_item:"total_seconds_watched" }} {% trans "secs" %}</div>
                                     {% else %}
                                         <td class="status data complete" title="{% trans "Viewed" %}">
-                                            <div class="total_seconds_watched">{{ log.total_seconds_watched }} {% trans "secs" %}</div>
+                                            <div class="total_seconds_watched">100%</div>
                                     {% endif %}
-                                    {% if log %}
-                                            <div class="points">{{ log.points }} {% trans "points" %}</div>
+                                    {% if student.video_logs|get_item:video.youtube_id  %}
+                                            <div class="points">{{ student.video_logs|get_item:video.youtube_id|get_item:"points"  }} {% trans "points" %}</div>
+                                    {% endif %}
                                         </td>
-                                    {% endif %}
                                 {% endfor %}
                             </tr>
                         {% endfor %}
