@@ -122,6 +122,7 @@ TEMPLATE_LOADERS = (
 #     "django.template.loaders.eggs.Loader",
 )
 
+MIDDLEWARE_CLASSES = getattr(local_settings, 'MIDDLEWARE_CLASSES', tuple())
 MIDDLEWARE_CLASSES = (
     "django.contrib.sessions.middleware.SessionMiddleware",
     'django.middleware.locale.LocaleMiddleware',
@@ -130,8 +131,11 @@ MIDDLEWARE_CLASSES = (
     "django.contrib.messages.middleware.MessageMiddleware",
     "main.middleware.GetNextParam",
     "django.middleware.csrf.CsrfViewMiddleware",
-)
+) + MIDDLEWARE_CLASSES  # append local_settings middleware, in case of dependencies
 
+ROOT_URLCONF = "kalite.urls"
+
+INSTALLED_APPS = getattr(local_settings, 'INSTALLED_APPS', tuple())
 INSTALLED_APPS = (
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -150,7 +154,8 @@ INSTALLED_APPS = (
     "control_panel", # in both apps
     "coachreports", # in both apps; reachable on central via control_panel
     "kalite", # contains commands
-)
+) + INSTALLED_APPS  # append local_settings installed_apps, in case of dependencies
+
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 if DEBUG or CENTRAL_SERVER:
@@ -188,7 +193,8 @@ USER_LOG_SUMMARY_FREQUENCY = getattr(local_settings, "USER_LOG_SUMMARY_FREQUENCY
 
 # Sessions use the default cache, and we want a local memory cache for that.
 # Separate session caching from file caching.
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_ENGINE = getattr(local_settings, "SESSION_ENGINE", 'django.contrib.sessions.backends.cached_db')
+
 CACHES = {
     "default": {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
@@ -230,3 +236,24 @@ CRONSERVER_FREQUENCY = getattr(local_settings, "CRONSERVER_FREQUENCY", 600) # 10
 # Add additional mimetypes to avoid errors/warnings
 import mimetypes
 mimetypes.add_type("font/opentype", ".otf", True)
+
+# Django debug_toolbar config
+if getattr(local_settings, "USE_DEBUG_TOOLBAR", False):
+    INSTALLED_APPS += ('debug_toolbar',)
+    MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
+    DEBUG_TOOLBAR_PANELS = (
+        'debug_toolbar.panels.version.VersionDebugPanel',
+        'debug_toolbar.panels.timer.TimerDebugPanel',
+        'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
+        'debug_toolbar.panels.headers.HeaderDebugPanel',
+        'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
+        'debug_toolbar.panels.template.TemplateDebugPanel',
+        'debug_toolbar.panels.sql.SQLDebugPanel',
+        'debug_toolbar.panels.signals.SignalDebugPanel',
+        'debug_toolbar.panels.logger.LoggingPanel',
+    )
+    DEBUG_TOOLBAR_CONFIG = {
+        'INTERCEPT_REDIRECTS': False,
+        'HIDE_DJANGO_SQL': False,
+        'ENABLE_STACKTRACES' : True,
+    }
