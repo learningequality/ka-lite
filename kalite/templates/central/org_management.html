@@ -51,7 +51,7 @@
 		</form>
 		{% endfor %}
 		
-		
+			
 			{% if organizations %}
 			{% for pk,org in organizations.items %}		
 			<div class="row-fluid">
@@ -77,6 +77,7 @@
 			<div class="row-fluid">
 			<div class="span6 padding-left-20">
 			<h3>Affiliated Zones</h3>
+			
 			<table class="table">
 			{% for zone in org.get_zones %}
 			<tr>
@@ -178,8 +179,8 @@
 <script src="{% static 'js/bootstrap/tooltip.js' %}"></script>
 <script src="{% static 'js/bootstrap/popover.js' %}"></script>
 <script>
+	// Used <div> instead of <a> to avoid a dirty js hack to avoid the reload to top page.
 	$('#button-popover-org').popover()
 	$('#button-popover-headless').popover()
-
 </script>
 {% endblock bodyjs %}
