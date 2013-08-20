@@ -133,7 +133,7 @@ var KMapEditor = {
 
                 $("<img>")
                     .attr({
-                        src: "/static/" + topic.icon_url
+                        src: "/static" + topic.icon_url
                     })
                     .appendTo(newTopic);
 
