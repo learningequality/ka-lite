@@ -1,25 +1,51 @@
 """
-Used for labeling models that use securesync.  This is where the heavy lifting happens!
+Used for labeling models that use securesync.
+This is where the heavy lifting happens!
 """
 from annoying.functions import get_object_or_None
 
 from django.core.exceptions import ValidationError
+from django.db.models.fields.related import ForeignKey
 
 import settings
 import version
 from settings import LOG as logging
 from shared import serializers
 
-_syncing_models = [] # all models we want to sync
-
+_syncing_models = []  # all models we want to sync
 
 def add_syncing_models(models):
     """When sync is run, these models will be sync'd"""
+
+    get_foreign_key_classes = lambda m: set([field.rel.to for field in m._meta.fields if isinstance(field, ForeignKey)])
+
     for model in models:
         if model in _syncing_models:
             logging.warn("We are already syncing model %s" % str(model))
-        else:
-            _syncing_models.append(model)
+            continue
+
+        # When we add models to be synced, we need to make sure
+        #   that models that depend on other models are synced AFTER
+        #   the model it depends on has been synced.
+
+        # Get the dependencies of the new model
+        foreign_key_classes = get_foreign_key_classes(model)
+
+        # Find all the existing models that this new model refers to.
+        class_indices = [_syncing_models.index(cls) for cls in foreign_key_classes if cls in _syncing_models]
+
+        # Insert just after the last dependency found,
+        #   or at the front if no dependencies
+        insert_idx = (1 + max(class_indices)) if class_indices else 0
+
+        # Before inserting, make sure that any models referencing *THIS* model
+        # appear after this model.
+        if [True for synmod in _syncing_models[0:insert_idx] if model in get_foreign_key_classes(synmod)]:
+            raise Exception("Dependency loop detected in syncing models; cannot proceed.")
+
+        # Now we're ready to insert.
+        _syncing_models.insert(insert_idx, model)
+
 
 def get_syncing_models():
     return _syncing_models
@@ -116,7 +142,7 @@ def save_serialized_models(data, increment_counters=True, src_version=version.VE
         purgatory = None
 
     # deserialize the models, either from text or a list of dictionaries
-    if isinstance(data, str) or isinstance(data, unicode):
+    if isinstance(data, basestring):
         models = serializers.deserialize("versioned-json", data, src_version=src_version, dest_version=version.VERSION)
     else:
         models = serializers.deserialize("versioned-python", data, src_version=src_version, dest_version=version.VERSION)
