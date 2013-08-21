@@ -60,6 +60,7 @@ def download_kalite(request, *args, **kwargs):
 def get_kalite_version(request):
     return JsonResponse({
         "version": kalite.VERSION,
+        "release_date": datetime.datetime.strptime(kalite.RELEASE_DATE, '%Y/%m/%d')
     })
 
 
@@ -79,6 +80,7 @@ def get_download_urls(request):
     for locale, size in download_sizes.iteritems():
         urlargs = {
             "version": kalite.VERSION,
+            "release_date": datetime.datetime.strptime(kalite.RELEASE_DATE, '%Y/%m/%d')
             "platform": "all",
             "locale": locale
         }
