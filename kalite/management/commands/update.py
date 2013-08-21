@@ -21,6 +21,7 @@ from settings import LOG as logging
 from updates.utils import UpdatesStaticCommand
 from utils import crypto
 from utils.general import ensure_dir
+from utils.platforms import is_windows, platform_script_extension
 
 
 def call_outside_command_with_output(base_path, command, *args, **kwargs):
@@ -234,7 +235,7 @@ class Command(UpdatesStaticCommand):
 
         # Validation & confirmation
         self.next_stage("Testing the updated server")
-#        if platform.system() == "Windows":  # In Windows. serverstart is not async
+#        if is_windows():  # In Windows. serverstart is not async
         self.test_server_weak()
 #        else:
 #            self.test_server_full(test_port=test_port)
@@ -567,7 +568,7 @@ class Command(UpdatesStaticCommand):
         # OK, don't actually kill it--just move it
         if os.path.exists(self.dest_dir):
             try:
-                if platform.system() == "Windows" and in_place_move:
+                if is_windows() and in_place_move:
                     # We know this will fail, so rather than get in an intermediate state,
                     #   just move right to the compensatory mechanism.
                     raise Exception("Windows sucks.")
@@ -664,10 +665,7 @@ class Command(UpdatesStaticCommand):
     def get_shell_script(self, cmd_glob, location=None):
         if not location:
             location = self.working_dir + '/kalite'
-        if platform.system() == "Windows":
-            cmd_glob += ".bat"
-        else:
-            cmd_glob += ".sh"
+        cmd_glob += platform_script_extension()
 
         # Find the command
         cmd = glob.glob(location + "/" + cmd_glob)
@@ -676,5 +674,6 @@ class Command(UpdatesStaticCommand):
         elif len(cmd)==1:
             cmd = cmd[0]
         else:
-            raise CommandError("No command found? (%s @ %s)" % (cmd_glob, location))
+            cmd = None
+            logging.warn("No command found: (%s in %s)" % (cmd_glob, location))
         return cmd
