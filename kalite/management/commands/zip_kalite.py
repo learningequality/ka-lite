@@ -215,7 +215,7 @@ class Command(BaseCommand):
 
         # Step 4: package into a zip file
         system_specific_zipping(
-            files_dict = dict([(src_path, v["dest_path"]) for src_path, v in files_dict.iteritems()]), 
+            files_dict = dict([(v["dest_path"], src_path) for src_path, v in files_dict.iteritems()]), 
             zip_file = options["file"], 
             compression=ZIP_DEFLATED if options['compress'] else ZIP_STORED,
             callback=_default_callback_zip if options["verbosity"] else None,

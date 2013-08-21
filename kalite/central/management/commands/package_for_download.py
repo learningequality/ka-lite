@@ -32,11 +32,12 @@ from securesync.management.commands.initdevice import Command as InitCommand
 from securesync.models import Zone, DeviceZone, Device, ChainOfTrust, ZoneInvitation
 from shared import serializers
 from utils import crypto
-from utils.platforms import system_script_extension, system_specific_unzipping
+from utils.platforms import system_script_extension, system_specific_zipping, system_specific_unzipping
 
 def install_from_package(install_json_file, signature_file, zip_file, dest_dir=None):
     import os
     import platform
+    import subprocess
     import shutil
     import sys
     from zipfile import ZipFile
@@ -59,20 +60,17 @@ def install_from_package(install_json_file, signature_file, zip_file, dest_dir=N
         dest_dir = raw_input("Please enter the directory where you'd like to install KA Lite (blank=%s): " % src_dir) or src_dir
 
     # unpack the inner zip to the destination
-    system_specific_unzipping(zip_file, dest_dir)
-    sys.stdout.write("\n")
+#    system_specific_unzipping(zip_file, dest_dir)
+#    sys.stdout.write("\n")
 
     shutil.copy(install_json_file, os.path.join(dest_dir, "kalite/static/data/"))
 
     # Run the install/start scripts
-    return_code = subprocess.Popen(os.path.join(dest_dir, "install%s" % system_script_extension())).communicate()
-    if return_code != 0:
-        sys.stderr.write("Failed to install KA Lite.")
-        sys.exit(return_code)
-    return_code = subprocess.Popen(os.path.join(dest_dir, "start%s" % system_script_extension())).communicate()
-    if return_code != 0:
-        sys.stderr.write("Failed to start KA Lite.")
-        sys.exit(return_code)
+    pipes = subprocess.Popen(os.path.join(dest_dir, "install%s" % system_script_extension()), stdin=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+    if pipes[1]:
+        sys.stderr.write("Failed to install KA Lite: %s" % pipes[1])
+        sys.exit(1)
+    subprocess.Popen(os.path.join(dest_dir, "start%s" % system_script_extension()))
 
     # move the data file to the expected location
     os.mkdir(os.path.join(dest_dir, "kalite/static/zip"))
@@ -150,6 +148,12 @@ class Command(BaseCommand):
         def create_install_files():
             install_files = {}
 
+            # Create the install_from_package python script,
+            #   by outputting the install_from_package function (extracting here
+            #   through inspection and dumping line-by-line), and its dependencies
+            #   (utils.platforms, grabbed here through force).
+            #
+            # Also output a call to the function.
             install_files[self.install_py_file] = tempfile.mkstemp()[1]
             with open(install_files[self.install_py_file], "w") as fp:
                 fp.write(open(utils.platforms.__file__, "r").read() + "\n\n")
@@ -183,7 +187,7 @@ class Command(BaseCommand):
             with open(install_files[install_bat_file], "w") as fp:
                 fp.write("start /b /wait python.exe %s" % self.install_py_file)
 
-            # Change permissions
+            # Change permissions--I WISH THIS WORKED!!
             for fil in install_files.values():
                 os.chmod(fil, 0775)
 
@@ -192,7 +196,7 @@ class Command(BaseCommand):
 
         # Pre-zip prep #3:
         #   Generate the INNER zip
-        def create_zip_file():
+        def create_inner_zip_file():
             zip_file = create_default_archive_filename(options)
             options["file"] = zip_file
             if settings.DEBUG or not os.path.exists(zip_file):  # always regenerate in debug mode
@@ -200,31 +204,32 @@ class Command(BaseCommand):
             if not os.path.exists(zip_file):
                 raise CommandError("Failed to create kalite zip file.")
             return zip_file
-        zip_file = create_zip_file()
+        inner_zip_file = create_inner_zip_file()
 
         # Pre-zip prep #4:
         #   Create a file with the inner zip file signature.
-        def create_signature_file(zip_file):
+        def create_signature_file(inner_zip_file):
             signature_file = tempfile.mkstemp()[1]
             key = Device.get_own_device().get_key()
-            signature = key.sign(crypto.encode_base64(open(zip_file, "rb").read()))
+            signature = key.sign(crypto.encode_base64(open(inner_zip_file, "rb").read()))
             with open(signature_file, "w") as fp:
                 fp.write(signature)
             return signature_file
-        signature_file = create_signature_file(zip_file)
+        signature_file = create_signature_file(inner_zip_file)
 
-        # Open the zip file for writing
-        with ZipFile(wrapper_filename, "w", ZIP_STORED if settings.DEBUG else ZIP_DEFLATED) as zfile:
-            # Dump the zip file
-            zfile.write(zip_file,       arcname=UpdateCommand.inner_zip_filename)
-            zfile.write(signature_file, arcname=UpdateCommand.signature_filename)
-            zfile.write(models_file,    arcname=InitCommand.install_json_filename)
-            for arcname, filename in install_files.iteritems():
-                #zfile.write(install_file,   arcname="install.py")  # hard-coded because only the user uses it
-                info = ZipInfo(arcname)
-                info.external_attr = 0775 << 16L # give full access to included file
-                with open(filename, "r") as fh:
-                    zfile.writestr(info, fh.read())
+        # Create the outer (wrapper) zip
+        files_dict = {
+            UpdateCommand.inner_zip_filename: inner_zip_file,
+            UpdateCommand.signature_filename: signature_file,
+            InitCommand.install_json_filename: models_file,
+        }
+        files_dict.update(install_files)
+        system_specific_zipping(
+            files_dict = files_dict,
+            zip_file=wrapper_filename, 
+            compression=ZIP_STORED if settings.DEBUG else ZIP_DEFLATED,
+#            callback=None,
+        )
 
         # cleanup
         os.remove(signature_file)

@@ -23,6 +23,8 @@ def system_specific_scripts(system=None):
     """
     if is_windows(system):
         return [".bat", ".vbs"]
+    elif platform.system().lower() == "darwin":
+        return [".sh", ".command"]
     else:
         return [".sh"]
 
@@ -42,12 +44,16 @@ def system_specific_zipping(files_dict, zip_file=None, compression=ZIP_DEFLATED,
     if not zip_file:
         zip_file = tempfile.mkstemp()[1]
     with ZipFile(zip_file, "w", compression) as zfile:
-        for fi, (src_path, dest_path) in enumerate(files_dict.iteritems()):
+        for fi, (dest_path, src_path) in enumerate(files_dict.iteritems()):
             try:
                 if callback:
                     callback(src_path, fi, len(files_dict))
+
                 # Add without setting exec perms
-                if os.path.splitext(dest_path)[1] not in system_specific_scripts(system="linux"):
+                #
+                # NOTE: this setting currently fails on mac, so funnel
+                #   all through the NON-setting path.
+                if True or os.path.splitext(dest_path)[1] not in system_specific_scripts(system="darwin"):
                     zfile.write(src_path, arcname=dest_path)
                 # Add with exec perms
                 else:
@@ -55,12 +61,13 @@ def system_specific_zipping(files_dict, zip_file=None, compression=ZIP_DEFLATED,
                     info.external_attr = 0755 << 16L # give full access to included file
                     with open(src_path, "r") as fh:
                         zfile.writestr(info, fh.read())
+                    print dest_path
             except Exception as e:
                 # TODO(bcipolli)
                 # Utility functions really shouldn't write to stderr / stdout,
                 #   but ... best to do for now.  Could have a callback later,
                 #   or pass back a list of files failed to be added.
-                sys.stderr.write("Failed to add file %s: %s\n" % (srcpath, e))
+                sys.stderr.write("Failed to add file %s: %s\n" % (src_path, e))
 
 
 def _default_callback_unzip(afile, fi, nfiles):
