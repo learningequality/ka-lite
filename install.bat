@@ -17,7 +17,7 @@ if %ERRORLEVEL% == 1 (
 
 rem Check for Python
 rem
-reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths" /f "python.exe" /s /k /e /d > nul
+reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths" | findstr /I "python.exe" > nul
 
 if !ERRORLEVEL! EQU 1 (
     echo -------------------------------------------------------------------
