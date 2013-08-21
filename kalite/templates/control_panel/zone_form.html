@@ -1,6 +1,6 @@
 {% extends "control_panel/base.html" %}
 
-{% block title %}{{ zone.name }} - Zone Management Console{% endblock title %}
+{% block title %}{{ zone.name }} - Sharing Network Add / Edit{% endblock title %}
 {% block control_panel_active %}active{% endblock control_panel_active %}
 
 {% block control_panel_content %}
@@ -10,16 +10,16 @@
 
     <div>
         <h2>
-            {% if form.instance.pk %}Update Your Zone{% else %}Create A Zone{% endif %}
+            {% if form.instance.pk %}Update Your Sharing Network{% else %}Create A Zone{% endif %}
             <span class="glossary-link nudge-left" title="A Zone is the area in which multiple devices may connect to share content with each other."></span>
         </h2>
     
         {{ form.as_p }}
 
         {% if form.instance.pk %}
-        <input type="submit" value="Update Zone" class="button-green"/>
+        <input type="submit" value="Update Network" class="button-green"/>
         {% else %}
-        <input type="submit" value="Create Zone" class="button-green"/>
+        <input type="submit" value="Create Network" class="button-green"/>
         {% endif %}
     </div>
     </form>
