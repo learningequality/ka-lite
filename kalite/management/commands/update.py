@@ -16,6 +16,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 import settings
 from settings import LOG as logging
+from utils.platforms import is_windows, platform_script_extension
 
 
 def call_outside_command_with_output(kalite_location, command, *args, **kwargs):
@@ -166,7 +167,7 @@ class Command(BaseCommand):
         self.move_video_files()
 
         # Validation & confirmation
-        if platform.system() == "Windows":  # In Windows. serverstart is not async
+        if is_windows():  # In Windows. serverstart is not async
             self.test_server_weak()
         else:
             self.test_server_full(test_port=test_port)
@@ -433,7 +434,7 @@ class Command(BaseCommand):
         # OK, don't actually kill it--just move it
         if os.path.exists(self.dest_dir):
             try:
-                if platform.system() == "Windows" and self.current_dir == self.dest_dir:
+                if is_windows() and self.current_dir == self.dest_dir:
                     # We know this will fail, so rather than get in an intermediate state,
                     #   just move right to the compensatory mechanism.
                     raise Exception("Windows sucks.")
@@ -524,10 +525,7 @@ class Command(BaseCommand):
     def get_shell_script(self, cmd_glob, location=None):
         if not location:
             location = self.working_dir + '/kalite'
-        if platform.system() == "Windows":
-            cmd_glob += ".bat"
-        else:
-            cmd_glob += ".sh"
+        cmd_glob += platform_script_extension()
 
         # Find the command
         cmd = glob.glob(location + "/" + cmd_glob)
@@ -536,5 +534,6 @@ class Command(BaseCommand):
         elif len(cmd)==1:
             cmd = cmd[0]
         else:
-            cmd = None#raise CommandError("No command found? (%s)" % cmd_glob)
+            cmd = None
+            logging.warn("No command found: (%s in %s)" % (cmd_glob, location))
         return cmd
