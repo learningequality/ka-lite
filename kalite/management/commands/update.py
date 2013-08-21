@@ -16,7 +16,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 import settings
 from settings import LOG as logging
-from utils.platforms import is_windows, platform_script_extension
+from utils.platforms import is_windows, system_script_extension
 
 
 def call_outside_command_with_output(kalite_location, command, *args, **kwargs):
@@ -525,7 +525,7 @@ class Command(BaseCommand):
     def get_shell_script(self, cmd_glob, location=None):
         if not location:
             location = self.working_dir + '/kalite'
-        cmd_glob += platform_script_extension()
+        cmd_glob += system_script_extension()
 
         # Find the command
         cmd = glob.glob(location + "/" + cmd_glob)

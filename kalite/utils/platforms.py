@@ -1,16 +1,16 @@
 import platform
 
-def is_windows(platform=None):
-    if platform is None:
-        platform.system()
-    return platform.system() == "windows"
+def is_windows(system=None):
+    if system is None:
+        system = platform.system()
+    return system.lower() == "windows"
 
-def platform_script_extension():
+def system_script_extension():
     return ".bat" if is_windows() else ".sh"
 
-def platform_specific_scripts(platform=None):
+def system_specific_scripts(system=None):
 
-    if is_windows(platform):
+    if is_windows(system):
         return [".bat", ".vbs"]
     else:
         return [".sh"]
