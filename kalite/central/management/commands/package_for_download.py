@@ -32,15 +32,14 @@ from securesync.management.commands.initdevice import Command as InitCommand
 from securesync.models import Zone, DeviceZone, Device, ChainOfTrust, ZoneInvitation
 from shared import serializers
 from utils import crypto
+from utils.general import get_module_source_file
 from utils.platforms import system_script_extension, system_specific_zipping, system_specific_unzipping
+
 
 def install_from_package(install_json_file, signature_file, zip_file, dest_dir=None):
     import os
-    import platform
-    import subprocess
     import shutil
     import sys
-    from zipfile import ZipFile
 
     # Make the true paths
     src_dir = os.path.dirname(__file__) or os.getcwd()  # necessary on Windows
@@ -60,17 +59,20 @@ def install_from_package(install_json_file, signature_file, zip_file, dest_dir=N
         dest_dir = raw_input("Please enter the directory where you'd like to install KA Lite (blank=%s): " % src_dir) or src_dir
 
     # unpack the inner zip to the destination
-#    system_specific_unzipping(zip_file, dest_dir)
-#    sys.stdout.write("\n")
+    system_specific_unzipping(zip_file, dest_dir)
+    sys.stdout.write("\n")
 
     shutil.copy(install_json_file, os.path.join(dest_dir, "kalite/static/data/"))
 
     # Run the install/start scripts
-    pipes = subprocess.Popen(os.path.join(dest_dir, "install%s" % system_script_extension()), stdin=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-    if pipes[1]:
-        sys.stderr.write("Failed to install KA Lite: %s" % pipes[1])
-        sys.exit(1)
-    subprocess.Popen(os.path.join(dest_dir, "start%s" % system_script_extension()))
+    return_code = os.system('"%s"' % os.path.join(dest_dir, "install%s" % system_script_extension()))
+    if return_code:
+        sys.stderr.write("Failed to install KA Lite: exit-code = %s" % return_code)
+        sys.exit(return_code)
+    return_code = os.system('"%s"' % os.path.join(dest_dir, "start%s" % system_script_extension()))
+    if return_code:
+        sys.stderr.write("Failed to start KA Lite: exit-code = %s" % return_code)
+        sys.exit(return_code)
 
     # move the data file to the expected location
     os.mkdir(os.path.join(dest_dir, "kalite/static/zip"))
@@ -156,9 +158,9 @@ class Command(BaseCommand):
             # Also output a call to the function.
             install_files[self.install_py_file] = tempfile.mkstemp()[1]
             with open(install_files[self.install_py_file], "w") as fp:
-                fp.write(open(utils.platforms.__file__, "r").read() + "\n\n")
                 for srcline in inspect.getsourcelines(install_from_package)[0]:
                     fp.write(srcline)
+                fp.write("\n%s\n" % open(get_module_source_file("utils.platforms"), "r").read())
                 fp.write("\ninstall_from_package(\n")
                 fp.write("    zip_file='%s',\n" % UpdateCommand.inner_zip_filename)
                 fp.write("    signature_file='%s',\n" % UpdateCommand.signature_filename)
