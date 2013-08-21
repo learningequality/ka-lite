@@ -1,35 +1,32 @@
 """
-This file demonstrates writing tests using the unittest module. These will pass
-when you run "manage.py test".
-
-Replace this with more appropriate tests for your application.
+Test the topic-tree caching code (but only if caching is enabled in settings)
 """
 import sys
 import random
 import requests
 import urllib
 
-from django.test import TestCase, LiveServerTestCase
-from django.core.management import call_command
 from django.test.client import Client
 from django.utils import unittest
 
 import settings
-from utils import caching
 from kalite.main import topicdata
+from shared import caching
 from utils.django_utils import call_command_with_output
-from utils.testing import distributed_only
+from utils.testing.base import KALiteTestCase
+from utils.testing.decorators import distributed_server_test
 
 
-@distributed_only
-class CachingTest(LiveServerTestCase):
+@distributed_server_test
+class CachingTest(KALiteTestCase):
 
     @unittest.skipIf(settings.CACHE_TIME==0, "Test only relevant when caching is enabled")
     def test_cache_invalidation(self):
-
+        """Create the cache item, then invalidate it and show that it is deleted."""
+        
         # Get a random youtube id
         n_videos = len(topicdata.NODE_CACHE['Video'])
-        video_slug = random.choice(topicdata.NODE_CACHE['Video'].keys())
+        video_slug = topicdata.NODE_CACHE['Video'].keys()[10]#random.choice(topicdata.NODE_CACHE['Video'].keys())
         sys.stdout.write("Testing on video_slug = %s\n" % video_slug)
         youtube_id = topicdata.NODE_CACHE['Video'][video_slug]['youtube_id']
         video_path = topicdata.NODE_CACHE['Video'][video_slug]['paths'][0]
@@ -39,17 +36,19 @@ class CachingTest(LiveServerTestCase):
         
         # Create the cache item, and check it
         self.assertTrue(not caching.has_cache_key(path=video_path), "expect: no cache key after expiring the page")
-        caching.regenerate_cached_topic_hierarchies(video_ids=[youtube_id])
+        caching.regenerate_all_pages_related_to_videos(video_ids=[youtube_id])
         self.assertTrue(caching.has_cache_key(path=video_path), "expect: Cache key exists after Django Client get")
 
         # Invalidate the cache item, and check it
-        caching.invalidate_cached_topic_hierarchies(video_id=youtube_id) # test the convenience function
+        caching.invalidate_all_pages_related_to_video(video_id=youtube_id) # test the convenience function
         self.assertTrue(not caching.has_cache_key(path=video_path), "expect: no cache key after expiring the page")
 
     
     @unittest.skipIf(settings.CACHE_TIME==0, "Test only relevant when caching is enabled")
     def test_cache_across_clients(self):
-
+        """Show that caching is accessible across all clients 
+        (i.e. that different clients don't generate different cache keys)"""
+        
         # Get a random youtube id
         n_videos = len(topicdata.NODE_CACHE['Video'])
         video_slug = random.choice(topicdata.NODE_CACHE['Video'].keys())

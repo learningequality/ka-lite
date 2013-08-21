@@ -70,13 +70,13 @@ var KMapEditor = {
             this.ICON_SIZE = 40;
             this.LABEL_WIDTH = 80;
         }
-        this.IMG_LIVE = "/images/node-not-started-" + this.ICON_SIZE + ".png";
-        this.IMG_DEV = "/images/node-not-started-" + this.ICON_SIZE + "-faded.png";
-        this.IMG_SELECTED = "/images/node-complete-" + this.ICON_SIZE + ".png";
-        this.IMG_SELECTED_DEV = "/images/node-complete-" + this.ICON_SIZE + "-faded.png";
-        this.IMG_NOT_STARTED = "/images/node-not-started-" + this.ICON_SIZE + ".png";
-        this.IMG_PARTIAL = "/images/node-partial-" + this.ICON_SIZE + ".png";
-        this.IMG_COMPLETE = "/images/node-complete-" + this.ICON_SIZE + ".png";
+        this.IMG_LIVE = "/static/images/node-not-started-" + this.ICON_SIZE + ".png";
+        this.IMG_DEV = "/static/images/node-not-started-" + this.ICON_SIZE + "-faded.png";
+        this.IMG_SELECTED = "/static/images/node-complete-" + this.ICON_SIZE + ".png";
+        this.IMG_SELECTED_DEV = "/static/images/node-complete-" + this.ICON_SIZE + "-faded.png";
+        this.IMG_NOT_STARTED = "/static/images/node-not-started-" + this.ICON_SIZE + ".png";
+        this.IMG_PARTIAL = "/static/images/node-partial-" + this.ICON_SIZE + ".png";
+        this.IMG_COMPLETE = "/static/images/node-complete-" + this.ICON_SIZE + ".png";
     },
 
     createCanvas: function() {
@@ -133,7 +133,7 @@ var KMapEditor = {
 
                 $("<img>")
                     .attr({
-                        src: topic.icon_url
+                        src: "/static" + topic.icon_url
                     })
                     .appendTo(newTopic);
 
@@ -231,21 +231,30 @@ $(document).ready(function() {
         vars[key] = value;
     });
 
-    if (vars["topic"]) {
-        $.getJSON("/static/data/topicdata/" + vars["topic"] + ".json", function(exerciseLayout) {
-            var exercise_ids = $.map(exerciseLayout, function(exercise) { return exercise.name });
-            doRequest("/api/get_exercise_logs", exercise_ids).success(function(data) {
-                var exercisesCompleted = {};
-                $.each(data, function(ind, status) {
-                    exercisesCompleted[status.exercise_id] = status.complete ? "complete" : "partial";
-                });
-                KMapEditor.init(exerciseLayout, [], exercisesCompleted, 8);
-            });
-        });
-    } else {
+    if (!vars["topic"]) {
+        // Top level of the topic tree
         $(".topic-button").hide();
-        $.getJSON("/static/data/maplayout_data.json", function(defaultMapLayout) {
-            KMapEditor.init([], defaultMapLayout, {}, 6);
-        });
+        $.getJSON("/static/data/maplayout_data.json")
+            .success(function(defaultMapLayout) {
+                KMapEditor.init([], defaultMapLayout, {}, 6);
+            });
+    } else {
+        // Second level of the topic tree
+        $.getJSON("/static/data/topicdata/" + vars["topic"] + ".json")
+            .success(function(exerciseLayout) {
+                var exercise_ids = $.map(exerciseLayout, function(exercise) { return exercise.name });
+                doRequest("/api/get_exercise_logs", exercise_ids)
+                    .success(function(data) {
+                        var exercisesCompleted = {};
+                        $.each(data, function(ind, status) {
+                            exercisesCompleted[status.exercise_id] = status.complete ? "complete" : "partial";
+                        });
+                        KMapEditor.init(exerciseLayout, [], exercisesCompleted, 8);
+                    })
+                    .fail(function (resp) {
+                        communicate_api_failure(resp, "id_student_logs");
+                        KMapEditor.init(exerciseLayout, [], [], 8);
+                    });
+            });
     }
 });

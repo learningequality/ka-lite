@@ -9,9 +9,10 @@ from django.utils import translation
 import settings
 from main import topicdata
 from main.models import VideoFile
+from shared import caching
 from utils.videos import download_video, DownloadCancelled
 from utils.jobs import force_job
-from utils import caching, topic_tools
+from utils import topic_tools
 
 
 class Command(BaseCommand):
@@ -28,9 +29,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        if not getattr(settings, "CACHES", None):
-            raise CommandError("caching is turned off (CACHES is None)")
-        elif not getattr(settings, "CACHE_TIME", None):
+        if settings.CACHE_TIME == 0:
             raise CommandError("caching is turned off (CACHE_TIME is zero or none)")
         elif len(args)<1:
             raise CommandError("No command specified.")        
