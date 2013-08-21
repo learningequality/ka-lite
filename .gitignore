@@ -30,5 +30,6 @@ content/*.png
 content/*.mp4
 content/*.json
 content/*.srt
+node_modules
 locale/*
 kalite/media/*

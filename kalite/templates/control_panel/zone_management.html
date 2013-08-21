@@ -1,7 +1,29 @@
-{% extends "control_panel/base_management.html" %}
+{% extends "control_panel/base.html" %}
 {% load i18n %}
 
 {% block title %}{{ zone.name }} - Zone Management Console{% endblock title %}
+{% block control_panel_active %}active{% endblock control_panel_active %}
+
+{% block headjs %}{{ block.super }}
+<script>
+    $(function () {
+        $("#form_data").hide()
+        $("#upload_form").submit(function() {
+        // Disable until we get to this stage of the IDOC deployment.
+        /*
+            // First press: show file entry
+            if ($('#form_data').filter(":visible").length==0) {
+                $('#form_data').show();
+                return false;
+            }
+            // Second press: submit form (default)
+        */
+            return false;
+        });
+    })
+</script>
+{% endblock headjs %}
+
 {% block headcss %}{{ block.super }}
 <style>
     .reports {
@@ -10,6 +32,7 @@
     }
 </style>
 {% endblock headcss %}
+
 
 {% block buttons %}
             {% block upload_button %}
@@ -22,7 +45,7 @@
             {% endblock download_button %}
 {% endblock buttons %}
 
-{% block inner_content %}
+{% block control_panel_content %}
 <div id="zone_container">
     <div class="facilities">
         <h2>Facilities</h2>
@@ -61,7 +84,7 @@
 
         </table>
         {% endif %}
-    </div>
+    </div><!-- facilities -->
 
     <div class="devices">
         <h2>Devices</h2>
@@ -96,22 +119,6 @@
                 {% endfor %}
             </table>
         {% endif %}
-    </div>
-    <div>
-
-<script>
-$("#form_data").hide()
-$("#upload_form").submit(function() {
-// Disable until we get to this stage of the IDOC deployment.
-/*
-    // First press: show file entry
-    if ($('#form_data').filter(":visible").length==0) {
-        $('#form_data').show();
-        return false;
-    }
-    // Second press: submit form (default)
-*/
-    return false;
-});
-</script>
-{% endblock inner_content %}
+    </div><!-- devices -->
+</div><!-- zone_container -->
+{% endblock control_panel_content %}
