@@ -95,10 +95,11 @@ def generate_fake_facilities(names=("Wilson Elementary",)):
     facilities = []
 
     for name in names:
-        try:
-            facility = Facility.objects.get(name=name)
+        found_facilities = Facility.objects.filter(name=name)
+        if found_facilities:
+            facility = found_facilities[0]
             logging.info("Retrieved facility '%s'" % name)
-        except Facility.DoesNotExist as e:
+        else:
             facility = Facility(name=name)
             facility.save()
             logging.info("Created facility '%s'" % name)
@@ -117,10 +118,11 @@ def generate_fake_facility_groups(names=("Class 4E", "Class 5B"), facilities=Non
     facility_groups = []
     for facility in facilities:
         for name in names:
-            try:
-                facility_group = FacilityGroup.objects.get(facility=facility, name=name)
+            found_facility_groups = FacilityGroup.objects.filter(facility=facility, name=name)
+            if found_facility_groups:
+                facility_group = found_facility_groups[0]
                 logging.info("Retrieved facility group '%s'" % name)
-            except FacilityGroup.DoesNotExist as e:
+            else:
                 facility_group = FacilityGroup(facility=facility, name=name)
                 facility_group.full_clean()
                 facility_group.save()

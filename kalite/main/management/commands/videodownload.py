@@ -1,10 +1,11 @@
 import sys
 import time
+from optparse import make_option
 
 import settings
 from main.models import VideoFile
+from shared import caching
 from updates.utils import UpdatesDynamicCommand
-from utils import caching
 from utils.jobs import force_job
 from utils.topic_tools import get_video_by_youtube_id
 from utils.videos import download_video, DownloadCancelled
@@ -50,6 +51,15 @@ def download_progress_callback(self, videofile):
 class Command(UpdatesDynamicCommand):
     help = "Download all videos marked to be downloaded"
 
+    option_list = UpdatesDynamicCommand.option_list + (
+        make_option('-c', '--cache',
+            action='store_true',
+            dest='auto_cache',
+            default=False,
+            help='Create cached files',
+            metavar="AUTO_CACHE"),
+    )
+
     def handle(self, *args, **options):
 
         caching_enabled = settings.CACHE_TIME != 0
@@ -74,10 +84,10 @@ class Command(UpdatesDynamicCommand):
                 video.download_in_progress = True
                 video.percent_complete = 0
                 video.save()
-            
+
                 # Update the progress logging
-                
-                self.set_stages(num_stages=videos.count() + len(handled_video_ids) + 1)  # add one for the currently handed video
+
+                self.set_stages(num_stages=videos.count() + len(handled_video_ids) + options["auto_cache"] + 1)  # add one for the currently handed video
                 if not self.started():
                     self.stdout.write("Downloading video '%s'...\n" % video.youtube_id)
                     self.start(stage_name=video.youtube_id)
@@ -105,10 +115,11 @@ class Command(UpdatesDynamicCommand):
             sys.stderr.write("Error: %s\n" % e)
             self.cancel()
 
-        # Update
+        # Regenerate all pages, efficiently
+        if options["auto_cache"] and caching_enabled and handled_video_ids:
+            self.update_stage(stage_name="auto_cache", stage_percent=0., notes="Pre-generating topic and video webpages (may be slow).")
+            caching.regenerate_all_pages_related_to_videos(video_ids=handled_video_ids)
+
+        # Update that we finished
         self.complete()
 
-        # Regenerate all pages, efficiently
-
-        if caching_enabled:
-            caching.regenerate_cached_topic_hierarchies(handled_video_ids)
