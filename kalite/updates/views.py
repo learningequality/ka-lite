@@ -92,8 +92,8 @@ def update_subtitles(request):
 @render_to("updates/update_software.html")
 def update_software(request):
     context = {
-        "am_i_online": True,
         "software_version": kalite.VERSION,
+        "software_release_date": datetime.datetime.strptime(kalite.RELEASE_DATE, '%Y/%m/%d'),
         "install_dir": os.path.realpath(os.path.join(settings.PROJECT_PATH, "..")),
         "database_last_updated": datetime.datetime.fromtimestamp(os.path.getctime(settings.DATABASES["default"]["NAME"]
 )),

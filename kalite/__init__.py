@@ -1,3 +1,5 @@
+from version import *
+
 # testing isn't always available; just ignore if not
 try:
     import tests.testrunner
@@ -5,8 +7,6 @@ try:
 except:
     pass
     
-import version
-VERSION = version.VERSION
 
 try:
     import platform
