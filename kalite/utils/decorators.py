@@ -166,7 +166,7 @@ def allow_api_profiling(handler):
     else:
         def aap_wrapper_fn(request, *args, **kwargs):
             response = handler(request, *args, **kwargs)
-            if "debug" in request.GET and response["Content-Type"] == "application/json":
+            if not request.is_ajax() and response["Content-Type"] == "application/json":
                 # Add the "body" tag, which allows the debug_toolbar to attach
                 response.content = "<body>%s</body>" % response.content
                 response["Content-Type"] = "text/html"

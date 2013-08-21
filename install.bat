@@ -1,11 +1,23 @@
 @echo off
 
-
 setlocal enabledelayedexpansion
+
+copy %0 kalite\writetest.temp > nul
+
+if %ERRORLEVEL% == 1 (
+	echo -------------------------------------------------------------------
+	echo You do not have permission to write to this directory!
+	echo -------------------------------------------------------------------
+	exit /B
+) else (
+	if %ERRORLEVEL% == 0 (
+		del kalite\writetest.temp > nul
+	)
+)
 
 rem Check for Python
 rem
-reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths" | findstr /I "python.exe" > nul
+reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths" /f "python.exe" /s /k /e /d > nul
 
 if !ERRORLEVEL! EQU 1 (
     echo -------------------------------------------------------------------

@@ -1,5 +1,17 @@
 """
-Placeholder for function that will wrap kalite in
+This command packages all parts together necessary for install and update.
+  The package (zip) generally contains:
+  * An inner zip file--the KA Lite source files
+  * A signature file, containing the signature of the zip file with the central server's private key, validating the zip's contents.
+  * a JSON file, containing models relevant to install (including the central server Device model, and any models relevant to the install)
+  * A set of install scripts--a main python one, and clickable scripts per OS-type
+
+This file also defines a function, "install_from_package", which extracts the 
+  contents of the package and uses them, ultimately running install and 
+  starting the server.  That function is extracted (using inspection)
+  and written into the package, so that it stays tightly tied to this
+  packaging logic, and so that it can be called both inline during testing,
+  and externally after the package has been downloaded.
 """
 import json
 import inspect
@@ -13,13 +25,14 @@ from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
+import utils.platforms
 from kalite.management.commands.zip_kalite import create_default_archive_filename, Command as ZipCommand
 from kalite.management.commands.update import Command as UpdateCommand
 from securesync.management.commands.initdevice import Command as InitCommand
 from securesync.models import Zone, DeviceZone, Device, ChainOfTrust, ZoneInvitation
 from shared import serializers
 from utils import crypto
-
+from utils.platforms import system_script_extension, system_specific_unzipping
 
 def install_from_package(install_json_file, signature_file, zip_file, dest_dir=None):
     import os
@@ -29,7 +42,7 @@ def install_from_package(install_json_file, signature_file, zip_file, dest_dir=N
     from zipfile import ZipFile
 
     # Make the true paths
-    src_dir = os.path.dirname(__file__)
+    src_dir = os.path.dirname(__file__) or os.getcwd()  # necessary on Windows
     install_json_file = os.path.join(src_dir, install_json_file)
     signature_file = os.path.join(src_dir, signature_file)
     zip_file = os.path.join(src_dir, zip_file)
@@ -46,29 +59,17 @@ def install_from_package(install_json_file, signature_file, zip_file, dest_dir=N
         dest_dir = raw_input("Please enter the directory where you'd like to install KA Lite (blank=%s): " % src_dir) or src_dir
 
     # unpack the inner zip to the destination
-    zip = ZipFile(zip_file, "r")
-    nfiles = len(zip.namelist())
-    for fi,afile in enumerate(zip.namelist()):
-        if fi>0 and fi%round(nfiles/10)==0:
-            pct_done = round(100.*(fi+1.)/nfiles)
-            sys.stdout.write(" %d%%" % pct_done)
-
-        zip.extract(afile, path=dest_dir)
-        # If it's a unix script or manage.py, give permissions to execute
-        if os.path.splitext(afile)[1] == ".sh" or afile.endswith("manage.py"):
-            os.chmod(os.path.realpath(dest_dir + "/" + afile), 0755)
-            sys.stdout.write("\tChanging perms on script %s\n" % os.path.realpath(dest_dir + "/" + afile))
+    system_specific_unzipping(zip_file, dest_dir)
     sys.stdout.write("\n")
 
     shutil.copy(install_json_file, os.path.join(dest_dir, "kalite/static/data/"))
 
     # Run the install/start scripts
-    script_extension = ("bat" if platform.platform() == "Windows" else "sh")
-    return_code = os.system(os.path.join(dest_dir, "install.%s" % script_extension))
+    return_code = subprocess.Popen(os.path.join(dest_dir, "install%s" % system_script_extension())).communicate()
     if return_code != 0:
         sys.stderr.write("Failed to install KA Lite.")
         sys.exit(return_code)
-    return_code = os.system(os.path.join(dest_dir, "start.%s" % script_extension))
+    return_code = subprocess.Popen(os.path.join(dest_dir, "start%s" % system_script_extension())).communicate()
     if return_code != 0:
         sys.stderr.write("Failed to start KA Lite.")
         sys.exit(return_code)
@@ -115,18 +116,27 @@ class Command(BaseCommand):
         del options["zone_id"]
         wrapper_filename = options["file"] or os.path.join(tempfile.mkdtemp(), "package_" + create_default_archive_filename(options))
 
+
+        # Pre-zip prep #1:
+        #   Create the json data file
         def create_json_file():
-            # Pre-zip prep #1:
-            #   Create the json data file
             central_server = Device.get_central_server()
             if not zone_id:
                 models = [central_server] if central_server else []
             else:
+                # Get a chain of trust to the zone owner.
+                #   Because we're on the central server, this will
+                #   simply be the central server, but in the future
+                #   this would return an actual chain.
                 zone = Zone.objects.get(id=zone_id)
                 chain = ChainOfTrust(zone=zone)
                 assert chain.validate()
                 new_invitation = ZoneInvitation.generate(zone=zone, invited_by=Device.get_own_device())
                 new_invitation.save()  # keep a record of the invitation, for future revocation.  Also, signs the thing
+
+                # This ordering of objects is a bit be hokey, but OK--invitation usually must be 
+                #   inserted before devicezones--but because it's not pointing to any devices,
+                #   it's OK to be at the end.
                 models = [central_server] + chain.objects() + [new_invitation]
 
             models_file = tempfile.mkstemp()[1]
@@ -142,6 +152,7 @@ class Command(BaseCommand):
 
             install_files[self.install_py_file] = tempfile.mkstemp()[1]
             with open(install_files[self.install_py_file], "w") as fp:
+                fp.write(open(utils.platforms.__file__, "r").read() + "\n\n")
                 for srcline in inspect.getsourcelines(install_from_package)[0]:
                     fp.write(srcline)
                 fp.write("\ninstall_from_package(\n")

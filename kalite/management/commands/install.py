@@ -1,6 +1,5 @@
 import getpass
 import os
-import platform
 import re
 import shutil
 import sys
@@ -23,7 +22,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 import settings
 from kalite.utils.general import get_host_name
-from kalite.utils.platforms import is_windows, platform_script_extension
+from kalite.utils.platforms import is_windows, system_script_extension
 
 
 def raw_input_yn(prompt):
@@ -171,7 +170,7 @@ class Command(BaseCommand):
             sys.stdout.write("-------------------------------------------------------------------\n")
             sys.stdout.write("WARNING: Database file already exists! If this is a new installation,\n")
             sys.stdout.write("\tyou should delete the file %s and then\n" % database_file)
-            sys.stdout.write("\tre-run this script. If the server is running, first run ./stop%s\n" % platform_script_extension())
+            sys.stdout.write("\tre-run this script. If the server is running, first run ./stop%s\n" % system_script_extension())
             sys.stdout.write("-------------------------------------------------------------------\n")
             if options["interactive"]:
                 if not raw_input_yn("Remove database file '%s' now? " % database_file):
@@ -228,6 +227,6 @@ class Command(BaseCommand):
 
         sys.stdout.write("\n")
         sys.stdout.write("CONGRATULATIONS! You've finished installing the KA Lite server software.\n")
-        sys.stdout.write("\tPlease run './start.%s' to start the server, and then load the url\n" % script_ext)
+        sys.stdout.write("\tPlease run './start.%s' to start the server, and then load the url\n" % system_script_extension())
         sys.stdout.write("\thttp://127.0.0.1:%d/ to complete the device configuration.\n" % settings.PRODUCTION_PORT)
         sys.stdout.write("\n")

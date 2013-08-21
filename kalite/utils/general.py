@@ -17,6 +17,7 @@ class InvalidDirectoryFormat(Exception):
     def __str__(value):
         return "Invalid directory format. Please ensure you are passing in a directory path, not a filepath."
 
+
 def break_into_chunks(bigiterator, chunksize=500):
     """
     Given an iterator, separates the iterator into a list of iterators,
