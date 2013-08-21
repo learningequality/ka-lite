@@ -11,22 +11,74 @@
 
 body{
   background: @light-green;
-  font:@body-font;
 }
 
 body,p,td{
   font:@body-font;
 }
-.container{
-  max-width: @container-max-width; // Puts a hard limit on the width of the layout 
-  margin: 0 auto;
-  background-image: url(/static/images/bg-header.png);
-  background-repeat: no-repeat;
-}
 
 a:hover{
   text-decoration: none;
 }
+
+.container-fluid,.container{ //Used to limit the width of the content and add the leaf background
+  max-width: @container-max-width; // Puts a hard limit on the width of the layout 
+  margin: 0 auto;
+  background-image: url(/static/images/bg-header.png);
+  background-repeat: no-repeat;
+
+}
+
+.max-width-container{ // Contains the content when the background is full width
+  max-width: @container-max-width;
+  .center;
+}
+
+.center { float: none; margin-left: auto; margin-right: auto; }
+
+.form-section li{
+  list-style: none;
+}
+
+// Headings & Titles
+// --------------------------------------------------
+
+h1,h2,h3,h4,h5,h6{
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: normal;
+}
+
+h1{
+  font-size: 218%;
+  line-height: 25pt;
+}
+h2{font-size: 164%;}
+h3{font-size: 145%;}
+h4{font-size: 118%;}
+
+.organization-title{
+  background-color: @light-gray;
+  padding-left: 20px;
+}
+
+.errorlist{
+  .alert;
+  .alert-error;
+}
+
+// Tooltip
+// --------------------------------------------------
+
+.tooltip-container{
+  h1,.button-popover,h2{
+    display:inline;
+    vertical-align: middle;
+    line-height: 3.0;
+  }
+}
+
+// Social media icons
+// --------------------------------------------------
 
 .symbol, a.symbol:before { // Makes the icons look nice on all the browsers
   font-family: 'Mono Social Icons Font';
@@ -47,69 +99,56 @@ a.symbol:before {
   font-size: 130%;
 }
 
+.list-icons{
+  margin: 0; // Webkit has an inital margin of 40px
+  font-size: 45px;
+  line-height: 10px;
+  padding: 0px;
+  li{
+    display: inline;
+    list-style-type: none;
 
-
-// Headings & Titles
-// --------------------------------------------------
-
-h1,h2,h3,h4,h5,h6{
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-weight: normal;
-}
-h1{font-size: 218%;
-  line-height: 25pt;}
-  h2{font-size: 164%;}
-  h3{font-size: 145%;}
-  h4{font-size: 118%;}
-
-  .organization-title{
-    background-color: @light-gray;
-    padding-left: 20px;
-
+    a, a:hover{
+      color:@dark-gray;
+      text-decoration: none;
+    }
   }
-.errorlist{
-  .alert;
-  .alert-error;
-}
-.tooltip-container{
-  h1,.button-popover,h2{
-    display:inline;
-    vertical-align: middle;
-    line-height: 3.0;
-  }
-
 }
 
 // Paddings
 // --------------------------------------------------
-  .padding-left-20{
-    padding-left: 20px;
-  }
+.padding-left-20{
+  padding-left: 20px;
+}
 
 // Buttons
 // --------------------------------------------------
 
-// Helper: .green_button(@width,@border_radius, @font_size, @paddingvertical, @paddinghorizontal)
+// Helper: .round-button(@bg-color,@bg-color-hover,@font-color,@width,@border_radius, @font_size, @paddingvertical, @paddinghorizontal)
 
 
-  .button-green--large{
-     .green_button(190px,5px, 14px, 10px, 20px);
-  }
-  .button-green{
-    .green_button(190px,5px, 14px, 10px, 20px);
-  }
+.button-green--large{
+ .round-button(@green-button-color,@dark-green,white,190px,5px, 14px, 10px, 20px);
+}
 
-  .button-green--small{
-    .green_button(100px,3px, 13px, 5px, 20px); 
-  }
-  .button-popover{
-     .green_button(100px,3px, 13px, 5px, 10px); 
-     margin-left: 10px;
-  }
-  .neworg-button{
-    margin-top:16px;
-    float:right;
-  }
+.button-green{
+  .round-button( @green-button-color,@dark-green,white,190px,5px, 14px, 10px, 20px);
+}
+
+.button-green--small{
+  .round-button( @green-button-color,@dark-green,white,100px,3px, 13px, 5px, 20px); 
+}
+
+.button-popover{
+ .round-button( @green-button-color,@dark-green,white,100px,3px, 13px, 5px, 10px); 
+ margin-left: 10px;
+}
+
+.neworg-button{
+  margin-top:16px;
+  float:right;
+}
+
 // List
 // --------------------------------------------------
 
@@ -123,46 +162,56 @@ ul{
     list-style-type: none;
   }
 
- &.horizontal-list {
-  margin: 0;
-  li,form{
-    display: inline!important; 
-    a, a:hover{
-      text-decoration: none;
+  &.horizontal-list {
+    margin: 0;
+    li,form{
+      display: inline!important; 
+      a, a:hover{
+        text-decoration: none;
+      }
     }
-  }
 
   }
 }
+
+// Horizontal separator
+// --------------------------------------------------
 
 .hr-gray{
   border-bottom: 1px #E7E7E7 solid;
-  margin-bottom: 20px;
+  background-color: white;
+  padding-top: 40px;
 }
+
 // Header (horizontal menu)
 // --------------------------------------------------
 
-.header__horizontal-menu__right{
+.header{
+  background-image: url(/static/images/bg-header.png);
+  background-repeat: no-repeat;
+  height: 100%;
+}
+
+.header__horizontal-menu__right{ //Positions the menu on the right
   float:right;
   padding-top: 15px;
 }
 
 .header__horizontal-menu {
   padding-left: 20px;
-  padding-top: 20px;
-  font-family: MuseoSans500, Helvetica, Arial, sans-serif;
-  font-size: 16px;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 14px;
   text-transform: uppercase;
+
   li{
     display: inline;
     list-style-type: none;
     padding-right:20px;
-
     a{
       color:black;
       text-decoration: none;
       &.active{
-          border-bottom: 3px solid @dark-green;
+        border-bottom: 3px solid @dark-green;
       }
       &:hover{
         color:@darkest-green;
@@ -170,7 +219,8 @@ ul{
     }
   }
 }
-@media (max-width: 767px)  {
+
+@media (max-width: 767px)  { //Creates a mobile-friendly menu
 
   .header__horizontal-menu__right{
     float:center;
@@ -188,13 +238,14 @@ ul{
   .header__horizontal-menu {
     padding-left: 0;
     li{
-    display:block;
+      display:block;
     }
   }
 }
 
 // Content
 // --------------------------------------------------
+
 .content{ 
   background-color: @white;
   border-top: 3px solid @dark-green;
@@ -204,81 +255,22 @@ ul{
   padding: 20px 30px 0px 30px;
 }
 
-.content__box-container{
-  background-color: rgb(211,211,211);
-}
-
-.center { float: none; margin-left: auto; margin-right: auto; }
-
-.content__box{
-  text-align: center;
-  background-color: #dae4cb;
-  max-width: 300px;
-  padding:10px;
-  margin-top: 15px;
-  margin-bottom: 15px;
-  .center;
-  border-top: 3px solid @dark-green;
-
-  img{
-    height:170px;
-  }
-
-  p{
-    font-size: 16px;
-  }
-}
-
-.content__motto-container{
-
-  h1{
-    font-size: 25px;
-    font-weight: normal;
-    
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  }
-  p{
-    color:rgb(151,151,151);
-    font-size: 17px;
-  }
-
-}
-
-.content__motto-container__motivation-box{
-  .normal-text-font;
-  padding-bottom: 10px;  
-  line-height: 28px;
-  padding-left:21px;
-
-}
-
 // Footer (only visible on the landing page)
 // --------------------------------------------------
+
 .footer{
   padding-top: 10px;
-  padding-bottom: 10px;
-  background-color: rgb(80,80,80);
-
+  padding-bottom: 30px;
+  background-color: @darkest-gray;
   height: 100%;
-  //border-top: 3px rgb(61,61,61) solid;
-}
-
-.footer__email{
-  padding-bottom: 10px;
-  padding-right: 15px;
-}
-
-input.footer__email__input{
-  width:100%;
-  padding:0;
 }
 
 .footer h2{
-  font-size: 22px;
+  font-size: 17px;
   line-height: 21pt;
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-weight: normal;
-  color:white;  
+  color:@dark-gray;  
 }
 .footer__rss{
   padding-left: 40px;
@@ -292,38 +284,111 @@ input.footer__email__input{
     list-style: none;
     line-height: 30px;
     a{  
-      color:rgb(194,194,194);
-    }
-
-  }
-}
-.footer__second-line{
-  padding-top: 30px;
-}
-.footer__updates{
-  padding-left: 40px;
-  padding-right: 40px;
-}
-
-.list-icons{
-  margin: 0; // Webkit has an inital margin of 40px
-  font-size: 45px;
-  line-height: 10px;
-  padding: 0px;
-  li{
-    display: inline;
-    list-style-type: none;
-
-    a, a:hover{
-      color:white;
-      text-decoration: none;
+      color:@dark-gray;
     }
   }
 }
+
 .cc-logo{
   height:14px;
+  width:75px;
 }
 
-.form-section li{
-list-style: none;
+// Landing page - non resuable parts
+// --------------------------------------------------
+
+.ka-quote{
+  border-top: 3px solid @dark-green;
+  background-color: white;
+  color:@darkest-gray;
+  padding:40px 0 20px 0;
+  text-align: center;
+  font-size: 28px;  
+
+}
+.features{
+  background-color: white;
+  text-align: center;
+  padding: 60px 0px;
+  p{
+    padding-top: 10px;
+    width:200px;
+    .center;
+  }
+}
+
+.quote{
+  background-color: white;
+  text-align: center;
+  font-size: 20px;
+  color:@gray;
+
+}
+.get-started{
+  background-color: white;
+  padding: 40px 0;
+  text-align: center;
+}
+.dev-cont{
+  background: url(/static/images/global-map-blur.png);
+  width:auto;
+  background-repeat: no-repeat;
+  background-position: center;
+  padding:60px 0;
+
+  .box{
+    .center;
+    @shadow: inset 0 0 0 2px @light-gray;
+    .box-shadow(@shadow);
+    text-align: center;
+    background-color:white;
+    padding-bottom:30px;
+    padding-top: 10px;
+    width:252px;
+    font-size: 17px;
+    .border-radius(10px);
+    border-top: 3px solid @lightest-green;
+    button{
+      margin-top: 20px;
+    }
+  }
+}
+
+.landing-cc{
+  padding-left:40px;
+  padding-top: 40px;
+  color:@dark-gray;
+  font-size: 13px;
+}
+
+.round-border-rural{
+  .round-border;
+  .center;
+  background: url(/static/images/deployment.jpg);
+  background-size: 300px;
+  background-position: -50px 0px;
+}
+
+.round-border-points{
+  .round-border;
+  .center;
+  background: url(/static/images/landing-page/coach-reports-cropped.png);
+  background-size:315px;
+  background-position: -91px -1px;
+}
+
+.round-border-install{
+  .round-border;
+  .center;
+  background: url(/static/images/landing-page/vid-down-cropped.png);
+  background-size: 300px;
+  background-position: -11px -5px;
+}
+.round-border {
+  border:4px solid @light-green;
+  background-color:black;
+  .border-radius(25px);
+  width: 200px;
+  height: 200px; 
+  /* width and height can be anything, as long as they're equal */
 }

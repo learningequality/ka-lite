@@ -22,13 +22,18 @@
      -moz-border-radius: @radius;
           border-radius: @radius;
 }
-.green_button(@width,@border_radius, @font_size, @paddingv, @paddingh){
+
+.round-button(@bg-color, @bg-color-hover,@font-color,@width,@border_radius, @font_size, @paddingv, @paddingh){
   .border-radius(@border_radius);
-  background-color: #91ca7f;
+  color:@font-color;
+  background-color:@bg-color;
   font-family: Arial, Helvetica, sans-serif;
   font-size: @font_size;
   color: #ffffff;
   padding: @paddingv @paddingh;
   border:0px;
   width:@width;
+  &:hover{
+    background-color: @bg-color-hover;
+  }
 }

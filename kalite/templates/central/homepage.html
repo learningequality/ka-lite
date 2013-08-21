@@ -4,66 +4,93 @@
 
 {% block title %}Home{% endblock %}
 {% block home_active %}active{% endblock home_active %}
+
 {% block jqueryjs %}
 <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.8.3.min.js"></script> 
 {% endblock jqueryjs %}
 
 {% block analytics %}{% include 'central/web_analytics.html' %}{% endblock analytics %}
 
-{% block content %}
-
-<div class="content__motto-container">
-    <h1>Only 35% of the world has internet. 100% of the world needs education.</h1>
-    <p>
-        KA Lite is an offline version of <a href="http://www.khanacademy.org/" target="_blank">Khan Academy</a> that runs on almost anything.
-    </p>
-    <ul class="content__motto-container__motivation-box">
-        <li>Bringing the online education revolution to rural communities.</li>
-        <li>Synchronize and manage your organization's deployments centrally.</li>
-        <li>Quick installation, minimal system requirements, and simple to use.</li>
-        <li>Students can earn points, teacher can view coach reports.</li>
-        <li>Choose which videos to download, and languages for subtitles.</li>
-    </ul>
-</div>
-
-
-
-{% endblock content %}
 
 {% block landing-page %}
-<div class="row-fluid content__box-container">
 
-    <div class="span4">
-        <div class="content__box">
-            <img src="{% static 'images/landing-page/install.png' %}" alt="">
-            <p>Ready to get started</p>
-            <a href="/installation">
-             <button type="button" name="" value="" class="button-green">Install Now!</button>
-         </a> 
-         <br> 
-     </div>
- </div>
- <div class="span4">
-    <div class="content__box">
-        <img src="{% static 'images/landing-page/contact.png' %}" alt="">
-        <p>Want deployment advice?</p>
-        <a href="contact/deployment/" >
-            <button type="button" name="" value="" class="button-green">Contact Us</button>
-        </a>
+<div class="row-fluid">
+    <div class="span12">
+        <div class="ka-quote">
+                        KA Lite is an offline version of  <a href="http://www.khanacademy.org/">Khan Academy</a> that runs on almost anything.
+        
+        </div>
+
     </div>
+
+    <div class="row-fluid">
+        <div class="span12 quote">
+                        Only 35% of the world has internet. 100% of the world needs education.
+
+        </div>
+
+    </div>
+    <div class="hr-gray"></div>
+    <div class="row-fluid features">
+        <div class="max-width-container">
+            <div class="span4">
+                <div class="round-border-rural"></div>
+                
+                <p>Bringing the online education revolution to rural communities.</p>
+            </div>
+            <div class="span4">
+                <div class="round-border-install"></div>
+                <p>
+                Quick installation, minimal system requirements, and simple to use.
+                </p>
+            </div>
+            <div class="span4">
+                <div class="round-border-points"></div>
+                <p>
+                Students can earn points, teacher can view coach reports.
+                </p>
+            </div>
+        </div>
+    </div>
+
 </div>
-<div class="span4">
-    <div class="content__box">
-        <img src="{% static 'images/landing-page/contribute.png' %}" alt="">
-        <p>Want to contribute</p>
+
+
+
+<div class="row-fluid dev-cont">
+    <div class="max-width-container">
+        <div class="span4">
+            <div class="box">
+                <p>Want deployment advice?</p>
+                <a href="contact/deployment/" >
+                <button type="button" name="" value="" class="button-green">Contact Us</button>
+                </a>
+            </div>   
+    </div>
+    <div class="span4 ">
+        <div class="box">
+        <p>Want to contribute?</p>
         <a href="/contribute">
             <button type="button" name="" value="" class="button-green">Get Involved</button>
         </a>
+         </div>   
     </div>
-</div>
+    <div class="span4">
+        <div class="box">
+            <p>Ready to get started?
+</p>
+                 <a href="/installation">
+                 <button type="button" name="" value="" class="button-green">Install Now</button>
+             </a> 
+        </div>
+    </div>
+
 
 </div>
+</div>
+
 <div class="row-fluid footer">
+    <div class="max-width-container">
     <div class="span8 footer__rss">
 
         <h2>Read More</h2>
@@ -73,44 +100,27 @@
             {% endfor %}
         </ul> 
     </div>
-    <div class="span4 footer__updates">    
-        <h2>Share</h2>
+    <div class="span4">    
+
+
+        <h2>Follow us</h2>
         <ul class="list-icons">
             <li>
-                <a  href="http://www.facebook.com/sharer.php?u=http://adhocsync.com/" class="symbol">&#xe227;</a>       
+                <a href="https://www.facebook.com/kaliteproject" class="symbol">&#xe227;</a>       
             </li>
             <li>
-                <a href="http://twitter.com/share?text=An%20Awesome%20Link&url=http://adhocsync.com/" class="symbol">&#xe286;</a>      
-            </li>
-            <li>
-                <a href="https://plus.google.com/share?url=http://adhocsync.com/" class="symbol">&#xe239;</a>      
-            </li>
-            <li>
-                <a href="http://www.linkedin.com/shareArticle?mini=true&url=http://adhocsync.com/&title=Awesome%20link!" class="symbol">&#xe252;</a>      
+                <a href="https://twitter.com/ka_lite" class="symbol">&#xe286;</a>      
             </li>
         </ul>
-        <div class="row-fluid footer__second-line">
-            <div class="span6">
-                <h2>Follow</h2>
-                <ul class="list-icons">
-                    <li>
-                        <a href="https://www.facebook.com/kaliteproject" class="symbol">&#xe227;</a>       
-                    </li>
-                    <li>
-                        <a href="https://twitter.com/ka_lite" class="symbol">&#xe286;</a>      
-                    </li>
-                </ul>
-
-            </div>
-            <div class="span6 footer__email">
-                <h2>Email Updates</h2>
-                <input type="text" class="footer__email__input">
-                <br>
-                <button type="button" name="" value="" class="button-green--small">Subscribe</button>
-            </div>
-        </div>
 
     </div>
+    <div class="row-fluid">
+        <div class="span12 landing-cc">
+            Videos and Exercises &copy; 2013 Khan Academy 
+                        <a href="http://creativecommons.org/licenses/by-nc-sa/2.0/" target="_blank" ><img src="{% static 'images/creative-commons.png' %}" alt="" class="cc-logo"></a>
+             
+        </div>
+    </div>
 </div>
-
+</div>
 {% endblock landing-page %}
