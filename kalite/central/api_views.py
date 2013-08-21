@@ -1,3 +1,4 @@
+import datetime
 import json
 import os
 from annoying.functions import get_object_or_None
@@ -80,7 +81,6 @@ def get_download_urls(request):
     for locale, size in download_sizes.iteritems():
         urlargs = {
             "version": kalite.VERSION,
-            "release_date": datetime.datetime.strptime(kalite.RELEASE_DATE, '%Y/%m/%d')
             "platform": "all",
             "locale": locale
         }
