@@ -9,7 +9,7 @@ from django.core.management.base import BaseCommand, CommandError
 import settings
 from config.models import Settings
 from main.models import VideoFile
-from utils.jobs import force_job
+from shared.jobs import force_job
 from utils.subtitles.download_subtitles import download_subtitles, NoSubs
 
 
