@@ -12,7 +12,7 @@ def cron():
     if get_count():
         # Use sys to get the same executable running as is running this process.
         # Make sure to call the manage.py from this project.
-        subprocess.call([sys.executable, os.path.join(os.path.dirname(__file__), "manage.py"), "cron"])
+        subprocess.call([sys.executable, os.path.join(settings.PROJECT_PATH, "manage.py"), "cron"])
 
     # This is the pause between executions.  If the above hangs for a long time,
     #   we won't check again until it has returned / completed.
