@@ -35,7 +35,7 @@ class SyncSession(models.Model):
     timestamp = models.DateTimeField(auto_now=True)
     models_uploaded = models.IntegerField(default=0)
     models_downloaded = models.IntegerField(default=0)
-    errors = models.IntegerField(default=0); errors.version="0.9.3" # kalite version
+    errors = models.IntegerField(default=0);  errors.minversion="0.9.3" # kalite version
     closed = models.BooleanField(default=False)
 
     def _hashable_representation(self):
@@ -69,7 +69,7 @@ class SyncSession(models.Model):
             SyncSession.objects.filter(pk__in=to_discard).delete()
 
     def __unicode__(self):
-        return "%s... -> %s..." % (self.client_device.pk[0:5],
+        return u"%s... -> %s..." % (self.client_device.pk[0:5],
             (self.server_device and self.server_device.pk[0:5] or "?????"))
 
 
@@ -78,7 +78,7 @@ class RegisteredDevicePublicKey(models.Model):
     zone = models.ForeignKey("Zone")
 
     def __unicode__(self):
-        return "%s... (Zone: %s)" % (self.public_key[0:5], self.zone)
+        return u"%s... (Zone: %s)" % (self.public_key[0:5], self.zone)
 
 
 class DeviceMetadata(models.Model):
@@ -91,7 +91,7 @@ class DeviceMetadata(models.Model):
         verbose_name_plural = "Device metadata"
 
     def __unicode__(self):
-        return "(Device: %s)" % (self.device)
+        return u"(Device: %s)" % (self.device)
 
 
 class SyncedModelManager(models.Manager):
@@ -126,10 +126,11 @@ class SyncedModel(models.Model):
         Get all of the relevant fields of this model into a single string (self._hashable_representation()),
         then sign it with the specified device (if specified), or the current device.
         """
-        if not self.id:
-            self.id = self.get_uuid()
-        self.signed_by = device or Device.get_own_device()
+        device = device or Device.get_own_device()
+        assert device.get_key(), "Cannot sign with device %s: key does not exist." % (device.name or "")
 
+        self.id = self.id or self.get_uuid()
+        self.signed_by = device
         self.full_clean()  # make sure the model data is of the appropriate types
         self.signature = self.signed_by.get_key().sign(self._hashable_representation())
 
@@ -240,6 +241,8 @@ class SyncedModel(models.Model):
             self.signed_by.set_counter_position(self.counter)
 
     def get_uuid(self):
+        assert self.counter is not None, "counter required for get_uuid"
+
         own_device = Device.get_own_device()
         namespace = own_device.id and uuid.UUID(own_device.id) or ROOT_UUID_NAMESPACE
         return uuid.uuid5(namespace, str(self.counter)).hex
@@ -272,8 +275,21 @@ class SyncedModel(models.Model):
         abstract = True
 
     def __unicode__(self):
-        return "%s... (Signed by: %s...)" % (self.pk[0:5], self.signed_by.pk[0:5])
+        pk = self.pk[0:5] if len(getattr(self, "pk", "")) >= 5 else "[unsaved]"
+        signed_by_pk = self.signed_by.pk[0:5] if self.signed_by and self.signed_by.pk else "[None]"
+        return u"%s... (Signed by: %s...)" % (pk, signed_by_pk)
 
+    @classmethod
+    def get_or_initialize(cls, *args, **kwargs):
+        """
+        This is like Django's get_or_create method, but without calling save().
+        Allows for more efficient post-initialize updates.
+        """
+        assert not args, "No positional arguments allowed for this method."""
+
+        obj = get_object_or_None(cls, **kwargs)
+        return obj or cls(**kwargs)
+        
 
 class Zone(SyncedModel):
     name = models.CharField(max_length=100)
@@ -323,7 +339,7 @@ class Facility(SyncedModel):
     def __unicode__(self):
         if not self.id:
             return self.name
-        return "%s (#%s)" % (self.name, int(self.id[:3], 16))
+        return u"%s (#%s)" % (self.name, int(self.id[:3], 16))
 
     def is_default(self):
         return self.id == Settings.get("default_facility")
@@ -370,7 +386,7 @@ class FacilityUser(SyncedModel):
         unique_together = ("facility", "username")
 
     def __unicode__(self):
-        return "%s (Facility: %s)" % (self.get_name(), self.facility)
+        return u"%s (Facility: %s)" % (self.get_name(), self.facility)
 
     def check_password(self, raw_password):
         if self.password.split("$", 1)[0] == "sha1":
@@ -408,10 +424,13 @@ class DeviceZone(SyncedModel):
     requires_trusted_signature = True
 
     def __unicode__(self):
-        return "Device: %s, assigned to Zone: %s" % (self.device, self.zone)
+        return u"Device: %s, assigned to Zone: %s" % (self.device, self.zone)
 
 
 class SyncedLog(SyncedModel):
+    """
+    This is not used, but for backwards compatibility, we need to keep it.
+    """
     category = models.CharField(max_length=50)
     value = models.CharField(max_length=250, blank=True)
     data = models.TextField(blank=True)
@@ -428,7 +447,7 @@ class Device(SyncedModel):
     name = models.CharField(max_length=100, blank=True)
     description = models.TextField(blank=True)
     public_key = models.CharField(max_length=500, db_index=True)
-    version = models.CharField(max_length=len("10.10.100"), default="0.9.2", blank=True); version.version="0.9.3"  # default comes from knowing when this feature was implemented!
+    version = models.CharField(max_length=len("10.10.100"), default="0.9.2", blank=True);  version.minversion="0.9.3"
 
     objects = DeviceManager()
 
@@ -535,6 +554,8 @@ class Device(SyncedModel):
             metadata.save()
 
     def get_uuid(self):
+        assert self.public_key is not None, "public_key required for get_uuid"
+
         return uuid.uuid5(ROOT_UUID_NAMESPACE, str(self.public_key)).hex
 
     @staticmethod
