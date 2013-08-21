@@ -1,0 +1,329 @@
+// style_with_bootstrap.less 
+// --------------------------------------------------
+@import "bootstrap/variables.less";
+@import "bootstrap/mixins.less";
+@import "bootstrap/buttons.less"; //Mandatory for alerts.less
+
+@import "bootstrap/alerts.less"; //Just include what you need
+
+// Body, Container and Resets
+// --------------------------------------------------
+
+body{
+  background: @light-green;
+  font:@body-font;
+}
+
+body,p,td{
+  font:@body-font;
+}
+.container{
+  max-width: @container-max-width; // Puts a hard limit on the width of the layout 
+  margin: 0 auto;
+  background-image: url(/static/images/bg-header.png);
+  background-repeat: no-repeat;
+}
+
+a:hover{
+  text-decoration: none;
+}
+
+.symbol, a.symbol:before { // Makes the icons look nice on all the browsers
+  font-family: 'Mono Social Icons Font';
+  -webkit-text-rendering: optimizeLegibility;
+  -moz-text-rendering: optimizeLegibility;
+  -ms-text-rendering: optimizeLegibility;
+  -o-text-rendering: optimizeLegibility;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-font-smoothing: antialiased;
+  -ms-font-smoothing: antialiased;
+  -o-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+}
+
+a.symbol:before {
+  content: attr(title);
+  font-size: 130%;
+}
+
+
+
+// Headings & Titles
+// --------------------------------------------------
+
+h1,h2,h3,h4,h5,h6{
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: normal;
+}
+h1{font-size: 218%;
+  line-height: 25pt;}
+  h2{font-size: 164%;}
+  h3{font-size: 145%;}
+  h4{font-size: 118%;}
+
+  .organization-title{
+    background-color: @light-gray;
+    padding-left: 20px;
+
+  }
+.errorlist{
+  .alert;
+  .alert-error;
+}
+.tooltip-container{
+  h1,.button-popover,h2{
+    display:inline;
+    vertical-align: middle;
+    line-height: 3.0;
+  }
+
+}
+
+// Paddings
+// --------------------------------------------------
+  .padding-left-20{
+    padding-left: 20px;
+  }
+
+// Buttons
+// --------------------------------------------------
+
+// Helper: .green_button(@width,@border_radius, @font_size, @paddingvertical, @paddinghorizontal)
+
+
+  .button-green--large{
+     .green_button(190px,5px, 14px, 10px, 20px);
+  }
+  .button-green{
+    .green_button(190px,5px, 14px, 10px, 20px);
+  }
+
+  .button-green--small{
+    .green_button(100px,3px, 13px, 5px, 20px); 
+  }
+  .button-popover{
+     .green_button(100px,3px, 13px, 5px, 10px); 
+     margin-left: 10px;
+  }
+  .neworg-button{
+    margin-top:16px;
+    float:right;
+  }
+// List
+// --------------------------------------------------
+
+ul{
+  padding:0;
+  &.list li{
+    margin:0;
+    font: @body-font;
+  }
+  &.nostyle-list li{
+    list-style-type: none;
+  }
+
+ &.horizontal-list {
+  margin: 0;
+  li,form{
+    display: inline!important; 
+    a, a:hover{
+      text-decoration: none;
+    }
+  }
+
+  }
+}
+
+.hr-gray{
+  border-bottom: 1px #E7E7E7 solid;
+  margin-bottom: 20px;
+}
+// Header (horizontal menu)
+// --------------------------------------------------
+
+.header__horizontal-menu__right{
+  float:right;
+  padding-top: 15px;
+}
+
+.header__horizontal-menu {
+  padding-left: 20px;
+  padding-top: 20px;
+  font-family: MuseoSans500, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  text-transform: uppercase;
+  li{
+    display: inline;
+    list-style-type: none;
+    padding-right:20px;
+
+    a{
+      color:black;
+      text-decoration: none;
+      &.active{
+          border-bottom: 3px solid @dark-green;
+      }
+      &:hover{
+        color:@darkest-green;
+      }
+    }
+  }
+}
+@media (max-width: 767px)  {
+
+  .header__horizontal-menu__right{
+    float:center;
+    text-align: center;
+    li{
+      margin-top:5px;
+      line-height: 2.2;
+      background-color: @dark-green;
+      padding-right: 0;
+      a{
+        padding-top: 10px;
+      }
+    }
+  }
+  .header__horizontal-menu {
+    padding-left: 0;
+    li{
+    display:block;
+    }
+  }
+}
+
+// Content
+// --------------------------------------------------
+.content{ 
+  background-color: @white;
+  border-top: 3px solid @dark-green;
+}
+
+.content-padding{
+  padding: 20px 30px 0px 30px;
+}
+
+.content__box-container{
+  background-color: rgb(211,211,211);
+}
+
+.center { float: none; margin-left: auto; margin-right: auto; }
+
+.content__box{
+  text-align: center;
+  background-color: #dae4cb;
+  max-width: 300px;
+  padding:10px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  .center;
+  border-top: 3px solid @dark-green;
+
+  img{
+    height:170px;
+  }
+
+  p{
+    font-size: 16px;
+  }
+}
+
+.content__motto-container{
+
+  h1{
+    font-size: 25px;
+    font-weight: normal;
+    
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+  p{
+    color:rgb(151,151,151);
+    font-size: 17px;
+  }
+
+}
+
+.content__motto-container__motivation-box{
+  .normal-text-font;
+  padding-bottom: 10px;  
+  line-height: 28px;
+  padding-left:21px;
+
+}
+
+// Footer (only visible on the landing page)
+// --------------------------------------------------
+.footer{
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background-color: rgb(80,80,80);
+
+  height: 100%;
+  //border-top: 3px rgb(61,61,61) solid;
+}
+
+.footer__email{
+  padding-bottom: 10px;
+  padding-right: 15px;
+}
+
+input.footer__email__input{
+  width:100%;
+  padding:0;
+}
+
+.footer h2{
+  font-size: 22px;
+  line-height: 21pt;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: normal;
+  color:white;  
+}
+.footer__rss{
+  padding-left: 40px;
+  padding-right: 40px;
+}
+.footer__news-list{
+  margin-top: 15px;
+  padding-left: 0px;
+  li{
+    border-bottom: 1px rgb(126,126,126) solid;
+    list-style: none;
+    line-height: 30px;
+    a{  
+      color:rgb(194,194,194);
+    }
+
+  }
+}
+.footer__second-line{
+  padding-top: 30px;
+}
+.footer__updates{
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+.list-icons{
+  margin: 0; // Webkit has an inital margin of 40px
+  font-size: 45px;
+  line-height: 10px;
+  padding: 0px;
+  li{
+    display: inline;
+    list-style-type: none;
+
+    a, a:hover{
+      color:white;
+      text-decoration: none;
+    }
+  }
+}
+.cc-logo{
+  height:14px;
+}
+
+.form-section li{
+list-style: none;
+}
