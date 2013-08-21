@@ -5,9 +5,6 @@ import sys
 from cStringIO import StringIO
 
 from django.core.management import call_command
-from django.contrib.messages.storage.session import SessionStorage
-
-import settings
 
 
 def call_command_with_output(cmd, *args, **kwargs): 
@@ -56,9 +53,13 @@ def call_command_async(cmd, *args, **kwargs):
     that stringify in a way that commands can parse
     (which will work for str, bool, int, etc).
     """
+    assert "manage_py_dir" in kwargs, "don't forget to specify the manage_py_dir"
+    manage_py_dir = kwargs["manage_py_dir"]
+    del kwargs["manage_py_dir"]
+
     # Use sys to get the same executable running as is running this process.
     # Make sure to call the manage.py from this project.
-    call_args = [sys.executable, os.path.join(settings.PROJECT_PATH, "manage.py"), cmd]
+    call_args = [sys.executable, os.path.join(manage_py_dir, "manage.py"), cmd]
     call_args += list(args)
     for key,val in kwargs:
         call_args.append("--%s=%s" % (key, val))
@@ -73,24 +74,23 @@ def call_command_async(cmd, *args, **kwargs):
     subprocess.Popen(call_args)
 
 
-class NoDuplicateMessagesSessionStorage(SessionStorage):
+def call_outside_command_with_output(command, *args, **kwargs):
     """
-    This storage class prevents any messages from being added to the message buffer
-    more than once.
-
-    We extend the session store for AJAX-based messaging to work in Django 1.4,
-       due to this bug: https://code.djangoproject.com/ticket/19387
+    Runs call_command for a KA Lite installation at the given location,
+    and returns the output.
     """
+    assert "manage_py_dir" in kwargs, "don't forget to specify the manage_py_dir"
+    manage_py_dir = kwargs["manage_py_dir"]
+    del kwargs["manage_py_dir"]
 
-    def add(self, level, message, extra_tags=''):
-        for m in self._queued_messages:
-            if m.level == level and m.message == message and m.extra_tags == extra_tags:
-                return
-        super(NoDuplicateMessagesSessionStorage, self).add(level, message, extra_tags)
-
-
-def get_request_ip(request):
-    """Return the IP address from a HTTP request object."""
-    return request.META.get("HTTP_X_FORWARDED_FOR") \
-        or request.META.get("REMOTE_ADDR") \
-        or request.META.get("HTTP_X_REAL_IP")  # set by some proxies
+    # build the command
+    cmd = (sys.executable, os.path.join(manage_py_dir, "manage.py"), command)
+    for arg in args:
+        cmd += (arg,)
+    for key, val in kwargs.items():
+        key = key.replace("_","-")
+        prefix = "--" if command != "runcherrypyserver" else ""  # hack, but ... whatever!
+        if isinstance(val, bool):
+            cmd += ("%s%s" % (prefix, key),)
+        else:
+            cmd += ("%s%s=%s" % (prefix, key, str(val)),)

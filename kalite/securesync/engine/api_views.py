@@ -20,10 +20,10 @@ from .models import *
 from shared import serializers
 from securesync.devices.models import *  # inter-dependence
 from shared.decorators import require_admin
+from shared.jobs import force_job
 from stats.models import UnregisteredDevicePing
 from utils.django_utils import get_request_ip
 from utils.internet import api_handle_error_with_json, JsonResponse
-from utils.jobs import force_job
 
 
 def require_sync_session(handler):
