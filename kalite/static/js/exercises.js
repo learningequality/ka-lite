@@ -6,7 +6,6 @@ function updateStreakBar() {
         $("#streakbar .progress-bar").addClass("completed");
         $("#hint-remainder").hide();
     }
-    userModel.set("newpoints", exerciseData.points - exerciseData.starting_points);
 }
 
 function updateQuestionPoints(points) {
@@ -45,7 +44,9 @@ function updatePercentCompleted(correct) {
 
     doRequest("/api/save_exercise_log", data)
         .success(function(data) {
-            show_api_messages(data, "id_student_logs")
+            show_api_messages(data, "id_student_logs");
+            // update the top-right point display, now that we've saved the points successfully
+            userModel.set("newpoints", exerciseData.points - exerciseData.starting_points);
         })
         .fail(function(resp) {
             communicate_api_failure(resp, "id_student_logs");

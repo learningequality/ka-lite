@@ -84,6 +84,8 @@ window.VideoPlayerModel = Backbone.Model.extend({
                 self.saving = false;
                 // Show all messages in "messages" object
                 show_api_messages(data.messages, "id_student_logs");
+                // update the top-right points display to show the newly earned points
+                userModel.set("newpoints", data.points - self.get("starting_points"));
             })
             .fail(function(resp) {
                 self.set({ wall_time_last_saved: lastSavedBeforeError });
@@ -398,13 +400,6 @@ function initialize_video(video_youtube_id) {
         $(window).resize(resize_video);
 
         resize_video();
-
-        function update_video_points() {
-            userModel.set("newpoints", videoView.model.get("points") - videoView.model.get("starting_points"));
-        }
-
-        videoView.model.bind("change:starting_points", update_video_points);
-        videoView.model.bind("change:points", update_video_points);
 
     });
 
