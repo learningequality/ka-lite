@@ -40,13 +40,11 @@ def load_data_for_offline_install(in_file):
         return
     logging.debug("Saving object %s" % central_server)
     assert isinstance(central_server, Device)
-    assert central_server.verify()
     central_server.save(imported=True, is_trusted=True)
 
     # Everything else, import as is.
     for model in models:
         logging.debug("Saving object %s" % model.object)
-        assert model.object.verify()
         model.object.save(imported=True)
 
 
@@ -78,7 +76,6 @@ class Command(BaseCommand):
         if not os.path.exists(data_file):
             sys.stderr.write("Could not find resource file %s.  This may cause warnings to appear when updating your KA Lite version." % data_file)
         else:
-            import pdb; pdb.set_trace()
             try:
                 load_data_for_offline_install(in_file=data_file)
                 self.stdout.write("Successfully imported offline data from %s\n" % data_file)

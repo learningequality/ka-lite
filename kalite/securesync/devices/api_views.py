@@ -61,13 +61,13 @@ def register_device(request):
             "code": "client_device_invalid_signature",
         }, status=500)
 
-    #try:
-    zone = register_self_registered_device(client_device, models)
-#    except Exception as e:
-#        return JsonResponse({
-#            "error": "Failed to validate the chain of trust (%s)." % e,
-#            "code": "chain_of_trust_invalid",
-#        }, status=500)
+    try:
+        zone = register_self_registered_device(client_device, models, data)
+    except Exception as e:
+        return JsonResponse({
+            "error": "Failed to validate the chain of trust (%s)." % e,
+            "code": "chain_of_trust_invalid",
+        }, status=500)
 
     if not zone: # old code-path
         try:
@@ -87,36 +87,34 @@ def register_device(request):
                     "code": "public_key_unregistered",
                 }, status=500)
 
-    client_device.signed_by = client_device  # the device checks out; let's save it!
     client_device.save(imported=True)
 
     try:
+        device_zone = DeviceZone.objects.get(device=client_device, zone=zone)
+        device_zone.save()  # re-save, to give it a central server signature that will be honored by old clients
+    except:
         device_zone = DeviceZone(device=client_device, zone=zone)
-        if not device_zone.get_existing_instance():
-            device_zone.save()     # create the DeviceZone for the new device, with an 'upgraded' signature
-    except Exception as e:
-        pass#import pdb; pdb.set_trace()
+        device_zone.save()     # create the DeviceZone for the new device, with an 'upgraded' signature
 
     # return our local (server) Device, its Zone, and the newly created DeviceZone, to the client
+    #   Note the order :)
+    #
+    # Addition: always back central server object--in case they didn't get it during install,
+    #   they need it for software updating.
     return JsonResponse(
-        serializers.serialize("json", [Device.get_own_device(), zone, device_zone], dest_version=client_device.version, ensure_ascii=False)
+        serializers.serialize("json", [Device.get_central_server(), Device.get_own_device(), zone, device_zone], dest_version=client_device.version, ensure_ascii=False)
     )
 
 
 @transaction.commit_on_success
-def register_self_registered_device(client_device, serialized_models):
+def register_self_registered_device(client_device, serialized_models, request_data):
     
     try:
         model_count = 0
-        models = []
         for model in serialized_models:
-            model_count += 1
-            models.append(model.object)
-            # HACK(bcipolli): DeviceZone fails to verify (for a few reasons),
-            #   and I don't think making it requires_trusted_signature makes 
-            #   sense.  For now, short-circuit the verify function--the
-            #   verification is the ChainOfTrust verification below.
             model.object.save(imported=True)
+
+            model_count += 1
             if model_count > 3 * ChainOfTrust.MAX_CHAIN_LENGTH:
                 raise Exception("Chain of trust is too long.")
 
@@ -128,6 +126,10 @@ def register_self_registered_device(client_device, serialized_models):
         # If that works, then we just need to prove that the device has
         #   the private key of the ZoneInvitation.
         #
+        # This would be easy to do if we had a session; could just sign the nonce.
+        #   However, we refuse to make a sync session if we don't know the device
+        #   why?  Would it be better to make a session, then register within the session?
+        # Let's talk.
 
         # we got through!  we got the zone, either recognized it or added it,
         #   and validated the certificate!

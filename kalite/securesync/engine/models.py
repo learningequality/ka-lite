@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 import datetime
 import uuid
 import zlib
@@ -17,6 +15,7 @@ import kalite
 import settings
 from . import add_syncing_models
 from config.models import Settings
+from utils.django_utils import validate_via_booleans
 
 
 _own_device = None
@@ -131,6 +130,7 @@ class SyncedModel(models.Model):
         self.full_clean()  # make sure the model data is of the appropriate types
         self.signature = self.signed_by.get_key().sign(self._hashable_representation())
 
+    @validate_via_booleans
     def validate(self):
         try:
             # if nobody signed it, verification fails
@@ -140,7 +140,6 @@ class SyncedModel(models.Model):
             if not self.signed_by.is_trusted():
                 if settings.CENTRAL_SERVER:
                     if not self.signed_by.get_zone():
-                        import pdb; pdb.set_trace()
                         raise ValidationError("This model was signed by a Device with no zone, but somehow synced to the central server.")
                 elif not _get_own_device().get_zone().is_member(self.signed_by):
                     # distributed server

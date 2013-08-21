@@ -190,7 +190,7 @@ def install_single_server_edition(request):
         "version": kalite.VERSION,
         "platform": platform,
         "locale": locale,
-    })+ "?auto_unpack")
+    }))
 
 
 @login_required
@@ -230,10 +230,10 @@ def install_multiple_server_edition(request):
         }
         zone_id = get_request_var(request, "zone", None)
         if not zone_id:  # TODO(bcipolli): remove debug querystring arg for unpacking automatically
-            return HttpResponseRedirect(reverse("download_kalite_public", kwargs=kwargs) + "?auto_unpack")
+            return HttpResponseRedirect(reverse("download_kalite_public", kwargs=kwargs))
         else:
             kwargs["zone_id"] = zone_id
-            return HttpResponseRedirect(reverse("download_kalite_private", kwargs=kwargs) + "?auto_unpack")
+            return HttpResponseRedirect(reverse("download_kalite_private", kwargs=kwargs))
 
     else: # GET
         return {
@@ -293,7 +293,6 @@ def download_kalite(request, *args, **kwargs):
         "package_for_download",
         file=zip_file,
         central_server=get_central_server_host(request),
-        auto_unpack="auto_unpack" in request.REQUEST and settings.DEBUG,  # don't auto-unpack for API requests
     **kwargs)
 
     # Build the outgoing filename."

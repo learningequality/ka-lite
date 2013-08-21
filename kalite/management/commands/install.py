@@ -8,6 +8,7 @@ import sys
 import tempfile
 from optparse import make_option
 
+# This is necessary for this script to run before KA Lite has ever been installed.
 CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
 BASE_DIR = os.path.realpath(CURRENT_DIR + "/../../../")
 

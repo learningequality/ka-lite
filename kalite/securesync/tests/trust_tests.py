@@ -40,7 +40,7 @@ class TestChainOfTrust(TestCase):
 
         # Now get a chain of trust establishing the new device on the zone
         chain = ChainOfTrust(zone=zone, device=new_device)
-        self.assertTrue(chain.validate(), "Chain of trust should be valid.")
+        self.assertTrue(chain.verify(), "Chain of trust should verify.")
 
 
     @central_server_test
@@ -68,7 +68,7 @@ class TestChainOfTrust(TestCase):
 
         # Now get a chain of trust establishing the new device on the zone
         chain = ChainOfTrust(zone=zone, device=new_device)
-        self.assertTrue(chain.validate(), "Chain of trust should be valid.")
+        self.assertTrue(chain.verify(), "Chain of trust should verify.")
 
 
     @distributed_server_test
@@ -88,8 +88,8 @@ class TestChainOfTrust(TestCase):
         new_device.save(own_device=new_device)  # get an ID
         new_device.get_metadata().save()
 
-        # Now create an illegal invitation--one that's not signed by the originator
-        with self.assertRaises(AssertionError):
+        # Now create an illegal invitation--one that's not signed by the zone creator
+        with self.assertRaises(ValidationError):
             ZoneInvitation.generate(zone=zone, invited_by=new_device)
 
         #

@@ -73,8 +73,6 @@ class RegistrationClient(BaseClient):
         own_zone = own_devicezone.zone
         chain_of_trust = ChainOfTrust(device=own_device, zone=own_zone)
 
-        assert chain_of_trust.validate()
-
         # For now, just try with one certificate
         #
         # Serialize for any version; in the current implementation, we assume the central server has
@@ -95,7 +93,7 @@ class RegistrationClient(BaseClient):
         return (serializers.deserialize("versioned-json", r.content, dest_version=kalite.VERSION), r)
 
 
-    def register_via_remote(self):
+    def register_via_preregistered_key(self):
         """Register this device with a zone, through the central server directly"""
         
         own_device = Device.get_own_device()

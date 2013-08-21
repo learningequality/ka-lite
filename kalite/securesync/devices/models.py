@@ -14,6 +14,7 @@ from securesync import crypto
 from securesync.engine.models import SyncedModel
 from settings import LOG as logging
 from utils.general import get_host_name
+from utils.django_utils import validate_via_booleans
 
 
 class RegisteredDevicePublicKey(models.Model):
@@ -66,6 +67,13 @@ class Zone(SyncedModel):
         except:
             return False
 
+    @validate_via_booleans
+    def validate(self):
+        """
+        Nothing to verify--ANYBODY can make a zone.  The question is
+        if you can convince anybody else to join it :P
+        """
+        return True
 
     @classmethod
     def get_headless_zones(cls):
@@ -78,16 +86,6 @@ class Zone(SyncedModel):
     def __unicode__(self):
         return self.name
 
-def throw_on_debug(handler):
-    def tod_wrapper_fn(*args, **kwargs):
-        try:
-            return handler(*args, **kwargs)
-        except ValidationError as ve:
-            if settings.DEBUG:
-                raise ve
-            else:
-                return False
-    return tod_wrapper_fn
 
 class DeviceZone(SyncedModel):
     device = models.ForeignKey("Device", unique=True)
@@ -98,10 +96,11 @@ class DeviceZone(SyncedModel):
     class Meta:
         app_label = "securesync"
 
-    @throw_on_debug
+    @validate_via_booleans
     def validate(self):
         """
-        Zone and DeviceZone: if we made it, then it auto-verifies.
+        Verify that it was created by a trusted server (old-school),
+        or that it has an invitation backing the devicezone (new-school)
         """
         if self.signed_by.is_trusted():
             return True
@@ -227,16 +226,11 @@ class Device(SyncedModel):
         return zones and zones[0].zone or None
     get_zone.short_description = "Zone"
 
+    @validate_via_booleans
     def validate(self):
-        try:
-            if self.signed_by_id != self.id:
-                raise ValidationError("Device is not self-signed.")
-            return True
-        except ValidationError as ve:
-            if settings.DEBUG:
-                raise ve
-            else:
-                return False
+        if self.signed_by_id != self.id:
+            raise ValidationError("Device is not self-signed.")
+        return True
 
     def verify(self):
         if not self.validate():
@@ -278,7 +272,7 @@ class Device(SyncedModel):
             devices = Device.objects.filter(devicemetadata__is_trusted=True)
             return devices[0] if devices else None  # none if old computer, hasn't registered.
 
-    def is_originator(self, model):
+    def is_creator(self, model):
         return self == model.signed_by
 
     def is_trusted(self):
@@ -331,25 +325,20 @@ class ZoneInvitation(SyncedModel):
             self.key = crypto.Key(public_key_string=self.public_key, private_key_string=self.private_key)
         return self.key
 
+    @validate_via_booleans
     def validate(self):
         """
-        Verify that this Invitation is valid and set up properly.
+        Check that this Invitation is set up properly.
         """
-        try:
-            if not self.public_key_signature:
-                raise ValidationError("Public key signature does not exist")
-            elif not self.invited_by:
-                raise ValidationError("Public key signee does not exist")
-            elif not self.is_authorized(self.invited_by):
-                raise ValidationError("Public key signee is on a different zone than this invitation, did not create the zone, and is not trusted.")
-            elif self.revoked:
-                raise ValidationError("ZoneInvitation was revoked.")
-            return True
-        except ValidationError as ve:
-            if settings.DEBUG:
-                raise ve
-            else:
-                return False
+        if not self.public_key_signature:
+            raise ValidationError("Public key signature does not exist")
+        elif not self.invited_by:
+            raise ValidationError("Public key signee does not exist")
+        elif not self.is_authorized(self.invited_by):
+            raise ValidationError("Public key signee is on a different zone than this invitation, did not create the zone, and is not trusted.")
+        elif self.revoked:
+            raise ValidationError("ZoneInvitation was revoked.")
+        return True
 
     def verify(self):
         if not self.validate():
@@ -422,7 +411,7 @@ class ChainOfTrust(object):
         """
         self.device = device or Device.get_own_device()
         self.zone = zone or Device.get_own_device().get_zone()
-        self.originator = zone.signed_by
+        self.zone_owner = zone.signed_by
         self.chain = self._compute()
 
     def objects(self):
@@ -438,21 +427,32 @@ class ChainOfTrust(object):
         #   objects (due to interdependencies)
         return device_list + [self.zone] + invitation_list + devicezone_list
 
+    @validate_via_booleans
     def validate(self):
-        import pdb; pdb.set_trace()
-        return self.verify()
+        if not self.device:
+            raise ValidationError("Origin device is not set.")
+        if not self.zone:
+            raise ValidationError("Target zone is not set.")
+        if not self.zone_owner:
+            raise ValidationError("Owner of zone is not set.")
+        if not self.chain:
+            raise ValidationError("Chain was not yet computed.")
+
+        if self.device != self.chain[0]["device"]:
+            raise ValidationError("Origin device is not the first link in the chain.")
+        if self.zone_owner != self.chain[-1]["device"] and not self.chain[-1]["device"].is_trusted():
+            raise ValidationError("Terminal device is not the zone owner or a trusted device.")
+
+        return True
 
     def verify(self):
-        is_valid = True
-        is_valid = is_valid and self.device
-        is_valid = is_valid and self.zone
-        is_valid = is_valid and self.originator
-        is_valid = is_valid and self.chain
-
-        first_link = self.chain[0]
-        last_link = self.chain[-1]
-        is_valid = is_valid and self.device == first_link["device"]
-        is_valid = is_valid and self.originator == last_link["device"] or last_link["device"].is_trusted()
+        """
+        This only works for models in the database,
+        so all models in the chain must be saved to the DB first
+        (in a transaction), then backed out if they don't verify.
+        """
+        if not self.validate():
+            return False
 
         # Make sure they're all on the same zone
         prev_invitation = None
@@ -461,18 +461,28 @@ class ChainOfTrust(object):
             invitation = link["zone_invitation"]
             devicezone = link["device_zone"]
 
-            is_valid = is_valid and device.is_trusted() or device.get_zone() == self.zone
+            if not device.is_trusted() and device.get_zone() != self.zone:
+                # Every link in the chain must be trusted or (verified) on the zone.
+                # This requires that all models already be in the database.
+                return False
 
             if invitation:
-                is_valid = is_valid and invitation.is_authorized(device)
-                is_valid = is_valid and (not prev_invitation or device.get_key().verify(prev_invitation.public_key, prev_invitation.public_key_signature))
+                if not invitation.is_authorized(device):
+                    # Device was not authorized to be on the zone / use this invitation
+                    return False
+                if prev_invitation and not device.get_key().verify(prev_invitation.public_key, prev_invitation.public_key_signature):
+                    # The previous invitation should be signed by the next device in the chain.
+                    return False
 
             if devicezone:
-                is_valid = is_valid and device.get_zone() == devicezone.zone
+                if devicezone.zone != self.zone:
+                    # DeviceZone is for another zone.
+                    #   Note: Shouldn't ever be--since we checked the device's zone above,
+                    #   and it gets its info from the DeviceZone... but let's be safe.
+                    return False
 
             prev_invitation = invitation
-
-        return bool(is_valid)   
+        return True
 
     def _compute(self):
         """
@@ -481,7 +491,7 @@ class ChainOfTrust(object):
 
         Returns an (ordered) list of dictionaries (Device, DeviceZone), defining the chain of trust.
         """
-        return self.__class__.compute_one_way(zone=self.zone, from_device=self.device, to_device=self.originator)
+        return self.__class__.compute_one_way(zone=self.zone, from_device=self.device, to_device=self.zone_owner)
 
     @classmethod
     def compute_one_way(cls, zone, from_device, to_device):
@@ -494,7 +504,7 @@ class ChainOfTrust(object):
 
         for i in range(cls.MAX_CHAIN_LENGTH):  # max chain size: 1000 (avoids infinite loops)
             # We're going to traverse the chain backwards, until we get to
-            #   the originator (to_device), or a trusted device.
+            #   the zone_owner (to_device), or a trusted device.
             cur_link = chain[-1]
 
             # Get a devicezone and/or zone invitation for the current device.
@@ -521,11 +531,11 @@ class ChainOfTrust(object):
                 devices_in_chain.add(next_device)
                 chain.append({"device": next_device})
 
-        # Validate the chain of trust to the zone originator
+        # Validate the chain of trust to the zone zone_owner
         terminal_link = chain[-1]
         terminal_device = terminal_link["device"]
         obj = terminal_link["zone_invitation"] or terminal_link["device_zone"]
-        if obj and not (terminal_device.is_originator(obj) or terminal_device.is_trusted()):
+        if obj and not (terminal_device.is_creator(obj) or terminal_device.is_trusted()):
             logging.warn("Could not verify chain of trust.")
         return chain
 

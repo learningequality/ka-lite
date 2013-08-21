@@ -16,7 +16,7 @@ class Command(BaseCommand):
         if DeviceZone.objects.filter(device=own_device).count() > 0:
             raise CommandError("This device is already on a zone.")
 
-        zone_name        = args[0] if len(args) >= 1 else "Device %s's self-generated zone" % own_device.name
+        zone_name        = args[0] if len(args) >= 1 else "Self-generated zone for Device %s" % own_device.name
         zone_description = args[1] if (len(args) >= 2 and args[1]) else ""
 
         # Create the zone
