@@ -60,9 +60,9 @@ def zone_management(request, zone_id, org_id=None):
 
     # Accumulate device data
     device_data = dict()
-    for device in Device.objects.filter(devicezone__zone=zone):
+    for device in Device.objects.filter(devicezone__zone=zone).order_by("name"):
 
-        sync_sessions = SyncSession.objects.filter(client_device=device)
+        sync_sessions = SyncSession.objects.filter(client_device=device).order_by("timestamp")
         user_activity = UserLogSummary.objects.filter(device=device)
 
         device_data[device.id] = {
@@ -75,7 +75,7 @@ def zone_management(request, zone_id, org_id=None):
 
     # Accumulate facility data
     facility_data = dict()
-    for facility in Facility.objects.by_zone(zone):
+    for facility in Facility.objects.by_zone(zone).order_by("name"):
 
         user_activity = UserLogSummary.objects.filter(user__in=FacilityUser.objects.filter(facility=facility))
 
