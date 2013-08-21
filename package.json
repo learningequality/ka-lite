@@ -1,0 +1,27 @@
+{
+  "name": "ka-lite",
+  "version": "0.0.0",
+  "description": "[Khan Academy](http://www.khanacademy.org/)'s core mission is to \"provide a free world-class education for anyone anywhere\", and as [70% of the world's population is without access to the internet](http://en.wikipedia.org/wiki/Global_Internet_usage), primarily in the developing world, providing an alternative delivery mechanism for Khan Academy content is key to fulfilling this mission.",
+  "main": "grunt.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arnaudbenard/ka-lite.git"
+  },
+  "author": "",
+  "license": "BSD",
+  "readmeFilename": "README.md",
+  "gitHead": "2eeb596f6d76493bcfb957e0df6b83f2f1b036f0",
+  "bugs": {
+    "url": "https://github.com/arnaudbenard/ka-lite/issues"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-less": "~0.6.4"
+  }
+}
