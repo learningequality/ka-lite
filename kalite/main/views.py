@@ -85,7 +85,7 @@ def check_setup_status(handler):
                 "Please <a href='%s?next=%s'>login</a> with the account you created while running the installation script, \
                 to complete the setup." % (reverse("login"), reverse("register_public_key"))))
         if request.is_admin:
-            if not Settings.get("registered") and SyncClient().test_connection() == "success":
+            if not Settings.get("registered") and BaseClient().test_connection() == "success":
                 messages.warning(request, mark_safe("Please <a href='%s'>follow the directions to register your device</a>, so that it can synchronize with the central server." % reverse("register_public_key")))
             elif Facility.objects.count() == 0:
                 messages.warning(request, mark_safe("Please <a href='%s'>create a facility</a> now. Users will not be able to sign up for accounts until you have made a facility." % reverse("add_facility")))
