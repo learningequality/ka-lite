@@ -17,7 +17,7 @@ from django.views.decorators.csrf import csrf_exempt
 import settings
 from central.forms import OrganizationForm, OrganizationInvitationForm
 from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
-from securesync.api_client import SyncClient
+from securesync.engine.api_client import SyncSession
 from utils.decorators import require_authorized_admin
 
 
@@ -150,8 +150,14 @@ def glossary(request):
     return {}
 
 
+
 @login_required
 def crypto_login(request):
+    """
+    Remote admin endpoint, for login to a distributed server (given its IP address; see also securesync/views.py:crypto_login)
+    
+    An admin login is negotiated using the nonce system inside SyncSession
+    """
     if not request.user.is_superuser:
         raise PermissionDenied()
     ip = request.GET.get("ip", "")
