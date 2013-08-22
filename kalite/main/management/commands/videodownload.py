@@ -1,18 +1,31 @@
 import sys
 import time
+from functools import partial
 from optparse import make_option
 
 import settings
 from main.models import VideoFile
 from shared import caching
+from shared.jobs import force_job
 from updates.utils import UpdatesDynamicCommand
-from utils.jobs import force_job
 from utils.topic_tools import get_video_by_youtube_id
 from utils.videos import download_video, DownloadCancelled
 
 
-def download_progress_callback(self, videofile):
-    def inner_fn(percent):
+class Command(UpdatesDynamicCommand):
+    help = "Download all videos marked to be downloaded"
+
+    option_list = UpdatesDynamicCommand.option_list + (
+        make_option('-c', '--cache',
+            action='store_true',
+            dest='auto_cache',
+            default=False,
+            help='Create cached files',
+            metavar="AUTO_CACHE"),
+    )
+
+
+    def download_progress_callback(self, videofile, percent):
         video = VideoFile.objects.get(pk=videofile.pk)
 
         if video.cancel_download == True:
@@ -45,20 +58,6 @@ def download_progress_callback(self, videofile):
             video_title = video_node["title"] if video_node else video.youtube_id
             self.update_stage(stage_name=video.youtube_id, stage_percent=percent/100., notes="Downloading '%s'" % video_title)
 
-    return inner_fn
-            
-
-class Command(UpdatesDynamicCommand):
-    help = "Download all videos marked to be downloaded"
-
-    option_list = BaseCommand.option_list + (
-        make_option('-c', '--cache',
-            action='store_true',
-            dest='auto_cache',
-            default=False,
-            help='Create cached files',
-            metavar="AUTO_CACHE"),
-    )
 
     def handle(self, *args, **options):
 
@@ -67,7 +66,6 @@ class Command(UpdatesDynamicCommand):
         failed_video_ids = []  # stored to avoid requerying failures.
         try:
             while True: # loop until the method is aborted
-            
                 if VideoFile.objects.filter(download_in_progress=True).count() > 0:
                     self.stderr.write("Another download is still in progress; aborting.\n")
                     break
@@ -94,7 +92,7 @@ class Command(UpdatesDynamicCommand):
 
                 # Initiate the download process
                 try:
-                    download_video(video.youtube_id, callback=download_progress_callback(self, video))
+                    download_video(video.youtube_id, callback=partial(self.download_progress_callback, video))
                     handled_video_ids.append(video.youtube_id)
                     self.stdout.write("Download is complete!\n")
                 except Exception as e:

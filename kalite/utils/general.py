@@ -17,6 +17,7 @@ class InvalidDirectoryFormat(Exception):
     def __str__(value):
         return "Invalid directory format. Please ensure you are passing in a directory path, not a filepath."
 
+
 def break_into_chunks(bigiterator, chunksize=500):
     """
     Given an iterator, separates the iterator into a list of iterators,
@@ -158,3 +159,14 @@ def convert_date_input(date_to_convert):
         return converted_date
     else:
         return date_to_convert
+
+def get_module_source_file(module_name):
+    """
+    http://stackoverflow.com/questions/247770/retrieving-python-module-path
+    http://stackoverflow.com/questions/8718885/import-module-from-string-variable
+    """
+    module_name.split
+    source_file = __import__(module_name, fromlist=[""]).__file__
+    if source_file.endswith(".pyc"):
+        return source_file[0:-1]
+    return source_file

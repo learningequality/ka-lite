@@ -29,9 +29,9 @@ from main import topicdata
 from main.models import VideoLog, ExerciseLog, VideoFile
 from securesync.models import Facility, FacilityUser, FacilityGroup, Device
 from securesync.views import require_admin, facility_required
+from shared.jobs import force_job
 from kalite.utils import topic_tools
 from kalite.utils.internet import am_i_online, JsonResponse
-from kalite.utils.jobs import force_job
 from kalite.utils.decorators import require_admin
 from kalite.utils.videos import video_connection_is_available
 

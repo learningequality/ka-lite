@@ -11,6 +11,7 @@ from django.core.management import call_command
 
 import settings
 import version
+from utils.platforms import is_windows, not_system_specific_scripts, system_specific_zipping, _default_callback_zip
 
 
 ## The following 3 functions define the rules for inclusion/exclusion
@@ -20,15 +21,7 @@ def file_in_platform(file_path, platform):
     based on the requested platform and the file's name (including path)"""
 
     ext = os.path.splitext(file_path)[1]
-
-    if platform == "all":
-        return True
-
-    elif platform == "windows":  # remove non-windows files
-        return ext not in [".sh",]
-
-    else:  # remove windows files
-        return ext not in [".vbs", ".bat"]
+    return (platform == "all") or (ext not in not_system_specific_scripts(platform))
 
 
 def select_package_dirs(dirnames, key_base, **kwargs):
@@ -48,8 +41,9 @@ def select_package_dirs(dirnames, key_base, **kwargs):
         # can't exclude 'test', which eliminates the Django test client (used in caching)
         #   as well as all the Khan academy tests
         in_dirs = set(dirnames)
+        in_dirs -= set(['tmp'])
         if kwargs["remove_test"]:
-            in_dirs -= set(('loadtesting', 'tests', 'testing', 'tmp', 'selenium', 'werkzeug', 'postmark'))
+            in_dirs -= set(('loadtesting', 'tests', 'testing', 'selenium', 'werkzeug', 'postmark'))
         #
         if kwargs.get("server_type", "") != "central":
             in_dirs -= set(("central", "landing-page"))
@@ -220,19 +214,9 @@ class Command(BaseCommand):
             options['file'] = create_default_archive_filename(options)
 
         # Step 4: package into a zip file
-        with ZipFile(options['file'], "w", ZIP_DEFLATED if options['compress'] else ZIP_STORED) as zfile:
-            for srcpath,fdict in files_dict.items():
-                try:
-                    if options['verbosity'] >= 1:
-                        print "Adding to zip: %s" % srcpath
-                    # Add without setting exec perms
-                    if os.path.splitext(fdict["dest_path"])[1] != ".sh":
-                        zfile.write(srcpath, arcname=fdict["dest_path"])
-                    # Add with exec perms
-                    else:
-                        info = ZipInfo(fdict["dest_path"])
-                        info.external_attr = 0755 << 16L # give full access to included file
-                        with open(srcpath, "r") as fh:
-                            zfile.writestr(info, fh.read())
-                except Exception as e:
-                    sys.stderr.write("Failed to add file %s: %s\n" % (srcpath, e))
+        system_specific_zipping(
+            files_dict = dict([(v["dest_path"], src_path) for src_path, v in files_dict.iteritems()]), 
+            zip_file = options["file"], 
+            compression=ZIP_DEFLATED if options['compress'] else ZIP_STORED,
+            callback=_default_callback_zip if options["verbosity"] else None,
+        )

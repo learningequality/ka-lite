@@ -85,39 +85,25 @@
 
     <div id="zone_section">
             <div class="errors">{% for err in errors %}{{ err }}{% endfor %}</div>
-            <div class="row-fluid">
-                <div class="span2">
-                    <p class="form-dropdown-label">{% trans "Select Organization:" %}</p>
-                </div>
-                <div class="span10">
-                    <select name="organization" id="organization">
-                        {% for org in organizations %}
-                        <option value="{{ org.id }}" {% if selected_organization.id == org.id %}selected{% endif %}>
-                            {{ org }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div> <!-- .row-fluid -->
-
             <div class="form-section">
                 <div class="row-fluid">
 
                     <div class="span2">
-                        <p class="form-dropdown-label">{% trans "Select Zone:" %}</p>
+                        <p class="form-dropdown-label">{% trans "Select Network:" %}</p>
                     </div>
                     <div class="span10">
                         <div class="form-selection">
                             <select name="zone" id="zone">
                                 <option disabled="disabled" value="__empty__" {% if not selected_zone %}selected{% endif %}>
-                                    --select your zone--
+                                    --select your network--
                                 </option>
                                 {% for zone in zones %}
-                                <option value="{{ zone.id }}"{% if selected_zone.id == zone.id %}selected{% endif %}>
-                                    {{ zone }}
+                                <option value="{{ zone.id }}"{% if selected_zone == zone.id %}selected{% endif %}>
+                                    {{ zone.name }}
                                 </option>
                                 {% endfor %}
                             </select>
+                            <span><a href="{% url org_management %}">Add a network</a>
                         </div>
                     </div>
                 </div>

@@ -9,6 +9,7 @@ import subprocess
 import tempfile
 import urllib
 import zipfile
+from functools import partial
 from optparse import make_option
 from zipfile import ZipFile, ZIP_DEFLATED
 
@@ -20,40 +21,9 @@ from securesync.models import Device
 from settings import LOG as logging
 from updates.utils import UpdatesStaticCommand
 from utils import crypto
+from utils.django_utils import call_outside_command_with_output
 from utils.general import ensure_dir
-
-
-def call_outside_command_with_output(base_path, command, *args, **kwargs):
-    """
-    Runs call_command for a KA Lite installation at the given location,
-    and returns the output.
-    """
-
-    # build the command
-    cmd = (sys.executable, base_path + "/kalite/manage.py",command)
-    for arg in args:
-        cmd += (arg,)
-    for key,val in kwargs.items():
-        key = key.replace("_","-")
-        prefix = "--" if command != "runcherrypyserver" else ""
-        if isinstance(val,bool):
-            cmd += ("%s%s" % (prefix,key),)
-        else:
-            cmd += ("%s%s=%s" % (prefix,key,str(val)),)
-
-    logging.debug(cmd)
-
-    # Execute the command, using subprocess/Popen
-    cwd = os.getcwd()
-    os.chdir(base_path + "/kalite")
-    p = subprocess.Popen(cmd, shell=False, cwd=os.path.split(cmd[0])[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    out = p.communicate()
-    os.chdir(cwd)
-
-    logging.debug(out[1] if out[1] else out[0])
-
-    # tuple output of stdout, stderr, and exit code
-    return out + (1 if out[1] else 0,)
+from utils.platforms import is_windows, system_script_extension, system_specific_unzipping, _default_callback_unzip
 
 
 class Command(UpdatesStaticCommand):
@@ -234,7 +204,7 @@ class Command(UpdatesStaticCommand):
 
         # Validation & confirmation
         self.next_stage("Testing the updated server")
-#        if platform.system() == "Windows":  # In Windows. serverstart is not async
+#        if is_windows():  # In Windows. serverstart is not async
         self.test_server_weak()
 #        else:
 #            self.test_server_full(test_port=test_port)
@@ -359,7 +329,13 @@ class Command(UpdatesStaticCommand):
             self.move_videos = move_videos
 
 
-    def extract_files(self,zip_file):
+    def _callback_unzip(self, afile, fi, nfiles):
+        _default_callback_unzip(afile, fi, nfiles)
+        if fi > 0 and fi % round(nfiles/10) == 0:
+            pct_done = (fi + 1.)/nfiles * 100.
+            self.update_stage(stage_percent=pct_done/100.)
+        
+    def extract_files(self, zip_file):
         """Extract all files to a temp location"""
 
         sys.stdout.write("*\n")
@@ -373,28 +349,15 @@ class Command(UpdatesStaticCommand):
             sys.stdout.write("** NOTE ** NOT EXTRACTING IN DEBUG MODE")
             return
 
-        if not os.path.exists(self.working_dir):
-            os.mkdir(self.working_dir)
-
-        if not zipfile.is_zipfile(zip_file):
-            raise CommandError("bad zip file")
-
-        zip = ZipFile(zip_file, "r")
-
-        nfiles = len(zip.namelist())
-        for fi,afile in enumerate(zip.namelist()):
-
-            if fi>0 and fi%round(nfiles/10)==0:
-                pct_done = round(100.*(fi+1.)/nfiles)
-                self.update_stage(stage_percent=pct_done/100., notes="Current file: %s" % afile)
-                sys.stdout.write(" %d%%" % pct_done)
-
-            zip.extract(afile, path=self.working_dir)
-            # If it's a unix script, give permissions to execute
-            if os.path.splitext(afile)[1] == ".sh":
-                os.chmod(os.path.realpath(self.working_dir + "/" + afile), 0755)
-                logging.debug("\tChanging perms on script %s\n" % os.path.realpath(self.working_dir + "/" + afile))
-        sys.stdout.write("\n")
+        try:
+            system_specific_unzipping(
+                zip_file=zip_file, 
+                dest_dir=self.working_dir,
+                callback = self._callback_unzip,
+            )
+            sys.stdout.write("\n")
+        except Exception as e:
+            raise CommandError("Error unzipping %s: %s" % (zip_file, e))
 
         # Error checking (successful unpacking would skip all the following logic.)
         if not os.path.exists(self.working_dir + "/kalite/"):
@@ -426,8 +389,9 @@ class Command(UpdatesStaticCommand):
 
         # Run the syncdb
         sys.stdout.write("* Syncing database...")
-        out = call_outside_command_with_output(self.working_dir, "migrate")
-        out = call_outside_command_with_output(self.working_dir, "syncdb", migrate=True)
+        sys.stdout.flush()
+        out = call_outside_command_with_output("migrate", manage_py_dir=os.path.join(self.working_dir, "kalite"))
+        out = call_outside_command_with_output("syncdb", migrate=True, manage_py_dir=os.path.join(self.working_dir, "kalite"))
         sys.stdout.write("\n")
 
 
@@ -496,7 +460,7 @@ class Command(UpdatesStaticCommand):
     def test_server_weak(self):
         sys.stdout.write("* Testing the new server (simple)\n")
 
-        out = call_outside_command_with_output(self.working_dir, "update", "test")
+        out = call_outside_command_with_output("update", "test", manage_py_dir=os.path.join(self.working_dir, "kalite"))
         if "Success!" not in out[0]:
             raise CommandError(out[1] if out[1] else out[0])
 
@@ -567,7 +531,7 @@ class Command(UpdatesStaticCommand):
         # OK, don't actually kill it--just move it
         if os.path.exists(self.dest_dir):
             try:
-                if platform.system() == "Windows" and in_place_move:
+                if is_windows() and in_place_move:
                     # We know this will fail, so rather than get in an intermediate state,
                     #   just move right to the compensatory mechanism.
                     raise Exception("Windows sucks.")
@@ -664,10 +628,7 @@ class Command(UpdatesStaticCommand):
     def get_shell_script(self, cmd_glob, location=None):
         if not location:
             location = self.working_dir + '/kalite'
-        if platform.system() == "Windows":
-            cmd_glob += ".bat"
-        else:
-            cmd_glob += ".sh"
+        cmd_glob += system_script_extension()
 
         # Find the command
         cmd = glob.glob(location + "/" + cmd_glob)
@@ -676,5 +637,6 @@ class Command(UpdatesStaticCommand):
         elif len(cmd)==1:
             cmd = cmd[0]
         else:
-            raise CommandError("No command found? (%s @ %s)" % (cmd_glob, location))
+            cmd = None
+            logging.warn("No command found: (%s in %s)" % (cmd_glob, location))
         return cmd

@@ -4,7 +4,6 @@ import tempfile
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 
-from annoying.functions import get_object_or_None
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -28,6 +27,11 @@ from utils.decorators import require_authorized_admin
 
 
 def get_central_server_host(request):
+    """
+    Nice to refer to the central server in a simple way.
+    Note that CENTRAL_SERVER_HOST usually isn't set for the central server,
+    so it's kind of a bogus fallback.
+    """
     return request.get_host() or getattr(settings, CENTRAL_SERVER_HOST, "")
 
 
@@ -161,12 +165,34 @@ def glossary(request):
 
 
 def get_request_var(request, var_name, default_val="__empty__"):
-    return  request.POST.get(var_name, request.GET.get(var_name, default_val))
+    """
+    Allow getting parameters from the POST object (from submitting a HTML form),
+    or on the querystring.
 
+    This isn't very RESTful, but it makes a lot of sense to me!
+    """
+    return  request.POST.get(var_name, request.GET.get(var_name, default_val))
 
 @render_to("central/install_wizard.html")
 def install_wizard(request, edition=None):
+    """
+    NOTE that this wizard is ONLY PARTIALLY FUNCTIONAL (see below)
+
+    Install wizard accepts "edition" as an optional argument.
+
+    If the user is not logged in, they are shown both choices.
+    If they select edition=single-server, then they download right away.
+
+    If the user is logged in, they are only shown the multiple-servers edition.
+    When they submit the form (to choose the zone), they get the download package.
+
+    TODO(bcipolli):
+    * Don't show org, only show zone.  
+    * If a user has more than one organization, you only get zone information for the first zone.
+    there's no way to show information from other orgs.
+        If the user is logged in, theyIf not sent, the user has two options: "single server" or "multiple server".
     
+    """
     if not edition and request.user.is_anonymous():
         return {}
 
@@ -198,57 +224,48 @@ def install_multiple_server_edition(request):
     # get a list of all the organizations this user helps administer,
     #   then choose the selected organization (if possible)
     # Get all data
-    organization_id = get_request_var(request, "organization", None)
     zone_id = get_request_var(request, "zone", None)
-    num_certificates = int(get_request_var(request, "num_certificates", 1))
-    
-    organization = None
-    if organization_id and organization_id != "__empty__":
-        organizations = request.user.organization_set.filter(id=organization_id)
-        organization = organizations[0] if organizations else None
-    else:
-        organizations = request.user.organization_set.all()
-        if len(organizations) == 1:
-            organization_id = organizations[0].id
-            organization = organizations[0]
-    
-    # If a zone is selected grab it
+    kwargs={
+        "version": kalite.VERSION,
+        "platform": get_request_var(request, "platform", "all"),
+        "locale": get_request_var(request, "locale", "en"),
+    }
+
+    # Loop over orgs and zones, building the dict of all zones
+    #   while searching for the zone_id.
     zones = []
-    zone = None
-    if organization_id and len(organizations)==1:
-        zones = organizations[0].zones.all()
-        if zone_id and zone_id != "__empty__": 
-            zone = get_object_or_None(Zone, id=zone_id)
-        zone = zone or (zones[0] if len(zones)==1 else None)              
+    for org in request.user.organization_set.all().order_by("name"):
+        for zone in org.zones.all().order_by("name"):
+            if zone_id and zone_id == zone.id:
+                kwargs["zone_id"] = zone_id
+                return HttpResponseRedirect(reverse("download_kalite_private", kwargs=kwargs))
+            else:
+                zones.append({
+                    "id": zone.id,
+                    "name": "%s / %s" % (org.name, zone.name),
+                })
 
-    # Generate install certificates
-    if request.method == "POST":
-        kwargs={
-            "version": kalite.VERSION,
-            "platform": get_request_var(request, "platform", "all"),
-            "locale": get_request_var(request, "locale", "en"),
-        }
-        zone_id = get_request_var(request, "zone", None)
-        if not zone_id:  # TODO(bcipolli): remove debug querystring arg for unpacking automatically
-            return HttpResponseRedirect(reverse("download_kalite_public", kwargs=kwargs))
+    # If we had a zone and didn't find one, then it's an error
+    if zone_id:
+        if Zone.objects.filter(id=zone_id):
+            raise PermissionDenied()
         else:
-            kwargs["zone_id"] = zone_id
-            return HttpResponseRedirect(reverse("download_kalite_private", kwargs=kwargs))
+            raise Http404("Zone ID not found: %s" % zone_id)
 
-    else: # GET
-        return {
-            "organizations": organizations,
-            "selected_organization": organization,
-            "zones": zones,
-            "selected_zone": zone,
-            "num_certificates": num_certificates,  
-            "internet": get_request_var(request, "internet"),
-            "edition": "multiple-server",
-        }
+    if len(zones) == 1:
+        zone_id = zones[0]["id"]
+
+    return {
+        "zones": zones,
+        "selected_zone": zone_id or (zones[0]["id"] if len(zones) == 1 else None),
+        "edition": "multiple-server",
+    }
 
 
 def download_kalite_public(request, *args, **kwargs):
     """
+    Download the public version of KA Lite--make sure they don't
+    try to sneak in unauthorized zone info!
     """
     if "zone_id" in kwargs or "zone" in request.REQUEST:
         raise PermissionDenied("Must be logged in to download with zone information.")
@@ -258,17 +275,25 @@ def download_kalite_public(request, *args, **kwargs):
 @login_required
 def download_kalite_private(request, *args, **kwargs):
     """
+    Download with zone info--will authenticate that zone info 
+    below.
     """
     zone_id = kwargs.get("zone_id") or request.REQUEST.get("zone")
     if not zone_id:
         # No zone information = bad request (400)
         return HttpResponse("Must specify zone information.", status=400)
+
     kwargs["zone_id"] = zone_id
     return download_kalite(request, *args, **kwargs)
 
 
 def download_kalite(request, *args, **kwargs):
     """
+    A request to download KA Lite, either without zone info, or with it.
+    If with it, then we have to make sure it's OK for this user.
+    
+    This endpoint is also set up to deal with platform, locale, and version,
+    though right now only direct URLs would set this (not via the install_wizard).
     """
 
     # Parse args
@@ -287,13 +312,15 @@ def download_kalite(request, *args, **kwargs):
         if not zone_org or not zone_org[0].id in [org for org in get_or_create_user_profile(request.user).get_organizations()]:
             raise PermissionDenied("You are not authorized to access this zone information.")
 
-    # Generate the zip file
+    # Generate the zip file.  Pre-specify the zip filename,
+    #   as we won't know the output location otherwise.
     zip_file = tempfile.mkstemp()[1]
     call_command(
         "package_for_download",
         file=zip_file,
         central_server=get_central_server_host(request),
-    **kwargs)
+        **kwargs
+    )
 
     # Build the outgoing filename."
     user_facing_filename = "kalite"
@@ -306,7 +333,10 @@ def download_kalite(request, *args, **kwargs):
     response = HttpResponse(content=zh, mimetype='application/zip', content_type='application/zip')
     response['Content-Disposition'] = 'attachment; filename="%s"' % user_facing_filename
 
+    # Not sure if we could remove the zip file here; possibly not, 
+    #   if it's a streaming response or byte-range reesponse
     return response
+
 
 @login_required
 def crypto_login(request):
