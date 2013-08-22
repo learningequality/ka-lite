@@ -10,11 +10,52 @@
 
 {% block headcss %}
 <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/jquery-ui.min.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-fileupload.min.css' %}" />
 <link rel="stylesheet" type="text/css" href="{% static 'css/updates.css' %}" />
+
+<style>
+
+.vertical-shadow{
+    margin-left: 5px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+}
+
+.container{
+    margin-left: 130px;
+}
+
+#software_available{
+    margin-left: -4px;
+    margin-top: 6px;
+}
+
+#cancel-update-kalite{
+    margin-top: 10px;
+    margin-bottom: 15px;
+
+}
+
+h2{
+    font-size: 24px;
+    margin-left: 45px;
+}
+
+img{
+    margin-left: 15px;
+}
+
+
+
+
+</style>
 {% endblock headcss %}
 
 {% block headjs %}
+<script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/jquery-ui/jquery-ui.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/jquery-ui/bootstrap-fileupload.min.js' %}"></script>
 <script src="{% static 'js/updates.js' %}"></script>
 <script type="text/javascript">
 // Callback functions 
@@ -134,29 +175,78 @@ function download_urls_callback(data) {
 {% endblock headjs %}
 
 {% block content %}
-<div>
-    <select id="software_available" disabled>
-    </select>
+<!---Breadcrumb -->
+<ul class="breadcrumb">
+  <li><a href="{% url homepage %}">Home</a> <span class="divider">/</span></li>
+  <li><a href="{% url update %}">Update</a> <span class="divider">/</span></li>
+  <li class="active">System Update</li>
+</ul>
 
-    <button id="download-update-kalite" type="button" disabled>{% trans "Update KA Lite from remote download" %}</button>
-    <button id="upload-update-kalite" type="button" disabled>{% trans "Update KA Lite from file" %}</button>
-    <button id="cancel-update-kalite" type="button" disabled>{% trans "Cancel update" %}</button>
-</div>
-
-<div style="clear: both;"></div>
-
-<!-- note: id must match the "updates" app process name -->
+<!-- Progress Bar, note: id must match the "updates" app process name -->
 <div id="update-progressbar">
     {% include "updates/progress-bar.html" %}
 </div>
+
+<!---Current System status -->
+<div>
+    <div class="">
+        <div class= "row">
+            <div class="span6 vertical-shadow">
+                <h2>{% trans "Current KA Lite" %}</h2>
+
+                <dl class="dl-horizontal">
+                    <dt>Current Version:</dt>
+                    <dd>{{ software_version }}</dd>
+                    <dt>Released Date:</dt>
+                    <dd>{{ software_release_date }}&nbsp;</dd>
+                    <dt>Size:</dt>
+                    <dd>19.03 MB</dd>
+                    <dt>Device ID:</dt>
+                    <dd>1eqrvaqewrm2848vadsfk</dd>
+                    <dt>Last changed at:</dt>
+                    <dd>{{ database_last_updated }}</dd>
+                    <dt>File Directory:</dt>
+                    <dd>{{ install_dir }}</dd>
+                </dl>
+            </div>
+
+            <div class="span6 offset6 vertical-shadow">
+                <h2>{% trans "New Updates" %}</h2>
+                <dl class="dl-horizontal">
+                    <dt>Latest Version:</dt>
+                    <dd>0.10</dd>
+                    <dt>Released Date:</dt>
+                    <dd>Sep 3, 2013</dd>
+                    <dt>Description:</dt>
+                    <dd>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec cursus nunc et est rutrum feugiat. Cras fermentum odio ac ante placerat, ut pharetra mi dignissim. Fusce sed urna aliquam, placerat ipsum at, pretiumtortor ac, bibendum turpis.</dd>
+                </dl>
+            </div>
+
+            <div class="span4 offset2">
+                <h4>From the Internet:</h4>
+                <button type="button" class="btn" id="download-update-kalite" disabled>Download and update</button>
+                <select class="span1" id="software_available"></select>
+                <!---File Upload Button -->
+                <h4>Use local file:</h4>
+                <div class="fileupload fileupload-new" data-provides="fileupload" id="upload-update-kalite">
+                    <span class="btn btn-file"><span class="fileupload-new">Select file</span><span class="fileupload-exists">Change</span><input type="file" /></span>
+                    <span class="fileupload-preview"></span>
+                    <a href="#" class="close fileupload-exists" data-dismiss="fileupload" style="float: none">×</a>
+                </div>
+<div class="text-right"><button type="button" class="btn btn-danger" id="cancel-update-kalite">Cancel</button></div>
 <div style="clear: both;"></div>
 
-<div>
-<span>Current version: {{ software_version }}</span><br />
-<span>Current install directory: {{ install_dir }}</span><br />
-<span>Current database last-updated: {{ database_last_updated }}</span><br />
+
+            </div>
+
+        </div>
+    </div>
+
 </div>
+
+
 <div style="clear: both;"></div>
+
 <!-- fake way to do JSONP -->
 <script type="text/javascript" src="{% central_server_api path='/api/version' %}?callback=version_callback"></script>
 <script type="text/javascript" src="{% central_server_api path='/api/download/kalite/' %}?callback=download_urls_callback"></script>

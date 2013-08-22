@@ -2,6 +2,7 @@ from django.http import HttpResponseRedirect
 from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
 
+import main.api_urls
 import central.api_urls
 import coachreports.urls
 import control_panel.urls
@@ -72,10 +73,12 @@ urlpatterns += patterns('central.views',
     url(r'^wiki/(?P<path>\w+)/$', redirect_to, {'base_url': settings.CENTRAL_WIKI_URL}, 'wiki'),
     url(r'^about/$', redirect_to, { 'base_url': 'http://learningequality.org/' }, 'about'),
 
-    url(r'^api/', include(central.api_urls)),
-
     # Endpoint for remote admin
     url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'),
+)
+
+urlpatterns += patterns('central.api_views',
+    url(r'^api/', include(central.api_urls)),
 )
 
 handler403 = 'central.views.handler_403'

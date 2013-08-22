@@ -132,7 +132,7 @@ class Command(UpdatesStaticCommand):
             else:
                 # No params, no git repo: try to get a file online.
                 zip_file = tempfile.mkstemp()[1]
-                for url in ["http://%s/download/kalite/latest/%s/%s/" % (settings.CENTRAL_SERVER_HOST, platform.system().lower(), "en")]:
+                for url in ["http://%s/api/download/kalite/latest/%s/%s/" % (settings.CENTRAL_SERVER_HOST, platform.system().lower(), "en")]:
                     logging.info("Downloading repo snapshot from %s to %s" % (url, zip_file))
                     try:
                         urllib.urlretrieve(url, zip_file)
