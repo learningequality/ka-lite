@@ -21,8 +21,8 @@ from django.utils.translation import ugettext as _
 from django.views.decorators.cache import cache_control
 from django.views.decorators.cache import cache_page
 
-import kalite
 import settings
+import version
 from config.models import Settings
 from control_panel.views import user_management_context
 from main import topicdata
@@ -91,11 +91,14 @@ def update_subtitles(request):
 @require_admin
 @render_to("updates/update_software.html")
 def update_software(request):
+    database_path = settings.DATABASES["default"]["NAME"]
+
     context = {
-        "software_version": kalite.VERSION,
-        "software_release_date": datetime.datetime.strptime(kalite.RELEASE_DATE, '%Y/%m/%d'),
+        "software_version": version.VERSION,
+        "software_release_date": version.VERSION_INFO[version.VERSION]["release_date"],
         "install_dir": os.path.realpath(os.path.join(settings.PROJECT_PATH, "..")),
-        "database_last_updated": datetime.datetime.fromtimestamp(os.path.getctime(settings.DATABASES["default"]["NAME"]
-)),
+        "database_last_updated": datetime.datetime.fromtimestamp(os.path.getctime(database_path)),
+        "database_size": os.stat(settings.DATABASES["default"]["NAME"]).st_size / float(1024**2),
+        "device_id": Device.get_own_device().id,
     }
     return context
