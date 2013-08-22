@@ -4,27 +4,6 @@
 
 {% block headcss %}
 <style>
-    .form-section {
-        width:75%;
-        clear:left;
-    }
-    .form-label label {
-        width:150px;
-        text-align:right;
-    }
-    .form-element {
-        float:left;
-        margin:0;
-    }
-    .errorlist {
-        float:left;
-        margin-left:25px;
-        color:red;
-    }
-    .submit {
-        margin-left: 71px;
-    }
-
     /* hackish way to show org details, if there are any errors or content */
     #org_details {
         display:none;
@@ -142,13 +121,13 @@
     </div>
     <div class="form-section">
       <div class="form-label"><label for="id_tos1"></label></div>
-      <div class="form-element"><input type="checkbox" name="email_subscribe"{% if subscribe %} checked="checked"{% endif %} />
+      <div class="form-element checkbox"><input type="checkbox" name="email_subscribe"{% if subscribe %} checked="checked"{% endif %} />
       Subscribe to our "General Announcements" newsletter
       </div>
     </div>
     <div class="form-section">
       <div class="form-label"><label for="id_tos1"></label></div>
-      <div class="form-element">{{ form.tos1 }}
+      <div class="form-element checkbox">{{ form.tos1 }}
       I acknowledge that the Khan Academy videos and exercises used within KA Lite are for
       <a href="http://www.khanacademy.org/about/tos#7" target="_blank">non-commercial purposes only</a>.
       </div>
@@ -158,17 +137,19 @@
     </div>
     <div class="form-section">
       <div class="form-label"><label for="id_tos2"></label></div>
-      <div class="form-element">{{ form.tos2 }}
+      <div class="form-element checkbox">{{ form.tos2 }}
       I acknowledge having read the <a href="http://www.khanacademy.org/about/api-tos" target="_blank">
       Khan Academy API terms of service</a>, and that KA Lite uses this API.
       {% if form.tos2.errors %}
         <div class="errorlist">{{ form.tos2.errors.as_text }}</div>
       {% endif %}
     </div>
+    <br>
     <div class="form-section">
-        <div class="submit"><input class="submit" type="submit" value="Register &rarr;"></div>
+        <div class="submit"><input class="button-green" type="submit" value="Register &rarr;"></div>
     </div>
   </form>
+</div>
   
 {% endblock %}
 
