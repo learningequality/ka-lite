@@ -15,7 +15,7 @@ from .models import FacilityUser, VideoLog, ExerciseLog, VideoFile
 from config.models import Settings
 from securesync.models import FacilityGroup
 from shared.caching import invalidate_all_pages_related_to_video
-from utils.jobs import force_job, job_status
+from shared.jobs import force_job, job_status
 from utils.videos import delete_downloaded_files
 from utils.decorators import api_handle_error_with_json, require_admin
 from utils.general import break_into_chunks

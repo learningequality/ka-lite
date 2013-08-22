@@ -6,8 +6,6 @@ from cStringIO import StringIO
 
 from django.core.management import call_command
 
-import settings
-
 
 def call_command_with_output(cmd, *args, **kwargs): 
     """
@@ -55,9 +53,13 @@ def call_command_async(cmd, *args, **kwargs):
     that stringify in a way that commands can parse
     (which will work for str, bool, int, etc).
     """
+    assert "manage_py_dir" in kwargs, "don't forget to specify the manage_py_dir"
+    manage_py_dir = kwargs["manage_py_dir"]
+    del kwargs["manage_py_dir"]
+
     # Use sys to get the same executable running as is running this process.
     # Make sure to call the manage.py from this project.
-    call_args = [sys.executable, os.path.join(settings.PROJECT_PATH, "manage.py"), cmd]
+    call_args = [sys.executable, os.path.join(manage_py_dir, "manage.py"), cmd]
     call_args += list(args)
     for key,val in kwargs.iteritems():
         call_args.append("--%s=%s" % (key, val))
@@ -71,3 +73,35 @@ def call_command_async(cmd, *args, **kwargs):
     #    using messaging through the database
     subprocess.Popen(call_args)
 
+
+def call_outside_command_with_output(command, *args, **kwargs):
+    """
+    Runs call_command for a KA Lite installation at the given location,
+    and returns the output.
+    """
+
+    assert "manage_py_dir" in kwargs, "don't forget to specify the manage_py_dir"
+    manage_py_dir = kwargs["manage_py_dir"]
+    del kwargs["manage_py_dir"]
+
+    # build the command
+    cmd = (sys.executable, os.path.join(manage_py_dir, "manage.py"), command)
+    for arg in args:
+        cmd += (arg,)
+    for key, val in kwargs.items():
+        key = key.replace("_","-")
+        prefix = "--" if command != "runcherrypyserver" else ""  # hack, but ... whatever!
+        if isinstance(val, bool):
+            cmd += ("%s%s" % (prefix, key),)
+        else:
+            cmd += ("%s%s=%s" % (prefix, key, str(val)),)
+
+    # Execute the command, using subprocess/Popen
+    cwd = os.getcwd()
+    os.chdir(manage_py_dir)
+    p = subprocess.Popen(cmd, shell=False, cwd=os.path.split(cmd[0])[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out = p.communicate()
+    os.chdir(cwd)
+
+    # tuple output of stdout, stderr, and exit code
+    return out + (1 if out[1] else 0,)
