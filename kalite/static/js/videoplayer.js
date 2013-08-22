@@ -16,6 +16,7 @@ window.VideoPlayerModel = Backbone.Model.extend({
         seconds_watched_since_save: 0.0,
         points: 0,
         possible_points: 750,
+        starting_points: 0,
         youtube_id: "",
         player_state: VideoPlayerState.UNSTARTED,
         seconds_between_saves: 30,
@@ -47,6 +48,7 @@ window.VideoPlayerModel = Backbone.Model.extend({
                 self.set({
                     total_seconds_watched: data[0].total_seconds_watched,
                     points: data[0].points,
+                    starting_points: data[0].points,
                     complete: data[0].complete
                 });
                 self.pointsSaved = data[0].points;
@@ -82,6 +84,8 @@ window.VideoPlayerModel = Backbone.Model.extend({
                 self.saving = false;
                 // Show all messages in "messages" object
                 show_api_messages(data.messages, "id_student_logs");
+                // update the top-right points display to show the newly earned points
+                userModel.set("newpoints", data.points - self.get("starting_points"));
             })
             .fail(function(resp) {
                 self.set({ wall_time_last_saved: lastSavedBeforeError });
