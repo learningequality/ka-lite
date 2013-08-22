@@ -38,7 +38,6 @@ def get_download_urls(request):
     # TODO: once Dylan makes all subtitle languages available,
     #   don't hard-code this.
     download_sizes = {
-        "all": 25.5,
         "en": 19.8,
     }
 

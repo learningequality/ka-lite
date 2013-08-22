@@ -92,10 +92,11 @@ def update_subtitles(request):
 @render_to("updates/update_software.html")
 def update_software(request):
     database_path = settings.DATABASES["default"]["NAME"]
+    current_version = request.GET.get("version", version.VERSION)  # allows easy development by passing a different version
 
     context = {
-        "software_version": version.VERSION,
-        "software_release_date": version.VERSION_INFO[version.VERSION]["release_date"],
+        "software_version": current_version,
+        "software_release_date": version.VERSION_INFO[current_version]["release_date"],
         "install_dir": os.path.realpath(os.path.join(settings.PROJECT_PATH, "..")),
         "database_last_updated": datetime.datetime.fromtimestamp(os.path.getctime(database_path)),
         "database_size": os.stat(settings.DATABASES["default"]["NAME"]).st_size / float(1024**2),

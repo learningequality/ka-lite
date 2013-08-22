@@ -122,7 +122,11 @@ function version_callback(data) {
     if (! remote_version ) {
         show_message("error", "Remote version information unavailable.", "id_message_update");
     } else if (current_version != remote_version) {
+        $("#update_info").show();  // show the related div
+        $("#internet_update").show();
+
         version_info = data["version_info"];
+
         //alert("update available! " + current_version + " < " + remote_version);
         $("#remote_version").text(remote_version);
         $("#remote_release_date").text(version_info[remote_version].release_date);
@@ -149,9 +153,8 @@ function version_callback(data) {
 }
 
 function download_urls_callback(data) {
-    for (key in data) {
-         $("#software_available").append("<option value='" + data[key].url + "'>" + key + " (" + data[key].size + "MB)</option>");
-    }
+    locale = "en";//{{ current_locale }}"
+   $("#software_available").append("<option value='" + data[locale].url + "'>" + locale + " (" + data[locale].size + "MB)</option>");
 }
 </script>
 
@@ -228,7 +231,7 @@ function download_urls_callback(data) {
                 </dl>
             </div>
 
-            <div class="span6 offset6 vertical-shadow">
+            <div id="update_info" class="span6 offset6 vertical-shadow" style="display:none">
                 <h2>{% trans "New Updates" %}</h2>
                 <dl class="dl-horizontal">
                     <dt>Latest Version:</dt>
@@ -245,15 +248,19 @@ function download_urls_callback(data) {
             </div>
 
             <div class="span4 offset2">
-                <h4>From the Internet:</h4>
-                <button type="button" class="btn" id="download-update-kalite" disabled>Download and update</button>
-                <select class="span1" id="software_available"></select>
-                <!---File Upload Button -->
-                <h4>Use local file:</h4>
-                <div class="fileupload fileupload-new" data-provides="fileupload" id="upload-update-kalite">
-                    <span class="btn btn-file"><span class="fileupload-new">Select file</span><span class="fileupload-exists">Change</span><input type="file" /></span>
-                    <span class="fileupload-preview"></span>
-                    <a href="#" class="close fileupload-exists" data-dismiss="fileupload" style="float: none">×</a>
+                <div id="internet_update" style="display:none">
+                    <h4>From the Internet:</h4>
+                    <button type="button" class="btn" id="download-update-kalite" disabled>Download and update</button>
+                    <select class="span1" id="software_available" style="display:none"></select>
+                    <!---File Upload Button -->
+                </div>
+                <div id="file_update">
+                    <h4>Use local file:</h4>
+                    <div class="fileupload fileupload-new" data-provides="fileupload" id="upload-update-kalite">
+                        <span class="btn btn-file"><span class="fileupload-new">Select file</span><span class="fileupload-exists">Change</span><input type="file" /></span>
+                        <span class="fileupload-preview"></span>
+                        <a href="#" class="close fileupload-exists" data-dismiss="fileupload" style="float: none">×</a>
+                    </div>
                 </div>
 <div class="text-right"><button type="button" class="btn btn-danger" id="cancel-update-kalite">Cancel</button></div>
 <div style="clear: both;"></div>
