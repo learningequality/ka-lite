@@ -56,10 +56,9 @@ grunt less:bootstrap
 
 Now that you understand all the individual components of the stack let's dive into the workflow.
 
-The first things to do is to put the local_settings into debug mode. In this mode, the client will compile the LESS files into CSS. 
-You'll gain a lot of time if you edit the style of an element dynamically. You can use the Debugger Tool of your browser or add `#!watch` to the url and the browser will reload the page each time you save your less files(Oh yeah!).
-
-When you're happy with your changes, you can simply paste the CSS code to the style_with_bootstrap.less file. If you're using existing colors you should check the variable.less files, they're already defined there. If the color is new and you're going to use it more than one time, add it to the variable.less file. 
+1. The first things to do is to put the local_settings into debug mode. In this mode, the client will compile the LESS files into CSS. 
+2. You'll gain a lot of time if you edit the style of an element dynamically. You can use the Debugger Tool of your browser or add `#!watch` to the url and the browser will reload the page each time you save your less files(Oh yeah!).
+3. When you're happy with your changes, you can simply paste the CSS code to the style_with_bootstrap.less file. If you're using existing colors you should check the variable.less files, they're already defined there. If the color is new and you're going to use it more than one time, add it to the variable.less file. 
 
 ```
 //variable.less
@@ -67,7 +66,7 @@ When you're happy with your changes, you can simply paste the CSS code to the st
 @pink: #ff69b4;
 ```
 
-When you're using borders, transparency and gradients, look at less/bootstrap/mixins.less file. This is already coded to work with all the browsers.
+When you're using borders, transparency and gradients, look at `less/bootstrap/mixins.less` file. This is already coded to work with all the browsers.
 
 ```
 //style_with_bootstrap.less
