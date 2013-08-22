@@ -447,4 +447,18 @@ function initialize_video(video_youtube_id) {
 
     });
 
+    $("#launch_mplayer").click(_.throttle(function() {
+        // launch mplayer in the background to play the video
+        doRequest("/api/launch_mplayer?youtube_id=" + video_youtube_id)
+            .fail(function(resp) {
+                communicate_api_failure(resp, "id_mplayer");
+            });
+        // after mplayer closes and focus returns to the website, refresh the points from the server
+        $(window).focus(function() {
+            $(window).unbind("focus");
+            videoView.model.fetch();
+        });
+        return false;
+    }, 5000));
+
 }

@@ -96,22 +96,11 @@
 <script src="{% static "js/videoplayer.js" %}"></script>
 
 <script>
-
 $(function() {
-
+    
+    // Keep this lean, in order to reduce caching filesize    
     initialize_video("{{ video.youtube_id }}");
 
-    $("#launch_mplayer").click(_.throttle(function() {
-            // launch mplayer in the background to play the video
-            doRequest("{% url launch_mplayer %}?youtube_id={{ video.youtube_id }}");
-            // after mplayer closes and focus returns to the website, refresh the points from the server
-            $(window).focus(function() {
-                $(window).unbind("focus");
-                videoView.model.fetch();
-            });
-            return false;
-        }, 5000));
-    });
-
+});
 </script>
 {% endblock bodyjs %}
