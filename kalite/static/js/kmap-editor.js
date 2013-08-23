@@ -55,8 +55,8 @@ var KMapEditor = {
     setZoom: function(zoom) {
         this.zoomLevel = Math.min(Math.max(zoom, this.ZOOM_TOPICS), this.ZOOM_EXERCISES);
         if (this.zoomLevel === this.ZOOM_EXERCISES) {
-            this.X_SPACING = 74;
-            this.Y_SPACING = 94;
+            this.X_SPACING = 65;
+            this.Y_SPACING = 105;
             this.ICON_SIZE = 26;
             this.LABEL_WIDTH = 60;
         } else if (this.zoomLevel === this.ZOOM_HYBRID) {
