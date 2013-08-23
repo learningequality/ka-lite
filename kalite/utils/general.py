@@ -3,6 +3,19 @@ Miscellaneous utility functions (no dependence on non-standard packages, such as
 
 General string, integer, date functions.
 """
+import datetime
+import os
+
+
+class InvalidDateFormat(Exception):
+
+    def __str__(value):
+        return "Invalid date format. Please format your date (-d) flag like this: 'MM/DD/YYYY'"
+
+class InvalidDirectoryFormat(Exception):
+
+    def __str__(value):
+        return "Invalid directory format. Please ensure you are passing in a directory path, not a filepath."
 
 
 def break_into_chunks(bigiterator, chunksize=500):
@@ -62,6 +75,22 @@ def datediff(*args, **kwargs):
         raise NotImplementedError("Unrecognized units: '%s'" % units)
 
 
+def max_none(data):
+    """
+    Given a list of data, returns the max... removing None elements first, for comparison "safety".
+    """
+
+    # Base case: data is none, then return max of that.
+    if not data:
+        return max(data)
+
+    non_none_data = []
+    for d in data:
+        if d is not None:
+            non_none_data.append(d)
+    return max(non_none_data) if non_none_data else None
+
+
 def version_diff(v1, v2):
     """
     Diff is the integer difference between the most leftward part of the versions that differ.
@@ -97,3 +126,29 @@ def version_diff(v1, v2):
             return cur_diff
 
     return 0
+
+
+def ensure_dir(path):
+    """Create the entire directory path, if it doesn't exist already."""
+    path_parts = path.split("/")
+    full_path = "/"
+    for part in path_parts:
+        if "." in part:
+            raise InvalidDirectoryFormat()
+        if part is not '':
+            full_path += part + "/"
+            if not os.path.exists(full_path):
+                os.makedirs(full_path)
+
+
+def convert_date_input(date_to_convert):
+    """Convert from MM/DD/YYYY to Unix timestamp"""
+    if date_to_convert:
+        try:
+            converted_date = datetime.datetime.strptime(
+                date_to_convert, '%m/%d/%Y')
+        except:
+            raise InvalidDateFormat()
+        return converted_date
+    else:
+        return date_to_convert

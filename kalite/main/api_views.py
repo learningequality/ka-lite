@@ -1,8 +1,11 @@
 import json
 import re
+import requests
 from annoying.functions import get_object_or_None
+from functools import partial
+from requests.exceptions import ConnectionError, HTTPError
 
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, PermissionDenied
 from django.db.models import Q
 from django.http import HttpResponse
 from django.utils import simplejson
@@ -12,21 +15,22 @@ import settings
 from .api_forms import ExerciseLogForm, VideoLogForm
 from .models import FacilityUser, VideoLog, ExerciseLog, VideoFile
 from config.models import Settings
-from main import topicdata
+from main import topicdata  # must import this way to cache across processes
 from securesync.models import FacilityGroup
-from utils.jobs import force_job, job_status
-from utils.videos import delete_downloaded_files
-from utils.decorators import require_admin
+from shared.caching import invalidate_all_pages_related_to_video
+from utils.decorators import api_handle_error_with_json, require_admin
 from utils.general import break_into_chunks
 from utils.internet import JsonResponse
+from utils.jobs import force_job, job_status
+from utils.mplayer_launcher import play_video_in_new_thread
 from utils.orderedset import OrderedSet
-from utils.decorators import api_handle_error_with_json
+from utils.videos import delete_downloaded_files
 
 
 class student_log_api(object):
     def __init__(self, logged_out_message):
         self.logged_out_message = logged_out_message
-    
+
     def __call__(self, handler):
         @api_handle_error_with_json
         def wrapper_fn(request, *args, **kwargs):
@@ -34,7 +38,7 @@ class student_log_api(object):
             #   allowing cross-checking of user information
             #   and better error reporting
             if "facility_user" not in request.session:
-                return JsonResponse({"warning": self.logged_out_message + "  " + _("You must be logged in as a facility user to view/save progress.")}, status=500)
+                return JsonResponse({"warning": self.logged_out_message + "  " + _("You must be logged in as a student or teacher to view/save progress.")}, status=500)
             else:
                 return handler(request)
         return wrapper_fn
@@ -53,14 +57,13 @@ def save_video_log(request):
         raise ValidationError(form.errors)
     data = form.data
 
-    # More robust extraction of previous object
-    videolog = VideoLog.get_or_initialize(user=request.session["facility_user"], youtube_id=data["youtube_id"])
-    videolog.total_seconds_watched  += data["seconds_watched"]
-    videolog.points = max(videolog.points, data["points"])  # videolog.points cannot be None
-
     try:
-        videolog.full_clean()
-        videolog.save()
+        videolog = VideoLog.update_video_log(
+            facility_user=request.session["facility_user"],
+            youtube_id=data["youtube_id"],
+            additional_seconds_watched=data["seconds_watched"],
+            points=data["points"],
+        )
     except ValidationError as e:
         return JsonResponse({"error": "Could not save VideoLog: %s" % e}, status=500)
 
@@ -102,7 +105,7 @@ def save_exercise_log(request):
     #   NOTE: it's important to check this AFTER calling save() above.
     if not previously_complete and exerciselog.complete:
         return JsonResponse({"success": _("You have mastered this exercise!")})
-    
+
     # Return no message in release mode; "data saved" message in debug mode.
     return JsonResponse({})
 
@@ -198,14 +201,20 @@ def start_video_download(request):
 def delete_videos(request):
     youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
     for id in youtube_ids:
+        # Delete the file on disk
         delete_downloaded_files(id)
+
+        # Delete the file in the database
         videofile = get_object_or_None(VideoFile, youtube_id=id)
-        if not videofile:
-            continue
-        videofile.cancel_download = True
-        videofile.flagged_for_download = False
-        videofile.flagged_for_subtitle_download = False
-        videofile.save()
+        if videofile:
+            videofile.cancel_download = True
+            videofile.flagged_for_download = False
+            videofile.flagged_for_subtitle_download = False
+            videofile.save()
+
+        # Refresh the cache
+        invalidate_all_pages_related_to_video(video_id=id)
+
     return JsonResponse({})
 
 @require_admin
@@ -229,27 +238,47 @@ def get_video_download_list(request):
 @require_admin
 @api_handle_error_with_json
 def start_subtitle_download(request):
-    new_only = simplejson.loads(request.raw_post_data or "{}").get("new_only", False)
+    update_set = simplejson.loads(request.raw_post_data or "{}").get("update_set", "existing")
     language = simplejson.loads(request.raw_post_data or "{}").get("language", "")
     language_list = topicdata.LANGUAGE_LIST
+    language_lookup = topicdata.LANGUAGE_LOOKUP
+
+    # Reset the language
     current_language = Settings.get("subtitle_language")
-    new_only = new_only and (current_language == language)
     if language in language_list:
         Settings.set("subtitle_language", language)
     else:
         return JsonResponse({"error": "This language is not currently supported - please update the language list"}, status=500)
-    if new_only:
-        videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True), subtitles_downloaded=False)
+
+    language_name = language_lookup.get(language)
+    # Get the json file with all srts
+    request_url = "http://%s/static/data/subtitles/languages/%s_available_srts.json" % (settings.CENTRAL_SERVER_HOST, language)
+    try:
+        r = requests.get(request_url)
+        r.raise_for_status() # will return none if 200, otherwise will raise HTTP error
+        available_srts = set((r.json)["srt_files"])
+    except ConnectionError:
+        return JsonResponse({"error": "The central server is currently offline."}, status=500)
+    except HTTPError:
+        return JsonResponse({"error": "No subtitles available on central server for %s (language code: %s); aborting." % (language_name, language)}, status=500)
+
+    if update_set == "existing":
+        videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True), subtitles_downloaded=False, youtube_id__in=available_srts)
     else:
-        videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True))
-    for videofile in videofiles:
-        videofile.cancel_download = False
-        if videofile.subtitle_download_in_progress:
-            continue
-        videofile.flagged_for_subtitle_download = True
-        if not new_only:
-            videofile.subtitles_downloaded = False
-        videofile.save()
+        videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True), youtube_id__in=available_srts)
+
+    if not videofiles:
+        return JsonResponse({"info": "There aren't any subtitles available in %s (language code: %s) for your current videos." % (language_name, language)}, status=200)
+    else:   
+        for videofile in videofiles:
+            videofile.cancel_download = False
+            if videofile.subtitle_download_in_progress:
+                continue
+            videofile.flagged_for_subtitle_download = True
+            if update_set == "all":
+                videofile.subtitles_downloaded = False
+            videofile.save()
+        
     force_job("subtitledownload", "Download Subtitles")
     return JsonResponse({})
 
@@ -367,3 +396,40 @@ def get_annotated_topic_tree():
 @api_handle_error_with_json
 def get_topic_tree(request):
     return JsonResponse(get_annotated_topic_tree())
+
+@api_handle_error_with_json
+def launch_mplayer(request):
+    """Launch an mplayer instance in a new thread, to play the video requested via the API.
+    """
+    
+    if not settings.USE_MPLAYER:
+        raise PermissionDenied("You can only initiate mplayer if USE_MPLAYER is set to True.")
+    
+    if "youtube_id" not in request.REQUEST:
+        return JsonResponse({"error": "no youtube_id specified"}, status=500)
+
+    youtube_id = request.REQUEST["youtube_id"]
+    facility_user = request.session.get("facility_user")
+    callback = partial(
+        _update_video_log_with_points,
+        youtube_id=youtube_id,
+        facility_user=facility_user,
+    )
+    play_video_in_new_thread(youtube_id, callback=callback)
+
+    return JsonResponse({})
+
+
+def _update_video_log_with_points(seconds_watched, video_length, youtube_id, facility_user):
+    """Handle the callback from the mplayer thread, saving the VideoLog. """
+    if not facility_user:
+        return  # in other places, we signal to the user that info isn't being saved, but can't do it here.
+                #   adding this code for consistency / documentation purposes.
+
+    new_points = (float(seconds_watched) / video_length) * VideoLog.POINTS_PER_VIDEO
+    videolog = VideoLog.update_video_log(
+        facility_user=facility_user,
+        youtube_id=youtube_id,
+        additional_seconds_watched=seconds_watched,
+        total_points=new_points,
+    )

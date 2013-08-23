@@ -12,16 +12,30 @@
         {% block titletag %}
         <title>{% block title %}{{ title }}{% endblock title %} | KA Lite</title>
         {% endblock %}
-        <link rel="stylesheet" type="text/css" href="{% static "css/khan-site.css" %}"></link>
-        <link rel="stylesheet" type="text/css" href="{% static "css/khan-lite.css" %}"></link>
+        <link rel="stylesheet" type="text/css" href="{% static "css/khan-site.css" %}">
+        <link rel="stylesheet" type="text/css" href="{% static "css/khan-lite.css" %}">
         {% block basecss %}{% endblock basecss %}
         {% block headcss %}{% endblock headcss %}
         <link rel="shortcut icon" href="{% static "images/favicon.ico" %}">
+        
+        {# In some versions of IE, console isn't defined, which can lead to JS errors #}
+        <script type="text/javascript">
+            window.console = window.console || {log: function() {}};
+        </script>
+        
+        {# Older versions of IE didn't have a JSON object, so this library adds it back in if needed #}
+        <script type="text/javascript" src="{% static "js/json2.js" %}"></script>
+
+        {# Use JS to help IE5.5-IE8 support modern browser features, especially for CSS and PNGs #}
+        <!--[if lt IE 8]>
+        {# <script src="{% static "js/IE8.js" %}"></script> #}
+        <![endif]-->
+        
         {% block jqueryjs %}
         <script type="text/javascript" src="{% static "js/jquery-1.7.1.min.js" %}"></script>
+        {% endblock jqueryjs %}
         <script type="text/javascript" src="{% static "js/underscore-min.js" %}"></script>
         <script type="text/javascript" src="{% static "js/backbone-min.js" %}"></script>
-        {% endblock jqueryjs %}
         <script type="text/javascript" src="{% static "js/khan-lite.js" %}"></script>
         {% block headjs %}{% endblock headjs %}
         {% block basejs %}{% endblock basejs %}
@@ -38,24 +52,20 @@
                     <header>
                         <div id="top-header">
                             <div id="sitepoints"></div>
+                            <div class="clear"></div>
                             <div class="top-header-links">
+                                <nav>
+                                    <span class="nav-subheader">
+                                        {% block sitewide_navigation %}
+                                        {% endblock sitewide_navigation %}
+                                    </span>
+                                </nav>
                                 <div class="clear"></div>
-                                <div id="nav-and-search">
-                                    <div class="sitewide-navigation">
-                                        <nav>
-                                            <span class="links nav-subheader">
-                                                {% block sitewide_navigation %}
-                                                {% endblock sitewide_navigation %}
-                                            </span>
-                                        </nav>
-                                    </div>
-                                    <div class="clear"></div>
-                                </div>
                             </div>
 
                             <div id="logo">
-                                <a id="logo-image-small" href="/" title="KA Lite Home" name="logo-image">
-                                    <img src="{% static "images/horizontal-logo-small.png" %}"/>
+                                <a id="logo-image-small" href="/" title="KA Lite Home">
+                                    <img src="{% static "images/horizontal-logo-small.png" %}" alt="KA Lite logo">
                                 </a>
                             </div>
                             <div class="clear"></div>
@@ -79,7 +89,6 @@
             </div>
         </div>
 
-        <div class="push"></div>
         <footer id="footer" class="short">
             <div id="leaves">
                 <div class="inner">

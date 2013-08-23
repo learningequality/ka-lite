@@ -108,9 +108,7 @@ def get_user_from_request(handler=None, request=None, *args, **kwargs):
     """
     Gets ID of requested user (not necessarily the user logged in)
     """
-    assert handler or request, "must specify handler or request."
-    assert not args, "positional arguments screw things up--don't use them here."
-
+    assert handler or request
     if not handler:
         handler = lambda request, user, *args, **kwargs: user
 
@@ -155,6 +153,26 @@ def require_admin(handler):
     return wrapper_fn
 
 
+def allow_api_profiling(handler):
+    """
+    For API requests decorated with this decorator,
+    if 'debug' is passed in with DEBUG=True,
+    it will add a BODY tag to the json response--allowing
+    the debug_toolbar to be used.
+    """
+    if not settings.DEBUG:
+        # For efficiency in release mode
+        return handler
+    else:
+        def aap_wrapper_fn(request, *args, **kwargs):
+            response = handler(request, *args, **kwargs)
+            if not request.is_ajax() and response["Content-Type"] == "application/json":
+                # Add the "body" tag, which allows the debug_toolbar to attach
+                response.content = "<body>%s</body>" % response.content
+                response["Content-Type"] = "text/html"
+            return response
+        return aap_wrapper_fn
+
 
 def require_authorized_access_to_student_data(handler):
     """
@@ -166,25 +184,27 @@ def require_authorized_access_to_student_data(handler):
     or explicitly (specifying their own user ID) get through.
     Admins and teachers also get through.
     """
+    if settings.CENTRAL_SERVER:
+        return require_authorized_admin(handler)
 
-    @distributed_server_only
-    @require_login
-    def wrapper_fn_distributed(request, *args, **kwargs):
-        """
-        Everything is allowed for admins on distributed server.
-        For students, they can only access their own account.
-        """
-        if getattr(request, "is_admin", False):
-            return handler(request, *args, **kwargs)
-        else: 
-            user = get_user_from_request(request=request)
-            if request.session.get("facility_user", None) == user:
+    else:
+        @distributed_server_only
+        @require_login
+        def wrapper_fn_distributed(request, *args, **kwargs):
+            """
+            Everything is allowed for admins on distributed server.
+            For students, they can only access their own account.
+            """
+            if getattr(request, "is_admin", False):
                 return handler(request, *args, **kwargs)
-            else:
-                raise PermissionDenied(_("You requested information for a user that you are not authorized to view."))
-        return require_admin(handler)
-
-    return require_authorized_admin(handler) if settings.CENTRAL_SERVER else wrapper_fn_distributed
+            else: 
+                user = get_user_from_request(request=request)
+                if request.session.get("facility_user", None) == user:
+                    return handler(request, *args, **kwargs)
+                else:
+                    raise PermissionDenied(_("You requested information for a user that you are not authorized to view."))
+            return require_admin(handler)
+        return wrapper_fn_distributed
 
 
 def require_authorized_admin(handler):

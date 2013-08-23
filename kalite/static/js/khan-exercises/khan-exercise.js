@@ -1402,7 +1402,7 @@ var Khan = (function() {
                             height: "0",
                             "border-left": "6px solid transparent",
                             "border-right": "6px solid transparent",
-                            position: "absolute",
+                            position: "absolute"
                         },
 
                     scrubber1 = $("<div>")

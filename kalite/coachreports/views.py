@@ -21,6 +21,7 @@ from main.models import VideoLog, ExerciseLog, VideoFile
 from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device
 from securesync.views import facility_required
 from utils.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
+from utils.general import max_none
 from utils.internet import StatusException
 from utils.topic_tools import get_topic_exercises, get_topic_videos, get_all_midlevel_topics
 
@@ -99,6 +100,14 @@ def student_view(request, xaxis="pct_mastery", yaxis="ex:attempts"):
 
     Student view lists a by-topic-summary of their activity logs.
     """
+    return student_view_context(request=request, xaxis=xaxis, yaxis=yaxis)
+
+
+@require_authorized_access_to_student_data
+def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
+    """
+    Context done separately, to be importable for similar pages.
+    """
     user = get_user_from_request(request=request)
 
     topics = get_all_midlevel_topics()
@@ -133,13 +142,13 @@ def student_view(request, xaxis="pct_mastery", yaxis="ex:attempts"):
             "ex:average_attempts": 0 if not n_exercises_touched else sum([el.attempts for el in exercise_logs[topic['id']]]) / float(n_exercises_touched),
             "ex:average_streak":   0 if not n_exercises_touched else sum([el.streak_progress for el in exercise_logs[topic['id']]]) / float(n_exercises_touched) / 100.,
             "ex:total_struggling": 0 if not n_exercises_touched else sum([el.struggling for el in exercise_logs[topic['id']]]),
-            "ex:last_completed": None if not n_exercises_touched else max([el.completion_timestamp or None for el in exercise_logs[topic['id']]]),
+            "ex:last_completed":None if not n_exercises_touched else max_none([el.completion_timestamp or None for el in exercise_logs[topic['id']]]),
 
             "vid:pct_started":      0 if not n_videos_touched else n_videos_touched / float(n_videos),
             "vid:pct_completed":    0 if not n_videos_touched else sum([vl.complete for vl in video_logs[topic['id']]]) / float(n_videos),
             "vid:total_minutes":      0 if not n_videos_touched else sum([vl.total_seconds_watched for vl in video_logs[topic['id']]]) / 60.,
             "vid:average_points":   0. if not n_videos_touched else float(sum([vl.points for vl in video_logs[topic['id']]]) / float(n_videos_touched)),
-            "vid:last_completed": None if not n_videos_touched else max([vl.completion_timestamp or None for vl in video_logs[topic['id']]]),
+            "vid:last_completed":None if not n_videos_touched else max_none([vl.completion_timestamp or None for vl in video_logs[topic['id']]]),
         }
         any_data = any_data or n_exercises_touched > 0 or n_videos_touched > 0
 
@@ -239,15 +248,17 @@ def tabular_view(request, facility, report_type="exercise"):
         exercise_names = [ex["name"] for ex in context["exercises"]]
         # Get students
         context["students"] = []
+        exlogs = ExerciseLog.objects \
+            .filter(user__in=users, exercise_id__in=exercise_names) \
+            .order_by("user__last_name", "user__first_name")\
+            .values("user__id", "struggling", "complete", "exercise_id")
+
+        exlog_idx = 0
         for user in users:
-            exlogs = ExerciseLog.objects.filter(user=user, exercise_id__in=exercise_names)
-            log_ids = [log.exercise_id for log in exlogs]
-            log_table = []
-            for en in exercise_names:
-                if en in log_ids:
-                    log_table.append(exlogs[log_ids.index(en)])
-                else:
-                    log_table.append(None)
+            log_table = {}
+            while exlog_idx < exlogs.count() and exlogs[exlog_idx]["user__id"] == user.id:
+                log_table[exlogs[exlog_idx]["exercise_id"]] = exlogs[exlog_idx]
+                exlog_idx += 1
 
             context["students"].append({
                 "first_name": user.first_name,
@@ -265,22 +276,26 @@ def tabular_view(request, facility, report_type="exercise"):
         video_ids = [vid["youtube_id"] for vid in context["videos"]]
         # Get students
         context["students"] = []
+        vidlogs = VideoLog.objects \
+            .filter(user__in=users, youtube_id__in=video_ids) \
+            .order_by("user__last_name", "user__first_name")\
+            .values("user__id", "complete", "youtube_id", "total_seconds_watched", "points")
+
+        vidlog_idx = 0
         for user in users:
-            vidlogs = VideoLog.objects.filter(user=user, youtube_id__in=video_ids)
-            log_ids = [log.youtube_id for log in vidlogs]
-            log_table = []
-            for yid in video_ids:
-                if yid in log_ids:
-                    log_table.append(vidlogs[log_ids.index(yid)])
-                else:
-                    log_table.append(None)
+            log_table = {}
+            while vidlog_idx < vidlogs.count() and vidlogs[vidlog_idx]["user__id"] == user.id:
+                log_table[vidlogs[vidlog_idx]["youtube_id"]] = vidlogs[vidlog_idx]
+                vidlog_idx += 1
 
             context["students"].append({
                 "first_name": user.first_name,
                 "last_name": user.last_name,
                 "username": user.username,
+                "id": user.id,
                 "video_logs": log_table,
             })
+
     else:
         raise Http404("Unknown report_type: %s" % report_type)
 

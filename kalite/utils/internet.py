@@ -3,9 +3,10 @@ For functions mucking with internet access
 """
 import os
 import requests
+import socket
+
 from urlparse import parse_qs, urlsplit, urlunsplit
 from urllib import urlencode
-
 
 from django.http import HttpResponse
 from django.utils import simplejson
@@ -20,7 +21,7 @@ class StatusException(Exception):
         self.args = (status_code,)
         self.status_code = status_code
 
-        
+
 class JsonResponse(HttpResponse):
     """Wrapper class for generating a HTTP response with JSON data"""
     def __init__(self, content, *args, **kwargs):
@@ -71,12 +72,26 @@ def am_i_online(url, expected_val=None, search_string=None, timeout=5, allow_red
         return False
 
 
-def generate_all_paths(path, base_path="/"):
+def is_loopback_connection(request):
+    """ Test whether the IP making the request is the same as the IP serving the request. """
+    try:
+        # get the server's host from the HTTP headers
+        host = request.META.get("HTTP_HOST", "127.0.0.1")
+        # remove the port, if it's there
+        host_name = host.split(":")[0]
+        # get the IP address from a structure like ('localhost', [], ['127.0.0.1'])
+        host_ip = socket.gethostbyaddr(host_name)[2][0]
+        # if the requester's IP is either localhost or the server's public IP, then it's a loopback
+        return request.META.get("REMOTE_ADDR") in ["127.0.0.1", host_ip]
+    except:
+        return False
 
+
+def generate_all_paths(path, base_path="/"):
     if not base_path.endswith("/"):   # Must have trailing slash to work.
         base_path += "/"
         
-    if not path.endswith("/"):        # Must NOT have trailing slash to work.
+    if path.endswith("/"):        # Must NOT have trailing slash to work.
         path = path[0:-1]
         
     all_paths = []
