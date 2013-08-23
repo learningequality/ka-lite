@@ -1,5 +1,15 @@
 #!/bin/bash
 
+echo "  _   __  ___    _     _ _        "
+echo " | | / / / _ \  | |   (_) |       "
+echo " | |/ / / /_\ \ | |    _| |_ ___  "
+echo " |    \ |  _  | | |   | | __/ _ \ "
+echo " | |\  \| | | | | |___| | ||  __/ "
+echo " \_| \_/\_| |_/ \_____/_|\__\___| "
+echo "                                  "
+echo "http://kalite.learningequality.org"
+echo "                                  "
+
 if [ `id -u` -eq 0 ]; then
 	while true; do
 		echo "-------------------------------------------------------------------"
@@ -44,7 +54,7 @@ if [ ! -w $current_dir/kalite ]; then
 fi
 
 SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
-pyexec=`$SCRIPT_DIR/python.sh`
+pyexec=`"$SCRIPT_DIR"/python.sh`
 cd $current_dir/kalite
 
 if [ -f "database/data.sqlite" ]; then
@@ -76,16 +86,12 @@ echo "--------------------------------------------------------------------------
 echo
 echo "This script will configure the database and prepare it for use."
 echo
-echo "When asked if you want to create a superuser, type 'yes' and enter your details."
-echo "You must remember this login information, as you will need to enter it to"
-echo "administer the website."
-echo
 echo "--------------------------------------------------------------------------------"
 echo
 read -n 1 -p "Press any key to continue..."
 echo
 
-$pyexec manage.py syncdb --migrate
+$pyexec manage.py syncdb --migrate --noinput
 
 # set the database permissions so that Apache will be able to access them
 chmod 777 database
@@ -93,6 +99,14 @@ chmod 766 database/data.sqlite
 
 echo
 $pyexec manage.py generatekeys
+echo
+
+echo
+echo "Please choose a username and password for the admin account on this device."
+echo "You must remember this login information, as you will need to enter it to"
+echo "administer this installation of KA Lite."
+echo
+$pyexec manage.py createsuperuser --email=dummy@learningequality.org
 echo
 
 hostname=`uname -n`

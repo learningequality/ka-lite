@@ -1,8 +1,13 @@
 import time
+from optparse import make_option
+
 from django.core.management.base import BaseCommand, CommandError
-from kalite.main.models import VideoFile
-from kalite.utils.videos import download_video, DownloadCancelled
+
+import settings
+from main.models import VideoFile
+from shared import caching
 from utils.jobs import force_job
+from utils.videos import download_video, DownloadCancelled
 
 
 def download_progress_callback(self, videofile):
@@ -28,18 +33,30 @@ def download_progress_callback(self, videofile):
 class Command(BaseCommand):
     help = "Download all videos marked to be downloaded"
 
+    option_list = BaseCommand.option_list + (
+        make_option('-c', '--cache',
+            action='store_true',
+            dest='auto_cache',
+            default=False,
+            help='Create cached files',
+            metavar="AUTO_CACHE"),
+    )
+
     def handle(self, *args, **options):
+
+        caching_enabled = settings.CACHE_TIME != 0
+        handled_video_ids = []
         
         while True: # loop until the method is aborted
             
             if VideoFile.objects.filter(download_in_progress=True).count() > 0:
                 self.stderr.write("Another download is still in progress; aborting.\n")
-                return
+                break
             
             videos = VideoFile.objects.filter(flagged_for_download=True, download_in_progress=False)
             if videos.count() == 0:
                 self.stdout.write("Nothing to download; aborting.\n")
-                return
+                break
 
             video = videos[0]
             
@@ -47,7 +64,7 @@ class Command(BaseCommand):
                 video.download_in_progress = False
                 video.save()
                 self.stdout.write("Download cancelled; aborting.\n")
-                return
+                break
             
             video.download_in_progress = True
             video.percent_complete = 0
@@ -61,5 +78,14 @@ class Command(BaseCommand):
                 self.stderr.write("Error in downloading: %s\n" % e)
                 video.download_in_progress = False
                 video.save()
-                force_job("videodownload", "Download Videos")
-                return
+                force_job("videodownload", "Download Videos")  # infinite recursive call? :(
+                break
+            
+            handled_video_ids.append(video.youtube_id)
+            
+            # Expire, but don't regenerate until the very end, for efficiency.
+            if caching_enabled:
+                caching.invalidate_all_pages_related_to_video(video_id=video.youtube_id)
+
+        if options["auto_cache"] and caching_enabled and handled_video_ids:
+            caching.regenerate_all_pages_related_to_videos(video_ids=handled_video_ids)

@@ -7,6 +7,7 @@ from StringIO import StringIO
 from django.db import models
 from django.utils.encoding import smart_unicode
 
+
 class SerializerDoesNotExist(KeyError):
     """The requested serializer was not found."""
     pass
@@ -38,6 +39,8 @@ class Serializer(object):
         self.selected_fields = options.pop("fields", None)
         self.use_natural_keys = options.pop("use_natural_keys", False)
 
+        dest_version = options.pop("dest_version", None)  # We're serializing to send to a machine of this version.
+
         self.start_serialization()
         for obj in queryset:
             self.start_object(obj)
@@ -45,6 +48,7 @@ class Serializer(object):
             # This is to avoid local_fields problems for proxy models. Refs #17717.
             concrete_model = obj._meta.concrete_model
             for field in concrete_model._meta.local_fields:
+
                 if field.serialize:
                     if field.rel is None:
                         if self.selected_fields is None or field.attname in self.selected_fields:

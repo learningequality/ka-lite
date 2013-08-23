@@ -1,37 +1,53 @@
 {% extends 'base_distributed.html' %}
 
 {% load i18n %}
+{% load staticfiles %}
 
 {% block currentusers_active %}active{% endblock currentusers_active %}
 
+{% block easyadmin_active %}active{% endblock easyadmin_active %}
+
 {% block headcss %}
-<link rel='stylesheet' type='text/css' href='{{ MEDIA_URL }}css/current_users.css'>
+<link rel='stylesheet' type='text/css' href='{% static "css/current_users.css" %}'>
 {% endblock headcss %}
 
 {% block title %}Current Users{% endblock title %}
 
 {% block content %}
 <div id="content">
+    {% block navbar %}
     <div class="facility"><h2>{% blocktrans %}User List for {{ facility }}{% endblocktrans %} (<a href="?facility=select">{% trans "Change Facility" %}</a>)</h2></div>
+    {% endblock %}
+    {% block selectionbar %}
     <div id="selection-bar">
-    {% if groups %}
         <div class="selection">
-            <div class="subtitle">{% trans "Select Group to Display" %}</div><select id="group">
+            <div class="subtitle">
+                {% if groups %}
+                {% trans "Select Group to Display" %}
+                {% else %}
+                <div class="subtitle">{% trans "No Groups at this Facility" %}
+                {% endif %}
+                <a style="margin-left: 10px" href="{% url add_group %}?next={% url user_list %}">({% trans "Add a group" %})</a>
+            </div>
+            <select id="group">
             <option {% if not request.GET.group %}selected{% endif %}>----</option>
-                {% for group in groups %}
-                    <option value="{{ group.id }}" {% if request.GET.group == group.id %}selected{% endif %}>{{ group }}</option>
-                {% endfor %}
+            {% for group in groups %}
+            <option value="{{ group.id }}" {% if request.GET.group == group.id %}selected{% endif %}>{{ group }}</option>
+            {% endfor %}
             <option {% if request.GET.group == "Ungrouped" %}selected{% endif %}>Ungrouped</option>
             </select>
         </div>
-    {% else %}
-        <div class="selection">
-            <div class="subtitle">{% trans "No Groups at this Facility" %}</div>
-        </div>
-    {% endif %}
     </div>
-
-    {% if users %}
+    {% endblock selectionbar %}
+    {% block users_table %}
+    {% if not users %}
+        <div style="clear: both;"></div>
+        {% if not groups %}
+        <p><div class="subtitle">{% trans "Please select a group above." %}</div></p>
+        {% else %}
+        <p><div class="subtitle">{% trans "No users.  Please select another group above." %}</div></p>
+        {% endif %}
+    {% else %}
     <div class="selection">
         <div class="subtitle">{% trans "Select Action" %}</div>
         <button id="movegroup">{% trans "Move Users to Group" %}</button>
@@ -43,13 +59,16 @@
                     {% endif %}
                 {% endfor %}
         </select>
-        <button id="removegroup">{% trans "Remove Users from Group" %}</button>
+        
+         {% if not request.GET.group == "Ungrouped" %}
+         	     <button id="removegroup">{% trans "Remove Users from Group" %}</button>
+         {% endif %} 
 <!--         <button id="newuser">{% trans "Add New User to Group" %}</button> -->
         <button id="delete">{% trans "Delete Users" %}</button>
     </div>
     <div class="pagination">
         <span class="step-links">
-            <a {% if users.has_previous %}href="{{ pageurls.prev_page }}"{% endif %}>&lt&lt</a>         
+            <a {% if users.has_previous %}href="{{ pageurls.prev_page }}"{% endif %}>&lt&lt</a>
             <span class="current">
                 {% trans "Page" %} {{ users.number }} {% trans "of" %} {{ users.paginator.num_pages }}
             </span>
@@ -109,11 +128,13 @@
                 </table>
                 <div style="clear: both;"></div>
         </div>
-    {% else %}
-        <div style="clear: both;"></div>
-        <p><div class="subtitle">{% trans "Please select a group above." %}</div></p>
     {% endif %}
-</div> 
+    {% endblock users_table %}
+</div>
+
+{% endblock content %}
+{% block endjs %}
+{{ block.super }}
 <script>
 
 function setGetParams(params) {
@@ -130,7 +151,7 @@ function setGetParams(params) {
         }
     }
     url = "?" + $.param(vars);
-    window.location.href = url;    
+    window.location.href = url;
 }
 
 function getUsers() {
@@ -145,17 +166,17 @@ $(function() {
     $("#group").change(function(){
         setGetParams({"group": $("#group option:selected").val(),"page": ""});
     });
-    
+
     $("#all").click(function(){
         $("[type=checkbox]").prop("checked",true)
     })
-    
+
     $("#none").click(function(){
         $("[type=checkbox]").prop("checked",false)
     })
-    
+
     $("#movegroup").click(function(event) {
-        
+
         var users = getUsers();
         var group = $('#movegrouplist option:selected').val()
         if (users.length>0 && group!="----") {
@@ -166,15 +187,15 @@ $(function() {
         } else if (users.length==0) {
             alert("{% trans 'Please select users first' %}");
         } else {
-            alert("{% trans 'Please choose a group to move users to' %}")
+            alert("{% trans 'Please choose a group to move users to' %}");
         }
-    
+
     });
-    
+
     $("#removegroup").click(function(event) {
-    
+
         var users = getUsers();
-        
+
         if (users.length>0) {
             if(!confirm("{% trans 'You are about to remove selected users from their current group.' %}")) {
                 return;
@@ -183,13 +204,13 @@ $(function() {
         } else {
             alert("{% trans 'Please select users first' %}");
         }
-    
+
     });
-    
+
     $("#delete").click(function(event) {
-    
+
         var users = getUsers();
-        
+
         if (users.length>0) {
             if(!confirm("{% trans 'You are about to delete selected users, they will be permanently deleted.' %}")) {
                 return;
@@ -198,8 +219,8 @@ $(function() {
         } else {
             alert("{% trans 'Please select users first' %}");
         }
-    
+
     });
 });
 </script>
-{% endblock content %}
+{% endblock endjs %}
