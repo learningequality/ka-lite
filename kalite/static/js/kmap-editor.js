@@ -242,6 +242,9 @@ $(document).ready(function() {
         // Second level of the topic tree
         $.getJSON("/static/data/topicdata/" + vars["topic"] + ".json")
             .success(function(exerciseLayout) {
+
+                exerciseLayout = collapse_layout(exerciseLayout);
+
                 var exercise_ids = $.map(exerciseLayout, function(exercise) { return exercise.name });
                 doRequest("/api/get_exercise_logs", exercise_ids)
                     .success(function(data) {
@@ -258,3 +261,48 @@ $(document).ready(function() {
             });
     }
 });
+
+function collapse_layout(exerciseLayout) {
+    var minX = Math.min.apply(Math, _.pluck(exerciseLayout, "v_position"));
+    var minY = Math.min.apply(Math, _.pluck(exerciseLayout, "h_position"));
+    var maxX = Math.max.apply(Math, _.pluck(exerciseLayout, "v_position"));
+    var maxY = Math.max.apply(Math, _.pluck(exerciseLayout, "h_position"));
+
+    var filledX = Array(maxX - minX);
+    var filledY = Array(maxY - minY);
+
+    _.each(exerciseLayout, function(ex) {
+        filledX[ex.v_position - minX] = true;
+        filledY[ex.h_position - minY] = true;
+    });
+
+    var shiftX = Array(maxX - minX);
+    var shift = 0;
+
+    for (var i = 0; i < filledX.length; i++) {
+        if (!filledX[i]) {
+            shift--;
+        }
+        shiftX[i] = shift;
+    }
+
+    var shiftY = Array(maxY - minY);
+    shift = 0;
+
+    for (var i = 0; i < filledY.length; i++) {
+        if (!filledY[i]) {
+            shift--;
+        }
+        shiftY[i] = shift;
+    }
+
+    _.each(exerciseLayout, function(ex) {
+        ex.v_position += shiftX[ex.v_position - minX];
+        ex.h_position += shiftY[ex.h_position - minY];
+    });
+
+    return exerciseLayout;
+
+
+
+}
