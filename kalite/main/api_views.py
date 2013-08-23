@@ -37,7 +37,7 @@ class student_log_api(object):
             #   allowing cross-checking of user information
             #   and better error reporting
             if "facility_user" not in request.session:
-                return JsonResponse({"warning": self.logged_out_message + "  " + _("You must be logged in as a facility user to view/save progress.")}, status=500)
+                return JsonResponse({"warning": self.logged_out_message + "  " + _("You must be logged in as a student or teacher to view/save progress.")}, status=500)
             else:
                 return handler(request)
         return wrapper_fn
