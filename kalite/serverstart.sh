@@ -10,7 +10,6 @@ else
 fi
 nthreads=`$pyexec -c "import settings; print settings.CHERRYPY_THREAD_COUNT"`
 
-
 cd "$SCRIPT_DIR"
 if [ -f "runcherrypyserver.pid" ];
 then
@@ -18,12 +17,6 @@ then
     echo "(Warning: Web server may still be running; attempting to stop old process ($pid) first)"
     kill $pid 2> /dev/null
     rm runcherrypyserver.pid
-fi
-
-pids=`ps aux | grep runcherrypyserver | grep -v "grep" | awk '{print $2}'`
-if [ "$pids" ]; then
-    echo "(Warning: Web server seems to have been started elsewhere; stopping all processes ($pids))"
-    kill $pids
 fi
 
 echo "Running the web server on port $port."
