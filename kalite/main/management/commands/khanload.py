@@ -49,6 +49,9 @@ kind_blacklist = [None, "Separator", "CustomStack", "Scratchpad", "Article"]
 
 slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res", "partner-content"]
 
+# blacklist of particular exercises that currently have problems being rendered
+slug_blacklist += ["ordering_improper_fractions_and_mixed_numbers", "ordering_numbers", "conditional_statements_2"]
+
 def download_khan_data(url, debug_cache_file=None, debug_cache_dir=settings.PROJECT_PATH + "../_khanload_cache"):
     """Download data from the given url.
     
@@ -172,9 +175,6 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
             # Mark all unrecognized exercises for deletion
             if child["kind"] == "Exercise":
                 if not os.path.exists(exercise_path % child["slug"]):
-                    with open(settings.PROJECT_PATH + "blah.txt", "a") as f:
-                        f.write(child["path"] + "\n")
-                    print "MISSING EXERCISE: " + child["path"]
                     children_to_delete.append(ci)
                 
             # Recurse over children to delete
@@ -243,7 +243,6 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
 
 
 def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH + "/static/data/", force_icons=False):
-
     """
     Uses KA Lite topic data and supporting data from Khan Academy 
     to rebuild the knowledge map (maplayout.json) and topicdata files.
