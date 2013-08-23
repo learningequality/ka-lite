@@ -8,6 +8,8 @@ if [ "$1" = "" ]; then
 else
     port=$1
 fi
+nthreads=`$pyexec -c "import settings; print settings.CHERRYPY_THREAD_COUNT"`
+
 
 cd "$SCRIPT_DIR"
 if [ -f "runcherrypyserver.pid" ];
@@ -25,7 +27,7 @@ if [ "$pids" ]; then
 fi
 
 echo "Running the web server on port $port."
-$pyexec manage.py runcherrypyserver host=0.0.0.0 port=$port threads=50 daemonize=true pidfile=runcherrypyserver.pid
+$pyexec manage.py runcherrypyserver host=0.0.0.0 port=$port threads=$nthreads daemonize=true pidfile=runcherrypyserver.pid
 echo "The server should now be accessible locally at: http://127.0.0.1:$port/"
 
 ifconfig_path=`command -v ifconfig`

@@ -4,9 +4,11 @@ if "%1" == "" (
 ) else (
     set PORT=%1
 )
+for /f %%a in ('start /b python.exe -c "import settings; print settings.CHERRYPY_THREAD_COUNT"') do set NTHREADS=%%a
+
 set OLD_DIR=%CD%
 set SCRIPT_DIR=%~dp0
 cd "%SCRIPT_DIR%"
 echo.
-start /b python.exe manage.py runcherrypyserver host=0.0.0.0 port=%PORT% daemonize=True threads=50 pidfile="%SCRIPT_DIR%\runcherrypyserver.pid"
+start /b python.exe manage.py runcherrypyserver host=0.0.0.0 port=%PORT% daemonize=True threads=%CHERRYPY_THREAD_COUNT% pidfile="%SCRIPT_DIR%\runcherrypyserver.pid"
 CD "%OLD_DIR%"
