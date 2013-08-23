@@ -11,11 +11,28 @@
 </style>
 {% endblock headcss %}
 
+{% block headjs %}{{ block.super }}
+<script>
+    function force_sync() {
+        doRequest("{% url api_force_sync %}")
+            .success(function() {
+                show_message("success", "Successfully launched data syncing job.", "id_command")
+            })
+            .fail(function(resp) {
+                communicate_api_failure(resp, "id_command")
+            });
+    }
+</script>
+{% endblock headjs %}
+
 {% block buttons %}
             {% block upload_button %}
             {% endblock upload_button %}
 
             {% block download_button %}
+                <li class="server-online-only2">
+                    <a class="green_button" href="javascript:force_sync()">{% trans "Sync Now!" %}</a>
+                </li>
                 <!--li>
                     <a class="green_button" href="#">{% trans "Sync via USB" %}</a>
                 </li-->
