@@ -412,14 +412,21 @@ ul.dynatree-container li, .ui-widget-content {
                     setNodeClass(currentKey, "complete");
                     window.download_index++;
                     if (window.download_index >= window.downloading_videos.length) {
+                        // Finished all downloads
                         clearInterval(window.download_check_interval);
                         $(".progress-section, #cancel-download").hide();
                         return;
                     }
                     checkVideoDownloadProgress();
                 } else if (!progress["downloading"]) {
+                    // In-progress (error) case: 
+                    //   we're not done downloading, but the 
+                    //   job is no longer running.
+                    $(".progress-section, #cancel-download").hide();
+                    $(".progress-waiting").hide();
                     $("#retry-video-download").show();
                 } else {
+                    // In progress case (happy).
                     $("#retry-video-download").hide();
                 }
             })
@@ -438,13 +445,16 @@ ul.dynatree-container li, .ui-widget-content {
                 $(".progress-section").hide();
             	$(".progress-waiting").show();
                 $("#cancel-download").show();
-        	}
-        } else {
+        	}            
+        } else if ($("#retry-video-download :visible").length == 0) {
+            // Downloading completed.  Hide all
             $(".progress-section").hide();
             if ($(".subtitle-section:visible").length == 0) {
                 $("#cancel-download").hide();
             }
             return;
+        } else {
+            // retry button was pressed
         }
 
         $("#progressbar-current").progressbar({value: window.current_download_percent});
