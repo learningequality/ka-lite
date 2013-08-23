@@ -48,9 +48,8 @@ kind_blacklist = [None, "Separator", "CustomStack", "Scratchpad", "Article"]
 slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res", "partner-content"]
 
 
-def download_khan_data(url, debug_cache_file=None, debug_cache_dir="json"):
-    """
-    Download data from the given url.
+def download_khan_data(url, debug_cache_file=None, debug_cache_dir=settings.PROJECT_PATH + "../_khanload_cache"):
+    """Download data from the given url.
     
     In DEBUG mode, these downloads are slow.  So for the sake of faster iteration,
     save the download to disk and re-serve it up again, rather than download again,
