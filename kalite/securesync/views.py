@@ -106,7 +106,7 @@ def register_public_key_client(request):
             "registration_url": client.path_to_url(
                 reverse("register_public_key") + "?" + urllib.quote(crypto.get_own_key().get_public_key_string())
             ),
-            "central_login_url": "http://%s/accounts/login" % settings.CENTRAL_SERVER_HOST,
+            "central_login_url": "%s://%s/accounts/login" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST),
             "callback_url": request.build_absolute_uri(reverse("register_public_key")),
         }
     error_msg = reg_response.get("error", "")
