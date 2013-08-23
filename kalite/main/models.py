@@ -4,6 +4,7 @@ from annoying.functions import get_object_or_None
 from dateutil import relativedelta
 
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.db.models import Sum
 
@@ -13,9 +14,10 @@ from securesync.models import SyncedModel, FacilityUser, Device
 from settings import LOG as logging
 from utils.general import datediff, isnumeric
 
-POINTS_PER_VIDEO = 750
 
 class VideoLog(SyncedModel):
+    POINTS_PER_VIDEO = 750
+
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
     youtube_id = models.CharField(max_length=20, db_index=True)
     total_seconds_watched = models.IntegerField(default=0)
@@ -33,51 +35,48 @@ class VideoLog(SyncedModel):
 
             # Compute learner status
             already_complete = self.complete
-            self.complete = (self.points >= POINTS_PER_VIDEO)
+            self.complete = (self.points >= VideoLog.POINTS_PER_VIDEO)
             if not already_complete and self.complete:
                 self.completion_timestamp = datetime.now()
                 self.completion_counter = Device.get_own_device().get_counter()
 
-            # Tell logins that they are still active.
+            # Tell logins that they are still active (ignoring validation failures).
             #   TODO(bcipolli): Could log video information in the future.
-            UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()))
+            try:
+                UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()))
+            except ValidationError as e:
+                logging.debug("Failed to update userlog during video: %s" % e)
 
         super(VideoLog, self).save(*args, **kwargs)
 
     def get_uuid(self, *args, **kwargs):
+        assert self.user is not None and self.user.id is not None, "User ID required for get_uuid"
+        assert self.youtube_id is not None, "Youtube ID required for get_uuid"
+
         namespace = uuid.UUID(self.user.id)
-        return uuid.uuid5(namespace, str(self.youtube_id)).hex
+        return uuid.uuid5(namespace, self.youtube_id.encode("utf-8")).hex
 
     @staticmethod
     def get_points_for_user(user):
         return VideoLog.objects.filter(user=user).aggregate(Sum("points")).get("points__sum", 0) or 0
         
-    @staticmethod
-    def update_video_log(facility_user, youtube_id, seconds_watched, points=0, new_points=0):
+    @classmethod
+    def update_video_log(cls, facility_user, youtube_id, additional_seconds_watched, total_points=0):
+        assert facility_user and youtube_id, "Updating a video log requires both a facility user and a YouTube ID"
         
-        if not facility_user or not youtube_id:
-            raise Exception("Updating a video log requires both a facility user and a YouTube ID!")
-        
-        # start a replacement video log
-        videolog = VideoLog(user=facility_user, youtube_id=youtube_id)
-        
-        # get an old video log for this combination of user and youtube_id, or a dummy if there isn't one
-        old_videolog = videolog.get_existing_instance() or VideoLog()
+        # More robust extraction of previous object
+        videolog = cls.get_or_initialize(user=facility_user, youtube_id=youtube_id)
         
         # combine the previously watched counts with the new counts
-        videolog.total_seconds_watched += seconds_watched
-        videolog.points = min(max((old_videolog.points or 0) + new_points, points), POINTS_PER_VIDEO)
+        videolog.total_seconds_watched += additional_seconds_watched
+        videolog.points = min(max(videolog.points, total_points), cls.POINTS_PER_VIDEO)
         
         # write the video log to the database, overwriting any old video log with the same ID
         # (and since the ID is computed from the user ID and YouTube ID, this will behave sanely)
         videolog.full_clean()
         videolog.save()
-        
-        return {
-            "points": videolog.points,
-            "complete": videolog.complete,
-        }
 
+        return videolog
 
 
 class ExerciseLog(SyncedModel):
@@ -111,15 +110,20 @@ class ExerciseLog(SyncedModel):
                 self.completion_counter = Device.get_own_device().get_counter()
                 self.attempts_before_completion = self.attempts
 
-            # Tell logins that they are still active.
+            # Tell logins that they are still active (ignoring validation failures).
             #   TODO(bcipolli): Could log exercise information in the future.
-            UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()))
-
-        super(ExerciseLog, self).save(*args, **kwargs)
+            try:
+                UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()))
+            except ValidationError as e:
+                logging.debug("Failed to update userlog during exercise: %s" % e)
+            super(ExerciseLog, self).save(*args, **kwargs)
 
     def get_uuid(self, *args, **kwargs):
+        assert self.user is not None and self.user.id is not None, "User ID required for get_uuid"
+        assert self.exercise_id is not None, "Exercise ID required for get_uuid"
+
         namespace = uuid.UUID(self.user.id)
-        return uuid.uuid5(namespace, str(self.exercise_id)).hex
+        return uuid.uuid5(namespace, self.exercise_id.encode("utf-8")).hex
 
     @staticmethod
     def get_points_for_user(user):
@@ -129,7 +133,7 @@ class ExerciseLog(SyncedModel):
 class UserLogSummary(SyncedModel):
     """Like UserLogs, but summarized over a longer period of time.
     Also sync'd across devices.  Unique per user, device, activity_type, and time period."""
-    version = "0.9.4"
+    minversion = "0.9.4"
 
     device = models.ForeignKey(Device, blank=False, null=False)
     user = models.ForeignKey(FacilityUser, blank=False, null=False, db_index=True)
@@ -140,7 +144,8 @@ class UserLogSummary(SyncedModel):
     total_seconds = models.IntegerField(default=0, blank=False, null=False)
 
     def __unicode__(self):
-        return "%d seconds over %d logins for %s/%s/%d, period %s to %s" % (self.total_seconds, self.total_logins, self.device.name, self.user.username, self.activity_type, self.start_datetime, self.end_datetime)
+        self.full_clean()  # make sure everything that has to be there, is there.
+        return u"%d seconds over %d logins for %s/%s/%d, period %s to %s" % (self.total_seconds, self.total_logins, self.device.name, self.user.username, self.activity_type, self.start_datetime, self.end_datetime)
 
 
     @classmethod
@@ -241,7 +246,7 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
 
     # Currently, all activity is used just to update logged-in-time.
     KNOWN_TYPES={"login": 1}
-    version = "0.9.4"
+    minversion = "0.9.4"
 
     user = models.ForeignKey(FacilityUser, blank=False, null=False, db_index=True)
     activity_type = models.IntegerField(blank=False, null=False)
@@ -290,9 +295,9 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
 
     def __unicode__(self):
         if self.end_datetime:
-            return "%s: logged in @ %s; for %s seconds"%(self.user.username,self.start_datetime, self.total_seconds)
+            return u"%s: logged in @ %s; for %s seconds"%(self.user.username,self.start_datetime, self.total_seconds)
         else:
-            return "%s: logged in @ %s; last active @ %s"%(self.user.username, self.start_datetime, self.last_active_datetime)
+            return u"%s: logged in @ %s; last active @ %s"%(self.user.username, self.start_datetime, self.last_active_datetime)
 
 
     @classmethod
@@ -340,8 +345,8 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
 
         # Create a new entry
         cur_user_log_entry = cls(user=user, activity_type=activity_type, start_datetime=start_datetime, last_active_datetime=start_datetime)
-        cur_user_log_entry.save()
 
+        cur_user_log_entry.save()
         return cur_user_log_entry
 
 
@@ -368,6 +373,7 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
 
         logging.debug("%s: UPDATE activity (%d) @ %s"%(user.username,activity_type,update_datetime))
         cur_user_log_entry.last_active_datetime = update_datetime
+
         cur_user_log_entry.save()
 
 

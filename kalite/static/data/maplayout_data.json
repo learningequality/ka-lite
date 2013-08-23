@@ -8,14 +8,6 @@
       "standalone_title": "Circles", 
       "id": "circles"
     }, 
-    "area--perimeter--and-volume": {
-      "icon_url": "/images/power-mode/badges/area--perimeter--and-volume-40x40.png", 
-      "translated_standalone_title": "Area, perimeter, and volume", 
-      "y": 37.0, 
-      "x": -19.0, 
-      "standalone_title": "Area, perimeter, and volume", 
-      "id": "area--perimeter--and-volume"
-    }, 
     "probability": {
       "icon_url": "/images/power-mode/badges/probability-40x40.png", 
       "translated_standalone_title": "Probability and statistics", 
@@ -106,10 +98,10 @@
     }, 
     "linear-equations-and-inequalitie": {
       "icon_url": "/images/power-mode/badges/linear-equations-and-inequalitie-40x40.png", 
-      "translated_standalone_title": "Graphing points, equations and inequalities", 
+      "translated_standalone_title": "Analytic geometry -visualizing linear relationships", 
       "y": 40.0, 
       "x": 10.0, 
-      "standalone_title": "Graphing points, equations and inequalities", 
+      "standalone_title": "Analytic geometry -visualizing linear relationships", 
       "id": "linear-equations-and-inequalitie"
     }, 
     "transformations": {
@@ -208,14 +200,6 @@
       "standalone_title": "Linear equations", 
       "id": "solving-linear-equations-and-inequalities"
     }, 
-    "pythagorean-theorem": {
-      "icon_url": "/images/power-mode/badges/pythagorean-theorem-40x40.png", 
-      "translated_standalone_title": "Pythagorean theorem", 
-      "y": 38.0, 
-      "x": -12.0, 
-      "standalone_title": "Pythagorean theorem", 
-      "id": "pythagorean-theorem"
-    }, 
     "quadratics": {
       "icon_url": "/images/power-mode/badges/quadratics-40x40.png", 
       "translated_standalone_title": "Quadratics", 
@@ -287,14 +271,6 @@
       "x": -1.0, 
       "standalone_title": "Functions", 
       "id": "algebra-functions"
-    }, 
-    "chemistry": {
-      "icon_url": "/images/power-mode/badges/chemistry-40x40.png", 
-      "translated_standalone_title": "Chemistry", 
-      "y": 39.0, 
-      "x": 18.0, 
-      "standalone_title": "Chemistry", 
-      "id": "chemistry"
     }, 
     "decimals": {
       "icon_url": "/images/power-mode/badges/decimals-40x40.png", 
@@ -421,42 +397,6 @@
     {
       "path": [
         {
-          "y": 31, 
-          "x": -19
-        }, 
-        {
-          "y": 37, 
-          "x": -19
-        }
-      ]
-    }, 
-    {
-      "path": [
-        {
-          "y": 36.5, 
-          "x": -26
-        }, 
-        {
-          "y": 37.5, 
-          "x": -33
-        }
-      ]
-    }, 
-    {
-      "path": [
-        {
-          "y": 37, 
-          "x": -19
-        }, 
-        {
-          "y": 43, 
-          "x": -22
-        }
-      ]
-    }, 
-    {
-      "path": [
-        {
           "y": 37, 
           "x": -33
         }, 
@@ -499,18 +439,6 @@
         {
           "y": 6, 
           "x": -5
-        }
-      ]
-    }, 
-    {
-      "path": [
-        {
-          "y": 1.5, 
-          "x": 4
-        }, 
-        {
-          "y": 7, 
-          "x": 0
         }
       ]
     }, 
@@ -637,42 +565,6 @@
     {
       "path": [
         {
-          "y": 22, 
-          "x": -10
-        }, 
-        {
-          "y": 27, 
-          "x": -7
-        }
-      ]
-    }, 
-    {
-      "path": [
-        {
-          "y": 21, 
-          "x": 4
-        }, 
-        {
-          "y": 38, 
-          "x": -12
-        }
-      ]
-    }, 
-    {
-      "path": [
-        {
-          "y": 38, 
-          "x": -12
-        }, 
-        {
-          "y": 49, 
-          "x": -25
-        }
-      ]
-    }, 
-    {
-      "path": [
-        {
           "y": 49, 
           "x": -25
         }, 
@@ -787,18 +679,6 @@
         {
           "y": 49, 
           "x": 10
-        }
-      ]
-    }, 
-    {
-      "path": [
-        {
-          "y": 38, 
-          "x": -12
-        }, 
-        {
-          "y": 46, 
-          "x": -7
         }
       ]
     }, 

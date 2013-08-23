@@ -12,7 +12,6 @@ import settings
 from utils.testing import central_server_test
 
 
-@unittest.skip
 @central_server_test
 class FixtureTestCases(TestCase):
     """Test the basic ability to load and dump data to a fixture.  Very basic."""

@@ -72,6 +72,8 @@ DATABASES      = getattr(local_settings, "DATABASES", {
 
 DATA_PATH      = os.path.realpath(getattr(local_settings, "DATA_PATH", PROJECT_PATH + "/static/data/")) + "/"
 
+SUBTITLES_DATA_ROOT = os.path.realpath(getattr(local_settings, "SUBTITLES_DATA_ROOT", DATA_PATH + "subtitles/")) + "/"
+
 CONTENT_ROOT   = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", PROJECT_PATH + "/../content/")) + "/"
 CONTENT_URL    = getattr(local_settings, "CONTENT_URL", "/content/")
 
@@ -120,6 +122,7 @@ TEMPLATE_LOADERS = (
 #     "django.template.loaders.eggs.Loader",
 )
 
+MIDDLEWARE_CLASSES = getattr(local_settings, 'MIDDLEWARE_CLASSES', tuple())
 MIDDLEWARE_CLASSES = (
     "django.contrib.sessions.middleware.SessionMiddleware",
     'django.middleware.locale.LocaleMiddleware',
@@ -128,8 +131,11 @@ MIDDLEWARE_CLASSES = (
     "django.contrib.messages.middleware.MessageMiddleware",
     "main.middleware.GetNextParam",
     "django.middleware.csrf.CsrfViewMiddleware",
-)
+) + MIDDLEWARE_CLASSES  # append local_settings middleware, in case of dependencies
 
+ROOT_URLCONF = "kalite.urls"
+
+INSTALLED_APPS = getattr(local_settings, 'INSTALLED_APPS', tuple())
 INSTALLED_APPS = (
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -149,7 +155,8 @@ INSTALLED_APPS = (
     "coachreports",  # in both apps; reachable on central via control_panel
     "khanload",  # khan academy interactions
     "kalite",  # contains commands
-)
+) + INSTALLED_APPS  # append local_settings installed_apps, in case of dependencies
+
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 if DEBUG or CENTRAL_SERVER:
@@ -177,7 +184,7 @@ else:
     ROOT_URLCONF = "main.urls"
     # Include optionally installed apps
     if os.path.exists(PROJECT_PATH + "/tests/loadtesting/"):
-        INSTALLED_APPS     += ("kalite.tests.loadtesting"),
+        INSTALLED_APPS += ("kalite.tests.loadtesting",)
 
     MIDDLEWARE_CLASSES += (
         "securesync.middleware.DBCheck",
@@ -191,6 +198,18 @@ USER_LOG_MAX_RECORDS = getattr(local_settings, "USER_LOG_MAX_RECORDS", 0)
 USER_LOG_SUMMARY_FREQUENCY = getattr(local_settings, "USER_LOG_SUMMARY_FREQUENCY", (1,"months"))
 
 
+# Sessions use the default cache, and we want a local memory cache for that.
+# Separate session caching from file caching.
+SESSION_ENGINE = getattr(local_settings, "SESSION_ENGINE", 'django.contrib.sessions.backends.cached_db')
+
+CACHES = {
+    "default": {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}
+
+# Local memory cache is to expensive to use for the page cache.
+#   instead, use a file-based cache.
 # By default, cache for maximum possible time.
 #   Note: caching for 100 years can be too large a value
 #   sys.maxint also can be too large (causes ValueError), since it's added to the current time.
@@ -202,16 +221,14 @@ CACHE_TIME = getattr(local_settings, "CACHE_TIME", _max_cache_time)
 
 # Cache is activated in every case,
 #   EXCEPT: if CACHE_TIME=0
-if CACHE_TIME or CACHE_TIME is None: # None can mean infinite caching to some functions
-    CACHES = {
-        'default': {
-            'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-            'LOCATION': getattr(local_settings, "CACHE_LOCATION", tempfile.gettempdir()), # this is kind of OS-specific, so dangerous.
-            'TIMEOUT': CACHE_TIME, # should be consistent
-            'OPTIONS': {
-                'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
-            },
-        }
+if CACHE_TIME != 0:  # None can mean infinite caching to some functions
+    CACHES["web_cache"] = {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': getattr(local_settings, "CACHE_LOCATION", os.path.join(tempfile.gettempdir(), "kalite_web_cache/")), # this is kind of OS-specific, so dangerous.
+        'TIMEOUT': CACHE_TIME, # should be consistent
+        'OPTIONS': {
+            'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
+        },
     }
     SESSION_CACHE_ALIAS = "session_cache"
 
@@ -241,3 +258,27 @@ TEST_RUNNER = 'kalite.utils.testing.testrunner.KALiteTestRunner'
 
 CRONSERVER_FREQUENCY = getattr(local_settings, "CRONSERVER_FREQUENCY", 600) # 10 mins (in seconds)
 
+# Add additional mimetypes to avoid errors/warnings
+import mimetypes
+mimetypes.add_type("font/opentype", ".otf", True)
+
+# Django debug_toolbar config
+if getattr(local_settings, "USE_DEBUG_TOOLBAR", False):
+    INSTALLED_APPS += ('debug_toolbar',)
+    MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
+    DEBUG_TOOLBAR_PANELS = (
+        'debug_toolbar.panels.version.VersionDebugPanel',
+        'debug_toolbar.panels.timer.TimerDebugPanel',
+        'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
+        'debug_toolbar.panels.headers.HeaderDebugPanel',
+        'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
+        'debug_toolbar.panels.template.TemplateDebugPanel',
+        'debug_toolbar.panels.sql.SQLDebugPanel',
+        'debug_toolbar.panels.signals.SignalDebugPanel',
+        'debug_toolbar.panels.logger.LoggingPanel',
+    )
+    DEBUG_TOOLBAR_CONFIG = {
+        'INTERCEPT_REDIRECTS': False,
+        'HIDE_DJANGO_SQL': False,
+        'ENABLE_STACKTRACES' : True,
+    }

@@ -35,7 +35,7 @@ class Contact(models.Model):
     cc_email  = models.BooleanField(verbose_name="Please send a copy of this support request to the email address above.", default=False)
 
     def __unicode__(self):
-        return "%s inquiry from %s @ %s on %s (%s)"%(self.type, self.name, self.org_name, self.contact_date, self.email)
+        return u"%s inquiry from %s @ %s on %s (%s)"%(self.type, self.name, self.org_name, self.contact_date, self.email)
 
 
 class Deployment(models.Model):
@@ -63,7 +63,7 @@ class Deployment(models.Model):
     other                   = models.TextField(blank=True,verbose_name="Do you have any other questions or suggestions for us?")
 
     def __unicode__(self):
-        return "Inquiry from %s @ %s on %s (%s)"%(self.contact.name, self.contact.org_name, self.contact.contact_date, self.contact.email)
+        return u"Inquiry from %s @ %s on %s (%s)"%(self.contact.name, self.contact.org_name, self.contact.contact_date, self.contact.email)
 
 
 class Support(models.Model):
@@ -79,7 +79,7 @@ class Support(models.Model):
     issue    = models.TextField(blank=True, verbose_name="Please describe your issue.")
 
     def __unicode__(self):
-        return "%s inquiry from %s @ %s on %s (%s)"%(self.type, self.contact.name, self.contact.org_name, self.contact.contact_date, self.contact.email)
+        return u"%s inquiry from %s @ %s on %s (%s)"%(self.type, self.contact.name, self.contact.org_name, self.contact.contact_date, self.contact.email)
 
 
 class Contribute(models.Model):
@@ -96,7 +96,7 @@ class Contribute(models.Model):
     issue    = models.TextField(blank=True, verbose_name="How would you like to contribute?")
 
     def __unicode__(self):
-        return "%s inquiry from %s @ %s on %s (%s)"%(self.type, self.contact.name, self.contact.org_name, self.contact.contact_date, self.contact.email)
+        return u"%s inquiry from %s @ %s on %s (%s)"%(self.type, self.contact.name, self.contact.org_name, self.contact.contact_date, self.contact.email)
 
 
 class Info(models.Model):
@@ -104,5 +104,5 @@ class Info(models.Model):
     issue    = models.TextField(blank=True, verbose_name="What's on your mind?")
     
     def __unicode__(self):
-        return "Inquiry from %s @ %s on %s (%s)"%(self.contact.name, self.contact.org_name, self.contact.contact_date, self.contact.email)
+        return u"Inquiry from %s @ %s on %s (%s)"%(self.contact.name, self.contact.org_name, self.contact.contact_date, self.contact.email)
 

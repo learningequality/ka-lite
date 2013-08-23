@@ -2,6 +2,7 @@ from django.http import HttpResponseRedirect
 from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
 
+import central.api_urls
 import coachreports.urls
 import contact.urls
 import control_panel.urls
@@ -68,6 +69,10 @@ urlpatterns += patterns('central.views',
 
     # api
     url(r'^api/khanload/', include(khanload.api_urls)),
+)
+
+urlpatterns += patterns('central.api_views',
+    url(r'^api/', include(central.api_urls)),
 )
 
 handler403 = 'central.views.handler_403'

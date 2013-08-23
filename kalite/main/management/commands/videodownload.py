@@ -1,10 +1,11 @@
 import time
+from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
 from main.models import VideoFile
-from utils import caching
+from shared import caching
 from utils.jobs import force_job
 from utils.videos import download_video, DownloadCancelled
 
@@ -32,8 +33,18 @@ def download_progress_callback(self, videofile):
 class Command(BaseCommand):
     help = "Download all videos marked to be downloaded"
 
+    option_list = BaseCommand.option_list + (
+        make_option('-c', '--cache',
+            action='store_true',
+            dest='auto_cache',
+            default=False,
+            help='Create cached files',
+            metavar="AUTO_CACHE"),
+    )
+
     def handle(self, *args, **options):
-        
+
+        caching_enabled = settings.CACHE_TIME != 0
         handled_video_ids = []
         
         while True: # loop until the method is aborted
@@ -73,10 +84,8 @@ class Command(BaseCommand):
             handled_video_ids.append(video.youtube_id)
             
             # Expire, but don't regenerate until the very end, for efficiency.
-            if hasattr(settings, "CACHES"):
-                caching.invalidate_cached_topic_hierarchies(video_id=video.youtube_id)
-    
-        # Regenerate all pages, efficiently
-        if hasattr(settings, "CACHES"):
-            caching.regenerate_cached_topic_hierarchies(handled_video_ids)
-        
+            if caching_enabled:
+                caching.invalidate_all_pages_related_to_video(video_id=video.youtube_id)
+
+        if options["auto_cache"] and caching_enabled and handled_video_ids:
+            caching.regenerate_all_pages_related_to_videos(video_ids=handled_video_ids)

@@ -2,6 +2,7 @@
 
 {% load i18n %}
 {% load staticfiles %}
+{% load my_filters %}
 
 {% block coachreports_active %}active{% endblock coachreports_active %}
 
@@ -68,7 +69,6 @@
 
 {% block content %}
 {% block navbar_title %}{{ block.super }}{% endblock navbar_title %}
-
     <div id="selection-bar">
     {% comment %}Select the coach report type{% endcomment %}
     {% if report_types %}
@@ -127,11 +127,29 @@
         <div id="legend">
             <div class="legend"><div class="partial"></div>{% trans "In Progress" %}</div>
             <div class="legend"><div class="complete"></div>{% trans "Completed" %}</div>
+            {% if request_report_type != "video" %}
             <div class="legend"><div class="struggle"></div>{% trans "Struggling" %}</div>
+            {% endif %}
         </div>
     </div>
-    {% if students %}
+    {% if not students %}
+        <div style="clear: both;"></div>
+        <p><div class="subtitle error" id="error_message">
+        {% if not groups.0.groups and not groups.1 %}
+            {% comment %}No groups available: then "ungrouped" is selected, and "no students" returned.{% endcomment %}
+            {% trans "No student accounts have been created." %}
+        {% elif not request.GET.topic %}
+            {% comment %}Group was selected, but data not queried because a topic was not selected 
+            (NOTE: this required knowledge of how the view queries data){% endcomment %}
+            {% trans "Please select a topic above." %}
+        {% else %}
+            {% comment %}Everything specified, but no users fit the query.{% endcomment %}
+            {% trans "No student accounts in this group have been created." %}
+        {% endif %}
+        </div></p>
+    {% else %}
         {% block students_header %}
+
         <div style="clear: both;"></div>
         <div id="displaygrid">
             <div style="clear: both;"></div>
@@ -165,28 +183,21 @@
                         <tr>
                             {% for exercise in exercises %}
                                 <th class="headrow data">
-                                    <a href="{{ exercise.path }}"><span title='"{{ exercise.display_name }}"{% if exercise.description %} ({{ exercise.description }}){% endif %}'>{{ exercise.name }}</span></a>
+                                    <a href="{{ exercise.path }}"><span title='"{{ exercise.display_name }}"{% if exercise.description %} ({{ exercise.description }}){% endif %}'>{{ exercise.title }}</span></a>
                                 </th>
                             {% endfor %}
                         </tr>
                         {% for student in students %}
                             <tr>
-                                {% for log in student.exercise_logs %}
-                                    {% if not log %}
+                                {% for exercise in exercises %}
+                                    {% if not student.exercise_logs|get_item:exercise.slug %}
                                         <td class="status data" title="{% trans "Not Attempted" %}">
-                                    {% elif log.struggling %}
+                                    {% elif student.exercise_logs|get_item:exercise.slug|get_item:"struggling" %}
                                         <td class="status data struggle" title="{% trans "Struggling" %}">
-                                    {% elif log.complete %}
+                                    {% elif student.exercise_logs|get_item:exercise.slug|get_item:"complete" %}
                                         <td class="status data complete" title="{% trans "Complete" %}">
                                     {% else %}
                                         <td class="status data partial" title="{% trans "Attempted" %}">
-                                    {% endif %}
-                                    {% if not log %}
-                                            &nbsp;
-                                    {% else %}
-                                            <div class="attempts">{{log.attempts}} {% trans "attempts" %}</div>
-                                            <div class="points">{{log.points}} {% trans "points" %}</div>
-                                            <div class="streak_progress">{% if not log.complete %}{{log.streak_progress}}% {% trans "streak" %}{% else %}&nbsp;{% endif %}</div>
                                     {% endif %}
                                         </td>
                                 {% endfor %}
@@ -212,21 +223,21 @@
                         </tr>
                         {% for student in students %}
                             <tr>
-                                {% for log in student.video_logs %}
-                                    {% if not log %}
+                                {% for video in videos %}
+                                    {% if not student.video_logs|get_item:video.youtube_id %}
                                         <td class="status data" title="{% trans "Not Viewed" %}">
                                             &nbsp;
-                                    {% elif not log.complete %}
+                                    {% elif not student.video_logs|get_item:video.youtube_id|get_item:"complete" %}
                                         <td class="status data partial" title="{% trans "Viewing" %}">
-                                            <div class="total_seconds_watched">100%</div>
+                                            <div class="total_seconds_watched">{{ student.video_logs|get_item:video.youtube_id|get_item:"total_seconds_watched" }} {% trans "secs" %}</div>
                                     {% else %}
                                         <td class="status data complete" title="{% trans "Viewed" %}">
-                                            <div class="total_seconds_watched">{{ log.total_seconds_watched }} {% trans "secs" %}</div>
+                                            <div class="total_seconds_watched">100%</div>
                                     {% endif %}
-                                    {% if log %}
-                                            <div class="points">{{ log.points }} {% trans "points" %}</div>
+                                    {% if student.video_logs|get_item:video.youtube_id  %}
+                                            <div class="points">{{ student.video_logs|get_item:video.youtube_id|get_item:"points"  }} {% trans "points" %}</div>
+                                    {% endif %}
                                         </td>
-                                    {% endif %}
                                 {% endfor %}
                             </tr>
                         {% endfor %}
@@ -236,15 +247,17 @@
         </div>
         {% endblock video_data %}
         {% endif %}
-    {% else %}
-        <div style="clear: both;"></div>
-        <p><div class="subtitle">{% trans "Please select a group and topic above." %}</div></p>
     {% endif %}
 </div> 
+{% endblock content %}
 
 {% block endjs %}{{ block.super }}
 <script>
 $(function() {
+
+    // Note: Unlike other coach reports, the tabular view is generated in server side templates.
+    // As such, changing any of the values of the items requires a change of URL and subsequent
+    // navigation event in order to produce the new report.
 
     $("#report_type").change(function(){
         window.location.href="{% url tabular_view %}"+$("#report_type option:selected").val()+window.location.search;
@@ -256,6 +269,14 @@ $(function() {
 
     $("#topic").change(function(){
         window.location.href = setGetParam(window.location.href, "topic", $("#topic option:selected").val());
+    });
+
+    $("#facility").change(function(){
+        window.location.href = setGetParamDict(window.location.href, {"facility": $("#facility option:selected").val(), "group": $("#" + $("#facility option:selected").val() + "_group_select").val()});
+    });
+
+    $(".group_select").change(function(event){
+        window.location.href = setGetParam(window.location.href, "group", $(event.target).val());
     });
 
     // Selector to toggle visible elements is stored in each option value
@@ -291,6 +312,5 @@ $(function() {
 });
 </script>
 {% endblock endjs %}
-{% endblock content %}
 
   
