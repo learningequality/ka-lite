@@ -171,7 +171,10 @@ if CENTRAL_SERVER:
     DEFAULT_FROM_EMAIL      = getattr(local_settings, "DEFAULT_FROM_EMAIL", CENTRAL_FROM_EMAIL)
     INSTALLED_APPS         += ("postmark", "kalite.registration", "central", "faq", "contact",)
     EMAIL_BACKEND           = getattr(local_settings, "EMAIL_BACKEND", "postmark.backends.PostmarkBackend")
-    AUTH_PROFILE_MODULE     = 'central.UserProfile'
+    AUTH_PROFILE_MODULE     = "central.UserProfile"
+    CSRF_COOKIE_NAME        = "csrftoken_central"
+    LANGUAGE_COOKIE_NAME    = "django_language_central"
+    SESSION_COOKIE_NAME     = "sessionid_central"
 
 else:
     ROOT_URLCONF = "main.urls"
