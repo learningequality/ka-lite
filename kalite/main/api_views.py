@@ -423,14 +423,16 @@ def launch_mplayer(request):
 
 def _update_video_log_with_points(seconds_watched, video_length, youtube_id, facility_user):
     """Handle the callback from the mplayer thread, saving the VideoLog. """
+    
     if not facility_user:
         return  # in other places, we signal to the user that info isn't being saved, but can't do it here.
                 #   adding this code for consistency / documentation purposes.
 
     new_points = (float(seconds_watched) / video_length) * VideoLog.POINTS_PER_VIDEO
+    
     videolog = VideoLog.update_video_log(
         facility_user=facility_user,
         youtube_id=youtube_id,
         additional_seconds_watched=seconds_watched,
-        total_points=new_points,
+        new_points=new_points,
     )
