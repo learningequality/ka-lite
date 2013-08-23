@@ -262,12 +262,17 @@ $(document).ready(function() {
     }
 });
 
+/**
+* Many knowledge map topic pages have huge gaping holes in the middle (sometimes pushing stuff
+* off the edge of the screen, as with the probability topic). Pull them all in so they're visible.
+*/
 function collapse_layout(exerciseLayout) {
     var minX = Math.min.apply(Math, _.pluck(exerciseLayout, "v_position"));
     var minY = Math.min.apply(Math, _.pluck(exerciseLayout, "h_position"));
     var maxX = Math.max.apply(Math, _.pluck(exerciseLayout, "v_position"));
     var maxY = Math.max.apply(Math, _.pluck(exerciseLayout, "h_position"));
 
+    // keep track of which vertical and horizontal positions are filled
     var filledX = Array(maxX - minX);
     var filledY = Array(maxY - minY);
 
@@ -276,6 +281,7 @@ function collapse_layout(exerciseLayout) {
         filledY[ex.h_position - minY] = true;
     });
 
+    // calculate how much each row/column need to be shifted to fill in the gaps
     var shiftX = Array(maxX - minX);
     var shift = 0;
 
@@ -296,13 +302,12 @@ function collapse_layout(exerciseLayout) {
         shiftY[i] = shift;
     }
 
+    // shift each exercise to fill in the gaps
     _.each(exerciseLayout, function(ex) {
         ex.v_position += shiftX[ex.v_position - minX];
         ex.h_position += shiftY[ex.h_position - minY];
     });
 
     return exerciseLayout;
-
-
 
 }
