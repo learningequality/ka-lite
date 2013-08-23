@@ -9,12 +9,12 @@
     "display_name": "Axis of symmetry", 
     "title": "Axis of symmetry", 
     "live": true, 
-    "seconds_per_fast_problem": 5.0, 
     "description": "", 
     "h_position": 43, 
     "slug": "axis_of_symmetry", 
     "kind": "Exercise", 
     "name": "axis_of_symmetry", 
+    "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "similar_triangles_1"
     ]
@@ -30,12 +30,12 @@
     "display_name": "Translations of polygons", 
     "title": "Translations of polygons", 
     "live": true, 
-    "seconds_per_fast_problem": 11.0, 
     "description": "Applying translations to polygons in the coordinate plane\n", 
     "h_position": 44, 
     "slug": "translations_of_points_and_polygons", 
     "kind": "Exercise", 
     "name": "translations_of_points_and_polygons", 
+    "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "axis_of_symmetry"
     ]
@@ -50,12 +50,12 @@
     "display_name": "Rotation of polygons", 
     "title": "Rotation of polygons", 
     "live": true, 
-    "seconds_per_fast_problem": 8.0, 
     "description": "Applying rotations to polygons in the coordinate plane\n", 
     "h_position": 44, 
     "slug": "rotation_of_polygons", 
     "kind": "Exercise", 
     "name": "rotation_of_polygons", 
+    "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "axis_of_symmetry"
     ]

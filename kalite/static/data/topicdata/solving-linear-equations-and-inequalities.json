@@ -11,12 +11,12 @@
     "display_name": "One step equation intuition", 
     "title": "One step equation intuition", 
     "live": true, 
-    "seconds_per_fast_problem": 10.0, 
     "description": "Explore why we do the same things to both sides of an equation", 
     "h_position": 26, 
     "slug": "one_step_equation_intuition", 
     "kind": "Exercise", 
     "name": "one_step_equation_intuition", 
+    "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "evaluating_expressions_1"
     ]
@@ -29,12 +29,12 @@
     "display_name": "One step equations 0.5", 
     "title": "One step equations 0.5", 
     "live": false, 
-    "seconds_per_fast_problem": 5.0, 
     "description": "", 
     "h_position": 63, 
     "slug": "one_step_equations_0.5", 
     "kind": "Exercise", 
     "name": "one_step_equations_0.5", 
+    "seconds_per_fast_problem": 5.0, 
     "prerequisites": []
   }, 
   {
@@ -45,12 +45,12 @@
     "display_name": "One step equations 0.5", 
     "title": "One step equations 0.5", 
     "live": false, 
-    "seconds_per_fast_problem": 5.0, 
     "description": "", 
     "h_position": 63, 
     "slug": "one_step_equations_0.5", 
     "kind": "Exercise", 
     "name": "one_step_equations_0.5", 
+    "seconds_per_fast_problem": 5.0, 
     "prerequisites": []
   }, 
   {
@@ -66,12 +66,12 @@
     "display_name": "One-step equations with multiplication", 
     "title": "One-step equations with multiplication", 
     "live": true, 
-    "seconds_per_fast_problem": 6.0, 
     "description": "Solve equations in one step.", 
     "h_position": 28, 
     "slug": "linear_equations_1", 
     "kind": "Exercise", 
     "name": "linear_equations_1", 
+    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "one_step_equations", 
       "combining_like_terms_2", 
@@ -91,12 +91,12 @@
     "display_name": "One step equations", 
     "title": "One step equations", 
     "live": true, 
-    "seconds_per_fast_problem": 7.0, 
     "description": "Solve equations in one step.\n", 
     "h_position": 27, 
     "slug": "one_step_equations", 
     "kind": "Exercise", 
     "name": "one_step_equations", 
+    "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "one_step_equation_intuition"
     ]
@@ -114,12 +114,12 @@
     "display_name": "2-step equations", 
     "title": "2-step equations", 
     "live": true, 
-    "seconds_per_fast_problem": 9.0, 
     "description": "Solve equations in two steps.\n", 
     "h_position": 29, 
     "slug": "linear_equations_2", 
     "kind": "Exercise", 
     "name": "linear_equations_2", 
+    "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "linear_equations_1"
     ]
@@ -134,12 +134,12 @@
     "display_name": "Linear equation word problems", 
     "title": "Linear equation word problems", 
     "live": true, 
-    "seconds_per_fast_problem": 24.0, 
     "description": "Word problems that require setting up multi-step equations to solve\n", 
     "h_position": 31, 
     "slug": "linear_equation_word_problems", 
     "kind": "Exercise", 
     "name": "linear_equation_word_problems", 
+    "seconds_per_fast_problem": 24.0, 
     "prerequisites": [
       "linear_equations_2"
     ]
@@ -157,12 +157,12 @@
     "display_name": "Equations with variables on both sides", 
     "title": "Equations with variables on both sides", 
     "live": true, 
-    "seconds_per_fast_problem": 15.0, 
     "description": "Solve equations with a variable on both sides.\n", 
     "h_position": 30, 
     "slug": "linear_equations_3", 
     "kind": "Exercise", 
     "name": "linear_equations_3", 
+    "seconds_per_fast_problem": 15.0, 
     "prerequisites": [
       "linear_equations_2"
     ]
@@ -181,12 +181,12 @@
     "display_name": "Percentage word problems 1", 
     "title": "Percentage word problems 1", 
     "live": true, 
-    "seconds_per_fast_problem": 19.0, 
     "description": "", 
     "h_position": 28, 
     "slug": "percentage_word_problems_1", 
     "kind": "Exercise", 
     "name": "percentage_word_problems_1", 
+    "seconds_per_fast_problem": 19.0, 
     "prerequisites": [
       "converting_decimals_to_percents", 
       "converting_percents_to_decimals"
@@ -205,12 +205,12 @@
     "display_name": "Percentage word problems 2", 
     "title": "Percentage word problems 2", 
     "live": true, 
-    "seconds_per_fast_problem": 32.0, 
     "description": "", 
     "h_position": 29, 
     "slug": "percentage_word_problems_2", 
     "kind": "Exercise", 
     "name": "percentage_word_problems_2", 
+    "seconds_per_fast_problem": 32.0, 
     "prerequisites": [
       "percentage_word_problems_1"
     ]
@@ -228,12 +228,12 @@
     "display_name": "Solving equations in terms of a variable", 
     "title": "Solving equations in terms of a variable", 
     "live": true, 
-    "seconds_per_fast_problem": 57.0, 
     "description": "Solve an equation in terms of a variable.\n", 
     "h_position": 33, 
     "slug": "solving_for_a_variable", 
     "kind": "Exercise", 
     "name": "solving_for_a_variable", 
+    "seconds_per_fast_problem": 57.0, 
     "prerequisites": [
       "multistep_equations_with_distribution"
     ]
@@ -248,12 +248,12 @@
     "display_name": "Converting 1-digit repeating decimals to fractions", 
     "title": "Converting 1-digit repeating decimals to fractions", 
     "live": true, 
-    "seconds_per_fast_problem": 8.0, 
     "description": "Convert 1-digit repeating decimals to fractions\n", 
     "h_position": 33, 
     "slug": "converting_repeating_decimals_to_fractions_1", 
     "kind": "Exercise", 
     "name": "converting_repeating_decimals_to_fractions_1", 
+    "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "solving_rational_equations_2"
     ]
@@ -268,12 +268,12 @@
     "display_name": "Converting multi-digit repeating decimals to fractions", 
     "title": "Converting multi-digit repeating decimals to fractions", 
     "live": true, 
-    "seconds_per_fast_problem": 25.0, 
     "description": "Convert multi-digit repeating decimals to fractions\n", 
     "h_position": 34, 
     "slug": "converting_repeating_decimals_to_fractions_2", 
     "kind": "Exercise", 
     "name": "converting_repeating_decimals_to_fractions_2", 
+    "seconds_per_fast_problem": 25.0, 
     "prerequisites": [
       "converting_repeating_decimals_to_fractions_1"
     ]
@@ -290,12 +290,12 @@
     "display_name": "Age word problems", 
     "title": "Age word problems", 
     "live": true, 
-    "seconds_per_fast_problem": 39.0, 
     "description": "Solve age word problems with a system of equations.\n", 
     "h_position": 31, 
     "slug": "age_word_problems", 
     "kind": "Exercise", 
     "name": "age_word_problems", 
+    "seconds_per_fast_problem": 39.0, 
     "prerequisites": [
       "linear_equations_3"
     ]
@@ -311,12 +311,12 @@
     "display_name": "Absolute value equations", 
     "title": "Absolute value equations", 
     "live": true, 
-    "seconds_per_fast_problem": 37.0, 
     "description": "Solve absolute value equations. Some have no solution.\n", 
     "h_position": 31, 
     "slug": "absolute_value_equations", 
     "kind": "Exercise", 
     "name": "absolute_value_equations", 
+    "seconds_per_fast_problem": 37.0, 
     "prerequisites": [
       "linear_equations_3"
     ]
@@ -335,12 +335,12 @@
     "display_name": "Multistep equations with distribution", 
     "title": "Multistep equations with distribution", 
     "live": true, 
-    "seconds_per_fast_problem": 38.0, 
     "description": "Solve linear equations like -(5x+1)=9x-5", 
     "h_position": 32, 
     "slug": "multistep_equations_with_distribution", 
     "kind": "Exercise", 
     "name": "multistep_equations_with_distribution", 
+    "seconds_per_fast_problem": 38.0, 
     "prerequisites": [
       "linear_equations_4"
     ]
@@ -356,12 +356,12 @@
     "display_name": "Expressions with unknown variables", 
     "title": "Expressions with unknown variables", 
     "live": true, 
-    "seconds_per_fast_problem": 9.0, 
     "description": "Multiplying variable expressions given their sums.\n", 
     "h_position": 32, 
     "slug": "expressions_with_unknown_variables", 
     "kind": "Exercise", 
     "name": "expressions_with_unknown_variables", 
+    "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "linear_equations_4"
     ]
@@ -377,12 +377,12 @@
     "display_name": "Expressions with unknown variables 2", 
     "title": "Expressions with unknown variables 2", 
     "live": true, 
-    "seconds_per_fast_problem": 14.0, 
     "description": "", 
     "h_position": 33, 
     "slug": "expressions_with_unknown_variables_2", 
     "kind": "Exercise", 
     "name": "expressions_with_unknown_variables_2", 
+    "seconds_per_fast_problem": 14.0, 
     "prerequisites": [
       "expressions_with_unknown_variables"
     ]

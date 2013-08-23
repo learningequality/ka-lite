@@ -9,12 +9,12 @@
     "display_name": "Solving rational equations 1", 
     "title": "Solving rational equations 1", 
     "live": true, 
-    "seconds_per_fast_problem": 34.0, 
     "description": "Solve equations with variables in numerator and denominator. Solutions can be fractions.\n", 
     "h_position": 31, 
     "slug": "linear_equations_4", 
     "kind": "Exercise", 
     "name": "linear_equations_4", 
+    "seconds_per_fast_problem": 34.0, 
     "prerequisites": [
       "linear_equations_3"
     ]

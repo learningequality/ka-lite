@@ -13,12 +13,12 @@
     "display_name": "Probability 1", 
     "title": "Probability 1", 
     "live": true, 
-    "seconds_per_fast_problem": 11.0, 
     "description": "", 
     "h_position": 30, 
     "slug": "probability_1", 
     "kind": "Exercise", 
     "name": "probability_1", 
+    "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "dice_probability"
     ]
@@ -38,12 +38,12 @@
     "display_name": "Independent probability", 
     "title": "Independent probability", 
     "live": true, 
-    "seconds_per_fast_problem": 12.0, 
     "description": "", 
     "h_position": 31, 
     "slug": "independent_probability", 
     "kind": "Exercise", 
     "name": "independent_probability", 
+    "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
       "probability_1"
     ]
@@ -62,12 +62,12 @@
     "display_name": "Dependent probability", 
     "title": "Dependent probability", 
     "live": true, 
-    "seconds_per_fast_problem": 25.0, 
     "description": "", 
     "h_position": 32, 
     "slug": "dependent_probability", 
     "kind": "Exercise", 
     "name": "dependent_probability", 
+    "seconds_per_fast_problem": 25.0, 
     "prerequisites": [
       "independent_probability"
     ]
@@ -83,12 +83,12 @@
     "display_name": "Counting 2", 
     "title": "Counting 2", 
     "live": true, 
-    "seconds_per_fast_problem": 9.0, 
     "description": "", 
     "h_position": 28, 
     "slug": "counting_2", 
     "kind": "Exercise", 
     "name": "counting_2", 
+    "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "exponents_1"
     ]
@@ -105,12 +105,12 @@
     "display_name": "Permutations", 
     "title": "Permutations", 
     "live": true, 
-    "seconds_per_fast_problem": 7.0, 
     "description": "Introductory permutation problems.\n", 
     "h_position": 30, 
     "slug": "permutations_1", 
     "kind": "Exercise", 
     "name": "permutations_1", 
+    "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "dice_probability"
     ]
@@ -126,12 +126,12 @@
     "display_name": "Combinations", 
     "title": "Combinations", 
     "live": true, 
-    "seconds_per_fast_problem": 13.0, 
     "description": "Introductory combination problems\n", 
     "h_position": 31, 
     "slug": "combinations_1", 
     "kind": "Exercise", 
     "name": "combinations_1", 
+    "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "permutations_1"
     ]
@@ -144,12 +144,12 @@
     "display_name": "Permutations and combinations", 
     "title": "Permutations and combinations", 
     "live": true, 
-    "seconds_per_fast_problem": 13.0, 
     "description": "Permutations and Combinations with overcounting", 
     "h_position": 32, 
     "slug": "permutations_and_combinations_2", 
     "kind": "Exercise", 
     "name": "permutations_and_combinations_2", 
+    "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "combinations_1"
     ]
@@ -173,12 +173,12 @@
     "display_name": "Probability with permutations and combinations", 
     "title": "Probability with permutations and combinations", 
     "live": true, 
-    "seconds_per_fast_problem": 32.0, 
     "description": "Probability questions using permutations and combinations of objects\n", 
     "h_position": 33, 
     "slug": "probability_with_perm_comb", 
     "kind": "Exercise", 
     "name": "probability_with_perm_comb", 
+    "seconds_per_fast_problem": 32.0, 
     "prerequisites": [
       "permutations_and_combinations_2"
     ]
@@ -193,12 +193,12 @@
     "display_name": "Expected value", 
     "title": "Expected value", 
     "live": true, 
-    "seconds_per_fast_problem": 17.0, 
     "description": "Compute the expected value given a set of outcomes, probabilities, and payoffs\n", 
     "h_position": 31, 
     "slug": "expected_value", 
     "kind": "Exercise", 
     "name": "expected_value", 
+    "seconds_per_fast_problem": 17.0, 
     "prerequisites": [
       "probability_1"
     ]
@@ -214,12 +214,12 @@
     "display_name": "Mean median and mode", 
     "title": "Mean median and mode", 
     "live": true, 
-    "seconds_per_fast_problem": 9.0, 
     "description": "", 
     "h_position": 18, 
     "slug": "mean_median_and_mode", 
     "kind": "Exercise", 
     "name": "mean_median_and_mode", 
+    "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "exploring_mean_and_median"
     ]
@@ -236,12 +236,12 @@
     "display_name": "Exploring mean and median", 
     "title": "Exploring mean and median", 
     "live": true, 
-    "seconds_per_fast_problem": 37.0, 
     "description": "", 
     "h_position": 17, 
     "slug": "exploring_mean_and_median", 
     "kind": "Exercise", 
     "name": "exploring_mean_and_median", 
+    "seconds_per_fast_problem": 37.0, 
     "prerequisites": [
       "order_of_operations"
     ]
@@ -257,12 +257,12 @@
     "display_name": "Average word problems", 
     "title": "Average word problems", 
     "live": true, 
-    "seconds_per_fast_problem": 27.0, 
     "description": "", 
     "h_position": 19, 
     "slug": "average_word_problems", 
     "kind": "Exercise", 
     "name": "average_word_problems", 
+    "seconds_per_fast_problem": 27.0, 
     "prerequisites": [
       "mean_median_and_mode"
     ]
@@ -279,12 +279,12 @@
     "display_name": "Creating box and whisker plots", 
     "title": "Creating box and whisker plots", 
     "live": true, 
-    "seconds_per_fast_problem": 49.0, 
     "description": "", 
     "h_position": 19, 
     "slug": "creating_box_and_whisker_plots", 
     "kind": "Exercise", 
     "name": "creating_box_and_whisker_plots", 
+    "seconds_per_fast_problem": 49.0, 
     "prerequisites": [
       "mean_median_and_mode"
     ]
@@ -301,12 +301,12 @@
     "display_name": "Variance", 
     "title": "Variance", 
     "live": true, 
-    "seconds_per_fast_problem": 60.0, 
     "description": "", 
     "h_position": 19, 
     "slug": "variance", 
     "kind": "Exercise", 
     "name": "variance", 
+    "seconds_per_fast_problem": 60.0, 
     "prerequisites": [
       "mean_median_and_mode"
     ]
@@ -324,12 +324,12 @@
     "display_name": "Exploring standard deviation 1", 
     "title": "Exploring standard deviation 1", 
     "live": true, 
-    "seconds_per_fast_problem": 13.0, 
     "description": "", 
     "h_position": 20, 
     "slug": "exploring_standard_deviation_1", 
     "kind": "Exercise", 
     "name": "exploring_standard_deviation_1", 
+    "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "variance"
     ]
@@ -346,12 +346,12 @@
     "display_name": "Standard deviation", 
     "title": "Standard deviation", 
     "live": true, 
-    "seconds_per_fast_problem": 53.0, 
     "description": "", 
     "h_position": 20, 
     "slug": "standard_deviation", 
     "kind": "Exercise", 
     "name": "standard_deviation", 
+    "seconds_per_fast_problem": 53.0, 
     "prerequisites": [
       "variance"
     ]
@@ -367,12 +367,12 @@
     "display_name": "Estimating the line of best fit", 
     "title": "Estimating the line of best fit", 
     "live": true, 
-    "seconds_per_fast_problem": 6.0, 
     "description": "Given a random assortment of points, find the best fit line for them.\n", 
     "h_position": 18, 
     "slug": "plotting_the_line_of_best_fit", 
     "kind": "Exercise", 
     "name": "plotting_the_line_of_best_fit", 
+    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "reading_line_charts_1"
     ]
@@ -390,12 +390,12 @@
     "display_name": "Empirical rule", 
     "title": "Empirical rule", 
     "live": true, 
-    "seconds_per_fast_problem": 27.0, 
     "description": "", 
     "h_position": 21, 
     "slug": "empirical_rule", 
     "kind": "Exercise", 
     "name": "empirical_rule", 
+    "seconds_per_fast_problem": 27.0, 
     "prerequisites": [
       "exploring_standard_deviation_1", 
       "standard_deviation"
@@ -412,12 +412,12 @@
     "display_name": "Z scores 1", 
     "title": "Z scores 1", 
     "live": true, 
-    "seconds_per_fast_problem": 13.0, 
     "description": "Find the z-score of a particular measurement given the mean and standard deviation.\n", 
     "h_position": 21, 
     "slug": "z_scores_1", 
     "kind": "Exercise", 
     "name": "z_scores_1", 
+    "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "exploring_standard_deviation_1", 
       "standard_deviation"
@@ -435,12 +435,12 @@
     "display_name": "Z scores 2", 
     "title": "Z scores 2", 
     "live": true, 
-    "seconds_per_fast_problem": 21.0, 
     "description": "Use a z-table to find the probability of a particular measurement.\n", 
     "h_position": 22, 
     "slug": "z_scores_2", 
     "kind": "Exercise", 
     "name": "z_scores_2", 
+    "seconds_per_fast_problem": 21.0, 
     "prerequisites": [
       "z_scores_1"
     ]
@@ -456,12 +456,12 @@
     "display_name": "Z scores 3", 
     "title": "Z scores 3", 
     "live": true, 
-    "seconds_per_fast_problem": 47.5, 
     "description": "Use a z-table to find the probability that a particular measurement is in a range.\n", 
     "h_position": 23, 
     "slug": "z_scores_3", 
     "kind": "Exercise", 
     "name": "z_scores_3", 
+    "seconds_per_fast_problem": 47.5, 
     "prerequisites": [
       "z_scores_2"
     ]
