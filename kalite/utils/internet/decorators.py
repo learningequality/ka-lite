@@ -1,3 +1,8 @@
+import csv
+from annoying.decorators import wraps
+from collections import OrderedDict
+from cStringIO import StringIO
+
 from django.core.exceptions import PermissionDenied
 
 from .classes import CsvResponse, JsonResponse, JsonpResponse
@@ -55,3 +60,45 @@ def allow_jsonp(handler):
         return response
         
     return wrapper_fn
+
+
+from . import CsvResponse
+
+def render_to_csv(context_keys, delimiter=",", key_label="key"):
+    """
+    "context_keys" are dictionary keys into the context object.
+    We can have multiple keys, assuming that:
+    * Each key returns a dict
+    * Each dict has exactly the same keys (order doesn't matter)
+    
+    TODO(bcipolli): This won't work properly for unicode names.
+    """
+    def renderer(function):
+        @wraps(function)
+        def wrapper(request, *args, **kwargs):
+            """
+            The header row are all the keys from all the context_key dicts.
+            The rows are accumulations of data across all the context_key dicts,
+               one row per entry in the dict.
+            """
+            output = function(request, *args, **kwargs)
+            if not isinstance(output, dict) or request.GET.get("format") != "csv":
+                return output
+
+            output_string = StringIO()
+            writer = csv.writer(output_string, delimiter=delimiter, quoting=csv.QUOTE_MINIMAL)
+
+            row_labels = output[context_keys[0]].keys()
+            col_labels = [key_label] + [kk for k in context_keys for kk in output[k][row_labels[0]].keys()]
+            writer.writerow(col_labels)
+
+            for ri, row_label in enumerate(row_labels):
+                row_data = [row_label]
+                for k in context_keys:
+                    row_data += output[k][row_label].values()
+                writer.writerow(row_data)
+
+            return CsvResponse(output_string.getvalue())
+        return wrapper
+    return renderer
+

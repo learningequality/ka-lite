@@ -20,7 +20,7 @@ from main.models import ExerciseLog, VideoLog, UserLogSummary
 from securesync.forms import FacilityForm
 from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device, Zone, SyncSession
 from shared.decorators import require_authorized_admin
-#from utils.internet import CsvResponse, render_to_csv
+from utils.internet import CsvResponse, render_to_csv
 
 
 @require_authorized_admin
@@ -107,8 +107,8 @@ def facility_management(request, zone_id, org_id=None):
 
 @require_authorized_admin
 @render_to("control_panel/facility_usage.html")
-#@render_to_csv(["users"], key_name="student_id")
-def facility_usage(request, facility_id, org_id=None, zone_id=None, frequency=settings.USER_LOG_SUMMARY_FREQUENCY[1]):
+@render_to_csv(["users"], key_label="student_id")
+def facility_usage(request, facility_id, org_id=None, zone_id=None, frequency=None):
 
     # Basic data
     org = get_object_or_None(Organization, pk=org_id) if org_id else None
@@ -118,9 +118,10 @@ def facility_usage(request, facility_id, org_id=None, zone_id=None, frequency=se
     users = FacilityUser.objects.filter(facility=facility).order_by("last_name")
 
     # compute period start and end
-    if frequency:
+    frequency = frequency or request.GET.get("fequency")
+    if frequency == "months":  # only works for months ATM
         cur_date = datetime.datetime.now()
-        first_this_month = datetime.datetime(year=cur_date.year, month=cur_date.month, day=cur_date.day, hour=23, minute=59, second=59)
+        first_this_month = datetime.datetime(year=cur_date.year, month=cur_date.month - 1, day=cur_date.day, hour=23, minute=59, second=59)
         period_end = first_this_month - datetime.timedelta(days=1)
         period_start = datetime.datetime(year=period_end.year, month=period_end.month, day=1)
 
@@ -147,6 +148,8 @@ def facility_usage(request, facility_id, org_id=None, zone_id=None, frequency=se
         video_stats = {"count": VideoLog.objects.filter(user=user).count()}
         login_stats = UserLogSummary.objects.filter(user=user).aggregate(Sum("total_logins"), Sum("total_seconds"))
 
+        # Had to add one-by-one, to get OrderedDict to work.
+        #   OrderedDict controls the order of the columns
         user_data[user.pk] = OrderedDict()
         user_data[user.pk]["first_name"] = user.first_name
         user_data[user.pk]["last_name"] = user.last_name
@@ -184,6 +187,7 @@ def facility_usage(request, facility_id, org_id=None, zone_id=None, frequency=se
         "facility": facility,
         "groups": group_data,
         "users": user_data,
+        "date_range": [period_start, period_end] if frequency else [None, None],
     }
 
 
