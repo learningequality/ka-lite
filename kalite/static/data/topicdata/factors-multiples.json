@@ -12,12 +12,12 @@
     "display_name": "Divisibility tests", 
     "title": "Divisibility tests", 
     "live": true, 
-    "seconds_per_fast_problem": 6.0, 
     "description": "", 
     "h_position": 11, 
     "slug": "divisibility_tests", 
     "kind": "Exercise", 
     "name": "divisibility_tests", 
+    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "divisibility_intuition"
     ]
@@ -32,12 +32,12 @@
     "display_name": "Divisibility 0.5", 
     "title": "Divisibility 0.5", 
     "live": true, 
-    "seconds_per_fast_problem": 8.0, 
     "description": "", 
     "h_position": 11, 
     "slug": "divisibility_0.5", 
     "kind": "Exercise", 
     "name": "divisibility_0.5", 
+    "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "divisibility_intuition"
     ]
@@ -53,12 +53,12 @@
     "display_name": "Divisibility intuition", 
     "title": "Divisibility intuition", 
     "live": true, 
-    "seconds_per_fast_problem": 8.0, 
     "description": "", 
     "h_position": 10, 
     "slug": "divisibility_intuition", 
     "kind": "Exercise", 
     "name": "divisibility_intuition", 
+    "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "division_2"
     ]
@@ -74,12 +74,12 @@
     "display_name": "Prime numbers", 
     "title": "Prime numbers", 
     "live": true, 
-    "seconds_per_fast_problem": 7.0, 
     "description": "", 
     "h_position": 12, 
     "slug": "prime_numbers", 
     "kind": "Exercise", 
     "name": "prime_numbers", 
+    "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "divisibility_0.5", 
       "divisibility_tests"
@@ -96,12 +96,12 @@
     "display_name": "Composite numbers", 
     "title": "Composite numbers", 
     "live": true, 
-    "seconds_per_fast_problem": 6.0, 
     "description": "", 
     "h_position": 12, 
     "slug": "composite_numbers", 
     "kind": "Exercise", 
     "name": "composite_numbers", 
+    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "divisibility_0.5", 
       "divisibility_tests"
@@ -118,12 +118,12 @@
     "display_name": "Prime factorization", 
     "title": "Prime factorization", 
     "live": true, 
-    "seconds_per_fast_problem": 8.0, 
     "description": "", 
     "h_position": 13, 
     "slug": "prime_factorization", 
     "kind": "Exercise", 
     "name": "prime_factorization", 
+    "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "prime_numbers", 
       "composite_numbers"
@@ -139,12 +139,12 @@
     "display_name": "The fundamental theorem of arithmetic", 
     "title": "The fundamental theorem of arithmetic", 
     "live": true, 
-    "seconds_per_fast_problem": 9.0, 
     "description": "", 
     "h_position": 14, 
     "slug": "the_fundamental_theorem_of_arithmetic", 
     "kind": "Exercise", 
     "name": "the_fundamental_theorem_of_arithmetic", 
+    "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "prime_factorization"
     ]
@@ -159,12 +159,12 @@
     "display_name": "Divisibility", 
     "title": "Divisibility", 
     "live": true, 
-    "seconds_per_fast_problem": 13.0, 
     "description": "", 
     "h_position": 15, 
     "slug": "divisibility", 
     "kind": "Exercise", 
     "name": "divisibility", 
+    "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "prime_factorization"
     ]
@@ -181,12 +181,12 @@
     "display_name": "Least common multiple", 
     "title": "Least common multiple", 
     "live": true, 
-    "seconds_per_fast_problem": 8.0, 
     "description": "", 
     "h_position": 14, 
     "slug": "least_common_multiple", 
     "kind": "Exercise", 
     "name": "least_common_multiple", 
+    "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "prime_factorization"
     ]
@@ -202,12 +202,12 @@
     "display_name": "Greatest common divisor", 
     "title": "Greatest common divisor", 
     "live": true, 
-    "seconds_per_fast_problem": 6.0, 
     "description": "", 
     "h_position": 14, 
     "slug": "greatest_common_divisor", 
     "kind": "Exercise", 
     "name": "greatest_common_divisor", 
+    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "division_3", 
       "prime_factorization"
@@ -223,12 +223,12 @@
     "display_name": "LCM and GCD word problems", 
     "title": "LCM and GCD word problems", 
     "live": true, 
-    "seconds_per_fast_problem": 20.0, 
     "description": "", 
     "h_position": 14, 
     "slug": "least_common_multiple_and_greatest_common_divisor_word_problems", 
     "kind": "Exercise", 
     "name": "least_common_multiple_and_greatest_common_divisor_word_problems", 
+    "seconds_per_fast_problem": 20.0, 
     "prerequisites": [
       "prime_factorization"
     ]

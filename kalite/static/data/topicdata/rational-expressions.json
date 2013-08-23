@@ -1,6 +1,28 @@
 [
   {
     "related_video_readable_ids": [
+      "simplifying-rational-expressions-introduction", 
+      "simplifying-rational-expressions-1", 
+      "simplifying-rational-expressions-2"
+    ], 
+    "v_position": -6, 
+    "path": "/math/algebra/rational-expressions/simplifying-rational-alg/e/simplifying_rational_expressions_2/", 
+    "id": "simplifying_rational_expressions_2", 
+    "display_name": "Simplifying rational expressions 2", 
+    "title": "Simplifying rational expressions 2", 
+    "live": true, 
+    "description": "Simplify the ratio of two polynomials.\n", 
+    "h_position": 54, 
+    "slug": "simplifying_rational_expressions_2", 
+    "kind": "Exercise", 
+    "name": "simplifying_rational_expressions_2", 
+    "seconds_per_fast_problem": 29.0, 
+    "prerequisites": [
+      "simplifying_rational_expressions_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
       "ex-1-multi-step-equation"
     ], 
     "v_position": 11, 
@@ -9,12 +31,12 @@
     "display_name": "Solving rational equations 1", 
     "title": "Solving rational equations 1", 
     "live": true, 
-    "seconds_per_fast_problem": 34.0, 
     "description": "Solve equations with variables in numerator and denominator. Solutions can be fractions.\n", 
     "h_position": 31, 
     "slug": "linear_equations_4", 
     "kind": "Exercise", 
     "name": "linear_equations_4", 
+    "seconds_per_fast_problem": 34.0, 
     "prerequisites": [
       "linear_equations_3"
     ]
