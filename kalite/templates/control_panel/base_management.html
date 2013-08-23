@@ -59,15 +59,5 @@
     {% block inner_content %}
     {% endblock inner_content %}
     {% block endjs %}{{ block.super }}
-<script>
-    $(".green_button").each(function () {
-        if (this.tagName == "INPUT") {
-            this.onclick = null;
-            this.onsubmit = null;
-        } else {
-            this.setAttribute("href","#");
-        }
-    });
-</script>
     {% endblock endjs %}
 {% endblock content %}
