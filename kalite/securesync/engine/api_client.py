@@ -7,9 +7,9 @@ import uuid
 
 import kalite
 import settings
-from kalite.utils.internet import am_i_online
-from securesync import crypto, model_sync
-from securesync.models import *
+from . import get_serialized_models, save_serialized_models
+from .models import *
+from securesync.devices.models import *
 from shared import serializers
 
 
@@ -201,7 +201,7 @@ class SyncClient(object):
         # As usual, we're deserializing from the central server, so we assume that what we're getting
         #   is "smartly" dumbed down for us.  We don't need to specify the src_version, as it's
         #   pre-cleaned for us.
-        download_results = model_sync.save_serialized_models(response.get("devices", "[]"), increment_counters=False)
+        download_results = save_serialized_models(response.get("devices", "[]"), increment_counters=False)
 
         # BUGFIX(bcipolli) metadata only gets created if models are
         #   streamed; if a device is downloaded but no models are downloaded,
@@ -235,7 +235,7 @@ class SyncClient(object):
             # As usual, we're deserializing from the central server, so we assume that what we're getting
             #   is "smartly" dumbed down for us.  We don't need to specify the src_version, as it's
             #   pre-cleanaed for us.
-            download_results = model_sync.save_serialized_models(response.get("models", "[]"))
+            download_results = save_serialized_models(response.get("models", "[]"))
             self.session.models_downloaded += download_results["saved_model_count"]
             self.session.errors += download_results.has_key("error")
             self.session.errors += download_results.has_key("exceptions")
@@ -251,7 +251,7 @@ class SyncClient(object):
         try:
             # By not specifying a dest_version, we're sending everything.
             #   Again, this is OK because we're sending to the central server.
-            response = self.post("models/upload", {"models": model_sync.get_serialized_models(self.counters_to_upload)})
+            response = self.post("models/upload", {"models": get_serialized_models(self.counters_to_upload)})
             upload_results = json.loads(response.content)
             self.session.models_uploaded += upload_results["saved_model_count"]
             self.session.errors += upload_results.has_key("error")

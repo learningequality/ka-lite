@@ -7,7 +7,6 @@ import coachreports.urls
 import contact.urls
 import control_panel.urls
 import faq.urls
-import khanload.api_urls
 import registration.urls
 import securesync.urls
 from kalite import settings
@@ -56,7 +55,6 @@ urlpatterns += patterns('central.views',
     # Reporting
     url(r'^coachreports/', include(coachreports.urls)),
 
-    url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'),
     url(r'^glossary/$', 'glossary', {}, 'glossary'),
     url(r'^addsubscription/$', 'add_subscription', {}, 'add_subscription'),
     url(r'^feeds/rss/$', RssSiteNewsFeed(), {}, 'rss_feed'),
@@ -67,8 +65,8 @@ urlpatterns += patterns('central.views',
     url(r'^wiki/(?P<path>\w+)/$', redirect_to, {'base_url': settings.CENTRAL_WIKI_URL}, 'wiki'),
     url(r'^about/$', redirect_to, { 'base_url': 'http://learningequality.org/' }, 'about'),
 
-    # api
-    url(r'^api/khanload/', include(khanload.api_urls)),
+    # Endpoint for remote admin
+    url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'),
 )
 
 urlpatterns += patterns('central.api_views',

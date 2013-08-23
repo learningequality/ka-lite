@@ -9,7 +9,7 @@ from django.db import models, transaction
 from django.db.models import Sum
 
 import settings
-from securesync import model_sync
+from securesync import engine
 from securesync.models import SyncedModel, FacilityUser, Device
 from settings import LOG as logging
 from utils.general import datediff, isnumeric
@@ -27,7 +27,10 @@ class VideoLog(SyncedModel):
     completion_counter = models.IntegerField(blank=True, null=True)
 
     def __unicode__(self):
-        return "user=%s, youtube_id=%s, seconds=%d, points=%d%s" % (self.user, self.youtube_id, self.total_seconds_watched, self.points, " (completed)" if self.complete else "")
+        return u"user=%s, youtube_id=%s, seconds=%d, points=%d%s" % (self.user, self.youtube_id, self.total_seconds_watched, self.points, " (completed)" if self.complete else "")
+
+    class Meta:
+        pass
 
     def save(self, *args, **kwargs):
         if not kwargs.get("imported", False):
@@ -92,8 +95,10 @@ class ExerciseLog(SyncedModel):
     completion_counter = models.IntegerField(blank=True, null=True)
 
     def __unicode__(self):
-        return "user=%s, exercise_id=%s, points=%d%s" % (self.user, self.exercise_id, self.points, " (completed)" if self.complete else "")
+        return u"user=%s, exercise_id=%s, points=%d%s" % (self.user, self.exercise_id, self.points, " (completed)" if self.complete else "")
 
+    class Meta:
+        pass
 
     def save(self, *args, **kwargs):
         if not kwargs.get("imported", False):
@@ -142,6 +147,9 @@ class UserLogSummary(SyncedModel):
     end_datetime = models.DateTimeField(blank=True, null=True)
     total_logins = models.IntegerField(default=0, blank=False, null=False)
     total_seconds = models.IntegerField(default=0, blank=False, null=False)
+
+    class Meta:
+        pass
 
     def __unicode__(self):
         self.full_clean()  # make sure everything that has to be there, is there.
@@ -425,4 +433,4 @@ class LanguagePack(models.Model):
     lang_name = models.CharField(max_length=30)
 
 
-model_sync.add_syncing_models([VideoLog, ExerciseLog, UserLogSummary])
+engine.add_syncing_models([VideoLog, ExerciseLog, UserLogSummary])
