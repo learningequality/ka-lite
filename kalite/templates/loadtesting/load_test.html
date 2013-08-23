@@ -44,7 +44,7 @@
                 color: red;
                 float: left;
                 width: 20%;
-                margin-left: 15px;                
+                margin-left: 15px;
             }
             
         </style>
@@ -105,7 +105,11 @@
                     
                     // it seems that using jQuery to "click" links does not follow them
                     if ($match.prop("tagName").toLowerCase() === "a" && $match.attr("href")) {
-                        this.goto(this.model.get("url") + $match.attr("href"), callback);
+                        var next_url = this.model.get("url") + $match.attr("href");
+                        if (next_url.slice(0, 2) == "//") {
+                            next_url = next_url.slice(1);
+                        }
+                        this.goto(next_url, callback);
                     } else {
                         this.startTimer();
                         this.whenLoaded(callback);
@@ -369,7 +373,10 @@
             <div class="status"></div>
             <div class="errorcount"></div>
         </div>
-        <iframe id="puppet"></iframe>
+        <br/>
+        <div>
+            <iframe id="puppet"></iframe>
+        </div>
     </body>
 </html>
 
