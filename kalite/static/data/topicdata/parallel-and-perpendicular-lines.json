@@ -12,12 +12,12 @@
     "display_name": "Measuring angles", 
     "title": "Measuring angles", 
     "live": true, 
+    "seconds_per_fast_problem": 13.0, 
     "description": "", 
     "h_position": 26, 
     "slug": "measuring_angles", 
     "kind": "Exercise", 
     "name": "measuring_angles", 
-    "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "recognizing_rays_lines_and_line_segments"
     ]
@@ -32,12 +32,12 @@
     "display_name": "Angle types", 
     "title": "Angle types", 
     "live": true, 
+    "seconds_per_fast_problem": 5.0, 
     "description": "", 
     "h_position": 26, 
     "slug": "angle_types", 
     "kind": "Exercise", 
     "name": "angle_types", 
-    "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "recognizing_rays_lines_and_line_segments"
     ]
@@ -52,12 +52,12 @@
     "display_name": "Exploring angle pairs", 
     "title": "Exploring angle pairs", 
     "live": true, 
+    "seconds_per_fast_problem": 11.0, 
     "description": "Find vertical angles, adjacent angles, and linearly paired angles.\n", 
     "h_position": 27, 
     "slug": "exploring_angle_pairs_1", 
     "kind": "Exercise", 
     "name": "exploring_angle_pairs_1", 
-    "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "measuring_angles", 
       "angle_types"
@@ -74,12 +74,12 @@
     "display_name": "Vertical angles", 
     "title": "Vertical angles", 
     "live": true, 
+    "seconds_per_fast_problem": 5.0, 
     "description": "", 
     "h_position": 28, 
     "slug": "vertical_angles", 
     "kind": "Exercise", 
     "name": "vertical_angles", 
-    "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "exploring_angle_pairs_1", 
       "complementary_and_supplementary_angles"
@@ -96,12 +96,12 @@
     "display_name": "Vertical angles 2", 
     "title": "Vertical angles 2", 
     "live": true, 
+    "seconds_per_fast_problem": 23.0, 
     "description": "", 
     "h_position": 28, 
     "slug": "vertical_angles_2", 
     "kind": "Exercise", 
     "name": "vertical_angles_2", 
-    "seconds_per_fast_problem": 23.0, 
     "prerequisites": [
       "exploring_angle_pairs_1", 
       "complementary_and_supplementary_angles"
@@ -118,12 +118,12 @@
     "display_name": "Congruent angles", 
     "title": "Congruent angles", 
     "live": true, 
+    "seconds_per_fast_problem": 5.0, 
     "description": "Determine which angles must be congruent when parallel lines are crossed by a transversal.\n", 
     "h_position": 30, 
     "slug": "congruent_angles", 
     "kind": "Exercise", 
     "name": "congruent_angles", 
-    "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "angle_addition_postulate", 
       "segment_addition"
@@ -140,12 +140,12 @@
     "display_name": "Parallel lines 1", 
     "title": "Parallel lines 1", 
     "live": true, 
+    "seconds_per_fast_problem": 6.0, 
     "description": "", 
     "h_position": 30, 
     "slug": "parallel_lines_1", 
     "kind": "Exercise", 
     "name": "parallel_lines_1", 
-    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "angle_addition_postulate", 
       "segment_addition"
@@ -163,12 +163,12 @@
     "display_name": "Parallel lines 2", 
     "title": "Parallel lines 2", 
     "live": true, 
+    "seconds_per_fast_problem": 23.0, 
     "description": "", 
     "h_position": 32, 
     "slug": "parallel_lines_2", 
     "kind": "Exercise", 
     "name": "parallel_lines_2", 
-    "seconds_per_fast_problem": 23.0, 
     "prerequisites": [
       "alternate_exterior_angles_2", 
       "same_side_exterior_angles_2", 
@@ -189,12 +189,12 @@
     "display_name": "Corresponding angles 2", 
     "title": "Corresponding angles 2", 
     "live": true, 
+    "seconds_per_fast_problem": 17.0, 
     "description": "", 
     "h_position": 31, 
     "slug": "corresponding_angles_2", 
     "kind": "Exercise", 
     "name": "corresponding_angles_2", 
-    "seconds_per_fast_problem": 17.0, 
     "prerequisites": [
       "congruent_angles", 
       "parallel_lines_1"
@@ -212,12 +212,12 @@
     "display_name": "Same side exterior angles 2", 
     "title": "Same side exterior angles 2", 
     "live": true, 
+    "seconds_per_fast_problem": 24.0, 
     "description": "", 
     "h_position": 31, 
     "slug": "same_side_exterior_angles_2", 
     "kind": "Exercise", 
     "name": "same_side_exterior_angles_2", 
-    "seconds_per_fast_problem": 24.0, 
     "prerequisites": [
       "congruent_angles", 
       "parallel_lines_1"
@@ -235,12 +235,12 @@
     "display_name": "Same side interior angles 2", 
     "title": "Same side interior angles 2", 
     "live": true, 
+    "seconds_per_fast_problem": 21.0, 
     "description": "", 
     "h_position": 31, 
     "slug": "same_side_interior_angles_2", 
     "kind": "Exercise", 
     "name": "same_side_interior_angles_2", 
-    "seconds_per_fast_problem": 21.0, 
     "prerequisites": [
       "congruent_angles", 
       "parallel_lines_1"
@@ -258,12 +258,12 @@
     "display_name": "Alternate interior angles 2", 
     "title": "Alternate interior angles 2", 
     "live": true, 
+    "seconds_per_fast_problem": 13.0, 
     "description": "", 
     "h_position": 31, 
     "slug": "alternate_interior_angles_2", 
     "kind": "Exercise", 
     "name": "alternate_interior_angles_2", 
-    "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "congruent_angles", 
       "parallel_lines_1"
@@ -281,12 +281,12 @@
     "display_name": "Alternate exterior angles 2", 
     "title": "Alternate exterior angles 2", 
     "live": true, 
+    "seconds_per_fast_problem": 12.0, 
     "description": "", 
     "h_position": 31, 
     "slug": "alternate_exterior_angles_2", 
     "kind": "Exercise", 
     "name": "alternate_exterior_angles_2", 
-    "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
       "congruent_angles", 
       "parallel_lines_1"
@@ -305,12 +305,12 @@
     "display_name": "Angles 1", 
     "title": "Angles 1", 
     "live": true, 
+    "seconds_per_fast_problem": 14.0, 
     "description": "", 
     "h_position": 31, 
     "slug": "angles_1", 
     "kind": "Exercise", 
     "name": "angles_1", 
-    "seconds_per_fast_problem": 14.0, 
     "prerequisites": [
       "triangle_types"
     ]
@@ -328,12 +328,12 @@
     "display_name": "Angles 2", 
     "title": "Angles 2", 
     "live": true, 
+    "seconds_per_fast_problem": 13.0, 
     "description": "", 
     "h_position": 32, 
     "slug": "angles_2", 
     "kind": "Exercise", 
     "name": "angles_2", 
-    "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "angles_1"
     ]
@@ -348,12 +348,12 @@
     "display_name": "Angles of a polygon", 
     "title": "Angles of a polygon", 
     "live": true, 
+    "seconds_per_fast_problem": 6.0, 
     "description": "", 
     "h_position": 34, 
     "slug": "angles_of_a_polygon", 
     "kind": "Exercise", 
     "name": "angles_of_a_polygon", 
-    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "quadrilateral_types"
     ]
@@ -368,12 +368,12 @@
     "display_name": "Complementary and supplementary angles", 
     "title": "Complementary and supplementary angles", 
     "live": true, 
+    "seconds_per_fast_problem": 10.0, 
     "description": "", 
     "h_position": 27, 
     "slug": "complementary_and_supplementary_angles", 
     "kind": "Exercise", 
     "name": "complementary_and_supplementary_angles", 
-    "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "measuring_angles", 
       "angle_types"
@@ -391,12 +391,12 @@
     "display_name": "Angle addition postulate", 
     "title": "Angle addition postulate", 
     "live": true, 
+    "seconds_per_fast_problem": 40.0, 
     "description": "", 
     "h_position": 29, 
     "slug": "angle_addition_postulate", 
     "kind": "Exercise", 
     "name": "angle_addition_postulate", 
-    "seconds_per_fast_problem": 40.0, 
     "prerequisites": [
       "vertical_angles", 
       "vertical_angles_2"

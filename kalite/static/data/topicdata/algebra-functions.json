@@ -12,12 +12,12 @@
     "display_name": "Understanding function notation", 
     "title": "Understanding function notation", 
     "live": true, 
+    "seconds_per_fast_problem": 8.0, 
     "description": "", 
     "h_position": 38, 
     "slug": "functions_1", 
     "kind": "Exercise", 
     "name": "functions_1", 
-    "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "interpreting_linear_equations"
     ]
@@ -37,12 +37,12 @@
     "display_name": "Domain of a function", 
     "title": "Domain of a function", 
     "live": true, 
+    "seconds_per_fast_problem": 13.0, 
     "description": "Given the equation of a function, determine the domain.", 
     "h_position": 40, 
     "slug": "domain_of_a_function", 
     "kind": "Exercise", 
     "name": "domain_of_a_function", 
-    "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "functions_2", 
       "domain_and_range_0.5"
@@ -62,12 +62,12 @@
     "display_name": "Range of a function", 
     "title": "Range of a function", 
     "live": true, 
+    "seconds_per_fast_problem": 10.0, 
     "description": "Given the equation of a quadratic function, determine the range.\n", 
     "h_position": 40, 
     "slug": "range_of_a_function", 
     "kind": "Exercise", 
     "name": "range_of_a_function", 
-    "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "functions_2", 
       "domain_and_range_0.5"
@@ -83,12 +83,12 @@
     "display_name": "Domain and range from graph", 
     "title": "Domain and range from graph", 
     "live": true, 
+    "seconds_per_fast_problem": 8.0, 
     "description": "Given the graph of a function, determine its domain or range.\n", 
     "h_position": 39, 
     "slug": "domain_and_range_0.5", 
     "kind": "Exercise", 
     "name": "domain_and_range_0.5", 
-    "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "functions_1"
     ]
@@ -105,12 +105,12 @@
     "display_name": "Direct and inverse variation", 
     "title": "Direct and inverse variation", 
     "live": true, 
+    "seconds_per_fast_problem": 10.0, 
     "description": "Select a function that indicates direct or inverse variation between two variables.\n", 
     "h_position": 38, 
     "slug": "direct_and_inverse_variation", 
     "kind": "Exercise", 
     "name": "direct_and_inverse_variation", 
-    "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "interpreting_linear_equations"
     ]
@@ -128,12 +128,12 @@
     "display_name": "Views of a function", 
     "title": "Views of a function", 
     "live": true, 
+    "seconds_per_fast_problem": 33.0, 
     "description": "Representing functions in multiple ways\n", 
     "h_position": 40, 
     "slug": "views_of_a_function", 
     "kind": "Exercise", 
     "name": "views_of_a_function", 
-    "seconds_per_fast_problem": 33.0, 
     "prerequisites": [
       "functions_2"
     ]
@@ -148,12 +148,12 @@
     "display_name": "Evaluating expressions with function notation", 
     "title": "Evaluating expressions with function notation", 
     "live": true, 
+    "seconds_per_fast_problem": 25.0, 
     "description": "Find the value of a function for a given x based on a graph, and perform operations with that value.\n", 
     "h_position": 39, 
     "slug": "functions_2", 
     "kind": "Exercise", 
     "name": "functions_2", 
-    "seconds_per_fast_problem": 25.0, 
     "prerequisites": [
       "functions_1"
     ]
@@ -168,12 +168,12 @@
     "display_name": "Evaluating composite functions", 
     "title": "Evaluating composite functions", 
     "live": true, 
+    "seconds_per_fast_problem": 46.0, 
     "description": "Find the function of a function.\n", 
     "h_position": 40, 
     "slug": "functions_3", 
     "kind": "Exercise", 
     "name": "functions_3", 
-    "seconds_per_fast_problem": 46.0, 
     "prerequisites": [
       "functions_2"
     ]
@@ -191,12 +191,12 @@
     "display_name": "Inverses of functions", 
     "title": "Inverses of functions", 
     "live": true, 
+    "seconds_per_fast_problem": 12.0, 
     "description": "Determine the inverse of a function based on the equation and graph.\n", 
     "h_position": 41, 
     "slug": "inverses_of_functions", 
     "kind": "Exercise", 
     "name": "inverses_of_functions", 
-    "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
       "domain_of_a_function", 
       "range_of_a_function"
@@ -212,12 +212,12 @@
     "display_name": "New operator definitions 1", 
     "title": "New operator definitions 1", 
     "live": true, 
+    "seconds_per_fast_problem": 12.0, 
     "description": "Given the definition of a new operator, evaluate an expression that contains that operator.\n", 
     "h_position": 38, 
     "slug": "new_definitions_1", 
     "kind": "Exercise", 
     "name": "new_definitions_1", 
-    "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
       "interpreting_linear_equations"
     ]
@@ -232,12 +232,12 @@
     "display_name": "New operator definitions 2", 
     "title": "New operator definitions 2", 
     "live": true, 
+    "seconds_per_fast_problem": 27.0, 
     "description": "Given the definition of 2 new operators, evaluate an expression that contains that operator.\n", 
     "h_position": 39, 
     "slug": "new_definitions_2", 
     "kind": "Exercise", 
     "name": "new_definitions_2", 
-    "seconds_per_fast_problem": 27.0, 
     "prerequisites": [
       "new_definitions_1"
     ]

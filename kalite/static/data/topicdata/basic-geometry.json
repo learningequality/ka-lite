@@ -13,12 +13,12 @@
     "display_name": "Perimeter 1", 
     "title": "Perimeter 1", 
     "live": true, 
+    "seconds_per_fast_problem": 6.0, 
     "description": "Calculate the perimeter of a shape from its side lengths.\n", 
     "h_position": 18, 
     "slug": "perimeter_1", 
     "kind": "Exercise", 
     "name": "perimeter_1", 
-    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "order_of_operations"
     ]
@@ -36,12 +36,12 @@
     "display_name": "Finding dimensions given perimeter", 
     "title": "Finding dimensions given perimeter", 
     "live": true, 
+    "seconds_per_fast_problem": 7.0, 
     "description": "", 
     "h_position": 19, 
     "slug": "perimeter_of_squares_and_rectangles", 
     "kind": "Exercise", 
     "name": "perimeter_of_squares_and_rectangles", 
-    "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "perimeter_1"
     ]
@@ -54,12 +54,12 @@
     "display_name": "Area 1", 
     "title": "Area 1", 
     "live": true, 
+    "seconds_per_fast_problem": 5.0, 
     "description": "Find the area of a rectangle given its length and width.\n", 
     "h_position": 18, 
     "slug": "area_1", 
     "kind": "Exercise", 
     "name": "area_1", 
-    "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "order_of_operations"
     ]
@@ -75,12 +75,12 @@
     "display_name": "Finding dimensions given area", 
     "title": "Finding dimensions given area", 
     "live": true, 
+    "seconds_per_fast_problem": 6.0, 
     "description": "", 
     "h_position": 19, 
     "slug": "area_of_squares_and_rectangles", 
     "kind": "Exercise", 
     "name": "area_of_squares_and_rectangles", 
-    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "area_1"
     ]
@@ -97,12 +97,12 @@
     "display_name": "Area of triangles", 
     "title": "Area of triangles", 
     "live": true, 
+    "seconds_per_fast_problem": 6.0, 
     "description": "Find the area of right, acute, and obtuse triangles from a diagram.\n", 
     "h_position": 21, 
     "slug": "area_of_triangles_1", 
     "kind": "Exercise", 
     "name": "area_of_triangles_1", 
-    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "area_of_squares_and_rectangles"
     ]
@@ -118,12 +118,12 @@
     "display_name": "Shaded areas", 
     "title": "Shaded areas", 
     "live": true, 
+    "seconds_per_fast_problem": 25.0, 
     "description": "Find the areas of shaded regions which are combinations of squares, triangles, and circles.\n", 
     "h_position": 38, 
     "slug": "shaded_areas", 
     "kind": "Exercise", 
     "name": "shaded_areas", 
-    "seconds_per_fast_problem": 25.0, 
     "prerequisites": [
       "circles_and_arcs", 
       "areas_of_circles_and_sectors"
@@ -139,12 +139,12 @@
     "display_name": "Triangle inequality theorem", 
     "title": "Triangle inequality theorem", 
     "live": true, 
+    "seconds_per_fast_problem": 9.0, 
     "description": "", 
     "h_position": 32, 
     "slug": "triangle_inequality_theorem", 
     "kind": "Exercise", 
     "name": "triangle_inequality_theorem", 
-    "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "triangle_angles_1"
     ]
@@ -159,12 +159,12 @@
     "display_name": "Heron's formula", 
     "title": "Heron's formula", 
     "live": true, 
+    "seconds_per_fast_problem": 38.0, 
     "description": "", 
     "h_position": 39, 
     "slug": "herons_formula", 
     "kind": "Exercise", 
     "name": "herons_formula", 
-    "seconds_per_fast_problem": 38.0, 
     "prerequisites": [
       "shaded_areas"
     ]
@@ -179,12 +179,12 @@
     "display_name": "Radius diameter and circumference", 
     "title": "Radius diameter and circumference", 
     "live": true, 
+    "seconds_per_fast_problem": 5.0, 
     "description": "", 
     "h_position": 20, 
     "slug": "radius_diameter_and_circumference", 
     "kind": "Exercise", 
     "name": "radius_diameter_and_circumference", 
-    "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "perimeter_of_squares_and_rectangles"
     ]
@@ -199,12 +199,12 @@
     "display_name": "Area of a circle", 
     "title": "Area of a circle", 
     "live": true, 
+    "seconds_per_fast_problem": 8.0, 
     "description": "", 
     "h_position": 21, 
     "slug": "area_of_a_circle", 
     "kind": "Exercise", 
     "name": "area_of_a_circle", 
-    "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "radius_diameter_and_circumference", 
       "area_of_squares_and_rectangles"
@@ -220,12 +220,12 @@
     "display_name": "Area of parallelograms", 
     "title": "Area of parallelograms", 
     "live": true, 
+    "seconds_per_fast_problem": 6.0, 
     "description": "Find the area of parallelograms given base and height.\n", 
     "h_position": 36, 
     "slug": "area_of_parallelograms", 
     "kind": "Exercise", 
     "name": "area_of_parallelograms", 
-    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "angles_2"
     ]
@@ -242,12 +242,12 @@
     "display_name": "Area of trapezoids, rhombi, and kites", 
     "title": "Area of trapezoids, rhombi, and kites", 
     "live": true, 
+    "seconds_per_fast_problem": 8.0, 
     "description": "Find areas of trapezoids, rhombi, and kites given important lengths.\n", 
     "h_position": 36, 
     "slug": "areas_of_trapezoids_rhombi_and_kites", 
     "kind": "Exercise", 
     "name": "areas_of_trapezoids_rhombi_and_kites", 
-    "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "angles_2"
     ]
@@ -264,12 +264,12 @@
     "display_name": "Solid geometry", 
     "title": "Solid geometry", 
     "live": true, 
+    "seconds_per_fast_problem": 12.0, 
     "description": "", 
     "h_position": 39, 
     "slug": "solid_geometry", 
     "kind": "Exercise", 
     "name": "solid_geometry", 
-    "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
       "volume_2"
     ]

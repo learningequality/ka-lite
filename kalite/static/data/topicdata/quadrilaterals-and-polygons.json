@@ -10,12 +10,12 @@
     "display_name": "Quadrilateral types", 
     "title": "Quadrilateral types", 
     "live": true, 
+    "seconds_per_fast_problem": 5.0, 
     "description": "", 
     "h_position": 33, 
     "slug": "quadrilateral_types", 
     "kind": "Exercise", 
     "name": "quadrilateral_types", 
-    "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "angles_2"
     ]
@@ -30,12 +30,12 @@
     "display_name": "Quadrilateral angles", 
     "title": "Quadrilateral angles", 
     "live": true, 
+    "seconds_per_fast_problem": 7.0, 
     "description": "", 
     "h_position": 34, 
     "slug": "quadrilateral_angles", 
     "kind": "Exercise", 
     "name": "quadrilateral_angles", 
-    "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "quadrilateral_types"
     ]

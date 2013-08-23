@@ -10,12 +10,12 @@
     "display_name": "Circles and arcs", 
     "title": "Circles and arcs", 
     "live": true, 
+    "seconds_per_fast_problem": 35.0, 
     "description": "Relate the length of an arc to the circumference of a whole circle.\n", 
     "h_position": 37, 
     "slug": "circles_and_arcs", 
     "kind": "Exercise", 
     "name": "circles_and_arcs", 
-    "seconds_per_fast_problem": 35.0, 
     "prerequisites": [
       "area_of_parallelograms", 
       "areas_of_trapezoids_rhombi_and_kites"
@@ -31,12 +31,12 @@
     "display_name": "Areas of circles and sectors", 
     "title": "Areas of circles and sectors", 
     "live": true, 
+    "seconds_per_fast_problem": 36.0, 
     "description": "Relate the area of a sector to the area of a whole circle.\n", 
     "h_position": 37, 
     "slug": "areas_of_circles_and_sectors", 
     "kind": "Exercise", 
     "name": "areas_of_circles_and_sectors", 
-    "seconds_per_fast_problem": 36.0, 
     "prerequisites": [
       "area_of_parallelograms", 
       "areas_of_trapezoids_rhombi_and_kites"
@@ -52,12 +52,12 @@
     "display_name": "Inscribed angles 1", 
     "title": "Inscribed angles 1", 
     "live": true, 
+    "seconds_per_fast_problem": 7.0, 
     "description": "", 
     "h_position": 42, 
     "slug": "inscribed_angles_1", 
     "kind": "Exercise", 
     "name": "inscribed_angles_1", 
-    "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "circles_and_arcs"
     ]
@@ -72,12 +72,12 @@
     "display_name": "Inscribed angles 2", 
     "title": "Inscribed angles 2", 
     "live": true, 
+    "seconds_per_fast_problem": 6.0, 
     "description": "", 
     "h_position": 43, 
     "slug": "inscribed_angles_2", 
     "kind": "Exercise", 
     "name": "inscribed_angles_2", 
-    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "inscribed_angles_1"
     ]
@@ -92,12 +92,12 @@
     "display_name": "Inscribed angles 3", 
     "title": "Inscribed angles 3", 
     "live": true, 
+    "seconds_per_fast_problem": 6.0, 
     "description": "", 
     "h_position": 44, 
     "slug": "inscribed_angles_3", 
     "kind": "Exercise", 
     "name": "inscribed_angles_3", 
-    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "inscribed_angles_2"
     ]

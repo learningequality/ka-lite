@@ -11,12 +11,12 @@
     "display_name": "Order of operations", 
     "title": "Order of operations", 
     "live": true, 
+    "seconds_per_fast_problem": 6.0, 
     "description": "", 
     "h_position": 15, 
     "slug": "order_of_operations", 
     "kind": "Exercise", 
     "name": "order_of_operations", 
-    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "properties_of_numbers_2", 
       "number_properties_terminology_1", 
@@ -35,12 +35,12 @@
     "display_name": "Place value", 
     "title": "Place value", 
     "live": true, 
+    "seconds_per_fast_problem": 6.0, 
     "description": "", 
     "h_position": 13, 
     "slug": "place_value", 
     "kind": "Exercise", 
     "name": "place_value", 
-    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "adding_decimals_2"
     ]
@@ -55,12 +55,12 @@
     "display_name": "Representing numbers", 
     "title": "Representing numbers", 
     "live": true, 
+    "seconds_per_fast_problem": 7.0, 
     "description": "Identify the number represented by hundreds, tens, and ones blocks", 
     "h_position": 5, 
     "slug": "representing_numbers", 
     "kind": "Exercise", 
     "name": "representing_numbers", 
-    "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "multiplication_1"
     ]
@@ -77,12 +77,12 @@
     "display_name": "Rounding whole numbers", 
     "title": "Rounding whole numbers", 
     "live": true, 
+    "seconds_per_fast_problem": 7.0, 
     "description": "", 
     "h_position": 14, 
     "slug": "rounding_whole_numbers", 
     "kind": "Exercise", 
     "name": "rounding_whole_numbers", 
-    "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "place_value"
     ]
@@ -99,12 +99,12 @@
     "display_name": "Distributive property", 
     "title": "Distributive property", 
     "live": true, 
+    "seconds_per_fast_problem": 20.0, 
     "description": "", 
     "h_position": 14, 
     "slug": "distributive_property", 
     "kind": "Exercise", 
     "name": "distributive_property", 
-    "seconds_per_fast_problem": 20.0, 
     "prerequisites": [
       "multiplying_and_dividing_negative_numbers"
     ]
@@ -117,12 +117,12 @@
     "display_name": "Properties of numbers 1", 
     "title": "Properties of numbers 1", 
     "live": true, 
+    "seconds_per_fast_problem": 5.0, 
     "description": "", 
     "h_position": 13, 
     "slug": "properties_of_numbers_1", 
     "kind": "Exercise", 
     "name": "properties_of_numbers_1", 
-    "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "multiplying_and_dividing_negative_numbers"
     ]
@@ -135,12 +135,12 @@
     "display_name": "Number properties terminology 1", 
     "title": "Number properties terminology 1", 
     "live": true, 
+    "seconds_per_fast_problem": 6.0, 
     "description": "", 
     "h_position": 14, 
     "slug": "number_properties_terminology_1", 
     "kind": "Exercise", 
     "name": "number_properties_terminology_1", 
-    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "multiplying_and_dividing_negative_numbers"
     ]
@@ -153,12 +153,12 @@
     "display_name": "Properties of numbers 2", 
     "title": "Properties of numbers 2", 
     "live": true, 
+    "seconds_per_fast_problem": 6.0, 
     "description": "", 
     "h_position": 14, 
     "slug": "properties_of_numbers_2", 
     "kind": "Exercise", 
     "name": "properties_of_numbers_2", 
-    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "properties_of_numbers_1"
     ]
@@ -173,12 +173,12 @@
     "display_name": "Counting 1", 
     "title": "Counting 1", 
     "live": true, 
+    "seconds_per_fast_problem": 6.0, 
     "description": "", 
     "h_position": 10, 
     "slug": "counting_1", 
     "kind": "Exercise", 
     "name": "counting_1", 
-    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "division_2"
     ]

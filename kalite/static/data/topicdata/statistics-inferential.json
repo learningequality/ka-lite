@@ -12,12 +12,12 @@
     "display_name": "Empirical rule", 
     "title": "Empirical rule", 
     "live": true, 
+    "seconds_per_fast_problem": 27.0, 
     "description": "", 
     "h_position": 21, 
     "slug": "empirical_rule", 
     "kind": "Exercise", 
     "name": "empirical_rule", 
-    "seconds_per_fast_problem": 27.0, 
     "prerequisites": [
       "exploring_standard_deviation_1", 
       "standard_deviation"
@@ -34,12 +34,12 @@
     "display_name": "Z scores 1", 
     "title": "Z scores 1", 
     "live": true, 
+    "seconds_per_fast_problem": 13.0, 
     "description": "Find the z-score of a particular measurement given the mean and standard deviation.\n", 
     "h_position": 21, 
     "slug": "z_scores_1", 
     "kind": "Exercise", 
     "name": "z_scores_1", 
-    "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "exploring_standard_deviation_1", 
       "standard_deviation"
@@ -57,12 +57,12 @@
     "display_name": "Z scores 2", 
     "title": "Z scores 2", 
     "live": true, 
+    "seconds_per_fast_problem": 21.0, 
     "description": "Use a z-table to find the probability of a particular measurement.\n", 
     "h_position": 22, 
     "slug": "z_scores_2", 
     "kind": "Exercise", 
     "name": "z_scores_2", 
-    "seconds_per_fast_problem": 21.0, 
     "prerequisites": [
       "z_scores_1"
     ]
@@ -78,12 +78,12 @@
     "display_name": "Z scores 3", 
     "title": "Z scores 3", 
     "live": true, 
+    "seconds_per_fast_problem": 47.5, 
     "description": "Use a z-table to find the probability that a particular measurement is in a range.\n", 
     "h_position": 23, 
     "slug": "z_scores_3", 
     "kind": "Exercise", 
     "name": "z_scores_3", 
-    "seconds_per_fast_problem": 47.5, 
     "prerequisites": [
       "z_scores_2"
     ]

@@ -10,12 +10,12 @@
     "display_name": "Conditional statements", 
     "title": "Conditional statements", 
     "live": true, 
+    "seconds_per_fast_problem": 14.0, 
     "description": "Rewrite conditional statements in \"if-then\" form.\n", 
     "h_position": 31, 
     "slug": "conditional_statements_2", 
     "kind": "Exercise", 
     "name": "conditional_statements_2", 
-    "seconds_per_fast_problem": 14.0, 
     "prerequisites": []
   }, 
   {
@@ -29,12 +29,12 @@
     "display_name": "Logical arguments and deductive reasoning", 
     "title": "Logical arguments and deductive reasoning", 
     "live": true, 
+    "seconds_per_fast_problem": 7.0, 
     "description": "Use given conditional statements to come to a logical conclusion, if possible.\n", 
     "h_position": 32, 
     "slug": "logical_arguments_deductive_reasoning", 
     "kind": "Exercise", 
     "name": "logical_arguments_deductive_reasoning", 
-    "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "conditional_statements_2"
     ]
@@ -51,12 +51,12 @@
     "display_name": "Conditional statements and truth value", 
     "title": "Conditional statements and truth value", 
     "live": true, 
+    "seconds_per_fast_problem": 7.0, 
     "description": "If some statement is true, determine what other statements must also be true.\n", 
     "h_position": 32, 
     "slug": "conditional_statements_and_truth_value", 
     "kind": "Exercise", 
     "name": "conditional_statements_and_truth_value", 
-    "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "conditional_statements_2"
     ]

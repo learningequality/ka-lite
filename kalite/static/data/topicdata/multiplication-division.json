@@ -9,12 +9,12 @@
     "display_name": "Number line 1", 
     "title": "Number line 1", 
     "live": true, 
+    "seconds_per_fast_problem": 8.0, 
     "description": "Drag a dot to a positive integer on the number line", 
     "h_position": 2, 
     "slug": "number_line", 
     "kind": "Exercise", 
     "name": "number_line", 
-    "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "addition_2"
     ]
@@ -30,12 +30,12 @@
     "display_name": "Multiplying 1-digit numbers", 
     "title": "Multiplying 1-digit numbers", 
     "live": true, 
+    "seconds_per_fast_problem": 4.5, 
     "description": "Multiply two 1-digit numbers. Some problems include multiplying by 10.", 
     "h_position": 3, 
     "slug": "multiplication_0.5", 
     "kind": "Exercise", 
     "name": "multiplication_0.5", 
-    "seconds_per_fast_problem": 4.5, 
     "prerequisites": [
       "addition_2"
     ]
@@ -50,12 +50,12 @@
     "display_name": "Basic division", 
     "title": "Basic division", 
     "live": true, 
+    "seconds_per_fast_problem": 4.0, 
     "description": "Divide by 1, 2, 3, 5, 10. No remainders", 
     "h_position": 5, 
     "slug": "division_0.5", 
     "kind": "Exercise", 
     "name": "division_0.5", 
-    "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "multiplication_1"
     ]
@@ -70,12 +70,12 @@
     "display_name": "1-digit division", 
     "title": "1-digit division", 
     "live": true, 
+    "seconds_per_fast_problem": 5.0, 
     "description": "Division problems with 1-digit divisors and quotients.", 
     "h_position": 7, 
     "slug": "division_1", 
     "kind": "Exercise", 
     "name": "division_1", 
-    "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "division_0.5"
     ]
@@ -92,12 +92,12 @@
     "display_name": "Multiplication and division word problems", 
     "title": "Multiplication and division word problems", 
     "live": true, 
+    "seconds_per_fast_problem": 8.0, 
     "description": "Word problems with multiplication and division of positive numbers.", 
     "h_position": 9, 
     "slug": "arithmetic_word_problems_2", 
     "kind": "Exercise", 
     "name": "arithmetic_word_problems_2", 
-    "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "comparing-with-multiplication"
     ]
@@ -114,12 +114,12 @@
     "display_name": "Multiplication and division word problems 2", 
     "title": "Multiplication and division word problems 2", 
     "live": true, 
+    "seconds_per_fast_problem": 11.0, 
     "description": "Word problems with simple multiplication and division. Some problems have remainders.", 
     "h_position": 10, 
     "slug": "arithmetic_word_problems", 
     "kind": "Exercise", 
     "name": "arithmetic_word_problems", 
-    "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "arithmetic_word_problems_2"
     ]
@@ -134,12 +134,12 @@
     "display_name": "Multiplying by multiples of 10", 
     "title": "Multiplying by multiples of 10", 
     "live": true, 
+    "seconds_per_fast_problem": 5.0, 
     "description": "Multiply a 1-digit number by a multiple of 10.", 
     "h_position": 4, 
     "slug": "multiplication_1", 
     "kind": "Exercise", 
     "name": "multiplication_1", 
-    "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "multiplication_0.5"
     ]
@@ -155,12 +155,12 @@
     "display_name": "Multiplication without carrying", 
     "title": "Multiplication without carrying", 
     "live": true, 
+    "seconds_per_fast_problem": 6.0, 
     "description": "Multiply 2- or 3-digit numbers by 1-digit numbers. No carrying.", 
     "h_position": 5, 
     "slug": "multiplication_1.5", 
     "kind": "Exercise", 
     "name": "multiplication_1.5", 
-    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "multiplication_1"
     ]
@@ -177,12 +177,12 @@
     "display_name": "Multiplication with carrying", 
     "title": "Multiplication with carrying", 
     "live": true, 
+    "seconds_per_fast_problem": 15.0, 
     "description": "Multiply 3 or 4 digits by 1-digit with carrying.", 
     "h_position": 6, 
     "slug": "multiplication_2", 
     "kind": "Exercise", 
     "name": "multiplication_2", 
-    "seconds_per_fast_problem": 15.0, 
     "prerequisites": [
       "multiplication_1.5"
     ]
@@ -198,12 +198,12 @@
     "display_name": "Multiplying 2 digits by 2 digits", 
     "title": "Multiplying 2 digits by 2 digits", 
     "live": true, 
+    "seconds_per_fast_problem": 17.0, 
     "description": "Multiply 2 digits by 2 digits with carrying.", 
     "h_position": 7, 
     "slug": "multiplication_3", 
     "kind": "Exercise", 
     "name": "multiplication_3", 
-    "seconds_per_fast_problem": 17.0, 
     "prerequisites": [
       "multiplication_2"
     ]
@@ -218,12 +218,12 @@
     "display_name": "Multi-digit multiplication", 
     "title": "Multi-digit multiplication", 
     "live": true, 
+    "seconds_per_fast_problem": 21.0, 
     "description": "Multiply 2-3 digits by 3-4 digits with carrying.", 
     "h_position": 8, 
     "slug": "multiplication_4", 
     "kind": "Exercise", 
     "name": "multiplication_4", 
-    "seconds_per_fast_problem": 21.0, 
     "prerequisites": [
       "multiplication_3"
     ]
@@ -239,12 +239,12 @@
     "display_name": "Multi-digit division without remainders", 
     "title": "Multi-digit division without remainders", 
     "live": true, 
+    "seconds_per_fast_problem": 12.0, 
     "description": "", 
     "h_position": 8, 
     "slug": "division_1.5", 
     "kind": "Exercise", 
     "name": "division_1.5", 
-    "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
       "division_1"
     ]
@@ -262,12 +262,12 @@
     "display_name": "Division with remainders", 
     "title": "Division with remainders", 
     "live": true, 
+    "seconds_per_fast_problem": 30.0, 
     "description": "Divide 3-digit or 4-digits by 1 digit, with remainder.", 
     "h_position": 9, 
     "slug": "division_2", 
     "kind": "Exercise", 
     "name": "division_2", 
-    "seconds_per_fast_problem": 30.0, 
     "prerequisites": [
       "division_1.5"
     ]
@@ -282,12 +282,12 @@
     "display_name": "Division by 2 digits", 
     "title": "Division by 2 digits", 
     "live": true, 
+    "seconds_per_fast_problem": 15.0, 
     "description": "Divide 3-digit and 4-digit numbers by a 2-digit number without remainders.", 
     "h_position": 10, 
     "slug": "division_3", 
     "kind": "Exercise", 
     "name": "division_3", 
-    "seconds_per_fast_problem": 15.0, 
     "prerequisites": [
       "multiplication_2", 
       "division_2"
@@ -303,12 +303,12 @@
     "display_name": "Multi-digit division", 
     "title": "Multi-digit division", 
     "live": true, 
+    "seconds_per_fast_problem": 44.0, 
     "description": "Divide multi-digit numbers.", 
     "h_position": 11, 
     "slug": "division_4", 
     "kind": "Exercise", 
     "name": "division_4", 
-    "seconds_per_fast_problem": 44.0, 
     "prerequisites": [
       "division_3"
     ]
