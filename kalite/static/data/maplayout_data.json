@@ -98,10 +98,10 @@
     }, 
     "linear-equations-and-inequalitie": {
       "icon_url": "/images/power-mode/badges/linear-equations-and-inequalitie-40x40.png", 
-      "translated_standalone_title": "Analytic geometry -visualizing linear relationships", 
+      "translated_standalone_title": "Graphing linear functions", 
       "y": 40.0, 
       "x": 10.0, 
-      "standalone_title": "Analytic geometry -visualizing linear relationships", 
+      "standalone_title": "Graphing linear functions", 
       "id": "linear-equations-and-inequalitie"
     }, 
     "transformations": {
@@ -122,10 +122,10 @@
     }, 
     "rational-expressions": {
       "icon_url": "/images/power-mode/badges/rational-expressions-40x40.png", 
-      "translated_standalone_title": "Ratios and rational expressions", 
+      "translated_standalone_title": "Rational expressions", 
       "y": 54.0, 
       "x": -7.0, 
-      "standalone_title": "Ratios and rational expressions", 
+      "standalone_title": "Rational expressions", 
       "id": "rational-expressions"
     }, 
     "linear_inequalities": {
@@ -184,14 +184,6 @@
       "standalone_title": "Matrices", 
       "id": "algebra-matrices"
     }, 
-    "polynomials": {
-      "icon_url": "/images/power-mode/badges/polynomials-40x40.png", 
-      "translated_standalone_title": "Polynomials", 
-      "y": 46.0, 
-      "x": -7.0, 
-      "standalone_title": "Polynomials", 
-      "id": "polynomials"
-    }, 
     "solving-linear-equations-and-inequalities": {
       "icon_url": "/images/power-mode/badges/solving-linear-equations-and-inequalities-40x40.png", 
       "translated_standalone_title": "Linear equations", 
@@ -202,10 +194,10 @@
     }, 
     "quadratics": {
       "icon_url": "/images/power-mode/badges/quadratics-40x40.png", 
-      "translated_standalone_title": "Quadratics", 
+      "translated_standalone_title": "Quadratics functions and equations", 
       "y": 49.0, 
       "x": -1.0, 
-      "standalone_title": "Quadratics", 
+      "standalone_title": "Quadratics functions and equations", 
       "id": "quadratics"
     }, 
     "statistics-inferential": {
@@ -649,72 +641,12 @@
     {
       "path": [
         {
-          "y": 39, 
-          "x": -1
-        }, 
-        {
-          "y": 46, 
-          "x": -7
-        }
-      ]
-    }, 
-    {
-      "path": [
-        {
-          "y": 40, 
-          "x": 10
-        }, 
-        {
-          "y": 46, 
-          "x": -7
-        }
-      ]
-    }, 
-    {
-      "path": [
-        {
           "y": 40, 
           "x": 10
         }, 
         {
           "y": 49, 
           "x": 10
-        }
-      ]
-    }, 
-    {
-      "path": [
-        {
-          "y": 46, 
-          "x": -7
-        }, 
-        {
-          "y": 49, 
-          "x": -12
-        }
-      ]
-    }, 
-    {
-      "path": [
-        {
-          "y": 46, 
-          "x": -7
-        }, 
-        {
-          "y": 49, 
-          "x": -1
-        }
-      ]
-    }, 
-    {
-      "path": [
-        {
-          "y": 46, 
-          "x": -7
-        }, 
-        {
-          "y": 49, 
-          "x": 4
         }
       ]
     }, 
