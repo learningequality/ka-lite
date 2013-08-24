@@ -41,7 +41,7 @@ for x in range(1):
     bench = benchmark_test_cases.SeleniumStudentExercisesOnly(comment="with nginx"
                                                 , username="stevewall"
                                                 , password="student"
-                                                , url="http://192.168.1.24:7007"
+                                                , url="http://192.168.1.24:8008"
                                                 , starttime="00:00"
                                                 , duration=3
                                                 , behaviour_profile=sys.argv[1])
