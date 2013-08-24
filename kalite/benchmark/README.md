@@ -16,7 +16,7 @@ Raw data from testing is in [DETAILED_RESULTS.md](/kalite/benchmark/DETAILED_RES
 **Software**
 * Raspbian (debian) fully updated
 * Python 2.7.3
-* ka-lite (benchmark_v2 branch)
+* ka-lite (benchmark_v3 branch)
 
 
 **System setup**
@@ -73,7 +73,7 @@ sudo shutdown -h now
 cd ~
 git clone https://github.com/gimick/ka-lite.git
 cd ka-lite/
-git checkout benchmark_v2
+git checkout benchmark_v3
 
 #Run the installer, remember to select autostart Y during the install process
 ./install.sh
