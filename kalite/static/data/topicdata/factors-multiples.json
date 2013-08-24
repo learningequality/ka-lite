@@ -17,7 +17,7 @@
     "slug": "divisibility_tests", 
     "kind": "Exercise", 
     "name": "divisibility_tests", 
-    "seconds_per_fast_problem": 5.0, 
+    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "divisibility_intuition"
     ]
@@ -37,7 +37,7 @@
     "slug": "divisibility_0.5", 
     "kind": "Exercise", 
     "name": "divisibility_0.5", 
-    "seconds_per_fast_problem": 7.0, 
+    "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "divisibility_intuition"
     ]
@@ -79,7 +79,7 @@
     "slug": "prime_numbers", 
     "kind": "Exercise", 
     "name": "prime_numbers", 
-    "seconds_per_fast_problem": 6.0, 
+    "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "divisibility_0.5", 
       "divisibility_tests"
@@ -101,7 +101,7 @@
     "slug": "composite_numbers", 
     "kind": "Exercise", 
     "name": "composite_numbers", 
-    "seconds_per_fast_problem": 5.0, 
+    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "divisibility_0.5", 
       "divisibility_tests"
@@ -164,7 +164,7 @@
     "slug": "divisibility", 
     "kind": "Exercise", 
     "name": "divisibility", 
-    "seconds_per_fast_problem": 11.0, 
+    "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "prime_factorization"
     ]
@@ -207,7 +207,7 @@
     "slug": "greatest_common_divisor", 
     "kind": "Exercise", 
     "name": "greatest_common_divisor", 
-    "seconds_per_fast_problem": 5.0, 
+    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "division_3", 
       "prime_factorization"
@@ -228,7 +228,7 @@
     "slug": "least_common_multiple_and_greatest_common_divisor_word_problems", 
     "kind": "Exercise", 
     "name": "least_common_multiple_and_greatest_common_divisor_word_problems", 
-    "seconds_per_fast_problem": 15.0, 
+    "seconds_per_fast_problem": 20.0, 
     "prerequisites": [
       "prime_factorization"
     ]

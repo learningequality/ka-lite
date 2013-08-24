@@ -14,7 +14,7 @@
     "slug": "addition_1", 
     "kind": "Exercise", 
     "name": "addition_1", 
-    "seconds_per_fast_problem": 5.0, 
+    "seconds_per_fast_problem": 4.0, 
     "prerequisites": []
   }, 
   {
@@ -93,7 +93,7 @@
     "slug": "addition_3", 
     "kind": "Exercise", 
     "name": "addition_3", 
-    "seconds_per_fast_problem": 9.0, 
+    "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "addition_2"
     ]
@@ -113,7 +113,7 @@
     "slug": "addition_4", 
     "kind": "Exercise", 
     "name": "addition_4", 
-    "seconds_per_fast_problem": 13.0, 
+    "seconds_per_fast_problem": 15.0, 
     "prerequisites": [
       "addition_3"
     ]
@@ -132,13 +132,13 @@
     "title": "Subtraction with borrowing", 
     "live": true, 
     "description": "Subtract two 3- or 4-digit numbers. Borrow once", 
-    "h_position": 4, 
+    "h_position": 6, 
     "slug": "subtraction_3", 
     "kind": "Exercise", 
     "name": "subtraction_3", 
-    "seconds_per_fast_problem": 13.0, 
+    "seconds_per_fast_problem": 15.0, 
     "prerequisites": [
-      "subtraction_2"
+      "regrouping-whole-numbers"
     ]
   }, 
   {
@@ -156,11 +156,11 @@
     "title": "4-digit subtraction with borrowing", 
     "live": true, 
     "description": "Subtract two 4-digit numbers. Borrow twice", 
-    "h_position": 5, 
+    "h_position": 7, 
     "slug": "subtraction_4", 
     "kind": "Exercise", 
     "name": "subtraction_4", 
-    "seconds_per_fast_problem": 15.0, 
+    "seconds_per_fast_problem": 18.0, 
     "prerequisites": [
       "subtraction_3"
     ]
@@ -180,7 +180,7 @@
     "slug": "arithmetic_word_problems_1", 
     "kind": "Exercise", 
     "name": "arithmetic_word_problems_1", 
-    "seconds_per_fast_problem": 10.0, 
+    "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "addition_2", 
       "subtraction_2"
