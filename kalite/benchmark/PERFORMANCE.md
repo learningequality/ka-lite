@@ -8,11 +8,13 @@ Performance of the Raspberry Pi server can be significantly improved with these 
 **Use NGINX as a proxy for static files**
 
 ```
+
 sudo apt-get install nginx
 sudo rm /etc/nginx/sites-enabled/default
 sudo ka-lite/kalite/manage.py nginxconfig > /etc/nginx/sites-enabled/kalite
 sudo rm /etc/nginx/nginx.conf
 sudo nano /etc/nginx/nginx.conf 
+
 ```
 
 paste this configuration into the nginx.conf file
@@ -68,19 +70,25 @@ http {
 	include /etc/nginx/conf.d/*.conf;
 	include /etc/nginx/sites-enabled/*;
 }
-```
-
-**Configuration changes for ka-lite**
 
 ```
+
+**Changes to local_settings for ka-lite**
+
+```
+
 echo "#NGINX on port 8008 and expects ka-lite on port 7007" >> ka-lite/kalite/local_settings.py
 echo "PRODUCTION_PORT=7007" >> ka-lite/kalite/local_settings.py
 echo "#Persist ka-lite django page cache between reboots" >> ka-lite/kalite/local_settings.py
 echo "CACHE_LOCATION = '/var/tmp/kalite/cache'" >> ka-lite/kalite/local_settings.py
 echo "#Optimise cherrypy server for Raspberry Pi" >> ka-lite/kalite/local_settings.py
-echo "CHERRYPY_THREAD_COUNT = 18" >> ka-lite/kalite/local_settings.py
+echo "CHERRYPY_THREAD_COUNT = 20" >> ka-lite/kalite/local_settings.py
+
 ```
 
+**Finally, reboot**
 
+```
+sudo reboot
 
-
+```
