@@ -114,18 +114,21 @@ function plotJsonData(chart_div, base_url, props) {
     var url = base_url + "?";
     url = url + $.param(props, true);
 
-    $.getJSON(url, function(json) {        
-        $("#loading").text("Drawing '" + stat2name(props["xaxis"]) + "' vs '" + stat2name(props["yaxis"]) + "'..."); 
-        drawJsonChart(chart_div, json, props["xaxis"], props["yaxis"]);
-        $("#loading").text(""); 
-    }).fail(function(data) {
-        if (data.responseText == "too many SQL variables") {
-            errorMsg = "Too many topics; please select fewer topics and retry."
-        } else {
-            errorMsg = "Failure (" + data.status + "): " + data.responseText;
-        }
-        $("#loading").text(errorMsg);
-    });
+    clear_message("id_coachreports")
+    doRequest(url)
+        .success(function(json) {        
+            $("#loading").text("Drawing '" + stat2name(props["xaxis"]) + "' vs '" + stat2name(props["yaxis"]) + "'..."); 
+            drawJsonChart(chart_div, json, props["xaxis"], props["yaxis"]);
+            $("#loading").text(""); 
+        }).fail(function(resp) {
+            if (resp.responseText.indexOf("too many SQL variables") != -1) {
+                // Translate cryptic error message
+                show_message("error", "Too many topics; please select fewer topics and retry.", "id_coachreports");
+            } else {
+                communicate_api_failure(resp, "id_coachreports");
+            }
+            $("#loading").text(""); 
+        });
     $("#loading").text("Loading '" + stat2name(props["xaxis"]) + "' vs. '" + stat2name(props["yaxis"]) + "'...");
     $("#chart_div").html("");
 }
@@ -239,39 +242,42 @@ function plotTopics(topic_paths) {
             });
 
             // Get the topic tree (starting on window load)            
-            doRequest("{% url get_topic_tree topic_path='/math/' %}", {}).success(function(treeData) {
-                
-                $("#content_tree").dynatree({
-                    imagePath:"{% static 'images/' %}",
-                    checkbox: true,
-                    selectMode: 3,
-                    children: treeData,
-                    debugLevel: 0,
-                    onSelect: function(select, node) {
+            doRequest("{% url get_topic_tree topic_path='/math/' %}", {})
+                .success(function(treeData) {
+                    $("#content_tree").dynatree({
+                        imagePath:"{% static 'images/' %}",
+                        checkbox: true,
+                        selectMode: 3,
+                        children: treeData,
+                        debugLevel: 0,
+                        onSelect: function(select, node) {
                         
-                    },
-                    onDblClick: function(node, event) {
-                        node.toggleSelect();
-                    },
-                    onKeydown: function(node, event) {
-                        if( event.which == 32 ) {
+                        },
+                        onDblClick: function(node, event) {
                             node.toggleSelect();
-                            return false;
-                        }
-                    },
-                    onPostInit: function() {
-                        // Load the topics found in the querystring, when the topic_tree finishes initializing
-                        topic_paths_in_querystring = {{ form.topic_path|jsonify }};
-                        if (topic_paths_in_querystring.length == 0) {
-                            toggle_tree(true) // open tree, force callbacks
-                        }
-                        else {
-                            set_topic_paths_in_tree(this, topic_paths_in_querystring);
-                        }
+                        },
+                        onKeydown: function(node, event) {
+                            if( event.which == 32 ) {
+                                node.toggleSelect();
+                                return false;
+                            }
+                        },
+                        onPostInit: function() {
+                            // Load the topics found in the querystring, when the topic_tree finishes initializing
+                            topic_paths_in_querystring = {{ form.topic_path|jsonify }};
+                            if (topic_paths_in_querystring.length == 0) {
+                                toggle_tree(true) // open tree, force callbacks
+                            }
+                            else {
+                                set_topic_paths_in_tree(this, topic_paths_in_querystring);
+                            }
                         
-                    }
-                });
-            });
+                        }
+                    })
+                })
+                .fail(function(resp) {
+                    communicate_api_failure(resp, "id_coachreports");
+                })
         }, 200); //200= callback wait time.
     });
 </script>
