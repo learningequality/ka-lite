@@ -56,7 +56,7 @@ http {
 	
 	###
 	# Speed up landing page by caching open file descriptors
-        open_file_cache max=2048;
+	open_file_cache max=2048;
         
 	##
 	# Logging Settings
