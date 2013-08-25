@@ -1,43 +1,66 @@
+"""
+System = Windows, Linux, etc
+Platform = WindowsXP-SP3, etc.
+
+This file is for functions that take system- and platform-specific 
+information, and try to make them accessible generically (at least for our purposes).
+"""
 import os
 import platform
 import sys
 import tempfile
 from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED, is_zipfile
 
+ALL_SYSTEMS = ["windows", "darwin", "linux"]
 
 def is_windows(system=None):
-    """Right? :)"""
-    if system is None:
-        system = platform.system()
+    system = system or platform.system()
     return system.lower() == "windows"
 
-def system_script_extension():
+
+def is_osx(system=None):
+    system = system or platform.system()
+    return system.lower() == "darwin"
+
+
+def system_script_extension(system=None):
     """
-    System script extension (duh)
+    The extension for the one script that could be considered "the os script" for the given system..
     """
-    return ".bat" if is_windows() else ".sh"
+    return ".bat" if is_windows(system) else ".sh"
+
 
 def system_specific_scripts(system=None):
     """
-    Set of all script files specific to a system
+    All scripting types for that platform, that wouldn't be recognized
+    on ALL other platforms.
     """
     if is_windows(system):
         return [".bat", ".vbs"]
+    elif is_osx(system):
+        return [".command", ".sh"]
     else:
         return [".sh"]
 
 def not_system_specific_scripts(system=None):
-    if is_windows(system):
-        return system_specific_scripts("linux")
-    else:
-        return system_specific_scripts("windows")
+    """
+    Returns a list of all platform-specific scripts
+    that are on OTHER systems and not on this one.
+    (useful for removing unnecessary files from lists)
+    """
+    all_scripts = [fil for syst in ALL_SYSTEMS for fil in system_specific_scripts(syst)]
+    return list(set(all_scripts) - set(system_specific_scripts(system)))
 
 
 def _default_callback_zip(src_path, fi, nfiles):
+    """Default callback function for system_specific_zipping"""
     sys.stdout.write("Adding to zip (%d of %d): %s\n" % (fi + 1, nfiles, src_path))
 
+
 def system_specific_zipping(files_dict, zip_file=None, compression=ZIP_DEFLATED, callback=_default_callback_zip):
-    # Step 4: package into a zip file
+    """
+    Zip up files, adding permissions when appropriate.
+    """
 
     if not zip_file:
         zip_file = tempfile.mkstemp()[1]
@@ -45,8 +68,8 @@ def system_specific_zipping(files_dict, zip_file=None, compression=ZIP_DEFLATED,
         for fi, (src_path, dest_path) in enumerate(files_dict.iteritems()):
             if callback:
                 callback(src_path, fi, len(files_dict))
-            # Add without setting exec perms
-            if os.path.splitext(dest_path)[1] not in system_specific_scripts(system="linux"):
+            # All platforms besides windows need permissions set.
+            if os.path.splitext(dest_path)[1] not in not_system_specific_scripts(system="windows"):
                 zfile.write(src_path, arcname=dest_path)
             # Add with exec perms
             else:
