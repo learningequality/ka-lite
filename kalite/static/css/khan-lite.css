@@ -200,6 +200,16 @@ div.exercises-card {
     margin-left: -10px;
 }
 
+.info-box #related-video-list a {
+    white-space: nowrap;
+    display: block;
+    float: left;
+    margin: 0;
+    width: 98%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .basic-form label {
     font-weight: bold;
     width: 120px;
@@ -324,7 +334,8 @@ li .progress-circle {
 
 
 #hint-remainder {
-    line-height: 110%;
+    line-height: 18px;
+    padding-top: 10px;
 }
 
 #totalpoints {
