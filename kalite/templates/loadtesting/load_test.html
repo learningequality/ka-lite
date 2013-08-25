@@ -12,6 +12,7 @@
         <script type="text/javascript" src="{% static "js/underscore-min.js" %}"></script>
         <script type="text/javascript" src="{% static "js/backbone-min.js" %}"></script>
         
+        <link rel="stylesheet" type="text/css" href="{% static "css/khan-site.css" %}">
         <style>
             html, body {
                 height: 100%;
@@ -19,21 +20,21 @@
                 margin: 0;
                 overflow: hidden;
             }
-        
+
             #puppet {
                 position: absolute;
                 top: 40px;
                 width: 100%;
                 border: none;
             }
-            
+
             #infobar .url {
                 float: left;
                 width: 40%;
                 margin-left: 5px;
                 overflow: hidden;
             }
-            
+
             #infobar .status {
                 float: left;
                 width: 20%;
@@ -105,11 +106,7 @@
                     
                     // it seems that using jQuery to "click" links does not follow them
                     if ($match.prop("tagName").toLowerCase() === "a" && $match.attr("href")) {
-                        var next_url = this.model.get("url") + $match.attr("href");
-                        if (next_url.slice(0, 2) == "//") {
-                            next_url = next_url.slice(1);
-                        }
-                        this.goto(next_url, callback);
+                        this.goto($match[0].href, callback);
                     } else {
                         this.startTimer();
                         this.whenLoaded(callback);
@@ -372,8 +369,9 @@
             <div class="url"></div>
             <div class="status"></div>
             <div class="errorcount"></div>
+            <div class="clearfix"></div>
         </div>
-        <br/>
+
         <div>
             <iframe id="puppet"></iframe>
         </div>
