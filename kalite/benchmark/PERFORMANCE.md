@@ -45,15 +45,19 @@ http {
 	###
 	# RPi+kalite "off" is a faster with sendfile "off"
 	sendfile off;
-
-	tcp_nopush on;
+	tcp_nopush off;
+	
 	tcp_nodelay on;
 	keepalive_timeout 65;
 	types_hash_max_size 2048;
 
 	include /etc/nginx/mime.types;
 	default_type application/octet-stream;
-
+	
+	###
+	# Speed up landing page by caching open file descriptors
+        open_file_cache max=2048;
+        
 	##
 	# Logging Settings
 	# don't log, we don't need to know normally
