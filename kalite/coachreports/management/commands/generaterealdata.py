@@ -95,10 +95,11 @@ def generate_fake_facilities(names=("Wilson Elementary",)):
     facilities = []
 
     for name in names:
-        try:
-            facility = Facility.objects.get(name=name)
+        found_facilities = Facility.objects.filter(name=name)
+        if found_facilities:
+            facility = found_facilities[0]
             logging.info("Retrieved facility '%s'" % name)
-        except Facility.DoesNotExist as e:
+        else:
             facility = Facility(name=name)
             facility.save()
             logging.info("Created facility '%s'" % name)
@@ -117,10 +118,11 @@ def generate_fake_facility_groups(names=("Class 4E", "Class 5B"), facilities=Non
     facility_groups = []
     for facility in facilities:
         for name in names:
-            try:
-                facility_group = FacilityGroup.objects.get(facility=facility, name=name)
+            found_facility_groups = FacilityGroup.objects.filter(facility=facility, name=name)
+            if found_facility_groups:
+                facility_group = found_facility_groups[0]
                 logging.info("Retrieved facility group '%s'" % name)
-            except FacilityGroup.DoesNotExist as e:
+            else:
                 facility_group = FacilityGroup(facility=facility, name=name)
                 facility_group.full_clean()
                 facility_group.save()
@@ -281,34 +283,36 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
                     streak_progress,
                     date_completed,
                 ))
+                try:
+                    elog = ExerciseLog.objects.get(user=facility_user, exercise_id=exercise["name"])
+                except ExerciseLog.DoesNotExist:
+                    elog = ExerciseLog(
+                        user=facility_user,
+                        exercise_id=exercise["name"],
+                        attempts=int(attempts),
+                        streak_progress=streak_progress,
+                        points=int(points),
+                        completion_timestamp=date_completed,
+                        completion_counter=datediff(date_completed, start_date, units="seconds"),
+                    )
+                    elog.full_clean()
+                    elog.save()   # TODO(bcipolli): bulk saving of logs
 
-                elog = ExerciseLog(
-                    user=facility_user,
-                    exercise_id=exercise["name"],
-                    attempts=int(attempts),
-                    streak_progress=streak_progress,
-                    points=int(points),
-                    completion_timestamp=date_completed,
-                    completion_counter=datediff(date_completed, start_date, units="seconds"),
-                )
-                elog.full_clean()
-                elog.save()   # TODO(bcipolli): bulk saving of logs
+                    # For now, make all attempts on an exercise into a single UserLog.
+                    seconds_per_attempt = 10 * (1 + user_settings["speed_of_learning"] * random.random())
+                    time_to_navigate = 15 * (0.5 + random.random())  #between 7.5s and 22.5s
+                    time_to_logout = 5 * (0.5 + random.random()) # between 2.5 and 7.5s
+                    ulog = UserLog(
+                        user=facility_user,
+                        activity_type=1,
+                        start_datetime = date_completed - datetime.timedelta(seconds=int(attempts * seconds_per_attempt + time_to_navigate)),
+                        end_datetime = date_completed + datetime.timedelta(seconds=time_to_logout),
+                        last_active_datetime = date_completed,
+                    )
+                    ulog.full_clean()
+                    ulog.save()
+                    user_logs.append(ulog)
                 exercise_logs.append(elog)
-
-                # For now, make all attempts on an exercise into a single UserLog.
-                seconds_per_attempt = 10 * (1 + user_settings["speed_of_learning"] * random.random())
-                time_to_navigate = 15 * (0.5 + random.random())  #between 7.5s and 22.5s
-                time_to_logout = 5 * (0.5 + random.random()) # between 2.5 and 7.5s
-                ulog = UserLog(
-                    user=facility_user,
-                    activity_type=1,
-                    start_datetime = date_completed - datetime.timedelta(seconds=int(attempts * seconds_per_attempt + time_to_navigate)),
-                    end_datetime = date_completed + datetime.timedelta(seconds=time_to_logout),
-                    last_active_datetime = date_completed,
-                )
-                ulog.full_clean()
-                ulog.save()
-                user_logs.append(ulog)
 
     return (exercise_logs, user_logs)
 
@@ -407,24 +411,28 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
                     time_delta_completed = datetime.timedelta(seconds=random.randint(int(time_for_watching), int(datediff(date_diff_started, units="seconds"))))
                     date_completed = datetime.datetime.now() - time_delta_completed
 
-                logging.info("Creating video log: %-12s: %-45s (%4.1f%% watched, %d points)%s" % (
-                    facility_user.first_name,
-                    video["title"],
-                    pct_completed,
-                    points,
-                    " COMPLETE on %s!" % date_completed if pct_completed == 100 else "",
-                ))
-                log = VideoLog(
-                    user=facility_user,
-                    youtube_id=video["youtube_id"],
-                    total_seconds_watched=total_seconds_watched,
-                    points=points,
-                    completion_timestamp=date_completed,
-                    completion_counter=datediff(date_completed, start_date, units="seconds"),
-                )
-                log.full_clean()
-                # TODO(bcipolli): bulk saving of logs
-                log.save()
+                try:
+                    log = VideoLog.objects.get(user=facility_user, youtube_id=video["youtube_id"])
+                except VideoLog.DoesNotExist:
+
+                    logging.info("Creating video log: %-12s: %-45s (%4.1f%% watched, %d points)%s" % (
+                        facility_user.first_name,
+                        video["title"],
+                        pct_completed,
+                        points,
+                        " COMPLETE on %s!" % date_completed if pct_completed == 100 else "",
+                    ))
+                    log = VideoLog(
+                        user=facility_user,
+                        youtube_id=video["youtube_id"],
+                        total_seconds_watched=total_seconds_watched,
+                        points=points,
+                        completion_timestamp=date_completed,
+                        completion_counter=datediff(date_completed, start_date, units="seconds"),
+                    )
+                    log.full_clean()
+                    # TODO(bcipolli): bulk saving of logs
+                    log.save()
 
                 video_logs.append(log)
 

@@ -10,7 +10,6 @@ from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
 
 import settings
-from securesync import crypto
 from securesync.models import Zone
 
 
