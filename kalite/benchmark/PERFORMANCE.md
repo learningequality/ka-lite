@@ -1,4 +1,4 @@
-## KA-LITE Raspberry Pi performance tuning information
+## Raspberry Pi performance tuning
 
 *Initial version 1 by Gimick*
 
@@ -77,7 +77,7 @@ http {
 
 ```
 
-**Changes to local_settings for ka-lite**
+**Changes to local_settings.py**
 
 ```
 
