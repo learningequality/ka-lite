@@ -107,7 +107,7 @@ def facility_management(request, zone_id, org_id=None):
 
 @require_authorized_admin
 @render_to("control_panel/facility_usage.html")
-@render_to_csv(["users"], key_label="student_id")
+@render_to_csv(["students"], key_label="user_id")
 def facility_usage(request, facility_id, org_id=None, zone_id=None, frequency=None):
 
     # Basic data
@@ -115,7 +115,7 @@ def facility_usage(request, facility_id, org_id=None, zone_id=None, frequency=No
     zone = get_object_or_None(Zone, pk=zone_id) if zone_id else None
     facility = get_object_or_404(Facility, pk=facility_id)
     groups = FacilityGroup.objects.filter(facility=facility).order_by("name")
-    users = FacilityUser.objects.filter(facility=facility).order_by("last_name")
+    students = FacilityUser.objects.filter(facility=facility, is_teacher=False).order_by("last_name", "first_name", "username")
 
     # compute period start and end
     frequency = frequency or request.GET.get("fequency")
@@ -127,12 +127,12 @@ def facility_usage(request, facility_id, org_id=None, zone_id=None, frequency=No
 
     # Now compute stats, based on queried data
     len_all_exercises = len(topicdata.NODE_CACHE['Exercise'])
-    user_data = OrderedDict()
+    student_data = OrderedDict()
     group_data = OrderedDict()
-    for user in users:
-        exercise_logs = ExerciseLog.objects.filter(user=user)
-        video_logs = VideoLog.objects.filter(user=user)
-        login_logs = UserLogSummary.objects.filter(user=user)
+    for student in students:
+        exercise_logs = ExerciseLog.objects.filter(user=student)
+        video_logs = VideoLog.objects.filter(user=student)
+        login_logs = UserLogSummary.objects.filter(user=student)
 
         # filter results
         if frequency:
@@ -145,48 +145,48 @@ def facility_usage(request, facility_id, org_id=None, zone_id=None, frequency=No
             "total_mastery": exercise_logs.aggregate(Sum("complete"))["complete__sum"],
             "mastered_exercises": [elog.exercise_id for elog in exercise_logs if elog.complete],
         }
-        video_stats = {"count": VideoLog.objects.filter(user=user).count()}
-        login_stats = UserLogSummary.objects.filter(user=user).aggregate(Sum("total_logins"), Sum("total_seconds"))
+        video_stats = {"count": VideoLog.objects.filter(user=student).count()}
+        login_stats = UserLogSummary.objects.filter(user=student).aggregate(Sum("total_logins"), Sum("total_seconds"))
 
         # Had to add one-by-one, to get OrderedDict to work.
         #   OrderedDict controls the order of the columns
-        user_data[user.pk] = OrderedDict()
-        user_data[user.pk]["first_name"] = user.first_name
-        user_data[user.pk]["last_name"] = user.last_name
-        user_data[user.pk]["group"] = user.group
-        user_data[user.pk]["total_logins"] = login_stats["total_logins__sum"] or 0
-        user_data[user.pk]["total_hours"] = (login_stats["total_seconds__sum"] or 0)/3600.
-        user_data[user.pk]["total_videos"] = video_stats["count"]
-        user_data[user.pk]["total_exercises"] = exercise_stats["count"]
-        user_data[user.pk]["pct_mastery"] = (exercise_stats["total_mastery"] or 0)/float(len_all_exercises)
-        user_data[user.pk]["exercises_mastered"] = exercise_stats["mastered_exercises"]
-        group = user.group
+        student_data[student.pk] = OrderedDict()
+        student_data[student.pk]["first_name"] = student.first_name
+        student_data[student.pk]["last_name"] = student.last_name
+        student_data[student.pk]["group"] = student.group
+        student_data[student.pk]["total_logins"] = login_stats["total_logins__sum"] or 0
+        student_data[student.pk]["total_hours"] = (login_stats["total_seconds__sum"] or 0)/3600.
+        student_data[student.pk]["total_videos"] = video_stats["count"]
+        student_data[student.pk]["total_exercises"] = exercise_stats["count"]
+        student_data[student.pk]["pct_mastery"] = (exercise_stats["total_mastery"] or 0)/float(len_all_exercises)
+        student_data[student.pk]["exercises_mastered"] = exercise_stats["mastered_exercises"]
+        group = student.group
         if group:
             if not group.pk in group_data:
                 group_data[group.pk] = {
                     "name": group.name,
                     "total_logins": 0,
                     "total_hours": 0,
-                    "total_users": 0,
+                    "total_students": 0,
                     "total_videos": 0,
                     "total_exercises": 0,
                     "pct_mastery": 0,
                 }
-            group_data[group.pk]["total_users"] += 1
-            group_data[group.pk]["total_logins"] += user_data[user.pk]["total_logins"]
-            group_data[group.pk]["total_hours"] += user_data[user.pk]["total_hours"]
-            group_data[group.pk]["total_videos"] += user_data[user.pk]["total_videos"]
-            group_data[group.pk]["total_exercises"] += user_data[user.pk]["total_exercises"]
+            group_data[group.pk]["total_students"] += 1
+            group_data[group.pk]["total_logins"] += student_data[student.pk]["total_logins"]
+            group_data[group.pk]["total_hours"] += student_data[student.pk]["total_hours"]
+            group_data[group.pk]["total_videos"] += student_data[student.pk]["total_videos"]
+            group_data[group.pk]["total_exercises"] += student_data[student.pk]["total_exercises"]
 
-            total_mastery_so_far = (group_data[group.pk]["pct_mastery"] * (group_data[group.pk]["total_users"] - 1) + user_data[user.pk]["pct_mastery"])
-            group_data[group.pk]["pct_mastery"] =  total_mastery_so_far / group_data[group.pk]["total_users"]
+            total_mastery_so_far = (group_data[group.pk]["pct_mastery"] * (group_data[group.pk]["total_students"] - 1) + student_data[student.pk]["pct_mastery"])
+            group_data[group.pk]["pct_mastery"] =  total_mastery_so_far / group_data[group.pk]["total_students"]
 
     return {
         "org": org,
         "zone": zone,
         "facility": facility,
         "groups": group_data,
-        "users": user_data,
+        "students": student_data,
         "date_range": [period_start, period_end] if frequency else [None, None],
     }
 
