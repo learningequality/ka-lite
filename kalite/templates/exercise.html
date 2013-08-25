@@ -36,7 +36,7 @@
 <script src="{% static "js/khan-exercises/utils/jquery-ui.js" %}"></script>
 <script>
     var exerciseData = {
-        "description": "{{ exercise.description }}",
+        "description": "{{ exercise.description|linebreaksbr }}",
         "title": "{{ exercise.display_name }}",
         "exerciseModel": {
             "displayName": "{{ exercise.display_name }}",
@@ -106,7 +106,7 @@
                                             {% trans "I'd like a hint" as hint %}
                                             <input id="hint" type="button" class="simple-button orange full-width" value="{{ hint }}" name="hint"/>
                                         </div>
-                                        <span id="hint-remainder">{% trans "Note: this will reset your streak and points for this exercise!" %}</span>
+                                        <div id="hint-remainder">{% trans "Note: this will reset your streak and points for this exercise!" %}</div>
                                     </div>
 
                                     {% if related_videos %}
@@ -115,7 +115,6 @@
                                             <span class="info-box-header">{% trans "Stuck? Watch a video." %}</span>
 
                                             <div id="related-video-list">
-                                                <span class="related-content-title">{% trans "Related videos:" %}</span>
                                                 <ul class="related-video-list">
                                                 {% for video in related_videos %}
                                                 {% if forloop.first %}

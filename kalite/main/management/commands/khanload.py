@@ -20,6 +20,8 @@ from settings import LOG as logging
 from utils.general import datediff
 from utils import topic_tools
 
+# get the path to an exercise file, so we can check, below, which ones exist
+exercise_path = os.path.join(settings.PROJECT_PATH, "static/js/khan-exercises/exercises/%s.html")
 
 slug_key = {
     "Topic": "node_slug",
@@ -45,12 +47,13 @@ attribute_whitelists = {
 
 kind_blacklist = [None, "Separator", "CustomStack", "Scratchpad", "Article"]
 
-slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res"]
+slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res", "partner-content"]
 
+# blacklist of particular exercises that currently have problems being rendered
+slug_blacklist += ["ordering_improper_fractions_and_mixed_numbers", "ordering_numbers", "conditional_statements_2"]
 
-def download_khan_data(url, debug_cache_file=None, debug_cache_dir="json"):
-    """
-    Download data from the given url.
+def download_khan_data(url, debug_cache_file=None, debug_cache_dir=settings.PROJECT_PATH + "../_khanload_cache"):
+    """Download data from the given url.
     
     In DEBUG mode, these downloads are slow.  So for the sake of faster iteration,
     save the download to disk and re-serve it up again, rather than download again,
@@ -87,8 +90,7 @@ def download_khan_data(url, debug_cache_file=None, debug_cache_dir="json"):
 
 
 def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_unknown_exercises=False):
-    """
-    Downloads topictree (and supporting) data from Khan Academy and uses it to
+    """Downloads topictree (and supporting) data from Khan Academy and uses it to
     rebuild the KA Lite topictree cache (topics.json).
     """
 
@@ -118,7 +120,6 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
 
         node["path"] = path + topic_tools.kind_slugs[kind] + node["slug"] + "/"
         node["title"] = node[title_key[kind]]
-
 
         kinds = set([kind])
 
@@ -157,24 +158,28 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
 
 
     # Limit exercises to only the previous list
-    def recurse_nodes_to_delete_exercise(node, OLD_NODE_CACHE):
+    def recurse_nodes_to_delete_exercise(node):
         """
         Internal function for recursing the topic tree and removing new exercises.
         Requires rebranding of metadata done by recurse_nodes function.
+        Returns a list of exercise slugs for the exercises that were deleted.
         """
         # Stop recursing when we hit leaves
         if node["kind"] != "Topic":
-            return
+            return []
+
+        slugs_deleted = []
 
         children_to_delete = []
         for ci, child in enumerate(node.get("children", [])):
             # Mark all unrecognized exercises for deletion
             if child["kind"] == "Exercise":
-                if not child["slug"] in OLD_NODE_CACHE["Exercise"].keys():
+                if not os.path.exists(exercise_path % child["slug"]):
                     children_to_delete.append(ci)
+                
             # Recurse over children to delete
             elif child.get("children", None):
-                recurse_nodes_to_delete_exercise(child, OLD_NODE_CACHE)
+                slugs_deleted += recurse_nodes_to_delete_exercise(child)
                 # Delete children without children (all their children were removed)
                 if not child.get("children", None):
                     logging.debug("Removing now-childless topic node '%s'" % child["slug"])
@@ -187,11 +192,13 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
         for i in reversed(children_to_delete):
             logging.debug("Deleting unknown exercise %s" % node["children"][i]["slug"])
             del node["children"][i]
+        
+        return slugs_deleted
+    
     if remove_unknown_exercises:
-        OLD_NODE_CACHE = topic_tools.get_node_cache()
-        recurse_nodes_to_delete_exercise(topictree, OLD_NODE_CACHE) # do this before [add related]
+        slugs_deleted = recurse_nodes_to_delete_exercise(topictree) # do this before [add related]
         for vid, ex in related_exercise.items():
-            if ex and ex["slug"] not in OLD_NODE_CACHE["Exercise"].keys():
+            if ex and ex["slug"] in slugs_deleted:
                 related_exercise[vid] = None
 
     def recurse_nodes_to_add_related_exercise(node):
@@ -236,7 +243,6 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
 
 
 def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH + "/static/data/", force_icons=False):
-
     """
     Uses KA Lite topic data and supporting data from Khan Academy 
     to rebuild the knowledge map (maplayout.json) and topicdata files.
@@ -504,7 +510,7 @@ class Command(BaseCommand):
     Options:
         [no args] - download from Khan Academy and refresh all files
         id2slug - regenerate the id2slug map file.
-"""
+    """
 
     option_list = BaseCommand.option_list + (
         # Basic options
