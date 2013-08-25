@@ -390,13 +390,18 @@ class SeleniumStudent(benchmark_base.Common):
                 "nextstep":[(1.00, "neadd2_1")]
                  }
         self.activity["neadd2_1"]= {
-                "method":self._get_path, "duration":10+(random.random()*10),
+                "method":self._get_path, "duration":3+(random.random()*10),
                 "args":{"path":"/exercisedashboard/?topic=addition-subtraction"},
                 "nextstep":[(1.00, "neadd2_2")]
                  }
         self.activity["neadd2_2"]= {
                 "method":self._get_path, "duration":5,
                 "args":{"path":"/math/arithmetic/addition-subtraction/two_dig_add_sub/e/addition_2/"},
+                "nextstep":[(1.00, "weadd2")]
+                 }
+        self.activity["weadd2"]= {
+                "method":self._wait_for_element, "duration":9,
+                "args":{"find_by":By.CSS_SELECTOR, "find_text":"#solutionarea input[type=text]"},
                 "nextstep":[(1.00, "do_eadd2")]
                  }
         self.activity["do_eadd2"]= {
@@ -411,13 +416,18 @@ class SeleniumStudent(benchmark_base.Common):
                 "nextstep":[(1.00, "nesub2_1")]
                  }
         self.activity["nesub2_1"]= {
-                "method":self._get_path, "duration":7,
+                "method":self._get_path, "duration":3,
                 "args":{"path":"/exercisedashboard/?topic=addition-subtraction"},
                 "nextstep":[(1.00, "nesub2_2")]
                  }
         self.activity["nesub2_2"]= {
                 "method":self._get_path, "duration":3+(random.random()*3),
                 "args":{"path":"/math/arithmetic/addition-subtraction/two_dig_add_sub/e/subtraction_2/"},
+                "nextstep":[(1.00, "wesub2")]
+                 }
+        self.activity["wesub2"]= {
+                "method":self._wait_for_element, "duration":11,
+                "args":{"find_by":By.CSS_SELECTOR, "find_text":"#solutionarea input[type=text]"},
                 "nextstep":[(1.00, "do_esub2")]
                  }
         self.activity["do_esub2"]= {
@@ -469,6 +479,10 @@ class SeleniumStudent(benchmark_base.Common):
             elem = self.browser.find_element_by_partial_link_text(args["find_text"])
         elem.send_keys(Keys.RETURN)
 
+    def _wait_for_element(self, args):
+        wait = ui.WebDriverWait(self.browser, self.timeout)
+        wait.until(expected_conditions.element_to_be_clickable((args["find_by"], args["find_text"])))
+        
     def _do_exer(self, args):
         wait = ui.WebDriverWait(self.browser, self.timeout)
         wait.until(expected_conditions.element_to_be_clickable((By.CSS_SELECTOR, '#solutionarea input[type=text]'))) 
