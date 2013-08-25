@@ -33,6 +33,7 @@ CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
 
 # TODO(jamalex): currently this only has an effect on Linux/OSX
 PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 8008 if not CENTRAL_SERVER else 8001)
+CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 50)
 
 AUTO_LOAD_TEST = getattr(local_settings, "AUTO_LOAD_TEST", False)
 assert not AUTO_LOAD_TEST or not CENTRAL_SERVER, "AUTO_LOAD_TEST only on local server"
@@ -175,7 +176,10 @@ if CENTRAL_SERVER:
     DEFAULT_FROM_EMAIL      = getattr(local_settings, "DEFAULT_FROM_EMAIL", CENTRAL_FROM_EMAIL)
     INSTALLED_APPS         += ("postmark", "kalite.registration", "central", "faq", "contact",)
     EMAIL_BACKEND           = getattr(local_settings, "EMAIL_BACKEND", "postmark.backends.PostmarkBackend")
-    AUTH_PROFILE_MODULE     = 'central.UserProfile'
+    AUTH_PROFILE_MODULE     = "central.UserProfile"
+    CSRF_COOKIE_NAME        = "csrftoken_central"
+    LANGUAGE_COOKIE_NAME    = "django_language_central"
+    SESSION_COOKIE_NAME     = "sessionid_central"
 
 else:
     INSTALLED_APPS         += ("updates",)
