@@ -196,6 +196,17 @@ def start_video_download(request):
     force_job("videodownload", "Download Videos")
     return JsonResponse({})
 
+
+@require_admin
+@api_handle_error_with_json
+def retry_video_download(request):
+    """Clear any video still accidentally marked as in-progress, and restart the download job.
+    """
+    VideoFile.objects.filter(download_in_progress=True).update(download_in_progress=False, percent_complete=0)
+    force_job("videodownload", "Download Videos")
+    return JsonResponse({})
+
+
 @require_admin
 @api_handle_error_with_json
 def delete_videos(request):
@@ -234,6 +245,24 @@ def get_video_download_list(request):
     videofiles = VideoFile.objects.filter(flagged_for_download=True).values("youtube_id")
     video_ids = [video["youtube_id"] for video in videofiles]
     return JsonResponse(video_ids)
+
+
+@require_admin
+@api_handle_error_with_json
+def get_video_download_status(request):
+    """Get info about what video is currently being downloaded, and how many are left.
+    So far, this is only used for debugging, but could be a more robust alternative to
+    `check_video_download` if we change our approach slightly.
+    """
+
+    videofile = get_object_or_None(VideoFile, download_in_progress=True)
+    return JsonResponse({
+        "waiting_count": VideoFile.objects.filter(flagged_for_download=True).count(),
+        "current_video_id": videofile.youtube_id if videofile else None,
+        "current_video_percent": videofile.percent_complete if videofile else 0,
+        "downloading": job_status("videodownload"),
+    })
+
 
 @require_admin
 @api_handle_error_with_json

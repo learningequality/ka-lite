@@ -222,8 +222,6 @@ ul.dynatree-container li, .ui-widget-content {
                 });
 
             $(".progress-section").hide();
-            $(".progress-waiting").show();
-            $("#cancel-download").show();
 
             ga_track("send", "event", "update", "click-download-videos", "Download Videos", videos.length);
 
@@ -302,14 +300,18 @@ ul.dynatree-container li, .ui-widget-content {
         });
 
         $("#retry-video-download").click(function() {
-            doRequest("/api/start_video_download", {})
-                .fail(function(resp) {
-                    handleFailedAPI(resp, "Error canceling downloads");
-                });
-
+            do_retry_download();
             ga_track("send", "event", "update", "click-retry-download", "Retry Download");
         });
+
     });
+
+    function do_retry_download() {
+        doRequest("/api/retry_video_download", {})
+            .fail(function(resp) {
+                handleFailedAPI(resp, "Error restarting downloads");
+            });
+    }
 
     function unselectAllNodes() {
         $.each($("#content_tree").dynatree("getSelectedNodes"), function(ind, node) {
@@ -424,10 +426,28 @@ ul.dynatree-container li, .ui-widget-content {
                     //   job is no longer running.
                     $(".progress-section, #cancel-download").hide();
                     $(".progress-waiting").hide();
-                    $("#retry-video-download").show();
+                    $("#retry-video-section").show();
+
+                    if (!$("#retry-video-download").is(":visible")) {
+
+                        // wait 5 seconds before showing the retry button, in case it's just a momentary blip
+                        setTimeout(retry_download, 5000);
+
+                        // keep pressing the retry button every 60 seconds, when this page is open
+                        function retry_download() {
+                            if (!window.download_check_interval || !$("#retry-video-section").is(":visible")) {
+                                $("#retry-video-download").hide();
+                                return;
+                            }
+                            $("#retry-video-download").show();
+                            do_retry_download();
+                            setTimeout(retry_download, 60000);
+                        }
+                    }
+
                 } else {
                     // In progress case (happy).
-                    $("#retry-video-download").hide();
+                    $("#retry-video-section, #retry-video-download").hide();
                 }
             })
             .fail(function(resp) {
@@ -468,7 +488,6 @@ ul.dynatree-container li, .ui-widget-content {
         $(".video-title").text(currentNode.data.title);
         $(".video-downloading-current").text(window.download_index + 1);
         $(".video-downloading-total").text(window.downloading_videos.length);
-
 
     }
 
@@ -659,6 +678,10 @@ ul.dynatree-container li, .ui-widget-content {
     </h2>
 
     <div class="progressbar" id="progressbar-overall"></div>
+
+</div>
+
+<div id="retry-video-section">
 
     <button id="retry-video-download" type="button">{% trans "Video download error... click to retry" %}</button>
 

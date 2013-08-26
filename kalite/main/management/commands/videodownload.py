@@ -7,7 +7,7 @@ import settings
 from main.models import VideoFile
 from shared import caching
 from utils.jobs import force_job
-from utils.videos import download_video, DownloadCancelled
+from utils.videos import download_video, DownloadCancelled, URLNotFound
 
 
 def download_progress_callback(self, videofile):
@@ -46,7 +46,6 @@ class Command(BaseCommand):
 
         caching_enabled = settings.CACHE_TIME != 0
         handled_video_ids = []  # stored to deal with caching
-        failed_video_ids = []  # stored to avoid requerying failures.
 
         while True: # loop until the method is aborted
             
@@ -55,7 +54,7 @@ class Command(BaseCommand):
                 break
 
             # Grab any video that hasn't been tried yet
-            videos = VideoFile.objects.filter(flagged_for_download=True, download_in_progress=False).exclude(youtube_id__in=failed_video_ids)
+            videos = VideoFile.objects.filter(flagged_for_download=True, download_in_progress=False)
             if videos.count() == 0:
                 self.stdout.write("Nothing to download; aborting.\n")
                 break
@@ -80,14 +79,20 @@ class Command(BaseCommand):
                 handled_video_ids.append(video.youtube_id)
                 self.stdout.write("Download is complete!\n")
             except Exception as e:
-                # On error, report the error, mark the video as not downloaded,
-                #   and allow the loop to try other videos.
+
+                if isinstance(e, URLNotFound):
+                    # This should never happen, but if it does, remove the VideoFile from the queue, and continue
+                    # to the next video. Warning: this will leave the update page in a weird state, currently
+                    # (and require a refresh of the update page in order to start showing progress again)
+                    video.delete()
+                    continue
+
+                # On connection error, report the error, mark the video as not downloaded, and give up for now.
                 self.stderr.write("Error in downloading %s: %s\n" % (video.youtube_id, e))
                 video.download_in_progress = False
+                video.percent_complete = 0
                 video.save()
-                # Rather than getting stuck on one video, continue to the next video.
-                failed_video_ids.append(video.youtube_id)
-                continue
+                break
 
             # Expire, but don't regenerate until the very end, for efficiency.
             if caching_enabled:
