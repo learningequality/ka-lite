@@ -24,7 +24,8 @@ import settings
 import version
 from kalite.utils.general import get_host_name
 from kalite.utils.platforms import is_windows, system_script_extension
-
+from kalite.securesync.management.commands.initdevice import load_data_for_offline_install, Command as InitCommand
+from kalite.securesync.models import Zone
 
 def raw_input_yn(prompt):
     ans = ""
@@ -212,7 +213,10 @@ class Command(BaseCommand):
                 elif not password:
                     raise CommandError("Password cannot be blank.\n")
 
+        ########################
         # Now do stuff
+        ########################
+
         if install_clean:
             dest_file = tempfile.mkstemp()[1]
             sys.stdout.write("(Re)moving database file to temp location, starting clean install.  Recovery location: %s\n" % dest_file)
@@ -236,6 +240,17 @@ class Command(BaseCommand):
             admin.save()
 
             call_command("initdevice", hostname, description, verbosity=options.get("verbosity"))
+
+        elif os.path.exists(InitCommand.install_json_file):
+            # This is a pathway to install zone-based data on a software upgrade.
+            sys.stdout.write("Loading zone data from %s\n" % InitCommand.install_json_file)
+            load_data_for_offline_install(in_file=InitCommand.install_json_file)
+
+        elif Zone.objects.all().count() == 0:
+            # This is another pathway to install zone-based data on a software upgrade.
+            #   It won't GET the central server object (necessary for easy upgrades),
+            #   but that can be packaged inside the update itself.
+            call_command("generate_zone")
 
         sys.stdout.write("\n")
         sys.stdout.write("CONGRATULATIONS! You've finished installing the KA Lite server software.\n")

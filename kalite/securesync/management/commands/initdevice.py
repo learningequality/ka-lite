@@ -79,8 +79,9 @@ class Command(BaseCommand):
             try:
                 load_data_for_offline_install(in_file=data_file)
                 self.stdout.write("Successfully imported offline data from %s\n" % data_file)
-                if not settings.DEBUG:
-                    os.remove(data_file)
+                # Doesn't hurt to keep data around.
+                #if not settings.DEBUG:
+                #    os.remove(data_file)
             except Exception as e:
                 raise CommandError("Error importing offline data from %s: %s\n" % (data_file, str(e))) 
 
