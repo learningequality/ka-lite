@@ -4,6 +4,7 @@ from collections import OrderedDict
 from cStringIO import StringIO
 
 from django.core.exceptions import PermissionDenied
+from django.http import HttpResponse
 
 from .classes import CsvResponse, JsonResponse, JsonpResponse
 
