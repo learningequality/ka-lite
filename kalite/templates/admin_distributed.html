@@ -46,8 +46,11 @@ td.title {
 {% block content %}
 <div id="content">
   {% trans "This page can help you administer your installation of KA Lite." %}
+    
     <div style="float:right" class="server-online-only">
-        <a class="green_button" href="javascript:force_sync()">{% trans "Sync Now!" %}</a>
+        <div class="registered-only">
+            <a class="green_button" href="javascript:force_sync()">{% trans "Sync Now!" %}</a>
+        </div>
     </div>
 
     <table>

@@ -56,7 +56,7 @@ function force_sync() {
     //   then shows a message for success/failure
     doRequest("/securesync/api/force_sync")
         .success(function() {
-            show_message("success", "Successfully launched data syncing job.", "id_command")
+            show_message("success", "Successfully launched data syncing job.  Please visit <a href='http://playground.learningequality.org:56599/management/device/'>your device management page</a> to view sync status.", "id_command")
         })
         .fail(function(resp) {
             communicate_api_failure(resp, "id_command")
