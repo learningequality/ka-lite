@@ -89,6 +89,9 @@ def callback_percent_proxy(callback, start_percent=0, end_percent=100):
         callback(start_percent + int(fraction * percent_range_size))
     return inner_fn
 
+class URLNotFound(Exception):
+    pass
+
 def download_video(youtube_id, format="mp4", callback=None):
     """Downloads the video file to disk (note: this does NOT invalidate any of the cached html files in KA Lite)"""
     
@@ -103,16 +106,20 @@ def download_video(youtube_id, format="mp4", callback=None):
     thumb_url = download_url % (video_filename, thumb_filename)
         
     try:
-        download_file(url, filepath, callback_percent_proxy(callback, end_percent=95))
+        path, response = download_file(url, filepath, callback_percent_proxy(callback, end_percent=95))
+        if not response.type.startswith("video"):
+            raise URLNotFound("Video was not found!")
         
-        download_file(thumb_url, thumb_filepath, callback_percent_proxy(callback, start_percent=95, end_percent=100))
+        path, response = download_file(thumb_url, thumb_filepath, callback_percent_proxy(callback, start_percent=95, end_percent=100))
+        if not response.type.startswith("image"):
+            raise URLNotFound("Thumbnail was not found!")
         
     except DownloadCancelled:
         delete_downloaded_files(youtube_id)
     
     except Exception as e:
         delete_downloaded_files(youtube_id)
-        raise e
+        raise
     
 def delete_downloaded_files(youtube_id):
     for filepath in glob.glob(download_path + youtube_id + ".*"):
@@ -143,8 +150,7 @@ def download_file(url, dst, callback=None):
         callback = callback or _reporthook
     else:
         callback = callback or _nullhook
-    urllib.urlretrieve(url, dst,
-        lambda nb, bs, fs, url=url: callback(nb,bs,fs,url))
+    return urllib.urlretrieve(url, dst, lambda nb, bs, fs, url=url: callback(nb,bs,fs,url))
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
