@@ -453,6 +453,8 @@ class LoadExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
     """
     def setUp(self):
         super(LoadExerciseTest, self).setUp()
+        self.student = self.create_student()
+        self.browser_login_student(self.student_username, self.student_password)
         self.driver = WebDriver()
 
     @unittest.skipIf(settings.FAST_TESTS_ONLY, "Skipping slow test")
@@ -460,7 +462,13 @@ class LoadExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
         for path in get_exercise_paths():
             logging.debug("Testing path : " + path)
             self.driver.get(self.live_server_url + path)
-            self.assertFalse(self.driver.execute_script("return document.body.hasAttribute('JSError');"), "Found JS error(s) while loading path: " + path)
+            error_list = self.driver.execute_script("return window.js_errors;")
+            if error_list:
+                logging.debug("Found JS error(s) while loading path: " + path)
+                logging.debug("JS errors reported:")
+                for e in error_list:
+                    logging.debug(e)    
+            self.assertFalse(error_list)
         self.driver.close()
 
 

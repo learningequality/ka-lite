@@ -22,10 +22,6 @@
 {% block headjs %}
 <script>
 
-    window.onerror=function(msg){
-        $("body").attr("JSError",msg);
-    }
-
     var urlBaseOverride = "{% static "js/khan-exercises/" %}";
     // some dummy features on the Exercises object to make khan-exercises.js happy
     Exercises = {
