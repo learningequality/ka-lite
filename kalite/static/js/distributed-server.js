@@ -51,6 +51,18 @@ function communicate_api_failure(resp, msg_id) {
 }
 
 
+function force_sync() {
+    // Simple function that calls the API endpoint to force a data sync,
+    //   then shows a message for success/failure
+    doRequest("/securesync/api/force_sync")
+        .success(function() {
+            show_message("success", "Successfully launched data syncing job.", "id_command")
+        })
+        .fail(function(resp) {
+            communicate_api_failure(resp, "id_command")
+        });
+}
+
 /**
 * Model that holds state about a user (username, points, admin status, etc)
 */

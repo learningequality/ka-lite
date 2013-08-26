@@ -21,9 +21,8 @@ from securesync import crypto
 from securesync.devices.api_client import RegistrationClient
 from securesync.forms import RegisteredDevicePublicKeyForm, FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
 from securesync.models import SyncSession, Device, Facility, FacilityGroup, Zone
+from shared.decorators import require_admin, central_server_only, distributed_server_only, facility_required, facility_from_request
 from shared.jobs import force_job
-from utils.decorators import require_admin, central_server_only, distributed_server_only, facility_required, facility_from_request
-from utils.internet import set_query_params
 
 
 def register_public_key(request):
@@ -61,7 +60,7 @@ def register_public_key_client(request):
             "registration_url": client.path_to_url(
                 reverse("register_public_key") + "?" + urllib.quote(crypto.get_own_key().get_public_key_string())
             ),
-            "login_url": client.path_to_url(reverse("login")),
+            "central_login_url": "%s://%s/accounts/login" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST),
             "callback_url": request.build_absolute_uri(reverse("register_public_key")),
         }
     error_msg = reg_response.get("error", "")

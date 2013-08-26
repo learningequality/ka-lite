@@ -8,9 +8,9 @@ from annoying.functions import get_object_or_None
 from functools import partial
 from collections import OrderedDict
 
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
@@ -18,14 +18,15 @@ from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.utils import simplejson
 from django.utils.translation import ugettext as _
 
-from coachreports.forms import DataForm
+from .forms import DataForm
 from config.models import Settings
 from main import topicdata
-from main.models import VideoLog, ExerciseLog, VideoFile
+from main.models import VideoLog, ExerciseLog, VideoFile, UserLog
 from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device
 from securesync.views import facility_required
-from utils.decorators import allow_api_profiling, api_handle_error_with_json
-from utils.internet import StatusException, JsonResponse
+from settings import LOG as logging
+from shared.decorators import allow_api_profiling
+from utils.internet import StatusException, JsonResponse, api_handle_error_with_json
 from utils.topic_tools import get_topic_by_path
 
 
@@ -34,12 +35,12 @@ from utils.topic_tools import get_topic_by_path
 stats_dict = [
     {"key": "pct_mastery",        "name": _("% Mastery"),          "type": "number", "description": _("Percent of exercises mastered (at least 10 consecutive correct answers)")},
     {"key": "effort",             "name": _("% Effort"),           "type": "number", "description": _("Combination of attempts on exercises and videos watched.")},
-    {"key": "ex:attempts",        "name": _("Average attempts"),   "type": "number", "description": _("Number of times submitting an answer to an exercise.")},
-    {"key": "ex:streak_progress", "name": _("Average streak"),     "type": "number", "description": _("Maximum number of consecutive correct answers on an exercise.")},
-    {"key": "ex:points",          "name": _("Exercise points"),    "type": "number", "description": _("[Pointless at the moment; tracks mastery linearly]")},
+    # {"key": "ex:attempts",        "name": _("Average attempts"),   "type": "number", "description": _("Number of times submitting an answer to an exercise.")},
+    # {"key": "ex:streak_progress", "name": _("Average streak"),     "type": "number", "description": _("Maximum number of consecutive correct answers on an exercise.")},
+    # {"key": "ex:points",          "name": _("Exercise points"),    "type": "number", "description": _("[Pointless at the moment; tracks mastery linearly]")},
     { "key": "ex:completion_timestamp", "name": _("Time exercise completed"),"type": "datetime", "description": _("Day/time the exercise was completed.") },
-    {"key": "vid:points",          "name": _("Video points"),      "type": "number", "description": _("Points earned while watching a video (750 max / video).")},
-    { "key": "vid:total_seconds_watched","name": _("Video time"),   "type": "number", "description": _("Total seconds spent watching a video.") },
+    # {"key": "vid:points",          "name": _("Video points"),      "type": "number", "description": _("Points earned while watching a video (750 max / video).")},
+    # { "key": "vid:total_seconds_watched","name": _("Video time"),   "type": "number", "description": _("Total seconds spent watching a video.") },
     { "key": "vid:completion_timestamp", "name": _("Time video completed"),"type": "datetime", "description": _("Day/time the video was completed.") },
 ]
 
@@ -338,6 +339,17 @@ def api_data(request, xaxis="", yaxis=""):
             "id": facility.id,
         }
     }
+
+    if "facility_user" in request.session:
+        try:
+            # Log a "begin" and end here
+            user = request.session["facility_user"]
+            UserLog.begin_user_activity(user, activity_type="coachreport")
+            UserLog.update_user_activity(user, activity_type="login")  # to track active login time for teachers
+            UserLog.end_user_activity(user, activity_type="coachreport")
+        except ValidationError as e:
+            # Never report this error; don't want this logging to block other functionality.
+            logging.debug("Failed to update Teacher userlog activity login: %s" % e)
 
     # Now we have data, stream it back with a handler for date-times
     return JsonResponse(json_data)

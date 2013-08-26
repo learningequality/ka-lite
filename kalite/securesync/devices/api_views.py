@@ -17,8 +17,7 @@ import settings
 import version
 from .models import *
 from shared import serializers
-from utils.decorators import allow_jsonp, api_handle_error_with_json
-from utils.internet import JsonResponse, am_i_online
+from utils.internet import allow_jsonp, api_handle_error_with_json, am_i_online, JsonResponse
 
 
 @csrf_exempt

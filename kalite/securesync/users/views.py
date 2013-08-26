@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
+from django.db import models
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError
 from django.shortcuts import get_object_or_404
 from django.utils.html import strip_tags
@@ -18,10 +19,10 @@ from config.models import Settings
 from main.models import UserLog
 from securesync.devices.views import *
 from securesync.forms import FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
-from securesync.users.views import *
+from securesync.models import Facility, FacilityGroup
 from settings import LOG as logging
+from shared.decorators import require_admin, central_server_only, distributed_server_only, facility_required, facility_from_request
 from shared.jobs import force_job
-from utils.decorators import require_admin, central_server_only, distributed_server_only, facility_required, facility_from_request
 from utils.internet import set_query_params
 
 
@@ -244,7 +245,7 @@ def login(request, facility):
             return HttpResponseRedirect(
                 form.non_field_errors()
                 or request.next
-                or reverse("coach_reports") if form.get_user().is_teacher else reverse("homepage")
+                or reverse("coach_reports") if form.get_user().is_teacher else reverse("student_view")
             )
         else:
             messages.error(

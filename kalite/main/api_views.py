@@ -15,12 +15,12 @@ from .models import FacilityUser, VideoLog, ExerciseLog, VideoFile
 from config.models import Settings
 from securesync.models import FacilityGroup
 from shared.caching import invalidate_all_pages_related_to_video
+from shared.decorators import require_admin
 from shared.jobs import force_job, job_status
-from utils.videos import delete_downloaded_files
-from utils.decorators import api_handle_error_with_json, require_admin
 from utils.general import break_into_chunks
-from updates.models import UpdateProgressLog
-from utils.internet import JsonResponse
+from utils.internet import api_handle_error_with_json, JsonResponse
+from utils.orderedset import OrderedSet
+from utils.videos import delete_downloaded_files
 
 
 class student_log_api(object):
@@ -154,31 +154,12 @@ def get_exercise_logs(request):
         return JsonResponse({"error": "Could not load ExerciseLog objects: Unrecognized input data format." % e}, status=500)
 
     user = request.session["facility_user"]
-    responses = []
-    for exercise_id in data:
-        response = _get_exercise_log_dict(request, user, exercise_id)
-        if response:
-            responses.append(response)
-    return JsonResponse(responses)
 
-
-def _get_exercise_log_dict(request, user, exercise_id):
-    """
-    Utility that converts a video log to a dictionary
-    """
-    if not exercise_id:
-        return {}
-    try:
-        exerciselog = ExerciseLog.objects.get(user=user, exercise_id=exercise_id)
-    except ExerciseLog.DoesNotExist:
-        return {}
-    return {
-        "exercise_id": exercise_id,
-        "streak_progress": exerciselog.streak_progress,
-        "complete": exerciselog.complete,
-        "points": exerciselog.points,
-        "struggling": exerciselog.struggling,
-    }
+    return JsonResponse(
+        list(ExerciseLog.objects \
+            .filter(user=user, exercise_id__in=data) \
+            .values("exercise_id", "streak_progress", "complete", "points", "struggling"))
+    )
 
 
 @require_admin
