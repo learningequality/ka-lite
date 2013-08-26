@@ -11,6 +11,7 @@ from django.core.management import call_command
 
 import settings
 import version
+from utils.platforms import is_windows, system_specific_scripts
 
 
 ## The following 3 functions define the rules for inclusion/exclusion
@@ -20,15 +21,7 @@ def file_in_platform(file_path, platform):
     based on the requested platform and the file's name (including path)"""
 
     ext = os.path.splitext(file_path)[1]
-
-    if platform == "all":
-        return True
-
-    elif platform == "windows":  # remove non-windows files
-        return ext not in [".sh",]
-
-    else:  # remove windows files
-        return ext not in [".vbs", ".bat"]
+    return (platform == "all") or (ext not in system_specific_scripts(platform))
 
 
 def select_package_dirs(dirnames, key_base, **kwargs):

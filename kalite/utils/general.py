@@ -75,6 +75,21 @@ def datediff(*args, **kwargs):
         raise NotImplementedError("Unrecognized units: '%s'" % units)
 
 
+def get_host_name():
+    """
+    Cross-platform way to get the current computer name.
+    """
+    name = ""
+    try:
+        name = eval("os.uname()[1]")
+    except:
+        try:
+            name = eval("os.getenv('HOSTNAME', os.getenv('COMPUTERNAME') or '').lower()")
+        except:
+            name = ""
+    return name
+
+
 def version_diff(v1, v2):
     """
     Diff is the integer difference between the most leftward part of the versions that differ.
