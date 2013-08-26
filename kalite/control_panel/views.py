@@ -16,7 +16,7 @@ import settings
 from main import topicdata
 from central.models import Organization
 from control_panel.forms import ZoneForm, UploadFileForm
-from main.models import ExerciseLog, VideoLog, UserLogSummary
+from main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
 from securesync.forms import FacilityForm
 from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device, Zone, SyncSession
 from shared.decorators import require_authorized_admin
@@ -146,7 +146,9 @@ def facility_usage(request, facility_id, org_id=None, zone_id=None, frequency=No
             "mastered_exercises": [elog.exercise_id for elog in exercise_logs if elog.complete],
         }
         video_stats = {"count": VideoLog.objects.filter(user=user).count()}
-        login_stats = UserLogSummary.objects.filter(user=user).aggregate(Sum("total_logins"), Sum("total_seconds"))
+        login_stats = UserLogSummary.objects \
+            .filter(user=user, activity_type=UserLog.get_activity_int("login")) \
+            .aggregate(Sum("count"), Sum("total_seconds"))
 
         # Had to add one-by-one, to get OrderedDict to work.
         #   OrderedDict controls the order of the columns
@@ -154,12 +156,13 @@ def facility_usage(request, facility_id, org_id=None, zone_id=None, frequency=No
         user_data[user.pk]["first_name"] = user.first_name
         user_data[user.pk]["last_name"] = user.last_name
         user_data[user.pk]["group"] = user.group
-        user_data[user.pk]["total_logins"] = login_stats["total_logins__sum"] or 0
+        user_data[user.pk]["total_logins"] = login_stats["count__sum"] or 0
         user_data[user.pk]["total_hours"] = (login_stats["total_seconds__sum"] or 0)/3600.
         user_data[user.pk]["total_videos"] = video_stats["count"]
         user_data[user.pk]["total_exercises"] = exercise_stats["count"]
         user_data[user.pk]["pct_mastery"] = (exercise_stats["total_mastery"] or 0)/float(len_all_exercises)
         user_data[user.pk]["exercises_mastered"] = exercise_stats["mastered_exercises"]
+
         group = user.group
         if group:
             if not group.pk in group_data:
