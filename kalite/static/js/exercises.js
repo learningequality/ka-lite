@@ -63,10 +63,8 @@ $(function() {
     $(Khan).bind("hintUsed", function(ev, data) {
         exerciseData.hintUsed = true;
         if (exerciseData.percentCompleted < 100) {
-            exerciseData.percentCompleted = 0;
-            exerciseData.points = 0;
+            updatePercentCompleted(false);
         }
-        updateStreakBar();
     });
     basepoints = Math.ceil(7*Math.log(exerciseData.exerciseModel.secondsPerFastProblem));
     $("#next-question-button").click(function() {
