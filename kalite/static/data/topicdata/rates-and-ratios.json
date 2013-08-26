@@ -66,8 +66,28 @@
   }, 
   {
     "related_video_readable_ids": [
-      "unit-conversion-exercise-example-1", 
+      "multiple-rates-word-problem"
+    ], 
+    "v_position": -11, 
+    "path": "/math/arithmetic/rates-and-ratios/rates_tutorial/e/rate_problems_2/", 
+    "id": "rate_problems_2", 
+    "display_name": "Rate problems 2", 
+    "title": "Rate problems 2", 
+    "live": true, 
+    "description": "", 
+    "h_position": 31, 
+    "slug": "rate_problems_2", 
+    "kind": "Exercise", 
+    "name": "rate_problems_2", 
+    "seconds_per_fast_problem": 9.0, 
+    "prerequisites": [
+      "rate_problems_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
       "can-a-squirrel-avoid-getting-run-over", 
+      "unit-conversion-exercise-example-1", 
       "converting-units-of-length", 
       "unit-conversion-example--drug-dosage", 
       "unit-conversion-with-fractions"
@@ -83,9 +103,9 @@
     "slug": "units", 
     "kind": "Exercise", 
     "name": "units", 
-    "seconds_per_fast_problem": 18.0, 
+    "seconds_per_fast_problem": 17.0, 
     "prerequisites": [
-      "multiplying_fractions"
+      "multiplying-fractions-by-fractions-word-problems"
     ]
   }
 ]

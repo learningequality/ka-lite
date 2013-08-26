@@ -50,11 +50,77 @@ function communicate_api_failure(resp, msg_id) {
     show_api_messages(messages, msg_id)
 }
 
+
+function force_sync() {
+    // Simple function that calls the API endpoint to force a data sync,
+    //   then shows a message for success/failure
+    doRequest("/securesync/api/force_sync")
+        .success(function() {
+            show_message("success", "Successfully launched data syncing job.", "id_command")
+        })
+        .fail(function(resp) {
+            communicate_api_failure(resp, "id_command")
+        });
+}
+
+/**
+* Model that holds state about a user (username, points, admin status, etc)
+*/
+var UserModel = Backbone.Model.extend({
+    defaults: {
+        points: 0,
+        newpoints: 0
+    }
+});
+
+
+/**
+ * View that wraps the point display in the top-right corner of the screen, updating itself when points change.
+ */
+var TotalPointView = Backbone.View.extend({
+
+    initialize: function() {
+        _.bindAll(this);
+        this.model.bind("change:points", this.render);
+        this.model.bind("change:newpoints", this.render);
+        this.render();
+    },
+
+    render: function() {
+
+        // add the points that existed at page load and the points earned since page load, to get the total current points
+        var points = this.model.get("points") + this.model.get("newpoints");
+
+        // only display the points if they are greater than zero, and the user is logged in
+        if (points > 0 && this.model.get("is_logged_in")) {
+            this.$el.text("Total Points: " + points);
+            this.$el.show();
+        } else {
+            this.$el.hide();
+        }
+    }
+
+});
+
+
 $(function(){
+
+    // global Backbone model instance to store state related to the user (username, points, admin status, etc)
+    window.userModel = new UserModel();
+
+    // create an instance of the total point view, which encapsulates the point display in the top right of the screen
+    var totalPointView = new TotalPointView({model: userModel, el: "#sitepoints"});
+
     // Do the AJAX request to async-load user and message data
     $("[class$=-only]").hide();
     doRequest("/securesync/api/status")
         .success(function(data){
+
+            // store the data on the global user model, so that info about the current user can be accessed and bound to by any view
+            // TODO(jamalex): not all of the data returned by "status" is specific to the user, so we should re-do the endpoint to
+            // separate data out by type, and have multiple client-side Backbone models to store these various types of state.
+            window.userModel.set(data);
+
             toggle_state("logged-in", data.is_logged_in);
             toggle_state("registered", data.registered);
             toggle_state("django-user", data.is_django_user);
@@ -65,9 +131,6 @@ $(function(){
                 }
                 else {
                     $('#logged-in-name').text(data.username);
-                    if (data.points!=0) {
-                        $('#sitepoints').text("Points: " + data.points);
-                    }
                 }
             }
             show_django_messages(data.messages);

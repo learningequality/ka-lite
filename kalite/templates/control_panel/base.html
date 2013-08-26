@@ -72,4 +72,9 @@
 
     {% block control_panel_content %}
     {% endblock control_panel_content %}
+
+    {% block inner_content %}
+    {% endblock inner_content %}
+    {% block endjs %}{{ block.super }}
+    {% endblock endjs %}
 {% endblock content %}
