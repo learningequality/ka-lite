@@ -112,9 +112,12 @@ ul.dynatree-container li, .ui-widget-content {
 
 #retry-video-download, #retry-subtitle-download {
     color: red;
-    padding: 0 10px 0 10px;
     display: none;
     margin-top: 15px;
+}
+
+#retry-video-download:disabled, #retry-subtitle-download:disabled {
+    color: gray;
 }
 
 </style>
@@ -300,6 +303,7 @@ ul.dynatree-container li, .ui-widget-content {
         });
 
         $("#retry-video-download").click(function() {
+            $(this).attr("disabled", "disabled");
             do_retry_download();
             ga_track("send", "event", "update", "click-retry-download", "Retry Download");
         });
@@ -427,6 +431,7 @@ ul.dynatree-container li, .ui-widget-content {
                     $(".progress-section, #cancel-download").hide();
                     $(".progress-waiting").hide();
                     $("#retry-video-section").show();
+                    $("#retry-video-download").removeAttr("disabled");
 
                     if (!$("#retry-video-download").is(":visible")) {
 
@@ -439,8 +444,8 @@ ul.dynatree-container li, .ui-widget-content {
                                 $("#retry-video-download").hide();
                                 return;
                             }
-                            $("#retry-video-download").show();
                             do_retry_download();
+                            $("#retry-video-download").show()
                             setTimeout(retry_download, 60000);
                         }
                     }
