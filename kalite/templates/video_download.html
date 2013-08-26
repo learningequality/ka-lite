@@ -620,8 +620,8 @@ ul.dynatree-container li, .ui-widget-content {
         <select id="language" class="enable-when-server-online" disabled>
         </select>
     </span>
-    <button class="download-subtitles enable-when-server-online" type="button" disabled type="button" update_set="existing">{% trans "Get Needed Subtitles Only" %}</button>
-    <button class="download-subtitles enable-when-server-online" type="button" disabled type="button" update_set="all">{% trans "Get All Available Subtitles" %}</button>
+    <button class="download-subtitles enable-when-server-online" type="button" title="Download missing subtitles for currently downloaded videos." disabled type="button" update_set="existing">{% trans "Download Missing" %}</button>
+    <button class="download-subtitles enable-when-server-online" type="button" title="Download all subtitles for currently downloaded videos, including updating existing subtitle files." disabled type="button" update_set="all">{% trans "Update/Download All" %}</button>
 </div>
 
 <div style="clear: both;"></div>
