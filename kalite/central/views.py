@@ -23,7 +23,7 @@ from central.forms import OrganizationForm, OrganizationInvitationForm
 from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
 from securesync.engine.api_client import SyncClient
 from securesync.models import Zone
-from utils.decorators import require_authorized_admin
+from shared.decorators import require_authorized_admin
 
 
 def get_central_server_host(request):

@@ -10,8 +10,7 @@ import settings
 from .models import Organization, get_or_create_user_profile
 from .views import get_central_server_host
 from securesync.models import Zone
-from utils.decorators import allow_jsonp, api_handle_error_with_json
-from utils.internet import JsonResponse
+from utils.internet import allow_jsonp, api_handle_error_with_json, JsonResponse
 
 
 @allow_jsonp

@@ -15,12 +15,12 @@ import settings
 from .models import UpdateProgressLog
 from main.models import VideoFile
 from main import topicdata
-from kalite.utils.decorators import require_admin, api_handle_error_with_json
+from kalite.utils.django_utils import call_command_async
 from kalite.utils.general import isnumeric, break_into_chunks
-from kalite.utils.internet import JsonResponse
+from kalite.utils.internet import api_handle_error_with_json, JsonResponse
 from kalite.utils.orderedset import OrderedSet
 from kalite.utils.videos import delete_downloaded_files
-from kalite.utils.django_utils import call_command_async
+from shared.decorators import require_admin
 from shared.jobs import force_job, job_status
 
 

@@ -15,12 +15,12 @@ from .models import FacilityUser, VideoLog, ExerciseLog, VideoFile
 from config.models import Settings
 from securesync.models import FacilityGroup
 from shared.caching import invalidate_all_pages_related_to_video
+from shared.decorators import require_admin
 from shared.jobs import force_job, job_status
-from utils.videos import delete_downloaded_files
-from utils.decorators import api_handle_error_with_json, require_admin
 from utils.general import break_into_chunks
-from updates.models import UpdateProgressLog
-from utils.internet import JsonResponse
+from utils.internet import api_handle_error_with_json, JsonResponse
+from utils.orderedset import OrderedSet
+from utils.videos import delete_downloaded_files
 
 
 class student_log_api(object):
