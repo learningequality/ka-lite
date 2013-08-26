@@ -1,7 +1,7 @@
 import datetime
 from annoying.decorators import render_to, wraps
 from annoying.functions import get_object_or_None
-from collections import OrderedDict
+from collections import OrderedDict, namedtuple
 
 from django.core import serializers
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -155,6 +155,7 @@ def facility_usage(request, facility_id, org_id=None, zone_id=None, frequency=No
         student_data[student.pk] = OrderedDict()
         student_data[student.pk]["first_name"] = student.first_name
         student_data[student.pk]["last_name"] = student.last_name
+        student_data[student.pk]["username"] = student.username
         student_data[student.pk]["group"] = student.group
         student_data[student.pk]["total_logins"] = login_stats["count__sum"] or 0
         student_data[student.pk]["total_hours"] = (login_stats["total_seconds__sum"] or 0)/3600.
@@ -162,26 +163,28 @@ def facility_usage(request, facility_id, org_id=None, zone_id=None, frequency=No
         student_data[student.pk]["total_exercises"] = exercise_stats["count"]
         student_data[student.pk]["pct_mastery"] = (exercise_stats["total_mastery"] or 0)/float(len_all_exercises)
         student_data[student.pk]["exercises_mastered"] = exercise_stats["mastered_exercises"]
-        group = student.group
-        if group:
-            if not group.pk in group_data:
-                group_data[group.pk] = {
-                    "name": group.name,
-                    "total_logins": 0,
-                    "total_hours": 0,
-                    "total_students": 0,
-                    "total_videos": 0,
-                    "total_exercises": 0,
-                    "pct_mastery": 0,
-                }
-            group_data[group.pk]["total_students"] += 1
-            group_data[group.pk]["total_logins"] += student_data[student.pk]["total_logins"]
-            group_data[group.pk]["total_hours"] += student_data[student.pk]["total_hours"]
-            group_data[group.pk]["total_videos"] += student_data[student.pk]["total_videos"]
-            group_data[group.pk]["total_exercises"] += student_data[student.pk]["total_exercises"]
 
-            total_mastery_so_far = (group_data[group.pk]["pct_mastery"] * (group_data[group.pk]["total_students"] - 1) + student_data[student.pk]["pct_mastery"])
-            group_data[group.pk]["pct_mastery"] =  total_mastery_so_far / group_data[group.pk]["total_students"]
+        # Add group data.  Allow a fake group "Ungrouped"
+        group_pk = getattr(student.group, "pk", None)
+        group_name = getattr(student.group, "name", "Ungrouped")
+        if not group_pk in group_data:
+            group_data[group_pk] = {
+                "name": group_name,
+                "total_logins": 0,
+                "total_hours": 0,
+                "total_students": 0,
+                "total_videos": 0,
+                "total_exercises": 0,
+                "pct_mastery": 0,
+            }
+        group_data[group_pk]["total_students"] += 1
+        group_data[group_pk]["total_logins"] += student_data[student.pk]["total_logins"]
+        group_data[group_pk]["total_hours"] += student_data[student.pk]["total_hours"]
+        group_data[group_pk]["total_videos"] += student_data[student.pk]["total_videos"]
+        group_data[group_pk]["total_exercises"] += student_data[student.pk]["total_exercises"]
+
+        total_mastery_so_far = (group_data[group_pk]["pct_mastery"] * (group_data[group_pk]["total_students"] - 1) + student_data[student.pk]["pct_mastery"])
+        group_data[group_pk]["pct_mastery"] =  total_mastery_so_far / group_data[group_pk]["total_students"]
 
     return {
         "org": org,
