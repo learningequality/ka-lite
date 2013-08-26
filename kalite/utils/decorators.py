@@ -218,6 +218,7 @@ def require_authorized_admin(handler):
     """
 
     @central_server_only
+    @require_admin
     def wrapper_fn_central(request, *args, **kwargs):
         """
         The check for distributed servers already exists (require_login), so just use that below.
