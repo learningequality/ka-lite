@@ -107,7 +107,7 @@ def facility_management(request, zone_id, org_id=None):
 
 @require_authorized_admin
 @render_to("control_panel/facility_usage.html")
-@render_to_csv(["students"], key_label="user_id")
+@render_to_csv(["students", "teachers"], key_label="user_id", order="stacked")
 def facility_usage(request, facility_id, org_id=None, zone_id=None, frequency=None):
 
     # Basic data
@@ -116,75 +116,13 @@ def facility_usage(request, facility_id, org_id=None, zone_id=None, frequency=No
     facility = get_object_or_404(Facility, pk=facility_id)
     groups = FacilityGroup.objects.filter(facility=facility).order_by("name")
     students = FacilityUser.objects.filter(facility=facility, is_teacher=False).order_by("last_name", "first_name", "username")
+    teachers = FacilityUser.objects.filter(facility=facility, is_teacher=True).order_by("last_name", "first_name", "username")
 
-    # compute period start and end
-    frequency = frequency or request.GET.get("fequency")
-    if frequency == "months":  # only works for months ATM
-        cur_date = datetime.datetime.now()
-        first_this_month = datetime.datetime(year=cur_date.year, month=cur_date.month - 1, day=cur_date.day, hour=23, minute=59, second=59)
-        period_end = first_this_month - datetime.timedelta(days=1)
-        period_start = datetime.datetime(year=period_end.year, month=period_end.month, day=1)
+    frequency = frequency or request.GET.get("fequency", "months")
+    (period_start, period_end) = _get_date_range(frequency)
 
-    # Now compute stats, based on queried data
-    len_all_exercises = len(topicdata.NODE_CACHE['Exercise'])
-    student_data = OrderedDict()
-    group_data = OrderedDict()
-    for student in students:
-        exercise_logs = ExerciseLog.objects.filter(user=student)
-        video_logs = VideoLog.objects.filter(user=student)
-        login_logs = UserLogSummary.objects.filter(user=student)
-
-        # filter results
-        if frequency:
-            exercise_logs = exercise_logs.filter(completion_timestamp__gte=period_start, completion_timestamp__lte=period_end)
-            video_logs = video_logs.filter(completion_timestamp__gte=period_start, completion_timestamp__lte=period_end)
-            login_logs = login_logs.filter(start_datetime__gte=period_start, end_datetime__lte=period_end)
-
-        exercise_stats = {
-            "count": exercise_logs.count(),
-            "total_mastery": exercise_logs.aggregate(Sum("complete"))["complete__sum"],
-            "mastered_exercises": [elog.exercise_id for elog in exercise_logs if elog.complete],
-        }
-        video_stats = {"count": VideoLog.objects.filter(user=student).count()}
-        login_stats = UserLogSummary.objects \
-            .filter(user=student, activity_type=UserLog.get_activity_int("login")) \
-            .aggregate(Sum("count"), Sum("total_seconds"))
-
-        # Had to add one-by-one, to get OrderedDict to work.
-        #   OrderedDict controls the order of the columns
-        student_data[student.pk] = OrderedDict()
-        student_data[student.pk]["first_name"] = student.first_name
-        student_data[student.pk]["last_name"] = student.last_name
-        student_data[student.pk]["username"] = student.username
-        student_data[student.pk]["group"] = student.group
-        student_data[student.pk]["total_logins"] = login_stats["count__sum"] or 0
-        student_data[student.pk]["total_hours"] = (login_stats["total_seconds__sum"] or 0)/3600.
-        student_data[student.pk]["total_videos"] = video_stats["count"]
-        student_data[student.pk]["total_exercises"] = exercise_stats["count"]
-        student_data[student.pk]["pct_mastery"] = (exercise_stats["total_mastery"] or 0)/float(len_all_exercises)
-        student_data[student.pk]["exercises_mastered"] = exercise_stats["mastered_exercises"]
-
-        # Add group data.  Allow a fake group "Ungrouped"
-        group_pk = getattr(student.group, "pk", None)
-        group_name = getattr(student.group, "name", "Ungrouped")
-        if not group_pk in group_data:
-            group_data[group_pk] = {
-                "name": group_name,
-                "total_logins": 0,
-                "total_hours": 0,
-                "total_students": 0,
-                "total_videos": 0,
-                "total_exercises": 0,
-                "pct_mastery": 0,
-            }
-        group_data[group_pk]["total_students"] += 1
-        group_data[group_pk]["total_logins"] += student_data[student.pk]["total_logins"]
-        group_data[group_pk]["total_hours"] += student_data[student.pk]["total_hours"]
-        group_data[group_pk]["total_videos"] += student_data[student.pk]["total_videos"]
-        group_data[group_pk]["total_exercises"] += student_data[student.pk]["total_exercises"]
-
-        total_mastery_so_far = (group_data[group_pk]["pct_mastery"] * (group_data[group_pk]["total_students"] - 1) + student_data[student.pk]["pct_mastery"])
-        group_data[group_pk]["pct_mastery"] =  total_mastery_so_far / group_data[group_pk]["total_students"]
+    (student_data, group_data) = _get_user_usage_data(students, period_start=period_start, period_end=period_end)
+    (teacher_data, _) = _get_user_usage_data(teachers, period_start=period_start, period_end=period_end)
 
     return {
         "org": org,
@@ -192,8 +130,105 @@ def facility_usage(request, facility_id, org_id=None, zone_id=None, frequency=No
         "facility": facility,
         "groups": group_data,
         "students": student_data,
+        "teachers": teacher_data,
         "date_range": [period_start, period_end] if frequency else [None, None],
     }
+
+
+
+def _get_date_range(frequency):
+    """
+    Hack function (while CSV is in initial stages),
+        returns dates of beginning and end of last month.
+    Should be extended to do something more generic, based on
+    "frequency", and moved into utils/general.py
+    """
+    assert frequency == "months"
+
+    if frequency == "months":  # only works for months ATM
+        cur_date = datetime.datetime.now()
+        first_this_month = datetime.datetime(year=cur_date.year, month=cur_date.month - 1, day=cur_date.day, hour=23, minute=59, second=59)
+        period_end = first_this_month - datetime.timedelta(days=1)
+        period_start = datetime.datetime(year=period_end.year, month=period_end.month, day=1)
+    return (period_start, period_end)
+
+
+def _get_user_usage_data(users, period_start=None, period_end=None):
+    """
+    Returns facility user data, within the given date range.
+    """
+
+    # compute period start and end
+    # Now compute stats, based on queried data
+    len_all_exercises = len(topicdata.NODE_CACHE['Exercise'])
+    user_data = OrderedDict()
+    group_data = OrderedDict()
+    for user in users:
+        exercise_logs = ExerciseLog.objects.filter(user=user)
+        video_logs = VideoLog.objects.filter(user=user)
+        login_logs = UserLogSummary.objects.filter(user=user)
+
+        # filter results
+        if period_start:
+            exercise_logs = exercise_logs.filter(completion_timestamp__gte=period_start)
+            video_logs = video_logs.filter(completion_timestamp__gte=period_start)
+            login_logs = login_logs.filter(start_datetime__gte=period_start)
+        if period_end:
+            exercise_logs = exercise_logs.filter(completion_timestamp__lte=period_end)
+            video_logs = video_logs.filter(completion_timestamp__lte=period_end)
+            login_logs = login_logs.filter(end_datetime__lte=period_end)
+
+        exercise_stats = {
+            "count": exercise_logs.count(),
+            "total_mastery": exercise_logs.aggregate(Sum("complete"))["complete__sum"],
+            "mastered_exercises": [elog.exercise_id for elog in exercise_logs if elog.complete],
+        }
+        video_stats = {"count": VideoLog.objects.filter(user=user).count()}
+        login_stats = UserLogSummary.objects \
+            .filter(user=user, activity_type=UserLog.get_activity_int("login")) \
+            .aggregate(Sum("count"), Sum("total_seconds"))
+        report_stats = UserLogSummary.objects \
+            .filter(user=user, activity_type=UserLog.get_activity_int("coachreport")) \
+            .aggregate(Sum("count"))
+
+        # Had to add one-by-one, to get OrderedDict to work.
+        #   OrderedDict controls the order of the columns
+        user_data[user.pk] = OrderedDict()
+        user_data[user.pk]["first_name"] = user.first_name
+        user_data[user.pk]["last_name"] = user.last_name
+        user_data[user.pk]["username"] = user.username
+        user_data[user.pk]["group"] = user.group
+        user_data[user.pk]["total_report_views"] = report_stats["count__sum"] or 0
+        user_data[user.pk]["total_logins"] = login_stats["count__sum"] or 0
+        user_data[user.pk]["total_hours"] = (login_stats["total_seconds__sum"] or 0)/3600.
+        user_data[user.pk]["total_videos"] = video_stats["count"]
+        user_data[user.pk]["total_exercises"] = exercise_stats["count"]
+        user_data[user.pk]["pct_mastery"] = (exercise_stats["total_mastery"] or 0)/float(len_all_exercises)
+        user_data[user.pk]["exercises_mastered"] = exercise_stats["mastered_exercises"]
+
+        # Add group data.  Allow a fake group "Ungrouped"
+        group_pk = getattr(user.group, "pk", None)
+        group_name = getattr(user.group, "name", "Ungrouped")
+        if not group_pk in group_data:
+            group_data[group_pk] = {
+                "name": group_name,
+                "total_logins": 0,
+                "total_hours": 0,
+                "total_users": 0,
+                "total_videos": 0,
+                "total_exercises": 0,
+                "pct_mastery": 0,
+            }
+        group_data[group_pk]["total_users"] += 1
+        group_data[group_pk]["total_logins"] += user_data[user.pk]["total_logins"]
+        group_data[group_pk]["total_hours"] += user_data[user.pk]["total_hours"]
+        group_data[group_pk]["total_videos"] += user_data[user.pk]["total_videos"]
+        group_data[group_pk]["total_exercises"] += user_data[user.pk]["total_exercises"]
+
+        total_mastery_so_far = (group_data[group_pk]["pct_mastery"] * (group_data[group_pk]["total_users"] - 1) + user_data[user.pk]["pct_mastery"])
+        group_data[group_pk]["pct_mastery"] =  total_mastery_so_far / group_data[group_pk]["total_users"]
+
+    return (user_data, group_data)
 
 
 @require_authorized_admin
