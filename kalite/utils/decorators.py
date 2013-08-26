@@ -266,7 +266,7 @@ def require_authorized_admin(handler):
                 zone_id = zone.pk
 
         # Validate zone through org
-        if zone_id:
+        if zone_id and zone_id != "new":
             zone = get_object_or_404(Zone, pk=zone_id)
             if not org_id:
                 # Have to check if any orgs are accessible to this user.
@@ -275,9 +275,7 @@ def require_authorized_admin(handler):
                         return handler(request, *args, **kwargs)
                 raise PermissionDenied("You requested information from an organization that you're not authorized on.")
 
-        if org_id:
-            if org_id=="new":
-                raise PermissionDenied("You requested information from an organization that you're not authorized on.")
+        if org_id and org_id != "new":
             org = get_object_or_404(Organization, pk=org_id)
             if not org.is_member(logged_in_user):
                 raise PermissionDenied("You requested information from an organization that you're not authorized on.")
