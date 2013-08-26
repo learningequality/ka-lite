@@ -61,10 +61,11 @@ $(function() {
         updatePercentCompleted(data.pass);
     });
     $(Khan).bind("hintUsed", function(ev, data) {
-        exerciseData.hintUsed = true;
-        if (exerciseData.percentCompleted < 100) {
-            updatePercentCompleted(false);
+        if (exerciseData.hintUsed) { // only register the first hint used on a question
+            return;
         }
+        exerciseData.hintUsed = true;
+        updatePercentCompleted(false);
     });
     basepoints = Math.ceil(7*Math.log(exerciseData.exerciseModel.secondsPerFastProblem));
     $("#next-question-button").click(function() {
