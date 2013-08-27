@@ -63,10 +63,14 @@ def register_device(request):
     try:
         zone = register_self_registered_device(client_device, models, data)
     except Exception as e:
-        return JsonResponse({
-            "error": "Failed to validate the chain of trust (%s)." % e,
-            "code": "chain_of_trust_invalid",
-        }, status=500)
+        if e.message == "Client not yet on zone.":
+            zone = None
+        else:
+            # Client not on zone: allow fall-through via "old route"
+            return JsonResponse({
+                "error": "Failed to validate the chain of trust (%s)." % e,
+                "code": "chain_of_trust_invalid",
+            }, status=500)
 
     if not zone: # old code-path
         try:
@@ -119,7 +123,9 @@ def register_self_registered_device(client_device, serialized_models, request_da
 
         # Now try to build a chain of from the device to the (claimed) zone
         client_zone = client_device.get_zone()
-        if not client_zone.is_member(client_device):
+        if not client_zone:
+            raise Exception("Client not yet on zone.")
+        elif not client_zone.is_member(client_device):
             raise Exception("Chain of trust could not be established.")
 
         # If that works, then we just need to prove that the device has
