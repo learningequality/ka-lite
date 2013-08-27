@@ -172,7 +172,7 @@ class Command(BaseCommand):
         if not os.access(BASE_DIR, os.W_OK):
             raise CommandError("You do not have permission to write to this directory!")
 
-        install_clean = False
+        install_clean = True
         database_file = settings.DATABASES["default"]["NAME"]
         if os.path.exists(database_file):
             # We found an existing database file.  By default,
@@ -187,10 +187,9 @@ class Command(BaseCommand):
                or not raw_input_yn("WARNING: all data will be lost!  Are you sure? "):
                 install_clean = False
                 sys.stdout.write("Upgrading database to KA Lite version %s\n" % version.VERSION)
-            else:
-                # After all, don't delete--just move.
-                install_clean = True
-                sys.stdout.write("OK.  We will run a clean install; database file will be moved to a deletable location.")
+        if install_clean:
+            # After all, don't delete--just move.
+            sys.stdout.write("OK.  We will run a clean install; database file will be moved to a deletable location.")
 
         # Do all input at once, at the beginning
         if install_clean:
@@ -217,7 +216,8 @@ class Command(BaseCommand):
         # Now do stuff
         ########################
 
-        if install_clean:
+        if install_clean and os.path.exists(database_file):
+            # This is an overwrite install; destroy the old db
             dest_file = tempfile.mkstemp()[1]
             sys.stdout.write("(Re)moving database file to temp location, starting clean install.  Recovery location: %s\n" % dest_file)
             shutil.move(database_file, dest_file)
