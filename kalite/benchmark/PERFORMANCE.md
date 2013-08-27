@@ -8,15 +8,15 @@ Performance of the Raspberry Pi server can be significantly improved with these 
 **Changes to local_settings.py**
 
 ```
-echo "#NGINX is on port 8008 and expects ka-lite on port 7007" >> ka-lite/kalite/local_settings.py
-echo "PRODUCTION_PORT=7007" >> ka-lite/kalite/local_settings.py
-echo "" >> ka-lite/kalite/local_settings.py
-echo "#Persist ka-lite django page cache between reboots" >> ka-lite/kalite/local_settings.py
-echo "CACHE_LOCATION = '/var/tmp/kalite/cache'" >> ka-lite/kalite/local_settings.py
-echo "" >> ka-lite/kalite/local_settings.py
-echo "#Optimise cherrypy server for Raspberry Pi" >> ka-lite/kalite/local_settings.py
-echo "CHERRYPY_THREAD_COUNT = 20" >> ka-lite/kalite/local_settings.py
-echo "" >> ka-lite/kalite/local_settings.py
+echo "#NGINX is on port 8008 and expects ka-lite on port 7007" >> ~/ka-lite/kalite/local_settings.py
+echo "PRODUCTION_PORT=7007" >> ~/ka-lite/kalite/local_settings.py
+echo "" >> ~/ka-lite/kalite/local_settings.py
+echo "#Persist ka-lite django page cache between reboots" >> ~/ka-lite/kalite/local_settings.py
+echo "CACHE_LOCATION = '/var/tmp/kalite/cache'" >> ~/ka-lite/kalite/local_settings.py
+echo "" >> ~/ka-lite/kalite/local_settings.py
+echo "#Optimise cherrypy server for Raspberry Pi" >> ~/ka-lite/kalite/local_settings.py
+echo "CHERRYPY_THREAD_COUNT = 20" >> ~/ka-lite/kalite/local_settings.py
+echo "" >> ~/ka-lite/kalite/local_settings.py
 
 ```
 
