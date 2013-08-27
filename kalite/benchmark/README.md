@@ -23,14 +23,17 @@ Raw data from testing is in [DETAILED_RESULTS.md](/kalite/benchmark/DETAILED_RES
 
 ```
 #initialise card
-sudo dd bs=1M if=2013-02-09-wheezy-raspbian.img of=/dev/my_sd_card_device_goes_here
+sudo dd bs=1M if=put_raspian_image_name-here.img of=/dev/my_sd_card_device_goes_here
 ```
 **Do not** put the wifi adaptor into the Raspberry Pi yet
 
 Raspberry Pi setup is done with a wired internet connection, using ssh to connect.
 
 * Boot the Raspberry Pi
-* sudo raspi-config  --  choose the following options *[expand_rootfs, memory_split=16, update]*
+
+```
+sudo raspi-config  --  choose the following options *[Expand Filesystem, Memory Split=16, Update, Hostname]*
+```
 * Reboot the Raspberry Pi
 
 ```
@@ -39,9 +42,6 @@ sudo apt-get upgrade
 sudo apt-get install python-m2crypto
 sudo apt-get install git-core
 sudo apt-get autoremove
-
-#use this command to set a different hostname for this computer
-sudo nano /etc/hostname
 
 sudo shutdown -h now
 ```
@@ -87,3 +87,6 @@ sudo reboot
 * From the browser, navigate to 1.1.1.1:8008
 * KA-lite home page should be shown
 
+**Verify the installation**
+
+Implement the Raspberry Pi optimizations [PERFORMANCE.md](/kalite/benchmark/PERFORMANCE.md)
