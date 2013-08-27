@@ -38,14 +38,14 @@ def add_syncing_models(models):
         #   or at the front if no dependencies
         insert_idx = (1 + max(class_indices)) if class_indices else 0
 
-        # Before inserting, make sure that any models referencing *THIS* model
-        # appear after this model.
-        if [True for synmod in _syncing_models[0:insert_idx] if model in get_foreign_key_classes(synmod)]:
-            raise Exception("Dependency loop detected in syncing models; cannot proceed.")
+        # Before inserting, make sure that none of the models that appear 
+        #   before the insertion point reference this model.
+        for synmod in _syncing_models[0:insert_idx]:
+            if model in get_foreign_key_classes(synmod):
+                raise Exception("Dependency loop detected in syncing models; cannot proceed.")
 
         # Now we're ready to insert.
         _syncing_models.insert(insert_idx, model)
-
 
 def get_syncing_models():
     return _syncing_models
