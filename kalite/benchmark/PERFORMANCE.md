@@ -4,7 +4,6 @@
 
 Performance of the Raspberry Pi server can be significantly improved with these configuration changes:
 
-```
 
 **Changes to local_settings.py**
 
