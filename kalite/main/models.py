@@ -253,7 +253,7 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
             return
 
         assert self.start_datetime
-        assert not self.last_active_datetime or self.start_datetime <= self.last_active_datetime), "UserLog date consistency check for start_datetime and last_active_datetime"
+        assert not self.last_active_datetime or self.start_datetime <= self.last_active_datetime, "UserLog date consistency check for start_datetime and last_active_datetime"
 
         # Compute total_seconds, save to summary
         #   Note: only supports setting end_datetime once!
