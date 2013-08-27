@@ -296,9 +296,9 @@ class ZoneInvitation(SyncedModel):
 
     def __unicode__(self):
         outstr = u"Invitation for zone %s, invited by %s" % (self.zone.name, self.invited_by.name)
-        if used_by:
+        if self.used_by:
             outstr += u", used by %s" % self.used_by.name
-        if revoked:
+        if self.revoked:
             outstr += u" (REVOKED)"
         return outstr
 
