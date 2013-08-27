@@ -87,6 +87,9 @@ sudo reboot
 * From the browser, navigate to 1.1.1.1:8008
 * KA-lite home page should be shown
 
-**Verify the installation**
+NOTE: On the server, use "ifconfig" to confirm that the wireless device (wlan0) has an IP address.
+If it does not have an IP address try adding an "auto wlan0" into /etc/network/interfaces.
+
+**Optimize for performance**
 
 Implement the Raspberry Pi optimizations [PERFORMANCE.md](/kalite/benchmark/PERFORMANCE.md)
