@@ -128,7 +128,12 @@ def facility_usage(request, facility_id, org_id=None, zone_id=None, frequency=No
     (period_start, period_end) = _get_date_range(frequency)
 
     (student_data, group_data) = _get_user_usage_data(students, period_start=period_start, period_end=period_end)
-    (teacher_data, _) = _get_user_usage_data(teachers, period_start=period_start, period_end=period_end)
+    # Total hack for CSV-only
+    if request.GET.get("format") == "csv":
+        (period_start, period_end) = _get_date_range(frequency)
+    else:
+        period_start = None
+        period_end = None
 
     return {
         "org": org,

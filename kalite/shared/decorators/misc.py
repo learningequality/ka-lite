@@ -48,7 +48,7 @@ def facility_from_request(handler=None, request=None, *args, **kwargs):
         handler = lambda request, facility, *args, **kwargs: facility
 
     def wrapper_fn(request, *args, **kwargs):
-        if kwargs.get("facility_id",None):
+        if kwargs.get("facility_id", None):  # avoid using blank
             facility = get_object_or_None(pk=kwargs["facility_id"])
         elif "facility" in request.GET:
             facility = get_object_or_None(Facility, pk=request.GET["facility"])
