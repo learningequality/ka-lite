@@ -243,7 +243,7 @@ class Command(BaseCommand):
 
         elif os.path.exists(InitCommand.install_json_file):
             # This is a pathway to install zone-based data on a software upgrade.
-            sys.stdout.write("Loading zone data from %s\n" % InitCommand.install_json_file)
+            sys.stdout.write("Loading zone data from '%s'\n" % InitCommand.install_json_file)
             load_data_for_offline_install(in_file=InitCommand.install_json_file)
 
         elif Zone.objects.all().count() == 0:

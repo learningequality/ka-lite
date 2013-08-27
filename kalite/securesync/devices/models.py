@@ -294,6 +294,14 @@ class ZoneInvitation(SyncedModel):
 
     key = None
 
+    def __unicode__(self):
+        outstr = u"Invitation for zone %s, invited by %s" % (self.zone.name, self.invited_by.name)
+        if used_by:
+            outstr += u", used by %s" % self.used_by.name
+        if revoked:
+            outstr += u" (REVOKED)"
+        return outstr
+
     def _hashable_representation(self):
         fields = ["zone", "public_key", "public_key_signature"]
         return super(ZoneInvitation, self)._hashable_representation(fields=fields)
