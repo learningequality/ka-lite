@@ -145,6 +145,17 @@ def delete_videos(request):
 
 
 @require_admin
+@api_handle_error_with_json
+def retry_video_download(request):
+    """Clear any video still accidentally marked as in-progress, and restart the download job.
+    """
+    VideoFile.objects.filter(download_in_progress=True).update(download_in_progress=False, percent_complete=0)
+    force_job("videodownload", "Download Videos")
+    return JsonResponse({})
+
+
+@require_admin
+@api_handle_error_with_json
 def cancel_video_download(request):
 
     # clear all download in progress flags, to make sure new downloads will go through

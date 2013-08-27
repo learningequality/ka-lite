@@ -1,4 +1,5 @@
 VERSION = "0.11.0"
+BUILD = "dummy"
 RELEASE_DATE="2013/08/26"
 VERSION_INFO = {
     "0.11.0": {
