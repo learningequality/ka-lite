@@ -252,6 +252,9 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
         if not self.is_enabled():
             return
 
+        assert self.start_datetime
+        assert not self.last_active_datetime or self.start_datetime <= self.last_active_datetime), "UserLog date consistency check for start_datetime and last_active_datetime"
+
         # Compute total_seconds, save to summary
         #   Note: only supports setting end_datetime once!
         if self.end_datetime and not self.total_seconds:
@@ -362,7 +365,9 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
         cur_user_log_entry = get_object_or_None(cls, user=user, end_datetime=None, activity_type=activity_type)
 
         # No unstopped starts.  Start should have been called first!
-        if not cur_user_log_entry:
+        if cur_user_log_entry:
+            assert cur_user_log_entry.start_datetime <= update_datetime, "update time must always be later than the login time."
+        else:
             logging.warn("%s: Had to create a user log entry on an UPDATE(%d)! @ %s"%(user.username,activity_type,update_datetime))
             cur_user_log_entry = cls.begin_user_activity(user=user, activity_type=activity_type, start_datetime=update_datetime)
 

@@ -295,8 +295,9 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
                         completion_timestamp=date_completed,
                         completion_counter=datediff(date_completed, start_date, units="seconds"),
                     )
-                    elog.full_clean()
-                    elog.save()   # TODO(bcipolli): bulk saving of logs
+                    import pdb; pdb.set_trace()
+                    elog.sign(Device.get_own_device())
+                    elog.save(imported=True)  # avoid userlog issues
 
                     # For now, make all attempts on an exercise into a single UserLog.
                     seconds_per_attempt = 10 * (1 + user_settings["speed_of_learning"] * random.random())
@@ -432,7 +433,8 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
                     )
                     log.full_clean()
                     # TODO(bcipolli): bulk saving of logs
-                    log.save()
+                    log.save(imported=True)  # avoid userlog issues
+
 
                 video_logs.append(log)
 
@@ -445,7 +447,8 @@ class Command(BaseCommand):
     help = "Generate fake user data.  Can be re-run to generate extra exercise and video data."
 
     def handle(self, *args, **options):
-
+        if settings.CENTRAL_SERVER:
+            raise CommandError("Don't run this on the central server!!  Data not linked to any zone on the central server is BAD.")
         # First arg is the type of data to generate
         generate_type = "all" if len(args) <= 0 else args[0].lower()
 
