@@ -91,7 +91,7 @@ http {
 	include /etc/nginx/sites-enabled/*;
 }
 
-
+```
 
 **Finally, reboot**
 
