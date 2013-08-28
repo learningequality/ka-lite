@@ -200,6 +200,16 @@ div.exercises-card {
     margin-left: -10px;
 }
 
+.info-box #related-video-list a {
+    white-space: nowrap;
+    display: block;
+    float: left;
+    margin: 0;
+    width: 98%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .basic-form label {
     font-weight: bold;
     width: 120px;
@@ -324,7 +334,8 @@ li .progress-circle {
 
 
 #hint-remainder {
-    line-height: 110%;
+    line-height: 18px;
+    padding-top: 10px;
 }
 
 #totalpoints {
@@ -427,4 +438,25 @@ a:link.topic-unavailable,
 a:visited.topic-unavailable {
     color: #bbb;
     text-decoration: none;
+}
+
+.green_button{
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    background-color: #91ca7f;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    color: #ffffff;
+    padding: 10px 20px;
+    border:0px;
+    vertical-align: middle;
+}
+
+a.green_button, a.green_button:hover,input.green_button, input.green_button:hover {
+    color: white !important;
+    text-decoration: none;
+}
+a.green_button:hover,input.green_button:hover{
+    background-color:#C0C0C0;
 }
