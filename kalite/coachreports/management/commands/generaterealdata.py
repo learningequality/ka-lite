@@ -27,6 +27,7 @@ import re
 import json
 from math import exp, sqrt, ceil, floor
 
+from django.contrib.auth.hashers import make_password
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
@@ -440,6 +441,42 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
 
     return video_logs
 
+def generate_fake_coachreport_logs():
+    teacher_password = make_password('hellothere')
+    t,_ = FacilityUser.objects.get_or_create(
+        facility=Facility.objects.all()[0],
+        username=random.choice(firstnames),
+        defaults={
+            'password' : teacher_password,
+            'is_teacher' : True,
+        }
+    )
+    # TODO: create flags later
+    num_logs = 20
+    logs = []
+    for _ in xrange(num_logs):
+        date_logged_in = datetime.datetime.now() - datetime.timedelta(days=random.randint(1,10))
+        date_viewed_coachreport = date_logged_in + datetime.timedelta(minutes=random.randint(0, 30))
+        date_logged_out = date_viewed_coachreport + datetime.timedelta(minutes=random.randint(0, 30))
+        login_log = UserLog.objects.create(
+            user=t,
+            activity_type=UserLog.get_activity_int("login"),
+            start_datetime=date_logged_in,
+            last_active_datetime=date_viewed_coachreport,
+            end_datetime=date_logged_out,
+        )
+        logging.info("created login log for teacher %s" % t.username)
+        coachreport_log = UserLog.objects.create(
+            user=t,
+            activity_type=UserLog.get_activity_int("coachreport"),
+            start_datetime=date_viewed_coachreport,
+            last_active_datetime=date_viewed_coachreport,
+            end_datetime=date_viewed_coachreport,
+        )
+        logs.append((login_log, coachreport_log))
+        logging.info("created coachreport log for teacher %s" % t.username)
+    return logs
+
 
 class Command(BaseCommand):
     args = "<data_type=[facility,facility_users,facility_groups,default=exercises,videos]>"
@@ -469,10 +506,14 @@ class Command(BaseCommand):
             (facility_users, _, _) = generate_fake_facility_users()  # default password
             generate_fake_video_logs(facility_user=facility_users)
 
+        elif generate_type in ["coachreport, coachreports"]:
+            generate_fake_coachreport_logs()
+
         elif generate_type in ["all"]:
             (facility_users, _, _) = generate_fake_facility_users()  # default password
             generate_fake_exercise_logs(facility_user=facility_users)
             generate_fake_video_logs(facility_user=facility_users)
+            generate_fake_coachreport_logs()
 
         else:
             raise Exception("Unknown data type to generate: %s" % generate_type)
