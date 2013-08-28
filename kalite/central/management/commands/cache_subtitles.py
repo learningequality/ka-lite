@@ -48,7 +48,7 @@ class LanguageNameDoesNotExist(Exception):
         self.lang_code = lang_code
 
     def __str__(self):
-        return "The language name for (%s) doesn't exist yet. Please add it to the lookup dictionary located at %s" % (self.lang_code, lang_lookup_path)
+        return "The language name for (%s) doesn't exist yet. Please add it to the lookup dictionary by running the get_all_languages.py script located in utils/" % self.lang_code
 
 
 def download_srt_from_3rd_party(*args, **kwargs):
