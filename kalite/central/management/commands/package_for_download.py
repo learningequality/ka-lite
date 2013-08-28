@@ -31,6 +31,7 @@ from kalite.management.commands.zip_kalite import create_default_archive_filenam
 from kalite.management.commands.update import Command as UpdateCommand
 from securesync.management.commands.initdevice import Command as InitCommand
 from securesync.models import Zone, DeviceZone, Device, ChainOfTrust, ZoneInvitation
+from settings import LOG as logging
 from shared import serializers
 from utils import crypto
 from utils.general import get_module_source_file
