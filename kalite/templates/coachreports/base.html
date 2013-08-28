@@ -66,7 +66,7 @@ function display_link () {
     var link_box = $('#link-box');
     if(url_field.is(":visible")){
         url_field.hide();
-        link_box.find('a').text("(link)");
+        link_box.find('a').text("(share)");
     }
     else{
         url_field.val(generate_current_link());
@@ -163,7 +163,7 @@ function make_editable(type) {
             {% block navbar_makelink %}
             <div id="link-box">
                 <input name="url" id="url" type="text" style="display:none"></input>
-                <a href="javascript:display_link()">(link)</a>
+                <a href="javascript:display_link()">(share)</a>
             </div>
             {% endblock navbar_makelink %}
         </div>

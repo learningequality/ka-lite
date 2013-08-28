@@ -119,7 +119,7 @@ class UserLogSummary(SyncedModel):
     activity_type = models.IntegerField(blank=False, null=False)
     start_datetime = models.DateTimeField(blank=False, null=False)
     end_datetime = models.DateTimeField(blank=True, null=True)
-    total_logins = models.IntegerField(default=0, blank=False, null=False)
+    count = models.IntegerField(default=0, blank=False, null=False)
     total_seconds = models.IntegerField(default=0, blank=False, null=False)
 
     class Meta:
@@ -127,7 +127,7 @@ class UserLogSummary(SyncedModel):
 
     def __unicode__(self):
         self.full_clean()  # make sure everything that has to be there, is there.
-        return u"%d seconds over %d logins for %s/%s/%d, period %s to %s" % (self.total_seconds, self.total_logins, self.device.name, self.user.username, self.activity_type, self.start_datetime, self.end_datetime)
+        return u"%d seconds over %d logins for %s/%s/%d, period %s to %s" % (self.total_seconds, self.count, self.device.name, self.user.username, self.activity_type, self.start_datetime, self.end_datetime)
 
 
     @classmethod
@@ -210,14 +210,14 @@ class UserLogSummary(SyncedModel):
             start_datetime=cls.get_period_start_datetime(user_log.end_datetime, settings.USER_LOG_SUMMARY_FREQUENCY),
             end_datetime=cls.get_period_end_datetime(user_log.end_datetime, settings.USER_LOG_SUMMARY_FREQUENCY),
             total_seconds=0,
-            total_logins=0,
+            count=0,
         )
 
         logging.debug("Adding %d seconds for %s/%s/%d, period %s to %s" % (user_log.total_seconds, device.name, user_log.user.username, user_log.activity_type, log_summary.start_datetime, log_summary.end_datetime))
 
         # Add the latest info
         log_summary.total_seconds += user_log.total_seconds
-        log_summary.total_logins += 1
+        log_summary.count += 1
         log_summary.save()
 
 

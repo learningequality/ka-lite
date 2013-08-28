@@ -19,7 +19,9 @@ from . import get_serialized_models, save_serialized_models
 from .models import *
 from shared import serializers
 from securesync.devices.models import *  # inter-dependence
+from shared.decorators import require_admin
 from utils.internet import api_handle_error_with_json, JsonResponse
+from utils.jobs import force_job
 
 
 def require_sync_session(handler):
@@ -183,3 +185,12 @@ def model_download(data, session):
     session.models_downloaded += result["count"]
     session.errors += result.has_key("error")
     return JsonResponse(result)
+
+
+@require_admin
+@api_handle_error_with_json
+def force_sync(request):
+    """
+    """
+    force_job("syncmodels")  # now launches asynchronously
+    return JsonResponse({})

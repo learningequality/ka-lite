@@ -4,6 +4,7 @@ from collections import OrderedDict
 from cStringIO import StringIO
 
 from django.core.exceptions import PermissionDenied
+from django.http import HttpResponse
 
 from .classes import CsvResponse, JsonResponse, JsonpResponse
 
@@ -61,8 +62,6 @@ def allow_jsonp(handler):
         
     return wrapper_fn
 
-
-from . import CsvResponse
 
 def render_to_csv(context_keys, delimiter=",", key_label="key"):
     """
