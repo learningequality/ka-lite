@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 import version
 from securesync.models import ImportPurgatory
-from securesync import model_sync
+from securesync import engine
 
 
 class Command(BaseCommand):
