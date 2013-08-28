@@ -199,6 +199,7 @@ class Device(SyncedModel):
 
         metadata = own_device.get_metadata()
         metadata.is_own_device = True
+        metadata.is_trusted = settings.CENTRAL_SERVER  # this is OK to set, as DeviceMetata is NEVER synced.
         metadata.save()
 
         return own_device
