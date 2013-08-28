@@ -27,8 +27,8 @@ from utils.subtitles import subtitle_utils
 # Once these files are removed from the repo, 
 #   this logic needs to get more dynamic (files can only be loaded 
 #   after they've been generated)
-LANGUAGE_LOOKUP = json.loads(open(os.path.join(settings.DATA_PATH, "languages.json")).read())
-LANGUAGE_LIST   = json.loads(open(os.path.join(settings.SUBTITLES_DATA_ROOT, "listedlanguages.json")).read())
+lang_lookup_path = os.path.join(settings.SUBTITLES_DATA_ROOT, "languagelookup.json")
+LANGUAGE_LOOKUP = json.loads(open(lang_lookup_path).read())
 
 download_path = settings.STATIC_ROOT + "srt/"  # kalite/static/
 
@@ -48,7 +48,7 @@ class LanguageNameDoesNotExist(Exception):
         self.lang_code = lang_code
 
     def __str__(self):
-        return "The language name for (%s) doesn't exist yet. Please add it to the lookup dictionary located at static/data/languages.json" % self.lang_code
+        return "The language name for (%s) doesn't exist yet. Please add it to the lookup dictionary located at %s" % (self.lang_code, lang_lookup_path)
 
 
 def download_srt_from_3rd_party(*args, **kwargs):
@@ -279,7 +279,6 @@ def get_new_counts(data_path, download_path, language_code):
         logging.info("%-4s subtitles for %-20s" % ("No", lang_name))
 
     write_new_json(language_subtitle_count, data_path)
-    update_language_list(language_subtitle_count, data_path)
 
 
 def get_language_name(lang_code):
@@ -305,17 +304,6 @@ def write_new_json(subtitle_counts, data_path):
     logging.info("Writing fresh srt counts to %s" % filepath)
     with open(filepath, 'wb') as fp:
         json.dump(current_counts, fp)
-
-
-def update_language_list(sub_counts, data_path):
-    """Update hardcoded language codes if any supported subtitle languages aren't there."""
-    for data in sub_counts.values():
-        lang_code = data.get("code")
-        if lang_code not in LANGUAGE_LIST:
-            logging.info("Adding %s to language code list" % lang_code)
-            LANGUAGE_LIST.append(lang_code)
-    with open(os.path.join(data_path, "listedlanguages.json"), 'wb') as fp:
-        json.dump(LANGUAGE_LIST, fp)
 
 
 def update_srt_availability(lang_code):
