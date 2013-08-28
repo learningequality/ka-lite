@@ -250,9 +250,9 @@ class Command(UpdatesStaticCommand):
 
         self.signature_file = os.path.join(self.working_dir, Command.signature_filename)
         self.inner_zip_file = os.path.join(self.working_dir, Command.inner_zip_filename)
+        key = Device.get_central_server().get_key()
         signature = open(self.signature_file, "r").read()
-        base64_encoded_zip = crypto.encode_base64(open(self.inner_zip_file, "rb").read())
-        if not Device.get_central_server().get_key().verify(base64_encoded_zip, signature):
+        if not key.verify_large_file(self.inner_zip_file, signature)
             raise Exception("Failed to verify inner zip file.")
         return self.inner_zip_file
 

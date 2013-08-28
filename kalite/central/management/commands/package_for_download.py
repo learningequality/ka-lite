@@ -13,6 +13,7 @@ This file also defines a function, "install_from_package", which extracts the
   packaging logic, and so that it can be called both inline during testing,
   and externally after the package has been downloaded.
 """
+import contextlib
 import json
 import inspect
 import os
@@ -211,11 +212,13 @@ class Command(BaseCommand):
         # Pre-zip prep #4:
         #   Create a file with the inner zip file signature.
         def create_signature_file(inner_zip_file):
-            signature_file = tempfile.mkstemp()[1]
-            key = Device.get_own_device().get_key()
-            signature = key.sign(crypto.encode_base64(open(inner_zip_file, "rb").read()))
-            with open(signature_file, "w") as fp:
-                fp.write(signature)
+            signature_file = os.path.splitext(inner_zip_file)[0] + "_signature.txt"
+            logging.debug("Generating signature; saving to %s" % signature_file)
+            if settings.DEBUG or not os.path.exists(signature_file):  # always regenerate in debug mode
+                key = Device.get_own_device().get_key()
+                signature = key.sign_large_file(inner_zip_file)
+                with open(signature_file, "w") as fp:
+                    fp.write(signature)
             return signature_file
         signature_file = create_signature_file(inner_zip_file)
 
@@ -234,7 +237,6 @@ class Command(BaseCommand):
         )
 
         # cleanup
-        os.remove(signature_file)
         os.remove(models_file)
         for fil in install_files.values():
             os.remove(fil)
