@@ -233,6 +233,7 @@ def install_multiple_server_edition(request):
 
     # Loop over orgs and zones, building the dict of all zones
     #   while searching for the zone_id.
+    
     zones = []
     for org in request.user.organization_set.all().order_by("name"):
         for zone in org.zones.all().order_by("name"):
@@ -308,8 +309,8 @@ def download_kalite(request, *args, **kwargs):
     if zone and not request.user.is_authenticated():
         raise PermissionDenied("Requires authentication")
     elif zone:
-        zone_org = Organization.from_zone(zone)
-        if not zone_org or not zone_org[0].id in [org for org in get_or_create_user_profile(request.user).get_organizations()]:
+        zone_orgs = Organization.from_zone(zone)
+        if not zone_orgs or not set([org.id for org in zone_orgs]).intersection(set(get_or_create_user_profile(request.user).get_organizations().keys())):
             raise PermissionDenied("You are not authorized to access this zone information.")
 
     # Generate the zip file.  Pre-specify the zip filename,

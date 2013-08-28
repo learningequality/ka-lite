@@ -199,7 +199,7 @@ class Command(BaseCommand):
         # Pre-zip prep #3:
         #   Generate the INNER zip
         def create_inner_zip_file():
-            zip_file = create_default_archive_filename(options)
+            zip_file = os.path.join(settings.MEDIA_ROOT, "zip", os.path.basename(create_default_archive_filename(options)))
             options["file"] = zip_file
             if settings.DEBUG or not os.path.exists(zip_file):  # always regenerate in debug mode
                 call_command("zip_kalite", **options)
