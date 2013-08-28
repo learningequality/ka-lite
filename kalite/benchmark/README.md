@@ -51,15 +51,25 @@ sudo shutdown -h now
 * switch on
 
 ```
+cd ~
 git clone https://github.com/learningequality/ka-lite-pi-scripts.git
 cd ka-lite-pi-scripts/
-sudo ./configure.sh
+sudo ./configure.sh    #ignore the error "hostapdSegmentation fault"
 sudo ./use_edimax.sh
 sudo python ./configure_network_interfaces.py
+#
+sudo insserv hostapd  #needed to start hostapd correctly on reboot
+```
+To autostart the wireless network on reboot, edit /etc/network/interfaces and add this autostart command:
+```
+...
+auto wlan0
+iface wlan0 inet static
+...
+```
+now shutdown
 
-# the following command may be needed to force hostapd to autostart correctly
-sudo insserv hostapd
-
+```
 sudo shutdown -h now
 ```
 
