@@ -17,11 +17,18 @@ from django.core.management import call_command
 
 import settings
 from generate_subtitle_map import SRTS_JSON_FILENAME, headers, get_lang_map_filepath
-from main.topicdata import LANGUAGE_LOOKUP, LANGUAGE_LIST
 from settings import LOG as logging
 from utils.general import convert_date_input, ensure_dir
 from utils.subtitles import subtitle_utils
 
+# These files MUST exist, or they'll cause errors... 
+#   but that's exactly how the logic
+#   when this logic was contained in main.topicdata
+# Once these files are removed from the repo, 
+#   this logic needs to get more dynamic (files can only be loaded 
+#   after they've been generated)
+LANGUAGE_LOOKUP = json.loads(open(os.path.join(settings.DATA_PATH, "languages.json")).read())
+LANGUAGE_LIST   = json.loads(open(os.path.join(settings.SUBTITLES_DATA_ROOT, "listedlanguages.json")).read())
 
 download_path = settings.STATIC_ROOT + "srt/"  # kalite/static/
 
