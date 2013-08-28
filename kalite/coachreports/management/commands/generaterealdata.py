@@ -296,7 +296,6 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
                         completion_timestamp=date_completed,
                         completion_counter=datediff(date_completed, start_date, units="seconds"),
                     )
-                    import pdb; pdb.set_trace()
                     elog.sign(Device.get_own_device())
                     elog.save(imported=True)  # avoid userlog issues
 
