@@ -63,6 +63,10 @@ function d3_multiTimeSeries (data, timeScale, appendtohtml, options) {
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis)
     .append("text")
+      .attr("class", "label")
+      .attr("font-weight", "bold")
+      .attr("x", width)
+      .attr("y", 30)
       .style("text-anchor", "end")
       .text(options['hAxis']['title']);
 
@@ -70,6 +74,8 @@ function d3_multiTimeSeries (data, timeScale, appendtohtml, options) {
       .attr("class", "y axis")
       .call(yAxis)
     .append("text")
+      .attr("class", "label")
+      .attr("font-weight", "bold")
       .attr("transform", "rotate(-90)")
       .attr("y", 6)
       .attr("dy", ".71em")
