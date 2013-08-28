@@ -179,10 +179,11 @@ Subtitles
 @require_admin
 @api_handle_error_with_json
 def start_subtitle_download(request):
+    """Totally broken, until @dylanjbarth takes this on."""
     update_set = simplejson.loads(request.raw_post_data or "{}").get("update_set", "existing")
     language = simplejson.loads(request.raw_post_data or "{}").get("language", "")
-    language_list = topicdata.LANGUAGE_LIST
-    language_lookup = topicdata.LANGUAGE_LOOKUP
+    language_list = []#topicdata.LANGUAGE_LIST
+    language_lookup = []#topicdata.LANGUAGE_LOOKUP
 
     # Reset the language
     current_language = Settings.get("subtitle_language")
