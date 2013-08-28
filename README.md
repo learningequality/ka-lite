@@ -11,11 +11,10 @@ To install KA Lite on Linux, OSX, or Windows, view the [installation guide](http
 
 Bug reports should be filed on the [GitHub issue tracker](https://github.com/learningequality/ka-lite/issues).
 
-If you'd like to contribute, please check out the [development wiki](http://kalitewiki.learningequality.org/development/getting-started).
+If you'd like to contribute, please check out the [development wiki](http://kalitewiki.learningequality.org/development/coding/getting-started).
 
 Official website: http://kalite.learningequality.org/
 
 ---
 
-The KA Lite sourcecode itself is open-source [MIT licensed](http://opensource.org/licenses/MIT), and the other included software
-and content is licensed as described in the [LICENSE](https://raw.github.com/learningequality/ka-lite/master/LICENSE) file. Please note that KA Lite is not officially affiliated with, nor maintained by, Khan Academy, but rather makes use of Khan Academy's open API and Creative Commons content, which may only be used for non-commercial purposes.
+The KA Lite sourcecode itself is open-source [MIT licensed](http://opensource.org/licenses/MIT), and the other included software and content is licensed as described in the [LICENSE](https://raw.github.com/learningequality/ka-lite/master/LICENSE) file. Please note that KA Lite is not officially affiliated with, nor maintained by, Khan Academy, but rather makes use of Khan Academy's open API and Creative Commons content, which may only be used for non-commercial purposes.

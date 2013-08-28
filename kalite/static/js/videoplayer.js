@@ -16,6 +16,7 @@ window.VideoPlayerModel = Backbone.Model.extend({
         seconds_watched_since_save: 0.0,
         points: 0,
         possible_points: 750,
+        starting_points: 0,
         youtube_id: "",
         player_state: VideoPlayerState.UNSTARTED,
         seconds_between_saves: 30,
@@ -47,6 +48,7 @@ window.VideoPlayerModel = Backbone.Model.extend({
                 self.set({
                     total_seconds_watched: data[0].total_seconds_watched,
                     points: data[0].points,
+                    starting_points: data[0].points,
                     complete: data[0].complete
                 });
                 self.pointsSaved = data[0].points;
@@ -82,6 +84,8 @@ window.VideoPlayerModel = Backbone.Model.extend({
                 self.saving = false;
                 // Show all messages in "messages" object
                 show_api_messages(data.messages, "id_student_logs");
+                // update the top-right points display to show the newly earned points
+                userModel.set("newpoints", data.points - self.get("starting_points"));
             })
             .fail(function(resp) {
                 self.set({ wall_time_last_saved: lastSavedBeforeError });
@@ -267,46 +271,46 @@ window.VideoView = Backbone.View.extend({
         this.model.whenPointsIncrease(this._update_points);
 
         this.player
-            .addEvent("loadstart", function() {
+            .on("loadstart", function() {
 
             })
-            .addEvent("loadedmetadata", function() {
+            .on("loadedmetadata", function() {
 
             })
-            .addEvent("loadeddata", function() {
+            .on("loadeddata", function() {
 
             })
-            .addEvent("loadedalldata", function() {
+            .on("loadedalldata", function() {
 
             })
-            .addEvent("play", function() {
+            .on("play", function() {
                 self.model.setPlayerState(VideoPlayerState.PLAYING);
             })
-            .addEvent("pause", function() {
+            .on("pause", function() {
                 self.model.setPlayerState(VideoPlayerState.PAUSED);
             })
-            // .addEvent("timeupdate", function() {
+            // .on("timeupdate", function() {
 
             // })
-            .addEvent("ended", function() {
+            .on("ended", function() {
                 self.model.setPlayerState(VideoPlayerState.ENDED);
             })
-            .addEvent("durationchange", function() {
+            .on("durationchange", function() {
                 self.model.set("duration", self.player.duration());
             })
-            .addEvent("progress", function() {
+            .on("progress", function() {
 
             })
-            .addEvent("resize", function() {
+            .on("resize", function() {
 
             })
-            .addEvent("volumechange", function() {
+            .on("volumechange", function() {
 
             })
-            .addEvent("error", function() {
+            .on("error", function() {
 
             })
-            .addEvent("fullscreenchange", function() {
+            .on("fullscreenchange", function() {
 
             });
 
@@ -376,10 +380,10 @@ window.VideoView = Backbone.View.extend({
 
 });
 
-function initialize_video(video_youtube_id){ 
-    
+function initialize_video(video_youtube_id) {
+
     var create_video_view = _.once(function(width, height) {
-        
+
         window.videoView = new VideoView({
             el: $("#video-player"),
             youtube_id: video_youtube_id,
@@ -392,29 +396,29 @@ function initialize_video(video_youtube_id){
             var available_height = $(window).height() * 0.9;
             videoView.setContainerSize(available_width, available_height);
         }, 500);
-        
+
         $(window).resize(resize_video);
-        
+
         resize_video();
-        
+
     });
 
     $("video").bind("loadedmetadata", function() {
-        
+
         var width = $(this).prop("videoWidth");
         var height = $(this).prop("videoHeight");
-        
+
         create_video_view(width, height);
-        
+
     });
 
     $(".video-thumb").load(function() {
 
         var width = $(".video-thumb").width();
         var height = $(".video-thumb").height();
-        
+
         create_video_view(width, height);
-                            
+
     });
-    
+
 }

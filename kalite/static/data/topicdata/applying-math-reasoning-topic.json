@@ -14,7 +14,7 @@
     "slug": "reading_tables_1", 
     "kind": "Exercise", 
     "name": "reading_tables_1", 
-    "seconds_per_fast_problem": 7.0, 
+    "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "multiplication_1.5"
     ]
@@ -34,7 +34,7 @@
     "slug": "reading_tables_2", 
     "kind": "Exercise", 
     "name": "reading_tables_2", 
-    "seconds_per_fast_problem": 11.0, 
+    "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "reading_tables_1"
     ]
@@ -54,7 +54,7 @@
     "slug": "reading_stem_and_leaf_plots", 
     "kind": "Exercise", 
     "name": "reading_stem_and_leaf_plots", 
-    "seconds_per_fast_problem": 7.0, 
+    "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "reading_tables_2"
     ]
@@ -74,7 +74,7 @@
     "slug": "reading_pictographs_1", 
     "kind": "Exercise", 
     "name": "reading_pictographs_1", 
-    "seconds_per_fast_problem": 6.0, 
+    "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "reading_tables_1"
     ]
@@ -94,7 +94,7 @@
     "slug": "reading_pictographs_2", 
     "kind": "Exercise", 
     "name": "reading_pictographs_2", 
-    "seconds_per_fast_problem": 10.0, 
+    "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
       "reading_pictographs_1"
     ]
@@ -114,7 +114,7 @@
     "slug": "reading_bar_charts_1", 
     "kind": "Exercise", 
     "name": "reading_bar_charts_1", 
-    "seconds_per_fast_problem": 5.0, 
+    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "reading_tables_2"
     ]
@@ -134,7 +134,7 @@
     "slug": "creating_bar_charts_1", 
     "kind": "Exercise", 
     "name": "creating_bar_charts_1", 
-    "seconds_per_fast_problem": 22.0, 
+    "seconds_per_fast_problem": 26.0, 
     "prerequisites": [
       "reading_bar_charts_1"
     ]
@@ -154,7 +154,7 @@
     "slug": "reading_bar_charts_2", 
     "kind": "Exercise", 
     "name": "reading_bar_charts_2", 
-    "seconds_per_fast_problem": 9.0, 
+    "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "reading_bar_charts_1"
     ]
@@ -174,7 +174,7 @@
     "slug": "reading_bar_charts_3", 
     "kind": "Exercise", 
     "name": "reading_bar_charts_3", 
-    "seconds_per_fast_problem": 14.0, 
+    "seconds_per_fast_problem": 15.0, 
     "prerequisites": [
       "reading_bar_charts_2", 
       "mean_median_and_mode"
@@ -195,7 +195,7 @@
     "slug": "reading_line_charts_1", 
     "kind": "Exercise", 
     "name": "reading_line_charts_1", 
-    "seconds_per_fast_problem": 6.0, 
+    "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "reading_bar_charts_1"
     ]
@@ -210,12 +210,12 @@
     "display_name": "Inequalities on a number line", 
     "title": "Inequalities on a number line", 
     "live": true, 
-    "description": "Write equations of inequalities graphed on number lines. Identify number line graphs of inequalities.", 
+    "description": "Write equations of inequalities graphed on number lines. Identify number line graphs of inequalities.\n", 
     "h_position": 29, 
     "slug": "inequalities_on_a_number_line", 
     "kind": "Exercise", 
     "name": "inequalities_on_a_number_line", 
-    "seconds_per_fast_problem": 9.0, 
+    "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "linear_equations_1"
     ]

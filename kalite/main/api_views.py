@@ -16,6 +16,7 @@ from .models import FacilityUser, VideoLog, ExerciseLog, VideoFile
 from config.models import Settings
 from main import topicdata
 from securesync.models import FacilityGroup
+from shared.caching import invalidate_all_pages_related_to_video
 from utils.jobs import force_job, job_status
 from utils.videos import delete_downloaded_files
 from utils.decorators import require_admin
@@ -36,7 +37,7 @@ class student_log_api(object):
             #   allowing cross-checking of user information
             #   and better error reporting
             if "facility_user" not in request.session:
-                return JsonResponse({"warning": self.logged_out_message + "  " + _("You must be logged in as a facility user to view/save progress.")}, status=500)
+                return JsonResponse({"warning": self.logged_out_message + "  " + _("You must be logged in as a student or teacher to view/save progress.")}, status=500)
             else:
                 return handler(request)
         return wrapper_fn
@@ -195,19 +196,36 @@ def start_video_download(request):
     force_job("videodownload", "Download Videos")
     return JsonResponse({})
 
+
+@require_admin
+@api_handle_error_with_json
+def retry_video_download(request):
+    """Clear any video still accidentally marked as in-progress, and restart the download job.
+    """
+    VideoFile.objects.filter(download_in_progress=True).update(download_in_progress=False, percent_complete=0)
+    force_job("videodownload", "Download Videos")
+    return JsonResponse({})
+
+
 @require_admin
 @api_handle_error_with_json
 def delete_videos(request):
     youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
     for id in youtube_ids:
+        # Delete the file on disk
         delete_downloaded_files(id)
+
+        # Delete the file in the database
         videofile = get_object_or_None(VideoFile, youtube_id=id)
-        if not videofile:
-            continue
-        videofile.cancel_download = True
-        videofile.flagged_for_download = False
-        videofile.flagged_for_subtitle_download = False
-        videofile.save()
+        if videofile:
+            videofile.cancel_download = True
+            videofile.flagged_for_download = False
+            videofile.flagged_for_subtitle_download = False
+            videofile.save()
+
+        # Refresh the cache
+        invalidate_all_pages_related_to_video(video_id=id)
+
     return JsonResponse({})
 
 @require_admin
@@ -228,22 +246,33 @@ def get_video_download_list(request):
     video_ids = [video["youtube_id"] for video in videofiles]
     return JsonResponse(video_ids)
 
+
+@require_admin
+@api_handle_error_with_json
+def get_video_download_status(request):
+    """Get info about what video is currently being downloaded, and how many are left.
+    So far, this is only used for debugging, but could be a more robust alternative to
+    `check_video_download` if we change our approach slightly.
+    """
+
+    videofile = get_object_or_None(VideoFile, download_in_progress=True)
+    return JsonResponse({
+        "waiting_count": VideoFile.objects.filter(flagged_for_download=True).count(),
+        "current_video_id": videofile.youtube_id if videofile else None,
+        "current_video_percent": videofile.percent_complete if videofile else 0,
+        "downloading": job_status("videodownload"),
+    })
+
+
 @require_admin
 @api_handle_error_with_json
 def start_subtitle_download(request):
     update_set = simplejson.loads(request.raw_post_data or "{}").get("update_set", "existing")
     language = simplejson.loads(request.raw_post_data or "{}").get("language", "")
-    language_list = topicdata.LANGUAGE_LIST
-    language_lookup = topicdata.LANGUAGE_LOOKUP
 
-    # Reset the language
-    current_language = Settings.get("subtitle_language")
-    if language in language_list:
-        Settings.set("subtitle_language", language)
-    else:
-        return JsonResponse({"error": "This language is not currently supported - please update the language list"}, status=500)
+    # Set subtitle language
+    Settings.set("subtitle_language", language)
 
-    language_name = language_lookup.get(language)
     # Get the json file with all srts
     request_url = "http://%s/static/data/subtitles/languages/%s_available_srts.json" % (settings.CENTRAL_SERVER_HOST, language)
     try:
@@ -253,27 +282,23 @@ def start_subtitle_download(request):
     except ConnectionError:
         return JsonResponse({"error": "The central server is currently offline."}, status=500)
     except HTTPError:
-        return JsonResponse({"error": "No subtitles available on central server for %s (language code: %s); aborting." % (language_name, language)}, status=500)
+        return JsonResponse({"error": "No subtitles available on central server for language code: %s; aborting." % language}, status=500)
 
     if update_set == "existing":
-        videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True), subtitles_downloaded=False, youtube_id__in=available_srts)
+        videofiles = VideoFile.objects.filter(subtitles_downloaded=False, subtitle_download_in_progress=False)
     else:
-        videofiles = VideoFile.objects.filter(Q(percent_complete=100) | Q(flagged_for_download=True), youtube_id__in=available_srts)
+        videofiles = VideoFile.objects.filter(subtitle_download_in_progress=False)
 
-    if not videofiles:
-        return JsonResponse({"info": "There aren't any subtitles available in %s (language code: %s) for your current videos." % (language_name, language)}, status=200)
-    else:   
-        for videofile in videofiles:
-            videofile.cancel_download = False
-            if videofile.subtitle_download_in_progress:
-                continue
-            videofile.flagged_for_subtitle_download = True
-            if update_set == "all":
-                videofile.subtitles_downloaded = False
-            videofile.save()
+    queue_count = 0
+    for chunk in break_into_chunks(available_srts):
+        queue_count += videofiles.filter(youtube_id__in=chunk).update(flagged_for_subtitle_download=True, subtitles_downloaded=False)
+
+    if queue_count == 0:
+        return JsonResponse({"info": "There aren't any subtitles available in this language for your currently downloaded videos."}, status=200)
         
     force_job("subtitledownload", "Download Subtitles")
     return JsonResponse({})
+
 
 @require_admin
 @api_handle_error_with_json
