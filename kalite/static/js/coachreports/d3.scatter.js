@@ -13,7 +13,7 @@ function d3_scatter(data, xCoordinate, yCoordinate, appendtohtml) {
       height = 500 - margin.top - margin.bottom;
 
   // Initialize x and y scales.
-
+  console.log(data);
   var x = d3.scale.linear()
       .range([0, width]);
 

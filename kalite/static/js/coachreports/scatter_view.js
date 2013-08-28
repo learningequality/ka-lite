@@ -10,13 +10,18 @@ function obj2num(row, stat, json) {
     //    and turns it into a single number or an array of numbers.
     var type = stat2type(stat)
     var xdata = (type=="number") ? 0 : new Date();
-
+    console.log(stat);
     if (typeof row == 'number') {
         xdata = 0+row;
     } else {
         for (var d in row) {
             switch (stat) {
                 case "ex:streak_progress": // compute an average
+                    xdata += row[d]/json['exercises'].length;
+                    break;
+                case "ex:points":
+                    xdata += row[d];
+                    break;
                 case "ex:attempts":
                     xdata += row[d]/json['exercises'].length;
                     break;
@@ -45,6 +50,8 @@ function json2dataTable(json, xaxis, yaxis) {
         entry["user"] = json['users'][user];
         entry["userid"] = user;
         entry["tooltip"] = user2tooltip(json, user, xaxis, yaxis);
+        entry[xaxis] = obj2num(entry[xaxis], xaxis, json);
+        entry[yaxis] = obj2num(entry[yaxis], yaxis, json);
         dataTable.push(entry);
     }
     return dataTable;
@@ -154,6 +161,7 @@ function drawJsonChart(chart_div, json, xaxis, yaxis) {
       xaxis: xaxis,
       yaxis: yaxis,
     };
+    console.log(xaxis);
     var dataTable = json2dataTable(json, xaxis, yaxis);
     drawChart("#chart_div", dataTable, options);
 }
