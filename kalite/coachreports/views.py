@@ -150,7 +150,7 @@ def student_view(request, xaxis="pct_mastery", yaxis="ex:attempts"):
 
     # Only log 'coachreport' activity for students, and only when they're
     #   not coming from the login page.
-    if "facility_user" in request.session and not request.session["facility_user"].is_teacher and reverse("login") not in request.META.get("HTTP_REFERER", ""):
+    if getattr(request.session.get("facility_user"), "is_teacher") and reverse("login") not in request.META.get("HTTP_REFERER", ""):
         # Only track students who don't get redirected here automatically
         #   by the login page.
         try:
@@ -175,6 +175,9 @@ def student_view(request, xaxis="pct_mastery", yaxis="ex:attempts"):
         "video_logs": video_logs,
         "exercise_sparklines": exercise_sparklines,
         "no_data": not any_data,
+        "last_login_time": UserLog.objects \
+            .filter(user=user, activity_type=UserLog.get_activity_int("login")) \
+            .order_by("-start_datetime")[0:1],
         "stats": stats,
         "stat_defs": [  # this order determines the order of display
             {"key": "ex:pct_mastery",      "title": _("% Mastery"),        "type": "pct"},

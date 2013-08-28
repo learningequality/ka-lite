@@ -55,6 +55,7 @@
 {% block content %}
     {% block navbar %}{{ block.super }} {% endblock navbar %}
 
+{% trans "Last login time" %}: {{ last_login_time }}
 {% if no_data %}
     {% if request.is_admin or is_central %}
         {% trans "No data for this user." %}
