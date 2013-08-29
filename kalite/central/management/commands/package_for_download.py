@@ -33,7 +33,6 @@ from securesync.management.commands.initdevice import Command as InitCommand
 from securesync.models import Zone, DeviceZone, Device, ChainOfTrust, ZoneInvitation
 from settings import LOG as logging
 from shared import serializers
-from utils import crypto
 from utils.general import get_module_source_file
 from utils.platforms import system_script_extension, system_specific_zipping, system_specific_unzipping
 
@@ -217,8 +216,10 @@ class Command(BaseCommand):
             logging.debug("Generating signature; saving to %s" % signature_file)
             if settings.DEBUG or not os.path.exists(signature_file):  # always regenerate in debug mode
                 key = Device.get_own_device().get_key()
-                signature = key.sign_large_file(inner_zip_file)
+                chunk_size = int(2E5)  #200kb chunks
+                signature = key.sign_large_file(inner_zip_file, chunk_size=chunk_size)
                 with open(signature_file, "w") as fp:
+                    fp.write("%d\n" % chunk_size)
                     fp.write(signature)
             return signature_file
         signature_file = create_signature_file(inner_zip_file)
