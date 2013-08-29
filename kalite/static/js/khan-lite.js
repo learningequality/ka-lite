@@ -42,7 +42,8 @@ function show_message(msg_class, msg_text, msg_id) {
 
     msg_html = "<div class='message " + msg_class + "'";
     if (msg_id) {
-        msg_html += " id='" + msg_id + "'"
+        clear_message(msg_id);
+        msg_html += " id='" + msg_id + "'";
     }
     msg_html += ">" + msg_text + "</div>"
     $("#message_container").append(msg_html);

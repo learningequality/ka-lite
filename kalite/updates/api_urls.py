@@ -5,6 +5,7 @@ urlpatterns = patterns('updates.api_views',
     url(r'^videos/start$', 'start_video_download', {}, 'start_video_download'),
     url(r'^videos/delete$', 'delete_videos', {}, 'delete_videos'),
     url(r'^videos/cancel$', 'cancel_video_download', {}, 'cancel_video_download'),
+    url(r'^videos/retry$', 'retry_video_download', {}, 'retry_video_download'),
 
     url(r'^subtitles/start$', 'start_subtitle_download', {}, 'start_subtitle_download'),
     url(r'^subtitles/check$', 'check_subtitle_download', {}, 'check_subtitle_download'),

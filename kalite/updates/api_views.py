@@ -109,6 +109,7 @@ def start_video_download(request):
     return JsonResponse({})
 
 
+@require_admin
 @api_handle_error_with_json
 def check_video_download(request):
     youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
@@ -118,6 +119,16 @@ def check_video_download(request):
         videofile = get_object_or_None(VideoFile, youtube_id=id) or VideoFile(youtube_id=id)
         percentages[id] = videofile.percent_complete
     return JsonResponse(percentages)
+
+
+@require_admin
+@api_handle_error_with_json
+def retry_video_download(request):
+    """Clear any video still accidentally marked as in-progress, and restart the download job.
+    """
+    VideoFile.objects.filter(download_in_progress=True).update(download_in_progress=False, percent_complete=0)
+    force_job("videodownload", "Download Videos")
+    return JsonResponse({})
 
 
 @require_admin

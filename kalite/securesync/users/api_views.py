@@ -21,7 +21,7 @@ from config.models import Settings
 from main.models import VideoLog, ExerciseLog, VideoFile
 from shared import serializers
 from utils.decorators import distributed_server_only, allow_jsonp, api_handle_error_with_json
-from utils.internet import JsonResponse, am_i_online
+from utils.internet import JsonResponse
 
 
 # On pages with no forms, we want to ensure that the CSRF cookie is set, so that AJAX POST
