@@ -248,8 +248,10 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
         if not settings.USER_LOG_MAX_RECORDS:
             return
 
-        assert self.start_datetime
-        assert not self.last_active_datetime or self.start_datetime <= self.last_active_datetime, "UserLog date consistency check for start_datetime and last_active_datetime"
+        if not self.start_datetime:
+            raise ValidationError("start_datetime cannot be None")
+        if self.last_active_datetime and self.start_datetime > self.last_active_datetime:
+            raise ValidationError("UserLog date consistency check for start_datetime and last_active_datetime")
 
         # Compute total_seconds, save to summary
         #   Note: only supports setting end_datetime once!
@@ -265,7 +267,8 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
 
             # Confirm the result (output info first for easier debugging)
             logging.debug("%s: total learning time: %d seconds" % (self.user.username, self.total_seconds))
-            assert self.total_seconds >= 0, "Total learning time should always be non-negative."
+            if self.total_seconds < 0:
+                raise ValidationError("Total learning time should always be non-negative.")
 
             # Save only completed log items to the UserLogSummary
             UserLogSummary.add_log_to_summary(self)
@@ -311,7 +314,8 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
         if not settings.USER_LOG_MAX_RECORDS:
             return
 
-        assert user is not None, "A valid user must always be specified."
+        if not user:
+            raise ValidationError("A valid user must always be specified.")
         if not start_datetime:  # must be done outside the function header (else becomes static)
             start_datetime = datetime.now()
         activity_type = cls.get_activity_int(activity_type)
@@ -344,7 +348,8 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
         if not settings.USER_LOG_MAX_RECORDS:
             return
 
-        assert user is not None, "A valid user must always be specified."
+        if not user:
+            raise ValidationError("A valid user must always be specified.")
         if not update_datetime:  # must be done outside the function header (else becomes static)
             update_datetime = datetime.now()
         activity_type = cls.get_activity_int(activity_type)
@@ -353,7 +358,8 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
 
         # No unstopped starts.  Start should have been called first!
         if cur_user_log_entry:
-            assert cur_user_log_entry.start_datetime <= update_datetime, "update time must always be later than the login time."
+            if cur_user_log_entry.start_datetime > update_datetime:
+                raise ValidationError("Update time must always be later than the login time.")
         else:
             logging.warn("%s: Had to create a user log entry on an UPDATE(%d)! @ %s"%(user.username,activity_type,update_datetime))
             cur_user_log_entry = cls.begin_user_activity(user=user, activity_type=activity_type, start_datetime=update_datetime)
@@ -373,7 +379,8 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
         if not settings.USER_LOG_MAX_RECORDS:
             return
 
-        assert user is not None, "A valid user must always be specified."
+        if not user:
+            raise ValidationError("A valid user must always be specified.")
         if not end_datetime:  # must be done outside the function header (else becomes static)
             end_datetime = datetime.now()
         activity_type = cls.get_activity_int(activity_type)
