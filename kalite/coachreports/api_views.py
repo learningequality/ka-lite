@@ -375,5 +375,4 @@ def api_data(request, xaxis="", yaxis=""):
         return HttpResponse(content=json.dumps(json_data, default=dthandler), content_type="application/json")
 
     except Exception as e:
-        import pdb; pdb.set_trace()
         return HttpResponseServerError(str(e))

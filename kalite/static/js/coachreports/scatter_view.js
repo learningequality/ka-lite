@@ -10,7 +10,6 @@ function obj2num(row, stat, json) {
     //    and turns it into a single number or an array of numbers.
     var type = stat2type(stat)
     var xdata = (type=="number") ? 0 : new Date();
-    console.log(stat);
     if (typeof row == 'number') {
         xdata = 0+row;
     } else {
@@ -159,7 +158,6 @@ function drawJsonChart(chart_div, json, xaxis, yaxis) {
       hAxis: {title: stat2name(xaxis), stat: xaxis},
       vAxis: {title: stat2name(yaxis), stat: yaxis},
     };
-    console.log(xaxis);
     var dataTable = json2dataTable(json, xaxis, yaxis);
     drawChart("#chart_div", dataTable, options);
 }
