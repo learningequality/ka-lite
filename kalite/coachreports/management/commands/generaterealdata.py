@@ -203,6 +203,7 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
     By default, users start learning randomly between 6 months ago and now.
     """
 
+    own_device = Device.get_own_device()
     date_diff = datetime.datetime.now() - start_date
     exercise_logs = []
     user_logs = []
@@ -296,7 +297,8 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
                         completion_timestamp=date_completed,
                         completion_counter=datediff(date_completed, start_date, units="seconds"),
                     )
-                    elog.sign(Device.get_own_device())
+                    elog.counter = own_device.increment_and_get_counter()
+                    elog.sign(own_device)  # have to sign after setting the counter
                     elog.save(imported=True)  # avoid userlog issues
 
                     # For now, make all attempts on an exercise into a single UserLog.
@@ -323,6 +325,7 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
     If no users are given, they are created.
     If no topics exist, they are taken from the list at the top of this file."""
 
+    own_device = Device.get_own_device()
     date_diff = datetime.datetime.now() - start_date
     video_logs = []
 
@@ -423,7 +426,7 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
                         points,
                         " COMPLETE on %s!" % date_completed if pct_completed == 100 else "",
                     ))
-                    log = VideoLog(
+                    vlog = VideoLog(
                         user=facility_user,
                         youtube_id=video["youtube_id"],
                         total_seconds_watched=total_seconds_watched,
@@ -431,12 +434,14 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
                         completion_timestamp=date_completed,
                         completion_counter=datediff(date_completed, start_date, units="seconds"),
                     )
-                    log.full_clean()
+                    vlog.full_clean()
                     # TODO(bcipolli): bulk saving of logs
-                    log.save(imported=True)  # avoid userlog issues
+                    vlog.counter = own_device.increment_and_get_counter()
+                    vlog.sign(own_device)  # have to sign after setting the counter
+                    vlog.save(imported=True)  # avoid userlog issues
 
 
-                video_logs.append(log)
+                video_logs.append(vlog)
 
     return video_logs
 
