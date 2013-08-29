@@ -3,6 +3,7 @@ import os
 
 from django.contrib.auth.models import User
 from django.core.management import call_command
+from django.core.management.base import CommandError
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils import unittest
@@ -13,8 +14,10 @@ from .command_tests import VideoScanTests
 from main.models import VideoLog, ExerciseLog, VideoFile
 from securesync.models import Facility, FacilityUser
 from utils.testing.client import KALiteClient
+from utils.testing.decorators import distributed_server_test
 
 
+@distributed_server_test
 class TestSaveExerciseLog(TestCase):
     
     ORIGINAL_POINTS = 37
@@ -124,6 +127,7 @@ class TestSaveExerciseLog(TestCase):
         self.assertEqual(exerciselog.attempts, self.ORIGINAL_ATTEMPTS + 2, "The ExerciseLog did not have the correct number of attempts.")        
 
 
+@distributed_server_test
 class TestSaveVideoLog(TestCase):
     
     ORIGINAL_POINTS = 84
@@ -208,6 +212,7 @@ class TestSaveVideoLog(TestCase):
         self.assertEqual(videolog.total_seconds_watched, self.ORIGINAL_SECONDS_WATCHED + self.NEW_SECONDS_WATCHED, "The VideoLog's seconds watched was not updated correctly.")
 
 
+@distributed_server_test
 class TestAdminApiCalls(MainTestCase):
     """
     Test main.api_views that require an admin login
@@ -288,3 +293,5 @@ class TestAdminApiCalls(MainTestCase):
         self.assertEqual(result.status_code, 200, "An error (%d) was thrown while saving the video log." % result.status_code)
         self.assertEqual(VideoFile.objects.all().count(), 0, "Should have zero objects; found %d" % VideoFile.objects.all().count())
         self.assertFalse(os.path.exists(self.fake_video_file), "Video file should not exist on disk.")
+
+
