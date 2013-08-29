@@ -11,16 +11,17 @@ from django.utils import simplejson
 from django.core.management import call_command
 from django.db.models import Q
 
-from updates.models import UpdateProgressLog
+import settings
+from .models import UpdateProgressLog
 from main.models import VideoFile
 from main import topicdata
 from kalite.utils.decorators import require_admin, api_handle_error_with_json
 from kalite.utils.general import isnumeric, break_into_chunks
 from kalite.utils.internet import JsonResponse
 from kalite.utils.orderedset import OrderedSet
-from kalite.utils.jobs import force_job, job_status
 from kalite.utils.videos import delete_downloaded_files
 from kalite.utils.django_utils import call_command_async
+from shared.jobs import force_job, job_status
 
 
 def process_log_from_request(handler):
@@ -313,14 +314,14 @@ def start_update_kalite(request):
 
     if request.META.get("CONTENT_TYPE", "") == "application/json" and "url" in data:
         # Got a download url
-        call_command_async("update", url=data["url"])
+        call_command_async("update", url=data["url"], manage_py_dir=settings.PROJECT_PATH)
 
     elif request.META.get("CONTENT_TYPE", "") == "application/zip":
         # Streamed a file; save and call
         fp, tempfile = tempfile.mkstmp()
         with fp:
             write(request.content)
-        call_command_async("update", zip_file=tempfile)
+        call_command_async("update", zip_file=tempfile, manage_py_dir=settings.PROJECT_PATH)
 
     return JsonResponse({})
 

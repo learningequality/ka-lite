@@ -14,13 +14,8 @@ from .api_forms import ExerciseLogForm, VideoLogForm
 from .models import FacilityUser, VideoLog, ExerciseLog, VideoFile
 from config.models import Settings
 from securesync.models import FacilityGroup
-from shared.caching import invalidate_all_pages_related_to_video
-from updates.models import UpdateProgressLog
 from utils.decorators import api_handle_error_with_json, require_admin
-from utils.general import break_into_chunks
 from utils.internet import JsonResponse
-from utils.jobs import force_job, job_status
-from utils.videos import delete_downloaded_files
 
 class student_log_api(object):
 
@@ -178,7 +173,6 @@ def _get_exercise_log_dict(request, user, exercise_id):
         "points": exerciselog.points,
         "struggling": exerciselog.struggling,
     }
-
 
 # Functions below here focused on users
 

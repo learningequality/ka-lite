@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 import urllib
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
@@ -19,10 +17,11 @@ from django.utils.translation import ugettext as _
 import settings
 from config.models import Settings
 from main.models import UserLog
+from securesync.devices.views import *
 from securesync.forms import FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
 from securesync.models import Facility, FacilityGroup
 from settings import LOG as logging
-from utils.jobs import force_job
+from shared.jobs import force_job
 from utils.decorators import require_admin, central_server_only, distributed_server_only, facility_required, facility_from_request
 from utils.internet import set_query_params
 

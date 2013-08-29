@@ -138,8 +138,6 @@ MIDDLEWARE_CLASSES = (
     "django.middleware.csrf.CsrfViewMiddleware",
 ) + MIDDLEWARE_CLASSES  # append local_settings middleware, in case of dependencies
 
-ROOT_URLCONF = "kalite.urls"
-
 INSTALLED_APPS = getattr(local_settings, 'INSTALLED_APPS', tuple())
 INSTALLED_APPS = (
     "django.contrib.auth",
@@ -159,6 +157,7 @@ INSTALLED_APPS = (
     "control_panel", # in both apps
     "coachreports", # in both apps; reachable on central via control_panel
     "kalite", # contains commands
+    "updates",
 ) + INSTALLED_APPS  # append local_settings installed_apps, in case of dependencies
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
@@ -182,7 +181,6 @@ if CENTRAL_SERVER:
     SESSION_COOKIE_NAME     = "sessionid_central"
 
 else:
-    INSTALLED_APPS         += ("updates",)
     ROOT_URLCONF = "main.urls"
     # Include optionally installed apps
     if os.path.exists(PROJECT_PATH + "/tests/loadtesting/"):
@@ -245,24 +243,3 @@ CRONSERVER_FREQUENCY = getattr(local_settings, "CRONSERVER_FREQUENCY", 600) # 10
 # Add additional mimetypes to avoid errors/warnings
 import mimetypes
 mimetypes.add_type("font/opentype", ".otf", True)
-
-# Django debug_toolbar config
-if getattr(local_settings, "USE_DEBUG_TOOLBAR", False):
-    INSTALLED_APPS += ('debug_toolbar',)
-    MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
-    DEBUG_TOOLBAR_PANELS = (
-        'debug_toolbar.panels.version.VersionDebugPanel',
-        'debug_toolbar.panels.timer.TimerDebugPanel',
-        'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
-        'debug_toolbar.panels.headers.HeaderDebugPanel',
-        'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
-        'debug_toolbar.panels.template.TemplateDebugPanel',
-        'debug_toolbar.panels.sql.SQLDebugPanel',
-        'debug_toolbar.panels.signals.SignalDebugPanel',
-        'debug_toolbar.panels.logger.LoggingPanel',
-    )
-    DEBUG_TOOLBAR_CONFIG = {
-        'INTERCEPT_REDIRECTS': False,
-        'HIDE_DJANGO_SQL': False,
-        'ENABLE_STACKTRACES' : True,
-    }

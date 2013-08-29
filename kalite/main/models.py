@@ -24,7 +24,7 @@ class VideoLog(SyncedModel):
     completion_timestamp = models.DateTimeField(blank=True, null=True)
     completion_counter = models.IntegerField(blank=True, null=True)
 
-    class Meta:
+    class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         pass
 
     def save(self, *args, **kwargs):
@@ -71,7 +71,7 @@ class ExerciseLog(SyncedModel):
     completion_timestamp = models.DateTimeField(blank=True, null=True)
     completion_counter = models.IntegerField(blank=True, null=True)
 
-    class Meta:
+    class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         pass
 
     def save(self, *args, **kwargs):
@@ -122,7 +122,7 @@ class UserLogSummary(SyncedModel):
     count = models.IntegerField(default=0, blank=False, null=False)
     total_seconds = models.IntegerField(default=0, blank=False, null=False)
 
-    class Meta:
+    class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         pass
 
     def __unicode__(self):

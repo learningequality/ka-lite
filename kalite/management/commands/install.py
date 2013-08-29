@@ -1,13 +1,12 @@
 import getpass
 import os
-import platform
-import pwd
 import re
 import shutil
 import sys
 import tempfile
 from optparse import make_option
 
+# This is necessary for this script to run before KA Lite has ever been installed.
 CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
 BASE_DIR = os.path.realpath(CURRENT_DIR + "/../../../")
 
@@ -23,6 +22,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 import settings
 from kalite.utils.general import get_host_name
+from kalite.utils.platforms import is_windows, system_script_extension
 
 
 def raw_input_yn(prompt):
@@ -50,8 +50,7 @@ def raw_input_password():
 
 
 def find_owner(file):
-    return pwd.getpwuid(os.stat(file).st_uid).pw_name
-
+    return getpass.getuser()
 
 def validate_username(username):
     return not username or (not re.match(r'^[^a-zA-Z]', username) and not re.match(r'[^a-zA-Z0-9_]+', username))
@@ -123,8 +122,6 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        script_ext = "bat" if platform.platform == "Windows" else "sh"
-
         sys.stdout.write("  _   __  ___    _     _ _        \n")
         sys.stdout.write(" | | / / / _ \  | |   (_) |       \n")
         sys.stdout.write(" | |/ / / /_\ \ | |    _| |_ ___  \n")
@@ -145,7 +142,8 @@ class Command(BaseCommand):
             raw_input("Press [enter] to continue...")
             sys.stdout.write("\n")
 
-        if platform.platform() != "Windows" and os.getuid() == 502:
+        # Tried not to be os-specific, but ... hey. :-/
+        if not is_windows() and hasattr(os, "getuid") and os.getuid() == 502:
             sys.stdout.write("-------------------------------------------------------------------\n")
             sys.stdout.write("WARNING: You are installing KA-Lite as root user!\n")
             sys.stdout.write("\tInstalling as root may cause some permission problems while running\n")
@@ -172,7 +170,7 @@ class Command(BaseCommand):
             sys.stdout.write("-------------------------------------------------------------------\n")
             sys.stdout.write("WARNING: Database file already exists! If this is a new installation,\n")
             sys.stdout.write("\tyou should delete the file %s and then\n" % database_file)
-            sys.stdout.write("\tre-run this script. If the server is running, first run ./stop.%s\n" % script_ext)
+            sys.stdout.write("\tre-run this script. If the server is running, first run ./stop%s\n" % system_script_extension())
             sys.stdout.write("-------------------------------------------------------------------\n")
             if options["interactive"]:
                 if not raw_input_yn("Remove database file '%s' now? " % database_file):
@@ -229,6 +227,6 @@ class Command(BaseCommand):
 
         sys.stdout.write("\n")
         sys.stdout.write("CONGRATULATIONS! You've finished installing the KA Lite server software.\n")
-        sys.stdout.write("\tPlease run './start.%s' to start the server, and then load the url\n" % script_ext)
+        sys.stdout.write("\tPlease run './start.%s' to start the server, and then load the url\n" % system_script_extension())
         sys.stdout.write("\thttp://127.0.0.1:%d/ to complete the device configuration.\n" % settings.PRODUCTION_PORT)
         sys.stdout.write("\n")
