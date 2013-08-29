@@ -17,8 +17,8 @@ from config.models import Settings
 from main import topicdata
 from securesync.models import FacilityGroup
 from shared.caching import invalidate_all_pages_related_to_video
+from shared.videos import delete_downloaded_files
 from utils.jobs import force_job, job_status
-from utils.videos import delete_downloaded_files
 from utils.decorators import require_admin
 from utils.general import break_into_chunks
 from utils.internet import JsonResponse
