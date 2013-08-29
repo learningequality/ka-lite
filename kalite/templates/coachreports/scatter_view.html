@@ -37,7 +37,7 @@
 
 {% block endjs %}{{ block.super }}
 <script>
-setTimeout( function {
+setTimeout( function() {
 	$("#xaxis").change(   function() { plotTopics(null); });
 	$("#yaxis").change(   function() { plotTopics(null); });
 }, 200);
