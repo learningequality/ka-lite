@@ -34,12 +34,12 @@ from utils.topic_tools import get_topic_by_path
 stats_dict = [
     {"key": "pct_mastery",        "name": _("% Mastery"),          "type": "number", "description": _("Percent of exercises mastered (at least 10 consecutive correct answers)")},
     {"key": "effort",             "name": _("% Effort"),           "type": "number", "description": _("Combination of attempts on exercises and videos watched.")},
-    {"key": "ex:attempts",        "name": _("Average attempts"),   "type": "number", "description": _("Number of times submitting an answer to an exercise.")},
-    {"key": "ex:streak_progress", "name": _("Average streak"),     "type": "number", "description": _("Maximum number of consecutive correct answers on an exercise.")},
-    {"key": "ex:points",          "name": _("Exercise points"),    "type": "number", "description": _("[Pointless at the moment; tracks mastery linearly]")},
+    # {"key": "ex:attempts",        "name": _("Average attempts"),   "type": "number", "description": _("Number of times submitting an answer to an exercise.")},
+    # {"key": "ex:streak_progress", "name": _("Average streak"),     "type": "number", "description": _("Maximum number of consecutive correct answers on an exercise.")},
+    # {"key": "ex:points",          "name": _("Exercise points"),    "type": "number", "description": _("[Pointless at the moment; tracks mastery linearly]")},
     { "key": "ex:completion_timestamp", "name": _("Time exercise completed"),"type": "datetime", "description": _("Day/time the exercise was completed.") },
-    {"key": "vid:points",          "name": _("Video points"),      "type": "number", "description": _("Points earned while watching a video (750 max / video).")},
-    { "key": "vid:total_seconds_watched","name": _("Video time"),   "type": "number", "description": _("Total seconds spent watching a video.") },
+    # {"key": "vid:points",          "name": _("Video points"),      "type": "number", "description": _("Points earned while watching a video (750 max / video).")},
+    # { "key": "vid:total_seconds_watched","name": _("Video time"),   "type": "number", "description": _("Total seconds spent watching a video.") },
     { "key": "vid:completion_timestamp", "name": _("Time video completed"),"type": "datetime", "description": _("Day/time the video was completed.") },
 ]
 
@@ -322,27 +322,22 @@ def api_data(request, xaxis="", yaxis=""):
         return HttpResponseNotFound("Must specify a topic path")
 
     # Query out the data: what?
-    try:
-        computed_data = compute_data(data_types=[form.data.get("xaxis"), form.data.get("yaxis")], who=users, where=form.data.get("topic_path"))
-        json_data = {
-            "data": computed_data["data"],
-            "exercises": computed_data["exercises"],
-            "videos": computed_data["videos"],
-            "users": dict(zip([u.id for u in users],
-                                ["%s, %s" % (u.last_name, u.first_name) for u in users]
-                         )),
-            "groups":  dict(zip([g.id for g in groups],
-                                 dict(zip(["id", "name"], [(g.id, g.name) for g in groups])),
-                          )),
-            "facility": None if not facility else {
-                "name": facility.name,
-                "id": facility.id,
-            }
+    computed_data = compute_data(data_types=[form.data.get("xaxis"), form.data.get("yaxis")], who=users, where=form.data.get("topic_path"))
+    json_data = {
+        "data": computed_data["data"],
+        "exercises": computed_data["exercises"],
+        "videos": computed_data["videos"],
+        "users": dict(zip([u.id for u in users],
+                            ["%s, %s" % (u.last_name, u.first_name) for u in users]
+                     )),
+        "groups":  dict(zip([g.id for g in groups],
+                             dict(zip(["id", "name"], [(g.id, g.name) for g in groups])),
+                      )),
+        "facility": None if not facility else {
+            "name": facility.name,
+            "id": facility.id,
         }
+    }
 
-        # Now we have data, stream it back with a handler for date-times
-        dthandler = lambda obj: obj.isoformat() if isinstance(obj, datetime.datetime) else None
-        return HttpResponse(content=json.dumps(json_data, default=dthandler), content_type="application/json")
-
-    except Exception as e:
-        return HttpResponseServerError(str(e))
+    # Now we have data, stream it back with a handler for date-times
+    return JsonResponse(json_data)

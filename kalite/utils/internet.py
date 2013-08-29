@@ -1,6 +1,7 @@
 """
 For functions mucking with internet access
 """
+import datetime
 import os
 import requests
 from urlparse import parse_qs, urlsplit, urlunsplit
@@ -25,7 +26,8 @@ class JsonResponse(HttpResponse):
     """Wrapper class for generating a HTTP response with JSON data"""
     def __init__(self, content, *args, **kwargs):
         if not isinstance(content, basestring):
-            content = simplejson.dumps(content, ensure_ascii=False)
+            dthandler = lambda obj: obj.isoformat() if isinstance(obj, datetime.datetime) else None
+            content = simplejson.dumps(content, default=dthandler, ensure_ascii=False)
         super(JsonResponse, self).__init__(content, content_type='application/json', *args, **kwargs)
 
 

@@ -1,3 +1,4 @@
+import datetime
 import json
 import os
 from decorator.decorator import decorator
@@ -7,9 +8,7 @@ from django.http import HttpResponse, Http404
 
 import kalite
 import settings
-from .models import Organization, get_or_create_user_profile
 from .views import get_central_server_host
-from securesync.models import Zone
 from utils.decorators import allow_jsonp, api_handle_error_with_json
 from utils.internet import JsonResponse
 
@@ -19,6 +18,7 @@ from utils.internet import JsonResponse
 def get_kalite_version(request):
     return JsonResponse({
         "version": kalite.VERSION,
+        "release_date": datetime.datetime.strptime(kalite.RELEASE_DATE, '%Y/%m/%d')
     })
 
 

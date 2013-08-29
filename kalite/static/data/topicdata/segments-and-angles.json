@@ -1,8 +1,7 @@
 [
   {
     "related_video_readable_ids": [
-      "lines--line-segments--and-rays", 
-      "identifying-rays"
+      "lines--line-segments--and-rays"
     ], 
     "v_position": -22, 
     "path": "/math/geometry/segments-and-angles/intro_euclid/e/recognizing_rays_lines_and_line_segments/", 
@@ -10,7 +9,7 @@
     "display_name": "Recognizing rays lines and line segments", 
     "title": "Recognizing rays lines and line segments", 
     "live": true, 
-    "description": null, 
+    "description": "", 
     "h_position": 25, 
     "slug": "recognizing_rays_lines_and_line_segments", 
     "kind": "Exercise", 
@@ -37,7 +36,7 @@
     "slug": "points_lines_and_planes", 
     "kind": "Exercise", 
     "name": "points_lines_and_planes", 
-    "seconds_per_fast_problem": 6.0, 
+    "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "recognizing_rays_lines_and_line_segments"
     ]
@@ -98,26 +97,28 @@
     "slug": "segment_addition", 
     "kind": "Exercise", 
     "name": "segment_addition", 
-    "seconds_per_fast_problem": 29.0, 
+    "seconds_per_fast_problem": 31.0, 
     "prerequisites": [
       "measuring_segments", 
       "congruent_segments"
     ]
   }, 
   {
-    "related_video_readable_ids": [], 
+    "related_video_readable_ids": [
+      "midpoint-of-a-segment"
+    ], 
     "v_position": -22, 
     "path": "/math/geometry/segments-and-angles/line-segment-algebra/e/midpoint_of_a_segment/", 
     "id": "midpoint_of_a_segment", 
     "display_name": "Midpoint of a segment", 
     "title": "Midpoint of a segment", 
     "live": true, 
-    "description": null, 
+    "description": "", 
     "h_position": 27, 
     "slug": "midpoint_of_a_segment", 
     "kind": "Exercise", 
     "name": "midpoint_of_a_segment", 
-    "seconds_per_fast_problem": 29.0, 
+    "seconds_per_fast_problem": 30.0, 
     "prerequisites": [
       "measuring_segments", 
       "congruent_segments"

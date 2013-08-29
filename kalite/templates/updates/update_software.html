@@ -77,7 +77,14 @@ function version_callback(data) {
     // Check to see if the remote software matches the local software version.
     //   If not, alert the user!
     var current_version = "{{ software_version }}";
+    var current_release_date = "{{ software_release_date }}"
     var remote_version = data.version;
+    var remote_release_date = data.release_date;
+
+    // Update the page
+    $("#remote_version").text(remote_version)
+    $("#remote_release_date").text(remote_release_date)
+
     if (current_version != remote_version) {
         alert("update available!" + current_version + remote_version);
     }
@@ -151,11 +158,18 @@ function download_urls_callback(data) {
 </div>
 <div style="clear: both;"></div>
 
-<div>
+<div><h2>Current Version</h2>
 <span>Current version: {{ software_version }}</span><br />
+<span>Current version release date: {{ software_release_date }}</span><br />
 <span>Current install directory: {{ install_dir }}</span><br />
 <span>Current database last-updated: {{ database_last_updated }}</span><br />
 </div>
+
+<div><h2>Remote Version</h2>
+<span>Current version release date:</span> <span id="remote_release_date"></span><br />
+<span>Current version:</span><span id="remote_version"></span><br />
+</div>
+
 <div style="clear: both;"></div>
 <!-- fake way to do JSONP -->
 <script type="text/javascript" src="{% central_server_api path='/api/version' %}?callback=version_callback"></script>

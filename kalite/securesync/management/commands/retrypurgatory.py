@@ -29,8 +29,11 @@ class Command(BaseCommand):
 
             # Serialized version is ourselves (or an earlier version of ourselves),
             #   so say so explicitly to make sure errors get bubbled up to us properly.
-            unsaved = engine.save_serialized_models(data=purgatory, src_version=version.VERSION)["unsaved_model_count"]
-            if not unsaved:
-                self.stdout_writeln("\t%s :)"%(("All models were saved successfully!")))
-            else:
-                self.stderr_writeln("\t%d %s :(" % (unsaved,("models still did not save.  Check 'exceptions' field in 'input purgatory' for failure details.")))
+            try:
+                unsaved = engine.save_serialized_models(data=purgatory, src_version=version.VERSION)["unsaved_model_count"]
+                if not unsaved:
+                    self.stdout_writeln("\t%s :)"%(("All models were saved successfully!")))
+                else:
+                    self.stderr_writeln("\t%d %s" % (unsaved,("models still did not save.  Check 'exceptions' field in 'input purgatory' for failure details.")))
+            except Exception as e:
+                self.stderr_writeln("\t%d %s  %s" % (unsaved,("models still did not save."), e))

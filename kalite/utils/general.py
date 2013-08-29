@@ -160,6 +160,7 @@ def convert_date_input(date_to_convert):
     else:
         return date_to_convert
 
+
 def get_module_source_file(module_name):
     """
     http://stackoverflow.com/questions/247770/retrieving-python-module-path
@@ -170,3 +171,19 @@ def get_module_source_file(module_name):
     if source_file.endswith(".pyc"):
         return source_file[0:-1]
     return source_file
+
+
+def max_none(data):
+    """
+    Given a list of data, returns the max... removing None elements first, for comparison "safety".
+    """
+
+    # Base case: data is none, then return max of that.
+    if not data:
+        return max(data)
+
+    non_none_data = []
+    for d in data:
+        if d is not None:
+            non_none_data.append(d)
+    return max(non_none_data) if non_none_data else None
