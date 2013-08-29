@@ -26,6 +26,7 @@ from django.views.decorators.cache import cache_control
 from django.views.decorators.cache import cache_page
 from django.views.decorators.http import condition 
 
+import kalite
 import settings
 from config.models import Settings
 from control_panel.views import user_management_context
@@ -36,7 +37,7 @@ from securesync.models import Facility, FacilityUser,FacilityGroup, Device
 from securesync.views import require_admin, facility_required
 from settings import LOG as logging
 from utils import topic_tools
-from utils.internet import am_i_online, JsonResponse
+from utils.internet import JsonResponse
 from utils.jobs import force_job
 from utils.decorators import require_admin
 from utils.videos import video_connection_is_available
@@ -347,26 +348,6 @@ Available stats:
             raise Exception("Unknown stat requested: %s" % stat_name)
 
     return val
-
-@require_admin
-@render_to("video_download.html")
-def update(request):
-    call_command("videoscan")  # Could potentially be very slow, blocking request.
-    force_job("videodownload", "Download Videos")
-    force_job("subtitledownload", "Download Subtitles")
-    default_language = Settings.get("subtitle_language") or "en"
-
-    device = Device.get_own_device()
-    zone = device.get_zone()
-
-    context = {
-        "default_language": default_language,
-        "registered": Settings.get("registered"),
-        "zone_id": zone.id if zone else None,
-        "device_id": device.id,
-        "video_count": VideoFile.objects.filter(percent_complete=100).count(),
-    }
-    return context
 
 
 @require_admin

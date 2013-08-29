@@ -95,7 +95,7 @@ class ExerciseLog(SyncedModel):
                 UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()))
             except ValidationError as e:
                 logging.debug("Failed to update userlog during exercise: %s" % e)
-            super(ExerciseLog, self).save(*args, **kwargs)
+        super(ExerciseLog, self).save(*args, **kwargs)
 
     def get_uuid(self, *args, **kwargs):
         assert self.user is not None and self.user.id is not None, "User ID required for get_uuid"

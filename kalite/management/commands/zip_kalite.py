@@ -39,7 +39,7 @@ def select_package_dirs(dirnames, key_base, **kwargs):
     if key_base == "":  # base directory
         in_dirs = set(('docs', 'kalite', 'locale', 'python-packages'))
 
-    elif base_name in ["locale", "localflavor"] and kwargs.get("locale", ""):
+    elif base_name in ["locale", "localflavor"] and kwargs.get("locale", "") not in [None, "", "all"]:
         # ONLY include files for the particular locale
 
         in_dirs = set((kwargs['locale'],))
@@ -112,7 +112,7 @@ def recursively_add_files(dirpath, files_dict=dict(), key_base="", **kwargs):
     return files_dict
 
 
-def create_local_settings_file(location, server_type="local", locale=None):
+def create_local_settings_file(location, server_type="local", locale=None, central_server=None):
     """Create an appropriate local_settings file for the installable server."""
 
     fil = tempfile.mkstemp()[1]
@@ -128,7 +128,7 @@ def create_local_settings_file(location, server_type="local", locale=None):
 
     ls.write("\n") # never trust the previous file ended with a newline!
     ls.write("CENTRAL_SERVER = %s\n" % (server_type=="central"))
-    if locale:
+    if locale and locale != "all":
         ls.write("LANGUAGE_CODE = '%s'\n" % locale)
     ls.close()
 
@@ -201,7 +201,7 @@ class Command(BaseCommand):
         # Step 2: Add a local_settings.py file.
         #   For distributed servers, this is a copy of the local local_settings.py,
         #   with a few properties (specified as command-line options) overridden
-        ls_file = create_local_settings_file(location=os.path.realpath(kalite_base+"/kalite/local_settings.py"), server_type=options['server_type'], locale=options['locale'])
+        ls_file = create_local_settings_file(location=os.path.realpath(kalite_base+"/kalite/local_settings.py"), server_type=options['server_type'], locale=options['locale'], central_server=options["central_server"])
         files_dict[ls_file] = { "dest_path": "kalite/local_settings.py" }
 
         # Step 3: select output file.

@@ -4,6 +4,8 @@ from django.db.models.query import QuerySet
 from django.utils import simplejson
 from django.utils.safestring import mark_safe
 
+import settings
+
 
 register = Library()
 
@@ -118,3 +120,7 @@ def format_name(user, format="first_last"):
 
     else:
         raise NotImplementedError("Unrecognized format string: %s" % format)
+
+@register.simple_tag
+def central_server_api(path, securesync=False):
+    return "%s://%s%s" % ((settings.SECURESYNC_PROTOCOL if securesync else "http"), settings.CENTRAL_SERVER_HOST, path)

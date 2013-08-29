@@ -1,0 +1,238 @@
+{% extends 'base_distributed.html' %}
+
+{% load i18n %}
+{% load staticfiles %}
+
+{% block update_active %}active{% endblock update_active %}
+
+{% block title %}{% trans "Update Subtitles" %}{% endblock %}
+
+{% block headcss %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/jquery-ui.min.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/updates.css' %}" />
+<style>
+.download-actions {
+    width: 400px;
+    float: left;
+    margin-right: 10px;
+    margin-top: 5px;
+    height: 60px;
+    padding: 10px;
+}
+
+.subtitles-download {
+    width: 500px;
+}
+
+#download-legend-selected, #download-videos, #delete-videos {
+    display: none;
+}
+
+#content_tree {
+    margin-top: 15px;
+}
+
+#cancel-download {
+    display: none;
+    margin-top: 10px;
+}
+
+#download-videos {
+    font-weight: bold;
+    padding: 4px 10px 5px 10px;
+    margin-bottom: 5px;
+    color: #52A852;
+}
+
+#delete-videos {
+    color: #AC4343;
+    padding: 0 10px 0 10px;
+}
+
+#retry-video-download, #retry-subtitle-download {
+    color: red;
+    padding: 0 10px 0 10px;
+    display: none;
+    margin-top: 15px;
+}
+#help-info, #download-videos {
+    display:none;
+}
+.progress-waiting {
+    padding: 5px 0px 0px 0px;
+    display: none;
+}
+</style>
+{% endblock headcss %}
+{% block headjs %}
+<script type="text/javascript" src="{% static 'js/jquery-ui/jquery-ui.min.js' %}"></script>
+<script src="{% static 'js/updates.js' %}"></script>
+
+<script type="text/javascript">
+// Callback functions 
+
+function video_start_callback(progress_log, resp) {
+    if (!progress_log) {
+        clear_messages()
+        show_message("error", resp.status_code + resp.responseText);
+    }
+}
+
+function video_check_callback(progress_log, resp) {
+    // When video status is checked
+    if (progress_log) { // check succeeded
+
+        if (progress_log.stage_percent == 1.) {
+            // 100% done with the video
+            setNodeClass(currentKey, "complete");
+            if (progress_log.process_percent == 1.) {
+                // 100% done with ALL videos.
+                $(".progress-section, #cancel-download").hide();
+                updatesReset(progress_log.process_name);
+                if ($(".subtitle-section:visible").length == 0) {
+                    $("#cancel-download").hide();
+                }
+                return;
+            }
+
+        } else if (progress_log.completed) {
+            // Completed without 100% done means there was a problem.
+            $("#retry-video-download").show();
+            $("#cancel-download").hide();
+        } else {
+            // Everything's good for now!
+            $("#retry-video-download").hide();
+            $("#cancel-download").show();
+        }
+        $("#cancel-download").show();
+    } else { // check failed.
+        switch (resp.status) {
+            case 403:
+                window.location.reload()  // Only happens if we were remotely logged out.
+                break;
+            default:
+                show_message("error", "Error downloading videos: " + resp.responseText);
+                clearInterval(window.download_subtitle_check_interval)
+                break;
+        }
+    }
+}
+
+function video_display_callback(progress_log) {
+    if (!progress_log) {
+        return;
+    }
+    //     Update the progress text
+    var currentKey = progress_log.stage_name;
+    if (!currentKey) {
+        return;
+    }
+    var currentNode = $("#content_tree").dynatree("getTree").getNodeByKey(currentKey);
+    $("#videodownload-progressbar .stage-header").text("Downloading video");
+    $("#videodownload-progressbar .stage-name").text(currentNode.data.title);
+}
+
+var video_callbacks = {
+    start: video_start_callback,
+    check: video_check_callback,
+    display: video_display_callback
+};
+</script>
+
+<script type="text/javascript">
+    $(function() {
+
+        setTimeout(function() {
+            get_server_status({path: "{% url get_server_info %}"}, ["online"], function(status){
+                // We assume the distributed server is offline.
+                //   if it's online, then we show all tools only usable when online.
+                //
+                // Best to assume offline, as online check returns much faster than offline check.
+                if(!status || !status["online"]){
+                    show_message("error", "{% trans 'Distributed server is offline; cannot access video nor subtitle updates.' %}", " id_offline_message")
+                } else {
+                    $("#help-info").show();
+                    $("#download-videos").removeAttr("disabled");
+                    $(".download-subtitles").removeAttr("disabled");
+                    clear_message("id_offline_message")
+                }
+            });
+        }, 200);
+
+        // Mixed stuff
+
+        $("#cancel-download").click(function() {
+            // Reset ALL of the progress tracking
+            updatesReset()
+
+            // Do the action
+            doRequest("{% url cancel_subtitle_download %}");
+
+            // Update the UI
+            $(".subtitle-section, #cancel-download").hide();
+        });
+
+        // Subtitles stuff
+
+        $(".download-subtitles").click(function(event) {
+            // Confirm the action
+            var new_only = $(event.target).attr("new_only");
+            var language = $("#language option:selected").val();
+            if (new_only!="true") {
+                if(!confirm("{% trans 'You are about to download new subtitles for all downloaded videos. This may take a long time.' %}")) {
+                    return;
+                }
+            }
+            if (!language) {
+                alert("{% trans 'Please select a language first' %}");
+                return;
+            }
+
+            // Do the action and start the updating process        
+            doRequest("{% url start_subtitle_download %}", {language: language, new_only: new_only}).success(function() {
+                updatesStart("subtitledownload")
+            });
+            
+            // Update the UI
+        });
+        
+
+
+        // onload    
+    });
+</script>
+{% endblock headjs %}
+
+{% block content %}
+<div class="download-actions subtitles-download vertical-shadow">
+    <h2 class="button_text">{% trans "Download/update subtitles for existing videos" %}</h2>
+    <span class= "button_style">
+        <select id="language">
+            {% if languages %}
+                {% for language in languages %}
+                    <option value="{{ language.id }}" {% ifequal language.id default_language %} selected {% endifequal %}>{{ language.name }}</option>
+                {% endfor %}
+            {% endif %}
+        </select>
+    </span>
+
+    <button class="download-subtitles" type="button" disabled>{% trans "Get/Update All Subtitles" %}</button>
+    <button class="download-subtitles" new_only=true type="button" disabled>{% trans "Get Missing Subtitles Only" %}</button>
+
+</div>
+
+<div>
+    <!-- note: id must match the "updates" app process name -->
+    <div id="subtitledownload-progressbar">
+        {% include "updates/progress-bar.html" %}
+        {# <button id="retry-subtitle-download" type="button">{% trans "Subtitle download error... click to retry" %}</button> #}
+    </div>
+
+    <div>
+        <button id="cancel-download" type="button">{% trans "Cancel All Downloads" %}</button>
+    </div>
+</div>
+
+<div style="clear: both;"></div>
+
+{% endblock content %}

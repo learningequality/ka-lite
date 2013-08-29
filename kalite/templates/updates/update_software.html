@@ -1,0 +1,178 @@
+{% extends 'base_distributed.html' %}
+
+{% load i18n %}
+{% load staticfiles %}
+{% load my_filters %}
+
+{% block update_active %}active{% endblock update_active %}
+
+{% block title %}{% trans "Update Software" %}{% endblock %}
+
+{% block headcss %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/jquery-ui.min.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/updates.css' %}" />
+{% endblock headcss %}
+
+{% block headjs %}
+<script type="text/javascript" src="{% static 'js/jquery-ui/jquery-ui.min.js' %}"></script>
+<script src="{% static 'js/updates.js' %}"></script>
+<script type="text/javascript">
+// Callback functions 
+
+function software_start_callback(progress_log, resp) {
+    if (!progress_log) {
+        clear_messages()
+        show_message("error", resp.status_code + resp.responseText);
+    }
+}
+
+function software_check_callback(progress_log, resp) {
+    // When video status is checked
+    if (progress_log) { // check succeeded
+
+        if (progress_log.stage_percent == 1.) {
+            // 100% done with the video
+            setNodeClass(currentKey, "complete");
+            if (progress_log.process_percent == 1.) {
+                // 100% done with ALL videos.
+                $(".progress-section, #cancel-download").hide();
+                updatesReset(progress_log.process_name);
+                if ($(".subtitle-section:visible").length == 0) {
+                    $("#cancel-download").hide();
+                }
+                return;
+            }
+
+        } else if (progress_log.completed) {
+            // Completed without 100% done means there was a problem.
+            $("#retry-video-download").show();
+            $("#cancel-download").hide();
+        } else {
+            // Everything's good for now!
+            $("#retry-video-download").hide();
+            $("#cancel-download").show();
+        }
+        $("#cancel-download").show();
+    } else { // check failed.
+        switch (resp.status) {
+            case 403:
+                window.location.reload()  // Only happens if we were remotely logged out.
+                break;
+            default:
+                show_message("error", "Error downloading videos: " + resp.responseText);
+                clearInterval(window.download_subtitle_check_interval)
+                break;
+        }
+    }
+}
+
+var software_callbacks = {
+    start: software_start_callback,
+    check: software_check_callback,
+};
+</script>
+
+<script type="text/javascript">
+function version_callback(data) {
+    // Check to see if the remote software matches the local software version.
+    //   If not, alert the user!
+    var current_version = "{{ software_version }}";
+    var current_release_date = "{{ software_release_date }}"
+    var remote_version = data.version;
+    var remote_release_date = data.release_date;
+
+    // Update the page
+    $("#remote_version").text(remote_version)
+    $("#remote_release_date").text(remote_release_date)
+
+    if (current_version != remote_version) {
+        alert("update available!" + current_version + remote_version);
+    }
+}
+
+function download_urls_callback(data) {
+    window.data = data;
+    for (key in data) {
+         $("#software_available").append("<option value='" + data[key].url + "'>" + key + " (" + data[key].size + "MB)</option>");
+    }
+}
+</script>
+
+<script type="text/javascript">
+    $(function() {
+        updatesStart("update", 5000, software_callbacks)
+
+        setTimeout(function() {
+            get_server_status({path: "{% url get_server_info %}"}, ["online"], function(status){
+                // We assume the distributed server is offline.
+                //   if it's online, then we show all tools only usable when online.
+                //
+                // Best to assume offline, as online check returns much faster than offline check.
+                if(false && (!status || !status["online"])){
+                    show_message("error", "{% trans 'Distributed server is offline; cannot access video nor subtitle updates.' %}", " id_offline_message")
+                } else {
+                    $("#software_available").removeAttr("disabled");
+                    $("#download-update-kalite").removeAttr("disabled");
+                    $("#upload-update-kalite").removeAttr("disabled");
+                    clear_message("id_offline_message")
+                }
+            });
+
+        }, 200);
+
+        $("#download-update-kalite").click(function() {
+            // Get all videos to download
+            //updatesStart("update", 1000, software_callbacks)
+
+            // Start the download and updating process
+            doRequest("{% url start_update_kalite %}", { "url": $("#software_available option:selected")[0].value })
+                .success(function() {
+                    updatesStart_callback("update")
+                }).fail(function(response) {
+                    show_message("error", "Error starting update process (" + response.status + "): " + response.responseText);
+                });
+
+            // Update the UI to reflect that we're waiting to start
+            $("#cancel-update").show();
+        });
+        // onload    
+    });
+</script>
+{% endblock headjs %}
+
+{% block content %}
+<div>
+    <select id="software_available" disabled>
+    </select>
+
+    <button id="download-update-kalite" type="button" disabled>{% trans "Update KA Lite from remote download" %}</button>
+    <button id="upload-update-kalite" type="button" disabled>{% trans "Update KA Lite from file" %}</button>
+    <button id="cancel-update-kalite" type="button" disabled>{% trans "Cancel update" %}</button>
+</div>
+
+<div style="clear: both;"></div>
+
+<!-- note: id must match the "updates" app process name -->
+<div id="update-progressbar">
+    {% include "updates/progress-bar.html" %}
+</div>
+<div style="clear: both;"></div>
+
+<div><h2>Current Version</h2>
+<span>Current version: {{ software_version }}</span><br />
+<span>Current version release date: {{ software_release_date }}</span><br />
+<span>Current install directory: {{ install_dir }}</span><br />
+<span>Current database last-updated: {{ database_last_updated }}</span><br />
+</div>
+
+<div><h2>Remote Version</h2>
+<span>Current version release date:</span> <span id="remote_release_date"></span><br />
+<span>Current version:</span><span id="remote_version"></span><br />
+</div>
+
+<div style="clear: both;"></div>
+<!-- fake way to do JSONP -->
+<script type="text/javascript" src="{% central_server_api path='/api/version' %}?callback=version_callback"></script>
+<script type="text/javascript" src="{% central_server_api path='/api/download/kalite/' %}?callback=download_urls_callback"></script>
+
+{% endblock content %}
