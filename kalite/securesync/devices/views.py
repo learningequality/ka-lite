@@ -18,10 +18,10 @@ import settings
 from config.models import Settings
 from main.models import UserLog
 from securesync import crypto
-from securesync.engine.api_client import SyncClient
+from securesync.devices.api_client import RegistrationClient
 from securesync.forms import RegisteredDevicePublicKeyForm, FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
 from securesync.models import SyncSession, Device, Facility, FacilityGroup, Zone
-from utils.jobs import force_job
+from shared.jobs import force_job
 from utils.decorators import require_admin, central_server_only, distributed_server_only, facility_required, facility_from_request
 from utils.internet import set_query_params
 
@@ -44,7 +44,7 @@ def register_public_key_client(request):
     if Device.get_own_device().get_zone():
         set_as_registered()
         return {"already_registered": True}
-    client = SyncClient()
+    client = RegistrationClient()
     if client.test_connection() != "success":
         return {"no_internet": True}
     reg_response = client.register()

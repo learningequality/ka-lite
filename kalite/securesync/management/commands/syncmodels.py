@@ -13,34 +13,32 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
+        # Parse input parameters
+        kwargs = {"host": args[0]} if len(args) >= 1 else {}
+        max_retries = args[1] if len(args) >= 2 else 5
+
+        # Retry purgatory
         self.stdout_writeln(("Checking purgatory for unsaved models")+"...")
         call_command("retrypurgatory")
-
-        kwargs = {}
-        if len(args) >= 1:
-            kwargs["host"] = args[0]
-        if len(args) >= 2:
-            max_retries = args[1]
-        else:
-            max_retries = 5
 
         try:
             client = SyncClient(**kwargs)
         except Exception as e:
             raise CommandError(e)
 
-        if client.test_connection() != "success":
-            self.stderr_writeln(("KA Lite host is currently unreachable")+": %s" % client.url)
+        connection_status = client.test_connection()
+        if connection_status != "success":
+            self.stderr_writeln(("KA Lite host is currently unreachable") + " (%s): %s" % (connection_status, client.url))
             return
 
         self.stdout_writeln(("Initiating SyncSession")+"...")
         try:
             result = client.start_session()
+            if result != "success":
+                self.stderr_writeln(("Unable to initiate session")+": %s" % result.content)
+                return
         except Exception as e:
             raise CommandError(e)
-        if result != "success":
-            self.stderr_writeln(("Unable to initiate session")+": %s" % result.content)
-            return
                 
         self.stdout_writeln(("Syncing models")+"...")
 

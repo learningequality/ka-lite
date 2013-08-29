@@ -1,18 +1,20 @@
 // Storage variables for this app
-var process_names = [];  // (string) indices into all arrays
+var process_names = {};  // (string) indices into all arrays
 var process_ids = {};    // ID of updated process information
 var process_intervals = {}
 var process_interval_handles = {}
 var process_callbacks = {}
 
-$(".progressbar-overall").progressbar({
-    value: 0,
-    max: 100
-});
+$(function() {
+    $(".progressbar-overall").progressbar({
+        value: 0,
+        max: 100
+    });
 
-$(".progressbar-current").progressbar({
-    value: 0,
-    max: 100
+    $(".progressbar-current").progressbar({
+        value: 0,
+        max: 100
+    });
 });
 
 /* Three functions to support updates:
@@ -28,8 +30,9 @@ function updatesStart(process_name, interval, callbacks) {
     // Starts looking for updates
     clear_message("id_" + process_name)
     // Store the info
-    if (process_names.indexOf(process_name) == -1) {
-        process_names = process_names.concat(process_name)
+    if (! process_name in process_names) {
+        process_names[process_name] = true;
+//        = process_names.concat(process_name);
     }
     process_intervals[process_name] = interval ? interval : 5000;
     process_callbacks[process_name] = callbacks;
@@ -172,7 +175,9 @@ function updatesReset(process_name) {
 
     // With no args, reset all
     if (!process_name) {
-        process_names.forEach( updatesReset );
+        for (pn in process_names) {
+            updatesReset(pn);
+        }
         return;
     }
 
@@ -193,9 +198,8 @@ function updatesReset(process_name) {
     process_intervals[process_name] = null;
     process_interval_handles[process_name];
 
-    var idx = process_names.indexOf(process_name);
-    if (idx) { 
-        process_names.splice(idx, 1);
+    if (process_name in process_names) { 
+        delete process_names[process_name];
     }
 
 }

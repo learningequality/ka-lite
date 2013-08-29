@@ -1,0 +1,34 @@
+.content-tree-background (@url) {
+  margin-top: 2px;
+  background: url(@url) no-repeat;
+}
+
+.user-select (@property) {
+    -webkit-touch-callout: @property;
+    -webkit-user-select: @property;
+    -khtml-user-select: @property;
+    -moz-user-select: @property;
+    -ms-user-select: @property;
+    user-select: @property;
+}
+
+.normal-text-font{
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	font-size: 13px;
+}
+
+.border-radius(@radius) {
+  -webkit-border-radius: @radius;
+     -moz-border-radius: @radius;
+          border-radius: @radius;
+}
+.green_button(@width,@border_radius, @font_size, @paddingv, @paddingh){
+  .border-radius(@border_radius);
+  background-color: #91ca7f;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: @font_size;
+  color: #ffffff;
+  padding: @paddingv @paddingh;
+  border:0px;
+  width:@width;
+}

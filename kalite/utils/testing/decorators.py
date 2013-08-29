@@ -18,7 +18,7 @@ def x_server_test(f, cond, msg):
         return f
         
     else:
-        @unittest.skipIf(cond, msg)
+        @unittest.skipIf(not cond, msg)
         def wrapped_fn(*args, **kwargs):
             return f(*args, **kwargs)
         return wrapped_fn

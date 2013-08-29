@@ -1,7 +1,19 @@
 @echo off
 
-
 setlocal enabledelayedexpansion
+
+copy %0 kalite\writetest.temp > nul
+
+if %ERRORLEVEL% == 1 (
+	echo -------------------------------------------------------------------
+	echo You do not have permission to write to this directory!
+	echo -------------------------------------------------------------------
+	exit /B
+) else (
+	if %ERRORLEVEL% == 0 (
+		del kalite\writetest.temp > nul
+	)
+)
 
 rem Check for Python
 rem
