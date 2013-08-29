@@ -182,6 +182,7 @@ if CENTRAL_SERVER:
     SESSION_COOKIE_NAME     = "sessionid_central"
 
 else:
+    INSTALLED_APPS         += ("updates",)
     ROOT_URLCONF = "main.urls"
     # Include optionally installed apps
     if os.path.exists(PROJECT_PATH + "/tests/loadtesting/"):

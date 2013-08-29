@@ -60,7 +60,7 @@ def call_command_async(cmd, *args, **kwargs):
     # Make sure to call the manage.py from this project.
     call_args = [sys.executable, os.path.join(settings.PROJECT_PATH, "manage.py"), cmd]
     call_args += list(args)
-    for key,val in kwargs:
+    for key,val in kwargs.iteritems():
         call_args.append("--%s=%s" % (key, val))
 
     # We don't need to hold onto the process handle.

@@ -12,7 +12,13 @@ from django.utils.translation import ugettext as _
 
 import settings
 from main import topicdata
-from central.models import Organization
+try:
+    from central.models import Organization
+except:
+    from securesync.models import SyncedModel
+    class Organization(SyncedModel):
+        pass
+
 from control_panel.forms import ZoneForm, UploadFileForm
 from main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
 from securesync.forms import FacilityForm
