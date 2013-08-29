@@ -76,7 +76,9 @@ def org_management(request):
         "title": _("Account administration"),
         "organizations": organizations,
         "HEADLESS_ORG_NAME": Organization.HEADLESS_ORG_NAME,
-        "invitations": OrganizationInvitation.objects.filter(email_to_invite=request.user.email)
+        "invitations": OrganizationInvitation.objects \
+            .filter(email_to_invite=request.user.email)
+            .order_by("organization__name")
     }
 
 
@@ -246,13 +248,16 @@ def install_multiple_server_edition(request):
                     "name": "%s / %s" % (org.name, zone.name),
                 })
 
-    # If we had a zone and didn't find one, then it's an error
+    # If we get here, then we failed to find the zone.
     if zone_id:
         if Zone.objects.filter(id=zone_id):
+            # The zone exists, we must just not have access to it
             raise PermissionDenied()
         else:
+            # We didnt't find it because it doesn't exist
             raise Http404("Zone ID not found: %s" % zone_id)
 
+    # If we get here, then no zone was specified.  So list the options.
     if len(zones) == 1:
         zone_id = zones[0]["id"]
 
