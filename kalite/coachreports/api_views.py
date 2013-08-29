@@ -3,6 +3,7 @@ import re
 import json
 import sys
 import logging
+import settings
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 from functools import partial
@@ -21,7 +22,7 @@ from django.utils.translation import ugettext as _
 from coachreports.forms import DataForm
 from config.models import Settings
 from main import topicdata
-from main.models import VideoLog, ExerciseLog, VideoFile
+from main.models import VideoLog, ExerciseLog, VideoFile, UserLog, UserLogSummary
 from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device
 from securesync.views import facility_required
 from utils.decorators import allow_api_profiling, api_handle_error_with_json
@@ -43,6 +44,14 @@ stats_dict = [
     { "key": "vid:completion_timestamp", "name": _("Time video completed"),"type": "datetime", "description": _("Day/time the video was completed.") },
 ]
 
+user_log_stats_dict = [
+    { "key": "usersum:total_seconds", "name": _("Time Active (s)"), "type": "number", "description": _("Total time spent actively logged in.")},
+    { "key": "user:total_seconds", "name": _("Active Time Per Login"), "type": "number", "description": "Duration of each login session.", "noscatter": True, "timeline": True},
+    { "key": "user:last_active_datetime", "name": _("Time Session Completed"),"type": "datetime", "description": _("Day/time the login session finished.")},
+]
+
+if settings.USER_LOG_MAX_RECORDS:
+    stats_dict.extend(user_log_stats_dict)
 
 def get_data_form(request, *args, **kwargs):
     """Get the basic data form, by combining information from
@@ -141,6 +150,12 @@ def query_logs(users, items, logtype, logdict):
     elif logtype == "video":
         all_logs = VideoLog.objects.filter(user__in=users, youtube_id__in=items).values(
             'user', 'complete', 'youtube_id', 'total_seconds_watched', 'completion_timestamp', 'points').order_by('completion_timestamp')
+    elif logtype == "activity" and settings.USER_LOG_MAX_RECORDS:
+        all_logs = UserLog.objects.filter(user__in=users).values(
+            'user', 'last_active_datetime', 'total_seconds').order_by('last_active_datetime')
+    elif logtype == "summaryactivity" and settings.USER_LOG_MAX_RECORDS:
+        all_logs = UserLogSummary.objects.filter(user__in=users).values(
+            'user', 'device', 'total_seconds').order_by('end_datetime')
     else:
         raise Exception("Unknown log type: '%s'" % logtype)
     for log in all_logs:
@@ -170,6 +185,8 @@ def compute_data(data_types, who, where):
     data = OrderedDict(zip([w.id for w in who], [dict() for i in range(len(who))]))  # maintain the order of the users
     vid_logs = dict(zip([w.id for w in who], [[] for i in range(len(who))]))
     ex_logs = dict(zip([w.id for w in who], [[] for i in range(len(who))]))
+    if settings.USER_LOG_MAX_RECORDS:
+        activity_logs = dict(zip([w.id for w in who], [[] for i in range(len(who))]))
 
     # Set up queries (but don't run them), so we have really easy aliases.
     #   Only do them if they haven't been done yet (tell this by passing in a value to the lambda function)
@@ -191,13 +208,16 @@ def compute_data(data_types, who, where):
 
         # Query out all exercises, videos, exercise logs, and video logs before looping to limit requests.
         # This means we could pull data for n-dimensional coach report displays with the same number of requests!
+        # Note: User activity is polled inside the loop, to prevent possible slowdown for exercise and video reports.
         exercises = query_exercises(exercises)
-
-        ex_logs = query_logs(data.keys(), exercises, "exercise", ex_logs)
 
         videos = query_videos(videos)
 
-        vid_logs = query_logs(data.keys(), videos, "video", vid_logs)
+        if exercises:
+            ex_logs = query_logs(data.keys(), exercises, "exercise", ex_logs)
+
+        if videos:
+            vid_logs = query_logs(data.keys(), videos, "video", vid_logs)
 
         for data_type in (data_types if not hasattr(data_types, "lower") else [data_types]):  # convert list from string, if necessary
             if data_type in data[data.keys()[0]]:  # if the first user has it, then all do; no need to calc again.
@@ -209,7 +229,6 @@ def compute_data(data_types, who, where):
             if data_type == "pct_mastery":
 
                 # Efficient query out, spread out to dict
-                # ExerciseLog.filter(user__in=who, exercise_id__in=exercises).order_by("user.id")
                 for user in data.keys():
                     data[user][data_type] = 0 if not ex_logs[user] else 100. * sum([el['complete'] for el in ex_logs[user]]) / float(len(exercises))
 
@@ -238,6 +257,21 @@ def compute_data(data_types, who, where):
                 for user in data.keys():
                     data[user][data_type] = OrderedDict([(el['exercise_id'], el[data_type[3:]]) for el in ex_logs[user]])
 
+            # User Log Queries
+            elif data_type.startswith("user:") and data_type[5:] in [f.name for f in UserLog._meta.fields] and settings.USER_LOG_MAX_RECORDS:
+
+                activity_logs = query_logs(data.keys(), "", "activity", activity_logs)
+
+                for user in data.keys():
+                    data[user][data_type] = [log[data_type[5:]] for log in activity_logs[user]]
+
+            # User Summary Queries
+            elif data_type.startswith("usersum:") and data_type[8:] in [f.name for f in UserLogSummary._meta.fields] and settings.USER_LOG_MAX_RECORDS:
+
+                activity_logs = query_logs(data.keys(), "", "summaryactivity", activity_logs)
+
+                for user in data.keys():
+                    data[user][data_type] = sum([log[data_type[8:]] for log in activity_logs[user]])
             # Unknown requested quantity
             else:
                 raise Exception("Unknown type: '%s' not in %s" % (data_type, str([f.name for f in ExerciseLog._meta.fields])))
@@ -328,12 +362,8 @@ def api_data(request, xaxis="", yaxis=""):
             "data": computed_data["data"],
             "exercises": computed_data["exercises"],
             "videos": computed_data["videos"],
-            "users": dict(zip([u.id for u in users],
-                                ["%s, %s" % (u.last_name, u.first_name) for u in users]
-                         )),
-            "groups":  dict(zip([g.id for g in groups],
-                                 dict(zip(["id", "name"], [(g.id, g.name) for g in groups])),
-                          )),
+            "users": dict(zip([u.id for u in users],["%s, %s" % (u.last_name, u.first_name) for u in users])),
+            "groups":  dict(zip([g.id for g in groups],dict(zip(["id", "name"], [(g.id, g.name) for g in groups])))),
             "facility": None if not facility else {
                 "name": facility.name,
                 "id": facility.id,
@@ -345,4 +375,5 @@ def api_data(request, xaxis="", yaxis=""):
         return HttpResponse(content=json.dumps(json_data, default=dthandler), content_type="application/json")
 
     except Exception as e:
+        import pdb; pdb.set_trace()
         return HttpResponseServerError(str(e))

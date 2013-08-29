@@ -13,23 +13,33 @@ function json2dataTable_timeline(json, xaxis, yaxis) {
 
     var timeScale = []
 
-    var multiplier = 100/nobjects
+    var multiplier = 1
     
     for (var ui=0; ui<nusers; ++ui) {
         var uid = Object.keys(json['data'])[ui];
 
         var good_xdata = [];
-        var good_ydata = []
+        var good_ydata = [];
         var all_xdata = json['data'][uid][xaxis];
         var all_ydata = json['data'][uid][yaxis];
-        for (var ri in all_xdata) {
-            var xdata = all_xdata[ri];
-            if (xdata == null) {
-                continue;
+        if (xaxis=="user:last_active_datetime"){
+            good_xdata = all_xdata;
+            good_ydata = all_ydata;
+            for (var ri in all_xdata) {
+                all_xdata[ri] = new Date(all_xdata[ri]);
+                timeScale.push(all_xdata[ri]);
             }
-            good_xdata.push(new Date(xdata));
-            timeScale.push(new Date(xdata));
-            good_ydata.push( good_ydata.length + 1 );
+        } else {
+            var multiplier = 100/nobjects
+            for (var ri in all_xdata) {
+                var xdata = all_xdata[ri];
+                if (xdata == null) {
+                    continue;
+                }
+                good_xdata.push(new Date(xdata));
+                timeScale.push(new Date(xdata));
+                good_ydata.push( good_ydata.length + 1 );
+            }
         }
 
         // Now create a data table
