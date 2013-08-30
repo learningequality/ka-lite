@@ -52,9 +52,9 @@ urlpatterns += patterns('main.views',
 )
 
 # Testing
-if "loadtesting" in settings.INSTALLED_APPS:
+if "tests.loadtesting" in settings.INSTALLED_APPS:
     urlpatterns += patterns('main.views',
-        url(r'^loadtesting/', include('loadtesting.urls')),
+        url(r'^loadtesting/', include('tests.loadtesting.urls')),
     )
 
 # Front-end
