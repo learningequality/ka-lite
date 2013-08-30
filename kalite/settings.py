@@ -228,7 +228,8 @@ if CACHE_TIME != 0:  # None can mean infinite caching to some functions
 SYNC_SESSIONS_MAX_RECORDS = getattr(local_settings, "SYNC_SESSIONS_MAX_RECORDS", None if CENTRAL_SERVER else 10)
 
 # enable this to use a background mplayer instance instead of playing the video in the browser, on loopback connections
-USE_MPLAYER = getattr(local_settings, "USE_MPLAYER", False)
+# TODO(jamalex): this will currently only work when caching is disabled, as the conditional logic is in the Django template
+USE_MPLAYER = getattr(local_settings, "USE_MPLAYER", False) if CACHE_TIME == 0 else False
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
