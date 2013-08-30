@@ -253,9 +253,18 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
         if self.last_active_datetime and self.start_datetime > self.last_active_datetime:
             raise ValidationError("UserLog date consistency check for start_datetime and last_active_datetime")
 
-        # Compute total_seconds, save to summary
-        #   Note: only supports setting end_datetime once!
-        if self.end_datetime and not self.total_seconds:
+        if not self.end_datetime:
+            # Conflict_resolution
+            related_open_logs = UserLog.objects \
+                .filter(user=self.user, activity_type=self.activity_type, end_datetime__isnull=True) \
+                .exclude(pk=self.pk)
+            for log in related_open_logs:
+                log.end_datetime = datetime.datetime.now()
+                log.save()
+
+        elif not self.total_seconds:
+            # Compute total_seconds, save to summary
+            #   Note: only supports setting end_datetime once!
             self.full_clean()
 
             # The top computation is more lenient: user activity is just time logged in, literally.
