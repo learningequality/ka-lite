@@ -184,7 +184,7 @@ else:
     ROOT_URLCONF = "main.urls"
     # Include optionally installed apps
     if os.path.exists(PROJECT_PATH + "/tests/loadtesting/"):
-        INSTALLED_APPS += ("kalite.tests.loadtesting",)
+        INSTALLED_APPS += ("tests.loadtesting",)
 
     MIDDLEWARE_CLASSES += (
         "securesync.middleware.DBCheck",
@@ -236,7 +236,7 @@ SYNC_SESSIONS_MAX_RECORDS = getattr(local_settings, "SYNC_SESSIONS_MAX_RECORDS",
 
 MESSAGE_STORAGE = 'utils.django_utils.NoDuplicateMessagesSessionStorage'
 
-TEST_RUNNER = 'kalite.utils.testing.testrunner.KALiteTestRunner'
+TEST_RUNNER = 'kalite.shared.testing.testrunner.KALiteTestRunner'
 
 CRONSERVER_FREQUENCY = getattr(local_settings, "CRONSERVER_FREQUENCY", 600) # 10 mins (in seconds)
 

@@ -18,15 +18,12 @@ from config.models import Settings
 from utils.django_utils import validate_via_booleans
 
 
-_own_device = None
 def _get_own_device():
     """
     To allow imports to resolve... the only ugly thing of this code separation.
     """
-    global _own_device
     from securesync.devices.models import Device
-    _own_device = _own_device or Device.get_own_device()
-    return _own_device
+    return Device.get_own_device()
 
 
 class SyncSession(models.Model):
