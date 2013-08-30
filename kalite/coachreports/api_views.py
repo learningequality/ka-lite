@@ -362,8 +362,12 @@ def api_data(request, xaxis="", yaxis=""):
         "data": computed_data["data"],
         "exercises": computed_data["exercises"],
         "videos": computed_data["videos"],
-        "users": dict(zip([u.id for u in users],["%s, %s" % (u.last_name, u.first_name) for u in users])),
-        "groups":  dict(zip([g.id for g in groups],dict(zip(["id", "name"], [(g.id, g.name) for g in groups])))),
+        "users": dict(zip([u.id for u in users],
+                          ["%s, %s" % (u.last_name, u.first_name) for u in users]
+                     )),
+        "groups": dict(zip([g.id for g in groups],
+                           dict(zip(["id", "name"], [(g.id, g.name) for g in groups])),
+                     )),
         "facility": None if not facility else {
             "name": facility.name,
             "id": facility.id,

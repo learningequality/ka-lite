@@ -3,7 +3,7 @@ import random
 
 import settings
 from main.topicdata import ID2SLUG_MAP
-from utils.testing.base import KALiteTestCase
+from shared.testing.base import KALiteTestCase
 
 
 class MainTestCase(KALiteTestCase):

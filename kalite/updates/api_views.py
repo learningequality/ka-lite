@@ -110,6 +110,7 @@ def start_video_download(request):
     return JsonResponse({})
 
 
+@require_admin
 @api_handle_error_with_json
 def check_video_download(request):
     youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
@@ -123,24 +124,36 @@ def check_video_download(request):
 
 @require_admin
 @api_handle_error_with_json
+def retry_video_download(request):
+    """Clear any video still accidentally marked as in-progress, and restart the download job.
+    """
+    VideoFile.objects.filter(download_in_progress=True).update(download_in_progress=False, percent_complete=0)
+    force_job("videodownload", "Download Videos")
+    return JsonResponse({})
+
+
+@require_admin
+@api_handle_error_with_json
 def delete_videos(request):
     """
     API endpoint for deleting videos.
     """
     youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
     for id in youtube_ids:
-        # We should mark all metadata first, to avoid conflicts
-        #   across processes (not currently an issue, but could be)
-        videofile = get_object_or_None(VideoFile, youtube_id=id)
-        if not videofile:
-            continue
-        videofile.cancel_download = True
-        videofile.flagged_for_download = False
-        videofile.flagged_for_subtitle_download = False
-        videofile.save()
-
-        # Now nobody should be touching this file.
+        # Delete the file on disk
         delete_downloaded_files(id)
+
+        # Delete the file in the database
+        videofile = get_object_or_None(VideoFile, youtube_id=id)
+        if videofile:
+            videofile.cancel_download = True
+            videofile.flagged_for_download = False
+            videofile.flagged_for_subtitle_download = False
+            videofile.save()
+
+        # Refresh the cache
+        invalidate_all_pages_related_to_video(video_id=id)
+
     return JsonResponse({})
 
 
@@ -170,6 +183,61 @@ def cancel_video_download(request):
         log.cancel_progress()
 
     return JsonResponse({})
+
+
+
+def annotate_topic_tree(node, level=0, statusdict=None):
+    if not statusdict:
+        statusdict = {}
+    if node["kind"] == "Topic":
+        if "Video" not in node["contains"]:
+            return None
+        children = []
+        unstarted = True
+        complete = True
+        for child_node in node["children"]:
+            child = annotate_topic_tree(child_node, level=level+1, statusdict=statusdict)
+            if child:
+                if child["addClass"] == "unstarted":
+                    complete = False
+                if child["addClass"] == "partial":
+                    complete = False
+                    unstarted = False
+                if child["addClass"] == "complete":
+                    unstarted = False
+                children.append(child)
+        return {
+            "title": node["title"],
+            "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
+            "isFolder": True,
+            "key": node["slug"],
+            "children": children,
+            "addClass": complete and "complete" or unstarted and "unstarted" or "partial",
+            "expand": level < 1,
+        }
+    if node["kind"] == "Video":
+        #statusdict contains an item for each video registered in the database
+        # will be {} (empty dict) if there are no videos downloaded yet
+        percent = statusdict.get(node["youtube_id"], 0)
+        if not percent:
+            status = "unstarted"
+        elif percent == 100:
+            status = "complete"
+        else:
+            status = "partial"
+        return {
+            "title": node["title"],
+            "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
+            "key": node["youtube_id"],
+            "addClass": status,
+        }
+    return None
+
+@require_admin
+@api_handle_error_with_json
+def get_annotated_topic_tree(request):
+    statusdict = dict(VideoFile.objects.values_list("youtube_id", "percent_complete"))
+    return JsonResponse(annotate_topic_tree(topicdata.TOPICS, statusdict=statusdict))
 
 
 """
@@ -224,13 +292,11 @@ def start_subtitle_download(request):
     force_job("subtitledownload", "Download Subtitles")
     return JsonResponse({})
 
-
 @require_admin
 @api_handle_error_with_json
 def check_subtitle_download(request):
     videofiles = VideoFile.objects.filter(flagged_for_subtitle_download=True)
     return JsonResponse(videofiles.count())
-
 
 @require_admin
 @api_handle_error_with_json
@@ -289,56 +355,3 @@ def cancel_update_kalite(request):
 
     force_job("subtitledownload", stop=True)
     return JsonResponse({})
-
-def annotate_topic_tree(node, level=0, statusdict=None):
-    if not statusdict:
-        statusdict = {}
-    if node["kind"] == "Topic":
-        if "Video" not in node["contains"]:
-            return None
-        children = []
-        unstarted = True
-        complete = True
-        for child_node in node["children"]:
-            child = annotate_topic_tree(child_node, level=level+1, statusdict=statusdict)
-            if child:
-                if child["addClass"] == "unstarted":
-                    complete = False
-                if child["addClass"] == "partial":
-                    complete = False
-                    unstarted = False
-                if child["addClass"] == "complete":
-                    unstarted = False
-                children.append(child)
-        return {
-            "title": node["title"],
-            "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
-            "isFolder": True,
-            "key": node["slug"],
-            "children": children,
-            "addClass": complete and "complete" or unstarted and "unstarted" or "partial",
-            "expand": level < 1,
-        }
-    if node["kind"] == "Video":
-        #statusdict contains an item for each video registered in the database
-        # will be {} (empty dict) if there are no videos downloaded yet
-        percent = statusdict.get(node["youtube_id"], 0)
-        if not percent:
-            status = "unstarted"
-        elif percent == 100:
-            status = "complete"
-        else:
-            status = "partial"
-        return {
-            "title": node["title"],
-            "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
-            "key": node["youtube_id"],
-            "addClass": status,
-        }
-    return None
-
-@require_admin
-@api_handle_error_with_json
-def get_annotated_topic_tree(request):
-    statusdict = dict(VideoFile.objects.values_list("youtube_id", "percent_complete"))
-    return JsonResponse(annotate_topic_tree(topicdata.TOPICS, statusdict=statusdict))
