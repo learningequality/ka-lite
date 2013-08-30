@@ -5,6 +5,8 @@ import sys
 import time
 import tempfile
 import uuid
+import version  # in danger of a circular import.  NEVER add settings stuff there--should all be hard-coded.
+
 
 # suppress warnings here.
 try:
@@ -194,7 +196,8 @@ else:
     TEMPLATE_CONTEXT_PROCESSORS += ("main.custom_context_processors.languages",)
 
 # Used for user logs.  By default, completely off.
-USER_LOG_MAX_RECORDS = getattr(local_settings, "USER_LOG_MAX_RECORDS", 0)
+#  Note: None means infinite (just like caching)
+USER_LOG_MAX_RECORDS_PER_USER = getattr(local_settings, "USER_LOG_MAX_RECORDS_PER_USER", 0)
 USER_LOG_SUMMARY_FREQUENCY = getattr(local_settings, "USER_LOG_SUMMARY_FREQUENCY", (1,"months"))
 
 
@@ -230,6 +233,7 @@ if CACHE_TIME != 0:  # None can mean infinite caching to some functions
             'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
         },
     }
+    KEY_PREFIX = version.VERSION
 
 # Here, None === no limit
 SYNC_SESSIONS_MAX_RECORDS = getattr(local_settings, "SYNC_SESSIONS_MAX_RECORDS", None if CENTRAL_SERVER else 10)

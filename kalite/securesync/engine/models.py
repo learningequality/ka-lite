@@ -138,7 +138,11 @@ class SyncedModel(models.Model):
                 if settings.CENTRAL_SERVER:
                     if not self.signed_by.get_zone():
                         raise ValidationError("This model was signed by a Device with no zone, but somehow synced to the central server.")
-                elif not _get_own_device().get_zone().is_member(self.signed_by):
+                elif (_get_own_device().get_zone() is None) + (self.signed_by.get_zone() is None) == 1:
+                    # one has a zone, the other doesn't
+                    raise ValidationError("This model is on a different zone than this device.")
+
+                elif _get_own_device().get_zone() and not _get_own_device().get_zone().is_member(self.signed_by):
                     # distributed server
                     raise ValidationError("This model is on a different zone than this device.")
             return True

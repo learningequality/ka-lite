@@ -19,9 +19,9 @@ from . import get_serialized_models, save_serialized_models
 from .models import *
 from shared import serializers
 from securesync.devices.models import *  # inter-dependence
-from utils.decorators import api_handle_error_with_json, require_admin
-from utils.jobs import force_job
-from utils.internet import JsonResponse
+from shared.decorators import require_admin
+from shared.jobs import force_job
+from utils.internet import api_handle_error_with_json, JsonResponse
 
 
 def require_sync_session(handler):

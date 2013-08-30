@@ -15,12 +15,12 @@ import settings
 from .models import UpdateProgressLog
 from main.models import VideoFile
 from main import topicdata
-from kalite.utils.decorators import require_admin, api_handle_error_with_json
+from kalite.utils.django_utils import call_command_async
 from kalite.utils.general import isnumeric, break_into_chunks
-from kalite.utils.internet import JsonResponse
+from kalite.utils.internet import api_handle_error_with_json, JsonResponse
 from kalite.utils.orderedset import OrderedSet
 from kalite.utils.videos import delete_downloaded_files
-from kalite.utils.django_utils import call_command_async
+from shared.decorators import require_admin
 from shared.jobs import force_job, job_status
 
 
@@ -158,6 +158,17 @@ def delete_videos(request):
 
 
 @require_admin
+@api_handle_error_with_json
+def retry_video_download(request):
+    """Clear any video still accidentally marked as in-progress, and restart the download job.
+    """
+    VideoFile.objects.filter(download_in_progress=True).update(download_in_progress=False, percent_complete=0)
+    force_job("videodownload", "Download Videos")
+    return JsonResponse({})
+
+
+@require_admin
+@api_handle_error_with_json
 def cancel_video_download(request):
 
     # clear all download in progress flags, to make sure new downloads will go through
@@ -236,10 +247,11 @@ Subtitles
 @require_admin
 @api_handle_error_with_json
 def start_subtitle_download(request):
+    """Totally broken, until @dylanjbarth takes this on."""
     update_set = simplejson.loads(request.raw_post_data or "{}").get("update_set", "existing")
     language = simplejson.loads(request.raw_post_data or "{}").get("language", "")
-    language_list = topicdata.LANGUAGE_LIST
-    language_lookup = topicdata.LANGUAGE_LOOKUP
+    language_list = []#topicdata.LANGUAGE_LIST
+    language_lookup = []#topicdata.LANGUAGE_LOOKUP
 
     # Reset the language
     current_language = Settings.get("subtitle_language")

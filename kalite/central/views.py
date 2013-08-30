@@ -23,7 +23,7 @@ from central.forms import OrganizationForm, OrganizationInvitationForm
 from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
 from securesync.engine.api_client import SyncClient
 from securesync.models import Zone
-from utils.decorators import require_authorized_admin
+from shared.decorators import require_authorized_admin
 
 
 def get_central_server_host(request):
@@ -76,7 +76,9 @@ def org_management(request):
         "title": _("Account administration"),
         "organizations": organizations,
         "HEADLESS_ORG_NAME": Organization.HEADLESS_ORG_NAME,
-        "invitations": OrganizationInvitation.objects.filter(email_to_invite=request.user.email)
+        "invitations": OrganizationInvitation.objects \
+            .filter(email_to_invite=request.user.email)
+            .order_by("organization__name")
     }
 
 
@@ -233,6 +235,7 @@ def install_multiple_server_edition(request):
 
     # Loop over orgs and zones, building the dict of all zones
     #   while searching for the zone_id.
+    
     zones = []
     for org in request.user.organization_set.all().order_by("name"):
         for zone in org.zones.all().order_by("name"):
@@ -245,13 +248,16 @@ def install_multiple_server_edition(request):
                     "name": "%s / %s" % (org.name, zone.name),
                 })
 
-    # If we had a zone and didn't find one, then it's an error
+    # If we get here, then we failed to find the zone.
     if zone_id:
         if Zone.objects.filter(id=zone_id):
+            # The zone exists, we must just not have access to it
             raise PermissionDenied()
         else:
+            # We didnt't find it because it doesn't exist
             raise Http404("Zone ID not found: %s" % zone_id)
 
+    # If we get here, then no zone was specified.  So list the options.
     if len(zones) == 1:
         zone_id = zones[0]["id"]
 
@@ -308,8 +314,8 @@ def download_kalite(request, *args, **kwargs):
     if zone and not request.user.is_authenticated():
         raise PermissionDenied("Requires authentication")
     elif zone:
-        zone_org = Organization.from_zone(zone)
-        if not zone_org or not zone_org[0].id in [org for org in get_or_create_user_profile(request.user).get_organizations()]:
+        zone_orgs = Organization.from_zone(zone)
+        if not zone_orgs or not set([org.id for org in zone_orgs]).intersection(set(get_or_create_user_profile(request.user).get_organizations().keys())):
             raise PermissionDenied("You are not authorized to access this zone information.")
 
     # Generate the zip file.  Pre-specify the zip filename,

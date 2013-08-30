@@ -23,7 +23,7 @@ class RegistrationClient(BaseClient):
             zone.  In this case, we have to prove our permission to be
             on the zone.
 
-        2. register_via_remote (deprecated):
+        2. register_via_preregistered_key (deprecated):
             We have no zone information; instead, we connect with the
             central server directly, and get zone information from 
             there.  This requires a previous manual step, where the
@@ -35,7 +35,7 @@ class RegistrationClient(BaseClient):
             if prove_self:
                 (models,response) = self.register_prove_self_registration()
             else:
-                models = self.register_via_remote()
+                models = self.register_via_preregistered_key()
         except Exception as e:
             # Some of our exceptions are actually json blobs from the server.
             #   Try loading them to pass on that error info.
