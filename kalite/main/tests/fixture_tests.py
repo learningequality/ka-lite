@@ -3,17 +3,16 @@
 """
 import os
 
-from django.test import TestCase
 from django.core.management import call_command
 from django.db import DatabaseError
 from django.utils import unittest
 
 import settings
-from shared.testing.decorators import distributed_server_test
+from shared.testing import distributed_server_test, KALiteTestCase
 
 
 @distributed_server_test
-class FixtureTestCases(TestCase):
+class FixtureTestCases(KALiteTestCase):
     """ """
 
     def test_loaddata(self):

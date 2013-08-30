@@ -105,6 +105,7 @@ class ChangeLocalUserPassword(MainTestCase):
     def setUp(self):
         """Create a new facility and facility user"""
         super(ChangeLocalUserPassword, self).setUp()
+
         self.old_password = 'testpass'
         self.username = "testuser"
         self.facility = Facility(name="Test Facility")
