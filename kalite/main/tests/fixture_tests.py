@@ -9,8 +9,7 @@ from django.db import DatabaseError
 from django.utils import unittest
 
 import settings
-from kalite import settings
-from utils.testing.decorators import distributed_server_test
+from shared.testing.decorators import distributed_server_test
 
 
 @distributed_server_test

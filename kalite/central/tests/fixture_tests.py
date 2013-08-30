@@ -9,7 +9,7 @@ from django.test import TestCase
 from django.core.management import call_command
 
 import settings
-from utils.testing import central_server_test
+from shared.testing import central_server_test
 
 
 @central_server_test

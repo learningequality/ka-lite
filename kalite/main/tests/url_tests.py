@@ -12,7 +12,7 @@ from django.core.management import call_command
 from django.utils import unittest
 
 import settings
-from utils.testing import distributed_server_test
+from shared.testing import distributed_server_test
 
 
 @distributed_server_test

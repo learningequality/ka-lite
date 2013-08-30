@@ -13,8 +13,8 @@ from .base import MainTestCase
 from .command_tests import VideoScanTests
 from main.models import VideoLog, ExerciseLog, VideoFile
 from securesync.models import Facility, FacilityUser
-from utils.testing.client import KALiteClient
-from utils.testing.decorators import distributed_server_test
+from shared.testing.client import KALiteClient
+from shared.testing.decorators import distributed_server_test
 
 
 @distributed_server_test

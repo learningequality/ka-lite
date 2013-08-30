@@ -2,8 +2,8 @@ import time
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
-from kalite import settings
-from utils.testing.base import create_test_admin, KALiteTestCase
+import settings
+from .base import create_test_admin, KALiteTestCase
 
 
 browser = None # persistent browser

@@ -12,9 +12,9 @@ from .base import MainTestCase
 from main.models import VideoFile
 from securesync.models import Facility, FacilityUser
 from shared import caching
+from shared.testing.client import KALiteClient
+from shared.testing.decorators import distributed_server_test
 from utils.django_utils import call_command_with_output
-from utils.testing.decorators import distributed_server_test
-from utils.testing.client import KALiteClient
 
 @distributed_server_test
 class VideoScanTests(MainTestCase):

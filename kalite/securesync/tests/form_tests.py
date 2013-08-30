@@ -5,7 +5,7 @@ from django.test import TestCase
 
 from securesync.forms import FacilityUserForm
 from securesync.models import Facility, FacilityUser
-from utils.testing.decorators import distributed_server_test
+from shared.testing.decorators import distributed_server_test
 
 
 @distributed_server_test

@@ -5,7 +5,7 @@ from django.utils import unittest
 
 from main.models import *
 from securesync.models import Device, Facility, FacilityGroup, FacilityUser
-from utils.testing.unicode import UnicodeModelsTest
+from shared.testing.unicode import UnicodeModelsTest
 
 class MainUnicodeModelsTest(UnicodeModelsTest):
 
