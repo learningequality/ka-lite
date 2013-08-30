@@ -6,9 +6,9 @@ import socket
 import sys
 import urllib
 
+import settings
 import utils.internet
 from utils.general import ensure_dir
-
 
 socket.setdefaulttimeout(20)
 
@@ -101,7 +101,7 @@ def download_video(youtube_id, download_path, format="mp4", callback=None):
         delete_downloaded_files(youtube_id, download_path)
         raise
     
-def delete_downloaded_files(youtube_id, download_path):
+def delete_downloaded_files(youtube_id, download_path=settings.CONTENT_ROOT):
     for filepath in glob.glob(download_path + youtube_id + ".*"):
         try:
             os.remove(filepath)
