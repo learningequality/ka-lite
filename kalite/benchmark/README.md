@@ -23,14 +23,17 @@ Raw data from testing is in [DETAILED_RESULTS.md](/kalite/benchmark/DETAILED_RES
 
 ```
 #initialise card
-sudo dd bs=1M if=2013-02-09-wheezy-raspbian.img of=/dev/my_sd_card_device_goes_here
+sudo dd bs=1M if=put_raspian_image_name-here.img of=/dev/my_sd_card_device_goes_here
 ```
 **Do not** put the wifi adaptor into the Raspberry Pi yet
 
 Raspberry Pi setup is done with a wired internet connection, using ssh to connect.
 
 * Boot the Raspberry Pi
-* sudo raspi-config  --  choose the following options *[expand_rootfs, memory_split=16, update]*
+
+```
+sudo raspi-config  --  choose the following options *[Expand Filesystem, Memory Split=16, Update, Hostname]*
+```
 * Reboot the Raspberry Pi
 
 ```
@@ -40,9 +43,6 @@ sudo apt-get install python-m2crypto
 sudo apt-get install git-core
 sudo apt-get autoremove
 
-#use this command to set a different hostname for this computer
-sudo nano /etc/hostname
-
 sudo shutdown -h now
 ```
 
@@ -51,15 +51,25 @@ sudo shutdown -h now
 * switch on
 
 ```
+cd ~
 git clone https://github.com/learningequality/ka-lite-pi-scripts.git
 cd ka-lite-pi-scripts/
-sudo ./configure.sh
+sudo ./configure.sh    #ignore the error "hostapdSegmentation fault"
 sudo ./use_edimax.sh
 sudo python ./configure_network_interfaces.py
+#
+sudo insserv hostapd  #needed to start hostapd correctly on reboot
+```
+To autostart the wireless network on reboot, edit /etc/network/interfaces and add this autostart command:
+```
+...
+auto wlan0
+iface wlan0 inet static
+...
+```
+now shutdown
 
-# the following command may be needed to force hostapd to autostart correctly
-sudo insserv hostapd
-
+```
 sudo shutdown -h now
 ```
 
@@ -87,3 +97,9 @@ sudo reboot
 * From the browser, navigate to 1.1.1.1:8008
 * KA-lite home page should be shown
 
+NOTE: On the server, use "ifconfig" to confirm that the wireless device (wlan0) has an IP address.
+If it does not have an IP address try adding an "auto wlan0" into /etc/network/interfaces.
+
+**Optimize for performance**
+
+Implement the Raspberry Pi optimizations [PERFORMANCE.md](/kalite/benchmark/PERFORMANCE.md)
