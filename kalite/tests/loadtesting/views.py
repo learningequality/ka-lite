@@ -19,4 +19,6 @@ def load_test(request):
             user.save()
         users_are_created = True
 
-    return {}
+    return {
+        "pct_videos": request.GET.get("pct_videos", 0.9),
+    }
