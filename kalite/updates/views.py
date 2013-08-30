@@ -21,7 +21,6 @@ from django.utils.translation import ugettext as _
 from django.views.decorators.cache import cache_control
 from django.views.decorators.cache import cache_page
 
-import kalite
 import settings
 import version
 from config.models import Settings
@@ -30,19 +29,19 @@ from main import topicdata
 from main.models import VideoLog, ExerciseLog, VideoFile
 from securesync.models import Facility, FacilityUser, FacilityGroup, Device
 from securesync.views import require_admin, facility_required
+from shared.decorators import require_admin
 from shared.jobs import force_job
 from kalite.utils import topic_tools
-from kalite.utils.decorators import require_admin
-from kalite.utils.internet import JsonResponse
+from kalite.utils.internet import am_i_online, JsonResponse
 from kalite.utils.videos import video_connection_is_available
 
 
 def update_context(request):
-
     device = Device.get_own_device()
     zone = device.get_zone()
 
     context = {
+        "registered": Settings.get("registered"),
         "zone_id": zone.id if zone else None,
         "device_id": device.id,
     }
@@ -60,12 +59,21 @@ def update(request):
     return context
 
 @require_admin
+@render_to("updates/update.html")
+def update(request):
+    context = update_context(request)
+    return context
+
+@require_admin
 @render_to("updates/update_videos.html")
 def update_videos(request):
     call_command("videoscan")  # Could potentially be very slow, blocking request.
     force_job("videodownload", "Download Videos")
 
     context = update_context(request)
+    context.update({
+        "video_count": VideoFile.objects.filter(percent_complete=100).count(),
+    })
     return context
 
 
@@ -73,6 +81,7 @@ def update_videos(request):
 @render_to("updates/update_subtitles.html")
 def update_subtitles(request):
     force_job("subtitledownload", "Download Subtitles")
+
     default_language = Settings.get("subtitle_language") or "en"
 
     context = update_context(request)
@@ -85,12 +94,15 @@ def update_subtitles(request):
 @require_admin
 @render_to("updates/update_software.html")
 def update_software(request):
+    database_path = settings.DATABASES["default"]["NAME"]
+    current_version = request.GET.get("version", version.VERSION)  # allows easy development by passing a different version
+
     context = update_context(request)
     context.update({
-        "software_version": kalite.VERSION,
-        "software_release_date": datetime.datetime.strptime(kalite.RELEASE_DATE, '%Y/%m/%d'),
+        "software_version": current_version,
+        "software_release_date": version.VERSION_INFO[current_version]["release_date"],
         "install_dir": os.path.realpath(os.path.join(settings.PROJECT_PATH, "..")),
-        "database_last_updated": datetime.datetime.fromtimestamp(os.path.getctime(settings.DATABASES["default"]["NAME"]
-)),
+        "database_last_updated": datetime.datetime.fromtimestamp(os.path.getctime(database_path)),
+        "database_size": os.stat(settings.DATABASES["default"]["NAME"]).st_size / float(1024**2),
     })
     return context

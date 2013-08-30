@@ -74,13 +74,14 @@ class Command(BaseCommand):
         # Now we're definitely not central server, so ... go for it!
         # Import a zone (for machines sharing zones)
         if not os.path.exists(data_file):
-            sys.stderr.write("Could not find resource file %s.  This may cause warnings to appear when updating your KA Lite version." % data_file)
+            sys.stderr.write("Could not find resource file %s.  This may cause warnings to appear when updating your KA Lite version.\n" % data_file)
         else:
             try:
                 load_data_for_offline_install(in_file=data_file)
                 self.stdout.write("Successfully imported offline data from %s\n" % data_file)
-                if not settings.DEBUG:
-                    os.remove(data_file)
+                # Doesn't hurt to keep data around.
+                #if not settings.DEBUG:
+                #    os.remove(data_file)
             except Exception as e:
                 raise CommandError("Error importing offline data from %s: %s\n" % (data_file, str(e))) 
 

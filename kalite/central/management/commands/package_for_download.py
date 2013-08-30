@@ -13,6 +13,7 @@ This file also defines a function, "install_from_package", which extracts the
   packaging logic, and so that it can be called both inline during testing,
   and externally after the package has been downloaded.
 """
+import contextlib
 import json
 import inspect
 import os
@@ -30,8 +31,8 @@ from kalite.management.commands.zip_kalite import create_default_archive_filenam
 from kalite.management.commands.update import Command as UpdateCommand
 from securesync.management.commands.initdevice import Command as InitCommand
 from securesync.models import Zone, DeviceZone, Device, ChainOfTrust, ZoneInvitation
+from settings import LOG as logging
 from shared import serializers
-from utils import crypto
 from utils.general import get_module_source_file
 from utils.platforms import system_script_extension, system_specific_zipping, system_specific_unzipping
 
@@ -199,7 +200,7 @@ class Command(BaseCommand):
         # Pre-zip prep #3:
         #   Generate the INNER zip
         def create_inner_zip_file():
-            zip_file = create_default_archive_filename(options)
+            zip_file = os.path.join(settings.MEDIA_ROOT, "zip", os.path.basename(create_default_archive_filename(options)))
             options["file"] = zip_file
             if settings.DEBUG or not os.path.exists(zip_file):  # always regenerate in debug mode
                 call_command("zip_kalite", **options)
@@ -211,11 +212,15 @@ class Command(BaseCommand):
         # Pre-zip prep #4:
         #   Create a file with the inner zip file signature.
         def create_signature_file(inner_zip_file):
-            signature_file = tempfile.mkstemp()[1]
-            key = Device.get_own_device().get_key()
-            signature = key.sign(crypto.encode_base64(open(inner_zip_file, "rb").read()))
-            with open(signature_file, "w") as fp:
-                fp.write(signature)
+            signature_file = os.path.splitext(inner_zip_file)[0] + "_signature.txt"
+            logging.debug("Generating signature; saving to %s" % signature_file)
+            if settings.DEBUG or not os.path.exists(signature_file):  # always regenerate in debug mode
+                key = Device.get_own_device().get_key()
+                chunk_size = int(2E5)  #200kb chunks
+                signature = key.sign_large_file(inner_zip_file, chunk_size=chunk_size)
+                with open(signature_file, "w") as fp:
+                    fp.write("%d\n" % chunk_size)
+                    fp.write(signature)
             return signature_file
         signature_file = create_signature_file(inner_zip_file)
 
@@ -234,7 +239,6 @@ class Command(BaseCommand):
         )
 
         # cleanup
-        os.remove(signature_file)
         os.remove(models_file)
         for fil in install_files.values():
             os.remove(fil)
