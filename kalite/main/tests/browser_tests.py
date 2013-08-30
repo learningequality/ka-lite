@@ -9,6 +9,7 @@ from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions, ui
+from selenium.webdriver.firefox.webdriver import WebDriver
 
 from django.test import TestCase
 from django.core.urlresolvers import reverse
@@ -22,6 +23,7 @@ from shared.testing.browser import BrowserTestCase
 from shared.testing.decorators import distributed_server_test
 from utils.django_utils import call_command_with_output
 from utils.general import isnumeric
+from utils.topic_tools import get_exercise_paths
 
 
 @distributed_server_test
@@ -413,6 +415,34 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
         self.assertEqual(elog.attempts, 10, "Student should have 10 attempts.")
         self.assertTrue(elog.complete, "Student should have completed the exercise.")
         self.assertEqual(elog.attempts_before_completion, 10, "Student should have 10 attempts for completion.")
+
+
+@unittest.skipIf(settings.FAST_TESTS_ONLY, "Skipping slow test")
+@distributed_server_test
+class LoadExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
+    """Tests if the exercise is loaded without any JS error.
+
+    The test is run over all urls and check for any JS error.
+    """
+    student_username = 'test_student'
+    student_password =  'socrates'
+
+    def setUp(self):
+        super(LoadExerciseTest, self).setUp()
+        self.student = self.create_student()
+        self.browser_login_student(self.student_username, self.student_password)
+
+    def test_get_exercise_load_status(self):
+        for path in get_exercise_paths():
+            logging.debug("Testing path : " + path)
+            self.browser.get(self.live_server_url + path)
+            error_list = self.browser.execute_script("return window.js_errors;")
+            if error_list:
+                logging.debug("Found JS error(s) while loading path: " + path)
+                logging.debug("JS errors reported:")
+                for e in error_list:
+                    logging.debug(e)    
+            self.assertFalse(error_list)
 
 
 @distributed_server_test
