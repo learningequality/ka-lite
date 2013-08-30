@@ -185,6 +185,10 @@
                     this.runSequence(login_sequence, null, callback);
                 },
                 
+                logout: function(callback) {
+                    this.runSequence(logout_sequence, null, callback);
+                },
+                
                 runSequence: function(tasks, input, callback) {
                     var self = this;
                     var index = 0;
@@ -342,6 +346,12 @@
                 }
             ]
             
+            var logout_sequence = [
+                function(input, callback) {
+                    this.goto("/securesync/logout/", callback);
+                }
+            ]
+            
             $(function() {
                 window.model = new PuppetModel({
                     clickDelay: fastInterval
@@ -351,12 +361,14 @@
                 puppet.goto(window.location.hash.slice(1) || "/");
                 
                 function watchVideos() {
-                    if(Math.random()<{{ pct_videos }}){
+                    if(Math.random() < {{ pct_videos }}){
                         puppet.watchVideo(watchVideos);
                     } else {
                         puppet.watchExercise(watchVideos);
                     }
-                    
+                    if (Math.random() < {{ pct_logout }}) {
+                        puppet.logout(function() { puppet.login(watchVideos); });
+                    }
                 }
                 
                 puppet.login(watchVideos);

@@ -27,5 +27,6 @@ def load_test(request, nusers=None):
 
     return {
         "pct_videos": request.GET.get("pct_videos", 0.9),
+        "pct_logout": request.GET.get("pct_logout", 0.0),
         "nusers": n_users_created,
     }
