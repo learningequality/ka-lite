@@ -185,7 +185,7 @@ else:
     ROOT_URLCONF = "main.urls"
     # Include optionally installed apps
     if os.path.exists(PROJECT_PATH + "/tests/loadtesting/"):
-        INSTALLED_APPS += ("kalite.tests.loadtesting",)
+        INSTALLED_APPS += ("tests.loadtesting",)
 
     MIDDLEWARE_CLASSES += (
         "securesync.middleware.DBCheck",
@@ -235,9 +235,15 @@ if CACHE_TIME != 0:  # None can mean infinite caching to some functions
 # Here, None === no limit
 SYNC_SESSIONS_MAX_RECORDS = getattr(local_settings, "SYNC_SESSIONS_MAX_RECORDS", None if CENTRAL_SERVER else 10)
 
+# enable this to use a background mplayer instance instead of playing the video in the browser, on loopback connections
+# TODO(jamalex): this will currently only work when caching is disabled, as the conditional logic is in the Django template
+USE_MPLAYER = getattr(local_settings, "USE_MPLAYER", False) if CACHE_TIME == 0 else False
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+
 MESSAGE_STORAGE = 'utils.django_utils.NoDuplicateMessagesSessionStorage'
 
-TEST_RUNNER = 'kalite.utils.testing.testrunner.KALiteTestRunner'
+TEST_RUNNER = 'kalite.shared.testing.testrunner.KALiteTestRunner'
 
 CRONSERVER_FREQUENCY = getattr(local_settings, "CRONSERVER_FREQUENCY", 600) # 10 mins (in seconds)
 
