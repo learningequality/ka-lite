@@ -238,9 +238,17 @@ if CACHE_TIME != 0:  # None can mean infinite caching to some functions
 # Here, None === no limit
 SYNC_SESSIONS_MAX_RECORDS = getattr(local_settings, "SYNC_SESSIONS_MAX_RECORDS", None if CENTRAL_SERVER else 10)
 
+# enable this to use a background mplayer instance instead of playing the video in the browser, on loopback connections
+# TODO(jamalex): this will currently only work when caching is disabled, as the conditional logic is in the Django template
+USE_MPLAYER = getattr(local_settings, "USE_MPLAYER", False) if CACHE_TIME == 0 else False
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+
 MESSAGE_STORAGE = 'utils.django_utils.NoDuplicateMessagesSessionStorage'
 
 TEST_RUNNER = 'kalite.shared.testing.testrunner.KALiteTestRunner'
+
+FAST_TESTS_ONLY = getattr(local_settings, "FAST_TESTS_ONLY", False)
 
 CRONSERVER_FREQUENCY = getattr(local_settings, "CRONSERVER_FREQUENCY", 600) # 10 mins (in seconds)
 

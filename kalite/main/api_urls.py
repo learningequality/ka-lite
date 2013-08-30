@@ -1,6 +1,7 @@
 from django.conf.urls.defaults import include, patterns, url
 from django.http import HttpResponse
 
+import settings
 import updates.api_urls
 
 # Note that these patterns are all under /api/, 
@@ -23,6 +24,7 @@ urlpatterns = patterns('main.api_views',
     url(r'^move_to_group$', 'move_to_group', {}, 'move_to_group'),
     url(r'^delete_users$', 'delete_users', {}, 'delete_users'),
 
+    url(r'^launch_mplayer$', 'launch_mplayer', {}, 'launch_mplayer'),
 )
 
 urlpatterns += patterns('updates.api_views',

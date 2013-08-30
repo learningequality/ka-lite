@@ -245,6 +245,13 @@ def get_related_exercises(videos):
     return related_exercises
 
 
+def get_exercise_paths():
+    """This function retrieves all the exercise paths.
+    """
+    exercises = get_node_cache("Exercise").values()
+    return [exercise["paths"][0] for exercise in exercises if len(exercise.get("paths", [])) > 0]
+
+
 def get_related_videos(exercises, topics=None, possible_videos=None):
     """Given a set of exercises, get all of the videos that say they're related.
 
