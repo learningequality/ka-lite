@@ -8,12 +8,11 @@
 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="shortcut icon" href="{% static "images/favicon.ico" %}">
-        {% block jqueryjs %}
         <script type="text/javascript" src="{% static "js/jquery-1.7.1.min.js" %}"></script>
         <script type="text/javascript" src="{% static "js/underscore-min.js" %}"></script>
         <script type="text/javascript" src="{% static "js/backbone-min.js" %}"></script>
-        {% endblock jqueryjs %}
         
+        <link rel="stylesheet" type="text/css" href="{% static "css/khan-site.css" %}">
         <style>
             html, body {
                 height: 100%;
@@ -21,21 +20,21 @@
                 margin: 0;
                 overflow: hidden;
             }
-        
+
             #puppet {
                 position: absolute;
                 top: 40px;
                 width: 100%;
                 border: none;
             }
-            
+
             #infobar .url {
                 float: left;
                 width: 40%;
                 margin-left: 5px;
                 overflow: hidden;
             }
-            
+
             #infobar .status {
                 float: left;
                 width: 20%;
@@ -46,7 +45,7 @@
                 color: red;
                 float: left;
                 width: 20%;
-                margin-left: 15px;                
+                margin-left: 15px;
             }
             
         </style>
@@ -107,7 +106,7 @@
                     
                     // it seems that using jQuery to "click" links does not follow them
                     if ($match.prop("tagName").toLowerCase() === "a" && $match.attr("href")) {
-                        this.goto(this.model.get("url") + $match.attr("href"), callback);
+                        this.goto($match[0].href, callback);
                     } else {
                         this.startTimer();
                         this.whenLoaded(callback);
@@ -370,8 +369,12 @@
             <div class="url"></div>
             <div class="status"></div>
             <div class="errorcount"></div>
+            <div class="clearfix"></div>
         </div>
-        <iframe id="puppet"></iframe>
+
+        <div>
+            <iframe id="puppet"></iframe>
+        </div>
     </body>
 </html>
 

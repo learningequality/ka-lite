@@ -13,7 +13,7 @@ from django.utils.translation import ugettext as _
 import settings
 from config.models import Settings
 from securesync.models import Device, DeviceZone, Zone, Facility, FacilityUser
-from utils.internet import JsonResponse
+from utils.internet import JsonResponse, JsonpResponse
 
 
 def central_server_only(handler):
@@ -62,8 +62,8 @@ def facility_from_request(handler=None, request=None, *args, **kwargs):
         handler = lambda request, facility, *args, **kwargs: facility
 
     def wrapper_fn(request, *args, **kwargs):
-        if kwargs.get("facility_id",None):
-            facility = get_object_or_None(pk=kwargs["facility_id"])
+        if "facility_id" in kwargs:
+            facility = get_object_or_None(Facility, pk=kwargs["facility_id"])
         elif "facility" in request.GET:
             facility = get_object_or_None(Facility, pk=request.GET["facility"])
             if "set_default" in request.GET and request.is_admin and facility:
@@ -108,9 +108,7 @@ def get_user_from_request(handler=None, request=None, *args, **kwargs):
     """
     Gets ID of requested user (not necessarily the user logged in)
     """
-    assert handler or request, "must specify handler or request."
-    assert not args, "positional arguments screw things up--don't use them here."
-
+    assert handler or request
     if not handler:
         handler = lambda request, user, *args, **kwargs: user
 
@@ -154,6 +152,26 @@ def require_admin(handler):
 
     return wrapper_fn
 
+
+def allow_api_profiling(handler):
+    """
+    For API requests decorated with this decorator,
+    if 'debug' is passed in with DEBUG=True,
+    it will add a BODY tag to the json response--allowing
+    the debug_toolbar to be used.
+    """
+    if not settings.DEBUG:
+        # For efficiency in release mode
+        return handler
+    else:
+        def aap_wrapper_fn(request, *args, **kwargs):
+            response = handler(request, *args, **kwargs)
+            if not request.is_ajax() and response["Content-Type"] == "application/json":
+                # Add the "body" tag, which allows the debug_toolbar to attach
+                response.content = "<body>%s</body>" % response.content
+                response["Content-Type"] = "text/html"
+            return response
+        return aap_wrapper_fn
 
 
 def require_authorized_access_to_student_data(handler):
@@ -248,7 +266,7 @@ def require_authorized_admin(handler):
                 zone_id = zone.pk
 
         # Validate zone through org
-        if zone_id:
+        if zone_id and zone_id != "new":
             zone = get_object_or_404(Zone, pk=zone_id)
             if not org_id:
                 # Have to check if any orgs are accessible to this user.
@@ -257,9 +275,7 @@ def require_authorized_admin(handler):
                         return handler(request, *args, **kwargs)
                 raise PermissionDenied("You requested information from an organization that you're not authorized on.")
 
-        if org_id:
-            if org_id=="new":
-                raise PermissionDenied("You requested information from an organization that you're not authorized on.")
+        if org_id and org_id != "new":
             org = get_object_or_404(Organization, pk=org_id)
             if not org.is_member(logged_in_user):
                 raise PermissionDenied("You requested information from an organization that you're not authorized on.")
@@ -287,4 +303,43 @@ def require_superuser(handler):
             return handler(request, *args, **kwargs)
         else:
             raise PermissionDenied(_("Must be logged in as a superuser to access this endpoint."))
+    return wrapper_fn
+
+
+def allow_jsonp(handler):
+    """A general wrapper for API views that should be permitted to return JSONP.
+    
+    Note: do not use this on views that return sensitive user-specific data, as it
+    could allow a 3rd-party attacker site to retrieve and store a user's information.
+
+    Args:
+        The api view, which must return a JsonResponse object, under normal circumstances.
+
+    """
+    def wrapper_fn(request, *args, **kwargs):
+        
+        response = handler(request, *args, **kwargs)
+        
+        # in case another type of response was returned for some reason, just pass it through
+        if not isinstance(response, JsonResponse):
+            return response
+
+        if "callback" in request.REQUEST:
+            
+            if request.method == "GET":
+                # wrap the JSON data as a JSONP response
+                response = JsonpResponse(response.content, request.REQUEST["callback"])
+            elif request.method == "OPTIONS":
+                # return an empty body, for OPTIONS requests, with the headers defined below included
+                response = HttpResponse("", content_type="text/plain")
+            
+            # add CORS-related headers, if the Origin header was included in the request
+            if request.method in ["OPTIONS", "GET"] and "HTTP_ORIGIN" in request.META:
+                response["Access-Control-Allow-Origin"] = request.META["HTTP_ORIGIN"]
+                response["Access-Control-Allow-Methods"] = "GET, OPTIONS"
+                response["Access-Control-Max-Age"] = "1000"
+                response["Access-Control-Allow-Headers"] = "Authorization,Content-Type,Accept,Origin,User-Agent,DNT,Cache-Control,X-Mx-ReqToken,Keep-Alive,X-Requested-With,If-Modified-Since"
+        
+        return response
+        
     return wrapper_fn
