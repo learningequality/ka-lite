@@ -76,8 +76,10 @@
 
 			<div class="row-fluid">
 			<div class="span6 padding-left-20">
-			<h3>Affiliated Zones</h3>
-			
+				<div class="tooltip-container">
+					<h3>Affiliated Zones</h3>
+					<div id="button-popover-zone-{{ forloop.counter0 }}" class="button-popover" data-toggle="popover" data-placement="right" data-content="A Zone is the area in which multiple devices may connect to share content with each other." title="" data-original-title="Zone">?</div>
+				</div>
 			<table class="table">
 			{% for zone in org.get_zones %}
 			<tr>
@@ -94,7 +96,11 @@
 			</form>
 			</div>
 			<div class="span6 padding-left-20">
-			<h3>Organization Admins</h3>
+
+			<div class="tooltip-container">
+					<h3>Organization Admins</h3>
+					<div id="button-popover-orgadmin-{{ forloop.counter0 }}" class="button-popover" data-toggle="popover" data-placement="right" data-content="An Organization Admin is a user responsible for overseeing an organization." title="" data-original-title="Organization admin">?</div>
+			</div>
 			{% for member in org.get_members %}
 			<table class="table">
 				<tr>
@@ -172,14 +178,19 @@
 
 {% endblock content %}
 
-
 {% block bodyjs %}
-
 
 <script src="{% static 'js/bootstrap/tooltip.js' %}"></script>
 <script src="{% static 'js/bootstrap/popover.js' %}"></script>
 <script>
+	var nbOrganization = {{ organizations|length }} - 1 ; //Start the counter at 0
+	
 	// Used <div> instead of <a> to avoid a dirty js hack to avoid the reload to top page.
+	for (var i=0;i<=nbOrganization;i++){ 
+		$('#button-popover-zone-'+(i.toString()) ).popover() //Each popover needs an individual callback
+		$('#button-popover-orgadmin-'+(i.toString()) ).popover() 
+	}
+
 	$('#button-popover-org').popover()
 	$('#button-popover-headless').popover()
 </script>
