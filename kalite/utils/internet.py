@@ -3,9 +3,10 @@ For functions mucking with internet access
 """
 import os
 import requests
+import socket
+
 from urlparse import parse_qs, urlsplit, urlunsplit
 from urllib import urlencode
-
 
 from django.http import HttpResponse
 from django.utils import simplejson
@@ -20,7 +21,7 @@ class StatusException(Exception):
         self.args = (status_code,)
         self.status_code = status_code
 
-        
+
 class JsonResponse(HttpResponse):
     """Wrapper class for generating a HTTP response with JSON data"""
     def __init__(self, content, *args, **kwargs):
@@ -69,6 +70,17 @@ def am_i_online(url, expected_val=None, search_string=None, timeout=5, allow_red
     except Exception as e:
         logging.debug("am_i_online: %s" % e)
         return False
+
+
+def is_loopback_connection(request):
+    """Test whether the IP making the request is the same as the IP serving the request.
+    """
+    # get the external IP address of the local host
+    host_ip = socket.gethostbyname(socket.gethostname())
+    # get the remote (browser) device's IP address (checking extra headers first in case we're behind a proxy)
+    remote_ip = request.META.get('HTTP_X_FORWARDED_FOR', request.META.get("HTTP_X_REAL_IP", request.META.get("REMOTE_ADDR")))
+    # if the requester's IP is either localhost or the same as the server's IP, then it's a loopback
+    return remote_ip in ["127.0.0.1", "localhost", host_ip]
 
 
 def generate_all_paths(path, base_path="/"):
