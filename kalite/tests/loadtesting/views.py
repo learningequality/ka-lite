@@ -3,22 +3,29 @@ from annoying.decorators import render_to
 from securesync.models import Facility, FacilityUser
 
 
-users_are_created = False
-@render_to("loadtesting/load_test.html")
-def load_test(request):
-    global users_are_created
+n_users_created = 0  # keep a global, to let us know if we've initialized, or need to re-initialize.
 
-    if not users_are_created:
+@render_to("loadtesting/load_test.html")
+def load_test(request, nusers=None):
+    global n_users_created
+
+    if not n_users_created or n_users_created < int(request.GET.get("nusers", 1)):  # default 1, as before
+        # It's either the first time, or time to add more
+
+        # Make sure there's a facility
         if not Facility.objects.count() > 0:
             fac = Facility.create({ "name": "fac" })
         fac = Facility.objects.all()[0]
-        for sidx in range(1, 11):
-            unpw = "s%d" % sidx
+
+        # Loop over all needed students
+        while n_users_created < int(request.GET.get("nusers", 1)):
+            n_users_created += 1
+            unpw = "s%d" % n_users_created
             user = FacilityUser.get_or_initialize(username=unpw, facility=fac)
             user.set_password(unpw)
             user.save()
-        users_are_created = True
 
     return {
         "pct_videos": request.GET.get("pct_videos", 0.9),
+        "nusers": n_users_created,
     }
