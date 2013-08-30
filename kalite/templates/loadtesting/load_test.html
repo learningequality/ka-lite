@@ -331,10 +331,12 @@
                     this.goto("/securesync/login/", callback);
                 },
                 function(input, callback) {
+                    var sidx = Math.ceil(Math.random()*10);
+                    
                     this.$("#id_facility option")[1].selected = true;
                     this.fillForm({
-                        username: "student",
-                        password: "student",
+                        username: "s" + sidx,
+                        password: "s" + sidx,
                     });
                     this.submitForm(callback);
                 }
@@ -349,7 +351,7 @@
                 puppet.goto(window.location.hash.slice(1) || "/");
                 
                 function watchVideos() {
-                    if(Math.random()<0.9){
+                    if(Math.random()<0.1){
                         puppet.watchVideo(watchVideos);
                     } else {
                         puppet.watchExercise(watchVideos);
