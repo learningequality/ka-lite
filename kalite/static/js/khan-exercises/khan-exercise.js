@@ -2088,38 +2088,38 @@ var Khan = (function() {
             var curTime = new Date().getTime();
             var data = buildAttemptData(pass, ++attempts, JSON.stringify(validator.guess), curTime);
             debugLog("attempt " + JSON.stringify(data));
-            request("problems/" + problemNum + "/attempt", data, function() {
+            // request("problems/" + problemNum + "/attempt", data, function() {
 
-                // TODO: Save locally if offline
-                $(Khan).trigger("attemptSaved");
+            //     // TODO: Save locally if offline
+            //     $(Khan).trigger("attemptSaved");
 
-            }, function(xhr) {
+            // }, function(xhr) {
 
-                if (xhr.readyState == 0) {
-                    // Ignore errors caused by a broken pipe during page unload
-                    // (browser navigating away during ajax request).
-                    // See http://stackoverflow.com/questions/1370322/jquery-ajax-fires-error-callback-on-window-unload
-                    return;
-                }
+            //     if (xhr.readyState == 0) {
+            //         // Ignore errors caused by a broken pipe during page unload
+            //         // (browser navigating away during ajax request).
+            //         // See http://stackoverflow.com/questions/1370322/jquery-ajax-fires-error-callback-on-window-unload
+            //         return;
+            //     }
 
-                // Error during submit. Disable the page and ask users to
-                // reload in an attempt to get updated data.
+            //     // Error during submit. Disable the page and ask users to
+            //     // reload in an attempt to get updated data.
 
-                // Alert any listeners of the error before reload
-                $(Khan).trigger("attemptError", userExercise);
+            //     // Alert any listeners of the error before reload
+            //     $(Khan).trigger("attemptError", userExercise);
 
-                // Hide the page so users don't continue
-                $("#problem-and-answer").css("visibility", "hidden");
+            //     // Hide the page so users don't continue
+            //     $("#problem-and-answer").css("visibility", "hidden");
 
-                // Warn user about problem, encourage to reload page
-                warn(
-                    "This page is out of date. You need to <a href='" + window.location.href +
-                    "'>refresh</a>, but don't worry, you haven't lost progress. " +
-                    "If you think this is a mistake, " +
-                    "<a href='http://www.khanacademy.org/reportissue?type=Defect&issue_labels='>tell us</a>."
-                );
+            //     // Warn user about problem, encourage to reload page
+            //     warn(
+            //         "This page is out of date. You need to <a href='" + window.location.href +
+            //         "'>refresh</a>, but don't worry, you haven't lost progress. " +
+            //         "If you think this is a mistake, " +
+            //         "<a href='http://www.khanacademy.org/reportissue?type=Defect&issue_labels='>tell us</a>."
+            //     );
 
-            }, "attempt_hint_queue");
+            // }, "attempt_hint_queue");
 
             if (pass === true) {
                 // Correct answer, so show the next question button.
@@ -2289,17 +2289,17 @@ var Khan = (function() {
 
             var fProdReadOnly = !testMode && userExercise.readOnly;
             var fAnsweredCorrectly = $("#next-question-button").is(":visible");
-            if (!fProdReadOnly && !fAnsweredCorrectly) {
-                // Resets the streak and logs history for exercise viewer
-                request(
-                    "problems/" + problemNum + "/hint",
-                    buildAttemptData(false, attempts, "hint", new Date().getTime()),
-                    // Don't do anything on success or failure, silently failing is ok here
-                    function() {},
-                    function() {},
-                    "attempt_hint_queue"
-                );
-            }
+            // if (!fProdReadOnly && !fAnsweredCorrectly) {
+            //     // Resets the streak and logs history for exercise viewer
+            //     request(
+            //         "problems/" + problemNum + "/hint",
+            //         buildAttemptData(false, attempts, "hint", new Date().getTime()),
+            //         // Don't do anything on success or failure, silently failing is ok here
+            //         function() {},
+            //         function() {},
+            //         "attempt_hint_queue"
+            //     );
+            // }
 
         });
 

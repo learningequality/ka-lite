@@ -9,13 +9,15 @@ from django.db import models, transaction
 from django.db.models import Sum
 
 import settings
-from securesync import model_sync
+from securesync import engine
 from securesync.models import SyncedModel, FacilityUser, Device
 from settings import LOG as logging
 from utils.general import datediff, isnumeric
 
 
 class VideoLog(SyncedModel):
+    POINTS_PER_VIDEO = 750
+
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
     youtube_id = models.CharField(max_length=20, db_index=True)
     total_seconds_watched = models.IntegerField(default=0)
@@ -24,13 +26,16 @@ class VideoLog(SyncedModel):
     completion_timestamp = models.DateTimeField(blank=True, null=True)
     completion_counter = models.IntegerField(blank=True, null=True)
 
+    class Meta:
+        pass
+
     def save(self, *args, **kwargs):
         if not kwargs.get("imported", False):
             self.full_clean()
 
             # Compute learner status
             already_complete = self.complete
-            self.complete = (self.points >= 750)
+            self.complete = (self.points >= VideoLog.POINTS_PER_VIDEO)
             if not already_complete and self.complete:
                 self.completion_timestamp = datetime.now()
                 self.completion_counter = Device.get_own_device().get_counter()
@@ -54,6 +59,24 @@ class VideoLog(SyncedModel):
     @staticmethod
     def get_points_for_user(user):
         return VideoLog.objects.filter(user=user).aggregate(Sum("points")).get("points__sum", 0) or 0
+        
+    @classmethod
+    def update_video_log(cls, facility_user, youtube_id, additional_seconds_watched, points=0, new_points=0):
+        assert facility_user and youtube_id, "Updating a video log requires both a facility user and a YouTube ID"
+        
+        # retrieve the previous video log for this user for this video, or make one if there isn't already one
+        videolog = cls.get_or_initialize(user=facility_user, youtube_id=youtube_id)
+        
+        # combine the previously watched counts with the new counts
+        videolog.total_seconds_watched += additional_seconds_watched
+        videolog.points = min(max(points, videolog.points + new_points), cls.POINTS_PER_VIDEO)
+        
+        # write the video log to the database, overwriting any old video log with the same ID
+        # (and since the ID is computed from the user ID and YouTube ID, this will behave sanely)
+        videolog.full_clean()
+        videolog.save()
+
+        return videolog
 
 
 class ExerciseLog(SyncedModel):
@@ -67,6 +90,9 @@ class ExerciseLog(SyncedModel):
     attempts_before_completion = models.IntegerField(blank=True, null=True)
     completion_timestamp = models.DateTimeField(blank=True, null=True)
     completion_counter = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        pass
 
     def save(self, *args, **kwargs):
         if not kwargs.get("imported", False):
@@ -89,7 +115,7 @@ class ExerciseLog(SyncedModel):
                 UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()))
             except ValidationError as e:
                 logging.debug("Failed to update userlog during exercise: %s" % e)
-            super(ExerciseLog, self).save(*args, **kwargs)
+        super(ExerciseLog, self).save(*args, **kwargs)
 
     def get_uuid(self, *args, **kwargs):
         assert self.user is not None and self.user.id is not None, "User ID required for get_uuid"
@@ -113,12 +139,15 @@ class UserLogSummary(SyncedModel):
     activity_type = models.IntegerField(blank=False, null=False)
     start_datetime = models.DateTimeField(blank=False, null=False)
     end_datetime = models.DateTimeField(blank=True, null=True)
-    total_logins = models.IntegerField(default=0, blank=False, null=False)
+    count = models.IntegerField(default=0, blank=False, null=False)
     total_seconds = models.IntegerField(default=0, blank=False, null=False)
+
+    class Meta:
+        pass
 
     def __unicode__(self):
         self.full_clean()  # make sure everything that has to be there, is there.
-        return u"%d seconds over %d logins for %s/%s/%d, period %s to %s" % (self.total_seconds, self.total_logins, self.device.name, self.user.username, self.activity_type, self.start_datetime, self.end_datetime)
+        return u"%d seconds over %d logins for %s/%s/%d, period %s to %s" % (self.total_seconds, self.count, self.device.name, self.user.username, self.activity_type, self.start_datetime, self.end_datetime)
 
 
     @classmethod
@@ -201,14 +230,14 @@ class UserLogSummary(SyncedModel):
             start_datetime=cls.get_period_start_datetime(user_log.end_datetime, settings.USER_LOG_SUMMARY_FREQUENCY),
             end_datetime=cls.get_period_end_datetime(user_log.end_datetime, settings.USER_LOG_SUMMARY_FREQUENCY),
             total_seconds=0,
-            total_logins=0,
+            count=0,
         )
 
         logging.debug("Adding %d seconds for %s/%s/%d, period %s to %s" % (user_log.total_seconds, device.name, user_log.user.username, user_log.activity_type, log_summary.start_datetime, log_summary.end_datetime))
 
         # Add the latest info
         log_summary.total_seconds += user_log.total_seconds
-        log_summary.total_logins += 1
+        log_summary.count += 1
         log_summary.save()
 
 
@@ -398,4 +427,4 @@ class LanguagePack(models.Model):
     lang_name = models.CharField(max_length=30)
 
 
-model_sync.add_syncing_models([VideoLog, ExerciseLog, UserLogSummary])
+engine.add_syncing_models([VideoLog, ExerciseLog, UserLogSummary])

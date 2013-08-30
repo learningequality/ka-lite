@@ -4,6 +4,7 @@ import logging
 import sys
 import time
 import tempfile
+import uuid
 
 # suppress warnings here.
 try:
@@ -38,7 +39,10 @@ AUTO_LOAD_TEST = getattr(local_settings, "AUTO_LOAD_TEST", False)
 assert not AUTO_LOAD_TEST or not CENTRAL_SERVER, "AUTO_LOAD_TEST only on local server"
 
 # info about the central server(s)
+# Note: this MUST be hard-coded for backwards-compatibility reasons.
+ROOT_UUID_NAMESPACE = uuid.UUID("a8f052c7-8790-5bed-ab15-fe2d3b1ede41")  # print uuid.uuid5(uuid.NAMESPACE_URL, "https://kalite.adhocsync.com/")
 SECURESYNC_PROTOCOL   = getattr(local_settings, "SECURESYNC_PROTOCOL",   "https")
+
 CENTRAL_SERVER_DOMAIN = getattr(local_settings, "CENTRAL_SERVER_DOMAIN", "adhocsync.com")
 CENTRAL_SERVER_HOST   = getattr(local_settings, "CENTRAL_SERVER_HOST",   "kalite.%s"%CENTRAL_SERVER_DOMAIN)
 CENTRAL_WIKI_URL      = getattr(local_settings, "CENTRAL_WIKI_URL",      "http://kalitewiki.learningequality.org/")#http://%kalitewiki.s/%CENTRAL_SERVER_DOMAIN
@@ -181,7 +185,7 @@ else:
     ROOT_URLCONF = "main.urls"
     # Include optionally installed apps
     if os.path.exists(PROJECT_PATH + "/tests/loadtesting/"):
-        INSTALLED_APPS += ("kalite.tests.loadtesting",)
+        INSTALLED_APPS += ("tests.loadtesting",)
 
     MIDDLEWARE_CLASSES += (
         "securesync.middleware.DBCheck",
@@ -231,9 +235,17 @@ if CACHE_TIME != 0:  # None can mean infinite caching to some functions
 # Here, None === no limit
 SYNC_SESSIONS_MAX_RECORDS = getattr(local_settings, "SYNC_SESSIONS_MAX_RECORDS", None if CENTRAL_SERVER else 10)
 
+# enable this to use a background mplayer instance instead of playing the video in the browser, on loopback connections
+# TODO(jamalex): this will currently only work when caching is disabled, as the conditional logic is in the Django template
+USE_MPLAYER = getattr(local_settings, "USE_MPLAYER", False) if CACHE_TIME == 0 else False
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+
 MESSAGE_STORAGE = 'utils.django_utils.NoDuplicateMessagesSessionStorage'
 
-TEST_RUNNER = 'kalite.utils.testing.testrunner.KALiteTestRunner'
+TEST_RUNNER = 'kalite.shared.testing.testrunner.KALiteTestRunner'
+
+FAST_TESTS_ONLY = getattr(local_settings, "FAST_TESTS_ONLY", False)
 
 CRONSERVER_FREQUENCY = getattr(local_settings, "CRONSERVER_FREQUENCY", 600) # 10 mins (in seconds)
 
