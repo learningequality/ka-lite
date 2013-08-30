@@ -5,13 +5,14 @@ from django.test import TestCase
 
 from securesync.forms import FacilityUserForm
 from securesync.models import Facility, FacilityUser
-from utils.testing.decorators import distributed_server_test
+from shared.testing import distributed_server_test, KALiteTestCase
 
 
 @distributed_server_test
-class UserRegistration(TestCase):
+class UserRegistration(KALiteTestCase):
 
     def setUp(self):
+        super(UserRegistration, self).setUp()
         self.f = Facility.objects.create(name='testfac')
         password = make_password('insecure')
         self.admin = User.objects.create(username='testadmin',

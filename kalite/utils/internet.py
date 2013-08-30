@@ -73,18 +73,14 @@ def am_i_online(url, expected_val=None, search_string=None, timeout=5, allow_red
 
 
 def is_loopback_connection(request):
-    """ Test whether the IP making the request is the same as the IP serving the request. """
-    try:
-        # get the server's host from the HTTP headers
-        host = request.META.get("HTTP_HOST", "127.0.0.1")
-        # remove the port, if it's there
-        host_name = host.split(":")[0]
-        # get the IP address from a structure like ('localhost', [], ['127.0.0.1'])
-        host_ip = socket.gethostbyaddr(host_name)[2][0]
-        # if the requester's IP is either localhost or the server's public IP, then it's a loopback
-        return request.META.get("REMOTE_ADDR") in ["127.0.0.1", host_ip]
-    except:
-        return False
+    """Test whether the IP making the request is the same as the IP serving the request.
+    """
+    # get the external IP address of the local host
+    host_ip = socket.gethostbyname(socket.gethostname())
+    # get the remote (browser) device's IP address (checking extra headers first in case we're behind a proxy)
+    remote_ip = request.META.get('HTTP_X_FORWARDED_FOR', request.META.get("HTTP_X_REAL_IP", request.META.get("REMOTE_ADDR")))
+    # if the requester's IP is either localhost or the same as the server's IP, then it's a loopback
+    return remote_ip in ["127.0.0.1", "localhost", host_ip]
 
 
 def generate_all_paths(path, base_path="/"):

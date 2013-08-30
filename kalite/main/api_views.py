@@ -19,12 +19,13 @@ from main import topicdata  # must import this way to cache across processes
 from securesync.models import FacilityGroup
 from shared.caching import invalidate_all_pages_related_to_video
 from utils.decorators import api_handle_error_with_json, require_admin
+from shared.videos import delete_downloaded_files
+from utils.jobs import force_job, job_status
 from utils.general import break_into_chunks
 from utils.internet import JsonResponse
 from utils.jobs import force_job, job_status
 from utils.mplayer_launcher import play_video_in_new_thread
 from utils.orderedset import OrderedSet
-from utils.videos import delete_downloaded_files
 
 
 class student_log_api(object):
@@ -440,14 +441,16 @@ def launch_mplayer(request):
 
 def _update_video_log_with_points(seconds_watched, video_length, youtube_id, facility_user):
     """Handle the callback from the mplayer thread, saving the VideoLog. """
+    
     if not facility_user:
         return  # in other places, we signal to the user that info isn't being saved, but can't do it here.
                 #   adding this code for consistency / documentation purposes.
 
     new_points = (float(seconds_watched) / video_length) * VideoLog.POINTS_PER_VIDEO
+    
     videolog = VideoLog.update_video_log(
         facility_user=facility_user,
         youtube_id=youtube_id,
         additional_seconds_watched=seconds_watched,
-        total_points=new_points,
+        new_points=new_points,
     )
