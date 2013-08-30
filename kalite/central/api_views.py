@@ -1,6 +1,7 @@
 import datetime
 import json
 import os
+from collections import OrderedDict
 from decorator.decorator import decorator
 
 from django.core.urlresolvers import reverse
@@ -8,17 +9,23 @@ from django.http import HttpResponse, Http404
 
 import kalite
 import settings
+import version
+from .models import Organization, get_or_create_user_profile
 from .views import get_central_server_host
-from utils.decorators import allow_jsonp, api_handle_error_with_json
-from utils.internet import JsonResponse
+from securesync.models import Zone
+from utils.internet import allow_jsonp, api_handle_error_with_json, JsonResponse
 
 
 @allow_jsonp
 @api_handle_error_with_json
 def get_kalite_version(request):
+    assert kalite.VERSION in version.VERSION_INFO
+
+    request_version = request.GET.get("current_version", "0.10.0")  # default to first version that can understand this.
+    needed_updates = [v for v in sorted(version.VERSION_INFO.keys()) if request_version < v]    # versions are nice--they sort by string
     return JsonResponse({
         "version": kalite.VERSION,
-        "release_date": datetime.datetime.strptime(kalite.RELEASE_DATE, '%Y/%m/%d')
+        "version_info": OrderedDict([(v, version.VERSION_INFO[v]) for v in needed_updates]),
     })
 
 
@@ -30,7 +37,6 @@ def get_download_urls(request):
     # TODO: once Dylan makes all subtitle languages available,
     #   don't hard-code this.
     download_sizes = {
-        "all": 25.5,
         "en": 19.8,
     }
 

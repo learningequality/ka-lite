@@ -15,5 +15,4 @@ urlpatterns = patterns('updates.api_views',
     url(r'^updates/cancel$', 'cancel_update_progress', {}, 'cancel_update_progress'),
     url(r'^updates/start$', 'start_update_kalite', {}, 'start_update_kalite'),
     url(r'^updates/check$', 'check_update_kalite', {}, 'check_update_kalite'),
-
 )

@@ -199,6 +199,7 @@ class Device(SyncedModel):
 
         metadata = own_device.get_metadata()
         metadata.is_own_device = True
+        metadata.is_trusted = settings.CENTRAL_SERVER  # this is OK to set, as DeviceMetata is NEVER synced.
         metadata.save()
 
         return own_device
@@ -293,6 +294,14 @@ class ZoneInvitation(SyncedModel):
     revoked = models.BooleanField(default=False)
 
     key = None
+
+    def __unicode__(self):
+        outstr = u"Invitation for zone %s, invited by %s" % (self.zone.name, self.invited_by.name)
+        if self.used_by:
+            outstr += u", used by %s" % self.used_by.name
+        if self.revoked:
+            outstr += u" (REVOKED)"
+        return outstr
 
     def _hashable_representation(self):
         fields = ["zone", "public_key", "public_key_signature"]

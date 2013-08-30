@@ -14,8 +14,14 @@ from .api_forms import ExerciseLogForm, VideoLogForm
 from .models import FacilityUser, VideoLog, ExerciseLog, VideoFile
 from config.models import Settings
 from securesync.models import FacilityGroup
-from utils.decorators import api_handle_error_with_json, require_admin
-from utils.internet import JsonResponse
+from shared.caching import invalidate_all_pages_related_to_video
+from shared.decorators import require_admin
+from shared.jobs import force_job, job_status
+from utils.general import break_into_chunks
+from utils.internet import api_handle_error_with_json, JsonResponse
+from utils.orderedset import OrderedSet
+from utils.videos import delete_downloaded_files
+
 
 class student_log_api(object):
 
@@ -148,31 +154,155 @@ def get_exercise_logs(request):
         return JsonResponse({"error": "Could not load ExerciseLog objects: Unrecognized input data format." % e}, status=500)
 
     user = request.session["facility_user"]
-    responses = []
-    for exercise_id in data:
-        response = _get_exercise_log_dict(request, user, exercise_id)
-        if response:
-            responses.append(response)
-    return JsonResponse(responses)
+
+    return JsonResponse(
+        list(ExerciseLog.objects \
+            .filter(user=user, exercise_id__in=data) \
+            .values("exercise_id", "streak_progress", "complete", "points", "struggling"))
+    )
 
 
-def _get_exercise_log_dict(request, user, exercise_id):
+@require_admin
+@api_handle_error_with_json
+def start_video_download(request):
+    youtube_ids = OrderedSet(simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", []))
+
+    video_files_to_create = [id for id in youtube_ids if not get_object_or_None(VideoFile, youtube_id=id)]
+    video_files_to_update = youtube_ids - OrderedSet(video_files_to_create)
+
+    VideoFile.objects.bulk_create([VideoFile(youtube_id=id, flagged_for_download=True) for id in video_files_to_create])
+
+    for chunk in break_into_chunks(youtube_ids):
+        video_files_needing_model_update = VideoFile.objects.filter(download_in_progress=False, youtube_id__in=chunk).exclude(percent_complete=100)
+        video_files_needing_model_update.update(percent_complete=0, cancel_download=False, flagged_for_download=True)
+
+    force_job("videodownload", "Download Videos")
+    return JsonResponse({})
+
+
+@require_admin
+@api_handle_error_with_json
+def delete_videos(request):
+    youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
+    for id in youtube_ids:
+        # Delete the file on disk
+        delete_downloaded_files(id)
+
+        # Delete the file in the database
+        videofile = get_object_or_None(VideoFile, youtube_id=id)
+        if videofile:
+            videofile.cancel_download = True
+            videofile.flagged_for_download = False
+            videofile.flagged_for_subtitle_download = False
+            videofile.save()
+
+        # Refresh the cache
+        invalidate_all_pages_related_to_video(video_id=id)
+
+    return JsonResponse({})
+
+@require_admin
+@api_handle_error_with_json
+def check_video_download(request):
+    youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
+    percentages = {}
+    percentages["downloading"] = job_status("videodownload")
+    for id in youtube_ids:
+        videofile = get_object_or_None(VideoFile, youtube_id=id) or VideoFile(youtube_id=id)
+        percentages[id] = videofile.percent_complete
+    return JsonResponse(percentages)
+
+@require_admin
+@api_handle_error_with_json
+def get_video_download_list(request):
+    videofiles = VideoFile.objects.filter(flagged_for_download=True).values("youtube_id")
+    video_ids = [video["youtube_id"] for video in videofiles]
+    return JsonResponse(video_ids)
+
+
+@require_admin
+@api_handle_error_with_json
+def get_video_download_status(request):
+    """Get info about what video is currently being downloaded, and how many are left.
+    So far, this is only used for debugging, but could be a more robust alternative to
+    `check_video_download` if we change our approach slightly.
     """
-    Utility that converts a video log to a dictionary
-    """
-    if not exercise_id:
-        return {}
+
+    videofile = get_object_or_None(VideoFile, download_in_progress=True)
+    return JsonResponse({
+        "waiting_count": VideoFile.objects.filter(flagged_for_download=True).count(),
+        "current_video_id": videofile.youtube_id if videofile else None,
+        "current_video_percent": videofile.percent_complete if videofile else 0,
+        "downloading": job_status("videodownload"),
+    })
+
+
+@require_admin
+@api_handle_error_with_json
+def start_subtitle_download(request):
+    update_set = simplejson.loads(request.raw_post_data or "{}").get("update_set", "existing")
+    language = simplejson.loads(request.raw_post_data or "{}").get("language", "")
+
+    # Set subtitle language
+    Settings.set("subtitle_language", language)
+
+    # Get the json file with all srts
+    request_url = "http://%s/static/data/subtitles/languages/%s_available_srts.json" % (settings.CENTRAL_SERVER_HOST, language)
     try:
-        exerciselog = ExerciseLog.objects.get(user=user, exercise_id=exercise_id)
-    except ExerciseLog.DoesNotExist:
-        return {}
-    return {
-        "exercise_id": exercise_id,
-        "streak_progress": exerciselog.streak_progress,
-        "complete": exerciselog.complete,
-        "points": exerciselog.points,
-        "struggling": exerciselog.struggling,
-    }
+        r = requests.get(request_url)
+        r.raise_for_status() # will return none if 200, otherwise will raise HTTP error
+        available_srts = set((r.json)["srt_files"])
+    except ConnectionError:
+        return JsonResponse({"error": "The central server is currently offline."}, status=500)
+    except HTTPError:
+        return JsonResponse({"error": "No subtitles available on central server for language code: %s; aborting." % language}, status=500)
+
+    if update_set == "existing":
+        videofiles = VideoFile.objects.filter(subtitles_downloaded=False, subtitle_download_in_progress=False)
+    else:
+        videofiles = VideoFile.objects.filter(subtitle_download_in_progress=False)
+
+    queue_count = 0
+    for chunk in break_into_chunks(available_srts):
+        queue_count += videofiles.filter(youtube_id__in=chunk).update(flagged_for_subtitle_download=True, subtitles_downloaded=False)
+
+    if queue_count == 0:
+        return JsonResponse({"info": "There aren't any subtitles available in this language for your currently downloaded videos."}, status=200)
+        
+    force_job("subtitledownload", "Download Subtitles")
+    return JsonResponse({})
+
+
+@require_admin
+@api_handle_error_with_json
+def check_subtitle_download(request):
+    videofiles = VideoFile.objects.filter(flagged_for_subtitle_download=True)
+    return JsonResponse(videofiles.count())
+
+@require_admin
+@api_handle_error_with_json
+def get_subtitle_download_list(request):
+    videofiles = VideoFile.objects.filter(flagged_for_subtitle_download=True).values("youtube_id")
+    video_ids = [video["youtube_id"] for video in videofiles]
+    return JsonResponse(video_ids)
+
+@require_admin
+@api_handle_error_with_json
+def cancel_downloads(request):
+
+    # clear all download in progress flags, to make sure new downloads will go through
+    VideoFile.objects.all().update(download_in_progress=False)
+
+    # unflag all video downloads
+    VideoFile.objects.filter(flagged_for_download=True).update(cancel_download=True, flagged_for_download=False)
+
+    # unflag all subtitle downloads
+    VideoFile.objects.filter(flagged_for_subtitle_download=True).update(cancel_download=True, flagged_for_subtitle_download=False)
+
+    force_job("videodownload", stop=True)
+    force_job("subtitledownload", stop=True)
+
+    return JsonResponse({})
 
 # Functions below here focused on users
 
