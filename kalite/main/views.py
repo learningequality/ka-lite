@@ -31,7 +31,7 @@ from config.models import Settings
 from control_panel.views import user_management_context
 from main import topicdata
 from main.models import VideoLog, ExerciseLog, VideoFile
-from securesync.api_client import SyncClient
+from securesync.engine.api_client import SyncClient
 from securesync.models import Facility, FacilityUser,FacilityGroup, Device
 from securesync.views import require_admin, facility_required
 from settings import LOG as logging
@@ -281,7 +281,6 @@ def easy_admin(request):
     context = {
         "wiki_url" : settings.CENTRAL_WIKI_URL,
         "central_server_host" : settings.CENTRAL_SERVER_HOST,
-        "am_i_online": am_i_online(settings.CENTRAL_WIKI_URL, allow_redirects=False),
         "in_a_zone":  Device.get_own_device().get_zone() is not None,
     }
     return context
@@ -356,19 +355,12 @@ def update(request):
     call_command("videoscan")  # Could potentially be very slow, blocking request.
     force_job("videodownload", "Download Videos")
     force_job("subtitledownload", "Download Subtitles")
-    language_lookup = topicdata.LANGUAGE_LOOKUP
-    language_list = topicdata.LANGUAGE_LIST
     default_language = Settings.get("subtitle_language") or "en"
-    if default_language not in language_list:
-        language_list.append(default_language)
-    languages = [{"id": key, "name": language_lookup[key]} for key in language_list]
-    languages = sorted(languages, key=lambda k: k["name"])
 
     device = Device.get_own_device()
     zone = device.get_zone()
 
     context = {
-        "languages": languages,
         "default_language": default_language,
         "registered": Settings.get("registered"),
         "zone_id": zone.id if zone else None,

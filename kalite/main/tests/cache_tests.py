@@ -12,9 +12,9 @@ from django.utils import unittest
 import settings
 from kalite.main import topicdata
 from shared import caching
+from shared.testing.base import KALiteTestCase
+from shared.testing.decorators import distributed_server_test
 from utils.django_utils import call_command_with_output
-from utils.testing.base import KALiteTestCase
-from utils.testing.decorators import distributed_server_test
 
 
 @distributed_server_test
