@@ -30,6 +30,12 @@ server {
         alias   %(root_path)s/content/;
     }
 
+    location /api/v1 {
+        types { }
+        default_type "application/json";
+        return 200 "{}";
+    }
+
     location /favicon.ico {
         empty_gif;
     }

@@ -14,7 +14,7 @@ import settings
 from main import topicdata
 from central.models import Organization
 from control_panel.forms import ZoneForm, UploadFileForm
-from main.models import ExerciseLog, VideoLog, UserLogSummary
+from main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
 from securesync.forms import FacilityForm
 from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device, Zone, SyncSession
 from utils.decorators import require_authorized_admin
@@ -121,14 +121,16 @@ def facility_usage(request, facility_id, org_id=None, zone_id=None):
         exercise_logs = ExerciseLog.objects.filter(user=user)
         exercise_stats = {"count": exercise_logs.count(), "total_mastery": exercise_logs.aggregate(Sum("complete"))["complete__sum"]}
         video_stats = {"count": VideoLog.objects.filter(user=user).count()}
-        login_stats = UserLogSummary.objects.filter(user=user).aggregate(Sum("total_logins"), Sum("total_seconds"))
+        login_stats = UserLogSummary.objects \
+            .filter(user=user, activity_type=UserLog.get_activity_int("login")) \
+            .aggregate(Sum("count"), Sum("total_seconds"))
 
         user_data[user.pk] = {
             "first_name": user.first_name,
             "last_name": user.last_name,
             "name": user.get_name(),
             "group": user.group,
-            "total_logins": login_stats["total_logins__sum"] or 0,
+            "total_logins": login_stats["count__sum"] or 0,
             "total_hours": (login_stats["total_seconds__sum"] or 0)/3600.,
             "total_videos": video_stats["count"],
             "total_exercises": exercise_stats["count"],
