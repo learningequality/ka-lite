@@ -1,8 +1,117 @@
 [
   {
     "related_video_readable_ids": [
-      "properties-of-numbers-1"
+      "introduction-to-order-of-operations", 
+      "order-of-operations", 
+      "more-complicated-order-of-operations-example"
     ], 
+    "v_position": -4, 
+    "path": "/math/arithmetic/order-of-operations/order_of_operations/e/order_of_operations/", 
+    "id": "order_of_operations", 
+    "display_name": "Order of operations", 
+    "title": "Order of operations", 
+    "live": true, 
+    "description": "", 
+    "h_position": 16, 
+    "slug": "order_of_operations", 
+    "kind": "Exercise", 
+    "name": "order_of_operations", 
+    "seconds_per_fast_problem": 6.0, 
+    "prerequisites": [
+      "properties_of_numbers_2", 
+      "number_properties_terminology_1", 
+      "distributive_property", 
+      "expressions-with-parentheses"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "place-value-1", 
+      "place-value-2", 
+      "place-value-3"
+    ], 
+    "v_position": 4, 
+    "path": "/math/arithmetic/order-of-operations/place_value/e/place_value/", 
+    "id": "place_value", 
+    "display_name": "Place value", 
+    "title": "Place value", 
+    "live": true, 
+    "description": "", 
+    "h_position": 13, 
+    "slug": "place_value", 
+    "kind": "Exercise", 
+    "name": "place_value", 
+    "seconds_per_fast_problem": 6.0, 
+    "prerequisites": [
+      "adding_decimals_2"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "representing-numbers"
+    ], 
+    "v_position": -4, 
+    "path": "/math/arithmetic/order-of-operations/place_value/e/representing_numbers/", 
+    "id": "representing_numbers", 
+    "display_name": "Representing numbers", 
+    "title": "Representing numbers", 
+    "live": true, 
+    "description": "Identify the number represented by hundreds, tens, and ones blocks", 
+    "h_position": 5, 
+    "slug": "representing_numbers", 
+    "kind": "Exercise", 
+    "name": "representing_numbers", 
+    "seconds_per_fast_problem": 7.0, 
+    "prerequisites": [
+      "multiplication_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "rounding-whole-numbers-1", 
+      "rounding-whole-numbers-2", 
+      "rounding-whole-numbers-3"
+    ], 
+    "v_position": 3, 
+    "path": "/math/arithmetic/order-of-operations/rounding_whole_numbers/e/rounding_whole_numbers/", 
+    "id": "rounding_whole_numbers", 
+    "display_name": "Rounding whole numbers", 
+    "title": "Rounding whole numbers", 
+    "live": true, 
+    "description": "", 
+    "h_position": 14, 
+    "slug": "rounding_whole_numbers", 
+    "kind": "Exercise", 
+    "name": "rounding_whole_numbers", 
+    "seconds_per_fast_problem": 7.0, 
+    "prerequisites": [
+      "place_value"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "distributive-property-exercise", 
+      "the-distributive-property", 
+      "the-distributive-property-2"
+    ], 
+    "v_position": -3, 
+    "path": "/math/arithmetic/order-of-operations/ditributive_property/e/distributive_property/", 
+    "id": "distributive_property", 
+    "display_name": "Distributive property", 
+    "title": "Distributive property", 
+    "live": true, 
+    "description": "", 
+    "h_position": 14, 
+    "slug": "distributive_property", 
+    "kind": "Exercise", 
+    "name": "distributive_property", 
+    "seconds_per_fast_problem": 20.0, 
+    "prerequisites": [
+      "multiplying_and_dividing_negative_numbers"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
     "v_position": -5, 
     "path": "/math/arithmetic/order-of-operations/arithmetic_properties/e/properties_of_numbers_1/", 
     "id": "properties_of_numbers_1", 
@@ -20,9 +129,7 @@
     ]
   }, 
   {
-    "related_video_readable_ids": [
-      "number-properties-terminology-1"
-    ], 
+    "related_video_readable_ids": [], 
     "v_position": -4, 
     "path": "/math/arithmetic/order-of-operations/arithmetic_properties/e/number_properties_terminology_1/", 
     "id": "number_properties_terminology_1", 
@@ -34,15 +141,13 @@
     "slug": "number_properties_terminology_1", 
     "kind": "Exercise", 
     "name": "number_properties_terminology_1", 
-    "seconds_per_fast_problem": 5.0, 
+    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "multiplying_and_dividing_negative_numbers"
     ]
   }, 
   {
-    "related_video_readable_ids": [
-      "properties-of-numbers-2"
-    ], 
+    "related_video_readable_ids": [], 
     "v_position": -5, 
     "path": "/math/arithmetic/order-of-operations/arithmetic_properties/e/properties_of_numbers_2/", 
     "id": "properties_of_numbers_2", 
@@ -74,7 +179,7 @@
     "slug": "counting_1", 
     "kind": "Exercise", 
     "name": "counting_1", 
-    "seconds_per_fast_problem": 5.0, 
+    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "division_2"
     ]
