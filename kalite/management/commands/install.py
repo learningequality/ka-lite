@@ -54,26 +54,25 @@ def find_owner(file):
     return getpass.getuser()
 
 def validate_username(username):
-    return not username or (not re.match(r'^[^a-zA-Z]', username) and not re.match(r'[^a-zA-Z0-9_]+', username))
+    return username and (not re.match(r'^[^a-zA-Z]', username) and not re.match(r'[^a-zA-Z0-9_]+', username))
 
-def get_username(current_user):
-    while True:
+def get_username(username):
+    while not validate_username(username):
         
-        username = raw_input("Username (leave blank to use '%s'): " % current_user) or current_user
+        username = raw_input("Username (leave blank to use '%s'): " % getpass.getuser()) or getpass.getuser()
         if not validate_username(username):
             sys.stderr.write("\tError: Username must contain only letters, digits, and underscores, and start with a letter.\n")
-        else:
-            break
+
     return username
 
 
-def get_username_password(current_user=""):
-    return (get_username(current_user), raw_input_password())
+def get_username_password(current_user="", password=None):
+    return (get_username(current_user), password or raw_input_password())
 
 
-def get_hostname_and_description():
+def get_hostname_and_description(hostname=None, description=None):
     default_hostname = get_host_name()
-    while True:
+    while not hostname:
         prompt = "Please enter a name for this server%s: " % ("" if not default_hostname else (" (or, press Enter to use '%s')" % get_host_name()))
         hostname = raw_input(prompt) or default_hostname
         if not hostname:
@@ -81,7 +80,7 @@ def get_hostname_and_description():
         else:
             break
 
-    description = raw_input("Please enter a one-line description for this server (or, press Enter to leave blank): ")
+    description = description or raw_input("Please enter a one-line description for this server (or, press Enter to leave blank): ")
 
     return (hostname, description)
 
@@ -96,7 +95,7 @@ class Command(BaseCommand):
         make_option('-u', '--username',
             action='store',
             dest='username',
-            default=getpass.getuser(),
+            default=None,
             help='Superuser username'),
         make_option('-p', '--password',
             action='store',
@@ -106,7 +105,7 @@ class Command(BaseCommand):
         make_option('-o', '--hostname',
             action='store',
             dest='hostname',
-            default=get_host_name(),
+            default=None,
             help='Computer hostname'),
         make_option('-d', '--description',
             action='store',
@@ -123,6 +122,11 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        if not options["interactive"]:
+            options["username"] = getpass.getuser()
+            options["hostname"] = get_host_name()
+ 
+    
         sys.stdout.write("  _   __  ___    _     _ _        \n")
         sys.stdout.write(" | | / / / _ \  | |   (_) |       \n")
         sys.stdout.write(" | |/ / / /_\ \ | |    _| |_ ___  \n")
@@ -193,13 +197,14 @@ class Command(BaseCommand):
         # Do all input at once, at the beginning
         if install_clean:
             if options["interactive"]:
-                sys.stdout.write("\n")
-                sys.stdout.write("Please choose a username and password for the admin account on this device.\n")
-                sys.stdout.write("\tYou must remember this login information, as you will need to enter it to\n")
-                sys.stdout.write("\tadminister this installation of KA Lite.\n")
-                sys.stdout.write("\n")
-                (username, password) = get_username_password(current_user)
-                (hostname, description) = get_hostname_and_description()
+                if not options["username"] or not options["password"]:
+                    sys.stdout.write("\n")
+                    sys.stdout.write("Please choose a username and password for the admin account on this device.\n")
+                    sys.stdout.write("\tYou must remember this login information, as you will need to enter it to\n")
+                    sys.stdout.write("\tadminister this installation of KA Lite.\n")
+                    sys.stdout.write("\n")
+                (username, password) = get_username_password(options["username"], options["password"])
+                (hostname, description) = get_hostname_and_description(options["hostname"], options["description"])
             else:
                 username = options["username"]
                 password = options["password"]
@@ -211,7 +216,10 @@ class Command(BaseCommand):
                 elif not password:
                     raise CommandError("Password cannot be blank.\n")
 
+        ########################
         # Now do stuff
+        ########################
+
         if install_clean and os.path.exists(database_file):
             # This is an overwrite install; destroy the old db
             dest_file = tempfile.mkstemp()[1]
