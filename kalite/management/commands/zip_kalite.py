@@ -31,7 +31,7 @@ def select_package_dirs(dirnames, key_base, **kwargs):
     base_name = os.path.split(key_base)[1]
 
     if key_base == "":  # base directory
-        in_dirs = set(('docs', 'kalite', 'locale', 'python-packages'))
+        in_dirs = set(('docs', 'kalite', 'locale', 'python-packages'))  # ignore content
 
     elif base_name in ["locale", "localflavor"] and kwargs.get("locale", "") not in [None, "", "all"]:
         # ONLY include files for the particular locale
@@ -42,7 +42,7 @@ def select_package_dirs(dirnames, key_base, **kwargs):
         # can't exclude 'test', which eliminates the Django test client (used in caching)
         #   as well as all the Khan academy tests
         in_dirs = set(dirnames)
-        in_dirs -= set(['tmp'])
+        in_dirs -= set(['tmp', "media"])  # media is like a temp dir
         if kwargs["remove_test"]:
             in_dirs -= set(('loadtesting', 'tests', 'testing', 'selenium', 'werkzeug', 'postmark'))
         #
