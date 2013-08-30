@@ -31,9 +31,9 @@ from securesync.models import Facility, FacilityUser, FacilityGroup, Device
 from securesync.views import require_admin, facility_required
 from shared.decorators import require_admin
 from shared.jobs import force_job
+from shared.videos import video_connection_is_available
 from kalite.utils import topic_tools
 from kalite.utils.internet import am_i_online, JsonResponse
-from kalite.utils.videos import video_connection_is_available
 
 
 def update_context(request):
