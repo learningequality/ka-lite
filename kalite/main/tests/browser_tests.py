@@ -2,7 +2,6 @@
 These use a web-browser, along selenium, to simulate user actions.
 """
 
-import logging
 import re
 import time
 import unittest
@@ -19,10 +18,10 @@ from main.models import ExerciseLog
 from main.topicdata import NODE_CACHE
 from securesync.models import Facility, FacilityGroup, FacilityUser
 from settings import LOG as logging
+from shared.testing.browser import BrowserTestCase
+from shared.testing.decorators import distributed_server_test
 from utils.django_utils import call_command_with_output
 from utils.general import isnumeric
-from utils.testing.browser import BrowserTestCase
-from utils.testing.decorators import distributed_server_test
 
 
 @distributed_server_test
@@ -225,7 +224,6 @@ class DeviceUnregisteredTest(KALiteDistributedBrowserTestCase):
         Tests that a device is initially unregistered, and that it can
         be registered through automatic means.
         """
-
         home_url = self.reverse("homepage")
 
         # First, get the homepage without any automated information.

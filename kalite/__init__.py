@@ -1,6 +1,6 @@
 # testing isn't always available; just ignore if not
 try:
-    import utils.testing.testrunner
+    import shared.testing.testrunner
 except Exception as e:
     pass
 try:

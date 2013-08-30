@@ -12,9 +12,9 @@ from .base import MainTestCase
 from main.models import VideoFile
 from securesync.models import Facility, FacilityUser
 from shared import caching
+from shared.testing.client import KALiteClient
+from shared.testing.decorators import distributed_server_test
 from utils.django_utils import call_command_with_output
-from utils.testing.decorators import distributed_server_test
-from utils.testing.client import KALiteClient
 
 @distributed_server_test
 class VideoScanTests(MainTestCase):
@@ -105,6 +105,7 @@ class ChangeLocalUserPassword(MainTestCase):
     def setUp(self):
         """Create a new facility and facility user"""
         super(ChangeLocalUserPassword, self).setUp()
+
         self.old_password = 'testpass'
         self.username = "testuser"
         self.facility = Facility(name="Test Facility")

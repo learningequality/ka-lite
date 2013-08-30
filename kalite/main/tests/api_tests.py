@@ -5,7 +5,6 @@ from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.core.urlresolvers import reverse
-from django.test import TestCase
 from django.utils import unittest
 
 import settings
@@ -13,12 +12,11 @@ from .base import MainTestCase
 from .command_tests import VideoScanTests
 from main.models import VideoLog, ExerciseLog, VideoFile
 from securesync.models import Facility, FacilityUser
-from utils.testing.client import KALiteClient
-from utils.testing.decorators import distributed_server_test
+from shared.testing import distributed_server_test, KALiteClient, KALiteTestCase
 
 
 @distributed_server_test
-class TestSaveExerciseLog(TestCase):
+class TestSaveExerciseLog(KALiteTestCase):
     
     ORIGINAL_POINTS = 37
     ORIGINAL_ATTEMPTS = 3
@@ -33,6 +31,8 @@ class TestSaveExerciseLog(TestCase):
     PASSWORD = "dummy"
     
     def setUp(self):
+        super(TestSaveExerciseLog, self).setUp()
+
         # create a facility and user that can be referred to in models across tests
         self.facility = Facility(name="Test Facility")
         self.facility.save()
@@ -128,7 +128,7 @@ class TestSaveExerciseLog(TestCase):
 
 
 @distributed_server_test
-class TestSaveVideoLog(TestCase):
+class TestSaveVideoLog(KALiteTestCase):
     
     ORIGINAL_POINTS = 84
     ORIGINAL_SECONDS_WATCHED = 32
@@ -140,6 +140,7 @@ class TestSaveVideoLog(TestCase):
     PASSWORD = "dummy"
     
     def setUp(self):
+        super(TestSaveVideoLog, self).setUp()
         # create a facility and user that can be referred to in models across tests
         self.facility = Facility(name="Test Facility")
         self.facility.save()
