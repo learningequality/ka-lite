@@ -26,7 +26,6 @@ def create_test_admin(username="admin", password="pass", email="admin@example.co
     Taken from http://stackoverflow.com/questions/3495114/how-to-create-admin-user-in-django-tests-py"""
     
     test_admin = User.objects.create_superuser(username, email, password)
-    settings.LOG.debug('Created user "%s"' % username)
 
     # You'll need to log him in before you can send requests through the client
     client = Client()

@@ -4,6 +4,7 @@ from selenium.webdriver.common.keys import Keys
 
 import settings
 from .base import create_test_admin, KALiteTestCase
+from settings import LOG as logging
 
 
 browser = None # persistent browser
@@ -63,10 +64,11 @@ class BrowserTestCase(KALiteTestCase):
     clients and logging in profiles.
     """
 
+    persistent_browser = True
+
     HtmlFormElements = ["form", "input", "textarea", "label", "fieldset", "legend", "select", "optgroup", "option", "ubtton", "datalist", "keygen", "output"]  # not all act as tab stops, but ...
 
     def __init__(self, *args, **kwargs):
-        self.persistent_browser = False
         self.max_wait_time = kwargs.get("max_wait_time", 30)
         super(BrowserTestCase, self).__init__(*args, **kwargs)
 
@@ -86,13 +88,21 @@ class BrowserTestCase(KALiteTestCase):
                     (self.browser,self.admin_user,self.admin_pass) = setup_test_env(browser_type=browser_type)
                     break
                 except Exception as e:
-                    settings.LOG.debug("Could not create browser %s through selenium: %s" % (browser_type, e))
+                    logging.debug("Could not create browser %s through selenium: %s" % (browser_type, e))
 
         
     def tearDown(self):
         if not self.persistent_browser:
             self.browser.quit()
         return super(BrowserTestCase, self).tearDown()
+
+    @classmethod
+    def tearDownClass(cls):
+        global browser
+        if cls.persistent_browser and browser:
+            browser.quit()
+            browser = None
+        return super(BrowserTestCase, cls).tearDownClass()
 
 
     def browse_to(self, *args, **kwargs):

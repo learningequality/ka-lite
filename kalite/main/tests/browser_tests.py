@@ -2,7 +2,6 @@
 These use a web-browser, along selenium, to simulate user actions.
 """
 
-import logging
 import re
 import time
 import unittest
@@ -225,7 +224,6 @@ class DeviceUnregisteredTest(KALiteDistributedBrowserTestCase):
         Tests that a device is initially unregistered, and that it can
         be registered through automatic means.
         """
-
         home_url = self.reverse("homepage")
 
         # First, get the homepage without any automated information.
