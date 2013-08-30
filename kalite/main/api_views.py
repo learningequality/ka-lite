@@ -26,7 +26,6 @@ from utils.internet import JsonResponse
 from utils.jobs import force_job, job_status
 from utils.mplayer_launcher import play_video_in_new_thread
 from utils.orderedset import OrderedSet
-from utils.videos import delete_downloaded_files
 
 
 class student_log_api(object):
