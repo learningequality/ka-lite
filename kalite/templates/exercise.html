@@ -48,7 +48,8 @@
         },
         "readOnly": false,
         "percentCompleted": 0,
-        "points": 0
+        "points": 0,
+        "starting_points": 0
     };    
 </script>
 <script src="{% static "js/exercises.js" %}"></script>
@@ -106,7 +107,7 @@
                                             {% trans "I'd like a hint" as hint %}
                                             <input id="hint" type="button" class="simple-button orange full-width" value="{{ hint }}" name="hint"/>
                                         </div>
-                                        <span id="hint-remainder">{% trans "Note: this will reset your streak and points for this exercise!" %}</span>
+                                        <div id="hint-remainder">{% trans "Note: this will reset your streak and points for this exercise!" %}</div>
                                     </div>
 
                                     {% if related_videos %}
@@ -115,7 +116,6 @@
                                             <span class="info-box-header">{% trans "Stuck? Watch a video." %}</span>
 
                                             <div id="related-video-list">
-                                                <span class="related-content-title">{% trans "Related videos:" %}</span>
                                                 <ul class="related-video-list">
                                                 {% for video in related_videos %}
                                                 {% if forloop.first %}

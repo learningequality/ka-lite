@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 
 import settings
 from registration.models import RegistrationProfile
-from utils.testing import central_server_test, BrowserTestCase
+from shared.testing import central_server_test, BrowserTestCase
 
 
 @central_server_test

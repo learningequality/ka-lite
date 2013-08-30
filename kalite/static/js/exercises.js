@@ -44,7 +44,9 @@ function updatePercentCompleted(correct) {
 
     doRequest("/api/save_exercise_log", data)
         .success(function(data) {
-            show_api_messages(data, "id_student_logs")
+            show_api_messages(data, "id_student_logs");
+            // update the top-right point display, now that we've saved the points successfully
+            userModel.set("newpoints", exerciseData.points - exerciseData.starting_points);
         })
         .fail(function(resp) {
             communicate_api_failure(resp, "id_student_logs");
@@ -59,12 +61,11 @@ $(function() {
         updatePercentCompleted(data.pass);
     });
     $(Khan).bind("hintUsed", function(ev, data) {
-        exerciseData.hintUsed = true;
-        if (exerciseData.percentCompleted < 100) {
-            exerciseData.percentCompleted = 0;
-            exerciseData.points = 0;
+        if (exerciseData.hintUsed) { // only register the first hint used on a question
+            return;
         }
-        updateStreakBar();
+        exerciseData.hintUsed = true;
+        updatePercentCompleted(false);
     });
     basepoints = Math.ceil(7*Math.log(exerciseData.exerciseModel.secondsPerFastProblem));
     $("#next-question-button").click(function() {
@@ -81,7 +82,8 @@ $(function() {
                 return;
             }
             exerciseData.percentCompleted = data[0].streak_progress;
-            exerciseData.points = data[0].points;
+            exerciseData.points = exerciseData.starting_points = data[0].points;
+
             updateStreakBar();
 
             // Show all messages in "messages" object
@@ -104,13 +106,13 @@ function adjust_scratchpad_margin(){
 $(function(){
 
     adjust_scratchpad_margin();
-     
+
     $("#scratchpad-show").click(function(){
         _.defer(function() {
             adjust_scratchpad_margin();
         });
     });
-    
+
     $(".return-link").click(function() {
         window.history.go(-1);
         return false;

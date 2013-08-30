@@ -1,10 +1,10 @@
-from django.test import TestCase
 from django.utils import unittest
 
 from main.models import VideoLog, ExerciseLog
 from securesync.models import Facility, FacilityUser
+from shared.testing import KALiteTestCase
 
-class TestExerciseLogs(TestCase):
+class TestExerciseLogs(KALiteTestCase):
     
     ORIGINAL_POINTS = 37
     ORIGINAL_ATTEMPTS = 3
@@ -13,6 +13,8 @@ class TestExerciseLogs(TestCase):
     EXERCISE_ID = "number_line"
     
     def setUp(self):
+        super(TestExerciseLogs, self).setUp()
+
         # create a facility and user that can be referred to in models across tests
         self.facility = Facility(name="Test Facility")
         self.facility.save()
@@ -68,7 +70,7 @@ class TestExerciseLogs(TestCase):
         self.assertEqual(exerciselog.attempts, max(self.ORIGINAL_ATTEMPTS, self.NEW_ATTEMPTS), "The ExerciseLog's attempts have already changed.")
         
 
-class TestVideoLogs(TestCase):
+class TestVideoLogs(KALiteTestCase):
     
     ORIGINAL_POINTS = 37
     ORIGINAL_SECONDS_WATCHED = 3
@@ -77,6 +79,7 @@ class TestVideoLogs(TestCase):
     YOUTUBE_ID = "aNqG4ChKShI"
     
     def setUp(self):
+        super(TestVideoLogs, self).setUp()
         # create a facility and user that can be referred to in models across tests
         self.facility = Facility(name="Test Facility")
         self.facility.save()

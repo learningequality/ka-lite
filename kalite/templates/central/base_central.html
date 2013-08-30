@@ -25,21 +25,19 @@ article {
 {% block analytics %}{% include 'central/web_analytics.html' %}{% endblock analytics %}
 
 {% block sitewide_navigation %}
-	<span class="dropdown topic-browser-dropdown">
-        <a href="{% url homepage %}" id="nav_home" class="{% block home_active %}{% endblock home_active %}">Home</a>
-        <a href="{% url wiki path='installation' %}" id="nav_install" class="{% block install_active %}{% endblock install_active %}" target="_blank">Install</a>
-        <a href="{% url faq_topic_list %}" id="nav_faq" class="{% block faq_active %}{% endblock faq_active %}">FAQ</a>
-        <a href="{% url contact_wizard %}" id="nav_contact" class="{% block contact_active %}{% endblock contact_active %}">Contact</a>
-        <a href="{% url about %}" id="nav_aboutus" class="{% block aboutus_active %}{% endblock aboutus_active %}" target="_blank">About</a>
     {% if user.is_authenticated %}
+        <a href="{% url auth_logout %}">Logout</a>
+        <a href="{% url org_management %}" id="nav_faq" class="{% block control_panel_active %}{% endblock control_panel_active %}{% block coachreports_active %}{% endblock coachreports_active %}{% block selfreports_active %}{% endblock selfreports_active %}">{{ user.username }}</a>
         {% if user.is_superuser %}
         <a href="{% url admin:index %}" id="nav_admin" class="{% block admin_active %}{% endblock admin_active %}">Admin</a>
         {% endif %}
-        <a href="{% url org_management %}" id="nav_faq" class="{% block control_panel_active %}{% endblock control_panel_active %}{% block coachreports_active %}{% endblock coachreports_active %}{% block selfreports_active %}{% endblock selfreports_active %}">{{ user.username }}</a>
-        <a href="{% url auth_logout %}">Logout</a>
     {% else %}
         <a href="{% url auth_login %}" id="nav_login" class="{% block login_active %}{% endblock login_active %}">Login</a>
-    {% endif %}
-    </span>
+    {% endif %}    
+    <a href="{% url about %}" id="nav_aboutus" class="{% block aboutus_active %}{% endblock aboutus_active %}" target="_blank">About</a>
+    <a href="{% url contact_wizard %}" id="nav_contact" class="{% block contact_active %}{% endblock contact_active %}">Contact</a>
+    <a href="{% url faq_topic_list %}" id="nav_faq" class="{% block faq_active %}{% endblock faq_active %}">FAQ</a>
+    <a href="{% url wiki path='installation' %}" id="nav_install" class="{% block install_active %}{% endblock install_active %}" target="_blank">Install</a>
+    <a href="{% url homepage %}" id="nav_home" class="{% block home_active %}{% endblock home_active %}">Home</a>
 {% endblock sitewide_navigation %}
 
