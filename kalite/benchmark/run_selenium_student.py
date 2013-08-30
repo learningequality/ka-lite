@@ -29,20 +29,25 @@ import settings
 print "-----------------------"
 print "SeleniumStudent sequence"
 print "-----------------------"
-print "profile:", sys.argv[1]
+try:
+    profile=sys.argv[1]
+except:
+    profile=0
+    
+print "profile:", profile
 
 
 for x in range(1):
     now = datetime.datetime.today()
-    while (now.minute / 5.) != (now.minute /5):
-        time.sleep(20)
-        now = datetime.datetime.today()
+    #while (now.minute / 5.) != (now.minute /5):
+    #    time.sleep(20)
+    #    now = datetime.datetime.today()
             
     bench = benchmark_test_cases.SeleniumStudentExercisesOnly(comment="with nginx"
                                                 , username="stevewall"
                                                 , password="student"
-                                                , url="http://192.168.1.24:8008"
+                                                , url="http://192.168.1.25:8008"
                                                 , starttime="00:00"
-                                                , duration=3
-                                                , behaviour_profile=sys.argv[1])
+                                                , duration=5
+                                                , behaviour_profile=profile)
     print bench.execute()

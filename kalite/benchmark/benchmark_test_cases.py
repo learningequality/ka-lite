@@ -247,22 +247,11 @@ class SeleniumStudent(benchmark_base.Common):
         self.endtime = time.time() + (duration * 60.)
         self.timeout = 240
         self.host_url = url
-        self.browser.get(self.host_url)
-        wait = ui.WebDriverWait(self.browser, self.timeout)
-        wait.until(expected_conditions.title_contains(("Home")))
-        wait = ui.WebDriverWait(self.browser, self.timeout)
-        wait.until(expected_conditions.element_to_be_clickable((By.ID, "nav_login")))
         random.seed(self.behaviour_profile) # seed the seed
-
-        elem = self.browser.find_element_by_id("nav_login")
-        elem.send_keys(Keys.RETURN)
-        wait = ui.WebDriverWait(self.browser, self.timeout)
-        wait.until(expected_conditions.title_contains(("Log in")))
-        time.sleep(5+random.random()*6.) # stagger 
 
         # self.activity simulates the classroom activity for the student
         # All students begin with activity "begin".
-        # A random 2dp number < 1.0 is then generated, and the next step is decided, working
+        # A random 2dp number <= 1.0 is then generated, and the next step is decided, working
         #  left to right through the list.
         # This allows a pseudo-random system usage - the behaviour_profile seeds the random
         #  number generator, so identical behaviour profiles will follow the same route through
@@ -277,6 +266,23 @@ class SeleniumStudent(benchmark_base.Common):
     
         self.activity = {}
         
+        self.activity["begin"]= {
+                "method":self._pass, "duration": 1+(random.random()*3),
+                "args":{},
+                "nextstep":[(1.00, "begin_2")]
+                 }        
+        
+        self.activity["begin_2"]= {
+                "method":self._get_path, "duration":1+(random.random()*3),
+                "args":{"path":""},
+                "nextstep":[(1.00, "begin_3")]
+                }
+        self.activity["begin_3"]= {
+                "method":self._click, "duration":2+(random.random()*3),
+                "args":{"find_by":By.ID, "find_text":"nav_login"},
+                "nextstep":[(1.00, "login")]
+                 }
+
         self.activity["login"]= {
                 "method":self._do_login_step_1, "duration": 3,
                 "args":{"username":username, "password": password},
@@ -285,12 +291,12 @@ class SeleniumStudent(benchmark_base.Common):
         self.activity["login_2"]= {
                 "method":self._do_login_step_2, "duration": 3,
                 "args":{},
-                "nextstep":[(1.00, "begin")]
+                "nextstep":[(1.00, "decide")]
                  }    
-        self.activity["begin"]= {
-                "method":self._pass, "duration": random.random() * 10,
+        self.activity["decide"]= {
+                "method":self._pass, "duration": 2+ random.random() * 3,
                 "args":{},
-                "nextstep":[(.10, "begin"), (.25, "watch"), (.98, "exercise"), (1.00, "end")]
+                "nextstep":[(.10, "decide"), (.25, "watch"), (.98, "exercise"), (1.00, "end")]
                  }
                  
         self.activity["watch"]= {
@@ -332,7 +338,7 @@ class SeleniumStudent(benchmark_base.Common):
         self.activity["wv1_1"]= {
                 "method":self._do_vid, "duration":750,
                 "args":{},
-                "nextstep":[(.10, "wv1_1"), (.20, "wv2"), (1.00, "begin")]
+                "nextstep":[(.10, "wv1_1"), (.20, "wv2"), (1.00, "decide")]
                  }
                  
         self.activity["wv2"]= {
@@ -343,7 +349,7 @@ class SeleniumStudent(benchmark_base.Common):
         self.activity["wv2_1"]= {
                 "method":self._do_vid, "duration":95,
                 "args":{},
-                "nextstep":[(.10, "wv2_1"), (.70, "eadd2"), (1.00, "begin")]
+                "nextstep":[(.10, "wv2_1"), (.70, "eadd2"), (1.00, "decide")]
                  }
 
         self.activity["wv3"]= {
@@ -354,7 +360,7 @@ class SeleniumStudent(benchmark_base.Common):
         self.activity["wv3_1"]= {
                 "method":self._do_vid, "duration":760,
                 "args":{},
-                "nextstep":[(.10, "wv3_1"), (.30, "wv4"), (.90, "esub2"), (1.00, "begin")]
+                "nextstep":[(.10, "wv3_1"), (.30, "wv4"), (.90, "esub2"), (1.00, "decide")]
                  }
 
         self.activity["wv4"]= {
@@ -365,7 +371,7 @@ class SeleniumStudent(benchmark_base.Common):
         self.activity["wv4_1"]= {
                 "method":self._do_vid, "duration":175,
                 "args":{},
-                "nextstep":[(.10, "wv4_1"), (.30, "wv5"), (.90, "esub2"), (1.00, "begin")]
+                "nextstep":[(.10, "wv4_1"), (.30, "wv5"), (.90, "esub2"), (1.00, "decide")]
                  }
 
         self.activity["wv5"]= {
@@ -376,7 +382,7 @@ class SeleniumStudent(benchmark_base.Common):
         self.activity["wv5_1"]= {
                 "method":self._do_vid, "duration":580,
                 "args":{},
-                "nextstep":[(.10, "wv5_1"), (.70, "eadd2"), (.80, "begin")]
+                "nextstep":[(.10, "wv5_1"), (.70, "eadd2"), (.80, "decide")]
                  }
 
         self.activity["exercise"]= {
@@ -385,7 +391,7 @@ class SeleniumStudent(benchmark_base.Common):
                 "nextstep":[(.60, "eadd2"),(1.00, "esub2")]
                  }                 
         self.activity["eadd2"]= {
-                "method":self._click, "duration":8+(random.random()*3),
+                "method":self._click, "duration":4+(random.random()*3),
                 "args":{"find_by":By.ID, "find_text":"nav_practice"},
                 "nextstep":[(1.00, "neadd2_1")]
                  }
@@ -400,18 +406,18 @@ class SeleniumStudent(benchmark_base.Common):
                 "nextstep":[(1.00, "weadd2")]
                  }
         self.activity["weadd2"]= {
-                "method":self._wait_for_element, "duration":9,
+                "method":self._wait_for_element, "duration":5,
                 "args":{"find_by":By.CSS_SELECTOR, "find_text":"#solutionarea input[type=text]"},
                 "nextstep":[(1.00, "do_eadd2")]
                  }
         self.activity["do_eadd2"]= {
-                "method":self._do_exer, "duration":9+(random.random()*9),
+                "method":self._do_exer, "duration":3+(random.random()*9),
                 "args":{},
-                "nextstep":[(.03, "begin"), (.75, "do_eadd2"), (1.00, "esub2")]
+                "nextstep":[(.03, "decide"), (.75, "do_eadd2"), (1.00, "esub2")]
                  }
                         
         self.activity["esub2"]= {
-                "method":self._click, "duration":6,
+                "method":self._click, "duration":3,
                 "args":{"find_by":By.ID, "find_text":"nav_practice"},
                 "nextstep":[(1.00, "nesub2_1")]
                  }
@@ -426,14 +432,14 @@ class SeleniumStudent(benchmark_base.Common):
                 "nextstep":[(1.00, "wesub2")]
                  }
         self.activity["wesub2"]= {
-                "method":self._wait_for_element, "duration":11,
+                "method":self._wait_for_element, "duration":6,
                 "args":{"find_by":By.CSS_SELECTOR, "find_text":"#solutionarea input[type=text]"},
                 "nextstep":[(1.00, "do_esub2")]
                  }
         self.activity["do_esub2"]= {
-                "method":self._do_exer, "duration":13+(random.random()*7),
+                "method":self._do_exer, "duration":9+(random.random()*7),
                 "args":{},
-                "nextstep":[(.03, "begin"), (.75, "do_esub2"), (.91, "watch"), (1.00, "eadd2")]
+                "nextstep":[(.03, "decide"), (.75, "do_esub2"), (.91, "watch"), (1.00, "eadd2")]
                  }
                  
         self.activity["end"] = {
@@ -443,7 +449,7 @@ class SeleniumStudent(benchmark_base.Common):
                  }
                        
     def _execute(self):
-        current_activity = "login"
+        current_activity = "begin"
         while True:
             if time.time() >= self.endtime:
                 current_activity = "end"
@@ -456,11 +462,13 @@ class SeleniumStudent(benchmark_base.Common):
                     round((time.time() - start_time),2),
                                     ))
             if "duration" in self.activity[current_activity]:
+                #print "sleeping for ", self.activity[current_activity]["duration"]
                 time.sleep(self.activity[current_activity]["duration"])
             if current_activity == "end":
                 break
             
-            next_activity_random = round(random.random(),2) 
+            next_activity_random = round(random.random(),2)
+
             for threshold, next_activity in self.activity[current_activity]["nextstep"]:
                 if threshold >= next_activity_random:
                     #print next_activity_random, "next_activity =", next_activity
@@ -540,8 +548,8 @@ class SeleniumStudent(benchmark_base.Common):
 
 class SeleniumStudentExercisesOnly(SeleniumStudent):
     def _execute(self):
-        self.activity["begin"]["nextstep"] = [(.10, "begin"), (.99, "exercise"), (1.00, "end")]
-        self.activity["do_esub2"]["nextstep"] =[(.03, "begin"), (.75, "do_esub2"), (1.00, "eadd2")]
+        self.activity["decide"]["nextstep"] = [(.10, "decide"), (.99, "exercise"), (1.00, "end")]
+        self.activity["do_esub2"]["nextstep"] =[(.03, "login"), (.75, "do_esub2"), (1.00, "eadd2")]
         super(SeleniumStudentExercisesOnly, self)._execute()
         
     
