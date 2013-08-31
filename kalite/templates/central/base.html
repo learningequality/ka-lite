@@ -27,12 +27,14 @@
           {% block basecss %}{% endblock basecss %}
           {% block headcss %}{% endblock headcss %}
           <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
-          {% block jqueryjs %}
+
           <script type="text/javascript" src="{% static 'js/jquery-1.7.1.min.js' %}"></script>
           <script type="text/javascript" src="{% static 'js/underscore-min.js' %}"></script>
           <script type="text/javascript" src="{% static 'js/backbone-min.js' %}"></script>
-          {% endblock jqueryjs %}
+
           <script type="text/javascript" src="{% static 'js/khan-lite.js' %}"></script>
+          
+   
 
           {% block headjs %}{% endblock headjs %}
           {% block basejs %}{% endblock basejs %}
@@ -101,7 +103,20 @@
 
         
 
-        {% block bodyjs %}{% endblock bodyjs %}
+        {% block bodyjs %}
+        <script>
+        $(".header__horizontal-menu__right").addClass("js").before('<div id="menu">&#9776;</div>');
+        $("#menu").click(function(){
+          $(".header__horizontal-menu__right").toggle();
+        });
+        $(window).resize(function(){
+          if(window.innerWidth > 768) {
+            $(".header__horizontal-menu__right").removeAttr("style");
+          }
+        });
+        </script>
+
+        {% endblock bodyjs %}
     </body>
     </html>
 

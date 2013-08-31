@@ -13,6 +13,12 @@ body{
   background: @light-green;
 }
 
+@media (max-width: 767px){
+  body{
+
+    padding:0;
+  }
+}
 body,p,td,.form-element{
   font:@body-font;
 }
@@ -132,20 +138,22 @@ a.symbol:before {
 
 
 .button-green--large{
- .round-button(@green-button-color,@dark-green,white,190px,5px, 14px, 10px, 20px);
+ .round-button(@green-button-color, @green-button-hover-color,white,190px,5px, 14px, 10px, 20px);
 }
 
 .button-green{
-  .round-button( @green-button-color,@dark-green,white,190px,5px, 14px, 10px, 20px);
+  .round-button( @green-button-color,@green-button-hover-color,white,190px,5px, 14px, 10px, 20px);
 }
 
 .button-green--small{
-  .round-button( @green-button-color,@dark-green,white,100px,3px, 13px, 5px, 20px); 
+  .round-button( @green-button-color,@green-button-hover-color,white,100px,3px, 13px, 5px, 20px); 
 }
 
 .button-popover{
- .round-button( @green-button-color,@dark-green,white,100px,3px, 13px, 5px, 10px); 
- margin-left: 10px;
+  .round-button( @green-button-color,@green-button-hover-color,white,100px,3px, 13px, 5px, 10px); 
+  margin-left: 10px;
+  cursor: pointer; 
+
 }
 
 .neworg-button{
@@ -225,8 +233,15 @@ ul{
 }
 
 @media (max-width: 767px)  { //Creates a mobile-friendly menu
+  .header__logo{
+    display:inline!important;    
+    padding-left: 20px;
+  }
 
   .header__horizontal-menu__right{
+    &.js {
+      display: none;
+    }
     float:center;
     text-align: center;
     li{
@@ -245,7 +260,20 @@ ul{
       display:block;
     }
   }
+  #menu {
+    margin-right: 20px;
+    display:inline;
+    float:right;
+    .round-button(@green-button-color, @green-button-hover-color,white,auto,5px, 14px, 7px, 15px);   
+  }
 }
+
+  @media screen and (min-width: 768px) { //Hides the three bar icon in normal mode
+    #menu {
+      display: none;
+    }
+  }
+
 
 // Content
 // --------------------------------------------------
