@@ -71,6 +71,7 @@ urlpatterns += patterns('central.views',
 
 urlpatterns += patterns('central.api_views',
     url(r'^api/', include(central.api_urls)),
+    url(r'^api/khanload/', include(khanload.api_urls)),
 )
 
 handler403 = 'central.views.handler_403'
