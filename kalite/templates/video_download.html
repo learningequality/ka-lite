@@ -414,13 +414,16 @@ ul.dynatree-container li, .ui-widget-content {
                 }
                 window.current_download_percent = progress[currentKey];
                 updateProgressDisplay();
-                if (window.current_download_percent == 100) {
-                    setNodeClass(currentKey, "complete");
+                if (window.current_download_percent == 100 || window.current_download_percent === null) {
+                    if (window.current_download_percent == 100) {
+                        setNodeClass(currentKey, "complete");
+                    }
                     window.download_index++;
                     if (window.download_index >= window.downloading_videos.length) {
                         // Finished all downloads
                         clearInterval(window.download_check_interval);
-                        $(".progress-section, #cancel-download").hide();
+                        window.download_check_interval = null;
+                        $(".progress-section, .progress-waiting, #cancel-download").hide();
                         return;
                     }
                     checkVideoDownloadProgress();
@@ -655,7 +658,7 @@ ul.dynatree-container li, .ui-widget-content {
         </select>
     </span>
     <button class="download-subtitles enable-when-server-online" type="button" title="Download missing subtitles for currently downloaded videos." disabled type="button" update_set="existing">{% trans "Download Missing" %}</button>
-    <button class="download-subtitles enable-when-server-online" type="button" title="Download all subtitles for currently downloaded videos, including updating existing subtitle files." disabled type="button" update_set="all">{% trans "Update/Download All" %}</button>
+    <button class="download-subtitles enable-when-server-online" type="button" title="Download all subtitles for currently downloaded videos, including updating existing subtitle files." disabled type="button" update_set="all">{% trans "Update All" %}</button>
 </div>
 
 <div style="clear: both;"></div>

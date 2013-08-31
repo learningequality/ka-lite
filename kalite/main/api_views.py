@@ -228,6 +228,7 @@ def delete_videos(request):
 
     return JsonResponse({})
 
+
 @require_admin
 @api_handle_error_with_json
 def check_video_download(request):
@@ -235,9 +236,10 @@ def check_video_download(request):
     percentages = {}
     percentages["downloading"] = job_status("videodownload")
     for id in youtube_ids:
-        videofile = get_object_or_None(VideoFile, youtube_id=id) or VideoFile(youtube_id=id)
-        percentages[id] = videofile.percent_complete
+        videofile = get_object_or_None(VideoFile, youtube_id=id)
+        percentages[id] = videofile.percent_complete if videofile else None
     return JsonResponse(percentages)
+
 
 @require_admin
 @api_handle_error_with_json
