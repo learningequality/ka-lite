@@ -95,7 +95,7 @@ class FacilityUser(SyncedModel):
         return u"%s (Facility: %s)" % (self.get_name(), self.facility)
 
     def check_password(self, raw_password):
-        cached_password = get_object_or_None(CachedPassword, user=self)
+        cached_password = CachedPassword.is_enabled() and get_object_or_None(CachedPassword, user=self)
         cur_password = getattr(cached_password, "password", self.password)
 
         # Check the password
@@ -108,7 +108,8 @@ class FacilityUser(SyncedModel):
         else:
             raise ValidationException("Unknown password format.")
 
-        if okie_dokie:
+        # Update on cached password-relevant stuff
+        if okie_dokie and CachedPassword.is_enabled():
             if not cached_password:
                 # Reset the password, which will store the cached password
                 self.set_password(raw_password=raw_password)
@@ -118,7 +119,8 @@ class FacilityUser(SyncedModel):
         return okie_dokie
 
     def set_password(self, raw_password=None, hashed_password=None, cached_password=None):
-        """Set a password with the raw password string, or the pre-hashed password."""
+        """Set a password with the raw password string, or the pre-hashed password.
+        If using the raw string, """
 
         assert hashed_password is None or settings.DEBUG, "Only use hashed_password in debug mode."
         assert raw_password is not None or hashed_password is not None, "Must be passing in raw or hashed password"
@@ -127,13 +129,24 @@ class FacilityUser(SyncedModel):
         if hashed_password:
             self.password = hashed_password
             # Can't save a cached password from a hash, so just make sure there is none.
+            # Note: Need to do this, even if they're not enabled--we don't want to risk
+            #   being out of sync (if people turn on/off/on the feature
             CachedPassword.objects.filter(username=self.username).delete()
+
         else:
-            self.password = crypt(raw_password, iterations=Settings.get("password_hash_iterations", 2000 if self.is_teacher else 1000))
-            cached_password = get_object_or_None(CachedPassword, user=self) or CachedPassword(user=self)
-            cached_password.password = crypt(raw_password, iterations=Settings.get("password_hash_iterations", 250 * (2 if self.is_teacher else 1)))
-            cached_password.save()
-            logging.debug("Set cached password for user=%s" % self.username)
+            n_iters = Settings.get("password_hash_iterations", 2000 if self.is_teacher else 1000)
+            self.password = crypt(raw_password, iterations=n_iters)
+
+            if not CachedPassword.is_enabled():
+                # Must delete, to make sure we don't get out of sync.
+                CachedPassword.objects.filter(username=self.username).delete()
+            else:
+                # Set the cached password.
+                n_cached_iters = settings.PASSWORD_ITERATIONS_TEACHER if self.is_teacher else settings.PASSWORD_ITERATIONS_STUDENT
+                cached_password = get_object_or_None(CachedPassword, user=self) or CachedPassword(user=self)
+                cached_password.password = crypt(raw_password, iterations=n_cached_iters)
+                cached_password.save()
+                logging.debug("Set cached password for user=%s" % self.username)
 
 
     def get_name(self):
@@ -145,6 +158,10 @@ class FacilityUser(SyncedModel):
 class CachedPassword(models.Model):
     user = models.ForeignKey("FacilityUser", unique=True)
     password = models.CharField(max_length=128)
+
+    @classmethod
+    def is_enabled(cls):
+        return bool(settings.PASSWORD_ITERATIONS_TEACHER or settings.PASSWORD_ITERATIONS_STUDENT)
 
     class Meta:
         app_label = "securesync"

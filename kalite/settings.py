@@ -194,10 +194,13 @@ else:
     )
     TEMPLATE_CONTEXT_PROCESSORS += ("main.custom_context_processors.languages",)
 
+# None means, use full hashing locally--turn off the password cache
+PASSWORD_ITERATIONS_TEACHER = getattr(local_settings, "PASSWORD_ITERATIONS_TEACHER", None)
+PASSWORD_ITERATIONS_STUDENT = getattr(local_settings, "PASSWORD_ITERATIONS_STUDENT", None)
+
 # Used for user logs.  By default, completely off.
 USER_LOG_MAX_RECORDS = getattr(local_settings, "USER_LOG_MAX_RECORDS", 0)
 USER_LOG_SUMMARY_FREQUENCY = getattr(local_settings, "USER_LOG_SUMMARY_FREQUENCY", (1,"months"))
-
 
 # Sessions use the default cache, and we want a local memory cache for that.
 # Separate session caching from file caching.
@@ -238,8 +241,6 @@ SYNC_SESSIONS_MAX_RECORDS = getattr(local_settings, "SYNC_SESSIONS_MAX_RECORDS",
 # enable this to use a background mplayer instance instead of playing the video in the browser, on loopback connections
 # TODO(jamalex): this will currently only work when caching is disabled, as the conditional logic is in the Django template
 USE_MPLAYER = getattr(local_settings, "USE_MPLAYER", False) if CACHE_TIME == 0 else False
-
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 MESSAGE_STORAGE = 'utils.django_utils.NoDuplicateMessagesSessionStorage'
 
