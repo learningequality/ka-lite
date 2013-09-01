@@ -333,6 +333,7 @@ ul.dynatree-container li, .ui-widget-content {
                     return;
                 }
                 window.download_check_interval = setInterval(checkVideoDownloadProgress, 5000);
+                checkVideoDownloadProgress();
             })
             .fail(function(resp) {
                 handleFailedAPI(resp, "Error getting video download list");
