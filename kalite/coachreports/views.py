@@ -20,7 +20,7 @@ from main import topicdata
 from main.models import VideoLog, ExerciseLog, VideoFile
 from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device
 from securesync.views import facility_required
-from utils.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
+from shared.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
 from utils.general import max_none
 from utils.internet import StatusException
 from utils.topic_tools import get_topic_exercises, get_topic_videos, get_all_midlevel_topics

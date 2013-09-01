@@ -8,7 +8,7 @@ from django.http import HttpResponseRedirect, HttpResponseServerError
 from .devices.views import *
 from .users.views import *
 from securesync.models import SyncSession
-from utils.decorators import distributed_server_only
+from shared.decorators import distributed_server_only
 
 
 @distributed_server_only
