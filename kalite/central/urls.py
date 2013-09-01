@@ -17,7 +17,7 @@ def redirect_to(self, base_url, path=""):
 
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^images/(.+)$', lambda request, path: HttpResponseRedirect('/static/images/' + path)),
+    url(r'^images/.*$', lambda request: HttpResponseRedirect(settings.STATIC_URL[:-1] + request.path)),
     url(r'^securesync/', include(securesync.urls)),
 )
 
@@ -59,8 +59,8 @@ urlpatterns += patterns('central.views',
     url(r'^faq/', include('faq.urls')),
 
     url(r'^contact/', include('contact.urls')),
-    url(r'^wiki/(?P<path>\w+)/$', redirect_to, {'base_url': settings.CENTRAL_WIKI_URL}, 'wiki'),
-    url(r'^about/$', redirect_to, { 'base_url': 'http://learningequality.org/' }, 'about'),
+    url(r'^wiki/(.*)$', lambda request, path: HttpResponseRedirect(settings.CENTRAL_WIKI_URL + path), 'wiki'),
+    url(r'^about/$', lambda request: HttpResponseRedirect('http://learningequality.org/'), 'about'),
 
     # Endpoint for remote admin
     url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'),

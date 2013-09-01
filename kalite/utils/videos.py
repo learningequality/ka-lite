@@ -11,8 +11,7 @@ from utils.general import ensure_dir
 
 socket.setdefaulttimeout(20)
 
-download_base_url = "http://s3.amazonaws.com/KA-youtube-converted/" # need this url as a test url for connectivity
-download_url = download_base_url + "%s/%s"
+OUTSIDE_DOWNLOAD_BASE_URL = "http://s3.amazonaws.com/KA-youtube-converted/" # need this url as a test url for connectivity
 
 
 class DownloadCancelled(Exception):
@@ -47,12 +46,11 @@ def get_video_ids_for_topic(topic_id, topic_tree=None):
                 return ids
         return []
 
-def download_all_videos(topic="root"):
+def download_all_videos(topic="root", download_path="../content/", download_url=OUTSIDE_DOWNLOAD_BASE_URL, format="mp4", callback=None):
     all_youtube_ids = get_video_ids_for_topic(topic)
     for id in all_youtube_ids:
-        download_video(id)
+        download_video(id, download_path, downlod_url=download_url, format=format, callback=callback)
         # print id
-
 
 def callback_percent_proxy(callback, start_percent=0, end_percent=100):
     if not callback:
@@ -71,7 +69,7 @@ def callback_percent_proxy(callback, start_percent=0, end_percent=100):
 class URLNotFound(Exception):
     pass
 
-def download_video(youtube_id, download_path, format="mp4", callback=None):
+def download_video(youtube_id, download_path="../content/", download_url=OUTSIDE_DOWNLOAD_BASE_URL, format="mp4", callback=None):
     """Downloads the video file to disk (note: this does NOT invalidate any of the cached html files in KA Lite)"""
     
     ensure_dir(download_path)
