@@ -2,7 +2,6 @@
 These use a web-browser, along selenium, to simulate user actions.
 """
 
-import logging
 import re
 import time
 import unittest
@@ -10,6 +9,7 @@ from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions, ui
+from selenium.webdriver.firefox.webdriver import WebDriver
 
 from django.test import TestCase
 from django.core.urlresolvers import reverse
@@ -19,11 +19,14 @@ from main.models import ExerciseLog
 from main.topicdata import NODE_CACHE
 from securesync.models import Facility, FacilityGroup, FacilityUser
 from settings import LOG as logging
+from shared.testing.browser import BrowserTestCase
+from shared.testing.decorators import distributed_server_test
 from utils.django_utils import call_command_with_output
 from utils.general import isnumeric
-from utils.testing.browser import BrowserTestCase
-from utils.testing.decorators import distributed_server_test
+from utils.topic_tools import get_exercise_paths
 
+
+@distributed_server_test
 class KALiteDistributedBrowserTestCase(BrowserTestCase):
     """Base class for main server test cases.
     They will have different functions in here, for sure.
@@ -223,7 +226,6 @@ class DeviceUnregisteredTest(KALiteDistributedBrowserTestCase):
         Tests that a device is initially unregistered, and that it can
         be registered through automatic means.
         """
-
         home_url = self.reverse("homepage")
 
         # First, get the homepage without any automated information.
@@ -233,41 +235,6 @@ class DeviceUnregisteredTest(KALiteDistributedBrowserTestCase):
 
         # Now, log in as admin
         self.browser_login_admin()
-
-
-@distributed_server_test
-class ChangeLocalUserPassword(KALiteDistributedWithFacilityBrowserTestCase):
-    """Tests for the changelocalpassword command"""
-
-    def setUp(self):
-        """Create a new facility and facility user"""
-        super(KALiteDistributedBrowserTestCase, self).setUp()
-        self.old_password = 'testpass'
-        self.user = self.create_student(password=self.old_password, facility_name=self.facility_name)
-
-
-    def test_change_password_on_existing_user(self):
-        """Change the password on an existing user."""
-
-        # Now, re-retrieve the user, to check.
-        (out,err,val) = call_command_with_output("changelocalpassword", self.user.username, noinput=True)
-        self.assertEqual(err, "", "no output on stderr")
-        self.assertNotEqual(out, "", "some output on stdout")
-        self.assertEqual(val, 0, "Exit code is not zero")
-        new_password =  re.search(r"Generated new password for user .*: '(?P<password>.*)'", out).group('password')
-        self.assertNotEqual(self.old_password, new_password)
-        self.browser_login_student(self.user.username, new_password)
-        self.assertTrue(self.browser_is_logged_in(), "student's password did not change")
-
-
-    def test_change_password_on_nonexistent_user(self):
-        nonexistent_username = "voiduser"
-        (out, err, val) = call_command_with_output("changelocalpassword", nonexistent_username, noinput=True)
-        self.assertEqual(out, '', "Expected no stdout; stdout is {}".format(out))
-        self.assertNotEqual(err, '', "Expected nonempty stderr")
-        self.assertNotEqual(val, 0, 'Expected return code to be nonzero')
-        self.browser_login_student(self.user.username, self.old_password)
-        self.assertTrue(self.browser_is_logged_in(), "student's password was changed!")
 
 
 @distributed_server_test
@@ -351,6 +318,7 @@ class UserRegistrationCaseTest(KALiteDistributedWithFacilityBrowserTestCase):
         self.browser_check_django_message("error", contains="There was an error logging you in.")
 
 
+@distributed_server_test
 class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
     """
     Test exercises.
@@ -449,6 +417,35 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
         self.assertEqual(elog.attempts_before_completion, 10, "Student should have 10 attempts for completion.")
 
 
+@unittest.skipIf(settings.FAST_TESTS_ONLY, "Skipping slow test")
+@distributed_server_test
+class LoadExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
+    """Tests if the exercise is loaded without any JS error.
+
+    The test is run over all urls and check for any JS error.
+    """
+    student_username = 'test_student'
+    student_password =  'socrates'
+
+    def setUp(self):
+        super(LoadExerciseTest, self).setUp()
+        self.student = self.create_student()
+        self.browser_login_student(self.student_username, self.student_password)
+
+    def test_get_exercise_load_status(self):
+        for path in get_exercise_paths():
+            logging.debug("Testing path : " + path)
+            self.browser.get(self.live_server_url + path)
+            error_list = self.browser.execute_script("return window.js_errors;")
+            if error_list:
+                logging.debug("Found JS error(s) while loading path: " + path)
+                logging.debug("JS errors reported:")
+                for e in error_list:
+                    logging.debug(e)    
+            self.assertFalse(error_list)
+
+
+@distributed_server_test
 class MainEmptyFormSubmitCaseTest(KALiteDistributedWithFacilityBrowserTestCase):
     """
     Submit forms with no values, make sure there are no errors.

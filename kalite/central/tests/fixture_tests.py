@@ -9,11 +9,11 @@ from django.test import TestCase
 from django.core.management import call_command
 
 import settings
-from utils.testing import central_server_test
+from shared.testing import central_server_test, KALiteTestCase
 
 
 @central_server_test
-class FixtureTestCases(TestCase):
+class FixtureTestCases(KALiteTestCase):
     """Test the basic ability to load and dump data to a fixture.  Very basic."""
 
     def test_loaddata(self):

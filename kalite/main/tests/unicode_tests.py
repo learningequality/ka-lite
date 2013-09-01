@@ -5,9 +5,9 @@ from django.utils import unittest
 
 from main.models import *
 from securesync.models import Device, Facility, FacilityGroup, FacilityUser
-from utils.testing.unicode import UnicodeModelsTest
+from shared.testing import KALiteTestCase, UnicodeModelsTest
 
-class MainUnicodeModelsTest(UnicodeModelsTest):
+class MainUnicodeModelsTest(KALiteTestCase, UnicodeModelsTest):
 
     @unittest.skipIf(sys.version_info < (2,7), "Test requires python version >= 2.7")
     def test_unicode_class_coverage(self):

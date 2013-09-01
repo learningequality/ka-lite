@@ -1,21 +1,19 @@
-import sys, os, re, json, urllib, glob
+import glob
+import json
+import os
+import re
+import socket
+import sys
+import urllib
+
 import utils.internet
+from utils.general import ensure_dir
 
-PROJECT_PATH = os.path.dirname(os.path.realpath(__file__)) + "/../"
-
-sys.path = [PROJECT_PATH] + sys.path
-
-import settings
-
-download_path = settings.CONTENT_ROOT
-
-data_path = settings.DATA_PATH
+socket.setdefaulttimeout(20)
 
 download_base_url = "http://s3.amazonaws.com/KA-youtube-converted/" # need this url as a test url for connectivity
 download_url = download_base_url + "%s/%s"
 
-import socket
-socket.setdefaulttimeout(20)
 
 class DownloadCancelled(Exception):
     def __str__(self):
@@ -38,7 +36,6 @@ def get_video_ids(topic_tree):
         return []
 
 def get_video_ids_for_topic(topic_id, topic_tree=None):
-    topic_tree = topic_tree or json.loads(open(data_path + "topics.json").read())
     if topic_tree["kind"] != "Topic":
         return []
     if topic_tree.get("id", "") == topic_id:
@@ -56,24 +53,6 @@ def download_all_videos(topic="root"):
         download_video(id)
         # print id
 
-# http://code.activestate.com/recipes/82465-a-friendly-mkdir/
-def _mkdir(newdir):
-    """works the way a good mkdir should :)
-        - already exists, silently complete
-        - regular file in the way, raise an exception
-        - parent directory(ies) does not exist, make them as well
-    """
-    if os.path.isdir(newdir):
-        pass
-    elif os.path.isfile(newdir):
-        raise OSError("a file with the same name as the desired " \
-                      "dir, '%s', already exists." % newdir)
-    else:
-        head, tail = os.path.split(newdir)
-        if head and not os.path.isdir(head):
-            _mkdir(head)
-        if tail:
-            os.mkdir(newdir)
 
 def callback_percent_proxy(callback, start_percent=0, end_percent=100):
     if not callback:
@@ -92,10 +71,10 @@ def callback_percent_proxy(callback, start_percent=0, end_percent=100):
 class URLNotFound(Exception):
     pass
 
-def download_video(youtube_id, format="mp4", callback=None):
+def download_video(youtube_id, download_path, format="mp4", callback=None):
     """Downloads the video file to disk (note: this does NOT invalidate any of the cached html files in KA Lite)"""
     
-    _mkdir(download_path)
+    ensure_dir(download_path)
     
     video_filename = "%(id)s.%(format)s" % {"id": youtube_id, "format": format}
     filepath = download_path + video_filename
@@ -115,13 +94,13 @@ def download_video(youtube_id, format="mp4", callback=None):
             raise URLNotFound("Thumbnail was not found!")
         
     except DownloadCancelled:
-        delete_downloaded_files(youtube_id)
+        delete_downloaded_files(youtube_id, download_path)
     
     except Exception as e:
-        delete_downloaded_files(youtube_id)
+        delete_downloaded_files(youtube_id, download_path)
         raise
     
-def delete_downloaded_files(youtube_id):
+def delete_downloaded_files(youtube_id, download_path):
     for filepath in glob.glob(download_path + youtube_id + ".*"):
         try:
             os.remove(filepath)

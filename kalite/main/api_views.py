@@ -2,9 +2,10 @@ import json
 import re
 import requests
 from annoying.functions import get_object_or_None
+from functools import partial
 from requests.exceptions import ConnectionError, HTTPError
 
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, PermissionDenied
 from django.db.models import Q
 from django.http import HttpResponse
 from django.utils import simplejson
@@ -14,14 +15,16 @@ import settings
 from .api_forms import ExerciseLogForm, VideoLogForm
 from .models import FacilityUser, VideoLog, ExerciseLog, VideoFile
 from config.models import Settings
-from main import topicdata
+from main import topicdata  # must import this way to cache across processes
 from securesync.models import FacilityGroup
 from shared.caching import invalidate_all_pages_related_to_video
 from shared.decorators import require_admin
+from shared.videos import delete_downloaded_files
 from utils.jobs import force_job, job_status
 from utils.videos import delete_downloaded_files
 from utils.general import break_into_chunks
 from utils.internet import api_handle_error_with_json, JsonResponse
+from utils.mplayer_launcher import play_video_in_new_thread
 from utils.orderedset import OrderedSet
 
 
@@ -55,14 +58,14 @@ def save_video_log(request):
         raise ValidationError(form.errors)
     data = form.data
 
-    # More robust extraction of previous object
-    videolog = VideoLog.get_or_initialize(user=request.session["facility_user"], youtube_id=data["youtube_id"])
-    videolog.total_seconds_watched  += data["seconds_watched"]
-    videolog.points = max(videolog.points, data["points"])  # videolog.points cannot be None
-
     try:
-        videolog.full_clean()
-        videolog.save()
+        videolog = VideoLog.update_video_log(
+            facility_user=request.session["facility_user"],
+            youtube_id=data["youtube_id"],
+            additional_seconds_watched=data["seconds_watched"],
+            points=data["points"],
+        )
+
     except ValidationError as e:
         return JsonResponse({"error": "Could not save VideoLog: %s" % e}, status=500)
 
@@ -413,3 +416,42 @@ def get_annotated_topic_tree():
 @api_handle_error_with_json
 def get_topic_tree(request):
     return JsonResponse(get_annotated_topic_tree())
+
+@api_handle_error_with_json
+def launch_mplayer(request):
+    """Launch an mplayer instance in a new thread, to play the video requested via the API.
+    """
+    
+    if not settings.USE_MPLAYER:
+        raise PermissionDenied("You can only initiate mplayer if USE_MPLAYER is set to True.")
+    
+    if "youtube_id" not in request.REQUEST:
+        return JsonResponse({"error": "no youtube_id specified"}, status=500)
+
+    youtube_id = request.REQUEST["youtube_id"]
+    facility_user = request.session.get("facility_user")
+    callback = partial(
+        _update_video_log_with_points,
+        youtube_id=youtube_id,
+        facility_user=facility_user,
+    )
+    play_video_in_new_thread(youtube_id, callback=callback)
+
+    return JsonResponse({})
+
+
+def _update_video_log_with_points(seconds_watched, video_length, youtube_id, facility_user):
+    """Handle the callback from the mplayer thread, saving the VideoLog. """
+    
+    if not facility_user:
+        return  # in other places, we signal to the user that info isn't being saved, but can't do it here.
+                #   adding this code for consistency / documentation purposes.
+
+    new_points = (float(seconds_watched) / video_length) * VideoLog.POINTS_PER_VIDEO
+    
+    videolog = VideoLog.update_video_log(
+        facility_user=facility_user,
+        youtube_id=youtube_id,
+        additional_seconds_watched=seconds_watched,
+        new_points=new_points,
+    )
