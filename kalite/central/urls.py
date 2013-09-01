@@ -1,6 +1,6 @@
-from django.http import HttpResponseRedirect
 from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
+from django.http import HttpResponseRedirect
 
 import central.api_urls
 import coachreports.urls
@@ -59,8 +59,8 @@ urlpatterns += patterns('central.views',
     url(r'^faq/', include('faq.urls')),
 
     url(r'^contact/', include('contact.urls')),
-    url(r'^wiki/(.*)$', lambda request, path: HttpResponseRedirect(settings.CENTRAL_WIKI_URL + path), 'wiki'),
-    url(r'^about/$', lambda request: HttpResponseRedirect('http://learningequality.org/'), 'about'),
+    url(r'^wiki/(?P<path>.*)$', lambda request, path: HttpResponseRedirect(settings.CENTRAL_WIKI_URL + path), {}, 'wiki'),
+    url(r'^about/$', lambda request: HttpResponseRedirect('http://learningequality.org/'), {}, 'about'),
 
     # Endpoint for remote admin
     url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'),
