@@ -333,7 +333,6 @@ ul.dynatree-container li, .ui-widget-content {
                     return;
                 }
                 window.download_check_interval = setInterval(checkVideoDownloadProgress, 5000);
-                checkVideoDownloadProgress();
             })
             .fail(function(resp) {
                 handleFailedAPI(resp, "Error getting video download list");
@@ -415,8 +414,11 @@ ul.dynatree-container li, .ui-widget-content {
                 window.current_download_percent = progress[currentKey];
                 updateProgressDisplay();
                 if (window.current_download_percent == 100 || window.current_download_percent === null) {
-                    if (window.current_download_percent == 100) {
+                    if (window.current_download_percent == 100) { // video finished downloading
                         setNodeClass(currentKey, "complete");
+                    } else { // the video was not downloaded, and was skipped
+                        var title = $("#content_tree").dynatree("getTree").getNodeByKey(currentKey).data.title;
+                        show_message("warning", "Video '" + title + "' was not found, and has been skipped.");
                     }
                     window.download_index++;
                     if (window.download_index >= window.downloading_videos.length) {
