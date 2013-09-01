@@ -131,7 +131,7 @@ class FacilityUser(SyncedModel):
             # Can't save a cached password from a hash, so just make sure there is none.
             # Note: Need to do this, even if they're not enabled--we don't want to risk
             #   being out of sync (if people turn on/off/on the feature
-            CachedPassword.objects.filter(username=self.username).delete()
+            CachedPassword.objects.filter(user=self).delete()
 
         else:
             n_iters = Settings.get("password_hash_iterations", 2000 if self.is_teacher else 1000)
@@ -139,7 +139,7 @@ class FacilityUser(SyncedModel):
 
             if not CachedPassword.is_enabled():
                 # Must delete, to make sure we don't get out of sync.
-                CachedPassword.objects.filter(username=self.username).delete()
+                CachedPassword.objects.filter(user=self).delete()
             else:
                 # Set the cached password.
                 n_cached_iters = settings.PASSWORD_ITERATIONS_TEACHER if self.is_teacher else settings.PASSWORD_ITERATIONS_STUDENT
