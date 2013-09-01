@@ -328,6 +328,8 @@ ul.dynatree-container li, .ui-widget-content {
             .success(function(video_ids) {
                 window.downloading_videos = video_ids;
                 window.download_index = 0;
+                window.downloads_skipped = 0;
+                clear_message("id_video_skipped");
                 clearInterval(window.download_check_interval);
                 if (video_ids.length == 0) {
                     return;
@@ -396,7 +398,7 @@ ul.dynatree-container li, .ui-widget-content {
                 messages = $.parseJSON(resp.responseText);
                 if (messages && !("error" in messages)) {
                     // this should be an assert--should never happen
-                    show_message("error", error_text + ": " + "Uninterpretable message received.", error_id)
+                    show_message("error", error_text + ": " + "Uninterpretable message received.", error_id);
                 } else {
                     show_message("error", error_text + ": " + messages["error"], error_id);
                 }
@@ -418,7 +420,12 @@ ul.dynatree-container li, .ui-widget-content {
                         setNodeClass(currentKey, "complete");
                     } else { // the video was not downloaded, and was skipped
                         var title = $("#content_tree").dynatree("getTree").getNodeByKey(currentKey).data.title;
-                        show_message("warning", "Video '" + title + "' was not found, and has been skipped.");
+                        var message = "Video '" + title + "' was not found, and has been skipped.";
+                        window.downloads_skipped++;
+                        if (window.downloads_skipped > 1) {
+                            message += " Total of " + window.downloads_skipped + " videos skipped.";
+                        }
+                        show_message("warning", message, "id_video_skipped");
                     }
                     window.download_index++;
                     if (window.download_index >= window.downloading_videos.length) {
