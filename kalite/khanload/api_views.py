@@ -126,13 +126,18 @@ def update_all_central(request):
     request.session["distributed_redirect_url"] = request.next or request.META.get("HTTP_REFERER", "") or "/"
     request.session["distributed_csrf_token"] = request._cookies["csrftoken"]
 
-    if not "ACCESS_TOKEN" in request.session:
-        # Will enter the callback, when it completes.
-        logging.debug("starting new authorization handshake")
-        return start_auth(request)
-    else:
-        logging.debug("using cached authorization handshake")
-        return update_all_central_callback(request)
+    # TODO(bcipolli)
+    # Disabled oauth caching, as we don't have a good way
+    #   to expire the credentials when a user on the distributed
+    #   server logs out.
+
+    #if not "ACCESS_TOKEN" in request.session:
+    # Will enter the callback, when it completes.
+    logging.debug("starting new authorization handshake")
+    return start_auth(request)
+    #else:
+    #logging.debug("using cached authorization handshake")
+    #return update_all_central_callback(request)
 
 def convert_ka_date(date_str):
     return datetime.datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%SZ")
