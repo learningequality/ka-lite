@@ -4,6 +4,16 @@
 
 {% block title %}{{ facility.name }} - Facility Usage{% endblock title %}
 
+
+{% block buttons %}
+            <li>
+                <a class="green_button" href="?format=csv&frequency={{ settings.USER_LOG_SUMMARY_FREQUENCY.1 }}" title="User report for the previous month">
+                    {% trans "Export to CSV" %}
+                </a>
+            </li>
+{% endblock buttons %}
+
+
 {% block inner_content %}
 <div id="facility_container">
     <div class="groups">

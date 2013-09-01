@@ -18,12 +18,12 @@ from config.models import Settings
 from main import topicdata  # must import this way to cache across processes
 from securesync.models import FacilityGroup
 from shared.caching import invalidate_all_pages_related_to_video
-from utils.decorators import api_handle_error_with_json, require_admin
+from shared.decorators import require_admin
 from shared.videos import delete_downloaded_files
 from utils.jobs import force_job, job_status
+from utils.videos import delete_downloaded_files
 from utils.general import break_into_chunks
-from utils.internet import JsonResponse
-from utils.jobs import force_job, job_status
+from utils.internet import api_handle_error_with_json, JsonResponse
 from utils.mplayer_launcher import play_video_in_new_thread
 from utils.orderedset import OrderedSet
 

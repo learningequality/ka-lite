@@ -18,9 +18,8 @@ import version
 from .models import *
 from shared import serializers
 from stats.models import UnregisteredDevicePing
-from utils.decorators import allow_jsonp, api_handle_error_with_json
 from utils.django_utils import get_request_ip
-from utils.internet import JsonResponse, am_i_online
+from utils.internet import allow_jsonp, api_handle_error_with_json, am_i_online, JsonResponse
 
 
 @csrf_exempt
