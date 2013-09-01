@@ -218,6 +218,9 @@ class BaseCommand(object):
         # like permissions, and those shouldn't contain any translations.
         # But only do this if we can assume we have a working settings file,
         # because django.utils.translation requires settings.
+        self.stdout = options.get('stdout', sys.stdout)
+        self.stderr = options.get('stderr', sys.stderr)
+
         saved_lang = None
         if self.can_import_settings:
             from django.utils import translation
@@ -225,8 +228,6 @@ class BaseCommand(object):
             translation.activate('en-us')
 
         try:
-            self.stdout = options.get('stdout', sys.stdout)
-            self.stderr = options.get('stderr', sys.stderr)
             if self.requires_model_validation:
                 self.validate()
             output = self.handle(*args, **options)
