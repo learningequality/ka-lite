@@ -21,6 +21,7 @@ from shared import serializers
 from securesync.devices.models import *  # inter-dependence
 from stats.models import UnregisteredDevicePing
 from utils.decorators import api_handle_error_with_json, require_admin
+from utils.django_utils import get_request_ip
 from utils.jobs import force_job
 from utils.internet import JsonResponse
 
@@ -65,14 +66,13 @@ def create_session(request):
         session.client_nonce = data["client_nonce"]
         session.client_os = data.get("client_os", "")
         session.client_version = data.get("client_version", "")
-        session.ip = request.META.get("HTTP_X_FORWARDED_FOR", request.META.get('REMOTE_ADDR', ""))
+        session.ip = get_request_ip(request)
         try:
             client_device = Device.objects.get(pk=data["client_device"])
             session.client_device = client_device
         except Device.DoesNotExist:
             # This is the codepath for unregistered devices trying to start a session.
-            #   This would only get hit, however, if they manually run syncmodels,
-            #   or if they visit the register page.
+            #   This would only get hit, however, if they manually run syncmodels.
             # But still, good to keep track of!
             UnregisteredDevicePing.record_ping(id=data["client_device"], ip=session.ip)
             return JsonResponse({"error": "Client device matching id could not be found. (id=%s)" % data["client_device"]}, status=500)
