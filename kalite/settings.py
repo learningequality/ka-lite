@@ -240,19 +240,8 @@ if CACHE_TIME != 0:  # None can mean infinite caching to some functions
     }
     SESSION_CACHE_ALIAS = "session_cache"
 
-else:
-    CACHES = {}
-    SESSION_CACHE_ALIAS = "default"
 
-# Separate session caching from file caching.
-CACHES[SESSION_CACHE_ALIAS] =  {
-    'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-#    'LOCATION': 'unique-snowflake'
-}
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-
-
-#Here, None === no limit
+# Here, None === no limit
 SYNC_SESSIONS_MAX_RECORDS = getattr(local_settings, "SYNC_SESSIONS_MAX_RECORDS", None if CENTRAL_SERVER else 10)
 
 # enable this to use a background mplayer instance instead of playing the video in the browser, on loopback connections

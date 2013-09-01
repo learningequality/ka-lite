@@ -122,8 +122,7 @@ def update_all_central(request):
 
     # Store information in a session
     request.session["distributed_user_id"] = request.GET["user_id"]
-    # TODO(bcipolli): remove total HACK to get playground demo to work.
-    request.session["distributed_callback_url"] = request.GET["callback"].replace("playground.learningequality.org","10.28.237.39")
+    request.session["distributed_callback_url"] = request.GET["callback"]
     request.session["distributed_redirect_url"] = request.next or request.META.get("HTTP_REFERER", "") or "/"
     request.session["distributed_csrf_token"] = request._cookies["csrftoken"]
 

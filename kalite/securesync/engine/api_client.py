@@ -21,7 +21,7 @@ class SyncClient(object):
     counters_to_download = None
     counters_to_upload = None
 
-    def __init__(self, host="%s://%s/"%(settings.SECURESYNC_PROTOCOL,settings.CENTRAL_SERVER_HOST.replace("playground.learningequality.org","10.28.237.39")), require_trusted=True):
+    def __init__(self, host="%s://%s/" % (settings.SECURESYNC_PROTOCOL,settings.CENTRAL_SERVER_HOST), require_trusted=True):
         url = urllib2.urlparse.urlparse(host)
         self.url = "%s://%s" % (url.scheme, url.netloc)
         self.require_trusted = require_trusted
