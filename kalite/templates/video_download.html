@@ -328,12 +328,14 @@ ul.dynatree-container li, .ui-widget-content {
             .success(function(video_ids) {
                 window.downloading_videos = video_ids;
                 window.download_index = 0;
+                window.downloads_skipped = 0;
+                clear_message("id_video_skipped");
                 clearInterval(window.download_check_interval);
                 if (video_ids.length == 0) {
                     return;
                 }
                 window.download_check_interval = setInterval(checkVideoDownloadProgress, 5000);
-                checkVideoDownloadProgress();
+                setTimeout(checkVideoDownloadProgress, 1000);
             })
             .fail(function(resp) {
                 handleFailedAPI(resp, "Error getting video download list");
@@ -386,7 +388,6 @@ ul.dynatree-container li, .ui-widget-content {
         if (error_id === undefined) {
             error_id = "id_video_download";
         }
-        clear_message(error_id);
 
         switch (resp.status) {
             case 403:
@@ -397,7 +398,7 @@ ul.dynatree-container li, .ui-widget-content {
                 messages = $.parseJSON(resp.responseText);
                 if (messages && !("error" in messages)) {
                     // this should be an assert--should never happen
-                    show_message("error", error_text + ": " + "Uninterpretable message received.", error_id)
+                    show_message("error", error_text + ": " + "Uninterpretable message received.", error_id);
                 } else {
                     show_message("error", error_text + ": " + messages["error"], error_id);
                 }
@@ -414,13 +415,24 @@ ul.dynatree-container li, .ui-widget-content {
                 }
                 window.current_download_percent = progress[currentKey];
                 updateProgressDisplay();
-                if (window.current_download_percent == 100) {
-                    setNodeClass(currentKey, "complete");
+                if (window.current_download_percent == 100 || window.current_download_percent === null) {
+                    if (window.current_download_percent == 100) { // video finished downloading
+                        setNodeClass(currentKey, "complete");
+                    } else { // the video was not downloaded, and was skipped
+                        var title = $("#content_tree").dynatree("getTree").getNodeByKey(currentKey).data.title;
+                        var message = "Video '" + title + "' was not found, and has been skipped.";
+                        window.downloads_skipped++;
+                        if (window.downloads_skipped > 1) {
+                            message += " Total of " + window.downloads_skipped + " videos skipped.";
+                        }
+                        show_message("warning", message, "id_video_skipped");
+                    }
                     window.download_index++;
                     if (window.download_index >= window.downloading_videos.length) {
                         // Finished all downloads
                         clearInterval(window.download_check_interval);
-                        $(".progress-section, #cancel-download").hide();
+                        window.download_check_interval = null;
+                        $(".progress-section, .progress-waiting, #cancel-download").hide();
                         return;
                     }
                     checkVideoDownloadProgress();
@@ -655,7 +667,7 @@ ul.dynatree-container li, .ui-widget-content {
         </select>
     </span>
     <button class="download-subtitles enable-when-server-online" type="button" title="Download missing subtitles for currently downloaded videos." disabled type="button" update_set="existing">{% trans "Download Missing" %}</button>
-    <button class="download-subtitles enable-when-server-online" type="button" title="Download all subtitles for currently downloaded videos, including updating existing subtitle files." disabled type="button" update_set="all">{% trans "Update/Download All" %}</button>
+    <button class="download-subtitles enable-when-server-online" type="button" title="Download all subtitles for currently downloaded videos, including updating existing subtitle files." disabled type="button" update_set="all">{% trans "Update All" %}</button>
 </div>
 
 <div style="clear: both;"></div>
