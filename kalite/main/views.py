@@ -36,10 +36,10 @@ from securesync.models import Facility, FacilityUser,FacilityGroup, Device
 from securesync.views import require_admin, facility_required
 from settings import LOG as logging
 from shared.decorators import require_admin
+from shared.videos import video_connection_is_available
 from utils import topic_tools
-from utils.internet import am_i_online, JsonResponse
+from utils.internet import am_i_online, is_loopback_connection, JsonResponse
 from utils.jobs import force_job
-from utils.videos import video_connection_is_available
 
 
 def calc_last_modified(request, *args, **kwargs):
@@ -209,6 +209,7 @@ def video_handler(request, video, prev=None, next=None):
         "video_exists": video_exists,
         "prev": prev,
         "next": next,
+        "use_mplayer": settings.USE_MPLAYER and is_loopback_connection(request),
     }
     return context
 
@@ -280,7 +281,6 @@ def easy_admin(request):
     context = {
         "wiki_url" : settings.CENTRAL_WIKI_URL,
         "central_server_host" : settings.CENTRAL_SERVER_HOST,
-        "am_i_online": am_i_online(settings.CENTRAL_WIKI_URL, allow_redirects=False),
         "in_a_zone":  Device.get_own_device().get_zone() is not None,
     }
     return context
@@ -355,19 +355,12 @@ def update(request):
     call_command("videoscan")  # Could potentially be very slow, blocking request.
     force_job("videodownload", "Download Videos")
     force_job("subtitledownload", "Download Subtitles")
-    language_lookup = topicdata.LANGUAGE_LOOKUP
-    language_list = topicdata.LANGUAGE_LIST
     default_language = Settings.get("subtitle_language") or "en"
-    if default_language not in language_list:
-        language_list.append(default_language)
-    languages = [{"id": key, "name": language_lookup[key]} for key in language_list]
-    languages = sorted(languages, key=lambda k: k["name"])
 
     device = Device.get_own_device()
     zone = device.get_zone()
 
     context = {
-        "languages": languages,
         "default_language": default_language,
         "registered": Settings.get("registered"),
         "zone_id": zone.id if zone else None,

@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import patterns, url
 from django.http import HttpResponse
-
+import settings
 
 # Note that these patterns are all under /api/, 
 # due to the way they've been included into main/urls.py
@@ -16,6 +16,8 @@ urlpatterns = patterns('main.api_views',
     url(r'^get_exercise_logs$', 'get_exercise_logs'),
 
     url(r'^start_video_download$', 'start_video_download'),
+    url(r'^retry_video_download$', 'retry_video_download'),
+    url(r'^get_video_download_status$', 'get_video_download_status'),
     url(r'^check_video_download$', 'check_video_download'),
     url(r'^get_topic_tree$', 'get_topic_tree'),
     url(r'^get_video_download_list$', 'get_video_download_list'),
@@ -28,4 +30,6 @@ urlpatterns = patterns('main.api_views',
     url(r'^remove_from_group$', 'remove_from_group'),
     url(r'^move_to_group$', 'move_to_group'),
     url(r'^delete_users$', 'delete_users'),
+    
+    url(r'^launch_mplayer$', 'launch_mplayer', {}, 'launch_mplayer'),
 )

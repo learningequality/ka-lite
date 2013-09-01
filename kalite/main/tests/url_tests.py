@@ -12,11 +12,11 @@ from django.core.management import call_command
 from django.utils import unittest
 
 import settings
-from utils.testing import distributed_server_test
+from shared.testing import distributed_server_test, KALiteTestCase
 
 
 @distributed_server_test
-class UrlTestCases(TestCase):
+class UrlTestCases(KALiteTestCase):
     """Walk through a set of URLs, and validate very basic properties (status code, some text)
     A good test to weed out untested view/template errors"""
 
@@ -25,8 +25,8 @@ class UrlTestCases(TestCase):
         self.assertEquals(resp.status_code, status_code, "%s (check status code=%d != %d)" % (url, status_code, resp.status_code))
         if find_str is not None:
             self.assertTrue(find_str in resp.content, "%s (check content)" % url)
-        
-        
+
+
     def test_urls(self):
         settings.DEBUG=False
         self.validate_url('/')
@@ -37,7 +37,3 @@ class UrlTestCases(TestCase):
         self.validate_url('/content/', status_code=404)
         self.validate_url('/accounts/login/', status_code=404)
         self.validate_url('/accounts/register/', status_code=404)
-        
-        
-        
-        
