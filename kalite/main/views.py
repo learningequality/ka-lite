@@ -262,7 +262,6 @@ def exercise_dashboard(request):
     }
     return context
 
-
 @check_setup_status  # this must appear BEFORE caching logic, so that it isn't blocked by a cache hit
 @backend_cache_page
 @render_to("homepage.html")
