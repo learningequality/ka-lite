@@ -18,6 +18,7 @@ import settings
 from config.models import Settings
 from securesync import engine
 from securesync.engine.models import SyncedModel
+from settings import LOG as logging
 
 
 class Facility(SyncedModel):
@@ -94,14 +95,29 @@ class FacilityUser(SyncedModel):
         return u"%s (Facility: %s)" % (self.get_name(), self.facility)
 
     def check_password(self, raw_password):
-        if self.password.split("$", 1)[0] == "sha1":
-            # use Django's built-in password checker for SHA1-hashed passwords
-            return check_password(raw_password, self.password)
-        if self.password.split("$", 2)[1] == "p5k2":
-            # use PBKDF2 password checking
-            return self.password == crypt(raw_password, self.password)
+        cached_password = get_object_or_None(CachedPassword, user=self)
+        cur_password = getattr(cached_password, "password", self.password)
 
-    def set_password(self, raw_password=None, hashed_password=None):
+        # Check the password
+        if cur_password.split("$", 1)[0] == "sha1":
+            # use Django's built-in password checker for SHA1-hashed passwords
+            okie_dokie = check_password(raw_password, cur_password)
+        elif cur_password.split("$", 2)[1] == "p5k2":
+            # use PBKDF2 password checking
+            okie_dokie = cur_password == crypt(raw_password, cur_password)
+        else:
+            raise ValidationException("Unknown password format.")
+
+        if okie_dokie:
+            if not cached_password:
+                # Reset the password, which will store the cached password
+                self.set_password(raw_password=raw_password)
+            else:
+                logging.debug("Cached password hit for user=%s" % self.username)
+
+        return okie_dokie
+
+    def set_password(self, raw_password=None, hashed_password=None, cached_password=None):
         """Set a password with the raw password string, or the pre-hashed password."""
 
         assert hashed_password is None or settings.DEBUG, "Only use hashed_password in debug mode."
@@ -110,14 +126,28 @@ class FacilityUser(SyncedModel):
 
         if hashed_password:
             self.password = hashed_password
+            # Can't save a cached password from a hash, so just make sure there is none.
+            CachedPassword.objects.filter(username=self.username).delete()
         else:
             self.password = crypt(raw_password, iterations=Settings.get("password_hash_iterations", 2000 if self.is_teacher else 1000))
+            cached_password = get_object_or_None(CachedPassword, user=self) or CachedPassword(user=self)
+            cached_password.password = crypt(raw_password, iterations=Settings.get("password_hash_iterations", 250 * (2 if self.is_teacher else 1)))
+            cached_password.save()
+            logging.debug("Set cached password for user=%s" % self.username)
+
 
     def get_name(self):
         if self.first_name and self.last_name:
             return u"%s %s" % (self.first_name, self.last_name)
         else:
             return self.username
+
+class CachedPassword(models.Model):
+    user = models.ForeignKey("FacilityUser", unique=True)
+    password = models.CharField(max_length=128)
+
+    class Meta:
+        app_label = "securesync"
 
 
 engine.add_syncing_models([Facility, FacilityGroup, FacilityUser])
