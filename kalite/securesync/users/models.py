@@ -141,13 +141,15 @@ class FacilityUser(SyncedModel):
                 # Must delete, to make sure we don't get out of sync.
                 CachedPassword.objects.filter(user=self).delete()
             else:
-                # Set the cached password.
-                n_cached_iters = settings.PASSWORD_ITERATIONS_TEACHER if self.is_teacher else settings.PASSWORD_ITERATIONS_STUDENT
-                cached_password = get_object_or_None(CachedPassword, user=self) or CachedPassword(user=self)
-                cached_password.password = crypt(raw_password, iterations=n_cached_iters)
-                cached_password.save()
-                logging.debug("Set cached password for user=%s" % self.username)
-
+                try:
+                    # Set the cached password.
+                    n_cached_iters = settings.PASSWORD_ITERATIONS_TEACHER if self.is_teacher else settings.PASSWORD_ITERATIONS_STUDENT
+                    cached_password = get_object_or_None(CachedPassword, user=self) or CachedPassword(user=self)
+                    cached_password.password = crypt(raw_password, iterations=n_cached_iters)
+                    cached_password.save()
+                    logging.debug("Set cached password for user=%s" % self.username)
+                except Exception as e:
+                    logging.debug(e)
 
     def get_name(self):
         if self.first_name and self.last_name:
