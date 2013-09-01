@@ -8,6 +8,7 @@ import control_panel.urls
 import securesync.urls
 from kalite import settings
 from feeds import RssSiteNewsFeed, AtomSiteNewsFeed
+from utils.videos import OUTSIDE_DOWNLOAD_BASE_URL  # for video download redirects
 
 
 admin.autodiscover()
@@ -64,6 +65,9 @@ urlpatterns += patterns('central.views',
 
     # Endpoint for remote admin
     url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'),
+
+    # redirects for downloads
+    url(r'^download/videos/(.*)$', lambda request, vpath: HttpResponseRedirect(OUTSIDE_DOWNLOAD_BASE_URL + vpath)),
 )
 
 urlpatterns += patterns('central.api_views',
