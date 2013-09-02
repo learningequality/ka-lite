@@ -109,10 +109,8 @@ class FacilityUser(SyncedModel):
             raise ValidationException("Unknown password format.")
 
         # Update on cached password-relevant stuff
-        if okie_dokie and CachedPassword.is_enabled():
-            if not cached_password:
-                # Reset the password, which will store the cached password
-                self.set_password(raw_password=raw_password)
+        if okie_dokie and not cached_password:
+            CachedPassword.set_cached_password(self, raw_password=raw_password)
 
         return okie_dokie
 
@@ -126,28 +124,17 @@ class FacilityUser(SyncedModel):
 
         if hashed_password:
             self.password = hashed_password
+
             # Can't save a cached password from a hash, so just make sure there is none.
             # Note: Need to do this, even if they're not enabled--we don't want to risk
             #   being out of sync (if people turn on/off/on the feature
-            CachedPassword.objects.filter(user=self).delete()
+            CachedPassword.invalidate_password_cache(user=self)
 
         else:
             n_iters = Settings.get("password_hash_iterations", 2000 if self.is_teacher else 1000)
             self.password = crypt(raw_password, iterations=n_iters)
 
-            if not CachedPassword.is_enabled():
-                # Must delete, to make sure we don't get out of sync.
-                CachedPassword.objects.filter(user=self).delete()
-            else:
-                try:
-                    # Set the cached password.
-                    n_cached_iters = CachedPassword.iters_for_user_type(self)
-                    cached_password = get_object_or_None(CachedPassword, user=self) or CachedPassword(user=self)
-                    cached_password.password = crypt(raw_password, iterations=n_cached_iters)
-                    cached_password.save()
-                    logging.debug("Set cached password for user=%s; iterations=%d" % (self.username, n_cached_iters))
-                except Exception as e:
-                    logging.debug(e)
+            CachedPassword.set_cached_password(self, raw_password)
 
     def get_name(self):
         if self.first_name and self.last_name:
@@ -164,29 +151,60 @@ class CachedPassword(models.Model):
 
     @classmethod
     def is_enabled(cls):
-        return bool(settings.PASSWORD_ITERATIONS_TEACHER or settings.PASSWORD_ITERATIONS_STUDENT)
+        # 0 is an illegal value, so 0 or None means disabled
+        # Force both to be set; otherwise, assumptions below can break
+        return bool(settings.PASSWORD_ITERATIONS_TEACHER and settings.PASSWORD_ITERATIONS_STUDENT)
 
     @classmethod
-    def iters_for_user_type(cls, facility_user):
-        return settings.PASSWORD_ITERATIONS_TEACHER if facility_user.is_teacher else settings.PASSWORD_ITERATIONS_STUDENT
+    def iters_for_user_type(cls, user):
+        return settings.PASSWORD_ITERATIONS_TEACHER if user.is_teacher else settings.PASSWORD_ITERATIONS_STUDENT
 
     @classmethod
-    def get_cached_password(cls, facility_user):
+    def get_cached_password(cls, user):
+        if not cls.is_enabled():
+            return None
 
         # Cache miss because there is no row in the table for this user.
-        cached_password = cls.is_enabled() and get_object_or_None(cls, user=facility_user)
+        cached_password = cls.is_enabled() and get_object_or_None(cls, user=user)
         if not cached_password:
+            logging.debug("Cached password MISS (does not exist) for user=%s" % user.username)
             return None
         
         n_cached_iters = int(cached_password.password.split("$")[2], 16)  # this was determined 
-        if n_cached_iters == cls.iters_for_user_type(facility_user):
+        if n_cached_iters == cls.iters_for_user_type(user):
             # Cache hit!
-            logging.debug("Cached password hit for user=%s; cached iters=%" % (self.username, n_cached_iters))
+            logging.debug("Cached password hit for user=%s; cached iters=%d" % (user.username, n_cached_iters))
             return cached_password.password
         else:
             # Cache miss because the row is invalid (# hashes doesn't match the current cache setting)
+            logging.debug("Cached password MISS (invalid) for user=%s" % user.username)
             cached_password.delete()
             return None
+
+    @classmethod
+    def invalidate_cached_password(cls, user):
+        cls.objects.filter(user=user).delete()
+
+    @classmethod
+    def set_cached_password(cls, user, raw_password):
+        if not cls.is_enabled():
+            # Must delete, to make sure we don't get out of sync.
+            cls.invalidate_cached_password(user=user)
+
+        else:
+            try:
+                # Set the cached password.
+                n_cached_iters = cls.iters_for_user_type(user)
+                # TODO(bcipolli) Migrate this to an extended django class
+                #   that uses get_or_initialize
+                cached_password = get_object_or_None(cls, user=user) or cls(user=user)
+                cached_password.password = crypt(raw_password, iterations=n_cached_iters)
+                cached_password.save()
+                logging.debug("Set cached password for user=%s; iterations=%d" % (user.username, n_cached_iters))
+            except Exception as e:
+                # If we fail to create a cache item... just keep going--functionality
+                #   can still move forward.
+                logging.error(e)
 
     class Meta:
         app_label = "securesync"
