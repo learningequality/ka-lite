@@ -26,7 +26,6 @@ from django.views.decorators.cache import cache_control
 from django.views.decorators.cache import cache_page
 from django.views.decorators.http import condition 
 
-import kalite
 import settings
 from config.models import Settings
 from control_panel.views import user_management_context
@@ -40,7 +39,7 @@ from shared.decorators import require_admin
 from shared.jobs import force_job
 from shared.videos import video_connection_is_available
 from utils import topic_tools
-from utils.internet import JsonResponse
+from utils.internet import JsonResponse, is_loopback_connection
 
 
 def calc_last_modified(request, *args, **kwargs):
@@ -277,7 +276,6 @@ def exercise_dashboard(request):
         "exercise_paths": json.dumps(paths),
     }
     return context
-
 
 @check_setup_status  # this must appear BEFORE caching logic, so that it isn't blocked by a cache hit
 @backend_cache_page

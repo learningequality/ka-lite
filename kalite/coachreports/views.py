@@ -102,6 +102,14 @@ def student_view(request, xaxis="pct_mastery", yaxis="ex:attempts"):
 
     Student view lists a by-topic-summary of their activity logs.
     """
+    return student_view_context(request=request, xaxis=xaxis, yaxis=yaxis)
+
+
+@require_authorized_access_to_student_data
+def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
+    """
+    Context done separately, to be importable for similar pages.
+    """
     user = get_user_from_request(request=request)
 
     topics = get_all_midlevel_topics()
@@ -147,21 +155,6 @@ def student_view(request, xaxis="pct_mastery", yaxis="ex:attempts"):
         any_data = any_data or n_exercises_touched > 0 or n_videos_touched > 0
 
     context = plotting_metadata_context(request)
-
-    # Only log 'coachreport' activity for students, and only when they're
-    #   not coming from the login page.
-    if getattr(request.session.get("facility_user"), "is_teacher") and reverse("login") not in request.META.get("HTTP_REFERER", ""):
-        # Only track students who don't get redirected here automatically
-        #   by the login page.
-        try:
-            # Log a "begin" and end here
-            user = request.session["facility_user"]
-            UserLog.begin_user_activity(user, activity_type="coachreport")
-            UserLog.update_user_activity(user, activity_type="login")  # to track active login time for teachers
-            UserLog.end_user_activity(user, activity_type="coachreport")
-        except ValidationError as e:
-            # Never report this error; don't want this logging to block other functionality.
-            logging.debug("Failed to update Teacher userlog activity login: %s" % e)
 
     return {
         "form": context["form"],

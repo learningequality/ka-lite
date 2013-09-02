@@ -4,6 +4,7 @@ from django.contrib import admin
 
 import coachreports.urls
 import control_panel.urls
+import khanload.api_urls
 import main.api_urls
 import securesync.urls
 import updates.urls
@@ -47,6 +48,10 @@ urlpatterns += patterns('main.views',
     url(r'^userlist/$', 'user_list', {}, 'user_list'),
     url(r'^stats/$', 'summary_stats', {}, 'summary_stats'),
 
+    # API
+    url(r'^api/', include(main.api_urls)),
+    url(r'^api/khanload/', include(khanload.api_urls)),
+
     # Management: Zone, facility, device
     url(r'^management/zone/$', 'zone_redirect', {}, 'zone_redirect'), # only one zone, so make an easy way to access it
     url(r'^management/device/$', 'device_redirect', {}, 'device_redirect'), # only one device, so make an easy way to access it
@@ -63,8 +68,6 @@ if "tests.loadtesting" in settings.INSTALLED_APPS:
 urlpatterns += patterns('main.views',
     url(r'^$', 'homepage', {}, 'homepage'),
     url(r'^exercisedashboard/$', 'exercise_dashboard', {}, 'exercise_dashboard'),
-
-    url(r'^api/', include('main.api_urls')),
 
     # the following pattern is a catch-all, so keep it last:
     url(r'^(?P<splat>.+)/$', 'splat_handler', {}, 'splat_handler'),

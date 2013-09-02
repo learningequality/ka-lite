@@ -35,7 +35,7 @@ CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
 
 # TODO(jamalex): currently this only has an effect on Linux/OSX
 PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 8008 if not CENTRAL_SERVER else 8001)
-CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 50)
+CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 50 if not DEBUG else 5)
 
 AUTO_LOAD_TEST = getattr(local_settings, "AUTO_LOAD_TEST", False)
 assert not AUTO_LOAD_TEST or not CENTRAL_SERVER, "AUTO_LOAD_TEST only on local server"
@@ -158,11 +158,12 @@ INSTALLED_APPS = (
     "main", # in order for securesync to work, this needs to be here.
     "control_panel", # in both apps
     "coachreports", # in both apps; reachable on central via control_panel
-    "kalite", # contains commands
-    "updates",
+    "control_panel",  # in both apps
+    "coachreports",  # in both apps; reachable on central via control_panel
+    "khanload",  # khan academy interactions--needed in both for downloading student data
+    "kalite",  # contains commands
 ) + INSTALLED_APPS  # append local_settings installed_apps, in case of dependencies
 
-MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 if DEBUG or CENTRAL_SERVER:
     INSTALLED_APPS += ("django_snippets",)   # used in contact form and (debug) profiling middleware
@@ -182,8 +183,16 @@ if CENTRAL_SERVER:
     LANGUAGE_COOKIE_NAME    = "django_language_central"
     SESSION_COOKIE_NAME     = "sessionid_central"
 
+    # Used for accessing the KA API.
+    #   By default, things won't work--local_settings needs to specify good values.
+    #   We do this so that we have control over our own key/secret (secretly, of course!)
+    KHAN_API_CONSUMER_KEY = getattr(local_settings, "KHAN_API_CONSUMER_KEY", "")
+    KHAN_API_CONSUMER_SECRET = getattr(local_settings, "KHAN_API_CONSUMER_SECRET", "")
+
 else:
     ROOT_URLCONF = "main.urls"
+
+    INSTALLED_APPS += ("updates",)
     # Include optionally installed apps
     if os.path.exists(PROJECT_PATH + "/tests/loadtesting/"):
         INSTALLED_APPS += ("tests.loadtesting",)
@@ -204,6 +213,9 @@ USER_LOG_SUMMARY_FREQUENCY = getattr(local_settings, "USER_LOG_SUMMARY_FREQUENCY
 # Sessions use the default cache, and we want a local memory cache for that.
 # Separate session caching from file caching.
 SESSION_ENGINE = getattr(local_settings, "SESSION_ENGINE", 'django.contrib.sessions.backends.cached_db')
+
+MESSAGE_STORAGE = 'utils.django_utils.NoDuplicateMessagesSessionStorage'
+
 
 CACHES = {
     "default": {
@@ -235,6 +247,9 @@ if CACHE_TIME != 0:  # None can mean infinite caching to some functions
     }
     KEY_PREFIX = version.VERSION
 
+
+CRONSERVER_FREQUENCY = getattr(local_settings, "CRONSERVER_FREQUENCY", 600) # 10 mins (in seconds)
+
 # Here, None === no limit
 SYNC_SESSIONS_MAX_RECORDS = getattr(local_settings, "SYNC_SESSIONS_MAX_RECORDS", None if CENTRAL_SERVER else 10)
 
@@ -242,15 +257,9 @@ SYNC_SESSIONS_MAX_RECORDS = getattr(local_settings, "SYNC_SESSIONS_MAX_RECORDS",
 # TODO(jamalex): this will currently only work when caching is disabled, as the conditional logic is in the Django template
 USE_MPLAYER = getattr(local_settings, "USE_MPLAYER", False) if CACHE_TIME == 0 else False
 
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-
-MESSAGE_STORAGE = 'utils.django_utils.NoDuplicateMessagesSessionStorage'
-
 TEST_RUNNER = 'kalite.shared.testing.testrunner.KALiteTestRunner'
 
 FAST_TESTS_ONLY = getattr(local_settings, "FAST_TESTS_ONLY", False)
-
-CRONSERVER_FREQUENCY = getattr(local_settings, "CRONSERVER_FREQUENCY", 600) # 10 mins (in seconds)
 
 # Add additional mimetypes to avoid errors/warnings
 import mimetypes

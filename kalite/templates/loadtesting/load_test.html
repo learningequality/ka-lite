@@ -99,7 +99,7 @@
                     selector = selector || "a[href!='']";
                     var matches = this.$(selector);
                     if (matches.length === 0) {
-                        if (callback !== "undefined" && callback) {
+                        if (_.isFunction(callback)) {
                             callback();
                         }
                         return;

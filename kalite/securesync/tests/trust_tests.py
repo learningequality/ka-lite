@@ -7,8 +7,8 @@ from django.utils import unittest
 
 import settings
 from securesync.models import Device, Zone, DeviceZone, ZoneInvitation, ChainOfTrust
+from shared.testing import distributed_server_test, central_server_test
 from utils.crypto import Key
-from utils.testing.decorators import distributed_server_test, central_server_test
 
 
 class TestChainOfTrust(TestCase):
