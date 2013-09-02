@@ -1,5 +1,5 @@
 //Modified from http://bl.ocks.org/mbostock/3887118
-function d3_scatter(data, xCoordinate, yCoordinate, appendtohtml) {
+function d3_scatter(data, options, appendtohtml) {
   // Takes data in the form of an array of users' data.
   // Each user's data is an object with a user attribute,
   // containing an object of all user data, a userid attribute.
@@ -8,17 +8,20 @@ function d3_scatter(data, xCoordinate, yCoordinate, appendtohtml) {
   // appendtohtml is the element identifier for the svg element to be attached to.
 
   // Set up variables to define plotting area.
-  var margin = {top: 20, right: 20, bottom: 30, left: 40},
+  var margin = {top: 20, right: 40, bottom: 30, left: 100},
       width = 960 - margin.left - margin.right,
       height = 500 - margin.top - margin.bottom;
 
   // Initialize x and y scales.
-
   var x = d3.scale.linear()
       .range([0, width]);
 
+  var xCoordinate = options['hAxis']['stat']
+
   var y = d3.scale.linear()
       .range([height, 0]);
+
+  var yCoordinate = options['vAxis']['stat']
 
   var color = d3.scale.category10();
 
@@ -68,21 +71,23 @@ function d3_scatter(data, xCoordinate, yCoordinate, appendtohtml) {
       .call(xAxis)
     .append("text")
       .attr("class", "label")
+      .attr("font-weight", "bold")
       .attr("x", width)
       .attr("y", -6)
       .style("text-anchor", "end")
-      .text(xCoordinate);
+      .text(options['hAxis']['title']);
 
   svg.append("g")
       .attr("class", "y axis")
       .call(yAxis)
     .append("text")
       .attr("class", "label")
+      .attr("font-weight", "bold")
       .attr("transform", "rotate(-90)")
       .attr("y", 6)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
-      .text(yCoordinate)
+      .text(options['vAxis']['title'])
 
 
   // Plot all data points
