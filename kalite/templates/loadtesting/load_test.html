@@ -99,7 +99,9 @@
                     selector = selector || "a[href!='']";
                     var matches = this.$(selector);
                     if (matches.length === 0) {
-                        callback();
+                        if (_.isFunction(callback)) {
+                            callback();
+                        }
                         return;
                     };
                     var $match = matches.eq(index)
@@ -183,6 +185,10 @@
                 
                 login: function(callback) {
                     this.runSequence(login_sequence, null, callback);
+                },
+                
+                logout: function(callback) {
+                    this.runSequence(logout_sequence, null, callback);
                 },
                 
                 runSequence: function(tasks, input, callback) {
@@ -331,12 +337,20 @@
                     this.goto("/securesync/login/", callback);
                 },
                 function(input, callback) {
+                    var sidx = Math.ceil(Math.random() * {{ nusers }});
+                    
                     this.$("#id_facility option")[1].selected = true;
                     this.fillForm({
-                        username: "student",
-                        password: "student",
+                        username: "s" + sidx,
+                        password: "s" + sidx,
                     });
                     this.submitForm(callback);
+                }
+            ]
+            
+            var logout_sequence = [
+                function(input, callback) {
+                    this.goto("/securesync/logout/", callback);
                 }
             ]
             
@@ -349,12 +363,14 @@
                 puppet.goto(window.location.hash.slice(1) || "/");
                 
                 function watchVideos() {
-                    if(Math.random()<0.9){
+                    if(Math.random() < {{ pct_videos }}){
                         puppet.watchVideo(watchVideos);
                     } else {
                         puppet.watchExercise(watchVideos);
                     }
-                    
+                    if (Math.random() < {{ pct_logout }}) {
+                        puppet.logout(function() { puppet.login(watchVideos); });
+                    }
                 }
                 
                 puppet.login(watchVideos);
