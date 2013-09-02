@@ -294,6 +294,7 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
                         attempts=int(attempts),
                         streak_progress=streak_progress,
                         points=int(points),
+                        complete=completed,
                         completion_timestamp=date_completed,
                         completion_counter=datediff(date_completed, start_date, units="seconds"),
                     )
@@ -416,7 +417,7 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
                     date_completed = datetime.datetime.now() - time_delta_completed
 
                 try:
-                    log = VideoLog.objects.get(user=facility_user, youtube_id=video["youtube_id"])
+                    vlog = VideoLog.objects.get(user=facility_user, youtube_id=video["youtube_id"])
                 except VideoLog.DoesNotExist:
 
                     logging.info("Creating video log: %-12s: %-45s (%4.1f%% watched, %d points)%s" % (
@@ -431,6 +432,7 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
                         youtube_id=video["youtube_id"],
                         total_seconds_watched=total_seconds_watched,
                         points=points,
+                        complete=(pct_completed == 100.),
                         completion_timestamp=date_completed,
                         completion_counter=datediff(date_completed, start_date, units="seconds"),
                     )
