@@ -274,9 +274,23 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
         if not settings.USER_LOG_MAX_RECORDS:
             return
 
-        # Compute total_seconds, save to summary
-        #   Note: only supports setting end_datetime once!
-        if self.end_datetime and not self.total_seconds:
+        if not self.start_datetime:
+            raise ValidationError("start_datetime cannot be None")
+        if self.last_active_datetime and self.start_datetime > self.last_active_datetime:
+            raise ValidationError("UserLog date consistency check for start_datetime and last_active_datetime")
+
+        if not self.end_datetime:
+            # Conflict_resolution
+            related_open_logs = UserLog.objects \
+                .filter(user=self.user, activity_type=self.activity_type, end_datetime__isnull=True) \
+                .exclude(pk=self.pk)
+            for log in related_open_logs:
+                log.end_datetime = datetime.now()
+                log.save()
+
+        elif not self.total_seconds:
+            # Compute total_seconds, save to summary
+            #   Note: only supports setting end_datetime once!
             self.full_clean()
 
             # The top computation is more lenient: user activity is just time logged in, literally.
@@ -288,7 +302,8 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
 
             # Confirm the result (output info first for easier debugging)
             logging.debug("%s: total learning time: %d seconds" % (self.user.username, self.total_seconds))
-            assert self.total_seconds >= 0, "Total learning time should always be non-negative."
+            if self.total_seconds < 0:
+                raise ValidationError("Total learning time should always be non-negative.")
 
             # Save only completed log items to the UserLogSummary
             UserLogSummary.add_log_to_summary(self)
@@ -324,6 +339,15 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
         else:
             raise Exception("Cannot convert requested activity_type to int")
 
+    @classmethod
+    def get_latest_open_log_or_None(cls, *args, **kwargs):
+        assert not args
+        assert "end_datetime" not in kwargs
+
+        logs = cls.objects \
+            .filter(end_datetime__isnull=True, **kwargs) \
+            .order_by("-last_active_datetime")
+        return None if not logs else logs[0]
 
     @classmethod
     def begin_user_activity(cls, user, activity_type="login", start_datetime=None):
@@ -334,28 +358,29 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
         if not settings.USER_LOG_MAX_RECORDS:
             return
 
-        assert user is not None, "A valid user must always be specified."
+        if not user:
+            raise ValidationError("A valid user must always be specified.")
         if not start_datetime:  # must be done outside the function header (else becomes static)
             start_datetime = datetime.now()
         activity_type = cls.get_activity_int(activity_type)
-        cur_user_log_entry = get_object_or_None(cls, user=user, end_datetime=None)
 
-        logging.debug("%s: BEGIN activity(%d) @ %s"%(user.username, activity_type, start_datetime))
-
-        # Seems we're logging in without logging out of the previous.
-        #   Best thing to do is simulate a login
-        #   at the previous last update time.
-        #
-        # Note: this can be a recursive call
-        if cur_user_log_entry:
+        cur_log = cls.get_latest_open_log_or_None(user=user, activity_type=activity_type)
+        if cur_log:
+            # Seems we're logging in without logging out of the previous.
+            #   Best thing to do is simulate a login
+            #   at the previous last update time.
+            #
+            # Note: this can be a recursive call
             logging.warn("%s: END activity on a begin @ %s"%(user.username,start_datetime))
-            cls.end_user_activity(user=user, activity_type=activity_type, end_datetime=cur_user_log_entry.last_active_datetime)
+            cls.end_user_activity(user=user, activity_type=activity_type, end_datetime=cur_log.last_active_datetime)
+            cur_log = None
 
         # Create a new entry
-        cur_user_log_entry = cls(user=user, activity_type=activity_type, start_datetime=start_datetime, last_active_datetime=start_datetime)
+        logging.debug("%s: BEGIN activity(%d) @ %s"%(user.username, activity_type, start_datetime))
+        cur_log = cls(user=user, activity_type=activity_type, start_datetime=start_datetime, last_active_datetime=start_datetime)
+        cur_log.save()
 
-        cur_user_log_entry.save()
-        return cur_user_log_entry
+        return cur_log
 
 
     @classmethod
@@ -367,22 +392,26 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
         if not settings.USER_LOG_MAX_RECORDS:
             return
 
-        assert user is not None, "A valid user must always be specified."
+        if not user:
+            raise ValidationError("A valid user must always be specified.")
         if not update_datetime:  # must be done outside the function header (else becomes static)
             update_datetime = datetime.now()
         activity_type = cls.get_activity_int(activity_type)
 
-        cur_user_log_entry = get_object_or_None(cls, user=user, end_datetime=None)
-
-        # No unstopped starts.  Start should have been called first!
-        if not cur_user_log_entry:
-            logging.warn("%s: Had to create a user log entry, but UPDATING('%d')! @ %s"%(user.username,activity_type,update_datetime))
-            cur_user_log_entry = cls.begin_user_activity(user=user, activity_type=activity_type, start_datetime=update_datetime)
+        cur_log = cls.get_latest_open_log_or_None(user=user, activity_type=activity_type)
+        if cur_log:
+            # How could you start after you updated??
+            if cur_log.start_datetime > update_datetime:
+                raise ValidationError("Update time must always be later than the login time.")
+        else:
+            # No unstopped starts.  Start should have been called first!
+            logging.warn("%s: Had to create a user log entry on an UPDATE(%d)! @ %s"%(user.username,activity_type,update_datetime))
+            cur_log = cls.begin_user_activity(user=user, activity_type=activity_type, start_datetime=update_datetime)
 
         logging.debug("%s: UPDATE activity (%d) @ %s"%(user.username,activity_type,update_datetime))
-        cur_user_log_entry.last_active_datetime = update_datetime
-
-        cur_user_log_entry.save()
+        cur_log.last_active_datetime = update_datetime
+        cur_log.save()
+        return cur_log
 
 
     @classmethod
@@ -394,22 +423,27 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
         if not settings.USER_LOG_MAX_RECORDS:
             return
 
-        assert user is not None, "A valid user must always be specified."
+        if not user:
+            raise ValidationError("A valid user must always be specified.")
         if not end_datetime:  # must be done outside the function header (else becomes static)
             end_datetime = datetime.now()
         activity_type = cls.get_activity_int(activity_type)
 
-        cur_user_log_entry = get_object_or_None(cls, user=user, end_datetime=None)
+        cur_log = cls.get_latest_open_log_or_None(user=user, activity_type=activity_type)
 
-        # No unstopped starts.  Start should have been called first!
-        if not cur_user_log_entry:
+        if cur_log:
+            # How could you start after you ended??
+            if cur_log.start_datetime > end_datetime:
+                raise ValidationError("Update time must always be later than the login time.")
+        else:
+            # No unstopped starts.  Start should have been called first!
             logging.warn("%s: Had to create a user log entry, but STOPPING('%d')! @ %s"%(user.username,activity_type,end_datetime))
-            cur_user_log_entry = cls.begin_user_activity(user=user, activity_type=activity_type, start_datetime=end_datetime)
+            cur_log = cls.begin_user_activity(user=user, activity_type=activity_type, start_datetime=end_datetime)
 
         logging.debug("%s: Logging LOGOUT activity @ %s"%(user.username, end_datetime))
-        cur_user_log_entry.end_datetime = end_datetime
-        cur_user_log_entry.save()  # total-seconds will be computed here.
-
+        cur_log.end_datetime = end_datetime
+        cur_log.save()  # total-seconds will be computed here.
+        return cur_log
 
 class VideoFile(models.Model):
     youtube_id = models.CharField(max_length=20, primary_key=True)
