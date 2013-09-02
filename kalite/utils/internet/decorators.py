@@ -63,7 +63,9 @@ def allow_jsonp(handler):
     return wrapper_fn
 
 
-def render_to_csv(context_keys, delimiter=",", key_label="key"):
+from . import CsvResponse
+
+def render_to_csv(context_keys, delimiter=",", key_label="key", order="stacked"):
     """
     "context_keys" are dictionary keys into the context object.
     We can have multiple keys, assuming that:
@@ -87,15 +89,30 @@ def render_to_csv(context_keys, delimiter=",", key_label="key"):
             output_string = StringIO()
             writer = csv.writer(output_string, delimiter=delimiter, quoting=csv.QUOTE_MINIMAL)
 
-            row_labels = output[context_keys[0]].keys()
-            col_labels = [key_label] + [kk for k in context_keys for kk in output[k][row_labels[0]].keys()]
-            writer.writerow(col_labels)
+            if order == "stacked":
+                # Stack vertically
+                ri = 0
+                for context_key in context_keys:
+                    for row_label, row_data in output[context_key].iteritems():
+                        if ri == 0:
+                            col_labels = [key_label] + row_data.keys()
+                            writer.writerow(col_labels)
+                        writer.writerow([row_label] + row_data.values())
+                        ri += 1
+                    # add blank line between types
+                    writer.writerow([])
 
-            for ri, row_label in enumerate(row_labels):
-                row_data = [row_label]
-                for k in context_keys:
-                    row_data += output[k][row_label].values()
-                writer.writerow(row_data)
+            elif order == "neighbors":
+                # Stack horizontally
+                row_labels = output[context_keys[0]].keys()
+                col_labels = [key_label] + [kk for k in context_keys for kk in output[k][row_labels[0]].keys()]
+                writer.writerow(col_labels)
+
+                for ri, row_label in enumerate(row_labels):
+                    row_data = [row_label]
+                    for k in context_keys:
+                        row_data += output[k][row_label].values()
+                    writer.writerow(row_data)
 
             return CsvResponse(output_string.getvalue())
         return wrapper

@@ -203,7 +203,8 @@ else:
     TEMPLATE_CONTEXT_PROCESSORS += ("main.custom_context_processors.languages",)
 
 # Used for user logs.  By default, completely off.
-USER_LOG_MAX_RECORDS = getattr(local_settings, "USER_LOG_MAX_RECORDS", 0)
+#  Note: None means infinite (just like caching)
+USER_LOG_MAX_RECORDS_PER_USER = getattr(local_settings, "USER_LOG_MAX_RECORDS_PER_USER", 0)
 USER_LOG_SUMMARY_FREQUENCY = getattr(local_settings, "USER_LOG_SUMMARY_FREQUENCY", (1,"months"))
 
 
