@@ -5,6 +5,8 @@ import sys
 import time
 import tempfile
 import uuid
+import version  # in danger of a circular import.  NEVER add settings stuff there--should all be hard-coded.
+
 
 # suppress warnings here.
 try:
@@ -156,12 +158,12 @@ INSTALLED_APPS = (
     "securesync",
     "config",
     "main", # in order for securesync to work, this needs to be here.
-    "control_panel", # in both apps
-    "coachreports", # in both apps; reachable on central via control_panel
-    "kalite", # contains commands
+    "control_panel",  # in both apps
+    "coachreports",  # in both apps; reachable on central via control_panel
+    "khanload",  # khan academy interactions
+    "kalite",  # contains commands
 ) + INSTALLED_APPS  # append local_settings installed_apps, in case of dependencies
 
-MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 if DEBUG or CENTRAL_SERVER:
     INSTALLED_APPS += ("django_snippets",)   # used in contact form and (debug) profiling middleware
@@ -180,6 +182,12 @@ if CENTRAL_SERVER:
     CSRF_COOKIE_NAME        = "csrftoken_central"
     LANGUAGE_COOKIE_NAME    = "django_language_central"
     SESSION_COOKIE_NAME     = "sessionid_central"
+
+    # Used for accessing the KA API.
+    #   By default, things won't work--local_settings needs to specify good values.
+    #   We do this so that we have control over our own key/secret (secretly, of course!)
+    KHAN_API_CONSUMER_KEY = getattr(local_settings, "KHAN_API_CONSUMER_KEY", "")
+    KHAN_API_CONSUMER_SECRET = getattr(local_settings, "KHAN_API_CONSUMER_SECRET", "")
 
 else:
     ROOT_URLCONF = "main.urls"
@@ -205,6 +213,9 @@ USER_LOG_SUMMARY_FREQUENCY = getattr(local_settings, "USER_LOG_SUMMARY_FREQUENCY
 # Sessions use the default cache, and we want a local memory cache for that.
 # Separate session caching from file caching.
 SESSION_ENGINE = getattr(local_settings, "SESSION_ENGINE", 'django.contrib.sessions.backends.cached_db')
+
+MESSAGE_STORAGE = 'utils.django_utils.NoDuplicateMessagesSessionStorage'
+
 
 CACHES = {
     "default": {
@@ -234,6 +245,10 @@ if CACHE_TIME != 0:  # None can mean infinite caching to some functions
             'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
         },
     }
+    KEY_PREFIX = version.VERSION
+
+
+CRONSERVER_FREQUENCY = getattr(local_settings, "CRONSERVER_FREQUENCY", 600) # 10 mins (in seconds)
 
 # Here, None === no limit
 SYNC_SESSIONS_MAX_RECORDS = getattr(local_settings, "SYNC_SESSIONS_MAX_RECORDS", None if CENTRAL_SERVER else 10)
@@ -242,13 +257,9 @@ SYNC_SESSIONS_MAX_RECORDS = getattr(local_settings, "SYNC_SESSIONS_MAX_RECORDS",
 # TODO(jamalex): this will currently only work when caching is disabled, as the conditional logic is in the Django template
 USE_MPLAYER = getattr(local_settings, "USE_MPLAYER", False) if CACHE_TIME == 0 else False
 
-MESSAGE_STORAGE = 'utils.django_utils.NoDuplicateMessagesSessionStorage'
-
 TEST_RUNNER = 'kalite.shared.testing.testrunner.KALiteTestRunner'
 
 FAST_TESTS_ONLY = getattr(local_settings, "FAST_TESTS_ONLY", False)
-
-CRONSERVER_FREQUENCY = getattr(local_settings, "CRONSERVER_FREQUENCY", 600) # 10 mins (in seconds)
 
 # Add additional mimetypes to avoid errors/warnings
 import mimetypes
