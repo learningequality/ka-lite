@@ -48,6 +48,6 @@ for x in range(1):
                                                 , password="student"
                                                 , url="http://192.168.1.25:8008"
                                                 , starttime="00:00"
-                                                , duration=5
+                                                , duration=2
                                                 , behaviour_profile=profile)
     print bench.execute()

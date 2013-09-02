@@ -55,7 +55,7 @@ from selenium.webdriver.common.by import By
 import benchmark_base
 from main.models import ExerciseLog, VideoLog, UserLog
 from securesync.models import Facility, FacilityUser, FacilityGroup
-from utils.testing.browser import BrowserTestCase
+from shared.testing.browser import BrowserTestCase
 
 
 class HelloWorld(benchmark_base.Common):
@@ -496,7 +496,7 @@ class SeleniumStudent(benchmark_base.Common):
         wait.until(expected_conditions.element_to_be_clickable((By.CSS_SELECTOR, '#solutionarea input[type=text]'))) 
         elem = self.browser.find_element_by_css_selector('#solutionarea input[type=text]')
         elem.click()
-        elem.send_keys("12345") # a wrong answer, but we don't care
+        elem.send_keys("987") # a wrong answer, but we don't care
         wait = ui.WebDriverWait(self.browser, self.timeout)
         wait.until(expected_conditions.element_to_be_clickable((By.ID, "check-answer-button")))         
         elem = self.browser.find_element_by_id("check-answer-button")
