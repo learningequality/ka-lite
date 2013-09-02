@@ -42,7 +42,7 @@ from main.models import ExerciseLog, VideoLog
 from main.topicdata import NODE_CACHE, ID2SLUG_MAP
 from settings import LOG as logging
 from securesync.models import FacilityUser
-from utils.decorators import require_login, distributed_server_only, central_server_only
+from shared.decorators import require_login, distributed_server_only, central_server_only
 from utils.internet import JsonResponse
 
 

@@ -9,7 +9,7 @@ from annoying.functions import get_object_or_None
 from functools import partial
 from collections import OrderedDict
 
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
@@ -19,12 +19,13 @@ from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.utils import simplejson
 from django.utils.translation import ugettext as _
 
-from coachreports.forms import DataForm
+from .forms import DataForm
 from config.models import Settings
 from main import topicdata
 from main.models import VideoLog, ExerciseLog, VideoFile, UserLog, UserLogSummary
 from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device
 from securesync.views import facility_required
+from settings import LOG as logging
 from shared.decorators import allow_api_profiling
 from utils.internet import StatusException, JsonResponse, api_handle_error_with_json
 from utils.topic_tools import get_topic_by_path
@@ -374,5 +375,16 @@ def api_data(request, xaxis="", yaxis=""):
         }
     }
 
+    if "facility_user" in request.session:
+        try:
+            # Log a "begin" and end here
+            user = request.session["facility_user"]
+            UserLog.begin_user_activity(user, activity_type="coachreport")
+            UserLog.update_user_activity(user, activity_type="login")  # to track active login time for teachers
+            UserLog.end_user_activity(user, activity_type="coachreport")
+        except ValidationError as e:
+            # Never report this error; don't want this logging to block other functionality.
+            logging.debug("Failed to update Teacher userlog activity login: %s" % e)
+    
     # Now we have data, stream it back with a handler for date-times
     return JsonResponse(json_data)
