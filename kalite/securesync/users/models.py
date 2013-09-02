@@ -95,8 +95,8 @@ class FacilityUser(SyncedModel):
         return u"%s (Facility: %s)" % (self.get_name(), self.facility)
 
     def check_password(self, raw_password):
-        cached_password = CachedPassword.is_enabled() and get_object_or_None(CachedPassword, user=self)
-        cur_password = getattr(cached_password, "password", self.password)
+        cached_password = CachedPassword.get_cached_password(self)
+        cur_password = cached_password or self.password
 
         # Check the password
         if cur_password.split("$", 1)[0] == "sha1":
@@ -113,8 +113,6 @@ class FacilityUser(SyncedModel):
             if not cached_password:
                 # Reset the password, which will store the cached password
                 self.set_password(raw_password=raw_password)
-            else:
-                logging.debug("Cached password hit for user=%s" % self.username)
 
         return okie_dokie
 
@@ -143,11 +141,11 @@ class FacilityUser(SyncedModel):
             else:
                 try:
                     # Set the cached password.
-                    n_cached_iters = settings.PASSWORD_ITERATIONS_TEACHER if self.is_teacher else settings.PASSWORD_ITERATIONS_STUDENT
+                    n_cached_iters = CachedPassword.iters_for_user_type(self)
                     cached_password = get_object_or_None(CachedPassword, user=self) or CachedPassword(user=self)
                     cached_password.password = crypt(raw_password, iterations=n_cached_iters)
                     cached_password.save()
-                    logging.debug("Set cached password for user=%s" % self.username)
+                    logging.debug("Set cached password for user=%s; iterations=%d" % (self.username, n_cached_iters))
                 except Exception as e:
                     logging.debug(e)
 
@@ -158,12 +156,37 @@ class FacilityUser(SyncedModel):
             return self.username
 
 class CachedPassword(models.Model):
+    """
+    Local store of password hashes, using a locally settable # of password hash iterations.
+    """
     user = models.ForeignKey("FacilityUser", unique=True)
     password = models.CharField(max_length=128)
 
     @classmethod
     def is_enabled(cls):
         return bool(settings.PASSWORD_ITERATIONS_TEACHER or settings.PASSWORD_ITERATIONS_STUDENT)
+
+    @classmethod
+    def iters_for_user_type(cls, facility_user):
+        return settings.PASSWORD_ITERATIONS_TEACHER if facility_user.is_teacher else settings.PASSWORD_ITERATIONS_STUDENT
+
+    @classmethod
+    def get_cached_password(cls, facility_user):
+
+        # Cache miss because there is no row in the table for this user.
+        cached_password = cls.is_enabled() and get_object_or_None(cls, user=facility_user)
+        if not cached_password:
+            return None
+        
+        n_cached_iters = int(cached_password.password.split("$")[2], 16)  # this was determined 
+        if n_cached_iters == cls.iters_for_user_type(facility_user):
+            # Cache hit!
+            logging.debug("Cached password hit for user=%s; cached iters=%" % (self.username, n_cached_iters))
+            return cached_password.password
+        else:
+            # Cache miss because the row is invalid (# hashes doesn't match the current cache setting)
+            cached_password.delete()
+            return None
 
     class Meta:
         app_label = "securesync"
