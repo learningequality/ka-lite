@@ -12,9 +12,6 @@ upstream kalite {
     server 127.0.0.1:7007;
 }
 
-proxy_cache_path  /var/cache/nginx levels=1:2 keys_zone=kalite:8m max_size=256m inactive=600m;
-proxy_temp_path /var/cache/nginx/tmp;
-
 server {
 
     # You may change the following port (8008) to something else,
@@ -33,13 +30,21 @@ server {
         alias   %(root_path)s/content/;
     }
 
+    location /api/v1 {
+        types { }
+        default_type "application/json";
+        return 200 "{}";
+    }
+
     location /favicon.ico {
         empty_gif;
     }
 
     location / {
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Scheme $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
         proxy_pass http://kalite;
-        proxy_cache kalite;
     }
 
 }
