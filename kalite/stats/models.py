@@ -38,11 +38,11 @@ class UnregisteredDevicePing(models.Model):
             #   to shorten things here
             cur_log = get_object_or_None(cls, device__id=id)  # get is safe, because device is unique
             if not cur_log:
-                cur_device = UnregisteredDevice.objects.get_or_create(id=id)
+                (cur_device, _) = UnregisteredDevice.objects.get_or_create(id=id)
                 cur_log = cls(device=cur_device)
 
             cur_log.npings += 1
-            cur_log.ip = ip
+            cur_log.last_ip = ip
             cur_log.save()
 
         except Exception as e:
