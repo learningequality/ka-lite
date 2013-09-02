@@ -156,28 +156,12 @@ def get_exercise_logs(request):
         return JsonResponse({"error": "Could not load ExerciseLog objects: Unrecognized input data format." % e}, status=500)
 
     user = request.session["facility_user"]
-    responses = []
-    for exercise_id in data:
-        response = _get_exercise_log_dict(request, user, exercise_id)
-        if response:
-            responses.append(response)
-    return JsonResponse(responses)
 
-
-def _get_exercise_log_dict(request, user, exercise_id):
-    if not exercise_id:
-        return {}
-    try:
-        exerciselog = ExerciseLog.objects.get(user=user, exercise_id=exercise_id)
-    except ExerciseLog.DoesNotExist:
-        return {}
-    return {
-        "exercise_id": exercise_id,
-        "streak_progress": exerciselog.streak_progress,
-        "complete": exerciselog.complete,
-        "points": exerciselog.points,
-        "struggling": exerciselog.struggling,
-    }
+    return JsonResponse(
+        list(ExerciseLog.objects \
+            .filter(user=user, exercise_id__in=data) \
+            .values("exercise_id", "streak_progress", "complete", "points", "struggling"))
+    )
 
 
 @require_admin
