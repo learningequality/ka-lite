@@ -4,6 +4,7 @@ from annoying.functions import get_object_or_None
 from collections import OrderedDict, namedtuple
 
 from django.core import serializers
+from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
 from django.db.models import Sum, Max
@@ -13,13 +14,14 @@ from django.template import RequestContext
 from django.utils.translation import ugettext as _
 
 import settings
-from main import topicdata
+from .forms import ZoneForm, UploadFileForm
 from central.models import Organization
 from coachreports.views import student_view_context
-from control_panel.forms import ZoneForm, UploadFileForm
+from main import topicdata
 from main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
 from securesync.forms import FacilityForm
 from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device, Zone, SyncSession
+from settings import LOG as logging
 from shared.decorators import require_authorized_admin, require_authorized_access_to_student_data
 from utils.internet import CsvResponse, render_to_csv
 
@@ -314,6 +316,20 @@ def facility_user_management(request, facility_id, group_id="", org_id=None, zon
 @require_authorized_access_to_student_data
 @render_to("control_panel/account_management.html")
 def account_management(request, org_id=None):
+
+    # Only log 'coachreport' activity for students, 
+    #   (otherwise it's hard to compare teachers)
+    if "facility_user" in request.session and not request.session["facility_user"].is_teacher and reverse("login") not in request.META.get("HTTP_REFERER", ""):
+        try:
+            # Log a "begin" and end here
+            user = request.session["facility_user"]
+            UserLog.begin_user_activity(user, activity_type="coachreport")
+            UserLog.update_user_activity(user, activity_type="login")  # to track active login time for teachers
+            UserLog.end_user_activity(user, activity_type="coachreport")
+        except ValidationError as e:
+            # Never report this error; don't want this logging to block other functionality.
+            logging.debug("Failed to update student userlog activity: %s" % e)
+
     return student_view_context(request)
 
 
