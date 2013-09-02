@@ -21,11 +21,8 @@ function show_django_messages(messages) {
 function show_api_messages(messages, msg_id) {
     // When receiving an error response object,
     //   show errors reported in that object
-    if (msg_id) {
-        clear_message(msg_id)
-    }
     if (!messages) {
-        return
+        return;
     }
     switch (typeof messages) {
         case "object":
@@ -39,7 +36,7 @@ function show_api_messages(messages, msg_id) {
             break;
         default:
             // Programming error; this should not happen
-            throw "do not call show_api_messages object of type " + (typeof messages)
+            throw "do not call show_api_messages object of type " + (typeof messages);
     }
 }
 
