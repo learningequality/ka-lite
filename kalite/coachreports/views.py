@@ -102,6 +102,14 @@ def student_view(request, xaxis="pct_mastery", yaxis="ex:attempts"):
 
     Student view lists a by-topic-summary of their activity logs.
     """
+    return student_view_context(request=request, xaxis=xaxis, yaxis=yaxis)
+
+
+@require_authorized_access_to_student_data
+def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
+    """
+    Context done separately, to be importable for similar pages.
+    """
     user = get_user_from_request(request=request)
 
     topics = get_all_midlevel_topics()
