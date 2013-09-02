@@ -29,18 +29,22 @@ class UnregisteredDevicePing(models.Model):
 
     @classmethod
     def record_ping(cls, id, ip):
+        """
+        We received a failed request to create a session; record that 'ping' in our DB
+        """
         try:
+            # Create the log (if necessary), update, and save
+            # TODO: make a base class (in django_utils) that has get_or_initialize, and use that
+            #   to shorten things here
             cur_log = get_object_or_None(cls, device__id=id)  # get is safe, because device is unique
             if not cur_log:
-                cur_device = get_object_or_None(UnregisteredDevice, id=id)
-                if not cur_device:
-                    cur_device = UnregisteredDevice(id=id)
-                    cur_device.save()
+                cur_device = UnregisteredDevice.objects.get_or_create(id=id)
                 cur_log = cls(device=cur_device)
+
             cur_log.npings += 1
             cur_log.ip = ip
             cur_log.save()
 
-            print cur_log
         except Exception as e:
+            # Never block functionality
             logging.debug(e)
