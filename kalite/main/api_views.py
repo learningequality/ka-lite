@@ -65,7 +65,6 @@ def save_video_log(request):
             additional_seconds_watched=data["seconds_watched"],
             points=data["points"],
         )
-
     except ValidationError as e:
         return JsonResponse({"error": "Could not save VideoLog: %s" % e}, status=500)
 
