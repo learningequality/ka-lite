@@ -21,7 +21,6 @@ from shared.caching import invalidate_all_pages_related_to_video
 from shared.decorators import require_admin
 from shared.videos import delete_downloaded_files
 from utils.jobs import force_job, job_status
-from utils.videos import delete_downloaded_files
 from utils.general import break_into_chunks
 from utils.internet import api_handle_error_with_json, JsonResponse
 from utils.mplayer_launcher import play_video_in_new_thread
@@ -213,6 +212,7 @@ def delete_videos(request):
 
     return JsonResponse({})
 
+
 @require_admin
 @api_handle_error_with_json
 def check_video_download(request):
@@ -220,9 +220,10 @@ def check_video_download(request):
     percentages = {}
     percentages["downloading"] = job_status("videodownload")
     for id in youtube_ids:
-        videofile = get_object_or_None(VideoFile, youtube_id=id) or VideoFile(youtube_id=id)
-        percentages[id] = videofile.percent_complete
+        videofile = get_object_or_None(VideoFile, youtube_id=id)
+        percentages[id] = videofile.percent_complete if videofile else None
     return JsonResponse(percentages)
+
 
 @require_admin
 @api_handle_error_with_json
