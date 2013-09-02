@@ -63,8 +63,6 @@ def allow_jsonp(handler):
     return wrapper_fn
 
 
-from . import CsvResponse
-
 def render_to_csv(context_keys, delimiter=",", key_label="key", order="stacked"):
     """
     "context_keys" are dictionary keys into the context object.
