@@ -8,7 +8,7 @@ function d3_scatter(data, options, appendtohtml) {
   // appendtohtml is the element identifier for the svg element to be attached to.
 
   // Set up variables to define plotting area.
-  var margin = {top: 20, right: 20, bottom: 30, left: 40},
+  var margin = {top: 20, right: 40, bottom: 30, left: 100},
       width = 960 - margin.left - margin.right,
       height = 500 - margin.top - margin.bottom;
 

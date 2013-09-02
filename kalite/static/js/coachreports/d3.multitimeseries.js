@@ -9,7 +9,7 @@ function d3_multiTimeSeries (data, timeScale, appendtohtml, options) {
     // appendtohtml is the element identifier for the svg element to be attached to.
 
     // Set up variables to define plotting area.
-    var margin = {top: 20, right: 80, bottom: 30, left: 50},
+    var margin = {top: 20, right: 80, bottom: 30, left: 100},
         width = 960 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom;
 
