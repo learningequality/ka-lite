@@ -51,6 +51,18 @@ function communicate_api_failure(resp, msg_id) {
 }
 
 
+function force_sync() {
+    // Simple function that calls the API endpoint to force a data sync,
+    //   then shows a message for success/failure
+    doRequest("/securesync/api/force_sync")
+        .success(function() {
+            show_message("success", "Successfully launched data syncing job.  Please visit <a href='/management/device/'>your device management page</a> to view sync status.", "id_command")
+        })
+        .fail(function(resp) {
+            communicate_api_failure(resp, "id_command")
+        });
+}
+
 /**
 * Model that holds state about a user (username, points, admin status, etc)
 */
@@ -92,12 +104,20 @@ var TotalPointView = Backbone.View.extend({
 
 
 $(function(){
-
     // global Backbone model instance to store state related to the user (username, points, admin status, etc)
     window.userModel = new UserModel();
 
     // create an instance of the total point view, which encapsulates the point display in the top right of the screen
     var totalPointView = new TotalPointView({model: userModel, el: "#sitepoints"});
+
+    // Process any direct messages, from the url querystring
+    if ($.url().param('message')) {
+        show_message(
+            $.url().param('message_type') || "info",
+            $.url().param('message'),
+            $.url().param('message_id') || ""
+        );
+    }
 
     // Do the AJAX request to async-load user and message data
     $("[class$=-only]").hide();

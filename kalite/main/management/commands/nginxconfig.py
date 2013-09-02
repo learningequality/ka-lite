@@ -30,11 +30,20 @@ server {
         alias   %(root_path)s/content/;
     }
 
+    location /api/v1 {
+        types { }
+        default_type "application/json";
+        return 200 "{}";
+    }
+
     location /favicon.ico {
         empty_gif;
     }
 
     location / {
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Scheme $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
         proxy_pass http://kalite;
     }
 

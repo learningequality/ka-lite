@@ -10,7 +10,7 @@ from collections import OrderedDict
 
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
@@ -24,8 +24,8 @@ from main import topicdata
 from main.models import VideoLog, ExerciseLog, VideoFile
 from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device
 from securesync.views import facility_required
-from utils.decorators import allow_api_profiling, api_handle_error_with_json
-from utils.internet import StatusException, JsonResponse
+from shared.decorators import allow_api_profiling
+from utils.internet import StatusException, JsonResponse, api_handle_error_with_json
 from utils.topic_tools import get_topic_by_path
 
 
@@ -322,27 +322,22 @@ def api_data(request, xaxis="", yaxis=""):
         return HttpResponseNotFound("Must specify a topic path")
 
     # Query out the data: what?
-    try:
-        computed_data = compute_data(data_types=[form.data.get("xaxis"), form.data.get("yaxis")], who=users, where=form.data.get("topic_path"))
-        json_data = {
-            "data": computed_data["data"],
-            "exercises": computed_data["exercises"],
-            "videos": computed_data["videos"],
-            "users": dict(zip([u.id for u in users],
-                                ["%s, %s" % (u.last_name, u.first_name) for u in users]
-                         )),
-            "groups":  dict(zip([g.id for g in groups],
-                                 dict(zip(["id", "name"], [(g.id, g.name) for g in groups])),
-                          )),
-            "facility": None if not facility else {
-                "name": facility.name,
-                "id": facility.id,
-            }
+    computed_data = compute_data(data_types=[form.data.get("xaxis"), form.data.get("yaxis")], who=users, where=form.data.get("topic_path"))
+    json_data = {
+        "data": computed_data["data"],
+        "exercises": computed_data["exercises"],
+        "videos": computed_data["videos"],
+        "users": dict(zip([u.id for u in users],
+                            ["%s, %s" % (u.last_name, u.first_name) for u in users]
+                     )),
+        "groups":  dict(zip([g.id for g in groups],
+                             dict(zip(["id", "name"], [(g.id, g.name) for g in groups])),
+                      )),
+        "facility": None if not facility else {
+            "name": facility.name,
+            "id": facility.id,
         }
+    }
 
-        # Now we have data, stream it back with a handler for date-times
-        dthandler = lambda obj: obj.isoformat() if isinstance(obj, datetime.datetime) else None
-        return HttpResponse(content=json.dumps(json_data, default=dthandler), content_type="application/json")
-
-    except Exception as e:
-        return HttpResponseServerError(str(e))
+    # Now we have data, stream it back with a handler for date-times
+    return JsonResponse(json_data)
