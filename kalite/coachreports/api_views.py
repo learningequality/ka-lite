@@ -3,7 +3,6 @@ import re
 import json
 import sys
 import logging
-import settings
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 from functools import partial
@@ -51,7 +50,7 @@ user_log_stats_dict = [
     { "key": "user:last_active_datetime", "name": _("Time Session Completed"),"type": "datetime", "description": _("Day/time the login session finished.")},
 ]
 
-if settings.USER_LOG_MAX_RECORDS:
+if UserLog.is_enabled():
     stats_dict.extend(user_log_stats_dict)
 
 def get_data_form(request, *args, **kwargs):
@@ -151,10 +150,10 @@ def query_logs(users, items, logtype, logdict):
     elif logtype == "video":
         all_logs = VideoLog.objects.filter(user__in=users, youtube_id__in=items).values(
             'user', 'complete', 'youtube_id', 'total_seconds_watched', 'completion_timestamp', 'points').order_by('completion_timestamp')
-    elif logtype == "activity" and settings.USER_LOG_MAX_RECORDS:
+    elif logtype == "activity" and UserLog.is_enabled():
         all_logs = UserLog.objects.filter(user__in=users).values(
             'user', 'last_active_datetime', 'total_seconds').order_by('last_active_datetime')
-    elif logtype == "summaryactivity" and settings.USER_LOG_MAX_RECORDS:
+    elif logtype == "summaryactivity" and UserLog.is_enabled():
         all_logs = UserLogSummary.objects.filter(user__in=users).values(
             'user', 'device', 'total_seconds').order_by('end_datetime')
     else:
@@ -186,7 +185,7 @@ def compute_data(data_types, who, where):
     data = OrderedDict(zip([w.id for w in who], [dict() for i in range(len(who))]))  # maintain the order of the users
     vid_logs = dict(zip([w.id for w in who], [[] for i in range(len(who))]))
     ex_logs = dict(zip([w.id for w in who], [[] for i in range(len(who))]))
-    if settings.USER_LOG_MAX_RECORDS:
+    if UserLog.is_enabled():
         activity_logs = dict(zip([w.id for w in who], [[] for i in range(len(who))]))
 
     # Set up queries (but don't run them), so we have really easy aliases.
@@ -259,7 +258,7 @@ def compute_data(data_types, who, where):
                     data[user][data_type] = OrderedDict([(el['exercise_id'], el[data_type[3:]]) for el in ex_logs[user]])
 
             # User Log Queries
-            elif data_type.startswith("user:") and data_type[5:] in [f.name for f in UserLog._meta.fields] and settings.USER_LOG_MAX_RECORDS:
+            elif data_type.startswith("user:") and data_type[5:] in [f.name for f in UserLog._meta.fields] and UserLog.is_enabled():
 
                 activity_logs = query_logs(data.keys(), "", "activity", activity_logs)
 
@@ -267,7 +266,7 @@ def compute_data(data_types, who, where):
                     data[user][data_type] = [log[data_type[5:]] for log in activity_logs[user]]
 
             # User Summary Queries
-            elif data_type.startswith("usersum:") and data_type[8:] in [f.name for f in UserLogSummary._meta.fields] and settings.USER_LOG_MAX_RECORDS:
+            elif data_type.startswith("usersum:") and data_type[8:] in [f.name for f in UserLogSummary._meta.fields] and UserLog.is_enabled():
 
                 activity_logs = query_logs(data.keys(), "", "summaryactivity", activity_logs)
 
