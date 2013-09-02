@@ -18,7 +18,7 @@ import settings
 from central.forms import OrganizationForm, OrganizationInvitationForm
 from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
 from securesync.engine.api_client import SyncSession
-from utils.decorators import require_authorized_admin
+from shared.decorators import require_authorized_admin
 
 
 @render_to("central/homepage.html")

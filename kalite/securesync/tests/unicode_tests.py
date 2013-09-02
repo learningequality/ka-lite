@@ -3,7 +3,7 @@ import sys
 from django.utils import unittest
 
 from securesync.models import *
-from utils.testing.unicode import UnicodeModelsTest
+from shared.testing.unicode import UnicodeModelsTest
 
 class SecuresyncUnicodeModelsTest(UnicodeModelsTest):
 
