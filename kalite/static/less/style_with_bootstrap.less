@@ -9,7 +9,8 @@
 
 // Body, Container and Resets
 // --------------------------------------------------
-html, html a {
+
+html, html a { //Makes fonts look great!
     -webkit-font-smoothing: antialiased;
     text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
 }
@@ -44,8 +45,6 @@ a:hover{
   max-width: @container-max-width;
   .center;
 }
-
-.center { float: none; margin-left: auto; margin-right: auto; }
 
 .form-section li{
   list-style: none;
@@ -123,7 +122,10 @@ a.symbol:before {
     display: inline;
     list-style-type: none;
 
-    a, a:hover{
+    a{
+      &:hover{
+        color:black;
+      }
       color:@dark-gray;
       text-decoration: none;
     }
@@ -162,6 +164,9 @@ a.symbol:before {
 .button-install{
   .button-green--large;
   background-color: @flashy-green;
+  &:hover{
+    background-color:#6FE04B;
+  }
 }
 .button-learn_more{
   .button-green--large;
@@ -212,8 +217,7 @@ ul{
 // --------------------------------------------------
 
 .hr-gray{
-  border-bottom: 1px #E7E7E7 solid;
-  background-color: white;
+  border-bottom: 1px @dark-gray solid;
 }
 
 // Header (horizontal menu)
@@ -312,33 +316,18 @@ ul{
 // --------------------------------------------------
 
 .footer{
-  padding-top: 10px;
-  padding-bottom: 30px;
-  background-color: @darkest-gray;
+  background-color: @footer-color;
   height: 100%;
 }
 
-.footer h2{
-  font-size: 17px;
-  line-height: 21pt;
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-weight: normal;
-  color:@dark-gray;  
+.footer__first-part{
+  padding: 20px 0px;
 }
-.footer__rss{
-  padding-left: 40px;
-  padding-right: 40px;
-}
-.footer__news-list{
-  margin-top: 15px;
-  padding-left: 0px;
-  li{
-    border-bottom: 1px rgb(126,126,126) solid;
-    list-style: none;
-    line-height: 30px;
-    a{  
-      color:@dark-gray;
-    }
+
+.footer__second-part{
+  padding: 20px 0px;
+  ul{
+    float:right;
   }
 }
 
@@ -351,7 +340,6 @@ ul{
 // --------------------------------------------------
 .quotes-container{
 
-  background-color:#004B66;
   .button-learn_more{
     margin-top: 50px;
     float: right;
@@ -369,9 +357,9 @@ ul{
 }
 
 .ka-quote{
-
+  background-color:@quote-color;
   border-top: 3px solid @dark-green;
-  color:white;
+  color:black;
   text-align: center;
   font-size: 26px;  
   padding: 80px 0px ;
@@ -394,16 +382,17 @@ ul{
 
 .features{
   text-align: center;
-  color:white;
+  color:black;
+  background-color: white;
+  padding: 40px 0px;
   p{
     padding-top: 10px;
-    padding-bottom: 40px;
+    
     width:200px;
     .center;
     line-height: 1.8;
   }
 }
-
 
 .get-started{
   background-color: white;
@@ -424,10 +413,9 @@ ul{
 }
 
 .landing-cc{
-  padding-left:40px;
-  padding-top: 40px;
-  color:@dark-gray;
-  font-size: 13px;
+  padding: 30px 40px 30px 40px;
+  color:@darkest-gray;
+
 }
 
 .round-border-rural{
