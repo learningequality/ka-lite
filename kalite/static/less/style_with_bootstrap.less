@@ -21,7 +21,6 @@ body{
 
 @media (max-width: 767px){
   body{
-
     padding:0;
   }
 }
@@ -38,7 +37,6 @@ a:hover{
   margin: 0 auto;
   background-image: url(/static/images/bg-header.png);
   background-repeat: no-repeat;
-
 }
 
 .max-width-container{ // Contains the content when the background is full width
@@ -54,14 +52,11 @@ a:hover{
 // --------------------------------------------------
 
 h1,h2,h3,h4,h5,h6{
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: @heading-font;
   font-weight: normal;
 }
 
-h1{
-  font-size: 218%;
-  line-height: 25pt;
-}
+h1{font-size: 218%;}
 h2{font-size: 164%;}
 h3{font-size: 145%;}
 h4{font-size: 118%;}
@@ -115,101 +110,89 @@ a.symbol:before {
 }
 
 .list-icons{
-  margin: 0; // Webkit has an inital margin of 40px
+  .horizontal-list;
   font-size: 45px;
   line-height: 10px;
-  padding: 0px;
-  li{
-    display: inline;
-    list-style-type: none;
 
-    a{
-      &:hover{
-        color:black;
-      }
-      color:@dark-gray;
-      text-decoration: none;
+  li a{
+    color:@dark-gray;
+    &:hover{
+      color:black;
     }
   }
-}
-
-// Paddings
-// --------------------------------------------------
-.padding-left-20{
-  padding-left: 20px;
 }
 
 // Buttons
 // --------------------------------------------------
 
-// Helper: .round-button(@bg-color,@bg-color-hover,@font-color,@width,@border_radius, @font_size, @paddingvertical, @paddinghorizontal)
+// Helper: .round-button(@width,@border_radius, @font_size, @paddingvertical, @paddinghorizontal)
 
-.button-green--large{
- .round-button(@green-button-color, @green-button-hover-color,white,232px,5px, 18px, 18px, 19px);
+.button{
+  .round-button(190px,5px, 14px, 10px, 20px);
+  color:@button-font-color;
+  background-color:@button-background;
+
+  &:hover,
+  &:focus {
+    background-color:@button-background-hover;
+    text-decoration: none;
+  }
 }
 
-.button-green{
-  .round-button(@green-button-color,@green-button-hover-color,white,190px,5px, 14px, 10px, 20px);
+.button--large{
+  .button;
+  .round-button(232px,5px, 18px, 18px, 19px);
 }
 
-.button-green--small{
-  .round-button(@green-button-color,@green-button-hover-color,white,100px,3px, 13px, 5px, 20px); 
+.button--small{
+  .button;
+  .round-button(100px,3px, 13px, 5px, 20px); 
 }
 
 .button-popover{
-  .round-button(@light-gray,@green-button-hover-color,black,100px,50%, 13px, 5px, 10px); 
+  .round-button(100px,50%, 13px, 5px, 10px); 
   margin-left: 10px;
   cursor: pointer; 
-  color:black;
-  border:2px @dark-gray solid;
+  color:@button-popover-font-color;
+  border:@button-popover-border;
   font-family:Tahoma;
-  &:hover{
-    color:white;
-    border:2px @flashy-green solid;
+  background-color: @button-popover-background;
+
+  &:hover,
+  &:focus {
+    background-color: @button-popover-background-hover;
+    color:@button-popover-font-color-hover;
+    border:@button-popover-border-hover;
   }
 }
 
 .button-install{
-  .button-green--large;
+  .button--large;
   background-color: @flashy-green;
-  &:hover{
-    background-color:#6FE04B;
+
+  &:hover,
+  &:focus {
+    background-color:@light-flashy-green;
   }
-}
-
-// Example of another button
-.button-gray{
-  .button-green;
-  background-color: @darkest-gray;
-}
-
-.neworg-button{
-  margin-top:16px;
-  float:right;
 }
 
 // List
 // --------------------------------------------------
+.list,.horizontal-list{
+  margin:0;
+  padding: 0;
+}
 
-ul{
-  padding:0;
-  &.list li{
-    margin:0;
-    font: @body-font;
-  }
-  &.nostyle-list li{
-    list-style-type: none;
-  }
+.list li{
+  font: @body-font;
+}
 
-  &.horizontal-list {
-    margin: 0;
-    li,form{
-      display: inline!important; 
-      a, a:hover{
-        text-decoration: none;
-      }
+.horizontal-list {
+  li,form{
+    display: inline; 
+    a, a:hover{
+      text-decoration: none;
     }
-
   }
 }
 
@@ -231,22 +214,22 @@ ul{
 
 .header__horizontal-menu__right{ //Positions the menu on the right
   float:right;
-  padding-top: 15px;
+  padding-top: 11px;
 }
 
 .header__horizontal-menu {
+  .horizontal-list;
+
+  margin:20px 0px;
   padding-left: 20px;
   font-family: MuseoSans500, Helvetica, Arial, sans-serif;
   font-size: 14px;
   text-transform: uppercase;
 
   li{
-    display: inline;
-    list-style-type: none;
     padding-right:20px;
     a{
       color:black;
-      text-decoration: none;
       &.active{
         border-bottom: 3px solid @dark-green;
       }
@@ -257,13 +240,17 @@ ul{
   }
 }
 
-@media (max-width: 767px)  { //Creates a mobile-friendly menu
+// Mobile-friendly menu
+@media (max-width: 767px){ 
+
   .header__logo{
     display:inline!important;    
     padding-left: 20px;
   }
 
   .header__horizontal-menu__right{
+   
+    padding: 20px 5px 0px 5px;
     &.js {
       display: none;
     }
@@ -280,6 +267,7 @@ ul{
     }
   }
   .header__horizontal-menu {
+
     padding-left: 0;
     li{
       display:block;
@@ -289,16 +277,16 @@ ul{
     margin-right: 20px;
     display:inline;
     float:right;
-    .round-button(@green-button-color, @green-button-hover-color,white,auto,5px, 14px, 7px, 15px);   
+    .button;
+    .round-button(auto,5px, 14px, 7px, 15px);   
   }
 }
 
-  @media screen and (min-width: 768px) { //Hides the three bar icon in normal mode
-    #menu {
-      display: none;
-    }
+@media screen and (min-width: 768px) { //Hides the three bar icon in normal mode
+  #menu {
+    display: none;
   }
-
+}
 
 // Content
 // --------------------------------------------------
@@ -312,118 +300,15 @@ ul{
   padding: 20px 30px 0px 30px;
 }
 
-// Footer (only visible on the landing page)
+.neworg-button{//Container to position the button on the org page
+  margin-top:16px;
+  float:right;
+}
+
+// Footer
 // --------------------------------------------------
-
-.footer{
-  background-color: @footer-color;
-  height: 100%;
-}
-
-.footer__first-part{
-  padding: 20px 0px;
-}
-
-.footer__second-part{
-  padding: 20px 0px;
-  ul{
-    float:right;
-  }
-}
 
 .cc-logo{
   height:14px;
   width:75px;
-}
-
-// Landing page - non resuable parts
-// --------------------------------------------------
-
-.button-container{
- .center;
- text-align: center;
- padding: 50px 0px;
- background-color: #1C2C38;
-}
-
-
-.ka-quote{
-  background-color:@quote-color;
-  border-top: 3px solid @dark-green;
-  color:black;
-  text-align: center;
-  font-size: 26px;  
-  padding: 80px 0px ;
-  p{
-
-    font-size: 18px;
-  }
-}
-
-.features{
-  text-align: center;
-  color:black;
-  background-color: white;
-  padding: 40px 0px;
-
-  p{
-    padding-top: 10px;
-    width:200px;
-    .center;
-    line-height: 1.8;
-  }
-}
-
-.get-started{
-  background-color: white;
-  padding: 40px 0;
-  text-align: center;
-
-}
-.dev-cont{
-  background: white;
-  padding:70px 0px;
-  .center;
-  text-align: center;
-
-  button{
-    margin-top: 20px;
-  }
-}
-
-.landing-cc{
-  padding: 30px 40px 30px 40px;
-  color:@darkest-gray;
-}
-
-.round-border-rural{
-  .round-border;
-  .center;
-  background: url(/static/images/deployment.jpg);
-  background-size: 360px;
-  background-position: -60px -0px;
-}
-
-.round-border-points{
-  .round-border;
-  .center;
-  background: url(/static/images/ka-lite-screenshot-v0.10.0.png);
-  background-size: 390px;
-  background-position: 3px 2px;
-}
-
-.round-border-install{
-  .round-border;
-  .center;
-  background: url(/static/images/landing-page/vid-down-cropped.png);
-  background-size: 300px;
-  background-position: -11px -5px;
-}
-.round-border {
-  border:3px solid rgb(24,33,54);
-  background-color:black;
-  .border-radius(25px);
-  width: 270px;
-  height: 270px; 
-  /* width and height can be anything, as long as they're equal */
 }

@@ -33,7 +33,7 @@
 			</div>
 			<div class="span3">
 				<form method="link" action="/organization/new/" class="neworg-button">
-				<input type="submit" class="button-green--large" value="Create a new organization">
+				<input type="submit" class="button--large" value="Create a new organization">
 				</form>
 			</div>
 		</div>
@@ -92,7 +92,7 @@
 			</table>
 
 			<form method="link" action="{% url zone_form org_id=org.id zone_id='new' %}">
-				<input class="button-green--small" type="submit" value="Create a new zone">
+				<input class="button--small" type="submit" value="Create a new zone">
 			</form>
 			</div>
 			<div class="span6 padding-left-20">
@@ -151,7 +151,7 @@
 					
 						<h4>Add Admin</h4>
 						<input type="text" placeholder="example@email.com" name="email_to_invite">
-						<input type="submit" class="button-green--small" value="Send invite!">
+						<input type="submit" class="button--small" value="Send invite!">
 					
 
 					{% for error in org.form.non_field_errors %}
