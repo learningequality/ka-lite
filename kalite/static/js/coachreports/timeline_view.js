@@ -1,5 +1,5 @@
 function drawChart_timeline(chart_div, dataTable, timeScale, options) {
-    d3_multiTimeSeries(dataTable, timeScale, chart_div);
+    d3_multiTimeSeries(dataTable, timeScale, chart_div, options);
 }
 
 function json2dataTable_timeline(json, xaxis, yaxis) {
@@ -12,21 +12,34 @@ function json2dataTable_timeline(json, xaxis, yaxis) {
     nobjects = json['exercises'].length || json['videos'].length;
 
     var timeScale = []
+
+    var multiplier = 1
     
     for (var ui=0; ui<nusers; ++ui) {
         var uid = Object.keys(json['data'])[ui];
 
         var good_xdata = [];
-        var good_ydata = []
+        var good_ydata = [];
         var all_xdata = json['data'][uid][xaxis];
-        for (var ri in all_xdata) {
-            var xdata = all_xdata[ri];
-            if (xdata == null) {
-                continue;
+        var all_ydata = json['data'][uid][yaxis];
+        if (xaxis=="user:last_active_datetime"){
+            good_xdata = all_xdata;
+            good_ydata = all_ydata;
+            for (var ri in all_xdata) {
+                all_xdata[ri] = new Date(all_xdata[ri]);
+                timeScale.push(all_xdata[ri]);
             }
-            good_xdata.push(new Date(xdata));
-            timeScale.push(new Date(xdata));
-            good_ydata.push( good_ydata.length + 1 );
+        } else {
+            var multiplier = 100/nobjects
+            for (var ri in all_xdata) {
+                var xdata = all_xdata[ri];
+                if (xdata == null) {
+                    continue;
+                }
+                good_xdata.push(new Date(xdata));
+                timeScale.push(new Date(xdata));
+                good_ydata.push( good_ydata.length + 1 );
+            }
         }
 
         // Now create a data table
@@ -39,7 +52,7 @@ function json2dataTable_timeline(json, xaxis, yaxis) {
         for (ri=0; ri<good_xdata.length; ++ri) {
 
             values.push({
-                date: good_xdata[ri], pctmastery: 100*good_ydata[ri]/nobjects
+                date: good_xdata[ri], data_point: multiplier*good_ydata[ri]
             })
         }
         
@@ -53,8 +66,8 @@ function json2dataTable_timeline(json, xaxis, yaxis) {
 function drawJsonChart_timeline(chart_div, json, xaxis, yaxis) {
     var options = {
       title: stat2name(xaxis) + ' vs. ' + stat2name(yaxis) + ' comparison',
-      hAxis: {title: stat2name(xaxis) },
-      vAxis: {title: stat2name(yaxis) },
+      hAxis: {title: stat2name(xaxis), stat: xaxis },
+      vAxis: {title: stat2name(yaxis), stat: yaxis },
     };
     var data = json2dataTable_timeline(json, xaxis, yaxis);
     var dataTable = data[0];
