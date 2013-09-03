@@ -6,7 +6,7 @@
 {% block home_active %}active{% endblock home_active %}
 
 {% block jqueryjs %}
-<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.8.3.min.js"></script> 
+<script type="text/javascript" src="{% static 'js/jquery-1.8.3.min.js' %}"></script> 
 {% endblock jqueryjs %}
 
 {% block analytics %}{% include 'central/web_analytics.html' %}{% endblock analytics %}
@@ -17,8 +17,11 @@
     <div class="row-fluid">
         <div class="span12">
             <div class="ka-quote">
-               65% of the world doesn't have internet. 100% of the world needs education.
-               <p>KA Lite is an offline version of  <a href="http://www.khanacademy.org/">Khan Academy</a> that runs on almost anything.</p>
+               65% of the world lacks internet access. 100% of the world needs education.
+               <p>
+                    KA Lite is an offline version of  <a href="http://www.khanacademy.org/">Khan Academy</a>
+                    that runs on almost anything.
+                </p>
            </div>
 
        </div>
@@ -28,25 +31,38 @@
     <div class="max-width-container">
 
         <div class="span4">
-            <h2>Our mission</h2>
-            <div class="round-border-rural"></div>
+            <h2>What is KA Lite?</h2>
 
-            <p>Bringing the online education revolution to rural communities.</p>
-        </div>
-        <div class="span4">
-            <h2>How to get it?</h2>
-
-            <div class="round-border-install"></div>
+            <a href="">
+            <div class="round-border-points"></div>
+            </a>
             <p>
-                Quick installation, minimal system requirements,<br>     and simple to use.
+                Students can earn points, teacher can view <br>coach reports.
             </p>
         </div>
         <div class="span4">
-            <h2>What is KA Lite?</h2>
+            <h2>How do I use it?</h2>
 
-            <div class="round-border-points"></div>
+            <a href="{% url wiki path='installation' %}">
+            <div class="round-border-install"></div>
+            </a>
             <p>
-                Students can earn points, teacher can view <br>coach reports.
+                How-to instructions for users:<br>
+                students, teachers, and<br>
+                administrators.
+            </p>
+        </div>
+        <div class="span4">
+            <h2 class="">Our mission</h2>
+
+            <a href="{% url about %}">
+            <div class="round-border-rural"></div>
+            </a>
+
+            <p>
+                Bringing the online education<br/>
+                revolution to rural<br/>
+                communities.
             </p>
         </div>
 
@@ -70,16 +86,20 @@
         <div class="row-fluid hr-gray footer__first-part">
             <div class="span8 ">
                 <h2>Learn more</h2>
-                <p>Learn more about KA Lite and the Foundation for Learning Equality on our <a href="http://learningequality.org/blog/">blog</a>.</p>
+                <p>about our software, mission, and team.
+                <a href="http://learningequality.org/blog/">
+                    Visit our blog.
+                </a></p>
             </div>
             <div class="span4">    
                
             <h2>Questions?</h2>
-                <p>Tell us about your needs.</p>
+                <p>Tell us about your needs.
 
-                <a href="contact/deployment/" >
-                   Contact Us
+                <a href="{% url contact_wizard type='deployment' %}">
+                   Contact Us.
                </a>
+            </p>
             </div>
        </div>
 
