@@ -11,8 +11,8 @@
 // --------------------------------------------------
 
 html, html a { //Makes fonts look great!
-    -webkit-font-smoothing: antialiased;
-    text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
+  -webkit-font-smoothing: antialiased;
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
 }
 
 body{
@@ -69,10 +69,11 @@ h4{font-size: 118%;}
 .organization-title{
   background-color: @light-gray;
   padding-left: 20px;
+  border-top: 3px @dark-gray solid;
 }
 
 .errorlist{
-  .alert;
+  .alert; // Defined by bootstrap
   .alert-error;
 }
 
@@ -143,24 +144,31 @@ a.symbol:before {
 
 // Helper: .round-button(@bg-color,@bg-color-hover,@font-color,@width,@border_radius, @font_size, @paddingvertical, @paddinghorizontal)
 
-
 .button-green--large{
  .round-button(@green-button-color, @green-button-hover-color,white,232px,5px, 18px, 18px, 19px);
 }
 
 .button-green{
-  .round-button( @green-button-color,@green-button-hover-color,white,190px,5px, 14px, 10px, 20px);
+  .round-button(@green-button-color,@green-button-hover-color,white,190px,5px, 14px, 10px, 20px);
 }
 
 .button-green--small{
-  .round-button( @green-button-color,@green-button-hover-color,white,100px,3px, 13px, 5px, 20px); 
+  .round-button(@green-button-color,@green-button-hover-color,white,100px,3px, 13px, 5px, 20px); 
 }
 
 .button-popover{
-  .round-button( @green-button-color,@green-button-hover-color,white,100px,3px, 13px, 5px, 10px); 
+  .round-button(@light-gray,@green-button-hover-color,black,100px,50%, 13px, 5px, 10px); 
   margin-left: 10px;
   cursor: pointer; 
+  color:black;
+  border:2px @dark-gray solid;
+  font-family:Tahoma;
+  &:hover{
+    color:white;
+    border:2px @flashy-green solid;
+  }
 }
+
 .button-install{
   .button-green--large;
   background-color: @flashy-green;
@@ -168,20 +176,12 @@ a.symbol:before {
     background-color:#6FE04B;
   }
 }
-.button-learn_more{
-  .button-green--large;
-  background-color: @darkest-gray;
-    &:hover{
-    background-color: black;
-  }
-}
 
-
+// Example of another button
 .button-gray{
   .button-green;
   background-color: @darkest-gray;
 }
-
 
 .neworg-button{
   margin-top:16px;
@@ -338,23 +338,14 @@ ul{
 
 // Landing page - non resuable parts
 // --------------------------------------------------
-.quotes-container{
 
-  .button-learn_more{
-    margin-top: 50px;
-    float: right;
-  }
-  .button-install{
-    margin-top: 50px;
-
-  }
-  .button-container{
-     .center;
-    text-align: center;
-      padding-bottom: 50px;
-  background-color: #1C2C38;
-  }
+.button-container{
+ .center;
+ text-align: center;
+ padding: 50px 0px;
+ background-color: #1C2C38;
 }
+
 
 .ka-quote{
   background-color:@quote-color;
@@ -368,26 +359,15 @@ ul{
     font-size: 18px;
   }
 }
-@media (max-width: 767px)  { 
-.quotes-container{
-
-  .button-gray--large,
-  .button-green--large{
-    
-    float: center;
-  }
-}
-
-}
 
 .features{
   text-align: center;
   color:black;
   background-color: white;
   padding: 40px 0px;
+
   p{
     padding-top: 10px;
-    
     width:200px;
     .center;
     line-height: 1.8;
@@ -403,10 +383,9 @@ ul{
 .dev-cont{
   background: white;
   padding:70px 0px;
+  .center;
+  text-align: center;
 
-    .center;
-    text-align: center;
-    
   button{
     margin-top: 20px;
   }
@@ -415,7 +394,6 @@ ul{
 .landing-cc{
   padding: 30px 40px 30px 40px;
   color:@darkest-gray;
-
 }
 
 .round-border-rural{
