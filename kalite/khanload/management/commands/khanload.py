@@ -145,6 +145,11 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
             if child[slug_key[child_kind]] in slug_blacklist:
                 children_to_delete.append(i)
                 continue
+            if child_kind == "Video" and set(["mp4", "png"]) - set(child.get("download_urls", {}).keys()):
+                print "No download link for video: %s: %s ('%s')" % (child["youtube_id"], child["ka_url"], child["author_names"])
+                # for now, since we expect the missing videos to be filled in soon, we won't skip these nodes
+                # children_to_delete.append(i)
+                # continue
             kinds = kinds.union(recurse_nodes(child, node["path"]))
         for i in reversed(children_to_delete):
             del node["children"][i]

@@ -1,6 +1,6 @@
 // Modified from http://bl.ocks.org/mbostock/3884955
 
-function d3_multiTimeSeries (data, timeScale, appendtohtml) {
+function d3_multiTimeSeries (data, timeScale, appendtohtml, options) {
     // Takes data in the form of an array of users' data.
     // Each user's data is an object with a name attribute,
     // and a values attribute, containing an array of objects
@@ -9,7 +9,7 @@ function d3_multiTimeSeries (data, timeScale, appendtohtml) {
     // appendtohtml is the element identifier for the svg element to be attached to.
 
     // Set up variables to define plotting area.
-    var margin = {top: 20, right: 80, bottom: 30, left: 50},
+    var margin = {top: 20, right: 80, bottom: 30, left: 100},
         width = 960 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom;
 
@@ -35,8 +35,7 @@ function d3_multiTimeSeries (data, timeScale, appendtohtml) {
     var line = d3.svg.line()
         .interpolate("basis")
         .x(function(d) { return x(d.date); })
-        .y(function(d) { return y(d.pctmastery); });
-
+        .y(function(d) { return y(d.data_point); });
     // Create svg object
     var svg = d3.select(appendtohtml).append("svg")
         .attr("width", width + margin.left + margin.right + 75)
@@ -51,28 +50,37 @@ function d3_multiTimeSeries (data, timeScale, appendtohtml) {
     x.domain(d3.extent(timeScale));
 
 
-    //TODO dynamically range based on values
-    y.domain([0, 100]);
-    //   d3.min(data, function(c) { return d3.min(c.values, function(v) { return v.pctmastery; }); }),
-    //   d3.max(data, function(c) { return d3.max(c.values, function(v) { return v.pctmastery; }); })
-    // ]);
+    //TODO round end values
+    y.domain([
+      d3.min(data, function(c) { return d3.min(c.values, function(v) { return v.data_point; }); }),
+      d3.max(data, function(c) { return d3.max(c.values, function(v) { return v.data_point; }); })
+    ]);
 
     // Add x and y axes
 
     svg.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
-      .call(xAxis);
+      .call(xAxis)
+    .append("text")
+      .attr("class", "label")
+      .attr("font-weight", "bold")
+      .attr("x", width)
+      .attr("y", 30)
+      .style("text-anchor", "end")
+      .text(options['hAxis']['title']);
 
     svg.append("g")
       .attr("class", "y axis")
       .call(yAxis)
     .append("text")
+      .attr("class", "label")
+      .attr("font-weight", "bold")
       .attr("transform", "rotate(-90)")
       .attr("y", 6)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
-      .text("pctmastery");
+      .text(options['vAxis']['title']);
 
     // Feed data into user object
 

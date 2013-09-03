@@ -32,6 +32,12 @@
         <![endif]-->
         
         {% block jqueryjs %}
+        <script>
+            window.onerror=function(msg){
+                window.js_errors = window.js_errors || [];
+                window.js_errors.push(msg);
+            }
+        </script>
         <script type="text/javascript" src="{% static "js/jquery-1.7.1.min.js" %}"></script>
         {% endblock jqueryjs %}
         <script type="text/javascript" src="{% static "js/underscore-min.js" %}"></script>

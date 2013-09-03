@@ -26,9 +26,10 @@
     {% block titlebar %}
     <div class="titlebar">
         <ul class="titlebar__title">
+        {% block titlebar_title %}
             {% comment "Draw the top navigation bar %}{% endcomment %}
             {% if org %}
-            <li><a href="{% url org_management %}"> {{org.name }}</a></li>
+            <li><a href="{% url org_management %}"> {{ org.name }}</a></li>
             {% endif %}
 
             {% if zone %}
@@ -59,7 +60,7 @@
             {% if group %}
             <li>{% if facility %}&gt; {% endif %}{{ group.name }}</li>
             {% endif %}
-
+        {% endblock titlebar_title %}
             {% comment "Provide upload/download buttons; each button should be an LI" %}{% endcomment %}
             <ul class="titlebar__buttons">
             {% block buttons %}

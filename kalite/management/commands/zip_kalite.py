@@ -11,7 +11,8 @@ from django.core.management import call_command
 
 import settings
 import version
-
+from utils.general import ensure_dir
+from utils.platforms import is_windows, system_specific_scripts
 
 ## The following 3 functions define the rules for inclusion/exclusion
 
@@ -20,15 +21,7 @@ def file_in_platform(file_path, platform):
     based on the requested platform and the file's name (including path)"""
 
     ext = os.path.splitext(file_path)[1]
-
-    if platform == "all":
-        return True
-
-    elif platform == "windows":  # remove non-windows files
-        return ext not in [".sh",]
-
-    else:  # remove windows files
-        return ext not in [".vbs", ".bat"]
+    return (platform == "all") or (ext not in system_specific_scripts(platform))
 
 
 def select_package_dirs(dirnames, key_base, **kwargs):
@@ -55,6 +48,8 @@ def select_package_dirs(dirnames, key_base, **kwargs):
             in_dirs -= set(("central", "landing-page"))
             if base_name in ["kalite", "templates"]:  # remove central server apps & templates
                 in_dirs -= set(("contact", "faq", "registration"))
+            elif base_name in ["data"]:
+                in_dirs -= set(["subtitles"])
 
     return in_dirs
 
@@ -66,7 +61,8 @@ def file_in_blacklist_set(file_path):
 
     name = os.path.split(file_path)[1]
     ext = os.path.splitext(file_path)[1]
-    return (ext in [".pyc",".sqlite",".zip",'.xlsx',]) or (name in ["local_settings.py", ".gitignore", "tests.py", "faq",".DS_Store"])
+    return (ext in [".pyc", ".sqlite", ".zip", ".xlsx", ".srt", ]) \
+        or (name in ["local_settings.py", ".gitignore", "tests.py", "faq", ".DS_Store"])
 
 
 # Filter-less functions (just logic)
@@ -209,6 +205,7 @@ class Command(BaseCommand):
             options['file'] = create_default_archive_filename(options)
 
         # Step 4: package into a zip file
+        ensure_dir(os.path.realpath(os.path.dirname(options["file"])))
         with ZipFile(options['file'], "w", ZIP_DEFLATED if options['compress'] else ZIP_STORED) as zfile:
             for srcpath,fdict in files_dict.items():
                 if options['verbosity'] >= 1:

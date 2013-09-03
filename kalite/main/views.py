@@ -35,11 +35,11 @@ from securesync.engine.api_client import SyncClient
 from securesync.models import Facility, FacilityUser,FacilityGroup, Device
 from securesync.views import require_admin, facility_required
 from settings import LOG as logging
+from shared.decorators import require_admin
+from shared.videos import video_connection_is_available
 from utils import topic_tools
-from utils.internet import am_i_online, JsonResponse
+from utils.internet import am_i_online, is_loopback_connection, JsonResponse
 from utils.jobs import force_job
-from utils.decorators import require_admin
-from utils.videos import video_connection_is_available
 
 
 def calc_last_modified(request, *args, **kwargs):
@@ -209,6 +209,7 @@ def video_handler(request, video, prev=None, next=None):
         "video_exists": video_exists,
         "prev": prev,
         "next": next,
+        "use_mplayer": settings.USE_MPLAYER and is_loopback_connection(request),
     }
     return context
 
@@ -260,7 +261,6 @@ def exercise_dashboard(request):
         "exercise_paths": json.dumps(paths),
     }
     return context
-
 
 @check_setup_status  # this must appear BEFORE caching logic, so that it isn't blocked by a cache hit
 @backend_cache_page
