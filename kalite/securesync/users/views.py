@@ -15,6 +15,8 @@ from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
 
 import settings
+from .forms import FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
+from .models import Facility, FacilityGroup
 from config.models import Settings
 from main.models import UserLog
 from securesync.devices.views import *

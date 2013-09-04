@@ -204,11 +204,14 @@ else:
     )
     TEMPLATE_CONTEXT_PROCESSORS += ("main.custom_context_processors.languages",)
 
+# None means, use full hashing locally--turn off the password cache
+PASSWORD_ITERATIONS_TEACHER = getattr(local_settings, "PASSWORD_ITERATIONS_TEACHER", None)
+PASSWORD_ITERATIONS_STUDENT = getattr(local_settings, "PASSWORD_ITERATIONS_STUDENT", None)
+
 # Used for user logs.  By default, completely off.
 #  Note: None means infinite (just like caching)
 USER_LOG_MAX_RECORDS_PER_USER = getattr(local_settings, "USER_LOG_MAX_RECORDS_PER_USER", 0)
 USER_LOG_SUMMARY_FREQUENCY = getattr(local_settings, "USER_LOG_SUMMARY_FREQUENCY", (1,"months"))
-
 
 # Sessions use the default cache, and we want a local memory cache for that.
 # Separate session caching from file caching.
