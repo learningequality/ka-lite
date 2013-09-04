@@ -179,7 +179,7 @@ def _get_user_usage_data(users, period_start=None, period_end=None):
 
 
     # Make queries efficiently
-    exercise_logs = ExerciseLog.objects.filter(user__in=users)
+    exercise_logs = ExerciseLog.objects.filter(user__in=users, complete=True)
     video_logs = VideoLog.objects.filter(user__in=users)
     login_logs = UserLogSummary.objects.filter(user__in=users)
 
@@ -231,7 +231,7 @@ def _get_user_usage_data(users, period_start=None, period_end=None):
         if llog["activity_type"] == UserLog.get_activity_int("coachreport"):
             user_data[llog["user__pk"]]["total_report_views"] += 1
         elif llog["activity_type"] == UserLog.get_activity_int("login"):
-            user_data[llog["user__pk"]]["total_hours"] += (llog["total_seconds"]) / 60.
+            user_data[llog["user__pk"]]["total_hours"] += (llog["total_seconds"]) / 3600.
             user_data[llog["user__pk"]]["total_logins"] += 1
 
     # Add group data.  Allow a fake group "Ungrouped"
