@@ -3,7 +3,6 @@ import re
 import json
 import sys
 import logging
-import settings
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 from functools import partial

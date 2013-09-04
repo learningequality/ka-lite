@@ -92,4 +92,5 @@ table.detail td.data {
    border: 1;
    border-radius: 0;
    -webkit-appearance: none;
+   pointer-events: none;
 }
