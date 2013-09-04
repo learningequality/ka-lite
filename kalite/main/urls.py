@@ -7,14 +7,14 @@ import control_panel.urls
 import khanload.api_urls
 import main.api_urls
 import securesync.urls
-from kalite import settings
+import settings
 
 admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^images/(.+)$', lambda request, path: HttpResponseRedirect('/static/images/' + path)),
-    url(r'^(favico.ico)/?$', lambda request, path: HttpResponseRedirect('/static/images/' + path)),
+    url(r'^images/.*$', lambda request: HttpResponseRedirect(settings.STATIC_URL[:-1] + request.path)),
+    url(r'^favico.ico/?$', lambda request: HttpResponseRedirect(settings.STATIC_URL + "images" + request.path)),
     url(r'^securesync/', include(securesync.urls)),
 )
 
