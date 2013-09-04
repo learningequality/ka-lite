@@ -18,7 +18,7 @@
 
     $ ./manage.py shell
     
-    >>> import benchmark.benchmark_test_cases as btc
+    >>> import shared.benchmark.benchmark_test_cases as btc
     >>> btc.Hello_world(comment="text", fixture="/foo/bar.json").execute(iterations=2)
 
     IMPORTANT: the fixture argument does NOT install the fixture - this argument
@@ -52,7 +52,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 
-import benchmark_base
+from . import benchmark_base
 from main.models import ExerciseLog, VideoLog, UserLog
 from securesync.models import Facility, FacilityUser, FacilityGroup
 from shared.testing.browser import BrowserTestCase
