@@ -345,6 +345,11 @@ def get_all_midlevel_topics():
     return topics
 
 
+def get_video_by_youtube_id(youtube_id):
+    slug = get_id2slug_map().get(youtube_id, None)
+    return get_node_cache("Video")[slug] if slug else None
+
+
 def is_sibling(node1, node2):
     """
     """

@@ -275,11 +275,12 @@ def tabular_view(request, facility, report_type="exercise"):
             .filter(user__in=users, exercise_id__in=exercise_names) \
             .order_by("user__last_name", "user__first_name")\
             .values("user__id", "struggling", "complete", "exercise_id")
+        exlogs = list(exlogs)  # force the query to be evaluated
 
         exlog_idx = 0
         for user in users:
             log_table = {}
-            while exlog_idx < exlogs.count() and exlogs[exlog_idx]["user__id"] == user.id:
+            while exlog_idx < len(exlogs) and exlogs[exlog_idx]["user__id"] == user.id:
                 log_table[exlogs[exlog_idx]["exercise_id"]] = exlogs[exlog_idx]
                 exlog_idx += 1
 
@@ -303,11 +304,12 @@ def tabular_view(request, facility, report_type="exercise"):
             .filter(user__in=users, youtube_id__in=video_ids) \
             .order_by("user__last_name", "user__first_name")\
             .values("user__id", "complete", "youtube_id", "total_seconds_watched", "points")
+        vidlogs = list(vidlogs)  # force the query to be executed now
 
         vidlog_idx = 0
         for user in users:
             log_table = {}
-            while vidlog_idx < vidlogs.count() and vidlogs[vidlog_idx]["user__id"] == user.id:
+            while vidlog_idx < len(vidlogs) and vidlogs[vidlog_idx]["user__id"] == user.id:
                 log_table[vidlogs[vidlog_idx]["youtube_id"]] = vidlogs[vidlog_idx]
                 vidlog_idx += 1
 

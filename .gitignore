@@ -30,6 +30,11 @@ content/*.png
 content/*.mp4
 content/*.json
 content/*.srt
+kalite/static/srt/
+kalite/static/data/subtitles/
+kalite/media/
+*.zip
+node_modules
 locale/*
 kalite/media/*
 _khanload_cache

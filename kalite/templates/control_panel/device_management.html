@@ -1,5 +1,4 @@
-{% extends "control_panel/base_management.html" %}
-
+{% extends "control_panel/base.html" %}
 {% load i18n %}
 
 {% if not is_central %}
@@ -10,11 +9,14 @@
     {% endblock buttons %}
 {% endif %}
 
-{% block inner_content %}
+{% block control_panel_content %}
 <div id="zone_container">
         
     <div class="sync_sessions">
-        <h2>Sync Sessions</h2>
+        <div>
+            <h2>Sync Sessions</h2>
+            <span>(showing {{ n_sessions }} of {{ total_sessions }})</span>
+        </div>
 
         {% if not sync_sessions %}
             <p>This device has never synced with the central server</p>
@@ -41,5 +43,5 @@
             </table>
         {% endif %}
     </div>
-
-{% endblock inner_content %}
+</div><!-- zone_container -->
+{% endblock control_panel_content %}
