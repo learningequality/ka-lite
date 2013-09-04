@@ -3,9 +3,8 @@
 {% load my_filters %}
 
 {% block title %}{{ facility.name }} - Facility Usage{% endblock title %}
-{% block control_panel_active %}active{% endblock control_panel_active %}
 
-{% block buttons %}
+{% block buttons %}{{ block.super }}
             <li>
                 <a class="button--large" href="?format=csv&frequency={{ settings.USER_LOG_SUMMARY_FREQUENCY.1 }}" title="User report for the previous month">
                     {% trans "Export to CSV" %}
@@ -74,7 +73,7 @@
                     <th width="100px">Logins</th>
                     <th width="100px">Login Time</th>
                     <th width="100px">Videos Viewed</th>
-                    <th width="100px">Exercises Begun</th>
+                    <th width="100px">Exercises Completed</th>
                     <th width="100px">Mastery</th>
                 </tr>
                 {% for id, student in students.items %}

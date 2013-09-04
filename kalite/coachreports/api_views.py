@@ -356,18 +356,17 @@ def api_data(request, xaxis="", yaxis=""):
         return HttpResponseNotFound("Must specify a topic path")
 
     # Query out the data: what?
-
     computed_data = compute_data(data_types=[form.data.get("xaxis"), form.data.get("yaxis")], who=users, where=form.data.get("topic_path"))
     json_data = {
         "data": computed_data["data"],
         "exercises": computed_data["exercises"],
         "videos": computed_data["videos"],
         "users": dict(zip([u.id for u in users],
-                            ["%s, %s" % (u.last_name, u.first_name) for u in users]
+                          ["%s, %s" % (u.last_name, u.first_name) for u in users]
                      )),
-        "groups":  dict(zip([g.id for g in groups],
-                             dict(zip(["id", "name"], [(g.id, g.name) for g in groups])),
-                      )),
+        "groups": dict(zip([g.id for g in groups],
+                           dict(zip(["id", "name"], [(g.id, g.name) for g in groups])),
+                     )),
         "facility": None if not facility else {
             "name": facility.name,
             "id": facility.id,
@@ -384,6 +383,6 @@ def api_data(request, xaxis="", yaxis=""):
         except ValidationError as e:
             # Never report this error; don't want this logging to block other functionality.
             logging.debug("Failed to update Teacher userlog activity login: %s" % e)
-    
+
     # Now we have data, stream it back with a handler for date-times
     return JsonResponse(json_data)

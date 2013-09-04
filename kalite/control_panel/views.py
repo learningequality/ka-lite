@@ -15,7 +15,12 @@ from django.utils.translation import ugettext as _
 
 import settings
 from .forms import ZoneForm, UploadFileForm
-from central.models import Organization
+try:
+    from central.models import Organization
+except:
+    from django.db import models
+    class Organization(models.Model):
+        pass
 from coachreports.views import student_view_context
 from main import topicdata
 from main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
@@ -59,10 +64,10 @@ def zone_management(request, zone_id, org_id=None):
     zone = get_object_or_404(Zone, pk=zone_id)# if zone_id != "new" else None
 
     # Accumulate device data
-    device_data = dict()
-    for device in Device.objects.filter(devicezone__zone=zone):
+    device_data = OrderedDict()
+    for device in Device.objects.filter(devicezone__zone=zone).order_by("name"):
 
-        sync_sessions = SyncSession.objects.filter(client_device=device)
+        sync_sessions = SyncSession.objects.filter(client_device=device).order_by("timestamp")
         user_activity = UserLogSummary.objects.filter(device=device)
 
         device_data[device.id] = {
@@ -74,10 +79,10 @@ def zone_management(request, zone_id, org_id=None):
         }
 
     # Accumulate facility data
-    facility_data = dict()
-    for facility in Facility.objects.by_zone(zone):
+    facility_data = OrderedDict()
+    for facility in Facility.objects.by_zone(zone).order_by("name"):
 
-        user_activity = UserLogSummary.objects.filter(user__in=FacilityUser.objects.filter(facility=facility))
+        user_activity = UserLogSummary.objects.filter(user__facility=facility)
 
         facility_data[facility.id] = {
             "name": facility.name,
@@ -118,10 +123,15 @@ def facility_usage(request, facility_id, org_id=None, zone_id=None, frequency=No
     zone = get_object_or_None(Zone, pk=zone_id) if zone_id else None
     facility = get_object_or_404(Facility, pk=facility_id)
     groups = FacilityGroup.objects.filter(facility=facility).order_by("name")
-
-    students = FacilityUser.objects.filter(facility=facility, is_teacher=False).order_by("last_name", "first_name", "username")
-    teachers = FacilityUser.objects.filter(facility=facility, is_teacher=True).order_by("last_name", "first_name", "username")
-
+    students = FacilityUser.objects \
+        .filter(facility=facility, is_teacher=False) \
+        .order_by("last_name", "first_name", "username") \
+        .prefetch_related("group")
+    teachers = FacilityUser.objects \
+        .filter(facility=facility, is_teacher=True) \
+        .order_by("last_name", "first_name", "username") \
+        .prefetch_related("group")
+    
     # Get the start and end date--based on csv.  A hack, yes...
     if request.GET.get("format", "") == "csv":
         frequency = frequency or request.GET.get("fequency", "months")
@@ -131,6 +141,13 @@ def facility_usage(request, facility_id, org_id=None, zone_id=None, frequency=No
 
     (student_data, group_data) = _get_user_usage_data(students, period_start=period_start, period_end=period_end)
     (teacher_data, _) = _get_user_usage_data(teachers, period_start=period_start, period_end=period_end)
+
+    # Total hack for CSV-only
+    if request.GET.get("format") == "csv":
+        (period_start, period_end) = _get_date_range(frequency)
+    else:
+        period_start = None
+        period_end = None
 
     return {
         "org": org,
@@ -171,50 +188,66 @@ def _get_user_usage_data(users, period_start=None, period_end=None):
     len_all_exercises = len(topicdata.NODE_CACHE['Exercise'])
     user_data = OrderedDict()
     group_data = OrderedDict()
+
+
+    # Make queries efficiently
+    exercise_logs = ExerciseLog.objects.filter(user__in=users, complete=True)
+    video_logs = VideoLog.objects.filter(user__in=users)
+    login_logs = UserLogSummary.objects.filter(user__in=users)
+
+    # filter results
+    if period_start:
+        exercise_logs = exercise_logs.filter(completion_timestamp__gte=period_start)
+        video_logs = video_logs.filter(completion_timestamp__gte=period_start)
+        login_logs = login_logs.filter(start_datetime__gte=period_start)
+    if period_end:
+        exercise_logs = exercise_logs.filter(completion_timestamp__lte=period_end)
+        video_logs = video_logs.filter(completion_timestamp__lte=period_end)
+        login_logs = login_logs.filter(end_datetime__lte=period_end)
+
+    # Force results in a single query
+    exercise_logs = list(exercise_logs.values("exercise_id", "user__pk"))
+    video_logs = list(video_logs.values("youtube_id", "user__pk"))
+    login_logs = list(login_logs.values("activity_type", "total_seconds", "user__pk"))
+
     for user in users:
-        exercise_logs = ExerciseLog.objects.filter(user=user)
-        video_logs = VideoLog.objects.filter(user=user)
-        login_logs = UserLogSummary.objects.filter(user=user)
-
-        # filter results
-        if period_start:
-            exercise_logs = exercise_logs.filter(completion_timestamp__gte=period_start)
-            video_logs = video_logs.filter(completion_timestamp__gte=period_start)
-            login_logs = login_logs.filter(start_datetime__gte=period_start)
-        if period_end:
-            exercise_logs = exercise_logs.filter(completion_timestamp__lte=period_end)
-            video_logs = video_logs.filter(completion_timestamp__lte=period_end)
-            login_logs = login_logs.filter(end_datetime__lte=period_end)
-
-        exercise_stats = {
-            "count": exercise_logs.count(),
-            "total_mastery": exercise_logs.aggregate(Sum("complete"))["complete__sum"],
-            "mastered_exercises": [elog.exercise_id for elog in exercise_logs if elog.complete],
-        }
-        video_stats = {"count": VideoLog.objects.filter(user=user).count()}
-        login_stats = UserLogSummary.objects \
-            .filter(user=user, activity_type=UserLog.get_activity_int("login")) \
-            .aggregate(Sum("count"), Sum("total_seconds"))
-        report_stats = UserLogSummary.objects \
-            .filter(user=user, activity_type=UserLog.get_activity_int("coachreport")) \
-            .aggregate(Sum("count"))
-
-        # Had to add one-by-one, to get OrderedDict to work.
-        #   OrderedDict controls the order of the columns
         user_data[user.pk] = OrderedDict()
         user_data[user.pk]["first_name"] = user.first_name
         user_data[user.pk]["last_name"] = user.last_name
         user_data[user.pk]["username"] = user.username
         user_data[user.pk]["group"] = user.group
-        user_data[user.pk]["total_report_views"] = report_stats["count__sum"] or 0
-        user_data[user.pk]["total_logins"] = login_stats["count__sum"] or 0
-        user_data[user.pk]["total_hours"] = (login_stats["total_seconds__sum"] or 0)/3600.
-        user_data[user.pk]["total_videos"] = video_stats["count"]
-        user_data[user.pk]["total_exercises"] = exercise_stats["count"]
-        user_data[user.pk]["pct_mastery"] = (exercise_stats["total_mastery"] or 0)/float(len_all_exercises)
-        user_data[user.pk]["exercises_mastered"] = exercise_stats["mastered_exercises"]
 
-        # Add group data.  Allow a fake group "Ungrouped"
+
+        user_data[user.pk]["total_report_views"] = 0#report_stats["count__sum"] or 0
+        user_data[user.pk]["total_logins"] =0# login_stats["count__sum"] or 0
+        user_data[user.pk]["total_hours"] = 0#login_stats["total_seconds__sum"] or 0)/3600.
+
+        user_data[user.pk]["total_exercises"] = 0
+        user_data[user.pk]["pct_mastery"] = 0.
+        user_data[user.pk]["exercises_mastered"] = []
+
+        user_data[user.pk]["total_videos"] = 0
+        user_data[user.pk]["videos_watched"] = []
+    
+
+    for elog in exercise_logs:
+        user_data[elog["user__pk"]]["total_exercises"] += 1
+        user_data[elog["user__pk"]]["pct_mastery"] += 1. / len_all_exercises
+        user_data[elog["user__pk"]]["exercises_mastered"].append(elog["exercise_id"])
+
+    for vlog in video_logs:
+        user_data[vlog["user__pk"]]["total_videos"] += 1
+        user_data[vlog["user__pk"]]["videos_watched"].append(vlog["youtube_id"])
+
+    for llog in login_logs:
+        if llog["activity_type"] == UserLog.get_activity_int("coachreport"):
+            user_data[llog["user__pk"]]["total_report_views"] += 1
+        elif llog["activity_type"] == UserLog.get_activity_int("login"):
+            user_data[llog["user__pk"]]["total_hours"] += (llog["total_seconds"]) / 3600.
+            user_data[llog["user__pk"]]["total_logins"] += 1
+
+    # Add group data.  Allow a fake group "Ungrouped"
+    for user in users:
         group_pk = getattr(user.group, "pk", None)
         group_name = getattr(user.group, "name", "Ungrouped")
         if not group_pk in group_data:
@@ -241,17 +274,21 @@ def _get_user_usage_data(users, period_start=None, period_end=None):
 
 @require_authorized_admin
 @render_to("control_panel/device_management.html")
-def device_management(request, device_id, org_id=None, zone_id=None):
+def device_management(request, device_id, org_id=None, zone_id=None, n_sessions=10):
     org = get_object_or_None(Organization, pk=org_id) if org_id else None
     zone = get_object_or_None(Zone, pk=zone_id) if zone_id else None
     device = get_object_or_404(Device, pk=device_id)
 
-    sync_sessions = SyncSession.objects.filter(client_device=device)
+    sync_sessions = SyncSession.objects \
+        .filter(client_device=device) \
+        .order_by("-timestamp")
     return {
         "org": org,
         "zone": zone,
         "device": device,
-        "sync_sessions": sync_sessions,
+        "sync_sessions": sync_sessions[:n_sessions],
+        "total_sessions": sync_sessions.count(), 
+        "n_sessions": min(sync_sessions.count(), n_sessions),
     }
 
 
@@ -340,7 +377,9 @@ def account_management(request, org_id=None):
 
 def get_users_from_group(group_id, facility=None):
     if group_id == "Ungrouped":
-        return FacilityUser.objects.filter(facility=facility,group__isnull=True)
+        return FacilityUser.objects \
+            .filter(facility=facility, group__isnull=True) \
+            .order_by("first_name", "last_name")
     elif not group_id:
         return []
     else:
@@ -349,7 +388,9 @@ def get_users_from_group(group_id, facility=None):
 
 def user_management_context(request, facility_id, group_id, page=1, per_page=25):
     facility = Facility.objects.get(id=facility_id)
-    groups = FacilityGroup.objects.filter(facility=facility)
+    groups = FacilityGroup.objects \
+        .filter(facility=facility) \
+        .order_by("name")
 
     user_list = get_users_from_group(group_id, facility=facility)
 

@@ -3,7 +3,6 @@
 {% load include_block %}
 
 {% block title %}{{ group.name }} - Group Report{% endblock title %}
-{% block control_panel_active %}active{% endblock control_panel_active %}
 
 {% block headjs %}{{ block.super }}
     {% include_block "coachreports/tabular_view.html" "headjs" %}

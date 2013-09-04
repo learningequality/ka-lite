@@ -1,99 +1,38 @@
 import re
 import json
-import requests
-import urllib
-import urllib2
 import uuid
 
 import kalite
 import settings
 from . import get_serialized_models, save_serialized_models
 from .models import *
+from securesync.api_client import BaseClient
+from securesync.devices.api_client import RegistrationClient
 from securesync.devices.models import *
 from shared import serializers
 
 
-class SyncClient(object):
+class SyncClient(BaseClient):
     """ This is for the distributed server, for establishing a client session with
-    the central server.  Over that session, syncing can occur in multiple requests"""
-
+    the central server.  Over that session, syncing can occur in multiple requests.
+    
+    Note that in the future, this object may be used to sync 
+    between two distributed servers (i.e. peer-to-peer sync)!"""
     session = None
     counters_to_download = None
     counters_to_upload = None
 
-    def __init__(self, host="%s://%s/" % (settings.SECURESYNC_PROTOCOL,settings.CENTRAL_SERVER_HOST), require_trusted=True):
-        url = urllib2.urlparse.urlparse(host)
-        self.url = "%s://%s" % (url.scheme, url.netloc)
-        self.require_trusted = require_trusted
-
-    def path_to_url(self, path):
-        if path.startswith("/"):
-            return self.url + path
-        else:
-            return self.url + "/securesync/api/" + path
-
     def post(self, path, payload={}, *args, **kwargs):
         if self.session and self.session.client_nonce:
             payload["client_nonce"] = self.session.client_nonce
-        return requests.post(self.path_to_url(path), data=json.dumps(payload))
+        return super(SyncClient, self).post(path, payload, *args, **kwargs)
 
     def get(self, path, payload={}, *args, **kwargs):
         if self.session and self.session.client_nonce:
             payload["client_nonce"] = self.session.client_nonce
         # add a random parameter to ensure the request is not cached
-        payload["_"] = uuid.uuid4().hex
-        query = urllib.urlencode(payload)
-        return requests.get(self.path_to_url(path) + "?" + query, *args, **kwargs)
+        return super(SyncClient, self).get(path, payload, *args, **kwargs)
 
-    def test_connection(self):
-        try:
-            if self.get("test", timeout=5).content != "OK":
-                return "bad_address"
-            return "success"
-        except requests.ConnectionError:
-            return "connection_error"
-        except Exception as e:
-            return "error (%s)" % e
-
-    def register(self):
-        """Register a device with the central server.  Happens outside of a session."""
-
-        own_device = Device.get_own_device()
-        # Todo: registration process should always use one of these--and it needs to use
-        #   Device.public_key.  So, should migrate over the rest of the registration code
-        #   to do the same.
-        assert own_device.public_key == own_device.get_key().get_public_key_string(), "Make sure these somehow didn't get out of sync (can happen when people muck around with the data manually."
-
-        # Since we can't know the version of the remote device (yet),
-        #   we give it everything we possibly can (don't specify a dest_version)
-        #
-        # Note that (currently) this should never fail--the central server (which we're sending
-        #   these objects to) should always have a higher version.
-        r = self.post("register", {
-            "client_device": serializers.serialize("versioned-json", [own_device], ensure_ascii=False)
-        })
-
-        # If they don't understand, our assumption is broken.
-        if r.status_code == 500:
-            if "Device has no field named 'version'" in r.content:
-                raise Exception("Central server is of an older version than us?")
-            elif r.headers.get("content-type", "") == "text/html":
-                raise Exception("Unhandled server-side exception: %s" % r.content)
-
-        elif r.status_code == 200:
-            # Save to our local store.  By NOT passing a src_version,
-            #   we're saying it's OK to just store what we can.
-            models = serializers.deserialize("versioned-json", r.content, src_version=None, dest_version=own_device.version)
-            for model in models:
-                if not model.object.verify():
-                    continue
-                # save the imported model, and mark the returned Device as trusted
-                if isinstance(model.object, Device):
-                    model.object.save(is_trusted=True, imported=True)
-                else:
-                    model.object.save(imported=True)
-            return {"code": "registered"}
-        return json.loads(r.content)
 
     def start_session(self):
         """A 'session' to exchange data"""
@@ -101,47 +40,35 @@ class SyncClient(object):
         if self.session:
             self.close_session()
         self.session = SyncSession()
-        self.session.client_nonce = uuid.uuid4().hex
-        self.session.client_device = Device.get_own_device()
-        r = self.post("session/create", {
-            "client_nonce": self.session.client_nonce,
-            "client_device": self.session.client_device.pk,
-            "client_version": kalite.VERSION,
-            "client_os": kalite.OS,
-        })
 
-        # Happens if the server has an error
-        raw_data = r.content
-        try:
-            data = json.loads(raw_data)
-        except ValueError as e:
-            z = re.search(r'exception_value">([^<]+)<', str(raw_data), re.MULTILINE)
-            if z:
-                raise Exception("Could not load JSON\n; server error=%s" % z.group(1))
-            else:
-                raise Exception("Could not load JSON\n; raw content=%s" % raw_data)
+        # Request one: validate me as a sessionable partner
+        (self.session.client_nonce, 
+         self.session.client_device,
+         data) = self.validate_me_on_server()
 
-        if data.get("error", ""):
-            raise Exception(data.get("error", ""))
+        # Able to create session
         signature = data.get("signature", "")
+
         # Once again, we assume that (currently) the central server's version is >= ours,
         #   We just store what we can.
         own_device = self.session.client_device
         session = serializers.deserialize("versioned-json", data["session"], src_version=None, dest_version=own_device.version).next().object
-        if not session.verify_server_signature(signature):
-            raise Exception("Signature did not match.")
-        if session.client_nonce != self.session.client_nonce:
-            raise Exception("Client nonce did not match.")
-        if session.client_device != self.session.client_device:
-            raise Exception("Client device did not match.")
-        if self.require_trusted and not session.server_device.get_metadata().is_trusted:
-            raise Exception("The server is not trusted.")
         self.session.server_nonce = session.server_nonce
         self.session.server_device = session.server_device
+        if not session.verify_server_signature(signature):
+            raise Exception("Sever session signature did not match.")
+        if session.client_nonce != self.session.client_nonce:
+            raise Exception("Client session nonce did not match.")
+        if session.client_device != self.session.client_device:
+            raise Exception("Client session device did not match.")
+        if self.require_trusted and not session.server_device.is_trusted():
+            raise Exception("The server is not trusted, don't make a session with THAT.")
         self.session.verified = True
         self.session.timestamp = session.timestamp
         self.session.save()
 
+        # Request two: create your own session, and
+        #   report the result back to me for validation
         r = self.post("session/create", {
             "client_nonce": self.session.client_nonce,
             "client_device": self.session.client_device.pk,
@@ -154,6 +81,45 @@ class SyncClient(object):
             return "success"
         else:
             return r
+
+
+    def validate_me_on_server(self, recursive_retry=False):
+        client_nonce = uuid.uuid4().hex
+        client_device = Device.get_own_device()
+        
+        r = self.post("session/create", {
+            "client_nonce": client_nonce,
+            "client_device": client_device.pk,
+            "client_version": kalite.VERSION,
+            "client_os": kalite.OS,
+        })
+        raw_data = r.content
+        try:
+            data = json.loads(raw_data)
+        except ValueError as e:
+            z = re.search(r'exception_value">([^<]+)<', str(raw_data), re.MULTILINE)
+            if z:
+                raise Exception("Could not load JSON\n; server error=%s" % z.group(1))
+            else:
+                raise Exception("Could not load JSON\n; raw content=%s" % raw_data)
+            
+        # Happens if the server reports an error
+        if data.get("error"):
+            # This happens when a device points to a new central server,
+            #   either because it changed, or because it self-registered.
+            if not recursive_retry and "Client device matching id could not be found." in data["error"]:
+                resp = RegistrationClient().register(prove_self=True)
+                if resp.get("error"):
+                    raise Exception("Error [code=%s]: %s" % (resp.get("code",""), resp.get("error","")))
+                elif resp.get("code") != "registered":
+                    raise Exception("Unexpected code: '%s'" % resp.get("code",""))
+                # We seem to have succeeded registering through prove_self;
+                #   let's try to validate again (but without retrying again, lest we loop forever!)
+                return self.validate_me_on_server(recursive_retry=True)
+            raise Exception(data.get("error", ""))
+
+        return (client_nonce, client_device, data)
+
 
     def close_session(self):
         if not self.session:
@@ -211,7 +177,8 @@ class SyncClient(object):
                 d = Device.objects.get(id=device_id)
             except:
                 continue
-            dm = d.get_metadata()
+
+            dm = d.get_metadata() 
             if not dm.counter_position: # this would be nonzero if the device sync'd models
                 dm.counter_position = self.counters_to_download[device_id]
             dm.save()
@@ -220,6 +187,8 @@ class SyncClient(object):
         self.session.errors += download_results.has_key("error")
 
         # TODO(jamalex): upload local devices as well? only needed once we have P2P syncing
+
+
     def sync_models(self):
 
         if self.counters_to_download is None or self.counters_to_upload is None:

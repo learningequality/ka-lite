@@ -2,6 +2,7 @@ from django.http import HttpResponseRedirect
 from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
 
+import main.api_urls
 import central.api_urls
 import coachreports.urls
 import contact.urls
@@ -60,6 +61,18 @@ urlpatterns += patterns('central.views',
     url(r'^feeds/rss/$', RssSiteNewsFeed(), {}, 'rss_feed'),
     url(r'^feeds/atom/$', AtomSiteNewsFeed(), {}, 'atom_feed'),
     url(r'^faq/', include(faq.urls)),
+
+    # The install wizard app has two views: both options available (here)
+    #   or an "edition" selected (to get more info, or redirect to download, below)
+    url(r'^install/$', 'install_wizard', {}, 'install_wizard'),
+    url(r'^install/(?P<edition>[\w-]+)/$', 'install_wizard', {}, 'install_wizard'),
+
+    # Downloads: public
+    url(r'^download/kalite/(?P<version>[^\/]+)/$', 'download_kalite_public', {}, 'download_kalite_public'),
+    url(r'^download/kalite/(?P<version>[^\/]+)/(?P<platform>[^\/]+)/$', 'download_kalite_public', {}, 'download_kalite_public'),
+    url(r'^download/kalite/(?P<version>[^\/]+)/(?P<platform>[^\/]+)/(?P<locale>[^\/]+)/$', 'download_kalite_public', {}, 'download_kalite_public'),
+    # Downloads: private
+    url(r'^download/kalite/(?P<version>[^\/]+)/(?P<platform>[^\/]+)/(?P<locale>[^\/]+)/(?P<zone_id>[^\/]+)/$', 'download_kalite_private', {}, 'download_kalite_private'),
 
     url(r'^contact/', include(contact.urls)),
     url(r'^wiki/(?P<path>\w+)/$', redirect_to, {'base_url': settings.CENTRAL_WIKI_URL}, 'wiki'),
