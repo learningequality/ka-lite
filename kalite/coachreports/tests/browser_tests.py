@@ -12,7 +12,7 @@ class TestTabularViewErrors(KALiteDistributedWithFacilityBrowserTestCase):
     In the tabular view, certain scenarios will cause different errors to occur.  Test them here.
     """
 
-te    def test_no_groups(self):
+    def test_no_groups(self):
         self.browser_login_admin()
         self.browse_to(url_name="tabular_view")
         self.browser.find_element_by_css_selector('#error_message')

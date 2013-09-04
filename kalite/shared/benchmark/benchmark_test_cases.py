@@ -60,11 +60,10 @@ from shared.testing.browser import BrowserTestCase
 
 class HelloWorld(benchmark_base.Common):
 
-    def _setup(self):
-        random.seed(time.time()) 
-
     def _execute(self):
-        time.sleep(10. * random.random())
+        wait_time = 10. * random.random()
+        print "Waiting %ss" % wait_time
+        time.sleep(wait_time)
 
     def _get_post_execute_info(self):
         return "Hello world has finished"
@@ -84,10 +83,10 @@ class GenerateRealData(benchmark_base.Common):
     take longer!
     """
     
-    def _setup(self):
+    def _setup(self, **kwargs):
+        super(GenerateRealData, self)._setup(**kwargs)
+
         self.max_iterations = 1
-        management.call_command('clean_pyc')
-        management.call_command('compile_pyc')
         #management.call_command('flush', interactive=False)
         
     def _execute(self):
@@ -110,10 +109,9 @@ class OneThousandRandomReads(benchmark_base.Common):
     The IO in the test is primarily SELECT and will normally be cached in memory
     """
     
-    def _setup(self):
-        random.seed(24601)
-        management.call_command('clean_pyc')
-        management.call_command('compile_pyc')
+    def _setup(self, **kwargs):
+        super(OneThousandRandomReads, self)._setup(**kwargs)
+
         #give the platform a chance to cache the logs
         self.exercise_list = ExerciseLog.objects.get_query_set()
         self.video_list = VideoLog.objects.get_query_set()
@@ -135,10 +133,9 @@ class OneHundredRandomLogUpdates(benchmark_base.Common):
     The I/O here is SELECT and UPDATE - update will normally generate physical media access
     """
     
-    def _setup(self):
-        random.seed(24601)
-        management.call_command('clean_pyc')
-        management.call_command('compile_pyc')
+    def _setup(self, **kwargs):
+        super(OneHundredRandomLogUpdates, self)._setup(**kwargs)
+
         #give the platform a chance to cache the logs
         self.exercise_list = ExerciseLog.objects.get_query_set()
         self.video_list = VideoLog.objects.get_query_set()
@@ -165,20 +162,15 @@ class OneHundredRandomLogUpdatesSingleTransaction(OneHundredRandomLogUpdates):
         super(OneHundredRandomLogUpdatesSingleTransaction, self)._execute()
 
 
-class LoginLogout(benchmark_base.Common):
+class LoginLogout(benchmark_base.SeleniumCommon):
 
-    def _setup(self, url="http://localhost:8008", username="s1", password="s1"):
-        # Note: user must exist
+    def _setup(self, **kwargs):
+        kwargs["timeout"] = kwargs.get("timeout", 30)
+        super(LoginLogout, self)._setup(**kwargs)
 
         # Store all
-        self.browser = webdriver.Firefox()
-        self.url = url
-        self.username = username
-        self.password = password
-        self.timeout = 30
         self.max_wait_time = 5.
         self.browser.get(self.url)
-        self.random_seed = 24601  # get from args in future
 
         # Go to the expected page
         wait = ui.WebDriverWait(self.browser, self.timeout)
@@ -186,7 +178,6 @@ class LoginLogout(benchmark_base.Common):
         wait = ui.WebDriverWait(self.browser, self.timeout)
         wait.until(expected_conditions.element_to_be_clickable((By.ID, "nav_login")))
 
-        random.seed(self.random_seed)
         wait_to_start_time = random.random() * self.max_wait_time
         print "Waiting for %fs before starting." % wait_to_start_time
         time.sleep(wait_to_start_time)
@@ -215,7 +206,7 @@ class LoginLogout(benchmark_base.Common):
 
             # verify
             wait = ui.WebDriverWait(self.browser, self.timeout)
-            wait.until(expected_conditions.title_contains(("Home")))
+            wait.until(expected_conditions.title_contains(("User report")))
             wait = ui.WebDriverWait(self.browser, self.timeout)
             wait.until(expected_conditions.element_to_be_clickable((By.ID, "nav_login")))
         finally:
@@ -224,12 +215,9 @@ class LoginLogout(benchmark_base.Common):
             info["username"] = self.username
 
         return info
-        
-    def _teardown(self):
-        self.browser.close()
 
 
-class SeleniumStudent(benchmark_base.Common):
+class SeleniumStudent(benchmark_base.SeleniumCommon):
     
     """student username/password will be passed in
         behaviour of this student will be determined by
@@ -241,26 +229,24 @@ class SeleniumStudent(benchmark_base.Common):
           Students with the same profile will follow the same behaviour.
         
     """ 
-    def _setup(self, url="http://localhost:8008", username="stevewall",
-                password="student", starttime="00:00", duration=30, behaviour_profile=24601):
-
-        self.browser = webdriver.Firefox()
+    def _setup(self, starttime="00:00", duration=30, **kwargs):
+        kwargs["timeout"] = kwargs.get("timeout", 240)
+        super(SeleniumStudent, self)._setup(**kwargs)
 
         def wait_until_starttime(starttime):
+            print "waiting until it's time to start."
             time.sleep((random.random() * 10.0) + 10) #sleep 
             now = datetime.datetime.today()
             if now.hour >= int(starttime[:2]):
                 if now.minute >= int(starttime[-2:]):
                     return False
+            print "Go!"
             return True
         while wait_until_starttime(starttime): pass #wait until lesson starttime
 
-        self.behaviour_profile = behaviour_profile
         self.return_list = []
         self.endtime = time.time() + (duration * 60.)
-        self.timeout = 240
-        self.host_url = url
-        random.seed(self.behaviour_profile) # seed the seed
+        self.host_url = self.url
 
         # self.activity simulates the classroom activity for the student
         # All students begin with activity "begin".
@@ -298,7 +284,7 @@ class SeleniumStudent(benchmark_base.Common):
 
         self.activity["login"]= {
                 "method":self._do_login_step_1, "duration": 3,
-                "args":{"username":username, "password": password},
+                "args":{"username":self.username, "password": self.password},
                 "nextstep":[(1.00, "login_2")]
                  }
         self.activity["login_2"]= {
@@ -484,7 +470,7 @@ class SeleniumStudent(benchmark_base.Common):
 
             for threshold, next_activity in self.activity[current_activity]["nextstep"]:
                 if threshold >= next_activity_random:
-                    #print next_activity_random, "next_activity =", next_activity
+                    print next_activity_random, "next_activity =", next_activity
                     current_activity = next_activity
                     break
         
@@ -534,7 +520,7 @@ class SeleniumStudent(benchmark_base.Common):
         elem.send_keys(args["password"])
         elem.send_keys(Keys.RETURN)
         wait = ui.WebDriverWait(self.browser, self.timeout)
-        wait.until(expected_conditions.title_contains(("Home")))
+        wait.until(expected_conditions.title_contains(("User report")))
 
     def _do_login_step_2(self, args):        
         wait = ui.WebDriverWait(self.browser, self.timeout)

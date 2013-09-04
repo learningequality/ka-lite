@@ -14,7 +14,13 @@ import time
 import random
 import platform
 import subprocess
-    
+from selenium import webdriver
+
+from django.core import management
+
+from settings import LOG as logging
+
+
 class Common(object):
 
     def __init__(self, comment=None, fixture=None, **kwargs):
@@ -37,8 +43,8 @@ class Common(object):
         # if setup fails, what could we do?
         try:
             self._setup(**kwargs)
-        except:
-            pass
+        except Exception as e:
+            logging.error(e)
 
     def execute(self, iterations=1):
 
@@ -76,12 +82,38 @@ class Common(object):
 
         try:
             self._teardown()
-        except:
-            pass
+        except Exception as e:
+            logging.error(e)
 
         return self.return_dict
 
-    def _setup(self, **kwargs): pass
+    def _setup(self, behavior_profile=None, **kwargs):
+        """
+        All benchmarks can take a random seed,
+        all should clean / recompile
+        """
+        if behavior_profile:
+            self.behavior_profile = behavior_profile
+            random.seed(self.behavior_profile)
+        management.call_command('clean_pyc')
+        management.call_command('compile_pyc')
+
     def _execute(self): pass
     def _teardown(self): pass
-    def _get_post_execute_info(self): pass    
+    def _get_post_execute_info(self): pass
+
+
+class SeleniumCommon(Common):
+    def _setup(self, url="http://localhost:8008/", username="s1", password="s1", timeout=30, **kwargs):
+        # Note: user must exist
+        super(SeleniumCommon, self)._setup(**kwargs)
+
+        self.url = url
+        self.username = username
+        self.password = password
+
+        self.browser = webdriver.Firefox()
+        self.timeout = timeout
+
+    def _teardown(self):
+        self.browser.close()
