@@ -1,5 +1,5 @@
 """
-This is a command-line tool to execute functions helpful to testing.
+
 """
 
 import threading
@@ -27,7 +27,7 @@ class BenchmarkThread(threading.Thread):
 
 
 class Command(BaseCommand):
-    help = "Benchmarking"
+    help = "Benchmarking.  Choose from: loginlogout, seleniumstudent, generatedata, 1000reads, 100updates, and more!"
 
     option_list = BaseCommand.option_list + (
         make_option(
