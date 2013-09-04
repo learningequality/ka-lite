@@ -220,7 +220,7 @@ function plotTopics(topic_paths) {
 
         // Select the values in the 
         $("#xaxis").val("{{ form.xaxis }}").change();
-        $("#yaxis").val("{{ form.yaxis }}").change();
+        $("#yaxis").val("{{ form.yaxis }}").change().prop("disabled", false);
         
         
         setTimeout(function() {
@@ -231,8 +231,6 @@ function plotTopics(topic_paths) {
 
             // Make sure that each dropdown has a callback 
             //   to replot upon selection.
-            $("#xaxis").change(   function() { plotTopics(null); });
-            $("#yaxis").change(   function() { plotTopics(null); });
             $(".group_select").change(function(event) { changeData(event.target.id); plotTopics(null); });
             $("#facility").change(function() { changeData("facility"); plotTopics(null); });
 

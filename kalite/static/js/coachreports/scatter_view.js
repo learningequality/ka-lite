@@ -2,7 +2,7 @@ function drawChart(chart_div, dataTable, options) {
     // Used for Google visualizations
     options["legend"] = 'none';
     options["tooltip"] = { isHtml: 'true', trigger: 'selection' };
-    d3_scatter(dataTable, options["xaxis"], options["yaxis"], chart_div);
+    d3_scatter(dataTable, options, chart_div);
 }
 
 function obj2num(row, stat, json) {
@@ -10,13 +10,17 @@ function obj2num(row, stat, json) {
     //    and turns it into a single number or an array of numbers.
     var type = stat2type(stat)
     var xdata = (type=="number") ? 0 : new Date();
-
     if (typeof row == 'number') {
         xdata = 0+row;
     } else {
         for (var d in row) {
             switch (stat) {
                 case "ex:streak_progress": // compute an average
+                    xdata += row[d]/json['exercises'].length;
+                    break;
+                case "ex:points":
+                    xdata += row[d];
+                    break;
                 case "ex:attempts":
                     xdata += row[d]/json['exercises'].length;
                     break;
@@ -45,6 +49,8 @@ function json2dataTable(json, xaxis, yaxis) {
         entry["user"] = json['users'][user];
         entry["userid"] = user;
         entry["tooltip"] = user2tooltip(json, user, xaxis, yaxis);
+        entry[xaxis] = obj2num(entry[xaxis], xaxis, json);
+        entry[yaxis] = obj2num(entry[yaxis], yaxis, json);
         dataTable.push(entry);
     }
     return dataTable;
@@ -149,10 +155,8 @@ function drawJsonChart(chart_div, json, xaxis, yaxis) {
     // The main function, required by our Google Visualization interface
     var options = {
       title: stat2name(xaxis) + ' vs. ' + stat2name(yaxis) + ' comparison',
-      hAxis: {title: stat2name(xaxis) },
-      vAxis: {title: stat2name(yaxis) },
-      xaxis: xaxis,
-      yaxis: yaxis,
+      hAxis: {title: stat2name(xaxis), stat: xaxis},
+      vAxis: {title: stat2name(yaxis), stat: yaxis},
     };
     var dataTable = json2dataTable(json, xaxis, yaxis);
     drawChart("#chart_div", dataTable, options);
