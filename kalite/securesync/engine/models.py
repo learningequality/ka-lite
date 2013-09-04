@@ -122,7 +122,7 @@ class SyncedModel(models.Model):
         device = device or _get_own_device()
         assert device.get_key(), "Cannot sign with device %s: key does not exist." % (device.name or "")
 
-        self.id = self.id or self.get_uuid()
+        self.id = self.id or self.get_uuid()  # only assign a UUID ONCE
         self.signed_by = device
         self.full_clean()  # make sure the model data is of the appropriate types
         self.signature = self.signed_by.get_key().sign(self._hashable_representation())
@@ -245,6 +245,10 @@ class SyncedModel(models.Model):
             self.signed_by.set_counter_position(self.counter)
 
     def get_uuid(self):
+        """
+        By default, all objects get an ID from the 
+        device and the counter position at which it was created.
+        """
         assert self.counter is not None, "counter required for get_uuid"
 
         own_device = _get_own_device()

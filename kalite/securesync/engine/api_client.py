@@ -93,7 +93,6 @@ class SyncClient(BaseClient):
             "client_version": kalite.VERSION,
             "client_os": kalite.OS,
         })
-        
         raw_data = r.content
         try:
             data = json.loads(raw_data)
@@ -105,10 +104,10 @@ class SyncClient(BaseClient):
                 raise Exception("Could not load JSON\n; raw content=%s" % raw_data)
             
         # Happens if the server reports an error
-        if data.get("error", ""):
+        if data.get("error"):
             # This happens when a device points to a new central server,
             #   either because it changed, or because it self-registered.
-            if not recursive_retry and "Client device matching id could not be found." in data.get("error", ""):
+            if not recursive_retry and "Client device matching id could not be found." in data["error"]:
                 resp = RegistrationClient().register(prove_self=True)
                 if resp.get("error"):
                     raise Exception("Error [code=%s]: %s" % (resp.get("code",""), resp.get("error","")))

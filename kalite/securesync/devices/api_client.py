@@ -69,7 +69,14 @@ class RegistrationClient(BaseClient):
         """
         # Get all the 
         own_device = Device.get_own_device()
-        own_devicezone = DeviceZone.objects.get(device=own_device)  # We exit if not found
+        try:
+            own_devicezone = DeviceZone.objects.get(device=own_device)  # We exit if not found
+        except DeviceZone.DoesNotExist:
+            # This should never actually happen--when upgrading to this new code,
+            #   all devices should be on a zone.
+            # However, if somehow that fails, let's try to create one now!
+            raise Exception("Shared network not installed.  Try running the `generate_zone` command.")
+
         own_zone = own_devicezone.zone
         chain_of_trust = ChainOfTrust(device=own_device, zone=own_zone)
 
