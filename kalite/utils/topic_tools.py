@@ -1,6 +1,7 @@
 """
 Important constants and helpful functions
 """
+import copy
 import glob
 import json
 import os
@@ -19,7 +20,6 @@ kind_slugs = {
 multipath_kinds = ["Exercise", "Video"]
 
 topics_file = "topics.json"
-node_cache_file = "nodecache.json"
 map_layout_file = "maplayout_data.json"
 video_remap_file = "youtube_to_slug_map.json"
 
@@ -35,9 +35,9 @@ def get_topic_tree(force=False):
 
 NODE_CACHE = None
 def get_node_cache(node_type=None, force=False):
-    global NODE_CACHE, node_cache_file
+    global NODE_CACHE
     if NODE_CACHE is None or force:
-        NODE_CACHE      = json.loads(open(os.path.join(settings.DATA_PATH, node_cache_file)).read())
+        NODE_CACHE      = generate_node_cache(get_topic_tree(force))
     if node_type is None:
         return NODE_CACHE
     else:
@@ -59,6 +59,69 @@ def get_id2slug_map(force=False):
         ID2SLUG_MAP     = json.loads(open(os.path.join(settings.DATA_PATH, video_remap_file)).read())
     return ID2SLUG_MAP
 
+
+def generate_node_cache(topictree=None):#, output_dir=settings.DATA_PATH):
+    """
+    Given the KA Lite topic tree, generate a dictionary of all Topic, Exercise, and Video nodes.
+    """
+
+    if not topictree:
+        topictree = get_topic_tree()
+    node_cache = {}
+
+
+    def recurse_nodes(node, path="/", parents=[]):
+        # Add the node to the node cache
+        kind = node["kind"]
+        node_cache[kind] = node_cache.get(kind, {})
+        
+        if node["slug"] in node_cache[kind]:
+            # Existing node, so append the path to the set of paths
+            assert kind in multipath_kinds, "Make sure we expect to see multiple nodes map to the same slug (%s unexpected)" % kind
+
+            # Before adding, let's validate some basic properties of the 
+            #   stored node and the new node:
+            # 1. Compare the keys, and make sure that they overlap 
+            #      (except the stored node will not have 'path', but instead 'paths')
+            # 2. For string args, check that values are the same
+            #      (most/all args are strings, and ... I feel we're already being darn
+            #      careful here.  So, I think it's enough.
+            node_shared_keys = set(node.keys()) - set(["path"])
+            stored_shared_keys = set(node_cache[kind][node["slug"]]) - set(["paths", "parents"])
+            unshared_keys = node_shared_keys.symmetric_difference(stored_shared_keys)
+            shared_keys = node_shared_keys.intersection(stored_shared_keys)
+            assert not unshared_keys, "Node and stored node should have all the same keys."
+            for key in shared_keys:
+                # A cursory check on values, for strings only (avoid unsafe types)
+                if isinstance(node[key], basestring):
+                    assert node[key] == node_cache[kind][node["slug"]][key]
+
+            # We already added this node, it's just found at multiple paths.
+            #   So, save the new path
+            node_cache[kind][node["slug"]]["paths"].append(node["path"])
+            node_cache[kind][node["slug"]]["parents"] = list(set(node_cache[kind][node["slug"]]["parents"]).union(set(parents)))
+
+        else:
+            # New node, so copy off, massage, and store.
+            node_copy = copy.copy(node)
+            if "children" in node_copy:
+                del node_copy["children"]
+            if kind in multipath_kinds:
+                # If multiple paths can map to a single slug, need to store all paths.
+                node_copy["paths"] = [node_copy["path"]]
+                del node_copy["path"]
+            node_cache[kind][node["slug"]] = node_copy
+            # Add parents
+            node_cache[kind][node["slug"]]["parents"] = parents
+
+        # Do the recursion
+        for child in node.get("children", []):
+            assert "path" in node and "paths" not in node, "This code can't handle nodes with multiple paths; it just generates them!"
+            recurse_nodes(child, node["path"], parents + [node["slug"]])
+
+    recurse_nodes(topictree)
+
+    return node_cache
 
 
 def get_videos(topic): 
