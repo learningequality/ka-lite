@@ -34,7 +34,11 @@ class Common(object):
             self.return_dict['branch'] = None
             self.return_dict['head'] = None            
 
-        self._setup(**kwargs)
+        # if setup fails, what could we do?
+        try:
+            self._setup(**kwargs)
+        except:
+            pass
 
     def execute(self, iterations=1):
 
@@ -47,18 +51,33 @@ class Common(object):
         self.return_dict['iterations'] = iterations
         self.return_dict['individual_elapsed'] = {}
         self.return_dict['post_execute_info'] = {}
+        self.return_dict['exceptions'] = {}
+
         for i in range(iterations):
+            self.return_dict['exceptions'][i+1] = []
             start_time = time.time()
-            self._execute()
-            self.return_dict['individual_elapsed'][i+1] = time.time() - start_time
-            self.return_dict['post_execute_info'][i+1] = self._get_post_execute_info()
-        
-        sum = 0.0
-        for i in self.return_dict['individual_elapsed']:
-            sum += self.return_dict['individual_elapsed'][i]
-        self.return_dict['average_elapsed'] = sum / len(self.return_dict['individual_elapsed'])
-         
-        self._teardown()
+            try:
+                self._execute()
+                self.return_dict['individual_elapsed'][i+1] = time.time() - start_time
+            except Exception as e:
+                self.return_dict['individual_elapsed'][i+1] = None
+                self.return_dict['exceptions'][i+1].append(e)
+
+            try:
+                self.return_dict['post_execute_info'][i+1] = self._get_post_execute_info()
+            except Exception as e:
+                self.return_dict['post_execute_info'][i+1] = None
+                self.return_dict['exceptions'][i+1].append(e)
+
+
+
+        mean = lambda vals: sum(vals)/float(len(vals)) if len(vals) else None
+        self.return_dict['average_elapsed'] = mean([v for v in self.return_dict['individual_elapsed'].values() if v is not None])
+
+        try:
+            self._teardown()
+        except:
+            pass
 
         return self.return_dict
 

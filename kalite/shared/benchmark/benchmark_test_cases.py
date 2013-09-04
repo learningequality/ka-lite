@@ -68,12 +68,13 @@ class HelloWorld(benchmark_base.Common):
 
     def _get_post_execute_info(self):
         return "Hello world has finished"
-        
+
+
 class ValidateModels(benchmark_base.Common):
 
     def _execute(self):
         management.call_command('validate', verbosity=1)
-        
+
 
 class GenerateRealData(benchmark_base.Common):
     """
@@ -101,11 +102,8 @@ class GenerateRealData(benchmark_base.Common):
         info['FacilityUser.objects.count'] = FacilityUser.objects.count()
         info['FacilityGroup.objects.count'] = FacilityGroup.objects.count()
         return info
-        
-    def _teardown(self):
-        from main.models import ExerciseLog, VideoLog, UserLog
-        
-        
+
+
 class OneThousandRandomReads(benchmark_base.Common):
     """
     One thousand random accesses of the video and exercise logs (500 of each)
@@ -130,7 +128,7 @@ class OneThousandRandomReads(benchmark_base.Common):
     def _get_post_execute_info(self):
         return {"total_records_accessed": 1000}
 
-        
+
 class OneHundredRandomLogUpdates(benchmark_base.Common):
     """
     One hundred random accesses and updates tothe video and exercise logs (50 of each)
@@ -169,18 +167,30 @@ class OneHundredRandomLogUpdatesSingleTransaction(OneHundredRandomLogUpdates):
 
 class LoginLogout(benchmark_base.Common):
 
-    def _setup(self, url="http://localhost:8008", username="admin", password="admin"):
+    def _setup(self, url="http://localhost:8008", username="s1", password="s1"):
+        # Note: user must exist
+
+        # Store all
         self.browser = webdriver.Firefox()
         self.url = url
         self.username = username
         self.password = password
+        self.timeout = 30
+        self.max_wait_time = 5.
         self.browser.get(self.url)
-        wait = ui.WebDriverWait(self.browser, 30)
+        self.random_seed = 24601  # get from args in future
+
+        # Go to the expected page
+        wait = ui.WebDriverWait(self.browser, self.timeout)
         wait.until(expected_conditions.title_contains(("Home")))
-        wait = ui.WebDriverWait(self.browser, 30)
+        wait = ui.WebDriverWait(self.browser, self.timeout)
         wait.until(expected_conditions.element_to_be_clickable((By.ID, "nav_login")))
-        random.seed(24601)
-        time.sleep ((random.random()*20.0))  
+
+        random.seed(self.random_seed)
+        wait_to_start_time = random.random() * self.max_wait_time
+        print "Waiting for %fs before starting." % wait_to_start_time
+        time.sleep(wait_to_start_time)
+        print "Go!"
 
     def _execute(self):
         elem = self.browser.find_element_by_id("nav_login")
@@ -196,20 +206,23 @@ class LoginLogout(benchmark_base.Common):
         elem.send_keys(self.password + Keys.RETURN)
         
     def _get_post_execute_info(self):
+        try:
+            # logout
+            wait = ui.WebDriverWait(self.browser, self.timeout)
+            wait.until(expected_conditions.element_to_be_clickable((By.ID, "nav_logout")))
+            elem = self.browser.find_element_by_id("nav_logout")
+            elem.send_keys(Keys.RETURN)
 
-        wait = ui.WebDriverWait(self.browser, self.timeout)
-        wait.until(expected_conditions.element_to_be_clickable((By.ID, "nav_logout")))
-        elem = self.browser.find_element_by_id("nav_logout")
-        elem.send_keys(Keys.RETURN)
+            # verify
+            wait = ui.WebDriverWait(self.browser, self.timeout)
+            wait.until(expected_conditions.title_contains(("Home")))
+            wait = ui.WebDriverWait(self.browser, self.timeout)
+            wait.until(expected_conditions.element_to_be_clickable((By.ID, "nav_login")))
+        finally:
+            info = {}
+            info["url"] = self.url
+            info["username"] = self.username
 
-        wait = ui.WebDriverWait(self.browser, self.timeout)
-        wait.until(expected_conditions.title_contains(("Home")))
-        wait = ui.WebDriverWait(self.browser, self.timeout)
-        wait.until(expected_conditions.element_to_be_clickable((By.ID, "nav_login")))
-        
-        info = {}
-        info["url"] = self.url
-        info["username"] = self.username
         return info
         
     def _teardown(self):
@@ -551,5 +564,3 @@ class SeleniumStudentExercisesOnly(SeleniumStudent):
         self.activity["decide"]["nextstep"] = [(.10, "decide"), (.99, "exercise"), (1.00, "end")]
         self.activity["do_esub2"]["nextstep"] =[(.03, "login"), (.75, "do_esub2"), (1.00, "eadd2")]
         super(SeleniumStudentExercisesOnly, self)._execute()
-        
-    
