@@ -87,3 +87,10 @@ class NoDuplicateMessagesSessionStorage(SessionStorage):
             if m.level == level and m.message == message and m.extra_tags == extra_tags:
                 return
         super(NoDuplicateMessagesSessionStorage, self).add(level, message, extra_tags)
+
+
+def get_request_ip(request):
+    """Return the IP address from a HTTP request object."""
+    return request.META.get("HTTP_X_FORWARDED_FOR") \
+        or request.META.get("REMOTE_ADDR") \
+        or request.META.get("HTTP_X_REAL_IP")  # set by some proxies
