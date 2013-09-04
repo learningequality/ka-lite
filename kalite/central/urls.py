@@ -4,7 +4,10 @@ from django.http import HttpResponseRedirect
 
 import central.api_urls
 import coachreports.urls
+import contact.urls
 import control_panel.urls
+import faq.urls
+import registration.urls
 import securesync.urls
 from kalite import settings
 from feeds import RssSiteNewsFeed, AtomSiteNewsFeed
@@ -37,10 +40,10 @@ urlpatterns += patterns('',
 )
 
 urlpatterns += patterns('central.views',
-    url(r'^$', 'homepage', {}, 'homepage'),
-    url(r'^delete_admin/(?P<org_id>\w+)/(?P<user_id>\w+)/$', 'delete_admin', {}, 'delete_admin'),
-    url(r'^delete_invite/(?P<org_id>\w+)/(?P<invite_id>\w+)/$', 'delete_invite', {}, 'delete_invite'),
-    url(r'^accounts/', include('registration.urls')),
+    url(r'^$', 'homepage', {}, 'homepage'), 
+    url(r'^delete_admin/(?P<org_id>\w+)/(?P<user_id>\w+)/$', 'delete_admin', {}, 'delete_admin'), 
+    url(r'^delete_invite/(?P<org_id>\w+)/(?P<invite_id>\w+)/$', 'delete_invite', {}, 'delete_invite'), 
+    url(r'^accounts/', include(registration.urls)),
 
     # Organization
     url(r'^organization/$', 'org_management', {}, 'org_management'),
@@ -57,9 +60,8 @@ urlpatterns += patterns('central.views',
     url(r'^addsubscription/$', 'add_subscription', {}, 'add_subscription'),
     url(r'^feeds/rss/$', RssSiteNewsFeed(), {}, 'rss_feed'),
     url(r'^feeds/atom/$', AtomSiteNewsFeed(), {}, 'atom_feed'),
-    url(r'^faq/', include('faq.urls')),
+    url(r'^faq/', include(faq.urls)),
 
-    url(r'^contact/', include('contact.urls')),
     url(r'^wiki/(?P<path>.*)$', lambda request, path: HttpResponseRedirect(settings.CENTRAL_WIKI_URL + path), {}, 'wiki'),
     url(r'^about/$', lambda request: HttpResponseRedirect('http://learningequality.org/'), {}, 'about'),
 
@@ -77,4 +79,3 @@ urlpatterns += patterns('central.api_views',
 handler403 = 'central.views.handler_403'
 handler404 = 'central.views.handler_404'
 handler500 = 'central.views.handler_500'
-

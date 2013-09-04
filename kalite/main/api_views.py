@@ -21,7 +21,6 @@ from shared.caching import invalidate_all_pages_related_to_video
 from shared.decorators import require_admin
 from shared.videos import delete_downloaded_files
 from utils.jobs import force_job, job_status
-from utils.videos import delete_downloaded_files
 from utils.general import break_into_chunks
 from utils.internet import api_handle_error_with_json, JsonResponse
 from utils.mplayer_launcher import play_video_in_new_thread
@@ -65,7 +64,6 @@ def save_video_log(request):
             additional_seconds_watched=data["seconds_watched"],
             points=data["points"],
         )
-
     except ValidationError as e:
         return JsonResponse({"error": "Could not save VideoLog: %s" % e}, status=500)
 
@@ -157,28 +155,12 @@ def get_exercise_logs(request):
         return JsonResponse({"error": "Could not load ExerciseLog objects: Unrecognized input data format." % e}, status=500)
 
     user = request.session["facility_user"]
-    responses = []
-    for exercise_id in data:
-        response = _get_exercise_log_dict(request, user, exercise_id)
-        if response:
-            responses.append(response)
-    return JsonResponse(responses)
 
-
-def _get_exercise_log_dict(request, user, exercise_id):
-    if not exercise_id:
-        return {}
-    try:
-        exerciselog = ExerciseLog.objects.get(user=user, exercise_id=exercise_id)
-    except ExerciseLog.DoesNotExist:
-        return {}
-    return {
-        "exercise_id": exercise_id,
-        "streak_progress": exerciselog.streak_progress,
-        "complete": exerciselog.complete,
-        "points": exerciselog.points,
-        "struggling": exerciselog.struggling,
-    }
+    return JsonResponse(
+        list(ExerciseLog.objects \
+            .filter(user=user, exercise_id__in=data) \
+            .values("exercise_id", "streak_progress", "complete", "points", "struggling"))
+    )
 
 
 @require_admin
@@ -230,6 +212,7 @@ def delete_videos(request):
 
     return JsonResponse({})
 
+
 @require_admin
 @api_handle_error_with_json
 def check_video_download(request):
@@ -237,9 +220,10 @@ def check_video_download(request):
     percentages = {}
     percentages["downloading"] = job_status("videodownload")
     for id in youtube_ids:
-        videofile = get_object_or_None(VideoFile, youtube_id=id) or VideoFile(youtube_id=id)
-        percentages[id] = videofile.percent_complete
+        videofile = get_object_or_None(VideoFile, youtube_id=id)
+        percentages[id] = videofile.percent_complete if videofile else None
     return JsonResponse(percentages)
+
 
 @require_admin
 @api_handle_error_with_json
