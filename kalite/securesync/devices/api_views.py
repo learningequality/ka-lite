@@ -17,6 +17,8 @@ import settings
 import version
 from .models import *
 from shared import serializers
+from stats.models import UnregisteredDevicePing
+from utils.django_utils import get_request_ip
 from utils.internet import allow_jsonp, api_handle_error_with_json, am_i_online, JsonResponse
 
 
@@ -67,6 +69,10 @@ def register_device(request):
                 "code": "device_already_registered",
             }, status=500)
         except Device.DoesNotExist:
+            # This is the codepath for unregistered devices trying to start a session.
+            #   This would only get hit, however, if they visit the registration page.
+            # But still, good to keep track of!
+            UnregisteredDevicePing.record_ping(id=client_device.id, ip=get_request_ip(request))
             return JsonResponse({
                 "error": "Device registration with public key not found; login and register first?",
                 "code": "public_key_unregistered",
