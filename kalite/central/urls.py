@@ -1,6 +1,6 @@
-from django.http import HttpResponseRedirect
 from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
+from django.http import HttpResponseRedirect
 
 import main.api_urls
 import central.api_urls
@@ -12,6 +12,7 @@ import registration.urls
 import securesync.urls
 from kalite import settings
 from feeds import RssSiteNewsFeed, AtomSiteNewsFeed
+from utils.videos import OUTSIDE_DOWNLOAD_BASE_URL  # for video download redirects
 
 
 admin.autodiscover()
@@ -21,7 +22,7 @@ def redirect_to(self, base_url, path=""):
 
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^images/(.+)$', lambda request, path: HttpResponseRedirect('/static/images/' + path)),
+    url(r'^images/.*$', lambda request: HttpResponseRedirect(settings.STATIC_URL[:-1] + request.path)),
     url(r'^securesync/', include(securesync.urls)),
 )
 
@@ -75,11 +76,14 @@ urlpatterns += patterns('central.views',
     url(r'^download/kalite/(?P<version>[^\/]+)/(?P<platform>[^\/]+)/(?P<locale>[^\/]+)/(?P<zone_id>[^\/]+)/$', 'download_kalite_private', {}, 'download_kalite_private'),
 
     url(r'^contact/', include(contact.urls)),
-    url(r'^wiki/(?P<path>\w+)/$', redirect_to, {'base_url': settings.CENTRAL_WIKI_URL}, 'wiki'),
-    url(r'^about/$', redirect_to, { 'base_url': 'http://learningequality.org/' }, 'about'),
+    url(r'^wiki/(?P<path>.*)$', lambda request, path: HttpResponseRedirect(settings.CENTRAL_WIKI_URL + path), {}, 'wiki'),
+    url(r'^about/$', lambda request: HttpResponseRedirect('http://learningequality.org/'), {}, 'about'),
 
     # Endpoint for remote admin
     url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'),
+
+    # redirects for downloads
+    url(r'^download/videos/(.*)$', lambda request, vpath: HttpResponseRedirect(OUTSIDE_DOWNLOAD_BASE_URL + vpath)),
 )
 
 urlpatterns += patterns('central.api_views',
