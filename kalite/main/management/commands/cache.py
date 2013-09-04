@@ -3,6 +3,7 @@ from django.core.management.base import BaseCommand, CommandError
 import settings
 from main import topicdata
 from shared import caching
+from shared.videos import download_video, DownloadCancelled
 from utils import topic_tools
 
 

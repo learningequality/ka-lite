@@ -12,7 +12,8 @@ from django.core.management import call_command
 import settings
 import version
 from utils.general import ensure_dir
-from utils.platforms import is_windows, system_specific_scripts
+from utils.platforms import is_windows, not_system_specific_scripts, system_specific_zipping, _default_callback_zip
+
 
 ## The following 3 functions define the rules for inclusion/exclusion
 
@@ -21,7 +22,7 @@ def file_in_platform(file_path, platform):
     based on the requested platform and the file's name (including path)"""
 
     ext = os.path.splitext(file_path)[1]
-    return (platform == "all") or (ext not in system_specific_scripts(platform))
+    return (platform == "all") or (ext not in not_system_specific_scripts(platform))
 
 
 def select_package_dirs(dirnames, key_base, **kwargs):
@@ -30,9 +31,9 @@ def select_package_dirs(dirnames, key_base, **kwargs):
     base_name = os.path.split(key_base)[1]
 
     if key_base == "":  # base directory
-        in_dirs = set(('docs', 'kalite', 'locale', 'python-packages'))
+        in_dirs = set(('docs', 'kalite', 'locale', 'python-packages'))  # ignore content
 
-    elif base_name in ["locale", "localflavor"] and kwargs.get("locale", ""):
+    elif base_name in ["locale", "localflavor"] and kwargs.get("locale", "") not in [None, "", "all"]:
         # ONLY include files for the particular locale
 
         in_dirs = set((kwargs['locale'],))
@@ -41,8 +42,9 @@ def select_package_dirs(dirnames, key_base, **kwargs):
         # can't exclude 'test', which eliminates the Django test client (used in caching)
         #   as well as all the Khan academy tests
         in_dirs = set(dirnames)
+        in_dirs -= set(['tmp', "media"])  # media is like a temp dir
         if kwargs["remove_test"]:
-            in_dirs -= set(('loadtesting', 'tests', 'testing', 'tmp', 'selenium', 'werkzeug', 'postmark'))
+            in_dirs -= set(('loadtesting', 'tests', 'testing', 'selenium', 'werkzeug', 'postmark'))
         #
         if kwargs.get("server_type", "") != "central":
             in_dirs -= set(("central", "landing-page"))
@@ -61,8 +63,8 @@ def file_in_blacklist_set(file_path):
 
     name = os.path.split(file_path)[1]
     ext = os.path.splitext(file_path)[1]
-    return (ext in [".pyc", ".sqlite", ".zip", ".xlsx", ".srt", ]) \
-        or (name in ["local_settings.py", ".gitignore", "tests.py", "faq", ".DS_Store"])
+    return (ext in [".pyc",".sqlite",".zip",'.xlsx','.srt']) \
+        or (name in ["local_settings.py", ".gitignore", "tests.py", "faq",".DS_Store"])
 
 
 # Filter-less functions (just logic)
@@ -108,7 +110,7 @@ def recursively_add_files(dirpath, files_dict=dict(), key_base="", **kwargs):
     return files_dict
 
 
-def create_local_settings_file(location, server_type="local", locale=None):
+def create_local_settings_file(location, server_type="local", locale=None, central_server=None):
     """Create an appropriate local_settings file for the installable server."""
 
     fil = tempfile.mkstemp()[1]
@@ -123,9 +125,14 @@ def create_local_settings_file(location, server_type="local", locale=None):
     ls = open(fil, "a") #append, to keep those settings, but override SOME
 
     ls.write("\n") # never trust the previous file ended with a newline!
+    if settings.DEBUG:
+        ls.write("DEBUG = %s\n" % settings.DEBUG)
     ls.write("CENTRAL_SERVER = %s\n" % (server_type=="central"))
-    if locale:
+    if locale and locale != "all":
         ls.write("LANGUAGE_CODE = '%s'\n" % locale)
+    if server_type == "local" and central_server:
+        ls.write("CENTRAL_SERVER_HOST = '%s'\n" % central_server)
+        ls.write("SECURESYNC_PROTOCOL = '%s'\n" % "http" if settings.DEBUG or "playground" in central_server else "https")
     ls.close()
 
     return fil
@@ -164,6 +171,12 @@ class Command(BaseCommand):
             dest='server_type',
             default="local",
             help='KA Lite server type'),
+        make_option('-c', '--central-server',
+            action='store',
+            dest='central_server',
+            default=getattr(settings, "CENTRAL_SERVER_HOST", None),
+            help='Central server host and port',
+            metavar="CENTRAL_SERVER"),
 
         # Functional options
         make_option('-r', '--remove-test',
@@ -179,7 +192,7 @@ class Command(BaseCommand):
         make_option('-f', '--file',
             action='store',
             dest='file',
-            default="__default__",
+            default=None,
             help='FILE to save zip to',
             metavar="FILE"),
         )
@@ -197,26 +210,18 @@ class Command(BaseCommand):
         # Step 2: Add a local_settings.py file.
         #   For distributed servers, this is a copy of the local local_settings.py,
         #   with a few properties (specified as command-line options) overridden
-        ls_file = create_local_settings_file(location=os.path.realpath(kalite_base+"/kalite/local_settings.py"), server_type=options['server_type'], locale=options['locale'])
+        ls_file = create_local_settings_file(location=os.path.realpath(kalite_base+"/kalite/local_settings.py"), server_type=options['server_type'], locale=options['locale'], central_server=options["central_server"])
         files_dict[ls_file] = { "dest_path": "kalite/local_settings.py" }
 
         # Step 3: select output file.
-        if options['file']=="__default__":
+        if not options['file']:
             options['file'] = create_default_archive_filename(options)
 
         # Step 4: package into a zip file
-        ensure_dir(os.path.realpath(os.path.dirname(options["file"])))
-        with ZipFile(options['file'], "w", ZIP_DEFLATED if options['compress'] else ZIP_STORED) as zfile:
-            for srcpath,fdict in files_dict.items():
-                if options['verbosity'] >= 1:
-                    print "Adding to zip: %s" % srcpath
-                # Add without setting exec perms
-                if os.path.splitext(fdict["dest_path"])[1] != ".sh":
-                    zfile.write(srcpath, arcname=fdict["dest_path"])
-                # Add with exec perms
-                else:
-                    info = ZipInfo(fdict["dest_path"])
-                    info.external_attr = 0755 << 16L # give full access to included file
-                    with open(srcpath, "r") as fh:
-                        zfile.writestr(info, fh.read())
-
+        ensure_dir(os.path.realpath(os.path.dirname(options["file"])))  # allows relative paths to be passed.
+        system_specific_zipping(
+            files_dict = dict([(v["dest_path"], src_path) for src_path, v in files_dict.iteritems()]), 
+            zip_file = options["file"], 
+            compression=ZIP_DEFLATED if options['compress'] else ZIP_STORED,
+            callback=_default_callback_zip if options["verbosity"] else None,
+        )

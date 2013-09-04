@@ -31,15 +31,15 @@ from config.models import Settings
 from control_panel.views import user_management_context
 from main import topicdata
 from main.models import VideoLog, ExerciseLog, VideoFile
-from securesync.engine.api_client import SyncClient
+from securesync.api_client import BaseClient
 from securesync.models import Facility, FacilityUser,FacilityGroup, Device
 from securesync.views import require_admin, facility_required
 from settings import LOG as logging
 from shared.decorators import require_admin
+from shared.jobs import force_job
 from shared.videos import video_connection_is_available
 from utils import topic_tools
-from utils.internet import am_i_online, is_loopback_connection, JsonResponse
-from utils.jobs import force_job
+from utils.internet import JsonResponse, is_loopback_connection
 
 
 def calc_last_modified(request, *args, **kwargs):
@@ -147,6 +147,21 @@ def splat_handler(request, splat):
         return exercise_handler(request, current_node)
     else:
         raise Http404
+
+
+def check_setup_status(handler):
+    def wrapper_fn(request, *args, **kwargs):
+        if not request.is_admin and Facility.objects.count() == 0:
+            messages.warning(request, mark_safe(
+                "Please <a href='%s?next=%s'>login</a> with the account you created while running the installation script, \
+                to complete the setup." % (reverse("login"), reverse("register_public_key"))))
+        if request.is_admin:
+            if not Settings.get("registered") and BaseClient().test_connection() == "success":
+                messages.warning(request, mark_safe("Please <a href='%s'>follow the directions to register your device</a>, so that it can synchronize with the central server." % reverse("register_public_key")))
+            elif Facility.objects.count() == 0:
+                messages.warning(request, mark_safe("Please <a href='%s'>create a facility</a> now. Users will not be able to sign up for accounts until you have made a facility." % reverse("add_facility")))
+        return handler(request, *args, **kwargs)
+    return wrapper_fn
 
 
 @backend_cache_page
@@ -347,26 +362,6 @@ Available stats:
             raise Exception("Unknown stat requested: %s" % stat_name)
 
     return val
-
-@require_admin
-@render_to("video_download.html")
-def update(request):
-    call_command("videoscan")  # Could potentially be very slow, blocking request.
-    force_job("videodownload", "Download Videos")
-    force_job("subtitledownload", "Download Subtitles")
-    default_language = Settings.get("subtitle_language") or "en"
-
-    device = Device.get_own_device()
-    zone = device.get_zone()
-
-    context = {
-        "default_language": default_language,
-        "registered": Settings.get("registered"),
-        "zone_id": zone.id if zone else None,
-        "device_id": device.id,
-        "video_count": VideoFile.objects.filter(percent_complete=100).count(),
-    }
-    return context
 
 
 @require_admin

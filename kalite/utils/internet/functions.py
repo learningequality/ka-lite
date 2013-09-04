@@ -82,11 +82,3 @@ def set_query_params(url, param_dict):
     new_query_string = urlencode(query_params, doseq=True)
 
     return urlunsplit((scheme, netloc, path, new_query_string, fragment))
-
-
-if __name__ == "__main__":
-    print generate_all_paths("/test/me/out")
-    print generate_all_paths("/test/me/out/")
-    print generate_all_paths("/test/me/out", base_path="/test")
-    
-    print am_i_online()

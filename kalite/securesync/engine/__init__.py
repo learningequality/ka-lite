@@ -1,25 +1,52 @@
 """
-Used for labeling models that use securesync.  This is where the heavy lifting happens!
+Used for labeling models that use securesync.
+This is where the heavy lifting happens!
 """
 from annoying.functions import get_object_or_None
 
 from django.core.exceptions import ValidationError
+#from django.db import models, transaction
+from django.db.models.fields.related import ForeignKey
 
 import settings
 import version
 from settings import LOG as logging
 from shared import serializers
 
-_syncing_models = [] # all models we want to sync
-
+_syncing_models = []  # all models we want to sync
 
 def add_syncing_models(models):
     """When sync is run, these models will be sync'd"""
+
+    get_foreign_key_classes = lambda m: set([field.rel.to for field in m._meta.fields if isinstance(field, ForeignKey)])
+
     for model in models:
         if model in _syncing_models:
             logging.warn("We are already syncing model %s" % str(model))
-        else:
-            _syncing_models.append(model)
+            continue
+
+        # When we add models to be synced, we need to make sure
+        #   that models that depend on other models are synced AFTER
+        #   the model it depends on has been synced.
+
+        # Get the dependencies of the new model
+        foreign_key_classes = get_foreign_key_classes(model)
+
+        # Find all the existing models that this new model refers to.
+        class_indices = [_syncing_models.index(cls) for cls in foreign_key_classes if cls in _syncing_models]
+
+        # Insert just after the last dependency found,
+        #   or at the front if no dependencies
+        insert_after_idx = 1 + (max(class_indices) if class_indices else -1)
+
+        # Before inserting, make sure that any models referencing *THIS* model
+        # appear after this model.
+        if [True for synmod in _syncing_models[0:insert_after_idx-1] if model in get_foreign_key_classes(synmod)]:
+            raise Exception("Dependency loop detected in syncing models; cannot proceed.")
+
+        # Now we're ready to insert.
+        _syncing_models.insert(insert_after_idx + 1, model)
+
 
 def get_syncing_models():
     return _syncing_models
@@ -43,7 +70,7 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
     # remove all requested devices that either don't exist or aren't in the correct zone
     for device_id in device_counters.keys():
         device = get_object_or_None(Device, pk=device_id)
-        if not device or not (device.in_zone(zone) or device.get_metadata().is_trusted):
+        if not device or not (device.in_zone(zone) or device.is_trusted()):
             del device_counters[device_id]
 
     models = []
@@ -66,7 +93,7 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
 
                 # for trusted (central) device, only include models with the correct fallback zone
                 if not device.in_zone(zone):
-                    if device.get_metadata().is_trusted:
+                    if device.is_trusted():
                         queryset = queryset.filter(zone_fallback=zone)
                     else:
                         continue
@@ -94,6 +121,7 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
         return serialized_models
 
 
+#@transaction.commit_on_success
 def save_serialized_models(data, increment_counters=True, src_version=version.VERSION):
     """Unserializes models (from a device of version=src_version) in data and saves them to the django database.
     If src_version is None, all unrecognized fields are (silently) stripped off.  
@@ -116,7 +144,7 @@ def save_serialized_models(data, increment_counters=True, src_version=version.VE
         purgatory = None
 
     # deserialize the models, either from text or a list of dictionaries
-    if isinstance(data, str) or isinstance(data, unicode):
+    if isinstance(data, basestring):
         models = serializers.deserialize("versioned-json", data, src_version=src_version, dest_version=version.VERSION)
     else:
         models = serializers.deserialize("versioned-python", data, src_version=src_version, dest_version=version.VERSION)

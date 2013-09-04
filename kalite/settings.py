@@ -140,8 +140,6 @@ MIDDLEWARE_CLASSES = (
     "django.middleware.csrf.CsrfViewMiddleware",
 ) + MIDDLEWARE_CLASSES  # append local_settings middleware, in case of dependencies
 
-ROOT_URLCONF = "kalite.urls"
-
 INSTALLED_APPS = getattr(local_settings, 'INSTALLED_APPS', tuple())
 INSTALLED_APPS = (
     "django.contrib.auth",
@@ -158,9 +156,11 @@ INSTALLED_APPS = (
     "securesync",
     "config",
     "main", # in order for securesync to work, this needs to be here.
+    "control_panel", # in both apps
+    "coachreports", # in both apps; reachable on central via control_panel
     "control_panel",  # in both apps
     "coachreports",  # in both apps; reachable on central via control_panel
-    "khanload",  # khan academy interactions
+    "khanload",  # khan academy interactions--needed in both for downloading student data
     "kalite",  # contains commands
 ) + INSTALLED_APPS  # append local_settings installed_apps, in case of dependencies
 
@@ -191,6 +191,8 @@ if CENTRAL_SERVER:
 
 else:
     ROOT_URLCONF = "main.urls"
+
+    INSTALLED_APPS += ("updates",)
     # Include optionally installed apps
     if os.path.exists(PROJECT_PATH + "/tests/loadtesting/"):
         INSTALLED_APPS += ("tests.loadtesting",)
@@ -202,11 +204,14 @@ else:
     )
     TEMPLATE_CONTEXT_PROCESSORS += ("main.custom_context_processors.languages",)
 
+# None means, use full hashing locally--turn off the password cache
+PASSWORD_ITERATIONS_TEACHER = getattr(local_settings, "PASSWORD_ITERATIONS_TEACHER", None)
+PASSWORD_ITERATIONS_STUDENT = getattr(local_settings, "PASSWORD_ITERATIONS_STUDENT", None)
+
 # Used for user logs.  By default, completely off.
 #  Note: None means infinite (just like caching)
 USER_LOG_MAX_RECORDS_PER_USER = getattr(local_settings, "USER_LOG_MAX_RECORDS_PER_USER", 0)
 USER_LOG_SUMMARY_FREQUENCY = getattr(local_settings, "USER_LOG_SUMMARY_FREQUENCY", (1,"months"))
-
 
 # Sessions use the default cache, and we want a local memory cache for that.
 # Separate session caching from file caching.
@@ -262,24 +267,3 @@ FAST_TESTS_ONLY = getattr(local_settings, "FAST_TESTS_ONLY", False)
 # Add additional mimetypes to avoid errors/warnings
 import mimetypes
 mimetypes.add_type("font/opentype", ".otf", True)
-
-# Django debug_toolbar config
-if getattr(local_settings, "USE_DEBUG_TOOLBAR", False):
-    INSTALLED_APPS += ('debug_toolbar',)
-    MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
-    DEBUG_TOOLBAR_PANELS = (
-        'debug_toolbar.panels.version.VersionDebugPanel',
-        'debug_toolbar.panels.timer.TimerDebugPanel',
-        'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
-        'debug_toolbar.panels.headers.HeaderDebugPanel',
-        'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
-        'debug_toolbar.panels.template.TemplateDebugPanel',
-        'debug_toolbar.panels.sql.SQLDebugPanel',
-        'debug_toolbar.panels.signals.SignalDebugPanel',
-        'debug_toolbar.panels.logger.LoggingPanel',
-    )
-    DEBUG_TOOLBAR_CONFIG = {
-        'INTERCEPT_REDIRECTS': False,
-        'HIDE_DJANGO_SQL': False,
-        'ENABLE_STACKTRACES' : True,
-    }
