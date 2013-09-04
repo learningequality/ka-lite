@@ -1,5 +1,5 @@
 """
-
+Run benchmarks from the benchmark command
 """
 
 import threading
