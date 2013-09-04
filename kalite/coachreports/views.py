@@ -7,6 +7,7 @@ from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 from functools import partial
 
+from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseServerError
@@ -15,12 +16,13 @@ from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext as _
 
-from coachreports.api_views import get_data_form, stats_dict
+from .api_views import get_data_form, stats_dict
 from main import topicdata
-from main.models import VideoLog, ExerciseLog, VideoFile
+from main.models import VideoLog, ExerciseLog, VideoFile, UserLog
 from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device
 from securesync.views import facility_required
-from utils.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
+from settings import LOG as logging
+from shared.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
 from utils.general import max_none
 from utils.internet import StatusException
 from utils.topic_tools import get_topic_exercises, get_topic_videos, get_all_midlevel_topics
@@ -100,6 +102,14 @@ def student_view(request, xaxis="pct_mastery", yaxis="ex:attempts"):
 
     Student view lists a by-topic-summary of their activity logs.
     """
+    return student_view_context(request=request, xaxis=xaxis, yaxis=yaxis)
+
+
+@require_authorized_access_to_student_data
+def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
+    """
+    Context done separately, to be importable for similar pages.
+    """
     user = get_user_from_request(request=request)
 
     topics = get_all_midlevel_topics()
@@ -145,6 +155,7 @@ def student_view(request, xaxis="pct_mastery", yaxis="ex:attempts"):
         any_data = any_data or n_exercises_touched > 0 or n_videos_touched > 0
 
     context = plotting_metadata_context(request)
+
     return {
         "form": context["form"],
         "groups": context["groups"],
@@ -290,5 +301,16 @@ def tabular_view(request, facility, report_type="exercise"):
 
     else:
         raise Http404("Unknown report_type: %s" % report_type)
+
+    if "facility_user" in request.session:
+        try:
+            # Log a "begin" and end here
+            user = request.session["facility_user"]
+            UserLog.begin_user_activity(user, activity_type="coachreport")
+            UserLog.update_user_activity(user, activity_type="login")  # to track active login time for teachers
+            UserLog.end_user_activity(user, activity_type="coachreport")
+        except ValidationError as e:
+            # Never report this error; don't want this logging to block other functionality.
+            logging.debug("Failed to update Teacher userlog activity login: %s" % e)
 
     return context

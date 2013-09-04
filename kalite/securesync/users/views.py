@@ -17,14 +17,14 @@ from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
 
 import settings
+from .forms import FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
+from .models import Facility, FacilityGroup
 from config.models import Settings
 from main.models import UserLog
-from securesync.forms import FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
-from securesync.models import Facility, FacilityGroup
 from settings import LOG as logging
-from utils.jobs import force_job
-from utils.decorators import require_admin, central_server_only, distributed_server_only, facility_required, facility_from_request
+from shared.decorators import require_admin, central_server_only, distributed_server_only, facility_required, facility_from_request
 from utils.internet import set_query_params
+from utils.jobs import force_job
 
 
 def get_facility_from_request(request):
@@ -246,7 +246,7 @@ def login(request, facility):
             return HttpResponseRedirect(
                 form.non_field_errors()
                 or request.next
-                or reverse("coach_reports") if form.get_user().is_teacher else reverse("homepage")
+                or reverse("coach_reports") if form.get_user().is_teacher else reverse("student_view")
             )
         else:
             messages.error(
