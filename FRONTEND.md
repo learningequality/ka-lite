@@ -80,12 +80,9 @@ npm install
 
 
 ```
-//Compiles everything
-grunt
-
-//Compiles style.less
-grunt less:compile
-
-//Compiles bootstrap.less+responsive.less
-grunt less:bootstrap
+grunt #Compiles everything
+grunt less:compile #Compiles style.less
+grunt less:bootstrap #Compiles bootstrap.less+responsive.less
 ```
+
+The CSS is compiled in the `static/css` folder. If you want to make those changes available to production, you need to commit them.
