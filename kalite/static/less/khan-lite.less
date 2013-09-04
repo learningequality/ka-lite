@@ -1,0 +1,417 @@
+@min-width: 600px;
+@max-width: 1100px;
+
+body {
+    min-width: @min-width;
+}
+
+#outer-wrapper {
+    background: url(/static/images/light-page-bg.png) repeat-x;
+}
+
+#page-container, #page-container-inner {
+    background: transparent url(/static/images/content-border.1.png) no-repeat right 50px;
+}
+
+#page-container {
+    background-position: 0 50px;
+    min-width: @min-width;
+    max-width: @max-width;
+}
+
+article {
+    padding: 20px;
+}
+
+footer {
+    background: url(/static/images/footer-bg.png) repeat-x 0 0; /*! data-uri(/images/footer-bg.png) */
+    min-width: @min-width - 30px;
+
+	&.short {
+	    color: #555;
+	    background: url(/static/images/light-page-bg.png) repeat-x 0 -30px;
+	    border-top: 1px solid #C6D1AD;
+	    z-index: 10;
+	}
+
+	#leaves {
+	    background-image: url(/static/images/non-repeating-sprites.4.png);
+	    background-position: 319px -908px;
+	    height: 188px;
+	}
+
+	#creative-commons-link {
+	    background-image: url(/static/images/non-repeating-sprites.4.png);
+	    margin-right: 15px;
+	}
+
+	&.short .inner {
+    	max-width: @max-width;
+    	margin: 0 auto;
+	}
+}
+
+#language-preferences {
+    position: relative; 
+    top: 7px;
+}
+
+#top-header {
+    height: 50px;
+}
+
+#logo-image-small img {
+    height: 33px;
+    margin-top: 10px;
+    margin-left: 5px;
+}
+
+#nav-and-search {
+    position: relative;
+    right: 10px;
+    top: 21px;
+}
+
+.nav-subheader {
+    background: transparent;
+
+	> span > a.selected{
+		&::after {
+	    	top: 21px;
+		}
+		&::before {
+	    	top: 19px;
+		}
+	}
+}
+.watch-navlink {
+    padding-left: 4px;
+}
+
+/*greeting styling*/
+
+.sitewide-navigation {
+    white-space: nowrap;
+}
+
+#logged_in_greeting {
+    padding-left: 20px;
+    color: #263500;
+    text-overflow: ellipsis;
+    white-space:nowrap;
+    overflow: hidden;
+}
+
+.nav-subheader {
+    background: transparent;
+}
+
+.top-header-links {
+    position: absolute;
+    top: 0;
+    right: 10px;
+    left: 0;
+    margin-left: 290px;
+    min-width: 280px;
+}
+
+h2 {
+    margin-bottom: 10px;
+}
+
+.title-header .long-description {
+    color: #666;
+    font-size: 15px;
+}
+
+div{
+	&#map-container {
+	    min-height: 1000px;
+	    min-width: 800px;
+	}
+	&.exercises-card {
+    	width: 800px;
+	}
+}
+
+#answer_area_wrap {
+    width: 229px;
+}
+
+#streakbar{
+
+	.streak {
+	    border: 1px solid #cccccc;
+	    height: 30px;
+	    background-color: #F7F7F7;
+
+	    .progress-bar {
+		    width: 0%;
+		    height: 100%;
+		    background-color: #9F9FFC;
+		    padding: 0px;
+		    border: none;
+		    text-align: center;
+
+		    &.completed{
+				width: 100%;
+    			background-color: #5BDB44;
+		    }
+		}
+	}
+}
+
+.practice-exercise-description {
+    opacity: 0.5;
+    font-size: 0.7em;
+}
+
+.current-card{ 
+	#problemarea {
+    	margin-top: 0;
+	}
+	#answer_area_wrap {
+    	margin-top: 15px;
+	}
+}
+
+.info-box #related-video-list {
+    margin-left: -10px;
+}
+
+.basic-form {
+	label {
+	    font-weight: bold;
+	    width: 120px;
+	    float: left;
+	    text-align: right;
+	    padding-right: 12px;
+	}
+
+	p {
+    	margin-top: 0;
+	}
+
+	.submit, .errorlist,  h2 {
+    	margin-left: 134px;
+	}
+}
+
+.progress-circle {
+
+	width: 12px;
+    height: 12px;
+    display: inline-block;
+    position: relative;
+    top: 2px;
+
+	li & {
+	    margin-left: -15px;
+	    top: 0;
+	}
+	.related-video-list & {
+	    margin-left: 0;
+	    top: 2px;
+	}
+	.related-video-inline & {
+	    margin-left: 10px;
+	}
+	&.complete {
+    	background: url(/static/images/circle-complete.png) no-repeat;
+	}
+	&.partial {
+    	background: url(/static/images/circle-partial.png) no-repeat;
+	}
+}
+
+.main-headline {
+    width: 100%;
+    display: block;
+    float: left;
+}
+
+.unregistered-only {
+    display: none;
+}
+
+.errors, .login_error {
+    color: red;
+}
+
+.login_error {
+    margin: 0;
+}
+
+.content_tree_background (@url) {
+  margin-top: 2px;
+  background: url(@url) no-repeat;
+}
+
+#content_tree{
+	.complete span.dynatree-icon {
+		.content_tree_background ('/static/images/circle-complete.png');
+	}
+	.partial span.dynatree-icon {
+    	.content_tree_background ('/static/images/circle-partial.png');
+	}
+	.unstarted span.dynatree-icon{
+	   .content_tree_background ('/static/images/circle-empty.png');
+	}
+}
+
+.message {
+    width: 75%;
+    padding: 4px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    margin-top: 0;
+    margin-bottom: 10px;
+    border-style: solid;
+    border-width: 1px;
+    font-size: 13px;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+
+    &.error {
+	    color: #FFFFFF;
+	    background-color: #FF3030; 
+	    border-color: #330000;
+
+	    a {
+    		color: #6969C4;
+		}
+	}
+	&.success {
+	    color: #273C2B;
+	    background-color: #8AF07C;
+	    border-color: #273C2B;
+	}
+
+	&.warning {
+	    color: #330000;
+	    background-color: #FF9955; 
+	    border-color: #330000;
+	}
+}
+
+.errorlist {
+/*    padding-bottom: 10px;*/
+    color: red;
+}
+
+#nav_registerdevice {
+    color: darkRed;
+}
+
+#nav_addstudent, #nav_addteacher, #nav_admin, #nav_coachreports, #nav_watch, #nav_practice, #nav_signup, #nav_login, #nav_update {
+    display: none;
+}
+
+.nav-subheader a{
+    height: 20px;
+    display: block;
+	&.active:after {
+	    content: url(/static/images/nav-selector.gif);
+	    position: relative;
+	    top: -12px;
+	    display: block;
+	    left: 50%;
+	    margin-left: -5px;
+	}
+}
+#hint-remainder {
+    line-height: 110%;
+}
+
+#totalpoints {
+    font-weight: bold;
+    font-size: 1.2em;  
+    padding-top: 4px;
+    color: #77C;
+}
+
+#questionpoints {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #666600;
+    background-color: #EEEEFF;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+}
+
+.points-container {
+    margin: 0px;
+    padding: 2px;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-right: 4px;
+    margin-top: -10px;
+    font-size: 0.8em;
+    float: right;
+    background-color: #EEEEFF;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+}
+
+.vidprev {
+    float: left;
+}
+
+.vidnext {
+    float: right;
+    padding-right: 4px;
+}
+
+#sitepoints {
+    float: right;
+    margin-top: 3px;
+    margin-right: 20px;
+    font-size: 1.2em;
+}
+
+#scratchpad > div {
+    margin-top: 10px;
+    max-width: 514px;
+}
+
+.current-card-contents #workarea {
+    margin-top: 50px;
+    margin-right: 30px;
+}
+
+.org-invite {
+    display: block;
+    position: relative;
+}
+
+.helptext {
+    font-size: .85em;
+    display: block;
+    position: relative;
+    left: 135px;
+    top: -3px;
+}
+
+.glossary-link {
+    background: url('/static/images/question_mark.png') no-repeat center;
+    display: inline-block;
+    width: 28px;
+    height: 21px;
+    float: center;
+    margin-bottom: -5px;
+    margin-left: -5px;
+    margin-right: -5px;
+}
+.thumb {
+    overflow: hidden;
+    position: relative;
+    .thumbimage {
+	    position: absolute;
+	    width: 200px;
+	    z-index: -10;
+	}
+}
+#answer_area .answer-buttons input.simple-button, #answer_area input.simple-button.full-width {
+    white-space: normal;
+}

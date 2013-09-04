@@ -2,6 +2,7 @@ import settings
 
 def custom(request):
     return {
-        "base_template": "central/base_central.html",
+        "base_template": "central/base.html",
         "is_central": True,
+        "debug": settings.DEBUG,
     }
