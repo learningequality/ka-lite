@@ -22,8 +22,7 @@ class Command(BaseCommand):
         # Create the zone
         self.stdout.write("Generating a zone.\n")
         zone = Zone(name=zone_name, description=zone_description)
-        zone.sign()  # sign with local device
-        zone.save()
+        zone.save()  # this will sign the zone with the current device
 
         # Create the zone invitation--you're invited to a party of one!
         self.stdout.write("Generating a zone invitation--from me, to me!\n")
