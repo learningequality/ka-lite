@@ -94,3 +94,16 @@ def call_outside_command_with_output(command, *args, **kwargs):
             cmd += ("%s%s" % (prefix, key),)
         else:
             cmd += ("%s%s=%s" % (prefix, key, str(val)),)
+    #logging.debug(cmd)
+
+    # Execute the command, using subprocess/Popen
+    cwd = os.getcwd()
+    os.chdir(kalite_location + "/kalite")
+    p = subprocess.Popen(cmd, shell=False, cwd=os.path.split(cmd[0])[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out = p.communicate()
+    os.chdir(cwd)
+
+    #logging.debug(out[1] if out[1] else out[0])
+
+    # tuple output of stdout, stderr, and exit code
+    return out + (1 if out[1] else 0,)
