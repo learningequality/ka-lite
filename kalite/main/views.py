@@ -241,9 +241,6 @@ def exercise_handler(request, exercise):
     for idx in reversed(videos_to_delete):
         del related_videos[idx]
 
-    # Paste points onto the exercise
-    from math import ceil, log
-    exercise["basepoints"] = ceil(7 * log(exercise["seconds_per_fast_problem"]));
     context = {
         "exercise": exercise,
         "title": exercise["title"],
