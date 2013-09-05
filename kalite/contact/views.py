@@ -9,6 +9,7 @@ import settings
 from central.models import Organization
 from contact.forms  import ContactForm, DeploymentForm, SupportForm, InfoForm, ContributeForm
 from contact.models import *
+from utils.django_utils import get_request_ip
 from utils.mailchimp import mailchimp_subscribe
 
 
@@ -56,7 +57,7 @@ def contact_wizard(request, type=""):
             # Map over the field at the bottom of the form to the hidden form element.
             #   I couldn't find a better way to get this set up in the form, without
             #   making a giant HTML mess, other than this way.
-            contact_form.instance.cc_email = request.POST["hack_cc_email"]
+            contact_form.instance.cc_email = request.POST.get("hack_cc_email", False)
 
             # Deployment
             if contact_form.cleaned_data["type"] == CONTACT_TYPE_DEPLOYMENT:
@@ -94,18 +95,34 @@ def contact_wizard(request, type=""):
         info_form = InfoForm(prefix="info_form")
         contribute_form = ContributeForm(prefix="contribute_form")
 
-        # Use the user's information, if available
-        if request.user.is_authenticated():
-            if request.user.owned_organizations.count()>0:
+        if not request.user.is_authenticated():
+            contact_form = ContactForm(
+                prefix="contact_form",
+                instance=Contact(
+                    type=type,
+                    ip=get_request_ip(request),
+                ))
+        
+        else:
+            # Use the user's information, if available
+            if request.user.owned_organizations.count() > 0:
                 org = request.user.owned_organizations.all()[0]
-            elif request.user.organization_set.count()>0:
+            elif request.user.organization_set.count() > 0:
                 org = request.user.organization_set[0]
             else:
                 org = Organization()
 
-            contact_form = ContactForm(prefix="contact_form", instance=Contact(type=type, user=request.user, name="%s %s"%(request.user.first_name, request.user.last_name), email=request.user.email, org_name=org.name, org_url=org.url))
-        else:
-            contact_form = ContactForm(prefix="contact_form", instance=Contact(type=type))
+            contact_form = ContactForm(
+                prefix="contact_form",
+                instance=Contact(
+                    type=type,
+                    user=request.user,
+                    name="%s %s"%(request.user.first_name, request.user.last_name),
+                    email=request.user.email,
+                    org_name=org.name,
+                    org_url=org.url,
+                    ip=get_request_ip(request),
+                ))
 
     return {
         "central_contact_email": settings.CENTRAL_CONTACT_EMAIL,
@@ -119,6 +136,7 @@ def contact_wizard(request, type=""):
 
 
 def handle_contact(request, contact_form, details_form, list_email, email_template_prefix):
+        import pdb; pdb.set_trace()
         # Save data to database
         contact_form.save()
         details_form.instance.contact = contact_form.instance

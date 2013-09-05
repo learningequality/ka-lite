@@ -62,6 +62,7 @@ urlpatterns += patterns('central.views',
     url(r'^feeds/atom/$', AtomSiteNewsFeed(), {}, 'atom_feed'),
     url(r'^faq/', include(faq.urls)),
 
+    url(r'^contact/', include(contact.urls)),
     url(r'^wiki/(?P<path>.*)$', lambda request, path: HttpResponseRedirect(settings.CENTRAL_WIKI_URL + path), {}, 'wiki'),
     url(r'^about/$', lambda request: HttpResponseRedirect('http://learningequality.org/'), {}, 'about'),
 
