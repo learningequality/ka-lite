@@ -1,3 +1,4 @@
+import random
 import uuid
 from annoying.functions import get_object_or_None
 from math import ceil
@@ -66,7 +67,7 @@ class VideoLog(SyncedModel):
 
     @classmethod
     def calc_points(cls, seconds_watched, video_length):
-        return (float(seconds_watched) / video_length) * VideoLog.POINTS_PER_VIDEO
+        return ceil(float(seconds_watched) / video_length* VideoLog.POINTS_PER_VIDEO)
 
     @classmethod
     def update_video_log(cls, facility_user, youtube_id, additional_seconds_watched, points=0, new_points=0):
@@ -136,14 +137,17 @@ class ExerciseLog(SyncedModel):
         return uuid.uuid5(namespace, self.exercise_id.encode("utf-8")).hex
 
     @classmethod
-    def calc_points(cls, basepoints, ncorrect=1):
+    def calc_points(cls, basepoints, ncorrect=1, add_randomness=True):
         # This is duplicated in javascript, in kalite/static/js/exercises.js
         inc = 0
         for i in range(ncorrect):
             bumpprob = 100 * random.random()
-            bump = (bumpprob < 90) ? 1 : (bumpprob < 99 ? 1.5 : 2);
-            inc += ceil(basepoints*bump);
-        return inc
+            # If we're adding randomness, then we add
+            # 50% more points 9% of the time,
+            # 100% more points 1% of the time.
+            bump = 1.0 + add_randomness * (0.5*(bumpprob >= 90) + 0.5*(bumpprob>=99))
+            inc += basepoints * bump;
+        return ceil(inc)
 
     @staticmethod
     def get_points_for_user(user):
