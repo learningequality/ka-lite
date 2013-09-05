@@ -25,7 +25,7 @@
 		<div class="row-fluid">
 			<div class="span9">
 				<div class="tooltip-container">
-					<h1 >My Organization</h1>
+					<h1>My Organization{{ organizations|pluralize }}</h1>
 					<div id="button-popover-org" class="button-popover" data-toggle="popover" data-placement="right" data-content="An Organization is a group of people responsible for administering a set of Zones and Facilities." title="" data-original-title="Organization">?</div>
 				</div>			
 			</div>
@@ -54,7 +54,6 @@
 		{% for pk,org in organizations.items %}		
 		<div class="row-fluid">
 			<div class="span12 organization-title">
-
 				<div class="tooltip-container">
 					<h2>{{ org.name }}</h2>
 					{% if org.name == HEADLESS_ORG_NAME %}
@@ -68,6 +67,9 @@
 					<a href="{% url organization_form org_id=org.id %}">
 						(Edit)
 					</a>
+					{% endif %}
+					{% if org.owner == request.user %}
+						<a href="{% url delete_organization org_id=org.id %}">Delete this organization</a>
 					{% endif %}
 				</div>
 			</div>

@@ -144,6 +144,15 @@ def organization_form(request, org_id):
         'form': form
     }
 
+@require_authorized_admin
+def delete_organization(request, org_id):
+    org = Organization.objects.get(pk=org_id)
+    deletion = DeletionRecord(organization=org, deleter=request.user)
+    deletion.save()
+    org.delete()
+    messages.success(request, "You have succesfully deleted " + org.name + ".")
+    return HttpResponseRedirect(reverse("org_management"))
+
 
 @render_to("central/glossary.html")
 def glossary(request):
