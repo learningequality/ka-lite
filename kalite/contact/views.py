@@ -136,7 +136,6 @@ def contact_wizard(request, type=""):
 
 
 def handle_contact(request, contact_form, details_form, list_email, email_template_prefix):
-        import pdb; pdb.set_trace()
         # Save data to database
         contact_form.save()
         details_form.instance.contact = contact_form.instance
