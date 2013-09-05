@@ -11,11 +11,12 @@
     "title": "Scaling vectors", 
     "live": true, 
     "description": "", 
+    "basepoints": 16.0, 
     "h_position": 32, 
     "slug": "scaling_vectors", 
     "kind": "Exercise", 
     "name": "scaling_vectors", 
-    "seconds_per_fast_problem": 8.0, 
+    "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "adding_vectors"
     ]
@@ -32,6 +33,7 @@
     "title": "Adding vectors", 
     "live": true, 
     "description": "", 
+    "basepoints": 15.0, 
     "h_position": 31, 
     "slug": "adding_vectors", 
     "kind": "Exercise", 

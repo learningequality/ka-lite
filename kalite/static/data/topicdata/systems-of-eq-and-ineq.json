@@ -10,6 +10,7 @@
     "title": "Graphing systems of equations", 
     "live": true, 
     "description": "Graph a system of equations in slope-intercept or standard form\n", 
+    "basepoints": 27.0, 
     "h_position": 46, 
     "slug": "graphing_systems_of_equations", 
     "kind": "Exercise", 
@@ -35,11 +36,12 @@
     "title": "Systems of equations with simple elimination", 
     "live": true, 
     "description": "Solve systems of equation with one-step elimination (e.g., x-values or y-values cancel each other out).\n", 
+    "basepoints": 25.0, 
     "h_position": 47, 
     "slug": "systems_of_equations_with_elimination_0.5", 
     "kind": "Exercise", 
     "name": "systems_of_equations_with_elimination_0.5", 
-    "seconds_per_fast_problem": 43.0, 
+    "seconds_per_fast_problem": 34.0, 
     "prerequisites": [
       "graphing_systems_of_equations"
     ]
@@ -53,11 +55,12 @@
     "title": "Systems of equations with elimination", 
     "live": true, 
     "description": "Solving systems of equations with elimination.", 
+    "basepoints": 29.0, 
     "h_position": 48, 
     "slug": "systems_of_equations_with_elimination", 
     "kind": "Exercise", 
     "name": "systems_of_equations_with_elimination", 
-    "seconds_per_fast_problem": 60.0, 
+    "seconds_per_fast_problem": 55.0, 
     "prerequisites": [
       "systems_of_equations_with_elimination_0.5"
     ]
@@ -77,11 +80,12 @@
     "title": "Systems of equations with substitution", 
     "live": true, 
     "description": "Solve systems of equations using substitution\n", 
+    "basepoints": 28.0, 
     "h_position": 47, 
     "slug": "systems_of_equations_with_substitution", 
     "kind": "Exercise", 
     "name": "systems_of_equations_with_substitution", 
-    "seconds_per_fast_problem": 60.0, 
+    "seconds_per_fast_problem": 52.0, 
     "prerequisites": [
       "graphing_systems_of_equations"
     ]
@@ -105,11 +109,12 @@
     "title": "Systems of equations", 
     "live": true, 
     "description": "Solve systems of equations with substitution and elimination.\n", 
+    "basepoints": 29.0, 
     "h_position": 49, 
     "slug": "systems_of_equations", 
     "kind": "Exercise", 
     "name": "systems_of_equations", 
-    "seconds_per_fast_problem": 60.0, 
+    "seconds_per_fast_problem": 59.0, 
     "prerequisites": [
       "systems_of_equations_with_substitution", 
       "systems_of_equations_with_elimination"
@@ -127,6 +132,7 @@
     "title": "Systems of equations word problems", 
     "live": true, 
     "description": "Word problems with systems of equations.", 
+    "basepoints": 29.0, 
     "h_position": 50, 
     "slug": "systems_of_equations_word_problems", 
     "kind": "Exercise", 
@@ -147,6 +153,7 @@
     "title": "Graphing systems of equations", 
     "live": true, 
     "description": "Graph a system of equations in slope-intercept or standard form\n", 
+    "basepoints": 27.0, 
     "h_position": 46, 
     "slug": "graphing_systems_of_equations", 
     "kind": "Exercise", 
@@ -171,11 +178,12 @@
     "title": "Systems of equations with substitution", 
     "live": true, 
     "description": "Solve systems of equations using substitution\n", 
+    "basepoints": 28.0, 
     "h_position": 47, 
     "slug": "systems_of_equations_with_substitution", 
     "kind": "Exercise", 
     "name": "systems_of_equations_with_substitution", 
-    "seconds_per_fast_problem": 60.0, 
+    "seconds_per_fast_problem": 52.0, 
     "prerequisites": [
       "graphing_systems_of_equations"
     ]
@@ -196,11 +204,12 @@
     "title": "Systems of equations with simple elimination", 
     "live": true, 
     "description": "Solve systems of equation with one-step elimination (e.g., x-values or y-values cancel each other out).\n", 
+    "basepoints": 25.0, 
     "h_position": 47, 
     "slug": "systems_of_equations_with_elimination_0.5", 
     "kind": "Exercise", 
     "name": "systems_of_equations_with_elimination_0.5", 
-    "seconds_per_fast_problem": 43.0, 
+    "seconds_per_fast_problem": 34.0, 
     "prerequisites": [
       "graphing_systems_of_equations"
     ]
@@ -214,11 +223,12 @@
     "title": "Systems of equations with elimination", 
     "live": true, 
     "description": "Solving systems of equations with elimination.", 
+    "basepoints": 29.0, 
     "h_position": 48, 
     "slug": "systems_of_equations_with_elimination", 
     "kind": "Exercise", 
     "name": "systems_of_equations_with_elimination", 
-    "seconds_per_fast_problem": 60.0, 
+    "seconds_per_fast_problem": 55.0, 
     "prerequisites": [
       "systems_of_equations_with_elimination_0.5"
     ]
@@ -242,11 +252,12 @@
     "title": "Systems of equations", 
     "live": true, 
     "description": "Solve systems of equations with substitution and elimination.\n", 
+    "basepoints": 29.0, 
     "h_position": 49, 
     "slug": "systems_of_equations", 
     "kind": "Exercise", 
     "name": "systems_of_equations", 
-    "seconds_per_fast_problem": 60.0, 
+    "seconds_per_fast_problem": 59.0, 
     "prerequisites": [
       "systems_of_equations_with_substitution", 
       "systems_of_equations_with_elimination"
@@ -264,11 +275,12 @@
     "title": "Solutions to systems of equations", 
     "live": true, 
     "description": "Determine how many solutions exist to a given system of equations (one, zero, infinite).\n", 
+    "basepoints": 17.0, 
     "h_position": 47, 
     "slug": "solutions_to_systems_of_equations", 
     "kind": "Exercise", 
     "name": "solutions_to_systems_of_equations", 
-    "seconds_per_fast_problem": 10.0, 
+    "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "graphing_systems_of_equations"
     ]
@@ -284,6 +296,7 @@
     "title": "Graphing systems of equations", 
     "live": true, 
     "description": "Graph a system of equations in slope-intercept or standard form\n", 
+    "basepoints": 27.0, 
     "h_position": 46, 
     "slug": "graphing_systems_of_equations", 
     "kind": "Exercise", 
@@ -305,11 +318,12 @@
     "title": "Solutions to systems of equations", 
     "live": true, 
     "description": "Determine how many solutions exist to a given system of equations (one, zero, infinite).\n", 
+    "basepoints": 17.0, 
     "h_position": 47, 
     "slug": "solutions_to_systems_of_equations", 
     "kind": "Exercise", 
     "name": "solutions_to_systems_of_equations", 
-    "seconds_per_fast_problem": 10.0, 
+    "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "graphing_systems_of_equations"
     ]
@@ -329,11 +343,12 @@
     "title": "Systems of equations with substitution", 
     "live": true, 
     "description": "Solve systems of equations using substitution\n", 
+    "basepoints": 28.0, 
     "h_position": 47, 
     "slug": "systems_of_equations_with_substitution", 
     "kind": "Exercise", 
     "name": "systems_of_equations_with_substitution", 
-    "seconds_per_fast_problem": 60.0, 
+    "seconds_per_fast_problem": 52.0, 
     "prerequisites": [
       "graphing_systems_of_equations"
     ]
@@ -354,11 +369,12 @@
     "title": "Systems of equations with simple elimination", 
     "live": true, 
     "description": "Solve systems of equation with one-step elimination (e.g., x-values or y-values cancel each other out).\n", 
+    "basepoints": 25.0, 
     "h_position": 47, 
     "slug": "systems_of_equations_with_elimination_0.5", 
     "kind": "Exercise", 
     "name": "systems_of_equations_with_elimination_0.5", 
-    "seconds_per_fast_problem": 43.0, 
+    "seconds_per_fast_problem": 34.0, 
     "prerequisites": [
       "graphing_systems_of_equations"
     ]
@@ -372,11 +388,12 @@
     "title": "Systems of equations with elimination", 
     "live": true, 
     "description": "Solving systems of equations with elimination.", 
+    "basepoints": 29.0, 
     "h_position": 48, 
     "slug": "systems_of_equations_with_elimination", 
     "kind": "Exercise", 
     "name": "systems_of_equations_with_elimination", 
-    "seconds_per_fast_problem": 60.0, 
+    "seconds_per_fast_problem": 55.0, 
     "prerequisites": [
       "systems_of_equations_with_elimination_0.5"
     ]
@@ -393,6 +410,7 @@
     "title": "Systems of equations word problems", 
     "live": true, 
     "description": "Word problems with systems of equations.", 
+    "basepoints": 29.0, 
     "h_position": 50, 
     "slug": "systems_of_equations_word_problems", 
     "kind": "Exercise", 
@@ -415,11 +433,12 @@
     "title": "Graphing systems of inequalities", 
     "live": true, 
     "description": "Graph a system of linear inequalities.\n", 
+    "basepoints": 29.0, 
     "h_position": 48, 
     "slug": "graphing_systems_of_inequalities", 
     "kind": "Exercise", 
     "name": "graphing_systems_of_inequalities", 
-    "seconds_per_fast_problem": 52.0, 
+    "seconds_per_fast_problem": 57.0, 
     "prerequisites": [
       "graphing_inequalities_2", 
       "graphing_systems_of_equations"
@@ -438,11 +457,12 @@
     "title": "Graphing and solving systems of inequalities", 
     "live": true, 
     "description": "Graph a system of inequalities, and determine whether ordered pairs are solutions.\n", 
+    "basepoints": 29.0, 
     "h_position": 49, 
     "slug": "graphing_systems_of_inequalities_2", 
     "kind": "Exercise", 
     "name": "graphing_systems_of_inequalities_2", 
-    "seconds_per_fast_problem": 58.0, 
+    "seconds_per_fast_problem": 60.0, 
     "prerequisites": [
       "graphing_systems_of_inequalities"
     ]

@@ -12,6 +12,7 @@
     "title": "One step inequalities", 
     "live": true, 
     "description": "Solve inequalities in one step.\n", 
+    "basepoints": 19.0, 
     "h_position": 30, 
     "slug": "one_step_inequalities", 
     "kind": "Exercise", 
@@ -35,11 +36,12 @@
     "title": "Multi-step linear inequalities", 
     "live": true, 
     "description": "Solve linear inequalities in multiple steps.", 
+    "basepoints": 23.0, 
     "h_position": 31, 
     "slug": "linear_inequalities", 
     "kind": "Exercise", 
     "name": "linear_inequalities", 
-    "seconds_per_fast_problem": 25.0, 
+    "seconds_per_fast_problem": 26.0, 
     "prerequisites": [
       "linear_equations_3", 
       "one_step_inequalities"
@@ -59,11 +61,12 @@
     "title": "Compound inequalities", 
     "live": true, 
     "description": "Solve compound inequalities.\n", 
+    "basepoints": 25.0, 
     "h_position": 31, 
     "slug": "compound_inequalities", 
     "kind": "Exercise", 
     "name": "compound_inequalities", 
-    "seconds_per_fast_problem": 29.0, 
+    "seconds_per_fast_problem": 32.0, 
     "prerequisites": [
       "one_step_inequalities"
     ]

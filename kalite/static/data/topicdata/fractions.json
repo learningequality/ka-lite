@@ -12,6 +12,7 @@
     "title": "Recognizing fractions 0.5", 
     "live": true, 
     "description": "", 
+    "basepoints": 14.0, 
     "h_position": 18, 
     "slug": "recognizing_fractions_0.5", 
     "kind": "Exercise", 
@@ -32,11 +33,12 @@
     "title": "Identifying numerators and denominators", 
     "live": true, 
     "description": "", 
+    "basepoints": 10.0, 
     "h_position": 20, 
     "slug": "recognizing_fractions", 
     "kind": "Exercise", 
     "name": "recognizing_fractions", 
-    "seconds_per_fast_problem": 5.0, 
+    "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "recognizing_fractions_0.5"
     ]
@@ -54,6 +56,7 @@
     "title": "Fractions on the number line 1", 
     "live": true, 
     "description": "", 
+    "basepoints": 12.0, 
     "h_position": 20, 
     "slug": "fractions_on_the_number_line_1", 
     "kind": "Exercise", 
@@ -75,7 +78,8 @@
     "title": "Fraction word problems 1", 
     "live": true, 
     "description": "", 
-    "h_position": 21, 
+    "basepoints": 17.0, 
+    "h_position": 20, 
     "slug": "fraction_word_problems_1", 
     "kind": "Exercise", 
     "name": "fraction_word_problems_1", 
@@ -96,6 +100,7 @@
     "title": "Fractions cut and copy 1", 
     "live": true, 
     "description": "", 
+    "basepoints": 18.0, 
     "h_position": 28, 
     "slug": "fractions_cut_and_copy_1", 
     "kind": "Exercise", 
@@ -112,14 +117,15 @@
       "equivalent-fractions", 
       "fractions-in-lowest-terms"
     ], 
-    "v_position": -10, 
+    "v_position": -11, 
     "path": "/math/arithmetic/fractions/Equivalent_fractions/e/simplifying_fractions/", 
     "id": "simplifying_fractions", 
     "display_name": "Simplifying fractions", 
     "title": "Simplifying fractions", 
     "live": true, 
     "description": "", 
-    "h_position": 21, 
+    "basepoints": 17.0, 
+    "h_position": 20, 
     "slug": "simplifying_fractions", 
     "kind": "Exercise", 
     "name": "simplifying_fractions", 
@@ -143,11 +149,12 @@
     "title": "Equivalent fractions", 
     "live": true, 
     "description": "", 
+    "basepoints": 13.0, 
     "h_position": 19, 
     "slug": "equivalent_fractions", 
     "kind": "Exercise", 
     "name": "equivalent_fractions", 
-    "seconds_per_fast_problem": 5.0, 
+    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "order_of_operations", 
       "recognizing_fractions_0.5"
@@ -165,6 +172,7 @@
     "title": "Equivalent fractions 2", 
     "live": true, 
     "description": "", 
+    "basepoints": 15.0, 
     "h_position": 20, 
     "slug": "equivalent_fractions_2", 
     "kind": "Exercise", 
@@ -188,11 +196,12 @@
     "title": "Comparing fractions 1", 
     "live": true, 
     "description": "", 
+    "basepoints": 13.0, 
     "h_position": 23, 
     "slug": "comparing_fractions_1", 
     "kind": "Exercise", 
     "name": "comparing_fractions_1", 
-    "seconds_per_fast_problem": 5.0, 
+    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "simplifying_fractions"
     ]
@@ -210,11 +219,12 @@
     "title": "Comparing fractions 2", 
     "live": true, 
     "description": "", 
+    "basepoints": 14.0, 
     "h_position": 24, 
     "slug": "comparing_fractions_2", 
     "kind": "Exercise", 
     "name": "comparing_fractions_2", 
-    "seconds_per_fast_problem": 6.0, 
+    "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "comparing_fractions_1"
     ]
@@ -232,11 +242,12 @@
     "title": "Ordering fractions", 
     "live": true, 
     "description": "", 
+    "basepoints": 19.0, 
     "h_position": 25, 
     "slug": "ordering_fractions", 
     "kind": "Exercise", 
     "name": "ordering_fractions", 
-    "seconds_per_fast_problem": 14.0, 
+    "seconds_per_fast_problem": 15.0, 
     "prerequisites": [
       "comparing_fractions_2"
     ]
@@ -252,7 +263,8 @@
     "title": "Adding fractions with common denominators", 
     "live": true, 
     "description": "", 
-    "h_position": 20, 
+    "basepoints": 13.0, 
+    "h_position": 19, 
     "slug": "adding_fractions_with_common_denominators", 
     "kind": "Exercise", 
     "name": "adding_fractions_with_common_denominators", 
@@ -273,6 +285,7 @@
     "title": "Subtracting fractions with common denominators", 
     "live": true, 
     "description": "", 
+    "basepoints": 13.0, 
     "h_position": 20, 
     "slug": "subtracting_fractions_with_common_denominators", 
     "kind": "Exercise", 
@@ -297,11 +310,12 @@
     "title": "Adding fractions", 
     "live": true, 
     "description": "", 
+    "basepoints": 24.0, 
     "h_position": 22, 
     "slug": "adding_fractions", 
     "kind": "Exercise", 
     "name": "adding_fractions", 
-    "seconds_per_fast_problem": 27.0, 
+    "seconds_per_fast_problem": 28.0, 
     "prerequisites": [
       "simplifying_fractions", 
       "decomposing-fractions"
@@ -318,11 +332,12 @@
     "title": "Subtracting fractions", 
     "live": true, 
     "description": "", 
+    "basepoints": 22.0, 
     "h_position": 22, 
     "slug": "subtracting_fractions", 
     "kind": "Exercise", 
     "name": "subtracting_fractions", 
-    "seconds_per_fast_problem": 16.0, 
+    "seconds_per_fast_problem": 21.0, 
     "prerequisites": [
       "subtracting_fractions_with_common_denominators", 
       "simplifying_fractions"
@@ -342,11 +357,12 @@
     "title": "Adding and subtracting fractions", 
     "live": true, 
     "description": "", 
+    "basepoints": 24.0, 
     "h_position": 23, 
     "slug": "adding_and_subtracting_fractions", 
     "kind": "Exercise", 
     "name": "adding_and_subtracting_fractions", 
-    "seconds_per_fast_problem": 24.0, 
+    "seconds_per_fast_problem": 28.0, 
     "prerequisites": [
       "subtracting_fractions", 
       "adding_fractions"
@@ -364,11 +380,12 @@
     "title": "Multiplying fractions 0.5", 
     "live": true, 
     "description": "Multiplying positive fractions with simplification\n", 
-    "h_position": 22, 
+    "basepoints": 16.0, 
+    "h_position": 21, 
     "slug": "multiplying_fractions_0.5", 
     "kind": "Exercise", 
     "name": "multiplying_fractions_0.5", 
-    "seconds_per_fast_problem": 8.0, 
+    "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "simplifying_fractions"
     ]
@@ -385,6 +402,7 @@
     "title": "Multiplying fractions", 
     "live": true, 
     "description": "", 
+    "basepoints": 17.0, 
     "h_position": 25, 
     "slug": "multiplying_fractions", 
     "kind": "Exercise", 
@@ -402,15 +420,16 @@
     "v_position": -13, 
     "path": "/math/arithmetic/fractions/multiplying_fractions/e/multiplying_fractions_word_problems/", 
     "id": "multiplying_fractions_word_problems", 
-    "display_name": "Multiplying fractions word problems", 
-    "title": "Multiplying fractions word problems", 
+    "display_name": "Multiplying fractions by whole numbers word problems", 
+    "title": "Multiplying fractions by whole numbers word problems", 
     "live": true, 
     "description": "", 
+    "basepoints": 18.0, 
     "h_position": 23, 
     "slug": "multiplying_fractions_word_problems", 
     "kind": "Exercise", 
     "name": "multiplying_fractions_word_problems", 
-    "seconds_per_fast_problem": 11.0, 
+    "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "multiplying_fractions_0.5", 
       "multiplying_fractions_by_integers"
@@ -429,6 +448,7 @@
     "title": "Dividing fractions by whole numbers", 
     "live": true, 
     "description": "Dividing positive fractions with simplification\n", 
+    "basepoints": 13.0, 
     "h_position": 23, 
     "slug": "dividing_fractions_0.5", 
     "kind": "Exercise", 
@@ -453,6 +473,7 @@
     "title": "Dividing whole numbers by fractions", 
     "live": true, 
     "description": "", 
+    "basepoints": 12.0, 
     "h_position": 26, 
     "slug": "dividing_fractions", 
     "kind": "Exercise", 
@@ -475,11 +496,12 @@
     "title": "Dividing fractions word problems", 
     "live": true, 
     "description": "", 
+    "basepoints": 18.0, 
     "h_position": 24, 
     "slug": "dividing_fractions_word_problems", 
     "kind": "Exercise", 
     "name": "dividing_fractions_word_problems", 
-    "seconds_per_fast_problem": 12.0, 
+    "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "dividing_fractions_0.5"
     ]
@@ -499,11 +521,12 @@
     "title": "Converting mixed numbers and improper fractions", 
     "live": true, 
     "description": "", 
+    "basepoints": 19.0, 
     "h_position": 22, 
     "slug": "converting_mixed_numbers_and_improper_fractions", 
     "kind": "Exercise", 
     "name": "converting_mixed_numbers_and_improper_fractions", 
-    "seconds_per_fast_problem": 12.0, 
+    "seconds_per_fast_problem": 14.0, 
     "prerequisites": [
       "simplifying_fractions"
     ]
@@ -519,11 +542,12 @@
     "title": "Fractions on the number line 2", 
     "live": true, 
     "description": "", 
+    "basepoints": 15.0, 
     "h_position": 24, 
     "slug": "fractions_on_the_number_line_2", 
     "kind": "Exercise", 
     "name": "fractions_on_the_number_line_2", 
-    "seconds_per_fast_problem": 7.0, 
+    "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "converting_mixed_numbers_and_improper_fractions"
     ]
@@ -539,11 +563,12 @@
     "title": "Comparing improper fractions and mixed numbers", 
     "live": true, 
     "description": "", 
+    "basepoints": 17.0, 
     "h_position": 24, 
     "slug": "comparing_improper_fractions_and_mixed_numbers", 
     "kind": "Exercise", 
     "name": "comparing_improper_fractions_and_mixed_numbers", 
-    "seconds_per_fast_problem": 9.0, 
+    "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "converting_mixed_numbers_and_improper_fractions"
     ]
@@ -559,6 +584,7 @@
     "title": "Fractions cut and copy 2", 
     "live": true, 
     "description": "", 
+    "basepoints": 23.0, 
     "h_position": 29, 
     "slug": "fractions_cut_and_copy_2", 
     "kind": "Exercise", 
@@ -579,11 +605,12 @@
     "title": "Fractions on the number line 3", 
     "live": true, 
     "description": "", 
+    "basepoints": 13.0, 
     "h_position": 25, 
     "slug": "fractions_on_the_number_line_3", 
     "kind": "Exercise", 
     "name": "fractions_on_the_number_line_3", 
-    "seconds_per_fast_problem": 7.0, 
+    "seconds_per_fast_problem": 6.25, 
     "prerequisites": [
       "fractions_on_the_number_line_2"
     ]
@@ -600,11 +627,12 @@
     "title": "Adding and subtracting mixed numbers 0.5", 
     "live": true, 
     "description": "", 
+    "basepoints": 17.0, 
     "h_position": 24, 
     "slug": "adding_subtracting_mixed_numbers_0.5", 
     "kind": "Exercise", 
     "name": "adding_subtracting_mixed_numbers_0.5", 
-    "seconds_per_fast_problem": 10.0, 
+    "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "adding_and_subtracting_fractions", 
       "converting_mixed_numbers_and_improper_fractions"
@@ -627,11 +655,12 @@
     "title": "Adding and subtracting mixed numbers 1", 
     "live": true, 
     "description": "", 
+    "basepoints": 26.0, 
     "h_position": 25, 
     "slug": "adding_subtracting_mixed_numbers_1", 
     "kind": "Exercise", 
     "name": "adding_subtracting_mixed_numbers_1", 
-    "seconds_per_fast_problem": 34.0, 
+    "seconds_per_fast_problem": 38.0, 
     "prerequisites": [
       "adding_subtracting_mixed_numbers_0.5"
     ]
@@ -649,11 +678,12 @@
     "title": "Multiplying mixed numbers 1", 
     "live": true, 
     "description": "", 
+    "basepoints": 25.0, 
     "h_position": 24, 
     "slug": "multiplying_mixed_numbers_1", 
     "kind": "Exercise", 
     "name": "multiplying_mixed_numbers_1", 
-    "seconds_per_fast_problem": 34.0, 
+    "seconds_per_fast_problem": 35.0, 
     "prerequisites": [
       "converting_mixed_numbers_and_improper_fractions", 
       "multiplying_fractions"
@@ -666,18 +696,19 @@
       "converting-fractions-to-decimals--ex2", 
       "converting-fractions-to-decimals"
     ], 
-    "v_position": 0, 
+    "v_position": 1, 
     "path": "/math/arithmetic/fractions/decimals_fractions/e/converting_fractions_to_decimals/", 
     "id": "converting_fractions_to_decimals", 
     "display_name": "Converting fractions to decimals", 
     "title": "Converting fractions to decimals", 
     "live": true, 
     "description": "Convert a fraction to decimal rounded to the nearest thousandth.\n", 
+    "basepoints": 20.0, 
     "h_position": 20, 
     "slug": "converting_fractions_to_decimals", 
     "kind": "Exercise", 
     "name": "converting_fractions_to_decimals", 
-    "seconds_per_fast_problem": 14.0, 
+    "seconds_per_fast_problem": 16.0, 
     "prerequisites": [
       "recognizing_fractions_0.5", 
       "converting_fractions_to_decimals_0.5"
@@ -696,6 +727,7 @@
     "title": "Converting decimals to fractions 1", 
     "live": true, 
     "description": "", 
+    "basepoints": 13.0, 
     "h_position": 24, 
     "slug": "converting_decimals_to_fractions_1", 
     "kind": "Exercise", 
@@ -718,6 +750,7 @@
     "title": "Converting decimals to fractions 2", 
     "live": true, 
     "description": "Convert a decimal to an equivalent fraction. Convert a decimal to an equivalent mixed number. Reduce to lowest terms.\n", 
+    "basepoints": 16.0, 
     "h_position": 25, 
     "slug": "converting_decimals_to_fractions_2", 
     "kind": "Exercise", 

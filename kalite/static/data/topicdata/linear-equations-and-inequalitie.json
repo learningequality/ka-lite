@@ -13,6 +13,7 @@
     "title": "Graphing points", 
     "live": true, 
     "description": "Plot a given point on the coordinate plane.", 
+    "basepoints": 13.0, 
     "h_position": 34, 
     "slug": "graphing_points", 
     "kind": "Exercise", 
@@ -35,11 +36,12 @@
     "title": "Graphing points and naming quadrants", 
     "live": true, 
     "description": "Graph a point and indicate which quadrant it is in on the coordinate plane.", 
+    "basepoints": 16.0, 
     "h_position": 35, 
     "slug": "graphing_points_2", 
     "kind": "Exercise", 
     "name": "graphing_points_2", 
-    "seconds_per_fast_problem": 8.0, 
+    "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "graphing_points"
     ]
@@ -57,6 +59,7 @@
     "title": "Points on the coordinate plane", 
     "live": true, 
     "description": "Determine which of several given ordered pairs is not graphed on the coordinate plane.", 
+    "basepoints": 20.0, 
     "h_position": 35, 
     "slug": "identifying_points_1", 
     "kind": "Exercise", 
@@ -79,11 +82,12 @@
     "title": "Equations from tables", 
     "live": true, 
     "description": "Determining which linear equation could generate a table of values by plugging in values.\n", 
+    "basepoints": 22.0, 
     "h_position": 39, 
     "slug": "plugging_in_values", 
     "kind": "Exercise", 
     "name": "plugging_in_values", 
-    "seconds_per_fast_problem": 19.0, 
+    "seconds_per_fast_problem": 22.0, 
     "prerequisites": [
       "line_graph_intuition"
     ]
@@ -101,6 +105,7 @@
     "title": "Ordered pair solutions to linear equations", 
     "live": true, 
     "description": "Determine which ordered pair represents a solution to a graph or equation.\n", 
+    "basepoints": 21.0, 
     "h_position": 35, 
     "slug": "identifying_points_2", 
     "kind": "Exercise", 
@@ -121,6 +126,7 @@
     "title": "Identifying linear relationships", 
     "live": true, 
     "description": "Based on graphs of lines, determine whether one variable decreases, increases, or stays the same as the other increases.\n", 
+    "basepoints": 14.0, 
     "h_position": 36, 
     "slug": "interpreting_linear_equations", 
     "kind": "Exercise", 
@@ -146,6 +152,7 @@
     "title": "Solving for the x-intercept", 
     "live": true, 
     "description": "Solve linear equations for the x-intercept\n", 
+    "basepoints": 14.0, 
     "h_position": 38, 
     "slug": "solving_for_the_x-intercept", 
     "kind": "Exercise", 
@@ -167,11 +174,12 @@
     "title": "Rate problems 1", 
     "live": true, 
     "description": "", 
+    "basepoints": 22.0, 
     "h_position": 30, 
     "slug": "rate_problems_1", 
     "kind": "Exercise", 
     "name": "rate_problems_1", 
-    "seconds_per_fast_problem": 19.0, 
+    "seconds_per_fast_problem": 22.0, 
     "prerequisites": [
       "rate_problems_0.5"
     ]
@@ -189,6 +197,7 @@
     "title": "Identifying slope of a line", 
     "live": true, 
     "description": "Select the graph that represents a given slope.\n", 
+    "basepoints": 17.0, 
     "h_position": 37, 
     "slug": "slope_of_a_line", 
     "kind": "Exercise", 
@@ -209,6 +218,7 @@
     "title": "Line graph intuition", 
     "live": true, 
     "description": "Adjust the slope and y-intercept of a line to make it go through given points.\n", 
+    "basepoints": 15.0, 
     "h_position": 38, 
     "slug": "line_graph_intuition", 
     "kind": "Exercise", 
@@ -230,6 +240,7 @@
     "title": "Graphing linear equations", 
     "live": true, 
     "description": "Graph a linear equation on the coordinate plane.\n", 
+    "basepoints": 19.0, 
     "h_position": 42, 
     "slug": "graphing_linear_equations", 
     "kind": "Exercise", 
@@ -253,11 +264,12 @@
     "title": "Solving for the y-intercept", 
     "live": true, 
     "description": "Solve linear equations for the y-intercept.\n", 
+    "basepoints": 18.0, 
     "h_position": 37, 
     "slug": "solving_for_the_y-intercept", 
     "kind": "Exercise", 
     "name": "solving_for_the_y-intercept", 
-    "seconds_per_fast_problem": 13.0, 
+    "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
       "interpreting_linear_equations"
     ]
@@ -276,6 +288,7 @@
     "title": "Slope intercept form", 
     "live": true, 
     "description": "Write an equation in slope-intercept form based on values given in a table.\n", 
+    "basepoints": 24.0, 
     "h_position": 39, 
     "slug": "slope_intercept_form", 
     "kind": "Exercise", 
@@ -298,11 +311,12 @@
     "title": "Point slope form", 
     "live": true, 
     "description": "Given 2 points, write an equation in point-slope form.\n", 
+    "basepoints": 22.0, 
     "h_position": 39, 
     "slug": "point_slope_form", 
     "kind": "Exercise", 
     "name": "point_slope_form", 
-    "seconds_per_fast_problem": 26.0, 
+    "seconds_per_fast_problem": 23.0, 
     "prerequisites": [
       "line_graph_intuition"
     ]
@@ -318,11 +332,12 @@
     "title": "Converting between slope-intercept and standard form", 
     "live": true, 
     "description": "Convert linear equations between slope-intercept and standard forms.\n", 
+    "basepoints": 20.0, 
     "h_position": 40, 
     "slug": "converting_between_slope_intercept_and_standard_form", 
     "kind": "Exercise", 
     "name": "converting_between_slope_intercept_and_standard_form", 
-    "seconds_per_fast_problem": 15.0, 
+    "seconds_per_fast_problem": 17.0, 
     "prerequisites": [
       "slope_intercept_form"
     ]
@@ -340,11 +355,12 @@
     "title": "Converting between point-slope and slope-intercept", 
     "live": true, 
     "description": "Convert linear equations between point-slop and slope-intercept forms.\n", 
+    "basepoints": 19.0, 
     "h_position": 40, 
     "slug": "converting_between_point_slope_and_slope_intercept", 
     "kind": "Exercise", 
     "name": "converting_between_point_slope_and_slope_intercept", 
-    "seconds_per_fast_problem": 14.0, 
+    "seconds_per_fast_problem": 15.0, 
     "prerequisites": [
       "point_slope_form", 
       "slope_intercept_form"
@@ -364,11 +380,12 @@
     "title": "Finding the equation of a line", 
     "live": true, 
     "description": "Given x and y values, write the equation of a line.\n", 
+    "basepoints": 23.0, 
     "h_position": 41, 
     "slug": "equation_of_a_line", 
     "kind": "Exercise", 
     "name": "equation_of_a_line", 
-    "seconds_per_fast_problem": 24.0, 
+    "seconds_per_fast_problem": 25.0, 
     "prerequisites": [
       "converting_between_slope_intercept_and_standard_form", 
       "converting_between_point_slope_and_slope_intercept"
@@ -385,13 +402,14 @@
     "title": "Midpoint formula", 
     "live": true, 
     "description": "Find the midpoint of a segment on the coordinate plane, or find the endpoint of a segment given one point and the midpoint.\n", 
+    "basepoints": 24.0, 
     "h_position": 40, 
     "slug": "midpoint_formula", 
     "kind": "Exercise", 
     "name": "midpoint_formula", 
-    "seconds_per_fast_problem": 22.0, 
+    "seconds_per_fast_problem": 27.0, 
     "prerequisites": [
-      "distance_formula"
+      "graphing_points_2"
     ]
   }, 
   {
@@ -409,13 +427,14 @@
     "title": "Pythagorean theorem", 
     "live": true, 
     "description": "Find the leg or hypotenuse of a right triangle using the Pythagorean theorem.\n", 
+    "basepoints": 21.0, 
     "h_position": 38, 
     "slug": "pythagorean_theorem_1", 
     "kind": "Exercise", 
     "name": "pythagorean_theorem_1", 
-    "seconds_per_fast_problem": 16.0, 
+    "seconds_per_fast_problem": 19.0, 
     "prerequisites": [
-      "adding_and_subtracting_radicals"
+      "simplifying_radicals"
     ]
   }, 
   {
@@ -429,11 +448,12 @@
     "title": "Distance formula", 
     "live": true, 
     "description": "Use the Pythagorean theorem to find the distance between two points on the coordinate plane.", 
+    "basepoints": 25.0, 
     "h_position": 39, 
     "slug": "distance_formula", 
     "kind": "Exercise", 
     "name": "distance_formula", 
-    "seconds_per_fast_problem": 27.0, 
+    "seconds_per_fast_problem": 34.0, 
     "prerequisites": [
       "pythagorean_theorem_1"
     ]
@@ -455,11 +475,12 @@
     "title": "Equations of parallel and perpendicular lines", 
     "live": true, 
     "description": "Determine the equation of a line parallel or perpendicular to the given line. Determine the relationship between two linear equations.", 
+    "basepoints": 22.0, 
     "h_position": 43, 
     "slug": "line_relationships", 
     "kind": "Exercise", 
     "name": "line_relationships", 
-    "seconds_per_fast_problem": 24.0, 
+    "seconds_per_fast_problem": 23.0, 
     "prerequisites": [
       "equation_of_a_line"
     ]
@@ -477,6 +498,7 @@
     "title": "Distance between point and line", 
     "live": true, 
     "description": "Find the distance between a point and a line. Some horizontal and vertical lines.", 
+    "basepoints": 22.0, 
     "h_position": 47, 
     "slug": "distance_between_point_and_line", 
     "kind": "Exercise", 
@@ -501,11 +523,12 @@
     "title": "Graphing linear inequalities", 
     "live": true, 
     "description": "Graph a linear inequality on the coordinate plane. Determine whether the line should be solid or dotted, and shade the proper side.\n", 
+    "basepoints": 22.0, 
     "h_position": 43, 
     "slug": "graphing_inequalities", 
     "kind": "Exercise", 
     "name": "graphing_inequalities", 
-    "seconds_per_fast_problem": 22.0, 
+    "seconds_per_fast_problem": 23.0, 
     "prerequisites": [
       "graphing_linear_equations"
     ]
@@ -523,11 +546,12 @@
     "title": "Graphing and solving linear inequalities", 
     "live": true, 
     "description": "Graph a linear inequality on the coordinate plane. Determine whether given ordered pairs are solutions.\n", 
+    "basepoints": 25.0, 
     "h_position": 44, 
     "slug": "graphing_inequalities_2", 
     "kind": "Exercise", 
     "name": "graphing_inequalities_2", 
-    "seconds_per_fast_problem": 29.0, 
+    "seconds_per_fast_problem": 31.0, 
     "prerequisites": [
       "graphing_inequalities"
     ]

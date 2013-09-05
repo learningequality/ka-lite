@@ -12,6 +12,7 @@
     "title": "Money and decimal place value intuition", 
     "live": true, 
     "description": "", 
+    "basepoints": 21.0, 
     "h_position": 14, 
     "slug": "understanding_decimals_place_value", 
     "kind": "Exercise", 
@@ -32,6 +33,7 @@
     "title": "Decimals on the number line 1", 
     "live": true, 
     "description": "", 
+    "basepoints": 13.0, 
     "h_position": 8, 
     "slug": "decimals_on_the_number_line_1", 
     "kind": "Exercise", 
@@ -53,11 +55,12 @@
     "title": "Decimals on the number line 2", 
     "live": true, 
     "description": "", 
+    "basepoints": 12.0, 
     "h_position": 9, 
     "slug": "decimals_on_the_number_line_2", 
     "kind": "Exercise", 
     "name": "decimals_on_the_number_line_2", 
-    "seconds_per_fast_problem": 6.0, 
+    "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "decimals_on_the_number_line_1"
     ]
@@ -75,11 +78,12 @@
     "title": "Adding decimals 0.5", 
     "live": true, 
     "description": "", 
+    "basepoints": 16.0, 
     "h_position": 10, 
     "slug": "adding_decimals_0.5", 
     "kind": "Exercise", 
     "name": "adding_decimals_0.5", 
-    "seconds_per_fast_problem": 7.0, 
+    "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "decimals_on_the_number_line_2"
     ]
@@ -97,11 +101,12 @@
     "title": "Adding decimals 1", 
     "live": true, 
     "description": "", 
+    "basepoints": 19.0, 
     "h_position": 11, 
     "slug": "adding_decimals", 
     "kind": "Exercise", 
     "name": "adding_decimals", 
-    "seconds_per_fast_problem": 14.0, 
+    "seconds_per_fast_problem": 15.0, 
     "prerequisites": [
       "addition_4", 
       "adding_decimals_0.5"
@@ -120,6 +125,7 @@
     "title": "Adding decimals 2", 
     "live": true, 
     "description": "", 
+    "basepoints": 20.0, 
     "h_position": 12, 
     "slug": "adding_decimals_2", 
     "kind": "Exercise", 
@@ -134,18 +140,19 @@
       "subtracting-decimals", 
       "subtracting-decimals--old"
     ], 
-    "v_position": 6, 
+    "v_position": 7, 
     "path": "/math/arithmetic/decimals/adding_decimals/e/subtracting_decimals_0.5/", 
     "id": "subtracting_decimals_0.5", 
     "display_name": "Subtracting decimals 0.5", 
     "title": "Subtracting decimals 0.5", 
     "live": true, 
     "description": "", 
+    "basepoints": 19.0, 
     "h_position": 13, 
     "slug": "subtracting_decimals_0.5", 
     "kind": "Exercise", 
     "name": "subtracting_decimals_0.5", 
-    "seconds_per_fast_problem": 13.0, 
+    "seconds_per_fast_problem": 15.0, 
     "prerequisites": [
       "regrouping-decimals"
     ]
@@ -162,11 +169,12 @@
     "title": "Subtracting decimals", 
     "live": true, 
     "description": "", 
+    "basepoints": 19.0, 
     "h_position": 14, 
     "slug": "subtracting_decimals", 
     "kind": "Exercise", 
     "name": "subtracting_decimals", 
-    "seconds_per_fast_problem": 13.0, 
+    "seconds_per_fast_problem": 14.0, 
     "prerequisites": [
       "subtracting_decimals_0.5"
     ]
@@ -183,11 +191,12 @@
     "title": "Adding and subtracting decimals word problems", 
     "live": true, 
     "description": "", 
+    "basepoints": 24.0, 
     "h_position": 15, 
     "slug": "adding_and_subtracting_decimals_word_problems", 
     "kind": "Exercise", 
     "name": "adding_and_subtracting_decimals_word_problems", 
-    "seconds_per_fast_problem": 26.0, 
+    "seconds_per_fast_problem": 27.0, 
     "prerequisites": [
       "subtracting_decimals"
     ]
@@ -205,6 +214,7 @@
     "title": "Multiplying decimals", 
     "live": true, 
     "description": "", 
+    "basepoints": 22.0, 
     "h_position": 13, 
     "slug": "multiplying_decimals", 
     "kind": "Exercise", 
@@ -227,6 +237,7 @@
     "title": "Dividing completely", 
     "live": true, 
     "description": "", 
+    "basepoints": 17.0, 
     "h_position": 12, 
     "slug": "dividing_decimals_0.5", 
     "kind": "Exercise", 
@@ -249,11 +260,12 @@
     "title": "Dividing decimals 1", 
     "live": true, 
     "description": "", 
+    "basepoints": 14.0, 
     "h_position": 13, 
     "slug": "dividing_decimals_1", 
     "kind": "Exercise", 
     "name": "dividing_decimals_1", 
-    "seconds_per_fast_problem": 15.0, 
+    "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "dividing_decimals_0.5", 
       "division_4"
@@ -265,18 +277,19 @@
       "dividing-decimals", 
       "dividing-decimal"
     ], 
-    "v_position": 1, 
+    "v_position": 0, 
     "path": "/math/arithmetic/decimals/dividing_decimals/e/dividing_decimals_2/", 
     "id": "dividing_decimals_2", 
     "display_name": "Dividing decimals 2", 
     "title": "Dividing decimals 2", 
     "live": true, 
     "description": "", 
+    "basepoints": 17.0, 
     "h_position": 14, 
     "slug": "dividing_decimals_2", 
     "kind": "Exercise", 
     "name": "dividing_decimals_2", 
-    "seconds_per_fast_problem": 12.0, 
+    "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "dividing_decimals_1"
     ]
@@ -293,6 +306,7 @@
     "title": "Dividing decimals", 
     "live": true, 
     "description": "", 
+    "basepoints": 21.0, 
     "h_position": 15, 
     "slug": "dividing_decimals", 
     "kind": "Exercise", 
@@ -309,18 +323,19 @@
       "converting-fractions-to-decimals--ex2", 
       "converting-fractions-to-decimals"
     ], 
-    "v_position": 0, 
+    "v_position": 1, 
     "path": "/math/arithmetic/decimals/decimal_to_fraction/e/converting_fractions_to_decimals/", 
     "id": "converting_fractions_to_decimals", 
     "display_name": "Converting fractions to decimals", 
     "title": "Converting fractions to decimals", 
     "live": true, 
     "description": "Convert a fraction to decimal rounded to the nearest thousandth.\n", 
+    "basepoints": 20.0, 
     "h_position": 20, 
     "slug": "converting_fractions_to_decimals", 
     "kind": "Exercise", 
     "name": "converting_fractions_to_decimals", 
-    "seconds_per_fast_problem": 14.0, 
+    "seconds_per_fast_problem": 16.0, 
     "prerequisites": [
       "recognizing_fractions_0.5", 
       "converting_fractions_to_decimals_0.5"
@@ -339,6 +354,7 @@
     "title": "Converting decimals to fractions 1", 
     "live": true, 
     "description": "", 
+    "basepoints": 13.0, 
     "h_position": 24, 
     "slug": "converting_decimals_to_fractions_1", 
     "kind": "Exercise", 
@@ -361,6 +377,7 @@
     "title": "Converting decimals to fractions 2", 
     "live": true, 
     "description": "Convert a decimal to an equivalent fraction. Convert a decimal to an equivalent mixed number. Reduce to lowest terms.\n", 
+    "basepoints": 16.0, 
     "h_position": 25, 
     "slug": "converting_decimals_to_fractions_2", 
     "kind": "Exercise", 
@@ -383,6 +400,7 @@
     "title": "Converting decimals to percents", 
     "live": true, 
     "description": "", 
+    "basepoints": 13.0, 
     "h_position": 27, 
     "slug": "converting_decimals_to_percents", 
     "kind": "Exercise", 
@@ -405,11 +423,12 @@
     "title": "Converting percents to decimals", 
     "live": true, 
     "description": "", 
+    "basepoints": 12.0, 
     "h_position": 27, 
     "slug": "converting_percents_to_decimals", 
     "kind": "Exercise", 
     "name": "converting_percents_to_decimals", 
-    "seconds_per_fast_problem": 6.0, 
+    "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "finding_percents"
     ]
@@ -427,6 +446,7 @@
     "title": "Discount tax and tip word problems", 
     "live": true, 
     "description": "", 
+    "basepoints": 21.0, 
     "h_position": 28, 
     "slug": "discount_tax_and_tip_word_problems", 
     "kind": "Exercise", 
@@ -450,11 +470,12 @@
     "title": "Markup and commission word problems", 
     "live": true, 
     "description": "", 
+    "basepoints": 22.0, 
     "h_position": 28, 
     "slug": "markup_and_commission_word_problems", 
     "kind": "Exercise", 
     "name": "markup_and_commission_word_problems", 
-    "seconds_per_fast_problem": 20.0, 
+    "seconds_per_fast_problem": 21.0, 
     "prerequisites": [
       "converting_decimals_to_percents", 
       "converting_percents_to_decimals"
@@ -471,6 +492,7 @@
     "title": "Rounding numbers", 
     "live": true, 
     "description": "", 
+    "basepoints": 15.0, 
     "h_position": 15, 
     "slug": "rounding_numbers", 
     "kind": "Exercise", 
@@ -491,11 +513,12 @@
     "title": "Estimation with decimals", 
     "live": true, 
     "description": "", 
+    "basepoints": 18.0, 
     "h_position": 16, 
     "slug": "estimation_with_decimals", 
     "kind": "Exercise", 
     "name": "estimation_with_decimals", 
-    "seconds_per_fast_problem": 19.0, 
+    "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "rounding_numbers"
     ]
@@ -512,6 +535,7 @@
     "title": "Significant figures", 
     "live": true, 
     "description": "Determine how many significant figures a given number has.\n", 
+    "basepoints": 12.0, 
     "h_position": 23, 
     "slug": "significant_figures_1", 
     "kind": "Exercise", 
@@ -534,11 +558,12 @@
     "title": "Understanding moving the decimal", 
     "live": true, 
     "description": "", 
+    "basepoints": 12.0, 
     "h_position": 14, 
     "slug": "understanding_moving_the_decimal", 
     "kind": "Exercise", 
     "name": "understanding_moving_the_decimal", 
-    "seconds_per_fast_problem": 6.0, 
+    "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "multiplying_decimals"
     ]

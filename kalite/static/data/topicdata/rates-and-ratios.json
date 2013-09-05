@@ -12,6 +12,7 @@
     "title": "Expressing ratios as fractions", 
     "live": true, 
     "description": "", 
+    "basepoints": 15.0, 
     "h_position": 28, 
     "slug": "expressing_ratios_as_fractions", 
     "kind": "Exercise", 
@@ -33,6 +34,7 @@
     "title": "Ratio word problems", 
     "live": true, 
     "description": "", 
+    "basepoints": 17.0, 
     "h_position": 29, 
     "slug": "ratio_word_problems", 
     "kind": "Exercise", 
@@ -55,11 +57,12 @@
     "title": "Rate problems 0.5", 
     "live": true, 
     "description": null, 
+    "basepoints": 19.0, 
     "h_position": 29, 
     "slug": "rate_problems_0.5", 
     "kind": "Exercise", 
     "name": "rate_problems_0.5", 
-    "seconds_per_fast_problem": 13.0, 
+    "seconds_per_fast_problem": 15.0, 
     "prerequisites": [
       "units"
     ]
@@ -75,11 +78,12 @@
     "title": "Rate problems 2", 
     "live": true, 
     "description": "", 
+    "basepoints": 18.0, 
     "h_position": 31, 
     "slug": "rate_problems_2", 
     "kind": "Exercise", 
     "name": "rate_problems_2", 
-    "seconds_per_fast_problem": 9.0, 
+    "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
       "rate_problems_1"
     ]
@@ -99,11 +103,12 @@
     "title": "Units", 
     "live": true, 
     "description": "", 
+    "basepoints": 21.0, 
     "h_position": 28, 
     "slug": "units", 
     "kind": "Exercise", 
     "name": "units", 
-    "seconds_per_fast_problem": 17.0, 
+    "seconds_per_fast_problem": 18.0, 
     "prerequisites": [
       "multiplying-fractions-by-fractions-word-problems"
     ]

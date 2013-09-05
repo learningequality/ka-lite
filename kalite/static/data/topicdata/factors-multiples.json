@@ -13,6 +13,7 @@
     "title": "Divisibility tests", 
     "live": true, 
     "description": "", 
+    "basepoints": 13.0, 
     "h_position": 11, 
     "slug": "divisibility_tests", 
     "kind": "Exercise", 
@@ -33,6 +34,7 @@
     "title": "Divisibility 0.5", 
     "live": true, 
     "description": "", 
+    "basepoints": 15.0, 
     "h_position": 11, 
     "slug": "divisibility_0.5", 
     "kind": "Exercise", 
@@ -54,11 +56,12 @@
     "title": "Divisibility intuition", 
     "live": true, 
     "description": "", 
+    "basepoints": 16.0, 
     "h_position": 10, 
     "slug": "divisibility_intuition", 
     "kind": "Exercise", 
     "name": "divisibility_intuition", 
-    "seconds_per_fast_problem": 8.0, 
+    "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "division_2"
     ]
@@ -75,6 +78,7 @@
     "title": "Prime numbers", 
     "live": true, 
     "description": "", 
+    "basepoints": 14.0, 
     "h_position": 12, 
     "slug": "prime_numbers", 
     "kind": "Exercise", 
@@ -90,14 +94,15 @@
       "recognizing-prime-numbers", 
       "prime-numbers"
     ], 
-    "v_position": -10, 
+    "v_position": -13, 
     "path": "/math/arithmetic/factors-multiples/prime_numbers/e/composite_numbers/", 
     "id": "composite_numbers", 
     "display_name": "Composite numbers", 
     "title": "Composite numbers", 
     "live": true, 
     "description": "", 
-    "h_position": 12, 
+    "basepoints": 13.0, 
+    "h_position": 13, 
     "slug": "composite_numbers", 
     "kind": "Exercise", 
     "name": "composite_numbers", 
@@ -119,6 +124,7 @@
     "title": "Prime factorization", 
     "live": true, 
     "description": "", 
+    "basepoints": 15.0, 
     "h_position": 13, 
     "slug": "prime_factorization", 
     "kind": "Exercise", 
@@ -140,6 +146,7 @@
     "title": "The fundamental theorem of arithmetic", 
     "live": true, 
     "description": "", 
+    "basepoints": 16.0, 
     "h_position": 14, 
     "slug": "the_fundamental_theorem_of_arithmetic", 
     "kind": "Exercise", 
@@ -160,11 +167,12 @@
     "title": "Divisibility", 
     "live": true, 
     "description": "", 
+    "basepoints": 19.0, 
     "h_position": 15, 
     "slug": "divisibility", 
     "kind": "Exercise", 
     "name": "divisibility", 
-    "seconds_per_fast_problem": 13.0, 
+    "seconds_per_fast_problem": 15.0, 
     "prerequisites": [
       "prime_factorization"
     ]
@@ -182,11 +190,12 @@
     "title": "Least common multiple", 
     "live": true, 
     "description": "", 
+    "basepoints": 16.0, 
     "h_position": 14, 
     "slug": "least_common_multiple", 
     "kind": "Exercise", 
     "name": "least_common_multiple", 
-    "seconds_per_fast_problem": 8.0, 
+    "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "prime_factorization"
     ]
@@ -203,6 +212,7 @@
     "title": "Greatest common divisor", 
     "live": true, 
     "description": "", 
+    "basepoints": 13.0, 
     "h_position": 14, 
     "slug": "greatest_common_divisor", 
     "kind": "Exercise", 
@@ -224,11 +234,12 @@
     "title": "LCM and GCD word problems", 
     "live": true, 
     "description": "", 
-    "h_position": 14, 
+    "basepoints": 22.0, 
+    "h_position": 15, 
     "slug": "least_common_multiple_and_greatest_common_divisor_word_problems", 
     "kind": "Exercise", 
     "name": "least_common_multiple_and_greatest_common_divisor_word_problems", 
-    "seconds_per_fast_problem": 20.0, 
+    "seconds_per_fast_problem": 21.0, 
     "prerequisites": [
       "prime_factorization"
     ]

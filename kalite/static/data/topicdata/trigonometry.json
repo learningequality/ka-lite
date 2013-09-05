@@ -13,6 +13,7 @@
     "title": "Graphing points", 
     "live": true, 
     "description": "Plot a given point on the coordinate plane.", 
+    "basepoints": 13.0, 
     "h_position": 34, 
     "slug": "graphing_points", 
     "kind": "Exercise", 
@@ -35,11 +36,12 @@
     "title": "Graphing points and naming quadrants", 
     "live": true, 
     "description": "Graph a point and indicate which quadrant it is in on the coordinate plane.", 
+    "basepoints": 16.0, 
     "h_position": 35, 
     "slug": "graphing_points_2", 
     "kind": "Exercise", 
     "name": "graphing_points_2", 
-    "seconds_per_fast_problem": 8.0, 
+    "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "graphing_points"
     ]
@@ -57,6 +59,7 @@
     "title": "Points on the coordinate plane", 
     "live": true, 
     "description": "Determine which of several given ordered pairs is not graphed on the coordinate plane.", 
+    "basepoints": 20.0, 
     "h_position": 35, 
     "slug": "identifying_points_1", 
     "kind": "Exercise", 
@@ -79,6 +82,7 @@
     "title": "Ordered pair solutions to linear equations", 
     "live": true, 
     "description": "Determine which ordered pair represents a solution to a graph or equation.\n", 
+    "basepoints": 21.0, 
     "h_position": 35, 
     "slug": "identifying_points_2", 
     "kind": "Exercise", 
@@ -99,6 +103,7 @@
     "title": "Identifying linear relationships", 
     "live": true, 
     "description": "Based on graphs of lines, determine whether one variable decreases, increases, or stays the same as the other increases.\n", 
+    "basepoints": 14.0, 
     "h_position": 36, 
     "slug": "interpreting_linear_equations", 
     "kind": "Exercise", 
@@ -123,6 +128,7 @@
     "title": "Identifying slope of a line", 
     "live": true, 
     "description": "Select the graph that represents a given slope.\n", 
+    "basepoints": 17.0, 
     "h_position": 37, 
     "slug": "slope_of_a_line", 
     "kind": "Exercise", 
@@ -143,6 +149,7 @@
     "title": "Line graph intuition", 
     "live": true, 
     "description": "Adjust the slope and y-intercept of a line to make it go through given points.\n", 
+    "basepoints": 15.0, 
     "h_position": 38, 
     "slug": "line_graph_intuition", 
     "kind": "Exercise", 
@@ -164,6 +171,7 @@
     "title": "Graphing linear equations", 
     "live": true, 
     "description": "Graph a linear equation on the coordinate plane.\n", 
+    "basepoints": 19.0, 
     "h_position": 42, 
     "slug": "graphing_linear_equations", 
     "kind": "Exercise", 
@@ -187,11 +195,12 @@
     "title": "Solving for the y-intercept", 
     "live": true, 
     "description": "Solve linear equations for the y-intercept.\n", 
+    "basepoints": 18.0, 
     "h_position": 37, 
     "slug": "solving_for_the_y-intercept", 
     "kind": "Exercise", 
     "name": "solving_for_the_y-intercept", 
-    "seconds_per_fast_problem": 13.0, 
+    "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
       "interpreting_linear_equations"
     ]
@@ -210,6 +219,7 @@
     "title": "Slope intercept form", 
     "live": true, 
     "description": "Write an equation in slope-intercept form based on values given in a table.\n", 
+    "basepoints": 24.0, 
     "h_position": 39, 
     "slug": "slope_intercept_form", 
     "kind": "Exercise", 
@@ -232,11 +242,12 @@
     "title": "Point slope form", 
     "live": true, 
     "description": "Given 2 points, write an equation in point-slope form.\n", 
+    "basepoints": 22.0, 
     "h_position": 39, 
     "slug": "point_slope_form", 
     "kind": "Exercise", 
     "name": "point_slope_form", 
-    "seconds_per_fast_problem": 26.0, 
+    "seconds_per_fast_problem": 23.0, 
     "prerequisites": [
       "line_graph_intuition"
     ]
@@ -252,11 +263,12 @@
     "title": "Converting between slope-intercept and standard form", 
     "live": true, 
     "description": "Convert linear equations between slope-intercept and standard forms.\n", 
+    "basepoints": 20.0, 
     "h_position": 40, 
     "slug": "converting_between_slope_intercept_and_standard_form", 
     "kind": "Exercise", 
     "name": "converting_between_slope_intercept_and_standard_form", 
-    "seconds_per_fast_problem": 15.0, 
+    "seconds_per_fast_problem": 17.0, 
     "prerequisites": [
       "slope_intercept_form"
     ]
@@ -274,11 +286,12 @@
     "title": "Converting between point-slope and slope-intercept", 
     "live": true, 
     "description": "Convert linear equations between point-slop and slope-intercept forms.\n", 
+    "basepoints": 19.0, 
     "h_position": 40, 
     "slug": "converting_between_point_slope_and_slope_intercept", 
     "kind": "Exercise", 
     "name": "converting_between_point_slope_and_slope_intercept", 
-    "seconds_per_fast_problem": 14.0, 
+    "seconds_per_fast_problem": 15.0, 
     "prerequisites": [
       "point_slope_form", 
       "slope_intercept_form"
@@ -298,11 +311,12 @@
     "title": "Finding the equation of a line", 
     "live": true, 
     "description": "Given x and y values, write the equation of a line.\n", 
+    "basepoints": 23.0, 
     "h_position": 41, 
     "slug": "equation_of_a_line", 
     "kind": "Exercise", 
     "name": "equation_of_a_line", 
-    "seconds_per_fast_problem": 24.0, 
+    "seconds_per_fast_problem": 25.0, 
     "prerequisites": [
       "converting_between_slope_intercept_and_standard_form", 
       "converting_between_point_slope_and_slope_intercept"
@@ -319,13 +333,14 @@
     "title": "Midpoint formula", 
     "live": true, 
     "description": "Find the midpoint of a segment on the coordinate plane, or find the endpoint of a segment given one point and the midpoint.\n", 
+    "basepoints": 24.0, 
     "h_position": 40, 
     "slug": "midpoint_formula", 
     "kind": "Exercise", 
     "name": "midpoint_formula", 
-    "seconds_per_fast_problem": 22.0, 
+    "seconds_per_fast_problem": 27.0, 
     "prerequisites": [
-      "distance_formula"
+      "graphing_points_2"
     ]
   }, 
   {
@@ -339,11 +354,12 @@
     "title": "Distance formula", 
     "live": true, 
     "description": "Use the Pythagorean theorem to find the distance between two points on the coordinate plane.", 
+    "basepoints": 25.0, 
     "h_position": 39, 
     "slug": "distance_formula", 
     "kind": "Exercise", 
     "name": "distance_formula", 
-    "seconds_per_fast_problem": 27.0, 
+    "seconds_per_fast_problem": 34.0, 
     "prerequisites": [
       "pythagorean_theorem_1"
     ]
@@ -365,11 +381,12 @@
     "title": "Equations of parallel and perpendicular lines", 
     "live": true, 
     "description": "Determine the equation of a line parallel or perpendicular to the given line. Determine the relationship between two linear equations.", 
+    "basepoints": 22.0, 
     "h_position": 43, 
     "slug": "line_relationships", 
     "kind": "Exercise", 
     "name": "line_relationships", 
-    "seconds_per_fast_problem": 24.0, 
+    "seconds_per_fast_problem": 23.0, 
     "prerequisites": [
       "equation_of_a_line"
     ]
@@ -387,6 +404,7 @@
     "title": "Distance between point and line", 
     "live": true, 
     "description": "Find the distance between a point and a line. Some horizontal and vertical lines.", 
+    "basepoints": 22.0, 
     "h_position": 47, 
     "slug": "distance_between_point_and_line", 
     "kind": "Exercise", 
@@ -411,11 +429,12 @@
     "title": "Graphing linear inequalities", 
     "live": true, 
     "description": "Graph a linear inequality on the coordinate plane. Determine whether the line should be solid or dotted, and shade the proper side.\n", 
+    "basepoints": 22.0, 
     "h_position": 43, 
     "slug": "graphing_inequalities", 
     "kind": "Exercise", 
     "name": "graphing_inequalities", 
-    "seconds_per_fast_problem": 22.0, 
+    "seconds_per_fast_problem": 23.0, 
     "prerequisites": [
       "graphing_linear_equations"
     ]
@@ -433,11 +452,12 @@
     "title": "Graphing and solving linear inequalities", 
     "live": true, 
     "description": "Graph a linear inequality on the coordinate plane. Determine whether given ordered pairs are solutions.\n", 
+    "basepoints": 25.0, 
     "h_position": 44, 
     "slug": "graphing_inequalities_2", 
     "kind": "Exercise", 
     "name": "graphing_inequalities_2", 
-    "seconds_per_fast_problem": 29.0, 
+    "seconds_per_fast_problem": 31.0, 
     "prerequisites": [
       "graphing_inequalities"
     ]
@@ -456,6 +476,7 @@
     "title": "Understanding function notation", 
     "live": true, 
     "description": "", 
+    "basepoints": 15.0, 
     "h_position": 38, 
     "slug": "functions_1", 
     "kind": "Exercise", 
@@ -476,11 +497,12 @@
     "title": "Evaluating expressions with function notation", 
     "live": true, 
     "description": "Find the value of a function for a given x based on a graph, and perform operations with that value.\n", 
+    "basepoints": 24.0, 
     "h_position": 39, 
     "slug": "functions_2", 
     "kind": "Exercise", 
     "name": "functions_2", 
-    "seconds_per_fast_problem": 25.0, 
+    "seconds_per_fast_problem": 30.0, 
     "prerequisites": [
       "functions_1"
     ]
@@ -496,11 +518,12 @@
     "title": "Evaluating composite functions", 
     "live": true, 
     "description": "Find the function of a function.\n", 
+    "basepoints": 28.0, 
     "h_position": 40, 
     "slug": "functions_3", 
     "kind": "Exercise", 
     "name": "functions_3", 
-    "seconds_per_fast_problem": 46.0, 
+    "seconds_per_fast_problem": 52.0, 
     "prerequisites": [
       "functions_2"
     ]
@@ -521,11 +544,12 @@
     "title": "Domain of a function", 
     "live": true, 
     "description": "Given the equation of a function, determine the domain.", 
+    "basepoints": 18.0, 
     "h_position": 40, 
     "slug": "domain_of_a_function", 
     "kind": "Exercise", 
     "name": "domain_of_a_function", 
-    "seconds_per_fast_problem": 13.0, 
+    "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
       "functions_2", 
       "domain_and_range_0.5"
@@ -542,11 +566,12 @@
     "title": "Domain and range from graph", 
     "live": true, 
     "description": "Given the graph of a function, determine its domain or range.\n", 
+    "basepoints": 16.0, 
     "h_position": 39, 
     "slug": "domain_and_range_0.5", 
     "kind": "Exercise", 
     "name": "domain_and_range_0.5", 
-    "seconds_per_fast_problem": 8.0, 
+    "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "functions_1"
     ]
@@ -567,11 +592,12 @@
     "title": "Domain of a function", 
     "live": true, 
     "description": "Given the equation of a function, determine the domain.", 
+    "basepoints": 18.0, 
     "h_position": 40, 
     "slug": "domain_of_a_function", 
     "kind": "Exercise", 
     "name": "domain_of_a_function", 
-    "seconds_per_fast_problem": 13.0, 
+    "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
       "functions_2", 
       "domain_and_range_0.5"
@@ -592,11 +618,12 @@
     "title": "Range of a function", 
     "live": true, 
     "description": "Given the equation of a quadratic function, determine the range.\n", 
+    "basepoints": 17.0, 
     "h_position": 40, 
     "slug": "range_of_a_function", 
     "kind": "Exercise", 
     "name": "range_of_a_function", 
-    "seconds_per_fast_problem": 10.0, 
+    "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "functions_2", 
       "domain_and_range_0.5"
@@ -616,11 +643,12 @@
     "title": "Inverses of functions", 
     "live": true, 
     "description": "Determine the inverse of a function based on the equation and graph.\n", 
+    "basepoints": 17.0, 
     "h_position": 41, 
     "slug": "inverses_of_functions", 
     "kind": "Exercise", 
     "name": "inverses_of_functions", 
-    "seconds_per_fast_problem": 12.0, 
+    "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "domain_of_a_function", 
       "range_of_a_function"
@@ -638,6 +666,7 @@
     "title": "Even and odd functions", 
     "live": true, 
     "description": "Determine if a graphed function is even, odd, or neither.\n", 
+    "basepoints": 12.0, 
     "h_position": 40, 
     "slug": "even_and_odd_functions", 
     "kind": "Exercise", 
@@ -658,6 +687,7 @@
     "title": "Shifting and reflecting functions", 
     "live": true, 
     "description": "Determine the equation for one graphed function in terms of another.\n", 
+    "basepoints": 15.0, 
     "h_position": 41, 
     "slug": "shifting_and_reflecting_functions", 
     "kind": "Exercise", 
@@ -682,11 +712,12 @@
     "title": "Factoring polynomials 1", 
     "live": true, 
     "description": "Factor polynomials that are not perfect squares, where A=1", 
+    "basepoints": 22.0, 
     "h_position": 49, 
     "slug": "factoring_polynomials_1", 
     "kind": "Exercise", 
     "name": "factoring_polynomials_1", 
-    "seconds_per_fast_problem": 20.0, 
+    "seconds_per_fast_problem": 22.0, 
     "prerequisites": [
       "factoring_linear_binomials"
     ]
@@ -704,6 +735,7 @@
     "title": "Solving quadratics by factoring", 
     "live": true, 
     "description": "Factor quadratics to find the x-intercepts. Solve a polynomial by factoring.\n", 
+    "basepoints": 17.0, 
     "h_position": 50, 
     "slug": "solving_quadratics_by_factoring", 
     "kind": "Exercise", 
@@ -724,11 +756,12 @@
     "title": "Factoring polynomials 2", 
     "live": true, 
     "description": "Factor polynomials that are not perfect squares, where A is not 1\n", 
+    "basepoints": 27.0, 
     "h_position": 50, 
     "slug": "factoring_polynomials_2", 
     "kind": "Exercise", 
     "name": "factoring_polynomials_2", 
-    "seconds_per_fast_problem": 48.0, 
+    "seconds_per_fast_problem": 47.0, 
     "prerequisites": [
       "factoring_polynomials_1"
     ]
@@ -746,11 +779,12 @@
     "title": "Solving quadratics by factoring 2", 
     "live": true, 
     "description": "Solve quadratics by factoring, where A is not 1\n", 
+    "basepoints": 23.0, 
     "h_position": 51, 
     "slug": "solving_quadratics_by_factoring_2", 
     "kind": "Exercise", 
     "name": "solving_quadratics_by_factoring_2", 
-    "seconds_per_fast_problem": 23.0, 
+    "seconds_per_fast_problem": 24.0, 
     "prerequisites": [
       "solving_quadratics_by_factoring"
     ]
@@ -766,11 +800,12 @@
     "title": "Factoring difference of squares 1", 
     "live": true, 
     "description": "Factoring differences of squares into the form (x+b)*(x-b)\n", 
+    "basepoints": 17.0, 
     "h_position": 49, 
     "slug": "factoring_difference_of_squares_1", 
     "kind": "Exercise", 
     "name": "factoring_difference_of_squares_1", 
-    "seconds_per_fast_problem": 10.0, 
+    "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "multiplying_expressions_1", 
       "multiplying_polynomials"
@@ -787,11 +822,12 @@
     "title": "Factoring difference of squares 2", 
     "live": true, 
     "description": "Factoring differences of squares into the form (Ax+b)*(Ax-b)\n", 
+    "basepoints": 19.0, 
     "h_position": 50, 
     "slug": "factoring_difference_of_squares_2", 
     "kind": "Exercise", 
     "name": "factoring_difference_of_squares_2", 
-    "seconds_per_fast_problem": 12.0, 
+    "seconds_per_fast_problem": 14.0, 
     "prerequisites": [
       "factoring_difference_of_squares_1"
     ]
@@ -808,6 +844,7 @@
     "title": "Factoring difference of squares 3", 
     "live": true, 
     "description": "Factoring a difference of squares in the format C(Ax+b)*(Ax-b)", 
+    "basepoints": 24.0, 
     "h_position": 51, 
     "slug": "factoring_difference_of_squares_3", 
     "kind": "Exercise", 
@@ -834,6 +871,7 @@
     "title": "Factoring polynomials by grouping", 
     "live": true, 
     "description": "Factor polynomials by grouping\n", 
+    "basepoints": 29.0, 
     "h_position": 51, 
     "slug": "factoring_polynomials_by_grouping_1", 
     "kind": "Exercise", 
@@ -854,11 +892,12 @@
     "title": "Solving quadratics by taking the square root", 
     "live": true, 
     "description": "Solve quadratics by taking the square root.\n", 
+    "basepoints": 22.0, 
     "h_position": 50, 
     "slug": "solving_quadratics_by_taking_the_square_root", 
     "kind": "Exercise", 
     "name": "solving_quadratics_by_taking_the_square_root", 
-    "seconds_per_fast_problem": 19.0, 
+    "seconds_per_fast_problem": 22.0, 
     "prerequisites": [
       "factoring_polynomials_1"
     ]
@@ -874,11 +913,12 @@
     "title": "Completing the square 1", 
     "live": true, 
     "description": "Find the roots of a quadratic equation by completing the square. Can also be solved by factoring.\n", 
+    "basepoints": 25.0, 
     "h_position": 51, 
     "slug": "completing_the_square_1", 
     "kind": "Exercise", 
     "name": "completing_the_square_1", 
-    "seconds_per_fast_problem": 31.0, 
+    "seconds_per_fast_problem": 33.0, 
     "prerequisites": [
       "solving_quadratics_by_taking_the_square_root", 
       "solving_quadratics_by_factoring"
@@ -895,6 +935,7 @@
     "title": "Completing the square 2", 
     "live": true, 
     "description": "Find the roots of a quadratic by completing the square.\n", 
+    "basepoints": 29.0, 
     "h_position": 52, 
     "slug": "completing_the_square_2", 
     "kind": "Exercise", 
@@ -919,11 +960,12 @@
     "title": "Quadratic formula", 
     "live": true, 
     "description": "Use the quadratic formula to find the roots of a quadratic function.\n", 
+    "basepoints": 26.0, 
     "h_position": 53, 
     "slug": "quadratic_equation", 
     "kind": "Exercise", 
     "name": "quadratic_equation", 
-    "seconds_per_fast_problem": 35.0, 
+    "seconds_per_fast_problem": 39.0, 
     "prerequisites": [
       "completing_the_square_2"
     ]
@@ -940,11 +982,12 @@
     "title": "Solutions to quadratic equations", 
     "live": true, 
     "description": "Determine how many solutions a quadratic equation has and whether they are rational, irrational, or complex\n", 
+    "basepoints": 21.0, 
     "h_position": 54, 
     "slug": "solutions_to_quadratic_equations", 
     "kind": "Exercise", 
     "name": "solutions_to_quadratic_equations", 
-    "seconds_per_fast_problem": 19.0, 
+    "seconds_per_fast_problem": 20.0, 
     "prerequisites": [
       "quadratic_equation"
     ]
@@ -962,11 +1005,12 @@
     "title": "Adding and subtracting polynomials", 
     "live": true, 
     "description": "Add or subtract polynomials\n", 
+    "basepoints": 20.0, 
     "h_position": 45, 
     "slug": "adding_and_subtracting_polynomials", 
     "kind": "Exercise", 
     "name": "adding_and_subtracting_polynomials", 
-    "seconds_per_fast_problem": 15.0, 
+    "seconds_per_fast_problem": 17.0, 
     "prerequisites": [
       "equation_of_a_line"
     ]
@@ -984,11 +1028,12 @@
     "title": "Multiplying polynomials", 
     "live": true, 
     "description": "Multiply two expressions with variables and exponents to get a polynomial\n", 
+    "basepoints": 21.0, 
     "h_position": 47, 
     "slug": "multiplying_polynomials", 
     "kind": "Exercise", 
     "name": "multiplying_polynomials", 
-    "seconds_per_fast_problem": 17.0, 
+    "seconds_per_fast_problem": 18.0, 
     "prerequisites": [
       "multiplying_expressions_0.5"
     ]
@@ -1005,11 +1050,12 @@
     "title": "Trigonometry 0.5", 
     "live": true, 
     "description": "", 
+    "basepoints": 18.0, 
     "h_position": 48, 
     "slug": "trigonometry_0.5", 
     "kind": "Exercise", 
     "name": "trigonometry_0.5", 
-    "seconds_per_fast_problem": 11.0, 
+    "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
       "pythagorean_theorem_1", 
       "radians_and_degrees"
@@ -1027,14 +1073,14 @@
     "title": "Trigonometry 1", 
     "live": true, 
     "description": "", 
+    "basepoints": 18.0, 
     "h_position": 49, 
     "slug": "trigonometry_1", 
     "kind": "Exercise", 
     "name": "trigonometry_1", 
     "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
-      "trigonometry_0.5", 
-      "unit_circle"
+      "trigonometry_0.5"
     ]
   }, 
   {
@@ -1049,11 +1095,12 @@
     "title": "Reciprocal trig functions", 
     "live": true, 
     "description": "Understand the right triangle definition of sec, csc, and cot functions\n", 
+    "basepoints": 18.0, 
     "h_position": 50, 
     "slug": "reciprocal_trig_funcs", 
     "kind": "Exercise", 
     "name": "reciprocal_trig_funcs", 
-    "seconds_per_fast_problem": 12.0, 
+    "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "trigonometry_1"
     ]
@@ -1071,6 +1118,7 @@
     "title": "Trigonometry 1.5", 
     "live": true, 
     "description": "", 
+    "basepoints": 20.0, 
     "h_position": 50, 
     "slug": "trigonometry_1.5", 
     "kind": "Exercise", 
@@ -1091,11 +1139,12 @@
     "title": "Trigonometry 2", 
     "live": true, 
     "description": "", 
+    "basepoints": 19.0, 
     "h_position": 51, 
     "slug": "trigonometry_2", 
     "kind": "Exercise", 
     "name": "trigonometry_2", 
-    "seconds_per_fast_problem": 15.0, 
+    "seconds_per_fast_problem": 14.0, 
     "prerequisites": [
       "trigonometry_1.5"
     ]
@@ -1115,11 +1164,12 @@
     "title": "Special right triangles", 
     "live": true, 
     "description": "", 
+    "basepoints": 19.0, 
     "h_position": 51, 
     "slug": "pythagorean_theorem_2", 
     "kind": "Exercise", 
     "name": "pythagorean_theorem_2", 
-    "seconds_per_fast_problem": 12.0, 
+    "seconds_per_fast_problem": 15.0, 
     "prerequisites": [
       "trigonometry_1.5"
     ]
@@ -1137,11 +1187,12 @@
     "title": "Degrees to radians", 
     "live": true, 
     "description": "", 
+    "basepoints": 17.0, 
     "h_position": 46, 
     "slug": "degrees_to_radians", 
     "kind": "Exercise", 
     "name": "degrees_to_radians", 
-    "seconds_per_fast_problem": 8.0, 
+    "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "congruent_triangles_2"
     ]
@@ -1159,11 +1210,12 @@
     "title": "Radians to degrees", 
     "live": true, 
     "description": "", 
+    "basepoints": 19.0, 
     "h_position": 46, 
     "slug": "radians_to_degrees", 
     "kind": "Exercise", 
     "name": "radians_to_degrees", 
-    "seconds_per_fast_problem": 11.0, 
+    "seconds_per_fast_problem": 14.0, 
     "prerequisites": [
       "congruent_triangles_2"
     ]
@@ -1182,11 +1234,12 @@
     "title": "Radians and degrees", 
     "live": true, 
     "description": "", 
+    "basepoints": 18.0, 
     "h_position": 47, 
     "slug": "radians_and_degrees", 
     "kind": "Exercise", 
     "name": "radians_and_degrees", 
-    "seconds_per_fast_problem": 11.0, 
+    "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "radians_to_degrees", 
       "degrees_to_radians"
@@ -1208,11 +1261,12 @@
     "title": "Unit circle", 
     "live": true, 
     "description": "", 
+    "basepoints": 19.0, 
     "h_position": 48, 
     "slug": "unit_circle", 
     "kind": "Exercise", 
     "name": "unit_circle", 
-    "seconds_per_fast_problem": 16.0, 
+    "seconds_per_fast_problem": 15.0, 
     "prerequisites": [
       "radians_and_degrees"
     ]
@@ -1228,6 +1282,7 @@
     "title": "Graphs of sine and cosine", 
     "live": true, 
     "description": "", 
+    "basepoints": 18.0, 
     "h_position": 52, 
     "slug": "graphs_of_sine_and_cosine", 
     "kind": "Exercise", 
@@ -1251,11 +1306,12 @@
     "title": "Inverse trig functions", 
     "live": true, 
     "description": "", 
+    "basepoints": 18.0, 
     "h_position": 52, 
     "slug": "inverse_trig_functions", 
     "kind": "Exercise", 
     "name": "inverse_trig_functions", 
-    "seconds_per_fast_problem": 11.0, 
+    "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "trigonometry_2"
     ]
@@ -1269,6 +1325,7 @@
     "title": "Trig identities 1", 
     "live": false, 
     "description": null, 
+    "basepoints": 18.0, 
     "h_position": 65, 
     "slug": "trig_identities_1", 
     "kind": "Exercise", 
@@ -1289,11 +1346,12 @@
     "title": "Pythagorean identities", 
     "live": true, 
     "description": "Simplify expressions using Pythagorean trig identities\n", 
+    "basepoints": 16.0, 
     "h_position": 52, 
     "slug": "pythagorean_identities", 
     "kind": "Exercise", 
     "name": "pythagorean_identities", 
-    "seconds_per_fast_problem": 7.0, 
+    "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "trigonometry_2", 
       "reciprocal_trig_funcs"
@@ -1314,11 +1372,12 @@
     "title": "Addition and subtraction trig identities", 
     "live": true, 
     "description": "Computing expressions using trig addition and subtraction identities\n", 
+    "basepoints": 28.0, 
     "h_position": 52, 
     "slug": "trig_addition_identities", 
     "kind": "Exercise", 
     "name": "trig_addition_identities", 
-    "seconds_per_fast_problem": 46.0, 
+    "seconds_per_fast_problem": 48.0, 
     "prerequisites": [
       "trigonometry_2"
     ]
@@ -1334,6 +1393,7 @@
     "title": "Recognizing conic sections", 
     "live": true, 
     "description": "Determine if the graph of a conic section shows a circle, hyperbola, parabola, or ellipse.\n", 
+    "basepoints": 10.0, 
     "h_position": 46, 
     "slug": "recognizing_conic_sections", 
     "kind": "Exercise", 
@@ -1354,6 +1414,7 @@
     "title": "Equation of a circle in factored form", 
     "live": true, 
     "description": "Find the center and radius of a circle given the equation in factored form.\n", 
+    "basepoints": 15.0, 
     "h_position": 47, 
     "slug": "equation_of_a_circle_1", 
     "kind": "Exercise", 
@@ -1376,11 +1437,12 @@
     "title": "Equation of a circle in non-factored form", 
     "live": true, 
     "description": "Find the center and radius of a circle given the equation in unfactored form.\n", 
+    "basepoints": 26.0, 
     "h_position": 48, 
     "slug": "equation_of_a_circle_2", 
     "kind": "Exercise", 
     "name": "equation_of_a_circle_2", 
-    "seconds_per_fast_problem": 29.0, 
+    "seconds_per_fast_problem": 36.0, 
     "prerequisites": [
       "equation_of_a_circle_1"
     ]
@@ -1396,11 +1458,12 @@
     "title": "Equation of an ellipse", 
     "live": true, 
     "description": "Find the center and major and minor radius of an ellipse given its equation.\n", 
+    "basepoints": 17.0, 
     "h_position": 48, 
     "slug": "equation_of_an_ellipse", 
     "kind": "Exercise", 
     "name": "equation_of_an_ellipse", 
-    "seconds_per_fast_problem": 9.0, 
+    "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "equation_of_a_circle_1"
     ]
@@ -1417,11 +1480,12 @@
     "title": "Parabola intuition 1", 
     "live": true, 
     "description": "Make one parabola overlap with another by adjusting the leading coefficient and vertex coordinates.\n", 
+    "basepoints": 20.0, 
     "h_position": 47, 
     "slug": "parabola_intuition_1", 
     "kind": "Exercise", 
     "name": "parabola_intuition_1", 
-    "seconds_per_fast_problem": 14.0, 
+    "seconds_per_fast_problem": 16.0, 
     "prerequisites": [
       "recognizing_conic_sections"
     ]
@@ -1435,11 +1499,12 @@
     "title": "Parabola intuition 2", 
     "live": true, 
     "description": "Make one parabola overlap with another by adjusting the focus coordinates and directrix.", 
+    "basepoints": 26.0, 
     "h_position": 48, 
     "slug": "parabola_intuition_2", 
     "kind": "Exercise", 
     "name": "parabola_intuition_2", 
-    "seconds_per_fast_problem": 35.0, 
+    "seconds_per_fast_problem": 36.0, 
     "prerequisites": [
       "parabola_intuition_1"
     ]
@@ -1457,11 +1522,12 @@
     "title": "Equation of a hyperbola", 
     "live": true, 
     "description": "Find the asymptotes of a hyperbola based on the equation.\n", 
+    "basepoints": 19.0, 
     "h_position": 48, 
     "slug": "equation_of_a_hyperbola", 
     "kind": "Exercise", 
     "name": "equation_of_a_hyperbola", 
-    "seconds_per_fast_problem": 14.0, 
+    "seconds_per_fast_problem": 15.0, 
     "prerequisites": [
       "equation_of_a_circle_1"
     ]
@@ -1477,6 +1543,7 @@
     "title": "Graphing systems of equations", 
     "live": true, 
     "description": "Graph a system of equations in slope-intercept or standard form\n", 
+    "basepoints": 27.0, 
     "h_position": 46, 
     "slug": "graphing_systems_of_equations", 
     "kind": "Exercise", 
@@ -1502,11 +1569,12 @@
     "title": "Systems of equations with simple elimination", 
     "live": true, 
     "description": "Solve systems of equation with one-step elimination (e.g., x-values or y-values cancel each other out).\n", 
+    "basepoints": 25.0, 
     "h_position": 47, 
     "slug": "systems_of_equations_with_elimination_0.5", 
     "kind": "Exercise", 
     "name": "systems_of_equations_with_elimination_0.5", 
-    "seconds_per_fast_problem": 43.0, 
+    "seconds_per_fast_problem": 34.0, 
     "prerequisites": [
       "graphing_systems_of_equations"
     ]
@@ -1520,11 +1588,12 @@
     "title": "Systems of equations with elimination", 
     "live": true, 
     "description": "Solving systems of equations with elimination.", 
+    "basepoints": 29.0, 
     "h_position": 48, 
     "slug": "systems_of_equations_with_elimination", 
     "kind": "Exercise", 
     "name": "systems_of_equations_with_elimination", 
-    "seconds_per_fast_problem": 60.0, 
+    "seconds_per_fast_problem": 55.0, 
     "prerequisites": [
       "systems_of_equations_with_elimination_0.5"
     ]
@@ -1544,11 +1613,12 @@
     "title": "Systems of equations with substitution", 
     "live": true, 
     "description": "Solve systems of equations using substitution\n", 
+    "basepoints": 28.0, 
     "h_position": 47, 
     "slug": "systems_of_equations_with_substitution", 
     "kind": "Exercise", 
     "name": "systems_of_equations_with_substitution", 
-    "seconds_per_fast_problem": 60.0, 
+    "seconds_per_fast_problem": 52.0, 
     "prerequisites": [
       "graphing_systems_of_equations"
     ]
@@ -1572,11 +1642,12 @@
     "title": "Systems of equations", 
     "live": true, 
     "description": "Solve systems of equations with substitution and elimination.\n", 
+    "basepoints": 29.0, 
     "h_position": 49, 
     "slug": "systems_of_equations", 
     "kind": "Exercise", 
     "name": "systems_of_equations", 
-    "seconds_per_fast_problem": 60.0, 
+    "seconds_per_fast_problem": 59.0, 
     "prerequisites": [
       "systems_of_equations_with_substitution", 
       "systems_of_equations_with_elimination"
@@ -1594,6 +1665,7 @@
     "title": "Systems of equations word problems", 
     "live": true, 
     "description": "Word problems with systems of equations.", 
+    "basepoints": 29.0, 
     "h_position": 50, 
     "slug": "systems_of_equations_word_problems", 
     "kind": "Exercise", 
@@ -1615,11 +1687,12 @@
     "title": "Solutions to systems of equations", 
     "live": true, 
     "description": "Determine how many solutions exist to a given system of equations (one, zero, infinite).\n", 
+    "basepoints": 17.0, 
     "h_position": 47, 
     "slug": "solutions_to_systems_of_equations", 
     "kind": "Exercise", 
     "name": "solutions_to_systems_of_equations", 
-    "seconds_per_fast_problem": 10.0, 
+    "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "graphing_systems_of_equations"
     ]
@@ -1637,11 +1710,12 @@
     "title": "Graphing systems of inequalities", 
     "live": true, 
     "description": "Graph a system of linear inequalities.\n", 
+    "basepoints": 29.0, 
     "h_position": 48, 
     "slug": "graphing_systems_of_inequalities", 
     "kind": "Exercise", 
     "name": "graphing_systems_of_inequalities", 
-    "seconds_per_fast_problem": 52.0, 
+    "seconds_per_fast_problem": 57.0, 
     "prerequisites": [
       "graphing_inequalities_2", 
       "graphing_systems_of_equations"
@@ -1660,11 +1734,12 @@
     "title": "Graphing and solving systems of inequalities", 
     "live": true, 
     "description": "Graph a system of inequalities, and determine whether ordered pairs are solutions.\n", 
+    "basepoints": 29.0, 
     "h_position": 49, 
     "slug": "graphing_systems_of_inequalities_2", 
     "kind": "Exercise", 
     "name": "graphing_systems_of_inequalities_2", 
-    "seconds_per_fast_problem": 58.0, 
+    "seconds_per_fast_problem": 60.0, 
     "prerequisites": [
       "graphing_systems_of_inequalities"
     ]
@@ -1684,6 +1759,7 @@
     "title": "Probability 1", 
     "live": true, 
     "description": "", 
+    "basepoints": 17.0, 
     "h_position": 30, 
     "slug": "probability_1", 
     "kind": "Exercise", 
@@ -1709,11 +1785,12 @@
     "title": "Independent probability", 
     "live": true, 
     "description": "", 
+    "basepoints": 18.0, 
     "h_position": 31, 
     "slug": "independent_probability", 
     "kind": "Exercise", 
     "name": "independent_probability", 
-    "seconds_per_fast_problem": 12.0, 
+    "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "probability_1"
     ]
@@ -1733,11 +1810,12 @@
     "title": "Dependent probability", 
     "live": true, 
     "description": "", 
+    "basepoints": 24.0, 
     "h_position": 32, 
     "slug": "dependent_probability", 
     "kind": "Exercise", 
     "name": "dependent_probability", 
-    "seconds_per_fast_problem": 25.0, 
+    "seconds_per_fast_problem": 29.0, 
     "prerequisites": [
       "independent_probability"
     ]
@@ -1754,6 +1832,7 @@
     "title": "Counting 2", 
     "live": true, 
     "description": "", 
+    "basepoints": 16.0, 
     "h_position": 28, 
     "slug": "counting_2", 
     "kind": "Exercise", 
@@ -1776,6 +1855,7 @@
     "title": "Permutations", 
     "live": true, 
     "description": "Introductory permutation problems.\n", 
+    "basepoints": 14.0, 
     "h_position": 30, 
     "slug": "permutations_1", 
     "kind": "Exercise", 
@@ -1797,11 +1877,12 @@
     "title": "Combinations", 
     "live": true, 
     "description": "Introductory combination problems\n", 
+    "basepoints": 20.0, 
     "h_position": 31, 
     "slug": "combinations_1", 
     "kind": "Exercise", 
     "name": "combinations_1", 
-    "seconds_per_fast_problem": 13.0, 
+    "seconds_per_fast_problem": 16.0, 
     "prerequisites": [
       "permutations_1"
     ]
@@ -1815,11 +1896,12 @@
     "title": "Permutations and combinations", 
     "live": true, 
     "description": "Permutations and Combinations with overcounting", 
+    "basepoints": 19.0, 
     "h_position": 32, 
     "slug": "permutations_and_combinations_2", 
     "kind": "Exercise", 
     "name": "permutations_and_combinations_2", 
-    "seconds_per_fast_problem": 13.0, 
+    "seconds_per_fast_problem": 15.0, 
     "prerequisites": [
       "combinations_1"
     ]
@@ -1844,11 +1926,12 @@
     "title": "Probability with permutations and combinations", 
     "live": true, 
     "description": "Probability questions using permutations and combinations of objects\n", 
+    "basepoints": 26.0, 
     "h_position": 33, 
     "slug": "probability_with_perm_comb", 
     "kind": "Exercise", 
     "name": "probability_with_perm_comb", 
-    "seconds_per_fast_problem": 32.0, 
+    "seconds_per_fast_problem": 37.0, 
     "prerequisites": [
       "permutations_and_combinations_2"
     ]
@@ -1865,6 +1948,7 @@
     "title": "Imaginary unit powers", 
     "live": true, 
     "description": "Solve problems with base i (square root of -1) raised to a positive exponent\n", 
+    "basepoints": 13.0, 
     "h_position": 45, 
     "slug": "imaginary_unit_powers", 
     "kind": "Exercise", 
@@ -1888,6 +1972,7 @@
     "title": "The complex plane", 
     "live": true, 
     "description": "Plot complex numbers on the complex plane.\n", 
+    "basepoints": 13.0, 
     "h_position": 46, 
     "slug": "the_complex_plane", 
     "kind": "Exercise", 
@@ -1908,11 +1993,12 @@
     "title": "Complex number polar form intuition", 
     "live": true, 
     "description": "Adjust the angle and radius to plot a complex number in polar form.\n", 
+    "basepoints": 16.0, 
     "h_position": 47, 
     "slug": "complex_number_polar_form_intuition", 
     "kind": "Exercise", 
     "name": "complex_number_polar_form_intuition", 
-    "seconds_per_fast_problem": 8.0, 
+    "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "the_complex_plane"
     ]
@@ -1930,6 +2016,7 @@
     "title": "Adding and subtracting complex numbers", 
     "live": true, 
     "description": "Add or subtract complex numbers. Identify the real and imaginary parts.\n", 
+    "basepoints": 17.0, 
     "h_position": 48, 
     "slug": "adding_and_subtracting_complex_numbers", 
     "kind": "Exercise", 
@@ -1952,6 +2039,7 @@
     "title": "Multiplying complex numbers", 
     "live": true, 
     "description": "Multiply complex numbers. Identify the real and imaginary parts.\n", 
+    "basepoints": 21.0, 
     "h_position": 49, 
     "slug": "multiplying_complex_numbers", 
     "kind": "Exercise", 
@@ -1973,11 +2061,12 @@
     "title": "Dividing complex numbers", 
     "live": true, 
     "description": "Divide complex numbers. Identify the real and imaginary parts.\n", 
+    "basepoints": 27.0, 
     "h_position": 50, 
     "slug": "dividing_complex_numbers", 
     "kind": "Exercise", 
     "name": "dividing_complex_numbers", 
-    "seconds_per_fast_problem": 38.0, 
+    "seconds_per_fast_problem": 46.0, 
     "prerequisites": [
       "multiplying_complex_numbers"
     ]
@@ -1994,11 +2083,12 @@
     "title": "Multiplying and dividing complex numbers in polar form", 
     "live": true, 
     "description": "Multiply and divide complex numbers in polar form, and plot the answer by specifying the radius and angle.\n", 
+    "basepoints": 24.0, 
     "h_position": 51, 
     "slug": "multiplying_and_dividing_complex_number_polar_forms", 
     "kind": "Exercise", 
     "name": "multiplying_and_dividing_complex_number_polar_forms", 
-    "seconds_per_fast_problem": 25.0, 
+    "seconds_per_fast_problem": 27.0, 
     "prerequisites": [
       "complex_number_polar_form_intuition", 
       "dividing_complex_numbers"
@@ -2015,6 +2105,7 @@
     "title": "Absolute value of complex numbers", 
     "live": true, 
     "description": "Find the absolute value of a complex number.\n", 
+    "basepoints": 18.0, 
     "h_position": 47, 
     "slug": "absolute_value_of_complex_numbers", 
     "kind": "Exercise", 
@@ -2036,11 +2127,12 @@
     "title": "Complex number polar form intuition", 
     "live": true, 
     "description": "Adjust the angle and radius to plot a complex number in polar form.\n", 
+    "basepoints": 16.0, 
     "h_position": 47, 
     "slug": "complex_number_polar_form_intuition", 
     "kind": "Exercise", 
     "name": "complex_number_polar_form_intuition", 
-    "seconds_per_fast_problem": 8.0, 
+    "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "the_complex_plane"
     ]
@@ -2057,11 +2149,12 @@
     "title": "Multiplying and dividing complex numbers in polar form", 
     "live": true, 
     "description": "Multiply and divide complex numbers in polar form, and plot the answer by specifying the radius and angle.\n", 
+    "basepoints": 24.0, 
     "h_position": 51, 
     "slug": "multiplying_and_dividing_complex_number_polar_forms", 
     "kind": "Exercise", 
     "name": "multiplying_and_dividing_complex_number_polar_forms", 
-    "seconds_per_fast_problem": 25.0, 
+    "seconds_per_fast_problem": 27.0, 
     "prerequisites": [
       "complex_number_polar_form_intuition", 
       "dividing_complex_numbers"
@@ -2076,11 +2169,12 @@
     "title": "Powers of complex numbers", 
     "live": true, 
     "description": "Use Euler's formula to determine the value of a complex number raised to an nth power.", 
+    "basepoints": 21.0, 
     "h_position": 53, 
     "slug": "powers_of_complex_numbers_1", 
     "kind": "Exercise", 
     "name": "powers_of_complex_numbers_1", 
-    "seconds_per_fast_problem": 19.0, 
+    "seconds_per_fast_problem": 20.0, 
     "prerequisites": [
       "multiplying_and_dividing_complex_number_polar_forms"
     ]
@@ -2096,11 +2190,12 @@
     "title": "Limits 1", 
     "live": true, 
     "description": "", 
+    "basepoints": 15.0, 
     "h_position": 56, 
     "slug": "limits_1", 
     "kind": "Exercise", 
     "name": "limits_1", 
-    "seconds_per_fast_problem": 9.0, 
+    "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "quadratic_equation", 
       "slope-of-secant-lines"
@@ -2120,11 +2215,12 @@
     "title": "Limits 2", 
     "live": true, 
     "description": "", 
+    "basepoints": 14.0, 
     "h_position": 57, 
     "slug": "limits_2", 
     "kind": "Exercise", 
     "name": "limits_2", 
-    "seconds_per_fast_problem": 8.0, 
+    "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "limits_1"
     ]

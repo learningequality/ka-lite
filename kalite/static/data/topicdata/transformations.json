@@ -10,6 +10,7 @@
     "title": "Axis of symmetry", 
     "live": true, 
     "description": "", 
+    "basepoints": 12.0, 
     "h_position": 43, 
     "slug": "axis_of_symmetry", 
     "kind": "Exercise", 
@@ -31,11 +32,12 @@
     "title": "Translations of polygons", 
     "live": true, 
     "description": "Applying translations to polygons in the coordinate plane\n", 
+    "basepoints": 19.0, 
     "h_position": 44, 
     "slug": "translations_of_points_and_polygons", 
     "kind": "Exercise", 
     "name": "translations_of_points_and_polygons", 
-    "seconds_per_fast_problem": 11.0, 
+    "seconds_per_fast_problem": 14.0, 
     "prerequisites": [
       "axis_of_symmetry"
     ]
@@ -51,11 +53,12 @@
     "title": "Rotation of polygons", 
     "live": true, 
     "description": "Applying rotations to polygons in the coordinate plane\n", 
+    "basepoints": 16.0, 
     "h_position": 44, 
     "slug": "rotation_of_polygons", 
     "kind": "Exercise", 
     "name": "rotation_of_polygons", 
-    "seconds_per_fast_problem": 8.0, 
+    "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "axis_of_symmetry"
     ]

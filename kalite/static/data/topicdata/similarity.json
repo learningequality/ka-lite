@@ -11,6 +11,7 @@
     "title": "Similar triangles 1", 
     "live": true, 
     "description": "", 
+    "basepoints": 15.0, 
     "h_position": 36, 
     "slug": "similar_triangles_1", 
     "kind": "Exercise", 
@@ -33,13 +34,14 @@
     "title": "Similar triangles 2", 
     "live": true, 
     "description": "", 
+    "basepoints": 17.0, 
     "h_position": 37, 
     "slug": "similar_triangles_2", 
     "kind": "Exercise", 
     "name": "similar_triangles_2", 
-    "seconds_per_fast_problem": 9.0, 
+    "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
-      "similar_triangles_1"
+      "proportions_1"
     ]
   }, 
   {
@@ -54,34 +56,32 @@
     "title": "Solving similar triangles 1", 
     "live": true, 
     "description": "", 
+    "basepoints": 19.0, 
     "h_position": 38, 
     "slug": "solving_similar_triangles_1", 
     "kind": "Exercise", 
     "name": "solving_similar_triangles_1", 
-    "seconds_per_fast_problem": 13.5, 
+    "seconds_per_fast_problem": 15.0, 
     "prerequisites": [
-      "similar_triangles_2"
+      "similar_triangles_2", 
+      "similar_triangles_1"
     ]
   }, 
   {
-    "related_video_readable_ids": [
-      "similarity-example-problems", 
-      "similarity-example-where-same-side-plays-different-roles"
-    ], 
-    "v_position": -33, 
+    "related_video_readable_ids": [], 
+    "v_position": -18, 
     "path": "/math/geometry/similarity/triangle_similarlity/e/solving_similar_triangles_2/", 
     "id": "solving_similar_triangles_2", 
     "display_name": "Solving similar triangles 2", 
     "title": "Solving similar triangles 2", 
-    "live": true, 
+    "live": false, 
     "description": "", 
-    "h_position": 39, 
+    "basepoints": 22.0, 
+    "h_position": 68, 
     "slug": "solving_similar_triangles_2", 
     "kind": "Exercise", 
     "name": "solving_similar_triangles_2", 
     "seconds_per_fast_problem": 22.0, 
-    "prerequisites": [
-      "solving_similar_triangles_1"
-    ]
+    "prerequisites": []
   }
 ]

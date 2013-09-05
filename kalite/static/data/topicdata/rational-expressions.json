@@ -12,11 +12,12 @@
     "title": "Simplifying rational expressions 2", 
     "live": true, 
     "description": "Simplify the ratio of two polynomials.\n", 
+    "basepoints": 24.0, 
     "h_position": 54, 
     "slug": "simplifying_rational_expressions_2", 
     "kind": "Exercise", 
     "name": "simplifying_rational_expressions_2", 
-    "seconds_per_fast_problem": 29.0, 
+    "seconds_per_fast_problem": 30.0, 
     "prerequisites": [
       "simplifying_rational_expressions_1"
     ]
@@ -32,11 +33,12 @@
     "title": "Solving rational equations 1", 
     "live": true, 
     "description": "Solve equations with variables in numerator and denominator. Solutions can be fractions.\n", 
+    "basepoints": 25.0, 
     "h_position": 31, 
     "slug": "linear_equations_4", 
     "kind": "Exercise", 
     "name": "linear_equations_4", 
-    "seconds_per_fast_problem": 34.0, 
+    "seconds_per_fast_problem": 31.0, 
     "prerequisites": [
       "linear_equations_3"
     ]
