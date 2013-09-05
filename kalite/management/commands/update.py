@@ -269,7 +269,6 @@ class Command(BaseCommand):
         # Run the syncdb
         sys.stdout.write("* Syncing database...")
         sys.stdout.flush()
-        import pdb; pdb.set_trace()
         out = call_outside_command_with_output("migrate", manage_py_dir=os.path.join(self.working_dir, "kalite"))
         out = call_outside_command_with_output("syncdb", migrate=True, manage_py_dir=os.path.join(self.working_dir, "kalite"))
         sys.stdout.write("\n")
