@@ -1,8 +1,10 @@
 #!/bin/bash
 
 SCRIPT_DIR=`dirname "${BASH_SOURCE[0]}"`
-pyexec=`"$SCRIPT_DIR/../python.sh"`
+KALITE_DIR="$SCRIPT_DIR/../kalite"
+pyexec=`"$SCRIPT_DIR/python.sh"`
 
+pushd "$KALITE_DIR" > /dev/null
 if [ "$1" = "" ]; then
     port=`$pyexec -c "import settings; print settings.PRODUCTION_PORT"`
 else
@@ -10,7 +12,6 @@ else
 fi
 nthreads=`$pyexec -c "import settings; print settings.CHERRYPY_THREAD_COUNT"`
 
-cd "$SCRIPT_DIR"
 if [ -f "runcherrypyserver.pid" ];
 then
     pid=`cat runcherrypyserver.pid`
@@ -20,7 +21,7 @@ then
 fi
 
 echo "Running the web server on port $port."
-$pyexec manage.py runcherrypyserver host=0.0.0.0 port=$port threads=$nthreads daemonize=true pidfile=runcherrypyserver.pid
+"$pyexec" manage.py runcherrypyserver host=0.0.0.0 port=$port threads=$nthreads daemonize=true pidfile=runcherrypyserver.pid
 echo "The server should now be accessible locally at: http://127.0.0.1:$port/"
 
 ifconfig_path=`command -v ifconfig`
@@ -39,3 +40,4 @@ else
     echo "http://10.0.0.3:$port/"
 fi
 
+popd > /dev/null

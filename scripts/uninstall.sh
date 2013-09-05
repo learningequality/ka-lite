@@ -10,8 +10,14 @@ echo "                                  "
 echo "http://kalite.learningequality.org"
 echo "                                  "
 
-current_dir=`dirname "${BASH_SOURCE[0]}"`
-if [ ! `id -u` -eq `stat -c "%u" $current_dir` ]; then
+SCRIPT_DIR=`dirname "${BASH_SOURCE[0]}"`
+if [ -e $SCRIPT_DIR/kalite ];; then
+    KALITE_DIR=$SCRIPT_DIR/kalite
+else
+    KALITE_DIR=$SCRIPT_DIR/../kalite
+fi
+
+if [ ! `id -u` -eq `stat -c "%u" $KALITE_DIR` ]; then
         echo "-------------------------------------------------------------------"
         echo "You are not the owner of this directory!"
         echo "We don't think it's a good idea to uninstall something you"
@@ -20,7 +26,7 @@ if [ ! `id -u` -eq `stat -c "%u" $current_dir` ]; then
         exit 1
 fi
 
-if [ ! -w $current_dir/kalite ]; then
+if [ ! -w "KALITE_DIR" ]; then
         echo "-------------------------------------------------------------------"
         echo "You do not have permission to write to this directory!"
         echo "Thus, it's not possible to remove it =)"
@@ -34,12 +40,12 @@ read CONFIRM
 
 case $CONFIRM in 
         y|Y)
-                $current_dir/stop.sh
+                "$SCRIPT_DIR/stop.sh"
                 echo "You are about to remove the service which started KA Lite server"
                 echo "in the background (this will require root/sudo privileges)"
-                sudo $current_dir/kalite/donotrunatboot.sh
+                sudo "$KALITE_DIR/donotrunatboot.sh
 
-                rm -rf $current_dir
+                rm -rf "$SCRIPT_DIR"
 
                 echo "Thank you for flying with KA Lite!"
                 ;;

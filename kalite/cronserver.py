@@ -2,14 +2,14 @@ import os
 import subprocess
 import sys
 import threading
-from croncount import get_count
+from shared.scripts import croncount
 
 import settings  # get cron settings from Django project settings file
 
 
 def cron():
     # only bother spinning up the full cron management command if there's something waiting to be run
-    if get_count():
+    if croncount.get_count():
         # Use sys to get the same executable running as is running this process.
         # Make sure to call the manage.py from this project.
         subprocess.call([sys.executable, os.path.join(settings.PROJECT_PATH, "manage.py"), "cron"])
