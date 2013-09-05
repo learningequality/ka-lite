@@ -40,7 +40,7 @@ class MultiSelectField(models.Field):
         defaults.update(kwargs)
         return MultiSelectFormField(**defaults)
 
-    def get_db_prep_value(self, value):
+    def get_db_prep_value(self, value, **kwargs):  # needed to interact with older versions of django
         if isinstance(value, basestring):
             return value
         elif isinstance(value, list):
