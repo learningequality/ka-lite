@@ -85,6 +85,21 @@ h4{font-size: 118%;}
     line-height: 18px;
     display:block;
   }
+  .options {
+    float: right;
+    list-style-type: none;
+    margin-right: 20px;
+    margin-top: 22px;
+    li {
+      display: inline;
+      border: 1px solid @light-gray;
+      .border-radius(7px);
+      padding: 7px;
+      &:hover, &:focus {
+        background-color: @dark-gray;
+      }
+    }
+  }
 }
 
 // Social media icons
@@ -176,18 +191,32 @@ a.symbol:before {
   }
 }
 
-.button-danger{
-  background-color: @btnDangerBackground;
-
-  &:hover, &:focus {
-    background-color: @btnDangerBackgroundHighlight;
-  }
+// Glyphicon hack
+// --------------------------------------------------
+[class^="icon-"],
+[class*=" icon-"] {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-top: 1px;
+  *margin-right: .3em;
+  line-height: 14px;
+  vertical-align: text-top;
+  background-image: url("../css/images/glyphicons-halflings.png");
+  background-position: 14px 14px;
+  background-repeat: no-repeat;
 }
 
-#delete-org-button {
-  float: right;
-  margin-top: 16px;
-  margin-right: 25px;
+.icon-trash {
+  background-position: -456px 0;
+}
+
+.icon-pencil {
+  background-position: 0 -72px;
+}
+
+.icon-wrench {
+  background-position: -360px -144px;
 }
 
 // List
