@@ -8,8 +8,8 @@ from django.core.management.base import BaseCommand, CommandError
 import settings
 from main.models import VideoFile
 from shared import caching
+from shared.videos import download_video
 from utils.general import break_into_chunks
-from utils.videos import download_video
 
 
 class Command(BaseCommand):

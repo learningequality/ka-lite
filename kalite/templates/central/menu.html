@@ -1,0 +1,17 @@
+{% load i18n %}
+
+<li><a href="{% url homepage %}" class="{% block home_active %}{% endblock home_active %}">{% trans "Home" %}</a></li>
+<li><a href="{% url wiki path='installation' %}" target="_blank">{% trans "Install" %}</a></li>
+<li><a href="{% url faq_topic_list %}" class="{% block faq_active %}{% endblock faq_active%}">{% trans "FAQ" %}</a></li>
+<li><a href="{% url contact_wizard %}"class="{% block contact_active %}{% endblock contact_active%}">{% trans "Contact" %}</a></li>
+<li><a href="{% url about %}" target="_blank">{% trans "About Us" %}</a></li>
+
+{% if not user.is_authenticated %}
+	<li><a href="{% url auth_login %}" id="login" class="{% block login_active %}{% endblock login_active %}">{% trans "Login" %}</a></li>
+{% else %}
+	{% if user.is_superuser %}
+		<li><a href="{% url admin:index %}" >{% trans "Admin" %}</a></li>
+	{% endif %}
+	<li><a href="{% url org_management %}" class="{% block control_panel_active %}{% endblock control_panel_active %}">{{ user.username }}</a></li>
+	<li><a href="{% url auth_logout %}" id="logout">{% trans "Logout" %}</a></li>
+{% endif %}

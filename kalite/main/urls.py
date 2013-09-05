@@ -4,16 +4,17 @@ from django.contrib import admin
 
 import coachreports.urls
 import control_panel.urls
+import khanload.api_urls
 import main.api_urls
 import securesync.urls
-from kalite import settings
+import settings
 
 admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^images/(.+)$', lambda request, path: HttpResponseRedirect('/static/images/' + path)),
-    url(r'^(favico.ico)/?$', lambda request, path: HttpResponseRedirect('/static/images/' + path)),
+    url(r'^images/.*$', lambda request: HttpResponseRedirect(settings.STATIC_URL[:-1] + request.path)),
+    url(r'^favico.ico/?$', lambda request: HttpResponseRedirect(settings.STATIC_URL + "images" + request.path)),
     url(r'^securesync/', include(securesync.urls)),
 )
 
@@ -45,6 +46,10 @@ urlpatterns += patterns('main.views',
     url(r'^userlist/$', 'user_list', {}, 'user_list'),
     url(r'^stats/$', 'summary_stats', {}, 'summary_stats'),
 
+    # API
+    url(r'^api/', include(main.api_urls)),
+    url(r'^api/khanload/', include(khanload.api_urls)),
+
     # Management: Zone, facility, device
     url(r'^management/zone/$', 'zone_redirect', {}, 'zone_redirect'), # only one zone, so make an easy way to access it
     url(r'^management/device/$', 'device_redirect', {}, 'device_redirect'), # only one device, so make an easy way to access it
@@ -52,17 +57,15 @@ urlpatterns += patterns('main.views',
 )
 
 # Testing
-if "loadtesting" in settings.INSTALLED_APPS:
+if "tests.loadtesting" in settings.INSTALLED_APPS:
     urlpatterns += patterns('main.views',
-        url(r'^loadtesting/', include('loadtesting.urls')),
+        url(r'^loadtesting/', include('tests.loadtesting.urls')),
     )
 
 # Front-end
 urlpatterns += patterns('main.views',
     url(r'^$', 'homepage', {}, 'homepage'),
     url(r'^exercisedashboard/$', 'exercise_dashboard', {}, 'exercise_dashboard'),
-
-    url(r'^api/', include('main.api_urls')),
 
     # the following pattern is a catch-all, so keep it last:
     url(r'^(?P<splat>.+)/$', 'splat_handler', {}, 'splat_handler'),

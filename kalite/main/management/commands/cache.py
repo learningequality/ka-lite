@@ -1,14 +1,7 @@
-import time
-import logging
-import sys
-from decorator.decorator import decorator
-
 from django.core.management.base import BaseCommand, CommandError
-from django.utils import translation
 
 import settings
 from main import topicdata
-from main.models import VideoFile
 from shared import caching
 from utils import topic_tools
 from utils.videos import download_video, DownloadCancelled

@@ -112,9 +112,12 @@ ul.dynatree-container li, .ui-widget-content {
 
 #retry-video-download, #retry-subtitle-download {
     color: red;
-    padding: 0 10px 0 10px;
     display: none;
     margin-top: 15px;
+}
+
+#retry-video-download:disabled, #retry-subtitle-download:disabled {
+    color: gray;
 }
 
 </style>
@@ -222,8 +225,6 @@ ul.dynatree-container li, .ui-widget-content {
                 });
 
             $(".progress-section").hide();
-            $(".progress-waiting").show();
-            $("#cancel-download").show();
 
             ga_track("send", "event", "update", "click-download-videos", "Download Videos", videos.length);
 
@@ -302,14 +303,19 @@ ul.dynatree-container li, .ui-widget-content {
         });
 
         $("#retry-video-download").click(function() {
-            doRequest("/api/start_video_download", {})
-                .fail(function(resp) {
-                    handleFailedAPI(resp, "Error canceling downloads");
-                });
-
+            $(this).attr("disabled", "disabled");
+            do_retry_download();
             ga_track("send", "event", "update", "click-retry-download", "Retry Download");
         });
+
     });
+
+    function do_retry_download() {
+        doRequest("/api/retry_video_download", {})
+            .fail(function(resp) {
+                handleFailedAPI(resp, "Error restarting downloads");
+            });
+    }
 
     function unselectAllNodes() {
         $.each($("#content_tree").dynatree("getSelectedNodes"), function(ind, node) {
@@ -322,12 +328,14 @@ ul.dynatree-container li, .ui-widget-content {
             .success(function(video_ids) {
                 window.downloading_videos = video_ids;
                 window.download_index = 0;
+                window.downloads_skipped = 0;
+                clear_message("id_video_skipped");
                 clearInterval(window.download_check_interval);
                 if (video_ids.length == 0) {
                     return;
                 }
                 window.download_check_interval = setInterval(checkVideoDownloadProgress, 5000);
-                checkVideoDownloadProgress();
+                setTimeout(checkVideoDownloadProgress, 1000);
             })
             .fail(function(resp) {
                 handleFailedAPI(resp, "Error getting video download list");
@@ -380,7 +388,6 @@ ul.dynatree-container li, .ui-widget-content {
         if (error_id === undefined) {
             error_id = "id_video_download";
         }
-        clear_message(error_id);
 
         switch (resp.status) {
             case 403:
@@ -391,7 +398,7 @@ ul.dynatree-container li, .ui-widget-content {
                 messages = $.parseJSON(resp.responseText);
                 if (messages && !("error" in messages)) {
                     // this should be an assert--should never happen
-                    show_message("error", error_text + ": " + "Uninterpretable message received.", error_id)
+                    show_message("error", error_text + ": " + "Uninterpretable message received.", error_id);
                 } else {
                     show_message("error", error_text + ": " + messages["error"], error_id);
                 }
@@ -408,19 +415,56 @@ ul.dynatree-container li, .ui-widget-content {
                 }
                 window.current_download_percent = progress[currentKey];
                 updateProgressDisplay();
-                if (window.current_download_percent == 100) {
-                    setNodeClass(currentKey, "complete");
+                if (window.current_download_percent == 100 || window.current_download_percent === null) {
+                    if (window.current_download_percent == 100) { // video finished downloading
+                        setNodeClass(currentKey, "complete");
+                    } else { // the video was not downloaded, and was skipped
+                        var title = $("#content_tree").dynatree("getTree").getNodeByKey(currentKey).data.title;
+                        var message = "Video '" + title + "' was not found, and has been skipped.";
+                        window.downloads_skipped++;
+                        if (window.downloads_skipped > 1) {
+                            message += " Total of " + window.downloads_skipped + " videos skipped.";
+                        }
+                        show_message("warning", message, "id_video_skipped");
+                    }
                     window.download_index++;
                     if (window.download_index >= window.downloading_videos.length) {
+                        // Finished all downloads
                         clearInterval(window.download_check_interval);
-                        $(".progress-section, #cancel-download").hide();
+                        window.download_check_interval = null;
+                        $(".progress-section, .progress-waiting, #cancel-download").hide();
                         return;
                     }
                     checkVideoDownloadProgress();
                 } else if (!progress["downloading"]) {
-                    $("#retry-video-download").show();
+                    // In-progress (error) case: 
+                    //   we're not done downloading, but the 
+                    //   job is no longer running.
+                    $(".progress-section, #cancel-download").hide();
+                    $(".progress-waiting").hide();
+                    $("#retry-video-section").show();
+                    $("#retry-video-download").removeAttr("disabled");
+
+                    if (!$("#retry-video-download").is(":visible")) {
+
+                        // wait 5 seconds before showing the retry button, in case it's just a momentary blip
+                        setTimeout(retry_download, 5000);
+
+                        // keep pressing the retry button every 60 seconds, when this page is open
+                        function retry_download() {
+                            if (!window.download_check_interval || !$("#retry-video-section").is(":visible")) {
+                                $("#retry-video-download").hide();
+                                return;
+                            }
+                            do_retry_download();
+                            $("#retry-video-download").show()
+                            setTimeout(retry_download, 60000);
+                        }
+                    }
+
                 } else {
-                    $("#retry-video-download").hide();
+                    // In progress case (happy).
+                    $("#retry-video-section, #retry-video-download").hide();
                 }
             })
             .fail(function(resp) {
@@ -438,13 +482,16 @@ ul.dynatree-container li, .ui-widget-content {
                 $(".progress-section").hide();
             	$(".progress-waiting").show();
                 $("#cancel-download").show();
-        	}
-        } else {
+        	}            
+        } else if ($("#retry-video-download :visible").length == 0) {
+            // Downloading completed.  Hide all
             $(".progress-section").hide();
             if ($(".subtitle-section:visible").length == 0) {
                 $("#cancel-download").hide();
             }
             return;
+        } else {
+            // retry button was pressed
         }
 
         $("#progressbar-current").progressbar({value: window.current_download_percent});
@@ -458,7 +505,6 @@ ul.dynatree-container li, .ui-widget-content {
         $(".video-title").text(currentNode.data.title);
         $(".video-downloading-current").text(window.download_index + 1);
         $(".video-downloading-total").text(window.downloading_videos.length);
-
 
     }
 
@@ -620,8 +666,8 @@ ul.dynatree-container li, .ui-widget-content {
         <select id="language" class="enable-when-server-online" disabled>
         </select>
     </span>
-    <button class="download-subtitles enable-when-server-online" type="button" disabled type="button" update_set="existing">{% trans "Get Needed Subtitles Only" %}</button>
-    <button class="download-subtitles enable-when-server-online" type="button" disabled type="button" update_set="all">{% trans "Get All Available Subtitles" %}</button>
+    <button class="download-subtitles enable-when-server-online" type="button" title="Download missing subtitles for currently downloaded videos." disabled type="button" update_set="existing">{% trans "Download Missing" %}</button>
+    <button class="download-subtitles enable-when-server-online" type="button" title="Download all subtitles for currently downloaded videos, including updating existing subtitle files." disabled type="button" update_set="all">{% trans "Update All" %}</button>
 </div>
 
 <div style="clear: both;"></div>
@@ -649,6 +695,10 @@ ul.dynatree-container li, .ui-widget-content {
     </h2>
 
     <div class="progressbar" id="progressbar-overall"></div>
+
+</div>
+
+<div id="retry-video-section">
 
     <button id="retry-video-download" type="button">{% trans "Video download error... click to retry" %}</button>
 
