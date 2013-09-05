@@ -10,6 +10,7 @@ import requests
 import shutil
 import sys
 import time
+from math import ceil, log  # needed for basepoints calculation
 from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
@@ -58,9 +59,6 @@ def download_khan_data(url, debug_cache_file=None, debug_cache_dir=settings.PROJ
     save the download to disk and re-serve it up again, rather than download again,
     if the file is less than a day old.
     """
-    if "telling_time" in url:
-        import pdb; pdb.set_trace()
-
     # Get the filename
     if not debug_cache_file:
         debug_cache_file = url.split("/")[-1] + ".json"
@@ -129,7 +127,6 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
         if kind == "Exercise":
             # compute base points
             # Paste points onto the exercise
-            from math import ceil, log
             node["basepoints"] = ceil(7 * log(node["seconds_per_fast_problem"]));
 
             # Related videos
