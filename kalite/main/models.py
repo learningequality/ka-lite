@@ -1,6 +1,7 @@
 import uuid
-from datetime import datetime
 from annoying.functions import get_object_or_None
+from math import ceil
+from datetime import datetime
 from dateutil import relativedelta
 
 from django.contrib.auth.decorators import login_required
@@ -62,7 +63,11 @@ class VideoLog(SyncedModel):
     @staticmethod
     def get_points_for_user(user):
         return VideoLog.objects.filter(user=user).aggregate(Sum("points")).get("points__sum", 0) or 0
-        
+
+    @classmethod
+    def calc_points(cls, seconds_watched, video_length):
+        return (float(seconds_watched) / video_length) * VideoLog.POINTS_PER_VIDEO
+
     @classmethod
     def update_video_log(cls, facility_user, youtube_id, additional_seconds_watched, points=0, new_points=0):
         assert facility_user and youtube_id, "Updating a video log requires both a facility user and a YouTube ID"
@@ -129,6 +134,16 @@ class ExerciseLog(SyncedModel):
 
         namespace = uuid.UUID(self.user.id)
         return uuid.uuid5(namespace, self.exercise_id.encode("utf-8")).hex
+
+    @classmethod
+    def calc_points(cls, basepoints, ncorrect=1):
+        # This is duplicated in javascript, in kalite/static/js/exercises.js
+        inc = 0
+        for i in range(ncorrect):
+            bumpprob = 100 * random.random()
+            bump = (bumpprob < 90) ? 1 : (bumpprob < 99 ? 1.5 : 2);
+            inc += ceil(basepoints*bump);
+        return inc
 
     @staticmethod
     def get_points_for_user(user):
