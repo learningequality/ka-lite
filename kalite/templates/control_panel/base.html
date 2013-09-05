@@ -1,10 +1,24 @@
 {% extends base_template %}
-
 {% load staticfiles %}
 
 {% block control_panel_active %}active{% endblock control_panel_active %}
 
-{% block headcss %}
+{% block headjs %}{{ block.super }}
+<script>
+    $(function () {
+        $(".green_button").each(function () {
+            if (this.tagName == "INPUT") {
+                this.onclick = null;
+                this.onsubmit = null;
+            } else {
+                this.setAttribute("href","#");
+            }
+        });
+    });
+</script>
+{% endblock headjs %}
+
+{% block headcss %}{{ block.super }}
     <link  rel="stylesheet" type="text/css" href="{% static 'css/control_panel.css' %}" />
 {% endblock headcss %}
 
@@ -30,7 +44,7 @@
             {% endif %}
 
             {% if device %}
-            <li>{% if zone %}&gt; {% endif %}{{ device.name }}</li>
+            <li>{% if zone %}&gt; {% endif %}{% if device.name %}{{ device.name }}{% else %}{{ device.id }}{% endif %}</li>
             {% endif %}
 
             {% if facility %}
@@ -57,8 +71,6 @@
     </div>
     {% endblock titlebar %}
 
-    {% block inner_content %}
-    {% endblock inner_content %}
-    {% block endjs %}{{ block.super }}
-    {% endblock endjs %}
+    {% block control_panel_content %}
+    {% endblock control_panel_content %}
 {% endblock content %}

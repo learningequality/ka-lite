@@ -6,8 +6,8 @@ from django.core.management.base import BaseCommand, CommandError
 import settings
 from main.models import VideoFile
 from shared import caching
+from shared.jobs import force_job
 from shared.videos import download_video, DownloadCancelled, URLNotFound
-from utils.jobs import force_job
 
 
 def download_progress_callback(self, videofile):

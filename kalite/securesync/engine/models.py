@@ -19,6 +19,9 @@ from . import add_syncing_models
 from config.models import Settings
 
 
+ID_MAX_LENGTH=32
+IP_MAX_LENGTH=50
+
 def _get_own_device():
     """
     To allow imports to resolve... the only ugly thing of this code separation.
@@ -28,12 +31,12 @@ def _get_own_device():
 
 
 class SyncSession(models.Model):
-    client_nonce = models.CharField(max_length=32, primary_key=True)
+    client_nonce = models.CharField(max_length=ID_MAX_LENGTH, primary_key=True)
     client_device = models.ForeignKey("Device", related_name="client_sessions")
-    server_nonce = models.CharField(max_length=32, blank=True)
+    server_nonce = models.CharField(max_length=ID_MAX_LENGTH, blank=True)
     server_device = models.ForeignKey("Device", blank=True, null=True, related_name="server_sessions")
     verified = models.BooleanField(default=False)
-    ip = models.CharField(max_length=50, blank=True)
+    ip = models.CharField(max_length=IP_MAX_LENGTH, blank=True)
     client_version = models.CharField(max_length=100, blank=True)
     client_os = models.CharField(max_length=200, blank=True)
     timestamp = models.DateTimeField(auto_now=True)
@@ -99,7 +102,7 @@ class SyncedModel(models.Model):
     A model that is cross-computer syncable.  All models sync'd across computers
     should inherit from this base class.
     """
-    id = models.CharField(primary_key=True, max_length=32, editable=False)
+    id = models.CharField(primary_key=True, max_length=ID_MAX_LENGTH, editable=False)
     counter = models.IntegerField(default=0)
     signature = models.CharField(max_length=360, blank=True, editable=False)
     signed_version = models.IntegerField(default=1, editable=False)

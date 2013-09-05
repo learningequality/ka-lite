@@ -66,7 +66,7 @@ def zone_management(request, zone_id, org_id=None):
         user_activity = UserLogSummary.objects.filter(device=device)
 
         device_data[device.id] = {
-            "name": device.name,
+            "name": device.name or device.id,
             "num_times_synced": sync_sessions.count(),
             "last_time_synced": sync_sessions.aggregate(Max("timestamp"))["timestamp__max"],
             "last_time_used":   None if user_activity.count() == 0 else user_activity.order_by("-end_datetime")[0],
@@ -118,11 +118,16 @@ def facility_usage(request, facility_id, org_id=None, zone_id=None, frequency=No
     zone = get_object_or_None(Zone, pk=zone_id) if zone_id else None
     facility = get_object_or_404(Facility, pk=facility_id)
     groups = FacilityGroup.objects.filter(facility=facility).order_by("name")
+
     students = FacilityUser.objects.filter(facility=facility, is_teacher=False).order_by("last_name", "first_name", "username")
     teachers = FacilityUser.objects.filter(facility=facility, is_teacher=True).order_by("last_name", "first_name", "username")
 
-    frequency = frequency or request.GET.get("fequency", "months")
-    (period_start, period_end) = _get_date_range(frequency)
+    # Get the start and end date--based on csv.  A hack, yes...
+    if request.GET.get("format", "") == "csv":
+        frequency = frequency or request.GET.get("fequency", "months")
+        (period_start, period_end) = _get_date_range(frequency)
+    else:
+        (period_start, period_end) = (None, None)
 
     (student_data, group_data) = _get_user_usage_data(students, period_start=period_start, period_end=period_end)
     (teacher_data, _) = _get_user_usage_data(teachers, period_start=period_start, period_end=period_end)
@@ -150,8 +155,8 @@ def _get_date_range(frequency):
 
     if frequency == "months":  # only works for months ATM
         cur_date = datetime.datetime.now()
-        first_this_month = datetime.datetime(year=cur_date.year, month=cur_date.month - 1, day=cur_date.day, hour=23, minute=59, second=59)
-        period_end = first_this_month - datetime.timedelta(days=1)
+        first_this_month = datetime.datetime(year=cur_date.year, month=cur_date.month, day=1, hour=0, minute=0, second=0)
+        period_end = first_this_month - datetime.timedelta(seconds=1)
         period_start = datetime.datetime(year=period_end.year, month=period_end.month, day=1)
     return (period_start, period_end)
 

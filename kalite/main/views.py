@@ -36,10 +36,9 @@ from securesync.models import Facility, FacilityUser,FacilityGroup, Device
 from securesync.views import require_admin, facility_required
 from settings import LOG as logging
 from shared.decorators import require_admin
-from shared.videos import video_connection_is_available
+from shared.jobs import force_job
 from utils import topic_tools
 from utils.internet import am_i_online, is_loopback_connection, JsonResponse
-from utils.jobs import force_job
 
 
 def calc_last_modified(request, *args, **kwargs):

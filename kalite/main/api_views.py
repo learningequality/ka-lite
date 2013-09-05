@@ -19,8 +19,8 @@ from main import topicdata  # must import this way to cache across processes
 from securesync.models import FacilityGroup
 from shared.caching import invalidate_all_pages_related_to_video
 from shared.decorators import require_admin
+from shared.jobs import force_job, job_status
 from shared.videos import delete_downloaded_files
-from utils.jobs import force_job, job_status
 from utils.general import break_into_chunks
 from utils.internet import api_handle_error_with_json, JsonResponse
 from utils.mplayer_launcher import play_video_in_new_thread
