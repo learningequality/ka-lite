@@ -44,11 +44,9 @@
                 </li-->
             {% endblock download_button %}
             {% if not facilities and not devices %}
-                <div id="delete-zone-button">
-                    <a href="{% url delete_zone org_id=org.id zone_id=zone.id %}">
-                        <input type="submit" value="Delete Zone" class="button">
-                    </a>
-                </div>
+                <a href="{% url delete_zone org_id=org.id zone_id=zone.id %}">
+                    <input type="submit" value="Delete Zone" class="button button-danger">
+                </a>
             {% endif %}
 {% endblock buttons %}
 

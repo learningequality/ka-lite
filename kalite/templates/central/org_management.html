@@ -66,7 +66,9 @@
 					</a>
 					{% endif %}
 					{% if org.owner == request.user %}
-						<a href="{% url delete_organization org_id=org.id %}">Delete this organization</a>
+						<a href="{% url delete_organization org_id=org.id %}">
+							<input id="delete-org-button" type="submit" value="Delete this organization" class="button button--small button-danger">
+						</a>
 					{% endif %}
 				</div>
 			</div>
