@@ -99,10 +99,10 @@ def zone_management(request, zone_id, org_id=None):
 def delete_zone(request, org_id, zone_id):
     zone = Zone.objects.get(pk=zone_id)
     if zone.is_deletable():
-        messages.success(request, "You have succesfully deleted " + zone.name + ".")
         zone.delete()
+        messages.success(request, "You have succesfully deleted " + zone.name + ".")
     else:
-        messages.warning(request, "You cannot delete this zone because it is syncing data with at least one facility or device.")
+        messages.warning(request, "You cannot delete this zone because it is syncing data with with %d device(s)" % zone.devicezone_set.count())
     return HttpResponseRedirect(reverse("org_management"))
 
 #TODO(bcipolli) I think this will be deleted on the central server side

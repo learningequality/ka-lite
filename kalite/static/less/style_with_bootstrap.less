@@ -102,6 +102,25 @@ h4{font-size: 118%;}
   }
 }
 
+#zone-management-options {
+  float: right;
+  list-style-type: none;
+  margin-right: 20px;
+  li {
+    font-size: 1px;
+    display: inline;
+    border: 1px solid @light-gray;
+    .border-radius(7px);
+    padding-bottom: 21px;
+    padding-left: 2px;
+    padding-right: 3px;
+    padding-top: 6px;
+    &:hover, &:focus {
+      background-color: @light-gray;
+    }
+  }
+}
+
 // Social media icons
 // --------------------------------------------------
 
@@ -191,7 +210,7 @@ a.symbol:before {
   }
 }
 
-// Glyphicon hack
+// Glyphicon hack & styling
 // --------------------------------------------------
 [class^="icon-"],
 [class*=" icon-"] {

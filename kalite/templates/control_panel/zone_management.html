@@ -43,11 +43,16 @@
                     <a class="green_button" href="#">{% trans "Sync via USB" %}</a>
                 </li-->
             {% endblock download_button %}
-            {% if not facilities and not devices %}
-                <a href="{% url delete_zone org_id=org.id zone_id=zone.id %}">
-                    <input type="submit" value="Delete Zone" class="button button-danger">
-                </a>
-            {% endif %}
+            <ul id="zone-management-options">
+                {% if not facilities and not devices %}
+                    <li>
+                        <a href="{% url delete_zone org_id=org.id zone_id=zone.id %}">
+                            <i class="icon-trash" title="Delete this zone."></i>
+                        </a>    
+                    </li>
+                {% endif %}
+            </ul>
+            
 {% endblock buttons %}
 
 {% block control_panel_content %}
