@@ -57,11 +57,8 @@
 				<div class="tooltip-container">
 					<h2>{{ org.name }}</h2>
 					{% if org.name == HEADLESS_ORG_NAME %}
-					<div id="button-popover-headless" class="button-popover" data-toggle="popover" data-placement="right" data-content="Headless zones are (auto-registered) zones not linked to any account." title="" data-original-title="Headless Zones">?</div>
-
+						<div id="button-popover-headless" class="button-popover" data-toggle="popover" data-placement="right" data-content="Headless zones are (auto-registered) zones not linked to any account." title="" data-original-title="Headless Zones">?</div>
 					{% endif %}
-
-
 
 					{% if org.name != HEADLESS_ORG_NAME %}
 					<a href="{% url organization_form org_id=org.id %}">

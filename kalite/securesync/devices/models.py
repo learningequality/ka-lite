@@ -17,6 +17,7 @@ import kalite
 import settings
 from securesync import crypto
 from securesync.engine.models import SyncedModel
+from securesync.users.models import Facility, FacilityUser, FacilityGroup
 
 
 class RegisteredDevicePublicKey(models.Model):
@@ -62,6 +63,14 @@ class Zone(SyncedModel):
         assert orgs.count() <= 1, "Zone must be contained by 0 or 1 organization(s)."
 
         return orgs[0] if orgs else None
+
+
+    def is_deletable(self):
+        """Return true if zone does not have any dependent facilities or devices"""
+        deletable = True
+        if Device.objects.filter(devicezone__zone=self) or Facility.objects.by_zone(self):
+            deletable = False
+        return deletable
 
 
     @classmethod
