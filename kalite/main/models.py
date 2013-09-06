@@ -12,6 +12,7 @@ import settings
 from securesync import engine
 from securesync.models import SyncedModel, FacilityUser, Device
 from settings import LOG as logging
+from utils.django_utils import ExtendedModel
 from utils.general import datediff, isnumeric
 
 
@@ -247,7 +248,7 @@ class UserLogSummary(SyncedModel):
         log_summary.save()
 
 
-class UserLog(models.Model):  # Not sync'd, only summaries are
+class UserLog(ExtendedModel):  # Not sync'd, only summaries are
     """Detailed instances of user behavior.
     Currently not sync'd (only used for local detail reports).
     """
@@ -458,7 +459,7 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
         return cur_log
 
 
-class VideoFile(models.Model):
+class VideoFile(ExtendedModel):
     youtube_id = models.CharField(max_length=20, primary_key=True)
     flagged_for_download = models.BooleanField(default=False)
     flagged_for_subtitle_download = models.BooleanField(default=False)
@@ -473,7 +474,7 @@ class VideoFile(models.Model):
         ordering = ["priority", "youtube_id"]
 
 
-class LanguagePack(models.Model):
+class LanguagePack(ExtendedModel):
     lang_id = models.CharField(max_length=5, primary_key=True)
     lang_version = models.CharField(max_length=5)
     software_version = models.CharField(max_length=12)

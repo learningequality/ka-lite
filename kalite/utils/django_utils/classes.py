@@ -19,11 +19,19 @@ class NoDuplicateMessagesSessionStorage(SessionStorage):
 
 class ExtendedModel(models.Model):
     """
-    A helper class that extends the base model class to allow extra functionality to be passed in.  
+    A helper class that extends the base model class,
+    so we can do fun Django-y stuff that Django didn't bother to do!
     """
+    class Meta:
+        abstract = True
 
     def get_dependencies(self, passable_classes=[]):
-        """Return list of related objects"""
+        """
+        Return list of which class names have objects
+        referencing this one.
+        
+        passable_classes means classes to ignore.
+        """
         class_names = []
         for related_object in (self._meta.get_all_related_objects() + self._meta.get_all_related_many_to_many_objects()):
             manager = getattr(self, related_object.get_accessor_name())
@@ -34,7 +42,17 @@ class ExtendedModel(models.Model):
         return set(class_names) - set(passable_classes)
 
     def has_dependencies(self, passable_classes=[]):
+        """
+        Returns whether this object is referenced by any objects
+        of class outside of passable_classes
+        """
         return bool(self.get_dependencies(passable_classes))
 
-    class Meta:
-        abstract = True
+    @classmethod
+    def get_or_initialize(cls, **kwargs):
+        """
+        This is like Django's get_or_create method, but without calling save().
+        Allows for more efficient post-initialize updates.
+        """
+        obj = get_object_or_None(cls, **kwargs)
+        return obj or cls(**kwargs)

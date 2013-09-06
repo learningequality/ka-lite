@@ -5,16 +5,17 @@ from django.db import models
 
 from securesync.models import ID_MAX_LENGTH, IP_MAX_LENGTH
 from settings import LOG as logging
+from utils.django_utils import ExtendedModel
 
 
-class UnregisteredDevice(models.Model):
+class UnregisteredDevice(ExtendedModel):
     """
     Bare list of all unregistered devices that 'ping' us with a device ID
     """
     id = models.CharField(primary_key=True, max_length=ID_MAX_LENGTH, editable=False)
 
 
-class UnregisteredDevicePing(models.Model):
+class UnregisteredDevicePing(ExtendedModel):
     """
     Whenever we receive a session request from an unregistered device,
     we increase our counter
