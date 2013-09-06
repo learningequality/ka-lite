@@ -1,3 +1,4 @@
+import datetime
 import uuid
 from annoying.functions import get_object_or_None
 
@@ -20,12 +21,26 @@ from utils.django_utils import validate_via_booleans
 class RegisteredDevicePublicKey(models.Model):
     public_key = models.CharField(max_length=500, help_text="(This field will be filled in automatically)")
     zone = models.ForeignKey("Zone")
+    created_timestamp = models.DateTimeField(auto_now_add=True, null=True, default=None)  # Null for oldies
+    used_timestamp = models.DateTimeField(null=True, default=None)
 
     class Meta:
         app_label = "securesync"
 
     def __unicode__(self):
-        return u"%s... (Zone: %s)" % (self.public_key[0:5], self.zone)
+        str = u"%s... (Zone: %s)" % (self.public_key[0:5], self.zone)
+        str += (u"; created on %s" % self.created_timestamp) if self.created_timestamp else ""
+        str += (u"; used on %s" % self.used_timestamp) if self.used_timestamp else ""
+        return str
+
+    def use(self):
+        # Never should get called if timestamp
+        assert not self.used_timestamp, "Cannot reuse public key registrations"
+        self.used_timestamp = datetime.datetime.now()
+        self.save()
+
+    def is_used(self):
+        return self.used_timestamp is not None
 
 
 class DeviceMetadata(models.Model):
