@@ -3,6 +3,7 @@ from annoying.decorators import render_to, wraps
 from annoying.functions import get_object_or_None
 from collections import OrderedDict, namedtuple
 
+from django.contrib import messages
 from django.core import serializers
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -50,8 +51,6 @@ def zone_form(request, zone_id, org_id=None):
     }
 
 
-
-
 @require_authorized_admin
 @render_to("control_panel/zone_management.html")
 def zone_management(request, zone_id, org_id=None):
@@ -96,6 +95,15 @@ def zone_management(request, zone_id, org_id=None):
     }
 
 
+@require_authorized_admin
+def delete_zone(request, org_id, zone_id):
+    zone = Zone.objects.get(pk=zone_id)
+    if not zone.has_dependencies(passable_classes=["Organization"]):
+        zone.delete()
+        messages.success(request, "You have succesfully deleted " + zone.name + ".")
+    else:
+        messages.warning(request, "You cannot delete this zone because it is syncing data with with %d device(s)" % zone.devicezone_set.count())
+    return HttpResponseRedirect(reverse("org_management"))
 
 #TODO(bcipolli) I think this will be deleted on the central server side
 @require_authorized_admin

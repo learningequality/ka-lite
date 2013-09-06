@@ -85,9 +85,9 @@ h4{font-size: 118%;}
     line-height: 18px;
     display:block;
   }
-}
+ 
 
-// Social media icons
+//Icons
 // --------------------------------------------------
 
 .symbol, a.symbol:before { // Makes the icons look nice on all the browsers
@@ -110,7 +110,7 @@ a.symbol:before {
 }
 
 .list-icons{
-  .horizontal-list;
+  
   font-size: 45px;
   line-height: 10px;
 
@@ -118,6 +118,26 @@ a.symbol:before {
     color:@dark-gray;
     &:hover{
       color:black;
+    }
+  }
+}
+ .options {
+    .horizontal-list;
+    float: right;
+
+    margin-right: 20px;
+    margin-top: 22px;
+
+    li {
+      a{
+        color:black;
+      }
+      border: 1px solid @light-gray;
+      .border-radius(7px);
+      padding: 7px;
+      &:hover, &:focus {
+        background-color: @dark-gray;
+      }
     }
   }
 }

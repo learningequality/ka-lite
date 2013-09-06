@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 import django_snippets.multiselect as multiselect
 
+from utils.django_utils import ExtendedModel
+
 
 # Different contact types
 CONTACT_TYPE_DEPLOYMENT = 'deployment'
@@ -17,7 +19,7 @@ CONTRIBUTE_TYPE_TESTING    ='testing'
 CONTRIBUTE_TYPE_OTHER      ='other'
 
 
-class Contact(models.Model):
+class Contact(ExtendedModel):
     """Base contact information"""
 
     CONTACT_TYPES = ((CONTACT_TYPE_DEPLOYMENT, 'New Deployment'),
@@ -39,7 +41,7 @@ class Contact(models.Model):
         return u"%s inquiry from %s @ %s on %s (%s)"%(self.type, self.name, self.org_name, self.contact_date, self.email)
 
 
-class Deployment(models.Model):
+class Deployment(ExtendedModel):
     """Deployment contact"""
 
     # The following values define limited options in the contact form
@@ -67,7 +69,7 @@ class Deployment(models.Model):
         return u"Inquiry from %s @ %s on %s (%s)"%(self.contact.name, self.contact.org_name, self.contact.contact_date, self.contact.email)
 
 
-class Support(models.Model):
+class Support(ExtendedModel):
     # Different support types (support contact sub-form)
     SUPPORT_TYPES = (('installation', 'Installation'),
                      ('setup',        'Post-install setup'),
@@ -83,7 +85,7 @@ class Support(models.Model):
         return u"%s inquiry from %s @ %s on %s (%s)"%(self.type, self.contact.name, self.contact.org_name, self.contact.contact_date, self.contact.email)
 
 
-class Contribute(models.Model):
+class Contribute(ExtendedModel):
     """Want to contribute?  We have a form for that."""
 
     CONTRIBUTE_TYPES = ((CONTRIBUTE_TYPE_DEVELOPMENT, 'Code Development'),
@@ -100,7 +102,7 @@ class Contribute(models.Model):
         return u"%s inquiry from %s @ %s on %s (%s)"%(self.type, self.contact.name, self.contact.org_name, self.contact.contact_date, self.contact.email)
 
 
-class Info(models.Model):
+class Info(ExtendedModel):
     contact  = models.ForeignKey(Contact)
     issue    = models.TextField(blank=True, verbose_name="What's on your mind?")
     
