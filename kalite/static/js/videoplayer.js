@@ -99,7 +99,7 @@ window.VideoPlayerModel = Backbone.Model.extend({
         this.set({
             wall_time_last_saved: new Date(),
             percent_last_saved: this.getPercentWatched(),
-            seconds_watched_since_save: 0,
+            seconds_watched_since_save: 0
         });
 
         return xhr;
