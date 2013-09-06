@@ -23,7 +23,7 @@ class Contact(ExtendedModel):
     """Base contact information"""
 
     CONTACT_TYPES = ((CONTACT_TYPE_DEPLOYMENT, 'New Deployment'),
-                     (CONTACT_TYPE_SUPPORT, 'Support'),
+                     (CONTACT_TYPE_SUPPORT, 'Get Support'),
                      (CONTACT_TYPE_CONTRIBUTE,"Contribute"),
                      (CONTACT_TYPE_INFO, 'General Inquiries'))
 
@@ -31,8 +31,7 @@ class Contact(ExtendedModel):
     name      = models.CharField(verbose_name="Your Name", max_length=100)
     type      = models.CharField(verbose_name="Reason for Contact", max_length=12, choices=CONTACT_TYPES)
     email     = models.EmailField(verbose_name="Your Email", max_length=100)
-    org_name  = models.CharField(verbose_name="Organization Name", max_length=100, blank=False)
-    org_url   = models.URLField(verbose_name="Organization URL", blank=True, null=True)
+    org_name  = models.CharField(verbose_name="Organization Name", max_length=100, blank=True)
     contact_date= models.DateField(auto_now_add=True)
     cc_email  = models.BooleanField(verbose_name="Please send a copy of this support request to the email address above.", default=False)
     ip        = models.CharField(max_length=50, blank=True, null=True)
