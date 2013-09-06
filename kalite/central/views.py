@@ -157,10 +157,13 @@ def organization_form(request, org_id):
 @require_authorized_admin
 def delete_organization(request, org_id):
     org = Organization.objects.get(pk=org_id)
-    deletion = DeletionRecord(organization=org, deleter=request.user)
-    deletion.save()
-    org.delete()
-    messages.success(request, "You have succesfully deleted " + org.name + ".")
+    if org.get_zones():
+        messages.warning(request, "You cannot delete %s because it has %d zone(s) affiliated with it." %(org.name, len(org.get_zones())))
+    else:
+        messages.success(request, "You have succesfully deleted " + org.name + ".")
+        deletion = DeletionRecord(organization=org, deleter=request.user)
+        deletion.save()
+        org.delete()
     return HttpResponseRedirect(reverse("org_management"))
 
 

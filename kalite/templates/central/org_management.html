@@ -111,7 +111,7 @@ $(function() {
 								</a>
 							</li>
 						{% endif %}
-						{% if org.owner == request.user %}
+						{% if org.owner == request.user and not org.get_zones %}
 							<li>
 								<a href="{% url delete_organization org_id=org.id %}" onclick="return confirm('Are you sure you want to delete {{org.name}}?')">
 									<span class="icon-trash icon-large" title="Delete this organization."></span>
