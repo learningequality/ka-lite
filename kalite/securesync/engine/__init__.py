@@ -6,7 +6,6 @@ from annoying.functions import get_object_or_None
 from django.core.exceptions import ValidationError
 
 import settings
-import version
 from settings import LOG as logging
 from shared import serializers
 
@@ -25,16 +24,21 @@ def get_syncing_models():
     return _syncing_models
 
     
-def get_serialized_models(device_counters=None, limit=100, zone=None, include_count=False, dest_version=version.VERSION):
+def get_serialized_models(device_counters=None, limit=100, zone=None, include_count=False, dest_version=None):
     """Serialize models for some intended version (dest_version)
     Default is our own version--i.e. include all known fields.
     If serializing for a device of a lower version, pass in that device's version!
     """
     from securesync.devices.models import Device # cannot be top-level, otherwise inter-dependency of this and models fouls things up
+    own_device = Device.get_own_device()
+
+    # Get the current version if none was specified
+    if not dest_version:
+        dest_version = own_device.get_version()
 
     # use the current device's zone if one was not specified
     if not zone:
-        zone = Device.get_own_device().get_zone()
+        zone = own_device.get_zone()
 
     # if no devices specified, assume we're starting from zero, and include all devices in the zone
     if device_counters is None:        
@@ -94,7 +98,7 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
         return serialized_models
 
 
-def save_serialized_models(data, increment_counters=True, src_version=version.VERSION):
+def save_serialized_models(data, increment_counters=True, src_version=None):
     """Unserializes models (from a device of version=src_version) in data and saves them to the django database.
     If src_version is None, all unrecognized fields are (silently) stripped off.  
     If it is set to some value, then only fields of versions higher than ours are stripped off.
@@ -106,7 +110,10 @@ def save_serialized_models(data, increment_counters=True, src_version=version.VE
 
     Returns a dictionary of the # of saved models, # unsaved, and any exceptions during saving"""
     
-    from .models import ImportPurgatory # cannot be top-level, otherwise inter-dependency of this and models fouls things up
+    from .models import Device, ImportPurgatory # cannot be top-level, otherwise inter-dependency of this and models fouls things up
+    own_device = Device.get_own_device()
+    if not src_version:  # default version: our own
+        src_version = own_device.get_version()
 
     # if data is from a purgatory object, load it up
     if isinstance(data, ImportPurgatory):
@@ -117,9 +124,9 @@ def save_serialized_models(data, increment_counters=True, src_version=version.VE
 
     # deserialize the models, either from text or a list of dictionaries
     if isinstance(data, str) or isinstance(data, unicode):
-        models = serializers.deserialize("versioned-json", data, src_version=src_version, dest_version=version.VERSION)
+        models = serializers.deserialize("versioned-json", data, src_version=src_version, dest_version=own_device.get_version())
     else:
-        models = serializers.deserialize("versioned-python", data, src_version=src_version, dest_version=version.VERSION)
+        models = serializers.deserialize("versioned-python", data, src_version=src_version, dest_version=own_device.get_version())
 
     # try importing each of the models in turn
     unsaved_models = []
@@ -171,7 +178,7 @@ def save_serialized_models(data, increment_counters=True, src_version=version.VE
             purgatory = ImportPurgatory()
         
         # These models were successfully unserialized, so re-save in our own version.
-        purgatory.serialized_models = serializers.serialize("versioned-json", unsaved_models, ensure_ascii=False, dest_version=version.VERSION)
+        purgatory.serialized_models = serializers.serialize("versioned-json", unsaved_models, ensure_ascii=False, dest_version=own_device.get_version())
         purgatory.exceptions = exceptions
         purgatory.model_count = len(unsaved_models)
         purgatory.retry_attempts += 1
