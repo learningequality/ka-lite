@@ -58,9 +58,19 @@ def org_management(request):
                 if org.pk == int(request.POST.get("organization")):
                     org.form = form
 
+    zones = {}
+    for org in organizations.values():
+        zones[org.pk] = []
+        for zone in org.get_zones():
+            zones[org.pk].append({
+                "id": zone.id,
+                "name": zone.name,
+                "is_deletable": not zone.has_dependencies(passable_classes=["Organization"]),
+            })
     return {
         "title": _("Account administration"),
         "organizations": organizations,
+        "zones": zones,
         "HEADLESS_ORG_NAME": Organization.HEADLESS_ORG_NAME,
         "invitations": OrganizationInvitation.objects.filter(email_to_invite=request.user.email)
     }

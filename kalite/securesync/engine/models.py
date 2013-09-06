@@ -8,7 +8,7 @@ from pbkdf2 import crypt
 
 from django.contrib.auth.models import check_password
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
-from django.db import models, transaction
+from django.db import models
 from django.db.models import Q
 from django.utils.text import compress_string
 from django.utils.translation import ugettext_lazy as _
@@ -17,6 +17,7 @@ import kalite
 import settings
 from . import add_syncing_models
 from config.models import Settings
+from utils.django_utils import ExtendedModel
 
 
 ID_MAX_LENGTH=32
@@ -30,7 +31,7 @@ def _get_own_device():
     return Device.get_own_device()
 
 
-class SyncSession(models.Model):
+class SyncSession(ExtendedModel):
     client_nonce = models.CharField(max_length=ID_MAX_LENGTH, primary_key=True)
     client_device = models.ForeignKey("Device", related_name="client_sessions")
     server_nonce = models.CharField(max_length=ID_MAX_LENGTH, blank=True)
@@ -95,7 +96,7 @@ class SyncedModelManager(models.Manager):
             Q(signed_by__devicemetadata__is_trusted=True, zone_fallback=zone))
 
 
-class SyncedModel(models.Model):
+class SyncedModel(ExtendedModel):
     """
     The main class that makes this engine go.
     
@@ -297,7 +298,7 @@ class SyncedLog(SyncedModel):
         app_label = "securesync"
 
 
-class ImportPurgatory(models.Model):
+class ImportPurgatory(ExtendedModel):
     timestamp = models.DateTimeField(auto_now_add=True)
     counter = models.IntegerField()
     retry_attempts = models.IntegerField(default=0)

@@ -1,5 +1,6 @@
 {% extends "central/base.html" %}
 {% load staticfiles %}
+{% load my_filters %}
 
 {% block control_panel_active %}active{% endblock control_panel_active %}
 
@@ -85,12 +86,19 @@
 						<div id="button-popover-zone-{{ forloop.counter0 }}" class="button-popover" data-toggle="popover" data-placement="right" data-content="A Zone is the area in which multiple devices may connect to share content with each other." title="" data-original-title="Zone">?</div>
 					</div>
 					<table class="table">
-						{% for zone in org.get_zones %}
+						{% for zone in zones|get_item:pk %}
 						<tr>
 							<td>{{ zone.name }}</td>
 							<td><a class="zone-manage-link" href="{% url zone_management org_id=org.id zone_id=zone.id %}">
 								<i class="icon-wrench" title="Manage this zone"></i> Manage Zone
 							</a></td>
+							<td>
+								{% if zone.is_deletable %}
+								<a href="{% url delete_zone org_id=org.id zone_id=zone.id %}">
+									<i class="icon-trash" title="Delete this zone"></i> Delete Zone
+								</a>
+								{% endif %}
+							</td>
 						</tr>
 						{% endfor %}
 					</table>

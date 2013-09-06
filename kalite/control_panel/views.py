@@ -98,7 +98,7 @@ def zone_management(request, zone_id, org_id=None):
 @require_authorized_admin
 def delete_zone(request, org_id, zone_id):
     zone = Zone.objects.get(pk=zone_id)
-    if zone.is_deletable():
+    if not zone.has_dependencies(passable_classes=["Organization"]):
         zone.delete()
         messages.success(request, "You have succesfully deleted " + zone.name + ".")
     else:
