@@ -21,7 +21,7 @@ class Contact(models.Model):
     """Base contact information"""
 
     CONTACT_TYPES = ((CONTACT_TYPE_DEPLOYMENT, 'New Deployment'),
-                     (CONTACT_TYPE_SUPPORT, 'Support'),
+                     (CONTACT_TYPE_SUPPORT, 'Get Support'),
                      (CONTACT_TYPE_CONTRIBUTE,"Contribute"),
                      (CONTACT_TYPE_INFO, 'General Inquiries'))
 
@@ -30,9 +30,9 @@ class Contact(models.Model):
     type      = models.CharField(verbose_name="Reason for Contact", max_length=12, choices=CONTACT_TYPES)
     email     = models.EmailField(verbose_name="Your Email", max_length=100)
     org_name  = models.CharField(verbose_name="Organization Name", max_length=100, blank=True)
-    org_url   = models.URLField(verbose_name="Organization URL", blank=True)
     contact_date= models.DateField(auto_now_add=True)
     cc_email  = models.BooleanField(verbose_name="Please send a copy of this support request to the email address above.", default=False)
+    ip        = models.CharField(max_length=50, blank=True, null=True)
 
     def __unicode__(self):
         return u"%s inquiry from %s @ %s on %s (%s)"%(self.type, self.name, self.org_name, self.contact_date, self.email)
@@ -58,9 +58,9 @@ class Deployment(models.Model):
     countries               = models.CharField(max_length=100, blank=True, verbose_name="What country/countries are you hoping to deploy in?")
     internet_access         = multiselect.MultiSelectField(choices=DEPLOYMENT_INTERNET_ACCESS, max_length=100, blank=True, verbose_name="Which of the following statements accurately describe the internet access at your planned deployment?")
     hardware_infrastructure = multiselect.MultiSelectField(choices=DEPLOYMENT_HARDWARE, max_length=100, blank=True, verbose_name="Which of the following statements accurately describe the hardware and infrastructure at your planned deployment?")
-    facilities              = models.TextField(blank=True,verbose_name="Please describe the facilities in more detail, to catch anything not covered above.",help_text="e.g. number of facilities, number of students at each, grade levels, languages spoken, etc.")
-    low_cost_bundle         = models.TextField(blank=True,verbose_name="Would you be interested in the possibility of a low-cost (~$60), small, self-contained server solution, capable of running KA Lite?")
-    other                   = models.TextField(blank=True,verbose_name="Do you have any other questions or suggestions for us?")
+    facilities              = models.TextField(blank=True, verbose_name="Please describe the facilities in more detail, to catch anything not covered above.",help_text="e.g. number of facilities, number of students at each, grade levels, languages spoken, etc.")
+    low_cost_bundle         = models.TextField(blank=True, verbose_name="Would you be interested in the possibility of a low-cost (~$60), small, self-contained server solution, capable of running KA Lite?")
+    other                   = models.TextField(blank=True, verbose_name="Do you have any other questions or suggestions for us?")
 
     def __unicode__(self):
         return u"Inquiry from %s @ %s on %s (%s)"%(self.contact.name, self.contact.org_name, self.contact.contact_date, self.contact.email)
