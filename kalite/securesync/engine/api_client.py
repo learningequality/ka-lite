@@ -267,5 +267,4 @@ class SyncClient(object):
 
         self.counters_to_download = None
         self.counters_to_upload = None
-
         return {"download_results": download_results, "upload_results": upload_results}

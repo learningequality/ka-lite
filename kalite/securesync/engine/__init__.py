@@ -110,7 +110,9 @@ def save_serialized_models(data, increment_counters=True, src_version=None):
 
     Returns a dictionary of the # of saved models, # unsaved, and any exceptions during saving"""
     
-    from .models import Device, ImportPurgatory # cannot be top-level, otherwise inter-dependency of this and models fouls things up
+    from .models import ImportPurgatory # cannot be top-level, otherwise inter-dependency of this and models fouls things up
+    from securesync.devices.models import Device
+
     own_device = Device.get_own_device()
     if not src_version:  # default version: our own
         src_version = own_device.get_version()

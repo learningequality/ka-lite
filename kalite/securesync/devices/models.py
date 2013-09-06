@@ -156,7 +156,8 @@ class Device(SyncedModel):
         """
         own_device = Device.get_own_device()
         if self == own_device and self.version != kalite.VERSION:
-            self.update({ "version": kalite.VERSION })
+            self.version = kalite.VERSION
+            self.save()
         return self.version
 
     @classmethod
