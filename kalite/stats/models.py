@@ -37,10 +37,8 @@ class UnregisteredDevicePing(ExtendedModel):
             # Create the log (if necessary), update, and save
             # TODO: make a base class (in django_utils) that has get_or_initialize, and use that
             #   to shorten things here
-            cur_log = get_object_or_None(cls, device__id=id)  # get is safe, because device is unique
-            if not cur_log:
-                (cur_device, _) = UnregisteredDevice.objects.get_or_create(id=id)
-                cur_log = cls(device=cur_device)
+            (cur_device, _) = UnregisteredDevice.objects.get_or_create(id=id)
+            (cur_log, _) = cls.get_or_initialize(device=cur_device)  # get is safe, because device is unique
 
             cur_log.npings += 1
             cur_log.last_ip = ip

@@ -69,7 +69,7 @@ class VideoLog(SyncedModel):
         assert facility_user and youtube_id, "Updating a video log requires both a facility user and a YouTube ID"
         
         # retrieve the previous video log for this user for this video, or make one if there isn't already one
-        videolog = cls.get_or_initialize(user=facility_user, youtube_id=youtube_id)
+        (videolog, _) = cls.get_or_initialize(user=facility_user, youtube_id=youtube_id)
         
         # combine the previously watched counts with the new counts
         videolog.total_seconds_watched += additional_seconds_watched
