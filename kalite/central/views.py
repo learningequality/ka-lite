@@ -158,11 +158,9 @@ def organization_form(request, org_id):
 def delete_organization(request, org_id):
     org = Organization.objects.get(pk=org_id)
     if org.get_zones():
-        messages.warning(request, "You cannot delete %s because it has %d zone(s) affiliated with it." %(org.name, len(org.get_zones())))
+        messages.error(request, "You cannot delete '%s' because it has %d zone(s) affiliated with it." %(org.name, len(org.get_zones())))
     else:
         messages.success(request, "You have succesfully deleted " + org.name + ".")
-        deletion = DeletionRecord(organization=org, deleter=request.user)
-        deletion.save()
         org.delete()
     return HttpResponseRedirect(reverse("org_management"))
 
