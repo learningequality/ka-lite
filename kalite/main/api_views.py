@@ -58,7 +58,7 @@ def save_video_log(request):
 
     # More robust extraction of previous object
     videolog = VideoLog.get_or_initialize(user=request.session["facility_user"], youtube_id=data["youtube_id"])
-    videolog.total_seconds_watched  += data["seconds_watched"]
+    videolog.total_seconds_watched  = data["total_seconds_watched"]  # don't set incrementally, to avoid concurrency issues
     videolog.points = max(videolog.points, data["points"])  # videolog.points cannot be None
 
     try:
