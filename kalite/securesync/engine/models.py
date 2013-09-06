@@ -3,7 +3,6 @@ from __future__ import absolute_import
 import datetime
 import uuid
 import zlib
-from annoying.functions import get_object_or_None
 from pbkdf2 import crypt
 
 from django.contrib.auth.models import check_password
@@ -252,6 +251,7 @@ class SyncedModel(ExtendedModel):
             return self.__class__.objects.get(id=uuid)
         except self.__class__.DoesNotExist:
             return None
+
 
     def get_zone(self):
         # some models have a direct zone attribute; try for that

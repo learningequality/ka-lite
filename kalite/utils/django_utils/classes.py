@@ -1,5 +1,8 @@
+from annoying.functions import get_object_or_None
+
 from django.db import models
 from django.contrib.messages.storage.session import SessionStorage
+
 
 class NoDuplicateMessagesSessionStorage(SessionStorage):
     """
