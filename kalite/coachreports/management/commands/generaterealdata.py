@@ -27,6 +27,7 @@ import re
 import json
 from math import exp, sqrt, ceil, floor
 
+from django.contrib.auth.hashers import make_password
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
@@ -95,10 +96,11 @@ def generate_fake_facilities(names=("Wilson Elementary",)):
     facilities = []
 
     for name in names:
-        try:
-            facility = Facility.objects.get(name=name)
+        found_facilities = Facility.objects.filter(name=name)
+        if found_facilities:
+            facility = found_facilities[0]
             logging.info("Retrieved facility '%s'" % name)
-        except Facility.DoesNotExist as e:
+        else:
             facility = Facility(name=name)
             facility.save()
             logging.info("Created facility '%s'" % name)
@@ -117,10 +119,11 @@ def generate_fake_facility_groups(names=("Class 4E", "Class 5B"), facilities=Non
     facility_groups = []
     for facility in facilities:
         for name in names:
-            try:
-                facility_group = FacilityGroup.objects.get(facility=facility, name=name)
+            found_facility_groups = FacilityGroup.objects.filter(facility=facility, name=name)
+            if found_facility_groups:
+                facility_group = found_facility_groups[0]
                 logging.info("Retrieved facility group '%s'" % name)
-            except FacilityGroup.DoesNotExist as e:
+            else:
                 facility_group = FacilityGroup(facility=facility, name=name)
                 facility_group.full_clean()
                 facility_group.save()
@@ -200,6 +203,7 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
     By default, users start learning randomly between 6 months ago and now.
     """
 
+    own_device = Device.get_own_device()
     date_diff = datetime.datetime.now() - start_date
     exercise_logs = []
     user_logs = []
@@ -290,11 +294,13 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
                         attempts=int(attempts),
                         streak_progress=streak_progress,
                         points=int(points),
+                        complete=completed,
                         completion_timestamp=date_completed,
                         completion_counter=datediff(date_completed, start_date, units="seconds"),
                     )
-                    elog.full_clean()
-                    elog.save()   # TODO(bcipolli): bulk saving of logs
+                    elog.counter = own_device.increment_and_get_counter()
+                    elog.sign(own_device)  # have to sign after setting the counter
+                    elog.save(imported=True)  # avoid userlog issues
 
                     # For now, make all attempts on an exercise into a single UserLog.
                     seconds_per_attempt = 10 * (1 + user_settings["speed_of_learning"] * random.random())
@@ -320,6 +326,7 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
     If no users are given, they are created.
     If no topics exist, they are taken from the list at the top of this file."""
 
+    own_device = Device.get_own_device()
     date_diff = datetime.datetime.now() - start_date
     video_logs = []
 
@@ -410,7 +417,7 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
                     date_completed = datetime.datetime.now() - time_delta_completed
 
                 try:
-                    log = VideoLog.objects.get(user=facility_user, youtube_id=video["youtube_id"])
+                    vlog = VideoLog.objects.get(user=facility_user, youtube_id=video["youtube_id"])
                 except VideoLog.DoesNotExist:
 
                     logging.info("Creating video log: %-12s: %-45s (%4.1f%% watched, %d points)%s" % (
@@ -420,21 +427,61 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
                         points,
                         " COMPLETE on %s!" % date_completed if pct_completed == 100 else "",
                     ))
-                    log = VideoLog(
+                    vlog = VideoLog(
                         user=facility_user,
                         youtube_id=video["youtube_id"],
                         total_seconds_watched=total_seconds_watched,
                         points=points,
+                        complete=(pct_completed == 100.),
                         completion_timestamp=date_completed,
                         completion_counter=datediff(date_completed, start_date, units="seconds"),
                     )
-                    log.full_clean()
+                    vlog.full_clean()
                     # TODO(bcipolli): bulk saving of logs
-                    log.save()
+                    vlog.counter = own_device.increment_and_get_counter()
+                    vlog.sign(own_device)  # have to sign after setting the counter
+                    vlog.save(imported=True)  # avoid userlog issues
 
-                video_logs.append(log)
+
+                video_logs.append(vlog)
 
     return video_logs
+
+def generate_fake_coachreport_logs():
+    teacher_password = make_password('hellothere')
+    t,_ = FacilityUser.objects.get_or_create(
+        facility=Facility.objects.all()[0],
+        username=random.choice(firstnames),
+        defaults={
+            'password' : teacher_password,
+            'is_teacher' : True,
+        }
+    )
+    # TODO: create flags later
+    num_logs = 20
+    logs = []
+    for _ in xrange(num_logs):
+        date_logged_in = datetime.datetime.now() - datetime.timedelta(days=random.randint(1,10))
+        date_viewed_coachreport = date_logged_in + datetime.timedelta(minutes=random.randint(0, 30))
+        date_logged_out = date_viewed_coachreport + datetime.timedelta(minutes=random.randint(0, 30))
+        login_log = UserLog.objects.create(
+            user=t,
+            activity_type=UserLog.get_activity_int("login"),
+            start_datetime=date_logged_in,
+            last_active_datetime=date_viewed_coachreport,
+            end_datetime=date_logged_out,
+        )
+        logging.info("created login log for teacher %s" % t.username)
+        coachreport_log = UserLog.objects.create(
+            user=t,
+            activity_type=UserLog.get_activity_int("coachreport"),
+            start_datetime=date_viewed_coachreport,
+            last_active_datetime=date_viewed_coachreport,
+            end_datetime=date_viewed_coachreport,
+        )
+        logs.append((login_log, coachreport_log))
+        logging.info("created coachreport log for teacher %s" % t.username)
+    return logs
 
 
 class Command(BaseCommand):
@@ -443,7 +490,8 @@ class Command(BaseCommand):
     help = "Generate fake user data.  Can be re-run to generate extra exercise and video data."
 
     def handle(self, *args, **options):
-
+        if settings.CENTRAL_SERVER:
+            raise CommandError("Don't run this on the central server!!  Data not linked to any zone on the central server is BAD.")
         # First arg is the type of data to generate
         generate_type = "all" if len(args) <= 0 else args[0].lower()
 
@@ -464,10 +512,14 @@ class Command(BaseCommand):
             (facility_users, _, _) = generate_fake_facility_users()  # default password
             generate_fake_video_logs(facility_user=facility_users)
 
+        elif generate_type in ["coachreport, coachreports"]:
+            generate_fake_coachreport_logs()
+
         elif generate_type in ["all"]:
             (facility_users, _, _) = generate_fake_facility_users()  # default password
             generate_fake_exercise_logs(facility_user=facility_users)
             generate_fake_video_logs(facility_user=facility_users)
+            generate_fake_coachreport_logs()
 
         else:
             raise Exception("Unknown data type to generate: %s" % generate_type)

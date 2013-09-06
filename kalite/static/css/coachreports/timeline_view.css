@@ -88,3 +88,9 @@ table.detail td.data {
   stroke: steelblue;
   stroke-width: 1.5px;
 }
+.no-select {
+   border: 1;
+   border-radius: 0;
+   -webkit-appearance: none;
+   pointer-events: none;
+}

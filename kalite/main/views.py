@@ -31,15 +31,14 @@ from config.models import Settings
 from control_panel.views import user_management_context
 from main import topicdata
 from main.models import VideoLog, ExerciseLog, VideoFile
-from securesync.api_client import SyncClient
+from securesync.engine.api_client import SyncClient
 from securesync.models import Facility, FacilityUser,FacilityGroup, Device
 from securesync.views import require_admin, facility_required
 from settings import LOG as logging
+from shared.decorators import require_admin
+from shared.jobs import force_job
 from utils import topic_tools
-from utils.internet import am_i_online, JsonResponse
-from utils.jobs import force_job
-from utils.decorators import require_admin
-from utils.videos import video_connection_is_available
+from utils.internet import am_i_online, is_loopback_connection, JsonResponse
 
 
 def calc_last_modified(request, *args, **kwargs):
@@ -209,6 +208,7 @@ def video_handler(request, video, prev=None, next=None):
         "video_exists": video_exists,
         "prev": prev,
         "next": next,
+        "use_mplayer": settings.USE_MPLAYER and is_loopback_connection(request),
     }
     return context
 
@@ -261,7 +261,6 @@ def exercise_dashboard(request):
     }
     return context
 
-
 @check_setup_status  # this must appear BEFORE caching logic, so that it isn't blocked by a cache hit
 @backend_cache_page
 @render_to("homepage.html")
@@ -280,7 +279,6 @@ def easy_admin(request):
     context = {
         "wiki_url" : settings.CENTRAL_WIKI_URL,
         "central_server_host" : settings.CENTRAL_SERVER_HOST,
-        "am_i_online": am_i_online(settings.CENTRAL_WIKI_URL, allow_redirects=False),
         "in_a_zone":  Device.get_own_device().get_zone() is not None,
     }
     return context
@@ -390,7 +388,7 @@ def zone_redirect(request):
     device = Device.get_own_device()
     zone = device.get_zone()
     if zone:
-        return HttpResponseRedirect(reverse("zone_management", kwargs={"org_id": "", "zone_id": zone.pk}))
+        return HttpResponseRedirect(reverse("zone_management", kwargs={"zone_id": zone.pk}))
     else:
         raise Http404(_("This device is not on any zone."))
 
@@ -402,7 +400,7 @@ def device_redirect(request):
     device = Device.get_own_device()
     zone = device.get_zone()
     if zone:
-        return HttpResponseRedirect(reverse("device_management", kwargs={"org_id": "", "zone_id": zone.pk, "device_id": device.pk}))
+        return HttpResponseRedirect(reverse("device_management", kwargs={"zone_id": zone.pk, "device_id": device.pk}))
     else:
         raise Http404(_("This device is not on any zone."))
 

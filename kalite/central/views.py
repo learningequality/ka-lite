@@ -17,8 +17,8 @@ from django.views.decorators.csrf import csrf_exempt
 import settings
 from central.forms import OrganizationForm, OrganizationInvitationForm
 from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
-from securesync.api_client import SyncClient
-from utils.decorators import require_authorized_admin
+from securesync.engine.api_client import SyncSession
+from shared.decorators import require_authorized_admin
 
 
 @render_to("central/homepage.html")
@@ -58,9 +58,19 @@ def org_management(request):
                 if org.pk == int(request.POST.get("organization")):
                     org.form = form
 
+    zones = {}
+    for org in organizations.values():
+        zones[org.pk] = []
+        for zone in org.get_zones():
+            zones[org.pk].append({
+                "id": zone.id,
+                "name": zone.name,
+                "is_deletable": not zone.has_dependencies(passable_classes=["Organization"]),
+            })
     return {
         "title": _("Account administration"),
         "organizations": organizations,
+        "zones": zones,
         "HEADLESS_ORG_NAME": Organization.HEADLESS_ORG_NAME,
         "invitations": OrganizationInvitation.objects.filter(email_to_invite=request.user.email)
     }
@@ -144,14 +154,30 @@ def organization_form(request, org_id):
         'form': form
     }
 
+@require_authorized_admin
+def delete_organization(request, org_id):
+    org = Organization.objects.get(pk=org_id)
+    if org.get_zones():
+        messages.error(request, "You cannot delete '%s' because it has %d zone(s) affiliated with it." %(org.name, len(org.get_zones())))
+    else:
+        messages.success(request, "You have succesfully deleted " + org.name + ".")
+        org.delete()
+    return HttpResponseRedirect(reverse("org_management"))
+
 
 @render_to("central/glossary.html")
 def glossary(request):
     return {}
 
 
+
 @login_required
 def crypto_login(request):
+    """
+    Remote admin endpoint, for login to a distributed server (given its IP address; see also securesync/views.py:crypto_login)
+    
+    An admin login is negotiated using the nonce system inside SyncSession
+    """
     if not request.user.is_superuser:
         raise PermissionDenied()
     ip = request.GET.get("ip", "")

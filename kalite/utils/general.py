@@ -75,6 +75,21 @@ def datediff(*args, **kwargs):
         raise NotImplementedError("Unrecognized units: '%s'" % units)
 
 
+def get_host_name():
+    """
+    Cross-platform way to get the current computer name.
+    """
+    name = ""
+    try:
+        name = eval("os.uname()[1]")
+    except:
+        try:
+            name = eval("os.getenv('HOSTNAME', os.getenv('COMPUTERNAME') or '').lower()")
+        except:
+            name = ""
+    return name
+
+
 def version_diff(v1, v2):
     """
     Diff is the integer difference between the most leftward part of the versions that differ.
@@ -124,6 +139,24 @@ def ensure_dir(path):
             if not os.path.exists(full_path):
                 os.makedirs(full_path)
 
+# http://code.activestate.com/recipes/82465-a-friendly-mkdir/
+#def _mkdir(newdir):
+#    """works the way a good mkdir should :)
+#        - already exists, silently complete
+#        - regular file in the way, raise an exception
+#        - parent directory(ies) does not exist, make them as well
+#    """
+#    if os.path.isdir(newdir):
+#        pass
+#    elif os.path.isfile(newdir):
+#        raise OSError("a file with the same name as the desired " \
+#                      "dir, '%s', already exists." % newdir)
+#    else:
+#        head, tail = os.path.split(newdir)
+#        if head and not os.path.isdir(head):
+#            _mkdir(head)
+#        if tail:
+#            os.mkdir(newdir)
 
 def convert_date_input(date_to_convert):
     """Convert from MM/DD/YYYY to Unix timestamp"""
