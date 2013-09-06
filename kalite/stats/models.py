@@ -5,16 +5,17 @@ from django.db import models
 
 from securesync.models import ID_MAX_LENGTH, IP_MAX_LENGTH
 from settings import LOG as logging
+from utils.django_utils import ExtendedModel
 
 
-class UnregisteredDevice(models.Model):
+class UnregisteredDevice(ExtendedModel):
     """
     Bare list of all unregistered devices that 'ping' us with a device ID
     """
     id = models.CharField(primary_key=True, max_length=ID_MAX_LENGTH, editable=False)
 
 
-class UnregisteredDevicePing(models.Model):
+class UnregisteredDevicePing(ExtendedModel):
     """
     Whenever we receive a session request from an unregistered device,
     we increase our counter
@@ -36,10 +37,8 @@ class UnregisteredDevicePing(models.Model):
             # Create the log (if necessary), update, and save
             # TODO: make a base class (in django_utils) that has get_or_initialize, and use that
             #   to shorten things here
-            cur_log = get_object_or_None(cls, device__id=id)  # get is safe, because device is unique
-            if not cur_log:
-                (cur_device, _) = UnregisteredDevice.objects.get_or_create(id=id)
-                cur_log = cls(device=cur_device)
+            (cur_device, _) = UnregisteredDevice.objects.get_or_create(id=id)
+            (cur_log, _) = cls.get_or_initialize(device=cur_device)  # get is safe, because device is unique
 
             cur_log.npings += 1
             cur_log.last_ip = ip
