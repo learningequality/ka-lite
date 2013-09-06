@@ -27,6 +27,9 @@ class Command(BaseCommand):
     help = "Generate fake user data"
 
     def handle(self, *args, **options):
+        if settings.CENTRAL_SERVER:
+            raise CommandError("Don't run this on the central server!!  Data not linked to any zone on the central server is BAD.")
+
         facility = Facility(name="Wilson Elementary")
         facility.save()
         group1 = FacilityGroup(facility=facility, name="Class 4E")

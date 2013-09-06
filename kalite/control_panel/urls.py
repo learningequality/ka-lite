@@ -14,6 +14,8 @@ urlpatterns = patterns('control_panel.views',
     url(r'zone/(?P<zone_id>\w+)/facility/(?P<facility_id>\w+)/usage/$', 'facility_usage', {}, 'facility_usage'),
 #    url(r'zone/(?P<zone_id>\w+)/facility/(?P<facility_id>\w+)/users/manage/$', 'facility_user_management', {}, 'facility_user_management'),
 
+    url(r'account/$', 'account_management', {}, 'account_management'),
+
     # Group
     url(r'zone/(?P<zone_id>\w+)/facility/(?P<facility_id>\w+)/group/(?P<group_id>\w+)/users/manage/$', 'facility_user_management', {}, 'facility_user_management'),
 )
