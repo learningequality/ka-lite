@@ -85,43 +85,9 @@ h4{font-size: 118%;}
     line-height: 18px;
     display:block;
   }
-  .options {
-    float: right;
-    list-style-type: none;
-    margin-right: 20px;
-    margin-top: 22px;
-    li {
-      display: inline;
-      border: 1px solid @light-gray;
-      .border-radius(7px);
-      padding: 7px;
-      &:hover, &:focus {
-        background-color: @dark-gray;
-      }
-    }
-  }
-}
+ 
 
-#zone-management-options {
-  float: right;
-  list-style-type: none;
-  margin-right: 20px;
-  li {
-    font-size: 1px;
-    display: inline;
-    border: 1px solid @light-gray;
-    .border-radius(7px);
-    padding-bottom: 21px;
-    padding-left: 2px;
-    padding-right: 3px;
-    padding-top: 6px;
-    &:hover, &:focus {
-      background-color: @light-gray;
-    }
-  }
-}
-
-// Social media icons
+//Icons
 // --------------------------------------------------
 
 .symbol, a.symbol:before { // Makes the icons look nice on all the browsers
@@ -144,7 +110,7 @@ a.symbol:before {
 }
 
 .list-icons{
-  .horizontal-list;
+  
   font-size: 45px;
   line-height: 10px;
 
@@ -152,6 +118,26 @@ a.symbol:before {
     color:@dark-gray;
     &:hover{
       color:black;
+    }
+  }
+}
+ .options {
+    .horizontal-list;
+    float: right;
+
+    margin-right: 20px;
+    margin-top: 22px;
+
+    li {
+      a{
+        color:black;
+      }
+      border: 1px solid @light-gray;
+      .border-radius(7px);
+      padding: 7px;
+      &:hover, &:focus {
+        background-color: @dark-gray;
+      }
     }
   }
 }
@@ -208,34 +194,6 @@ a.symbol:before {
   &:focus {
     background-color:@light-flashy-green;
   }
-}
-
-// Glyphicon hack & styling
-// --------------------------------------------------
-[class^="icon-"],
-[class*=" icon-"] {
-  display: inline-block;
-  width: 14px;
-  height: 14px;
-  margin-top: 1px;
-  *margin-right: .3em;
-  line-height: 14px;
-  vertical-align: text-top;
-  background-image: url("../css/images/glyphicons-halflings.png");
-  background-position: 14px 14px;
-  background-repeat: no-repeat;
-}
-
-.icon-trash {
-  background-position: -456px 0;
-}
-
-.icon-pencil {
-  background-position: 0 -72px;
-}
-
-.icon-wrench {
-  background-position: -360px -144px;
 }
 
 // List
