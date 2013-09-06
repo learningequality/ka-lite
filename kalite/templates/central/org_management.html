@@ -63,14 +63,14 @@
 						{% if org.name != HEADLESS_ORG_NAME %}
 							<li>
 								<a href="{% url organization_form org_id=org.id %}">
-									<i class="icon-pencil icon-large" title="Edit this organization's information."></i>
+									<span class="icon-pencil icon-large" title="Edit this organization's information."></span>
 								</a>
 							</li>
 						{% endif %}
 						{% if org.owner == request.user %}
 							<li>
 								<a href="{% url delete_organization org_id=org.id %}" onclick="return confirm('Are you sure you want to delete {{org.name}}?')">
-									<i class="icon-trash icon-large" title="Delete this organization."></i>
+									<span class="icon-trash icon-large" title="Delete this organization."></span>
 								</a>
 							</li>
 						{% endif %}
