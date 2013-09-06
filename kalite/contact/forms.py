@@ -27,35 +27,21 @@ class DeploymentForm(ModelForm):
         model = Deployment
         fields = ('countries', 'internet_access', 'hardware_infrastructure', 'facilities', 'low_cost_bundle', 'other' )
 
-
 class SupportForm(ModelForm):
     required_css_class = 'required'
     class Meta:
         model = Support
         fields = ('type', 'issue')
-        widgets = {
-            'type': forms.Select(attrs={ 'required': 'true' }),
-            'issue': forms.Textarea(attrs={ 'required': 'true' })
-        }
-
-
 
 class InfoForm(ModelForm):
     required_css_class = 'required'
     class Meta:
         model = Info
         fields = ('issue',)
-        widgets = {
-            'issue': forms.Textarea(attrs={ 'required': 'true' })
-        }
-
 
 class ContributeForm(ModelForm):
     required_css_class = 'required'
     class Meta:
         model = Contribute
         fields = ('type','issue',)
-        widgets = {
-            'type': forms.Select(attrs={ 'required': 'true' }),
-            'issue': forms.Textarea(attrs={ 'required': 'true' })
-        }
+
