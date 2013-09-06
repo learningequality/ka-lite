@@ -22,7 +22,6 @@
 		{% block headcss %}{% endblock headcss %}
 
 		{% block content %}
-		
 		<div class="row-fluid">
 			<div class="span9">
 				<div class="tooltip-container">
@@ -64,14 +63,14 @@
 						{% if org.name != HEADLESS_ORG_NAME %}
 							<li>
 								<a href="{% url organization_form org_id=org.id %}">
-									<i class="icon-pencil" title="Edit this organization's information."></i>
+									<i class="icon-pencil icon-large" title="Edit this organization's information."></i>
 								</a>
 							</li>
 						{% endif %}
 						{% if org.owner == request.user %}
 							<li>
 								<a href="{% url delete_organization org_id=org.id %}" onclick="return confirm('Are you sure you want to delete {{org.name}}?')">
-									<i class="icon-trash" title="Delete this organization."></i>
+									<i class="icon-trash icon-large" title="Delete this organization."></i>
 								</a>
 							</li>
 						{% endif %}
@@ -90,12 +89,12 @@
 						<tr>
 							<td>{{ zone.name }}</td>
 							<td><a class="zone-manage-link" href="{% url zone_management org_id=org.id zone_id=zone.id %}">
-								<i class="icon-wrench" title="Manage this zone"></i> Manage Zone
+								 Manage Zone
 							</a></td>
 							<td>
 								{% if zone.is_deletable %}
 								<a href="{% url delete_zone org_id=org.id zone_id=zone.id %}" onclick="return confirm('Are you sure you want to delete {{zone.name}}?')">
-									<i class="icon-trash" title="Delete this zone"></i> Delete Zone
+									 Delete Zone
 								</a>
 								{% endif %}
 							</td>
