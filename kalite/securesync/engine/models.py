@@ -3,7 +3,6 @@ from __future__ import absolute_import
 import datetime
 import uuid
 import zlib
-from annoying.functions import get_object_or_None
 from pbkdf2 import crypt
 
 from django.contrib.auth.models import check_password
@@ -253,6 +252,7 @@ class SyncedModel(ExtendedModel):
         except self.__class__.DoesNotExist:
             return None
 
+
     def get_zone(self):
         # some models have a direct zone attribute; try for that
         zone = getattr(self, "zone", None)
@@ -273,17 +273,6 @@ class SyncedModel(ExtendedModel):
         pk = self.pk[0:5] if len(getattr(self, "pk", "")) >= 5 else "[unsaved]"
         signed_by_pk = self.signed_by.pk[0:5] if self.signed_by and self.signed_by.pk else "[None]"
         return u"%s... (Signed by: %s...)" % (pk, signed_by_pk)
-
-    @classmethod
-    def get_or_initialize(cls, *args, **kwargs):
-        """
-        This is like Django's get_or_create method, but without calling save().
-        Allows for more efficient post-initialize updates.
-        """
-        assert not args, "No positional arguments allowed for this method."""
-
-        obj = get_object_or_None(cls, **kwargs)
-        return obj or cls(**kwargs)
 
 
 class SyncedLog(SyncedModel):
