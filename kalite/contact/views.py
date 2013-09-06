@@ -120,7 +120,6 @@ def contact_wizard(request, type=""):
                     name="%s %s"%(request.user.first_name, request.user.last_name),
                     email=request.user.email,
                     org_name=org.name,
-                    org_url=org.url,
                     ip=get_request_ip(request),
                 ))
 
