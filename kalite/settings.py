@@ -283,3 +283,15 @@ if getattr(local_settings, "USE_DEBUG_TOOLBAR", False):
         'HIDE_DJANGO_SQL': False,
         'ENABLE_STACKTRACES' : True,
     }
+
+#####
+# sqlite performance boosts:
+#  synchronous (OFF|NORMAL|FULL) FULL=safest, NORMAL=normally safe, OFF=not safe, but fast)
+#  journal_mode (DELETE|WAL) DELETE=standard sqlite journal, WAL=Write-ahead-log journal, faster for updates)
+#  autocheckpoint (n), low number=frequent db writes, fewer trx lost if power fails
+#
+SQLITE_PRAGMA_SYNCHRONOUS = getattr(local_settings, "SQLITE_PRAGMA_SYNCHRONOUS", "FULL")
+SQLITE_PRAGMA_JOURNAL_MODE = getattr(local_settings, "SQLITE_PRAGMA_JOURNAL_MODE", "WAL")
+SQLITE_PRAGMA_AUTOCHECKPOINT = getattr(local_settings, "SQLITE_PRAGMA_AUTOCHECKPOINT", 16)
+#
+#####
