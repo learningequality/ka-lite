@@ -277,7 +277,7 @@ def update_all_distributed_callback(request):
             continue
 
         try:
-            vl = VideoLog.get_or_initialize(user=user, youtube_id=video["youtube_id"])
+            (vl, _) = VideoLog.get_or_initialize(user=user, youtube_id=video["youtube_id"])
             for key,val in video.iteritems():
                 setattr(vl, key, val)
             logging.debug("Saving video log for %s: %s" % (youtube_id, vl))
@@ -298,7 +298,7 @@ def update_all_distributed_callback(request):
             continue
 
         try:
-            el = ExerciseLog.get_or_initialize(user=user, exercise_id=exercise["exercise_id"])
+            (el, _) = ExerciseLog.get_or_initialize(user=user, exercise_id=exercise["exercise_id"])
             for key,val in exercise.iteritems():
                 setattr(el, key, val)
             logging.debug("Saving exercise log for %s: %s" % (exercise['exercise_id'], el))

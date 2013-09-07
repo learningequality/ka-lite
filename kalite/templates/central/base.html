@@ -24,9 +24,6 @@
               };
           </script>
           <script type="text/javascript" src="{% static 'js/less.js' %}"></script>
-          <script type="text/javascript">
-            less.watch(); // Auto-reloads the page when you change a file
-          </script>
 
           {% else %}
 
@@ -98,7 +95,12 @@
 
             <div class="row-fluid content"> 
                 <div class="span12 content-padding">
-                    {% block content %}{% endblock content %}
+                  {% block precontent %}
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                  {% endblock precontent %}
+                  {% block content %}{% endblock content %}
                 </div>
             </div>
             <div class="row-fluid"> <!-- copyright footer -->

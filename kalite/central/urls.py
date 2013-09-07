@@ -48,6 +48,7 @@ urlpatterns += patterns('central.views',
     # Organization
     url(r'^organization/$', 'org_management', {}, 'org_management'),
     url(r'^organization/(?P<org_id>\w+)/$', 'organization_form', {}, 'organization_form'),
+    url(r'^organization/delete/(?P<org_id>\w+)/$', 'delete_organization', {}, 'delete_organization'),
     url(r'^organization/invite_action/(?P<invite_id>\w+)/$', 'org_invite_action', {}, 'org_invite_action'),
 
     # Zone, facility, device
@@ -62,6 +63,7 @@ urlpatterns += patterns('central.views',
     url(r'^feeds/atom/$', AtomSiteNewsFeed(), {}, 'atom_feed'),
     url(r'^faq/', include(faq.urls)),
 
+    url(r'^contact/', include(contact.urls)),
     url(r'^wiki/(?P<path>.*)$', lambda request, path: HttpResponseRedirect(settings.CENTRAL_WIKI_URL + path), {}, 'wiki'),
     url(r'^about/$', lambda request: HttpResponseRedirect('http://learningequality.org/'), {}, 'about'),
 

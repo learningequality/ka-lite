@@ -3,6 +3,7 @@ from annoying.decorators import render_to, wraps
 from annoying.functions import get_object_or_None
 from collections import OrderedDict, namedtuple
 
+from django.contrib import messages
 from django.core import serializers
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -50,8 +51,6 @@ def zone_form(request, zone_id, org_id=None):
     }
 
 
-
-
 @require_authorized_admin
 @render_to("control_panel/zone_management.html")
 def zone_management(request, zone_id, org_id=None):
@@ -96,6 +95,15 @@ def zone_management(request, zone_id, org_id=None):
     }
 
 
+@require_authorized_admin
+def delete_zone(request, org_id, zone_id):
+    zone = Zone.objects.get(pk=zone_id)
+    if not zone.has_dependencies(passable_classes=["Organization"]):
+        zone.delete()
+        messages.success(request, "You have succesfully deleted " + zone.name + ".")
+    else:
+        messages.warning(request, "You cannot delete this zone because it is syncing data with with %d device(s)" % zone.devicezone_set.count())
+    return HttpResponseRedirect(reverse("org_management"))
 
 #TODO(bcipolli) I think this will be deleted on the central server side
 @require_authorized_admin
@@ -118,10 +126,15 @@ def facility_usage(request, facility_id, org_id=None, zone_id=None, frequency=No
     zone = get_object_or_None(Zone, pk=zone_id) if zone_id else None
     facility = get_object_or_404(Facility, pk=facility_id)
     groups = FacilityGroup.objects.filter(facility=facility).order_by("name")
-
-    students = FacilityUser.objects.filter(facility=facility, is_teacher=False).order_by("last_name", "first_name", "username")
-    teachers = FacilityUser.objects.filter(facility=facility, is_teacher=True).order_by("last_name", "first_name", "username")
-
+    students = FacilityUser.objects \
+        .filter(facility=facility, is_teacher=False) \
+        .order_by("last_name", "first_name", "username") \
+        .prefetch_related("group")
+    teachers = FacilityUser.objects \
+        .filter(facility=facility, is_teacher=True) \
+        .order_by("last_name", "first_name", "username") \
+        .prefetch_related("group")
+    
     # Get the start and end date--based on csv.  A hack, yes...
     if request.GET.get("format", "") == "csv":
         frequency = frequency or request.GET.get("fequency", "months")
@@ -171,50 +184,66 @@ def _get_user_usage_data(users, period_start=None, period_end=None):
     len_all_exercises = len(topicdata.NODE_CACHE['Exercise'])
     user_data = OrderedDict()
     group_data = OrderedDict()
+
+
+    # Make queries efficiently
+    exercise_logs = ExerciseLog.objects.filter(user__in=users, complete=True)
+    video_logs = VideoLog.objects.filter(user__in=users)
+    login_logs = UserLogSummary.objects.filter(user__in=users)
+
+    # filter results
+    if period_start:
+        exercise_logs = exercise_logs.filter(completion_timestamp__gte=period_start)
+        video_logs = video_logs.filter(completion_timestamp__gte=period_start)
+        login_logs = login_logs.filter(start_datetime__gte=period_start)
+    if period_end:
+        exercise_logs = exercise_logs.filter(completion_timestamp__lte=period_end)
+        video_logs = video_logs.filter(completion_timestamp__lte=period_end)
+        login_logs = login_logs.filter(end_datetime__lte=period_end)
+
+    # Force results in a single query
+    exercise_logs = list(exercise_logs.values("exercise_id", "user__pk"))
+    video_logs = list(video_logs.values("youtube_id", "user__pk"))
+    login_logs = list(login_logs.values("activity_type", "total_seconds", "user__pk"))
+
     for user in users:
-        exercise_logs = ExerciseLog.objects.filter(user=user)
-        video_logs = VideoLog.objects.filter(user=user)
-        login_logs = UserLogSummary.objects.filter(user=user)
-
-        # filter results
-        if period_start:
-            exercise_logs = exercise_logs.filter(completion_timestamp__gte=period_start)
-            video_logs = video_logs.filter(completion_timestamp__gte=period_start)
-            login_logs = login_logs.filter(start_datetime__gte=period_start)
-        if period_end:
-            exercise_logs = exercise_logs.filter(completion_timestamp__lte=period_end)
-            video_logs = video_logs.filter(completion_timestamp__lte=period_end)
-            login_logs = login_logs.filter(end_datetime__lte=period_end)
-
-        exercise_stats = {
-            "count": exercise_logs.count(),
-            "total_mastery": exercise_logs.aggregate(Sum("complete"))["complete__sum"],
-            "mastered_exercises": [elog.exercise_id for elog in exercise_logs if elog.complete],
-        }
-        video_stats = {"count": VideoLog.objects.filter(user=user).count()}
-        login_stats = UserLogSummary.objects \
-            .filter(user=user, activity_type=UserLog.get_activity_int("login")) \
-            .aggregate(Sum("count"), Sum("total_seconds"))
-        report_stats = UserLogSummary.objects \
-            .filter(user=user, activity_type=UserLog.get_activity_int("coachreport")) \
-            .aggregate(Sum("count"))
-
-        # Had to add one-by-one, to get OrderedDict to work.
-        #   OrderedDict controls the order of the columns
         user_data[user.pk] = OrderedDict()
         user_data[user.pk]["first_name"] = user.first_name
         user_data[user.pk]["last_name"] = user.last_name
         user_data[user.pk]["username"] = user.username
         user_data[user.pk]["group"] = user.group
-        user_data[user.pk]["total_report_views"] = report_stats["count__sum"] or 0
-        user_data[user.pk]["total_logins"] = login_stats["count__sum"] or 0
-        user_data[user.pk]["total_hours"] = (login_stats["total_seconds__sum"] or 0)/3600.
-        user_data[user.pk]["total_videos"] = video_stats["count"]
-        user_data[user.pk]["total_exercises"] = exercise_stats["count"]
-        user_data[user.pk]["pct_mastery"] = (exercise_stats["total_mastery"] or 0)/float(len_all_exercises)
-        user_data[user.pk]["exercises_mastered"] = exercise_stats["mastered_exercises"]
 
-        # Add group data.  Allow a fake group "Ungrouped"
+
+        user_data[user.pk]["total_report_views"] = 0#report_stats["count__sum"] or 0
+        user_data[user.pk]["total_logins"] =0# login_stats["count__sum"] or 0
+        user_data[user.pk]["total_hours"] = 0#login_stats["total_seconds__sum"] or 0)/3600.
+
+        user_data[user.pk]["total_exercises"] = 0
+        user_data[user.pk]["pct_mastery"] = 0.
+        user_data[user.pk]["exercises_mastered"] = []
+
+        user_data[user.pk]["total_videos"] = 0
+        user_data[user.pk]["videos_watched"] = []
+    
+
+    for elog in exercise_logs:
+        user_data[elog["user__pk"]]["total_exercises"] += 1
+        user_data[elog["user__pk"]]["pct_mastery"] += 1. / len_all_exercises
+        user_data[elog["user__pk"]]["exercises_mastered"].append(elog["exercise_id"])
+
+    for vlog in video_logs:
+        user_data[vlog["user__pk"]]["total_videos"] += 1
+        user_data[vlog["user__pk"]]["videos_watched"].append(vlog["youtube_id"])
+
+    for llog in login_logs:
+        if llog["activity_type"] == UserLog.get_activity_int("coachreport"):
+            user_data[llog["user__pk"]]["total_report_views"] += 1
+        elif llog["activity_type"] == UserLog.get_activity_int("login"):
+            user_data[llog["user__pk"]]["total_hours"] += (llog["total_seconds"]) / 3600.
+            user_data[llog["user__pk"]]["total_logins"] += 1
+
+    # Add group data.  Allow a fake group "Ungrouped"
+    for user in users:
         group_pk = getattr(user.group, "pk", None)
         group_name = getattr(user.group, "name", "Ungrouped")
         if not group_pk in group_data:
