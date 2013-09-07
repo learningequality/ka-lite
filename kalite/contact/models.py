@@ -78,7 +78,7 @@ class Support(ExtendedModel):
 
     contact  = models.ForeignKey(Contact)
     type     = models.CharField(max_length=15, choices=SUPPORT_TYPES, verbose_name="Issue Type")
-    issue    = models.TextField(blank=True, verbose_name="Please describe your issue.")
+    issue    = models.TextField(blank=False, verbose_name="Please describe your issue.")
 
     def __unicode__(self):
         return u"%s inquiry from %s @ %s on %s (%s)"%(self.type, self.contact.name, self.contact.org_name, self.contact.contact_date, self.contact.email)
@@ -95,7 +95,7 @@ class Contribute(ExtendedModel):
 
     contact  = models.ForeignKey(Contact)
     type     = models.CharField(max_length=15, choices=CONTRIBUTE_TYPES, verbose_name="Type of contribution:")
-    issue    = models.TextField(blank=True, verbose_name="How would you like to contribute?")
+    issue    = models.TextField(blank=False, verbose_name="How would you like to contribute?")
 
     def __unicode__(self):
         return u"%s inquiry from %s @ %s on %s (%s)"%(self.type, self.contact.name, self.contact.org_name, self.contact.contact_date, self.contact.email)
@@ -103,7 +103,7 @@ class Contribute(ExtendedModel):
 
 class Info(ExtendedModel):
     contact  = models.ForeignKey(Contact)
-    issue    = models.TextField(blank=True, verbose_name="What's on your mind?")
+    issue    = models.TextField(blank=False, verbose_name="What's on your mind?")
     
     def __unicode__(self):
         return u"Inquiry from %s @ %s on %s (%s)"%(self.contact.name, self.contact.org_name, self.contact.contact_date, self.contact.email)
