@@ -43,7 +43,7 @@
         <div class="span4">
             <h2>How do I use it?</h2>
 
-            <a href="{% url wiki path='installation' %}">
+            <a href="{% url install_wizard %}">
             <div class="round-border-install"></div>
             </a>
             <p>
@@ -71,7 +71,7 @@
 <div class="row-fluid button-container">
 
     <div class="span12">
-        <a href="/installation"><button class="button-install">Install now! </button></a>
+        <a href="{% url install_wizard %}"><button class="button-install">Install now! </button></a>
     </div>
 </div>
 </div>

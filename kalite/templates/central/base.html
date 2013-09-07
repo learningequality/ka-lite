@@ -64,7 +64,7 @@
                             <ul class="header__horizontal-menu__right">
 
                                 <li><a href="{% url homepage %}" class="{% block home_active %}{% endblock home_active %}">{% trans "Home" %}</a></li>
-                                <li><a href="{% url wiki path='installation' %}" target="_blank">{% trans "Install" %}</a></li>
+                                <li><a href="{% url install_wizard %}">{% trans "Install" %}</a></li>
                                 <li><a href="{% url faq_topic_list %}" class="{% block faq_active %}{% endblock faq_active%}">{% trans "FAQ" %}</a></li>
                                 <li><a href="{% url contact_wizard %}"class="{% block contact_active %}{% endblock contact_active%}">{% trans "Contact" %}</a></li>
                                 <li><a href="{% url about %}" target="_blank">{% trans "About Us" %}</a></li>
