@@ -69,8 +69,8 @@ def zone_management(request, zone_id, org_id=None):
         
         device_data[device.id] = {
             "name": device.name or device.id,
-            "num_times_synced": sync_sessions.count() if sync_sessions is not None else "N/A",
-            "last_time_synced": sync_sessions.aggregate(Max("timestamp"))["timestamp__max"] if sync_sessions is not None else "N/A",
+            "num_times_synced": sync_sessions.count() if sync_sessions is not None else None,
+            "last_time_synced": sync_sessions.aggregate(Max("timestamp"))["timestamp__max"] if sync_sessions is not None else None,
             "last_time_used":   None if user_activity.count() == 0 else user_activity.order_by("-end_datetime")[0],
             "counter": device.get_counter(),
         }
