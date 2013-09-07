@@ -91,7 +91,8 @@ def zone_management(request, zone_id, org_id=None):
         "zone": zone,
         "facilities": facility_data,
         "devices": device_data,
-        "upload_form": UploadFileForm()
+        "upload_form": UploadFileForm(),
+        "own_device_is_trusted": Device.get_own_device().get_metadata().is_trusted,
     }
 
 

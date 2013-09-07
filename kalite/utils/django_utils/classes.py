@@ -41,7 +41,6 @@ class ExtendedModel(models.Model):
             model = getattr(manager, "model")
             if manager.all():
                 class_names.append(model.__name__)
-        print class_names
         return set(class_names) - set(passable_classes)
 
     def has_dependencies(self, passable_classes=[]):
