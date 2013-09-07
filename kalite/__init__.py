@@ -37,14 +37,12 @@ def activate_pragma(sender, connection, **kwargs):
     except:
         return
 
+    import settings
     cursor = connection.cursor()
-    from settings import SQLITE_PRAGMA_SYNCHRONOUS
-    from settings import SQLITE_PRAGMA_JOURNAL_MODE
-    cursor.execute('PRAGMA synchronous=' + SQLITE_PRAGMA_SYNCHRONOUS + ';')
-    cursor.execute('PRAGMA journal_mode=' + SQLITE_PRAGMA_JOURNAL_MODE + ';')
-    if SQLITE_PRAGMA_JOURNAL_MODE == 'WAL':
-        from settings import SQLITE_PRAGMA_WAL_AUTOCHECKPOINT
-        cursor.execute('PRAGMA wal_autocheckpoint=' + str(SQLITE_PRAGMA_WAL_AUTOCHECKPOINT) + ';')
+    cursor.execute('PRAGMA synchronous=' + settings.SQLITE_PRAGMA_SYNCHRONOUS + ';')
+    cursor.execute('PRAGMA journal_mode=' + settings.SQLITE_PRAGMA_JOURNAL_MODE + ';')
+    if settings.SQLITE_PRAGMA_JOURNAL_MODE == 'WAL':
+        cursor.execute('PRAGMA wal_autocheckpoint=' + str(settomgs.SQLITE_PRAGMA_WAL_AUTOCHECKPOINT) + ';')
 
 from django.db.backends.signals import connection_created
 connection_created.connect(activate_pragma)
