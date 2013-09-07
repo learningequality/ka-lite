@@ -2,6 +2,7 @@ import cgi
 import json
 import re
 import uuid
+from annoying.functions import get_object_or_None
 
 from django.contrib import messages
 from django.contrib.messages.api import get_messages
@@ -83,22 +84,23 @@ def register_device(request):
     if not zone: # old code-path
         try:
             registration = RegisteredDevicePublicKey.objects.get(public_key=client_device.public_key)
-            if registration.is_used():
-                if Device.objects.get(public_key=client_device.public_key):
-                    return JsonResponse({
-                        "error": "This device has already been registered",
-                        "code": "device_already_registered",
-                    }, status=500)
-                else:
-                    # If not... we're in a very weird state--we have a record of their
-                    #   registration, but no device record.
-                    # Let's just let the registration happens, so we can refresh things here.
-                    #   No harm, and some failsafe benefit.
-                    # So, pass through... no code :)
-                    pass
+            if not registration.is_used():
+                registration.use()
+
+            elif get_object_or_None(Device, public_key=client_device.public_key):
+                return JsonResponse({
+                    "error": "This device has already been registered",
+                    "code": "device_already_registered",
+                }, status=500)
+            else:
+                # If not... we're in a very weird state--we have a record of their
+                #   registration, but no device record.
+                # Let's just let the registration happens, so we can refresh things here.
+                #   No harm, and some failsafe benefit.
+                # So, pass through... no code :)
+                pass
 
             # Use the RegisteredDevicePublicKey, now that we've initialized the device and put it in its zone
-            registration.use()
             zone = registration.zone
 
         except RegisteredDevicePublicKey.DoesNotExist:
