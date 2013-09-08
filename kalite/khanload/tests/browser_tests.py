@@ -1,6 +1,6 @@
 import time
 
-from browser_tests import KALiteDistributedBrowserTestCase
+from main.tests import KALiteDistributedBrowserTestCase
 
 
 class KnowledgeMapTests(KALiteDistributedBrowserTestCase):
@@ -29,3 +29,4 @@ class KnowledgeMapTests(KALiteDistributedBrowserTestCase):
 
         for url in link_urls:
             self.test_exercise_dashboard(map_url=url)
+            time.sleep(2.)
