@@ -61,14 +61,21 @@ def register_device(request):
     # we have a valid self-signed Device, so now check if its public key has been registered
     try:
         registration = RegisteredDevicePublicKey.objects.get(public_key=client_device.public_key)
+        if registration.is_used():
+            if Device.objects.get(public_key=client_device.public_key):
+                return JsonResponse({
+                    "error": "This device has already been registered",
+                    "code": "device_already_registered",
+                }, status=500)
+            else:
+                # If not... we're in a very weird state--we have a record of their
+                #   registration, but no device record.
+                # Let's just let the registration happens, so we can refresh things here.
+                #   No harm, and some failsafe benefit.
+                # So, pass through... no code :)
+                pass
+
     except RegisteredDevicePublicKey.DoesNotExist:
-        try:
-            device = Device.objects.get(public_key=client_device.public_key)
-            return JsonResponse({
-                "error": "This device has already been registered",
-                "code": "device_already_registered",
-            }, status=500)
-        except Device.DoesNotExist:
             # This is the codepath for unregistered devices trying to start a session.
             #   This would only get hit, however, if they visit the registration page.
             # But still, good to keep track of!
@@ -87,8 +94,8 @@ def register_device(request):
     device_zone = DeviceZone(device=client_device, zone=registration.zone)
     device_zone.save()
 
-    # delete the RegisteredDevicePublicKey, now that we've initialized the device and put it in its zone
-    registration.delete()
+    # Use the RegisteredDevicePublicKey, now that we've initialized the device and put it in its zone
+    registration.use()
 
     # return our local (server) Device, its Zone, and the newly created DeviceZone, to the client
     return JsonResponse(
