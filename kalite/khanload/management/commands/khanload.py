@@ -74,7 +74,7 @@ def download_khan_data(url, debug_cache_file=None, debug_cache_dir=settings.PROJ
     # c) It's less than 7 days old.
     if settings.DEBUG and os.path.exists(debug_cache_file) and datediff(datetime.datetime.now(), datetime.datetime.fromtimestamp(os.path.getctime(debug_cache_file)), units="days") <= 14.0:
         # Slow to debug, so keep a local cache in the debug case only.
-        sys.stdout.write("Using cached file: %s\n" % debug_cache_file)
+        #sys.stdout.write("Using cached file: %s\n" % debug_cache_file)
         data = json.loads(open(debug_cache_file).read())
     else:
         sys.stdout.write("Downloading data from %s..." % url)
@@ -412,37 +412,48 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
         """
 
         def adjust_coord(children, prop_name):
-            allX = [c[prop_name] for c in children]
+            allX = [ch[prop_name] for ch in children]
             minX = min(allX)
             maxX = max(allX)
-            rangeX = maxX - minX
+            rangeX = maxX - minX + 1
             if not rangeX: 
                 return children
 
             filledX = [False] * rangeX
 
-            for c in children:
-                filledX[max(0, min(rangeX - 1, c[prop_name] - minX))] = True
+            # Mark all the places where an object is found
+            for ch in children:
+                filledX[ch[prop_name] - minX] = True
 
-            # calculate how much each row/column need to be shifted to fill in the gaps
+            # calculate how much each row/column need to be shifted to fill in the gaps,
+            #   by seeing how many positions along the way are gaps,
+            #   then trying to minimize them
             shiftX = [0] * rangeX
             shift = 0
             for ii in range(rangeX):
                 if not filledX[ii]:
-                    shift -= 1
+                    shift -= 1   # move increasingly left, to close gaps
                 shiftX[ii] = shift
 
             # shift each exercise to fill in the gaps
-            for c in children:
-                c[prop_name] += shiftX[max(0, min(rangeX - 1, c[prop_name] - minX))]
-
+            for ch in children:
+                ch[prop_name] += shiftX[ch[prop_name] - minX]
+                
             return children
 
         # NOTE that we are not adjusting any coordinates in 
         #   the knowledge map, or in the polylines.
         for slug, children in knowledge_topics.iteritems():
-            children = adjust_coord(children, "v_position")
-            children = adjust_coord(children, "h_position")
+            # Flip coordinates
+            for ch in children:
+                v_position = ch["v_position"]
+                ch["v_position"] = ch["h_position"]
+                ch["h_position"] = v_position
+            
+            # Adjust coordinates
+            adjust_coord(children, "v_position")  # side-effect directly into 'children'
+            adjust_coord(children, "h_position")
+            
 
 
         return knowledge_map, knowledge_topics
