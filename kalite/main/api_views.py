@@ -58,7 +58,7 @@ def save_video_log(request):
 
     # More robust extraction of previous object
     videolog = VideoLog.get_or_initialize(user=request.session["facility_user"], youtube_id=data["youtube_id"])
-    videolog.total_seconds_watched  += data["seconds_watched"]
+    videolog.total_seconds_watched  = data["total_seconds_watched"]  # don't set incrementally, to avoid concurrency issues
     videolog.points = max(videolog.points, data["points"])  # videolog.points cannot be None
 
     try:
@@ -91,7 +91,7 @@ def save_exercise_log(request):
     exerciselog = ExerciseLog.get_or_initialize(user=request.session["facility_user"], exercise_id=data["exercise_id"])
     previously_complete = exerciselog.complete
 
-    exerciselog.attempts += 1
+    exerciselog.attempts = data["attempts"]  # don't increment, because we fail to save some requests
     exerciselog.streak_progress = data["streak_progress"]
     exerciselog.points = data["points"]
 
@@ -176,6 +176,7 @@ def _get_exercise_log_dict(request, user, exercise_id):
         "complete": exerciselog.complete,
         "points": exerciselog.points,
         "struggling": exerciselog.struggling,
+        "attempts": exerciselog.attempts,
     }
 
 
