@@ -96,6 +96,7 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
     topictree = download_khan_data("http://www.khanacademy.org/api/v1/topictree")
 
     related_exercise = {}  # Temp variable to save exercises related to particular videos
+    related_videos = {}  #
 
     def recurse_nodes(node, path=""):
         """
@@ -126,6 +127,7 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
         if kind == "Exercise":
             related_video_readable_ids = [vid["readable_id"] for vid in download_khan_data("http://www.khanacademy.org/api/v1/exercises/%s/videos" % node["name"], node["name"] + ".json")]
             node["related_video_readable_ids"] = related_video_readable_ids
+
             exercise = {
                 "slug": node[slug_key[kind]],
                 "title": node[title_key[kind]],
@@ -133,6 +135,7 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
             }
             for video_id in node.get("related_video_readable_ids", []):
                 related_exercise[video_id] = exercise
+
 
         # Recurse through children, remove any blacklisted items
         children_to_delete = []
@@ -145,8 +148,9 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
                 children_to_delete.append(i)
                 continue
             if child_kind == "Video" and set(["mp4", "png"]) - set(child.get("download_urls", {}).keys()):
-                print "No download link for video: %s: %s ('%s')" % (child["youtube_id"], child["ka_url"], child["author_names"])
-                # for now, since we expect the missing videos to be filled in soon, we won't skip these nodes
+                # for now, since we expect the missing videos to be filled in soon, 
+                #   we won't remove these nodes
+                sys.stderr.write("WARNING: No download link for video: %s: authors='%s'\n" % (child["youtube_id"], child["author_names"]))
                 # children_to_delete.append(i)
                 # continue
             kinds = kinds.union(recurse_nodes(child, node["path"]))
@@ -159,6 +163,35 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
 
         return kinds
     recurse_nodes(topictree)
+
+
+    def recurse_nodes_to_clean_related_videos(node):
+        """
+        Internal function for recursing the topic tree and marking related exercises.
+        Requires rebranding of metadata done by recurse_nodes function.
+        """
+        def get_video_node(video_slug, node):
+            if node["kind"] == "Topic":
+                for child in node.get("children", []):
+                    video_node = get_video_node(video_slug, child)
+                    if video_node:
+                        return video_node
+            elif node["kind"] == "Video" and node["slug"] == video_slug:
+                return node
+
+            return None
+
+        if node["kind"] == "Exercise":
+            videos_to_delete = []
+            for vi, video_slug in enumerate(node["related_video_readable_ids"]):
+                if not get_video_node(video_slug, topictree):
+                    videos_to_delete.append(vi)
+            for vi in reversed(videos_to_delete):
+                logging.debug("Deleting unknown video %s" % node["related_video_readable_ids"][vi])
+                del node["related_video_readable_ids"][vi]
+        for child in node.get("children", []):
+            recurse_nodes_to_clean_related_videos(child)
+    recurse_nodes_to_clean_related_videos(topictree)
 
 
     # Limit exercises to only the previous list
@@ -205,6 +238,7 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
             if ex and ex["slug"] in slugs_deleted:
                 related_exercise[vid] = None
 
+
     def recurse_nodes_to_add_related_exercise(node):
         """
         Internal function for recursing the topic tree and marking related exercises.
@@ -215,6 +249,7 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
         for child in node.get("children", []):
             recurse_nodes_to_add_related_exercise(child)
     recurse_nodes_to_add_related_exercise(topictree)
+
 
     def recurse_nodes_to_remove_childless_nodes(node):
         """
@@ -254,6 +289,7 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
 
     knowledge_map = download_khan_data("http://www.khanacademy.org/api/v1/maplayout")
     knowledge_topics = {}  # Stored variable that keeps all exercises related to second-level topics
+                           #   Much of this is duplicate information from node_cache
 
     def scrub_knowledge_map(knowledge_map, node_cache):
         """
@@ -276,7 +312,6 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
             del knowledge_map["topics"][slug]
             nodecache_node["in_knowledge_map"] = False
             topictree_node["in_knowledge_map"] = False
-
     scrub_knowledge_map(knowledge_map, node_cache)
 
 
@@ -310,7 +345,8 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
         for child in [n for n in node.get("children", []) if n["kind"] == "Topic"]:
             recurse_nodes_to_extract_knowledge_map(child, node_cache)
     recurse_nodes_to_extract_knowledge_map(topictree, node_cache)
-    
+
+
     # Download icons
     def download_kmap_icons(knowledge_map):
         for key, value in knowledge_map["topics"].items():
@@ -357,12 +393,60 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
             if any(["x" for pt in polyline["path"] if (pt["x"], pt["y"]) not in all_topic_points]):
                 polylines_to_delete.append(li)
 
-        logging.debug("Removing %s of %s polylines" % (len(polylines_to_delete), len(knowledge_map["polylines"])))
+        logging.debug("Removing %s of %s polylines in top-level knowledge map" % (len(polylines_to_delete), len(knowledge_map["polylines"])))
         for i in reversed(polylines_to_delete):
             del knowledge_map["polylines"][i]
 
         return knowledge_map
     clean_orphaned_polylines(knowledge_map)
+
+
+    def normalize_tree(knowledge_map, knowledge_topics):
+        """
+        Tree is in arbitrary coordinates.  However, we need to deal with screens of different sizes.
+        Normalize coordinates by:
+        * Making the x extent be a range of 1.0
+        * Flip horizontal and vertical coordinates here, NOT in the kmap-editor.js (which was confusing)
+
+        The y range isn't touched yet, as it seemed to be working.
+        """
+
+        def adjust_coord(children, prop_name):
+            allX = [c[prop_name] for c in children]
+            minX = min(allX)
+            maxX = max(allX)
+            rangeX = maxX - minX
+            if not rangeX: 
+                return children
+
+            filledX = [False] * rangeX
+
+            for c in children:
+                filledX[max(0, min(rangeX - 1, c[prop_name] - minX))] = True
+
+            # calculate how much each row/column need to be shifted to fill in the gaps
+            shiftX = [0] * rangeX
+            shift = 0
+            for ii in range(rangeX):
+                if not filledX[ii]:
+                    shift -= 1
+                shiftX[ii] = shift
+
+            # shift each exercise to fill in the gaps
+            for c in children:
+                c[prop_name] += shiftX[max(0, min(rangeX - 1, c[prop_name] - minX))]
+
+            return children
+
+        # NOTE that we are not adjusting any coordinates in 
+        #   the knowledge map, or in the polylines.
+        for slug, children in knowledge_topics.iteritems():
+            children = adjust_coord(children, "v_position")
+            children = adjust_coord(children, "h_position")
+
+
+        return knowledge_map, knowledge_topics
+    normalize_tree(knowledge_map, knowledge_topics)
 
     # Dump the knowledge map
     with open(os.path.join(data_path, topic_tools.map_layout_file), "w") as fp:
@@ -405,6 +489,9 @@ def validate_data(topictree, node_cache, knowledge_map):
 
     # Validate related videos
     for exercise in node_cache['Exercise'].values():
+        exercise_path = os.path.join(settings.PROJECT_PATH, "static", "js", "khan-exercises", "exercises", "%s.html" % exercise["slug"])
+        if not os.path.exists(exercise_path):
+            sys.stderr.write("Could not find exercise HTML file: %s\n" % exercise_path)
         for vid in exercise.get("related_video_readable_ids", []):
             if not vid in node_cache["Video"]:
                 sys.stderr.write("Could not find related video %s in node_cache (from exercise %s)\n" % (vid, exercise["slug"]))
@@ -442,6 +529,7 @@ def validate_data(topictree, node_cache, knowledge_map):
 
         elif topic["in_knowledge_map"] and not topic_tools.get_all_leaves(topic_tools.get_topic_by_path(topic["path"], root_node=topictree), leaf_type="Exercise"):
             sys.stderr.write("Topic '%40s' in knowledge map, but has no exercises.\n" % topic["slug"])
+
 
 class Command(BaseCommand):
     help = """**WARNING** not intended for use outside of the FLE; use at your own risk!
