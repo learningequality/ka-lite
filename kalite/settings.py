@@ -23,7 +23,8 @@ except ImportError:
 
 DEBUG          = getattr(local_settings, "DEBUG", False)
 TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
-
+# config_package (None|RPi) alters some defaults e.g. different defaults for Raspberry Pi(RPi) - see code at end of this file
+CONFIG_PACKAGE = getattr(local_settings, "CONFIG_PACKAGE", None)
 # Set logging level based on the value of DEBUG (evaluates to 0 if False, 1 if True)
 logging.basicConfig()
 LOG = getattr(local_settings, "LOG", logging.getLogger("kalite"))
@@ -283,3 +284,29 @@ if getattr(local_settings, "USE_DEBUG_TOOLBAR", False):
         'HIDE_DJANGO_SQL': False,
         'ENABLE_STACKTRACES' : True,
     }
+
+#####
+# sqlite performance boosts:
+#  synchronous (OFF|NORMAL|FULL) FULL=safest, NORMAL=normally safe, OFF=not safe, but fast
+#  journal_mode (DELETE|WAL) DELETE=standard sqlite journal, WAL=Write-ahead-log journal, faster for updates
+#  wal_autocheckpoint (n), low number=frequent db writes, fewer trx lost if power fails.  Only used for journal mode WAL
+#
+SQLITE_PRAGMA_SYNCHRONOUS = getattr(local_settings, "SQLITE_PRAGMA_SYNCHRONOUS", "FULL")
+SQLITE_PRAGMA_JOURNAL_MODE = getattr(local_settings, "SQLITE_PRAGMA_JOURNAL_MODE", "DELETE")
+SQLITE_PRAGMA_WAL_AUTOCHECKPOINT = getattr(local_settings, "SQLITE_PRAGMA_WAL_AUTOCHECKPOINT", 128)
+#####
+
+#####
+# IMPORTANT: Do not add new settings below this line
+# everything that follows is overriding default settings, depending on CONFIG_PACKAGE
+
+# Raspberry Pi distributed server
+if CONFIG_PACKAGE == "RPi":
+    PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 7007)                 # nginx will normally be on 8008 so default to 7007
+    CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 18)       # 18 is the sweet-spot for RPi
+    if CACHE_TIME != 0:                                                                # /tmp deleted on boot, use /var/tmp instead
+        CACHES["web_cache"]['LOCATION'] = getattr(local_settings, "CACHE_LOCATION", '/var/tmp/kalite_web_cache')
+    SQLITE_PRAGMA_SYNCHRONOUS = getattr(local_settings, "SQLITE_PRAGMA_SYNCHRONOUS", "NORMAL")         # TODO(gimick): to test if power fails
+    SQLITE_PRAGMA_JOURNAL_MODE = getattr(local_settings, "SQLITE_PRAGMA_JOURNAL_MODE", "WAL")
+    SQLITE_PRAGMA_WAL_AUTOCHECKPOINT = getattr(local_settings, "SQLITE_PRAGMA_WAL_AUTOCHECKPOINT", 16) # TODO(gimick): to test if power fails
+
