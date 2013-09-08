@@ -163,6 +163,18 @@ class Device(SyncedModel):
         # TODO(jamalex): we skip out here, because otherwise self-signed devices will fail
         pass
 
+    def get_version(self):
+        """
+        Get this property through an accessor function,
+        so that we can guarantee that the DB-stored version
+        matches the hard-coded software version.
+        """
+        own_device = Device.get_own_device()
+        if self == own_device and self.version != kalite.VERSION:
+            self.version = kalite.VERSION
+            self.save()
+        return self.version
+
     @classmethod
     def get_default_version(cls):
         """Accessor method to probe the default version of a device (or field)"""
