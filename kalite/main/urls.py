@@ -7,14 +7,14 @@ import control_panel.urls
 import khanload.api_urls
 import main.api_urls
 import securesync.urls
-from kalite import settings
+import settings
 
 admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^images/(.+)$', lambda request, path: HttpResponseRedirect('/static/images/' + path)),
-    url(r'^(favico.ico)/?$', lambda request, path: HttpResponseRedirect('/static/images/' + path)),
+    url(r'^images/.*$', lambda request: HttpResponseRedirect(settings.STATIC_URL[:-1] + request.path)),
+    url(r'^favico.ico/?$', lambda request: HttpResponseRedirect(settings.STATIC_URL + "images" + request.path)),
     url(r'^securesync/', include(securesync.urls)),
 )
 
@@ -53,7 +53,7 @@ urlpatterns += patterns('main.views',
     # Management: Zone, facility, device
     url(r'^management/zone/$', 'zone_redirect', {}, 'zone_redirect'), # only one zone, so make an easy way to access it
     url(r'^management/device/$', 'device_redirect', {}, 'device_redirect'), # only one device, so make an easy way to access it
-    url(r'^management/(?P<org_id>\s{0})', include(control_panel.urls)), # no org_id, but parameter needed for reverse url look-up
+    url(r'^management/', include(control_panel.urls), {"org_id": ""}), # no org_id, but parameter needed for reverse url look-up
 )
 
 # Testing

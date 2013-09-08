@@ -1,19 +1,8 @@
-{% extends "central/base_central.html" %}
+{% extends "central/base.html" %}
 
 {% block content %}
 
-<style>
 
-input, textarea {
-	width: 275px;
-}
-
-input.submit{
-	margin-bottom: 100px;
-	margin-top: 10px;
-}
-
-</style>
 
 <form method="post" class="basic-form">
 {% csrf_token %}
@@ -29,7 +18,7 @@ input.submit{
 {% if form.instance.pk %}
 <input type="submit" value="Update Organization" class="submit"/>
 {% else %}
-<input type="submit" value="Create Organization" class="submit"/>
+<input type="submit" value="Create Organization" class="submit button"/>
 {% endif %}
 
 </form>

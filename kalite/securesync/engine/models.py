@@ -3,12 +3,11 @@ from __future__ import absolute_import
 import datetime
 import uuid
 import zlib
-from annoying.functions import get_object_or_None
 from pbkdf2 import crypt
 
 from django.contrib.auth.models import check_password
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
-from django.db import models, transaction
+from django.db import models
 from django.db.models import Q
 from django.utils.text import compress_string
 from django.utils.translation import ugettext_lazy as _
@@ -17,7 +16,11 @@ import kalite
 import settings
 from . import add_syncing_models
 from config.models import Settings
+from utils.django_utils import ExtendedModel
 
+
+ID_MAX_LENGTH=32
+IP_MAX_LENGTH=50
 
 def _get_own_device():
     """
@@ -27,13 +30,13 @@ def _get_own_device():
     return Device.get_own_device()
 
 
-class SyncSession(models.Model):
-    client_nonce = models.CharField(max_length=32, primary_key=True)
+class SyncSession(ExtendedModel):
+    client_nonce = models.CharField(max_length=ID_MAX_LENGTH, primary_key=True)
     client_device = models.ForeignKey("Device", related_name="client_sessions")
-    server_nonce = models.CharField(max_length=32, blank=True)
+    server_nonce = models.CharField(max_length=ID_MAX_LENGTH, blank=True)
     server_device = models.ForeignKey("Device", blank=True, null=True, related_name="server_sessions")
     verified = models.BooleanField(default=False)
-    ip = models.CharField(max_length=50, blank=True)
+    ip = models.CharField(max_length=IP_MAX_LENGTH, blank=True)
     client_version = models.CharField(max_length=100, blank=True)
     client_os = models.CharField(max_length=200, blank=True)
     timestamp = models.DateTimeField(auto_now=True)
@@ -92,14 +95,14 @@ class SyncedModelManager(models.Manager):
             Q(signed_by__devicemetadata__is_trusted=True, zone_fallback=zone))
 
 
-class SyncedModel(models.Model):
+class SyncedModel(ExtendedModel):
     """
     The main class that makes this engine go.
     
     A model that is cross-computer syncable.  All models sync'd across computers
     should inherit from this base class.
     """
-    id = models.CharField(primary_key=True, max_length=32, editable=False)
+    id = models.CharField(primary_key=True, max_length=ID_MAX_LENGTH, editable=False)
     counter = models.IntegerField(default=0)
     signature = models.CharField(max_length=360, blank=True, editable=False)
     signed_version = models.IntegerField(default=1, editable=False)
@@ -249,6 +252,7 @@ class SyncedModel(models.Model):
         except self.__class__.DoesNotExist:
             return None
 
+
     def get_zone(self):
         # some models have a direct zone attribute; try for that
         zone = getattr(self, "zone", None)
@@ -270,17 +274,6 @@ class SyncedModel(models.Model):
         signed_by_pk = self.signed_by.pk[0:5] if self.signed_by and self.signed_by.pk else "[None]"
         return u"%s... (Signed by: %s...)" % (pk, signed_by_pk)
 
-    @classmethod
-    def get_or_initialize(cls, *args, **kwargs):
-        """
-        This is like Django's get_or_create method, but without calling save().
-        Allows for more efficient post-initialize updates.
-        """
-        assert not args, "No positional arguments allowed for this method."""
-
-        obj = get_object_or_None(cls, **kwargs)
-        return obj or cls(**kwargs)
-
 
 class SyncedLog(SyncedModel):
     """
@@ -294,7 +287,7 @@ class SyncedLog(SyncedModel):
         app_label = "securesync"
 
 
-class ImportPurgatory(models.Model):
+class ImportPurgatory(ExtendedModel):
     timestamp = models.DateTimeField(auto_now_add=True)
     counter = models.IntegerField()
     retry_attempts = models.IntegerField(default=0)

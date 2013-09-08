@@ -23,6 +23,7 @@ from config.models import Settings
 from main.models import UserLog
 from settings import LOG as logging
 from shared.decorators import require_admin, central_server_only, distributed_server_only, facility_required, facility_from_request
+from shared.jobs import force_job
 from utils.internet import set_query_params
 from utils.jobs import force_job
 
@@ -246,7 +247,7 @@ def login(request, facility):
             return HttpResponseRedirect(
                 form.non_field_errors()
                 or request.next
-                or reverse("coach_reports") if form.get_user().is_teacher else reverse("student_view")
+                or reverse("coach_reports") if form.get_user().is_teacher else reverse("account_management")
             )
         else:
             messages.error(

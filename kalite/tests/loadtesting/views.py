@@ -13,8 +13,8 @@ def load_test(request, nusers=None):
         # It's either the first time, or time to add more
 
         # Make sure there's a facility
-        if not Facility.objects.count() > 0:
-            fac = Facility.create({ "name": "fac" })
+        if not Facility.objects.count():
+            fac = Facility.objects.create(name="fac")
         fac = Facility.objects.all()[0]
 
         # Loop over all needed students
