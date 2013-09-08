@@ -14,10 +14,10 @@ from securesync import crypto
 from securesync.engine.models import SyncedModel
 from settings import LOG as logging
 from utils.general import get_host_name
-from utils.django_utils import validate_via_booleans
+from utils.django_utils import validate_via_booleans, ExtendedModel
 
 
-class RegisteredDevicePublicKey(models.Model):
+class RegisteredDevicePublicKey(ExtendedModel):
     public_key = models.CharField(max_length=500, help_text="(This field will be filled in automatically)")
     zone = models.ForeignKey("Zone")
 
@@ -28,7 +28,7 @@ class RegisteredDevicePublicKey(models.Model):
         return u"%s... (Zone: %s)" % (self.public_key[0:5], self.zone)
 
 
-class DeviceMetadata(models.Model):
+class DeviceMetadata(ExtendedModel):
     device = models.OneToOneField("Device", blank=True, null=True)
     is_trusted = models.BooleanField(default=False)
     is_own_device = models.BooleanField(default=False)

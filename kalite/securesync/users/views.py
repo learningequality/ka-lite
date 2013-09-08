@@ -247,7 +247,7 @@ def login(request, facility):
             return HttpResponseRedirect(
                 form.non_field_errors()
                 or request.next
-                or reverse("coach_reports") if form.get_user().is_teacher else reverse("student_view")
+                or reverse("coach_reports") if form.get_user().is_teacher else reverse("account_management")
             )
         else:
             messages.error(

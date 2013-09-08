@@ -49,6 +49,7 @@ urlpatterns += patterns('central.views',
     # Organization
     url(r'^organization/$', 'org_management', {}, 'org_management'),
     url(r'^organization/(?P<org_id>\w+)/$', 'organization_form', {}, 'organization_form'),
+    url(r'^organization/delete/(?P<org_id>\w+)/$', 'delete_organization', {}, 'delete_organization'),
     url(r'^organization/invite_action/(?P<invite_id>\w+)/$', 'org_invite_action', {}, 'org_invite_action'),
 
     # Zone, facility, device
@@ -74,6 +75,8 @@ urlpatterns += patterns('central.views',
     url(r'^download/kalite/(?P<version>[^\/]+)/(?P<platform>[^\/]+)/(?P<locale>[^\/]+)/$', 'download_kalite_public', {}, 'download_kalite_public'),
     # Downloads: private
     url(r'^download/kalite/(?P<version>[^\/]+)/(?P<platform>[^\/]+)/(?P<locale>[^\/]+)/(?P<zone_id>[^\/]+)/$', 'download_kalite_private', {}, 'download_kalite_private'),
+    # redirects for downloads
+    url(r'^download/videos/(.*)$', lambda request, vpath: HttpResponseRedirect(OUTSIDE_DOWNLOAD_BASE_URL + vpath)),
 
     url(r'^contact/', include(contact.urls)),
     url(r'^wiki/(?P<path>.*)$', lambda request, path: HttpResponseRedirect(settings.CENTRAL_WIKI_URL + path), {}, 'wiki'),
@@ -82,8 +85,6 @@ urlpatterns += patterns('central.views',
     # Endpoint for remote admin
     url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'),
 
-    # redirects for downloads
-    url(r'^download/videos/(.*)$', lambda request, vpath: HttpResponseRedirect(OUTSIDE_DOWNLOAD_BASE_URL + vpath)),
 )
 
 urlpatterns += patterns('central.api_views',

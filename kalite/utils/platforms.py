@@ -66,29 +66,17 @@ def system_specific_zipping(files_dict, zip_file=None, compression=ZIP_DEFLATED,
         zip_file = tempfile.mkstemp()[1]
     with ZipFile(zip_file, "w", compression) as zfile:
         for fi, (dest_path, src_path) in enumerate(files_dict.iteritems()):
-            try:
-                if callback:
-                    callback(src_path, fi, len(files_dict))
-
-                # Add without setting exec perms
-                #
-                # NOTE: this setting currently fails on mac, so funnel
-                #   all through the NON-setting path.
-                if True or os.path.splitext(dest_path)[1] not in not_system_specific_scripts(system="windows"):
-                    zfile.write(src_path, arcname=dest_path)
-                # Add with exec perms
-                else:
-                    info = ZipInfo(dest_path)
-                    info.external_attr = 0755 << 16L # give full access to included file
-                    with open(src_path, "r") as fh:
-                        zfile.writestr(info, fh.read())
-                    print dest_path
-            except Exception as e:
-                # TODO(bcipolli)
-                # Utility functions really shouldn't write to stderr / stdout,
-                #   but ... best to do for now.  Could have a callback later,
-                #   or pass back a list of files failed to be added.
-                sys.stderr.write("Failed to add file %s: %s\n" % (src_path, e))
+            if callback:
+                callback(src_path, fi, len(files_dict))
+            # All platforms besides windows need permissions set.
+            if os.path.splitext(dest_path)[1] not in not_system_specific_scripts(system="windows"):
+                zfile.write(src_path, arcname=dest_path)
+            # Add with exec perms
+            else:
+                info = ZipInfo(dest_path)
+                info.external_attr = 0755 << 16L # give full access to included file
+                with open(src_path, "r") as fh:
+                    zfile.writestr(info, fh.read())
 
 
 def _default_callback_unzip(afile, fi, nfiles):

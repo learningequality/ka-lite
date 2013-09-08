@@ -335,7 +335,7 @@ class Command(UpdatesStaticCommand):
         if fi > 0 and fi % round(nfiles/10) == 0:
             pct_done = (fi + 1.)/nfiles * 100.
             self.update_stage(stage_percent=pct_done/100.)
-        
+
     def extract_files(self, zip_file):
         """Extract all files to a temp location"""
 

@@ -7,7 +7,7 @@ import settings
 from main.models import VideoFile
 from shared import caching
 from shared.jobs import force_job
-from shared.videos import download_video, DownloadCancelled
+from shared.videos import download_video, DownloadCancelled, URLNotFound
 from updates.utils import UpdatesDynamicCommand
 from utils.topic_tools import get_video_by_youtube_id
 

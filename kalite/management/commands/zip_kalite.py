@@ -42,6 +42,7 @@ def select_package_dirs(dirnames, key_base, **kwargs):
         # can't exclude 'test', which eliminates the Django test client (used in caching)
         #   as well as all the Khan academy tests
         in_dirs = set(dirnames)
+
         in_dirs -= set(['tmp', "media"])  # media is like a temp dir
         if kwargs["remove_test"]:
             in_dirs -= set(('loadtesting', 'tests', 'testing', 'selenium', 'werkzeug', 'postmark'))

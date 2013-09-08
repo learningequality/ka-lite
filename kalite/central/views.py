@@ -72,9 +72,19 @@ def org_management(request):
                 if org.pk == int(request.POST.get("organization")):
                     org.form = form
 
+    zones = {}
+    for org in organizations.values():
+        zones[org.pk] = []
+        for zone in org.get_zones():
+            zones[org.pk].append({
+                "id": zone.id,
+                "name": zone.name,
+                "is_deletable": not zone.has_dependencies(passable_classes=["Organization"]),
+            })
     return {
         "title": _("Account administration"),
         "organizations": organizations,
+        "zones": zones,
         "HEADLESS_ORG_NAME": Organization.HEADLESS_ORG_NAME,
         "invitations": OrganizationInvitation.objects \
             .filter(email_to_invite=request.user.email)
@@ -159,6 +169,16 @@ def organization_form(request, org_id):
     return {
         'form': form
     }
+
+@require_authorized_admin
+def delete_organization(request, org_id):
+    org = Organization.objects.get(pk=org_id)
+    if org.get_zones():
+        messages.error(request, "You cannot delete '%s' because it has %d zone(s) affiliated with it." %(org.name, len(org.get_zones())))
+    else:
+        messages.success(request, "You have succesfully deleted " + org.name + ".")
+        org.delete()
+    return HttpResponseRedirect(reverse("org_management"))
 
 
 @render_to("central/glossary.html")

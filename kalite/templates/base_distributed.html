@@ -21,7 +21,7 @@
 {% block sitewide_navigation %}
     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
     <a href="{% url logout %}" id="nav_logout" class="logged-in-only" title="Logout">&nbsp;{% trans "Logout" %}</a>
-    <a href="{% url account_management org_id=org.id %}" id="logged-in-name" class="logged-in-only not-admin-only {% block selfreports_active %}{% endblock selfreports_active %}">&nbsp;</a>
+    <a href="{% url account_management %}" id="logged-in-name" class="logged-in-only not-admin-only {% block account_management_active %}{% endblock account_management_active %}">&nbsp;</a>
     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
     <span class="not-registered-only" style="float: right;"><a href="{% url register_public_key %}" id="nav_registerdevice" class="admin-only {% block register_active %}{% endblock register_active %}" title="Register this device with the central server">{% trans "Register device" %}</a></span>
     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}

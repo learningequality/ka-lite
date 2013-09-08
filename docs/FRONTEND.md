@@ -69,11 +69,15 @@ When you're using borders, transparency and gradients, look at `less/bootstrap/m
 
 #### How to install
 
-You have to run these commands in the directory where package.json is.
+First, install the [Node.js package manager (npm)](http://nodejs.org/download/).
+
+
+Then, you have to run these commands in the directory where package.json is.
 
 ```
 npm install grunt --save-dev
 npm install
+sudo npm install -g grunt-cli
 ```
 
 #### Compile with grunt

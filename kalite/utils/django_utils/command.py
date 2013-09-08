@@ -79,7 +79,6 @@ def call_outside_command_with_output(command, *args, **kwargs):
     Runs call_command for a KA Lite installation at the given location,
     and returns the output.
     """
-
     assert "manage_py_dir" in kwargs, "don't forget to specify the manage_py_dir"
     manage_py_dir = kwargs["manage_py_dir"]
     del kwargs["manage_py_dir"]
@@ -95,6 +94,7 @@ def call_outside_command_with_output(command, *args, **kwargs):
             cmd += ("%s%s" % (prefix, key),)
         else:
             cmd += ("%s%s=%s" % (prefix, key, str(val)),)
+    #logging.debug(cmd)
 
     # Execute the command, using subprocess/Popen
     cwd = os.getcwd()
@@ -105,10 +105,3 @@ def call_outside_command_with_output(command, *args, **kwargs):
 
     # tuple output of stdout, stderr, and exit code
     return out + (1 if out[1] else 0,)
-
-
-def get_request_ip(request):
-    """Return the IP address from a HTTP request object."""
-    return request.META.get("HTTP_X_FORWARDED_FOR") \
-        or request.META.get("REMOTE_ADDR") \
-        or request.META.get("HTTP_X_REAL_IP")  # set by some proxies

@@ -87,7 +87,7 @@ def save_exercise_log(request):
     data = form.data
 
     # More robust extraction of previous object
-    exerciselog = ExerciseLog.get_or_initialize(user=request.session["facility_user"], exercise_id=data["exercise_id"])
+    (exerciselog, _) = ExerciseLog.get_or_initialize(user=request.session["facility_user"], exercise_id=data["exercise_id"])
     previously_complete = exerciselog.complete
 
     exerciselog.attempts += 1
