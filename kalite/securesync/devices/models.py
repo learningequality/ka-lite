@@ -28,10 +28,10 @@ class RegisteredDevicePublicKey(models.Model):
         app_label = "securesync"
 
     def __unicode__(self):
-        str = u"%s... (Zone: %s)" % (self.public_key[0:5], self.zone)
-        str += (u"; created on %s" % self.created_timestamp) if self.created_timestamp else ""
-        str += (u"; used on %s" % self.used_timestamp) if self.used_timestamp else ""
-        return str
+        out_str = u"%s... (Zone: %s)" % (self.public_key[0:5], self.zone)
+        out_str += (u"; created on %s" % self.created_timestamp) if self.created_timestamp else ""
+        out_str += (u"; used on %s" % self.used_timestamp) if self.used_timestamp else ""
+        return out_str
 
     def use(self):
         # Never should get called if timestamp
