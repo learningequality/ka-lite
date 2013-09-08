@@ -60,7 +60,7 @@ def zone_management(request, zone_id, org_id=None):
 
     # Accumulate device data
     device_data = dict()
-    for device in Device.objects.filter(devicezone__zone=zone):
+    for device in Device.objects.filter(devicezone__zone=zone).order_by("devicemetadata__is_demo_device", "name"):
 
         user_activity = UserLogSummary.objects.filter(device=device)
         sync_sessions = SyncSession.objects.filter(client_device=device)
@@ -71,6 +71,7 @@ def zone_management(request, zone_id, org_id=None):
             "name": device.name or device.id,
             "num_times_synced": sync_sessions.count() if sync_sessions is not None else None,
             "last_time_synced": sync_sessions.aggregate(Max("timestamp"))["timestamp__max"] if sync_sessions is not None else None,
+            "is_demo_device": device.devicemetadata.is_demo_device,
             "last_time_used":   None if user_activity.count() == 0 else user_activity.order_by("-end_datetime")[0],
             "counter": device.get_counter(),
         }
