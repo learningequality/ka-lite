@@ -294,7 +294,6 @@ if getattr(local_settings, "USE_DEBUG_TOOLBAR", False):
 SQLITE_PRAGMA_SYNCHRONOUS = getattr(local_settings, "SQLITE_PRAGMA_SYNCHRONOUS", "FULL")
 SQLITE_PRAGMA_JOURNAL_MODE = getattr(local_settings, "SQLITE_PRAGMA_JOURNAL_MODE", "DELETE")
 SQLITE_PRAGMA_WAL_AUTOCHECKPOINT = getattr(local_settings, "SQLITE_PRAGMA_WAL_AUTOCHECKPOINT", 128)
-#
 #####
 
 #####
@@ -307,7 +306,7 @@ if CONFIG_PACKAGE == "RPi":
     CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 18)       # 18 is the sweet-spot for RPi
     if CACHE_TIME != 0:                                                                # /tmp deleted on boot, use /var/tmp instead
         CACHES["web_cache"]['LOCATION'] = getattr(local_settings, "CACHE_LOCATION", '/var/tmp/kalite_web_cache')
-    SQLITE_PRAGMA_SYNCHRONOUS = getattr(local_settings, "SQLITE_PRAGMA_SYNCHRONOUS", "NORMAL")         # Todo @gimick to test if power fails
+    SQLITE_PRAGMA_SYNCHRONOUS = getattr(local_settings, "SQLITE_PRAGMA_SYNCHRONOUS", "NORMAL")         # TODO(gimick): to test if power fails
     SQLITE_PRAGMA_JOURNAL_MODE = getattr(local_settings, "SQLITE_PRAGMA_JOURNAL_MODE", "WAL")
-    SQLITE_PRAGMA_WAL_AUTOCHECKPOINT = getattr(local_settings, "SQLITE_PRAGMA_WAL_AUTOCHECKPOINT", 16) # Todo @gimick to test if power fails
+    SQLITE_PRAGMA_WAL_AUTOCHECKPOINT = getattr(local_settings, "SQLITE_PRAGMA_WAL_AUTOCHECKPOINT", 16) # TODO(gimick): to test if power fails
 
