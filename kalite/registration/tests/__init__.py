@@ -1,4 +1,2 @@
-from registration.tests.backends import *
-from registration.tests.forms import *
-from registration.tests.models import *
-from registration.tests.views import *
+from utils.importing import import_all_child_modules
+import_all_child_modules()

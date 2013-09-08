@@ -9,6 +9,7 @@ from django.core.serializers import base
 from django.db import models, DEFAULT_DB_ALIAS
 from django.utils.encoding import smart_unicode, is_protected_type
 
+
 class Serializer(base.Serializer):
     """
     Serializes a QuerySet to basic Python objects.
@@ -75,10 +76,12 @@ def Deserializer(object_list, **options):
     stream or a string) to the constructor
     """
     db = options.pop('using', DEFAULT_DB_ALIAS)
+
     models.get_apps()
     for d in object_list:
         # Look up the model and starting build a dict of data for it.
         Model = _get_model(d["model"])
+
         data = {Model._meta.pk.attname : Model._meta.pk.to_python(d["pk"])}
         m2m_data = {}
 

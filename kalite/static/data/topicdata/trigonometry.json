@@ -1,1 +1,2132 @@
-[{"relative_url": "/exercise/trigonometry_0.5", "guaranteed_file_name": "trigonometry_0.5.html", "file_name": null, "author_name": "Matt Wahl", "creation_date": "2012-02-21T17:55:05Z", "ka_url": "http://www.khanacademy.org/exercise/trigonometry_0.5", "v_position": -24, "h_position": 48, "node_slug": "e/trigonometry_0.5", "progress_key": "e592471461", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/trigonometry-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/trigonometry_0.5.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Trig 0.5", "covers": [], "display_name": "Trigonometry 0.5", "kind": "Exercise", "sha1": "cfb085c562b4c2dbf91d12ba3ecf5e2f7d09372f", "name": "trigonometry_0.5", "seconds_per_fast_problem": 10.0, "prerequisites": ["pythagorean_theorem_1", "radians_and_degrees"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/trigonometry_0.5_256.png"}, {"relative_url": "/exercise/trigonometry_1", "guaranteed_file_name": "trigonometry_1.html", "file_name": null, "author_name": "Igor Terzic", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/trigonometry_1", "v_position": -25, "h_position": 49, "node_slug": "e/trigonometry_1", "progress_key": "e3036", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/trigonometry-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/trigonometry_1.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Trig. 1", "covers": [], "display_name": "Trigonometry 1", "kind": "Exercise", "sha1": "ad57b9320354dfe77b691aec89d92093baabcf83", "name": "trigonometry_1", "seconds_per_fast_problem": 12.0, "prerequisites": ["trigonometry_0.5", "unit_circle"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/trigonometry_1_256.png"}, {"relative_url": "/exercise/reciprocal_trig_funcs", "guaranteed_file_name": "reciprocal_trig_funcs.html", "file_name": "reciprocal_trig_funcs.html", "author_name": "Mark Wittels", "creation_date": "2012-08-22T01:22:11Z", "ka_url": "http://www.khanacademy.org/exercise/reciprocal_trig_funcs", "v_position": -26, "h_position": 50, "node_slug": "e/reciprocal_trig_funcs", "progress_key": "e986692734", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/trigonometry-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/reciprocal_trig_funcs.png", "custom_stacks": [], "description": "Understand the right triangle definition of sec, csc, and cot functions", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Recip Trig", "covers": [], "display_name": "Reciprocal trig functions", "kind": "Exercise", "sha1": "21238bd227eb24f9e1fbd597e854663eaf6b0eb8", "name": "reciprocal_trig_funcs", "seconds_per_fast_problem": 11.0, "prerequisites": ["trigonometry_1"], "pretty_display_name": "Reciprocal trig functions", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/reciprocal_trig_funcs_256.png"}, {"relative_url": "/exercise/trigonometry_1.5", "guaranteed_file_name": "trigonometry_1.5.html", "file_name": null, "author_name": "Matt Wahl", "creation_date": "2012-02-21T18:01:05Z", "ka_url": "http://www.khanacademy.org/exercise/trigonometry_1.5", "v_position": -25, "h_position": 50, "node_slug": "e/trigonometry_1.5", "progress_key": "e592442008", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/trigonometry-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/trigonometry_1.5.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Trig 1.5", "covers": ["trigonometry_0.5"], "display_name": "Trigonometry 1.5", "kind": "Exercise", "sha1": "3fbcd261fb71fad006b2b5b287bd16f7b19f7fab", "name": "trigonometry_1.5", "seconds_per_fast_problem": 14.0, "prerequisites": ["trigonometry_1"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/trigonometry_1.5_256.png"}, {"relative_url": "/exercise/trigonometry_2", "guaranteed_file_name": "trigonometry_2.html", "file_name": null, "author_name": "Igor Terzic", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/trigonometry_2", "v_position": -25, "h_position": 51, "node_slug": "e/trigonometry_2", "progress_key": "e2032", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/trigonometry-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/trigonometry_2.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Trig. 2", "covers": ["trigonometry_1"], "display_name": "Trigonometry 2", "kind": "Exercise", "sha1": "89327573aca0229fdddcb1bc53f446dbbdb9f006", "name": "trigonometry_2", "seconds_per_fast_problem": 11.0, "prerequisites": ["trigonometry_1.5"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/trigonometry_2_256.png"}, {"relative_url": "/exercise/pythagorean_theorem_2", "guaranteed_file_name": "pythagorean_theorem_2.html", "file_name": "pythagorean_theorem_2.html", "author_name": "Ben Alpert", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/pythagorean_theorem_2", "v_position": -24, "h_position": 51, "node_slug": "e/pythagorean_theorem_2", "progress_key": "e3034", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/trigonometry-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/pythagorean_theorem_2.png", "custom_stacks": [], "description": "", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Spec Rt Tri", "covers": ["pythagorean_theorem_1"], "display_name": "Special right triangles", "kind": "Exercise", "sha1": "b76c159a5784d95f9db26943e0b0b7ba861d237e", "name": "pythagorean_theorem_2", "seconds_per_fast_problem": 9.0, "prerequisites": ["trigonometry_1.5"], "pretty_display_name": "Special right triangles", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/pythagorean_theorem_2_256.png"}, {"relative_url": "/exercise/degrees_to_radians", "guaranteed_file_name": "degrees_to_radians.html", "file_name": null, "author_name": "Ben Eater", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/degrees_to_radians", "v_position": -24, "h_position": 46, "node_slug": "e/degrees_to_radians", "progress_key": "e47770341", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/trigonometry-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/degrees_to_radians.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Deg -> Rad", "covers": [], "display_name": "Degrees to radians", "kind": "Exercise", "sha1": "ba440751e484fe07b825e67fcbd8f7d31b2479b1", "name": "degrees_to_radians", "seconds_per_fast_problem": 9.0, "prerequisites": ["congruent_triangles_2"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/degrees_to_radians_256.png"}, {"relative_url": "/exercise/radians_to_degrees", "guaranteed_file_name": "radians_to_degrees.html", "file_name": null, "author_name": "Marcia Lee", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/radians_to_degrees", "v_position": -26, "h_position": 46, "node_slug": "e/radians_to_degrees", "progress_key": "e47784257", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/trigonometry-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/radians_to_degrees.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Rad -> Deg", "covers": [], "display_name": "Radians to degrees", "kind": "Exercise", "sha1": "1ed5c70fd0d5f45e724f89c586b111184b57ddbc", "name": "radians_to_degrees", "seconds_per_fast_problem": 12.0, "prerequisites": ["congruent_triangles_2"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/radians_to_degrees_256.png"}, {"relative_url": "/exercise/radians_and_degrees", "guaranteed_file_name": "radians_and_degrees.html", "file_name": null, "author_name": "Omar Rizwan", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/radians_and_degrees", "v_position": -25, "h_position": 47, "node_slug": "e/radians_and_degrees", "progress_key": "e47789184", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/trigonometry-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/radians_and_degrees.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Rad <-> Deg", "covers": ["degrees_to_radians", "radians_to_degrees"], "display_name": "Radians and degrees", "kind": "Exercise", "sha1": "d92755f6d36c7f781cdf1f6aab0ba1c57456131c", "name": "radians_and_degrees", "seconds_per_fast_problem": 11.0, "prerequisites": ["radians_to_degrees", "degrees_to_radians"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/radians_and_degrees_256.png"}, {"relative_url": "/exercise/unit_circle", "guaranteed_file_name": "unit_circle.html", "file_name": null, "author_name": "Ben Eater", "creation_date": "2011-09-27T06:26:49Z", "ka_url": "http://www.khanacademy.org/exercise/unit_circle", "v_position": -26, "h_position": 48, "node_slug": "e/unit_circle", "progress_key": "e274063565", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/trigonometry-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/unit_circle.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Unit circle", "covers": [], "display_name": "Unit circle", "kind": "Exercise", "sha1": "09958b3a4dd958ebd18329d12f01216d83b094d2", "name": "unit_circle", "seconds_per_fast_problem": 17.0, "prerequisites": ["radians_and_degrees"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/unit_circle_256.png"}, {"relative_url": "/exercise/graphs_of_sine_and_cosine", "guaranteed_file_name": "graphs_of_sine_and_cosine.html", "file_name": null, "author_name": "Jeff Ruberg", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/graphs_of_sine_and_cosine", "v_position": -24, "h_position": 52, "node_slug": "e/graphs_of_sine_and_cosine", "progress_key": "e2033", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/trigonometry-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/graphs_of_sine_and_cosine.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Gr. sin/cos", "covers": [], "display_name": "Graphs of sine and cosine", "kind": "Exercise", "sha1": "173027082090045ecca2eeb14fbf7663832287f1", "name": "graphs_of_sine_and_cosine", "seconds_per_fast_problem": 11.0, "prerequisites": ["trigonometry_2"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/graphs_of_sine_and_cosine_256.png"}, {"relative_url": "/exercise/inverse_trig_functions", "guaranteed_file_name": "inverse_trig_functions.html", "file_name": null, "author_name": "", "creation_date": "2011-08-29T00:00:00Z", "ka_url": "http://www.khanacademy.org/exercise/inverse_trig_functions", "v_position": -25, "h_position": 52, "node_slug": "e/inverse_trig_functions", "progress_key": "e3943241", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/trigonometry-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/inverse_trig_functions.png", "custom_stacks": [], "description": null, "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Inv Trig fx", "covers": [], "display_name": "Inverse trig functions", "kind": "Exercise", "sha1": "2252bf3e69a199aaac3abcb52b57d53e849c5ed1", "name": "inverse_trig_functions", "seconds_per_fast_problem": 11.0, "prerequisites": ["trigonometry_2"], "pretty_display_name": null, "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/inverse_trig_functions_256.png"}, {"relative_url": "/exercise/pythagorean_identities", "guaranteed_file_name": "pythagorean_identities.html", "file_name": "", "author_name": "Mark Wittels", "creation_date": "2012-08-22T01:18:34Z", "ka_url": "http://www.khanacademy.org/exercise/pythagorean_identities", "v_position": -27, "h_position": 52, "node_slug": "e/pythagorean_identities", "progress_key": "e986800089", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/trigonometry-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/pythagorean_identities.png", "custom_stacks": [], "description": "Simplify expressions using Pythagorean trig identities", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Pythag Iden", "covers": [], "display_name": "Pythagorean identities", "kind": "Exercise", "sha1": "255fb1cd737ac50ca74ffa4f7c458cfa07a1c30d", "name": "pythagorean_identities", "seconds_per_fast_problem": 8.0, "prerequisites": ["trigonometry_2", "reciprocal_trig_funcs"], "pretty_display_name": "", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/pythagorean_identities_256.png"}, {"relative_url": "/exercise/trig_addition_identities", "guaranteed_file_name": "trig_addition_identities.html", "file_name": "trig_addition_identities.html", "author_name": "Mark Wittels", "creation_date": "2012-08-22T01:21:31Z", "ka_url": "http://www.khanacademy.org/exercise/trig_addition_identities", "v_position": -26, "h_position": 52, "node_slug": "e/trig_addition_identities", "progress_key": "e986815073", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/trigonometry-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/trig_addition_identities.png", "custom_stacks": [], "description": "Computing expressions using trig addition and subtraction identities", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Trig+-ident", "covers": [], "display_name": "Addition and subtraction trig identities", "kind": "Exercise", "sha1": "ff851f32f4d9e272980e1fbedb9acc61bb5e3606", "name": "trig_addition_identities", "seconds_per_fast_problem": 34.0, "prerequisites": ["trigonometry_2"], "pretty_display_name": "Addition and subtraction trig identities", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/trig_addition_identities_256.png"}, {"relative_url": "/exercise/law_of_cosines", "guaranteed_file_name": "law_of_cosines.html", "file_name": "", "author_name": "Ben Eater", "creation_date": "2012-10-10T23:21:24Z", "ka_url": "http://www.khanacademy.org/exercise/law_of_cosines", "v_position": -27, "h_position": 53, "node_slug": "e/law_of_cosines", "progress_key": "e1080800905", "live": true, "thumbnail_image": "https://khan-academy.appspot.com/images/power-mode/badges/trigonometry-250x250.png?8", "image_url": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/law_of_cosines.png", "custom_stacks": [], "description": "Solve missing triangle measures using the law of cosines", "tags": [], "summative": false, "backup_timestamp": "2012-12-12T19:54:32Z", "short_display_name": "Law Cosines", "covers": [], "display_name": "Law of cosines", "kind": "Exercise", "sha1": "a8a911c0f10788ed5a94f47fb6880dae6c3a27b8", "name": "law_of_cosines", "seconds_per_fast_problem": 42.0, "prerequisites": ["pythagorean_identities"], "pretty_display_name": "Law of cosines", "image_url_256": "http://ka-exercise-screenshots.s3-website-us-east-1.amazonaws.com/law_of_cosines_256.png"}]
+[
+  {
+    "related_video_readable_ids": [
+      "graphing-points-exercise", 
+      "the-coordinate-plane", 
+      "plot-ordered-pairs", 
+      "descartes-and-cartesian-coordinates"
+    ], 
+    "v_position": 9, 
+    "path": "/math/trigonometry/graphs/graphing_coordinates/e/graphing_points/", 
+    "id": "graphing_points", 
+    "display_name": "Graphing points", 
+    "title": "Graphing points", 
+    "live": true, 
+    "description": "Plot a given point on the coordinate plane.", 
+    "h_position": 34, 
+    "slug": "graphing_points", 
+    "kind": "Exercise", 
+    "name": "graphing_points", 
+    "seconds_per_fast_problem": 6.0, 
+    "prerequisites": [
+      "linear_equations_3"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "graphing-points-and-naming-quadrants-exercise", 
+      "quadrants-of-coordinate-plane", 
+      "descartes-and-cartesian-coordinates"
+    ], 
+    "v_position": 8, 
+    "path": "/math/trigonometry/graphs/graphing_coordinates/e/graphing_points_2/", 
+    "id": "graphing_points_2", 
+    "display_name": "Graphing points and naming quadrants", 
+    "title": "Graphing points and naming quadrants", 
+    "live": true, 
+    "description": "Graph a point and indicate which quadrant it is in on the coordinate plane.", 
+    "h_position": 35, 
+    "slug": "graphing_points_2", 
+    "kind": "Exercise", 
+    "name": "graphing_points_2", 
+    "seconds_per_fast_problem": 8.0, 
+    "prerequisites": [
+      "graphing_points"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "points-on-the-coordinate-plane", 
+      "descartes-and-cartesian-coordinates", 
+      "plot-ordered-pairs"
+    ], 
+    "v_position": 9, 
+    "path": "/math/trigonometry/graphs/graphing_coordinates/e/identifying_points_1/", 
+    "id": "identifying_points_1", 
+    "display_name": "Points on the coordinate plane", 
+    "title": "Points on the coordinate plane", 
+    "live": true, 
+    "description": "Determine which of several given ordered pairs is not graphed on the coordinate plane.", 
+    "h_position": 35, 
+    "slug": "identifying_points_1", 
+    "kind": "Exercise", 
+    "name": "identifying_points_1", 
+    "seconds_per_fast_problem": 17.0, 
+    "prerequisites": [
+      "graphing_points"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "graphs-of-linear-equations", 
+      "plotting--x-y--relationships", 
+      "application-problem-with-graph"
+    ], 
+    "v_position": 10, 
+    "path": "/math/trigonometry/graphs/graphing_coordinates/e/identifying_points_2/", 
+    "id": "identifying_points_2", 
+    "display_name": "Ordered pair solutions to linear equations", 
+    "title": "Ordered pair solutions to linear equations", 
+    "live": true, 
+    "description": "Determine which ordered pair represents a solution to a graph or equation.\n", 
+    "h_position": 35, 
+    "slug": "identifying_points_2", 
+    "kind": "Exercise", 
+    "name": "identifying_points_2", 
+    "seconds_per_fast_problem": 18.0, 
+    "prerequisites": [
+      "graphing_points"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "graphs-of-linear-equations"
+    ], 
+    "v_position": 9, 
+    "path": "/math/trigonometry/graphs/graphing_coordinates/e/interpreting_linear_equations/", 
+    "id": "interpreting_linear_equations", 
+    "display_name": "Identifying linear relationships", 
+    "title": "Identifying linear relationships", 
+    "live": true, 
+    "description": "Based on graphs of lines, determine whether one variable decreases, increases, or stays the same as the other increases.\n", 
+    "h_position": 36, 
+    "slug": "interpreting_linear_equations", 
+    "kind": "Exercise", 
+    "name": "interpreting_linear_equations", 
+    "seconds_per_fast_problem": 7.0, 
+    "prerequisites": [
+      "identifying_points_2", 
+      "identifying_points_1", 
+      "graphing_points_2"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "slope-example", 
+      "hairier-slope-of-line", 
+      "slope-of-a-line-2"
+    ], 
+    "v_position": 9, 
+    "path": "/math/trigonometry/graphs/slope_of_line/e/slope_of_a_line/", 
+    "id": "slope_of_a_line", 
+    "display_name": "Identifying slope of a line", 
+    "title": "Identifying slope of a line", 
+    "live": true, 
+    "description": "Select the graph that represents a given slope.\n", 
+    "h_position": 37, 
+    "slug": "slope_of_a_line", 
+    "kind": "Exercise", 
+    "name": "slope_of_a_line", 
+    "seconds_per_fast_problem": 10.0, 
+    "prerequisites": [
+      "interpreting_linear_equations"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "slope-and-y-intercept-intuition"
+    ], 
+    "v_position": 9, 
+    "path": "/math/trigonometry/graphs/slope_of_line/e/line_graph_intuition/", 
+    "id": "line_graph_intuition", 
+    "display_name": "Line graph intuition", 
+    "title": "Line graph intuition", 
+    "live": true, 
+    "description": "Adjust the slope and y-intercept of a line to make it go through given points.\n", 
+    "h_position": 38, 
+    "slug": "line_graph_intuition", 
+    "kind": "Exercise", 
+    "name": "line_graph_intuition", 
+    "seconds_per_fast_problem": 8.0, 
+    "prerequisites": [
+      "slope_of_a_line"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "graphing-a-line-in-slope-intercept-form", 
+      "converting-to-slope-intercept-form"
+    ], 
+    "v_position": 9, 
+    "path": "/math/trigonometry/graphs/line_equation/e/graphing_linear_equations/", 
+    "id": "graphing_linear_equations", 
+    "display_name": "Graphing linear equations", 
+    "title": "Graphing linear equations", 
+    "live": true, 
+    "description": "Graph a linear equation on the coordinate plane.\n", 
+    "h_position": 42, 
+    "slug": "graphing_linear_equations", 
+    "kind": "Exercise", 
+    "name": "graphing_linear_equations", 
+    "seconds_per_fast_problem": 15.0, 
+    "prerequisites": [
+      "equation_of_a_line"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "finding-y-intercept-given-slope-and-point", 
+      "x-and-y-intercepts-2", 
+      "graphs-using-slope-intercept-form", 
+      "equation-of-a-line-hairier-example"
+    ], 
+    "v_position": 10, 
+    "path": "/math/trigonometry/graphs/line_equation/e/solving_for_the_y-intercept/", 
+    "id": "solving_for_the_y-intercept", 
+    "display_name": "Solving for the y-intercept", 
+    "title": "Solving for the y-intercept", 
+    "live": true, 
+    "description": "Solve linear equations for the y-intercept.\n", 
+    "h_position": 37, 
+    "slug": "solving_for_the_y-intercept", 
+    "kind": "Exercise", 
+    "name": "solving_for_the_y-intercept", 
+    "seconds_per_fast_problem": 13.0, 
+    "prerequisites": [
+      "interpreting_linear_equations"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "slope-intercept-form-from-table", 
+      "equation-of-a-line-3", 
+      "equation-of-a-line-2", 
+      "linear-equations-in-slope-intercept-form"
+    ], 
+    "v_position": 11, 
+    "path": "/math/trigonometry/graphs/line_equation/e/slope_intercept_form/", 
+    "id": "slope_intercept_form", 
+    "display_name": "Slope intercept form", 
+    "title": "Slope intercept form", 
+    "live": true, 
+    "description": "Write an equation in slope-intercept form based on values given in a table.\n", 
+    "h_position": 39, 
+    "slug": "slope_intercept_form", 
+    "kind": "Exercise", 
+    "name": "slope_intercept_form", 
+    "seconds_per_fast_problem": 30.0, 
+    "prerequisites": [
+      "solving_for_the_x-intercept", 
+      "line_graph_intuition"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "linear-equations-in-point-slope-form", 
+      "idea-behind-point-slope-form"
+    ], 
+    "v_position": 9, 
+    "path": "/math/trigonometry/graphs/line_equation/e/point_slope_form/", 
+    "id": "point_slope_form", 
+    "display_name": "Point slope form", 
+    "title": "Point slope form", 
+    "live": true, 
+    "description": "Given 2 points, write an equation in point-slope form.\n", 
+    "h_position": 39, 
+    "slug": "point_slope_form", 
+    "kind": "Exercise", 
+    "name": "point_slope_form", 
+    "seconds_per_fast_problem": 26.0, 
+    "prerequisites": [
+      "line_graph_intuition"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "linear-equations-in-standard-form"
+    ], 
+    "v_position": 11, 
+    "path": "/math/trigonometry/graphs/line_equation/e/converting_between_slope_intercept_and_standard_form/", 
+    "id": "converting_between_slope_intercept_and_standard_form", 
+    "display_name": "Converting between slope-intercept and standard form", 
+    "title": "Converting between slope-intercept and standard form", 
+    "live": true, 
+    "description": "Convert linear equations between slope-intercept and standard forms.\n", 
+    "h_position": 40, 
+    "slug": "converting_between_slope_intercept_and_standard_form", 
+    "kind": "Exercise", 
+    "name": "converting_between_slope_intercept_and_standard_form", 
+    "seconds_per_fast_problem": 15.0, 
+    "prerequisites": [
+      "slope_intercept_form"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "converting-from-point-slope-to-slope-intercept-form", 
+      "converting-to-slope-intercept-form", 
+      "linear-equations-in-point-slope-form"
+    ], 
+    "v_position": 9, 
+    "path": "/math/trigonometry/graphs/line_equation/e/converting_between_point_slope_and_slope_intercept/", 
+    "id": "converting_between_point_slope_and_slope_intercept", 
+    "display_name": "Converting between point-slope and slope-intercept", 
+    "title": "Converting between point-slope and slope-intercept", 
+    "live": true, 
+    "description": "Convert linear equations between point-slop and slope-intercept forms.\n", 
+    "h_position": 40, 
+    "slug": "converting_between_point_slope_and_slope_intercept", 
+    "kind": "Exercise", 
+    "name": "converting_between_point_slope_and_slope_intercept", 
+    "seconds_per_fast_problem": 14.0, 
+    "prerequisites": [
+      "point_slope_form", 
+      "slope_intercept_form"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "linear-equations-in-point-slope-form", 
+      "linear-equations-in-slope-intercept-form", 
+      "linear-equations-in-standard-form", 
+      "point-slope-and-standard-form"
+    ], 
+    "v_position": 8, 
+    "path": "/math/trigonometry/graphs/line_equation/e/equation_of_a_line/", 
+    "id": "equation_of_a_line", 
+    "display_name": "Finding the equation of a line", 
+    "title": "Finding the equation of a line", 
+    "live": true, 
+    "description": "Given x and y values, write the equation of a line.\n", 
+    "h_position": 41, 
+    "slug": "equation_of_a_line", 
+    "kind": "Exercise", 
+    "name": "equation_of_a_line", 
+    "seconds_per_fast_problem": 24.0, 
+    "prerequisites": [
+      "converting_between_slope_intercept_and_standard_form", 
+      "converting_between_point_slope_and_slope_intercept"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "midpoint-formula"
+    ], 
+    "v_position": -12, 
+    "path": "/math/trigonometry/graphs/midpoint_and_distance/e/midpoint_formula/", 
+    "id": "midpoint_formula", 
+    "display_name": "Midpoint formula", 
+    "title": "Midpoint formula", 
+    "live": true, 
+    "description": "Find the midpoint of a segment on the coordinate plane, or find the endpoint of a segment given one point and the midpoint.\n", 
+    "h_position": 40, 
+    "slug": "midpoint_formula", 
+    "kind": "Exercise", 
+    "name": "midpoint_formula", 
+    "seconds_per_fast_problem": 22.0, 
+    "prerequisites": [
+      "distance_formula"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "distance-formula"
+    ], 
+    "v_position": -13, 
+    "path": "/math/trigonometry/graphs/midpoint_and_distance/e/distance_formula/", 
+    "id": "distance_formula", 
+    "display_name": "Distance formula", 
+    "title": "Distance formula", 
+    "live": true, 
+    "description": "Use the Pythagorean theorem to find the distance between two points on the coordinate plane.", 
+    "h_position": 39, 
+    "slug": "distance_formula", 
+    "kind": "Exercise", 
+    "name": "distance_formula", 
+    "seconds_per_fast_problem": 27.0, 
+    "prerequisites": [
+      "pythagorean_theorem_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "equations-of-parallel-and-perpendicular-lines", 
+      "parallel-line-equation", 
+      "perpendicular-lines", 
+      "perpendicular-lines-2", 
+      "parallel-lines", 
+      "parallel-lines-2", 
+      "parallel-lines-3"
+    ], 
+    "v_position": 8, 
+    "path": "/math/trigonometry/graphs/parallel_perpendicular/e/line_relationships/", 
+    "id": "line_relationships", 
+    "display_name": "Equations of parallel and perpendicular lines", 
+    "title": "Equations of parallel and perpendicular lines", 
+    "live": true, 
+    "description": "Determine the equation of a line parallel or perpendicular to the given line. Determine the relationship between two linear equations.", 
+    "h_position": 43, 
+    "slug": "line_relationships", 
+    "kind": "Exercise", 
+    "name": "line_relationships", 
+    "seconds_per_fast_problem": 24.0, 
+    "prerequisites": [
+      "equation_of_a_line"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "distance-between-a-point-and-a-line", 
+      "equations-of-parallel-and-perpendicular-lines", 
+      "distance-formula"
+    ], 
+    "v_position": 8, 
+    "path": "/math/trigonometry/graphs/parallel_perpendicular/e/distance_between_point_and_line/", 
+    "id": "distance_between_point_and_line", 
+    "display_name": "Distance between point and line", 
+    "title": "Distance between point and line", 
+    "live": true, 
+    "description": "Find the distance between a point and a line. Some horizontal and vertical lines.", 
+    "h_position": 47, 
+    "slug": "distance_between_point_and_line", 
+    "kind": "Exercise", 
+    "name": "distance_between_point_and_line", 
+    "seconds_per_fast_problem": 23.0, 
+    "prerequisites": [
+      "line_relationships", 
+      "graphing_systems_of_equations"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "graphing-inequalities", 
+      "graphing-inequalities-2", 
+      "solving-and-graphing-linear-inequalities-in-two-variables-1", 
+      "graphing-linear-inequalities-in-two-variables-example-2"
+    ], 
+    "v_position": 9, 
+    "path": "/math/trigonometry/graphs/graphing_inequalities/e/graphing_inequalities/", 
+    "id": "graphing_inequalities", 
+    "display_name": "Graphing linear inequalities", 
+    "title": "Graphing linear inequalities", 
+    "live": true, 
+    "description": "Graph a linear inequality on the coordinate plane. Determine whether the line should be solid or dotted, and shade the proper side.\n", 
+    "h_position": 43, 
+    "slug": "graphing_inequalities", 
+    "kind": "Exercise", 
+    "name": "graphing_inequalities", 
+    "seconds_per_fast_problem": 22.0, 
+    "prerequisites": [
+      "graphing_linear_equations"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "graphing-inequalities-1", 
+      "solving-and-graphing-linear-inequalities-in-two-variables-1", 
+      "graphing-linear-inequalities-in-two-variables-example-2"
+    ], 
+    "v_position": 9, 
+    "path": "/math/trigonometry/graphs/graphing_inequalities/e/graphing_inequalities_2/", 
+    "id": "graphing_inequalities_2", 
+    "display_name": "Graphing and solving linear inequalities", 
+    "title": "Graphing and solving linear inequalities", 
+    "live": true, 
+    "description": "Graph a linear inequality on the coordinate plane. Determine whether given ordered pairs are solutions.\n", 
+    "h_position": 44, 
+    "slug": "graphing_inequalities_2", 
+    "kind": "Exercise", 
+    "name": "graphing_inequalities_2", 
+    "seconds_per_fast_problem": 29.0, 
+    "prerequisites": [
+      "graphing_inequalities"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "understanding-function-notation-example-1", 
+      "understanding-function-notation-example-2", 
+      "understanding-function-notation-example-3", 
+      "understanding-function-notation-exercise"
+    ], 
+    "v_position": -1, 
+    "path": "/math/trigonometry/functions_and_graphs/function_introduction/e/functions_1/", 
+    "id": "functions_1", 
+    "display_name": "Understanding function notation", 
+    "title": "Understanding function notation", 
+    "live": true, 
+    "description": "", 
+    "h_position": 38, 
+    "slug": "functions_1", 
+    "kind": "Exercise", 
+    "name": "functions_1", 
+    "seconds_per_fast_problem": 8.0, 
+    "prerequisites": [
+      "interpreting_linear_equations"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "evaluating-a-function-expression"
+    ], 
+    "v_position": -2, 
+    "path": "/math/trigonometry/functions_and_graphs/function_introduction/e/functions_2/", 
+    "id": "functions_2", 
+    "display_name": "Evaluating expressions with function notation", 
+    "title": "Evaluating expressions with function notation", 
+    "live": true, 
+    "description": "Find the value of a function for a given x based on a graph, and perform operations with that value.\n", 
+    "h_position": 39, 
+    "slug": "functions_2", 
+    "kind": "Exercise", 
+    "name": "functions_2", 
+    "seconds_per_fast_problem": 25.0, 
+    "prerequisites": [
+      "functions_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "evaluating-composite-functions-example-1"
+    ], 
+    "v_position": -2, 
+    "path": "/math/trigonometry/functions_and_graphs/function_introduction/e/functions_3/", 
+    "id": "functions_3", 
+    "display_name": "Evaluating composite functions", 
+    "title": "Evaluating composite functions", 
+    "live": true, 
+    "description": "Find the function of a function.\n", 
+    "h_position": 40, 
+    "slug": "functions_3", 
+    "kind": "Exercise", 
+    "name": "functions_3", 
+    "seconds_per_fast_problem": 46.0, 
+    "prerequisites": [
+      "functions_2"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "domain-of-a-function", 
+      "domain-and-range-of-a-function", 
+      "domain-and-range-of-a-function-given-a-formula", 
+      "domain-of-a-radical-function", 
+      "domain-and-range-1", 
+      "domain-and-range-2"
+    ], 
+    "v_position": -1, 
+    "path": "/math/trigonometry/functions_and_graphs/function_introduction/e/domain_of_a_function/", 
+    "id": "domain_of_a_function", 
+    "display_name": "Domain of a function", 
+    "title": "Domain of a function", 
+    "live": true, 
+    "description": "Given the equation of a function, determine the domain.", 
+    "h_position": 40, 
+    "slug": "domain_of_a_function", 
+    "kind": "Exercise", 
+    "name": "domain_of_a_function", 
+    "seconds_per_fast_problem": 13.0, 
+    "prerequisites": [
+      "functions_2", 
+      "domain_and_range_0.5"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "domain-and-range-from-graphs"
+    ], 
+    "v_position": 0, 
+    "path": "/math/trigonometry/functions_and_graphs/domain_range/e/domain_and_range_0.5/", 
+    "id": "domain_and_range_0.5", 
+    "display_name": "Domain and range from graph", 
+    "title": "Domain and range from graph", 
+    "live": true, 
+    "description": "Given the graph of a function, determine its domain or range.\n", 
+    "h_position": 39, 
+    "slug": "domain_and_range_0.5", 
+    "kind": "Exercise", 
+    "name": "domain_and_range_0.5", 
+    "seconds_per_fast_problem": 8.0, 
+    "prerequisites": [
+      "functions_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "domain-of-a-function", 
+      "domain-and-range-of-a-function", 
+      "domain-and-range-of-a-function-given-a-formula", 
+      "domain-of-a-radical-function", 
+      "domain-and-range-1", 
+      "domain-and-range-2"
+    ], 
+    "v_position": -1, 
+    "path": "/math/trigonometry/functions_and_graphs/domain_range/e/domain_of_a_function/", 
+    "id": "domain_of_a_function", 
+    "display_name": "Domain of a function", 
+    "title": "Domain of a function", 
+    "live": true, 
+    "description": "Given the equation of a function, determine the domain.", 
+    "h_position": 40, 
+    "slug": "domain_of_a_function", 
+    "kind": "Exercise", 
+    "name": "domain_of_a_function", 
+    "seconds_per_fast_problem": 13.0, 
+    "prerequisites": [
+      "functions_2", 
+      "domain_and_range_0.5"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "domain-and-range-of-a-function", 
+      "domain-and-range-of-a-function-given-a-formula", 
+      "domain-and-range-of-a-relation", 
+      "domain-and-range-1", 
+      "domain-and-range-2"
+    ], 
+    "v_position": 1, 
+    "path": "/math/trigonometry/functions_and_graphs/domain_range/e/range_of_a_function/", 
+    "id": "range_of_a_function", 
+    "display_name": "Range of a function", 
+    "title": "Range of a function", 
+    "live": true, 
+    "description": "Given the equation of a quadratic function, determine the range.\n", 
+    "h_position": 40, 
+    "slug": "range_of_a_function", 
+    "kind": "Exercise", 
+    "name": "range_of_a_function", 
+    "seconds_per_fast_problem": 10.0, 
+    "prerequisites": [
+      "functions_2", 
+      "domain_and_range_0.5"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "function-inverse-example-1", 
+      "function-inverses-example-2", 
+      "function-inverses-example-3", 
+      "introduction-to-function-inverses"
+    ], 
+    "v_position": -1, 
+    "path": "/math/trigonometry/functions_and_graphs/fucntion_inverses/e/inverses_of_functions/", 
+    "id": "inverses_of_functions", 
+    "display_name": "Inverses of functions", 
+    "title": "Inverses of functions", 
+    "live": true, 
+    "description": "Determine the inverse of a function based on the equation and graph.\n", 
+    "h_position": 41, 
+    "slug": "inverses_of_functions", 
+    "kind": "Exercise", 
+    "name": "inverses_of_functions", 
+    "seconds_per_fast_problem": 12.0, 
+    "prerequisites": [
+      "domain_of_a_function", 
+      "range_of_a_function"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "recognizing-odd-and-even-functions", 
+      "connection-between-even-and-odd-numbers-and-functions"
+    ], 
+    "v_position": 2, 
+    "path": "/math/trigonometry/functions_and_graphs/analyzing_functions/e/even_and_odd_functions/", 
+    "id": "even_and_odd_functions", 
+    "display_name": "Even and odd functions", 
+    "title": "Even and odd functions", 
+    "live": true, 
+    "description": "Determine if a graphed function is even, odd, or neither.\n", 
+    "h_position": 40, 
+    "slug": "even_and_odd_functions", 
+    "kind": "Exercise", 
+    "name": "even_and_odd_functions", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "functions_2"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "shifting-and-reflecting-functions"
+    ], 
+    "v_position": 1, 
+    "path": "/math/trigonometry/functions_and_graphs/analyzing_functions/e/shifting_and_reflecting_functions/", 
+    "id": "shifting_and_reflecting_functions", 
+    "display_name": "Shifting and reflecting functions", 
+    "title": "Shifting and reflecting functions", 
+    "live": true, 
+    "description": "Determine the equation for one graphed function in terms of another.\n", 
+    "h_position": 41, 
+    "slug": "shifting_and_reflecting_functions", 
+    "kind": "Exercise", 
+    "name": "shifting_and_reflecting_functions", 
+    "seconds_per_fast_problem": 8.0, 
+    "prerequisites": [
+      "domain_of_a_function", 
+      "functions_3", 
+      "range_of_a_function"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "factoring-quadratic-expressions", 
+      "factoring-polynomials-1", 
+      "factoring-trinomials-with-a-leading-1-coefficient"
+    ], 
+    "v_position": -6, 
+    "path": "/math/trigonometry/polynomial_and_rational/quad_factoring/e/factoring_polynomials_1/", 
+    "id": "factoring_polynomials_1", 
+    "display_name": "Factoring polynomials 1", 
+    "title": "Factoring polynomials 1", 
+    "live": true, 
+    "description": "Factor polynomials that are not perfect squares, where A=1", 
+    "h_position": 49, 
+    "slug": "factoring_polynomials_1", 
+    "kind": "Exercise", 
+    "name": "factoring_polynomials_1", 
+    "seconds_per_fast_problem": 20.0, 
+    "prerequisites": [
+      "factoring_linear_binomials"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "factoring-quadratic-expressions", 
+      "factoring-polynomials-1", 
+      "factoring-trinomials-with-a-leading-1-coefficient"
+    ], 
+    "v_position": -2, 
+    "path": "/math/trigonometry/polynomial_and_rational/quad_factoring/e/solving_quadratics_by_factoring/", 
+    "id": "solving_quadratics_by_factoring", 
+    "display_name": "Solving quadratics by factoring", 
+    "title": "Solving quadratics by factoring", 
+    "live": true, 
+    "description": "Factor quadratics to find the x-intercepts. Solve a polynomial by factoring.\n", 
+    "h_position": 50, 
+    "slug": "solving_quadratics_by_factoring", 
+    "kind": "Exercise", 
+    "name": "solving_quadratics_by_factoring", 
+    "seconds_per_fast_problem": 11.0, 
+    "prerequisites": [
+      "factoring_polynomials_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "factoring-trinomials-with-a-common-factor"
+    ], 
+    "v_position": -6, 
+    "path": "/math/trigonometry/polynomial_and_rational/quad_factoring/e/factoring_polynomials_2/", 
+    "id": "factoring_polynomials_2", 
+    "display_name": "Factoring polynomials 2", 
+    "title": "Factoring polynomials 2", 
+    "live": true, 
+    "description": "Factor polynomials that are not perfect squares, where A is not 1\n", 
+    "h_position": 50, 
+    "slug": "factoring_polynomials_2", 
+    "kind": "Exercise", 
+    "name": "factoring_polynomials_2", 
+    "seconds_per_fast_problem": 48.0, 
+    "prerequisites": [
+      "factoring_polynomials_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "Example 1: Solving a quadratic equation by factoring", 
+      "factoring-trinomials-with-a-common-factor", 
+      "Example 2: Solving a quadratic equation by factoring"
+    ], 
+    "v_position": -2, 
+    "path": "/math/trigonometry/polynomial_and_rational/quad_factoring/e/solving_quadratics_by_factoring_2/", 
+    "id": "solving_quadratics_by_factoring_2", 
+    "display_name": "Solving quadratics by factoring 2", 
+    "title": "Solving quadratics by factoring 2", 
+    "live": true, 
+    "description": "Solve quadratics by factoring, where A is not 1\n", 
+    "h_position": 51, 
+    "slug": "solving_quadratics_by_factoring_2", 
+    "kind": "Exercise", 
+    "name": "solving_quadratics_by_factoring_2", 
+    "seconds_per_fast_problem": 23.0, 
+    "prerequisites": [
+      "solving_quadratics_by_factoring"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "factoring-difference-of-squares"
+    ], 
+    "v_position": -8, 
+    "path": "/math/trigonometry/polynomial_and_rational/quad_factoring/e/factoring_difference_of_squares_1/", 
+    "id": "factoring_difference_of_squares_1", 
+    "display_name": "Factoring difference of squares 1", 
+    "title": "Factoring difference of squares 1", 
+    "live": true, 
+    "description": "Factoring differences of squares into the form (x+b)*(x-b)\n", 
+    "h_position": 49, 
+    "slug": "factoring_difference_of_squares_1", 
+    "kind": "Exercise", 
+    "name": "factoring_difference_of_squares_1", 
+    "seconds_per_fast_problem": 10.0, 
+    "prerequisites": [
+      "multiplying_expressions_1", 
+      "multiplying_polynomials"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "u09-l2-t1-we3-factoring-special-products-3"
+    ], 
+    "v_position": -8, 
+    "path": "/math/trigonometry/polynomial_and_rational/quad_factoring/e/factoring_difference_of_squares_2/", 
+    "id": "factoring_difference_of_squares_2", 
+    "display_name": "Factoring difference of squares 2", 
+    "title": "Factoring difference of squares 2", 
+    "live": true, 
+    "description": "Factoring differences of squares into the form (Ax+b)*(Ax-b)\n", 
+    "h_position": 50, 
+    "slug": "factoring_difference_of_squares_2", 
+    "kind": "Exercise", 
+    "name": "factoring_difference_of_squares_2", 
+    "seconds_per_fast_problem": 12.0, 
+    "prerequisites": [
+      "factoring_difference_of_squares_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "factoring-to-produce-difference-of-squares", 
+      "u09-l2-t1-we3-factoring-special-products-3"
+    ], 
+    "v_position": -8, 
+    "path": "/math/trigonometry/polynomial_and_rational/quad_factoring/e/factoring_difference_of_squares_3/", 
+    "id": "factoring_difference_of_squares_3", 
+    "display_name": "Factoring difference of squares 3", 
+    "title": "Factoring difference of squares 3", 
+    "live": true, 
+    "description": "Factoring a difference of squares in the format C(Ax+b)*(Ax-b)", 
+    "h_position": 51, 
+    "slug": "factoring_difference_of_squares_3", 
+    "kind": "Exercise", 
+    "name": "factoring_difference_of_squares_3", 
+    "seconds_per_fast_problem": 27.0, 
+    "prerequisites": [
+      "factoring_difference_of_squares_2"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "factor-by-grouping-and-factoring-completely", 
+      "factoring-trinomials-with-a-non-1-leading-coefficient-by-grouping", 
+      "ex2-factoring-quad", 
+      "u09-l1-t2-we3-factoring-trinomials", 
+      "factoring-trinomials-by-grouping-4", 
+      "factoring-trinomials-by-grouping-5", 
+      "factoring-trinomials-by-grouping-6"
+    ], 
+    "v_position": -5, 
+    "path": "/math/trigonometry/polynomial_and_rational/quad_factoring/e/factoring_polynomials_by_grouping_1/", 
+    "id": "factoring_polynomials_by_grouping_1", 
+    "display_name": "Factoring polynomials by grouping", 
+    "title": "Factoring polynomials by grouping", 
+    "live": true, 
+    "description": "Factor polynomials by grouping\n", 
+    "h_position": 51, 
+    "slug": "factoring_polynomials_by_grouping_1", 
+    "kind": "Exercise", 
+    "name": "factoring_polynomials_by_grouping_1", 
+    "seconds_per_fast_problem": 60.0, 
+    "prerequisites": [
+      "factoring_polynomials_2"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "solving-quadratic-equations-by-square-roots"
+    ], 
+    "v_position": -1, 
+    "path": "/math/trigonometry/polynomial_and_rational/quad_formula_tutorial/e/solving_quadratics_by_taking_the_square_root/", 
+    "id": "solving_quadratics_by_taking_the_square_root", 
+    "display_name": "Solving quadratics by taking the square root", 
+    "title": "Solving quadratics by taking the square root", 
+    "live": true, 
+    "description": "Solve quadratics by taking the square root.\n", 
+    "h_position": 50, 
+    "slug": "solving_quadratics_by_taking_the_square_root", 
+    "kind": "Exercise", 
+    "name": "solving_quadratics_by_taking_the_square_root", 
+    "seconds_per_fast_problem": 19.0, 
+    "prerequisites": [
+      "factoring_polynomials_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "solving-quadratic-equations-by-completing-the-square"
+    ], 
+    "v_position": -1, 
+    "path": "/math/trigonometry/polynomial_and_rational/quad_formula_tutorial/e/completing_the_square_1/", 
+    "id": "completing_the_square_1", 
+    "display_name": "Completing the square 1", 
+    "title": "Completing the square 1", 
+    "live": true, 
+    "description": "Find the roots of a quadratic equation by completing the square. Can also be solved by factoring.\n", 
+    "h_position": 51, 
+    "slug": "completing_the_square_1", 
+    "kind": "Exercise", 
+    "name": "completing_the_square_1", 
+    "seconds_per_fast_problem": 31.0, 
+    "prerequisites": [
+      "solving_quadratics_by_taking_the_square_root", 
+      "solving_quadratics_by_factoring"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "solving-quadratic-equations-by-completing-the-square"
+    ], 
+    "v_position": -2, 
+    "path": "/math/trigonometry/polynomial_and_rational/quad_formula_tutorial/e/completing_the_square_2/", 
+    "id": "completing_the_square_2", 
+    "display_name": "Completing the square 2", 
+    "title": "Completing the square 2", 
+    "live": true, 
+    "description": "Find the roots of a quadratic by completing the square.\n", 
+    "h_position": 52, 
+    "slug": "completing_the_square_2", 
+    "kind": "Exercise", 
+    "name": "completing_the_square_2", 
+    "seconds_per_fast_problem": 60.0, 
+    "prerequisites": [
+      "solving_quadratics_by_factoring_2", 
+      "completing_the_square_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "using-the-quadratic-formula", 
+      "proof-of-quadratic-formula", 
+      "introduction-to-the-quadratic-equation", 
+      "quadratic-equation-part-2"
+    ], 
+    "v_position": -2, 
+    "path": "/math/trigonometry/polynomial_and_rational/quad_formula_tutorial/e/quadratic_equation/", 
+    "id": "quadratic_equation", 
+    "display_name": "Quadratic formula", 
+    "title": "Quadratic formula", 
+    "live": true, 
+    "description": "Use the quadratic formula to find the roots of a quadratic function.\n", 
+    "h_position": 53, 
+    "slug": "quadratic_equation", 
+    "kind": "Exercise", 
+    "name": "quadratic_equation", 
+    "seconds_per_fast_problem": 35.0, 
+    "prerequisites": [
+      "completing_the_square_2"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "discriminant-of-quadratic-equations", 
+      "discriminant-for-types-of-solutions-for-a-quadratic"
+    ], 
+    "v_position": -2, 
+    "path": "/math/trigonometry/polynomial_and_rational/quad_formula_tutorial/e/solutions_to_quadratic_equations/", 
+    "id": "solutions_to_quadratic_equations", 
+    "display_name": "Solutions to quadratic equations", 
+    "title": "Solutions to quadratic equations", 
+    "live": true, 
+    "description": "Determine how many solutions a quadratic equation has and whether they are rational, irrational, or complex\n", 
+    "h_position": 54, 
+    "slug": "solutions_to_quadratic_equations", 
+    "kind": "Exercise", 
+    "name": "solutions_to_quadratic_equations", 
+    "seconds_per_fast_problem": 19.0, 
+    "prerequisites": [
+      "quadratic_equation"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "adding-and-subtracting-polynomials-1", 
+      "adding-and-subtracting-polynomials-2", 
+      "adding-and-subtracting-polynomials-3"
+    ], 
+    "v_position": -7, 
+    "path": "/math/trigonometry/polynomial_and_rational/polynomial_tutorial/e/adding_and_subtracting_polynomials/", 
+    "id": "adding_and_subtracting_polynomials", 
+    "display_name": "Adding and subtracting polynomials", 
+    "title": "Adding and subtracting polynomials", 
+    "live": true, 
+    "description": "Add or subtract polynomials\n", 
+    "h_position": 45, 
+    "slug": "adding_and_subtracting_polynomials", 
+    "kind": "Exercise", 
+    "name": "adding_and_subtracting_polynomials", 
+    "seconds_per_fast_problem": 15.0, 
+    "prerequisites": [
+      "equation_of_a_line"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "multiplying-polynomials", 
+      "multiplying-polynomials-3", 
+      "more-multiplying-polynomials"
+    ], 
+    "v_position": -6, 
+    "path": "/math/trigonometry/polynomial_and_rational/polynomial_tutorial/e/multiplying_polynomials/", 
+    "id": "multiplying_polynomials", 
+    "display_name": "Multiplying polynomials", 
+    "title": "Multiplying polynomials", 
+    "live": true, 
+    "description": "Multiply two expressions with variables and exponents to get a polynomial\n", 
+    "h_position": 47, 
+    "slug": "multiplying_polynomials", 
+    "kind": "Exercise", 
+    "name": "multiplying_polynomials", 
+    "seconds_per_fast_problem": 17.0, 
+    "prerequisites": [
+      "multiplying_expressions_0.5"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "basic-trigonometry", 
+      "basic-trigonometry-ii"
+    ], 
+    "v_position": -24, 
+    "path": "/math/trigonometry/basic-trigonometry/basic_trig_ratios/e/trigonometry_0.5/", 
+    "id": "trigonometry_0.5", 
+    "display_name": "Trigonometry 0.5", 
+    "title": "Trigonometry 0.5", 
+    "live": true, 
+    "description": "", 
+    "h_position": 48, 
+    "slug": "trigonometry_0.5", 
+    "kind": "Exercise", 
+    "name": "trigonometry_0.5", 
+    "seconds_per_fast_problem": 11.0, 
+    "prerequisites": [
+      "pythagorean_theorem_1", 
+      "radians_and_degrees"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "basic-trigonometry", 
+      "basic-trigonometry-ii"
+    ], 
+    "v_position": -25, 
+    "path": "/math/trigonometry/basic-trigonometry/basic_trig_ratios/e/trigonometry_1/", 
+    "id": "trigonometry_1", 
+    "display_name": "Trigonometry 1", 
+    "title": "Trigonometry 1", 
+    "live": true, 
+    "description": "", 
+    "h_position": 49, 
+    "slug": "trigonometry_1", 
+    "kind": "Exercise", 
+    "name": "trigonometry_1", 
+    "seconds_per_fast_problem": 12.0, 
+    "prerequisites": [
+      "trigonometry_0.5", 
+      "unit_circle"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "example--the-six-trig-ratios", 
+      "example--using-trig-to-solve-for-missing-information"
+    ], 
+    "v_position": -26, 
+    "path": "/math/trigonometry/basic-trigonometry/basic_trig_ratios/e/reciprocal_trig_funcs/", 
+    "id": "reciprocal_trig_funcs", 
+    "display_name": "Reciprocal trig functions", 
+    "title": "Reciprocal trig functions", 
+    "live": true, 
+    "description": "Understand the right triangle definition of sec, csc, and cot functions\n", 
+    "h_position": 50, 
+    "slug": "reciprocal_trig_funcs", 
+    "kind": "Exercise", 
+    "name": "reciprocal_trig_funcs", 
+    "seconds_per_fast_problem": 12.0, 
+    "prerequisites": [
+      "trigonometry_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "example--trig-to-solve-the-sides-and-angles-of-a-right-triangle", 
+      "basic-trigonometry", 
+      "basic-trigonometry-ii"
+    ], 
+    "v_position": -25, 
+    "path": "/math/trigonometry/basic-trigonometry/basic_trig_ratios/e/trigonometry_1.5/", 
+    "id": "trigonometry_1.5", 
+    "display_name": "Trigonometry 1.5", 
+    "title": "Trigonometry 1.5", 
+    "live": true, 
+    "description": "", 
+    "h_position": 50, 
+    "slug": "trigonometry_1.5", 
+    "kind": "Exercise", 
+    "name": "trigonometry_1.5", 
+    "seconds_per_fast_problem": 16.0, 
+    "prerequisites": [
+      "trigonometry_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "example--trig-to-solve-the-sides-and-angles-of-a-right-triangle"
+    ], 
+    "v_position": -25, 
+    "path": "/math/trigonometry/basic-trigonometry/basic_trig_ratios/e/trigonometry_2/", 
+    "id": "trigonometry_2", 
+    "display_name": "Trigonometry 2", 
+    "title": "Trigonometry 2", 
+    "live": true, 
+    "description": "", 
+    "h_position": 51, 
+    "slug": "trigonometry_2", 
+    "kind": "Exercise", 
+    "name": "trigonometry_2", 
+    "seconds_per_fast_problem": 15.0, 
+    "prerequisites": [
+      "trigonometry_1.5"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "intro-to-30-60-90-triangles", 
+      "30-60-90-triangles-ii", 
+      "30-60-90-triangle-example-problem", 
+      "45-45-90-triangles", 
+      "45-45-90-triangle-side-ratios"
+    ], 
+    "v_position": -24, 
+    "path": "/math/trigonometry/basic-trigonometry/basic_trig_ratios/e/pythagorean_theorem_2/", 
+    "id": "pythagorean_theorem_2", 
+    "display_name": "Special right triangles", 
+    "title": "Special right triangles", 
+    "live": true, 
+    "description": "", 
+    "h_position": 51, 
+    "slug": "pythagorean_theorem_2", 
+    "kind": "Exercise", 
+    "name": "pythagorean_theorem_2", 
+    "seconds_per_fast_problem": 12.0, 
+    "prerequisites": [
+      "trigonometry_1.5"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "introduction-to-radians", 
+      "we-converting-degrees-to-radians", 
+      "radian-and-degree-conversion-practice"
+    ], 
+    "v_position": -24, 
+    "path": "/math/trigonometry/basic-trigonometry/radians_tutorial/e/degrees_to_radians/", 
+    "id": "degrees_to_radians", 
+    "display_name": "Degrees to radians", 
+    "title": "Degrees to radians", 
+    "live": true, 
+    "description": "", 
+    "h_position": 46, 
+    "slug": "degrees_to_radians", 
+    "kind": "Exercise", 
+    "name": "degrees_to_radians", 
+    "seconds_per_fast_problem": 8.0, 
+    "prerequisites": [
+      "congruent_triangles_2"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "introduction-to-radians", 
+      "we-converting-radians-to-degrees", 
+      "radian-and-degree-conversion-practice"
+    ], 
+    "v_position": -26, 
+    "path": "/math/trigonometry/basic-trigonometry/radians_tutorial/e/radians_to_degrees/", 
+    "id": "radians_to_degrees", 
+    "display_name": "Radians to degrees", 
+    "title": "Radians to degrees", 
+    "live": true, 
+    "description": "", 
+    "h_position": 46, 
+    "slug": "radians_to_degrees", 
+    "kind": "Exercise", 
+    "name": "radians_to_degrees", 
+    "seconds_per_fast_problem": 11.0, 
+    "prerequisites": [
+      "congruent_triangles_2"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "introduction-to-radians", 
+      "radian-and-degree-conversion-practice", 
+      "we-converting-radians-to-degrees", 
+      "we-converting-degrees-to-radians"
+    ], 
+    "v_position": -25, 
+    "path": "/math/trigonometry/basic-trigonometry/radians_tutorial/e/radians_and_degrees/", 
+    "id": "radians_and_degrees", 
+    "display_name": "Radians and degrees", 
+    "title": "Radians and degrees", 
+    "live": true, 
+    "description": "", 
+    "h_position": 47, 
+    "slug": "radians_and_degrees", 
+    "kind": "Exercise", 
+    "name": "radians_and_degrees", 
+    "seconds_per_fast_problem": 11.0, 
+    "prerequisites": [
+      "radians_to_degrees", 
+      "degrees_to_radians"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "unit-circle-definition-of-trig-functions-1", 
+      "unit-circle-manipulative", 
+      "we-unit-circle-definition-to-calculate-sin-and-cos-of-multiple-angles", 
+      "example-unit-circ-def", 
+      "finding-trig-function-values-using-unit-circle-definition", 
+      "the-sign-of-sine"
+    ], 
+    "v_position": -26, 
+    "path": "/math/trigonometry/basic-trigonometry/unit_circle_tut/e/unit_circle/", 
+    "id": "unit_circle", 
+    "display_name": "Unit circle", 
+    "title": "Unit circle", 
+    "live": true, 
+    "description": "", 
+    "h_position": 48, 
+    "slug": "unit_circle", 
+    "kind": "Exercise", 
+    "name": "unit_circle", 
+    "seconds_per_fast_problem": 16.0, 
+    "prerequisites": [
+      "radians_and_degrees"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "matching-a-trigonometric-function-to-its-graph"
+    ], 
+    "v_position": -24, 
+    "path": "/math/trigonometry/basic-trigonometry/trig_graphs_tutorial/e/graphs_of_sine_and_cosine/", 
+    "id": "graphs_of_sine_and_cosine", 
+    "display_name": "Graphs of sine and cosine", 
+    "title": "Graphs of sine and cosine", 
+    "live": true, 
+    "description": "", 
+    "h_position": 52, 
+    "slug": "graphs_of_sine_and_cosine", 
+    "kind": "Exercise", 
+    "name": "graphs_of_sine_and_cosine", 
+    "seconds_per_fast_problem": 12.0, 
+    "prerequisites": [
+      "trigonometry_2"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "inverse-trig-functions--arcsin", 
+      "inverse-trig-functions--arccos", 
+      "inverse-trig-functions--arctan", 
+      "example---calculator-to-evaluate-inverse-trig-function"
+    ], 
+    "v_position": -25, 
+    "path": "/math/trigonometry/basic-trigonometry/inverse_trig_functions/e/inverse_trig_functions/", 
+    "id": "inverse_trig_functions", 
+    "display_name": "Inverse trig functions", 
+    "title": "Inverse trig functions", 
+    "live": true, 
+    "description": "", 
+    "h_position": 52, 
+    "slug": "inverse_trig_functions", 
+    "kind": "Exercise", 
+    "name": "inverse_trig_functions", 
+    "seconds_per_fast_problem": 11.0, 
+    "prerequisites": [
+      "trigonometry_2"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -14, 
+    "path": "/math/trigonometry/less-basic-trigonometry/trig_iden_tutorial/e/trig_identities_1/", 
+    "id": "trig_identities_1", 
+    "display_name": "Trig identities 1", 
+    "title": "Trig identities 1", 
+    "live": false, 
+    "description": null, 
+    "h_position": 65, 
+    "slug": "trig_identities_1", 
+    "kind": "Exercise", 
+    "name": "trig_identities_1", 
+    "seconds_per_fast_problem": 12.0, 
+    "prerequisites": []
+  }, 
+  {
+    "related_video_readable_ids": [
+      "examples-using-pythagorean-identities-to-simplify-trigonometric--expressions", 
+      "trigonometry-identity-review-fun", 
+      "trigonometric-identities"
+    ], 
+    "v_position": -27, 
+    "path": "/math/trigonometry/less-basic-trigonometry/trig_iden_tutorial/e/pythagorean_identities/", 
+    "id": "pythagorean_identities", 
+    "display_name": "Pythagorean identities", 
+    "title": "Pythagorean identities", 
+    "live": true, 
+    "description": "Simplify expressions using Pythagorean trig identities\n", 
+    "h_position": 52, 
+    "slug": "pythagorean_identities", 
+    "kind": "Exercise", 
+    "name": "pythagorean_identities", 
+    "seconds_per_fast_problem": 7.0, 
+    "prerequisites": [
+      "trigonometry_2", 
+      "reciprocal_trig_funcs"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "cosine-addition-identity-example", 
+      "double-angle-formula-for-cosine-example-c", 
+      "trigonometry-identity-review-fun", 
+      "proof--sin-a-b------cos-a--sin-b-----sin-a--cos-b", 
+      "proof--cos-a-b-----cos-a--cos-b---sin-a--sin-b"
+    ], 
+    "v_position": -26, 
+    "path": "/math/trigonometry/less-basic-trigonometry/trig_iden_tutorial/e/trig_addition_identities/", 
+    "id": "trig_addition_identities", 
+    "display_name": "Addition and subtraction trig identities", 
+    "title": "Addition and subtraction trig identities", 
+    "live": true, 
+    "description": "Computing expressions using trig addition and subtraction identities\n", 
+    "h_position": 52, 
+    "slug": "trig_addition_identities", 
+    "kind": "Exercise", 
+    "name": "trig_addition_identities", 
+    "seconds_per_fast_problem": 46.0, 
+    "prerequisites": [
+      "trigonometry_2"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "introduction-to-conic-sections"
+    ], 
+    "v_position": 4, 
+    "path": "/math/trigonometry/conics_precalc/conic_section_intro/e/recognizing_conic_sections/", 
+    "id": "recognizing_conic_sections", 
+    "display_name": "Recognizing conic sections", 
+    "title": "Recognizing conic sections", 
+    "live": true, 
+    "description": "Determine if the graph of a conic section shows a circle, hyperbola, parabola, or ellipse.\n", 
+    "h_position": 46, 
+    "slug": "recognizing_conic_sections", 
+    "kind": "Exercise", 
+    "name": "recognizing_conic_sections", 
+    "seconds_per_fast_problem": 4.0, 
+    "prerequisites": [
+      "adding_and_subtracting_polynomials"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "radius-and-center-for-a-circle-equation-in-standard-form"
+    ], 
+    "v_position": 5, 
+    "path": "/math/trigonometry/conics_precalc/circles-tutorial-precalc/e/equation_of_a_circle_1/", 
+    "id": "equation_of_a_circle_1", 
+    "display_name": "Equation of a circle in factored form", 
+    "title": "Equation of a circle in factored form", 
+    "live": true, 
+    "description": "Find the center and radius of a circle given the equation in factored form.\n", 
+    "h_position": 47, 
+    "slug": "equation_of_a_circle_1", 
+    "kind": "Exercise", 
+    "name": "equation_of_a_circle_1", 
+    "seconds_per_fast_problem": 8.0, 
+    "prerequisites": [
+      "recognizing_conic_sections"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "completing-the-square-to-write-equation-in-standard-form-of-a-circle", 
+      "radius-and-center-for-a-circle-equation-in-standard-form", 
+      "conic-identification-3"
+    ], 
+    "v_position": 5, 
+    "path": "/math/trigonometry/conics_precalc/circles-tutorial-precalc/e/equation_of_a_circle_2/", 
+    "id": "equation_of_a_circle_2", 
+    "display_name": "Equation of a circle in non-factored form", 
+    "title": "Equation of a circle in non-factored form", 
+    "live": true, 
+    "description": "Find the center and radius of a circle given the equation in unfactored form.\n", 
+    "h_position": 48, 
+    "slug": "equation_of_a_circle_2", 
+    "kind": "Exercise", 
+    "name": "equation_of_a_circle_2", 
+    "seconds_per_fast_problem": 29.0, 
+    "prerequisites": [
+      "equation_of_a_circle_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "conic-sections--intro-to-ellipses"
+    ], 
+    "v_position": 4, 
+    "path": "/math/trigonometry/conics_precalc/ellipses-precalc/e/equation_of_an_ellipse/", 
+    "id": "equation_of_an_ellipse", 
+    "display_name": "Equation of an ellipse", 
+    "title": "Equation of an ellipse", 
+    "live": true, 
+    "description": "Find the center and major and minor radius of an ellipse given its equation.\n", 
+    "h_position": 48, 
+    "slug": "equation_of_an_ellipse", 
+    "kind": "Exercise", 
+    "name": "equation_of_an_ellipse", 
+    "seconds_per_fast_problem": 9.0, 
+    "prerequisites": [
+      "equation_of_a_circle_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "parabola-intuition-example-1", 
+      "shifting-and-scaling-parabolas"
+    ], 
+    "v_position": 3, 
+    "path": "/math/trigonometry/conics_precalc/parabolas_precalc/e/parabola_intuition_1/", 
+    "id": "parabola_intuition_1", 
+    "display_name": "Parabola intuition 1", 
+    "title": "Parabola intuition 1", 
+    "live": true, 
+    "description": "Make one parabola overlap with another by adjusting the leading coefficient and vertex coordinates.\n", 
+    "h_position": 47, 
+    "slug": "parabola_intuition_1", 
+    "kind": "Exercise", 
+    "name": "parabola_intuition_1", 
+    "seconds_per_fast_problem": 14.0, 
+    "prerequisites": [
+      "recognizing_conic_sections"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": 3, 
+    "path": "/math/trigonometry/conics_precalc/parabolas_precalc/e/parabola_intuition_2/", 
+    "id": "parabola_intuition_2", 
+    "display_name": "Parabola intuition 2", 
+    "title": "Parabola intuition 2", 
+    "live": true, 
+    "description": "Make one parabola overlap with another by adjusting the focus coordinates and directrix.", 
+    "h_position": 48, 
+    "slug": "parabola_intuition_2", 
+    "kind": "Exercise", 
+    "name": "parabola_intuition_2", 
+    "seconds_per_fast_problem": 35.0, 
+    "prerequisites": [
+      "parabola_intuition_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "conic-sections--intro-to-hyperbolas", 
+      "conic-sections--hyperbolas-2", 
+      "conic-sections--hyperbolas-3"
+    ], 
+    "v_position": 6, 
+    "path": "/math/trigonometry/conics_precalc/hyperbolas-precalc/e/equation_of_a_hyperbola/", 
+    "id": "equation_of_a_hyperbola", 
+    "display_name": "Equation of a hyperbola", 
+    "title": "Equation of a hyperbola", 
+    "live": true, 
+    "description": "Find the asymptotes of a hyperbola based on the equation.\n", 
+    "h_position": 48, 
+    "slug": "equation_of_a_hyperbola", 
+    "kind": "Exercise", 
+    "name": "equation_of_a_hyperbola", 
+    "seconds_per_fast_problem": 14.0, 
+    "prerequisites": [
+      "equation_of_a_circle_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "solving-systems-graphically"
+    ], 
+    "v_position": 11, 
+    "path": "/math/trigonometry/systems_eq_ineq/systems_tutorial_precalc/e/graphing_systems_of_equations/", 
+    "id": "graphing_systems_of_equations", 
+    "display_name": "Graphing systems of equations", 
+    "title": "Graphing systems of equations", 
+    "live": true, 
+    "description": "Graph a system of equations in slope-intercept or standard form\n", 
+    "h_position": 46, 
+    "slug": "graphing_systems_of_equations", 
+    "kind": "Exercise", 
+    "name": "graphing_systems_of_equations", 
+    "seconds_per_fast_problem": 47.0, 
+    "prerequisites": [
+      "graphical-solutions-to-systems"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "solving-systems-by-elimination", 
+      "solving-systems-by-elimination-2", 
+      "solving-systems-by-elimination-3", 
+      "solving-systems-of-equations-by-elimination", 
+      "super-yoga-plans--solving-systems-by-elimination", 
+      "king-s-cupcakes---solving-systems-by-elimination"
+    ], 
+    "v_position": 11, 
+    "path": "/math/trigonometry/systems_eq_ineq/systems_tutorial_precalc/e/systems_of_equations_with_elimination_0.5/", 
+    "id": "systems_of_equations_with_elimination_0.5", 
+    "display_name": "Systems of equations with simple elimination", 
+    "title": "Systems of equations with simple elimination", 
+    "live": true, 
+    "description": "Solve systems of equation with one-step elimination (e.g., x-values or y-values cancel each other out).\n", 
+    "h_position": 47, 
+    "slug": "systems_of_equations_with_elimination_0.5", 
+    "kind": "Exercise", 
+    "name": "systems_of_equations_with_elimination_0.5", 
+    "seconds_per_fast_problem": 43.0, 
+    "prerequisites": [
+      "graphing_systems_of_equations"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": 11, 
+    "path": "/math/trigonometry/systems_eq_ineq/systems_tutorial_precalc/e/systems_of_equations_with_elimination/", 
+    "id": "systems_of_equations_with_elimination", 
+    "display_name": "Systems of equations with elimination", 
+    "title": "Systems of equations with elimination", 
+    "live": true, 
+    "description": "Solving systems of equations with elimination.", 
+    "h_position": 48, 
+    "slug": "systems_of_equations_with_elimination", 
+    "kind": "Exercise", 
+    "name": "systems_of_equations_with_elimination", 
+    "seconds_per_fast_problem": 60.0, 
+    "prerequisites": [
+      "systems_of_equations_with_elimination_0.5"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "solving-linear-systems-by-substitution", 
+      "super-yoga-plans--solving-systems-by-substitution", 
+      "solving-systems-by-substitution-1", 
+      "solving-systems-by-substitution-2", 
+      "solving-systems-by-substitution-3"
+    ], 
+    "v_position": 12, 
+    "path": "/math/trigonometry/systems_eq_ineq/systems_tutorial_precalc/e/systems_of_equations_with_substitution/", 
+    "id": "systems_of_equations_with_substitution", 
+    "display_name": "Systems of equations with substitution", 
+    "title": "Systems of equations with substitution", 
+    "live": true, 
+    "description": "Solve systems of equations using substitution\n", 
+    "h_position": 47, 
+    "slug": "systems_of_equations_with_substitution", 
+    "kind": "Exercise", 
+    "name": "systems_of_equations_with_substitution", 
+    "seconds_per_fast_problem": 60.0, 
+    "prerequisites": [
+      "graphing_systems_of_equations"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "solving-linear-systems-by-substitution", 
+      "solving-systems-with-substitution", 
+      "super-yoga-plans--solving-systems-by-substitution", 
+      "solving-systems-of-equations-by-elimination", 
+      "addition-elimination-method-1", 
+      "addition-elimination-method-2", 
+      "addition-elimination-method-3", 
+      "addition-elimination-method-4", 
+      "solving-systems-by-elimination"
+    ], 
+    "v_position": 12, 
+    "path": "/math/trigonometry/systems_eq_ineq/systems_tutorial_precalc/e/systems_of_equations/", 
+    "id": "systems_of_equations", 
+    "display_name": "Systems of equations", 
+    "title": "Systems of equations", 
+    "live": true, 
+    "description": "Solve systems of equations with substitution and elimination.\n", 
+    "h_position": 49, 
+    "slug": "systems_of_equations", 
+    "kind": "Exercise", 
+    "name": "systems_of_equations", 
+    "seconds_per_fast_problem": 60.0, 
+    "prerequisites": [
+      "systems_of_equations_with_substitution", 
+      "systems_of_equations_with_elimination"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "using-a-system-of-equations-to-find-the-price-of-apples-and-oranges", 
+      "algebraic-word-problem"
+    ], 
+    "v_position": 12, 
+    "path": "/math/trigonometry/systems_eq_ineq/systems_tutorial_precalc/e/systems_of_equations_word_problems/", 
+    "id": "systems_of_equations_word_problems", 
+    "display_name": "Systems of equations word problems", 
+    "title": "Systems of equations word problems", 
+    "live": true, 
+    "description": "Word problems with systems of equations.", 
+    "h_position": 50, 
+    "slug": "systems_of_equations_word_problems", 
+    "kind": "Exercise", 
+    "name": "systems_of_equations_word_problems", 
+    "seconds_per_fast_problem": 60.0, 
+    "prerequisites": [
+      "systems_of_equations"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "practice-thinking-about-number-of-solutions-to-systems", 
+      "consistent-and-inconsistent-systems"
+    ], 
+    "v_position": 10, 
+    "path": "/math/trigonometry/systems_eq_ineq/systems_tutorial_precalc/e/solutions_to_systems_of_equations/", 
+    "id": "solutions_to_systems_of_equations", 
+    "display_name": "Solutions to systems of equations", 
+    "title": "Solutions to systems of equations", 
+    "live": true, 
+    "description": "Determine how many solutions exist to a given system of equations (one, zero, infinite).\n", 
+    "h_position": 47, 
+    "slug": "solutions_to_systems_of_equations", 
+    "kind": "Exercise", 
+    "name": "solutions_to_systems_of_equations", 
+    "seconds_per_fast_problem": 10.0, 
+    "prerequisites": [
+      "graphing_systems_of_equations"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "graphical-system-of-inequalities", 
+      "graphing-systems-of-inequalities-2", 
+      "u06-l3-t1-we3-graphing-systems-of-inequalities"
+    ], 
+    "v_position": 9, 
+    "path": "/math/trigonometry/systems_eq_ineq/systems_inequalities_precalc/e/graphing_systems_of_inequalities/", 
+    "id": "graphing_systems_of_inequalities", 
+    "display_name": "Graphing systems of inequalities", 
+    "title": "Graphing systems of inequalities", 
+    "live": true, 
+    "description": "Graph a system of linear inequalities.\n", 
+    "h_position": 48, 
+    "slug": "graphing_systems_of_inequalities", 
+    "kind": "Exercise", 
+    "name": "graphing_systems_of_inequalities", 
+    "seconds_per_fast_problem": 52.0, 
+    "prerequisites": [
+      "graphing_inequalities_2", 
+      "graphing_systems_of_equations"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "graphical-system-of-inequalities", 
+      "graphing-systems-of-inequalities-2", 
+      "u06-l3-t1-we3-graphing-systems-of-inequalities"
+    ], 
+    "v_position": 9, 
+    "path": "/math/trigonometry/systems_eq_ineq/systems_inequalities_precalc/e/graphing_systems_of_inequalities_2/", 
+    "id": "graphing_systems_of_inequalities_2", 
+    "display_name": "Graphing and solving systems of inequalities", 
+    "title": "Graphing and solving systems of inequalities", 
+    "live": true, 
+    "description": "Graph a system of inequalities, and determine whether ordered pairs are solutions.\n", 
+    "h_position": 49, 
+    "slug": "graphing_systems_of_inequalities_2", 
+    "kind": "Exercise", 
+    "name": "graphing_systems_of_inequalities_2", 
+    "seconds_per_fast_problem": 58.0, 
+    "prerequisites": [
+      "graphing_systems_of_inequalities"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "basic-probability", 
+      "probability-space", 
+      "simple-probability", 
+      "probability-1-module-examples", 
+      "events-and-outcomes-1"
+    ], 
+    "v_position": 0, 
+    "path": "/math/trigonometry/prob_comb/basic_prob_precalc/e/probability_1/", 
+    "id": "probability_1", 
+    "display_name": "Probability 1", 
+    "title": "Probability 1", 
+    "live": true, 
+    "description": "", 
+    "h_position": 30, 
+    "slug": "probability_1", 
+    "kind": "Exercise", 
+    "name": "probability_1", 
+    "seconds_per_fast_problem": 11.0, 
+    "prerequisites": [
+      "dice_probability"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "compound-probability-of-independent-events", 
+      "lebron-asks-about-the-chances-of-making-10-free-throws", 
+      "frequency-probability-and-unfair-coins", 
+      "independent-events-2", 
+      "independent-events-3", 
+      "lebron-asks-about-free-throws-versus-three-pointers"
+    ], 
+    "v_position": 0, 
+    "path": "/math/trigonometry/prob_comb/independent_events_precalc/e/independent_probability/", 
+    "id": "independent_probability", 
+    "display_name": "Independent probability", 
+    "title": "Independent probability", 
+    "live": true, 
+    "description": "", 
+    "h_position": 31, 
+    "slug": "independent_probability", 
+    "kind": "Exercise", 
+    "name": "independent_probability", 
+    "seconds_per_fast_problem": 12.0, 
+    "prerequisites": [
+      "probability_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "introduction-to-dependent-probability", 
+      "dependent-probability-example-1", 
+      "independent-events-1", 
+      "dependent-probability-example-2", 
+      "monty-hall-problem"
+    ], 
+    "v_position": 0, 
+    "path": "/math/trigonometry/prob_comb/dependent_events_precalc/e/dependent_probability/", 
+    "id": "dependent_probability", 
+    "display_name": "Dependent probability", 
+    "title": "Dependent probability", 
+    "live": true, 
+    "description": "", 
+    "h_position": 32, 
+    "slug": "dependent_probability", 
+    "kind": "Exercise", 
+    "name": "dependent_probability", 
+    "seconds_per_fast_problem": 25.0, 
+    "prerequisites": [
+      "independent_probability"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "permutations", 
+      "combinations"
+    ], 
+    "v_position": 0, 
+    "path": "/math/trigonometry/prob_comb/combinatorics_precalc/e/counting_2/", 
+    "id": "counting_2", 
+    "display_name": "Counting 2", 
+    "title": "Counting 2", 
+    "live": true, 
+    "description": "", 
+    "h_position": 28, 
+    "slug": "counting_2", 
+    "kind": "Exercise", 
+    "name": "counting_2", 
+    "seconds_per_fast_problem": 9.0, 
+    "prerequisites": [
+      "exponents_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "permutations", 
+      "permutations-and-combinations-1", 
+      "permutations-and-combinations-2"
+    ], 
+    "v_position": -1, 
+    "path": "/math/trigonometry/prob_comb/combinatorics_precalc/e/permutations_1/", 
+    "id": "permutations_1", 
+    "display_name": "Permutations", 
+    "title": "Permutations", 
+    "live": true, 
+    "description": "Introductory permutation problems.\n", 
+    "h_position": 30, 
+    "slug": "permutations_1", 
+    "kind": "Exercise", 
+    "name": "permutations_1", 
+    "seconds_per_fast_problem": 7.0, 
+    "prerequisites": [
+      "dice_probability"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "combinations", 
+      "permutations-and-combinations-3"
+    ], 
+    "v_position": -1, 
+    "path": "/math/trigonometry/prob_comb/combinatorics_precalc/e/combinations_1/", 
+    "id": "combinations_1", 
+    "display_name": "Combinations", 
+    "title": "Combinations", 
+    "live": true, 
+    "description": "Introductory combination problems\n", 
+    "h_position": 31, 
+    "slug": "combinations_1", 
+    "kind": "Exercise", 
+    "name": "combinations_1", 
+    "seconds_per_fast_problem": 13.0, 
+    "prerequisites": [
+      "permutations_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -1, 
+    "path": "/math/trigonometry/prob_comb/combinatorics_precalc/e/permutations_and_combinations_2/", 
+    "id": "permutations_and_combinations_2", 
+    "display_name": "Permutations and combinations", 
+    "title": "Permutations and combinations", 
+    "live": true, 
+    "description": "Permutations and Combinations with overcounting", 
+    "h_position": 32, 
+    "slug": "permutations_and_combinations_2", 
+    "kind": "Exercise", 
+    "name": "permutations_and_combinations_2", 
+    "seconds_per_fast_problem": 13.0, 
+    "prerequisites": [
+      "combinations_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "probability-of-dependent-events", 
+      "probability-of-dependent-events-2", 
+      "events-and-outcomes-3", 
+      "coin-flipping-example", 
+      "exactly-three-heads-in-five-flips", 
+      "getting-exactly-two-heads--combinatorics", 
+      "probability-and-combinations--part-2", 
+      "probability-using-combinations", 
+      "permutations-and-combinations-4", 
+      "mega-millions-jackpot-probability"
+    ], 
+    "v_position": -1, 
+    "path": "/math/trigonometry/prob_comb/prob_combinatorics_precalc/e/probability_with_perm_comb/", 
+    "id": "probability_with_perm_comb", 
+    "display_name": "Probability with permutations and combinations", 
+    "title": "Probability with permutations and combinations", 
+    "live": true, 
+    "description": "Probability questions using permutations and combinations of objects\n", 
+    "h_position": 33, 
+    "slug": "probability_with_perm_comb", 
+    "kind": "Exercise", 
+    "name": "probability_with_perm_comb", 
+    "seconds_per_fast_problem": 32.0, 
+    "prerequisites": [
+      "permutations_and_combinations_2"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "introduction-to-i-and-imaginary-numbers", 
+      "calculating-i-raised-to-arbitrary-exponents"
+    ], 
+    "v_position": -12, 
+    "path": "/math/trigonometry/imaginary_complex_precalc/i_precalc/e/imaginary_unit_powers/", 
+    "id": "imaginary_unit_powers", 
+    "display_name": "Imaginary unit powers", 
+    "title": "Imaginary unit powers", 
+    "live": true, 
+    "description": "Solve problems with base i (square root of -1) raised to a positive exponent\n", 
+    "h_position": 45, 
+    "slug": "imaginary_unit_powers", 
+    "kind": "Exercise", 
+    "name": "imaginary_unit_powers", 
+    "seconds_per_fast_problem": 6.0, 
+    "prerequisites": [
+      "equation_of_a_line"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "plotting-complex-numbers-on-the-complex-plane", 
+      "complex-numbers", 
+      "complex-numbers--part-1", 
+      "complex-numbers--part-2"
+    ], 
+    "v_position": -12, 
+    "path": "/math/trigonometry/imaginary_complex_precalc/complex_num_precalc/e/the_complex_plane/", 
+    "id": "the_complex_plane", 
+    "display_name": "The complex plane", 
+    "title": "The complex plane", 
+    "live": true, 
+    "description": "Plot complex numbers on the complex plane.\n", 
+    "h_position": 46, 
+    "slug": "the_complex_plane", 
+    "kind": "Exercise", 
+    "name": "the_complex_plane", 
+    "seconds_per_fast_problem": 6.0, 
+    "prerequisites": [
+      "imaginary_unit_powers"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "complex-number-polar-form-intuition-exercise"
+    ], 
+    "v_position": -11, 
+    "path": "/math/trigonometry/imaginary_complex_precalc/complex_num_precalc/e/complex_number_polar_form_intuition/", 
+    "id": "complex_number_polar_form_intuition", 
+    "display_name": "Complex number polar form intuition", 
+    "title": "Complex number polar form intuition", 
+    "live": true, 
+    "description": "Adjust the angle and radius to plot a complex number in polar form.\n", 
+    "h_position": 47, 
+    "slug": "complex_number_polar_form_intuition", 
+    "kind": "Exercise", 
+    "name": "complex_number_polar_form_intuition", 
+    "seconds_per_fast_problem": 8.0, 
+    "prerequisites": [
+      "the_complex_plane"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "complex-numbers--part-1", 
+      "adding-complex-numbers", 
+      "subtracting-complex-numbers"
+    ], 
+    "v_position": -12, 
+    "path": "/math/trigonometry/imaginary_complex_precalc/complex_num_precalc/e/adding_and_subtracting_complex_numbers/", 
+    "id": "adding_and_subtracting_complex_numbers", 
+    "display_name": "Adding and subtracting complex numbers", 
+    "title": "Adding and subtracting complex numbers", 
+    "live": true, 
+    "description": "Add or subtract complex numbers. Identify the real and imaginary parts.\n", 
+    "h_position": 48, 
+    "slug": "adding_and_subtracting_complex_numbers", 
+    "kind": "Exercise", 
+    "name": "adding_and_subtracting_complex_numbers", 
+    "seconds_per_fast_problem": 10.0, 
+    "prerequisites": [
+      "adding_and_subtracting_polynomials", 
+      "complex_plane_operations"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "multiplying-complex-numbers", 
+      "complex-numbers"
+    ], 
+    "v_position": -12, 
+    "path": "/math/trigonometry/imaginary_complex_precalc/complex_num_precalc/e/multiplying_complex_numbers/", 
+    "id": "multiplying_complex_numbers", 
+    "display_name": "Multiplying complex numbers", 
+    "title": "Multiplying complex numbers", 
+    "live": true, 
+    "description": "Multiply complex numbers. Identify the real and imaginary parts.\n", 
+    "h_position": 49, 
+    "slug": "multiplying_complex_numbers", 
+    "kind": "Exercise", 
+    "name": "multiplying_complex_numbers", 
+    "seconds_per_fast_problem": 20.0, 
+    "prerequisites": [
+      "multiplying_expressions_1", 
+      "adding_and_subtracting_complex_numbers"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "dividing-complex-numbers"
+    ], 
+    "v_position": -12, 
+    "path": "/math/trigonometry/imaginary_complex_precalc/complex_num_precalc/e/dividing_complex_numbers/", 
+    "id": "dividing_complex_numbers", 
+    "display_name": "Dividing complex numbers", 
+    "title": "Dividing complex numbers", 
+    "live": true, 
+    "description": "Divide complex numbers. Identify the real and imaginary parts.\n", 
+    "h_position": 50, 
+    "slug": "dividing_complex_numbers", 
+    "kind": "Exercise", 
+    "name": "dividing_complex_numbers", 
+    "seconds_per_fast_problem": 38.0, 
+    "prerequisites": [
+      "multiplying_complex_numbers"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "basic-complex-analysis", 
+      "complex-number-polar-form-intuition-exercise"
+    ], 
+    "v_position": -11, 
+    "path": "/math/trigonometry/imaginary_complex_precalc/complex_num_precalc/e/multiplying_and_dividing_complex_number_polar_forms/", 
+    "id": "multiplying_and_dividing_complex_number_polar_forms", 
+    "display_name": "Multiplying and dividing complex numbers in polar form", 
+    "title": "Multiplying and dividing complex numbers in polar form", 
+    "live": true, 
+    "description": "Multiply and divide complex numbers in polar form, and plot the answer by specifying the radius and angle.\n", 
+    "h_position": 51, 
+    "slug": "multiplying_and_dividing_complex_number_polar_forms", 
+    "kind": "Exercise", 
+    "name": "multiplying_and_dividing_complex_number_polar_forms", 
+    "seconds_per_fast_problem": 25.0, 
+    "prerequisites": [
+      "complex_number_polar_form_intuition", 
+      "dividing_complex_numbers"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "absolute-value-of-a-complex-number"
+    ], 
+    "v_position": -13, 
+    "path": "/math/trigonometry/imaginary_complex_precalc/complex_num_precalc/e/absolute_value_of_complex_numbers/", 
+    "id": "absolute_value_of_complex_numbers", 
+    "display_name": "Absolute value of complex numbers", 
+    "title": "Absolute value of complex numbers", 
+    "live": true, 
+    "description": "Find the absolute value of a complex number.\n", 
+    "h_position": 47, 
+    "slug": "absolute_value_of_complex_numbers", 
+    "kind": "Exercise", 
+    "name": "absolute_value_of_complex_numbers", 
+    "seconds_per_fast_problem": 12.0, 
+    "prerequisites": [
+      "the_complex_plane", 
+      "distance_formula"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "complex-number-polar-form-intuition-exercise"
+    ], 
+    "v_position": -11, 
+    "path": "/math/trigonometry/imaginary_complex_precalc/complex_analysis/e/complex_number_polar_form_intuition/", 
+    "id": "complex_number_polar_form_intuition", 
+    "display_name": "Complex number polar form intuition", 
+    "title": "Complex number polar form intuition", 
+    "live": true, 
+    "description": "Adjust the angle and radius to plot a complex number in polar form.\n", 
+    "h_position": 47, 
+    "slug": "complex_number_polar_form_intuition", 
+    "kind": "Exercise", 
+    "name": "complex_number_polar_form_intuition", 
+    "seconds_per_fast_problem": 8.0, 
+    "prerequisites": [
+      "the_complex_plane"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "basic-complex-analysis", 
+      "complex-number-polar-form-intuition-exercise"
+    ], 
+    "v_position": -11, 
+    "path": "/math/trigonometry/imaginary_complex_precalc/complex_analysis/e/multiplying_and_dividing_complex_number_polar_forms/", 
+    "id": "multiplying_and_dividing_complex_number_polar_forms", 
+    "display_name": "Multiplying and dividing complex numbers in polar form", 
+    "title": "Multiplying and dividing complex numbers in polar form", 
+    "live": true, 
+    "description": "Multiply and divide complex numbers in polar form, and plot the answer by specifying the radius and angle.\n", 
+    "h_position": 51, 
+    "slug": "multiplying_and_dividing_complex_number_polar_forms", 
+    "kind": "Exercise", 
+    "name": "multiplying_and_dividing_complex_number_polar_forms", 
+    "seconds_per_fast_problem": 25.0, 
+    "prerequisites": [
+      "complex_number_polar_form_intuition", 
+      "dividing_complex_numbers"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [], 
+    "v_position": -11, 
+    "path": "/math/trigonometry/imaginary_complex_precalc/complex_analysis/e/powers_of_complex_numbers_1/", 
+    "id": "powers_of_complex_numbers_1", 
+    "display_name": "Powers of complex numbers", 
+    "title": "Powers of complex numbers", 
+    "live": true, 
+    "description": "Use Euler's formula to determine the value of a complex number raised to an nth power.", 
+    "h_position": 53, 
+    "slug": "powers_of_complex_numbers_1", 
+    "kind": "Exercise", 
+    "name": "powers_of_complex_numbers_1", 
+    "seconds_per_fast_problem": 19.0, 
+    "prerequisites": [
+      "multiplying_and_dividing_complex_number_polar_forms"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "limit-example-1"
+    ], 
+    "v_position": -25, 
+    "path": "/math/trigonometry/limit_topic_precalc/limits_precalc/e/limits_1/", 
+    "id": "limits_1", 
+    "display_name": "Limits 1", 
+    "title": "Limits 1", 
+    "live": true, 
+    "description": "", 
+    "h_position": 56, 
+    "slug": "limits_1", 
+    "kind": "Exercise", 
+    "name": "limits_1", 
+    "seconds_per_fast_problem": 9.0, 
+    "prerequisites": [
+      "quadratic_equation", 
+      "slope-of-secant-lines"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "limits-at-positive-and-negative-infinity", 
+      "more-limits-at-infinity", 
+      "limits-with-two-horizontal-asymptotes", 
+      "limits-and-infinity"
+    ], 
+    "v_position": -25, 
+    "path": "/math/trigonometry/limit_topic_precalc/limits_precalc/e/limits_2/", 
+    "id": "limits_2", 
+    "display_name": "Limits 2", 
+    "title": "Limits 2", 
+    "live": true, 
+    "description": "", 
+    "h_position": 57, 
+    "slug": "limits_2", 
+    "kind": "Exercise", 
+    "name": "limits_2", 
+    "seconds_per_fast_problem": 8.0, 
+    "prerequisites": [
+      "limits_1"
+    ]
+  }
+]

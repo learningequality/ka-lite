@@ -55,8 +55,8 @@ var KMapEditor = {
     setZoom: function(zoom) {
         this.zoomLevel = Math.min(Math.max(zoom, this.ZOOM_TOPICS), this.ZOOM_EXERCISES);
         if (this.zoomLevel === this.ZOOM_EXERCISES) {
-            this.X_SPACING = 74;
-            this.Y_SPACING = 94;
+            this.X_SPACING = 65;
+            this.Y_SPACING = 105;
             this.ICON_SIZE = 26;
             this.LABEL_WIDTH = 60;
         } else if (this.zoomLevel === this.ZOOM_HYBRID) {
@@ -70,13 +70,13 @@ var KMapEditor = {
             this.ICON_SIZE = 40;
             this.LABEL_WIDTH = 80;
         }
-        this.IMG_LIVE = "/images/node-not-started-" + this.ICON_SIZE + ".png";
-        this.IMG_DEV = "/images/node-not-started-" + this.ICON_SIZE + "-faded.png";
-        this.IMG_SELECTED = "/images/node-complete-" + this.ICON_SIZE + ".png";
-        this.IMG_SELECTED_DEV = "/images/node-complete-" + this.ICON_SIZE + "-faded.png";
-        this.IMG_NOT_STARTED = "/images/node-not-started-" + this.ICON_SIZE + ".png";
-        this.IMG_PARTIAL = "/images/node-partial-" + this.ICON_SIZE + ".png";
-        this.IMG_COMPLETE = "/images/node-complete-" + this.ICON_SIZE + ".png";
+        this.IMG_LIVE = "/static/images/node-not-started-" + this.ICON_SIZE + ".png";
+        this.IMG_DEV = "/static/images/node-not-started-" + this.ICON_SIZE + "-faded.png";
+        this.IMG_SELECTED = "/static/images/node-complete-" + this.ICON_SIZE + ".png";
+        this.IMG_SELECTED_DEV = "/static/images/node-complete-" + this.ICON_SIZE + "-faded.png";
+        this.IMG_NOT_STARTED = "/static/images/node-not-started-" + this.ICON_SIZE + ".png";
+        this.IMG_PARTIAL = "/static/images/node-partial-" + this.ICON_SIZE + ".png";
+        this.IMG_COMPLETE = "/static/images/node-complete-" + this.ICON_SIZE + ".png";
     },
 
     createCanvas: function() {
@@ -133,7 +133,7 @@ var KMapEditor = {
 
                 $("<img>")
                     .attr({
-                        src: topic.icon_url
+                        src: "/static" + topic.icon_url
                     })
                     .appendTo(newTopic);
 
@@ -231,22 +231,83 @@ $(document).ready(function() {
         vars[key] = value;
     });
 
-    if (vars["topic"]) {
-        $.getJSON("/static/data/topicdata/" + vars["topic"] + ".json", function(exerciseLayout) {
-            console.log(exerciseLayout);
-            var exercise_ids = $.map(exerciseLayout, function(exercise) { return exercise.name });
-            doRequest("/api/get_exercise_logs", exercise_ids).success(function(data) {
-                var exercisesCompleted = {};
-                $.each(data, function(ind, status) {
-                    exercisesCompleted[status.exercise_id] = status.complete ? "complete" : "partial";
-                });
-                KMapEditor.init(exerciseLayout, [], exercisesCompleted, 8);
-            });
-        });
-    } else {
+    if (!vars["topic"]) {
+        // Top level of the topic tree
         $(".topic-button").hide();
-        $.getJSON("/static/data/maplayout_data.json", function(defaultMapLayout) {
-            KMapEditor.init([], defaultMapLayout, {}, 6);
-        });
+        $.getJSON("/static/data/maplayout_data.json")
+            .success(function(defaultMapLayout) {
+                KMapEditor.init([], defaultMapLayout, {}, 6);
+            });
+    } else {
+        // Second level of the topic tree
+        $.getJSON("/static/data/topicdata/" + vars["topic"] + ".json")
+            .success(function(exerciseLayout) {
+
+                exerciseLayout = collapse_layout(exerciseLayout);
+
+                var exercise_ids = $.map(exerciseLayout, function(exercise) { return exercise.name });
+                doRequest("/api/get_exercise_logs", exercise_ids)
+                    .success(function(data) {
+                        var exercisesCompleted = {};
+                        $.each(data, function(ind, status) {
+                            exercisesCompleted[status.exercise_id] = status.complete ? "complete" : "partial";
+                        });
+                        KMapEditor.init(exerciseLayout, [], exercisesCompleted, 8);
+                    })
+                    .fail(function (resp) {
+                        communicate_api_failure(resp, "id_student_logs");
+                        KMapEditor.init(exerciseLayout, [], [], 8);
+                    });
+            });
     }
 });
+
+/**
+* Many knowledge map topic pages have huge gaping holes in the middle (sometimes pushing stuff
+* off the edge of the screen, as with the probability topic). Pull them all in so they're visible.
+*/
+function collapse_layout(exerciseLayout) {
+    var minX = Math.min.apply(Math, _.pluck(exerciseLayout, "v_position"));
+    var minY = Math.min.apply(Math, _.pluck(exerciseLayout, "h_position"));
+    var maxX = Math.max.apply(Math, _.pluck(exerciseLayout, "v_position"));
+    var maxY = Math.max.apply(Math, _.pluck(exerciseLayout, "h_position"));
+
+    // keep track of which vertical and horizontal positions are filled
+    var filledX = Array(maxX - minX);
+    var filledY = Array(maxY - minY);
+
+    _.each(exerciseLayout, function(ex) {
+        filledX[ex.v_position - minX] = true;
+        filledY[ex.h_position - minY] = true;
+    });
+
+    // calculate how much each row/column need to be shifted to fill in the gaps
+    var shiftX = Array(maxX - minX);
+    var shift = 0;
+
+    for (var i = 0; i < filledX.length; i++) {
+        if (!filledX[i]) {
+            shift--;
+        }
+        shiftX[i] = shift;
+    }
+
+    var shiftY = Array(maxY - minY);
+    shift = 0;
+
+    for (var i = 0; i < filledY.length; i++) {
+        if (!filledY[i]) {
+            shift--;
+        }
+        shiftY[i] = shift;
+    }
+
+    // shift each exercise to fill in the gaps
+    _.each(exerciseLayout, function(ex) {
+        ex.v_position += shiftX[ex.v_position - minX];
+        ex.h_position += shiftY[ex.h_position - minY];
+    });
+
+    return exerciseLayout;
+
+}
