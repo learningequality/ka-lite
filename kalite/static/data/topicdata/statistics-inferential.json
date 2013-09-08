@@ -6,7 +6,7 @@
       "ck12-org--more-empirical-rule-and-z-score-practice", 
       "ck12-org-normal-distribution-problems--z-score"
     ], 
-    "v_position": -21, 
+    "v_position": -23, 
     "path": "/math/probability/statistics-inferential/normal_distribution/e/empirical_rule/", 
     "id": "empirical_rule", 
     "display_name": "Empirical rule", 
@@ -17,7 +17,7 @@
     "slug": "empirical_rule", 
     "kind": "Exercise", 
     "name": "empirical_rule", 
-    "seconds_per_fast_problem": 27.0, 
+    "seconds_per_fast_problem": 28.0, 
     "prerequisites": [
       "exploring_standard_deviation_1", 
       "standard_deviation"
@@ -28,7 +28,7 @@
       "ck12-org-normal-distribution-problems--z-score", 
       "ck12-org--more-empirical-rule-and-z-score-practice"
     ], 
-    "v_position": -22, 
+    "v_position": -24, 
     "path": "/math/probability/statistics-inferential/normal_distribution/e/z_scores_1/", 
     "id": "z_scores_1", 
     "display_name": "Z scores 1", 
@@ -51,7 +51,7 @@
       "ck12-org-normal-distribution-problems--z-score", 
       "ck12-org-normal-distribution-problems--empirical-rule"
     ], 
-    "v_position": -22, 
+    "v_position": -24, 
     "path": "/math/probability/statistics-inferential/normal_distribution/e/z_scores_2/", 
     "id": "z_scores_2", 
     "display_name": "Z scores 2", 
@@ -62,7 +62,7 @@
     "slug": "z_scores_2", 
     "kind": "Exercise", 
     "name": "z_scores_2", 
-    "seconds_per_fast_problem": 21.0, 
+    "seconds_per_fast_problem": 23.0, 
     "prerequisites": [
       "z_scores_1"
     ]
@@ -72,7 +72,7 @@
       "ck12-org-normal-distribution-problems--z-score", 
       "ck12-org--more-empirical-rule-and-z-score-practice"
     ], 
-    "v_position": -22, 
+    "v_position": -24, 
     "path": "/math/probability/statistics-inferential/normal_distribution/e/z_scores_3/", 
     "id": "z_scores_3", 
     "display_name": "Z scores 3", 
@@ -83,7 +83,7 @@
     "slug": "z_scores_3", 
     "kind": "Exercise", 
     "name": "z_scores_3", 
-    "seconds_per_fast_problem": 47.5, 
+    "seconds_per_fast_problem": 51.0, 
     "prerequisites": [
       "z_scores_2"
     ]
