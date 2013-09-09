@@ -94,13 +94,14 @@ class Key(object):
                     pass
                 return False
 
-    def sign_large_file(self, filename, chunk_size=int(1E5)):
+    def _hash_large_file(self, filename, chunk_size=None):
         """
-        Sign a large file by taking in bite-sized chunks,
-        signing each chunk, then appending each signature
-        with newlines.
+        Process a file into a single hash, by taking
+        bite-sized chunks.
+        Useful for signing the full file.
         """
         hasher = hashlib.sha256()
+        chunk_size = chunk_size or hasher.block_size * 1000  #(64,000 on my machine)
 
         with open(filename, "rb") as fp:
             while True:
@@ -112,14 +113,21 @@ class Key(object):
                 hasher.update(bytes)
         return hasher.hexdigest()
 
-    def verify_large_file(self, filename, signature, chunk_size=int(1E5)):
+    def sign_large_file(self, filename, chunk_size=None):
+        """
+        Sign a large file by taking in bite-sized chunks,
+        signing each chunk, then appending each signature
+        with newlines.
+        """
+        return self.sign(self._hash_large_file(filename, chunk_size))
+
+    def verify_large_file(self, filename, signature, chunk_size=None):
         """
         Verify a large file by taking in bite-sized chunks,
         signing each chunk, then comparing to a set of signatures,
         either as a list or separated by newlines.
         """
-        actual_signature = self.sign_large_file(filename, chunk_size=chunk_size)
-        return signature == actual_signature
+        return self.verify(self._hash_large_file(filename, chunk_size), signature)
 
     def get_public_key_string(self):
         
