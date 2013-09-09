@@ -56,18 +56,21 @@ def zone_form(request, zone_id, org_id=None):
 def zone_management(request, zone_id, org_id=None):
     org = get_object_or_None(Organization, pk=org_id) if org_id else None
     zone = get_object_or_404(Zone, pk=zone_id)# if zone_id != "new" else None
+    own_device = Device.get_own_device()
 
     # Accumulate device data
     device_data = dict()
     for device in Device.objects.filter(devicezone__zone=zone):
 
-        sync_sessions = SyncSession.objects.filter(client_device=device)
         user_activity = UserLogSummary.objects.filter(device=device)
-
+        sync_sessions = SyncSession.objects.filter(client_device=device)
+        if not settings.CENTRAL_SERVER and device.id != own_device.id:
+            sync_sessions = None
+        
         device_data[device.id] = {
             "name": device.name or device.id,
-            "num_times_synced": sync_sessions.count(),
-            "last_time_synced": sync_sessions.aggregate(Max("timestamp"))["timestamp__max"],
+            "num_times_synced": sync_sessions.count() if sync_sessions is not None else None,
+            "last_time_synced": sync_sessions.aggregate(Max("timestamp"))["timestamp__max"] if sync_sessions is not None else None,
             "last_time_used":   None if user_activity.count() == 0 else user_activity.order_by("-end_datetime")[0],
             "counter": device.get_counter(),
         }
