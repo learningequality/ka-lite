@@ -131,7 +131,7 @@ class FacilityUser(SyncedModel):
             CachedPassword.invalidate_password_cache(user=self)
 
         else:
-            n_iters = Settings.get("password_hash_iterations", 2000 if self.is_teacher else 1000)
+            n_iters = PASSWORD_ITERATIONS_TEACHER_SYNCED if self.is_teacher else PASSWORD_ITERATIONS_STUDENT_SYNCED
             self.password = crypt(raw_password, iterations=n_iters)
 
             CachedPassword.set_cached_password(self, raw_password)

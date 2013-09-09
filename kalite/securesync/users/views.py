@@ -25,7 +25,6 @@ from settings import LOG as logging
 from shared.decorators import require_admin, central_server_only, distributed_server_only, facility_required, facility_from_request
 from shared.jobs import force_job
 from utils.internet import set_query_params
-from utils.jobs import force_job
 
 
 def get_facility_from_request(request):
