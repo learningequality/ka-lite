@@ -4,14 +4,14 @@
       "similar-triangle-basics", 
       "similarity-postulates"
     ], 
-    "v_position": -33, 
+    "v_position": 36, 
     "path": "/math/geometry/similarity/triangle_similarlity/e/similar_triangles_1/", 
     "id": "similar_triangles_1", 
     "display_name": "Similar triangles 1", 
     "title": "Similar triangles 1", 
     "live": true, 
     "description": "", 
-    "h_position": 36, 
+    "h_position": -33, 
     "slug": "similar_triangles_1", 
     "kind": "Exercise", 
     "name": "similar_triangles_1", 
@@ -26,20 +26,20 @@
       "similar-triangle-basics", 
       "similarity-postulates"
     ], 
-    "v_position": -33, 
+    "v_position": 37, 
     "path": "/math/geometry/similarity/triangle_similarlity/e/similar_triangles_2/", 
     "id": "similar_triangles_2", 
     "display_name": "Similar triangles 2", 
     "title": "Similar triangles 2", 
     "live": true, 
     "description": "", 
-    "h_position": 37, 
+    "h_position": -33, 
     "slug": "similar_triangles_2", 
     "kind": "Exercise", 
     "name": "similar_triangles_2", 
-    "seconds_per_fast_problem": 9.0, 
+    "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
-      "similar_triangles_1"
+      "proportions_1"
     ]
   }, 
   {
@@ -47,41 +47,37 @@
       "similarity-example-problems", 
       "similarity-example-where-same-side-plays-different-roles"
     ], 
-    "v_position": -33, 
+    "v_position": 38, 
     "path": "/math/geometry/similarity/triangle_similarlity/e/solving_similar_triangles_1/", 
     "id": "solving_similar_triangles_1", 
     "display_name": "Solving similar triangles 1", 
     "title": "Solving similar triangles 1", 
     "live": true, 
     "description": "", 
-    "h_position": 38, 
+    "h_position": -33, 
     "slug": "solving_similar_triangles_1", 
     "kind": "Exercise", 
     "name": "solving_similar_triangles_1", 
-    "seconds_per_fast_problem": 13.5, 
+    "seconds_per_fast_problem": 15.0, 
     "prerequisites": [
-      "similar_triangles_2"
+      "similar_triangles_2", 
+      "similar_triangles_1"
     ]
   }, 
   {
-    "related_video_readable_ids": [
-      "similarity-example-problems", 
-      "similarity-example-where-same-side-plays-different-roles"
-    ], 
-    "v_position": -33, 
+    "related_video_readable_ids": [], 
+    "v_position": 39, 
     "path": "/math/geometry/similarity/triangle_similarlity/e/solving_similar_triangles_2/", 
     "id": "solving_similar_triangles_2", 
     "display_name": "Solving similar triangles 2", 
     "title": "Solving similar triangles 2", 
-    "live": true, 
+    "live": false, 
     "description": "", 
-    "h_position": 39, 
+    "h_position": -32, 
     "slug": "solving_similar_triangles_2", 
     "kind": "Exercise", 
     "name": "solving_similar_triangles_2", 
     "seconds_per_fast_problem": 22.0, 
-    "prerequisites": [
-      "solving_similar_triangles_1"
-    ]
+    "prerequisites": []
   }
 ]

@@ -201,8 +201,10 @@ def exercise_handler(request, exercise):
 def exercise_dashboard(request):
     # Just grab the first path, whatever it is
     paths = dict((key, val["paths"][0]) for key, val in topicdata.NODE_CACHE["Exercise"].items())
+    slug = request.GET.get("topic")
+
     context = {
-        "title": "Knowledge map",
+        "title": topicdata.NODE_CACHE["Topic"][slug]["title"] if slug else _("Your Knowledge Map"),
         "exercise_paths": json.dumps(paths),
     }
     return context
