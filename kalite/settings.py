@@ -7,6 +7,9 @@ import tempfile
 import uuid
 import version  # in danger of a circular import.  NEVER add settings stuff there--should all be hard-coded.
 
+##############################
+# Basic setup (no options)
+##############################
 
 # suppress warnings here.
 try:
@@ -21,26 +24,24 @@ try:
 except ImportError:
     local_settings = {}
 
+# Add additional mimetypes to avoid errors/warnings
+import mimetypes
+mimetypes.add_type("font/opentype", ".otf", True)
+
+
+# Used everywhere, so ... set it up top.
 DEBUG          = getattr(local_settings, "DEBUG", False)
-TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
 
-# Set logging level based on the value of DEBUG (evaluates to 0 if False, 1 if True)
-logging.basicConfig()
-LOG = getattr(local_settings, "LOG", logging.getLogger("kalite"))
-LOG.setLevel(logging.DEBUG*DEBUG + logging.INFO*(1-DEBUG))
 
-INTERNAL_IPS   = getattr(local_settings, "INTERNAL_IPS", ("127.0.0.1",))
+##############################
+# Basic App Settings 
+##############################
 
 CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
 
-# TODO(jamalex): currently this only has an effect on Linux/OSX
 PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 8008 if not CENTRAL_SERVER else 8001)
 CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 50 if not DEBUG else 5)
 
-AUTO_LOAD_TEST = getattr(local_settings, "AUTO_LOAD_TEST", False)
-assert not AUTO_LOAD_TEST or not CENTRAL_SERVER, "AUTO_LOAD_TEST only on local server"
-
-# info about the central server(s)
 # Note: this MUST be hard-coded for backwards-compatibility reasons.
 ROOT_UUID_NAMESPACE = uuid.UUID("a8f052c7-8790-5bed-ab15-fe2d3b1ede41")  # print uuid.uuid5(uuid.NAMESPACE_URL, "https://kalite.adhocsync.com/")
 SECURESYNC_PROTOCOL   = getattr(local_settings, "SECURESYNC_PROTOCOL",   "https")
@@ -57,10 +58,6 @@ CENTRAL_CONTACT_EMAIL = getattr(local_settings, "CENTRAL_CONTACT_EMAIL", "info@l
 CENTRAL_ADMIN_EMAIL   = getattr(local_settings, "CENTRAL_ADMIN_EMAIL",   "errors@learningequality.org")#"kalite@%s"%CENTRAL_SERVER_DOMAIN
 
 CENTRAL_SUBSCRIBE_URL    = getattr(local_settings, "CENTRAL_SUBSCRIBE_URL",    "http://adhocsync.us6.list-manage.com/subscribe/post?u=023b9af05922dfc7f47a4fffb&amp;id=97a379de16")
-
-ADMINS         = getattr(local_settings, "ADMINS", ( ("KA Lite Team", CENTRAL_ADMIN_EMAIL), ) )
-
-MANAGERS       = getattr(local_settings, "MANAGERS", ADMINS)
 
 PROJECT_PATH   = os.path.realpath(getattr(local_settings, "PROJECT_PATH", os.path.dirname(os.path.realpath(__file__)))) + "/"
 
@@ -83,6 +80,17 @@ SUBTITLES_DATA_ROOT = os.path.realpath(getattr(local_settings, "SUBTITLES_DATA_R
 
 CONTENT_ROOT   = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", PROJECT_PATH + "/../content/")) + "/"
 CONTENT_URL    = getattr(local_settings, "CONTENT_URL", "/content/")
+
+
+##############################
+# Basic Django settings 
+##############################
+
+INTERNAL_IPS   = getattr(local_settings, "INTERNAL_IPS", ("127.0.0.1",))
+
+ADMINS         = getattr(local_settings, "ADMINS", ( ("KA Lite Team", CENTRAL_ADMIN_EMAIL), ) )
+
+MANAGERS       = getattr(local_settings, "MANAGERS", ADMINS)
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -140,8 +148,6 @@ MIDDLEWARE_CLASSES = (
     "django.middleware.csrf.CsrfViewMiddleware",
 ) + MIDDLEWARE_CLASSES  # append local_settings middleware, in case of dependencies
 
-ROOT_URLCONF = "kalite.urls"
-
 INSTALLED_APPS = getattr(local_settings, 'INSTALLED_APPS', tuple())
 INSTALLED_APPS = (
     "django.contrib.auth",
@@ -168,10 +174,6 @@ INSTALLED_APPS = (
 if DEBUG or CENTRAL_SERVER:
     INSTALLED_APPS += ("django_snippets",)   # used in contact form and (debug) profiling middleware
 
-if DEBUG:
-    # add ?prof to URL, to see performance stats
-    MIDDLEWARE_CLASSES += ('django_snippets.profiling_middleware.ProfileMiddleware',)
-
 if CENTRAL_SERVER:
     ROOT_URLCONF = "central.urls"
     ACCOUNT_ACTIVATION_DAYS = getattr(local_settings, "ACCOUNT_ACTIVATION_DAYS", 7)
@@ -183,18 +185,8 @@ if CENTRAL_SERVER:
     LANGUAGE_COOKIE_NAME    = "django_language_central"
     SESSION_COOKIE_NAME     = "sessionid_central"
 
-    # Used for accessing the KA API.
-    #   By default, things won't work--local_settings needs to specify good values.
-    #   We do this so that we have control over our own key/secret (secretly, of course!)
-    KHAN_API_CONSUMER_KEY = getattr(local_settings, "KHAN_API_CONSUMER_KEY", "")
-    KHAN_API_CONSUMER_SECRET = getattr(local_settings, "KHAN_API_CONSUMER_SECRET", "")
-
 else:
     ROOT_URLCONF = "main.urls"
-    # Include optionally installed apps
-    if os.path.exists(PROJECT_PATH + "/tests/loadtesting/"):
-        INSTALLED_APPS += ("tests.loadtesting",)
-
     MIDDLEWARE_CLASSES += (
         "securesync.middleware.DBCheck",
         "securesync.middleware.AuthFlags",
@@ -202,21 +194,40 @@ else:
     )
     TEMPLATE_CONTEXT_PROCESSORS += ("main.custom_context_processors.languages",)
 
-# None means, use full hashing locally--turn off the password cache
-PASSWORD_ITERATIONS_TEACHER = getattr(local_settings, "PASSWORD_ITERATIONS_TEACHER", None)
-PASSWORD_ITERATIONS_STUDENT = getattr(local_settings, "PASSWORD_ITERATIONS_STUDENT", None)
+
+########################
+# Syncing and synced data
+########################
+
+CRONSERVER_FREQUENCY = getattr(local_settings, "CRONSERVER_FREQUENCY", 600) # 10 mins (in seconds)
+
+# Here, None === no limit
+SYNC_SESSIONS_MAX_RECORDS = getattr(local_settings, "SYNC_SESSIONS_MAX_RECORDS", None if CENTRAL_SERVER else 10)
 
 # Used for user logs.  By default, completely off.
 #  Note: None means infinite (just like caching)
 USER_LOG_MAX_RECORDS_PER_USER = getattr(local_settings, "USER_LOG_MAX_RECORDS_PER_USER", 0)
 USER_LOG_SUMMARY_FREQUENCY = getattr(local_settings, "USER_LOG_SUMMARY_FREQUENCY", (1,"months"))
 
+
+########################
+# Security
+########################
+
+# None means, use full hashing locally--turn off the password cache
+PASSWORD_ITERATIONS_TEACHER = getattr(local_settings, "PASSWORD_ITERATIONS_TEACHER", None)
+PASSWORD_ITERATIONS_STUDENT = getattr(local_settings, "PASSWORD_ITERATIONS_STUDENT", None)
+
+
+########################
+# Storage and caching
+########################
+
 # Sessions use the default cache, and we want a local memory cache for that.
 # Separate session caching from file caching.
 SESSION_ENGINE = getattr(local_settings, "SESSION_ENGINE", 'django.contrib.sessions.backends.cached_db')
 
 MESSAGE_STORAGE = 'utils.django_utils.NoDuplicateMessagesSessionStorage'
-
 
 CACHES = {
     "default": {
@@ -249,22 +260,33 @@ if CACHE_TIME != 0:  # None can mean infinite caching to some functions
     KEY_PREFIX = version.VERSION
 
 
-CRONSERVER_FREQUENCY = getattr(local_settings, "CRONSERVER_FREQUENCY", 600) # 10 mins (in seconds)
+########################
+# Features
+########################
 
-# Here, None === no limit
-SYNC_SESSIONS_MAX_RECORDS = getattr(local_settings, "SYNC_SESSIONS_MAX_RECORDS", None if CENTRAL_SERVER else 10)
+if CENTRAL_SERVER:
+    # Used for accessing the KA API.
+    #   By default, things won't work--local_settings needs to specify good values.
+    #   We do this so that we have control over our own key/secret (secretly, of course!)
+    KHAN_API_CONSUMER_KEY = getattr(local_settings, "KHAN_API_CONSUMER_KEY", "")
+    KHAN_API_CONSUMER_SECRET = getattr(local_settings, "KHAN_API_CONSUMER_SECRET", "")
 
-# enable this to use a background mplayer instance instead of playing the video in the browser, on loopback connections
-# TODO(jamalex): this will currently only work when caching is disabled, as the conditional logic is in the Django template
-USE_MPLAYER = getattr(local_settings, "USE_MPLAYER", False) if CACHE_TIME == 0 else False
+else:
+    # enable this to use a background mplayer instance instead of playing the video in the browser, on loopback connections
+    # TODO(jamalex): this will currently only work when caching is disabled, as the conditional logic is in the Django template
+    USE_MPLAYER = getattr(local_settings, "USE_MPLAYER", False) if CACHE_TIME == 0 else False
 
-TEST_RUNNER = 'kalite.shared.testing.testrunner.KALiteTestRunner'
 
-FAST_TESTS_ONLY = getattr(local_settings, "FAST_TESTS_ONLY", False)
+########################
+# Debugging and testing
+########################
 
-# Add additional mimetypes to avoid errors/warnings
-import mimetypes
-mimetypes.add_type("font/opentype", ".otf", True)
+# Set logging level based on the value of DEBUG (evaluates to 0 if False, 1 if True)
+logging.basicConfig()
+LOG = getattr(local_settings, "LOG", logging.getLogger("kalite"))
+LOG.setLevel(logging.DEBUG*DEBUG + logging.INFO*(1-DEBUG))
+
+TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
 
 # Django debug_toolbar config
 if getattr(local_settings, "USE_DEBUG_TOOLBAR", False):
@@ -287,7 +309,22 @@ if getattr(local_settings, "USE_DEBUG_TOOLBAR", False):
         'ENABLE_STACKTRACES' : True,
     }
 
-#####
+if DEBUG:
+    # add ?prof to URL, to see performance stats
+    MIDDLEWARE_CLASSES += ('django_snippets.profiling_middleware.ProfileMiddleware',)
+
+if not CENTRAL_SERVER and os.path.exists(PROJECT_PATH + "/tests/loadtesting/"):
+        INSTALLED_APPS += ("tests.loadtesting",)
+
+TEST_RUNNER = 'kalite.shared.testing.testrunner.KALiteTestRunner'
+
+FAST_TESTS_ONLY = getattr(local_settings, "FAST_TESTS_ONLY", False)
+
+AUTO_LOAD_TEST = getattr(local_settings, "AUTO_LOAD_TEST", False)
+assert not AUTO_LOAD_TEST or not CENTRAL_SERVER, "AUTO_LOAD_TEST only on local server"
+
+
+########################
 # IMPORTANT: Do not add new settings below this line
 # everything that follows is overriding default settings, depending on CONFIG_PACKAGE
 
