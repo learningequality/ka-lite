@@ -237,7 +237,7 @@ def login(request, facility):
             user = form.get_user()
 
             try:
-                UserLog.begin_user_activity(user, activity_type="login")  # Success! Log the event (ignoring validation failures)
+                UserLog.begin_user_activity(user, activity_type="login", language=request.language)  # Success! Log the event (ignoring validation failures)
             except ValidationError as e:
                 logging.debug("Failed to begin_user_activity upon login: %s" % e)
             request.session["facility_user"] = user
