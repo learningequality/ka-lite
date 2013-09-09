@@ -286,3 +286,21 @@ if getattr(local_settings, "USE_DEBUG_TOOLBAR", False):
         'HIDE_DJANGO_SQL': False,
         'ENABLE_STACKTRACES' : True,
     }
+
+#####
+# IMPORTANT: Do not add new settings below this line
+# everything that follows is overriding default settings, depending on CONFIG_PACKAGE
+
+# config_package (None|RPi) alters some defaults e.g. different defaults for Raspberry Pi(RPi)
+CONFIG_PACKAGE = getattr(local_settings, "CONFIG_PACKAGE", None)
+
+# Config for Raspberry Pi distributed server
+#     nginx will normally be on 8008 so default to 7007
+#     18 is the sweet-spot for cherrypy threads
+#    /tmp is deleted on boot, so use /var/tmp for a persistent cache instead
+if CONFIG_PACKAGE == "RPi":
+    PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 7007)
+    CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 18)
+    if CACHE_TIME != 0:
+        CACHES["web_cache"]['LOCATION'] = getattr(local_settings, "CACHE_LOCATION", '/var/tmp/kalite_web_cache')
+

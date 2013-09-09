@@ -61,7 +61,7 @@ def save_video_log(request):
         videolog = VideoLog.update_video_log(
             facility_user=request.session["facility_user"],
             youtube_id=data["youtube_id"],
-            additional_seconds_watched=data["seconds_watched"],
+            total_seconds_watched=data["total_seconds_watched"],  # don't set incrementally, to avoid concurrency issues
             points=data["points"],
         )
     except ValidationError as e:
@@ -88,10 +88,11 @@ def save_exercise_log(request):
     data = form.data
 
     # More robust extraction of previous object
-    (exerciselog, _) = ExerciseLog.get_or_initialize(user=request.session["facility_user"], exercise_id=data["exercise_id"])
+    (exerciselog, was_created) = ExerciseLog.get_or_initialize(user=request.session["facility_user"], exercise_id=data["exercise_id"])
     previously_complete = exerciselog.complete
 
-    exerciselog.attempts += 1
+
+    exerciselog.attempts = data["attempts"]  # don't increment, because we fail to save some requests
     exerciselog.streak_progress = data["streak_progress"]
     exerciselog.points = data["points"]
 
@@ -99,7 +100,7 @@ def save_exercise_log(request):
         exerciselog.full_clean()
         exerciselog.save()
     except ValidationError as e:
-        return JsonResponse({"error": "Could not save ExerciseLog: %s" % e}, status=500)
+        return JsonResponse({"error": _("Could not save ExerciseLog") + u": %s" % e}, status=500)
 
     # Special message if you've just completed.
     #   NOTE: it's important to check this AFTER calling save() above.
@@ -159,9 +160,8 @@ def get_exercise_logs(request):
     return JsonResponse(
         list(ExerciseLog.objects \
             .filter(user=user, exercise_id__in=data) \
-            .values("exercise_id", "streak_progress", "complete", "points", "struggling"))
+            .values("exercise_id", "streak_progress", "complete", "points", "struggling", "attempts"))
     )
-
 
 @require_admin
 @api_handle_error_with_json
