@@ -96,7 +96,7 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
     topictree = download_khan_data("http://www.khanacademy.org/api/v1/topictree")
 
     related_exercise = {}  # Temp variable to save exercises related to particular videos
-    related_videos = {}  #
+    related_videos = {}  # Similar idea, reverse direction
 
     def recurse_nodes(node, path=""):
         """
@@ -403,12 +403,15 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
 
     def normalize_tree(knowledge_map, knowledge_topics):
         """
-        Tree is in arbitrary coordinates.  However, we need to deal with screens of different sizes.
-        Normalize coordinates by:
-        * Making the x extent be a range of 1.0
-        * Flip horizontal and vertical coordinates here, NOT in the kmap-editor.js (which was confusing)
-
-        The y range isn't touched yet, as it seemed to be working.
+        The knowledge map is currently arbitrary coordinates, with a lot of space
+        between nodes.
+        
+        The code below adjusts the space between nodes.  Our code
+        in kmap-editor.js adjust coordinates based on screen size.
+        
+        TODO(bcipolli): normalize coordinates to range [0,1]
+        that will make code for expanding out to arbitrary screen
+        sizes much more simple.
         """
 
         def adjust_coord(children, prop_name):
@@ -446,9 +449,7 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
         for slug, children in knowledge_topics.iteritems():
             # Flip coordinates
             for ch in children:
-                v_position = ch["v_position"]
-                ch["v_position"] = ch["h_position"]
-                ch["h_position"] = v_position
+                ch["v_position"], ch["h_position"] = ch["h_position"], ch["v_position"]
             
             # Adjust coordinates
             adjust_coord(children, "v_position")  # side-effect directly into 'children'
