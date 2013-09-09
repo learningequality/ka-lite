@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 import django_snippets.multiselect as multiselect
 
+from utils.django_utils import ExtendedModel
+
 
 # Different contact types
 CONTACT_TYPE_DEPLOYMENT = 'deployment'
@@ -17,11 +19,11 @@ CONTRIBUTE_TYPE_TESTING    ='testing'
 CONTRIBUTE_TYPE_OTHER      ='other'
 
 
-class Contact(models.Model):
+class Contact(ExtendedModel):
     """Base contact information"""
 
     CONTACT_TYPES = ((CONTACT_TYPE_DEPLOYMENT, 'New Deployment'),
-                     (CONTACT_TYPE_SUPPORT, 'Support'),
+                     (CONTACT_TYPE_SUPPORT, 'Get Support'),
                      (CONTACT_TYPE_CONTRIBUTE,"Contribute"),
                      (CONTACT_TYPE_INFO, 'General Inquiries'))
 
@@ -29,8 +31,7 @@ class Contact(models.Model):
     name      = models.CharField(verbose_name="Your Name", max_length=100)
     type      = models.CharField(verbose_name="Reason for Contact", max_length=12, choices=CONTACT_TYPES)
     email     = models.EmailField(verbose_name="Your Email", max_length=100)
-    org_name  = models.CharField(verbose_name="Organization Name", max_length=100, blank=False)
-    org_url   = models.URLField(verbose_name="Organization URL", blank=True, null=True)
+    org_name  = models.CharField(verbose_name="Organization Name", max_length=100, blank=True)
     contact_date= models.DateField(auto_now_add=True)
     cc_email  = models.BooleanField(verbose_name="Please send a copy of this support request to the email address above.", default=False)
     ip        = models.CharField(max_length=50, blank=True, null=True)
@@ -39,7 +40,7 @@ class Contact(models.Model):
         return u"%s inquiry from %s @ %s on %s (%s)"%(self.type, self.name, self.org_name, self.contact_date, self.email)
 
 
-class Deployment(models.Model):
+class Deployment(ExtendedModel):
     """Deployment contact"""
 
     # The following values define limited options in the contact form
@@ -67,7 +68,7 @@ class Deployment(models.Model):
         return u"Inquiry from %s @ %s on %s (%s)"%(self.contact.name, self.contact.org_name, self.contact.contact_date, self.contact.email)
 
 
-class Support(models.Model):
+class Support(ExtendedModel):
     # Different support types (support contact sub-form)
     SUPPORT_TYPES = (('installation', 'Installation'),
                      ('setup',        'Post-install setup'),
@@ -77,13 +78,13 @@ class Support(models.Model):
 
     contact  = models.ForeignKey(Contact)
     type     = models.CharField(max_length=15, choices=SUPPORT_TYPES, verbose_name="Issue Type")
-    issue    = models.TextField(blank=True, verbose_name="Please describe your issue.")
+    issue    = models.TextField(blank=False, verbose_name="Please describe your issue.")
 
     def __unicode__(self):
         return u"%s inquiry from %s @ %s on %s (%s)"%(self.type, self.contact.name, self.contact.org_name, self.contact.contact_date, self.contact.email)
 
 
-class Contribute(models.Model):
+class Contribute(ExtendedModel):
     """Want to contribute?  We have a form for that."""
 
     CONTRIBUTE_TYPES = ((CONTRIBUTE_TYPE_DEVELOPMENT, 'Code Development'),
@@ -94,15 +95,15 @@ class Contribute(models.Model):
 
     contact  = models.ForeignKey(Contact)
     type     = models.CharField(max_length=15, choices=CONTRIBUTE_TYPES, verbose_name="Type of contribution:")
-    issue    = models.TextField(blank=True, verbose_name="How would you like to contribute?")
+    issue    = models.TextField(blank=False, verbose_name="How would you like to contribute?")
 
     def __unicode__(self):
         return u"%s inquiry from %s @ %s on %s (%s)"%(self.type, self.contact.name, self.contact.org_name, self.contact.contact_date, self.contact.email)
 
 
-class Info(models.Model):
+class Info(ExtendedModel):
     contact  = models.ForeignKey(Contact)
-    issue    = models.TextField(blank=True, verbose_name="What's on your mind?")
+    issue    = models.TextField(blank=False, verbose_name="What's on your mind?")
     
     def __unicode__(self):
         return u"Inquiry from %s @ %s on %s (%s)"%(self.contact.name, self.contact.org_name, self.contact.contact_date, self.contact.email)

@@ -3,7 +3,7 @@
     "related_video_readable_ids": [
       "basic-addition"
     ], 
-    "v_position": 5, 
+    "v_position": 0, 
     "path": "/math/arithmetic/addition-subtraction/basic_addition/e/addition_1/", 
     "id": "addition_1", 
     "display_name": "1-digit addition", 
@@ -11,7 +11,7 @@
     "live": true, 
     "description": "Add two 1-digit numbers", 
     "basepoints": 10.0, 
-    "h_position": 0, 
+    "h_position": 5, 
     "slug": "addition_1", 
     "kind": "Exercise", 
     "name": "addition_1", 
@@ -22,7 +22,7 @@
     "related_video_readable_ids": [
       "basic-subtraction"
     ], 
-    "v_position": 6, 
+    "v_position": 2, 
     "path": "/math/arithmetic/addition-subtraction/basic_addition/e/subtraction_1/", 
     "id": "subtraction_1", 
     "display_name": "1-digit subtraction", 
@@ -30,7 +30,7 @@
     "live": true, 
     "description": "Subtract two 1-digit numbers", 
     "basepoints": 10.0, 
-    "h_position": 2, 
+    "h_position": 6, 
     "slug": "subtraction_1", 
     "kind": "Exercise", 
     "name": "subtraction_1", 
@@ -43,7 +43,7 @@
     "related_video_readable_ids": [
       "adding-whole-numbers-and-applications-1"
     ], 
-    "v_position": 4, 
+    "v_position": 1, 
     "path": "/math/arithmetic/addition-subtraction/two_dig_add_sub/e/addition_2/", 
     "id": "addition_2", 
     "display_name": "2-digit addition", 
@@ -51,7 +51,7 @@
     "live": true, 
     "description": "Add two 2-digit numbers, no carrying", 
     "basepoints": 12.0, 
-    "h_position": 1, 
+    "h_position": 4, 
     "slug": "addition_2", 
     "kind": "Exercise", 
     "name": "addition_2", 
@@ -64,7 +64,7 @@
     "related_video_readable_ids": [
       "subtracting-whole-numbers"
     ], 
-    "v_position": 6, 
+    "v_position": 3, 
     "path": "/math/arithmetic/addition-subtraction/two_dig_add_sub/e/subtraction_2/", 
     "id": "subtraction_2", 
     "display_name": "2 and 3-digit subtraction", 
@@ -72,7 +72,7 @@
     "live": true, 
     "description": "Subtract two 2-3 digit numbers without borrowing", 
     "basepoints": 13.0, 
-    "h_position": 3, 
+    "h_position": 6, 
     "slug": "subtraction_2", 
     "kind": "Exercise", 
     "name": "subtraction_2", 
@@ -107,7 +107,7 @@
     "related_video_readable_ids": [
       "addition-4"
     ], 
-    "v_position": 4, 
+    "v_position": 5, 
     "path": "/math/arithmetic/addition-subtraction/addition_carrying/e/addition_4/", 
     "id": "addition_4", 
     "display_name": "4-digit addition with carrying", 
@@ -115,7 +115,7 @@
     "live": true, 
     "description": "Add two 3- or 4-digit numbers with carrying", 
     "basepoints": 20.0, 
-    "h_position": 5, 
+    "h_position": 4, 
     "slug": "addition_4", 
     "kind": "Exercise", 
     "name": "addition_4", 
@@ -156,7 +156,7 @@
       "alternate-mental-subtraction-method", 
       "level-4-subtraction"
     ], 
-    "v_position": 6, 
+    "v_position": 7, 
     "path": "/math/arithmetic/addition-subtraction/sub_borrowing/e/subtraction_4/", 
     "id": "subtraction_4", 
     "display_name": "4-digit subtraction with borrowing", 
@@ -164,7 +164,7 @@
     "live": true, 
     "description": "Subtract two 4-digit numbers. Borrow twice", 
     "basepoints": 20.0, 
-    "h_position": 7, 
+    "h_position": 6, 
     "slug": "subtraction_4", 
     "kind": "Exercise", 
     "name": "subtraction_4", 
@@ -177,7 +177,7 @@
     "related_video_readable_ids": [
       "subtraction-word-problem"
     ], 
-    "v_position": 5, 
+    "v_position": 4, 
     "path": "/math/arithmetic/addition-subtraction/add_sub_word_problems/e/arithmetic_word_problems_1/", 
     "id": "arithmetic_word_problems_1", 
     "display_name": "Addition and subtraction word problems", 
@@ -185,7 +185,7 @@
     "live": true, 
     "description": "Word problems with addition and subtraction of positive integers. Some carrying and borrowing.", 
     "basepoints": 18.0, 
-    "h_position": 4, 
+    "h_position": 5, 
     "slug": "arithmetic_word_problems_1", 
     "kind": "Exercise", 
     "name": "arithmetic_word_problems_1", 

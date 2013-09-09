@@ -1,9 +1,10 @@
 {% extends "central/base.html" %}
 {% load staticfiles %}
+{% load my_filters %}
 
 {% block control_panel_active %}active{% endblock control_panel_active %}
 
-{% block headjs %}
+{% block headjs %}{{ block.super }}
 <script>
 		// makes correct link submit form for removing admin & revoking invites
 		$(function() {
@@ -15,17 +16,56 @@
 			$('.glossary-link').wrap('<a href="{% url glossary %}"></a>');
 		});
 
-		</script>		
-		{% endblock headjs %}
+</script>
 
-		{% block headcss %}{% endblock headcss %}
+<script src="{% static 'js/bootstrap/tooltip.js' %}"></script>
+<script src="{% static 'js/bootstrap/popover.js' %}"></script>
+<script>
+$(function() {
+	var nbOrganization = {{ organizations|length }} - 1 ; //Start the counter at 0
+	
+	// Used <div> instead of <a> to avoid a dirty js hack to avoid the reload to top page.
+	for (var i=0;i<=nbOrganization;i++){ 
+		$('#button-popover-zone-'+(i.toString()) ).popover() //Each popover needs an individual callback
+		$('#button-popover-orgadmin-'+(i.toString()) ).popover() 
+	}
 
-		{% block content %}
-		
+	$('#button-popover-org').popover()
+	$('#button-popover-headless').popover()
+
+	$('body').on('click', function (e) {
+		$('.button-popover').each(function () {
+	        //the 'is' for buttons that trigger popups
+	        //the 'has' for icons within a button that triggers a popup
+	        if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+	        	$(this).popover('hide');
+	        }
+	    });
+	});
+});
+</script>
+{% endblock headjs %}
+
+{% block headcss %}{{ block.super }}
+<style>
+.glossary-link {
+    background: url('/static/images/question_mark.png') no-repeat center;
+    display: inline-block;
+    width: 14px;
+    height: 10px;
+    float: center;
+    margin-bottom: -51px;
+    margin-left: -5px;
+    margin-right: -5px;
+}
+</style>
+{% endblock headcss %}
+
+{% block content %}
 		<div class="row-fluid">
 			<div class="span9">
 				<div class="tooltip-container">
-					<h1 >My Organization</h1>
+					<h1>My Organization{{ organizations|pluralize }}</h1>
 					<div id="button-popover-org" class="button-popover" data-toggle="popover" data-placement="right" data-content="An Organization is a group of people responsible for administering a set of Zones and Facilities." title="" data-original-title="Organization">?</div>
 				</div>			
 			</div>
@@ -50,25 +90,35 @@
 		{% endfor %}
 		
 
-		{% if organizations %}
+    {% if not organizations %}
+        <h2>You currently have no organizations. Would you like to <a href="/organization/new/">create a new organization</a>?</h2>
+        <h2>To join an existing organization, contact one of its administrators to have them add you.</h2>
+
+    {% else %}
 		{% for pk,org in organizations.items %}		
 		<div class="row-fluid">
 			<div class="span12 organization-title">
-
 				<div class="tooltip-container">
 					<h2>{{ org.name }}</h2>
 					{% if org.name == HEADLESS_ORG_NAME %}
-					<div id="button-popover-headless" class="button-popover" data-toggle="popover" data-placement="right" data-content="Headless zones are (auto-registered) zones not linked to any account." title="" data-original-title="Headless Zones">?</div>
-
+						<div id="button-popover-headless" class="button-popover" data-toggle="popover" data-placement="right" data-content="Headless zones are (auto-registered) zones not linked to any account." title="" data-original-title="Headless Zones">?</div>
 					{% endif %}
-
-
-
-					{% if org.name != HEADLESS_ORG_NAME %}
-					<a href="{% url organization_form org_id=org.id %}">
-						(Edit)
-					</a>
-					{% endif %}
+					<ul class="options">
+						{% if org.name != HEADLESS_ORG_NAME %}
+							<li>
+								<a href="{% url organization_form org_id=org.id %}">
+									<span class="icon-pencil icon-large" title="Edit this organization's information."></span>
+								</a>
+							</li>
+						{% endif %}
+						{% if org.owner == request.user and not org.get_zones %}
+							<li>
+								<a href="{% url delete_organization org_id=org.id %}" onclick="return confirm('Are you sure you want to delete {{org.name}}?')">
+									<span class="icon-trash icon-large" title="Delete this organization."></span>
+								</a>
+							</li>
+						{% endif %}
+					</div>
 				</div>
 			</div>
 
@@ -79,12 +129,19 @@
 						<div id="button-popover-zone-{{ forloop.counter0 }}" class="button-popover" data-toggle="popover" data-placement="right" data-content="A Zone is the area in which multiple devices may connect to share content with each other." title="" data-original-title="Zone">?</div>
 					</div>
 					<table class="table">
-						{% for zone in org.get_zones %}
+						{% for zone in zones|get_item:pk %}
 						<tr>
 							<td>{{ zone.name }}</td>
 							<td><a class="zone-manage-link" href="{% url zone_management org_id=org.id zone_id=zone.id %}">
-								manage
+								 Manage
 							</a></td>
+							<td>
+								{% if zone.is_deletable %}
+								<a href="{% url delete_zone org_id=org.id zone_id=zone.id %}" onclick="return confirm('Are you sure you want to delete {{zone.name}}?')">
+									 Delete
+								</a>
+								{% endif %}
+							</td>
 						</tr>
 						{% endfor %}
 					</table>
@@ -163,46 +220,17 @@
 				</div><!-- .span6 -->
 			</div> <!-- .row -->
 			<br>
-			{% endfor %}
+        {% endfor %}
+    {% endif %}
 
-			{% else %}
-			<h2>You currently have no organizations. Would you like to <a href="/organization/new/">create a new organization</a>?</h2>
-			<h2>To join an existing organization, contact one of its administrators to have them add you.</h2>
-			{% endif %}
+    <p>
+        {% if not organizations %}
+            After creating an organization and adding a zone to it, above, you'll be 
+        {% else %}
+            You're
+        {% endif %}
+        ready to <a href="/install/">install KA Lite</a>
+        (either on this machine, or to download the installation package to install offline on another machine)
+    </p>
 
-			{% if not organizations %}
-			<p>After creating an organization and adding a zone to it, above, you'll be 
-				{% else %}
-				<p>You're
-					{% endif %}
-					ready to <a href="/install/">install KA Lite</a> (either on this machine, or to download the installation package to install offline on another machine)</p>
-
-					{% endblock content %}
-
-					{% block bodyjs %}
-
-					<script src="{% static 'js/bootstrap/tooltip.js' %}"></script>
-					<script src="{% static 'js/bootstrap/popover.js' %}"></script>
-					<script>
-	var nbOrganization = {{ organizations|length }} - 1 ; //Start the counter at 0
-	
-	// Used <div> instead of <a> to avoid a dirty js hack to avoid the reload to top page.
-	for (var i=0;i<=nbOrganization;i++){ 
-		$('#button-popover-zone-'+(i.toString()) ).popover() //Each popover needs an individual callback
-		$('#button-popover-orgadmin-'+(i.toString()) ).popover() 
-	}
-
-	$('#button-popover-org').popover()
-	$('#button-popover-headless').popover()
-
-	$('body').on('click', function (e) {
-		$('.button-popover').each(function () {
-	        //the 'is' for buttons that trigger popups
-	        //the 'has' for icons within a button that triggers a popup
-	        if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
-	        	$(this).popover('hide');
-	        }
-	    });
-	});
-	</script>
-	{% endblock bodyjs %}
+{% endblock content %}

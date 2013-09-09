@@ -108,7 +108,7 @@ def contact_wizard(request, type=""):
             if request.user.owned_organizations.count() > 0:
                 org = request.user.owned_organizations.all()[0]
             elif request.user.organization_set.count() > 0:
-                org = request.user.organization_set[0]
+                org = request.user.organization_set.all()[0]
             else:
                 org = Organization()
 
@@ -120,7 +120,6 @@ def contact_wizard(request, type=""):
                     name="%s %s"%(request.user.first_name, request.user.last_name),
                     email=request.user.email,
                     org_name=org.name,
-                    org_url=org.url,
                     ip=get_request_ip(request),
                 ))
 

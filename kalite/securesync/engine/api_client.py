@@ -83,7 +83,7 @@ class SyncClient(object):
         elif r.status_code == 200:
             # Save to our local store.  By NOT passing a src_version,
             #   we're saying it's OK to just store what we can.
-            models = serializers.deserialize("versioned-json", r.content, src_version=None, dest_version=own_device.version)
+            models = serializers.deserialize("versioned-json", r.content, src_version=None, dest_version=own_device.get_version())
             for model in models:
                 if not model.object.verify():
                     continue
@@ -106,7 +106,7 @@ class SyncClient(object):
         r = self.post("session/create", {
             "client_nonce": self.session.client_nonce,
             "client_device": self.session.client_device.pk,
-            "client_version": kalite.VERSION,
+            "client_version": self.session.client_device.get_version(),
             "client_os": kalite.OS,
         })
 
@@ -127,7 +127,12 @@ class SyncClient(object):
         # Once again, we assume that (currently) the central server's version is >= ours,
         #   We just store what we can.
         own_device = self.session.client_device
-        session = serializers.deserialize("versioned-json", data["session"], src_version=None, dest_version=own_device.version).next().object
+        session = serializers.deserialize(
+            "versioned-json",
+            data["session"],
+            src_version=None,
+            dest_version=own_device.get_version(),
+        ).next().object
         if not session.verify_server_signature(signature):
             raise Exception("Signature did not match.")
         if session.client_nonce != self.session.client_nonce:
@@ -262,5 +267,4 @@ class SyncClient(object):
 
         self.counters_to_download = None
         self.counters_to_upload = None
-
         return {"download_results": download_results, "upload_results": upload_results}

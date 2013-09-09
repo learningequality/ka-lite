@@ -14,6 +14,7 @@ import settings
 from securesync import engine
 from securesync.models import SyncedModel, FacilityUser, Device
 from settings import LOG as logging
+from utils.django_utils import ExtendedModel
 from utils.general import datediff, isnumeric
 
 
@@ -70,14 +71,17 @@ class VideoLog(SyncedModel):
         return ceil(float(seconds_watched) / video_length* VideoLog.POINTS_PER_VIDEO)
 
     @classmethod
-    def update_video_log(cls, facility_user, youtube_id, additional_seconds_watched, points=0, new_points=0):
+    def update_video_log(cls, facility_user, youtube_id, total_seconds_watched, points=0, new_points=0):
         assert facility_user and youtube_id, "Updating a video log requires both a facility user and a YouTube ID"
         
         # retrieve the previous video log for this user for this video, or make one if there isn't already one
-        videolog = cls.get_or_initialize(user=facility_user, youtube_id=youtube_id)
+        (videolog, _) = cls.get_or_initialize(user=facility_user, youtube_id=youtube_id)
         
         # combine the previously watched counts with the new counts
-        videolog.total_seconds_watched += additional_seconds_watched
+        #
+        # Set total_seconds_watched directly, rather than incrementally, for robustness
+        #   as sometimes an update request fails, and we'd miss the time update!
+        videolog.total_seconds_watched = total_seconds_watched  
         videolog.points = min(max(points, videolog.points + new_points), cls.POINTS_PER_VIDEO)
         
         # write the video log to the database, overwriting any old video log with the same ID
@@ -266,7 +270,7 @@ class UserLogSummary(SyncedModel):
         log_summary.save()
 
 
-class UserLog(models.Model):  # Not sync'd, only summaries are
+class UserLog(ExtendedModel):  # Not sync'd, only summaries are
     """Detailed instances of user behavior.
     Currently not sync'd (only used for local detail reports).
     """
@@ -477,7 +481,7 @@ class UserLog(models.Model):  # Not sync'd, only summaries are
         return cur_log
 
 
-class VideoFile(models.Model):
+class VideoFile(ExtendedModel):
     youtube_id = models.CharField(max_length=20, primary_key=True)
     flagged_for_download = models.BooleanField(default=False)
     flagged_for_subtitle_download = models.BooleanField(default=False)
@@ -492,7 +496,7 @@ class VideoFile(models.Model):
         ordering = ["priority", "youtube_id"]
 
 
-class LanguagePack(models.Model):
+class LanguagePack(ExtendedModel):
     lang_id = models.CharField(max_length=5, primary_key=True)
     lang_version = models.CharField(max_length=5)
     software_version = models.CharField(max_length=12)

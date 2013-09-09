@@ -6,7 +6,7 @@
       "ck12-org--more-empirical-rule-and-z-score-practice", 
       "ck12-org-normal-distribution-problems--z-score"
     ], 
-    "v_position": -21, 
+    "v_position": -23, 
     "path": "/math/probability/statistics-inferential/normal_distribution/e/empirical_rule/", 
     "id": "empirical_rule", 
     "display_name": "Empirical rule", 
@@ -29,7 +29,7 @@
       "ck12-org-normal-distribution-problems--z-score", 
       "ck12-org--more-empirical-rule-and-z-score-practice"
     ], 
-    "v_position": -22, 
+    "v_position": -24, 
     "path": "/math/probability/statistics-inferential/normal_distribution/e/z_scores_1/", 
     "id": "z_scores_1", 
     "display_name": "Z scores 1", 
@@ -53,7 +53,7 @@
       "ck12-org-normal-distribution-problems--z-score", 
       "ck12-org-normal-distribution-problems--empirical-rule"
     ], 
-    "v_position": -22, 
+    "v_position": -24, 
     "path": "/math/probability/statistics-inferential/normal_distribution/e/z_scores_2/", 
     "id": "z_scores_2", 
     "display_name": "Z scores 2", 
@@ -75,7 +75,7 @@
       "ck12-org-normal-distribution-problems--z-score", 
       "ck12-org--more-empirical-rule-and-z-score-practice"
     ], 
-    "v_position": -22, 
+    "v_position": -24, 
     "path": "/math/probability/statistics-inferential/normal_distribution/e/z_scores_3/", 
     "id": "z_scores_3", 
     "display_name": "Z scores 3", 

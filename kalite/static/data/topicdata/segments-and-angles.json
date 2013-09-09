@@ -3,7 +3,7 @@
     "related_video_readable_ids": [
       "lines--line-segments--and-rays"
     ], 
-    "v_position": -22, 
+    "v_position": 25, 
     "path": "/math/geometry/segments-and-angles/intro_euclid/e/recognizing_rays_lines_and_line_segments/", 
     "id": "recognizing_rays_lines_and_line_segments", 
     "display_name": "Recognizing rays lines and line segments", 
@@ -11,7 +11,7 @@
     "live": true, 
     "description": "", 
     "basepoints": 10.0, 
-    "h_position": 25, 
+    "h_position": -22, 
     "slug": "recognizing_rays_lines_and_line_segments", 
     "kind": "Exercise", 
     "name": "recognizing_rays_lines_and_line_segments", 
@@ -26,7 +26,7 @@
       "lines--line-segments--and-rays", 
       "specifying-planes-in-three-dimensions"
     ], 
-    "v_position": -24, 
+    "v_position": 26, 
     "path": "/math/geometry/segments-and-angles/intro_euclid/e/points_lines_and_planes/", 
     "id": "points_lines_and_planes", 
     "display_name": "Points, lines, and planes", 
@@ -34,7 +34,7 @@
     "live": true, 
     "description": "", 
     "basepoints": 14.0, 
-    "h_position": 26, 
+    "h_position": -24, 
     "slug": "points_lines_and_planes", 
     "kind": "Exercise", 
     "name": "points_lines_and_planes", 
@@ -48,7 +48,7 @@
       "measuring-segments", 
       "language-and-notation-of-basic-geometry"
     ], 
-    "v_position": -23, 
+    "v_position": 26, 
     "path": "/math/geometry/segments-and-angles/measuring-segments-tutorial/e/measuring_segments/", 
     "id": "measuring_segments", 
     "display_name": "Measuring segments", 
@@ -56,7 +56,7 @@
     "live": true, 
     "description": null, 
     "basepoints": 12.0, 
-    "h_position": 26, 
+    "h_position": -23, 
     "slug": "measuring_segments", 
     "kind": "Exercise", 
     "name": "measuring_segments", 
@@ -69,7 +69,7 @@
     "related_video_readable_ids": [
       "congruent-segments"
     ], 
-    "v_position": -22, 
+    "v_position": 26, 
     "path": "/math/geometry/segments-and-angles/measuring-segments-tutorial/e/congruent_segments/", 
     "id": "congruent_segments", 
     "display_name": "Congruent segments", 
@@ -77,7 +77,7 @@
     "live": true, 
     "description": null, 
     "basepoints": 12.0, 
-    "h_position": 26, 
+    "h_position": -22, 
     "slug": "congruent_segments", 
     "kind": "Exercise", 
     "name": "congruent_segments", 
@@ -90,7 +90,7 @@
     "related_video_readable_ids": [
       "segment-addition"
     ], 
-    "v_position": -23, 
+    "v_position": 27, 
     "path": "/math/geometry/segments-and-angles/line-segment-algebra/e/segment_addition/", 
     "id": "segment_addition", 
     "display_name": "Segment addition", 
@@ -98,7 +98,7 @@
     "live": true, 
     "description": null, 
     "basepoints": 25.0, 
-    "h_position": 27, 
+    "h_position": -23, 
     "slug": "segment_addition", 
     "kind": "Exercise", 
     "name": "segment_addition", 
@@ -112,7 +112,7 @@
     "related_video_readable_ids": [
       "midpoint-of-a-segment"
     ], 
-    "v_position": -22, 
+    "v_position": 27, 
     "path": "/math/geometry/segments-and-angles/line-segment-algebra/e/midpoint_of_a_segment/", 
     "id": "midpoint_of_a_segment", 
     "display_name": "Midpoint of a segment", 
@@ -120,7 +120,7 @@
     "live": true, 
     "description": "", 
     "basepoints": 26.0, 
-    "h_position": 27, 
+    "h_position": -22, 
     "slug": "midpoint_of_a_segment", 
     "kind": "Exercise", 
     "name": "midpoint_of_a_segment", 

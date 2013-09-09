@@ -1,4 +1,4 @@
-window.VideoPlayerState = {
+    window.VideoPlayerState = {
     UNSTARTED: -1,
     ENDED: 0,
     PLAYING: 1,
@@ -14,6 +14,7 @@ window.VideoPlayerModel = Backbone.Model.extend({
     defaults: {
         percent_last_saved: 0.0,
         seconds_watched_since_save: 0.0,
+        total_seconds_watched: 0.0,
         points: 0,
         possible_points: 750,
         starting_points: 0,
@@ -75,6 +76,7 @@ window.VideoPlayerModel = Backbone.Model.extend({
         data = {
             youtube_id: this.get("youtube_id"),
             seconds_watched: this.get("seconds_watched_since_save"),
+            total_seconds_watched: this.get("total_seconds_watched"),
             points: this.get("points")
         }
 
@@ -132,7 +134,10 @@ window.VideoPlayerModel = Backbone.Model.extend({
 
         if (secondsWatchedSinceLastPoll > 0) {
             seconds_watched_since_save += secondsWatchedSinceLastPoll;
-            this.set("seconds_watched_since_save", seconds_watched_since_save);
+            this.set({
+                seconds_watched_since_save: seconds_watched_since_save,
+                total_seconds_watched: this.get("total_seconds_watched") + secondsWatchedSinceLastPoll
+            });
         }
 
         return seconds_watched_since_save;
