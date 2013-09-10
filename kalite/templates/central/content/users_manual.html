@@ -3,6 +3,8 @@
 User's Manual
 {% endblock title %}
 
+{% block home_active %}active{% endblock home_active %}
+
 {% block content %}
 <div id="user-manual-container">
 	<iframe src="{% url wiki path='user-s-manual' %}" width="100%" height="800px;"></iframe>		

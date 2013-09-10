@@ -64,7 +64,7 @@
                                 <li><a href="{% url wiki path='installation' %}" target="_blank">{% trans "Install" %}</a></li>
                                 <li><a href="{% url faq_topic_list %}" class="{% block faq_active %}{% endblock faq_active%}">{% trans "FAQ" %}</a></li>
                                 <li><a href="{% url contact_wizard %}"class="{% block contact_active %}{% endblock contact_active%}">{% trans "Contact" %}</a></li>
-                                <li><a href="{% url content_page page='about' %}">{% trans "About Us" %}</a></li>
+                                <li><a href="{% url content_page page='about' %}" class="{% block about_active %}{% endblock about_active%}">{% trans "About Us" %}</a></li>
 
                                 {% if not user.is_authenticated %}
                                 <li><a href="{% url auth_login %}" id="login" class="{% block login_active %}{% endblock login_active %}">{% trans "Login" %}</a></li>
