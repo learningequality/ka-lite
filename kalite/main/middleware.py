@@ -16,14 +16,15 @@ class GetNextParam:
 # TODO(dylan): new class that handles finding and setting the language for the session
 class SessionLanguage:
     def process_request(self, request):
-        if request.is_logged_in and "django_language" not in request.session:
-            request.session["django_language"] = Settings.get("default_language") or settings.LANGUAGE_CODE
-            request.language = request.session["django_language"]
-        if request.GET.get("set_language"):
-            request.session["django_language"] = request.GET.get("set_language")
-            return HttpResponseRedirect(request.path)
         if request.is_admin and request.GET.get("set_default_language"):
             Settings.set("default_language", request.GET.get("set_default_language"))
-            return HttpResponseRedirect(request.path)
-        print "Language: %s" % (request.session.get("django_language") or "None")
+            #return HttpResponseRedirect(request.path)
+        if request.GET.get("set_language"):
+            request.session["django_language"] = request.GET.get("set_language")
+            #return HttpResponseRedirect(request.path)
+        else:
+            request.session["django_language"] = Settings.get("default_language") or settings.LANGUAGE_CODE
+
+        request.language = request.session["django_language"]
+        print "Language: %s" % (request.language or "None")
 
