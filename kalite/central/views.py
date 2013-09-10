@@ -165,12 +165,9 @@ def delete_organization(request, org_id):
     return HttpResponseRedirect(reverse("org_management"))
 
 
-@render_to("central/content_page.html")
 def content_page(request, page):
-    return {
-        "title": page,
-        "page_template": "central/content/%s.html" % page,
-    }
+    from django.shortcuts import render_to_response
+    return render_to_response("central/content/%s.html" % page)
 
 
 @render_to("central/glossary.html")
