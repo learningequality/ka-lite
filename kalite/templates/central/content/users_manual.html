@@ -4,5 +4,7 @@ User's Manual
 {% endblock title %}
 
 {% block content %}
-<iframe src="{% url wiki path='user-s-manual' %}" width="100%" height="800px;"></iframe>
+<div id="user-manual-container">
+	<iframe src="{% url wiki path='user-s-manual' %}" width="100%" height="800px;"></iframe>		
+</div>
 {% endblock content %}
