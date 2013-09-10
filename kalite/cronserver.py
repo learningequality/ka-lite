@@ -2,10 +2,9 @@ import os
 import subprocess
 import sys
 import threading
-from croncount import get_count
 
 import settings  # get cron settings from Django project settings file
-
+from shared import jobs
 
 def cron():
     # only bother spinning up the full cron management command if there's something waiting to be run

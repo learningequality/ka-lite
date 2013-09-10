@@ -36,7 +36,7 @@
           {% block headcss %}{% endblock headcss %}
           <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
 
-          <script type="text/javascript" src="{% static 'js/jquery-1.7.1.min.js' %}"></script>
+          <script type="text/javascript" src="{% static 'js/jquery-1.8.3.min.js' %}"></script> 
           <script type="text/javascript" src="{% static 'js/underscore-min.js' %}"></script>
           <script type="text/javascript" src="{% static 'js/backbone-min.js' %}"></script>
 
@@ -48,7 +48,7 @@
           {% block basejs %}{% endblock basejs %}
           {% block extra_head %}{% endblock extra_head %}
           {% block extrahead %}{% endblock extrahead %}
-          {% block analytics %}{% endblock analytics %}
+          {% block analytics %}{% include 'central/web_analytics.html' %}{% endblock analytics %}
       </head>
 
       <body>
@@ -64,7 +64,7 @@
                                 <li><a href="{% url wiki path='installation' %}" target="_blank">{% trans "Install" %}</a></li>
                                 <li><a href="{% url faq_topic_list %}" class="{% block faq_active %}{% endblock faq_active%}">{% trans "FAQ" %}</a></li>
                                 <li><a href="{% url contact_wizard %}"class="{% block contact_active %}{% endblock contact_active%}">{% trans "Contact" %}</a></li>
-                                <li><a href="{% url about %}" target="_blank">{% trans "About Us" %}</a></li>
+                                <li><a href="{% url content_page page='about' %}">{% trans "About Us" %}</a></li>
 
                                 {% if not user.is_authenticated %}
                                 <li><a href="{% url auth_login %}" id="login" class="{% block login_active %}{% endblock login_active %}">{% trans "Login" %}</a></li>
