@@ -1,6 +1,22 @@
 {% extends "central/content_page.html" %}
+
+{% load staticfiles %}
+
 {% block title %}About Us {% endblock title %}
 
+{% block about_active %}active{% endblock about_active %}
+
 {% block content %}
-about us
+	<div id="about-container">
+		<div class="row">
+			<div class="span12">
+				<h1>About the Foundation for Learning Equality</h1>
+				<img id="fle-logo" src="{% static 'images/FLE-logo.png' %}" alt="Foundation for Learning Equality">
+				<p>The <a href="http://learningequality.org">Foundation for Learning Equality</a> (FLE) is a startup non-profit organization located in San Diego, CA. We are dedicated to creating tools for the sharing and creation of open-licensed educational content for use by anyone around the world, with a special emphasis on reaching the 65% of the world that does not have Internet access, and those with limited-bandwidth, expensive, or unreliable connections.</p>
+				<p>
+					KA Lite, our open-source platform for deploying Khan Academy videos and exercises in offline and low-bandwidth contexts, was soft-launched in December of 2012, and is already seeing widespread global deployment, particularly in India and sub-Saharan Africa. The Foundation’s current activities are focused around developing this platform further and helping to support its deployment through partner NGOs, as well as individual teachers and schools wanting to make use of the platform with their students. We have been in discussions with hundreds of organizations, schools, and individuals around the world, many of whom are now deploying KA Lite in classrooms and homes, and have several larger pilot programs underway.
+				</p></div>
+		</div>
+	</div>
+	
 {% endblock content %}
