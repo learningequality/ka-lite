@@ -1,15 +1,4 @@
-{% extends 'central/base.html' %}
-
-{% load staticfiles %}
-
-{% block title %}Home{% endblock %}
-{% block home_active %}active{% endblock home_active %}
-
-{% block jqueryjs %}
-<script type="text/javascript" src="{% static 'js/jquery-1.8.3.min.js' %}"></script> 
-{% endblock jqueryjs %}
-
-{% block analytics %}{% include 'central/web_analytics.html' %}{% endblock analytics %}
+{% block title %}Test {% endblock title %}
 
 {% block content %}
 
@@ -75,6 +64,4 @@
         proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
     </div>
 </div>
-
-{% endblock content %}
-
+{% endblock %}

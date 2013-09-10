@@ -42,7 +42,7 @@ urlpatterns += patterns('',
 
 urlpatterns += patterns('central.views',
     url(r'^$', 'homepage', {}, 'homepage'), 
-    url(r'^content/', TemplateView.as_view(template_name="central/homepage_content.html")), # Example of a new landing page
+    url(r'^content/(?P<page>\w+)/', 'content_page', {}, 'content_page'), # Example of a new landing page
     url(r'^delete_admin/(?P<org_id>\w+)/(?P<user_id>\w+)/$', 'delete_admin', {}, 'delete_admin'), 
     url(r'^delete_invite/(?P<org_id>\w+)/(?P<invite_id>\w+)/$', 'delete_invite', {}, 'delete_invite'), 
     url(r'^accounts/', include(registration.urls)),

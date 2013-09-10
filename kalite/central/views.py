@@ -165,6 +165,14 @@ def delete_organization(request, org_id):
     return HttpResponseRedirect(reverse("org_management"))
 
 
+@render_to("central/content_page.html")
+def content_page(request, page):
+    return {
+        "title": page,
+        "page_template": "central/content/%s.html" % page,
+    }
+
+
 @render_to("central/glossary.html")
 def glossary(request):
     return {}

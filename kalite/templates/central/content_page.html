@@ -1,0 +1,13 @@
+{% extends 'central/base.html' %}
+{% load staticfiles %}
+{% load include_block %}
+
+{% block title %}
+{% include_block page_template "title" %}
+{% endblock %}
+
+{% block home_active %}active{% endblock home_active %}
+
+{% block content %}
+{% include_block page_template "content" %}
+{% endblock content %}
