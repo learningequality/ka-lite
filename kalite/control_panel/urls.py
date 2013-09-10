@@ -1,8 +1,8 @@
 from django.conf.urls.defaults import patterns, url
 
 urlpatterns = patterns('control_panel.views',
-    # Database
-    url(r'^summary/$', 'admin_summary_page', {}, 'admin_summary_page'),
+    # Database-wide; disabling here because otherwise it needs org info :-/
+    # url(r'^summary/$', 'admin_summary_page', {}, 'admin_summary_page'),
 
     # Zone
     url(r'zone/(?P<zone_id>\w+)/$', 'zone_management', {}, 'zone_management'),

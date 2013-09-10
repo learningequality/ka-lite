@@ -78,6 +78,11 @@ urlpatterns += patterns('central.api_views',
     url(r'^api/', include(central.api_urls)),
 )
 
+urlpatterns += patterns('control_panel.views',
+    # HACK(bcipolli) Admin summary page (no org info needed)
+    url(r'^summary/$', 'admin_summary_page', {}, 'admin_summary_page'),
+)
+
 handler403 = 'central.views.handler_403'
 handler404 = 'central.views.handler_404'
 handler500 = 'central.views.handler_500'
