@@ -166,8 +166,7 @@ def delete_organization(request, org_id):
 
 
 def content_page(request, page):
-    from django.shortcuts import render_to_response
-    return render_to_response("central/content/%s.html" % page)
+    return render_to_response("central/content/%s.html" % page, context_instance=RequestContext(request))
 
 
 @render_to("central/glossary.html")
