@@ -416,3 +416,15 @@ def user_management_context(request, facility_id, group_id, page=1, per_page=25)
     if users:
         context["pageurls"] = {"next_page": next_page_url, "prev_page": previous_page_url}
     return context
+
+
+@require_authorized_admin
+@render_to("control_panel/admin_summary_page.html")
+def admin_summary_page(request, org_id=None):
+    zo = Zone.objects \
+        .annotate(nmodels=Sum("devicezone__device__client_sessions__models_uploaded")) \
+        .filter(nmodels__gt=0).order_by("-nmodels") \
+        .values("name", "id", "nmodels", "organization__id")
+    return {
+        "zones": zo,
+    }
