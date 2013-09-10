@@ -20,7 +20,7 @@ if UserLog.is_enabled():  # only enable admin if the feature is enabled.
 
 class UserLogSummaryAdmin(admin.ModelAdmin):
     pass
-if UserLog.is_enabled():  # only enable admin if the feature is enabled.
+if UserLog.is_enabled() or settings.CENTRAL_SERVER:  # only enable admin if the feature is enabled.
     admin.site.register(UserLogSummary, UserLogSummaryAdmin)
 
 class VideoFileAdmin(admin.ModelAdmin):

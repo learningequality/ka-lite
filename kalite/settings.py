@@ -197,7 +197,7 @@ else:
 
     MIDDLEWARE_CLASSES += (
         "securesync.middleware.DBCheck",
-        "securesync.middleware.AuthFlags",
+        "securesync.middleware.AuthFlags",  # this must come before main.middleware.SessionLanguage
         "main.middleware.SessionLanguage",
     )
     TEMPLATE_CONTEXT_PROCESSORS += ("main.custom_context_processors.languages",)
