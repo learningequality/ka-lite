@@ -37,20 +37,20 @@ NODE_CACHE = None
 def get_node_cache(node_type=None, force=False):
     global NODE_CACHE
     if NODE_CACHE is None or force:
-        NODE_CACHE      = generate_node_cache(get_topic_tree(force))
+        NODE_CACHE = generate_node_cache(get_topic_tree(force))
     if node_type is None:
         return NODE_CACHE
     else:
         return NODE_CACHE[node_type]
 
 
-EXERCISE_TOPICS = None
-def get_exercise_topics(force=False):
-    global EXERCISE_TOPICS, map_layout_file
-    if EXERCISE_TOPICS is None or force:
-        EXERCISE_TOPICS = json.loads(open(os.path.join(settings.DATA_PATH, map_layout_file)).read())
-    return EXERCISE_TOPICS
-
+KNOWLEDGEMAP_TOPICS = None
+def get_knowledgemap_topics(force=False):
+    global KNOWLEDGEMAP_TOPICS, map_layout_file
+    if KNOWLEDGEMAP_TOPICS is None or force:
+        kmap = json.loads(open(os.path.join(settings.DATA_PATH, map_layout_file)).read())
+        KNOWLEDGEMAP_TOPICS = sorted(kmap["topics"].values(), key=lambda k: (k["y"], k["x"]))
+    return KNOWLEDGEMAP_TOPICS
 
 ID2SLUG_MAP = None
 def get_id2slug_map(force=False):
@@ -334,15 +334,6 @@ def get_related_videos(exercises, topics=None, possible_videos=None):
         if "related_exercise" in video and video["related_exercise"]['id'] in exercise_ids:
             related_videos.append(video)
     return related_videos
-
-
-def get_all_midlevel_topics():
-    """Nobody knows what the true definition of these are, but this is the list of
-    exercise-related topics used in coach reports."""
-
-    topics = get_exercise_topics()["topics"].values()
-    topics = sorted(topics, key=lambda k: (k["y"], k["x"]))
-    return topics
 
 
 def is_sibling(node1, node2):

@@ -56,19 +56,22 @@ def zone_form(request, zone_id, org_id=None):
 def zone_management(request, zone_id, org_id=None):
     org = get_object_or_None(Organization, pk=org_id) if org_id else None
     zone = get_object_or_404(Zone, pk=zone_id)# if zone_id != "new" else None
+    own_device = Device.get_own_device()
 
     # Accumulate device data
     device_data = dict()
     for device in Device.objects.filter(devicezone__zone=zone).order_by("devicemetadata__is_demo_device", "name"):
 
-        sync_sessions = SyncSession.objects.filter(client_device=device)
         user_activity = UserLogSummary.objects.filter(device=device)
-
+        sync_sessions = SyncSession.objects.filter(client_device=device)
+        if not settings.CENTRAL_SERVER and device.id != own_device.id:  # Non-local sync sessions unavailable on distributed server
+            sync_sessions = None
+        
         device_data[device.id] = {
             "name": device.name or device.id,
             "is_demo_device": device.devicemetadata.is_demo_device,
-            "num_times_synced": sync_sessions.count(),
-            "last_time_synced": sync_sessions.aggregate(Max("timestamp"))["timestamp__max"],
+            "num_times_synced": sync_sessions.count() if sync_sessions is not None else None,
+            "last_time_synced": sync_sessions.aggregate(Max("timestamp"))["timestamp__max"] if sync_sessions is not None else None,
             "last_time_used":   None if user_activity.count() == 0 else user_activity.order_by("-end_datetime")[0],
             "counter": device.get_counter(),
         }
@@ -417,3 +420,15 @@ def user_management_context(request, facility_id, group_id, page=1, per_page=25)
     if users:
         context["pageurls"] = {"next_page": next_page_url, "prev_page": previous_page_url}
     return context
+
+
+@require_authorized_admin
+@render_to("control_panel/admin_summary_page.html")
+def admin_summary_page(request, org_id=None):
+    zo = Zone.objects \
+        .annotate(nmodels=Sum("devicezone__device__client_sessions__models_uploaded")) \
+        .filter(nmodels__gt=0).order_by("-nmodels") \
+        .values("name", "id", "nmodels", "organization__id")
+    return {
+        "zones": zo,
+    }

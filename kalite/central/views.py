@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
+from django.db.models import Sum
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
@@ -32,7 +33,7 @@ def homepage(request):
 
 @login_required
 @render_to("central/org_management.html")
-def org_management(request):
+def org_management(request, org_id=None):
     """Management of all organizations for the given user"""
 
     # get a list of all the organizations this user helps administer
@@ -165,10 +166,13 @@ def delete_organization(request, org_id):
     return HttpResponseRedirect(reverse("org_management"))
 
 
+def content_page(request, page):
+    return render_to_response("central/content/%s.html" % page, context_instance=RequestContext(request))
+
+
 @render_to("central/glossary.html")
 def glossary(request):
     return {}
-
 
 
 @login_required

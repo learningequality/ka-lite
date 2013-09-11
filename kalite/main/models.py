@@ -65,14 +65,17 @@ class VideoLog(SyncedModel):
         return VideoLog.objects.filter(user=user).aggregate(Sum("points")).get("points__sum", 0) or 0
         
     @classmethod
-    def update_video_log(cls, facility_user, youtube_id, additional_seconds_watched, points=0, new_points=0):
+    def update_video_log(cls, facility_user, youtube_id, total_seconds_watched, points=0, new_points=0):
         assert facility_user and youtube_id, "Updating a video log requires both a facility user and a YouTube ID"
         
         # retrieve the previous video log for this user for this video, or make one if there isn't already one
         (videolog, _) = cls.get_or_initialize(user=facility_user, youtube_id=youtube_id)
         
         # combine the previously watched counts with the new counts
-        videolog.total_seconds_watched += additional_seconds_watched
+        #
+        # Set total_seconds_watched directly, rather than incrementally, for robustness
+        #   as sometimes an update request fails, and we'd miss the time update!
+        videolog.total_seconds_watched = total_seconds_watched  
         videolog.points = min(max(points, videolog.points + new_points), cls.POINTS_PER_VIDEO)
         
         # write the video log to the database, overwriting any old video log with the same ID

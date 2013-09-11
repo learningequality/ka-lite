@@ -1,0 +1,26 @@
+{% extends "control_panel/base.html" %}
+{% load i18n %}
+
+{% block control_panel_content %}
+<div id="zone_container">
+        
+    <div class="sync_sessions">
+        <h2>Zones</h2>
+
+        <table class="simple-table">
+            <tr>
+                <th width="250px">Name</th>
+                <th width="250px"># models (total)</th>
+                <th width="200px">Link</th>
+            </tr>
+            {% for zone in zones %}
+                <tr>
+                    <td>{{ zone.name }}</td>
+                    <td>{{ zone.nmodels }}</td>
+                    <td><a href="{% url zone_management zone_id=zone.id, org_id=zone.organization__id %}">{{ zone.id }}</a></td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div><!-- zone_container -->
+{% endblock control_panel_content %}
