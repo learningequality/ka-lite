@@ -1,9 +1,9 @@
 #!/bin/bash
 
 SCRIPT_DIR=`dirname "${BASH_SOURCE[0]}"`
-pyexec=`"$SCRIPT_DIR/../python.sh"`
+pyexec=`"$SCRIPT_DIR/python.sh"`
 
-cd "$SCRIPT_DIR"
+pushd "$SCRIPT_DIR/../kalite" > /dev/null
 pids=`ps aux | grep cronserver.py | grep -v "grep" | awk '{print $2}'`
 
 if [ "$pids" ]; then
@@ -13,4 +13,5 @@ fi
 
 echo "Starting the cron server in the background."
 
-$pyexec cronserver.py &
+"$pyexec" cronserver.py &
+popd > /dev/null
