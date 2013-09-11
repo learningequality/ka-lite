@@ -14,7 +14,6 @@ html, html a { //Makes fonts look great!
   -webkit-font-smoothing: antialiased;
   text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
 }
-
 body{
   background: @light-green;
 }
@@ -47,6 +46,42 @@ a:hover{
 .form-section li{
   list-style: none;
 }
+
+//Icons
+// --------------------------------------------------
+
+.list-icons{
+  .horizontal-list;
+  font-size: 45px;
+  line-height: 10px;
+
+  li a{
+    color:@dark-gray;
+    &:hover{
+      color:black;
+    }
+  }
+}
+
+.icon,a.icon:before{
+  font-family: 'Mono Social Icons Font';
+  -webkit-text-rendering: optimizeLegibility;
+  -moz-text-rendering: optimizeLegibility;
+  -ms-text-rendering: optimizeLegibility;
+  -o-text-rendering: optimizeLegibility;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-font-smoothing: antialiased;
+  -ms-font-smoothing: antialiased;
+  -o-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+}
+
+a.icon:before {
+  content: attr(title);
+  font-size: 130%;
+}
+
 
 // Headings & Titles
 // --------------------------------------------------
@@ -85,61 +120,26 @@ h4{font-size: 118%;}
     line-height: 18px;
     display:block;
   }
- 
 
-//Icons
-// --------------------------------------------------
+.options {
+  .horizontal-list;
+  float: right;
 
-.symbol, a.symbol:before { // Makes the icons look nice on all the browsers
-  font-family: 'Mono Social Icons Font';
-  -webkit-text-rendering: optimizeLegibility;
-  -moz-text-rendering: optimizeLegibility;
-  -ms-text-rendering: optimizeLegibility;
-  -o-text-rendering: optimizeLegibility;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-font-smoothing: antialiased;
-  -ms-font-smoothing: antialiased;
-  -o-font-smoothing: antialiased;
-  font-smoothing: antialiased;
-}
+  margin-right: 20px;
+  margin-top: 22px;
 
-a.symbol:before {
-  content: attr(title);
-  font-size: 130%;
-}
-
-.list-icons{
-  
-  font-size: 45px;
-  line-height: 10px;
-
-  li a{
-    color:@dark-gray;
-    &:hover{
+  li {
+    a{
       color:black;
     }
-  }
-}
- .options {
-    .horizontal-list;
-    float: right;
-
-    margin-right: 20px;
-    margin-top: 22px;
-
-    li {
-      a{
-        color:black;
-      }
-      border: 1px solid @light-gray;
-      .border-radius(7px);
-      padding: 7px;
-      &:hover, &:focus {
-        background-color: @dark-gray;
-      }
+    border: 1px solid @light-gray;
+    .border-radius(7px);
+    padding: 7px;
+    &:hover, &:focus {
+      background-color: @dark-gray;
     }
   }
+}
 }
 
 // Buttons
@@ -204,7 +204,7 @@ a.symbol:before {
 }
 
 .nostyle-list li{
-    list-style-type: none;
+  list-style-type: none;
 }
 
 .list li{
@@ -273,7 +273,7 @@ a.symbol:before {
   }
 
   .header__horizontal-menu__right{
-   
+
     padding: 20px 5px 0px 5px;
     &.js {
       display: none;
