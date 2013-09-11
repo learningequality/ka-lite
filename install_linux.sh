@@ -1,7 +1,7 @@
 #!/bin/bash
 
 current_dir=`dirname "${BASH_SOURCE[0]}"`
-SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
+SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )/scripts"
 pyexec=`"$SCRIPT_DIR"/python.sh`
 
 "$pyexec" "$current_dir/kalite/manage.py" install
@@ -17,7 +17,7 @@ if [ $initd_available ]; then
         case $CONFIRM in
             y|Y)
                 echo
-                sudo "$SCRIPT_DIR/kalite/runatboot.sh"
+                sudo "$SCRIPT_DIR/runatboot.sh"
                 echo
                 break
                 ;;
