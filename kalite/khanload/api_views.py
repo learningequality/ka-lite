@@ -174,7 +174,7 @@ def update_all_central_callback(request):
             video_logs.append({
                 "youtube_id": youtube_id,
                 "total_seconds_watched": video['seconds_watched'],
-                "points": video['points'],
+                "points": VideoLog.calc_points(video['seconds_watched'], video['duration']),
                 "complete": video['completed'],
                 "completion_timestamp": convert_ka_date(video['last_watched']) if video['completed'] else None,
             })
@@ -197,11 +197,12 @@ def update_all_central_callback(request):
 
         try:
             completed = exercise['streak'] >= 10
+            basepoints = NODE_CACHE['Exercise'][slug]['basepoints']
             exercise_logs.append({
                 "exercise_id": slug,
-                "streak_progress": min(100, 100*exercise['streak']/10),  # duplicates logic elsewhere
+                "streak_progress": min(100, 100 * exercise['streak']/10),  # duplicates logic elsewhere
                 "attempts": exercise['total_done'],
-                "points": min(10, exercise['total_correct']) * 12,
+                "points": ExerciseLog.calc_points(basepoints, ncorrect=exercise['streak'], add_randomness=False),  # no randomness when importing from KA
                 "complete": completed,
                 "attempts_before_completion": exercise['total_done'] if not exercise['practiced'] else None,  #can't figure this out if they practiced after mastery.
                 "completion_timestamp": convert_ka_date(exercise['proficient_date']) if completed else None,
