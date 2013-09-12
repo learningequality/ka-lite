@@ -17,7 +17,7 @@
     <div class="row-fluid">
         <div class="span12">
             <div class="ka-quote">
-               65% of the world lacks internet access. 100% of the world needs education.
+               <a href="{% url content_page page='mission' %}">65% of the world lacks internet access. 100% of the world needs education.</a>
                <p>
                     KA Lite is an offline version of  <a href="http://www.khanacademy.org/">Khan Academy</a>
                     that runs on almost anything.
@@ -33,7 +33,7 @@
         <div class="span4">
             <h2>What is KA Lite?</h2>
 
-            <a href="">
+            <a href="{% url content_page page='kalite' %}">
             <div class="round-border-points"></div>
             </a>
             <p>
@@ -43,7 +43,7 @@
         <div class="span4">
             <h2>How do I use it?</h2>
 
-            <a href="{% url wiki path='installation' %}">
+            <a href="{% url content_page page='users_manual' %}">
             <div class="round-border-install"></div>
             </a>
             <p>
@@ -55,7 +55,7 @@
         <div class="span4">
             <h2 class="">Our mission</h2>
 
-            <a href="{% url about %}">
+            <a href="{% url content_page page='about' %}">
             <div class="round-border-rural"></div>
             </a>
 
@@ -71,7 +71,7 @@
 <div class="row-fluid button-container">
 
     <div class="span12">
-        <a href="/installation"><button class="button-install">Install now! </button></a>
+        <a href="{% url wiki path='installation' %}"><button class="button-install">Install now! </button></a>
     </div>
 </div>
 </div>
@@ -96,7 +96,7 @@
             <h2>Questions?</h2>
                 <p>Tell us about your needs.
 
-                <a href="{% url contact_wizard type='deployment' %}">
+                <a href="{% url contact_wizard %}">
                    Contact Us.
                </a>
             </p>
@@ -113,10 +113,10 @@
             <div class="span6">
                <ul class="list-icons">
             <li>
-                <a href="https://www.facebook.com/kaliteproject" class="symbol">&#xe227;</a>       
+                <a href="https://www.facebook.com/kaliteproject" class="icon">circlefacebook</a>       
             </li>
             <li>
-                <a href="https://twitter.com/ka_lite" class="symbol">&#xe286;</a>      
+                <a href="https://twitter.com/ka_lite" class="icon">circletwitterbird</a>      
             </li>
         </ul>
  

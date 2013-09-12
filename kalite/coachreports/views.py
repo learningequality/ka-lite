@@ -25,7 +25,7 @@ from settings import LOG as logging
 from shared.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
 from utils.general import max_none
 from utils.internet import StatusException
-from utils.topic_tools import get_topic_exercises, get_topic_videos, get_all_midlevel_topics
+from utils.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics
 
 
 def get_accessible_objects_from_logged_in_user(request):
@@ -111,8 +111,8 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
     Context done separately, to be importable for similar pages.
     """
     user = get_user_from_request(request=request)
-    topics = get_all_midlevel_topics()
-    topic_slugs = [t["id"] for t in topics]
+    topic_slugs = [t["id"] for t in get_knowledgemap_topics()]
+    topics = [NODE_CACHE["Topic"][slug] for slug in topic_slugs]
 
     user_id = user.id
     exercise_logs = list(ExerciseLog.objects \
@@ -221,7 +221,7 @@ def tabular_view(request, facility, report_type="exercise"):
     """Tabular view also gets data server-side."""
 
     # Get a list of topics (sorted) and groups
-    topics = get_all_midlevel_topics()
+    topics = get_knowledgemap_topics()
     (groups, facilities) = get_accessible_objects_from_logged_in_user(request)
     context = plotting_metadata_context(request, facility=facility)
     context.update({
@@ -284,10 +284,11 @@ def tabular_view(request, facility, report_type="exercise"):
                 log_table[exlogs[exlog_idx]["exercise_id"]] = exlogs[exlog_idx]
                 exlog_idx += 1
 
-            context["students"].append({
+            context["students"].append({  # this could be DRYer
                 "first_name": user.first_name,
                 "last_name": user.last_name,
                 "username": user.username,
+                "name": user.get_name(),
                 "id": user.id,
                 "exercise_logs": log_table,
             })
@@ -313,10 +314,11 @@ def tabular_view(request, facility, report_type="exercise"):
                 log_table[vidlogs[vidlog_idx]["youtube_id"]] = vidlogs[vidlog_idx]
                 vidlog_idx += 1
 
-            context["students"].append({
+            context["students"].append({  # this could be DRYer
                 "first_name": user.first_name,
                 "last_name": user.last_name,
                 "username": user.username,
+                "name": user.get_name(),
                 "id": user.id,
                 "video_logs": log_table,
             })
