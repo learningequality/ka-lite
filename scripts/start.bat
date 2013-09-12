@@ -2,7 +2,7 @@
 
 rem determine the script directory (could be in scripts, could be in root folder)
 set SCRIPT_DIR=%~dp0
-if exist "%SCRIPT_DIR%\get_port.bat" (
+if exist "%SCRIPT_DIR%\python.bat" (
     set KALITE_DIR=%SCRIPT_DIR%\..\kalite
 ) else (
     set SCRIPT_DIR=%SCRIPT_DIR%\scripts
