@@ -23,7 +23,6 @@ import datetime
 import json
 import oauth
 import os
-import readline
 import requests
 import sys
 import time
