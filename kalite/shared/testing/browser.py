@@ -218,6 +218,34 @@ class BrowserTestCase(KALiteTestCase):
         self.browser_next_form_element(num_expected_links=num_expected_links)
 
 
+
+    def browser_wait_for_element(self, css_selector, max_wait_time=4, step_time=0.25):
+        total_wait_time = 0
+        element = None
+        while total_wait_time < max_wait_time:
+            
+            time.sleep(step_time)
+            total_wait_time += step_time
+            try:
+                element = self.browser.find_element_by_css_selector(css_selector)
+                break
+            except:
+                pass
+        return element
+
+    def browser_wait_for_no_element(self, css_selector, max_wait_time=4, step_time=0.25):
+        total_wait_time = 0
+        while total_wait_time < max_wait_time:
+            
+            time.sleep(step_time)
+            total_wait_time += step_time
+            try:
+                self.browser.find_element_by_css_selector(css_selector)
+                pass
+            except:
+                break
+
+
     # Actual testing methods
     def empty_form_test(self, url, submission_element_id):
         """
@@ -228,12 +256,4 @@ class BrowserTestCase(KALiteTestCase):
         self.browser_activate_element(id=submission_element_id)  # explicitly set the focus, to start
         self.browser_send_keys(Keys.RETURN)
         # how to wait for page change?  Will reload the same page.
-        for i in range(10):  # up to 4 seconds
-            time.sleep(0.25)
-            try:
-                self.browser.find_element_by_css_selector(".errorlist")
-                break
-            except:
-                pass
-        # Note that if there's a server error, this will assert.
-        self.assertNotEqual(self.browser.find_element_by_css_selector(".errorlist"), None, "Make sure there's an error.")
+        self.assertNotEqual(self.browser_wait_for_element(".errorlist"), None, "Make sure there's an error.")
