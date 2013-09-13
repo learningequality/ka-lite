@@ -223,12 +223,12 @@ def register(request, backend, success_url=None, form_class=None,
                 org_form.instance.owner = new_user
                 org_form.save()
                 org = org_form.instance
-                org.users.add(new_user)
+                org.add_member(new_user)
 
                 # Now add a zone, and link to the org
                 zone = Zone(name=org_form.instance.name + " Default Zone")
                 zone.save()
-                org.zones.add(zone)
+                org.add_zone(zone)
 
                 # Finally, try and subscribe the user to the mailing list
                 # (silently; don't return anything to the user)

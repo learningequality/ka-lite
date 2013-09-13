@@ -137,7 +137,7 @@ $(function() {
 							</a></td>
 							<td>
 								{% if zone.is_deletable %}
-								<a href="{% url delete_zone org_id=org.id zone_id=zone.id %}" onclick="return confirm('Are you sure you want to delete {{zone.name}}?')">
+								<a class="zone-delete-link" href="{% url delete_zone org_id=org.id zone_id=zone.id %}" onclick="return confirm('Are you sure you want to delete {{zone.name}}?')">
 									 Delete
 								</a>
 								{% endif %}

@@ -243,11 +243,10 @@ def login(request, facility):
             request.session["facility_user"] = user
             messages.success(request, _("You've been logged in! We hope you enjoy your time with KA Lite ") +
                                         _("-- be sure to log out when you finish."))
-            return HttpResponseRedirect(
-                form.non_field_errors()
-                or request.next
-                or reverse("coach_reports") if form.get_user().is_teacher else reverse("account_management")
-            )
+            landing_page = reverse("coach_reports") if form.get_user().is_teacher else None
+            landing_page = landing_page or (reverse("account_management") if settings.CONFIG_PACKAGE != "RPi" else reverse("homepage"))
+
+            return HttpResponseRedirect(form.non_field_errors() or request.next or landing_page)
         else:
             messages.error(
                 request,
