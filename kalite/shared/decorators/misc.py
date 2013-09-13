@@ -56,10 +56,13 @@ def facility_from_request(handler=None, request=None, *args, **kwargs):
                 Settings.set("default_facility", facility.id)
         elif "facility_user" in request.session:
             facility = request.session["facility_user"].facility
+        elif settings.CENTRAL_SERVER:  # following options are distributed-only
+            facility = None
         elif Facility.objects.count() == 1:
             facility = Facility.objects.all()[0]
         else:
             facility = get_object_or_None(Facility, pk=Settings.get("default_facility"))
+        
         return handler(request, *args, facility=facility, **kwargs)
     return wrapper_fn if not request else wrapper_fn(request=request, *args, **kwargs)
 
