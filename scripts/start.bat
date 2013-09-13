@@ -1,4 +1,4 @@
-rem @echo off
+@echo off
 
 rem determine the script directory (could be in scripts, could be in root folder)
 set SCRIPT_DIR=%~dp0

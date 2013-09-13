@@ -1,24 +1,23 @@
-from django.core.management.base import BaseCommand, CommandError
-from django.core.management import call_command
-from django.utils.translation import ugettext_lazy as _
-
-from chronograph.models import Job
-
 import logging
 import sys
 import warnings
 from datetime import datetime
-from time import sleep, time
 from threading import Thread
+from time import sleep, time
 from optparse import make_option
-
 try:
     import memory_profiler
 except Exception as e:
     pass
 import gc
 
-logger = logging.getLogger('chronograph.commands.cronserver')
+from django.core.management.base import BaseCommand, CommandError
+from django.core.management import call_command
+from django.utils.translation import ugettext_lazy as _
+
+from chronograph.models import Job
+from settings import LOG as logger
+
 
 class CronThread(Thread):
     daemon = True
@@ -41,7 +40,7 @@ class CronThread(Thread):
             logger.info("%sRunning %d due jobs... (%s)" % (prof_string, jobs.count(), ", ".join(['"%s"' % job.name for job in jobs])))
             call_command('cron')
         else:
-            logger.info("%sNo jobs due to run." % prof_string)
+            logger.debug("%sNo jobs due to run." % prof_string)
 
         if self.do_gc:
             gc.collect()
@@ -55,7 +54,7 @@ class Command(BaseCommand):
         make_option('-g', '--gc',
             action='store_true',
             dest='gc',
-            default=False,
+            default=True,  # known memory leak, so keep True by default
             help='Force garbage collection after every execution'),
         make_option('-p', '--prof',
             action='store_true',
@@ -64,16 +63,13 @@ class Command(BaseCommand):
             help='Print memory profiling information'),
     )
     def handle( self, *args, **options ):
-        from django.core.management import call_command
-        
-        logging.basicConfig(stream=sys.stdout, level=logging.INFO,
+
+        logging.basicConfig(stream=sys.stdout,
                             datefmt="%Y-%m-%d %H:%M:%S",
                             format="[%(asctime)-15s] %(message)s")
-        if len(args) == 0:
-            time_wait = 60
-        
+
         try:
-            time_wait = float(args[0])
+            time_wait = 60 if not args else float(args[0])
         except:
             raise CommandError("Invalid wait time: %s is not a number." % args[0])
             
