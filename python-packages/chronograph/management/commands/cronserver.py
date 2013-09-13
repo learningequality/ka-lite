@@ -51,11 +51,11 @@ class Command(BaseCommand):
              "interval.  This is meant primarily for development use.")
     
     option_list = BaseCommand.option_list + (
-        make_option('-g', '--gc',
-            action='store_true',
+        make_option('-g', '--nogc',
+            action='store_false',
             dest='gc',
             default=True,  # known memory leak, so keep True by default
-            help='Force garbage collection after every execution'),
+            help='Block garbage collection after every execution'),
         make_option('-p', '--prof',
             action='store_true',
             dest='prof',
