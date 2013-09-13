@@ -169,8 +169,8 @@ class BrowserTestCase(KALiteTestCase):
         time.sleep(0.50) # wait for the message to get created via AJAX
 
         # Get messages (and limit by type)    
-        messages = self.browser.find_elements_by_class_name("message")
-        if type:
+        messages = self.browser.find_elements_by_class_name("alert")
+        if message_type:
             messages = [m for m in messages if message_type in m.get_attribute("class")]
 
         # Check that we got as many as expected
@@ -228,6 +228,12 @@ class BrowserTestCase(KALiteTestCase):
         self.browser_activate_element(id=submission_element_id)  # explicitly set the focus, to start
         self.browser_send_keys(Keys.RETURN)
         # how to wait for page change?  Will reload the same page.
-        time.sleep(1)
+        for i in range(10):  # up to 4 seconds
+            time.sleep(0.25)
+            try:
+                self.browser.find_element_by_css_selector(".errorlist")
+                break
+            except:
+                pass
         # Note that if there's a server error, this will assert.
         self.assertNotEqual(self.browser.find_element_by_css_selector(".errorlist"), None, "Make sure there's an error.")

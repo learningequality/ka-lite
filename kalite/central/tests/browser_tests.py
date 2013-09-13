@@ -34,12 +34,12 @@ class KALiteCentralBrowserTestCase(BrowserTestCase):
         self.browser_form_fill(first_name)  # first name
         self.browser_form_fill(last_name)  # last name
         self.browser_form_fill(username)  #email
-        self.browser_form_fill(org_name, num_expected_links=1)  #org name
+        self.browser_form_fill(org_name)  #org name
         self.browser_form_fill(password)  #password
         self.browser_form_fill(password)  #password (again)
         self.browser_form_fill("")  #newsletter subscription
-        self.browser_form_fill(Keys.SPACE, num_expected_links=1)  # checkbox 2: EULA
-        self.browser_form_fill(Keys.SPACE, num_expected_links=1)  # checkbox 3: EULA2
+        self.browser_form_fill(Keys.SPACE)  # checkbox 2: EULA
+        self.browser_form_fill(Keys.SPACE)  # checkbox 3: EULA2
         self.browser_send_keys(Keys.RETURN)  # submit the form
 
         # Make sure that the page changed to the "thank you" confirmation page
@@ -269,7 +269,7 @@ class RegressionTests(KALiteCentralBrowserTestCase):
         self.browser_login_user(   username=user1_uname, password=user1_password)
 
         # Verify that we can go to the page with the correct user
-        user1_zone_link = self.browser.find_element_by_css_selector(".zones a.zone-manage-link").get_attribute("href")
+        user1_zone_link = self.browser.find_element_by_css_selector(".zone-manage-link").get_attribute("href")
         self.browse_to(user1_zone_link)
         self.assertEqual(self.browser.current_url, user1_zone_link)
 
@@ -280,6 +280,7 @@ class RegressionTests(KALiteCentralBrowserTestCase):
         self.browser_login_user(   username=user2_uname, password=user2_password)
 
         # Now try 
-        self.assertNotEqual(self.browser.current_url, user1_zone_link)
+        self.browse_to(user1_zone_link)
+        self.assertIn(self.reverse("auth_login"), self.browser.current_url)
         self.browser_check_django_message(message_type="error", contains="You must be logged in with an account authorized to view this page.", num_messages=1)
 
