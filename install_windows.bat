@@ -1,9 +1,9 @@
-@echo off
+rem @echo off
 set SCRIPT_DIR=%~dp0
+set KALITE_DIR=%SCRIPT_DIR%\kalite
 setlocal enabledelayedexpansion
 
-copy %0 "%SCRIPT_DIR%\kalite\writetest.temp > nul
-
+copy %0 "%KALITE_DIR%\writetest.temp" > nul
 if %ERRORLEVEL% == 1 (
 	echo -------------------------------------------------------------------
 	echo You do not have permission to write to this directory!
