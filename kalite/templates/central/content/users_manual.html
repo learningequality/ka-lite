@@ -1,12 +1,1 @@
-{% extends "central/content_page.html" %}
-{% block title %}
-User's Manual
-{% endblock title %}
-
-{% block home_active %}active{% endblock home_active %}
-
-{% block content %}
-<div id="user-manual-container">
-	<iframe src="{% url wiki path='user-s-manual' %}" width="100%" height="800px;"></iframe>		
-</div>
-{% endblock content %}
+{% include "central/content/wiki_page.html" with path="user-s-manual" title="User's Manual" active="home" %}
