@@ -313,6 +313,12 @@ class OrganizationDeletionTestCase(OrganizationManagementTestCase):
             self.assertEqual(self.browser.find_element_by_css_selector(".icon-trash"), None, "Make sure 'delete' icon does not appear.")
 
 
+    def test_issue_697(self):
+        self.facility = Facility(name=self.FACILITY_NAME)
+        self.facility.save()
+        self.test_delete_org()
+
+
 class ZoneDeletionTestCase(OrganizationManagementTestCase):
     def setUp(self):
         super(ZoneDeletionTestCase, self).setUp()
@@ -384,7 +390,10 @@ class ZoneDeletionTestCase(OrganizationManagementTestCase):
         with self.assertRaises(NoSuchElementException):
             self.assertEqual(self.browser.find_element_by_css_selector(".zone-delete-link"), None, "Make sure 'delete' link is gone.")
 
-
+    def test_issue_697(self):
+        self.facility = Facility(name=self.FACILITY_NAME)
+        self.facility.save()
+        self.test_delete_zone_from_org_admin()
 
 
 class RegressionTests(KALiteCentralBrowserTestCase):
@@ -416,4 +425,3 @@ class RegressionTests(KALiteCentralBrowserTestCase):
         self.browse_to(user1_zone_link)
         self.assertIn(self.reverse("auth_login"), self.browser.current_url)
         self.browser_check_django_message(message_type="error", contains="You must be logged in with an account authorized to view this page.", num_messages=1)
-
