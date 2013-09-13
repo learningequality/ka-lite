@@ -40,7 +40,7 @@ $('a.video-unavailable').attr('title', '{% trans "This video is not downloaded."
 <ol>
     {% for subtopic in topics %}
     <li>
-        <span><a href="{{ subtopic.path }}" class="topic-{% if subtopic.nvideos_local == 0 %}un{% endif %}available" title="{{subtopic.nvideos_local}}/{{subtopic.nvideos_known}} {% trans "video(s) are downloaded." %}">{% trans subtopic.title %}</a></span>
+        <span><a href="{{ subtopic.path }}" class="topic-{% if not online_vids_available and subtopic.nvideos_local == 0 %}un{% endif %}available" title="{{subtopic.nvideos_local}}/{{subtopic.nvideos_known}} {% trans "video(s) are downloaded." %}">{% trans subtopic.title %}</a></span>
     </li>
     {% endfor %}
     <br/>
@@ -54,7 +54,7 @@ $('a.video-unavailable').attr('title', '{% trans "This video is not downloaded."
     <li>
         <!--<a href="mplayer:///khan/videofiles/{{ video.youtube_id }}.ogv">{{ video.title }}</a>-->
         <span class="progress-circle" data-youtube-id="{{ video.youtube_id }}"></span>
-        <a class="video-link video-{% if not video.on_disk %}un{% endif %}available" href="v/{{ video.readable_id }}/">{% trans video.title %}</a>
+        <a class="video-link video-{% if not video.on_disk and not online_vids_available %}un{% endif %}available" href="v/{{ video.readable_id }}/">{% trans video.title %}</a>
     </li>
     {% endfor %}
     <br/>

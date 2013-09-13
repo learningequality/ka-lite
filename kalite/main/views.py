@@ -28,6 +28,7 @@ from securesync.views import require_admin, facility_required
 from settings import LOG as logging
 from shared.decorators import require_admin, backend_cache_page
 from shared.jobs import force_job
+from shared.videos import get_video_urls
 from utils import topic_tools
 from utils.internet import am_i_online, is_loopback_connection, JsonResponse
 
@@ -124,21 +125,19 @@ def topic_context(topic):
         "videos": videos,
         "exercises": exercises,
         "topics": my_topics,
+        "online_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),
+    
+
     }
     return context
 
 
 @backend_cache_page
 @render_to("video.html")
-def video_handler(request, video, prev=None, next=None):
-    video_exists = VideoFile.objects.filter(pk=video['youtube_id']).exists()
+def video_handler(request, video, format="mp4", prev=None, next=None):
 
-    # If we detect that a video exists, but it's not on disk, then
-    #   force the database to update.  No race condition here for saving
-    #   progress in a VideoLog: it is not dependent on VideoFile.
-    if not video_exists and topic_tools.is_video_on_disk(video['youtube_id']):
-        force_job("videoscan")
-        video_exists = True
+    video_on_disk = topic_tools.is_video_on_disk(video['youtube_id'])
+    video_exists = video_on_disk or bool(settings.BACKUP_VIDEO_SOURCE)
 
     if not video_exists:
         if request.is_admin:
@@ -148,6 +147,12 @@ def video_handler(request, video, prev=None, next=None):
             messages.warning(request, _("This video was not found! Please contact your teacher or an admin to have it downloaded."))
         elif not request.is_logged_in:
             messages.warning(request, _("This video was not found! You must login as an admin/teacher to download the video."))
+
+    video["stream_type"] = "video/%s" % format
+
+    if video_exists and not video_on_disk:
+        messages.success(request, "Got video content from %s" % video["stream_url"])
+
     context = {
         "video": video,
         "title": video["title"],

@@ -19,3 +19,17 @@ def download_video(youtube_id, format="mp4", callback=None):
 
 def delete_downloaded_files(youtube_id):
     return utils.videos.delete_downloaded_files(youtube_id, settings.CONTENT_ROOT)
+
+
+def get_video_urls(video_id, format, video_on_disk=True):
+    if not video_on_disk and settings.BACKUP_VIDEO_SOURCE:
+        stream_url = settings.BACKUP_VIDEO_SOURCE(video_id, format)
+        thumbnail_url = None
+        subtitles_url = None
+    else:
+        base_url = settings.CONTENT_URL + video_id
+        stream_url = base_url + ".%s" % format
+        thumbnail_url = base_url + ".png"
+        subtitles_url = base_url + ".srt"
+
+    return (stream_url, thumbnail_url, subtitles_url)

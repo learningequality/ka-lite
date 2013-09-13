@@ -285,6 +285,10 @@ else:
     # TODO(jamalex): this will currently only work when caching is disabled, as the conditional logic is in the Django template
     USE_MPLAYER = getattr(local_settings, "USE_MPLAYER", False) if CACHE_TIME == 0 else False
 
+    # Should be a function that receives a video file (youtube ID), and returns a URL to a video stream
+    BACKUP_VIDEO_SOURCE = getattr(local_settings, "BACKUP_VIDEO_SOURCE", None)
+    assert not BACKUP_VIDEO_SOURCE or CACHE_TIME == 0, "If BACKUP_VIDEO_SOURCE, then CACHE_TIME must be 0"
+
 
 ########################
 # Debugging and testing
