@@ -43,7 +43,7 @@
         <div class="span4">
             <h2>How do I use it?</h2>
 
-            <a href="{% url content_page page='users_manual' %}">
+            <a href="{% url wiki path='user-s-manual' %}">
             <div class="round-border-install"></div>
             </a>
             <p>
@@ -53,16 +53,16 @@
             </p>
         </div>
         <div class="span4">
-            <h2 class="">Our mission</h2>
+            <h2 class="">Who is using it?</h2>
 
-            <a href="{% url content_page page='about' %}">
+            <a href="{% url content_page page='users' %}">
             <div class="round-border-rural"></div>
             </a>
 
             <p>
-                Bringing the online education<br/>
-                revolution to rural<br/>
-                communities.
+                Read about our partnerships<br/>
+                and world-wide installations.<br/>
+                <a href="{% url contact_wizard type='deployment' %}">Tell us about yours.</a></br>
             </p>
         </div>
 
