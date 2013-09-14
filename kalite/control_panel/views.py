@@ -104,7 +104,7 @@ def delete_zone(request, org_id, zone_id):
     zone = Zone.objects.get(pk=zone_id)
     if not zone.has_dependencies(passable_classes=["Organization"]):
         zone.delete()
-        messages.success(request, "You have succesfully deleted " + zone.name + ".")
+        messages.success(request, "You have successfully deleted " + zone.name + ".")
     else:
         messages.warning(request, "You cannot delete this zone because it is syncing data with with %d device(s)" % zone.devicezone_set.count())
     return HttpResponseRedirect(reverse("org_management"))
