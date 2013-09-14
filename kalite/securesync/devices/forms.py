@@ -8,17 +8,44 @@ from models import RegisteredDevicePublicKey, Zone
 
 
 class RegisteredDevicePublicKeyForm(forms.ModelForm):
-    callback_url = forms.CharField(widget=forms.HiddenInput, required=False)
+    callback_url = forms.CharField(widget=forms.HiddenInput(), required=False)
+    zone = forms.ChoiceField()
 
     def __init__(self, user, callback_url=None, *args, **kwargs):
         super(RegisteredDevicePublicKeyForm, self).__init__(*args, **kwargs)
-        if not user.is_superuser:
-            self.fields['zone'].queryset = Zone.objects.filter(organization__in=user.organization_set.all())
+
+        # Get the zones
+        if user.is_superuser:
+            self.zones = Zone.objects.all()
+        else:
+            self.zones = Zone.objects.filter(organization__in=user.organization_set.all())
+
+
+        # Compute the choices
+        self.zone_choices = []
+        for zone in self.zones:
+            org_name = zone.organization_set.all()[0] if zone.organization_set.count() > 0 else "[Headless]"
+            self.zone_choices.append((zone.id, "%s / %s" % (org_name, zone.name)))
+
+        self.fields['zone'].choices = self.zone_choices
         self.fields["callback_url"].initial = callback_url
 
     class Meta:
         model = RegisteredDevicePublicKey
         fields = ("zone", "public_key",)
+
+    def clean_zone(self):
+        """
+        Convert back into a valid zone object.
+        """
+        zone_id = self.cleaned_data["zone"]
+        if zone_id not in [tup[0] for tup in self.fields["zone"].choices]:
+            raise forms.ValidationError("You must select a zone from the given choices.")
+        try:
+            zone = Zone.objects.get(id=zone_id)
+        except:
+            raise forms.ValidationError("You must select a valid Zone.")
+        return zone
 
     def clean_public_key(self):
         public_key = self.cleaned_data["public_key"]
