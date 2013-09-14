@@ -41,7 +41,8 @@ def register_device(request):
         #   this will only fail (currently) if the central server version
         #   is less than the version of a client--something that should never happen
         try:
-            models = serializers.deserialize("json", data["client_device"], src_version=version.VERSION, dest_version=version.VERSION)
+            local_version = Device.get_own_device().get_version()
+            models = serializers.deserialize("json", data["client_device"], src_version=local_version, dest_version=local_version)
         except db_models.FieldDoesNotExist as fdne:
             raise Exception("Central server version is lower than client version.  This is ... impossible!")
         client_device = models.next().object
@@ -196,7 +197,8 @@ def get_server_info(request):
     for field in request.GET.get("fields", "").split(","):
         
         if field == "version":
-            device_info[field] = version.VERSION
+            device = device or Device.get_own_device()
+            device_info[field] = device.get_version()
 
         elif field == "video_count":
             from main.models import VideoFile

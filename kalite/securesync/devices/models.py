@@ -184,6 +184,18 @@ class Device(SyncedModel):
         # TODO(jamalex): we skip out here, because otherwise self-signed devices will fail
         pass
 
+    def get_version(self):
+        """
+        Get this property through an accessor function,
+        so that we can guarantee that the DB-stored version
+        matches the hard-coded software version.
+        """
+        own_device = Device.get_own_device()
+        if self == own_device and self.version != kalite.VERSION:
+            self.version = kalite.VERSION
+            self.save()
+        return self.version
+
     @classmethod
     def get_default_version(cls):
         """Accessor method to probe the default version of a device (or field)"""
@@ -207,10 +219,11 @@ class Device(SyncedModel):
         kwargs["name"] = kwargs.get("name", get_host_name())
         own_device = cls(**kwargs)
         own_device.set_key(crypto.get_own_key())
-        own_device.save(
-            is_trusted=settings.CENTRAL_SERVER,
-            own_device=own_device,  # all objects must be signed by this device and increment counters;
-        )                           #   allowing passing this parameter breaks an infinite loop.
+        own_device.sign(device=own_device)
+
+        # imported=True is for when the local device should not sign the object,
+        #   and when counters should not be incremented.  That's our situation here!
+        super(Device, own_device).save(imported=True, increment_counters=False)
 
         metadata = own_device.get_metadata()
         metadata.is_own_device = True
@@ -259,7 +272,9 @@ class Device(SyncedModel):
         #     raise ValidationError("ID must match device's public key.")
         if self.signed_by_id and self.signed_by_id != self.id and not self.signed_by.get_metadata().is_trusted:
             raise ValidationError("Devices must either be self-signed or signed by a trusted authority.")
+
         super(Device, self).save(*args, **kwargs)
+
         if is_trusted:
             metadata = self.get_metadata()
             metadata.is_trusted = True

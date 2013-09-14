@@ -27,7 +27,13 @@ def system_script_extension(system=None):
     """
     The extension for the one script that could be considered "the os script" for the given system..
     """
-    return ".bat" if is_windows(system) else ".sh"
+    exts = {
+        "windows": ".bat",
+        "darwin": ".command",
+        "linux": ".sh",
+    }
+    system = system or platform.system()
+    return exts.get(system.lower(), ".sh")
 
 
 def system_specific_scripts(system=None):

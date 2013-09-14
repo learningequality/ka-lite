@@ -43,7 +43,10 @@ class IncludeBlockNode(template.Node):
         return None
 
     def render(self, context):
-        t = get_template(self.include_file)
+        try:
+            t = get_template(self.include_file)
+        except:
+            t = get_template(context[self.include_file])
         node = self._get_node(t, self.block_name)
         if node:
             return node.nodelist.render(context)

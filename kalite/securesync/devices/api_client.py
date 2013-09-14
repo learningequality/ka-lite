@@ -97,7 +97,7 @@ class RegistrationClient(BaseClient):
 
         # When we register, we should receive the model information we require.
         #   Make sure to deserialize for our version.
-        return (serializers.deserialize("versioned-json", r.content, dest_version=kalite.VERSION), r)
+        return (serializers.deserialize("versioned-json", r.content, dest_version=own_device.get_version()), r)
 
 
     def register_via_preregistered_key(self):
@@ -125,4 +125,4 @@ class RegistrationClient(BaseClient):
         else:
             # Save to our local store.  By NOT passing a src_version, 
             #   we're saying it's OK to just store what we can.
-            return serializers.deserialize("versioned-json", r.content, src_version=None, dest_version=own_device.version)
+            return serializers.deserialize("versioned-json", r.content, src_version=None, dest_version=own_device.get_version())

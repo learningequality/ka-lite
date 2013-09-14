@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import os, sys, warnings
 
+# We are overriding a few packages (like Django) from the system path.
+#   Suppress those warnings
 warnings.filterwarnings('ignore', message=r'Module .*? is being added to sys\.path', append=True)
 
 PROJECT_PATH = os.path.dirname(os.path.realpath(__file__))

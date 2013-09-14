@@ -94,48 +94,40 @@ class Key(object):
                     pass
                 return False
 
-    def sign_large_file(self, filename, chunk_size=int(1E5)):
+    def _hash_large_file(self, filename, chunk_size=None):
+        """
+        Process a file into a single hash, by taking
+        bite-sized chunks.
+        Useful for signing the full file.
+        """
+        hasher = hashlib.sha256()
+        chunk_size = chunk_size or hasher.block_size * 1000  #(64,000 on my machine)
+
+        with open(filename, "rb") as fp:
+            while True:
+                # Chunk file into chunks of 1K.
+                #   Write each chunk as a separate signature.
+                bytes = fp.read(chunk_size)
+                if not bytes:  # stop when we've hit EOF
+                    break
+                hasher.update(bytes)
+        return hasher.hexdigest()
+
+    def sign_large_file(self, filename, chunk_size=None):
         """
         Sign a large file by taking in bite-sized chunks,
         signing each chunk, then appending each signature
         with newlines.
         """
-        chunk_signature_list = []
-        with open(filename, "rb") as fp:
-            while True:
-                # Chunk file into chunks of 1K.
-                #   Write each chunk as a separate signature.
-                bytes = fp.read(chunk_size)
-                if not bytes:  # stop when we've hit EOF
-                    break
-                chunk_signature_list.append(self.sign(encode_base64(bytes)))
-        signature = "\n".join(chunk_signature_list)
-        return signature
+        return self.sign(self._hash_large_file(filename, chunk_size))
 
-    def verify_large_file(self, filename, signature, chunk_size=int(1E5)):
+    def verify_large_file(self, filename, signature, chunk_size=None):
         """
         Verify a large file by taking in bite-sized chunks,
         signing each chunk, then comparing to a set of signatures,
         either as a list or separated by newlines.
         """
-        chunk_signature_list = signature if isinstance(signature, list) else signature.split("\n")
-
-        cur_chunk = 0
-        with open(filename, "rb") as fp:
-            while True:
-                # Chunk file into chunks of 1K.
-                #   Write each chunk as a separate signature.
-                bytes = fp.read(chunk_size)
-                if not bytes:  # stop when we've hit EOF
-                    break
-                elif cur_chunk == len(chunk_signature_list):
-                    # Didn't have enough chunks; file verification fails
-                    return False
-                elif not self.verify(encode_base64(bytes), chunk_signature_list[cur_chunk]):
-                    # Verfiication of the chunk failed; file verification fails
-                    return False
-                cur_chunk += 1
-        return cur_chunk == len(chunk_signature_list)  # verify that all sigatures were used.
+        return self.verify(self._hash_large_file(filename, chunk_size), signature)
 
     def get_public_key_string(self):
         

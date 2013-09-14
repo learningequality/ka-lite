@@ -33,13 +33,17 @@ function updatePercentCompleted(correct) {
     // max out at the percentage completed at 100%
     exerciseData.percentCompleted = Math.min(exerciseData.percentCompleted, 100);
 
+    // Increment the # of attempts
+    exerciseData.attempts++;
+
     updateStreakBar();
 
     var data = {
         exercise_id: exerciseData.exerciseModel.name,
         streak_progress: exerciseData.percentCompleted,
         points: exerciseData.points,
-        correct: correct
+        correct: correct,
+        attempts: exerciseData.attempts
     };
 
     doRequest("/api/save_exercise_log", data)
@@ -67,7 +71,7 @@ $(function() {
         exerciseData.hintUsed = true;
         updatePercentCompleted(false);
     });
-    basepoints = Math.ceil(7*Math.log(exerciseData.exerciseModel.secondsPerFastProblem));
+    basepoints = exerciseData.basepoints;
     $("#next-question-button").click(function() {
         _.defer(function() {
             updateQuestionPoints(false);
@@ -83,6 +87,7 @@ $(function() {
             }
             exerciseData.percentCompleted = data[0].streak_progress;
             exerciseData.points = exerciseData.starting_points = data[0].points;
+            exerciseData.attempts = data[0].attempts;
 
             updateStreakBar();
 

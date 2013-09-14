@@ -3,18 +3,19 @@
     "related_video_readable_ids": [
       "reading-tables-1"
     ], 
-    "v_position": -23, 
+    "v_position": 14, 
     "path": "/math/arithmetic/applying-math-reasoning-topic/reading_data/e/reading_tables_1/", 
     "id": "reading_tables_1", 
     "display_name": "Reading tables 1", 
     "title": "Reading tables 1", 
     "live": true, 
     "description": "", 
-    "h_position": 14, 
+    "basepoints": 16.0, 
+    "h_position": -23, 
     "slug": "reading_tables_1", 
     "kind": "Exercise", 
     "name": "reading_tables_1", 
-    "seconds_per_fast_problem": 10.0, 
+    "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "multiplication_1.5"
     ]
@@ -23,14 +24,15 @@
     "related_video_readable_ids": [
       "reading-tables-2"
     ], 
-    "v_position": -24, 
+    "v_position": 15, 
     "path": "/math/arithmetic/applying-math-reasoning-topic/reading_data/e/reading_tables_2/", 
     "id": "reading_tables_2", 
     "display_name": "Reading tables 2", 
     "title": "Reading tables 2", 
     "live": true, 
     "description": "", 
-    "h_position": 15, 
+    "basepoints": 18.0, 
+    "h_position": -24, 
     "slug": "reading_tables_2", 
     "kind": "Exercise", 
     "name": "reading_tables_2", 
@@ -43,18 +45,19 @@
     "related_video_readable_ids": [
       "reading-stem-and-leaf-plots"
     ], 
-    "v_position": -25, 
+    "v_position": 16, 
     "path": "/math/arithmetic/applying-math-reasoning-topic/reading_data/e/reading_stem_and_leaf_plots/", 
     "id": "reading_stem_and_leaf_plots", 
     "display_name": "Reading stem and leaf plots", 
     "title": "Reading stem and leaf plots", 
     "live": true, 
     "description": "", 
-    "h_position": 16, 
+    "basepoints": 16.0, 
+    "h_position": -25, 
     "slug": "reading_stem_and_leaf_plots", 
     "kind": "Exercise", 
     "name": "reading_stem_and_leaf_plots", 
-    "seconds_per_fast_problem": 8.0, 
+    "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "reading_tables_2"
     ]
@@ -63,18 +66,19 @@
     "related_video_readable_ids": [
       "reading-pictographs"
     ], 
-    "v_position": -23, 
+    "v_position": 15, 
     "path": "/math/arithmetic/applying-math-reasoning-topic/reading_data/e/reading_pictographs_1/", 
     "id": "reading_pictographs_1", 
     "display_name": "Reading pictographs 1", 
     "title": "Reading pictographs 1", 
     "live": true, 
     "description": "", 
-    "h_position": 15, 
+    "basepoints": 15.0, 
+    "h_position": -23, 
     "slug": "reading_pictographs_1", 
     "kind": "Exercise", 
     "name": "reading_pictographs_1", 
-    "seconds_per_fast_problem": 7.0, 
+    "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "reading_tables_1"
     ]
@@ -83,14 +87,15 @@
     "related_video_readable_ids": [
       "reading-pictographs"
     ], 
-    "v_position": -23, 
+    "v_position": 16, 
     "path": "/math/arithmetic/applying-math-reasoning-topic/reading_data/e/reading_pictographs_2/", 
     "id": "reading_pictographs_2", 
     "display_name": "Reading pictographs 2", 
     "title": "Reading pictographs 2", 
     "live": true, 
     "description": "", 
-    "h_position": 16, 
+    "basepoints": 18.0, 
+    "h_position": -23, 
     "slug": "reading_pictographs_2", 
     "kind": "Exercise", 
     "name": "reading_pictographs_2", 
@@ -103,18 +108,19 @@
     "related_video_readable_ids": [
       "reading-bar-charts-1"
     ], 
-    "v_position": -24, 
+    "v_position": 16, 
     "path": "/math/arithmetic/applying-math-reasoning-topic/reading_data/e/reading_bar_charts_1/", 
     "id": "reading_bar_charts_1", 
     "display_name": "Reading bar charts 1", 
     "title": "Reading bar charts 1", 
     "live": true, 
     "description": "", 
-    "h_position": 16, 
+    "basepoints": 12.0, 
+    "h_position": -24, 
     "slug": "reading_bar_charts_1", 
     "kind": "Exercise", 
     "name": "reading_bar_charts_1", 
-    "seconds_per_fast_problem": 6.0, 
+    "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "reading_tables_2"
     ]
@@ -123,18 +129,19 @@
     "related_video_readable_ids": [
       "creating-bar-charts-1"
     ], 
-    "v_position": -25, 
+    "v_position": 17, 
     "path": "/math/arithmetic/applying-math-reasoning-topic/reading_data/e/creating_bar_charts_1/", 
     "id": "creating_bar_charts_1", 
     "display_name": "Creating bar charts 1", 
     "title": "Creating bar charts 1", 
     "live": true, 
     "description": "", 
-    "h_position": 17, 
+    "basepoints": 24.0, 
+    "h_position": -25, 
     "slug": "creating_bar_charts_1", 
     "kind": "Exercise", 
     "name": "creating_bar_charts_1", 
-    "seconds_per_fast_problem": 26.0, 
+    "seconds_per_fast_problem": 27.0, 
     "prerequisites": [
       "reading_bar_charts_1"
     ]
@@ -143,18 +150,19 @@
     "related_video_readable_ids": [
       "reading-bar-charts-2"
     ], 
-    "v_position": -24, 
+    "v_position": 18, 
     "path": "/math/arithmetic/applying-math-reasoning-topic/reading_data/e/reading_bar_charts_2/", 
     "id": "reading_bar_charts_2", 
     "display_name": "Reading bar charts 2", 
     "title": "Reading bar charts 2", 
     "live": true, 
     "description": "", 
-    "h_position": 18, 
+    "basepoints": 18.0, 
+    "h_position": -24, 
     "slug": "reading_bar_charts_2", 
     "kind": "Exercise", 
     "name": "reading_bar_charts_2", 
-    "seconds_per_fast_problem": 11.0, 
+    "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
       "reading_bar_charts_1"
     ]
@@ -163,14 +171,15 @@
     "related_video_readable_ids": [
       "reading-bar-charts-3"
     ], 
-    "v_position": -24, 
+    "v_position": 19, 
     "path": "/math/arithmetic/applying-math-reasoning-topic/reading_data/e/reading_bar_charts_3/", 
     "id": "reading_bar_charts_3", 
     "display_name": "Reading bar charts 3", 
     "title": "Reading bar charts 3", 
     "live": true, 
     "description": "", 
-    "h_position": 19, 
+    "basepoints": 19.0, 
+    "h_position": -24, 
     "slug": "reading_bar_charts_3", 
     "kind": "Exercise", 
     "name": "reading_bar_charts_3", 
@@ -184,14 +193,15 @@
     "related_video_readable_ids": [
       "u08-l1-t2-we2-reading-line-graphs"
     ], 
-    "v_position": -26, 
+    "v_position": 17, 
     "path": "/math/arithmetic/applying-math-reasoning-topic/reading_data/e/reading_line_charts_1/", 
     "id": "reading_line_charts_1", 
     "display_name": "Reading line charts 1", 
     "title": "Reading line charts 1", 
     "live": true, 
     "description": "", 
-    "h_position": 17, 
+    "basepoints": 15.0, 
+    "h_position": -26, 
     "slug": "reading_line_charts_1", 
     "kind": "Exercise", 
     "name": "reading_line_charts_1", 
@@ -204,14 +214,15 @@
     "related_video_readable_ids": [
       "inequalities-on-a-number-line"
     ], 
-    "v_position": 11, 
+    "v_position": 20, 
     "path": "/math/arithmetic/applying-math-reasoning-topic/greater-than-less-than/e/inequalities_on_a_number_line/", 
     "id": "inequalities_on_a_number_line", 
     "display_name": "Inequalities on a number line", 
     "title": "Inequalities on a number line", 
     "live": true, 
     "description": "Write equations of inequalities graphed on number lines. Identify number line graphs of inequalities.\n", 
-    "h_position": 29, 
+    "basepoints": 17.0, 
+    "h_position": -22, 
     "slug": "inequalities_on_a_number_line", 
     "kind": "Exercise", 
     "name": "inequalities_on_a_number_line", 

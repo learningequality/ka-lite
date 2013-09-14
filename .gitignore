@@ -3,6 +3,9 @@ tmp/
 *.prof
 *.pyc
 *.sublime-*
+/run_command.*
+/start.*
+/stop.*
 notes.txt
 kalite/static/videos/
 kalite/static/presentation/

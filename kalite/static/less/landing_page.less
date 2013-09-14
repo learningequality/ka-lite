@@ -12,10 +12,13 @@
 .ka-quote{
   background-color:@quote-color;
   border-top: 3px solid @dark-green;
-  color:black;
+  color:gray;
   text-align: center;
   font-size: 26px;  
-  padding: 80px 0px ;
+  padding: 50px 0px ;
+  .box-shadow(0px 1px 4px @light-gray);
+
+
   p{
 
     font-size: 18px;
@@ -23,15 +26,25 @@
 }
 
 .features{
-  text-align: center;
+  //text-align: center;
   color:black;
-  background-color: white;
-  padding: 40px 0px;
+  background-color:#fcfcfc;
+  padding: 70px 0px;
 
+
+  h2{
+    padding-top: 20px;
+  }
+  .span4 > p,h2{
+    width:200px;
+    padding-left: 50px;
+  }
+  p,h2{
+    .center;
+  }
   p{
     padding-top: 10px;
-    width:200px;
-    .center;
+    color:gray;
     line-height: 1.8;
   }
 }
@@ -44,6 +57,32 @@
 
   button{
     margin-top: 20px;
+  }
+}
+.content-page p{
+  color: #434950;
+  line-height: 1.5;
+  margin-bottom: 1em;
+  font-size: 18px;
+}
+.content-page__disclaimer{
+  background-color: @light-gray;
+
+  p{
+    padding: 15px;  
+  }
+
+  img{
+    padding: 35px;  
+    height: 100px;
+    width: auto;
+    float:right;
+  }
+}
+
+.content-page__ka{
+    p{
+    padding: 0px 15px;  
   }
 }
 
@@ -75,8 +114,8 @@
   border:3px solid rgb(24,33,54);
   background-color:black;
   .border-radius(25px);
-  width: 270px;
-  height: 270px; 
+  width: 150px;
+  height: 150px; 
   /* width and height can be anything, as long as they're equal */
 }
 

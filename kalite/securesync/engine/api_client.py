@@ -52,7 +52,7 @@ class SyncClient(BaseClient):
         # Once again, we assume that (currently) the central server's version is >= ours,
         #   We just store what we can.
         own_device = self.session.client_device
-        session = serializers.deserialize("versioned-json", data["session"], src_version=None, dest_version=own_device.version).next().object
+        session = serializers.deserialize("versioned-json", data["session"], src_version=None, dest_version=own_device.get_version()).next().object
         self.session.server_nonce = session.server_nonce
         self.session.server_device = session.server_device
         if not session.verify_server_signature(signature):
@@ -90,7 +90,7 @@ class SyncClient(BaseClient):
         r = self.post("session/create", {
             "client_nonce": client_nonce,
             "client_device": client_device.pk,
-            "client_version": kalite.VERSION,
+            "client_version": client_device.get_version(),
             "client_os": kalite.OS,
         })
         raw_data = r.content

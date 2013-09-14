@@ -109,7 +109,7 @@ class FacilityUser(SyncedModel):
             raise ValidationException("Unknown password format.")
 
         # Update on cached password-relevant stuff
-        if okie_dokie and not cached_password:
+        if okie_dokie and not cached_password and self.id:  # only can create if the user's been saved
             CachedPassword.set_cached_password(self, raw_password=raw_password)
 
         return okie_dokie
@@ -131,10 +131,11 @@ class FacilityUser(SyncedModel):
             CachedPassword.invalidate_password_cache(user=self)
 
         else:
-            n_iters = Settings.get("password_hash_iterations", 2000 if self.is_teacher else 1000)
+            n_iters = settings.PASSWORD_ITERATIONS_TEACHER_SYNCED if self.is_teacher else settings.PASSWORD_ITERATIONS_STUDENT_SYNCED
             self.password = crypt(raw_password, iterations=n_iters)
 
-            CachedPassword.set_cached_password(self, raw_password)
+            if self.id:
+                CachedPassword.set_cached_password(self, raw_password)
 
     def get_name(self):
         if self.first_name and self.last_name:
@@ -187,6 +188,8 @@ class CachedPassword(models.Model):
 
     @classmethod
     def set_cached_password(cls, user, raw_password):
+        assert user.id, "Your user must have an ID before calling this function."
+
         if not cls.is_enabled():
             # Must delete, to make sure we don't get out of sync.
             cls.invalidate_cached_password(user=user)

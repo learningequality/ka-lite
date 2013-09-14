@@ -38,6 +38,7 @@ from utils.platforms import system_script_extension, system_specific_zipping, sy
 
 
 def install_from_package(install_json_file, signature_file, zip_file, dest_dir=None):
+    import glob
     import os
     import shutil
     import sys
@@ -66,7 +67,8 @@ def install_from_package(install_json_file, signature_file, zip_file, dest_dir=N
     shutil.copy(install_json_file, os.path.join(dest_dir, "kalite/static/data/"))
 
     # Run the install/start scripts
-    return_code = os.system('"%s"' % os.path.join(dest_dir, "install%s" % system_script_extension()))
+    files = [f for f in glob.glob(os.path.join(dest_dir, "install*%s" % system_script_extension())) if not "from_zip" in f]
+    return_code = os.system('"%s"' % files[0])
     if return_code:
         sys.stderr.write("Failed to install KA Lite: exit-code = %s" % return_code)
         sys.exit(return_code)
@@ -173,7 +175,7 @@ class Command(BaseCommand):
             install_sh_file = self.install_py_file[:-3] + ".sh"
             install_files[install_sh_file] = tempfile.mkstemp()[1]
             with open(install_files[install_sh_file], "w") as fp:
-                fp.write(open(os.path.realpath(settings.PROJECT_PATH + "/../python.sh"), "r").read())
+                fp.write(open(os.path.realpath(settings.PROJECT_PATH + "/../scripts/python.sh"), "r").read())
                 fp.write('current_dir=`dirname "${BASH_SOURCE[0]}"`')
                 fp.write('\n$PYEXEC "$current_dir/%s"' % self.install_py_file)
 

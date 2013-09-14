@@ -1,15 +1,7 @@
-import git
 import os
-import glob
-import platform
-import shutil
 import sys
 import subprocess
-import tempfile
-import urllib
-import zipfile
 from optparse import make_option
-from zipfile import ZipFile, ZIP_DEFLATED
 
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
@@ -42,6 +34,9 @@ class Command(BaseCommand):
 
         cmd = None
         while cmd not in self.allowable_commands:
+            if cmd:
+                sys.stderr.write("Command '%s' is not available.  Please choose from\n:" % cmd)
+                sys.stderr.write("%s\n" % self.allowable_commands)
             cmd_text = raw_input("Please enter the command text to run: ")
             cmd = cmd_text.split(" ")[0]
 

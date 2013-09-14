@@ -45,7 +45,7 @@
             <ul id="zone-management-options">
                 {% if not facilities and not devices %}
                     <li>
-                        <a href="{% url delete_zone org_id=org.id zone_id=zone.id %}" onclick="return confirm('Are you sure you want to delete {{zone.name}}?')">
+                        <a class="zone-delete-link" href="{% url delete_zone org_id=org.id zone_id=zone.id %}" onclick="return confirm('Are you sure you want to delete {{zone.name}}?')">
                             <i class="icon-trash" title="Delete this zone."></i>
                         </a>    
                     </li>
@@ -116,11 +116,24 @@
                 {% for id,device in devices.items %}
                     <tr>
                         <td nowrap>
-                            <a href="{% url device_management org_id=org.id zone_id=zone.id device_id=id %}">
+                            {% if device.num_times_synced != None %}<a href="{% url device_management org_id=org.id zone_id=zone.id device_id=id %}">{% endif %}
                                 {{ device.name }}
-                            </a></td>
-                        <td>{{ device.num_times_synced }}</td>
-                        <td nowrap>{{ device.last_time_synced }}</td>
+                            {% if device.num_times_synced != None %}</a>{% endif %}
+                        </td>
+                        <td>
+                            {% if device.num_times_synced != None %}
+                                {{ device.num_times_synced }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td nowrap>
+                            {% if device.last_time_synced != None %}
+                                {{ device.last_time_synced }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
                         <td nowrap>{% if not device.last_time_used %}{% trans "Never" %}{% else %}{{ device.last_time_used.start_datetime|date }} - {{ device.last_time_used.end_datetime|date }}{% endif %}</td>
                         <td nowrap>{{ device.counter }}</td>
                     </tr>

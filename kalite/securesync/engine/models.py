@@ -213,7 +213,7 @@ class SyncedModel(ExtendedModel):
 
         return "&".join(chunks)
 
-    def save(self, own_device=None, imported=False, increment_counters=True, *args, **kwargs):
+    def save(self, imported=False, increment_counters=True, *args, **kwargs):
         """
         Some of the heavy lifting happens here.  There are two saving scenarios:
         (a) We are saving an imported model.
@@ -229,9 +229,7 @@ class SyncedModel(ExtendedModel):
             if not self.verify():
                 raise ValidationError("Could not verify the imported model.")#Imported model's signature did not match.")
         else:
-            # we allow for the "own device" to be passed in so that a device can sign itself (before existing)
-            own_device = own_device or _get_own_device()
-            assert own_device, "own_device is None--this should never happen, as get_own_device should create if not found."
+            own_device = _get_own_device()
 
             # Two critical things to do:
             # 1. local models need to be signed by us
