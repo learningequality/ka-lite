@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 import urllib
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
