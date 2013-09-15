@@ -42,6 +42,7 @@ class Command(BaseCommand):
             '-t', '--iterations',
             action='store',
             dest='niters',
+            type="int",
             default=1,
             help='# of times to repeat the benchmark',
         ),
