@@ -8,7 +8,7 @@ from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
 
 from securesync.models import Facility, FacilityUser
-from shared.benchmark.benchmark_test_cases import *
+from shared.benchmark.test_cases import *
 
 
 class BenchmarkThread(threading.Thread):
