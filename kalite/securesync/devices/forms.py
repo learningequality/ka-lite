@@ -11,28 +11,30 @@ class RegisteredDevicePublicKeyForm(forms.ModelForm):
     callback_url = forms.CharField(widget=forms.HiddenInput(), required=False)
     zone = forms.ChoiceField()
 
+    class Meta:
+        model = RegisteredDevicePublicKey
+        fields = ("zone", "public_key",)
+
     def __init__(self, user, callback_url=None, *args, **kwargs):
         super(RegisteredDevicePublicKeyForm, self).__init__(*args, **kwargs)
 
         # Get the zones
         if user.is_superuser:
             self.zones = Zone.objects.all()
+            self.orgs = set([o for z in self.zones for o in z.organization_set.all()])
         else:
-            self.zones = Zone.objects.filter(organization__in=user.organization_set.all())
-
+            self.orgs = user.organization_set.all()
+            self.zones = Zone.objects.filter(organization__in=self.orgs)
 
         # Compute the choices
         self.zone_choices = []
-        for zone in self.zones:
+        for zone in self.zones.order_by("name"):
             org_name = zone.organization_set.all()[0] if zone.organization_set.count() > 0 else "[Headless]"
-            self.zone_choices.append((zone.id, "%s / %s" % (org_name, zone.name)))
+            selection_text = "%s (%s)" % (zone.name, org_name) if len(self.orgs) > 1 else zone.name
+            self.zone_choices.append((zone.id, selection_text))
 
         self.fields['zone'].choices = self.zone_choices
         self.fields["callback_url"].initial = callback_url
-
-    class Meta:
-        model = RegisteredDevicePublicKey
-        fields = ("zone", "public_key",)
 
     def clean_zone(self):
         """
