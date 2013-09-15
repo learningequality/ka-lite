@@ -92,7 +92,7 @@ class Command(BaseCommand):
                     sys.stdout.write("success @ %s\n" % url)
                     break;
                 except Exception as e:
-                    logging.debug("Failed to get zipfile from %s: %s" % (url, e))
+                    logging.error("Failed to get zipfile from %s: %s" % (url, e))
                     continue
 
             self.update_via_zip(zip_file=zip_file, **options)

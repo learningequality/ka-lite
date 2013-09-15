@@ -366,7 +366,7 @@ def account_management(request, org_id=None):
             UserLog.end_user_activity(user, activity_type="coachreport")
         except ValidationError as e:
             # Never report this error; don't want this logging to block other functionality.
-            logging.debug("Failed to update student userlog activity: %s" % e)
+            logging.error("Failed to update student userlog activity: %s" % e)
 
     return student_view_context(request)
 

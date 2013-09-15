@@ -199,8 +199,8 @@ def update_json(youtube_id, lang_code, downloaded, api_response, time_of_attempt
     filepath = get_lang_map_filepath(lang_code)
     try: 
         language_srt_map = json.loads(open(filepath).read())
-    except:
-        logging.debug("Something went wrong while trying to open the json file: %s" % filepath)
+    except Exception as e:
+        logging.error("Something went wrong while trying to open the json file (%s): %s" % (filepath, e))
 
     # create updated entry
     entry = language_srt_map[youtube_id]
@@ -299,8 +299,8 @@ def write_new_json(subtitle_counts, data_path):
     filepath = data_path + filename
     try:
         current_counts = json.loads(open(filepath).read())
-    except:
-        logging.debug("Subtitle counts file appears to be corrupted. Starting from scratch.")
+    except Exception as e:
+        logging.error("Subtitle counts file appears to be corrupted (%s). Starting from scratch." % e)
         current_counts = {}
     current_counts.update(subtitle_counts)
     logging.info("Writing fresh srt counts to %s" % filepath)

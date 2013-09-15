@@ -88,7 +88,7 @@ class BrowserTestCase(KALiteTestCase):
                     (self.browser,self.admin_user,self.admin_pass) = setup_test_env(browser_type=browser_type)
                     break
                 except Exception as e:
-                    logging.debug("Could not create browser %s through selenium: %s" % (browser_type, e))
+                    logging.error("Could not create browser %s through selenium: %s" % (browser_type, e))
 
         
     def tearDown(self):
