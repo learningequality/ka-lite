@@ -35,4 +35,7 @@ def force_job(command, name="", frequency="YEARLY", stop=False, launch_cron=True
 
 
 def get_ready_count():
-    return Job.objects.filter(disabled=False, is_running=True, next_run__lte=datetime.now()).count()
+    return Job.objects.filter(disabled=False, is_running=False, next_run__lte=datetime.now()).count()
+
+def job_status(command):
+    return Job.objects.filter(command=command, is_running=True).count() > 0
