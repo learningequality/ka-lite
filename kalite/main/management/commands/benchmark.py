@@ -1,12 +1,13 @@
 """
 Run benchmarks from the benchmark command
 """
-
 import threading
+from functools import partial
 from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
 
+from securesync.models import Facility, FacilityUser
 from shared.benchmark.benchmark_test_cases import *
 
 
@@ -45,7 +46,6 @@ class Command(BaseCommand):
             help='# of times to repeat the benchmark',
         ),
 
-
         make_option(
             '--comment',
             action='store',
@@ -57,15 +57,15 @@ class Command(BaseCommand):
             '--username',
             action='store',
             dest='username',
-            default="s1",
-            help='username (default: s1)',
+            default=None,
+            help='username (default: benchmark_xx)',
         ),
         make_option(
             '--password',
             action='store',
             dest='password',
-            default="s1",
-            help='password (default: s1)',
+            default=None,
+            help='password (default: benchmark_xx)',
         ),
         make_option(
             '--url',
@@ -96,6 +96,13 @@ class Command(BaseCommand):
             default=24601,
             help='profile (i.e. random seed)',
         ),
+        make_option(
+            '--file',
+            action='store',
+            dest='out_file',
+            default="benchmark_results.txt",
+            help='Benchmark output file',
+        ),
     )
 
 
@@ -125,16 +132,35 @@ class Command(BaseCommand):
         else:
             raise CommandError("Unknown test case: %s" % args[0])
 
+
         # Now, use the class to make a lambda function
         good_keys = list(set(options.keys()) - set(["niters", "nclients", 'settings', 'pythonpath', 'verbosity', 'traceback']))
-        kwargs = dict((k, options[k]) for k in good_keys)
-        fn = lambda: cls(**kwargs).execute(iterations=options["niters"])
 
-        # Run the lambda function inside some threads
+        # Create the threads (takes time, so call start separately),
+        #   passing the lambda function
+        threads = []
         for ti in range(int(options["nclients"])):
+
+            # Eliminate unnecessary keys
+            kwargs = dict((k, options[k]) for k in good_keys)
+            kwargs["behavior_profile"] += ti  # each thread has a different behavior
+
+            # Get username
+            kwargs["username"] = kwargs["username"] or "benchmark_%d" % ti
+            kwargs["password"] = kwargs["password"] or "benchmark_pass"
+
+            # Now, use the class to make a lambda function
+            #   Since each thread can have a different user and profile,
+            #   
+            fn = partial(lambda kwargs: cls(**kwargs).execute(iterations=options["niters"]), kwargs=kwargs)
+
             th = BenchmarkThread(
                 threadID=ti,
-                outfile="test.txt",
+                outfile=kwargs["out_file"],
                 fn=fn,
             )
+            threads.append(th)
+        
+        # Run the threads
+        for th in threads:
             th.start()

@@ -206,7 +206,7 @@ class LoginLogout(benchmark_base.SeleniumCommon):
 
             # verify
             wait = ui.WebDriverWait(self.browser, self.timeout)
-            wait.until(expected_conditions.title_contains(("User report")))
+            wait.until(expected_conditions.visibility_of_element_located(["id", "logged-in-name"]))
             wait = ui.WebDriverWait(self.browser, self.timeout)
             wait.until(expected_conditions.element_to_be_clickable((By.ID, "nav_login")))
         finally:
@@ -520,7 +520,7 @@ class SeleniumStudent(benchmark_base.SeleniumCommon):
         elem.send_keys(args["password"])
         elem.send_keys(Keys.RETURN)
         wait = ui.WebDriverWait(self.browser, self.timeout)
-        wait.until(expected_conditions.title_contains(("User report")))
+        wait.until(expected_conditions.visibility_of_element_located(["id", "logged-in-name"]))
 
     def _do_login_step_2(self, args):        
         wait = ui.WebDriverWait(self.browser, self.timeout)
