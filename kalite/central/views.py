@@ -115,7 +115,7 @@ def delete_admin(request, org_id, user_id):
     deletion = DeletionRecord(organization=org, deleter=request.user, deleted_user=admin)
     deletion.save()
     org.users.remove(admin)
-    messages.success(request, "You have succesfully removed " + admin.username + " as an administrator for " + org.name + ".")
+    messages.success(request, "You have successfully removed " + admin.username + " as an administrator for " + org.name + ".")
     return HttpResponseRedirect(reverse("org_management"))
 
 
@@ -126,7 +126,7 @@ def delete_invite(request, org_id, invite_id):
     deletion = DeletionRecord(organization=org, deleter=request.user, deleted_invite=invite)
     deletion.save()
     invite.delete()
-    messages.success(request, "You have succesfully revoked the invitation for " + invite.email_to_invite + ".")
+    messages.success(request, "You have successfully revoked the invitation for " + invite.email_to_invite + ".")
     return HttpResponseRedirect(reverse("org_management"))
 
 
@@ -161,7 +161,7 @@ def delete_organization(request, org_id):
     if org.get_zones():
         messages.error(request, "You cannot delete '%s' because it has %d zone(s) affiliated with it." %(org.name, len(org.get_zones())))
     else:
-        messages.success(request, "You have succesfully deleted " + org.name + ".")
+        messages.success(request, "You have successfully deleted " + org.name + ".")
         org.delete()
     return HttpResponseRedirect(reverse("org_management"))
 
