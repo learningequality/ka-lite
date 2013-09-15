@@ -18,7 +18,7 @@
 
     $ ./manage.py shell
     
-    >>> import shared.benchmark.benchmark_test_cases as btc
+    >>> import shared.benchmark.test_cases as btc
     >>> btc.Hello_world(comment="text", fixture="/foo/bar.json").execute(iterations=2)
 
     IMPORTANT: the fixture argument does NOT install the fixture - this argument
@@ -52,13 +52,13 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 
-from . import benchmark_base
+from . import base
 from main.models import ExerciseLog, VideoLog, UserLog
 from securesync.models import Facility, FacilityUser, FacilityGroup
 from shared.testing.browser import BrowserTestCase
 
 
-class HelloWorld(benchmark_base.Common):
+class HelloWorld(base.Common):
 
     def _execute(self):
         wait_time = 10. * random.random()
@@ -69,13 +69,13 @@ class HelloWorld(benchmark_base.Common):
         return "Hello world has finished"
 
 
-class ValidateModels(benchmark_base.Common):
+class ValidateModels(base.Common):
 
     def _execute(self):
         management.call_command('validate', verbosity=1)
 
 
-class GenerateRealData(benchmark_base.Common):
+class GenerateRealData(base.Common):
     """
     generaterealdata command is both i/o and moderately cpu intensive
     The i/o in this task is primarily INSERT
@@ -103,7 +103,7 @@ class GenerateRealData(benchmark_base.Common):
         return info
 
 
-class OneThousandRandomReads(benchmark_base.Common):
+class OneThousandRandomReads(base.Common):
     """
     One thousand random accesses of the video and exercise logs (500 of each)
     The IO in the test is primarily SELECT and will normally be cached in memory
@@ -127,7 +127,7 @@ class OneThousandRandomReads(benchmark_base.Common):
         return {"total_records_accessed": 1000}
 
 
-class OneHundredRandomLogUpdates(benchmark_base.Common):
+class OneHundredRandomLogUpdates(base.Common):
     """
     One hundred random accesses and updates tothe video and exercise logs (50 of each)
     The I/O here is SELECT and UPDATE - update will normally generate physical media access
@@ -162,7 +162,7 @@ class OneHundredRandomLogUpdatesSingleTransaction(OneHundredRandomLogUpdates):
         super(OneHundredRandomLogUpdatesSingleTransaction, self)._execute()
 
 
-class LoginLogout(benchmark_base.SeleniumCommon):
+class LoginLogout(base.SeleniumCommon):
 
     def _setup(self, **kwargs):
         kwargs["timeout"] = kwargs.get("timeout", 30)
@@ -206,7 +206,7 @@ class LoginLogout(benchmark_base.SeleniumCommon):
 
             # verify
             wait = ui.WebDriverWait(self.browser, self.timeout)
-            wait.until(expected_conditions.title_contains(("User report")))
+            wait.until(expected_conditions.visibility_of_element_located(["id", "logged-in-name"]))
             wait = ui.WebDriverWait(self.browser, self.timeout)
             wait.until(expected_conditions.element_to_be_clickable((By.ID, "nav_login")))
         finally:
@@ -217,7 +217,7 @@ class LoginLogout(benchmark_base.SeleniumCommon):
         return info
 
 
-class SeleniumStudent(benchmark_base.SeleniumCommon):
+class SeleniumStudent(base.SeleniumCommon):
     
     """student username/password will be passed in
         behaviour of this student will be determined by
@@ -520,7 +520,7 @@ class SeleniumStudent(benchmark_base.SeleniumCommon):
         elem.send_keys(args["password"])
         elem.send_keys(Keys.RETURN)
         wait = ui.WebDriverWait(self.browser, self.timeout)
-        wait.until(expected_conditions.title_contains(("User report")))
+        wait.until(expected_conditions.visibility_of_element_located(["id", "logged-in-name"]))
 
     def _do_login_step_2(self, args):        
         wait = ui.WebDriverWait(self.browser, self.timeout)

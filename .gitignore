@@ -3,6 +3,7 @@ tmp/
 *.prof
 *.pyc
 *.sublime-*
+benchmark_results.txt
 /run_command.*
 /start.*
 /stop.*
