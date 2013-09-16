@@ -6,18 +6,18 @@
       "using-a-protractor", 
       "measuring-angles"
     ], 
-    "v_position": -21, 
+    "v_position": 26, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/Angle_basics/e/measuring_angles/", 
     "id": "measuring_angles", 
     "display_name": "Measuring angles", 
     "title": "Measuring angles", 
     "live": true, 
     "description": "", 
-    "h_position": 26, 
+    "h_position": -24, 
     "slug": "measuring_angles", 
     "kind": "Exercise", 
     "name": "measuring_angles", 
-    "seconds_per_fast_problem": 13.0, 
+    "seconds_per_fast_problem": 14.0, 
     "prerequisites": [
       "recognizing_rays_lines_and_line_segments"
     ]
@@ -26,14 +26,14 @@
     "related_video_readable_ids": [
       "acute-right-and-obtuse-angles"
     ], 
-    "v_position": -20, 
+    "v_position": 26, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/Angle_basics/e/angle_types/", 
     "id": "angle_types", 
     "display_name": "Angle types", 
     "title": "Angle types", 
     "live": true, 
     "description": "", 
-    "h_position": 26, 
+    "h_position": -23, 
     "slug": "angle_types", 
     "kind": "Exercise", 
     "name": "angle_types", 
@@ -46,18 +46,18 @@
     "related_video_readable_ids": [
       "vertical--adjacent-and-linearly-paired-angles"
     ], 
-    "v_position": -21, 
+    "v_position": 27, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/Angle_basics/e/exploring_angle_pairs_1/", 
     "id": "exploring_angle_pairs_1", 
     "display_name": "Exploring angle pairs", 
     "title": "Exploring angle pairs", 
     "live": true, 
     "description": "Find vertical angles, adjacent angles, and linearly paired angles.\n", 
-    "h_position": 27, 
+    "h_position": -24, 
     "slug": "exploring_angle_pairs_1", 
     "kind": "Exercise", 
     "name": "exploring_angle_pairs_1", 
-    "seconds_per_fast_problem": 11.0, 
+    "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
       "measuring_angles", 
       "angle_types"
@@ -68,14 +68,14 @@
       "angles-at-the-intersection-of-two-lines", 
       "proof-vertical-angles-are-equal"
     ], 
-    "v_position": -21, 
+    "v_position": 28, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/vertical_angles/", 
     "id": "vertical_angles", 
     "display_name": "Vertical angles", 
     "title": "Vertical angles", 
     "live": true, 
     "description": "", 
-    "h_position": 28, 
+    "h_position": -24, 
     "slug": "vertical_angles", 
     "kind": "Exercise", 
     "name": "vertical_angles", 
@@ -90,21 +90,21 @@
       "using-algebra-to-find-the-measures-of-vertical-angles", 
       "angles-at-the-intersection-of-two-lines"
     ], 
-    "v_position": -20, 
+    "v_position": 33, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/vertical_angles_2/", 
     "id": "vertical_angles_2", 
     "display_name": "Vertical angles 2", 
     "title": "Vertical angles 2", 
     "live": true, 
     "description": "", 
-    "h_position": 28, 
+    "h_position": -22, 
     "slug": "vertical_angles_2", 
     "kind": "Exercise", 
     "name": "vertical_angles_2", 
-    "seconds_per_fast_problem": 23.0, 
+    "seconds_per_fast_problem": 24.0, 
     "prerequisites": [
-      "exploring_angle_pairs_1", 
-      "complementary_and_supplementary_angles"
+      "linear_equations_3", 
+      "vertical_angles"
     ]
   }, 
   {
@@ -112,14 +112,14 @@
       "angles-formed-by-parallel-lines-and-transversals", 
       "figuring-out-angles-between-transversal-and-parallel-lines"
     ], 
-    "v_position": -27, 
+    "v_position": 30, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/congruent_angles/", 
     "id": "congruent_angles", 
     "display_name": "Congruent angles", 
     "title": "Congruent angles", 
     "live": true, 
     "description": "Determine which angles must be congruent when parallel lines are crossed by a transversal.\n", 
-    "h_position": 30, 
+    "h_position": -27, 
     "slug": "congruent_angles", 
     "kind": "Exercise", 
     "name": "congruent_angles", 
@@ -134,14 +134,14 @@
       "angles-formed-by-parallel-lines-and-transversals", 
       "figuring-out-angles-between-transversal-and-parallel-lines"
     ], 
-    "v_position": -25, 
+    "v_position": 30, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/parallel_lines_1/", 
     "id": "parallel_lines_1", 
     "display_name": "Parallel lines 1", 
     "title": "Parallel lines 1", 
     "live": true, 
     "description": "", 
-    "h_position": 30, 
+    "h_position": -25, 
     "slug": "parallel_lines_1", 
     "kind": "Exercise", 
     "name": "parallel_lines_1", 
@@ -157,140 +157,103 @@
       "figuring-out-angles-between-transversal-and-parallel-lines", 
       "angles-formed-by-parallel-lines-and-transversals"
     ], 
-    "v_position": -26, 
+    "v_position": 32, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/parallel_lines_2/", 
     "id": "parallel_lines_2", 
     "display_name": "Parallel lines 2", 
     "title": "Parallel lines 2", 
     "live": true, 
     "description": "", 
-    "h_position": 32, 
+    "h_position": -26, 
     "slug": "parallel_lines_2", 
     "kind": "Exercise", 
     "name": "parallel_lines_2", 
-    "seconds_per_fast_problem": 23.0, 
+    "seconds_per_fast_problem": 26.0, 
     "prerequisites": [
-      "alternate_exterior_angles_2", 
-      "same_side_exterior_angles_2", 
-      "alternate_interior_angles_2", 
-      "same_side_interior_angles_2", 
-      "corresponding_angles_2"
+      "congruent_angles", 
+      "parallel_lines_1", 
+      "linear_equations_3"
     ]
   }, 
   {
-    "related_video_readable_ids": [
-      "angles-formed-by-parallel-lines-and-transversals", 
-      "figuring-out-angles-between-transversal-and-parallel-lines", 
-      "using-algebra-to-find-measures-of-angles-formed-from-transversal"
-    ], 
-    "v_position": -27, 
+    "related_video_readable_ids": [], 
+    "v_position": 34, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/corresponding_angles_2/", 
     "id": "corresponding_angles_2", 
     "display_name": "Corresponding angles 2", 
     "title": "Corresponding angles 2", 
-    "live": true, 
+    "live": false, 
     "description": "", 
-    "h_position": 31, 
+    "h_position": -20, 
     "slug": "corresponding_angles_2", 
     "kind": "Exercise", 
     "name": "corresponding_angles_2", 
-    "seconds_per_fast_problem": 17.0, 
-    "prerequisites": [
-      "congruent_angles", 
-      "parallel_lines_1"
-    ]
+    "seconds_per_fast_problem": 18.0, 
+    "prerequisites": []
   }, 
   {
-    "related_video_readable_ids": [
-      "using-algebra-to-find-measures-of-angles-formed-from-transversal", 
-      "figuring-out-angles-between-transversal-and-parallel-lines", 
-      "angles-formed-by-parallel-lines-and-transversals"
-    ], 
-    "v_position": -24, 
+    "related_video_readable_ids": [], 
+    "v_position": 34, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/same_side_exterior_angles_2/", 
     "id": "same_side_exterior_angles_2", 
     "display_name": "Same side exterior angles 2", 
     "title": "Same side exterior angles 2", 
-    "live": true, 
+    "live": false, 
     "description": "", 
-    "h_position": 31, 
+    "h_position": -17, 
     "slug": "same_side_exterior_angles_2", 
     "kind": "Exercise", 
     "name": "same_side_exterior_angles_2", 
-    "seconds_per_fast_problem": 24.0, 
-    "prerequisites": [
-      "congruent_angles", 
-      "parallel_lines_1"
-    ]
+    "seconds_per_fast_problem": 25.0, 
+    "prerequisites": []
   }, 
   {
-    "related_video_readable_ids": [
-      "using-algebra-to-find-measures-of-angles-formed-from-transversal", 
-      "figuring-out-angles-between-transversal-and-parallel-lines", 
-      "angles-formed-by-parallel-lines-and-transversals"
-    ], 
-    "v_position": -25, 
+    "related_video_readable_ids": [], 
+    "v_position": 34, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/same_side_interior_angles_2/", 
     "id": "same_side_interior_angles_2", 
     "display_name": "Same side interior angles 2", 
     "title": "Same side interior angles 2", 
-    "live": true, 
+    "live": false, 
     "description": "", 
-    "h_position": 31, 
+    "h_position": -18, 
     "slug": "same_side_interior_angles_2", 
     "kind": "Exercise", 
     "name": "same_side_interior_angles_2", 
-    "seconds_per_fast_problem": 21.0, 
-    "prerequisites": [
-      "congruent_angles", 
-      "parallel_lines_1"
-    ]
+    "seconds_per_fast_problem": 23.0, 
+    "prerequisites": []
   }, 
   {
-    "related_video_readable_ids": [
-      "using-algebra-to-find-measures-of-angles-formed-from-transversal", 
-      "figuring-out-angles-between-transversal-and-parallel-lines", 
-      "angles-formed-by-parallel-lines-and-transversals"
-    ], 
-    "v_position": -28, 
+    "related_video_readable_ids": [], 
+    "v_position": 34, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/alternate_interior_angles_2/", 
     "id": "alternate_interior_angles_2", 
     "display_name": "Alternate interior angles 2", 
     "title": "Alternate interior angles 2", 
-    "live": true, 
+    "live": false, 
     "description": "", 
-    "h_position": 31, 
+    "h_position": -21, 
     "slug": "alternate_interior_angles_2", 
     "kind": "Exercise", 
     "name": "alternate_interior_angles_2", 
-    "seconds_per_fast_problem": 13.0, 
-    "prerequisites": [
-      "congruent_angles", 
-      "parallel_lines_1"
-    ]
+    "seconds_per_fast_problem": 14.0, 
+    "prerequisites": []
   }, 
   {
-    "related_video_readable_ids": [
-      "using-algebra-to-find-measures-of-angles-formed-from-transversal", 
-      "figuring-out-angles-between-transversal-and-parallel-lines", 
-      "angles-formed-by-parallel-lines-and-transversals"
-    ], 
-    "v_position": -26, 
+    "related_video_readable_ids": [], 
+    "v_position": 34, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/ang_intro/e/alternate_exterior_angles_2/", 
     "id": "alternate_exterior_angles_2", 
     "display_name": "Alternate exterior angles 2", 
     "title": "Alternate exterior angles 2", 
-    "live": true, 
+    "live": false, 
     "description": "", 
-    "h_position": 31, 
+    "h_position": -19, 
     "slug": "alternate_exterior_angles_2", 
     "kind": "Exercise", 
     "name": "alternate_exterior_angles_2", 
-    "seconds_per_fast_problem": 12.0, 
-    "prerequisites": [
-      "congruent_angles", 
-      "parallel_lines_1"
-    ]
+    "seconds_per_fast_problem": 14.0, 
+    "prerequisites": []
   }, 
   {
     "related_video_readable_ids": [
@@ -299,18 +262,18 @@
       "triangle-angle-example-3", 
       "finding-more-angles"
     ], 
-    "v_position": -20, 
+    "v_position": 30, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/triang_prop_tut/e/angles_1/", 
     "id": "angles_1", 
     "display_name": "Angles 1", 
     "title": "Angles 1", 
     "live": true, 
     "description": "", 
-    "h_position": 31, 
+    "h_position": -23, 
     "slug": "angles_1", 
     "kind": "Exercise", 
     "name": "angles_1", 
-    "seconds_per_fast_problem": 14.0, 
+    "seconds_per_fast_problem": 16.0, 
     "prerequisites": [
       "triangle_types"
     ]
@@ -322,18 +285,18 @@
       "triangle-angle-example-1", 
       "proof---sum-of-measures-of-angles-in-a-triangle-are-180"
     ], 
-    "v_position": -20, 
+    "v_position": 31, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/triang_prop_tut/e/angles_2/", 
     "id": "angles_2", 
     "display_name": "Angles 2", 
     "title": "Angles 2", 
     "live": true, 
     "description": "", 
-    "h_position": 32, 
+    "h_position": -23, 
     "slug": "angles_2", 
     "kind": "Exercise", 
     "name": "angles_2", 
-    "seconds_per_fast_problem": 13.0, 
+    "seconds_per_fast_problem": 15.0, 
     "prerequisites": [
       "angles_1"
     ]
@@ -342,14 +305,14 @@
     "related_video_readable_ids": [
       "sum-of-interior-angles-of-a-polygon"
     ], 
-    "v_position": -13, 
+    "v_position": 33, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/triang_prop_tut/e/angles_of_a_polygon/", 
     "id": "angles_of_a_polygon", 
     "display_name": "Angles of a polygon", 
     "title": "Angles of a polygon", 
     "live": true, 
     "description": "", 
-    "h_position": 34, 
+    "h_position": -18, 
     "slug": "angles_of_a_polygon", 
     "kind": "Exercise", 
     "name": "angles_of_a_polygon", 
@@ -362,14 +325,14 @@
     "related_video_readable_ids": [
       "complementary-and-supplementary-angles"
     ], 
-    "v_position": -20, 
+    "v_position": 27, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/complementary-supplementary-angl/e/complementary_and_supplementary_angles/", 
     "id": "complementary_and_supplementary_angles", 
     "display_name": "Complementary and supplementary angles", 
     "title": "Complementary and supplementary angles", 
     "live": true, 
     "description": "", 
-    "h_position": 27, 
+    "h_position": -23, 
     "slug": "complementary_and_supplementary_angles", 
     "kind": "Exercise", 
     "name": "complementary_and_supplementary_angles", 
@@ -385,21 +348,21 @@
       "example-using-algebra-to-find-measure-of-supplementary-angles", 
       "complementary-and-supplementary-angles"
     ], 
-    "v_position": -21, 
+    "v_position": 29, 
     "path": "/math/geometry/parallel-and-perpendicular-lines/complementary-supplementary-angl/e/angle_addition_postulate/", 
     "id": "angle_addition_postulate", 
     "display_name": "Angle addition postulate", 
     "title": "Angle addition postulate", 
     "live": true, 
     "description": "", 
-    "h_position": 29, 
+    "h_position": -24, 
     "slug": "angle_addition_postulate", 
     "kind": "Exercise", 
     "name": "angle_addition_postulate", 
-    "seconds_per_fast_problem": 40.0, 
+    "seconds_per_fast_problem": 50.0, 
     "prerequisites": [
       "vertical_angles", 
-      "vertical_angles_2"
+      "linear_equations_3"
     ]
   }
 ]

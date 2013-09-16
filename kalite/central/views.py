@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
+from django.db.models import Sum
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
@@ -17,8 +18,8 @@ from django.views.decorators.csrf import csrf_exempt
 import settings
 from central.forms import OrganizationForm, OrganizationInvitationForm
 from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
-from securesync.api_client import SyncClient
-from utils.decorators import require_authorized_admin
+from securesync.engine.api_client import SyncSession
+from shared.decorators import require_authorized_admin
 
 
 @render_to("central/homepage.html")
@@ -32,7 +33,7 @@ def homepage(request):
 
 @login_required
 @render_to("central/org_management.html")
-def org_management(request):
+def org_management(request, org_id=None):
     """Management of all organizations for the given user"""
 
     # get a list of all the organizations this user helps administer
@@ -58,9 +59,19 @@ def org_management(request):
                 if org.pk == int(request.POST.get("organization")):
                     org.form = form
 
+    zones = {}
+    for org in organizations.values():
+        zones[org.pk] = []
+        for zone in org.get_zones():
+            zones[org.pk].append({
+                "id": zone.id,
+                "name": zone.name,
+                "is_deletable": not zone.has_dependencies(passable_classes=["Organization"]),
+            })
     return {
         "title": _("Account administration"),
         "organizations": organizations,
+        "zones": zones,
         "HEADLESS_ORG_NAME": Organization.HEADLESS_ORG_NAME,
         "invitations": OrganizationInvitation.objects.filter(email_to_invite=request.user.email)
     }
@@ -104,7 +115,7 @@ def delete_admin(request, org_id, user_id):
     deletion = DeletionRecord(organization=org, deleter=request.user, deleted_user=admin)
     deletion.save()
     org.users.remove(admin)
-    messages.success(request, "You have succesfully removed " + admin.username + " as an administrator for " + org.name + ".")
+    messages.success(request, "You have successfully removed " + admin.username + " as an administrator for " + org.name + ".")
     return HttpResponseRedirect(reverse("org_management"))
 
 
@@ -115,7 +126,7 @@ def delete_invite(request, org_id, invite_id):
     deletion = DeletionRecord(organization=org, deleter=request.user, deleted_invite=invite)
     deletion.save()
     invite.delete()
-    messages.success(request, "You have succesfully revoked the invitation for " + invite.email_to_invite + ".")
+    messages.success(request, "You have successfully revoked the invitation for " + invite.email_to_invite + ".")
     return HttpResponseRedirect(reverse("org_management"))
 
 
@@ -144,6 +155,22 @@ def organization_form(request, org_id):
         'form': form
     }
 
+@require_authorized_admin
+def delete_organization(request, org_id):
+    org = Organization.objects.get(pk=org_id)
+    if org.get_zones():
+        messages.error(request, "You cannot delete '%s' because it has %d zone(s) affiliated with it." %(org.name, len(org.get_zones())))
+    else:
+        messages.success(request, "You have successfully deleted " + org.name + ".")
+        org.delete()
+    return HttpResponseRedirect(reverse("org_management"))
+
+
+def content_page(request, page, **kwargs):
+    context = RequestContext(request)
+    context.update(kwargs)
+    return render_to_response("central/content/%s.html" % page, context_instance=context)
+
 
 @render_to("central/glossary.html")
 def glossary(request):
@@ -152,6 +179,11 @@ def glossary(request):
 
 @login_required
 def crypto_login(request):
+    """
+    Remote admin endpoint, for login to a distributed server (given its IP address; see also securesync/views.py:crypto_login)
+    
+    An admin login is negotiated using the nonce system inside SyncSession
+    """
     if not request.user.is_superuser:
         raise PermissionDenied()
     ip = request.GET.get("ip", "")

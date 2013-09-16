@@ -1,16 +1,11 @@
 import copy
-import datetime
 import json
-import os
 import re 
 import sys
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
-from functools import partial
 
 from django.contrib import messages
-from django.core.cache import InvalidCacheBackendError
-from django.core.cache.backends.filebased import FileBasedCache
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
@@ -19,72 +14,22 @@ from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFoun
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
-from django.utils.cache import get_cache_key, get_cache
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
-from django.views.decorators.cache import cache_control
-from django.views.decorators.cache import cache_page
-from django.views.decorators.http import condition 
 
 import settings
 from config.models import Settings
 from control_panel.views import user_management_context
 from main import topicdata
 from main.models import VideoLog, ExerciseLog, VideoFile
-from securesync.api_client import SyncClient
+from securesync.engine.api_client import SyncClient
 from securesync.models import Facility, FacilityUser,FacilityGroup, Device
 from securesync.views import require_admin, facility_required
 from settings import LOG as logging
+from shared.decorators import require_admin, backend_cache_page
+from shared.jobs import force_job
 from utils import topic_tools
-from utils.internet import am_i_online, JsonResponse
-from utils.jobs import force_job
-from utils.decorators import require_admin
-from utils.videos import video_connection_is_available
-
-
-def calc_last_modified(request, *args, **kwargs):
-    """
-    Returns the file's modified time as the last-modified date
-    """
-    assert "cache_name" in kwargs, "Must specify cache_name as a keyword arg."
-    
-    try:
-        cache = get_cache(kwargs["cache_name"])
-        assert isinstance(cache, FileBasedCache), "requires file-based cache."
-    except InvalidCacheBackendError:
-        return None
-
-    key = get_cache_key(request, cache=cache)
-    if key is None:
-        return None
-
-    fname = cache._key_to_file(cache.make_key(key))
-    if not os.path.exists(fname):  # would happen only if cache expired AFTER getting the key
-        return None
-    last_modified = datetime.datetime.fromtimestamp(os.path.getmtime(fname))
-    return last_modified
-
-
-def backend_cache_page(handler, cache_time=settings.CACHE_TIME, cache_name="web_cache"):
-    """
-    Applies all logic for getting a page to cache in our backend,
-    and never in the browser, so we can control things from Django/Python.
-
-    This function does this all with the settings we want, specified in settings.
-    """
-    try:
-        @condition(last_modified_func=partial(calc_last_modified, cache_name=cache_name))
-        @cache_control(no_cache=True)  # must appear before @cache_page
-        @cache_page(cache_time, cache=cache_name)
-        def wrapper_fn(request, *args, **kwargs):
-            return handler(request, *args, **kwargs)
-
-    except InvalidCacheBackendError:
-        # Would happen if caching was disabled
-        def wrapper_fn(request, *args, **kwargs):
-            return handler(request, *args, **kwargs)
-
-    return wrapper_fn
+from utils.internet import am_i_online, is_loopback_connection, JsonResponse
 
 
 def check_setup_status(handler):
@@ -209,6 +154,7 @@ def video_handler(request, video, prev=None, next=None):
         "video_exists": video_exists,
         "prev": prev,
         "next": next,
+        "use_mplayer": settings.USE_MPLAYER and is_loopback_connection(request),
     }
     return context
 
@@ -255,12 +201,13 @@ def exercise_handler(request, exercise):
 def exercise_dashboard(request):
     # Just grab the first path, whatever it is
     paths = dict((key, val["paths"][0]) for key, val in topicdata.NODE_CACHE["Exercise"].items())
+    slug = request.GET.get("topic")
+
     context = {
-        "title": "Knowledge map",
+        "title": topicdata.NODE_CACHE["Topic"][slug]["title"] if slug else _("Your Knowledge Map"),
         "exercise_paths": json.dumps(paths),
     }
     return context
-
 
 @check_setup_status  # this must appear BEFORE caching logic, so that it isn't blocked by a cache hit
 @backend_cache_page
@@ -280,7 +227,6 @@ def easy_admin(request):
     context = {
         "wiki_url" : settings.CENTRAL_WIKI_URL,
         "central_server_host" : settings.CENTRAL_SERVER_HOST,
-        "am_i_online": am_i_online(settings.CENTRAL_WIKI_URL, allow_redirects=False),
         "in_a_zone":  Device.get_own_device().get_zone() is not None,
     }
     return context
@@ -390,7 +336,7 @@ def zone_redirect(request):
     device = Device.get_own_device()
     zone = device.get_zone()
     if zone:
-        return HttpResponseRedirect(reverse("zone_management", kwargs={"org_id": "", "zone_id": zone.pk}))
+        return HttpResponseRedirect(reverse("zone_management", kwargs={"zone_id": zone.pk}))
     else:
         raise Http404(_("This device is not on any zone."))
 
@@ -402,7 +348,7 @@ def device_redirect(request):
     device = Device.get_own_device()
     zone = device.get_zone()
     if zone:
-        return HttpResponseRedirect(reverse("device_management", kwargs={"org_id": "", "zone_id": zone.pk, "device_id": device.pk}))
+        return HttpResponseRedirect(reverse("device_management", kwargs={"zone_id": zone.pk, "device_id": device.pk}))
     else:
         raise Http404(_("This device is not on any zone."))
 

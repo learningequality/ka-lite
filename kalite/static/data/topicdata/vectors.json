@@ -4,18 +4,18 @@
       "linear-algebra--vector-examples", 
       "linear-algebra--introduction-to-vectors"
     ], 
-    "v_position": 18, 
+    "v_position": 32, 
     "path": "/math/linear-algebra/vectors_and_spaces/vectors/e/scaling_vectors/", 
     "id": "scaling_vectors", 
     "display_name": "Scaling vectors", 
     "title": "Scaling vectors", 
     "live": true, 
     "description": "", 
-    "h_position": 32, 
+    "h_position": 18, 
     "slug": "scaling_vectors", 
     "kind": "Exercise", 
     "name": "scaling_vectors", 
-    "seconds_per_fast_problem": 8.0, 
+    "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "adding_vectors"
     ]
@@ -25,14 +25,14 @@
       "linear-algebra--vector-examples", 
       "linear-algebra--introduction-to-vectors"
     ], 
-    "v_position": 18, 
+    "v_position": 31, 
     "path": "/math/linear-algebra/vectors_and_spaces/vectors/e/adding_vectors/", 
     "id": "adding_vectors", 
     "display_name": "Adding vectors", 
     "title": "Adding vectors", 
     "live": true, 
     "description": "", 
-    "h_position": 31, 
+    "h_position": 18, 
     "slug": "adding_vectors", 
     "kind": "Exercise", 
     "name": "adding_vectors", 

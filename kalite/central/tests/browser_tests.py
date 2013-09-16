@@ -6,13 +6,16 @@ These require a test server to be running, and multiple ports
 ".
 """
 import time
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 
 from django.contrib.auth.models import User
 
 import settings
+from central.models import Organization
 from registration.models import RegistrationProfile
-from utils.testing import central_server_test, BrowserTestCase
+from securesync.models import Zone, Facility, Device, DeviceZone
+from shared.testing import central_server_test, BrowserTestCase
 
 
 @central_server_test
@@ -34,12 +37,12 @@ class KALiteCentralBrowserTestCase(BrowserTestCase):
         self.browser_form_fill(first_name)  # first name
         self.browser_form_fill(last_name)  # last name
         self.browser_form_fill(username)  #email
-        self.browser_form_fill(org_name, num_expected_links=1)  #org name
+        self.browser_form_fill(org_name)  #org name
         self.browser_form_fill(password)  #password
         self.browser_form_fill(password)  #password (again)
         self.browser_form_fill("")  #newsletter subscription
-        self.browser_form_fill(Keys.SPACE, num_expected_links=1)  # checkbox 2: EULA
-        self.browser_form_fill(Keys.SPACE, num_expected_links=1)  # checkbox 3: EULA2
+        self.browser_form_fill(Keys.SPACE)  # checkbox 2: EULA
+        self.browser_form_fill(Keys.SPACE)  # checkbox 3: EULA2
         self.browser_send_keys(Keys.RETURN)  # submit the form
 
         # Make sure that the page changed to the "thank you" confirmation page
@@ -252,7 +255,146 @@ class CentralEmptyFormSubmitCaseTest(KALiteCentralBrowserTestCase):
 
     def test_password_reset(self):
         self.empty_form_test(url=self.reverse("auth_password_reset"), submission_element_id="id_email")
-        
+
+
+class OrganizationManagementTestCase(KALiteCentralBrowserTestCase):
+    USER_EMAIL = "test_user@nowhere.com"
+    USER_PASSWORD = "password"
+    ORG_NAME = "test org"
+    ZONE_NAME = "test zone"
+    FACILITY_NAME = "test facility"
+
+    def setUp(self):
+        super(OrganizationManagementTestCase, self).setUp()
+        self.user = User(username=self.USER_EMAIL, email=self.USER_EMAIL)
+        self.user.set_password(self.USER_PASSWORD)
+        self.user.save()
+        self.org = Organization(name=self.ORG_NAME, owner=self.user)
+        self.org.save()
+        self.org.add_member(self.user)
+        self.org.save()
+
+
+class OrganizationDeletionTestCase(OrganizationManagementTestCase):
+
+    def test_delete_org(self):
+        """Delete an empty org"""
+        self.browser_login_user(self.USER_EMAIL, self.USER_PASSWORD)
+        self.assertNotEqual(self.browser.find_element_by_css_selector(".icon-pencil"), None, "Make sure 'edit' icon appears.")
+        self.assertNotEqual(self.browser.find_element_by_css_selector(".icon-trash"), None, "Make sure 'delete' icon appears.")
+        self.browser.find_element_by_css_selector(".icon-trash").click()
+        self.browser.switch_to_alert().accept()
+        self.browser_wait_for_no_element(".icon-trash")
+        self.browser_check_django_message(message_type="success", contains="successfully deleted")
+        with self.assertRaises(NoSuchElementException):
+            self.assertEqual(self.browser.find_element_by_css_selector(".icon-trash"), None, "Make sure 'delete' icon is gone.")
+
+    def test_cancel_delete_org(self):
+        """Click to delete an empty org, then choose CANCEL"""
+        self.browser_login_user(self.USER_EMAIL, self.USER_PASSWORD)
+        self.assertNotEqual(self.browser.find_element_by_css_selector(".icon-pencil"), None, "Make sure 'edit' icon appears.")
+        self.assertNotEqual(self.browser.find_element_by_css_selector(".icon-trash"), None, "Make sure 'delete' icon appears.")
+        self.browser.find_element_by_css_selector(".icon-trash").click()
+        self.browser.switch_to_alert().dismiss()
+        self.assertNotEqual(self.browser.find_element_by_css_selector(".icon-trash"), None, "Make sure 'delete' icon appears.")
+        self.browser_check_django_message(num_messages=0)
+
+    def test_cannot_delete_full_org(self):
+        """Confirm no option to delete an org with data"""
+        # Save zone info, but without adding
+        self.zone = Zone(name=self.ZONE_NAME)
+        self.zone.save()
+        self.org.add_zone(self.zone)    
+        self.org.save()
+
+        self.browser_login_user(self.USER_EMAIL, self.USER_PASSWORD)
+        self.assertNotEqual(self.browser.find_element_by_css_selector(".icon-pencil"), None, "Make sure 'edit' icon appears.")
+        with self.assertRaises(NoSuchElementException):
+            self.assertEqual(self.browser.find_element_by_css_selector(".icon-trash"), None, "Make sure 'delete' icon does not appear.")
+
+
+    def test_issue_697(self):
+        self.facility = Facility(name=self.FACILITY_NAME)
+        self.facility.save()
+        self.test_delete_org()
+
+
+class ZoneDeletionTestCase(OrganizationManagementTestCase):
+    def setUp(self):
+        super(ZoneDeletionTestCase, self).setUp()
+        self.zone = Zone(name=self.ZONE_NAME)
+        self.zone.save()
+        self.org.add_zone(self.zone)    
+        self.org.save()
+
+
+    def test_delete_zone_from_org_admin(self):
+        """Delete a zone from the org_management page"""
+        self.browser_login_user(self.USER_EMAIL, self.USER_PASSWORD)
+        self.browser.find_element_by_css_selector(".zone-delete-link").click()
+        self.browser.switch_to_alert().accept()
+        self.browser_wait_for_no_element(".zone-delete-link")
+        self.browser_check_django_message(message_type="success", contains="successfully deleted")
+        with self.assertRaises(NoSuchElementException):
+            self.assertEqual(self.browser.find_element_by_css_selector(".zone-delete-link"), None, "Make sure 'delete' link is gone.")
+
+    def test_cancel_delete_zone_from_org_admin(self):
+        """Delete a zone from the org_management page"""
+        self.browser_login_user(self.USER_EMAIL, self.USER_PASSWORD)
+        self.browser.find_element_by_css_selector(".zone-delete-link").click()
+        self.browser.switch_to_alert().dismiss()
+        self.assertNotEqual(self.browser.find_element_by_css_selector(".zone-delete-link"), None, "Make sure 'delete' link still exists.")
+        self.browser_check_django_message(num_messages=0)
+
+
+    def test_delete_zone_from_zone_admin(self):
+        """Delete a zone from the org_management page"""
+        self.browser_login_user(self.USER_EMAIL, self.USER_PASSWORD)
+        zone_url = self.browser.find_element_by_css_selector(".zone-manage-link").get_attribute("href")
+        self.browse_to(zone_url), 
+        self.assertEqual(self.browser.current_url, zone_url, "Expect link to go to zone management page")
+
+        self.browser.find_element_by_css_selector(".zone-delete-link").click()
+        self.browser.switch_to_alert().accept()
+        self.browser_wait_for_no_element(".zone-delete-link")
+        self.browser_check_django_message(message_type="success", contains="successfully deleted")
+        with self.assertRaises(NoSuchElementException):
+            self.assertEqual(self.browser.find_element_by_css_selector(".zone-delete-link"), None, "Make sure 'delete' link is gone.")
+
+    def test_cancel_delete_zone_from_zone_admin(self):
+        """Delete a zone from the org_management page"""
+        self.browser_login_user(self.USER_EMAIL, self.USER_PASSWORD)
+        zone_url = self.browser.find_element_by_css_selector(".zone-manage-link").get_attribute("href")
+        self.browse_to(zone_url)
+        self.assertEqual(self.browser.current_url, zone_url, "Expect link to go to zone management page")
+
+        self.browser.find_element_by_css_selector(".zone-delete-link").click()
+        self.browser.switch_to_alert().dismiss()
+        self.assertNotEqual(self.browser.find_element_by_css_selector(".zone-delete-link"), None, "Make sure 'delete' link still exists.")
+        self.browser_check_django_message(num_messages=0)
+
+    def test_cannot_delete_full_zone(self):
+        # Save zone info, but without adding
+        self.devicezone = DeviceZone(device=Device.get_own_device(), zone=self.zone)
+        self.devicezone.save()
+
+        # Check on the org management page
+        self.browser_login_user(self.USER_EMAIL, self.USER_PASSWORD)
+        with self.assertRaises(NoSuchElementException):
+            self.assertEqual(self.browser.find_element_by_css_selector(".zone-delete-link"), None, "Make sure 'delete' link is gone.")
+
+        # Follow the link, and confirm on the zone management page.
+        zone_url = self.browser.find_element_by_css_selector(".zone-manage-link").get_attribute("href")
+        self.browse_to(zone_url)
+        self.assertEqual(self.browser.current_url, zone_url, "Expect link to go to zone management page")
+        with self.assertRaises(NoSuchElementException):
+            self.assertEqual(self.browser.find_element_by_css_selector(".zone-delete-link"), None, "Make sure 'delete' link is gone.")
+
+    def test_issue_697(self):
+        self.facility = Facility(name=self.FACILITY_NAME)
+        self.facility.save()
+        self.test_delete_zone_from_org_admin()
+
 
 class RegressionTests(KALiteCentralBrowserTestCase):
 
@@ -269,7 +411,7 @@ class RegressionTests(KALiteCentralBrowserTestCase):
         self.browser_login_user(   username=user1_uname, password=user1_password)
 
         # Verify that we can go to the page with the correct user
-        user1_zone_link = self.browser.find_element_by_css_selector(".zones a.zone-manage-link").get_attribute("href")
+        user1_zone_link = self.browser.find_element_by_css_selector(".zone-manage-link").get_attribute("href")
         self.browse_to(user1_zone_link)
         self.assertEqual(self.browser.current_url, user1_zone_link)
 
@@ -280,6 +422,6 @@ class RegressionTests(KALiteCentralBrowserTestCase):
         self.browser_login_user(   username=user2_uname, password=user2_password)
 
         # Now try 
-        self.assertNotEqual(self.browser.current_url, user1_zone_link)
+        self.browse_to(user1_zone_link)
+        self.assertIn(self.reverse("auth_login"), self.browser.current_url)
         self.browser_check_django_message(message_type="error", contains="You must be logged in with an account authorized to view this page.", num_messages=1)
-

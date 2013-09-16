@@ -9,6 +9,7 @@ import settings
 from central.models import Organization
 from contact.forms  import ContactForm, DeploymentForm, SupportForm, InfoForm, ContributeForm
 from contact.models import *
+from utils.django_utils import get_request_ip
 from utils.mailchimp import mailchimp_subscribe
 
 
@@ -94,18 +95,33 @@ def contact_wizard(request, type=""):
         info_form = InfoForm(prefix="info_form")
         contribute_form = ContributeForm(prefix="contribute_form")
 
-        # Use the user's information, if available
-        if request.user.is_authenticated():
-            if request.user.owned_organizations.count()>0:
+        if not request.user.is_authenticated():
+            contact_form = ContactForm(
+                prefix="contact_form",
+                instance=Contact(
+                    type=type,
+                    ip=get_request_ip(request),
+                ))
+        
+        else:
+            # Use the user's information, if available
+            if request.user.owned_organizations.count() > 0:
                 org = request.user.owned_organizations.all()[0]
-            elif request.user.organization_set.count()>0:
-                org = request.user.organization_set[0]
+            elif request.user.organization_set.count() > 0:
+                org = request.user.organization_set.all()[0]
             else:
                 org = Organization()
 
-            contact_form = ContactForm(prefix="contact_form", instance=Contact(type=type, user=request.user, name="%s %s"%(request.user.first_name, request.user.last_name), email=request.user.email, org_name=org.name, org_url=org.url))
-        else:
-            contact_form = ContactForm(prefix="contact_form", instance=Contact(type=type))
+            contact_form = ContactForm(
+                prefix="contact_form",
+                instance=Contact(
+                    type=type,
+                    user=request.user,
+                    name="%s %s"%(request.user.first_name, request.user.last_name),
+                    email=request.user.email,
+                    org_name=org.name,
+                    ip=get_request_ip(request),
+                ))
 
     return {
         "central_contact_email": settings.CENTRAL_CONTACT_EMAIL,

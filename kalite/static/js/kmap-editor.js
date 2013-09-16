@@ -83,10 +83,10 @@ var KMapEditor = {
         this.raphael = Raphael($("#map")[0]);
 
         if (this.zoomLevel === this.ZOOM_EXERCISES) {
-            this.minX = Math.min.apply(Math, _.pluck(this.exercises, "v_position"));
-            this.minY = Math.min.apply(Math, _.pluck(this.exercises, "h_position"));
-            this.maxX = Math.max.apply(Math, _.pluck(this.exercises, "v_position"));
-            this.maxY = Math.max.apply(Math, _.pluck(this.exercises, "h_position"));
+            this.minX = Math.min.apply(Math, _.pluck(this.exercises, "h_position"));
+            this.minY = Math.min.apply(Math, _.pluck(this.exercises, "v_position"));
+            this.maxX = Math.max.apply(Math, _.pluck(this.exercises, "h_position"));
+            this.maxY = Math.max.apply(Math, _.pluck(this.exercises, "v_position"));
         } else if (this.zoomLevel === this.ZOOM_TOPICS) {
             var topicList = _.values(this.maplayout.topics);
             this.minY = Math.min.apply(Math, _.pluck(topicList, "y"));
@@ -162,8 +162,8 @@ var KMapEditor = {
                 var newDiv = $("<div>")
                     .appendTo($("#map"))
                     .css({
-                        "left": (ex.v_position - KMapEditor.minX) * KMapEditor.X_SPACING,
-                        "top": (ex.h_position - KMapEditor.minY) * KMapEditor.Y_SPACING - KMapEditor.ICON_SIZE / 2,
+                        "left": (ex.h_position - KMapEditor.minX) * KMapEditor.X_SPACING,
+                        "top": (ex.v_position - KMapEditor.minY) * KMapEditor.Y_SPACING - KMapEditor.ICON_SIZE / 2,
                         "width": KMapEditor.LABEL_WIDTH
                     })
                     .addClass("exercise");
@@ -214,10 +214,10 @@ var KMapEditor = {
 
         this.raphael.path(
             Raphael.format("M{0},{1}L{2},{3}",
-                (src_ex.v_position - this.minX) * this.X_SPACING + (this.LABEL_WIDTH / 2),
-                (src_ex.h_position - this.minY) * this.Y_SPACING,
-                (dst_ex.v_position - this.minX) * this.X_SPACING + (this.LABEL_WIDTH / 2),
-                (dst_ex.h_position - this.minY) * this.Y_SPACING
+                (src_ex.h_position - this.minX) * this.X_SPACING + (this.LABEL_WIDTH / 2),
+                (src_ex.v_position - this.minY) * this.Y_SPACING,
+                (dst_ex.h_position - this.minX) * this.X_SPACING + (this.LABEL_WIDTH / 2),
+                (dst_ex.v_position - this.minY) * this.Y_SPACING
         )).attr({
             "stroke-width": 1,
             "stroke": "#777"
@@ -243,8 +243,6 @@ $(document).ready(function() {
         $.getJSON("/static/data/topicdata/" + vars["topic"] + ".json")
             .success(function(exerciseLayout) {
 
-                exerciseLayout = collapse_layout(exerciseLayout);
-
                 var exercise_ids = $.map(exerciseLayout, function(exercise) { return exercise.name });
                 doRequest("/api/get_exercise_logs", exercise_ids)
                     .success(function(data) {
@@ -261,53 +259,3 @@ $(document).ready(function() {
             });
     }
 });
-
-/**
-* Many knowledge map topic pages have huge gaping holes in the middle (sometimes pushing stuff
-* off the edge of the screen, as with the probability topic). Pull them all in so they're visible.
-*/
-function collapse_layout(exerciseLayout) {
-    var minX = Math.min.apply(Math, _.pluck(exerciseLayout, "v_position"));
-    var minY = Math.min.apply(Math, _.pluck(exerciseLayout, "h_position"));
-    var maxX = Math.max.apply(Math, _.pluck(exerciseLayout, "v_position"));
-    var maxY = Math.max.apply(Math, _.pluck(exerciseLayout, "h_position"));
-
-    // keep track of which vertical and horizontal positions are filled
-    var filledX = Array(maxX - minX);
-    var filledY = Array(maxY - minY);
-
-    _.each(exerciseLayout, function(ex) {
-        filledX[ex.v_position - minX] = true;
-        filledY[ex.h_position - minY] = true;
-    });
-
-    // calculate how much each row/column need to be shifted to fill in the gaps
-    var shiftX = Array(maxX - minX);
-    var shift = 0;
-
-    for (var i = 0; i < filledX.length; i++) {
-        if (!filledX[i]) {
-            shift--;
-        }
-        shiftX[i] = shift;
-    }
-
-    var shiftY = Array(maxY - minY);
-    shift = 0;
-
-    for (var i = 0; i < filledY.length; i++) {
-        if (!filledY[i]) {
-            shift--;
-        }
-        shiftY[i] = shift;
-    }
-
-    // shift each exercise to fill in the gaps
-    _.each(exerciseLayout, function(ex) {
-        ex.v_position += shiftX[ex.v_position - minX];
-        ex.h_position += shiftY[ex.h_position - minY];
-    });
-
-    return exerciseLayout;
-
-}

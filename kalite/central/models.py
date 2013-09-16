@@ -10,8 +10,8 @@ from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
 
 import settings
-from securesync import crypto
 from securesync.models import Zone
+from utils.django_utils import ExtendedModel
 
 
 def get_or_create_user_profile(user):
@@ -20,7 +20,7 @@ def get_or_create_user_profile(user):
 
     return UserProfile.objects.get_or_create(user=user)[0]
 
-class Organization(models.Model):
+class Organization(ExtendedModel):
     name = models.CharField(verbose_name="org name", max_length=100)
     description = models.TextField(help_text="<br/>How is this organization using KA Lite?", blank=True, )
     url = models.URLField(verbose_name="org URL", help_text="<br/>(optional)", blank=True)
@@ -35,6 +35,9 @@ class Organization(models.Model):
     HEADLESS_ORG_PK = None  # keep the primary key of the headless org around, for efficiency
     HEADLESS_ORG_SAVE_FLAG = "internally_safe_headless_org_save"  # indicates safe save() call
 
+
+    def add_zone(self, zone):
+        return self.zones.add(zone)
 
     def get_zones(self):
         return list(self.zones.all())
@@ -113,7 +116,7 @@ class Organization(models.Model):
         return headless_org
 
 
-class UserProfile(models.Model):
+class UserProfile(ExtendedModel):
     user = models.OneToOneField(User)
 
     def __unicode__(self):
@@ -139,7 +142,7 @@ class UserProfile(models.Model):
         return orgs
 
 
-class OrganizationInvitation(models.Model):
+class OrganizationInvitation(ExtendedModel):
     email_to_invite = models.EmailField(verbose_name="Email of invitee", max_length=75)
     invited_by = models.ForeignKey(User)
     organization = models.ForeignKey(Organization, related_name="invitations")
@@ -167,14 +170,14 @@ class OrganizationInvitation(models.Model):
         send_mail(subject, body, sender, [to_email], fail_silently=False)
 
 
-class DeletionRecord(models.Model):
+class DeletionRecord(ExtendedModel):
     organization = models.ForeignKey(Organization)
     deleter = models.ForeignKey(User, related_name="deletion_actor")
     deleted_user = models.ForeignKey(User, related_name="deletion_recipient", blank=True, null=True)
     deleted_invite = models.ForeignKey(OrganizationInvitation, blank=True, null=True)
 
 
-class FeedListing(models.Model):
+class FeedListing(ExtendedModel):
     title = models.CharField(max_length=150)
     author = models.CharField(max_length=100)
     description = models.TextField(blank=True)
@@ -184,7 +187,7 @@ class FeedListing(models.Model):
     def get_absolute_url(self):
         return self.url
 
-class Subscription(models.Model):
+class Subscription(ExtendedModel):
     email = models.EmailField()
     timestamp = models.DateTimeField(auto_now_add=True)
     ip = models.CharField(max_length=100, blank=True)

