@@ -101,12 +101,15 @@ class Command(BaseCommand):
         self.stdout.write("Update is complete!\n")
 
 
-
     def update_via_git(self, repo=".", *args, **kwargs):
         # Step 1: update via git repo
         sys.stdout.write("Updating via git repo: %s\n" % repo)
         self.stdout.write(git.Repo(repo).git.pull() + "\n")
-        call_command("syncdb", migrate=True)
+        # since we're updating into the same directory, need to clear the old pyc files
+        call_command("clean_pyc")
+        # call syncdb, then migrate with merging enabled (in case there were any out-of-order migration files)
+        call_command("syncdb")
+        call_command("migrate", merge=True)
 
 
     def update_via_zip(self, zip_file, interactive=True, test_port=8008, *args, **kwargs):
