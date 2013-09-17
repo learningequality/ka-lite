@@ -6,7 +6,6 @@ if [ -e "$SCRIPT_DIR/python.sh" ]; then
 else
     KALITE_DIR=$SCRIPT_DIR/kalite
     SCRIPT_DIR=$SCRIPT_DIR/scripts
-
 fi
 
 if [ ! -e "$KALITE_DIR/database/data.sqlite" ] ; then
