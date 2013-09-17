@@ -7,7 +7,7 @@
 
 {% block control_panel_active %}{% endblock control_panel_active %}
 {% block account_management_active %}active{% endblock account_management_active %}
-{% block title %}User Management{% endblock title%}
+{% block title %}{{ student.get_name }} - User Management{% endblock title%}
 
 {% block headcss %}{% comment %}Don't insert block.super here, because block.super is WEIRD and isn't the super for student_view IN student view, but instead THIS super.{% endcomment %}
     {% include_block "coachreports/student_view.html" "headcss" %}
