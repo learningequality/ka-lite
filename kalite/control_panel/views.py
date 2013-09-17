@@ -105,7 +105,7 @@ def delete_zone(request, org_id, zone_id):
     zone = Zone.objects.get(pk=zone_id)
     if not zone.has_dependencies(passable_classes=["Organization"]):
         zone.delete()
-        messages.success(request, "You have succesfully deleted " + zone.name + ".")
+        messages.success(request, "You have successfully deleted " + zone.name + ".")
     else:
         messages.warning(request, "You cannot delete this zone because it is syncing data with with %d device(s)" % zone.devicezone_set.count())
     return HttpResponseRedirect(reverse("org_management"))
@@ -280,7 +280,7 @@ def device_management(request, device_id, org_id=None, zone_id=None):
     zone = get_object_or_None(Zone, pk=zone_id) if zone_id else None
     device = get_object_or_404(Device, pk=device_id)
 
-    sync_sessions = SyncSession.objects.filter(client_device=device)
+    sync_sessions = SyncSession.objects.filter(client_device=device).order_by("-timestamp")
     return {
         "org": org,
         "zone": zone,

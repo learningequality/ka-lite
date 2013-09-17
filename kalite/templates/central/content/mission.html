@@ -1,25 +1,22 @@
-{% extends "central/content_page.html" %}
+{% extends "central/base.html" %}
 {% load staticfiles %}
 
-{% block headcss %}{{ block.super }}
-<style>
-.right { float: right; }
-.left { float: left; }
-img.inline { margin: 0px 20px 20px 20px; padding: 0px;}
-img.centered { display:block; margin-left: auto; margin-right: auto; }
-</style>
-{% endblock headcss %}
+{% block headcss %}{% endblock headcss %}
 
 {% block title %}
 Our Mission
 {% endblock title %}
-
 {% block content %}
-<div class="row-fluid content-page">
+1
+{% endblock content%}
+
+{% block landing-page %}
+<div class="row-fluid content content-page content-padding">
 	<div class="span12">
-		<p>
-			<img width="55%" class="inline right" src="{% static 'images/central/Internet-map.png' %}">
-		</p>
+    	<div class="max-width-container">
+		<br>
+		<h1>Our mission</h1>
+		<br>
 
 		<h2>"Open access" isn't open to those offline.</h2>
 
@@ -33,6 +30,10 @@ Our Mission
 
 		<p>
 			One of the most challenging barriers to accessing online learning resources is the massive disparities in internet connectivity between developed and developing regions, with <b>approximately 65% of the world still not classified as internet users</b>, according to the <a href="http://data.worldbank.org/data-catalog/world-development-indicators" target="_blank">World Development Indicators</a> compiled by the World Bank.</p>
+			<div class="mission-map">
+				<img  src="{% static 'images/central/Internet-map.png' %}">
+				<p class="mission-map__label">Map of the distribution of internet users</p>
+			</div>
 
 			<p>
 				Bridging the offline gap is therefore necessary for any strategy that hopes to use education to "level the global playing field"; otherwise populations that could benefit most from access to these educational resources may be left further behind.
@@ -51,15 +52,19 @@ Our Mission
 				If we’re serious about achieving the online learning revolution’s mission of universal access, and don’t want to leave further generations of students behind by waiting for high-speed internet to reach everyone, then we need to explore solutions for distributing and hosting open educational resources via low-bandwidth and offline channels, taking advantage of low-cost or pre-existing infrastructure.
 			</p>
 
-			<p>
-				<img width="75%" class="inline centered" src="{% static 'images/central/student-teacher-ratio-vs-internet-users.png' %}">
-			</p>
+			<div class="mission-map">
+
+				<img src="{% static 'images/central/student-teacher-ratio-vs-internet-users.png' %}">
+				<p class="mission-map__label">Student teach ratio vs internet user</p>
+
+			</div>
 
 
 
+	</div>
 
 		</div>
 	</div>
 
 
-	{% endblock content %}
+	{% endblock landing-page %}
