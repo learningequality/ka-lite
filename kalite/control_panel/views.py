@@ -294,6 +294,7 @@ def device_management(request, device_id, org_id=None, zone_id=None, n_sessions=
     sync_sessions = SyncSession.objects \
         .filter(client_device=device) \
         .order_by("-timestamp")
+
     return {
         "org": org,
         "zone": zone,

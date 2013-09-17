@@ -126,7 +126,8 @@ class Command(UpdatesStaticCommand):
         Full update via git
         """
         self.stages = [
-            "git pull", 
+            "git pull",
+            "clean_pyc",
             "syncdb",
         ]
 
@@ -135,9 +136,15 @@ class Command(UpdatesStaticCommand):
             self.start(notes = "Updating via git; repo=%s" % (repo or "[default]") )
             self.stdout.write(git.Repo(repo).git.pull() + "\n")
         
-            # step 2: syncdb
+            # step 2: clean_pyc
             self.next_stage()
-            call_command("syncdb", migrate=True)
+            call_command("clean_pyc")
+
+            # step 3: syncdb
+            self.next_stage()
+            # call syncdb, then migrate with merging enabled (in case there were any out-of-order migration files)
+            call_command("syncdb")
+            call_command("migrate", merge=True)
 
             # Done!
             self.complete()

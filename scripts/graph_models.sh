@@ -1,11 +1,13 @@
 #!/bin/bash
 
 SCRIPT_DIR=`dirname "${BASH_SOURCE[0]}"`
-pyexec=`$SCRIPT_DIR/python.sh`
+KALITE_DIR=$SCRIPT_DIR/../kalite
+pyexec=`"$SCRIPT_DIR/python.sh"`
 
-pushd "$SCRIPT_DIR/../kalite" > /dev/null
-"$pyexec" manage.py graph_models securesync main -g -o model_graph.png
-eog model_graph.png
-rm model_graph.png
-
-popd > /dev/null
+"$pyexec" "$KALITE_DIR/manage.py" graph_models securesync main -g -o "$KALITE_DIR/model_graph.png"
+if [ ! -e "$KALITE_DIR/model_graph.png" ]; then
+    echo "Could not find expected output file: '$KALITE_DIR/model_graph.png"
+else
+    eog "$KALITE_DIR/model_graph.png"
+    rm "$KALITE_DIR/model_graph.png"
+fi

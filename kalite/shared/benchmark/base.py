@@ -10,11 +10,13 @@
 
     These benchmarks do not use unittest or testrunner frameworks
 """
-import time
-import random
 import platform
+import random
 import subprocess
+import time
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions, ui 
 
 from django.core import management
 
@@ -95,8 +97,6 @@ class Common(object):
         if behavior_profile:
             self.behavior_profile = behavior_profile
             random.seed(self.behavior_profile)
-        management.call_command('clean_pyc')
-        management.call_command('compile_pyc')
 
     def _execute(self): pass
     def _teardown(self): pass
@@ -115,5 +115,34 @@ class SeleniumCommon(Common):
         self.browser = webdriver.Firefox()
         self.timeout = timeout
 
+        self._do_signup()
+
     def _teardown(self):
         self.browser.close()
+
+    def _do_signup(self):
+        # Go to the webpage
+        self.browser.get(self.url)
+        wait = ui.WebDriverWait(self.browser, self.timeout)
+        wait.until(expected_conditions.visibility_of_element_located(["id", "logo"]))
+
+        # Log out any existing user
+        if self.browser.find_elements_by_id("nav_logout"):
+            nav = self.browser.find_element_by_id("nav_logout")
+            if nav.is_displayed():
+                self.browser.find_element_by_id("nav_logout").click()
+                wait = ui.WebDriverWait(self.browser, self.timeout)
+                wait.until(expected_conditions.title_contains(("Home")))
+
+        # Go to the sign-up page
+        self.browser.find_element_by_id("nav_signup").click()
+        wait = ui.WebDriverWait(self.browser, self.timeout)
+        wait.until(expected_conditions.title_contains(("Sign up")))
+
+        # Sign up (don't choose facility or group)
+        self.browser.find_element_by_id("id_username").send_keys(self.username)
+        self.browser.find_element_by_id("id_password").send_keys(self.password)
+        self.browser.find_element_by_id("id_password_recheck").send_keys(self.password)
+        self.browser.find_element_by_id("id_password_recheck").send_keys(Keys.TAB + Keys.RETURN)
+        wait = ui.WebDriverWait(self.browser, self.timeout)
+        wait.until(expected_conditions.visibility_of_element_located(["id", "logo"]))

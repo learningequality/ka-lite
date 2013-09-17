@@ -59,11 +59,26 @@
     margin-top: 20px;
   }
 }
-.content-page p{
-  color: #434950;
-  line-height: 1.5;
-  margin-bottom: 1em;
-  font-size: 18px;
+.content-page {
+  background: white;
+  
+  h1,p,h2{
+    .center;
+    max-width: 650px;
+  }
+  h1{
+
+    text-align: center;
+    border-bottom: 1px solid @light-gray;
+    padding-bottom: 20px;
+    padding-top: 30px;
+  }
+  p{
+    color: #434950;
+    line-height: 1.5;
+    margin-bottom: 1em;
+    font-size: 14px;
+  }
 }
 .content-page__disclaimer{
   background-color: @light-gray;
@@ -85,7 +100,16 @@
     padding: 0px 15px;  
   }
 }
-
+.mission-map{
+  max-width:800px;
+  height:auto;
+  padding:20px 0px;
+  .center;
+  .mission-map__label{
+    text-align: center;
+    font-style: italic;
+  }
+}
 .round-border-rural{
   .round-border;
   .center;

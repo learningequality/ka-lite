@@ -31,7 +31,7 @@ def select_package_dirs(dirnames, key_base, **kwargs):
     base_name = os.path.split(key_base)[1]
 
     if key_base == "":  # base directory
-        in_dirs = set(('docs', 'kalite', 'locale', 'python-packages'))  # ignore content
+        in_dirs = set(dirnames) - set(('.git', 'content', 'node_modules'))
 
     elif base_name in ["locale", "localflavor"] and kwargs.get("locale", "") not in [None, "", "all"]:
         # ONLY include files for the particular locale
@@ -64,8 +64,8 @@ def file_in_blacklist_set(file_path):
 
     name = os.path.split(file_path)[1]
     ext = os.path.splitext(file_path)[1]
-    return (ext in [".pyc",".sqlite",".zip",'.xlsx','.srt']) \
-        or (name in ["local_settings.py", ".gitignore", "tests.py", "faq",".DS_Store"])
+    return (ext in [".pyc", ".sqlite", ".zip", ".xlsx", ".srt", ]) \
+        or (name in ["local_settings.py", ".gitignore", "tests.py", "faq", ".DS_Store", "Gruntfile.js", "package.json"])
 
 
 # Filter-less functions (just logic)
