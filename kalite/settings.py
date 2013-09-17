@@ -166,6 +166,7 @@ INSTALLED_APPS = (
     "control_panel",  # in both apps
     "coachreports",  # in both apps; reachable on central via control_panel
     "khanload",  # khan academy interactions
+    "i18n",
     "kalite",  # contains commands
 ) + INSTALLED_APPS  # append local_settings installed_apps, in case of dependencies
 
@@ -218,8 +219,8 @@ USER_LOG_SUMMARY_FREQUENCY = getattr(local_settings, "USER_LOG_SUMMARY_FREQUENCY
 # None means, use full hashing locally--turn off the password cache
 PASSWORD_ITERATIONS_TEACHER = getattr(local_settings, "PASSWORD_ITERATIONS_TEACHER", None)
 PASSWORD_ITERATIONS_STUDENT = getattr(local_settings, "PASSWORD_ITERATIONS_STUDENT", None)
-assert PASSWORD_ITERATIONS_TEACHER >= 1, "PASSWORD_ITERATIONS_TEACHER must be >= 1"
-assert PASSWORD_ITERATIONS_STUDENT >= 1, "PASSWORD_ITERATIONS_STUDENT must be >= 1"
+assert PASSWORD_ITERATIONS_TEACHER is None or PASSWORD_ITERATIONS_TEACHER >= 1, "If set, PASSWORD_ITERATIONS_TEACHER must be >= 1"
+assert PASSWORD_ITERATIONS_STUDENT is None or PASSWORD_ITERATIONS_STUDENT >= 1, "If set, PASSWORD_ITERATIONS_STUDENT must be >= 1"
 
 # This should not be set, except in cases where additional security is desired.
 PASSWORD_ITERATIONS_TEACHER_SYNCED = getattr(local_settings, "PASSWORD_ITERATIONS_TEACHER_SYNCED", 5000)

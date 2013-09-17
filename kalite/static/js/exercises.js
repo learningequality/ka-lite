@@ -71,7 +71,7 @@ $(function() {
         exerciseData.hintUsed = true;
         updatePercentCompleted(false);
     });
-    basepoints = Math.ceil(7*Math.log(exerciseData.exerciseModel.secondsPerFastProblem));
+    basepoints = exerciseData.basepoints;
     $("#next-question-button").click(function() {
         _.defer(function() {
             updateQuestionPoints(false);

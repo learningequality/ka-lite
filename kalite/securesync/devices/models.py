@@ -195,11 +195,16 @@ class Device(SyncedModel):
         own_device = Device(**kwargs)
         own_device.set_key(crypto.get_own_key())
         own_device.sign(device=own_device)
-        own_device.save(own_device=own_device)
+
+        # imported=True is for when the local device should not sign the object,
+        #   and when counters should not be incremented.  That's our situation here!
+        super(Device, own_device).save(imported=True, increment_counters=False)
+
         metadata = own_device.get_metadata()
         metadata.is_own_device = True
         metadata.is_trusted = settings.CENTRAL_SERVER
         metadata.save()
+
         return own_device
 
     @transaction.commit_on_success
@@ -236,7 +241,9 @@ class Device(SyncedModel):
         #     raise ValidationError("ID must match device's public key.")
         if self.signed_by_id and self.signed_by_id != self.id and not self.signed_by.get_metadata().is_trusted:
             raise ValidationError("Devices must either be self-signed or signed by a trusted authority.")
+
         super(Device, self).save(*args, **kwargs)
+
         if is_trusted:
             metadata = self.get_metadata()
             metadata.is_trusted = True

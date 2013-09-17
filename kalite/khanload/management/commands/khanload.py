@@ -10,6 +10,7 @@ import requests
 import shutil
 import sys
 import time
+from math import ceil, log  # needed for basepoints calculation
 from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
@@ -58,7 +59,6 @@ def download_khan_data(url, debug_cache_file=None, debug_cache_dir=settings.PROJ
     save the download to disk and re-serve it up again, rather than download again,
     if the file is less than a day old.
     """
-
     # Get the filename
     if not debug_cache_file:
         debug_cache_file = url.split("/")[-1] + ".json"
@@ -120,11 +120,17 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
 
         node["path"] = path + topic_tools.kind_slugs[kind] + node["slug"] + "/"
         node["title"] = node[title_key[kind]]
-
+        
         kinds = set([kind])
 
         # For each exercise, need to get related videos
+        #   and compute base points
         if kind == "Exercise":
+            # compute base points
+            # Paste points onto the exercise
+            node["basepoints"] = ceil(7 * log(node["seconds_per_fast_problem"]));
+
+            # Related videos
             related_video_readable_ids = [vid["readable_id"] for vid in download_khan_data("http://www.khanacademy.org/api/v1/exercises/%s/videos" % node["name"], node["name"] + ".json")]
             node["related_video_readable_ids"] = related_video_readable_ids
 
