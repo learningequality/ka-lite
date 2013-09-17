@@ -1,6 +1,6 @@
 #!/bin/bash
 
-pids=`ps aux | grep cronserver.py | grep -v "grep" | awk '{print $2}'`
+pids=`ps aux | grep cronserver | grep manage | grep -v "grep" | awk '{print $2}'`
 
 if [ "$pids" ]; then
     echo "----------------------------------------------------------------"

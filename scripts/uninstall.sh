@@ -12,12 +12,13 @@ echo "                                  "
 
 SCRIPT_DIR=`dirname "${BASH_SOURCE[0]}"`
 if [ -e $SCRIPT_DIR/kalite ];; then
-    KALITE_DIR=$SCRIPT_DIR/kalite
+    BASE_DIR=$SCRIPT_DIR
 else
-    KALITE_DIR=$SCRIPT_DIR/../kalite
+    BASE_DIR=$SCRIPT_DIR/..
 fi
+KALITE_DIR=$BASE_DIR/kalite
 
-if [ ! `id -u` -eq `stat -c "%u" $KALITE_DIR` ]; then
+if [ ! `id -u` -eq `stat -c "%u" "$KALITE_DIR"` ]; then
         echo "-------------------------------------------------------------------"
         echo "You are not the owner of this directory!"
         echo "We don't think it's a good idea to uninstall something you"
@@ -45,7 +46,7 @@ case $CONFIRM in
                 echo "in the background (this will require root/sudo privileges)"
                 sudo "$KALITE_DIR/donotrunatboot.sh
 
-                rm -rf "$SCRIPT_DIR"
+                rm -rf "$BASE_DIR"
 
                 echo "Thank you for flying with KA Lite!"
                 ;;
