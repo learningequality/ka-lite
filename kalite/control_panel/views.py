@@ -279,7 +279,7 @@ def device_management(request, device_id, org_id=None, zone_id=None):
     zone = get_object_or_None(Zone, pk=zone_id) if zone_id else None
     device = get_object_or_404(Device, pk=device_id)
 
-    sync_sessions = SyncSession.objects.filter(client_device=device)
+    sync_sessions = SyncSession.objects.filter(client_device=device).order_by("-timestamp")
     return {
         "org": org,
         "zone": zone,

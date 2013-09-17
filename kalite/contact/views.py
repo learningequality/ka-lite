@@ -57,7 +57,7 @@ def contact_wizard(request, type=""):
             # Map over the field at the bottom of the form to the hidden form element.
             #   I couldn't find a better way to get this set up in the form, without
             #   making a giant HTML mess, other than this way.
-            contact_form.instance.cc_email = request.POST.get("hack_cc_email", False)
+            contact_form.instance.cc_email = bool(request.POST.get("hack_cc_email", False))
 
             # Deployment
             if contact_form.cleaned_data["type"] == CONTACT_TYPE_DEPLOYMENT:
