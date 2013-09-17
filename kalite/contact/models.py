@@ -22,14 +22,15 @@ CONTRIBUTE_TYPE_OTHER      ='other'
 class Contact(ExtendedModel):
     """Base contact information"""
 
-    CONTACT_TYPES = ((CONTACT_TYPE_DEPLOYMENT, 'New Deployment'),
+    CONTACT_TYPES = (('', 'Please select a category'),
+                     (CONTACT_TYPE_DEPLOYMENT, 'New Deployment'),
                      (CONTACT_TYPE_SUPPORT, 'Get Support'),
                      (CONTACT_TYPE_CONTRIBUTE,"Contribute"),
                      (CONTACT_TYPE_INFO, 'General Inquiries'))
 
     user      = models.ForeignKey(User, blank=True, null=True)  # user, but can be null (unregistered contact)
     name      = models.CharField(verbose_name="Your Name", max_length=100)
-    type      = models.CharField(verbose_name="Reason for Contact", max_length=12, choices=CONTACT_TYPES)
+    type      = models.CharField(verbose_name="Reason for Contact", max_length=12, choices=CONTACT_TYPES, default='')
     email     = models.EmailField(verbose_name="Your Email", max_length=100)
     org_name  = models.CharField(verbose_name="Organization Name", max_length=100, blank=True)
     contact_date= models.DateField(auto_now_add=True)
@@ -70,14 +71,15 @@ class Deployment(ExtendedModel):
 
 class Support(ExtendedModel):
     # Different support types (support contact sub-form)
-    SUPPORT_TYPES = (('installation', 'Installation'),
+    SUPPORT_TYPES = (('', 'Please select a category'),
+                     ('installation', 'Installation'),
                      ('setup',        'Post-install setup'),
                      ('downloading',  'Downloading videos'),
                      ('reporting',    'Coach reports'),
                      ('other',        'Other'))
 
     contact  = models.ForeignKey(Contact)
-    type     = models.CharField(max_length=15, choices=SUPPORT_TYPES, verbose_name="Issue Type")
+    type     = models.CharField(max_length=15, choices=SUPPORT_TYPES, verbose_name="Issue Type", default='')
     issue    = models.TextField(blank=False, verbose_name="Please describe your issue.")
 
     def __unicode__(self):
@@ -87,14 +89,15 @@ class Support(ExtendedModel):
 class Contribute(ExtendedModel):
     """Want to contribute?  We have a form for that."""
 
-    CONTRIBUTE_TYPES = ((CONTRIBUTE_TYPE_DEVELOPMENT, 'Code Development'),
+    CONTRIBUTE_TYPES = (('', 'Please select a category'),
+                        (CONTRIBUTE_TYPE_DEVELOPMENT, 'Code Development'),
                         (CONTRIBUTE_TYPE_FUNDING,     'Funding'),
                         (CONTRIBUTE_TYPE_TRANSLATION, 'Translation'),
                         (CONTRIBUTE_TYPE_TESTING,     'Testing'),
                         (CONTRIBUTE_TYPE_OTHER,       'Other'))
 
     contact  = models.ForeignKey(Contact)
-    type     = models.CharField(max_length=15, choices=CONTRIBUTE_TYPES, verbose_name="Type of contribution:")
+    type     = models.CharField(max_length=15, choices=CONTRIBUTE_TYPES, verbose_name="Type of contribution:", default='')
     issue    = models.TextField(blank=False, verbose_name="How would you like to contribute?")
 
     def __unicode__(self):
