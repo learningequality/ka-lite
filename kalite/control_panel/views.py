@@ -60,15 +60,16 @@ def zone_management(request, zone_id, org_id=None):
 
     # Accumulate device data
     device_data = dict()
-    for device in Device.objects.filter(devicezone__zone=zone):
+    for device in Device.objects.filter(devicezone__zone=zone).order_by("devicemetadata__is_demo_device", "name"):
 
         user_activity = UserLogSummary.objects.filter(device=device)
         sync_sessions = SyncSession.objects.filter(client_device=device)
-        if not settings.CENTRAL_SERVER and device.id != own_device.id:
+        if not settings.CENTRAL_SERVER and device.id != own_device.id:  # Non-local sync sessions unavailable on distributed server
             sync_sessions = None
         
         device_data[device.id] = {
             "name": device.name or device.id,
+            "is_demo_device": device.devicemetadata.is_demo_device,
             "num_times_synced": sync_sessions.count() if sync_sessions is not None else None,
             "last_time_synced": sync_sessions.aggregate(Max("timestamp"))["timestamp__max"] if sync_sessions is not None else None,
             "last_time_used":   None if user_activity.count() == 0 else user_activity.order_by("-end_datetime")[0],
@@ -279,7 +280,7 @@ def device_management(request, device_id, org_id=None, zone_id=None):
     zone = get_object_or_None(Zone, pk=zone_id) if zone_id else None
     device = get_object_or_404(Device, pk=device_id)
 
-    sync_sessions = SyncSession.objects.filter(client_device=device)
+    sync_sessions = SyncSession.objects.filter(client_device=device).order_by("-timestamp")
     return {
         "org": org,
         "zone": zone,
