@@ -1,0 +1,41 @@
+{% extends "control_panel/base.html" %}
+{% load i18n %}
+
+{% block title %}Zones with recent data uploads {% endblock title %}
+
+{% block control_panel_content %}
+<div id="zone_container">
+        
+    <div class="sync_sessions">
+        <h2>Most active zones and devices</h2>
+
+        <table class="simple-table">
+            <tr>
+                <th width="250px">Zone Name</th>
+                <th width="200px">Last upload date</th>
+                <th width="100px"># models (total)</th>
+                <th width="350px">Device info</th>
+            </tr>
+            {% for zone in zones %}
+                <tr>
+                    <td>
+                        <a target="_blank" href="{% url zone_management zone_id=zone.id, org_id=zone.organization__id %}">
+                            {{ zone.name }}
+                        </a>
+                    </td>
+                    <td>{{ zone.last_synced }}</td>
+                    <td>{{ zone.nuploaded }}</td>
+                    <td>
+                        <li>Device:
+                            <a target="_blank" href="{% url device_management zone_id=zone.id device_id=zone.devicezone__device__id org_id=zone.organization__id %}">
+                                {{ zone.devicezone__device__name }} / {{ zone.devicezone__device__client_sessions__client_version }}
+                            </a>
+                        </li>
+                        <li>OS: {{ zone.devicezone__device__client_sessions__client_os }}</li>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div><!-- zone_container -->
+{% endblock control_panel_content %}
