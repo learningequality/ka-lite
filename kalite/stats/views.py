@@ -1,27 +1,62 @@
 from annoying.decorators import render_to
+from collections import OrderedDict
+from datetime import timedelta  # this is OK; central server code can be 2.7+
 
-from django.db.models import Sum, Max, Count
+from django.db.models import Sum, Max, Count, F
 
-from securesync.models import Zone
+from securesync.models import SyncSession
 from shared.decorators import require_authorized_admin
 
 
 @require_authorized_admin
 @render_to("stats/admin_summary_page.html")
-def admin_summary_page(request, org_id=None):
-    zo = Zone.objects \
+def admin_summary_page(request, org_id=None, max_zones=20, chunk_size=100, ndays=None):
+    ndays = ndays or request.GET.get("days", 7)
+
+    ss = SyncSession.objects \
         .annotate( \
-            last_synced=Max("devicezone__device__client_sessions__timestamp", distinct=True), \
-            nsyncsessions=Count("devicezone__device__client_sessions__timestamp", distinct=True), \
-            nuploaded=Sum("devicezone__device__client_sessions__models_uploaded", distinct=True), \
-            ndevices=Count("devicezone__device", distinct=True), \
+            ndevices=Count("client_device__devicezone__zone__id", distinct=True), \
         ) \
-        .filter(nuploaded__gt=0, devicezone__device__devicemetadata__is_demo_device=False) \
-        .order_by("-last_synced") \
+        .filter(models_uploaded__gt=0, timestamp__gt=F("timestamp") - timedelta(days=ndays)) \
+        .order_by("-timestamp") \
         .values(
-            "name", "id", "last_synced", "nuploaded", "organization__id", \
-            "ndevices", "devicezone__device__name", "devicezone__device__id", "devicezone__device__client_sessions__client_version", "devicezone__device__client_sessions__client_os", \
+            "client_device__devicezone__zone__name", "client_device__devicezone__zone__id", "client_device__devicezone__zone__organization__id", \
+            "ndevices", "timestamp", "models_uploaded", "client_device__name", "client_device__id", "client_version", "client_os", "client_device__devicemetadata__is_demo_device", \
         )
+
+    # Apparently I can't group by zone.  So, will have to do manually
+    zones = OrderedDict()
+    cur_chunk = 0
+    while len(zones) < max_zones and cur_chunk < ss.count():
+        for session in ss[cur_chunk:cur_chunk+chunk_size]:
+            if len(zones) >= max_zones:
+                break
+            zone_id = session["client_device__devicezone__zone__id"]
+            if zone_id in zones:
+                zones[zone_id]["nsessions"] += 1
+                zones[zone_id]["nuploaded"] += session["models_uploaded"]
+                zones[zone_id]["device"]["is_demo_device"] = zones[zone_id]["device"]["is_demo_device"] or session["client_device__devicemetadata__is_demo_device"]
+
+            else:
+                zones[zone_id] = {
+                    "nsessions": 1,
+                    "last_synced": session["timestamp"],
+                    "nuploaded": session["models_uploaded"],
+                    "name": session["client_device__devicezone__zone__name"],
+                    "id": session["client_device__devicezone__zone__id"],
+                    "organization": { "id": session["client_device__devicezone__zone__organization__id"] },
+                    "device": {
+                        "id": session["client_device__id"] or "ben",
+                        "name": session["client_device__name"],
+                        "os": session["client_os"],
+                        "version": session["client_version"],
+                        "is_demo_device": session["client_device__devicemetadata__is_demo_device"],
+                    },
+                }
+        cur_chunk += chunk_size
+
     return {
-        "zones": list(zo[0:20]),
+        "days": ndays,
+        "zones": zones,
     }
+
