@@ -22,10 +22,11 @@ from django.core.management.base import BaseCommand, CommandError
 
 import settings
 import version
-from kalite.utils.general import get_host_name
-from kalite.utils.platforms import is_windows, system_script_extension
-from kalite.securesync.management.commands.initdevice import load_data_for_offline_install, Command as InitCommand
-from kalite.securesync.models import Zone
+from securesync.management.commands.initdevice import load_data_for_offline_install, Command as InitCommand
+from securesync.models import Zone
+from utils.general import get_host_name
+from utils.platforms import is_windows, system_script_extension
+
 
 def raw_input_yn(prompt):
     ans = ""
@@ -214,8 +215,6 @@ class Command(BaseCommand):
 
                 if not validate_username(username):
                     raise CommandError("Username must contain only letters, digits, and underscores, and start with a letter.\n")
-                elif not password:
-                    raise CommandError("Password cannot be blank.\n")
 
         ########################
         # Now do stuff
@@ -241,10 +240,11 @@ class Command(BaseCommand):
         if install_clean:
             call_command("generatekeys", verbosity=options.get("verbosity"))
 
-            call_command("createsuperuser", username=username, email="dummy@learningequality.org", interactive=False, verbosity=options.get("verbosity"))
-            admin = User.objects.get(username=username)
-            admin.set_password(password)
-            admin.save()
+            if options["password"]:  # blank password (non-interactive) means don't create a superuser
+                call_command("createsuperuser", username=username, email="dummy@learningequality.org", interactive=False, verbosity=options.get("verbosity"))
+                admin = User.objects.get(username=username)
+                admin.set_password(password)
+                admin.save()
 
             call_command("initdevice", hostname, description, verbosity=options.get("verbosity"))
 

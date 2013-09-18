@@ -212,5 +212,4 @@ class CachedPassword(models.Model):
     class Meta:
         app_label = "securesync"
 
-
 engine.add_syncing_models([Facility, FacilityGroup, FacilityUser])
