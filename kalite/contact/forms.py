@@ -2,6 +2,8 @@ from django import forms
 from django.forms import ModelForm, ChoiceField, RadioSelect
 
 from contact.models import Contact, Deployment, Support, Info, Contribute
+from django_snippets import EmptyChoiceField
+
 
 class Html5EmailInput(forms.TextInput):
     """adding email attributes"""
@@ -11,6 +13,8 @@ class Html5EmailInput(forms.TextInput):
 class ContactForm(ModelForm):
     required_css_class = 'required'
     ip = forms.CharField(widget=forms.HiddenInput)
+    type = EmptyChoiceField(choices=Contact.CONTACT_TYPES)
+
     class Meta:
         model = Contact
         fields = ('name', 'email', 'org_name', 'type', "ip")
