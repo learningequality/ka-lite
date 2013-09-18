@@ -4,8 +4,8 @@ SCRIPT_DIR=`dirname "${BASH_SOURCE[0]}"`
 if [ -e "$SCRIPT_DIR/python.sh" ]; then
     KALITE_DIR=$SCRIPT_DIR/../kalite
 else
-    SCRIPT_DIR=$SCRIPT_DIR/scripts
     KALITE_DIR=$SCRIPT_DIR/kalite
+    SCRIPT_DIR=$SCRIPT_DIR/scripts
 fi
 
 if [ ! -e "$KALITE_DIR/database/data.sqlite" ] ; then
