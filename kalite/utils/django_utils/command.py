@@ -94,7 +94,6 @@ def call_outside_command_with_output(command, *args, **kwargs):
             cmd += ("%s%s" % (prefix, key),)
         else:
             cmd += ("%s%s=%s" % (prefix, key, str(val)),)
-    #logging.debug(cmd)
 
     # Execute the command, using subprocess/Popen
     cwd = os.getcwd()

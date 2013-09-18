@@ -29,6 +29,9 @@
         padding-right: 15px;
         white-space: nowrap;
     }
+    .demo {
+        background-color:#fee;
+    }
 </style>
 {% endblock headcss %}
 
@@ -114,10 +117,11 @@
                     </th>
                 </tr>
                 {% for id,device in devices.items %}
-                    <tr>
+                    <tr class="{% if device.is_demo_device %}demo-device{% else %}real{% endif %}">
                         <td nowrap>
                             {% if device.num_times_synced != None %}<a href="{% url device_management org_id=org.id zone_id=zone.id device_id=id %}">{% endif %}
                                 {{ device.name }}
+                                {% if device.is_demo_device %}[Demo data]{% endif %}
                             {% if device.num_times_synced != None %}</a>{% endif %}
                         </td>
                         <td>

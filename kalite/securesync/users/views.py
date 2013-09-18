@@ -240,7 +240,7 @@ def login(request, facility):
             try:
                 UserLog.begin_user_activity(user, activity_type="login")  # Success! Log the event (ignoring validation failures)
             except ValidationError as e:
-                logging.debug("Failed to begin_user_activity upon login: %s" % e)
+                logging.error("Failed to begin_user_activity upon login: %s" % e)
             request.session["facility_user"] = user
             messages.success(request, _("You've been logged in! We hope you enjoy your time with KA Lite ") +
                                         _("-- be sure to log out when you finish."))
@@ -271,7 +271,7 @@ def logout(request):
         try:
             UserLog.end_user_activity(request.session["facility_user"], activity_type="login")
         except ValidationError as e:
-            logging.debug("Failed to end_user_activity upon logout: %s" % e)
+            logging.error("Failed to end_user_activity upon logout: %s" % e)
         del request.session["facility_user"]
     auth_logout(request)
     next = request.GET.get("next", reverse("homepage"))

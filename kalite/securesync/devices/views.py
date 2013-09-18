@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 import urllib
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
@@ -73,6 +71,9 @@ def register_public_key_client(request):
 @login_required
 @render_to("securesync/register_public_key_server.html")
 def register_public_key_server(request):
+    # Localizing central-only import
+    from central.models import Organization
+
     if request.method == 'POST':
         form = RegisteredDevicePublicKeyForm(request.user, data=request.POST)
         if form.is_valid():
@@ -90,6 +91,22 @@ def register_public_key_server(request):
                 messages.success(request, _("The device's public key has been successfully registered. You may now close this window."))
                 return HttpResponseRedirect(reverse("zone_management", kwargs={'org_id': org_id, 'zone_id': zone_id}))
     else:
+        # This is hackish--we now create default organizations and zones for users, based on their
+        #   registration information.  For previous users, however, we don't.  And we don't
+        #   give any links / instructions for creating zones when they get here.
+        # So, rather than block them, let's create an org and zone for them, so that
+        #   at least they can proceed directly.
+        if request.user.organization_set.count() == 0:
+            org = Organization(name="Your organization", owner=request.user)
+            org.save()
+            org.add_member(request.user)
+            org.save()
+        if not sum([org.zones.count() for org in request.user.organization_set.all()]):
+            org = request.user.organization_set.all()[0]
+            zone = Zone(name="Default zone")
+            zone.save()
+            org.add_zone(zone)
+
         form = RegisteredDevicePublicKeyForm(
             request.user, 
             callback_url = request.REQUEST.get("callback_url", request.META.get("HTTP_REFERER", "")),

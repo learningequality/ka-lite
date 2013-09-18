@@ -46,4 +46,4 @@ class UnregisteredDevicePing(ExtendedModel):
 
         except Exception as e:
             # Never block functionality
-            logging.debug(e)
+            logging.error("Error recording unregistered device ping: %s" % e)

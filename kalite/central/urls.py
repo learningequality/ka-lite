@@ -11,6 +11,7 @@ import control_panel.urls
 import faq.urls
 import registration.urls
 import securesync.urls
+import stats.urls
 from kalite import settings
 from feeds import RssSiteNewsFeed, AtomSiteNewsFeed
 from utils.videos import OUTSIDE_DOWNLOAD_BASE_URL  # for video download redirects
@@ -94,9 +95,8 @@ urlpatterns += patterns('central.api_views',
     url(r'^api/', include(central.api_urls)),
 )
 
-urlpatterns += patterns('control_panel.views',
-    # HACK(bcipolli) Admin summary page (no org info needed)
-    url(r'^summary/$', 'admin_summary_page', {}, 'admin_summary_page'),
+urlpatterns += patterns('stats.views',
+    url(r'^stats/', include(stats.urls)),
 )
 
 handler403 = 'central.views.handler_403'

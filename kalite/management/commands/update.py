@@ -113,6 +113,7 @@ class Command(UpdatesStaticCommand):
                         continue
                 options["zip_file"] = zip_file
                 self.update_via_zip(**options)
+
         except Exception as e:
             if self.started():
                 self.cancel(notes=str(e))
