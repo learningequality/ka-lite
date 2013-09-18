@@ -131,7 +131,11 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
 
     # Categorize every exercise log into a "midlevel" exercise
     for elog in exercise_logs:
-        topic = set(NODE_CACHE["Exercise"][elog["exercise_id"]]["parents"]).intersection(set(topic_slugs))
+        parents = NODE_CACHE["Exercise"][elog["exercise_id"]]["parents"]
+        topic = set(parents).intersection(set(topic_slugs))
+        if not topic:
+            logging.error("Could not find a topic for exercise %s (parents=%s)" % (elog["exercise_id"], parents))
+            continue
         topic = topic.pop()
         if not topic in topic_exercises:
             topic_exercises[topic] = get_topic_exercises(path=NODE_CACHE["Topic"][topic]["path"])
@@ -139,7 +143,12 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
 
     # Categorize every video log into a "midlevel" exercise.
     for vlog in video_logs:
-        topic = set(NODE_CACHE["Video"][ID2SLUG_MAP[vlog["youtube_id"]]]["parents"]).intersection(set(topic_slugs)).pop()
+        parents = NODE_CACHE["Video"][ID2SLUG_MAP[vlog["youtube_id"]]]["parents"]
+        topic = set(parents).intersection(set(topic_slugs))
+        if not topic:
+            logging.error("Could not find a topic for video %s (parents=%s)" % (vlog["youtube_id"], parents))
+            continue
+        topic = topic.pop()
         if not topic in topic_videos:
             topic_videos[topic] = get_topic_videos(path=NODE_CACHE["Topic"][topic]["path"])
         videos_by_topic[topic] = videos_by_topic.get(topic, []) + [vlog]
