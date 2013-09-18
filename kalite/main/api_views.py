@@ -63,7 +63,7 @@ def save_video_log(request):
             youtube_id=data["youtube_id"],
             total_seconds_watched=data["total_seconds_watched"],  # don't set incrementally, to avoid concurrency issues
             points=data["points"],
-            language=request.language,
+            language=data.get("language") or request.language,
         )
     except ValidationError as e:
         return JsonResponse({"error": "Could not save VideoLog: %s" % e}, status=500)
@@ -96,7 +96,7 @@ def save_exercise_log(request):
     exerciselog.attempts = data["attempts"]  # don't increment, because we fail to save some requests
     exerciselog.streak_progress = data["streak_progress"]
     exerciselog.points = data["points"]
-    exerciselog.language = request.language
+    exerciselog.language = data.get("language") or request.language
 
     try:
         exerciselog.full_clean()
