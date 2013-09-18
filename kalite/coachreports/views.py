@@ -335,6 +335,6 @@ def tabular_view(request, facility, report_type="exercise"):
             UserLog.end_user_activity(user, activity_type="coachreport")
         except ValidationError as e:
             # Never report this error; don't want this logging to block other functionality.
-            logging.debug("Failed to update Teacher userlog activity login: %s" % e)
+            logging.error("Failed to update Teacher userlog activity login: %s" % e)
 
     return context
