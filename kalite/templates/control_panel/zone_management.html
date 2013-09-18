@@ -118,7 +118,7 @@
                     </th>
                 </tr>
                 {% for id,device in devices.items %}
-                    <tr class="{% if device.is_demo_device %}demo{% else %}real{% endif %}">
+                    <tr class="{% if device.is_demo_device %}demo-device{% else %}real{% endif %}">
                         <td nowrap>
                             {% if device.num_times_synced != None %}<a href="{% url device_management org_id=org.id zone_id=zone.id device_id=id %}">{% endif %}
                                 {{ device.name }}
