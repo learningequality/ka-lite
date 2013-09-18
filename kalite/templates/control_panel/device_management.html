@@ -1,17 +1,30 @@
 {% extends "control_panel/base.html" %}
 {% load i18n %}
 
-{% if not is_central %}
-    {% block buttons %}
+{% block title %}{{ device.name }} : Device Syncing History{% endblock title %}
+
+{% block buttons %}{{ block.super }}
+    {% if not is_central %}
         <!--li>
             <a class="green_button" href="javascript:alert('NYI; sorry!');">{% trans "Sync device now!" %}</a>
         </li-->
-    {% endblock buttons %}
-{% endif %}
+    {% endif %}
+{% endblock buttons %}
 
 {% block control_panel_content %}
 <div id="zone_container">
-        
+
+    <div class="device_metadata">
+        <h2>Device Metadata</h2>
+
+        {% if not sync_sessions %}
+        <li>Version: {{ device.version }}</li>
+        {% else %}
+        <li>Version: {{ sync_sessions.0.client_version }}</li>
+        <li>OS:  {{ sync_sessions.0.client_os }}</li>
+        {% endif %}
+    </div>
+
     <div class="sync_sessions">
         <h2>Sync Sessions</h2>
 
@@ -40,5 +53,6 @@
             </table>
         {% endif %}
     </div>
+
 </div><!-- zone_container -->
 {% endblock control_panel_content %}
