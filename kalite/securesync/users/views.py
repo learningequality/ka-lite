@@ -17,10 +17,10 @@ from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
 
 import settings
+from .forms import FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
+from .models import Facility, FacilityGroup
 from config.models import Settings
 from main.models import UserLog
-from securesync.forms import FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
-from securesync.models import Facility, FacilityGroup
 from settings import LOG as logging
 from shared.decorators import require_admin, central_server_only, distributed_server_only, facility_required, facility_from_request
 from shared.jobs import force_job

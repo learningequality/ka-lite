@@ -64,11 +64,12 @@ def zone_management(request, zone_id, org_id=None):
 
         user_activity = UserLogSummary.objects.filter(device=device)
         sync_sessions = SyncSession.objects.filter(client_device=device)
-        if not settings.CENTRAL_SERVER and device.id != own_device.id:
+        if not settings.CENTRAL_SERVER and device.id != own_device.id:  # Non-local sync sessions unavailable on distributed server
             sync_sessions = None
         
         device_data[device.id] = {
             "name": device.name or device.id,
+            "is_demo_device": device.devicemetadata.is_demo_device,
             "num_times_synced": sync_sessions.count() if sync_sessions is not None else None,
             "last_time_synced": sync_sessions.aggregate(Max("timestamp"))["timestamp__max"] if sync_sessions is not None else None,
             "is_demo_device": device.devicemetadata.is_demo_device,

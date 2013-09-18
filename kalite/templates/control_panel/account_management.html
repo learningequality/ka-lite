@@ -22,9 +22,9 @@ Account Management Page for {{ student.get_name }}
 
 {% block buttons %}
 {% if not is_central %}
-                <!--li class="client-online-only">
+                <li class="client-online-only">
                     <a class="server-online-only green_button" href="{% url update_all_distributed %}">{% trans "Download data from Khan Academy" %}</a>
-                </li-->
+                </li>
 {% endif %}
 {% endblock buttons %}
 
