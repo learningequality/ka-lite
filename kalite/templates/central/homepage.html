@@ -15,13 +15,16 @@
 {% block landing-page %}
 <div class="row-fluid quotes-container">
     <div class="row-fluid">
+
         <div class="span12">
-            <div class="ka-quote">
-               65% of the world lacks internet access. 100% of the world needs education.
+            <div class="ka-quote ">
+                <div class="max-width-container">
+               <a href="{% url content_page page='mission' %}">65% of the world lacks internet access. 100% of the world needs education.</a>
                <p>
                     KA Lite is an offline version of  <a href="http://www.khanacademy.org/">Khan Academy</a>
                     that runs on almost anything.
                 </p>
+                </div>
            </div>
 
        </div>
@@ -31,38 +34,42 @@
     <div class="max-width-container">
 
         <div class="span4">
-            <h2>What is KA Lite?</h2>
 
-            <a href="">
+            <a href="{% url content_page page='kalite' %}">
             <div class="round-border-points"></div>
             </a>
+            <h2>What is KA Lite?</h2>
+
             <p>
-                Students can earn points, teacher can view <br>coach reports.
+                Students earn points, teacher view coach reports.<br> <a href="{% url content_page page='kalite' %}">Learn more about KA Lite.</a>
             </p>
         </div>
         <div class="span4">
-            <h2>How do I use it?</h2>
 
-            <a href="{% url wiki path='installation' %}">
+            <a href="{% url wiki path='user-s-manual' %}">
+
             <div class="round-border-install"></div>
             </a>
+            <h2>How do I use it?</h2>
+
             <p>
-                How-to instructions for users:<br>
+                            <a href="{% url wiki path='user-s-manual' %}">
+                    How-to instructions</a> for users:<br>
                 students, teachers, and<br>
                 administrators.
             </p>
         </div>
         <div class="span4">
-            <h2 class="">Our mission</h2>
 
-            <a href="{% url about %}">
+            <a href="{% url content_page page='users' %}">
             <div class="round-border-rural"></div>
             </a>
+            <h2 class="">Who is using it?</h2>
 
             <p>
-                Bringing the online education<br/>
-                revolution to rural<br/>
-                communities.
+                Read about our partnerships<br/>
+                and world-wide installations.<br/>
+                <a href="{% url contact_wizard type='deployment' %}">Tell us about yours.</a></br>
             </p>
         </div>
 
@@ -71,7 +78,7 @@
 <div class="row-fluid button-container">
 
     <div class="span12">
-        <a href="/installation"><button class="button-install">Install now! </button></a>
+        <a href="{% url wiki path='installation' %}"><button class="button-install">Install now! </button></a>
     </div>
 </div>
 </div>
@@ -96,7 +103,7 @@
             <h2>Questions?</h2>
                 <p>Tell us about your needs.
 
-                <a href="{% url contact_wizard type='deployment' %}">
+                <a href="{% url contact_wizard %}">
                    Contact Us.
                </a>
             </p>
@@ -113,10 +120,10 @@
             <div class="span6">
                <ul class="list-icons">
             <li>
-                <a href="https://www.facebook.com/kaliteproject" class="symbol">&#xe227;</a>       
+                <a href="https://www.facebook.com/kaliteproject" class="icon">circlefacebook</a>       
             </li>
             <li>
-                <a href="https://twitter.com/ka_lite" class="symbol">&#xe286;</a>      
+                <a href="https://twitter.com/ka_lite" class="icon">circletwitterbird</a>      
             </li>
         </ul>
  

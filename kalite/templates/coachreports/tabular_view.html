@@ -91,7 +91,7 @@
             <div class="subtitle">{% trans "Select Student" %}</div><select id="student">
                 <option {% if not request.GET.user %}selected{% endif %}>----</option>
                 {% for user in users %}
-                    <option value="{{ user.pk }}"{% if request.GET.user == user.pk %}selected{% endif %}>{{ user.last_name }} {{ user.first_name }}</option>
+                    <option value="{{ user.pk }}"{% if request.GET.user == user.pk %}selected{% endif %}>{{ user.name }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -135,7 +135,7 @@
     {% if not students %}
         <div style="clear: both;"></div>
         <p><div class="subtitle error" id="error_message">
-        {% if not groups.0.groups and not groups.1 %}
+        {% if not groups.0.groups and not groups.1 and request.GET.topic %}
             {% comment %}No groups available: then "ungrouped" is selected, and "no students" returned.{% endcomment %}
             {% trans "No student accounts have been created." %}
         {% elif not request.GET.topic %}
@@ -147,6 +147,7 @@
             {% trans "No student accounts in this group have been created." %}
         {% endif %}
         </div></p>
+
     {% else %}
         {% block students_header %}
 
@@ -164,8 +165,8 @@
                         {% for student in students %}
                             <tr>
                                 <th class="username">
-                                    <span title="{{ student.first_name }} {{ student.last_name }} ({{ student.username }})">
-                                        <div class="student-name"><a href="{% url student_view %}?user={{ student.id }}">{{ student.first_name }} {{ student.last_name }}</a></div>
+                                    <span title="{{ student.name }} ({{ student.username }})">
+                                        <div class="student-name"><a href="{% url student_view %}?user={{ student.id }}">{{ student.name }}</a></div>
                                     </span>
                                 </th>
                             </tr>

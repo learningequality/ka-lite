@@ -1,6 +1,7 @@
 from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
 from django.http import HttpResponseRedirect
+from django.views.generic import TemplateView
 
 import central.api_urls
 import coachreports.urls
@@ -41,6 +42,9 @@ urlpatterns += patterns('',
 
 urlpatterns += patterns('central.views',
     url(r'^$', 'homepage', {}, 'homepage'), 
+    url(r'^content/(?P<page>\w+)/', 'content_page', {}, 'content_page'), # Example of a new landing page
+    url(r'^wiki/(?P<path>.*)$', 'content_page', {"page": "wiki_page", "wiki_site": settings.CENTRAL_WIKI_URL}, 'wiki'),
+
     url(r'^delete_admin/(?P<org_id>\w+)/(?P<user_id>\w+)/$', 'delete_admin', {}, 'delete_admin'), 
     url(r'^delete_invite/(?P<org_id>\w+)/(?P<invite_id>\w+)/$', 'delete_invite', {}, 'delete_invite'), 
     url(r'^accounts/', include(registration.urls)),
@@ -64,7 +68,6 @@ urlpatterns += patterns('central.views',
     url(r'^faq/', include(faq.urls)),
 
     url(r'^contact/', include(contact.urls)),
-    url(r'^wiki/(?P<path>.*)$', lambda request, path: HttpResponseRedirect(settings.CENTRAL_WIKI_URL + path), {}, 'wiki'),
     url(r'^about/$', lambda request: HttpResponseRedirect('http://learningequality.org/'), {}, 'about'),
 
     # Endpoint for remote admin
@@ -76,6 +79,11 @@ urlpatterns += patterns('central.views',
 
 urlpatterns += patterns('central.api_views',
     url(r'^api/', include(central.api_urls)),
+)
+
+urlpatterns += patterns('control_panel.views',
+    # HACK(bcipolli) Admin summary page (no org info needed)
+    url(r'^summary/$', 'admin_summary_page', {}, 'admin_summary_page'),
 )
 
 handler403 = 'central.views.handler_403'

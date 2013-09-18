@@ -447,9 +447,6 @@ ul.dynatree-container li, .ui-widget-content {
 
                     if (!$("#retry-video-download").is(":visible")) {
 
-                        // wait 5 seconds before showing the retry button, in case it's just a momentary blip
-                        setTimeout(retry_download, 5000);
-
                         // keep pressing the retry button every 60 seconds, when this page is open
                         function retry_download() {
                             if (!window.download_check_interval || !$("#retry-video-section").is(":visible")) {
@@ -460,6 +457,9 @@ ul.dynatree-container li, .ui-widget-content {
                             $("#retry-video-download").show()
                             setTimeout(retry_download, 60000);
                         }
+
+                        // wait 5 seconds before showing the retry button, in case it's just a momentary blip
+                        setTimeout(retry_download, 5000);
                     }
 
                 } else {
