@@ -17,12 +17,14 @@
     <div class="device_metadata">
         <h2>Device Metadata</h2>
 
+        <ul>
         {% if not sync_sessions %}
-        <li>Version: {{ device.version }}</li>
+            <li>Version: {{ device.version }}</li>
         {% else %}
-        <li>Version: {{ sync_sessions.0.client_version }}</li>
-        <li>OS:  {{ sync_sessions.0.client_os }}</li>
+            <li>Version: {{ sync_sessions.0.client_version }}</li>
+            <li>OS:  {{ sync_sessions.0.client_os }}</li>
         {% endif %}
+        </ul>
     </div>
 
     <div class="sync_sessions">
