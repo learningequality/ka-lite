@@ -11,7 +11,7 @@ from shared.decorators import require_authorized_admin
 @require_authorized_admin
 @render_to("stats/admin_summary_page.html")
 def admin_summary_page(request, org_id=None, max_zones=20, chunk_size=100, ndays=None):
-    ndays = ndays or request.GET.get("days", 7)
+    ndays = ndays or int(request.GET.get("days", 7))
 
     ss = SyncSession.objects \
         .annotate( \
