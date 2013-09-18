@@ -10,7 +10,7 @@ class Html5EmailInput(forms.TextInput):
 
 class ContactForm(ModelForm):
     required_css_class = 'required'
-    ip = forms.CharField(widget=forms.HiddenInput())
+    ip = forms.CharField(widget=forms.HiddenInput)
     class Meta:
         model = Contact
         fields = ('name', 'email', 'org_name', 'type', "ip")
