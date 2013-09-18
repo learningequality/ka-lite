@@ -8,7 +8,7 @@ from models import RegisteredDevicePublicKey, Zone
 
 
 class RegisteredDevicePublicKeyForm(forms.ModelForm):
-    callback_url = forms.CharField(widget=forms.HiddenInput(), required=False)
+    callback_url = forms.CharField(widget=forms.HiddenInput, required=False)
     zone = forms.ChoiceField()
 
     class Meta:
@@ -20,18 +20,17 @@ class RegisteredDevicePublicKeyForm(forms.ModelForm):
 
         # Get the zones
         if user.is_superuser:
-            self.zones = Zone.objects.all()
-            self.orgs = set([o for z in self.zones for o in z.organization_set.all()])
+            orgs = set([o for z in Zone.objects.all() for o in z.organization_set.all()])
         else:
-            self.orgs = user.organization_set.all()
-            self.zones = Zone.objects.filter(organization__in=self.orgs)
+            orgs = user.organization_set.all()
 
         # Compute the choices
+        orgs = sorted(list(orgs), key=lambda org: org.name.lower())
         self.zone_choices = []
-        for zone in self.zones.order_by("name"):
-            org_name = zone.organization_set.all()[0] if zone.organization_set.count() > 0 else "[Headless]"
-            selection_text = "%s (%s)" % (zone.name, org_name) if len(self.orgs) > 1 else zone.name
-            self.zone_choices.append((zone.id, selection_text))
+        for org in orgs:
+            for zone in sorted(list(org.zones.all()), key=lambda zone: zone.name.lower()):
+                selection_text = "%s / %s" % (org.name, zone.name)
+                self.zone_choices.append((zone.id, selection_text))
 
         self.fields['zone'].choices = self.zone_choices
         self.fields["callback_url"].initial = callback_url
