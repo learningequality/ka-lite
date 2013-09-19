@@ -10,6 +10,7 @@ from django.core import management
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
+from utils.general import ensure_dir
 
 class Command(BaseCommand):
 	option_list = BaseCommand.option_list + (
@@ -19,12 +20,12 @@ class Command(BaseCommand):
 
 	def handle(self, **options):
 		# Change to project root dir
-		os.chdir(os.path.join(settings.LOCALE_PATHS[0], "..")
+		os.chdir(os.path.join(settings.PROJECT_PATH, "../"))
 		# Generate english po file
 		management.call_command('makemessages', locale='en')
 		# Generate english po file from javascript
 		management.call_command('makemessages', domain='djangojs', locale='en')
 
 		# cp new files into static dir (which should be exposed for download) 
-		shutil.copy(os.path.join(settings.LOCALE_PATHS[0], "en/LC_MESSAGES/django.po"), os.path.join(settings.STATIC_ROOT, "pot/kalite.pot"))
-		shutil.copy(os.path.join(settings.LOCALE_PATHS[0], "en/LC_MESSAGES/djangojs.po"), os.path.join(settings.STATIC_ROOT, "pot/kalitejs.pot"))
+		shutil.copy(os.path.join(settings.LOCALE_PATHS[0], "en/LC_MESSAGES/django.po"), ensure_dir(os.path.join(settings.STATIC_ROOT, "pot/kalite.pot")))
+		shutil.copy(os.path.join(settings.LOCALE_PATHS[0], "en/LC_MESSAGES/djangojs.po"), ensure_dir(os.path.join(settings.STATIC_ROOT, "pot/kalitejs.pot")))
