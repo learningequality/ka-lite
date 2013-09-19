@@ -1,26 +1,21 @@
 #!/bin/bash
 
-#!/bin/bash
-
-current_dir=`dirname "${BASH_SOURCE[0]}"`
-if [ -e "$current_dir/serverstart.sh" ]; then
-    KALITE_DIR=$current_dir/../kalite
+SCRIPT_DIR=`dirname "${BASH_SOURCE[0]}"`
+if [ -e "$SCRIPT_DIR/python.sh" ]; then
+    KALITE_DIR=$SCRIPT_DIR/../kalite
 else
-    SCRIPT_DIR=$current_dir/scripts
-    KALITE_DIR=$current_dir/kalite
+    KALITE_DIR=$SCRIPT_DIR/kalite
+    SCRIPT_DIR=$SCRIPT_DIR/scripts
 fi
 
-if [ -e "$KALITE_DIR/database/data.sqlite" ] ; then
-	
+if [ ! -e "$KALITE_DIR/database/data.sqlite" ] ; then
+	echo "Please run install.sh first!"
+else
     # move any previously downloaded content from the old location to the new
 	mv "$KALITE_DIR/static/videos/*" "$KALITE_DIR/../content" > /dev/null 2> /dev/null
 
 	echo
-	source "$current_dir/cronstart.sh"
+	source "$SCRIPT_DIR/cronstart.sh"
 	echo
-	source "$current_dir/serverstart.sh"
-else
-	echo "Please run install.sh first!"
+	source "$SCRIPT_DIR/serverstart.sh"
 fi
-
-cd ..

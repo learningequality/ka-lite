@@ -193,7 +193,7 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
                 if not get_video_node(video_slug, topictree):
                     videos_to_delete.append(vi)
             for vi in reversed(videos_to_delete):
-                logging.debug("Deleting unknown video %s" % node["related_video_readable_ids"][vi])
+                logging.warn("Deleting unknown video %s" % node["related_video_readable_ids"][vi])
                 del node["related_video_readable_ids"][vi]
         for child in node.get("children", []):
             recurse_nodes_to_clean_related_videos(child)
@@ -225,7 +225,7 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
                 slugs_deleted += recurse_nodes_to_delete_exercise(child)
                 # Delete children without children (all their children were removed)
                 if not child.get("children", None):
-                    logging.debug("Removing now-childless topic node '%s'" % child["slug"])
+                    logging.warn("Removing now-childless topic node '%s'" % child["slug"])
                     children_to_delete.append(ci)
                 # If there are no longer exercises, be honest about it
                 elif not any([ch["kind"] == "Exercise" or "Exercise" in ch.get("contains", []) for ch in child["children"]]):
@@ -233,7 +233,7 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
 
         # Do the actual deletion
         for i in reversed(children_to_delete):
-            logging.debug("Deleting unknown exercise %s" % node["children"][i]["slug"])
+            logging.warn("Deleting unknown exercise %s" % node["children"][i]["slug"])
             del node["children"][i]
         
         return slugs_deleted
@@ -273,7 +273,7 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
 
             if not child.get("children"):
                 children_to_delete.append(ci)
-                logging.debug("Removing KA childless topic: %s" % child["slug"])
+                logging.warn("Removing KA childless topic: %s" % child["slug"])
 
         for ci in reversed(children_to_delete):
             del node["children"][ci]
@@ -307,11 +307,11 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
             topictree_node = topic_tools.get_topic_by_path(node_cache["Topic"][slug]["path"], root_node=topictree)
 
             if not nodecache_node or not topictree_node:
-                logging.debug("Removing unrecognized knowledge_map topic '%s'" % slug)
+                logging.warn("Removing unrecognized knowledge_map topic '%s'" % slug)
             elif not topictree_node.get("children"):
-                logging.debug("Removing knowledge_map topic '%s' with no children." % slug)
+                logging.warn("Removing knowledge_map topic '%s' with no children." % slug)
             elif not "Exercise" in topictree_node.get("contains"):
-                logging.debug("Removing knowledge_map topic '%s' with no exercises." % slug)
+                logging.warn("Removing knowledge_map topic '%s' with no exercises." % slug)
             else:
                 continue
 
@@ -345,7 +345,7 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
         else:
             if node["slug"] in knowledge_map["topics"]:
                 sys.stderr.write("Removing topic from topic tree; does not belong. '%s'" % node["slug"])
-                logging.debug("Removing from knowledge map: %s" % node["slug"])
+                logging.warn("Removing from knowledge map: %s" % node["slug"])
                 del knowledge_map["topics"][node["slug"]]
 
         for child in [n for n in node.get("children", []) if n["kind"] == "Topic"]:
@@ -359,7 +359,7 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
             # Note: id here is retrieved from knowledge_map, so we're OK
             #   that we blew away ID in the topic tree earlier.
             if "icon_url" not in value:
-                logging.debug("No icon URL for %s" % key)
+                logging.warn("No icon URL for %s" % key)
 
             value["icon_url"] = iconfilepath + value["id"] + iconextension
             knowledge_map["topics"][key] = value
@@ -399,7 +399,7 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
             if any(["x" for pt in polyline["path"] if (pt["x"], pt["y"]) not in all_topic_points]):
                 polylines_to_delete.append(li)
 
-        logging.debug("Removing %s of %s polylines in top-level knowledge map" % (len(polylines_to_delete), len(knowledge_map["polylines"])))
+        logging.warn("Removing %s of %s polylines in top-level knowledge map" % (len(polylines_to_delete), len(knowledge_map["polylines"])))
         for i in reversed(polylines_to_delete):
             del knowledge_map["polylines"][i]
 

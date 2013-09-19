@@ -239,15 +239,14 @@ def login(request, facility):
             try:
                 UserLog.begin_user_activity(user, activity_type="login")  # Success! Log the event (ignoring validation failures)
             except ValidationError as e:
-                logging.debug("Failed to begin_user_activity upon login: %s" % e)
+                logging.error("Failed to begin_user_activity upon login: %s" % e)
             request.session["facility_user"] = user
             messages.success(request, _("You've been logged in! We hope you enjoy your time with KA Lite ") +
                                         _("-- be sure to log out when you finish."))
-            return HttpResponseRedirect(
-                form.non_field_errors()
-                or request.next
-                or reverse("coach_reports") if form.get_user().is_teacher else reverse("account_management")
-            )
+            landing_page = reverse("coach_reports") if form.get_user().is_teacher else None
+            landing_page = landing_page or (reverse("account_management") if settings.CONFIG_PACKAGE != "RPi" else reverse("homepage"))
+
+            return HttpResponseRedirect(form.non_field_errors() or request.next or landing_page)
         else:
             messages.error(
                 request,
@@ -271,7 +270,7 @@ def logout(request):
         try:
             UserLog.end_user_activity(request.session["facility_user"], activity_type="login")
         except ValidationError as e:
-            logging.debug("Failed to end_user_activity upon logout: %s" % e)
+            logging.error("Failed to end_user_activity upon logout: %s" % e)
         del request.session["facility_user"]
     auth_logout(request)
     next = request.GET.get("next", reverse("homepage"))

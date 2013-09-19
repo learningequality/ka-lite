@@ -60,17 +60,19 @@ def zone_management(request, zone_id, org_id=None):
 
     # Accumulate device data
     device_data = dict()
-    for device in Device.objects.filter(devicezone__zone=zone):
+    for device in Device.objects.filter(devicezone__zone=zone).order_by("devicemetadata__is_demo_device", "name"):
 
         user_activity = UserLogSummary.objects.filter(device=device)
         sync_sessions = SyncSession.objects.filter(client_device=device)
-        if not settings.CENTRAL_SERVER and device.id != own_device.id:
+        if not settings.CENTRAL_SERVER and device.id != own_device.id:  # Non-local sync sessions unavailable on distributed server
             sync_sessions = None
         
         device_data[device.id] = {
             "name": device.name or device.id,
+            "is_demo_device": device.devicemetadata.is_demo_device,
             "num_times_synced": sync_sessions.count() if sync_sessions is not None else None,
             "last_time_synced": sync_sessions.aggregate(Max("timestamp"))["timestamp__max"] if sync_sessions is not None else None,
+            "is_demo_device": device.devicemetadata.is_demo_device,
             "last_time_used":   None if user_activity.count() == 0 else user_activity.order_by("-end_datetime")[0],
             "counter": device.get_counter(),
         }
@@ -104,7 +106,7 @@ def delete_zone(request, org_id, zone_id):
     zone = Zone.objects.get(pk=zone_id)
     if not zone.has_dependencies(passable_classes=["Organization"]):
         zone.delete()
-        messages.success(request, "You have succesfully deleted " + zone.name + ".")
+        messages.success(request, "You have successfully deleted " + zone.name + ".")
     else:
         messages.warning(request, "You cannot delete this zone because it is syncing data with with %d device(s)" % zone.devicezone_set.count())
     return HttpResponseRedirect(reverse("org_management"))
@@ -279,7 +281,7 @@ def device_management(request, device_id, org_id=None, zone_id=None):
     zone = get_object_or_None(Zone, pk=zone_id) if zone_id else None
     device = get_object_or_404(Device, pk=device_id)
 
-    sync_sessions = SyncSession.objects.filter(client_device=device)
+    sync_sessions = SyncSession.objects.filter(client_device=device).order_by("-timestamp")
     return {
         "org": org,
         "zone": zone,
@@ -366,7 +368,7 @@ def account_management(request, org_id=None):
             UserLog.end_user_activity(user, activity_type="coachreport")
         except ValidationError as e:
             # Never report this error; don't want this logging to block other functionality.
-            logging.debug("Failed to update student userlog activity: %s" % e)
+            logging.error("Failed to update student userlog activity: %s" % e)
 
     return student_view_context(request)
 
@@ -419,15 +421,3 @@ def user_management_context(request, facility_id, group_id, page=1, per_page=25)
     if users:
         context["pageurls"] = {"next_page": next_page_url, "prev_page": previous_page_url}
     return context
-
-
-@require_authorized_admin
-@render_to("control_panel/admin_summary_page.html")
-def admin_summary_page(request, org_id=None):
-    zo = Zone.objects \
-        .annotate(nmodels=Sum("devicezone__device__client_sessions__models_uploaded")) \
-        .filter(nmodels__gt=0).order_by("-nmodels") \
-        .values("name", "id", "nmodels", "organization__id")
-    return {
-        "zones": zo,
-    }

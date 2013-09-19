@@ -383,7 +383,7 @@ def api_data(request, xaxis="", yaxis=""):
             UserLog.end_user_activity(user, activity_type="coachreport")
         except ValidationError as e:
             # Never report this error; don't want this logging to block other functionality.
-            logging.debug("Failed to update Teacher userlog activity login: %s" % e)
+            logging.error("Failed to update Teacher userlog activity login: %s" % e)
     
     # Now we have data, stream it back with a handler for date-times
     return JsonResponse(json_data)

@@ -36,6 +36,9 @@ class Organization(ExtendedModel):
     HEADLESS_ORG_SAVE_FLAG = "internally_safe_headless_org_save"  # indicates safe save() call
 
 
+    def add_zone(self, zone):
+        return self.zones.add(zone)
+
     def get_zones(self):
         return list(self.zones.all())
 

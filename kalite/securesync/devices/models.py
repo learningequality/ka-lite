@@ -49,6 +49,7 @@ class DeviceMetadata(ExtendedModel):
     device = models.OneToOneField("Device", blank=True, null=True)
     is_trusted = models.BooleanField(default=False)
     is_own_device = models.BooleanField(default=False)
+    is_demo_device = models.BooleanField(default=False)
     counter_position = models.IntegerField(default=0)
 
     class Meta:

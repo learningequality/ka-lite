@@ -30,7 +30,7 @@
 {% trans "Add a new group" as add_new_group %}
 $('#id_group').parent().find(".helptext").html('(<a href="{% url add_group %}?facility={{facility.id}}&prev={{cur_url|urlencode:''}}">{{add_new_group}}</a>)');
 {% endif %}
-{% if request.is_admin %}
+{% if request.is_admin and teacher %}
 $("#id_group").attr('disabled',true);
 $("#id_group").parent().hide();
 {% else %}
