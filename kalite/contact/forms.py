@@ -13,7 +13,7 @@ class Html5EmailInput(forms.TextInput):
 class ContactForm(ModelForm):
     required_css_class = 'required'
     ip = forms.CharField(widget=forms.HiddenInput)
-    type = EmptyChoiceField(choices=Contact.CONTACT_TYPES, label="Reason for Contact:")
+    type = EmptyChoiceField(choices=Contact.CONTACT_TYPES, label="Reason for Contact:", widget=forms.Select(attrs={ 'required': 'true' }))
 
     class Meta:
         model = Contact
@@ -21,7 +21,6 @@ class ContactForm(ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={ 'required': 'true' }),
             'email': Html5EmailInput(attrs={ 'required': 'true' }),
-            'type': forms.Select(attrs={ 'required': 'true' }),
         }
 
 
