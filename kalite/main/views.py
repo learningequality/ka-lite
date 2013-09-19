@@ -125,9 +125,7 @@ def topic_context(topic):
         "videos": videos,
         "exercises": exercises,
         "topics": my_topics,
-        "online_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),
-    
-
+        "backup_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),
     }
     return context
 
@@ -221,6 +219,7 @@ def homepage(request):
     context = topic_context(topicdata.TOPICS)
     context.update({
         "title": "Home",
+        "backup_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),
     })
     return context
 
