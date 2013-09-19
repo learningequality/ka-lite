@@ -23,8 +23,9 @@ def delete_downloaded_files(youtube_id):
 
 def get_video_urls(video_id, format, video_on_disk=True):
     if not video_on_disk and settings.BACKUP_VIDEO_SOURCE:
-        stream_url = settings.BACKUP_VIDEO_SOURCE(video_id, format)
-        thumbnail_url = None
+        dict_vals = {"video_id": video_id, "video_format": format, "thumb_format": "png" }
+        stream_url = settings.BACKUP_VIDEO_SOURCE % dict_vals
+        thumbnail_url = settings.BACKUP_THUMBNAIL_SOURCE % dict_vals if settings.BACKUP_THUMBNAIL_SOURCE else None
         subtitles_url = None
     else:
         base_url = settings.CONTENT_URL + video_id

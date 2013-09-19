@@ -78,7 +78,7 @@
 
     {% else %}
 
-        <div id="video-player">
+        <div id="video-player" {% if not video.ondisk %} class="client-online-only"{% endif %}>
             <video id="video-element" class="video-js vjs-default-skin" controls preload="auto" width="100%" height="600" {% if video.thumbnail_url %}poster="{{ video.thumbnail_url }}" {% endif %}data-setup="{}">
                 <source src="{{ video.stream_url }}" type="{{ video.stream_type }}" />
                 {% if video.subtitles_url %}<track kind="captions" src="{{ video.subtitles_url }}" srclang="en" label="On" />{% endif %}

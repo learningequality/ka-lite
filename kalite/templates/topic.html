@@ -27,6 +27,8 @@ $('.video-unavailable').removeAttr("href");
 // TODO(bcipolli): use javascript to translate here
 $('a.video-unavailable').attr('title', '{% trans "This video is not downloaded." %}');
 </script>
+<script>
+</script>
 {% endblock bodyjs %}
 
 
@@ -40,7 +42,16 @@ $('a.video-unavailable').attr('title', '{% trans "This video is not downloaded."
 <ol>
     {% for subtopic in topics %}
     <li>
-        <span><a href="{{ subtopic.path }}" class="topic-{% if not online_vids_available and subtopic.nvideos_local == 0 %}un{% endif %}available" title="{{subtopic.nvideos_local}}/{{subtopic.nvideos_known}} {% trans "video(s) are downloaded." %}">{% trans subtopic.title %}</a></span>
+        <span>
+        {% if backup_vids_available and subtopic.nvideos_local != subtopic.nvideos_known %}
+            <a href="{{ subtopic.path }}" class="topic-available client-online-only" title="{{subtopic.nvideos_known}}/{{subtopic.nvideos_known}} {% trans "video(s) are available." %}">
+                {% trans subtopic.title %}
+            </a>
+        {% endif %}
+        <a href="{{ subtopic.path }}" class="{% if backup_vids_available and subtopic.nvideos_local != subtopic.nvideos_known %}not-client-online-only {% endif %}topic-{% if subtopic.nvideos_local == 0 %}un{% endif %}available" title="{{subtopic.nvideos_local}}/{{subtopic.nvideos_known}} {% trans "video(s) are downloaded." %}">
+            {% trans subtopic.title %}
+        </a>
+        </span>
     </li>
     {% endfor %}
     <br/>
@@ -54,7 +65,17 @@ $('a.video-unavailable').attr('title', '{% trans "This video is not downloaded."
     <li>
         <!--<a href="mplayer:///khan/videofiles/{{ video.youtube_id }}.ogv">{{ video.title }}</a>-->
         <span class="progress-circle" data-youtube-id="{{ video.youtube_id }}"></span>
-        <a class="video-link video-{% if not video.on_disk and not online_vids_available %}un{% endif %}available" href="v/{{ video.readable_id }}/">{% trans video.title %}</a>
+        {% if backup_vids_available and subtopic.nvideos_local != subtopic.nvideos_known %}
+            <a class="video-link video-available client-online-only" href="v/{{ video.readable_id }}/">
+                {% trans video.title %}
+            </a>
+        {% endif %}
+        <a href="v/{{ video.readable_id }}/" class="{% if backup_vids_available and not video.on_disk %}client-online-only {% endif %}video-available" title="{{subtopic.nvideos_local}}/{{subtopic.nvideos_known}} {% trans "video(s) are downloaded." %}">
+            {% trans video.title %}
+        </a>
+        <a href="v/{{ video.readable_id }}/" class="video-link {% if backup_vids_available and not video.on_disk %} not-client-online-only {% endif %}video-{% if not video.on_disk and not backup_vids_available %}un{% endif %}available">
+            {% trans video.title %}
+        </a>
     </li>
     {% endfor %}
     <br/>
