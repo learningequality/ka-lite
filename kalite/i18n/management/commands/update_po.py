@@ -27,5 +27,7 @@ class Command(BaseCommand):
 		management.call_command('makemessages', domain='djangojs', locale='en')
 
 		# cp new files into static dir (which should be exposed for download) 
-		shutil.copy(os.path.join(settings.LOCALE_PATHS[0], "en/LC_MESSAGES/django.po"), ensure_dir(os.path.join(settings.STATIC_ROOT, "pot/kalite.pot")))
-		shutil.copy(os.path.join(settings.LOCALE_PATHS[0], "en/LC_MESSAGES/djangojs.po"), ensure_dir(os.path.join(settings.STATIC_ROOT, "pot/kalitejs.pot")))
+		static_path = os.path.join(settings.STATIC_ROOT, "pot/")
+		ensure_dir(static_path)
+		shutil.copy(os.path.join(settings.LOCALE_PATHS[0], "en/LC_MESSAGES/django.po"), os.path.join(static_path, "kalite.pot"))
+		shutil.copy(os.path.join(settings.LOCALE_PATHS[0], "en/LC_MESSAGES/djangojs.po"), os.path.join(static_path, "kalitejs.pot"))
