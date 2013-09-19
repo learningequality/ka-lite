@@ -13,7 +13,7 @@ class Html5EmailInput(forms.TextInput):
 class ContactForm(ModelForm):
     required_css_class = 'required'
     ip = forms.CharField(widget=forms.HiddenInput)
-    type = EmptyChoiceField(choices=Contact.CONTACT_TYPES)
+    type = EmptyChoiceField(choices=Contact.CONTACT_TYPES, label="Reason for Contact:")
 
     class Meta:
         model = Contact
@@ -33,6 +33,7 @@ class DeploymentForm(ModelForm):
 
 class SupportForm(ModelForm):
     required_css_class = 'required'
+    type = EmptyChoiceField(choices=Support.SUPPORT_TYPES, label="Issue Type:")
     class Meta:
         model = Support
         fields = ('type', 'issue')
@@ -44,6 +45,7 @@ class InfoForm(ModelForm):
         fields = ('issue',)
 
 class ContributeForm(ModelForm):
+    type = EmptyChoiceField(choices=Support.SUPPORT_TYPES, label="Type of contribution:")
     required_css_class = 'required'
     class Meta:
         model = Contribute
