@@ -173,13 +173,37 @@ class Device(SyncedModel):
         except DeviceMetadata.DoesNotExist:
             return DeviceMetadata(device=self)
 
+    def get_counter_position(self):
+        """
+        """
+        if not self.id:
+            return 0
+
+        elif self.is_own_device:
+            from securesync.engine import get_local_device_unsynced_count
+            return self.get_metadata() + get_local_device_unsynced_count() 
+
+        else:
+            return self.get_metadata().counter_position
+
     def set_counter_position(self, counter_position):
         metadata = self.get_metadata()
-        if not metadata.device.id:
+        if not metadata.device.id:  # only happens if device has not been saved yet.  Should be changed to self.id
             return
-        if counter_position > metadata.counter_position:
-            metadata.counter_position = counter_position
-            metadata.save()
+        assert counter_position > metadata.counter_position, "How else?"
+        metadata.counter_position = counter_position
+        metadata.save()
+
+
+    @transaction.commit_on_success
+    def increment_counter_position(self):
+        metadata = self.get_metadata()
+        if not metadata.device.id:
+            return 0
+        metadata.counter_position += 1
+        metadata.save()
+        return metadata.counter_position
+
 
     def full_clean(self):
         # TODO(jamalex): we skip out here, because otherwise self-signed devices will fail
@@ -233,21 +257,6 @@ class Device(SyncedModel):
 
         return own_device
 
-    @transaction.commit_on_success
-    def increment_and_get_counter(self):
-        metadata = self.get_metadata()
-        if not metadata.device.id:
-            return 0
-        metadata.counter_position += 1
-        metadata.save()
-        return metadata.counter_position
-
-    def get_counter(self):
-        metadata = self.get_metadata()
-        if not metadata.device.id:
-            return 0
-        return metadata.counter_position
-
     def __unicode__(self):
         return self.name or self.id[0:5]
 
@@ -287,14 +296,6 @@ class Device(SyncedModel):
         """
         assert self.public_key is not None, "public_key required for get_uuid"
         return uuid.uuid5(settings.ROOT_UUID_NAMESPACE, str(self.public_key)).hex
-
-    @staticmethod
-    def get_device_counters(zone):
-        device_counters = {}
-        for device in Device.objects.by_zone(zone):
-            if device.id not in device_counters:
-                device_counters[device.id] = device.get_metadata().counter_position
-        return device_counters
 
     @classmethod
     def get_central_server(cls):

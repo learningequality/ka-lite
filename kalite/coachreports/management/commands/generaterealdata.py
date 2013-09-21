@@ -103,6 +103,7 @@ def generate_fake_facilities(names=("Wilson Elementary",)):
             logging.info("Retrieved facility '%s'" % name)
         else:
             facility = Facility(name=name)
+            import pdb; pdb.set_trace()
             facility.save()
             logging.info("Created facility '%s'" % name)
 
@@ -299,7 +300,7 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
                         completion_timestamp=date_completed,
                         completion_counter=datediff(date_completed, start_date, units="seconds"),
                     )
-                    elog.counter = own_device.increment_and_get_counter()
+                    elog.counter = own_device.increment_counter_position()
                     elog.sign(own_device)  # have to sign after setting the counter
                     elog.save(imported=True)  # avoid userlog issues
 
@@ -440,7 +441,7 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
                     )
                     vlog.full_clean()
                     # TODO(bcipolli): bulk saving of logs
-                    vlog.counter = own_device.increment_and_get_counter()
+                    vlog.counter = own_device.increment_counter_position()
                     vlog.sign(own_device)  # have to sign after setting the counter
                     vlog.save(imported=True)  # avoid userlog issues
 

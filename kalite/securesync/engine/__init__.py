@@ -51,6 +51,20 @@ def get_syncing_models():
     return _syncing_models
 
     
+def get_device_counters(**kwargs):
+    """Get device counters, filtered by zone"""
+    assert ("zone" in kwargs) + ("devices" in kwargs) == 1, "Must specify zone or devices, and not both."
+
+    from securesync.devices.models import Device
+    devices = kwargs.get("devices") or Device.objects.by_zone(kwargs["zone"])
+
+    device_counters = {}
+    for device in list(devices):
+        if device.id not in device_counters:  # why is this needed?
+            device_counters[device.id] = device.get_counter_position()
+    return device_counters
+
+
 def get_serialized_models(device_counters=None, limit=100, zone=None, include_count=False, dest_version=None):
     """Serialize models for some intended version (dest_version)
     Default is our own version--i.e. include all known fields.

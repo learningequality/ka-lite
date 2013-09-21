@@ -234,7 +234,7 @@ class SyncedModel(ExtendedModel):
             # Two critical things to do:
             # 1. local models need to be signed by us
             # 2. and get our counter position
-            self.counter = own_device.increment_and_get_counter()
+            self.counter =own_device.increment_counter_position()
             self.sign(device=own_device)
 
         # call the base Django Model save to write to the DB
@@ -309,7 +309,7 @@ class ImportPurgatory(ExtendedModel):
         app_label = "securesync"
 
     def save(self, *args, **kwargs):
-        self.counter = self.counter or _get_own_device().get_counter()
+        self.counter = self.counter or _get_own_device().get_counter_position()
         super(ImportPurgatory, self).save(*args, **kwargs)
 
 add_syncing_models([SyncedLog])
