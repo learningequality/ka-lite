@@ -35,7 +35,7 @@ class VideoLog(SyncedModel):
     def __unicode__(self):
         return u"user=%s, youtube_id=%s, seconds=%d, points=%d%s" % (self.user, self.youtube_id, self.total_seconds_watched, self.points, " (completed)" if self.complete else "")
 
-    def save(self, *args, **kwargs):
+    def save(self, update_userlog=True, *args, **kwargs):
         if not kwargs.get("imported", False):
             self.full_clean()
 
@@ -48,10 +48,11 @@ class VideoLog(SyncedModel):
 
             # Tell logins that they are still active (ignoring validation failures).
             #   TODO(bcipolli): Could log video information in the future.
-            try:
-                UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()))
-            except ValidationError as e:
-                logging.error("Failed to update userlog during video: %s" % e)
+            if update_userlog:
+                try:
+                    UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()))
+                except ValidationError as e:
+                    logging.error("Failed to update userlog during video: %s" % e)
 
         super(VideoLog, self).save(*args, **kwargs)
 
@@ -110,7 +111,7 @@ class ExerciseLog(SyncedModel):
     def __unicode__(self):
         return u"user=%s, exercise_id=%s, points=%d%s" % (self.user, self.exercise_id, self.points, " (completed)" if self.complete else "")
 
-    def save(self, *args, **kwargs):
+    def save(self, update_userlog=True, *args, **kwargs):
         if not kwargs.get("imported", False):
             self.full_clean()
 
@@ -127,10 +128,12 @@ class ExerciseLog(SyncedModel):
 
             # Tell logins that they are still active (ignoring validation failures).
             #   TODO(bcipolli): Could log exercise information in the future.
-            try:
-                UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()))
-            except ValidationError as e:
-                logging.error("Failed to update userlog during exercise: %s" % e)
+            if update_userlog:
+                try:
+                    UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()))
+                except ValidationError as e:
+                    logging.error("Failed to update userlog during exercise: %s" % e)
+
         super(ExerciseLog, self).save(*args, **kwargs)
 
     def get_uuid(self, *args, **kwargs):
