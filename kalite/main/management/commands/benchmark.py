@@ -2,6 +2,7 @@
 Run benchmarks from the benchmark command
 """
 import threading
+import time
 from functools import partial
 from optparse import make_option
 
@@ -106,7 +107,6 @@ class Command(BaseCommand):
         ),
     )
 
-
     def handle(self, *args, **options):
         if len(args) < 1:
             raise CommandError("Must specify the benchmark type.")
@@ -135,7 +135,7 @@ class Command(BaseCommand):
 
 
         # Now, use the class to make a lambda function
-        good_keys = list(set(options.keys()) - set(["niters", "nclients", 'settings', 'pythonpath', 'verbosity', 'traceback']))
+        good_keys = list(set(options.keys()) - set(["niters", "nclients", 'settings', 'pythonpath', 'traceback']))
 
         # Create the threads (takes time, so call start separately),
         #   passing the lambda function
@@ -164,4 +164,5 @@ class Command(BaseCommand):
         
         # Run the threads
         for th in threads:
+            time.sleep(3)
             th.start()
