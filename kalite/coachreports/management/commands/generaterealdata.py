@@ -29,6 +29,7 @@ from math import exp, sqrt, ceil, floor
 
 from django.contrib.auth.hashers import make_password
 from django.core.management.base import BaseCommand, CommandError
+from django.db import transaction
 
 import settings
 import securesync
@@ -306,16 +307,17 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
                     seconds_per_attempt = 10 * (1 + user_settings["speed_of_learning"] * random.random())
                     time_to_navigate = 15 * (0.5 + random.random())  #between 7.5s and 22.5s
                     time_to_logout = 5 * (0.5 + random.random()) # between 2.5 and 7.5s
-                    ulog = UserLog(
-                        user=facility_user,
-                        activity_type=1,
-                        start_datetime = date_completed - datetime.timedelta(seconds=int(attempts * seconds_per_attempt + time_to_navigate)),
-                        end_datetime = date_completed + datetime.timedelta(seconds=time_to_logout),
-                        last_active_datetime = date_completed,
-                    )
-                    ulog.full_clean()
-                    ulog.save()
-                    user_logs.append(ulog)
+                    if settings.USER_LOG_MAX_RECORDS_PER_USER != 0:
+                        ulog = UserLog(
+                            user=facility_user,
+                            activity_type=1,
+                            start_datetime = date_completed - datetime.timedelta(seconds=int(attempts * seconds_per_attempt + time_to_navigate)),
+                            end_datetime = date_completed + datetime.timedelta(seconds=time_to_logout),
+                            last_active_datetime = date_completed,
+                        )
+                        ulog.full_clean()
+                        ulog.save()
+                        user_logs.append(ulog)
                 exercise_logs.append(elog)
 
     return (exercise_logs, user_logs)
@@ -484,6 +486,7 @@ def generate_fake_coachreport_logs():
     return logs
 
 
+@transaction.commit_on_success
 class Command(BaseCommand):
     args = "<data_type=[facility,facility_users,facility_groups,default=exercises,videos]>"
 
