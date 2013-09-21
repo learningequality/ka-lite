@@ -177,7 +177,7 @@ class SyncClient(BaseClient):
             except:
                 continue
 
-            if not d.get_counter_position(): # this would be nonzero if the device sync'd models
+            if not d.get_counter_position():  # this would be nonzero if the device sync'd models
                 d.set_counter_position(self.counters_to_download[device_id])
 
 

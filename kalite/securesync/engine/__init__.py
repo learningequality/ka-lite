@@ -64,6 +64,7 @@ def get_device_counters(**kwargs):
     for device in list(devices):
         if device.id not in device_counters:  # why is this needed?
             device_counters[device.id] = device.get_counter_position()
+
     return device_counters
 
 
@@ -108,11 +109,7 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
             # loop through each of the devices of interest
             for device_id, counter in device_counters.items():
 
-                device = Device.objects.get(pk=device_id)
-                if device != own_device:
-                    queryset = Model.objects.filter(signed_by=device)
-                else:
-                    queryset = Model.objects.filter(Q(signed_by=device) | Q(signed_by__isnull=True))
+                queryset = Model.objects.filter(Q(signed_by=device) | Q(signed_by__isnull=True))
 
                 # for trusted (central) device, only include models with the correct fallback zone
                 if not device.in_zone(zone):
@@ -121,12 +118,15 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
                     else:
                         continue
 
+                # Now select relevant items
+                queryset = queryset.filter(counter__gt=counter)
+
                 # check whether there are any models that will be excluded by our limit, so we know to ask again
-                if not instances_remaining and queryset.filter(counter__gt=counter+limit+boost).count() > 0:
+                if not instances_remaining and queryset.count() > (limit+boost):
                     instances_remaining = True
 
                 # pull out the model instances within the given counter range
-                models += queryset.filter(counter__gt=counter, counter__lte=counter+limit+boost)
+                models += queryset[:(limit+boost)]
 
         # if we got some models, or there were none to get, then call it quits
         if len(models) > 0 or not instances_remaining:
@@ -214,7 +214,7 @@ def save_serialized_models(data, increment_counters=True, src_version=None):
                 # (because otherwise we may never ask for additional models)
                 try:
                     if increment_counters and model.verify():
-                        model.signed_by.set_counter_position(model.counter)
+                        model.signed_by.set_counter_position(model.counter, soft_set=True)
                 except:
                     pass
         
@@ -250,16 +250,22 @@ def sign_and_serialize(models, *args, **kwargs):
     This function encapsulates serialization, and ensures that any final steps needed before syncing
     (e.g. signing, incrementing counters, etc) are done.
     """
+    from securesync.devices.models import Device
     from .models import SyncedModel
 
     for model in models:
         assert isinstance(model, SyncedModel), "Can only serialize SyncedModel instances"
-        
+        resave = False
+
         if not model.signature:
             model.sign()
-            #model.save(sign=False, increment_counters=False)  # this causes the whole cascade 
+            resave = True
+
+        if resave:
+            super(SyncedModel, model).save()
 
     return serializers.serialize("versioned-json", models, *args, **kwargs)
+
 
 def deserialize(data, *args, **kwargs):
     """

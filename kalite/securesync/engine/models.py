@@ -245,9 +245,10 @@ class SyncedModel(ExtendedModel):
         # call the base Django Model save to write to the DB
         super(SyncedModel, self).save(*args, **kwargs)
 
-        # for imported models, we want to keep track of the counter position we're at for that device
+        # For imported models, we want to keep track of the counter position we're at for that device.
+        #   so, if it's ahead of what we had, set it!
         if imported and increment_counters:
-            self.signed_by.set_counter_position(self.counter)
+            self.signed_by.set_counter_position(self.counter, soft_set=True)
 
     def set_id(self):
         self.id = self.id or self.get_uuid()
