@@ -11,3 +11,7 @@ else:
     str_version = "%s.%s" % VERSION[:2]
 
 __version__ = str_version
+
+# make it easier to import snippets
+from utils.importing import import_all_child_modules
+import_all_child_modules()

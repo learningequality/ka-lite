@@ -29,7 +29,7 @@ class Contact(ExtendedModel):
 
     user      = models.ForeignKey(User, blank=True, null=True)  # user, but can be null (unregistered contact)
     name      = models.CharField(verbose_name="Your Name", max_length=100)
-    type      = models.CharField(verbose_name="Reason for Contact", max_length=12, choices=CONTACT_TYPES)
+    type      = models.CharField(max_length=12, choices=CONTACT_TYPES)
     email     = models.EmailField(verbose_name="Your Email", max_length=100)
     org_name  = models.CharField(verbose_name="Organization Name", max_length=100, blank=True)
     contact_date= models.DateField(auto_now_add=True)
@@ -77,7 +77,7 @@ class Support(ExtendedModel):
                      ('other',        'Other'))
 
     contact  = models.ForeignKey(Contact)
-    type     = models.CharField(max_length=15, choices=SUPPORT_TYPES, verbose_name="Issue Type")
+    type     = models.CharField(max_length=15, choices=SUPPORT_TYPES)
     issue    = models.TextField(blank=False, verbose_name="Please describe your issue.")
 
     def __unicode__(self):
@@ -94,7 +94,7 @@ class Contribute(ExtendedModel):
                         (CONTRIBUTE_TYPE_OTHER,       'Other'))
 
     contact  = models.ForeignKey(Contact)
-    type     = models.CharField(max_length=15, choices=CONTRIBUTE_TYPES, verbose_name="Type of contribution:")
+    type     = models.CharField(max_length=15, choices=CONTRIBUTE_TYPES)
     issue    = models.TextField(blank=False, verbose_name="How would you like to contribute?")
 
     def __unicode__(self):
