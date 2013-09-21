@@ -287,6 +287,7 @@ def sign_and_serialize(models, *args, **kwargs):
 
     return serializers.serialize("versioned-json", models, *args, **kwargs)
 
+
 def deserialize(data, *args, **kwargs):
     """
     Similar to sign_and_serialize, except for deserialization.
