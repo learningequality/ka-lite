@@ -182,10 +182,17 @@ class Device(SyncedModel):
         else:
             return self.get_metadata().counter_position
 
-    def set_counter_position(self, counter_position):
+    def set_counter_position(self, counter_position, soft_set=False):
         metadata = self.get_metadata()
         if not metadata.device.id:  # only happens if device has not been saved yet.  Should be changed to self.id
             return
+
+        # It's often convenient to reset the position ONLY if the new counter position
+        #   is higher than the old.  So, let people be lazy--but need to send in a flag,
+        #   so it's clear that something a bit unusual is happening in a "set"
+        if soft_set and self.signed_by.get_counter_position() >= counter_position:
+            return
+
         assert counter_position > metadata.counter_position, "You should not be setting the counter position to a number lower than it's current value!"
         metadata.counter_position = counter_position
         metadata.save()
@@ -306,6 +313,9 @@ class Device(SyncedModel):
 
     def is_trusted(self):
         return self.get_metadata().is_trusted
+
+    def is_own_device(self):
+        return self.get_metadata().is_own_device
 
 
 class ZoneInvitation(SyncedModel):
