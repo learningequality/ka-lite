@@ -53,6 +53,7 @@ class Migration(SchemaMigration):
             'counter_position': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'device': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['securesync.Device']", 'unique': 'True', 'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'is_demo_device': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_own_device': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_trusted': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
         },
