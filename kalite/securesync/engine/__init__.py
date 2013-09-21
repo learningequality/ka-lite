@@ -6,6 +6,7 @@ from annoying.functions import get_object_or_None
 
 from django.core.exceptions import ValidationError
 #from django.db import models, transaction
+from django.db.models import Q
 from django.db.models.fields.related import ForeignKey
 
 import settings
@@ -108,9 +109,10 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
             for device_id, counter in device_counters.items():
 
                 device = Device.objects.get(pk=device_id)
-                queryset = Model.objects.filter(signed_by=device)
-                if not queryset and device == own_device:
-                    queryset = Model.objects.filter(signed_by=None)
+                if device != own_device:
+                    queryset = Model.objects.filter(signed_by=device)
+                else:
+                    queryset = Model.objects.filter(Q(signed_by=device) | Q(signed_by__isnull=True))
 
                 # for trusted (central) device, only include models with the correct fallback zone
                 if not device.in_zone(zone):
@@ -245,6 +247,8 @@ def save_serialized_models(data, increment_counters=True, src_version=None):
 
 def sign_and_serialize(models, *args, **kwargs):
     """
+    This function encapsulates serialization, and ensures that any final steps needed before syncing
+    (e.g. signing, incrementing counters, etc) are done.
     """
     from .models import SyncedModel
 
@@ -253,11 +257,12 @@ def sign_and_serialize(models, *args, **kwargs):
         
         if not model.signature:
             model.sign()
-            #model.save(sign=False, increment_counters=True)
+            #model.save(sign=False, increment_counters=False)  # this causes the whole cascade 
 
     return serializers.serialize("versioned-json", models, *args, **kwargs)
 
 def deserialize(data, *args, **kwargs):
     """
+    Similar to sign_and_serialize, except for deserialization.
     """
     return serializers.deserialize("versioned-json", data, *args, **kwargs)

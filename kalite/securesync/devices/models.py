@@ -186,7 +186,7 @@ class Device(SyncedModel):
         metadata = self.get_metadata()
         if not metadata.device.id:  # only happens if device has not been saved yet.  Should be changed to self.id
             return
-        assert counter_position > metadata.counter_position, "How else?"
+        assert counter_position > metadata.counter_position, "You should not be setting the counter position to a number lower than it's current value!"
         metadata.counter_position = counter_position
         metadata.save()
 

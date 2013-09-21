@@ -46,6 +46,10 @@ class SyncSession(ExtendedModel):
     class Meta:
         app_label = "securesync"
 
+    def __unicode__(self):
+        return u"%s... -> %s..." % (self.client_device.pk[0:5],
+            (self.server_device and self.server_device.pk[0:5] or "?????"))
+
     def _hashable_representation(self):
         return "%s:%s:%s:%s" % (
             self.client_nonce, self.client_device.pk,
@@ -75,10 +79,6 @@ class SyncSession(ExtendedModel):
         if settings.SYNC_SESSIONS_MAX_RECORDS is not None and SyncSession.objects.count() > settings.SYNC_SESSIONS_MAX_RECORDS:
             to_discard = SyncSession.objects.order_by("timestamp")[0:SyncSession.objects.count()-settings.SYNC_SESSIONS_MAX_RECORDS]
             SyncSession.objects.filter(pk__in=to_discard).delete()
-
-    def __unicode__(self):
-        return u"%s... -> %s..." % (self.client_device.pk[0:5],
-            (self.server_device and self.server_device.pk[0:5] or "?????"))
 
 
 class SyncedModelManager(models.Manager):
@@ -297,10 +297,8 @@ class DeferredSignSyncedModel(SyncedModel):
     """
     Synced model that we defer signing until it's time to sync.
     """
-    def save(self, *args, **kwargs):
-        if "sign" not in kwargs:
-            kwargs["sign"] = False
-        super(DeferredSignSyncedModel, self).save(*args, **kwargs)
+    def save(self, sign=settings.CENTRAL_SERVER, *args, **kwargs):
+        super(DeferredSignSyncedModel, self).save(*args, sign=sign, **kwargs)
 
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         app_label = "securesync"
