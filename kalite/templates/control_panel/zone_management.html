@@ -136,7 +136,15 @@
                                 N/A
                             {% endif %}
                         </td>
-                        <td nowrap>{% if not device.last_time_used %}{% trans "Never" %}{% else %}{{ device.last_time_used.start_datetime|date }} - {{ device.last_time_used.end_datetime|date }}{% endif %}</td>
+                        <td nowrap>
+                            {% if not device.last_time_used %}
+                                {% trans "Never" %}
+                            {% elif device.last_time_used.completion_timestamp %}
+                                {{ device.last_time_used.completion_timestamp|date }}
+                            {% elif device.last_time_used.start_datetime %}
+                                {{ device.last_time_used.start_datetime|date }} - {{ device.last_time_used.end_datetime|date }}
+                            {% endif %}
+                        </td>
                         <td nowrap>{{ device.counter }}</td>
                     </tr>
 

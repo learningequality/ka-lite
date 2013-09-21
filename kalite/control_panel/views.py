@@ -66,13 +66,15 @@ def zone_management(request, zone_id, org_id=None):
         sync_sessions = SyncSession.objects.filter(client_device=device)
         if not settings.CENTRAL_SERVER and device.id != own_device.id:
             sync_sessions = None
-        
+
+        exercise_activity = ExerciseLog.objects.filter(signed_by=device)
+
         device_data[device.id] = {
             "name": device.name or device.id,
             "num_times_synced": sync_sessions.count() if sync_sessions is not None else None,
             "last_time_synced": sync_sessions.aggregate(Max("timestamp"))["timestamp__max"] if sync_sessions is not None else None,
             "is_demo_device": device.get_metadata().is_demo_device,
-            "last_time_used":   None if user_activity.count() == 0 else user_activity.order_by("-end_datetime")[0],
+            "last_time_used":   exercise_activity.order_by("-completion_timestamp")[0:1] if user_activity.count() == 0 else user_activity.order_by("-end_datetime")[0],
             "counter": device.get_counter(),
         }
 
@@ -80,14 +82,15 @@ def zone_management(request, zone_id, org_id=None):
     facility_data = dict()
     for facility in Facility.objects.by_zone(zone):
 
-        user_activity = UserLogSummary.objects.filter(user__in=FacilityUser.objects.filter(facility=facility))
+        user_activity = UserLogSummary.objects.filter(user__facility=facility)
+        exercise_activity = ExerciseLog.objects.filter(user__facility=facility)
 
         facility_data[facility.id] = {
             "name": facility.name,
             "num_users":  FacilityUser.objects.filter(facility=facility).count(),
             "num_groups": FacilityGroup.objects.filter(facility=facility).count(),
             "id": facility.id,
-            "last_time_used":   None if user_activity.count() == 0 else user_activity.order_by("-end_datetime")[0],
+            "last_time_used":   exercise_activity.order_by("-completion_timestamp")[0:1] if user_activity.count() == 0 else user_activity.order_by("-end_datetime")[0],
         }
 
     return {
