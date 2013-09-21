@@ -18,7 +18,20 @@ from utils.django_utils import ExtendedModel
 from utils.general import datediff, isnumeric
 
 
-class VideoLog(SyncedModel):
+class DeferredSignSyncedModel(SyncedModel):
+    """
+    Defer incrementing counters until syncing.
+    """
+    def save(self, *args, **kwargs):
+        if "sign" not in kwargs:
+            kwargs["sign"] = False
+        super(DeferredSignSyncedModel, self).save(*args, **kwargs)
+
+    class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
+        abstract = True
+
+
+class VideoLog(DeferredSignSyncedModel):
     POINTS_PER_VIDEO = 750
 
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
@@ -28,9 +41,6 @@ class VideoLog(SyncedModel):
     complete = models.BooleanField(default=False)
     completion_timestamp = models.DateTimeField(blank=True, null=True)
     completion_counter = models.IntegerField(blank=True, null=True)
-
-    class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
-        pass
 
     def __unicode__(self):
         return u"user=%s, youtube_id=%s, seconds=%d, points=%d%s" % (self.user, self.youtube_id, self.total_seconds_watched, self.points, " (completed)" if self.complete else "")
@@ -44,7 +54,7 @@ class VideoLog(SyncedModel):
             self.complete = (self.points >= VideoLog.POINTS_PER_VIDEO)
             if not already_complete and self.complete:
                 self.completion_timestamp = datetime.now()
-                self.completion_counter = Device.get_own_device().get_counter()
+                self.completion_counter = Device.get_own_device().get_counter_position()
 
             # Tell logins that they are still active (ignoring validation failures).
             #   TODO(bcipolli): Could log video information in the future.
@@ -93,7 +103,7 @@ class VideoLog(SyncedModel):
         return videolog
 
 
-class ExerciseLog(SyncedModel):
+class ExerciseLog(DeferredSignSyncedModel):
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
     exercise_id = models.CharField(max_length=100, db_index=True)
     streak_progress = models.IntegerField(default=0)
@@ -104,9 +114,6 @@ class ExerciseLog(SyncedModel):
     attempts_before_completion = models.IntegerField(blank=True, null=True)
     completion_timestamp = models.DateTimeField(blank=True, null=True)
     completion_counter = models.IntegerField(blank=True, null=True)
-
-    class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
-        pass
 
     def __unicode__(self):
         return u"user=%s, exercise_id=%s, points=%d%s" % (self.user, self.exercise_id, self.points, " (completed)" if self.complete else "")
@@ -123,7 +130,7 @@ class ExerciseLog(SyncedModel):
             if not already_complete and self.complete:
                 self.struggling = False
                 self.completion_timestamp = datetime.now()
-                self.completion_counter = Device.get_own_device().get_counter()
+                self.completion_counter = Device.get_own_device().get_counter_position()
                 self.attempts_before_completion = self.attempts
 
             # Tell logins that they are still active (ignoring validation failures).
@@ -161,7 +168,7 @@ class ExerciseLog(SyncedModel):
         return ExerciseLog.objects.filter(user=user).aggregate(Sum("points")).get("points__sum", 0) or 0
 
 
-class UserLogSummary(SyncedModel):
+class UserLogSummary(DeferredSignSyncedModel):
     """Like UserLogs, but summarized over a longer period of time.
     Also sync'd across devices.  Unique per user, device, activity_type, and time period."""
     minversion = "0.9.4"
@@ -173,9 +180,6 @@ class UserLogSummary(SyncedModel):
     end_datetime = models.DateTimeField(blank=True, null=True)
     count = models.IntegerField(default=0, blank=False, null=False)
     total_seconds = models.IntegerField(default=0, blank=False, null=False)
-
-    class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
-        pass
 
     def __unicode__(self):
         self.full_clean()  # make sure everything that has to be there, is there.

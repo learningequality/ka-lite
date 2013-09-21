@@ -4,7 +4,7 @@ import uuid
 
 import kalite
 import settings
-from . import get_serialized_models, save_serialized_models
+from . import get_serialized_models, save_serialized_models, get_device_counters
 from .models import *
 from securesync.api_client import BaseClient
 from securesync.devices.api_client import RegistrationClient
@@ -135,7 +135,7 @@ class SyncClient(BaseClient):
         return json.loads(r.content or "{}").get("device_counters", {})
 
     def get_client_device_counters(self):
-        return Device.get_device_counters(self.session.client_device.get_zone())
+        return get_device_counters(zone=self.session.client_device.get_zone())
 
 
     def sync_device_records(self):

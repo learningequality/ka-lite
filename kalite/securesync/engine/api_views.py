@@ -15,7 +15,7 @@ from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.gzip import gzip_page
 
 import version
-from . import get_serialized_models, save_serialized_models
+from . import get_serialized_models, save_serialized_models, get_device_counters
 from .models import *
 from shared import serializers
 from securesync.devices.models import *  # inter-dependence
@@ -152,7 +152,7 @@ def device_upload(data, session):
 @api_handle_error_with_json
 def device_counters(data, session):
 
-    device_counters = Device.get_device_counters(session.client_device.get_zone())
+    device_counters = get_device_counters(zone=session.client_device.get_zone())
     return JsonResponse({
         "device_counters": device_counters,
     })

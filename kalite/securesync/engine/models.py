@@ -102,7 +102,7 @@ class SyncedModel(ExtendedModel):
     """
     id = models.CharField(primary_key=True, max_length=ID_MAX_LENGTH, editable=False)
     counter = models.IntegerField(default=0)
-    signature = models.CharField(max_length=360, blank=True, editable=False)
+    signature = models.CharField(max_length=360, blank=True, editable=False, null=True)
     signed_version = models.IntegerField(default=1, editable=False)
     signed_by = models.ForeignKey("Device", blank=True, null=True, related_name="+")
     zone_fallback = models.ForeignKey("Zone", blank=True, null=True, related_name="+")
@@ -124,7 +124,7 @@ class SyncedModel(ExtendedModel):
         device = device or _get_own_device()
         assert device.get_key(), "Cannot sign with device %s: key does not exist." % (device.name or "")
 
-        self.id = self.id or self.get_uuid()  # only assign a UUID ONCE
+        self.set_id()  #id = self.id or self.get_uuid()  # only assign a UUID ONCE
         self.signed_by = device
         self.full_clean()  # make sure the model data is of the appropriate types
         self.signature = self.signed_by.get_key().sign(self._hashable_representation())
@@ -213,7 +213,7 @@ class SyncedModel(ExtendedModel):
 
         return "&".join(chunks)
 
-    def save(self, imported=False, increment_counters=True, *args, **kwargs):
+    def save(self, imported=False, increment_counters=True, sign=True, *args, **kwargs):
         """
         Some of the heavy lifting happens here.  There are two saving scenarios:
         (a) We are saving an imported model.
@@ -235,7 +235,12 @@ class SyncedModel(ExtendedModel):
             # 1. local models need to be signed by us
             # 2. and get our counter position
             self.counter =own_device.increment_counter_position()
-            self.sign(device=own_device)
+            if sign:
+                # Always sign on the central server.
+                self.sign(device=own_device)
+            else:
+                self.set_id()  # = self.id or self.get_uuid()
+                self.signature = None  # make sure the signature will be recomputed on sync
 
         # call the base Django Model save to write to the DB
         super(SyncedModel, self).save(*args, **kwargs)
@@ -243,6 +248,9 @@ class SyncedModel(ExtendedModel):
         # for imported models, we want to keep track of the counter position we're at for that device
         if imported and increment_counters:
             self.signed_by.set_counter_position(self.counter)
+
+    def set_id(self):
+        self.id = self.id or self.get_uuid()
 
     def get_uuid(self):
         """

@@ -179,10 +179,6 @@ class Device(SyncedModel):
         if not self.id:
             return 0
 
-        elif self.is_own_device:
-            from securesync.engine import get_local_device_unsynced_count
-            return self.get_metadata() + get_local_device_unsynced_count() 
-
         else:
             return self.get_metadata().counter_position
 
@@ -244,10 +240,10 @@ class Device(SyncedModel):
         kwargs["name"] = kwargs.get("name", get_host_name())
         own_device = cls(**kwargs)
         own_device.set_key(crypto.get_own_key())
-        own_device.sign(device=own_device)
 
         # imported=True is for when the local device should not sign the object,
         #   and when counters should not be incremented.  That's our situation here!
+        own_device.sign(device=own_device)  # must sign, in order to use imported codepath
         super(Device, own_device).save(imported=True, increment_counters=False)
 
         metadata = own_device.get_metadata()

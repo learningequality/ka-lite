@@ -108,6 +108,8 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
 
                 device = Device.objects.get(pk=device_id)
                 queryset = Model.objects.filter(signed_by=device)
+                if not queryset and device == own_device:
+                    queryset = Model.objects.filter(signed_by=None)
 
                 # for trusted (central) device, only include models with the correct fallback zone
                 if not device.in_zone(zone):

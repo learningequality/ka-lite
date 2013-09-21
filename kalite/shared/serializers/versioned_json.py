@@ -47,6 +47,10 @@ class Serializer(json.Serializer):
             if v_diff is not None and v_diff < 0:
                 continue
 
+            assert hasattr(obj, "signature"), "Can only serialize models with a signature"
+            if not obj.signature:
+                obj.sign()
+
             self.start_object(obj)
             # Use the concrete parent class' _meta instead of the object's _meta
             # This is to avoid local_fields problems for proxy models. Refs #17717.

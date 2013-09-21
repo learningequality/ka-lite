@@ -14,7 +14,7 @@ class MainUnicodeModelsTest(KALiteTestCase, UnicodeModelsTest):
         # Make sure we're testing all classes
         self.check_unicode_class_coverage(
             models_module="main.models",
-            known_classes = [ExerciseLog, UserLog, UserLogSummary, VideoLog],
+            known_classes = [ExerciseLog, UserLog, UserLogSummary, VideoLog, DeferredSignSyncedModel],
         )
 
 
