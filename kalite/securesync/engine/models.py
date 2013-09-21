@@ -293,6 +293,20 @@ class SyncedModel(ExtendedModel):
         return u"%s... (Signed by: %s...)" % (pk, signed_by_pk)
 
 
+class DeferredSignSyncedModel(SyncedModel):
+    """
+    Synced model that we defer signing until it's time to sync.
+    """
+    def save(self, *args, **kwargs):
+        if "sign" not in kwargs:
+            kwargs["sign"] = False
+        super(DeferredSignSyncedModel, self).save(*args, **kwargs)
+
+    class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
+        app_label = "securesync"
+        abstract = True
+
+
 class SyncedLog(SyncedModel):
     """
     This is not used, but for backwards compatibility, we need to keep it.

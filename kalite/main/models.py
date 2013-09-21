@@ -12,23 +12,10 @@ from django.db.models import Sum
 
 import settings
 from securesync import engine
-from securesync.models import SyncedModel, FacilityUser, Device
+from securesync.models import DeferredSignSyncedModel, SyncedModel, FacilityUser, Device
 from settings import LOG as logging
 from utils.django_utils import ExtendedModel
 from utils.general import datediff, isnumeric
-
-
-class DeferredSignSyncedModel(SyncedModel):
-    """
-    Defer incrementing counters until syncing.
-    """
-    def save(self, *args, **kwargs):
-        if "sign" not in kwargs:
-            kwargs["sign"] = False
-        super(DeferredSignSyncedModel, self).save(*args, **kwargs)
-
-    class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
-        abstract = True
 
 
 class VideoLog(DeferredSignSyncedModel):
@@ -41,6 +28,9 @@ class VideoLog(DeferredSignSyncedModel):
     complete = models.BooleanField(default=False)
     completion_timestamp = models.DateTimeField(blank=True, null=True)
     completion_counter = models.IntegerField(blank=True, null=True)
+
+    class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
+        pass
 
     def __unicode__(self):
         return u"user=%s, youtube_id=%s, seconds=%d, points=%d%s" % (self.user, self.youtube_id, self.total_seconds_watched, self.points, " (completed)" if self.complete else "")
@@ -115,6 +105,9 @@ class ExerciseLog(DeferredSignSyncedModel):
     completion_timestamp = models.DateTimeField(blank=True, null=True)
     completion_counter = models.IntegerField(blank=True, null=True)
 
+    class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
+        pass
+
     def __unicode__(self):
         return u"user=%s, exercise_id=%s, points=%d%s" % (self.user, self.exercise_id, self.points, " (completed)" if self.complete else "")
 
@@ -181,10 +174,12 @@ class UserLogSummary(DeferredSignSyncedModel):
     count = models.IntegerField(default=0, blank=False, null=False)
     total_seconds = models.IntegerField(default=0, blank=False, null=False)
 
+    class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
+        pass
+
     def __unicode__(self):
         self.full_clean()  # make sure everything that has to be there, is there.
         return u"%d seconds over %d logins for %s/%s/%d, period %s to %s" % (self.total_seconds, self.count, self.device.name, self.user.username, self.activity_type, self.start_datetime, self.end_datetime)
-
 
     @classmethod
     def get_period_start_datetime(cls, log_time, summary_freq):

@@ -126,7 +126,6 @@ def generate_fake_facility_groups(names=("Class 4E", "Class 5B"), facilities=Non
                 logging.info("Retrieved facility group '%s'" % name)
             else:
                 facility_group = FacilityGroup(facility=facility, name=name)
-                facility_group.full_clean()
                 facility_group.save()
                 logging.info("Created facility group '%s'" % name)
 
@@ -173,7 +172,6 @@ def generate_fake_facility_users(nusers=20, facilities=None, facility_groups=Non
                         group=facility_group,
                     )
                     facility_user.set_password(password)  # set same password for every user
-                    facility_user.full_clean()
                     facility_user.save()
                     logging.info("Created facility user '%s/%s'" % (facility.name, user_data["username"]))
 
@@ -313,7 +311,6 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
                             end_datetime = date_completed + datetime.timedelta(seconds=time_to_logout),
                             last_active_datetime = date_completed,
                         )
-                        ulog.full_clean()
                         ulog.save()
                         user_logs.append(ulog)
                 exercise_logs.append(elog)
