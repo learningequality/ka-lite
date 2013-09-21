@@ -52,7 +52,18 @@ def add_syncing_models(models):
 def get_syncing_models():
     return _syncing_models
 
-    
+
+def get_local_device_unsynced_count():
+    """
+    When a model needs to sync, counter is set to None.
+    When it is synced, counter is set to an integer value.
+    """
+    count = 0
+    for Model in _syncing_models:
+        count += Model.objects.filter(counter__isnull=True).count()
+    return count
+
+
 def get_device_counters(**kwargs):
     """Get device counters, filtered by zone"""
     assert ("zone" in kwargs) + ("devices" in kwargs) == 1, "Must specify zone or devices, and not both."
@@ -251,13 +262,18 @@ def sign_and_serialize(models, *args, **kwargs):
     (e.g. signing, incrementing counters, etc) are done.
     """
     from .models import SyncedModel
+    own_device = Device.get_own_device()
 
     for model in models:
         assert isinstance(model, SyncedModel), "Can only serialize SyncedModel instances"
         
+        if not model.counter:
+            model.counter = own_device.increment_counter_position()
+
         if not model.signature:
             model.sign()
-            #model.save(sign=False, increment_counters=False)  # this causes the whole cascade 
+
+        #model.save(sign=False, increment_counters=False)  # this causes the whole cascade 
 
     return serializers.serialize("versioned-json", models, *args, **kwargs)
 

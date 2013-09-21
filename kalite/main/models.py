@@ -12,13 +12,13 @@ from django.db.models import Sum
 
 import settings
 from securesync import engine
-from securesync.models import DeferredSignSyncedModel, SyncedModel, FacilityUser, Device
+from securesync.models import DeferredCountSyncedModel, SyncedModel, FacilityUser, Device
 from settings import LOG as logging
 from utils.django_utils import ExtendedModel
 from utils.general import datediff, isnumeric
 
 
-class VideoLog(DeferredSignSyncedModel):
+class VideoLog(DeferredCountSyncedModel):
     POINTS_PER_VIDEO = 750
 
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
@@ -93,7 +93,7 @@ class VideoLog(DeferredSignSyncedModel):
         return videolog
 
 
-class ExerciseLog(DeferredSignSyncedModel):
+class ExerciseLog(DeferredCountSyncedModel):
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
     exercise_id = models.CharField(max_length=100, db_index=True)
     streak_progress = models.IntegerField(default=0)
@@ -161,7 +161,7 @@ class ExerciseLog(DeferredSignSyncedModel):
         return ExerciseLog.objects.filter(user=user).aggregate(Sum("points")).get("points__sum", 0) or 0
 
 
-class UserLogSummary(DeferredSignSyncedModel):
+class UserLogSummary(DeferredCountSyncedModel):
     """Like UserLogs, but summarized over a longer period of time.
     Also sync'd across devices.  Unique per user, device, activity_type, and time period."""
     minversion = "0.9.4"

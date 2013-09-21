@@ -85,7 +85,7 @@ class SyncClient(BaseClient):
     def validate_me_on_server(self, recursive_retry=False):
         client_nonce = uuid.uuid4().hex
         client_device = Device.get_own_device()
-        
+
         r = self.post("session/create", {
             "client_nonce": client_nonce,
             "client_device": client_device.pk,
