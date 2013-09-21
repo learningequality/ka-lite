@@ -26,6 +26,7 @@ import random
 import re
 import json
 from math import exp, sqrt, ceil, floor
+from optparse import make_option
 
 from django.contrib.auth.hashers import make_password
 from django.core.management.base import BaseCommand, CommandError
@@ -477,15 +478,32 @@ def generate_fake_coachreport_logs():
     return logs
 
 
-@transaction.commit_on_success
 class Command(BaseCommand):
     args = "<data_type=[facility,facility_users,facility_groups,default=exercises,videos]>"
 
     help = "Generate fake user data.  Can be re-run to generate extra exercise and video data."
 
+    option_list = BaseCommand.option_list + (
+        make_option('-t', '--transaction',
+            action='store_true',
+            dest='in_transaction',
+            default=False,
+            help='Create all objects in a single transaction',
+            metavar="TRANSACTION"),
+    )
+
     def handle(self, *args, **options):
         if settings.CENTRAL_SERVER:
             raise CommandError("Don't run this on the central server!!  Data not linked to any zone on the central server is BAD.")
+
+        if options["in_transaction"]:
+            with transaction.commit_on_success():
+                self.handle_stuff(*args, **options)
+        else:
+            self.handle_stuff(*args, **options)
+
+
+    def handle_stuff(self, *args, **options):
         # First arg is the type of data to generate
         generate_type = "all" if len(args) <= 0 else args[0].lower()
 
