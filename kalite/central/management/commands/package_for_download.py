@@ -29,10 +29,10 @@ import settings
 import utils.platforms
 from kalite.management.commands.zip_kalite import create_default_archive_filename, Command as ZipCommand
 from kalite.management.commands.update import Command as UpdateCommand
+from securesync import engine
 from securesync.management.commands.initdevice import Command as InitCommand
 from securesync.models import Zone, DeviceZone, Device, ChainOfTrust, ZoneInvitation
 from settings import LOG as logging
-from shared import serializers
 from utils.general import get_module_source_file
 from utils.platforms import system_script_extension, system_specific_zipping, system_specific_unzipping
 
@@ -144,7 +144,7 @@ class Command(BaseCommand):
 
             models_file = tempfile.mkstemp()[1]
             with open(models_file, "w") as fp:
-                fp.write(serializers.serialize("versioned-json", models))
+                fp.write(engine.sign_and_serialize(models))
             return models_file
         models_file = create_json_file()
 

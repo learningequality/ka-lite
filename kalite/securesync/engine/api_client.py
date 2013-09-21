@@ -4,12 +4,11 @@ import uuid
 
 import kalite
 import settings
-from . import get_serialized_models, save_serialized_models, get_device_counters
+from . import get_serialized_models, save_serialized_models, get_device_counters, deserialize
 from .models import *
 from securesync.api_client import BaseClient
 from securesync.devices.api_client import RegistrationClient
 from securesync.devices.models import *
-from shared import serializers
 
 
 class SyncClient(BaseClient):
@@ -52,7 +51,7 @@ class SyncClient(BaseClient):
         # Once again, we assume that (currently) the central server's version is >= ours,
         #   We just store what we can.
         own_device = self.session.client_device
-        session = serializers.deserialize("versioned-json", data["session"], src_version=None, dest_version=own_device.get_version()).next().object
+        session = deserialize(data["session"], src_version=None, dest_version=own_device.get_version()).next().object
         self.session.server_nonce = session.server_nonce
         self.session.server_device = session.server_device
         if not session.verify_server_signature(signature):

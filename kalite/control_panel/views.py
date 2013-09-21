@@ -4,7 +4,6 @@ from annoying.functions import get_object_or_None
 from collections import OrderedDict, namedtuple
 
 from django.contrib import messages
-from django.core import serializers
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse

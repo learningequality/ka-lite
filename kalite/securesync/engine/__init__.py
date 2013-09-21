@@ -12,6 +12,7 @@ import settings
 from settings import LOG as logging
 from shared import serializers
 
+
 _syncing_models = []  # all models we want to sync
 
 def add_syncing_models(models):
@@ -133,7 +134,7 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
         boost += limit
 
     # serialize the models we found
-    serialized_models = serializers.serialize("versioned-json", models, ensure_ascii=False, dest_version=dest_version)
+    serialized_models = sign_and_serialize(models, ensure_ascii=False, dest_version=dest_version)
 
     if include_count:
         return {"models": serialized_models, "count": len(models)}
@@ -170,9 +171,9 @@ def save_serialized_models(data, increment_counters=True, src_version=None):
 
     # deserialize the models, either from text or a list of dictionaries
     if isinstance(data, str) or isinstance(data, unicode):
-        models = serializers.deserialize("versioned-json", data, src_version=src_version, dest_version=own_device.get_version())
+        models = deserialize(data, src_version=src_version, dest_version=own_device.get_version())
     else:
-        models = serializers.deserialize("versioned-python", data, src_version=src_version, dest_version=own_device.get_version())
+        models = deserialize(data, src_version=src_version, dest_version=own_device.get_version())
 
     # try importing each of the models in turn
     unsaved_models = []
@@ -224,7 +225,7 @@ def save_serialized_models(data, increment_counters=True, src_version=None):
             purgatory = ImportPurgatory()
         
         # These models were successfully unserialized, so re-save in our own version.
-        purgatory.serialized_models = serializers.serialize("versioned-json", unsaved_models, ensure_ascii=False, dest_version=own_device.get_version())
+        purgatory.serialized_models = sign_and_serialize(unsaved_models, ensure_ascii=False, dest_version=own_device.get_version())
         purgatory.exceptions = exceptions
         purgatory.model_count = len(unsaved_models)
         purgatory.retry_attempts += 1
@@ -240,3 +241,23 @@ def save_serialized_models(data, increment_counters=True, src_version=None):
         out_dict["exceptions"] = exceptions
 
     return out_dict
+
+
+def sign_and_serialize(models, *args, **kwargs):
+    """
+    """
+    from .models import SyncedModel
+
+    for model in models:
+        assert isinstance(model, SyncedModel), "Can only serialize SyncedModel instances"
+        
+        if not model.signature:
+            model.sign()
+            #model.save(sign=False, increment_counters=True)
+
+    return serializers.serialize("versioned-json", models, *args, **kwargs)
+
+def deserialize(data, *args, **kwargs):
+    """
+    """
+    return serializers.deserialize("versioned-json", data, *args, **kwargs)
