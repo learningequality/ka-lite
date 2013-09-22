@@ -2,7 +2,7 @@ import json
 import os
 
 import settings
-from utils import topic_tools
+from shared import topic_tools
 
 
 TOPICS          = topic_tools.get_topic_tree()

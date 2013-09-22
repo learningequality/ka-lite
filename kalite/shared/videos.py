@@ -1,7 +1,7 @@
 import settings
 import utils.videos  # keep access to all functions
+from shared.topic_tools import get_topic_tree
 from utils.videos import *  # get all into the current namespace, override some.
-from utils.topic_tools import get_topic_tree
 
 
 def get_video_ids_for_topic(topic_id, topic_tree=None):
