@@ -136,7 +136,7 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
         boost += limit
 
     # serialize the models we found
-    serialized_models = sign_and_serialize(models, ensure_ascii=False, dest_version=dest_version)
+    serialized_models = serialize(models, ensure_ascii=False, dest_version=dest_version)
 
     if include_count:
         return {"models": serialized_models, "count": len(models)}
@@ -227,7 +227,7 @@ def save_serialized_models(data, increment_counters=True, src_version=None):
             purgatory = ImportPurgatory()
         
         # These models were successfully unserialized, so re-save in our own version.
-        purgatory.serialized_models = sign_and_serialize(unsaved_models, ensure_ascii=False, dest_version=own_device.get_version())
+        purgatory.serialized_models = serialize(unsaved_models, ensure_ascii=False, dest_version=own_device.get_version())
         purgatory.exceptions = exceptions
         purgatory.model_count = len(unsaved_models)
         purgatory.retry_attempts += 1
@@ -245,21 +245,23 @@ def save_serialized_models(data, increment_counters=True, src_version=None):
     return out_dict
 
 
-def sign_and_serialize(models, *args, **kwargs):
+def serialize(models, sign=True, *args, **kwargs):
     """
     This function encapsulates serialization, and ensures that any final steps needed before syncing
     (e.g. signing, incrementing counters, etc) are done.
     """
     from securesync.devices.models import Device
     from .models import SyncedModel
+    own_device = Device.get_own_device()
 
     for model in models:
-        assert isinstance(model, SyncedModel), "Can only serialize SyncedModel instances"
         resave = False
 
-        if not model.signature:
-            model.sign()
-            resave = True
+        if sign:
+            assert isinstance(model, SyncedModel), "Can only serialize SyncedModel instances"
+            if not model.signature:
+                model.sign()
+                resave = True
 
         if resave:
             super(SyncedModel, model).save()
@@ -269,6 +271,6 @@ def sign_and_serialize(models, *args, **kwargs):
 
 def deserialize(data, *args, **kwargs):
     """
-    Similar to sign_and_serialize, except for deserialization.
+    Similar to serialize, except for deserialization.
     """
     return serializers.deserialize("versioned-json", data, *args, **kwargs)

@@ -88,7 +88,7 @@ class RegistrationClient(BaseClient):
         # the other side will have to reconstruct the chain from the object list
         object_list = [own_device] + chain_of_trust.objects()
         r = self.post("register", {
-            "client_device": engine.sign_and_serialize(object_list, ensure_ascii=False),
+            "client_device": engine.serialize(object_list, ensure_ascii=False),
         })
 
         # Failed to register with any certificate
@@ -111,7 +111,7 @@ class RegistrationClient(BaseClient):
         # Note that (currently) this should never fail--the central server (which we're sending
         #   these objects to) should always have a higher version.
         r = self.post("register", {
-            "client_device": engine.sign_and_serialize([own_device], ensure_ascii=False),
+            "client_device": engine.serialize([own_device], ensure_ascii=False),
         })
 
         # If they don't understand, our assumption is broken.
