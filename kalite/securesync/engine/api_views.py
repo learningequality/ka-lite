@@ -14,7 +14,7 @@ from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.gzip import gzip_page
 
 import version
-from . import get_serialized_models, save_serialized_models, get_device_counters, sign_and_serialize
+from . import get_serialized_models, save_serialized_models, get_device_counters, serialize
 from .models import *
 from securesync.devices.models import *  # inter-dependence
 from shared.decorators import require_admin
@@ -96,7 +96,7 @@ def create_session(request):
 
     # Return the serializd session, in the version intended for the other device
     return JsonResponse({
-        "session": sign_and_serialize([session], dest_version=session.client_version, ensure_ascii=False ),
+        "session": serialize([session], dest_version=session.client_version, ensure_ascii=False, sign=False ),
         "signature": session.sign(),
     })
 
@@ -121,7 +121,7 @@ def device_download(data, session):
     session.models_downloaded += len(devices) + len(devicezones)
 
     # Return the objects serialized to the version of the other device.
-    return JsonResponse({"devices": sign_and_serialize(devices + devicezones, dest_version=session.client_version, ensure_ascii=False)})
+    return JsonResponse({"devices": serialize(devices + devicezones, dest_version=session.client_version, ensure_ascii=False)})
 
 
 @csrf_exempt

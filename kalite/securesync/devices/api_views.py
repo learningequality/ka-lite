@@ -132,7 +132,7 @@ def register_device(request):
     # Addition: always back central server object--in case they didn't get it during install,
     #   they need it for software updating.
     return JsonResponse(
-        engine.sign_and_serialize([Device.get_central_server(), Device.get_own_device(), zone, device_zone], dest_version=client_device.version, ensure_ascii=False)
+        engine.serialize([Device.get_central_server(), Device.get_own_device(), zone, device_zone], dest_version=client_device.version, ensure_ascii=False)
     )
 
 
