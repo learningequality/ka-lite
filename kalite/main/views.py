@@ -29,6 +29,7 @@ from settings import LOG as logging
 from shared import topic_tools
 from shared.decorators import require_admin, backend_cache_page
 from shared.jobs import force_job
+from shared.videos import get_video_urls
 from utils.internet import am_i_online, is_loopback_connection, JsonResponse
 
 
@@ -124,21 +125,17 @@ def topic_context(topic):
         "videos": videos,
         "exercises": exercises,
         "topics": my_topics,
+        "backup_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),
     }
     return context
 
 
 @backend_cache_page
 @render_to("video.html")
-def video_handler(request, video, prev=None, next=None):
-    video_exists = VideoFile.objects.filter(pk=video['youtube_id']).exists()
+def video_handler(request, video, format="mp4", prev=None, next=None):
 
-    # If we detect that a video exists, but it's not on disk, then
-    #   force the database to update.  No race condition here for saving
-    #   progress in a VideoLog: it is not dependent on VideoFile.
-    if not video_exists and topic_tools.is_video_on_disk(video['youtube_id']):
-        force_job("videoscan")
-        video_exists = True
+    video_on_disk = topic_tools.is_video_on_disk(video['youtube_id'])
+    video_exists = video_on_disk or bool(settings.BACKUP_VIDEO_SOURCE)
 
     if not video_exists:
         if request.is_admin:
@@ -148,6 +145,14 @@ def video_handler(request, video, prev=None, next=None):
             messages.warning(request, _("This video was not found! Please contact your teacher or an admin to have it downloaded."))
         elif not request.is_logged_in:
             messages.warning(request, _("This video was not found! You must login as an admin/teacher to download the video."))
+
+    video["stream_type"] = "video/%s" % format
+
+    if video_exists and not video_on_disk:
+        if not "stream_url" in video:
+            import pdb; pdb.set_trace()
+        messages.success(request, "Got video content from %s" % video["stream_url"])
+
     context = {
         "video": video,
         "title": video["title"],
@@ -166,32 +171,25 @@ def exercise_handler(request, exercise):
     Display an exercise
     """
     # Copy related videos (should be small), as we're going to tweak them
-    related_videos = [copy.copy(topicdata.NODE_CACHE["Video"].get(key, None)) for key in exercise["related_video_readable_ids"]]
-
-    videos_to_delete = []
-    for idx, video in enumerate(related_videos):
-        # Remove all videos that were not recognized or
-        #   simply aren't on disk.
-        #   Check on disk is relatively cheap, also executed infrequently
-        if not video or not topic_tools.is_video_on_disk(video["youtube_id"]):
-            videos_to_delete.append(idx)
+    related_videos = {}
+    for key in exercise["related_video_readable_ids"]:
+        video = topicdata.NODE_CACHE["Video"].get(key, None)
+        if not video:
             continue
-
-        # Resolve the most related path
-        video["path"] = video["paths"][0]  # default value
+        
+        related_videos[key] = copy.copy(video)
         for path in video["paths"]:
             if topic_tools.is_sibling({"path": path, "kind": "Video"}, exercise):
-                video["path"] = path
+                related_videos[key]["path"] = path
                 break
-        del video["paths"]
-    for idx in reversed(videos_to_delete):
-        del related_videos[idx]
+        if "path" not in related_videos[key]:
+            related_videos[key]["path"] = video["paths"][0]
 
     context = {
         "exercise": exercise,
         "title": exercise["title"],
         "exercise_template": "exercises/" + exercise["slug"] + ".html",
-        "related_videos": related_videos,
+        "related_videos": related_videos.values(),
     }
     return context
 
@@ -216,6 +214,7 @@ def homepage(request):
     context = topic_context(topicdata.TOPICS)
     context.update({
         "title": "Home",
+        "backup_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),
     })
     return context
 
