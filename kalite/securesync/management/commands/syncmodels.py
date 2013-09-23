@@ -1,6 +1,13 @@
+"""
+This is the command that does the actual syncing of models from distributed
+servers to the central server, and back again.
+"""
+import time
+
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
+import settings
 from securesync.engine.api_client import SyncClient
 
 
@@ -80,6 +87,11 @@ class Command(BaseCommand):
             if success_count == 0 and (fail_count == 0 or failure_tries >= max_retries):
                 break
             failure_tries += (fail_count > 0 and success_count == 0)
+
+            # Allow the user to throttle the syncing by inserting a wait, so that users
+            #   aren't overwhelmed by the computational need for signing during sync
+            if settings.SYNCING_THROTTLE_WAIT_TIME is not None:
+                time.sleep(settings.SYNCING_THROTTLE_WAIT_TIME)
 
         # Report summaries
         self.stdout_writeln("%s... (%s: %d, %s: %d, %s: %d)" % 

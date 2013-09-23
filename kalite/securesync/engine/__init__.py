@@ -84,7 +84,7 @@ def get_device_counters(**kwargs):
     return device_counters
 
 
-def get_serialized_models(device_counters=None, limit=100, zone=None, include_count=False, dest_version=None):
+def get_serialized_models(device_counters=None, limit=settings.SYNCING_MAX_RECORDS_PER_REQUEST, zone=None, include_count=False, dest_version=None):
     """Serialize models for some intended version (dest_version)
     Default is our own version--i.e. include all known fields.
     If serializing for a device of a lower version, pass in that device's version!
