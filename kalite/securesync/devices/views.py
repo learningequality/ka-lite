@@ -39,7 +39,8 @@ def set_as_registered():
 @require_admin
 @render_to("securesync/register_public_key_client.html")
 def register_public_key_client(request):
-    if Device.get_own_device().get_zone():
+    own_device = Device.get_own_device()
+    if own_device.get_zone():
         set_as_registered()
         return {"already_registered": True}
     client = SyncClient()
@@ -57,7 +58,7 @@ def register_public_key_client(request):
         return {
             "unregistered": True,
             "registration_url": client.path_to_url(
-                reverse("register_public_key") + "?" + urllib.quote(crypto.get_own_key().get_public_key_string())
+                reverse("register_public_key") + "?" + urllib.quote(own_device.public_key)
             ),
             "central_login_url": "%s://%s/accounts/login" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST),
             "callback_url": request.build_absolute_uri(reverse("register_public_key")),
