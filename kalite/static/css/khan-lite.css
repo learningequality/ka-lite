@@ -266,11 +266,11 @@ li .progress-circle {
     float: left;
 }
 
-.admin-only, .not-admin-only,
+.admin-only,
 .unregistered-only, .not-unregistered-only,
-.logged-in-only, .not-logged-in-only,
-.client-online-only, .not-client-online-only,
-.server-online-only, .not-server-online-only,
+.logged-in-only,
+.client-online-only,
+.server-online-only
 {
     display: none;
 }

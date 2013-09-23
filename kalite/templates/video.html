@@ -35,8 +35,8 @@
     <!-- <![endif]-->
 {% endblock headjs %}
 
-{% block content %}
 
+{% block content %}
 <h2 class="title-header">
     <span class="title">{% trans video.title %}</span><br/>
     {% if video.description %}
@@ -51,9 +51,11 @@
     </span>
     {% endif %}
     <div class="clear"></div>
-<div class="points-container" style="display: none;">{% trans "Points" %}: <span class="points">0</span></div>
+
+    <div class="points-container" style="display: none;">{% trans "Points" %}: <span class="points">0</span></div>
 </h2>
 <div class="clear"></div>
+
 {% if prev %}
 <div class="vidprev"><a href="../{{ prev.readable_id }}/">&lt; {% trans prev.title %} <span class="progress-circle" data-youtube-id="{{ prev.youtube_id }}"></span></a></div>
 {% endif %}
@@ -61,16 +63,14 @@
 {% if next %}
 <div class="vidnext"><a href="../{{ next.readable_id }}/"><span class="progress-circle" data-youtube-id="{{ next.youtube_id }}"></span> {% trans next.title %} &gt;</a></div>
 {% endif %}
-
 <div class="clear"></div>
 
 {% if video_exists %}
-
     {% if use_mplayer %}
 
         <h2 id="video-player">
             <a href="" id="launch_mplayer">
-                <img class="video-thumb" src="{{ CONTENT_URL }}{{ video.youtube_id }}.png" style="width: 100%;" title="Click to play!">
+                <img class="video-thumb" src="{{ video.thumbnail_url }}" style="width: 100%;" title="Click to play!">
                 <br/><br/>
                 Launch video in mplayer!
             </a>
@@ -78,12 +78,12 @@
 
     {% else %}
 
-        <div id="video-player">
-            <video id="video-element" class="video-js vjs-default-skin" controls preload="auto" width="100%" height="600" poster="{{ CONTENT_URL }}{{ video.youtube_id }}.png" data-setup="{}">
-                <source src="{{ CONTENT_URL }}{{ video.youtube_id }}.mp4" type="video/mp4" />
-                <track kind="captions" src="{{ CONTENT_URL }}{{ video.youtube_id }}.srt" srclang="en" label="On" />
+        <div id="video-player" {% if not video.ondisk %} class="client-online-only"{% endif %}>
+            <video id="video-element" class="video-js vjs-default-skin" controls preload="auto" width="100%" height="600" {% if video.thumbnail_url %}poster="{{ video.thumbnail_url }}" {% endif %}data-setup="{}">
+                <source src="{{ video.stream_url }}" type="{{ video.stream_type }}" />
+                {% if video.subtitles_url %}<track kind="captions" src="{{ video.subtitles_url }}" srclang="en" label="On" />{% endif %}
             </video>
-            <img class="video-thumb" src="{{ CONTENT_URL }}{{ video.youtube_id }}.png" style="position: absolute; left: -9999999px;">
+            {% if video.thumbnail_url %}<img class="video-thumb" src="{{ video.thumbnail_url }}" style="position: absolute; left: -9999999px;">{% endif %}
         </div>
 
     {% endif %}
