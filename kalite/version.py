@@ -1,5 +1,5 @@
 # THIS IS USED BY settings.py.  NEVER import settings.py here; hard-codes only!
-VERSION = "0.11.0"
+VERSION = "0.11.1"
 BUILD = "dummy"
 RELEASE_DATE="2013/08/26"
 VERSION_INFO = {

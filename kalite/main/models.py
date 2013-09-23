@@ -25,6 +25,7 @@ class VideoLog(SyncedModel):
     youtube_id = models.CharField(max_length=20, db_index=True)
     total_seconds_watched = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
+    language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.11.1"
     complete = models.BooleanField(default=False)
     completion_timestamp = models.DateTimeField(blank=True, null=True)
     completion_counter = models.IntegerField(blank=True, null=True)
@@ -49,7 +50,7 @@ class VideoLog(SyncedModel):
             # Tell logins that they are still active (ignoring validation failures).
             #   TODO(bcipolli): Could log video information in the future.
             try:
-                UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()))
+                UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()), language=language)
             except ValidationError as e:
                 logging.error("Failed to update userlog during video: %s" % e)
 
@@ -98,6 +99,7 @@ class ExerciseLog(SyncedModel):
     streak_progress = models.IntegerField(default=0)
     attempts = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
+    language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.11.1"
     complete = models.BooleanField(default=False)
     struggling = models.BooleanField(default=False)
     attempts_before_completion = models.IntegerField(blank=True, null=True)
@@ -128,7 +130,7 @@ class ExerciseLog(SyncedModel):
             # Tell logins that they are still active (ignoring validation failures).
             #   TODO(bcipolli): Could log exercise information in the future.
             try:
-                UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()))
+                UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()), language=language)
             except ValidationError as e:
                 logging.error("Failed to update userlog during exercise: %s" % e)
         super(ExerciseLog, self).save(*args, **kwargs)
@@ -166,6 +168,7 @@ class UserLogSummary(SyncedModel):
     device = models.ForeignKey(Device, blank=False, null=False)
     user = models.ForeignKey(FacilityUser, blank=False, null=False, db_index=True)
     activity_type = models.IntegerField(blank=False, null=False)
+    language = models.CharField(max_length=8, blank=True, null=True)
     start_datetime = models.DateTimeField(blank=False, null=False)
     end_datetime = models.DateTimeField(blank=True, null=True)
     count = models.IntegerField(default=0, blank=False, null=False)
@@ -256,13 +259,14 @@ class UserLogSummary(SyncedModel):
             device=device,
             user=user_log.user,
             activity_type=user_log.activity_type,
+            language=user_log.language,
             start_datetime=cls.get_period_start_datetime(user_log.end_datetime, settings.USER_LOG_SUMMARY_FREQUENCY),
             end_datetime=cls.get_period_end_datetime(user_log.end_datetime, settings.USER_LOG_SUMMARY_FREQUENCY),
             total_seconds=0,
             count=0,
         )
 
-        logging.debug("Adding %d seconds for %s/%s/%d, period %s to %s" % (user_log.total_seconds, device.name, user_log.user.username, user_log.activity_type, log_summary.start_datetime, log_summary.end_datetime))
+        logging.debug("Adding %d seconds for %s/%s/%d/%s, period %s to %s" % (user_log.total_seconds, device.name, user_log.user.username, user_log.activity_type, user_log.language, log_summary.start_datetime, log_summary.end_datetime))
 
         # Add the latest info
         log_summary.total_seconds += user_log.total_seconds
@@ -281,6 +285,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
 
     user = models.ForeignKey(FacilityUser, blank=False, null=False, db_index=True)
     activity_type = models.IntegerField(blank=False, null=False)
+    language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.11.1"
     start_datetime = models.DateTimeField(blank=False, null=False)
     last_active_datetime = models.DateTimeField(blank=False, null=False)
     end_datetime = models.DateTimeField(blank=True, null=True)
@@ -386,7 +391,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
         return None if not logs else logs[0]
 
     @classmethod
-    def begin_user_activity(cls, user, activity_type="login", start_datetime=None):
+    def begin_user_activity(cls, user, activity_type="login", start_datetime=None, language=None):
         """Helper function to create a user activity log entry."""
 
         # Do nothing if the max # of records is zero
@@ -408,19 +413,20 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
             #
             # Note: this can be a recursive call
             logging.warn("%s: had to END activity on a begin(%d) @ %s" % (user.username, activity_type, start_datetime))
+            # Don't mark current language when closing an old one
             cls.end_user_activity(user=user, activity_type=activity_type, end_datetime=cur_log.last_active_datetime)
             cur_log = None
 
         # Create a new entry
         logging.debug("%s: BEGIN activity(%d) @ %s"%(user.username, activity_type, start_datetime))
-        cur_log = cls(user=user, activity_type=activity_type, start_datetime=start_datetime, last_active_datetime=start_datetime)
+        cur_log = cls(user=user, activity_type=activity_type, start_datetime=start_datetime, last_active_datetime=start_datetime, language=language)
         cur_log.save()
 
         return cur_log
 
 
     @classmethod
-    def update_user_activity(cls, user, activity_type="login", update_datetime=None):
+    def update_user_activity(cls, user, activity_type="login", update_datetime=None, language=language):
         """Helper function to update an existing user activity log entry."""
 
         # Do nothing if the max # of records is zero
@@ -446,12 +452,13 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
 
         logging.debug("%s: UPDATE activity (%d) @ %s"%(user.username, activity_type, update_datetime))
         cur_log.last_active_datetime = update_datetime
+        cur_log.language = language or cur_log.language  # set the language to the current language, if there is one.
         cur_log.save()
         return cur_log
 
 
     @classmethod
-    def end_user_activity(cls, user, activity_type="login", end_datetime=None):
+    def end_user_activity(cls, user, activity_type="login", end_datetime=None):  # don't accept language--we're just closing previous activity.
         """Helper function to complete an existing user activity log entry."""
 
         # Do nothing if the max # of records is zero

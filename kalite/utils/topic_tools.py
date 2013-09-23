@@ -1,7 +1,6 @@
 """
 Important constants and helpful functions
 """
-import copy
 import glob
 import json
 import os
@@ -87,14 +86,14 @@ def generate_node_cache(topictree=None):#, output_dir=settings.DATA_PATH):
             #      (most/all args are strings, and ... I feel we're already being darn
             #      careful here.  So, I think it's enough.
             node_shared_keys = set(node.keys()) - set(["path"])
-            stored_shared_keys = set(node_cache[kind][node["slug"]]) - set(["paths", "parents"])
+            stored_shared_keys = set(node_cache[kind][node["slug"]]) - set(["path", "paths", "parents"])
             unshared_keys = node_shared_keys.symmetric_difference(stored_shared_keys)
             shared_keys = node_shared_keys.intersection(stored_shared_keys)
             assert not unshared_keys, "Node and stored node should have all the same keys."
             for key in shared_keys:
                 # A cursory check on values, for strings only (avoid unsafe types)
                 if isinstance(node[key], basestring):
-                    assert node[key] == node_cache[kind][node["slug"]][key]
+                    assert node[key] == node_cache[kind][node["slug"]][key], "Node values don't match"
 
             # We already added this node, it's just found at multiple paths.
             #   So, save the new path
@@ -103,13 +102,10 @@ def generate_node_cache(topictree=None):#, output_dir=settings.DATA_PATH):
 
         else:
             # New node, so copy off, massage, and store.
-            node_copy = copy.copy(node)
-            if "children" in node_copy:
-                del node_copy["children"]
+            node_copy = node
             if kind in multipath_kinds:
                 # If multiple paths can map to a single slug, need to store all paths.
                 node_copy["paths"] = [node_copy["path"]]
-                del node_copy["path"]
             node_cache[kind][node["slug"]] = node_copy
             # Add parents
             node_cache[kind][node["slug"]]["parents"] = parents
