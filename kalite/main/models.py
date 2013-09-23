@@ -25,7 +25,7 @@ class VideoLog(SyncedModel):
     youtube_id = models.CharField(max_length=20, db_index=True)
     total_seconds_watched = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
-    language = models.CharField(max_length=8, blank=True, null=True)
+    language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.11.1"
     complete = models.BooleanField(default=False)
     completion_timestamp = models.DateTimeField(blank=True, null=True)
     completion_counter = models.IntegerField(blank=True, null=True)
@@ -99,7 +99,7 @@ class ExerciseLog(SyncedModel):
     streak_progress = models.IntegerField(default=0)
     attempts = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
-    language = models.CharField(max_length=8, blank=True, null=True)
+    language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.11.1"
     complete = models.BooleanField(default=False)
     struggling = models.BooleanField(default=False)
     attempts_before_completion = models.IntegerField(blank=True, null=True)
@@ -285,7 +285,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
 
     user = models.ForeignKey(FacilityUser, blank=False, null=False, db_index=True)
     activity_type = models.IntegerField(blank=False, null=False)
-    language = models.CharField(max_length=8, blank=True, null=True)
+    language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.11.1"
     start_datetime = models.DateTimeField(blank=False, null=False)
     last_active_datetime = models.DateTimeField(blank=False, null=False)
     end_datetime = models.DateTimeField(blank=True, null=True)
