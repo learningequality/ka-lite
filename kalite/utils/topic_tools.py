@@ -1,7 +1,6 @@
 """
 Important constants and helpful functions
 """
-import copy
 import glob
 import json
 import os
@@ -103,14 +102,10 @@ def generate_node_cache(topictree=None):#, output_dir=settings.DATA_PATH):
 
         else:
             # New node, so copy off, massage, and store.
-            #node_copy = copy.copy(node)
             node_copy = node
-            #if "children" in node_copy:
-            #    del node_copy["children"]
             if kind in multipath_kinds:
                 # If multiple paths can map to a single slug, need to store all paths.
                 node_copy["paths"] = [node_copy["path"]]
-                #del node_copy["path"]
             node_cache[kind][node["slug"]] = node_copy
             # Add parents
             node_cache[kind][node["slug"]]["parents"] = parents

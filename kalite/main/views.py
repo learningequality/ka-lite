@@ -149,6 +149,8 @@ def video_handler(request, video, format="mp4", prev=None, next=None):
     video["stream_type"] = "video/%s" % format
 
     if video_exists and not video_on_disk:
+        if not "stream_url" in video:
+            import pdb; pdb.set_trace()
         messages.success(request, "Got video content from %s" % video["stream_url"])
 
     context = {
@@ -169,32 +171,25 @@ def exercise_handler(request, exercise):
     Display an exercise
     """
     # Copy related videos (should be small), as we're going to tweak them
-    related_videos = [copy.copy(topicdata.NODE_CACHE["Video"].get(key, None)) for key in exercise["related_video_readable_ids"]]
-
-    videos_to_delete = []
-    for idx, video in enumerate(related_videos):
-        # Remove all videos that were not recognized or
-        #   simply aren't on disk.
-        #   Check on disk is relatively cheap, also executed infrequently
-        if not video or not topic_tools.is_video_on_disk(video["youtube_id"]):
-            videos_to_delete.append(idx)
+    related_videos = {}
+    for key in exercise["related_video_readable_ids"]:
+        video = topicdata.NODE_CACHE["Video"].get(key, None)
+        if not video:
             continue
-
-        # Resolve the most related path
-        video["path"] = video["paths"][0]  # default value
+        
+        related_videos[key] = copy.copy(video)
         for path in video["paths"]:
             if topic_tools.is_sibling({"path": path, "kind": "Video"}, exercise):
-                video["path"] = path
+                related_videos[key]["path"] = path
                 break
-        del video["paths"]
-    for idx in reversed(videos_to_delete):
-        del related_videos[idx]
+        if "path" not in related_videos[key]:
+            related_videos[key]["path"] = video["paths"][0]
 
     context = {
         "exercise": exercise,
         "title": exercise["title"],
         "exercise_template": "exercises/" + exercise["slug"] + ".html",
-        "related_videos": related_videos,
+        "related_videos": related_videos.values(),
     }
     return context
 
