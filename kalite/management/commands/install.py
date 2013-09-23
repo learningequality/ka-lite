@@ -234,7 +234,8 @@ class Command(BaseCommand):
         call_command("clean_pyc", migrate=True, interactive=False, verbosity=options.get("verbosity"))
 
         # Migrate the database
-        call_command("syncdb", migrate=True, interactive=False, verbosity=options.get("verbosity"))
+        call_command("syncdb", interactive=False, verbosity=options.get("verbosity"))
+        call_command("migrate", merge=True, verbosity=options.get("verbosity"))
 
         # Install data
         if install_clean:

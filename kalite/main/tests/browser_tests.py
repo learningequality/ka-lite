@@ -438,10 +438,9 @@ class LoadExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
             self.browser.get(self.live_server_url + path)
             error_list = self.browser.execute_script("return window.js_errors;")
             if error_list:
-                logging.debug("Found JS error(s) while loading path: " + path)
-                logging.debug("JS errors reported:")
+                logging.error("Found JS error(s) while loading path: " + path)
                 for e in error_list:
-                    logging.debug(e)    
+                    logging.error(e)    
             self.assertFalse(error_list)
 
 

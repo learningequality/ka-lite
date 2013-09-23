@@ -52,7 +52,7 @@ class VideoLog(SyncedModel):
             try:
                 UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()), language=language)
             except ValidationError as e:
-                logging.debug("Failed to update userlog during video: %s" % e)
+                logging.error("Failed to update userlog during video: %s" % e)
 
         super(VideoLog, self).save(*args, **kwargs)
 
@@ -132,7 +132,7 @@ class ExerciseLog(SyncedModel):
             try:
                 UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()), language=language)
             except ValidationError as e:
-                logging.debug("Failed to update userlog during exercise: %s" % e)
+                logging.error("Failed to update userlog during exercise: %s" % e)
         super(ExerciseLog, self).save(*args, **kwargs)
 
     def get_uuid(self, *args, **kwargs):

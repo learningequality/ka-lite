@@ -24,7 +24,7 @@ class VideoLogForm(forms.Form):
 
     youtube_id = forms.CharField(max_length=25)
     total_seconds_watched = forms.FloatField(required=False)
-    seconds_watched = forms.FloatField()
+    seconds_watched = forms.FloatField(required=False)
     points = forms.IntegerField()
 
     def clean_youtube_id(self):

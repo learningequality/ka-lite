@@ -166,7 +166,7 @@ def update_all_central_callback(request):
 
         # Only save video logs for videos that we recognize.
         if youtube_id not in ID2SLUG_MAP:
-            logging.debug("Skipping unknown video %s" % youtube_id)
+            logging.warn("Skipping unknown video %s" % youtube_id)
             continue
 
         try:
@@ -179,7 +179,7 @@ def update_all_central_callback(request):
             })
             logging.debug("Got video log for %s: %s" % (youtube_id, video_logs[-1]))
         except KeyError:  # 
-            logging.debug("Could not save video log for data with missing values: %s" % video)
+            logging.error("Could not save video log for data with missing values: %s" % video)
 
     # Save exercises
     exercise_logs = []
@@ -191,7 +191,7 @@ def update_all_central_callback(request):
         # Only save video logs for videos that we recognize.
         slug = exercise.get('exercise', "")
         if slug not in NODE_CACHE['Exercise']:
-            logging.debug("Skipping unknown video %s" % slug)
+            logging.warn("Skipping unknown video %s" % slug)
             continue
 
         try:
@@ -208,7 +208,7 @@ def update_all_central_callback(request):
             })
             logging.debug("Got exercise log for %s: %s" % (slug, exercise_logs[-1]))
         except KeyError:
-            logging.debug("Could not save exercise log for data with missing values: %s" % exercise)
+            logging.error("Could not save exercise log for data with missing values: %s" % exercise)
 
     # POST the data back to the distributed server
     dthandler = lambda obj: obj.isoformat() if isinstance(obj, datetime.datetime) else None
@@ -273,7 +273,7 @@ def update_all_distributed_callback(request):
 
         # Only save video logs for videos that we recognize.
         if youtube_id not in ID2SLUG_MAP:
-            logging.debug("Skipping unknown video %s" % youtube_id)
+            logging.warn("Skipping unknown video %s" % youtube_id)
             continue
 
         try:
@@ -284,7 +284,7 @@ def update_all_distributed_callback(request):
             vl.save()
             n_videos_uploaded += 1
         except KeyError:  # 
-            logging.debug("Could not save video log for data with missing values: %s" % video)
+            logging.error("Could not save video log for data with missing values: %s" % video)
         except Exception as e:
             error_message = "Unexpected error importing videos: %s" % e
             return JsonResponse({"error": error_message}, status=500)
@@ -294,7 +294,7 @@ def update_all_distributed_callback(request):
     for exercise in exercises:
         # Only save video logs for videos that we recognize.
         if exercise['exercise_id'] not in NODE_CACHE['Exercise']:
-            logging.debug("Skipping unknown video %s" % exercise['exercise_id'])
+            logging.warn("Skipping unknown video %s" % exercise['exercise_id'])
             continue
 
         try:
@@ -305,7 +305,7 @@ def update_all_distributed_callback(request):
             el.save()
             n_exercises_uploaded += 1
         except KeyError:
-            logging.debug("Could not save exercise log for data with missing values: %s" % exercise)
+            logging.error("Could not save exercise log for data with missing values: %s" % exercise)
         except Exception as e:
             error_message = "Unexpected error importing exercises: %s" % e
             return JsonResponse({"error": error_message}, status=500)

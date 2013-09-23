@@ -32,6 +32,7 @@ class Common(object):
         self.return_dict['class']=type(self).__name__
         self.return_dict['uname'] = platform.uname()
         self.return_dict['fixture'] = fixture
+        self.verbosity = int(kwargs.get("verbosity"))
                                 
         try:
             branch = subprocess.Popen(["git", "describe", "--contains", "--all", "HEAD"], stdout=subprocess.PIPE).communicate()[0]
@@ -96,7 +97,8 @@ class Common(object):
         """
         if behavior_profile:
             self.behavior_profile = behavior_profile
-            random.seed(self.behavior_profile)
+            self.random=random.Random() #thread-safe local instance of random
+            self.random.seed(self.behavior_profile)
 
     def _execute(self): pass
     def _teardown(self): pass
@@ -135,12 +137,18 @@ class SeleniumCommon(Common):
                 wait.until(expected_conditions.title_contains(("Home")))
 
         # Go to the sign-up page
+        wait = ui.WebDriverWait(self.browser, self.timeout)
+        wait.until(expected_conditions.visibility_of_element_located(["id", "nav_signup"]))
         self.browser.find_element_by_id("nav_signup").click()
         wait = ui.WebDriverWait(self.browser, self.timeout)
         wait.until(expected_conditions.title_contains(("Sign up")))
 
         # Sign up (don't choose facility or group)
+        wait = ui.WebDriverWait(self.browser, self.timeout)
+        wait.until(expected_conditions.visibility_of_element_located(["id", "id_username"]))
         self.browser.find_element_by_id("id_username").send_keys(self.username)
+        wait = ui.WebDriverWait(self.browser, self.timeout)
+        wait.until(expected_conditions.visibility_of_element_located(["id", "id_password"]))
         self.browser.find_element_by_id("id_password").send_keys(self.password)
         self.browser.find_element_by_id("id_password_recheck").send_keys(self.password)
         self.browser.find_element_by_id("id_password_recheck").send_keys(Keys.TAB + Keys.RETURN)

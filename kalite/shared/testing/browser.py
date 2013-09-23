@@ -88,7 +88,7 @@ class BrowserTestCase(KALiteTestCase):
                     (self.browser,self.admin_user,self.admin_pass) = setup_test_env(browser_type=browser_type)
                     break
                 except Exception as e:
-                    logging.debug("Could not create browser %s through selenium: %s" % (browser_type, e))
+                    logging.error("Could not create browser %s through selenium: %s" % (browser_type, e))
 
         
     def tearDown(self):
@@ -169,7 +169,7 @@ class BrowserTestCase(KALiteTestCase):
         time.sleep(0.50) # wait for the message to get created via AJAX
 
         # Get messages (and limit by type)    
-        messages = self.browser.find_elements_by_class_name("alert")
+        messages = self.browser.find_elements_by_class_name("alert" if settings.CENTRAL_SERVER else "message")
         if message_type:
             messages = [m for m in messages if message_type in m.get_attribute("class")]
 
