@@ -186,7 +186,7 @@ class SyncClient(BaseClient):
 
         # TODO(jamalex): upload local devices as well? only needed once we have P2P syncing
 
-        return (counter_to_download, counters_to_upload)
+        return (counters_to_download, counters_to_upload)
 
 
     def sync_models(self):

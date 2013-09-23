@@ -130,11 +130,7 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
             # Now select relevant items
             queryset = queryset.filter(Q(counter__gt=counter) | Q(counter__isnull=True))
 
-            # check whether there are any models that will be excluded by our limit, so we know to ask again
-            if not instances_remaining and queryset.count() > limit:
-                instances_remaining = True
-
-            # pull out the model instances within the given counter range
+            # Grab up to (limit) model instances, then decrease the limit to the total limit remaining
             new_models = queryset[:limit]
             models += new_models
             limit -= new_models.count()
