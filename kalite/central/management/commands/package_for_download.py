@@ -144,7 +144,7 @@ class Command(BaseCommand):
 
             models_file = tempfile.mkstemp()[1]
             with open(models_file, "w") as fp:
-                fp.write(engine.sign_and_serialize(models))
+                fp.write(engine.serialize(models))
             return models_file
         models_file = create_json_file()
 
