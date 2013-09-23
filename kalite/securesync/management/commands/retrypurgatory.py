@@ -35,4 +35,4 @@ class Command(BaseCommand):
                 else:
                     self.stderr_writeln("\t%d %s" % (unsaved,("models still did not save.  Check 'exceptions' field in 'input purgatory' for failure details.")))
             except Exception as e:
-                self.stderr_writeln("\t%d %s  %s" % (unsaved,("models still did not save."), e))
+                self.stderr_writeln("\t%s %s" % (("Unexpected error saving models: "), e))
