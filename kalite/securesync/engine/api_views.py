@@ -96,7 +96,7 @@ def create_session(request):
 
     # Return the serializd session, in the version intended for the other device
     return JsonResponse({
-        "session": serialize([session], dest_version=session.client_version, ensure_ascii=False, sign=False ),
+        "session": serialize([session], dest_version=session.client_version, ensure_ascii=False, sign=False, increment_counters=False ),
         "signature": session.sign(),
     })
 
