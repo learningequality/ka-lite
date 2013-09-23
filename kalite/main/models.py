@@ -30,11 +30,11 @@ class VideoLog(SyncedModel):
     completion_timestamp = models.DateTimeField(blank=True, null=True)
     completion_counter = models.IntegerField(blank=True, null=True)
 
+    class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
+        pass
+
     def __unicode__(self):
         return u"user=%s, youtube_id=%s, seconds=%d, points=%d%s" % (self.user, self.youtube_id, self.total_seconds_watched, self.points, " (completed)" if self.complete else "")
-
-    class Meta:
-        pass
 
     def save(self, *args, **kwargs):
         if not kwargs.get("imported", False):
@@ -106,11 +106,11 @@ class ExerciseLog(SyncedModel):
     completion_timestamp = models.DateTimeField(blank=True, null=True)
     completion_counter = models.IntegerField(blank=True, null=True)
 
+    class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
+        pass
+
     def __unicode__(self):
         return u"user=%s, exercise_id=%s, points=%d%s" % (self.user, self.exercise_id, self.points, " (completed)" if self.complete else "")
-
-    class Meta:
-        pass
 
     def save(self, *args, **kwargs):
         if not kwargs.get("imported", False):
@@ -174,7 +174,7 @@ class UserLogSummary(SyncedModel):
     count = models.IntegerField(default=0, blank=False, null=False)
     total_seconds = models.IntegerField(default=0, blank=False, null=False)
 
-    class Meta:
+    class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         pass
 
     def __unicode__(self):
@@ -450,7 +450,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
             logging.warn("%s: Had to create a user log entry on an UPDATE(%d)! @ %s"%(user.username, activity_type, update_datetime))
             cur_log = cls.begin_user_activity(user=user, activity_type=activity_type, start_datetime=update_datetime)
 
-        logging.debug("%s: UPDATE activity (%d) @ %s"%(user.username,activity_type,update_datetime))
+        logging.debug("%s: UPDATE activity (%d) @ %s"%(user.username, activity_type, update_datetime))
         cur_log.last_active_datetime = update_datetime
         cur_log.language = language or cur_log.language  # set the language to the current language, if there is one.
         cur_log.save()
@@ -479,7 +479,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
                 raise ValidationError("Update time must always be later than the login time.")
         else:
             # No unstopped starts.  Start should have been called first!
-            logging.warn("%s: Had to create a user log entry, but STOPPING('%d')! @ %s"%(user.username, activity_type, end_datetime))
+            logging.warn("%s: Had to BEGIN a user log entry, but ENDING(%d)! @ %s"%(user.username, activity_type, end_datetime))
             cur_log = cls.begin_user_activity(user=user, activity_type=activity_type, start_datetime=end_datetime)
 
         logging.debug("%s: Logging LOGOUT activity @ %s"%(user.username, end_datetime))

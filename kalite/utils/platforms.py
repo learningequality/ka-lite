@@ -71,7 +71,7 @@ def system_specific_zipping(files_dict, zip_file=None, compression=ZIP_DEFLATED,
     if not zip_file:
         zip_file = tempfile.mkstemp()[1]
     with ZipFile(zip_file, "w", compression) as zfile:
-        for fi, (src_path, dest_path) in enumerate(files_dict.iteritems()):
+        for fi, (dest_path, src_path) in enumerate(files_dict.iteritems()):
             if callback:
                 callback(src_path, fi, len(files_dict))
             # All platforms besides windows need permissions set.

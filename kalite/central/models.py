@@ -40,7 +40,7 @@ class Organization(ExtendedModel):
         return self.zones.add(zone)
 
     def get_zones(self):
-        return list(self.zones.all())
+        return list(self.zones.all().order_by("name"))
 
     def add_member(self, user):
         return self.users.add(user)
@@ -129,7 +129,7 @@ class UserProfile(ExtendedModel):
         If this user is a super-user, then the headless org will be appended at the end.
         """
         orgs = OrderedDict()  # no dictionary comprehensions, so have to loop
-        for org in self.user.organization_set.all():  # add in order queries (alphabetical?)
+        for org in self.user.organization_set.all().order_by("name"):  # add in order queries (alphabetical?)
             orgs[org.pk] = org
 
         # Add a headless organization for superusers, containing

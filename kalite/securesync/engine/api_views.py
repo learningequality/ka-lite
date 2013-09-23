@@ -76,6 +76,7 @@ def create_session(request):
             # But still, good to keep track of!
             UnregisteredDevicePing.record_ping(id=data["client_device"], ip=session.ip)
             return JsonResponse({"error": "Client device matching id could not be found. (id=%s)" % data["client_device"]}, status=500)
+
         session.server_nonce = uuid.uuid4().hex
         session.server_device = Device.get_own_device()
         if session.client_device.pk == session.server_device.pk:
@@ -130,6 +131,7 @@ def device_download(data, session):
 @api_handle_error_with_json
 def device_upload(data, session):
     """This device is getting device-related objects from another device"""
+
     # TODO(jamalex): check that the uploaded devices belong to the client device's zone and whatnot
     # (although it will only save zones from here if centrally signed, and devices if registered in a zone)
     try:
@@ -149,6 +151,7 @@ def device_upload(data, session):
 @require_sync_session
 @api_handle_error_with_json
 def device_counters(data, session):
+
     device_counters = Device.get_device_counters(session.client_device.get_zone())
     return JsonResponse({
         "device_counters": device_counters,
@@ -160,6 +163,7 @@ def device_counters(data, session):
 @api_handle_error_with_json
 def model_upload(data, session):
     """This device is getting data-related objects from another device."""
+
     if "models" not in data:
         return JsonResponse({"error": "Must provide models.", "saved_model_count": 0}, status=500)
     try:
@@ -180,6 +184,7 @@ def model_upload(data, session):
 @api_handle_error_with_json
 def model_download(data, session):
     """This device is having its own data downloaded"""
+
     if "device_counters" not in data:
         return JsonResponse({"error": "Must provide device counters.", "count": 0}, status=500)
     try:

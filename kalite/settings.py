@@ -187,6 +187,7 @@ if CENTRAL_SERVER:
 
 else:
     ROOT_URLCONF = "main.urls"
+    INSTALLED_APPS += ("updates",)
     MIDDLEWARE_CLASSES += (
         "securesync.middleware.DBCheck",
         "securesync.middleware.AuthFlags",  # this must come before main.middleware.SessionLanguage
