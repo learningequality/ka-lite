@@ -7,6 +7,7 @@ import glob
 import json
 import requests
 import os
+import shutil
 import sys
 import time
 import zipfile
@@ -23,7 +24,7 @@ from utils.general import convert_date_input, ensure_dir
 from utils.subtitles import subtitle_utils
 
 
-download_path = settings.STATIC_ROOT + "srt/"  # kalite/static/
+DOWNLOAD_PATH = settings.STATIC_ROOT + "srt/"  # kalite/static/
 
 
 class LanguageCodeDoesNotExist(Exception):
@@ -44,6 +45,25 @@ class LanguageNameDoesNotExist(Exception):
         return "The language name for (%s) doesn't exist yet. Please add it to the lookup dictionary by running the get_all_languages.py script located in utils/" % self.lang_code
 
 
+def clear_subtitles_cache(language_codes=None, download_path=DOWNLOAD_PATH):
+    language_codes = language_codes or os.listdir(download_path)
+    for language_code in language_codes:
+
+        # Clear the status file
+        lm_file = get_lang_map_filepath(language_code)
+        with open(lm_file, "r") as fp:
+            download_status = json.load(fp)
+        for key in download_status:
+            download_status[key] = {u'downloaded': False, u'last_success': u'', u'last_attempt': u'', u'api_response': u''}
+        with open(lm_file, "w") as fp:
+            json.dump(download_status, fp)
+
+        # Delete all srt files
+        srt_path = get_srt_path(language_code)
+        if os.path.exists(srt_path):
+            shutil.rmtree(srt_path)
+
+
 def download_srt_from_3rd_party(*args, **kwargs):
     """Download subtitles specified by command line args"""
 
@@ -59,26 +79,27 @@ def download_srt_from_3rd_party(*args, **kwargs):
         download_if_criteria_met(videos, *args, **kwargs)
 
     else:
-        base_path = settings.SUBTITLES_DATA_ROOT + "languages/"
         for filename in get_all_download_status_files():
             try:
-                videos = json.loads(open(base_path + filename).read())
-            except:
+                videos = json.loads(open(filename).read())
+            except Exception as e:
+                logging.error(e)
                 raise CommandError("Unable to open %s. The file might be corrupted. Please re-run the generate_subtitle_map command to regenerate it." % filename)
-            kwargs["lang_code"] = filename.split("_")[0]
-            download_if_criteria_met(videos, *args, **kwargs)
+            
+            try:
+                kwargs["lang_code"] = os.path.basename(filename).split("_")[0]
+                download_if_criteria_met(videos, *args, **kwargs)
+            except Exception as e:
+                logging.error(e)
+                raise CommandError("Error while downloading language srts: %s" % e)
 
-
-def get_srt_path(download_path, lang_code):
+def get_srt_path(lang_code, download_path=DOWNLOAD_PATH):
     return download_path + lang_code + "/subtitles/"
 
 
 def get_all_download_status_files():
     """Return filenames in data/subtitles/languages/ that contain download status information"""
-    languages_dir = os.listdir(settings.SUBTITLES_DATA_ROOT + "languages/")
-    for f in languages_dir:
-        if "_download_status.json" not in f:
-            languages_dir.remove(f)
+    languages_dir = glob.glob(os.path.join(settings.SUBTITLES_DATA_ROOT, "languages/", "*.json"))
     return languages_dir
 
 
@@ -87,7 +108,6 @@ def download_if_criteria_met(videos, lang_code, force, response_code, date_since
 
     Note: videos are a dict; keys=youtube_id, values=data
     """
-
     date_specified = convert_date_input(date_since_attempt)
 
     # Filter up front, for efficiency (& reporting's sake)
@@ -132,11 +152,10 @@ def download_if_criteria_met(videos, lang_code, force, response_code, date_since
         if response == "client-error" or response == "server-error":
             # Couldn't download
             logging.info("Updating JSON file to record %s." % response)
-            update_json(
-                youtube_id, lang_code, previously_downloaded, response, time_of_attempt)
+            update_json(youtube_id, lang_code, previously_downloaded, response, time_of_attempt)
 
         else:
-            dirpath = get_srt_path(download_path, lang_code)
+            dirpath = get_srt_path(lang_code)
             filename = youtube_id + ".srt"
             fullpath = dirpath + filename
             logging.info("Writing file to %s" % fullpath)
@@ -147,16 +166,14 @@ def download_if_criteria_met(videos, lang_code, force, response_code, date_since
                 fp.write(response.encode('UTF-8'))
 
             logging.info("Updating JSON file to record success.")
-            update_json(
-                youtube_id, lang_code, True, "success", time_of_attempt)
+            update_json(youtube_id, lang_code, True, "success", time_of_attempt)
 
         # Update srt availability mapping
         n_loops += 1
         if n_loops % frequency_to_save == 0 or n_loops == len(videos.keys())-1:
             logging.info(
                 "On loop %d - generating new subtitle counts & updating srt availability!" % n_loops)
-            get_new_counts(data_path=settings.SUBTITLES_DATA_ROOT,
-                           download_path=download_path, language_code=lang_code)
+            get_new_counts(language_code=lang_code)
             update_srt_availability(lang_code=lang_code)
 
     # One last call, to make sure we didn't miss anything.
@@ -171,7 +188,8 @@ def download_subtitle(youtube_id, lang_code, format="srt"):
     assert format == "srt", "We only support srt download at the moment."
 
     api_info_map = json.loads(
-        open(settings.SUBTITLES_DATA_ROOT + SRTS_JSON_FILENAME).read())
+        open(settings.SUBTITLES_DATA_ROOT + SRTS_JSON_FILENAME).read()
+    )
     # get amara id
     amara_code = api_info_map.get(youtube_id).get("amara_code")
 
@@ -180,17 +198,22 @@ def download_subtitle(youtube_id, lang_code, format="srt"):
     base_url = "https://amara.org/api2/partners/videos"
 
     r = subtitle_utils.make_request(headers, "%s/%s/languages/%s/subtitles/?format=srt" % (
-        base_url, amara_code, lang_code))
-    if r:
+        base_url, amara_code, lang_code
+    ))
+    if isinstance(r, basestring):
+        return r
+    else:
         # return the subtitle text, replacing empty subtitle lines with
         # spaces to make the FLV player happy
         try:
-            response = (r.text or "").replace(
-                "\n\n\n", "\n   \n\n").replace("\r\n\r\n\r\n", "\r\n   \r\n\r\n")
-        except:
-            response = r
+            r.encoding = "UTF-8"
+            response = (r.text or u"") \
+                .replace("\n\n\n", "\n   \n\n") \
+                .replace("\r\n\r\n\r\n", "\r\n   \r\n\r\n")
+        except Exception as e:
+            logging.error(e)
+            response = "client-error"
         return response
-    return False
 
 
 def update_json(youtube_id, lang_code, downloaded, api_response, time_of_attempt):
@@ -201,6 +224,7 @@ def update_json(youtube_id, lang_code, downloaded, api_response, time_of_attempt
         language_srt_map = json.loads(open(filepath).read())
     except:
         logging.debug("Something went wrong while trying to open the json file: %s" % filepath)
+        return False
 
     # create updated entry
     entry = language_srt_map[youtube_id]
@@ -218,9 +242,10 @@ def update_json(youtube_id, lang_code, downloaded, api_response, time_of_attempt
     json_file = open(filepath, "wb")
     json_file.write(json.dumps(language_srt_map))
     json_file.close()
+    return True
 
 
-def generate_zipped_srts(lang_codes_to_update, download_path):
+def generate_zipped_srts(lang_codes_to_update, download_path=DOWNLOAD_PATH):
 
     # Create media directory if it doesn't yet exist
     ensure_dir(settings.MEDIA_ROOT)
@@ -252,7 +277,7 @@ def generate_zipped_srts(lang_codes_to_update, download_path):
         zf.close()
 
 
-def get_new_counts(data_path, download_path, language_code):
+def get_new_counts(language_code, data_path=settings.SUBTITLES_DATA_ROOT, download_path=DOWNLOAD_PATH):
     """Write a new dictionary of srt file counts in respective download folders"""
 
     language_subtitle_count = {}
@@ -379,19 +404,27 @@ class Command(BaseCommand):
                     help="How often to update the srt availability status. The script will go FREQ_SAVE loops before running update_srt_availability"),
     )
 
+
     def handle(self, *args, **options):
-        try:
-            lang_codes = [options["lang_code"]] if options[
-                "lang_code"] else None
+        lang_codes = [options["lang_code"]] if options["lang_code"] else None
+
+        if len(args) == 1:
+            if args[0] == "clear":
+                logging.info("Clearing subtitles...")
+                clear_subtitles_cache(lang_codes)
+            else:
+                raise CommandError("Unknown argument: %s" % args[0])
+
+        elif len(args) > 1:
+            raise CommandError("Max 1 arg")
+
+        else:
 
             logging.info("Downloading...")
             download_srt_from_3rd_party(**options)
 
             logging.info(
                 "Executed successfully! Re-zipping changed language packs!")
-            generate_zipped_srts(
-                lang_codes_to_update=lang_codes, download_path=download_path)
+            generate_zipped_srts(lang_codes_to_update=lang_codes)
 
             logging.info("Process complete.")
-        except Exception as e:
-            raise CommandError(e)
