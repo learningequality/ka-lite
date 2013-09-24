@@ -14,9 +14,9 @@ from django.core.management import call_command
 
 import settings
 from settings import LOG as logging
+from shared.topic_tools import get_node_cache
 from utils.general import convert_date_input, ensure_dir
-from utils.subtitles import subtitle_utils
-from utils.topic_tools import get_node_cache
+from utils.subtitles import make_request
 
 
 headers = {
@@ -130,7 +130,7 @@ def update_video_entry(youtube_id, entry={}):
     """
     request_url = "https://www.amara.org/api2/partners/videos/?format=json&video_url=http://www.youtube.com/watch?v=%s" % (
         youtube_id)
-    r = subtitle_utils.make_request(headers, request_url)
+    r = make_request(headers, request_url)
     # add api response first to prevent empty json on errors
     entry["last_attempt"] = unicode(datetime.datetime.now().date())
 
