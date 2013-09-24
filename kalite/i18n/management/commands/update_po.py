@@ -20,10 +20,13 @@ class Command(BaseCommand):
 
 	def handle(self, **options):
 		# Change to project root dir
-		os.chdir(os.path.join(settings.PROJECT_PATH, "../"))
+		project_root = os.path.join(settings.PROJECT_PATH, "../")
+		os.chdir(project_root)
+		ensure_dir(os.path.join(project_root, "locale/"))
+
 		# Generate english po file
 		management.call_command('makemessages', locale='en')
-		# Generate english po file from javascript
+		# Generate english po file for javascript
 		management.call_command('makemessages', domain='djangojs', locale='en')
 
 		# cp new files into static dir (which should be exposed for download) 
