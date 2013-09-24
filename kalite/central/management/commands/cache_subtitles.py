@@ -20,7 +20,7 @@ import settings
 from generate_subtitle_map import SRTS_JSON_FILENAME, headers, get_lang_map_filepath
 from settings import LOG as logging
 from utils.general import convert_date_input, ensure_dir
-from utils.subtitles import subtitle_utils
+from utils.subtitles import make_request
 
 
 download_path = settings.STATIC_ROOT + "srt/"  # kalite/static/
@@ -179,7 +179,7 @@ def download_subtitle(youtube_id, lang_code, format="srt"):
     # Please see http://amara.readthedocs.org/en/latest/api.html
     base_url = "https://amara.org/api2/partners/videos"
 
-    r = subtitle_utils.make_request(headers, "%s/%s/languages/%s/subtitles/?format=srt" % (
+    r = make_request(headers, "%s/%s/languages/%s/subtitles/?format=srt" % (
         base_url, amara_code, lang_code))
     if r:
         # return the subtitle text, replacing empty subtitle lines with

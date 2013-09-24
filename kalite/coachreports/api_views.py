@@ -26,8 +26,8 @@ from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone,
 from securesync.views import facility_required
 from settings import LOG as logging
 from shared.decorators import allow_api_profiling
+from shared.topic_tools import get_topic_by_path
 from utils.internet import StatusException, JsonResponse, api_handle_error_with_json
-from utils.topic_tools import get_topic_by_path
 
 
 # Global variable of all the known stats, their internal and external names,

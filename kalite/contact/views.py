@@ -30,7 +30,7 @@ def contact_subscribe(request, email=None):
     if settings.DEBUG:
         return HttpResponse("We'll subscribe you via mailchimp when we're in RELEASE mode, %s, we swear!" % email)
     else:
-        return HttpResponse(mailchimp_subscribe(email))
+        return HttpResponse(mailchimp_subscribe(email, settings.CENTRAL_SUBSCRIBE_URL))
 
 
 @render_to("contact/contact_wizard.html")
