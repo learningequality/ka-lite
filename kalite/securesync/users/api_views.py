@@ -67,13 +67,13 @@ def status(request):
         "messages": message_dicts,
     }
     # Override properties using facility data
-    if "facility_user" in request.session:
+    if "facility_user" in request.session:  # Facility user
         user = request.session["facility_user"]
         data["is_logged_in"] = True
         data["username"] = user.get_name()
         data["points"] = VideoLog.get_points_for_user(user) + ExerciseLog.get_points_for_user(user)
     # Override data using django data
-    if request.user.is_authenticated():
+    if request.user.is_authenticated():  # Django user
         data["is_logged_in"] = True
         data["username"] = request.user.username
 

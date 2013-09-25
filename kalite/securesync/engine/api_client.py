@@ -32,7 +32,6 @@ class SyncClient(BaseClient):
         # add a random parameter to ensure the request is not cached
         return super(SyncClient, self).get(path, payload, *args, **kwargs)
 
-
     def start_session(self):
         """A 'session' to exchange data"""
 

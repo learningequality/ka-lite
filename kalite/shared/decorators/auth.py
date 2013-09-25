@@ -38,7 +38,7 @@ def require_login(handler):
     """
     @distributed_server_only
     def wrapper_fn(request, *args, **kwargs):
-        if request.user.is_authenticated() or "facility_user" in request.session:
+        if getattr(request, "is_logged_in", False):  # requires the securesync.middleware.AuthFlags middleware be hit
             return handler(request, *args, **kwargs)
 
         # Failed.  Send different response for ajax vs non-ajax requests.
