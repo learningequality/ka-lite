@@ -2,8 +2,8 @@ import json
 import os
 
 import settings
+from shared import topic_tools
 from shared.videos import get_video_urls
-from utils import topic_tools
 
 
 TOPICS          = topic_tools.get_topic_tree()

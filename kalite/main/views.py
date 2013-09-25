@@ -26,10 +26,10 @@ from securesync.api_client import BaseClient
 from securesync.models import Facility, FacilityUser,FacilityGroup, Device
 from securesync.views import require_admin, facility_required
 from settings import LOG as logging
+from shared import topic_tools
 from shared.decorators import require_admin, backend_cache_page
 from shared.jobs import force_job
 from shared.videos import get_video_urls
-from utils import topic_tools
 from utils.internet import is_loopback_connection, JsonResponse
 
 

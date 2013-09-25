@@ -7,8 +7,8 @@ from django.test.client import Client
 
 import settings
 from settings import LOG as logging
+from shared import topic_tools
 from utils.internet import generate_all_paths
-from utils import topic_tools
 
 
 def caching_is_enabled():

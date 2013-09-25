@@ -5,6 +5,7 @@
 {% load my_filters %}
 
 {% block coachreports_active %}active{% endblock coachreports_active %}
+{% block title %}{% trans "Coach Reports" %}{% endblock title %}
 
 {% block headcss %}{{ block.super }}
 <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/tabular_view.css' %}" />
@@ -65,65 +66,48 @@
 </style>
 {% endblock headcss %}
 
-{% block title %}{% trans "Coach Reports" %}{% endblock title %}
-
 {% block content %}
-{% block navbar_title %}{{ block.super }}{% endblock navbar_title %}
+    {% block navbar_title %}{{ block.super }}{% endblock navbar_title %}
+
     <div id="selection-bar">
-    {% comment %}Select the coach report type{% endcomment %}
-    {% if report_types %}
         <div class="selection">
-            <div class="subtitle">{% trans "Select Report" %}</div><select id="report_type">
+        {% comment %}Select the coach report type{% endcomment %}
+        {% if report_types %}
+            <div class="subtitle">{% trans "Select Report" %}</div>
+            <select id="report_type">
                 <option {% if not request_report_type %}selected{% endif %}>----</option>
                 {% for report_type in report_types %}
                     <option value="{{ report_type }}" {% if report_type == request_report_type %}selected{% endif %}>{{ report_type }}</option>
                 {% endfor %}
             </select>
-        </div>
-    {% else %}
-        <div class="selection">
+        {% else %}
             <div class="subtitle">{% trans "No Report Types Available" %}</div>
+        {% endif %}
         </div>
-    {% endif %}
 
-    {% if users and request_report_type == "student" %}
         <div class="selection">
-            <div class="subtitle">{% trans "Select Student" %}</div><select id="student">
+        {% if users and request_report_type == "student" %}
+            <div class="subtitle">{% trans "Select Student" %}</div>
+            <select id="student">
                 <option {% if not request.GET.user %}selected{% endif %}>----</option>
                 {% for user in users %}
                     <option value="{{ user.pk }}"{% if request.GET.user == user.pk %}selected{% endif %}>{{ user.name }}</option>
                 {% endfor %}
             </select>
-        </div>
-    {% elif topics and groups %}
-        <div class="selection">
-            <div class="subtitle">{% trans "Select Topic" %}</div><select id="topic">
+        {% elif topics and groups %}
+            <div class="subtitle">{% trans "Select Topic" %}</div>
+            <select id="topic">
                 <option {% if not request.GET.topic %}selected{% endif %}>----</option>
                 {% for topic in topics %}
                     
                     <option value="{{ topic.id }}"{% if request.GET.topic == topic.id %}selected{% endif %}>{{ topic.standalone_title }}</option>
                 {% endfor %}
             </select>
+        {% endif %}
         </div>
-    {% endif %}
     </div>
 
-<div id="content">
-   
-        <div class="selection" style="display:none">
-            <div class="subtitle">{% trans "Display Options" %}</div><select id="disp_options">
-                <option selected>----</option>
-                {% if exercises %}
-                <option value=".attempts">attempts</option>
-                <option value=".points">points</option>
-                <option value=".streak_progress">streak progress</option>
-                {% endif %}
-                {% if videos %}
-                <option value=".points">points</option>
-                <option value=".total_seconds_watched">total seconds</option>
-                {% endif %}
-            </select>
-        </div>
+    <div id="content">
         <div id="legend">
             <div class="legend"><div class="partial"></div>{% trans "In Progress" %}</div>
             <div class="legend"><div class="complete"></div>{% trans "Completed" %}</div>
@@ -132,8 +116,9 @@
             {% endif %}
         </div>
     </div>
+    <div style="clear: both;"></div>
+
     {% if not students %}
-        <div style="clear: both;"></div>
         <p><div class="subtitle error" id="error_message">
         {% if not groups.0.groups and not groups.1 and request.GET.topic %}
             {% comment %}No groups available: then "ungrouped" is selected, and "no students" returned.{% endcomment %}
@@ -150,8 +135,6 @@
 
     {% else %}
         {% block students_header %}
-
-        <div style="clear: both;"></div>
         <div id="displaygrid">
             <div style="clear: both;"></div>
             <div class="users">
@@ -175,8 +158,10 @@
                 </table>
                 <div style="clear: both;"></div>
             </div>
-            {% endblock students_header %}
-        {%if request_report_type == "exercise" and exercises %}
+        </div>
+        {% endblock students_header %}
+
+        {% if request_report_type == "exercise" and exercises %}
         {% block exercise_data %}
             <div class="userstatus">
                 <table>
@@ -207,7 +192,6 @@
                     </tbody>
                 </table>
             </div>
-        </div>
         {% endblock exercise_data %}
 
     {% elif request_report_type == "video" and videos %}
@@ -245,11 +229,9 @@
                     </tbody>
                 </table>
             </div>
-        </div>
         {% endblock video_data %}
         {% endif %}
     {% endif %}
-</div> 
 {% endblock content %}
 
 {% block endjs %}{{ block.super }}
@@ -301,17 +283,10 @@ $(function() {
         $("th.username").each(function () {
             $(this).height(cell_height);
         });
-        
-        
     });
-        
     $(window).resize(function() {
         $('.headrowuser').height($('.headrow.data').height()+1);
     }).resize();
-    
-    
 });
 </script>
 {% endblock endjs %}
-
-  

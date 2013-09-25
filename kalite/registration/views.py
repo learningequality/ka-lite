@@ -23,7 +23,6 @@ from contact.views import contact_subscribe
 from registration.backends import get_backend
 from securesync.models import Zone
 from shared.decorators import central_server_only
-from utils.mailchimp import mailchimp_subscribe
 
 
 @central_server_only
