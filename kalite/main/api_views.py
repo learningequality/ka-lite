@@ -270,10 +270,9 @@ def start_subtitle_download(request):
     except HTTPError:
         return JsonResponse({"error": "No subtitles available on central server for language code: %s; aborting." % language}, status=500)
 
+    videofiles = VideoFile.objects.filter(subtitle_download_in_progress=False)
     if update_set == "existing":
-        videofiles = VideoFile.objects.filter(subtitles_downloaded=False, subtitle_download_in_progress=False)
-    else:
-        videofiles = VideoFile.objects.filter(subtitle_download_in_progress=False)
+        videofiles = VideoFile.objects.filter(subtitles_downloaded=False)
 
     queue_count = 0
     for chunk in break_into_chunks(available_srts):
