@@ -101,7 +101,7 @@ class SyncedModel(ExtendedModel):
     should inherit from this base class.
     """
     id = models.CharField(primary_key=True, max_length=ID_MAX_LENGTH, editable=False)
-    counter = models.IntegerField(default=0)
+    counter = models.IntegerField(default=None, blank=True, null=True)
     signature = models.CharField(max_length=360, blank=True, editable=False, null=True)
     signed_version = models.IntegerField(default=1, editable=False)
     signed_by = models.ForeignKey("Device", blank=True, null=True, related_name="+")
@@ -227,14 +227,18 @@ class SyncedModel(ExtendedModel):
             if not self.signed_by_id:
                 raise ValidationError("Imported models must be signed.")
             if not self.verify():
-                raise ValidationError("Could not verify the imported model.")#Imported model's signature did not match.")
+                raise ValidationError("Could not verify the imported model.")  #Imported model's signature did not match.")
         else:
             own_device = _get_own_device()
 
             # Two critical things to do:
             # 1. local models need to be signed by us
             # 2. and get our counter position
-            self.counter =own_device.increment_counter_position()
+            if increment_counters:
+                self.counter = own_device.increment_counter_position()
+            else:
+                self.counter = None  # will set this when we sync
+
             if sign:
                 # Always sign on the central server.
                 self.sign(device=own_device)
@@ -300,6 +304,21 @@ class DeferredSignSyncedModel(SyncedModel):
     """
     def save(self, sign=settings.CENTRAL_SERVER, *args, **kwargs):
         super(DeferredSignSyncedModel, self).save(*args, sign=sign, **kwargs)
+
+    class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
+        app_label = "securesync"
+        abstract = True
+
+
+class DeferredCountSyncedModel(DeferredSignSyncedModel):
+    """
+    Defer incrementing counters until syncing.
+    """
+    def save(self, increment_counters=None, *args, **kwargs):
+        if increment_counters is None:
+            # We need to set counters upon the first save, or if we're on the central server.
+            increment_counters = settings.CENTRAL_SERVER or not self.id
+        super(DeferredCountSyncedModel, self).save(*args, increment_counters=increment_counters, **kwargs)
 
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         app_label = "securesync"
