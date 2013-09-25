@@ -1,5 +1,6 @@
 from django.conf.urls.defaults import patterns, include, url
 
+import coachreports.api_urls
 import khanload.api_urls
 
 
@@ -10,4 +11,7 @@ urlpatterns = patterns('central.api_views',
     url(r'^download/kalite/$', 'get_download_urls', {}, 'get_download_urls'),
 
     url(r'^khanload/', include(khanload.api_urls)),
+)
+urlpatterns += patterns('coachreports.api_views',
+    url(r'^coachreports/', include(coachreports.api_urls)),
 )

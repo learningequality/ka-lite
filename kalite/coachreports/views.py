@@ -23,9 +23,9 @@ from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone,
 from securesync.views import facility_required
 from settings import LOG as logging
 from shared.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
+from shared.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics
 from utils.general import max_none
 from utils.internet import StatusException
-from utils.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics
 
 
 def get_accessible_objects_from_logged_in_user(request):

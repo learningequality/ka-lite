@@ -20,7 +20,6 @@
 # Perhaps worth having the ability to target only particular existing users to further
 #   generate data?
 """
-
 import datetime
 import random
 import re
@@ -38,8 +37,8 @@ from main import topicdata
 from main.models import ExerciseLog, VideoLog, UserLog
 from securesync.models import Facility, FacilityUser, FacilityGroup, Device, DeviceMetadata
 from settings import LOG as logging
+from shared.topic_tools import get_topic_videos, get_topic_exercises
 from utils.general import datediff
-from utils.topic_tools import get_topic_videos, get_topic_exercises
 
 
 firstnames = ["Vuzy", "Liz", "Ben", "Richard", "Kwame", "Jamie", "Alison", "Nadia", "Zenab", "Guan", "Dylan", "Vicky",

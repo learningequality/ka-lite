@@ -240,7 +240,7 @@ function plotTopics(topic_paths) {
             });
 
             // Get the topic tree (starting on window load)            
-            doRequest("{% url get_topic_tree topic_path='/math/' %}", {})
+            doRequest("{% url get_topic_tree topic_path='/math/' %}")
                 .success(function(treeData) {
                     $("#content_tree").dynatree({
                         imagePath:"{% static 'images/' %}",

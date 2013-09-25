@@ -22,10 +22,11 @@ from django.core.management.base import BaseCommand, CommandError
 
 import settings
 import version
-from kalite.utils.general import get_host_name
-from kalite.utils.platforms import is_windows, system_script_extension
-from kalite.securesync.management.commands.initdevice import load_data_for_offline_install, Command as InitCommand
-from kalite.securesync.models import Zone
+from securesync.management.commands.initdevice import load_data_for_offline_install, Command as InitCommand
+from securesync.models import Zone
+from utils.general import get_host_name
+from utils.platforms import is_windows, system_script_extension
+
 
 def raw_input_yn(prompt):
     ans = ""

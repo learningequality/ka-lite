@@ -190,7 +190,7 @@ else:
     INSTALLED_APPS += ("updates",)
     MIDDLEWARE_CLASSES += (
         "securesync.middleware.DBCheck",
-        "securesync.middleware.AuthFlags",
+        "securesync.middleware.AuthFlags",  # this must come before main.middleware.SessionLanguage
         "main.middleware.SessionLanguage",
     )
     TEMPLATE_CONTEXT_PROCESSORS += ("main.custom_context_processors.languages",)
@@ -291,6 +291,11 @@ else:
     # enable this to use a background mplayer instance instead of playing the video in the browser, on loopback connections
     # TODO(jamalex): this will currently only work when caching is disabled, as the conditional logic is in the Django template
     USE_MPLAYER = getattr(local_settings, "USE_MPLAYER", False) if CACHE_TIME == 0 else False
+
+    # Should be a function that receives a video file (youtube ID), and returns a URL to a video stream
+    BACKUP_VIDEO_SOURCE = getattr(local_settings, "BACKUP_VIDEO_SOURCE", None)
+    BACKUP_THUMBNAIL_SOURCE = getattr(local_settings, "BACKUP_THUMBNAIL_SOURCE", None)
+    assert not BACKUP_VIDEO_SOURCE or CACHE_TIME == 0, "If BACKUP_VIDEO_SOURCE, then CACHE_TIME must be 0"
 
 
 ########################

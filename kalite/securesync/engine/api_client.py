@@ -18,8 +18,6 @@ class SyncClient(BaseClient):
     Note that in the future, this object may be used to sync 
     between two distributed servers (i.e. peer-to-peer sync)!"""
     session = None
-    counters_to_download = None
-    counters_to_upload = None
 
     def post(self, path, payload={}, *args, **kwargs):
         if self.session and self.session.client_nonce:
@@ -31,7 +29,6 @@ class SyncClient(BaseClient):
             payload["client_nonce"] = self.session.client_nonce
         # add a random parameter to ensure the request is not cached
         return super(SyncClient, self).get(path, payload, *args, **kwargs)
-
 
     def start_session(self):
         """A 'session' to exchange data"""

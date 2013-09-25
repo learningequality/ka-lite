@@ -1,12 +1,15 @@
-from django.core.management.base import BaseCommand, CommandError
-from securesync.models import Facility, FacilityUser, FacilityGroup
-from main.models import ExerciseLog
 import random
 import json
 from math import exp
-from main import topicdata
+
+from django.core.management.base import BaseCommand, CommandError
+
 import settings
-from utils.topic_tools import get_topic_exercises
+from main import topicdata
+from main.models import ExerciseLog
+from securesync.models import Facility, FacilityUser, FacilityGroup
+from shared.topic_tools import get_topic_exercises
+
 
 def sigmoid(theta, a, b):
     return 1.0 / (1.0 + exp(b - a * theta))

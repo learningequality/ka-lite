@@ -2,7 +2,6 @@
 Utilities for downloading Khan Academy topic tree and 
 massaging into data and files that we use in KA Lite.
 """
-
 import datetime
 import json
 import os
@@ -17,8 +16,9 @@ from django.core.management.base import BaseCommand, CommandError
 
 import settings
 from settings import LOG as logging
+from shared import topic_tools
 from utils.general import datediff
-from utils import topic_tools
+
 
 # get the path to an exercise file, so we can check, below, which ones exist
 exercise_path = os.path.join(settings.PROJECT_PATH, "static/js/khan-exercises/exercises/%s.html")
