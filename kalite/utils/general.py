@@ -129,15 +129,8 @@ def version_diff(v1, v2):
 
 def ensure_dir(path):
     """Create the entire directory path, if it doesn't exist already."""
-    path_parts = path.split("/")
-    full_path = "/"
-    for part in path_parts:
-        if "." in part:
-            raise InvalidDirectoryFormat()
-        if part is not '':
-            full_path += part + "/"
-            if not os.path.exists(full_path):
-                os.makedirs(full_path)
+    if not os.path.exists(path):
+        os.makedirs(path)
 
 # http://code.activestate.com/recipes/82465-a-friendly-mkdir/
 #def _mkdir(newdir):
