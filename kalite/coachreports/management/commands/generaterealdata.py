@@ -435,7 +435,6 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
                     )
                     vlog.save(update_userlog=False)  # avoid userlog issues
 
-
                 video_logs.append(vlog)
 
     return video_logs

@@ -17,11 +17,11 @@ import kalite
 import settings
 from config.models import Settings
 from securesync import engine
-from securesync.engine.models import DeferredSignSyncedModel
+from securesync.engine.models import DeferredCountSyncedModel
 from settings import LOG as logging
 
 
-class Facility(DeferredSignSyncedModel):
+class Facility(DeferredCountSyncedModel):
     name = models.CharField(verbose_name=_("Name"), help_text=_("(This is the name that students/teachers will see when choosing their facility; it can be in the local language.)"), max_length=100)
     description = models.TextField(blank=True, verbose_name=_("Description"))
     address = models.CharField(verbose_name=_("Address"), help_text=_("(Please provide as detailed an address as possible.)"), max_length=400, blank=True)
@@ -46,7 +46,6 @@ class Facility(DeferredSignSyncedModel):
     def is_default(self):
         return self.id == Settings.get("default_facility")
 
-
     @classmethod
     def from_zone(cls, zone):
         """Our best approximation of how to map facilities to zones"""
@@ -60,7 +59,7 @@ class Facility(DeferredSignSyncedModel):
         return facilities
 
 
-class FacilityGroup(DeferredSignSyncedModel):
+class FacilityGroup(DeferredCountSyncedModel):
     facility = models.ForeignKey(Facility, verbose_name=_("Facility"))
     name = models.CharField(max_length=30, verbose_name=_("Name"))
 
@@ -71,7 +70,7 @@ class FacilityGroup(DeferredSignSyncedModel):
         return self.name
 
 
-class FacilityUser(DeferredSignSyncedModel):
+class FacilityUser(DeferredCountSyncedModel):
     # Translators: This is a label in a form.
     facility = models.ForeignKey(Facility, verbose_name=_("Facility"))
     # Translators: This is a label in a form.

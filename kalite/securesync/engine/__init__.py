@@ -52,7 +52,18 @@ def add_syncing_models(models):
 def get_syncing_models():
     return _syncing_models
 
-    
+
+def get_local_device_unsynced_count():
+    """
+    When a model needs to sync, counter is set to None.
+    When it is synced, counter is set to an integer value.
+    """
+    count = 0
+    for Model in _syncing_models:
+        count += Model.objects.filter(counter__isnull=True).count()
+    return count
+
+
 def get_device_counters(**kwargs):
     """Get device counters, filtered by zone"""
     assert ("zone" in kwargs) + ("devices" in kwargs) == 1, "Must specify zone or devices, and not both."
@@ -64,6 +75,11 @@ def get_device_counters(**kwargs):
     for device in list(devices):
         if device.id not in device_counters:  # why is this needed?
             device_counters[device.id] = device.get_counter_position()
+
+            # The local device may have items that haven't incremented the device counter,
+            #   but instead have deferred until sync time.  Include those!
+            if device.is_own_device():
+                device_counters[device.id] += get_local_device_unsynced_count()
 
     return device_counters
 
@@ -119,7 +135,7 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
                         continue
 
                 # Now select relevant items
-                queryset = queryset.filter(counter__gt=counter)
+                queryset = queryset.filter(Q(counter__gt=counter) | Q(counter__isnull=True))
 
                 # check whether there are any models that will be excluded by our limit, so we know to ask again
                 if not instances_remaining and queryset.count() > (limit+boost):
@@ -245,7 +261,7 @@ def save_serialized_models(data, increment_counters=True, src_version=None):
     return out_dict
 
 
-def serialize(models, sign=True, *args, **kwargs):
+def serialize(models, sign=True, increment_counters=True, *args, **kwargs):
     """
     This function encapsulates serialization, and ensures that any final steps needed before syncing
     (e.g. signing, incrementing counters, etc) are done.
@@ -257,11 +273,16 @@ def serialize(models, sign=True, *args, **kwargs):
     for model in models:
         resave = False
 
-        if sign:
+        if increment_counters or sign:
             assert isinstance(model, SyncedModel), "Can only serialize SyncedModel instances"
-            if not model.signature:
-                model.sign()
-                resave = True
+
+        if increment_counters and not model.counter:
+            model.counter = own_device.increment_counter_position()
+            resave = True
+
+        if sign and not model.signature:
+            model.sign()
+            resave = True
 
         if resave:
             super(SyncedModel, model).save()
