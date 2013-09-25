@@ -91,7 +91,7 @@ class SyncedModelManager(models.Manager):
     def by_zone(self, zone):
         # get model instances that were signed by devices in the zone,
         # or signed by a trusted authority that said they were for the zone
-        return self.filter(Q(signed_by__devicezone__zone=zone) |
+        return self.filter(Q(signed_by__devicezone__zone=zone, signed_by__devicezone__revoked=False) |
             Q(signed_by__devicemetadata__is_trusted=True, zone_fallback=zone))
 
 
