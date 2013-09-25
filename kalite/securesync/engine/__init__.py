@@ -84,7 +84,7 @@ def get_device_counters(**kwargs):
     return device_counters
 
 
-def get_serialized_models(device_counters=None, limit=100, zone=None, include_count=False, dest_version=None):
+def get_serialized_models(device_counters=None, limit=settings.SYNCING_MAX_RECORDS_PER_REQUEST, zone=None, include_count=False, dest_version=None):
     """Serialize models for some intended version (dest_version)
     Default is our own version--i.e. include all known fields.
     If serializing for a device of a lower version, pass in that device's version!
@@ -111,45 +111,35 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
             del device_counters[device_id]
 
     models = []
-    boost = 0
 
-    # loop until we've found some models, or determined that there are none to get
-    while True:
+    # loop through all the model classes marked as syncable
+    for Model in _syncing_models:
 
-        # assume no instances remaining until proven otherwise
-        instances_remaining = False
+        # loop through each of the devices of interest
+        for device_id, counter in device_counters.items():
 
-        # loop through all the model classes marked as syncable
-        for Model in _syncing_models:
+            queryset = Model.objects.filter(Q(signed_by=device) | Q(signed_by__isnull=True))
 
-            # loop through each of the devices of interest
-            for device_id, counter in device_counters.items():
+            # for trusted (central) device, only include models with the correct fallback zone
+            if not device.in_zone(zone):
+                if device.is_trusted():
+                    queryset = queryset.filter(zone_fallback=zone)
+                else:
+                    continue
 
-                queryset = Model.objects.filter(Q(signed_by=device) | Q(signed_by__isnull=True))
+            # Now select relevant items
+            queryset = queryset.filter(Q(counter__gt=counter) | Q(counter__isnull=True))
 
-                # for trusted (central) device, only include models with the correct fallback zone
-                if not device.in_zone(zone):
-                    if device.is_trusted():
-                        queryset = queryset.filter(zone_fallback=zone)
-                    else:
-                        continue
+            # Grab up to (limit) model instances, then decrease the limit to the total limit remaining
+            new_models = queryset[:limit]
+            models += new_models
+            limit -= new_models.count()
 
-                # Now select relevant items
-                queryset = queryset.filter(Q(counter__gt=counter) | Q(counter__isnull=True))
-
-                # check whether there are any models that will be excluded by our limit, so we know to ask again
-                if not instances_remaining and queryset.count() > (limit+boost):
-                    instances_remaining = True
-
-                # pull out the model instances within the given counter range
-                models += queryset[:(limit+boost)]
-
-        # if we got some models, or there were none to get, then call it quits
-        if len(models) > 0 or not instances_remaining:
-            break
-
-        # boost the effective limit, so we have a chance of catching something when we do another round
-        boost += limit
+            # Check if we've hit the limit
+            if limit <= 0:
+                break;
+        if limit <= 0:
+            break;
 
     # serialize the models we found
     serialized_models = serialize(models, ensure_ascii=False, dest_version=dest_version)

@@ -18,8 +18,6 @@ class SyncClient(BaseClient):
     Note that in the future, this object may be used to sync 
     between two distributed servers (i.e. peer-to-peer sync)!"""
     session = None
-    counters_to_download = None
-    counters_to_upload = None
 
     def post(self, path, payload={}, *args, **kwargs):
         if self.session and self.session.client_nonce:
@@ -144,22 +142,22 @@ class SyncClient(BaseClient):
         devices_to_download = []
         devices_to_upload = []
 
-        self.counters_to_download = {}
-        self.counters_to_upload = {}
+        counters_to_download = {}
+        counters_to_upload = {}
 
         for device in client_counters:
             if device not in server_counters:
                 devices_to_upload.append(device)
-                self.counters_to_upload[device] = 0
+                counters_to_upload[device] = 0
             elif client_counters[device] > server_counters[device]:
-                self.counters_to_upload[device] = server_counters[device]
+                counters_to_upload[device] = server_counters[device]
 
         for device in server_counters:
             if device not in client_counters:
                 devices_to_download.append(device)
-                self.counters_to_download[device] = 0
+                counters_to_download[device] = 0
             elif server_counters[device] > client_counters[device]:
-                self.counters_to_download[device] = client_counters[device]
+                counters_to_download[device] = client_counters[device]
 
         response = json.loads(self.post("device/download", {"devices": devices_to_download}).content)
         # As usual, we're deserializing from the central server, so we assume that what we're getting
@@ -177,7 +175,7 @@ class SyncClient(BaseClient):
                 continue
 
             if not d.get_counter_position():  # this would be nonzero if the device sync'd models
-                d.set_counter_position(self.counters_to_download[device_id])
+                d.set_counter_position(counters_to_download[device_id])
 
 
         self.session.models_downloaded += download_results["saved_model_count"]
@@ -185,11 +183,23 @@ class SyncClient(BaseClient):
 
         # TODO(jamalex): upload local devices as well? only needed once we have P2P syncing
 
+        return (counters_to_download, counters_to_upload)
+
 
     def sync_models(self):
+        """
+        This method first syncs device counters and device objects, so that the two computers
+        can determine who has what and, in comparison, what it needs to request.
+        
+        Then, it uses those device records to partially download and partially upload.
+        Not all at once--that would be less robust!
 
-        if self.counters_to_download is None or self.counters_to_upload is None:
-            self.sync_device_records()
+        Afterwards, it returns summary statistics about what was synced, but no specific
+        state--this allows it to assume nothing for the next go-around (as this method
+        is called in a loop elsewhere)
+        """
+
+        counters_to_download, counters_to_upload = self.sync_device_records()
 
         # Download (but prepare for errors--both thrown and unthrown!)
         download_results = {
@@ -197,7 +207,7 @@ class SyncClient(BaseClient):
             "unsaved_model_count" : 0,
         }
         try:
-            response = json.loads(self.post("models/download", {"device_counters": self.counters_to_download}).content)
+            response = json.loads(self.post("models/download", {"device_counters": counters_to_download}).content)
             # As usual, we're deserializing from the central server, so we assume that what we're getting
             #   is "smartly" dumbed down for us.  We don't need to specify the src_version, as it's
             #   pre-cleanaed for us.
@@ -217,7 +227,7 @@ class SyncClient(BaseClient):
         try:
             # By not specifying a dest_version, we're sending everything.
             #   Again, this is OK because we're sending to the central server.
-            response = self.post("models/upload", {"models": get_serialized_models(self.counters_to_upload)})
+            response = self.post("models/upload", {"models": get_serialized_models(counters_to_upload)})
             upload_results = json.loads(response.content)
             self.session.models_uploaded += upload_results["saved_model_count"]
             self.session.errors += upload_results.has_key("error")
@@ -225,8 +235,5 @@ class SyncClient(BaseClient):
         except Exception as e:
             upload_results["error"] = e
             self.session.errors += 1
-
-        self.counters_to_download = None
-        self.counters_to_upload = None
 
         return {"download_results": download_results, "upload_results": upload_results}
