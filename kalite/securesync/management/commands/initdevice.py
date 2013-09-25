@@ -7,10 +7,10 @@ from django.db import IntegrityError, transaction
 
 import settings
 import version
+from securesync import engine
 from securesync.models import Device, DeviceMetadata, Zone, ZoneInvitation
 from securesync.views import set_as_registered
 from settings import LOG as logging
-from shared import serializers
 from utils.general import get_host_name
 
 
@@ -30,7 +30,7 @@ def load_data_for_offline_install(in_file):
     """
     assert os.path.exists(in_file), "in_file must exist."
     with open(in_file, "r") as fp:
-        models = serializers.deserialize("versioned-json", fp.read())  # all must be in a consistent version
+        models = engine.deserialize(fp.read())  # all must be in a consistent version
     
     # First object should be the central server.
     try:

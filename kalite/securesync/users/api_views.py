@@ -3,7 +3,6 @@ import json
 import re
 import uuid
 
-from django.core import serializers
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.contrib.messages.api import get_messages
@@ -19,7 +18,6 @@ import version
 from .models import *
 from config.models import Settings
 from main.models import VideoLog, ExerciseLog, VideoFile
-from shared import serializers
 from shared.decorators import distributed_server_only
 from utils.internet import allow_jsonp, api_handle_error_with_json, JsonResponse
 

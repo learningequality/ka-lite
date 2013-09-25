@@ -173,13 +173,40 @@ class Device(SyncedModel):
         except DeviceMetadata.DoesNotExist:
             return DeviceMetadata(device=self)
 
-    def set_counter_position(self, counter_position):
+    def get_counter_position(self):
+        """
+        """
+        if not self.id:
+            return 0
+
+        else:
+            return self.get_metadata().counter_position
+
+    def set_counter_position(self, counter_position, soft_set=False):
+        metadata = self.get_metadata()
+        if not metadata.device.id:  # only happens if device has not been saved yet.  Should be changed to self.id
+            return
+
+        # It's often convenient to reset the position ONLY if the new counter position
+        #   is higher than the old.  So, let people be lazy--but need to send in a flag,
+        #   so it's clear that something a bit unusual is happening in a "set"
+        if soft_set and self.signed_by.get_counter_position() >= counter_position:
+            return
+
+        assert counter_position > metadata.counter_position, "You should not be setting the counter position to a number lower than it's current value!"
+        metadata.counter_position = counter_position
+        metadata.save()
+
+
+    @transaction.commit_on_success
+    def increment_counter_position(self):
         metadata = self.get_metadata()
         if not metadata.device.id:
-            return
-        if counter_position > metadata.counter_position:
-            metadata.counter_position = counter_position
-            metadata.save()
+            return 0
+        metadata.counter_position += 1
+        metadata.save()
+        return metadata.counter_position
+
 
     def full_clean(self):
         # TODO(jamalex): we skip out here, because otherwise self-signed devices will fail
@@ -220,10 +247,10 @@ class Device(SyncedModel):
         kwargs["name"] = kwargs.get("name", get_host_name())
         own_device = cls(**kwargs)
         own_device.set_key(crypto.get_own_key())
-        own_device.sign(device=own_device)
 
         # imported=True is for when the local device should not sign the object,
         #   and when counters should not be incremented.  That's our situation here!
+        own_device.sign(device=own_device)  # must sign, in order to use imported codepath
         super(Device, own_device).save(imported=True, increment_counters=False)
 
         metadata = own_device.get_metadata()
@@ -232,21 +259,6 @@ class Device(SyncedModel):
         metadata.save()
 
         return own_device
-
-    @transaction.commit_on_success
-    def increment_and_get_counter(self):
-        metadata = self.get_metadata()
-        if not metadata.device.id:
-            return 0
-        metadata.counter_position += 1
-        metadata.save()
-        return metadata.counter_position
-
-    def get_counter(self):
-        metadata = self.get_metadata()
-        if not metadata.device.id:
-            return 0
-        return metadata.counter_position
 
     def __unicode__(self):
         return self.name or self.id[0:5]
@@ -288,14 +300,6 @@ class Device(SyncedModel):
         assert self.public_key is not None, "public_key required for get_uuid"
         return uuid.uuid5(settings.ROOT_UUID_NAMESPACE, str(self.public_key)).hex
 
-    @staticmethod
-    def get_device_counters(zone):
-        device_counters = {}
-        for device in Device.objects.by_zone(zone):
-            if device.id not in device_counters:
-                device_counters[device.id] = device.get_metadata().counter_position
-        return device_counters
-
     @classmethod
     def get_central_server(cls):
         if settings.CENTRAL_SERVER:
@@ -309,6 +313,9 @@ class Device(SyncedModel):
 
     def is_trusted(self):
         return self.get_metadata().is_trusted
+
+    def is_own_device(self):
+        return self.get_metadata().is_own_device
 
 
 class ZoneInvitation(SyncedModel):

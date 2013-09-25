@@ -12,7 +12,7 @@ class SecuresyncUnicodeModelsTest(UnicodeModelsTest):
         # Make sure we're testing all classes
         self.check_unicode_class_coverage(
             models_module="securesync.models",
-            known_classes = [Device, DeviceMetadata, DeviceZone, Facility, FacilityGroup, FacilityUser, RegisteredDevicePublicKey, SyncSession, SyncedLog, SyncedModel, Zone],
+            known_classes = [DeferredSignSyncedModel, Device, DeviceMetadata, DeviceZone, Facility, FacilityGroup, FacilityUser, RegisteredDevicePublicKey, SyncSession, SyncedLog, SyncedModel, Zone],
         )
 
 

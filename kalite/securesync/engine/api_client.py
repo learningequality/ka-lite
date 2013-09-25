@@ -4,12 +4,11 @@ import uuid
 
 import kalite
 import settings
-from . import get_serialized_models, save_serialized_models
+from . import get_serialized_models, save_serialized_models, get_device_counters, deserialize
 from .models import *
 from securesync.api_client import BaseClient
 from securesync.devices.api_client import RegistrationClient
 from securesync.devices.models import *
-from shared import serializers
 
 
 class SyncClient(BaseClient):
@@ -51,7 +50,7 @@ class SyncClient(BaseClient):
         # Once again, we assume that (currently) the central server's version is >= ours,
         #   We just store what we can.
         own_device = self.session.client_device
-        session = serializers.deserialize("versioned-json", data["session"], src_version=None, dest_version=own_device.get_version()).next().object
+        session = deserialize(data["session"], src_version=None, dest_version=own_device.get_version()).next().object
         self.session.server_nonce = session.server_nonce
         self.session.server_device = session.server_device
         if not session.verify_server_signature(signature):
@@ -134,7 +133,7 @@ class SyncClient(BaseClient):
         return json.loads(r.content or "{}").get("device_counters", {})
 
     def get_client_device_counters(self):
-        return Device.get_device_counters(self.session.client_device.get_zone())
+        return get_device_counters(zone=self.session.client_device.get_zone())
 
 
     def sync_device_records(self):
@@ -177,10 +176,9 @@ class SyncClient(BaseClient):
             except:
                 continue
 
-            dm = d.get_metadata() 
-            if not dm.counter_position: # this would be nonzero if the device sync'd models
-                dm.counter_position = self.counters_to_download[device_id]
-            dm.save()
+            if not d.get_counter_position():  # this would be nonzero if the device sync'd models
+                d.set_counter_position(self.counters_to_download[device_id])
+
 
         self.session.models_downloaded += download_results["saved_model_count"]
         self.session.errors += download_results.has_key("error")

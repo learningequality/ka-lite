@@ -4,7 +4,6 @@ from annoying.functions import get_object_or_None
 from collections import OrderedDict, namedtuple
 
 from django.contrib import messages
-from django.core import serializers
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
@@ -81,7 +80,7 @@ def zone_management(request, zone_id, org_id=None):
             "last_time_synced": sync_sessions.aggregate(Max("timestamp"))["timestamp__max"] if sync_sessions is not None else None,
             "is_demo_device": device.get_metadata().is_demo_device,
             "last_time_used":   exercise_activity.order_by("-completion_timestamp")[0:1] if user_activity.count() == 0 else user_activity.order_by("-end_datetime")[0],
-            "counter": device.get_counter(),
+            "counter": device.get_counter_position(),
         }
 
     # Accumulate facility data

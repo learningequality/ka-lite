@@ -8,24 +8,56 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding field 'RegisteredDevicePublicKey.created_timestamp'
-        db.add_column('securesync_registereddevicepublickey', 'created_timestamp',
-                      self.gf('django.db.models.fields.DateTimeField')(default=None, auto_now_add=True, null=True, blank=True),
-                      keep_default=False)
 
-        # Adding field 'RegisteredDevicePublicKey.used_timestamp'
-        db.add_column('securesync_registereddevicepublickey', 'used_timestamp',
-                      self.gf('django.db.models.fields.DateTimeField')(default=None, null=True),
-                      keep_default=False)
+        # Changing field 'FacilityUser.signature'
+        db.alter_column('securesync_facilityuser', 'signature', self.gf('django.db.models.fields.CharField')(max_length=360, null=True))
 
+        # Changing field 'DeviceZone.signature'
+        db.alter_column('securesync_devicezone', 'signature', self.gf('django.db.models.fields.CharField')(max_length=360, null=True))
+
+        # Changing field 'SyncedLog.signature'
+        db.alter_column('securesync_syncedlog', 'signature', self.gf('django.db.models.fields.CharField')(max_length=360, null=True))
+
+        # Changing field 'Device.signature'
+        db.alter_column('securesync_device', 'signature', self.gf('django.db.models.fields.CharField')(max_length=360, null=True))
+
+        # Changing field 'FacilityGroup.signature'
+        db.alter_column('securesync_facilitygroup', 'signature', self.gf('django.db.models.fields.CharField')(max_length=360, null=True))
+
+        # Changing field 'Zone.signature'
+        db.alter_column('securesync_zone', 'signature', self.gf('django.db.models.fields.CharField')(max_length=360, null=True))
+
+        # Changing field 'ZoneInvitation.signature'
+        db.alter_column('securesync_zoneinvitation', 'signature', self.gf('django.db.models.fields.CharField')(max_length=360, null=True))
+
+        # Changing field 'Facility.signature'
+        db.alter_column('securesync_facility', 'signature', self.gf('django.db.models.fields.CharField')(max_length=360, null=True))
 
     def backwards(self, orm):
-        # Deleting field 'RegisteredDevicePublicKey.created_timestamp'
-        db.delete_column('securesync_registereddevicepublickey', 'created_timestamp')
 
-        # Deleting field 'RegisteredDevicePublicKey.used_timestamp'
-        db.delete_column('securesync_registereddevicepublickey', 'used_timestamp')
+        # Changing field 'FacilityUser.signature'
+        db.alter_column('securesync_facilityuser', 'signature', self.gf('django.db.models.fields.CharField')(default='', max_length=360))
 
+        # Changing field 'DeviceZone.signature'
+        db.alter_column('securesync_devicezone', 'signature', self.gf('django.db.models.fields.CharField')(default='', max_length=360))
+
+        # Changing field 'SyncedLog.signature'
+        db.alter_column('securesync_syncedlog', 'signature', self.gf('django.db.models.fields.CharField')(default='', max_length=360))
+
+        # Changing field 'Device.signature'
+        db.alter_column('securesync_device', 'signature', self.gf('django.db.models.fields.CharField')(default='', max_length=360))
+
+        # Changing field 'FacilityGroup.signature'
+        db.alter_column('securesync_facilitygroup', 'signature', self.gf('django.db.models.fields.CharField')(default='', max_length=360))
+
+        # Changing field 'Zone.signature'
+        db.alter_column('securesync_zone', 'signature', self.gf('django.db.models.fields.CharField')(default='', max_length=360))
+
+        # Changing field 'ZoneInvitation.signature'
+        db.alter_column('securesync_zoneinvitation', 'signature', self.gf('django.db.models.fields.CharField')(default='', max_length=360))
+
+        # Changing field 'Facility.signature'
+        db.alter_column('securesync_facility', 'signature', self.gf('django.db.models.fields.CharField')(default='', max_length=360))
 
     models = {
         'securesync.cachedpassword': {
@@ -42,7 +74,7 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.CharField', [], {'max_length': '32', 'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
             'public_key': ('django.db.models.fields.CharField', [], {'max_length': '500', 'db_index': 'True'}),
-            'signature': ('django.db.models.fields.CharField', [], {'max_length': '360', 'blank': 'True'}),
+            'signature': ('django.db.models.fields.CharField', [], {'max_length': '360', 'null': 'True', 'blank': 'True'}),
             'signed_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Device']"}),
             'signed_version': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
             'version': ('django.db.models.fields.CharField', [], {'default': "'0.9.2'", 'max_length': '9', 'blank': 'True'}),
@@ -65,7 +97,7 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.CharField', [], {'max_length': '32', 'primary_key': 'True'}),
             'max_counter': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'revoked': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'signature': ('django.db.models.fields.CharField', [], {'max_length': '360', 'blank': 'True'}),
+            'signature': ('django.db.models.fields.CharField', [], {'max_length': '360', 'null': 'True', 'blank': 'True'}),
             'signed_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Device']"}),
             'signed_version': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
             'zone': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['securesync.Zone']"}),
@@ -85,7 +117,7 @@ class Migration(SchemaMigration):
             'latitude': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'longitude': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'signature': ('django.db.models.fields.CharField', [], {'max_length': '360', 'blank': 'True'}),
+            'signature': ('django.db.models.fields.CharField', [], {'max_length': '360', 'null': 'True', 'blank': 'True'}),
             'signed_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Device']"}),
             'signed_version': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
             'user_count': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
@@ -99,7 +131,7 @@ class Migration(SchemaMigration):
             'facility': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['securesync.Facility']"}),
             'id': ('django.db.models.fields.CharField', [], {'max_length': '32', 'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
-            'signature': ('django.db.models.fields.CharField', [], {'max_length': '360', 'blank': 'True'}),
+            'signature': ('django.db.models.fields.CharField', [], {'max_length': '360', 'null': 'True', 'blank': 'True'}),
             'signed_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Device']"}),
             'signed_version': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
             'zone_fallback': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Zone']"})
@@ -116,7 +148,7 @@ class Migration(SchemaMigration):
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '60', 'blank': 'True'}),
             'notes': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'signature': ('django.db.models.fields.CharField', [], {'max_length': '360', 'blank': 'True'}),
+            'signature': ('django.db.models.fields.CharField', [], {'max_length': '360', 'null': 'True', 'blank': 'True'}),
             'signed_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Device']"}),
             'signed_version': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
             'username': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
@@ -147,7 +179,7 @@ class Migration(SchemaMigration):
             'data': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'deleted': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'id': ('django.db.models.fields.CharField', [], {'max_length': '32', 'primary_key': 'True'}),
-            'signature': ('django.db.models.fields.CharField', [], {'max_length': '360', 'blank': 'True'}),
+            'signature': ('django.db.models.fields.CharField', [], {'max_length': '360', 'null': 'True', 'blank': 'True'}),
             'signed_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Device']"}),
             'signed_version': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
             'value': ('django.db.models.fields.CharField', [], {'max_length': '250', 'blank': 'True'}),
@@ -176,7 +208,7 @@ class Migration(SchemaMigration):
             'description': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'id': ('django.db.models.fields.CharField', [], {'max_length': '32', 'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'signature': ('django.db.models.fields.CharField', [], {'max_length': '360', 'blank': 'True'}),
+            'signature': ('django.db.models.fields.CharField', [], {'max_length': '360', 'null': 'True', 'blank': 'True'}),
             'signed_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Device']"}),
             'signed_version': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
             'zone_fallback': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Zone']"})
@@ -191,7 +223,7 @@ class Migration(SchemaMigration):
             'public_key': ('django.db.models.fields.CharField', [], {'max_length': '500'}),
             'public_key_signature': ('django.db.models.fields.CharField', [], {'max_length': '500'}),
             'revoked': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'signature': ('django.db.models.fields.CharField', [], {'max_length': '360', 'blank': 'True'}),
+            'signature': ('django.db.models.fields.CharField', [], {'max_length': '360', 'null': 'True', 'blank': 'True'}),
             'signed_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Device']"}),
             'signed_version': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
             'used_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Device']"}),
