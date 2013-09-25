@@ -17,7 +17,7 @@ from django.views.decorators.gzip import gzip_page
 import settings
 import version
 from .models import *
-from shared import serializers
+from securesync import engine
 from stats.models import UnregisteredDevicePing
 from utils.django_utils import get_request_ip
 from utils.internet import allow_jsonp, api_handle_error_with_json, am_i_online, JsonResponse
@@ -42,7 +42,7 @@ def register_device(request):
         #   is less than the version of a client--something that should never happen
         try:
             local_version = Device.get_own_device().get_version()
-            models = serializers.deserialize("json", data["client_device"], src_version=local_version, dest_version=local_version)
+            models = engine.deserialize(data["client_device"], src_version=local_version, dest_version=local_version)
         except db_models.FieldDoesNotExist as fdne:
             raise Exception("Central server version is lower than client version.  This is ... impossible!")
         client_device = models.next().object
@@ -132,7 +132,7 @@ def register_device(request):
     # Addition: always back central server object--in case they didn't get it during install,
     #   they need it for software updating.
     return JsonResponse(
-        serializers.serialize("json", [Device.get_central_server(), Device.get_own_device(), zone, device_zone], dest_version=client_device.version, ensure_ascii=False)
+        engine.serialize([Device.get_central_server(), Device.get_own_device(), zone, device_zone], dest_version=client_device.version, ensure_ascii=False)
     )
 
 

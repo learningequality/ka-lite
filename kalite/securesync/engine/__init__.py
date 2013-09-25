@@ -6,11 +6,13 @@ from annoying.functions import get_object_or_None
 
 from django.core.exceptions import ValidationError
 #from django.db import models, transaction
+from django.db.models import Q
 from django.db.models.fields.related import ForeignKey
 
 import settings
 from settings import LOG as logging
 from shared import serializers
+
 
 _syncing_models = []  # all models we want to sync
 
@@ -51,6 +53,21 @@ def get_syncing_models():
     return _syncing_models
 
     
+def get_device_counters(**kwargs):
+    """Get device counters, filtered by zone"""
+    assert ("zone" in kwargs) + ("devices" in kwargs) == 1, "Must specify zone or devices, and not both."
+
+    from securesync.devices.models import Device
+    devices = kwargs.get("devices") or Device.objects.by_zone(kwargs["zone"])
+
+    device_counters = {}
+    for device in list(devices):
+        if device.id not in device_counters:  # why is this needed?
+            device_counters[device.id] = device.get_counter_position()
+
+    return device_counters
+
+
 def get_serialized_models(device_counters=None, limit=100, zone=None, include_count=False, dest_version=None):
     """Serialize models for some intended version (dest_version)
     Default is our own version--i.e. include all known fields.
@@ -92,8 +109,7 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
             # loop through each of the devices of interest
             for device_id, counter in device_counters.items():
 
-                device = Device.objects.get(pk=device_id)
-                queryset = Model.objects.filter(signed_by=device)
+                queryset = Model.objects.filter(Q(signed_by=device) | Q(signed_by__isnull=True))
 
                 # for trusted (central) device, only include models with the correct fallback zone
                 if not device.in_zone(zone):
@@ -102,12 +118,15 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
                     else:
                         continue
 
+                # Now select relevant items
+                queryset = queryset.filter(counter__gt=counter)
+
                 # check whether there are any models that will be excluded by our limit, so we know to ask again
-                if not instances_remaining and queryset.filter(counter__gt=counter+limit+boost).count() > 0:
+                if not instances_remaining and queryset.count() > (limit+boost):
                     instances_remaining = True
 
                 # pull out the model instances within the given counter range
-                models += queryset.filter(counter__gt=counter, counter__lte=counter+limit+boost)
+                models += queryset[:(limit+boost)]
 
         # if we got some models, or there were none to get, then call it quits
         if len(models) > 0 or not instances_remaining:
@@ -117,7 +136,7 @@ def get_serialized_models(device_counters=None, limit=100, zone=None, include_co
         boost += limit
 
     # serialize the models we found
-    serialized_models = serializers.serialize("versioned-json", models, ensure_ascii=False, dest_version=dest_version)
+    serialized_models = serialize(models, ensure_ascii=False, dest_version=dest_version)
 
     if include_count:
         return {"models": serialized_models, "count": len(models)}
@@ -154,9 +173,9 @@ def save_serialized_models(data, increment_counters=True, src_version=None):
 
     # deserialize the models, either from text or a list of dictionaries
     if isinstance(data, str) or isinstance(data, unicode):
-        models = serializers.deserialize("versioned-json", data, src_version=src_version, dest_version=own_device.get_version())
+        models = deserialize(data, src_version=src_version, dest_version=own_device.get_version())
     else:
-        models = serializers.deserialize("versioned-python", data, src_version=src_version, dest_version=own_device.get_version())
+        models = deserialize(data, src_version=src_version, dest_version=own_device.get_version())
 
     # try importing each of the models in turn
     unsaved_models = []
@@ -195,7 +214,7 @@ def save_serialized_models(data, increment_counters=True, src_version=None):
                 # (because otherwise we may never ask for additional models)
                 try:
                     if increment_counters and model.verify():
-                        model.signed_by.set_counter_position(model.counter)
+                        model.signed_by.set_counter_position(model.counter, soft_set=True)
                 except:
                     pass
         
@@ -208,7 +227,7 @@ def save_serialized_models(data, increment_counters=True, src_version=None):
             purgatory = ImportPurgatory()
         
         # These models were successfully unserialized, so re-save in our own version.
-        purgatory.serialized_models = serializers.serialize("versioned-json", unsaved_models, ensure_ascii=False, dest_version=own_device.get_version())
+        purgatory.serialized_models = serialize(unsaved_models, ensure_ascii=False, dest_version=own_device.get_version())
         purgatory.exceptions = exceptions
         purgatory.model_count = len(unsaved_models)
         purgatory.retry_attempts += 1
@@ -224,3 +243,34 @@ def save_serialized_models(data, increment_counters=True, src_version=None):
         out_dict["exceptions"] = exceptions
 
     return out_dict
+
+
+def serialize(models, sign=True, *args, **kwargs):
+    """
+    This function encapsulates serialization, and ensures that any final steps needed before syncing
+    (e.g. signing, incrementing counters, etc) are done.
+    """
+    from securesync.devices.models import Device
+    from .models import SyncedModel
+    own_device = Device.get_own_device()
+
+    for model in models:
+        resave = False
+
+        if sign:
+            assert isinstance(model, SyncedModel), "Can only serialize SyncedModel instances"
+            if not model.signature:
+                model.sign()
+                resave = True
+
+        if resave:
+            super(SyncedModel, model).save()
+
+    return serializers.serialize("versioned-json", models, *args, **kwargs)
+
+
+def deserialize(data, *args, **kwargs):
+    """
+    Similar to serialize, except for deserialization.
+    """
+    return serializers.deserialize("versioned-json", data, *args, **kwargs)

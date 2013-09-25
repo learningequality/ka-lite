@@ -12,13 +12,13 @@ from django.db.models import Sum
 
 import settings
 from securesync import engine
-from securesync.models import SyncedModel, FacilityUser, Device
+from securesync.models import DeferredSignSyncedModel, SyncedModel, FacilityUser, Device
 from settings import LOG as logging
 from utils.django_utils import ExtendedModel
 from utils.general import datediff, isnumeric
 
 
-class VideoLog(SyncedModel):
+class VideoLog(DeferredSignSyncedModel):
     POINTS_PER_VIDEO = 750
 
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
@@ -36,7 +36,7 @@ class VideoLog(SyncedModel):
     def __unicode__(self):
         return u"user=%s, youtube_id=%s, seconds=%d, points=%d%s" % (self.user, self.youtube_id, self.total_seconds_watched, self.points, " (completed)" if self.complete else "")
 
-    def save(self, *args, **kwargs):
+    def save(self, update_userlog=True, *args, **kwargs):
         if not kwargs.get("imported", False):
             self.full_clean()
 
@@ -45,14 +45,15 @@ class VideoLog(SyncedModel):
             self.complete = (self.points >= VideoLog.POINTS_PER_VIDEO)
             if not already_complete and self.complete:
                 self.completion_timestamp = datetime.now()
-                self.completion_counter = Device.get_own_device().get_counter()
+                self.completion_counter = Device.get_own_device().get_counter_position()
 
             # Tell logins that they are still active (ignoring validation failures).
             #   TODO(bcipolli): Could log video information in the future.
-            try:
-                UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()), language=language)
-            except ValidationError as e:
-                logging.error("Failed to update userlog during video: %s" % e)
+            if update_userlog:
+                try:
+                    UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()), language=language)
+                except ValidationError as e:
+                    logging.error("Failed to update userlog during video: %s" % e)
 
         super(VideoLog, self).save(*args, **kwargs)
 
@@ -93,7 +94,7 @@ class VideoLog(SyncedModel):
         return videolog
 
 
-class ExerciseLog(SyncedModel):
+class ExerciseLog(DeferredSignSyncedModel):
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
     exercise_id = models.CharField(max_length=100, db_index=True)
     streak_progress = models.IntegerField(default=0)
@@ -112,7 +113,7 @@ class ExerciseLog(SyncedModel):
     def __unicode__(self):
         return u"user=%s, exercise_id=%s, points=%d%s" % (self.user, self.exercise_id, self.points, " (completed)" if self.complete else "")
 
-    def save(self, *args, **kwargs):
+    def save(self, update_userlog=True, *args, **kwargs):
         if not kwargs.get("imported", False):
             self.full_clean()
 
@@ -124,15 +125,17 @@ class ExerciseLog(SyncedModel):
             if not already_complete and self.complete:
                 self.struggling = False
                 self.completion_timestamp = datetime.now()
-                self.completion_counter = Device.get_own_device().get_counter()
+                self.completion_counter = Device.get_own_device().get_counter_position()
                 self.attempts_before_completion = self.attempts
 
             # Tell logins that they are still active (ignoring validation failures).
             #   TODO(bcipolli): Could log exercise information in the future.
-            try:
-                UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()), language=language)
-            except ValidationError as e:
-                logging.error("Failed to update userlog during exercise: %s" % e)
+            if update_userlog:
+                try:
+                    UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()), language=language)
+                except ValidationError as e:
+                    logging.error("Failed to update userlog during exercise: %s" % e)
+
         super(ExerciseLog, self).save(*args, **kwargs)
 
     def get_uuid(self, *args, **kwargs):
@@ -160,7 +163,7 @@ class ExerciseLog(SyncedModel):
         return ExerciseLog.objects.filter(user=user).aggregate(Sum("points")).get("points__sum", 0) or 0
 
 
-class UserLogSummary(SyncedModel):
+class UserLogSummary(DeferredSignSyncedModel):
     """Like UserLogs, but summarized over a longer period of time.
     Also sync'd across devices.  Unique per user, device, activity_type, and time period."""
     minversion = "0.9.4"
@@ -180,7 +183,6 @@ class UserLogSummary(SyncedModel):
     def __unicode__(self):
         self.full_clean()  # make sure everything that has to be there, is there.
         return u"%d seconds over %d logins for %s/%s/%d, period %s to %s" % (self.total_seconds, self.count, self.device.name, self.user.username, self.activity_type, self.start_datetime, self.end_datetime)
-
 
     @classmethod
     def get_period_start_datetime(cls, log_time, summary_freq):

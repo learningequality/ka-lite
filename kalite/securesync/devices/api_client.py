@@ -7,8 +7,8 @@ import urllib2
 import kalite
 import settings
 from .models import *
+from securesync import engine
 from securesync.api_client import BaseClient
-from shared import serializers
 
 
 class RegistrationClient(BaseClient):
@@ -88,7 +88,7 @@ class RegistrationClient(BaseClient):
         # the other side will have to reconstruct the chain from the object list
         object_list = [own_device] + chain_of_trust.objects()
         r = self.post("register", {
-            "client_device": serializers.serialize("versioned-json", object_list, ensure_ascii=False),
+            "client_device": engine.serialize(object_list, ensure_ascii=False),
         })
 
         # Failed to register with any certificate
@@ -97,7 +97,7 @@ class RegistrationClient(BaseClient):
 
         # When we register, we should receive the model information we require.
         #   Make sure to deserialize for our version.
-        return (serializers.deserialize("versioned-json", r.content, dest_version=own_device.get_version()), r)
+        return (engine.deserialize(r.content, dest_version=own_device.get_version()), r)
 
 
     def register_via_preregistered_key(self):
@@ -111,7 +111,7 @@ class RegistrationClient(BaseClient):
         # Note that (currently) this should never fail--the central server (which we're sending
         #   these objects to) should always have a higher version.
         r = self.post("register", {
-            "client_device": serializers.serialize("versioned-json", [own_device], ensure_ascii=False),
+            "client_device": engine.serialize([own_device], ensure_ascii=False),
         })
 
         # If they don't understand, our assumption is broken.
@@ -125,4 +125,4 @@ class RegistrationClient(BaseClient):
         else:
             # Save to our local store.  By NOT passing a src_version, 
             #   we're saying it's OK to just store what we can.
-            return serializers.deserialize("versioned-json", r.content, src_version=None, dest_version=own_device.get_version())
+            return engine.deserialize(r.content, src_version=None, dest_version=own_device.get_version())

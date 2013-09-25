@@ -17,11 +17,11 @@ import kalite
 import settings
 from config.models import Settings
 from securesync import engine
-from securesync.engine.models import SyncedModel
+from securesync.engine.models import DeferredSignSyncedModel
 from settings import LOG as logging
 
 
-class Facility(SyncedModel):
+class Facility(DeferredSignSyncedModel):
     name = models.CharField(verbose_name=_("Name"), help_text=_("(This is the name that students/teachers will see when choosing their facility; it can be in the local language.)"), max_length=100)
     description = models.TextField(blank=True, verbose_name=_("Description"))
     address = models.CharField(verbose_name=_("Address"), help_text=_("(Please provide as detailed an address as possible.)"), max_length=400, blank=True)
@@ -60,18 +60,18 @@ class Facility(SyncedModel):
         return facilities
 
 
-class FacilityGroup(SyncedModel):
+class FacilityGroup(DeferredSignSyncedModel):
     facility = models.ForeignKey(Facility, verbose_name=_("Facility"))
     name = models.CharField(max_length=30, verbose_name=_("Name"))
-
-    def __unicode__(self):
-        return self.name
 
     class Meta:
         app_label = "securesync"
 
+    def __unicode__(self):
+        return self.name
 
-class FacilityUser(SyncedModel):
+
+class FacilityUser(DeferredSignSyncedModel):
     # Translators: This is a label in a form.
     facility = models.ForeignKey(Facility, verbose_name=_("Facility"))
     # Translators: This is a label in a form.
