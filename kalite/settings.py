@@ -1,9 +1,9 @@
 import json
-import os
 import logging
+import os
 import sys
-import time
 import tempfile
+import time
 import uuid
 import version  # in danger of a circular import.  NEVER add settings stuff there--should all be hard-coded.
 
@@ -197,6 +197,13 @@ else:
 
 
 ########################
+# Zero-config options
+########################
+
+ZERO_CONFIG   = getattr(local_settings, "ZERO_CONFIG", False)
+
+
+########################
 # Syncing and synced data
 ########################
 
@@ -368,3 +375,15 @@ if CONFIG_PACKAGE == "RPi":
     if CACHE_TIME != 0:
         CACHES["web_cache"]['LOCATION'] = getattr(local_settings, "CACHE_LOCATION", '/var/tmp/kalite_web_cache')
 
+
+########################
+# ZERO CONFIG
+########################
+
+if ZERO_CONFIG:
+    # Force all commands to run through our own serve command, which does auto-config if necessary
+    # TODO(bcipolli): simplify start scripts, just force everything through kaserve directly.
+    if "runserver" in sys.argv:
+        sys.argv[sys.argv.index("runserver")] = "kaserve"
+    elif "runcherrypyserver" in sys.argv:
+        sys.argv[sys.argv.index("runcherrypyserver")] = "kaserve"
