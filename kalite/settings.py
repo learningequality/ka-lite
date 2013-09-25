@@ -360,16 +360,3 @@ if CONFIG_PACKAGE == "RPi":
     PASSWORD_ITERATIONS_STUDENT = getattr(local_settings, "PASSWORD_ITERATIONS_STUDENT", 1000)
     if CACHE_TIME != 0:
         CACHES["web_cache"]['LOCATION'] = getattr(local_settings, "CACHE_LOCATION", '/var/tmp/kalite_web_cache')
-
-
-########################
-# ZERO CONFIG
-########################
-
-if ZERO_CONFIG:
-    # Force all commands to run through our own serve command, which does auto-config if necessary
-    # TODO(bcipolli): simplify start scripts, just force everything through kaserve directly.
-    if "runserver" in sys.argv:
-        sys.argv[sys.argv.index("runserver")] = "kaserve"
-    elif "runcherrypyserver" in sys.argv:
-        sys.argv[sys.argv.index("runcherrypyserver")] = "kaserve"
