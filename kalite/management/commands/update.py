@@ -19,7 +19,7 @@ from django.core.management.base import BaseCommand, CommandError
 import settings
 from securesync.models import Device
 from settings import LOG as logging
-from updates.utils import UpdatesStaticCommand
+from updates.management.commands.classes import UpdatesStaticCommand
 from utils import crypto
 from utils.django_utils import call_outside_command_with_output
 from utils.general import ensure_dir

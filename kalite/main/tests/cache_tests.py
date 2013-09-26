@@ -10,7 +10,7 @@ from django.test.client import Client
 from django.utils import unittest
 
 import settings
-from kalite.main import topicdata
+from main import topicdata
 from shared import caching
 from shared.testing.base import KALiteTestCase
 from shared.testing.decorators import distributed_server_test

@@ -9,7 +9,7 @@ from shared import caching
 from shared.jobs import force_job
 from shared.topic_tools import get_video_by_youtube_id
 from shared.videos import download_video, DownloadCancelled, URLNotFound
-from updates.utils import UpdatesDynamicCommand
+from updates.management.commands.classes import UpdatesDynamicCommand
 
 
 class Command(UpdatesDynamicCommand):
