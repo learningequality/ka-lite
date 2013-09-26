@@ -2,7 +2,7 @@ import sys
 
 from django.core.management.base import BaseCommand, CommandError
 
-from models import UpdateProgressLog
+from updates.models import UpdateProgressLog
 
 
 class UpdatesDynamicCommand(BaseCommand):
