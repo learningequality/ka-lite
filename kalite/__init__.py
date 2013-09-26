@@ -1,12 +1,14 @@
+from version import *
+
 # testing isn't always available; just ignore if not
 try:
-    import tests.testrunner
-    import tests.loadtesting
-except:
+    import shared.testing.testrunner
+except Exception as e:
     pass
-    
-import version
-VERSION = version.VERSION
+try:
+    import tests.loadtesting as loadtesting
+except Exception as e:
+    pass
 
 try:
     import platform

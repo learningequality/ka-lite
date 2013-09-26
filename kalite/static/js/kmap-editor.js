@@ -55,8 +55,8 @@ var KMapEditor = {
     setZoom: function(zoom) {
         this.zoomLevel = Math.min(Math.max(zoom, this.ZOOM_TOPICS), this.ZOOM_EXERCISES);
         if (this.zoomLevel === this.ZOOM_EXERCISES) {
-            this.X_SPACING = 74;
-            this.Y_SPACING = 94;
+            this.X_SPACING = 65;
+            this.Y_SPACING = 105;
             this.ICON_SIZE = 26;
             this.LABEL_WIDTH = 60;
         } else if (this.zoomLevel === this.ZOOM_HYBRID) {
@@ -70,23 +70,23 @@ var KMapEditor = {
             this.ICON_SIZE = 40;
             this.LABEL_WIDTH = 80;
         }
-        this.IMG_LIVE = "/images/node-not-started-" + this.ICON_SIZE + ".png";
-        this.IMG_DEV = "/images/node-not-started-" + this.ICON_SIZE + "-faded.png";
-        this.IMG_SELECTED = "/images/node-complete-" + this.ICON_SIZE + ".png";
-        this.IMG_SELECTED_DEV = "/images/node-complete-" + this.ICON_SIZE + "-faded.png";
-        this.IMG_NOT_STARTED = "/images/node-not-started-" + this.ICON_SIZE + ".png";
-        this.IMG_PARTIAL = "/images/node-partial-" + this.ICON_SIZE + ".png";
-        this.IMG_COMPLETE = "/images/node-complete-" + this.ICON_SIZE + ".png";
+        this.IMG_LIVE = "/static/images/node-not-started-" + this.ICON_SIZE + ".png";
+        this.IMG_DEV = "/static/images/node-not-started-" + this.ICON_SIZE + "-faded.png";
+        this.IMG_SELECTED = "/static/images/node-complete-" + this.ICON_SIZE + ".png";
+        this.IMG_SELECTED_DEV = "/static/images/node-complete-" + this.ICON_SIZE + "-faded.png";
+        this.IMG_NOT_STARTED = "/static/images/node-not-started-" + this.ICON_SIZE + ".png";
+        this.IMG_PARTIAL = "/static/images/node-partial-" + this.ICON_SIZE + ".png";
+        this.IMG_COMPLETE = "/static/images/node-complete-" + this.ICON_SIZE + ".png";
     },
 
     createCanvas: function() {
         this.raphael = Raphael($("#map")[0]);
 
         if (this.zoomLevel === this.ZOOM_EXERCISES) {
-            this.minX = Math.min.apply(Math, _.pluck(this.exercises, "v_position"));
-            this.minY = Math.min.apply(Math, _.pluck(this.exercises, "h_position"));
-            this.maxX = Math.max.apply(Math, _.pluck(this.exercises, "v_position"));
-            this.maxY = Math.max.apply(Math, _.pluck(this.exercises, "h_position"));
+            this.minX = Math.min.apply(Math, _.pluck(this.exercises, "h_position"));
+            this.minY = Math.min.apply(Math, _.pluck(this.exercises, "v_position"));
+            this.maxX = Math.max.apply(Math, _.pluck(this.exercises, "h_position"));
+            this.maxY = Math.max.apply(Math, _.pluck(this.exercises, "v_position"));
         } else if (this.zoomLevel === this.ZOOM_TOPICS) {
             var topicList = _.values(this.maplayout.topics);
             this.minY = Math.min.apply(Math, _.pluck(topicList, "y"));
@@ -133,7 +133,7 @@ var KMapEditor = {
 
                 $("<img>")
                     .attr({
-                        src: topic.icon_url
+                        src: "/static" + topic.icon_url
                     })
                     .appendTo(newTopic);
 
@@ -162,8 +162,8 @@ var KMapEditor = {
                 var newDiv = $("<div>")
                     .appendTo($("#map"))
                     .css({
-                        "left": (ex.v_position - KMapEditor.minX) * KMapEditor.X_SPACING,
-                        "top": (ex.h_position - KMapEditor.minY) * KMapEditor.Y_SPACING - KMapEditor.ICON_SIZE / 2,
+                        "left": (ex.h_position - KMapEditor.minX) * KMapEditor.X_SPACING,
+                        "top": (ex.v_position - KMapEditor.minY) * KMapEditor.Y_SPACING - KMapEditor.ICON_SIZE / 2,
                         "width": KMapEditor.LABEL_WIDTH
                     })
                     .addClass("exercise");
@@ -214,10 +214,10 @@ var KMapEditor = {
 
         this.raphael.path(
             Raphael.format("M{0},{1}L{2},{3}",
-                (src_ex.v_position - this.minX) * this.X_SPACING + (this.LABEL_WIDTH / 2),
-                (src_ex.h_position - this.minY) * this.Y_SPACING,
-                (dst_ex.v_position - this.minX) * this.X_SPACING + (this.LABEL_WIDTH / 2),
-                (dst_ex.h_position - this.minY) * this.Y_SPACING
+                (src_ex.h_position - this.minX) * this.X_SPACING + (this.LABEL_WIDTH / 2),
+                (src_ex.v_position - this.minY) * this.Y_SPACING,
+                (dst_ex.h_position - this.minX) * this.X_SPACING + (this.LABEL_WIDTH / 2),
+                (dst_ex.v_position - this.minY) * this.Y_SPACING
         )).attr({
             "stroke-width": 1,
             "stroke": "#777"
@@ -231,21 +231,31 @@ $(document).ready(function() {
         vars[key] = value;
     });
 
-    if (vars["topic"]) {
-        $.getJSON("/static/data/topicdata/" + vars["topic"] + ".json", function(exerciseLayout) {
-            var exercise_ids = $.map(exerciseLayout, function(exercise) { return exercise.name });
-            doRequest("/api/get_exercise_logs", exercise_ids).success(function(data) {
-                var exercisesCompleted = {};
-                $.each(data, function(ind, status) {
-                    exercisesCompleted[status.exercise_id] = status.complete ? "complete" : "partial";
-                });
-                KMapEditor.init(exerciseLayout, [], exercisesCompleted, 8);
-            });
-        });
-    } else {
+    if (!vars["topic"]) {
+        // Top level of the topic tree
         $(".topic-button").hide();
-        $.getJSON("/static/data/maplayout_data.json", function(defaultMapLayout) {
-            KMapEditor.init([], defaultMapLayout, {}, 6);
-        });
+        $.getJSON("/static/data/maplayout_data.json")
+            .success(function(defaultMapLayout) {
+                KMapEditor.init([], defaultMapLayout, {}, 6);
+            });
+    } else {
+        // Second level of the topic tree
+        $.getJSON("/static/data/topicdata/" + vars["topic"] + ".json")
+            .success(function(exerciseLayout) {
+
+                var exercise_ids = $.map(exerciseLayout, function(exercise) { return exercise.name });
+                doRequest("/api/get_exercise_logs", exercise_ids)
+                    .success(function(data) {
+                        var exercisesCompleted = {};
+                        $.each(data, function(ind, status) {
+                            exercisesCompleted[status.exercise_id] = status.complete ? "complete" : "partial";
+                        });
+                        KMapEditor.init(exerciseLayout, [], exercisesCompleted, 8);
+                    })
+                    .fail(function (resp) {
+                        communicate_api_failure(resp, "id_student_logs");
+                        KMapEditor.init(exerciseLayout, [], [], 8);
+                    });
+            });
     }
 });

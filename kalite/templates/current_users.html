@@ -5,6 +5,8 @@
 
 {% block currentusers_active %}active{% endblock currentusers_active %}
 
+{% block easyadmin_active %}active{% endblock easyadmin_active %}
+
 {% block headcss %}
 <link rel='stylesheet' type='text/css' href='{% static "css/current_users.css" %}'>
 {% endblock headcss %}
@@ -129,7 +131,10 @@
     {% endif %}
     {% endblock users_table %}
 </div>
-{% block endjs %}{{ block.super }}
+
+{% endblock content %}
+{% block endjs %}
+{{ block.super }}
 <script>
 
 function setGetParams(params) {
@@ -182,7 +187,7 @@ $(function() {
         } else if (users.length==0) {
             alert("{% trans 'Please select users first' %}");
         } else {
-            alert("{% trans 'Please choose a group to move users to' %}")
+            alert("{% trans 'Please choose a group to move users to' %}");
         }
 
     });
@@ -219,4 +224,3 @@ $(function() {
 });
 </script>
 {% endblock endjs %}
-{% endblock content %}

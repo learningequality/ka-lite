@@ -1,3 +1,2 @@
-from central.tests.browser_tests import *
-from central.tests.fixture_tests import *
-from central.tests.url_tests import *
+from utils.importing import import_all_child_modules
+import_all_child_modules()

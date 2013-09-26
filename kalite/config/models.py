@@ -23,7 +23,14 @@ class Settings(models.Model):
             return setting.value
         except Settings.DoesNotExist:
             return default
-        
+
+    @staticmethod
+    def delete(name):
+        try:
+            setting = Settings.objects.filter(name=name).delete()
+        except Settings.DoesNotExist:
+            pass
+
     class Meta:
         verbose_name = "Settings"
         verbose_name_plural = "Settings"

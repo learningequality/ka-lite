@@ -15,12 +15,12 @@ admin.site.register(ExerciseLog, ExerciseLogAdmin)
 
 class UserLogAdmin(admin.ModelAdmin):
     pass
-if settings.USER_LOG_MAX_RECORDS:  # only enable admin if the feature is enabled.
+if UserLog.is_enabled():  # only enable admin if the feature is enabled.
     admin.site.register(UserLog, UserLogAdmin)
 
 class UserLogSummaryAdmin(admin.ModelAdmin):
     pass
-if settings.USER_LOG_MAX_RECORDS:  # only enable admin if the feature is enabled.
+if UserLog.is_enabled() or settings.CENTRAL_SERVER:  # only enable admin if the feature is enabled.
     admin.site.register(UserLogSummary, UserLogSummaryAdmin)
 
 class VideoFileAdmin(admin.ModelAdmin):

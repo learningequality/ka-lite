@@ -8,12 +8,11 @@
 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="shortcut icon" href="{% static "images/favicon.ico" %}">
-        {% block jqueryjs %}
         <script type="text/javascript" src="{% static "js/jquery-1.7.1.min.js" %}"></script>
         <script type="text/javascript" src="{% static "js/underscore-min.js" %}"></script>
         <script type="text/javascript" src="{% static "js/backbone-min.js" %}"></script>
-        {% endblock jqueryjs %}
         
+        <link rel="stylesheet" type="text/css" href="{% static "css/khan-site.css" %}">
         <style>
             html, body {
                 height: 100%;
@@ -21,21 +20,21 @@
                 margin: 0;
                 overflow: hidden;
             }
-        
+
             #puppet {
                 position: absolute;
                 top: 40px;
                 width: 100%;
                 border: none;
             }
-            
+
             #infobar .url {
                 float: left;
                 width: 40%;
                 margin-left: 5px;
                 overflow: hidden;
             }
-            
+
             #infobar .status {
                 float: left;
                 width: 20%;
@@ -46,7 +45,7 @@
                 color: red;
                 float: left;
                 width: 20%;
-                margin-left: 15px;                
+                margin-left: 15px;
             }
             
         </style>
@@ -100,14 +99,16 @@
                     selector = selector || "a[href!='']";
                     var matches = this.$(selector);
                     if (matches.length === 0) {
-                        callback();
+                        if (_.isFunction(callback)) {
+                            callback();
+                        }
                         return;
                     };
                     var $match = matches.eq(index)
                     
                     // it seems that using jQuery to "click" links does not follow them
                     if ($match.prop("tagName").toLowerCase() === "a" && $match.attr("href")) {
-                        this.goto(this.model.get("url") + $match.attr("href"), callback);
+                        this.goto($match[0].href, callback);
                     } else {
                         this.startTimer();
                         this.whenLoaded(callback);
@@ -184,6 +185,10 @@
                 
                 login: function(callback) {
                     this.runSequence(login_sequence, null, callback);
+                },
+                
+                logout: function(callback) {
+                    this.runSequence(logout_sequence, null, callback);
                 },
                 
                 runSequence: function(tasks, input, callback) {
@@ -332,12 +337,20 @@
                     this.goto("/securesync/login/", callback);
                 },
                 function(input, callback) {
+                    var sidx = Math.ceil(Math.random() * {{ nusers }});
+                    
                     this.$("#id_facility option")[1].selected = true;
                     this.fillForm({
-                        username: "student",
-                        password: "student",
+                        username: "s" + sidx,
+                        password: "s" + sidx,
                     });
                     this.submitForm(callback);
+                }
+            ]
+            
+            var logout_sequence = [
+                function(input, callback) {
+                    this.goto("/securesync/logout/", callback);
                 }
             ]
             
@@ -350,12 +363,14 @@
                 puppet.goto(window.location.hash.slice(1) || "/");
                 
                 function watchVideos() {
-                    if(Math.random()<0.9){
+                    if(Math.random() < {{ pct_videos }}){
                         puppet.watchVideo(watchVideos);
                     } else {
                         puppet.watchExercise(watchVideos);
                     }
-                    
+                    if (Math.random() < {{ pct_logout }}) {
+                        puppet.logout(function() { puppet.login(watchVideos); });
+                    }
                 }
                 
                 puppet.login(watchVideos);
@@ -370,8 +385,12 @@
             <div class="url"></div>
             <div class="status"></div>
             <div class="errorcount"></div>
+            <div class="clearfix"></div>
         </div>
-        <iframe id="puppet"></iframe>
+
+        <div>
+            <iframe id="puppet"></iframe>
+        </div>
     </body>
 </html>
 

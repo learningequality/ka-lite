@@ -1,20 +1,37 @@
-{% extends "control_panel/base_management.html" %}
-
+{% extends "control_panel/base.html" %}
 {% load i18n %}
 
-{% if not is_central %}
-    {% block buttons %}
-        <li>
-            <a class="green_button" href="javascript:alert('NYI; sorry!');">{% trans "Sync device now!" %}</a>
-        </li>
-    {% endblock buttons %}
-{% endif %}
+{% block title %}{{ device.name }} : Device Syncing History{% endblock title %}
 
-{% block inner_content %}
+{% block buttons %}{{ block.super }}
+    {% if not is_central %}
+        <!--li>
+            <a class="green_button" href="javascript:alert('NYI; sorry!');">{% trans "Sync device now!" %}</a>
+        </li-->
+    {% endif %}
+{% endblock buttons %}
+
+{% block control_panel_content %}
 <div id="zone_container">
-        
+
+    <div class="device_metadata">
+        <h2>Device Metadata</h2>
+
+        <ul>
+        {% if not sync_sessions %}
+            <li>Version: {{ device.version }}</li>
+        {% else %}
+            <li>Version: {{ sync_sessions.0.client_version }}</li>
+            <li>OS:  {{ sync_sessions.0.client_os }}</li>
+        {% endif %}
+        </ul>
+    </div>
+
     <div class="sync_sessions">
-        <h2>Sync Sessions</h2>
+        <div>
+            <h2>Sync Sessions</h2>
+            <span>(showing {{ n_sessions }} of {{ total_sessions }})</span>
+        </div>
 
         {% if not sync_sessions %}
             <p>This device has never synced with the central server</p>
@@ -42,4 +59,5 @@
         {% endif %}
     </div>
 
-{% endblock inner_content %}
+</div><!-- zone_container -->
+{% endblock control_panel_content %}

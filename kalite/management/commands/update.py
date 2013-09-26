@@ -2,12 +2,14 @@ import git
 import os
 import glob
 import platform
+import requests
 import shutil
 import sys
 import subprocess
 import tempfile
 import urllib
 import zipfile
+from functools import partial
 from optparse import make_option
 from zipfile import ZipFile, ZIP_DEFLATED
 
@@ -15,43 +17,16 @@ from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
+from securesync.models import Device
 from settings import LOG as logging
+from updates.management.commands.classes import UpdatesStaticCommand
+from utils import crypto
+from utils.django_utils import call_outside_command_with_output
+from utils.general import ensure_dir
+from utils.platforms import is_windows, system_script_extension, system_specific_unzipping, _default_callback_unzip
 
 
-def call_outside_command_with_output(kalite_location, command, *args, **kwargs):
-    """
-    Runs call_command for a KA Lite installation at the given location,
-    and returns the output.
-    """
-
-    # build the command
-    cmd = (sys.executable,kalite_location + "/kalite/manage.py",command)
-    for arg in args:
-        cmd += (arg,)
-    for key,val in kwargs.items():
-        key = key.replace("_","-")
-        prefix = "--" if command != "runcherrypyserver" else ""
-        if isinstance(val,bool):
-            cmd += ("%s%s" % (prefix,key),)
-        else:
-            cmd += ("%s%s=%s" % (prefix,key,str(val)),)
-
-    logging.debug(cmd)
-
-    # Execute the command, using subprocess/Popen
-    cwd = os.getcwd()
-    os.chdir(kalite_location + "/kalite")
-    p = subprocess.Popen(cmd, shell=False, cwd=os.path.split(cmd[0])[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    out = p.communicate()
-    os.chdir(cwd)
-
-    logging.debug(out[1] if out[1] else out[0])
-
-    # tuple output of stdout, stderr, and exit code
-    return out + (1 if out[1] else 0,)
-
-
-class Command(BaseCommand):
+class Command(UpdatesStaticCommand):
     help = "Create a zip file with all code, that can be unpacked anywhere."
 
     option_list = BaseCommand.option_list + (
@@ -67,6 +42,12 @@ class Command(BaseCommand):
             default=None,
             help='FILE to unzip from',
             metavar="FILE"),
+        make_option('-u', '--url',
+            action='store',
+            dest='url',
+            default=None,
+            help='URL to download from',
+            metavar="URL"),
         make_option('-p', '--port',
             action='store',
             dest='test_port',
@@ -80,6 +61,8 @@ class Command(BaseCommand):
             help="Display interactive prompts"),
         )
 
+    signature_filename = "zip_signature.txt"
+    inner_zip_filename = "kalite.zip"
 
     def handle(self, *args, **options):
 
@@ -88,70 +71,122 @@ class Command(BaseCommand):
             sys.stdout.write("Success!\n")
             exit(0)
 
-        if options.get("repo", None):
-            # Specified a repo
-            self.update_via_git(**options)
+        try:
+            if options.get("repo", None):
+                # Specified a repo
+                self.update_via_git(**options)
 
-        elif options.get("zip_file", None):
-            # Specified a file
-            if not os.path.exists(options.get("zip_file")):
-                raise CommandError("Specified zip file does not exist: %s" % options.get("zip_file"))
-            self.update_via_zip(**options)
+            elif options.get("zip_file", None):
+                # Specified a file
+                if not os.path.exists(options.get("zip_file")):
+                    raise CommandError("Specified zip file does not exist: %s" % options.get("zip_file"))
+                self.update_via_zip(**options)
 
-        elif os.path.exists(settings.PROJECT_PATH + "/../.git"):
-            # Without params, if we detect a git repo, try git
-            self.update_via_git(**options)
+            elif options.get("url", None):
+                self.update_via_zip(**options)
+        
+            elif os.path.exists(settings.PROJECT_PATH + "/../.git"):
+                # Without params, if we detect a git repo, try git
+                self.update_via_git(**options)
 
-        elif len(args) > 1:
-            raise CommandError("Too many command-line arguments.")
+            elif len(args) > 1:
+                raise CommandError("Too many command-line arguments.")
 
-        elif len(args) == 1:
-            # Specify zip via first command-line arg
-            if options['zip_file'] is not None:
-                raise CommandError("Cannot specify a zipfile as unnamed and named command-line arguments at the same time.")
-            options['zip_file'] = args[0]
-            self.update_via_zip(**options)
+            elif len(args) == 1:
+                # Specify zip via first command-line arg
+                if options['zip_file'] is not None:
+                    raise CommandError("Cannot specify a zipfile as unnamed and named command-line arguments at the same time.")
+                options['zip_file'] = args[0]
+                self.update_via_zip(**options)
 
-        else:
-            # No params, no git repo: try to get a file online.
-            zip_file = tempfile.mkstemp()[1]
-            for url in ["https://github.com/learningequality/ka-lite/archive/master.zip",
-                        "http://%s/download/kalite/%s/%s/" % (settings.CENTRAL_SERVER_HOST, platform.system().lower(), "all")]:
-                logging.info("Downloading repo snapshot from %s to %s" % (url, zip_file))
-                try:
-                    urllib.urlretrieve(url, zip_file)
-                    sys.stdout.write("success @ %s\n" % url)
-                    break;
-                except Exception as e:
-                    logging.debug("Failed to get zipfile from %s: %s" % (url, e))
-                    continue
+            else:
+                # No params, no git repo: try to get a file online.
+                zip_file = tempfile.mkstemp()[1]
+                for url in ["http://%s/api/download/kalite/latest/%s/%s/" % (settings.CENTRAL_SERVER_HOST, platform.system().lower(), "en")]:
+                    logging.info("Downloading repo snapshot from %s to %s" % (url, zip_file))
+                    try:
+                        urllib.urlretrieve(url, zip_file)
+                        sys.stdout.write("success @ %s\n" % url)
+                        break;
+                    except Exception as e:
+                        logging.debug("Failed to get zipfile from %s: %s" % (url, e))
+                        continue
+                options["zip_file"] = zip_file
+                self.update_via_zip(**options)
 
-            self.update_via_zip(zip_file=zip_file, **options)
+        except Exception as e:
+            if self.started():
+                self.cancel(notes=str(e))
+            raise CommandError(str(e))
 
-
-        self.stdout.write("Update is complete!\n")
-
+        assert not self.started(), "Subroutines should complete() if they start()!"
 
 
     def update_via_git(self, repo=".", *args, **kwargs):
-        # Step 1: update via git repo
-        sys.stdout.write("Updating via git repo: %s\n" % repo)
-        self.stdout.write(git.Repo(repo).git.pull() + "\n")
-        call_command("syncdb", migrate=True)
+        """
+        Full update via git
+        """
+        self.stages = [
+            "git pull",
+            "clean_pyc",
+            "syncdb",
+        ]
+
+        try:
+            # Step 1: update via git repo
+            self.start(notes = "Updating via git; repo=%s" % (repo or "[default]") )
+            self.stdout.write(git.Repo(repo).git.pull() + "\n")
+        
+            # step 2: clean_pyc
+            self.next_stage()
+            call_command("clean_pyc")
+
+            # step 3: syncdb
+            self.next_stage()
+            # call syncdb, then migrate with merging enabled (in case there were any out-of-order migration files)
+            call_command("syncdb")
+            call_command("migrate", merge=True)
+
+            # Done!
+            self.complete()
+        except Exception as e:
+            self.cancel()
+            raise CommandError(str(e))
 
 
-    def update_via_zip(self, zip_file, interactive=True, test_port=8008, *args, **kwargs):
-        if not os.path.exists(zip_file):
-            raise CommandError("Zip file doesn't exist")
+    def update_via_zip(self, zip_file=None, url=None, interactive=True, test_port=8008, *args, **kwargs):
+        """
+        """
+        assert (zip_file or url) and not (zip_file and url)
+
         if not self.kalite_is_installed():
             raise CommandError("KA Lite not yet installed; cannot update.  Please install KA Lite first, then update.\n")
 
-        sys.stdout.write("Updating via zip file: %s\n" % zip_file)
+        self.stages = [
+            "download_zip" if url else "validate_zip",
+            "get_options",
+            "verify_zip",
+            "unpack_zip_file",
+            "copy in data",
+            "update_local_settings",
+            "move_files",
+            "test_server",
+            "move_to_final",
+            "start_server",
+        ]
 
         # current_dir === base dir for current installation
         self.current_dir = os.path.realpath(settings.PROJECT_PATH + "/../")
 
+        if url:
+            self.start(notes="Downloading zip file from %s" % url)
+            zip_file = self.download_zip(url)
+        else:
+            self.start(notes="Validating zip file.")
+            self.validate_zip(zip_file)
+
         # Prep
+        self.next_stage(notes="Getting options")
         self.print_header()
         self.get_dest_dir(
             zip_name=os.path.splitext(os.path.split(zip_file)[1])[0],
@@ -160,21 +195,75 @@ class Command(BaseCommand):
         self.get_move_videos(interactive)
 
         # Work
+        self.next_stage(notes="Verifying the integrity of the zip file.")
+        zip_file = self.verify_inner_zip(zip_file)  # switch outer for inner zip
+
+        self.next_stage(notes="Extracting files from zip")
         self.extract_files(zip_file)
+
+        self.next_stage(notes="Copying database data")
         self.copy_in_data()
+
+        self.next_stage(notes="Updating local settings")
         self.update_local_settings()
-        self.move_video_files()
+
+        self.next_stage(notes="Moving video files")
+        self.move_files()
 
         # Validation & confirmation
-        if platform.system() == "Windows":  # In Windows. serverstart is not async
-            self.test_server_weak()
-        else:
-            self.test_server_full(test_port=test_port)
+        self.next_stage("Testing the updated server")
+#        if is_windows():  # In Windows. serverstart is not async
+        self.test_server_weak()
+#        else:
+#            self.test_server_full(test_port=test_port)
+
+        #raise CommandError("Don't replace--I need this code!")
+
+        self.next_stage("Replacing the current server with the updated server")
         self.move_to_final(interactive)
+
+        self.next_stage("Starting the updated server")
         self.start_server()
 
         self.print_footer()
 
+        self.complete()
+
+
+    def download_zip(self, url):
+        response = requests.get(url)
+        zip_file = tempfile.mkstemp()[1]
+        with open(zip_file,"wb") as fp:
+            fp.write(response.content)
+        self.validate_zip(zip_file)
+        return zip_file
+
+
+    def validate_zip(self, zip_file):
+        """
+        Peek inside.  If it has the signature of the zip, then unpack and replace.
+        """
+        if not os.path.exists(zip_file):
+            raise CommandError("Zip file doesn't exist.")
+        return True
+
+    def verify_inner_zip(self, zip_file):
+        """
+        Extract contents of outer zip, verify the inner zip
+        """
+        zip = ZipFile(zip_file, "r")
+        nfiles = len(zip.namelist())
+        for fi,afile in enumerate(zip.namelist()):
+            zip.extract(afile, path=self.working_dir)
+
+        self.signature_file = os.path.join(self.working_dir, Command.signature_filename)
+        self.inner_zip_file = os.path.join(self.working_dir, Command.inner_zip_filename)
+        key = Device.get_central_server().get_key()
+        lines = open(self.signature_file, "r").read().split("\n")
+        chunk_size = int(lines.pop(0))
+        if not key.verify_large_file(self.inner_zip_file, signature=lines, chunk_size=chunk_size):
+            raise Exception("Failed to verify inner zip file.")
+        return self.inner_zip_file
 
     def print_header(self):
         """Start the output with some informative header"""
@@ -199,8 +288,8 @@ class Command(BaseCommand):
             sys.stdout.write("*\tOr any other path\n")
             sys.stdout.write("*\n")
 
-        dest_dir = "" if interactive else self.current_dir
         working_dir = "" if interactive else tempfile.mkdtemp()
+        dest_dir = "" if interactive else self.current_dir#(tempfile.mkdtemp() if settings.DEBUG else self.current_dir)
         while not dest_dir:
             dest_dir=raw_input("*\tEnter a number, or path: ").strip()
 
@@ -209,7 +298,7 @@ class Command(BaseCommand):
                 working_dir = tempfile.mkdtemp()
             elif dest_dir=="1":
                 dest_dir = self.neighbor_dir
-                working_dir = tempfile.mkdtemp() if not settings.DEBUG else dest_dir # speedup for debug
+                working_dir = tempfile.mkdtemp()# if not settings.DEBUG else dest_dir # speedup for debug
             elif dest_dir=="2":
                 dest_dir = tempfile.mkdtemp()
                 working_dir = dest_dir
@@ -224,8 +313,8 @@ class Command(BaseCommand):
                 else:
                     dest_dir = "" # try again
 
-        self.dest_dir = dest_dir
-        self.working_dir = working_dir
+        self.dest_dir = os.path.realpath(dest_dir)
+        self.working_dir = os.path.realpath(working_dir)
 
 
     def get_move_videos(self, interactive=True):
@@ -249,7 +338,13 @@ class Command(BaseCommand):
             self.move_videos = move_videos
 
 
-    def extract_files(self,zip_file):
+    def _callback_unzip(self, afile, fi, nfiles):
+        _default_callback_unzip(afile, fi, nfiles)
+        if fi > 0 and fi % round(nfiles/10) == 0:
+            pct_done = (fi + 1.)/nfiles * 100.
+            self.update_stage(stage_percent=pct_done/100.)
+
+    def extract_files(self, zip_file):
         """Extract all files to a temp location"""
 
         sys.stdout.write("*\n")
@@ -263,27 +358,15 @@ class Command(BaseCommand):
             sys.stdout.write("** NOTE ** NOT EXTRACTING IN DEBUG MODE")
             return
 
-        if not os.path.exists(self.working_dir):
-            os.mkdir(self.working_dir)
-
-        if not zipfile.is_zipfile(zip_file):
-            raise CommandError("bad zip file")
-
-        zip = ZipFile(zip_file, "r")
-
-        nfiles = len(zip.namelist())
-        for fi,afile in enumerate(zip.namelist()):
-
-            if fi>0 and fi%round(nfiles/10)==0:
-                pct_done = round(100.*(fi+1.)/nfiles)
-                sys.stdout.write(" %d%%" % pct_done)
-
-            zip.extract(afile, path=self.working_dir)
-            # If it's a unix script, give permissions to execute
-            if os.path.splitext(afile)[1] == ".sh":
-                os.chmod(os.path.realpath(self.working_dir + "/" + afile), 0755)
-                logging.debug("\tChanging perms on script %s\n" % os.path.realpath(self.working_dir + "/" + afile))
-        sys.stdout.write("\n")
+        try:
+            system_specific_unzipping(
+                zip_file=zip_file, 
+                dest_dir=self.working_dir,
+                callback = self._callback_unzip,
+            )
+            sys.stdout.write("\n")
+        except Exception as e:
+            raise CommandError("Error unzipping %s: %s" % (zip_file, e))
 
         # Error checking (successful unpacking would skip all the following logic.)
         if not os.path.exists(self.working_dir + "/kalite/"):
@@ -315,8 +398,9 @@ class Command(BaseCommand):
 
         # Run the syncdb
         sys.stdout.write("* Syncing database...")
-        out = call_outside_command_with_output(self.working_dir, "migrate")
-        out = call_outside_command_with_output(self.working_dir, "syncdb", migrate=True)
+        sys.stdout.flush()
+        out = call_outside_command_with_output("migrate", manage_py_dir=os.path.join(self.working_dir, "kalite"))
+        out = call_outside_command_with_output("syncdb", migrate=True, manage_py_dir=os.path.join(self.working_dir, "kalite"))
         sys.stdout.write("\n")
 
 
@@ -349,7 +433,7 @@ class Command(BaseCommand):
         fh.close()
 
 
-    def move_video_files(self):
+    def move_files(self):
         """If necessary (determined previously), move video files on disk.
         Otherwise, write into local_settings."""
 
@@ -370,11 +454,22 @@ class Command(BaseCommand):
             fh.write("\nCONTENT_ROOT = '%s'\n" % settings.CONTENT_ROOT)
             fh.close()
 
+        # Move inner zip file
+        if not os.path.exists(self.inner_zip_file) or not os.path.exists(self.signature_file):
+            sys.stderr.write("\tCould not find inner zip file / signature file for storage.  Continuing...\n")
+        else:
+            try:
+                zip_dir = os.path.join(self.working_dir, "kalite", "static", "zip")
+                ensure_dir(zip_dir)
+                shutil.move(self.inner_zip_file, os.path.join(zip_dir, os.path.basename(self.inner_zip_file)))
+                shutil.move(self.signature_file, os.path.join(zip_dir, os.path.basename(self.signature_file)))
+            except Exception as e:
+                sys.stderr.write("\tCould not keep inner zip file / signature for future re-packaging (%s).  Continuing...\n" % e)
 
     def test_server_weak(self):
         sys.stdout.write("* Testing the new server (simple)\n")
 
-        out = call_outside_command_with_output(self.working_dir, "update", "test")
+        out = call_outside_command_with_output("update", "test", manage_py_dir=os.path.join(self.working_dir, "kalite"))
         if "Success!" not in out[0]:
             raise CommandError(out[1] if out[1] else out[0])
 
@@ -421,8 +516,20 @@ class Command(BaseCommand):
     def move_to_final(self, interactive=True):
         """Confirm the move to the new location"""
 
+        # Shut down the old server
+        self.update_stage(stage_percent=0.5, notes="Stopping server.")
+        stop_cmd = self.get_shell_script("stop*", location=self.current_dir)
+        p = subprocess.Popen(stop_cmd, shell=False, cwd=os.path.split(stop_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out = p.communicate()
+        if out[1]:
+            if  "No such process" not in out[1]:
+                raise CommandError(out[1])
+
+        # Make sure we know if the current_dir will be changed during process running
+        in_place_move = (self.dest_dir == self.current_dir)
+
         # Double-check if destroying old install
-        if self.dest_dir == self.current_dir:
+        if in_place_move:
             ans = "" if interactive else "y"
             while ans.lower() not in ["y","n"]:
                 ans = raw_input("* Server setup verified; complete by moving to the final destination? [y/n]: ").strip()
@@ -433,7 +540,7 @@ class Command(BaseCommand):
         # OK, don't actually kill it--just move it
         if os.path.exists(self.dest_dir):
             try:
-                if platform.system() == "Windows" and self.current_dir == self.dest_dir:
+                if is_windows() and in_place_move:
                     # We know this will fail, so rather than get in an intermediate state,
                     #   just move right to the compensatory mechanism.
                     raise Exception("Windows sucks.")
@@ -446,6 +553,10 @@ class Command(BaseCommand):
                 # Move to the final destination
                 sys.stdout.write("* Moving new installation to final position.\n")
                 shutil.move(self.working_dir, self.dest_dir)
+
+                if in_place_move:
+                    self.current_dir = os.path.realpath(tempdir)
+
 
             except Exception as e:
                 if str(e) == "Windows sucks.":
@@ -492,20 +603,22 @@ class Command(BaseCommand):
     def start_server(self, port=None):
         """
         Start the server, for real (not to test) (cron and web server)
+        
+        Assumes the web server is shut down.
         """
-
         sys.stdout.write("* Starting the server\n")
 
         # Start the server to validate
-        start_cmd = self.get_shell_script("start*", location=self.current_dir)
+        start_cmd = self.get_shell_script("start*", location=self.dest_dir)
         full_cmd = [start_cmd] if not port else [start_cmd, port]
         p = subprocess.Popen(full_cmd, shell=False, cwd=os.path.split(start_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out = p.communicate()
-        if out[1]:
-            raise CommandError(out[1])
+        #out = p.communicate()
+        #if out[1]:
+        #    raise CommandError(out[1])
 
-        running_port = out[0].split(" ")[-1]
-        sys.stdout.write("* Server accessible @ port %s.\n" % running_port)
+        #running_port = out[0].split(" ")[-1]
+        #sys.stdout.write("* Server accessible @ port %s.\n" % running_port)
+        sys.stdout.write("* Server should be accessible @ port %s.\n" % (port or settings.PRODUCTION_PORT))
 
 
     def print_footer(self):
@@ -524,10 +637,7 @@ class Command(BaseCommand):
     def get_shell_script(self, cmd_glob, location=None):
         if not location:
             location = self.working_dir + '/kalite'
-        if platform.system() == "Windows":
-            cmd_glob += ".bat"
-        else:
-            cmd_glob += ".sh"
+        cmd_glob += system_script_extension()
 
         # Find the command
         cmd = glob.glob(location + "/" + cmd_glob)
@@ -536,5 +646,6 @@ class Command(BaseCommand):
         elif len(cmd)==1:
             cmd = cmd[0]
         else:
-            cmd = None#raise CommandError("No command found? (%s)" % cmd_glob)
+            cmd = None
+            logging.warn("No command found: (%s in %s)" % (cmd_glob, location))
         return cmd

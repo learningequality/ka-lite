@@ -1,12 +1,15 @@
-from django.core.management.base import BaseCommand, CommandError
-from securesync.models import Facility, FacilityUser, FacilityGroup
-from main.models import ExerciseLog
 import random
 import json
 from math import exp
-from main import topicdata
+
+from django.core.management.base import BaseCommand, CommandError
+
 import settings
-from utils.topic_tools import get_topic_exercises
+from main import topicdata
+from main.models import ExerciseLog
+from securesync.models import Facility, FacilityUser, FacilityGroup
+from shared.topic_tools import get_topic_exercises
+
 
 def sigmoid(theta, a, b):
     return 1.0 / (1.0 + exp(b - a * theta))
@@ -27,6 +30,9 @@ class Command(BaseCommand):
     help = "Generate fake user data"
 
     def handle(self, *args, **options):
+        if settings.CENTRAL_SERVER:
+            raise CommandError("Don't run this on the central server!!  Data not linked to any zone on the central server is BAD.")
+
         facility = Facility(name="Wilson Elementary")
         facility.save()
         group1 = FacilityGroup(facility=facility, name="Class 4E")

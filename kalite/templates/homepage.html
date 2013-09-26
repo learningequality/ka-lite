@@ -19,7 +19,7 @@
     width: 370px;
     float: left;
     margin-right: 25px;
-    min-height: 225px;
+    min-height: 221px;
 }
 
 .suggested-actions {
@@ -63,7 +63,8 @@
 }
 
 .topic-list {
-    padding: 5px 0 0 0;
+    padding: 7px 0 0 0;
+    margin: 0;
     font-size: 24px;
     font-family: "MuseoSans500", sans-serif;
 }
@@ -72,6 +73,7 @@
     display: block;
     padding: 0 0 8px 40px;
     font-size: 18px;
+    line-height: 28px;
 }
 
 a:hover, a:hover .suggested-action-title {
@@ -82,6 +84,14 @@ a:hover, a:hover .suggested-action-title {
     padding-left: 7px;
 }
 
+.video-unavailable,
+.topic-unavailable,
+a:active.topic-unavailable,
+a:hover.topic-unavailable,
+a:link.topic-unavailable,
+a:visited.topic-unavailable {
+    color: #ACBDD1;
+}
 </style>
 {% endblock headcss %}
 
@@ -103,8 +113,15 @@ if (window.parent.frames.length === 0) {
     <div class="vertical-shadow suggested-action">
         <h2 class="suggested-action-title">{% trans "Learn by watching videos!" %}</h2>
         <p class="topic-list">
-            {% for topic in topics %}
-            <a class="topic-link" href="{{ topic.path }}">{% trans topic.title %}</a>
+            {% for subtopic in topics %}
+            {% if backup_vids_available and subtopic.nvideos_local != subtopic.nvideos_known %}
+                <a href="{{ subtopic.path }}" class="topic-available client-online-only" title="{{subtopic.nvideos_known}}/{{subtopic.nvideos_known}} {% trans "video(s) are available." %}">
+                    {% trans subtopic.title %}
+                </a>
+            {% endif %}
+            <a href="{{ subtopic.path }}" class="{% if backup_vids_available and subtopic.nvideos_local != subtopic.nvideos_known %}not-client-online-only {% endif %}topic-{% if subtopic.nvideos_local == 0 %}un{% endif %}available" title="{{subtopic.nvideos_local}}/{{subtopic.nvideos_known}} {% trans "video(s) are downloaded." %}">
+                {% trans subtopic.title %}
+            </a>
             {% endfor %}
         </p>
     </div>

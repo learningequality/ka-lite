@@ -1,6 +1,7 @@
 {% extends "coachreports/base.html" %}
 
 {% load i18n %}
+{% load staticfiles %}
 {% load my_filters %}
 
 {% block coachreports_active %}{% endblock coachreports_active %}
@@ -9,34 +10,34 @@
 {% block title %}User report{% endblock title%}
 
 {% block headcss %}{{ block.super }}
-<style>
-    table, th, td {
-        border: 1px solid black;
-    }
-    .super-header {
-        background-color: #ccc;
-        font-weight: bold;
-    }
-    th {
-        color: #555;
-    }
-    th, td {
-        padding: 3px;
-    }
-    tr.invisible {
-        display:none;
-    }
-    td.pct, td.float, td.int, td.date {
-        text-align: right;
-    }
-    td.struggling {
-        background-color: #aa0;
-        font-weight: bold;
-    }
-    .table-title {
-        margin-bottom: 15px;
-    }
-</style>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+        }
+        .super-header {
+            background-color: #ccc;
+            font-weight: bold;
+        }
+        th {
+            color: #555;
+        }
+        th, td {
+            padding: 3px;
+        }
+        tr.invisible {
+            display:none;
+        }
+        td.pct, td.float, td.int, td.date {
+            text-align: right;
+        }
+        td.struggling {
+            background-color: #aa0;
+            font-weight: bold;
+        }
+        .table-title {
+            margin-bottom: 15px;
+        }
+    </style>
 {% endblock headcss %}
 
 {% block navbar_topics %}{% endblock navbar_topics %}
@@ -53,7 +54,10 @@
 {% endblock navbar_groups %}
 
 {% block content %}
-    {% block navbar %}{{ block.super }} {% endblock navbar %}
+    {% block navbar %}{{ block.super }}{% endblock navbar %}
+
+{% block student_report %}
+<!-- {% trans "Last login time" %}: {{ last_login_time }} -->
 
 {% if no_data %}
     {% if request.is_admin or is_central %}
@@ -121,6 +125,6 @@
 {% endfor %}
 </table>
 {% endif %}
-
+{% endblock student_report %}
 {% block endjs %}{{ block.super }}{% endblock endjs %}
 {% endblock content %}

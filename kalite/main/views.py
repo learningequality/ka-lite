@@ -10,30 +10,50 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.db.models import Sum
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound, HttpResponseRedirect, Http404, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
-from django.views.decorators.cache import cache_control
-from django.views.decorators.cache import cache_page
 
 import settings
 from config.models import Settings
 from control_panel.views import user_management_context
 from main import topicdata
 from main.models import VideoLog, ExerciseLog, VideoFile
-from securesync.api_client import SyncClient
+from securesync.api_client import BaseClient
 from securesync.models import Facility, FacilityUser,FacilityGroup, Device
 from securesync.views import require_admin, facility_required
-from utils import topic_tools
-from utils.internet import am_i_online
-from utils.jobs import force_job
-from utils.decorators import require_admin
-from utils.videos import video_connection_is_available
+from settings import LOG as logging
+from shared import topic_tools
+from shared.decorators import require_admin, backend_cache_page
+from shared.jobs import force_job
+from shared.videos import get_video_urls
+from utils.internet import is_loopback_connection, JsonResponse
 
 
+def check_setup_status(handler):
+    """
+    Decorator for validating that KA Lite post-install setup has completed.
+    NOTE that this decorator must appear before the backend_cache_page decorator,
+    so that it is run even when there is a cache hit.
+    """
+    def wrapper_fn(request, *args, **kwargs):
+        if not request.is_admin and Facility.objects.count() == 0:
+            messages.warning(request, mark_safe(
+                "Please <a href='%s?next=%s'>login</a> with the account you created while running the installation script, \
+                to complete the setup." % (reverse("login"), reverse("register_public_key"))))
+        if request.is_admin:
+            if not Settings.get("registered") and SyncClient().test_connection() == "success":
+                messages.warning(request, mark_safe("Please <a href='%s'>follow the directions to register your device</a>, so that it can synchronize with the central server." % reverse("register_public_key")))
+            elif Facility.objects.count() == 0:
+                messages.warning(request, mark_safe("Please <a href='%s'>create a facility</a> now. Users will not be able to sign up for accounts until you have made a facility." % reverse("add_facility")))
+        return handler(request, *args, **kwargs)
+    return wrapper_fn
+
+
+@backend_cache_page
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
     current_node = topicdata.TOPICS
@@ -72,19 +92,17 @@ def splat_handler(request, splat):
     elif current_node["kind"] == "Exercise":
         return exercise_handler(request, current_node)
     else:
-        # return HttpResponseNotFound("No valid item found at this address!")
         raise Http404
 
 
 def check_setup_status(handler):
     def wrapper_fn(request, *args, **kwargs):
-        client = SyncClient()
         if not request.is_admin and Facility.objects.count() == 0:
             messages.warning(request, mark_safe(
                 "Please <a href='%s?next=%s'>login</a> with the account you created while running the installation script, \
                 to complete the setup." % (reverse("login"), reverse("register_public_key"))))
         if request.is_admin:
-            if not Settings.get("registered") and client.test_connection() == "success":
+            if not Settings.get("registered") and BaseClient().test_connection() == "success":
                 messages.warning(request, mark_safe("Please <a href='%s'>follow the directions to register your device</a>, so that it can synchronize with the central server." % reverse("register_public_key")))
             elif Facility.objects.count() == 0:
                 messages.warning(request, mark_safe("Please <a href='%s'>create a facility</a> now. Users will not be able to sign up for accounts until you have made a facility." % reverse("add_facility")))
@@ -92,9 +110,17 @@ def check_setup_status(handler):
     return wrapper_fn
 
 
-@cache_page(settings.CACHE_TIME)
+@backend_cache_page
 @render_to("topic.html")
 def topic_handler(request, topic):
+    return topic_context(topic)
+
+
+def topic_context(topic):
+    """
+    Given a topic node, create all context related to showing that topic
+    in a template.
+    """
     videos    = topic_tools.get_videos(topic)
     exercises = topic_tools.get_exercises(topic)
     topics    = topic_tools.get_live_topics(topic)
@@ -114,120 +140,107 @@ def topic_handler(request, topic):
         "videos": videos,
         "exercises": exercises,
         "topics": my_topics,
+        "backup_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),
     }
     return context
 
 
-@cache_page(settings.CACHE_TIME)
+@backend_cache_page
 @render_to("video.html")
-def video_handler(request, video, prev=None, next=None):
-    video_exists = VideoFile.objects.filter(pk=video['youtube_id']).exists()
+def video_handler(request, video, format="mp4", prev=None, next=None):
 
-    # If we detect that a video exists, but it's not on disk, then
-    #   force the database to update.  No race condition here for saving
-    #   progress in a VideoLog: it is not dependent on VideoFile.
-    if not video_exists and topic_tools.is_video_on_disk(video['youtube_id']):
-        force_job("videoscan")
-        video_exists = True
+    video_on_disk = topic_tools.is_video_on_disk(video['youtube_id'])
+    video_exists = video_on_disk or bool(settings.BACKUP_VIDEO_SOURCE)
 
     if not video_exists:
         if request.is_admin:
+            # TODO(bcipolli): add a link, with querystring args that auto-checks this video in the topic tree
             messages.warning(request, _("This video was not found! You can download it by going to the Update page."))
         elif request.is_logged_in:
             messages.warning(request, _("This video was not found! Please contact your teacher or an admin to have it downloaded."))
         elif not request.is_logged_in:
             messages.warning(request, _("This video was not found! You must login as an admin/teacher to download the video."))
-    elif request.user.is_authenticated():
-        messages.warning(request, _("Note: You're logged in as an admin (not as a student/teacher), so your video progress and points won't be saved."))
-    elif not request.is_logged_in:
-        messages.warning(request, _("Friendly reminder: You are not currently logged in, so your video progress and points won't be saved."))
+
+    video["stream_type"] = "video/%s" % format
+
+    if video_exists and not video_on_disk:
+        if not "stream_url" in video:
+            import pdb; pdb.set_trace()
+        messages.success(request, "Got video content from %s" % video["stream_url"])
+
     context = {
         "video": video,
         "title": video["title"],
         "video_exists": video_exists,
         "prev": prev,
         "next": next,
+        "use_mplayer": settings.USE_MPLAYER and is_loopback_connection(request),
     }
     return context
 
 
-@cache_page(settings.CACHE_TIME)
+@backend_cache_page
 @render_to("exercise.html")
 def exercise_handler(request, exercise):
     """
     Display an exercise
     """
     # Copy related videos (should be small), as we're going to tweak them
-    related_videos = [copy.copy(topicdata.NODE_CACHE["Video"].get(key, None)) for key in exercise["related_video_readable_ids"]]
-
-    videos_to_delete = []
-    for idx, video in enumerate(related_videos):
-        # Remove all videos that were not recognized or 
-        #   simply aren't on disk.  
-        #   Check on disk is relatively cheap, also executed infrequently
-        if not video or not topic_tools.is_video_on_disk(video["youtube_id"]):
-            videos_to_delete.append(idx)
+    related_videos = {}
+    for key in exercise["related_video_readable_ids"]:
+        video = topicdata.NODE_CACHE["Video"].get(key, None)
+        if not video:
             continue
-
-        # Resolve the most related path
-        video["path"] = video["paths"][0]  # default value
+        
+        related_videos[key] = copy.copy(video)
         for path in video["paths"]:
             if topic_tools.is_sibling({"path": path, "kind": "Video"}, exercise):
-                video["path"] = path
+                related_videos[key]["path"] = path
                 break
-        del video["paths"]
-    for idx in reversed(videos_to_delete):
-        del related_videos[idx]
-
-    if request.user.is_authenticated():
-        messages.warning(request, _("Note: You're logged in as an admin (not as a student/teacher), so your exercise progress and points won't be saved."))
-    elif not request.is_logged_in:
-        messages.warning(request, _("Friendly reminder: You are not currently logged in, so your exercise progress and points won't be saved."))
+        if "path" not in related_videos[key]:
+            related_videos[key]["path"] = video["paths"][0]
 
     context = {
         "exercise": exercise,
         "title": exercise["title"],
         "exercise_template": "exercises/" + exercise["slug"] + ".html",
-        "related_videos": related_videos,
+        "related_videos": related_videos.values(),
     }
     return context
 
-@cache_page(settings.CACHE_TIME)
+
+@backend_cache_page
 @render_to("knowledgemap.html")
 def exercise_dashboard(request):
     # Just grab the first path, whatever it is
     paths = dict((key, val["paths"][0]) for key, val in topicdata.NODE_CACHE["Exercise"].items())
+    slug = request.GET.get("topic")
+
     context = {
-        "title": "Knowledge map",
+        "title": topicdata.NODE_CACHE["Topic"][slug]["title"] if slug else _("Your Knowledge Map"),
         "exercise_paths": json.dumps(paths),
     }
     return context
 
-@check_setup_status
-@cache_page(settings.CACHE_TIME)
+@check_setup_status  # this must appear BEFORE caching logic, so that it isn't blocked by a cache hit
+@backend_cache_page
 @render_to("homepage.html")
 def homepage(request):
-    # TODO(bcipolli): video counts on the distributed server homepage
-    topics = filter(lambda node: node["kind"] == "Topic" and not node["hide"], topicdata.TOPICS["children"])
-
-    # indexed by integer
-    my_topics = [dict([(k, t[k]) for k in ('title', 'path')]) for t in topics]
-
-    context = {
+    context = topic_context(topicdata.TOPICS)
+    context.update({
         "title": "Home",
-        "topics": my_topics,
-        "registered": Settings.get("registered"),
-    }
+        "backup_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),
+    })
     return context
 
 @require_admin
+@check_setup_status
 @render_to("admin_distributed.html")
 def easy_admin(request):
 
     context = {
         "wiki_url" : settings.CENTRAL_WIKI_URL,
         "central_server_host" : settings.CENTRAL_SERVER_HOST,
-        "am_i_online": am_i_online(settings.CENTRAL_WIKI_URL, allow_redirects=False),
         "in_a_zone":  Device.get_own_device().get_zone() is not None,
     }
     return context
@@ -296,31 +309,6 @@ Available stats:
 
     return val
 
-@require_admin
-@render_to("video_download.html")
-def update(request):
-    call_command("videoscan")  # Could potentially be very slow, blocking request.
-    force_job("videodownload", "Download Videos")
-    force_job("subtitledownload", "Download Subtitles")
-    language_lookup = topicdata.LANGUAGE_LOOKUP
-    language_list = topicdata.LANGUAGE_LIST
-    default_language = Settings.get("subtitle_language") or "en"
-    if default_language not in language_list:
-        language_list.append(default_language)
-    languages = [{"id": key, "name": language_lookup[key]} for key in language_list]
-    languages = sorted(languages, key=lambda k: k["name"])
-
-    am_i_online = video_connection_is_available()
-    if not am_i_online:
-        messages.warning(request, _("No internet connection was detected.  You must be online to download videos or subtitles."))
-
-    context = {
-        "languages": languages,
-        "default_language": default_language,
-        "am_i_online": am_i_online,
-    }
-    return context
-
 
 @require_admin
 @facility_required
@@ -342,7 +330,7 @@ def zone_redirect(request):
     device = Device.get_own_device()
     zone = device.get_zone()
     if zone:
-        return HttpResponseRedirect(reverse("zone_management", kwargs={"org_id": "", "zone_id": zone.pk}))
+        return HttpResponseRedirect(reverse("zone_management", kwargs={"zone_id": zone.pk}))
     else:
         raise Http404(_("This device is not on any zone."))
 
@@ -354,19 +342,19 @@ def device_redirect(request):
     device = Device.get_own_device()
     zone = device.get_zone()
     if zone:
-        return HttpResponseRedirect(reverse("device_management", kwargs={"org_id": "", "zone_id": zone.pk, "device_id": device.pk}))
+        return HttpResponseRedirect(reverse("device_management", kwargs={"zone_id": zone.pk, "device_id": device.pk}))
     else:
         raise Http404(_("This device is not on any zone."))
 
 
 def handler_403(request, *args, **kwargs):
     context = RequestContext(request)
-    message = None  # Need to retrieve, but can't figure it out yet.
+    #message = None  # Need to retrieve, but can't figure it out yet.
 
     if request.is_ajax():
-        return HttpResponseForbidden(message)
+        return JsonResponse({ "error": "You must be logged in with an account authorized to view this page." }, status=403)
     else:
-        messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page..")))
+        messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page.")))
         return HttpResponseRedirect(reverse("login") + "?next=" + request.path)
 
 

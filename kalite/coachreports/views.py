@@ -7,6 +7,7 @@ from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 from functools import partial
 
+from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseServerError
@@ -15,15 +16,16 @@ from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext as _
 
-from coachreports.forms import DataForm
-from coachreports.api_views import get_data_form, stats_dict
-from main import topicdata
-from main.models import VideoLog, ExerciseLog, VideoFile
+from .api_views import get_data_form, stats_dict
+from main.topicdata import ID2SLUG_MAP, NODE_CACHE
+from main.models import VideoLog, ExerciseLog, VideoFile, UserLog
 from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device
 from securesync.views import facility_required
-from utils.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
+from settings import LOG as logging
+from shared.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
+from shared.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics
+from utils.general import max_none
 from utils.internet import StatusException
-from utils.topic_tools import get_topic_exercises, get_topic_videos, get_all_midlevel_topics
 
 
 def get_accessible_objects_from_logged_in_user(request):
@@ -100,63 +102,101 @@ def student_view(request, xaxis="pct_mastery", yaxis="ex:attempts"):
 
     Student view lists a by-topic-summary of their activity logs.
     """
+    return student_view_context(request=request, xaxis=xaxis, yaxis=yaxis)
+
+
+@require_authorized_access_to_student_data
+def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
+    """
+    Context done separately, to be importable for similar pages.
+    """
     user = get_user_from_request(request=request)
+    topic_slugs = [t["id"] for t in get_knowledgemap_topics()]
+    topics = [NODE_CACHE["Topic"][slug] for slug in topic_slugs]
 
-    topics = get_all_midlevel_topics()
-    topic_ids = [t['id'] for t in topics]
-    topics = filter(partial(lambda n, ids: n['id'] in ids, ids=topic_ids), topicdata.NODE_CACHE['Topic'].values())  # real data, like paths
+    user_id = user.id
+    exercise_logs = list(ExerciseLog.objects \
+        .filter(user=user) \
+        .values("exercise_id", "complete", "points", "attempts", "streak_progress", "struggling", "completion_timestamp"))
+    video_logs = list(VideoLog.objects \
+        .filter(user=user) \
+        .values("youtube_id", "complete", "total_seconds_watched", "points", "completion_timestamp"))
 
-    any_data = False  # whether the user has any data at all.
-    exercise_logs = dict()
-    video_logs = dict()
     exercise_sparklines = dict()
     stats = dict()
     topic_exercises = dict()
-    for topic in topics:
-        topic_exercises[topic['id']] = get_topic_exercises(path=topic['path'])
-        n_exercises = len(topic_exercises[topic['id']])
-        exercise_logs[topic['id']] = ExerciseLog.objects.filter(user=user, exercise_id__in=[t['name'] for t in topic_exercises[topic['id']]]).order_by("completion_timestamp")
-        n_exercises_touched = len(exercise_logs[topic['id']])
+    topic_videos = dict()
+    exercises_by_topic = dict()
+    videos_by_topic = dict()
 
-        topic_videos = get_topic_videos(topic_id=topic['id'])
-        n_videos = len(topic_videos)
-        video_logs[topic['id']] = VideoLog.objects.filter(user=user, youtube_id__in=[tv['youtube_id'] for tv in topic_videos]).order_by("completion_timestamp")
-        n_videos_touched = len(video_logs[topic['id']])
+    # Categorize every exercise log into a "midlevel" exercise
+    for elog in exercise_logs:
+        parents = NODE_CACHE["Exercise"][elog["exercise_id"]]["parents"]
+        topic = set(parents).intersection(set(topic_slugs))
+        if not topic:
+            logging.error("Could not find a topic for exercise %s (parents=%s)" % (elog["exercise_id"], parents))
+            continue
+        topic = topic.pop()
+        if not topic in topic_exercises:
+            topic_exercises[topic] = get_topic_exercises(path=NODE_CACHE["Topic"][topic]["path"])
+        exercises_by_topic[topic] = exercises_by_topic.get(topic, []) + [elog]
 
-        exercise_sparklines[topic['id']] = [el.completion_timestamp for el in filter(lambda n: n.complete, exercise_logs[topic['id']])]
+    # Categorize every video log into a "midlevel" exercise.
+    for vlog in video_logs:
+        parents = NODE_CACHE["Video"][ID2SLUG_MAP[vlog["youtube_id"]]]["parents"]
+        topic = set(parents).intersection(set(topic_slugs))
+        if not topic:
+            logging.error("Could not find a topic for video %s (parents=%s)" % (vlog["youtube_id"], parents))
+            continue
+        topic = topic.pop()
+        if not topic in topic_videos:
+            topic_videos[topic] = get_topic_videos(path=NODE_CACHE["Topic"][topic]["path"])
+        videos_by_topic[topic] = videos_by_topic.get(topic, []) + [vlog]
+
+
+    # Now compute stats
+    for topic in topic_slugs:#set(topic_exercises.keys()).union(set(topic_videos.keys())):
+        n_exercises = len(topic_exercises.get(topic, []))
+        n_videos = len(topic_videos.get(topic, []))
+
+        exercises = exercises_by_topic.get(topic, [])
+        videos = videos_by_topic.get(topic, [])
+        n_exercises_touched = len(exercises)
+        n_videos_touched = len(videos)
+
+        exercise_sparklines[topic] = [el["completion_timestamp"] for el in filter(lambda n: n["complete"], exercises)]
 
          # total streak currently a pct, but expressed in max 100; convert to
          # proportion (like other percentages here)
-        stats[topic['id']] = {
-            "ex:pct_mastery":      0 if not n_exercises_touched else sum([el.complete for el in exercise_logs[topic['id']]]) / float(n_exercises),
+        stats[topic] = {
+            "ex:pct_mastery":      0 if not n_exercises_touched else sum([el["complete"] for el in exercises]) / float(n_exercises),
             "ex:pct_started":      0 if not n_exercises_touched else n_exercises_touched / float(n_exercises),
-            "ex:average_points":   0 if not n_exercises_touched else sum([el.points for el in exercise_logs[topic['id']]]) / float(n_exercises_touched),
-            "ex:average_attempts": 0 if not n_exercises_touched else sum([el.attempts for el in exercise_logs[topic['id']]]) / float(n_exercises_touched),
-            "ex:average_streak":   0 if not n_exercises_touched else sum([el.streak_progress for el in exercise_logs[topic['id']]]) / float(n_exercises_touched) / 100.,
-            "ex:total_struggling": 0 if not n_exercises_touched else sum([el.struggling for el in exercise_logs[topic['id']]]),
-            "ex:last_completed": None if not n_exercises_touched else max([el.completion_timestamp or None for el in exercise_logs[topic['id']]]),
+            "ex:average_points":   0 if not n_exercises_touched else sum([el["points"] for el in exercises]) / float(n_exercises_touched),
+            "ex:average_attempts": 0 if not n_exercises_touched else sum([el["attempts"] for el in exercises]) / float(n_exercises_touched),
+            "ex:average_streak":   0 if not n_exercises_touched else sum([el["streak_progress"] for el in exercises]) / float(n_exercises_touched) / 100.,
+            "ex:total_struggling": 0 if not n_exercises_touched else sum([el["struggling"] for el in exercises]),
+            "ex:last_completed": None if not n_exercises_touched else max_none([el["completion_timestamp"] or None for el in exercises]),
 
             "vid:pct_started":      0 if not n_videos_touched else n_videos_touched / float(n_videos),
-            "vid:pct_completed":    0 if not n_videos_touched else sum([vl.complete for vl in video_logs[topic['id']]]) / float(n_videos),
-            "vid:total_minutes":      0 if not n_videos_touched else sum([vl.total_seconds_watched for vl in video_logs[topic['id']]]) / 60.,
-            "vid:average_points":   0. if not n_videos_touched else float(sum([vl.points for vl in video_logs[topic['id']]]) / float(n_videos_touched)),
-            "vid:last_completed": None if not n_videos_touched else max([vl.completion_timestamp or None for vl in video_logs[topic['id']]]),
+            "vid:pct_completed":    0 if not n_videos_touched else sum([vl["complete"] for vl in videos]) / float(n_videos),
+            "vid:total_minutes":      0 if not n_videos_touched else sum([vl["total_seconds_watched"] for vl in videos]) / 60.,
+            "vid:average_points":   0. if not n_videos_touched else float(sum([vl["points"] for vl in videos]) / float(n_videos_touched)),
+            "vid:last_completed": None if not n_videos_touched else max_none([vl["completion_timestamp"] or None for vl in videos]),
         }
-        any_data = any_data or n_exercises_touched > 0 or n_videos_touched > 0
 
     context = plotting_metadata_context(request)
+
     return {
         "form": context["form"],
         "groups": context["groups"],
         "facilities": context["facilities"],
         "student": user,
         "topics": topics,
-        "topic_ids": topic_ids,
         "exercises": topic_exercises,
-        "exercise_logs": exercise_logs,
-        "video_logs": video_logs,
+        "exercise_logs": exercises_by_topic,
+        "video_logs": videos_by_topic,
         "exercise_sparklines": exercise_sparklines,
-        "no_data": not any_data,
+        "no_data": not exercise_logs and not video_logs,
         "stats": stats,
         "stat_defs": [  # this order determines the order of display
             {"key": "ex:pct_mastery",      "title": _("% Mastery"),        "type": "pct"},
@@ -190,7 +230,7 @@ def tabular_view(request, facility, report_type="exercise"):
     """Tabular view also gets data server-side."""
 
     # Get a list of topics (sorted) and groups
-    topics = get_all_midlevel_topics()
+    topics = get_knowledgemap_topics()
     (groups, facilities) = get_accessible_objects_from_logged_in_user(request)
     context = plotting_metadata_context(request, facility=facility)
     context.update({
@@ -240,20 +280,24 @@ def tabular_view(request, facility, report_type="exercise"):
         exercise_names = [ex["name"] for ex in context["exercises"]]
         # Get students
         context["students"] = []
-        for user in users:
-            exlogs = ExerciseLog.objects.filter(user=user, exercise_id__in=exercise_names)
-            log_ids = [log.exercise_id for log in exlogs]
-            log_table = []
-            for en in exercise_names:
-                if en in log_ids:
-                    log_table.append(exlogs[log_ids.index(en)])
-                else:
-                    log_table.append(None)
+        exlogs = ExerciseLog.objects \
+            .filter(user__in=users, exercise_id__in=exercise_names) \
+            .order_by("user__last_name", "user__first_name")\
+            .values("user__id", "struggling", "complete", "exercise_id")
+        exlogs = list(exlogs)  # force the query to be evaluated
 
-            context["students"].append({
+        exlog_idx = 0
+        for user in users:
+            log_table = {}
+            while exlog_idx < len(exlogs) and exlogs[exlog_idx]["user__id"] == user.id:
+                log_table[exlogs[exlog_idx]["exercise_id"]] = exlogs[exlog_idx]
+                exlog_idx += 1
+
+            context["students"].append({  # this could be DRYer
                 "first_name": user.first_name,
                 "last_name": user.last_name,
                 "username": user.username,
+                "name": user.get_name(),
                 "id": user.id,
                 "exercise_logs": log_table,
             })
@@ -266,23 +310,40 @@ def tabular_view(request, facility, report_type="exercise"):
         video_ids = [vid["youtube_id"] for vid in context["videos"]]
         # Get students
         context["students"] = []
-        for user in users:
-            vidlogs = VideoLog.objects.filter(user=user, youtube_id__in=video_ids)
-            log_ids = [log.youtube_id for log in vidlogs]
-            log_table = []
-            for yid in video_ids:
-                if yid in log_ids:
-                    log_table.append(vidlogs[log_ids.index(yid)])
-                else:
-                    log_table.append(None)
+        vidlogs = VideoLog.objects \
+            .filter(user__in=users, youtube_id__in=video_ids) \
+            .order_by("user__last_name", "user__first_name")\
+            .values("user__id", "complete", "youtube_id", "total_seconds_watched", "points")
+        vidlogs = list(vidlogs)  # force the query to be executed now
 
-            context["students"].append({
+        vidlog_idx = 0
+        for user in users:
+            log_table = {}
+            while vidlog_idx < len(vidlogs) and vidlogs[vidlog_idx]["user__id"] == user.id:
+                log_table[vidlogs[vidlog_idx]["youtube_id"]] = vidlogs[vidlog_idx]
+                vidlog_idx += 1
+
+            context["students"].append({  # this could be DRYer
                 "first_name": user.first_name,
                 "last_name": user.last_name,
                 "username": user.username,
+                "name": user.get_name(),
+                "id": user.id,
                 "video_logs": log_table,
             })
+
     else:
         raise Http404("Unknown report_type: %s" % report_type)
+
+    if "facility_user" in request.session:
+        try:
+            # Log a "begin" and end here
+            user = request.session["facility_user"]
+            UserLog.begin_user_activity(user, activity_type="coachreport")
+            UserLog.update_user_activity(user, activity_type="login")  # to track active login time for teachers
+            UserLog.end_user_activity(user, activity_type="coachreport")
+        except ValidationError as e:
+            # Never report this error; don't want this logging to block other functionality.
+            logging.error("Failed to update Teacher userlog activity login: %s" % e)
 
     return context

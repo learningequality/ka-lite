@@ -44,6 +44,11 @@ footer.short .inner {
     margin: 0 auto;
 }
 
+a:link:focus,
+a:hover {
+    color: #2F92A5;
+}
+
 #language-preferences {
     position: relative; 
     top: 7px;
@@ -51,6 +56,12 @@ footer.short .inner {
 
 #top-header {
     height: 50px;
+    position: relative;
+}
+
+#top-header #logo {
+    position: absolute;
+    top: 0;
 }
 
 #logo-image-small img {
@@ -59,34 +70,76 @@ footer.short .inner {
     margin-left: 5px;
 }
 
-#nav-and-search {
-    position: relative;
-    right: 10px;
-    top: 21px;
-}
-
-.watch-navlink {
-    padding-left: 4px;
-}
-
-/*greeting styling*/
-
-.sitewide-navigation {
-    white-space: nowrap;
-}
-
-.nav-subheader {
-    background: transparent;
-}
+/********** Top Navigation bar ***********/
 
 .top-header-links {
     position: absolute;
     top: 0;
     right: 10px;
-    left: 0;
-    margin-left: 290px;
     min-width: 280px;
+    height: 50px;
 }
+
+nav {
+    display: block;
+    clear: both;
+    width: 100%;
+    margin: 0;
+    padding: 3px 0;
+    white-space: nowrap;
+    /* Position this at 30 so the white triangle appears on top of the page_sub_nav breadcrumbs border */
+    height: 30px;
+    z-index: 50;
+    position: relative;
+    right: 10px;
+    top: 22px;
+}
+
+.nav-subheader {
+    font-family: "MuseoSans500", Helvetica, Arial, sans-serif;
+    font-weight: normal;
+    font-size: 16px;
+    letter-spacing: -1px;
+    text-transform: uppercase;    
+    margin-bottom: 0;
+    height: 30px;
+    color: #fff;
+}
+
+.nav-subheader a {
+    color: #263500;
+    height: 20px;
+    display: block;
+}
+
+.nav-subheader a:hover {
+    color: #2F92A5;
+}
+
+.nav-subheader > a, .nav-subheader > span {
+    margin-left: 20px;
+    display: block;
+    float: right;
+}
+
+.nav-subheader a.active:after {
+    content: url(/static/images/nav-selector.gif);
+    position: relative;
+    top: -12px;
+    display: block;
+    left: 50%;
+    margin-left: -5px;
+}
+
+#nav_registerdevice {
+    color: darkRed;
+}
+
+#nav_addstudent, #nav_addteacher, #nav_admin, #nav_coachreports, #nav_watch, #nav_practice, #nav_signup, #nav_login, #nav_update, #nav_logout, #nav_registerdevice {
+    display: none;
+}
+
+/********** End of Top Navigation bar ***********/
 
 h2 {
     margin-bottom: 10px;
@@ -147,6 +200,16 @@ div.exercises-card {
     margin-left: -10px;
 }
 
+.info-box #related-video-list a {
+    white-space: nowrap;
+    display: block;
+    float: left;
+    margin: 0;
+    width: 98%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .basic-form label {
     font-weight: bold;
     width: 120px;
@@ -203,7 +266,12 @@ li .progress-circle {
     float: left;
 }
 
-.unregistered-only {
+.admin-only,
+.unregistered-only, .not-unregistered-only,
+.logged-in-only,
+.client-online-only,
+.server-online-only
+{
     display: none;
 }
 
@@ -264,31 +332,10 @@ li .progress-circle {
     color: red;
 }
 
-#nav_registerdevice {
-    color: darkRed;
-}
-
-
-#nav_addstudent, #nav_addteacher, #nav_admin, #nav_coachreports, #nav_watch, #nav_practice, #nav_signup, #nav_login, #nav_update {
-    display: none;
-}
-
-.nav-subheader a.active:after {
-    content: url(/static/images/nav-selector.gif);
-    position: relative;
-    top: -12px;
-    display: block;
-    left: 50%;
-    margin-left: -5px;
-}
-
-.nav-subheader a {
-    height: 20px;
-    display: block;
-}
 
 #hint-remainder {
-    line-height: 110%;
+    line-height: 18px;
+    padding-top: 10px;
 }
 
 #totalpoints {
@@ -331,10 +378,12 @@ li .progress-circle {
 }
 
 #sitepoints {
+    font-family: "MuseoSans500", Helvetica, Arial, sans-serif;
     float: right;
-    margin-top: 3px;
-    margin-right: 20px;
-    font-size: 1.2em;
+    margin-top: 4px;
+    margin-right: 19px;
+    opacity: 0.7;
+    font-size: 1.05em;
 }
 
 #scratchpad > div {
@@ -379,4 +428,39 @@ li .progress-circle {
 
 #answer_area .answer-buttons input.simple-button, #answer_area input.simple-button.full-width {
     white-space: normal;
+}
+
+.video-unavailable,
+.topic-unavailable,
+a:active.video-unavailable,
+a:hover.video-unavailable,
+a:link.video-unavailable,
+a:visited.video-unavailable,
+a:active.topic-unavailable,
+a:hover.topic-unavailable,
+a:link.topic-unavailable,
+a:visited.topic-unavailable {
+    color: #bbb;
+    text-decoration: none;
+}
+
+.green_button{
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    background-color: #91ca7f;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    color: #ffffff;
+    padding: 10px 20px;
+    border:0px;
+    vertical-align: middle;
+}
+
+a.green_button, a.green_button:hover,input.green_button, input.green_button:hover {
+    color: white !important;
+    text-decoration: none;
+}
+a.green_button:hover,input.green_button:hover{
+    background-color:#C0C0C0;
 }

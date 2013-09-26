@@ -3,6 +3,19 @@ Miscellaneous utility functions (no dependence on non-standard packages, such as
 
 General string, integer, date functions.
 """
+import datetime
+import os
+
+
+class InvalidDateFormat(Exception):
+
+    def __str__(value):
+        return "Invalid date format. Please format your date (-d) flag like this: 'MM/DD/YYYY'"
+
+class InvalidDirectoryFormat(Exception):
+
+    def __str__(value):
+        return "Invalid directory format. Please ensure you are passing in a directory path, not a filepath."
 
 
 def break_into_chunks(bigiterator, chunksize=500):
@@ -62,6 +75,21 @@ def datediff(*args, **kwargs):
         raise NotImplementedError("Unrecognized units: '%s'" % units)
 
 
+def get_host_name():
+    """
+    Cross-platform way to get the current computer name.
+    """
+    name = ""
+    try:
+        name = eval("os.uname()[1]")
+    except:
+        try:
+            name = eval("os.getenv('HOSTNAME', os.getenv('COMPUTERNAME') or '').lower()")
+        except:
+            name = ""
+    return name
+
+
 def version_diff(v1, v2):
     """
     Diff is the integer difference between the most leftward part of the versions that differ.
@@ -97,3 +125,68 @@ def version_diff(v1, v2):
             return cur_diff
 
     return 0
+
+
+def ensure_dir(path):
+    """Create the entire directory path, if it doesn't exist already."""
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+# http://code.activestate.com/recipes/82465-a-friendly-mkdir/
+#def _mkdir(newdir):
+#    """works the way a good mkdir should :)
+#        - already exists, silently complete
+#        - regular file in the way, raise an exception
+#        - parent directory(ies) does not exist, make them as well
+#    """
+#    if os.path.isdir(newdir):
+#        pass
+#    elif os.path.isfile(newdir):
+#        raise OSError("a file with the same name as the desired " \
+#                      "dir, '%s', already exists." % newdir)
+#    else:
+#        head, tail = os.path.split(newdir)
+#        if head and not os.path.isdir(head):
+#            _mkdir(head)
+#        if tail:
+#            os.mkdir(newdir)
+
+def convert_date_input(date_to_convert):
+    """Convert from MM/DD/YYYY to Unix timestamp"""
+    if date_to_convert:
+        try:
+            converted_date = datetime.datetime.strptime(
+                date_to_convert, '%m/%d/%Y')
+        except:
+            raise InvalidDateFormat()
+        return converted_date
+    else:
+        return date_to_convert
+
+
+def get_module_source_file(module_name):
+    """
+    http://stackoverflow.com/questions/247770/retrieving-python-module-path
+    http://stackoverflow.com/questions/8718885/import-module-from-string-variable
+    """
+    module_name.split
+    source_file = __import__(module_name, fromlist=[""]).__file__
+    if source_file.endswith(".pyc"):
+        return source_file[0:-1]
+    return source_file
+
+
+def max_none(data):
+    """
+    Given a list of data, returns the max... removing None elements first, for comparison "safety".
+    """
+
+    # Base case: data is none, then return max of that.
+    if not data:
+        return max(data)
+
+    non_none_data = []
+    for d in data:
+        if d is not None:
+            non_none_data.append(d)
+    return max(non_none_data) if non_none_data else None

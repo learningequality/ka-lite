@@ -1,31 +1,25 @@
-import sys, os, re, json, urllib, glob
-import utils.internet
-
-PROJECT_PATH = os.path.dirname(os.path.realpath(__file__)) + "/../"
-
-sys.path = [PROJECT_PATH] + sys.path
-
-import settings
-
-download_path = settings.CONTENT_ROOT
-
-data_path = settings.DATA_PATH
-
-download_base_url = "http://s3.amazonaws.com/KA-youtube-converted/" # need this url as a test url for connectivity
-download_url = download_base_url + "%s/%s"
-
+import glob
+import json
+import os
+import re
 import socket
+import sys
+import urllib
+
+import utils.internet
+from utils.general import ensure_dir
+
 socket.setdefaulttimeout(20)
+
+OUTSIDE_DOWNLOAD_BASE_URL = "http://s3.amazonaws.com/KA-youtube-converted/"  # needed for redirects
+OUTSIDE_DOWNLOAD_URL = OUTSIDE_DOWNLOAD_BASE_URL + "%s/%s"  # needed for default behavior, below
+
 
 class DownloadCancelled(Exception):
     def __str__(self):
         return "Download has been cancelled"
 
 
-def video_connection_is_available():
-    # In danger of failing, if amazon redirects us
-    return utils.internet.am_i_online(download_base_url, allow_redirects=False)
-    
 def get_video_ids(topic_tree):
     if topic_tree["kind"] == "Video":
         return [topic_tree["youtube_id"]]
@@ -38,7 +32,6 @@ def get_video_ids(topic_tree):
         return []
 
 def get_video_ids_for_topic(topic_id, topic_tree=None):
-    topic_tree = topic_tree or json.loads(open(data_path + "topics.json").read())
     if topic_tree["kind"] != "Topic":
         return []
     if topic_tree.get("id", "") == topic_id:
@@ -50,30 +43,11 @@ def get_video_ids_for_topic(topic_id, topic_tree=None):
                 return ids
         return []
 
-def download_all_videos(topic="root"):
+def download_all_videos(topic="root", download_path="../content/", download_url=OUTSIDE_DOWNLOAD_URL, format="mp4", callback=None):
     all_youtube_ids = get_video_ids_for_topic(topic)
     for id in all_youtube_ids:
-        download_video(id)
+        download_video(id, download_path, downlod_url=download_url, format=format, callback=callback)
         # print id
-
-# http://code.activestate.com/recipes/82465-a-friendly-mkdir/
-def _mkdir(newdir):
-    """works the way a good mkdir should :)
-        - already exists, silently complete
-        - regular file in the way, raise an exception
-        - parent directory(ies) does not exist, make them as well
-    """
-    if os.path.isdir(newdir):
-        pass
-    elif os.path.isfile(newdir):
-        raise OSError("a file with the same name as the desired " \
-                      "dir, '%s', already exists." % newdir)
-    else:
-        head, tail = os.path.split(newdir)
-        if head and not os.path.isdir(head):
-            _mkdir(head)
-        if tail:
-            os.mkdir(newdir)
 
 def callback_percent_proxy(callback, start_percent=0, end_percent=100):
     if not callback:
@@ -89,10 +63,13 @@ def callback_percent_proxy(callback, start_percent=0, end_percent=100):
         callback(start_percent + int(fraction * percent_range_size))
     return inner_fn
 
-def download_video(youtube_id, format="mp4", callback=None):
+class URLNotFound(Exception):
+    pass
+
+def download_video(youtube_id, download_path="../content/", download_url=OUTSIDE_DOWNLOAD_URL, format="mp4", callback=None):
     """Downloads the video file to disk (note: this does NOT invalidate any of the cached html files in KA Lite)"""
     
-    _mkdir(download_path)
+    ensure_dir(download_path)
     
     video_filename = "%(id)s.%(format)s" % {"id": youtube_id, "format": format}
     filepath = download_path + video_filename
@@ -103,18 +80,22 @@ def download_video(youtube_id, format="mp4", callback=None):
     thumb_url = download_url % (video_filename, thumb_filename)
         
     try:
-        download_file(url, filepath, callback_percent_proxy(callback, end_percent=95))
+        path, response = download_file(url, filepath, callback_percent_proxy(callback, end_percent=95))
+        if not response.type.startswith("video"):
+            raise URLNotFound("Video was not found!")
         
-        download_file(thumb_url, thumb_filepath, callback_percent_proxy(callback, start_percent=95, end_percent=100))
+        path, response = download_file(thumb_url, thumb_filepath, callback_percent_proxy(callback, start_percent=95, end_percent=100))
+        if not response.type.startswith("image"):
+            raise URLNotFound("Thumbnail was not found!")
         
     except DownloadCancelled:
-        delete_downloaded_files(youtube_id)
+        delete_downloaded_files(youtube_id, download_path)
     
     except Exception as e:
-        delete_downloaded_files(youtube_id)
-        raise e
+        delete_downloaded_files(youtube_id, download_path)
+        raise
     
-def delete_downloaded_files(youtube_id):
+def delete_downloaded_files(youtube_id, download_path):
     for filepath in glob.glob(download_path + youtube_id + ".*"):
         try:
             os.remove(filepath)
@@ -143,8 +124,7 @@ def download_file(url, dst, callback=None):
         callback = callback or _reporthook
     else:
         callback = callback or _nullhook
-    urllib.urlretrieve(url, dst,
-        lambda nb, bs, fs, url=url: callback(nb,bs,fs,url))
+    return urllib.urlretrieve(url, dst, lambda nb, bs, fs, url=url: callback(nb,bs,fs,url))
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:

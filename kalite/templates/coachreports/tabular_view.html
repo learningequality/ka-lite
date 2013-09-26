@@ -2,8 +2,10 @@
 
 {% load i18n %}
 {% load staticfiles %}
+{% load my_filters %}
 
 {% block coachreports_active %}active{% endblock coachreports_active %}
+{% block title %}{% trans "Coach Reports" %}{% endblock title %}
 
 {% block headcss %}{{ block.super }}
 <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/tabular_view.css' %}" />
@@ -64,74 +66,75 @@
 </style>
 {% endblock headcss %}
 
-{% block title %}{% trans "Coach Reports" %}{% endblock title %}
-
 {% block content %}
-{% block navbar_title %}{{ block.super }}{% endblock navbar_title %}
+    {% block navbar_title %}{{ block.super }}{% endblock navbar_title %}
+
     <div id="selection-bar">
-    {% comment %}Select the coach report type{% endcomment %}
-    {% if report_types %}
         <div class="selection">
-            <div class="subtitle">{% trans "Select Report" %}</div><select id="report_type">
+        {% comment %}Select the coach report type{% endcomment %}
+        {% if report_types %}
+            <div class="subtitle">{% trans "Select Report" %}</div>
+            <select id="report_type">
                 <option {% if not request_report_type %}selected{% endif %}>----</option>
                 {% for report_type in report_types %}
                     <option value="{{ report_type }}" {% if report_type == request_report_type %}selected{% endif %}>{{ report_type }}</option>
                 {% endfor %}
             </select>
-        </div>
-    {% else %}
-        <div class="selection">
+        {% else %}
             <div class="subtitle">{% trans "No Report Types Available" %}</div>
+        {% endif %}
         </div>
-    {% endif %}
 
-    {% if users and request_report_type == "student" %}
         <div class="selection">
-            <div class="subtitle">{% trans "Select Student" %}</div><select id="student">
+        {% if users and request_report_type == "student" %}
+            <div class="subtitle">{% trans "Select Student" %}</div>
+            <select id="student">
                 <option {% if not request.GET.user %}selected{% endif %}>----</option>
                 {% for user in users %}
-                    <option value="{{ user.pk }}"{% if request.GET.user == user.pk %}selected{% endif %}>{{ user.last_name }} {{ user.first_name }}</option>
+                    <option value="{{ user.pk }}"{% if request.GET.user == user.pk %}selected{% endif %}>{{ user.name }}</option>
                 {% endfor %}
             </select>
-        </div>
-    {% elif topics and groups %}
-        <div class="selection">
-            <div class="subtitle">{% trans "Select Topic" %}</div><select id="topic">
+        {% elif topics and groups %}
+            <div class="subtitle">{% trans "Select Topic" %}</div>
+            <select id="topic">
                 <option {% if not request.GET.topic %}selected{% endif %}>----</option>
                 {% for topic in topics %}
                     
                     <option value="{{ topic.id }}"{% if request.GET.topic == topic.id %}selected{% endif %}>{{ topic.standalone_title }}</option>
                 {% endfor %}
             </select>
+        {% endif %}
         </div>
-    {% endif %}
     </div>
 
-<div id="content">
-   
-        <div class="selection" style="display:none">
-            <div class="subtitle">{% trans "Display Options" %}</div><select id="disp_options">
-                <option selected>----</option>
-                {% if exercises %}
-                <option value=".attempts">attempts</option>
-                <option value=".points">points</option>
-                <option value=".streak_progress">streak progress</option>
-                {% endif %}
-                {% if videos %}
-                <option value=".points">points</option>
-                <option value=".total_seconds_watched">total seconds</option>
-                {% endif %}
-            </select>
-        </div>
+    <div id="content">
         <div id="legend">
             <div class="legend"><div class="partial"></div>{% trans "In Progress" %}</div>
             <div class="legend"><div class="complete"></div>{% trans "Completed" %}</div>
+            {% if request_report_type != "video" %}
             <div class="legend"><div class="struggle"></div>{% trans "Struggling" %}</div>
+            {% endif %}
         </div>
     </div>
-    {% if students %}
+    <div style="clear: both;"></div>
+
+    {% if not students %}
+        <p><div class="subtitle error" id="error_message">
+        {% if not groups.0.groups and not groups.1 and request.GET.topic %}
+            {% comment %}No groups available: then "ungrouped" is selected, and "no students" returned.{% endcomment %}
+            {% trans "No student accounts have been created." %}
+        {% elif not request.GET.topic %}
+            {% comment %}Group was selected, but data not queried because a topic was not selected 
+            (NOTE: this required knowledge of how the view queries data){% endcomment %}
+            {% trans "Please select a topic above." %}
+        {% else %}
+            {% comment %}Everything specified, but no users fit the query.{% endcomment %}
+            {% trans "No student accounts in this group have been created." %}
+        {% endif %}
+        </div></p>
+
+    {% else %}
         {% block students_header %}
-        <div style="clear: both;"></div>
         <div id="displaygrid">
             <div style="clear: both;"></div>
             <div class="users">
@@ -145,8 +148,8 @@
                         {% for student in students %}
                             <tr>
                                 <th class="username">
-                                    <span title="{{ student.first_name }} {{ student.last_name }} ({{ student.username }})">
-                                        <div class="student-name"><a href="{% url student_view %}?user={{ student.id }}">{{ student.first_name }} {{ student.last_name }}</a></div>
+                                    <span title="{{ student.name }} ({{ student.username }})">
+                                        <div class="student-name"><a href="{% url student_view %}?user={{ student.id }}">{{ student.name }}</a></div>
                                     </span>
                                 </th>
                             </tr>
@@ -155,8 +158,10 @@
                 </table>
                 <div style="clear: both;"></div>
             </div>
-            {% endblock students_header %}
-        {%if request_report_type == "exercise" and exercises %}
+        </div>
+        {% endblock students_header %}
+
+        {% if request_report_type == "exercise" and exercises %}
         {% block exercise_data %}
             <div class="userstatus">
                 <table>
@@ -164,18 +169,18 @@
                         <tr>
                             {% for exercise in exercises %}
                                 <th class="headrow data">
-                                    <a href="{{ exercise.path }}"><span title='"{{ exercise.display_name }}"{% if exercise.description %} ({{ exercise.description }}){% endif %}'>{{ exercise.name }}</span></a>
+                                    <a href="{{ exercise.path }}"><span title='"{{ exercise.display_name }}"{% if exercise.description %} ({{ exercise.description }}){% endif %}'>{{ exercise.title }}</span></a>
                                 </th>
                             {% endfor %}
                         </tr>
                         {% for student in students %}
                             <tr>
-                                {% for log in student.exercise_logs %}
-                                    {% if not log %}
+                                {% for exercise in exercises %}
+                                    {% if not student.exercise_logs|get_item:exercise.slug %}
                                         <td class="status data" title="{% trans "Not Attempted" %}">
-                                    {% elif log.struggling %}
+                                    {% elif student.exercise_logs|get_item:exercise.slug|get_item:"struggling" %}
                                         <td class="status data struggle" title="{% trans "Struggling" %}">
-                                    {% elif log.complete %}
+                                    {% elif student.exercise_logs|get_item:exercise.slug|get_item:"complete" %}
                                         <td class="status data complete" title="{% trans "Complete" %}">
                                     {% else %}
                                         <td class="status data partial" title="{% trans "Attempted" %}">
@@ -187,7 +192,6 @@
                     </tbody>
                 </table>
             </div>
-        </div>
         {% endblock exercise_data %}
 
     {% elif request_report_type == "video" and videos %}
@@ -204,35 +208,30 @@
                         </tr>
                         {% for student in students %}
                             <tr>
-                                {% for log in student.video_logs %}
-                                    {% if not log %}
+                                {% for video in videos %}
+                                    {% if not student.video_logs|get_item:video.youtube_id %}
                                         <td class="status data" title="{% trans "Not Viewed" %}">
                                             &nbsp;
-                                    {% elif not log.complete %}
+                                    {% elif not student.video_logs|get_item:video.youtube_id|get_item:"complete" %}
                                         <td class="status data partial" title="{% trans "Viewing" %}">
-                                            <div class="total_seconds_watched">100%</div>
+                                            <div class="total_seconds_watched">{{ student.video_logs|get_item:video.youtube_id|get_item:"total_seconds_watched" }} {% trans "secs" %}</div>
                                     {% else %}
                                         <td class="status data complete" title="{% trans "Viewed" %}">
-                                            <div class="total_seconds_watched">{{ log.total_seconds_watched }} {% trans "secs" %}</div>
+                                            <div class="total_seconds_watched">100%</div>
                                     {% endif %}
-                                    {% if log %}
-                                            <div class="points">{{ log.points }} {% trans "points" %}</div>
+                                    {% if student.video_logs|get_item:video.youtube_id  %}
+                                            <div class="points">{{ student.video_logs|get_item:video.youtube_id|get_item:"points"  }} {% trans "points" %}</div>
+                                    {% endif %}
                                         </td>
-                                    {% endif %}
                                 {% endfor %}
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-        </div>
         {% endblock video_data %}
         {% endif %}
-    {% else %}
-        <div style="clear: both;"></div>
-        <p><div class="subtitle">{% trans "Please select a group and topic above." %}</div></p>
     {% endif %}
-</div> 
 {% endblock content %}
 
 {% block endjs %}{{ block.super }}
@@ -284,17 +283,10 @@ $(function() {
         $("th.username").each(function () {
             $(this).height(cell_height);
         });
-        
-        
     });
-        
     $(window).resize(function() {
-        $('.headrowuser').height($('.headrow.data').height());
+        $('.headrowuser').height($('.headrow.data').height()+1);
     }).resize();
-    
-    
 });
 </script>
 {% endblock endjs %}
-
-  
