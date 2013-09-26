@@ -128,7 +128,7 @@ class FacilityUser(SyncedModel):
             # Can't save a cached password from a hash, so just make sure there is none.
             # Note: Need to do this, even if they're not enabled--we don't want to risk
             #   being out of sync (if people turn on/off/on the feature
-            CachedPassword.invalidate_password_cache(user=self)
+            CachedPassword.invalidate_cached_password(user=self)
 
         else:
             n_iters = settings.PASSWORD_ITERATIONS_TEACHER_SYNCED if self.is_teacher else settings.PASSWORD_ITERATIONS_STUDENT_SYNCED

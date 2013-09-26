@@ -336,7 +336,8 @@ if not CENTRAL_SERVER and os.path.exists(PROJECT_PATH + "/tests/loadtesting/"):
 
 TEST_RUNNER = 'kalite.shared.testing.testrunner.KALiteTestRunner'
 
-FAST_TESTS_ONLY = getattr(local_settings, "FAST_TESTS_ONLY", False)
+TESTS_TO_SKIP = getattr(local_settings, "TESTS_TO_SKIP", ["long"])  # can be
+assert not (set(TESTS_TO_SKIP) - set(["fast", "medium", "long"])), "TESTS_TO_SKIP must contain only 'fast', 'medium', and 'long'"
 
 AUTO_LOAD_TEST = getattr(local_settings, "AUTO_LOAD_TEST", False)
 assert not AUTO_LOAD_TEST or not CENTRAL_SERVER, "AUTO_LOAD_TEST only on local server"
