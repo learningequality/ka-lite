@@ -274,6 +274,7 @@ if CACHE_TIME != 0:  # None can mean infinite caching to some functions
 # Features
 ########################
 
+
 if CENTRAL_SERVER:
     # Used for accessing the KA API.
     #   By default, things won't work--local_settings needs to specify good values.
@@ -286,10 +287,12 @@ else:
     # TODO(jamalex): this will currently only work when caching is disabled, as the conditional logic is in the Django template
     USE_MPLAYER = getattr(local_settings, "USE_MPLAYER", False) if CACHE_TIME == 0 else False
 
-    # Should be a function that receives a video file (youtube ID), and returns a URL to a video stream
-    BACKUP_VIDEO_SOURCE = getattr(local_settings, "BACKUP_VIDEO_SOURCE", None)
-    BACKUP_THUMBNAIL_SOURCE = getattr(local_settings, "BACKUP_THUMBNAIL_SOURCE", None)
-    assert not BACKUP_VIDEO_SOURCE or CACHE_TIME == 0, "If BACKUP_VIDEO_SOURCE, then CACHE_TIME must be 0"
+# This has to be defined for main and central
+
+# Should be a function that receives a video file (youtube ID), and returns a URL to a video stream
+BACKUP_VIDEO_SOURCE = getattr(local_settings, "BACKUP_VIDEO_SOURCE", None)
+BACKUP_THUMBNAIL_SOURCE = getattr(local_settings, "BACKUP_THUMBNAIL_SOURCE", None)
+assert not BACKUP_VIDEO_SOURCE or CACHE_TIME == 0, "If BACKUP_VIDEO_SOURCE, then CACHE_TIME must be 0"
 
 
 ########################
