@@ -84,7 +84,7 @@ def get_device_counters(**kwargs):
     return device_counters
 
 
-def get_serialized_models(device_counters=None, limit=settings.SYNCING_MAX_RECORDS_PER_REQUEST, zone=None, include_count=False, dest_version=None):
+def get_models(device_counters=None, limit=settings.SYNCING_MAX_RECORDS_PER_REQUEST, zone=None, dest_version=None):
     """Serialize models for some intended version (dest_version)
     Default is our own version--i.e. include all known fields.
     If serializing for a device of a lower version, pass in that device's version!
@@ -147,18 +147,23 @@ def get_serialized_models(device_counters=None, limit=settings.SYNCING_MAX_RECOR
             # Make sure you send anything that HAS to be sent (i.e. send anything that is BELOW
             #   the max counter position that we do plan to send.  If we find things that we
             #   unexpectedly need to send, make sure to add room for them.
-            if counter_max is None:
-                # If we're sending something with counter=None, then this will set
-                #   the devicecounter above anything downstream, so these downstream items
-                #   must be sent NOW
-                remaining += max(0, (queryset.filter(counter__isnull=False).count() - remaining))
-            else:
-                # If we're sending something with counter=10, then anything with a lower
-                #   counter must be sent along with it.  So, squeeze it in
-                remaining += max(0, (queryset.filter(counter__lt=counter_max).count() - remaining))
+            if remaining is None:
+                new_models = queryset
 
-            # Grab up to (remaining) model instances, then decrease the remaining to the total limit remaining
-            new_models = queryset[:remaining]
+            else:
+                if counter_max is None:
+                    # If we're sending something with counter=None, then this will set
+                    #   the devicecounter above anything downstream, so these downstream items
+                    #   must be sent NOW
+                    remaining += max(0, (queryset.filter(counter__isnull=False).count() - remaining))
+                else:
+                    # If we're sending something with counter=10, then anything with a lower
+                    #   counter must be sent along with it.  So, squeeze it in
+                    remaining += max(0, (queryset.filter(counter__lt=counter_max).count() - remaining))
+
+                # Grab up to (remaining) model instances, then decrease the remaining to the total limit remaining
+                new_models = queryset[:remaining]
+
             if not new_models:
                 continue
 
@@ -171,11 +176,22 @@ def get_serialized_models(device_counters=None, limit=settings.SYNCING_MAX_RECOR
                     counter_max = max(counter_max, max(counters))
 
             models += new_models
-            remaining -= len(new_models)
+            if remaining is not None:
+                remaining -= len(new_models)
 
         # Must loop through all models (due to potential dependencies), but 
-        if remaining <= 0:
+        if remaining is not None and remaining <= 0:
             break
+
+    return models
+
+
+def get_serialized_models(*args, **kwargs):
+    from securesync.devices.models import Device
+
+    models = get_models(*args, **kwargs)
+    dest_version = kwargs.get("dest_version", Device.get_own_device().get_version())
+    include_count = kwargs.get("include_count", False)
 
     # serialize the models we found
     serialized_models = serialize(models, ensure_ascii=False, dest_version=dest_version)

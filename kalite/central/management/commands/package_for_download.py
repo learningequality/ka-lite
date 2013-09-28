@@ -34,7 +34,7 @@ from securesync.management.commands.initdevice import Command as InitCommand
 from securesync.models import Zone, DeviceZone, Device, ChainOfTrust, ZoneInvitation
 from settings import LOG as logging
 from utils.general import get_module_source_file
-from utils.platforms import system_script_extension, system_specific_zipping, system_specific_unzipping
+from utils.platforms import is_windows, system_script_extension, system_specific_zipping, system_specific_unzipping
 
 
 def install_from_package(install_json_file, signature_file, zip_file, dest_dir=None):
@@ -100,6 +100,14 @@ class Command(BaseCommand):
             help='Zone information to include',
             metavar="ZONE"
         ),
+        make_option('-i', '--include-data',
+            action='store_true',
+            dest='include_data',
+            default=False,
+            help='Include all data currently in a zone, into the installation json blob',
+            metavar="INCLUDE_DATA"
+        ),
+
         make_option('-a', '--auto-unpack',
             action='store',
             dest='auto_unpack',
@@ -122,10 +130,11 @@ class Command(BaseCommand):
 
         # Pre-zip prep #1:
         #   Create the json data file
-        def create_json_file():
+        def create_json_file(include_data):
             central_server = Device.get_central_server()
             if not zone_id:
                 models = [central_server] if central_server else []
+
             else:
                 # Get a chain of trust to the zone owner.
                 #   Because we're on the central server, this will
@@ -140,13 +149,18 @@ class Command(BaseCommand):
                 # This ordering of objects is a bit be hokey, but OK--invitation usually must be 
                 #   inserted before devicezones--but because it's not pointing to any devices,
                 #   it's OK to be at the end.
-                models = [central_server] + chain.objects() + [new_invitation]
+                # Note that the central server will always be at the front of the chain of trust,
+                #   so no need to explicitly include.
+                models = chain.objects() + [new_invitation]
 
+                # 
+                if include_data:
+                    models += engine.get_models(zone=zone, limit=None)  # get all models on this zone
             models_file = tempfile.mkstemp()[1]
             with open(models_file, "w") as fp:
                 fp.write(engine.serialize(models))
             return models_file
-        models_file = create_json_file()
+        models_file = create_json_file(options["include_data"])
 
         # Pre-zip prep #2:
         #   Create the install script.
@@ -193,8 +207,9 @@ class Command(BaseCommand):
                 fp.write("start /b /wait python.exe %s" % self.install_py_file)
 
             # Change permissions--I WISH THIS WORKED!!
-            for fil in install_files.values():
-                os.chmod(fil, 0775)
+            if not is_windows():
+                for fil in install_files.values():
+                    os.chmod(fil, 0775)
 
             return install_files
         install_files = create_install_files()
