@@ -118,6 +118,7 @@ def get_models(device_counters=None, limit=settings.SYNCING_MAX_RECORDS_PER_REQU
     #   Models within a device are highly dependent (on explicit dependencies,
     #   as well as counter position)
     for device_id, counter in device_counters.items():
+        device = Device.objects.get(pk=device_id)
 
         # We need to track the min counter position (send things above this value)
         #   and the max (we're sending up to this value, so make sure nothing 
@@ -134,10 +135,8 @@ def get_models(device_counters=None, limit=settings.SYNCING_MAX_RECORDS_PER_REQU
 
             # for trusted (central) device, only include models with the correct fallback zone
             if not device.in_zone(zone):
-                if device.is_trusted():
-                    queryset = queryset.filter(zone_fallback=zone)
-                else:
-                    continue
+                assert device.is_trusted(), "Should never include devices not ACTUALLY in the zone, except trusted devices."
+                queryset = queryset.filter(zone_fallback=zone)
 
             # Now select relevant items that have been updated since the last sync event
             queryset = queryset.filter(Q(counter__gte=counter_min) | Q(counter__isnull=True))
