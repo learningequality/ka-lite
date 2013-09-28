@@ -49,7 +49,7 @@
                 {% if not facilities and not devices %}
                     <li>
                         <a class="zone-delete-link" href="{% url delete_zone org_id=org.id zone_id=zone.id %}" onclick="return confirm('Are you sure you want to delete {{zone.name}}?')">
-                            <i class="icon-trash" title="Delete this zone."></i>
+                            <i class="icon-trash" title="Delete this sharing network."></i>
                         </a>    
                     </li>
                 {% endif %}
