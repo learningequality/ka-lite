@@ -1,8 +1,12 @@
 # based on: http://www.djangosnippets.org/snippets/1926/
-from django.template import Library, Node, TemplateSyntaxError
+from django import template
 from django.db.models.query import QuerySet
+from django.template import Library, Node, TemplateSyntaxError
+from django.template.defaultfilters import floatformat
 from django.utils import simplejson
 from django.utils.safestring import mark_safe
+
+import settings
 
 
 register = Library()
@@ -22,9 +26,11 @@ class RangeNode(Node):
         context[self.context_name] = range(*resolved_ranges)
         return ""
 
+
 @register.filter
 def get_item(dictionary, key):
     return dictionary.get(key)
+
 
 @register.tag
 def mkrange(parser, token):
@@ -80,10 +86,6 @@ def jsonify(object):
     if isinstance(object, QuerySet):
         return serialize('json', object)
     return mark_safe(simplejson.dumps(object))
-
-from django import template
-
-from django.template.defaultfilters import floatformat
 
 
 @register.filter
