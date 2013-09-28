@@ -315,10 +315,22 @@ class DeferredCountSyncedModel(DeferredSignSyncedModel):
     Defer incrementing counters until syncing.
     """
     def save(self, increment_counters=None, *args, **kwargs):
+        remove_counter = False   # see comment below
+
         if increment_counters is None:
             # We need to set counters upon the first save, or if we're on the central server.
+            #   Need the counter on the first save in order to create a UUID
             increment_counters = settings.CENTRAL_SERVER or not self.id
+            remove_counter = not self.id
         super(DeferredCountSyncedModel, self).save(*args, increment_counters=increment_counters, **kwargs)
+
+        if remove_counter:
+            # On create, we have to add a counter value in order to set the ID.
+            # In order to simplify syncing later, remove that counter after that save.
+            #
+            # You get a double-save now, but in the end... it's all good.
+            self.counter = False
+            super(DeferredCountSyncedModel, self).save(*args, increment_counters=False, **kwargs)
 
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         app_label = "securesync"
