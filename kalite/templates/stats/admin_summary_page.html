@@ -1,16 +1,16 @@
 {% extends "control_panel/base.html" %}
 {% load i18n %}
 
-{% block title %}Zones with recent data uploads{% endblock title %}
+{% block title %}Sharing Networks with recent data uploads{% endblock title %}
 
 {% block control_panel_content %}
 <div id="zone_container">
         
     <div class="sync_sessions">
-        <h2>Most active zones and devices (last {{ days }} days)</h2>
+        <h2>Most active sharing networks and devices (last {{ days }} days)</h2>
         <table class="simple-table">
             <tr>
-                <th width="250px">Zone Name</th>
+                <th width="250px">Sharing Network Name</th>
                 <th width="200px">Last upload date</th>
                 <th width="100px"># upload sessions</th>
                 <th width="100px"># models (total)</th>
