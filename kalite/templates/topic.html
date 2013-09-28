@@ -7,29 +7,29 @@
 {% block content %}
 
 {% block headcss %}
-<style>
-.long-description {
-    margin-top: 5px;
-}
-li {
-   font-size: 15px;
-   line-height: 23px;
-   margin-left: 10px;
-}
-</style>
+    <style>
+    .long-description {
+        margin-top: 5px;
+    }
+    li {
+       font-size: 15px;
+       line-height: 23px;
+       margin-left: 10px;
+    }
+    </style>
 {% endblock headcss %}
 
 
-{% block bodyjs %}
-<script type="text/javascript">
-$('.video-unavailable').removeAttr("href"); 
+{% block headjs %}
+    <script type="text/javascript">
+    $(function() {
+        $('.video-unavailable').removeAttr("href"); 
 
-// TODO(bcipolli): use javascript to translate here
-$('a.video-unavailable').attr('title', '{% trans "This video is not downloaded." %}');
-</script>
-<script>
-</script>
-{% endblock bodyjs %}
+        // TODO(bcipolli): use javascript to translate here
+        $('a.video-unavailable').attr('title', '{% trans "This video is not downloaded." %}');
+    });
+    </script>
+{% endblock headjs %}
 
 
 <h1 class="title-header">
