@@ -257,6 +257,7 @@ def install_multiple_server_edition(request):
         "version": kalite.VERSION,
         "platform": get_request_var(request, "platform", "all"),
         "locale": get_request_var(request, "locale", "en"),
+        "include_data": bool(get_request_var(request, "include_data", True)),
     }
 
     # Loop over orgs and zones, building the dict of all zones

@@ -467,8 +467,13 @@ class ChainOfTrust(object):
         as well as supporting objects (such as DeviceMetadata)
         """
         device_list = [dict["device"] for dict in self.chain]
+        device_list += [self.zone_owner]  # make sure the zone owner makes it on there!
+
         invitation_list = [dict["zone_invitation"] for dict in self.chain if dict["zone_invitation"]]
+        invitation_list += ZoneInvitation.objects.filter(used_by=self.zone_owner)
+
         devicezone_list = [dict["device_zone"] for dict in self.chain if dict["device_zone"]]
+        devicezone_list += DeviceZone.objects.filter(device=self.zone_owner)
 
         # We return in this order because we know this order is necessary for serializing
         #   objects (due to interdependencies)
