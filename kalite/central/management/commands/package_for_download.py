@@ -140,6 +140,7 @@ class Command(BaseCommand):
                 #   Because we're on the central server, this will
                 #   simply be the central server, but in the future
                 #   this would return an actual chain.
+                logging.debug("Generating a zone invitation...")
                 zone = Zone.objects.get(id=zone_id)
                 chain = ChainOfTrust(zone=zone)
                 assert chain.validate()
@@ -155,7 +156,12 @@ class Command(BaseCommand):
 
                 # 
                 if include_data:
+                    logging.debug("Serializing entire dataset...")
+                    devices = Device.objects.by_zone(zone)
+                    devicezones = DeviceZone.objects.filter(zone=zone)
+                    models += list(devices) + list(devicezones)
                     models += engine.get_models(zone=zone, limit=None)  # get all models on this zone
+
             models_file = tempfile.mkstemp()[1]
             with open(models_file, "w") as fp:
                 fp.write(engine.serialize(models))
