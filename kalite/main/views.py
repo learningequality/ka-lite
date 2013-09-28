@@ -29,7 +29,7 @@ from settings import LOG as logging
 from shared import topic_tools
 from shared.decorators import require_admin, backend_cache_page
 from shared.jobs import force_job
-from shared.videos import get_video_urls
+from shared.videos import get_video_urls, is_video_on_disk
 from utils.internet import am_i_online, is_loopback_connection, JsonResponse
 
 
@@ -110,12 +110,6 @@ def topic_context(topic):
     exercises = topic_tools.get_exercises(topic)
     topics    = topic_tools.get_live_topics(topic)
 
-    # Get video counts if they'll be used, on-demand only.
-    #
-    # Check in this order so that the initial counts are always updated
-    if topic_tools.video_counts_need_update() or not 'nvideos_local' in topic:
-        (topic,_,_) = topic_tools.get_video_counts(topic=topic, videos_path=settings.CONTENT_ROOT)
-
     my_topics = [dict((k, t[k]) for k in ('title', 'path', 'nvideos_local', 'nvideos_known')) for t in topics]
 
     context = {
@@ -134,7 +128,7 @@ def topic_context(topic):
 @render_to("video.html")
 def video_handler(request, video, format="mp4", prev=None, next=None):
 
-    video_on_disk = topic_tools.is_video_on_disk(video['youtube_id'])
+    video_on_disk = is_video_on_disk(video['youtube_id'])
     video_exists = video_on_disk or bool(settings.BACKUP_VIDEO_SOURCE)
 
     if not video_exists:
@@ -149,16 +143,14 @@ def video_handler(request, video, format="mp4", prev=None, next=None):
     video["stream_type"] = "video/%s" % format
 
     if video_exists and not video_on_disk:
-        if not "stream_url" in video:
-            import pdb; pdb.set_trace()
         messages.success(request, "Got video content from %s" % video["stream_url"])
 
     context = {
         "video": video,
         "title": video["title"],
-        "video_exists": video_exists,
         "prev": prev,
         "next": next,
+        "backup_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),
         "use_mplayer": settings.USE_MPLAYER and is_loopback_connection(request),
     }
     return context
