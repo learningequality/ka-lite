@@ -295,7 +295,6 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
                         points=int(points),
                         complete=completed,
                         completion_timestamp=date_completed,
-                        completion_counter=datediff(date_completed, start_date, units="seconds"),
                     )
                     elog.save(update_userlog=False)
 
@@ -431,7 +430,6 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
                         points=points,
                         complete=(pct_completed == 100.),
                         completion_timestamp=date_completed,
-                        completion_counter=datediff(date_completed, start_date, units="seconds"),
                     )
                     vlog.save(update_userlog=False)  # avoid userlog issues
 
