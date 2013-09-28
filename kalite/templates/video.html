@@ -19,6 +19,16 @@
 {% endblock headcss %}
 
 {% block headjs %}
+    <script src="{% static "js/videoplayer.js" %}"></script>
+
+    <script>
+    $(function() {
+    
+        // Keep this lean, in order to reduce caching filesize    
+        initialize_video("{{ video.youtube_id }}");
+
+    });
+    </script>
 
     <!--[if IE]>
     <script src="{% static "video-js-4/video.js" %}"></script>
@@ -33,6 +43,7 @@
         _V_.options.flash.swf = "{% static "video-js/video-js.swf" %}";
     </script>
     <!-- <![endif]-->
+
 {% endblock headjs %}
 
 
@@ -91,16 +102,3 @@
 {% endif %}
 
 {% endblock content %}
-
-{% block bodyjs %}
-<script src="{% static "js/videoplayer.js" %}"></script>
-
-<script>
-$(function() {
-    
-    // Keep this lean, in order to reduce caching filesize    
-    initialize_video("{{ video.youtube_id }}");
-
-});
-</script>
-{% endblock bodyjs %}

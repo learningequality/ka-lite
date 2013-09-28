@@ -10,8 +10,13 @@
 {% block headjs %} {{ block.super }}
 <script type="text/javascript" src="{% static 'js/coachreports/d3.scatter.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/coachreports/scatter_view.js' %}"></script>
+<script>
+    setTimeout( function() {
+        $("#xaxis").change(   function() { plotTopics(null); });
+        $("#yaxis").change(   function() { plotTopics(null); });
+    }, 200);
+</script>
 {% endblock headjs %}
-
 
 {% block headcss %} {{ block.super }}
 <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/scatter_view.css' %}" />
@@ -21,11 +26,11 @@
     X-Axis:
     <select id="xaxis" name="xaxis">
         {% block data_options %}
-        	<option value="">----</option>
+            <option value="">----</option>
                 {% for stat in stats %}
-            	    {% if stat.type == "number" and not stat.noscatter %}
-                		<option value="{{ stat.key }}"{% if stat.key = form|get_item:axis_value %} selected{% endif %}>{{ stat.name }}</option>
-	                {% endif %}
+                    {% if stat.type == "number" and not stat.noscatter %}
+                        <option value="{{ stat.key }}"{% if stat.key = form|get_item:axis_value %} selected{% endif %}>{{ stat.name }}</option>
+                    {% endif %}
                 {% endfor %}
         {% endblock %}
     </select>
@@ -34,12 +39,3 @@
         {% repeatblock data_options %}
     </select>
 {% endblock axis_dropdown %}
-
-{% block endjs %}{{ block.super }}
-<script>
-setTimeout( function() {
-	$("#xaxis").change(   function() { plotTopics(null); });
-	$("#yaxis").change(   function() { plotTopics(null); });
-}, 200);
-</script>
-{% endblock endjs %}
