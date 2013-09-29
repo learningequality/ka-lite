@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 import urllib
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
@@ -17,8 +15,11 @@ from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
 
 import settings
+from .forms import FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
+from .models import Facility, FacilityGroup
 from config.models import Settings
 from main.models import UserLog
+from securesync.devices.views import *
 from securesync.forms import FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
 from securesync.models import Facility, FacilityGroup
 from settings import LOG as logging
@@ -237,9 +238,9 @@ def login(request, facility):
             user = form.get_user()
 
             try:
-                UserLog.begin_user_activity(user, activity_type="login")  # Success! Log the event (ignoring validation failures)
+                UserLog.begin_user_activity(user, activity_type="login", language=request.language)  # Success! Log the event (ignoring validation failures)
             except ValidationError as e:
-                logging.debug("Failed to begin_user_activity upon login: %s" % e)
+                logging.error("Failed to begin_user_activity upon login: %s" % e)
             request.session["facility_user"] = user
             messages.success(request, _("You've been logged in! We hope you enjoy your time with KA Lite ") +
                                         _("-- be sure to log out when you finish."))
@@ -270,7 +271,7 @@ def logout(request):
         try:
             UserLog.end_user_activity(request.session["facility_user"], activity_type="login")
         except ValidationError as e:
-            logging.debug("Failed to end_user_activity upon logout: %s" % e)
+            logging.error("Failed to end_user_activity upon logout: %s" % e)
         del request.session["facility_user"]
     auth_logout(request)
     next = request.GET.get("next", reverse("homepage"))

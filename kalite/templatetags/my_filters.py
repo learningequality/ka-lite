@@ -1,8 +1,12 @@
 # based on: http://www.djangosnippets.org/snippets/1926/
-from django.template import Library, Node, TemplateSyntaxError
+from django import template
 from django.db.models.query import QuerySet
+from django.template import Library, Node, TemplateSyntaxError
+from django.template.defaultfilters import floatformat
 from django.utils import simplejson
 from django.utils.safestring import mark_safe
+
+import settings
 
 
 register = Library()
@@ -22,9 +26,11 @@ class RangeNode(Node):
         context[self.context_name] = range(*resolved_ranges)
         return ""
 
+
 @register.filter
 def get_item(dictionary, key):
     return dictionary.get(key)
+
 
 @register.tag
 def mkrange(parser, token):
@@ -81,10 +87,6 @@ def jsonify(object):
         return serialize('json', object)
     return mark_safe(simplejson.dumps(object))
 
-from django import template
-
-from django.template.defaultfilters import floatformat
-
 
 @register.filter
 def percent(value, precision):
@@ -118,3 +120,7 @@ def format_name(user, format="first_last"):
 
     else:
         raise NotImplementedError("Unrecognized format string: %s" % format)
+
+@register.simple_tag
+def central_server_api(path, securesync=False):
+    return "%s://%s%s" % ((settings.SECURESYNC_PROTOCOL if securesync else "http"), settings.CENTRAL_SERVER_HOST, path)

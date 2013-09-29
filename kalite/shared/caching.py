@@ -7,12 +7,15 @@ from django.test.client import Client
 
 import settings
 from settings import LOG as logging
+from shared import topic_tools
 from utils.internet import generate_all_paths
-from utils import topic_tools
 
+
+def caching_is_enabled():
+    return settings.CACHE_TIME != 0
 
 def get_web_cache():
-    return get_cache("web_cache") if settings.CACHE_TIME != 0 else None
+    return get_cache("web_cache") if caching_is_enabled() else None
 
 
 def get_cache_key(path=None, url_name=None, cache=None, failure_ok=False):
@@ -42,7 +45,10 @@ def has_cache_key(path=None, url_name=None, cache=None):
 
     assert (path or url_name) and not (path and url_name), "Must have path or url_name parameter, but not both"
 
-    return get_web_cache().has_key( get_cache_key(path=path, url_name=url_name, failure_ok=True, cache=cache) )
+    if not cache:
+        return False
+    else:
+        return cache.has_key( get_cache_key(path=path, url_name=url_name, failure_ok=True, cache=cache) )
 
 
 def create_cache(path=None, url_name=None, cache=None, force=False):

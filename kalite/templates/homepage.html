@@ -113,8 +113,15 @@ if (window.parent.frames.length === 0) {
     <div class="vertical-shadow suggested-action">
         <h2 class="suggested-action-title">{% trans "Learn by watching videos!" %}</h2>
         <p class="topic-list">
-            {% for topic in topics %}
-            <a href="{{ topic.path }}" class="topic-link topic-{% if topic.nvideos_local == 0 %}un{% endif %}available" title="{{topic.nvideos_local}}/{{topic.nvideos_known}} {% trans "video(s) are downloaded." %}">{% trans topic.title %}</a>
+            {% for subtopic in topics %}
+            {% if backup_vids_available and subtopic.nvideos_local != subtopic.nvideos_known %}
+                <a href="{{ subtopic.path }}" class="topic-available client-online-only" title="{{subtopic.nvideos_known}}/{{subtopic.nvideos_known}} {% trans "video(s) are available." %}">
+                    {% trans subtopic.title %}
+                </a>
+            {% endif %}
+            <a href="{{ subtopic.path }}" class="{% if backup_vids_available and subtopic.nvideos_local != subtopic.nvideos_known %}not-client-online-only {% endif %}topic-{% if subtopic.nvideos_local == 0 %}un{% endif %}available" title="{{subtopic.nvideos_local}}/{{subtopic.nvideos_known}} {% trans "video(s) are downloaded." %}">
+                {% trans subtopic.title %}
+            </a>
             {% endfor %}
         </p>
     </div>

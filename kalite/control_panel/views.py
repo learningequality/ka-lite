@@ -4,7 +4,6 @@ from annoying.functions import get_object_or_None
 from collections import OrderedDict, namedtuple
 
 from django.contrib import messages
-from django.core import serializers
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
@@ -16,7 +15,12 @@ from django.utils.translation import ugettext as _
 
 import settings
 from .forms import ZoneForm, UploadFileForm
-from central.models import Organization
+try:
+    from central.models import Organization
+except:
+    from django.db import models
+    class Organization(models.Model):
+        pass
 from coachreports.views import student_view_context
 from main import topicdata
 from main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
@@ -59,34 +63,39 @@ def zone_management(request, zone_id, org_id=None):
     own_device = Device.get_own_device()
 
     # Accumulate device data
-    device_data = dict()
-    for device in Device.objects.filter(devicezone__zone=zone):
+    device_data = OrderedDict()
+    for device in Device.objects.filter(devicezone__zone=zone).order_by("devicemetadata__is_demo_device", "name"):
 
         user_activity = UserLogSummary.objects.filter(device=device)
         sync_sessions = SyncSession.objects.filter(client_device=device)
-        if not settings.CENTRAL_SERVER and device.id != own_device.id:
+        if not settings.CENTRAL_SERVER and device.id != own_device.id:  # Non-local sync sessions unavailable on distributed server
             sync_sessions = None
-        
+
+        exercise_activity = ExerciseLog.objects.filter(signed_by=device)
+
         device_data[device.id] = {
             "name": device.name or device.id,
+            "is_demo_device": device.devicemetadata.is_demo_device,
             "num_times_synced": sync_sessions.count() if sync_sessions is not None else None,
             "last_time_synced": sync_sessions.aggregate(Max("timestamp"))["timestamp__max"] if sync_sessions is not None else None,
-            "last_time_used":   None if user_activity.count() == 0 else user_activity.order_by("-end_datetime")[0],
-            "counter": device.get_counter(),
+            "is_demo_device": device.get_metadata().is_demo_device,
+            "last_time_used":   exercise_activity.order_by("-completion_timestamp")[0:1] if user_activity.count() == 0 else user_activity.order_by("-end_datetime")[0],
+            "counter": device.get_counter_position(),
         }
 
     # Accumulate facility data
-    facility_data = dict()
-    for facility in Facility.objects.by_zone(zone):
+    facility_data = OrderedDict()
+    for facility in Facility.objects.by_zone(zone).order_by("name"):
 
-        user_activity = UserLogSummary.objects.filter(user__in=FacilityUser.objects.filter(facility=facility))
+        user_activity = UserLogSummary.objects.filter(user__facility=facility)
+        exercise_activity = ExerciseLog.objects.filter(user__facility=facility)
 
         facility_data[facility.id] = {
             "name": facility.name,
             "num_users":  FacilityUser.objects.filter(facility=facility).count(),
             "num_groups": FacilityGroup.objects.filter(facility=facility).count(),
             "id": facility.id,
-            "last_time_used":   None if user_activity.count() == 0 else user_activity.order_by("-end_datetime")[0],
+            "last_time_used":   exercise_activity.order_by("-completion_timestamp")[0:1] if user_activity.count() == 0 else user_activity.order_by("-end_datetime")[0],
         }
 
     return {
@@ -148,6 +157,13 @@ def facility_usage(request, facility_id, org_id=None, zone_id=None, frequency=No
 
     (student_data, group_data) = _get_user_usage_data(students, period_start=period_start, period_end=period_end)
     (teacher_data, _) = _get_user_usage_data(teachers, period_start=period_start, period_end=period_end)
+
+    # Total hack for CSV-only
+    if request.GET.get("format") == "csv":
+        (period_start, period_end) = _get_date_range(frequency)
+    else:
+        period_start = None
+        period_end = None
 
     return {
         "org": org,
@@ -274,17 +290,22 @@ def _get_user_usage_data(users, period_start=None, period_end=None):
 
 @require_authorized_admin
 @render_to("control_panel/device_management.html")
-def device_management(request, device_id, org_id=None, zone_id=None):
+def device_management(request, device_id, org_id=None, zone_id=None, n_sessions=10):
     org = get_object_or_None(Organization, pk=org_id) if org_id else None
     zone = get_object_or_None(Zone, pk=zone_id) if zone_id else None
     device = get_object_or_404(Device, pk=device_id)
 
-    sync_sessions = SyncSession.objects.filter(client_device=device).order_by("-timestamp")
+    sync_sessions = SyncSession.objects \
+        .filter(client_device=device) \
+        .order_by("-timestamp")
+
     return {
         "org": org,
         "zone": zone,
         "device": device,
-        "sync_sessions": sync_sessions,
+        "sync_sessions": sync_sessions[:n_sessions],
+        "total_sessions": sync_sessions.count(), 
+        "n_sessions": min(sync_sessions.count(), n_sessions),
     }
 
 
@@ -366,14 +387,16 @@ def account_management(request, org_id=None):
             UserLog.end_user_activity(user, activity_type="coachreport")
         except ValidationError as e:
             # Never report this error; don't want this logging to block other functionality.
-            logging.debug("Failed to update student userlog activity: %s" % e)
+            logging.error("Failed to update student userlog activity: %s" % e)
 
     return student_view_context(request)
 
 
 def get_users_from_group(group_id, facility=None):
     if group_id == "Ungrouped":
-        return FacilityUser.objects.filter(facility=facility,group__isnull=True)
+        return FacilityUser.objects \
+            .filter(facility=facility, group__isnull=True) \
+            .order_by("first_name", "last_name")
     elif not group_id:
         return []
     else:
@@ -382,7 +405,9 @@ def get_users_from_group(group_id, facility=None):
 
 def user_management_context(request, facility_id, group_id, page=1, per_page=25):
     facility = Facility.objects.get(id=facility_id)
-    groups = FacilityGroup.objects.filter(facility=facility)
+    groups = FacilityGroup.objects \
+        .filter(facility=facility) \
+        .order_by("name")
 
     user_list = get_users_from_group(group_id, facility=facility)
 
@@ -419,15 +444,3 @@ def user_management_context(request, facility_id, group_id, page=1, per_page=25)
     if users:
         context["pageurls"] = {"next_page": next_page_url, "prev_page": previous_page_url}
     return context
-
-
-@require_authorized_admin
-@render_to("control_panel/admin_summary_page.html")
-def admin_summary_page(request, org_id=None):
-    zo = Zone.objects \
-        .annotate(nmodels=Sum("devicezone__device__client_sessions__models_uploaded")) \
-        .filter(nmodels__gt=0).order_by("-nmodels") \
-        .values("name", "id", "nmodels", "organization__id")
-    return {
-        "zones": zo,
-    }

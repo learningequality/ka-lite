@@ -10,6 +10,21 @@
 {% block headjs %} {{ block.super }}
 <script type="text/javascript" src="{% static 'js/coachreports/d3.multitimeseries.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/coachreports/timeline_view.js' %}"></script>
+<script>
+    var ystats = {
+        "ex:completion_timestamp": "pct_mastery",
+        "vid:completion_timestamp": "pct_mastery",
+        "user:last_active_datetime": "user:total_seconds"
+    }
+
+    $(function() {
+        $("#xaxis").change(function() {
+            $("#yaxis option").prop("disabled", true);
+            $("#yaxis option[value='" + ystats[$("#xaxis").val()] + "']").prop("disabled", false).prop("selected", true);
+            plotTopics(null);
+        });
+    });
+</script>
 {% endblock headjs %}
 
 
@@ -35,21 +50,3 @@
             {% endfor %}
     </select>
 {% endblock axis_dropdown %}
-
-{% block endjs %}{{ block.super }}
-<script>
-var ystats = {
-    "ex:completion_timestamp": "pct_mastery",
-    "vid:completion_timestamp": "pct_mastery",
-    "user:last_active_datetime": "user:total_seconds"
-}
-
-setTimeout(function() {
-    $("#xaxis").change(function() {
-        $("#yaxis option").prop("disabled", true);
-        $("#yaxis option[value='" + ystats[$("#xaxis").val()] + "']").prop("disabled", false).prop("selected", true);
-        plotTopics(null);
-    });
-}, 300);
-</script>
-{% endblock endjs %}

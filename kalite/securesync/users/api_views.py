@@ -3,7 +3,6 @@ import json
 import re
 import uuid
 
-from django.core import serializers
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.contrib.messages.api import get_messages
@@ -19,9 +18,8 @@ import version
 from .models import *
 from config.models import Settings
 from main.models import VideoLog, ExerciseLog, VideoFile
-from shared import serializers
 from shared.decorators import distributed_server_only
-from utils.internet import allow_jsonp, api_handle_error_with_json, am_i_online, JsonResponse
+from utils.internet import allow_jsonp, api_handle_error_with_json, JsonResponse
 
 
 # On pages with no forms, we want to ensure that the CSRF cookie is set, so that AJAX POST
@@ -69,13 +67,13 @@ def status(request):
         "messages": message_dicts,
     }
     # Override properties using facility data
-    if "facility_user" in request.session:
+    if "facility_user" in request.session:  # Facility user
         user = request.session["facility_user"]
         data["is_logged_in"] = True
         data["username"] = user.get_name()
         data["points"] = VideoLog.get_points_for_user(user) + ExerciseLog.get_points_for_user(user)
     # Override data using django data
-    if request.user.is_authenticated():
+    if request.user.is_authenticated():  # Django user
         data["is_logged_in"] = True
         data["username"] = request.user.username
 

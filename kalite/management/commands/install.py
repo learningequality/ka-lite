@@ -22,8 +22,10 @@ from django.core.management.base import BaseCommand, CommandError
 
 import settings
 import version
-from kalite.utils.general import get_host_name
-from kalite.utils.platforms import is_windows, system_script_extension
+from securesync.management.commands.initdevice import load_data_for_offline_install, Command as InitCommand
+from securesync.models import Zone
+from utils.general import get_host_name
+from utils.platforms import is_windows, system_script_extension
 
 
 def raw_input_yn(prompt):
@@ -213,13 +215,12 @@ class Command(BaseCommand):
 
                 if not validate_username(username):
                     raise CommandError("Username must contain only letters, digits, and underscores, and start with a letter.\n")
-                elif not password:
-                    raise CommandError("Password cannot be blank.\n")
 
         ########################
         # Now do stuff
         ########################
 
+        # Move database file (if exists)
         if install_clean and os.path.exists(database_file):
             # This is an overwrite install; destroy the old db
             dest_file = tempfile.mkstemp()[1]
@@ -232,21 +233,43 @@ class Command(BaseCommand):
         # Should clean_pyc for (clean) reinstall purposes
         call_command("clean_pyc", migrate=True, interactive=False, verbosity=options.get("verbosity"))
 
-        # 
-        call_command("syncdb", migrate=True, interactive=False, verbosity=options.get("verbosity"))
+        # Migrate the database
+        call_command("syncdb", interactive=False, verbosity=options.get("verbosity"))
+        call_command("migrate", merge=True, verbosity=options.get("verbosity"))
 
+        # Install data
         if install_clean:
             call_command("generatekeys", verbosity=options.get("verbosity"))
 
-            call_command("createsuperuser", username=username, email="dummy@learningequality.org", interactive=False, verbosity=options.get("verbosity"))
-            admin = User.objects.get(username=username)
-            admin.set_password(password)
-            admin.save()
+            if options["password"]:  # blank password (non-interactive) means don't create a superuser
+                call_command("createsuperuser", username=username, email="dummy@learningequality.org", interactive=False, verbosity=options.get("verbosity"))
+                admin = User.objects.get(username=username)
+                admin.set_password(password)
+                admin.save()
 
             call_command("initdevice", hostname, description, verbosity=options.get("verbosity"))
 
+        elif os.path.exists(InitCommand.install_json_file):
+            # This is a pathway to install zone-based data on a software upgrade.
+            sys.stdout.write("Loading zone data from '%s'\n" % InitCommand.install_json_file)
+            load_data_for_offline_install(in_file=InitCommand.install_json_file)
+
+        elif Zone.objects.all().count() == 0:
+            # This is another pathway to install zone-based data on a software upgrade.
+            #   It won't GET the central server object (necessary for easy upgrades),
+            #   but that can be packaged inside the update itself.
+            call_command("generate_zone")
+
+        # Move scripts
+        for script_name in ["start", "stop", "run_command"]:
+            script_file = script_name + system_script_extension()
+            dest_dir = os.path.join(settings.PROJECT_PATH, "..")
+            src_dir = os.path.join(dest_dir, "scripts")
+            shutil.copyfile(os.path.join(src_dir, script_file), os.path.join(dest_dir, script_file))
+            shutil.copystat(os.path.join(src_dir, script_file), os.path.join(dest_dir, script_file))
+
         sys.stdout.write("\n")
         sys.stdout.write("CONGRATULATIONS! You've finished installing the KA Lite server software.\n")
-        sys.stdout.write("\tPlease run './start.%s' to start the server, and then load the url\n" % system_script_extension())
+        sys.stdout.write("\tPlease run './start%s' to start the server, and then load the url\n" % system_script_extension())
         sys.stdout.write("\thttp://127.0.0.1:%d/ to complete the device configuration.\n" % settings.PRODUCTION_PORT)
         sys.stdout.write("\n")

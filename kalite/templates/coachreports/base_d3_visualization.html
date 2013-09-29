@@ -31,33 +31,32 @@ You must:
 <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/plugins/ui.dynatree.defaultoff.css' %}" />
 
 <style>
-#loading {
-    width:100%;
-    font-size:12pt;
-    text-align:center;
-}
-.google-chart {
-    width: 900px; 
-    height: 500px;
-}
-.subtitle {
-    float: left;
-}
+    #loading {
+        width:100%;
+        font-size:12pt;
+        text-align:center;
+    }
+    .google-chart {
+        width: 900px; 
+        height: 500px;
+    }
+    .subtitle {
+        float: left;
+    }
 
-#summary {
-    border: 1px black solid;
-    position: absolute;
-    background-color: white;
-}
-#topic_header {
-    margin-left: 25px;
-    margin-bottom: 0px;
-}
-#topic_paths_note {
-    font-weight:normal;
-    color:red;
-}
-
+    #summary {
+        border: 1px black solid;
+        position: absolute;
+        background-color: white;
+    }
+    #topic_header {
+        margin-left: 25px;
+        margin-bottom: 0px;
+    }
+    #topic_paths_note {
+        font-weight:normal;
+        color:red;
+    }
 </style>
 {% endblock headcss %}
 
@@ -69,91 +68,157 @@ You must:
 <script type="text/javascript" src="{% static 'js/d3.v3.min.js' %}"></script>
 
 <script type="text/javascript">
-// Scripts for mapping our stats into text names and Google vis types.
-function stat2name(stat) {
-    var children = $("#xaxis option");
-    for (opt in children) {
-        if (children[opt].value == stat) {        
-            return children[opt].text;
+    // Scripts for mapping our stats into text names and Google vis types.
+    function stat2name(stat) {
+        var children = $("#xaxis option");
+        for (opt in children) {
+            if (children[opt].value == stat) {        
+                return children[opt].text;
+            }
         }
+
+        var children = $("#yaxis option");
+        for (opt in children) {
+            if (children[opt].value == stat) {        
+                return children[opt].text;
+            }
+        }
+        return null;
     }
 
-    var children = $("#yaxis option");
-    for (opt in children) {
-        if (children[opt].value == stat) {        
-            return children[opt].text;
+    function stat2type(stat) {
+        switch (stat) {
+            {% for stat in stats %}
+            case "{{ stat.key }}": return "{{ stat.type }}";
+            {% endfor %}
         }
+        return null;    
     }
-    return null;
-}
-
-function stat2type(stat) {
-    switch (stat) {
-        {% for stat in stats %}
-        case "{{ stat.key }}": return "{{ stat.type }}";
-        {% endfor %}
-    }
-    return null;    
-}
 </script>
 
 <script type="text/javascript">
-function plotJsonData(chart_div, base_url, props) {
-    /* Called whenever json data blob returns (via AJAX)
-       NOTE: you have to implement drawJsonChart(chart_div, json, xaxis, yaxis); */
+    function plotJsonData(chart_div, base_url, props) {
+        /* Called whenever json data blob returns (via AJAX)
+           NOTE: you have to implement drawJsonChart(chart_div, json, xaxis, yaxis); */
     
-    // Scrub data
-    if (!props["user"])     { props["user"]     = "{{ form.user|escapejs }}"; }
-    if (!props["topic_path"])  { props["topic_path"]  = {{ form.topic_path|jsonify }}; }
+        // Scrub data
+        if (!props["user"])     { props["user"]     = "{{ form.user|escapejs }}"; }
+        if (!props["topic_path"])  { props["topic_path"]  = {{ form.topic_path|jsonify }}; }
 
-    if (!props["xaxis"] || !props["yaxis"] || !props["topic_path"] || props["topic_path"].length==0) { // one of the ---- is selected
-        return false; 
-    }
-    
-    // Get the data
-    var url = base_url + "?";
-    url = url + $.param(props, true);
-
-    clear_message("id_coachreports")
-    doRequest(url)
-        .success(function(json) {        
-            $("#loading").text("Drawing '" + stat2name(props["xaxis"]) + "' vs '" + stat2name(props["yaxis"]) + "'..."); 
-            drawJsonChart(chart_div, json, props["xaxis"], props["yaxis"]);
-            $("#loading").text(""); 
-        }).fail(function(resp) {
-            if (resp.responseText.indexOf("too many SQL variables") != -1) {
-                // Translate cryptic error message
-                show_message("error", "Too many topics; please select fewer topics and retry.", "id_coachreports");
-            } else {
-                communicate_api_failure(resp, "id_coachreports");
-            }
-            $("#loading").text(""); 
-        });
-    $("#loading").text("Loading '" + stat2name(props["xaxis"]) + "' vs. '" + stat2name(props["yaxis"]) + "'...");
-    $("#chart_div").html("");
-}
-
-
-function plotTopics(topic_paths) {
-    if (!$("#content_tree")) {
-        return false;
-    }
-    if (topic_paths==null) {
-        topic_paths = get_topic_paths_from_tree()
-    }
-    plotJsonData(
-        "#chart_div",
-        "{% url api_data %}",
-        {
-            "xaxis":       $("#xaxis option:selected").val(),
-            "yaxis":       $("#yaxis option:selected").val(),
-            "user":        "",
-            "group":       $("#" + $("#facility option:selected").val() + "_group_select option:selected").val(), 
-            "facility":    $("#facility option:selected").val(),
-            "topic_path":  topic_paths
+        if (!props["xaxis"] || !props["yaxis"] || !props["topic_path"] || props["topic_path"].length==0) { // one of the ---- is selected
+            return false; 
         }
-    );
-}
+    
+        // Get the data
+        var url = base_url + "?";
+        url = url + $.param(props, true);
+
+        clear_message("id_coachreports")
+        doRequest(url)
+            .success(function(json) {        
+                $("#loading").text("Drawing '" + stat2name(props["xaxis"]) + "' vs '" + stat2name(props["yaxis"]) + "'..."); 
+                drawJsonChart(chart_div, json, props["xaxis"], props["yaxis"]);
+                $("#loading").text(""); 
+            }).fail(function(resp) {
+                if (resp.responseText.indexOf("too many SQL variables") != -1) {
+                    // Translate cryptic error message
+                    show_message("error", "Too many topics; please select fewer topics and retry.", "id_coachreports");
+                } else {
+                    communicate_api_failure(resp, "id_coachreports");
+                }
+                $("#loading").text(""); 
+            });
+        $("#loading").text("Loading '" + stat2name(props["xaxis"]) + "' vs. '" + stat2name(props["yaxis"]) + "'...");
+        $("#chart_div").html("");
+    }
+
+
+    function plotTopics(topic_paths) {
+        if (!$("#content_tree")) {
+            return false;
+        }
+        if (topic_paths==null) {
+            topic_paths = get_topic_paths_from_tree()
+        }
+        plotJsonData(
+            "#chart_div",
+            "{% url api_data %}",
+            {
+                "xaxis":       $("#xaxis option:selected").val(),
+                "yaxis":       $("#yaxis option:selected").val(),
+                "user":        "",
+                "group":       $("#" + $("#facility option:selected").val() + "_group_select option:selected").val(), 
+                "facility":    $("#facility option:selected").val(),
+                "topic_path":  topic_paths
+            }
+        );
+    }
+</script>
+<script type="text/javascript">
+
+    $(function() {  
+        window.showing_tree = false;
+
+        // Select the values in the 
+        $("#xaxis").val("{{ form.xaxis }}").change();
+        $("#yaxis").val("{{ form.yaxis }}").change().prop("disabled", false);
+        
+        
+        setTimeout(function() {
+            // Set some event functions, once objects are available to manipulate
+
+            // Register a callback
+            window.toggle_tree_callbacks.push(plotTopics);
+
+            // Make sure that each dropdown has a callback 
+            //   to replot upon selection.
+            $(".group_select").change(function(event) { changeData(event.target.id); plotTopics(null); });
+            $("#facility").change(function() { changeData("facility"); plotTopics(null); });
+
+            // When the button is clicked, toggle the view style
+            $("#content_tree_toggle").click(function() {
+                toggle_tree();
+            });
+
+            // Get the topic tree (starting on window load)            
+            doRequest("{% url get_topic_tree topic_path='/math/' %}")
+                .success(function(treeData) {
+                    $("#content_tree").dynatree({
+                        imagePath:"{% static 'images/' %}",
+                        checkbox: true,
+                        selectMode: 3,
+                        children: treeData,
+                        debugLevel: 0,
+                        onSelect: function(select, node) {
+                        
+                        },
+                        onDblClick: function(node, event) {
+                            node.toggleSelect();
+                        },
+                        onKeydown: function(node, event) {
+                            if( event.which == 32 ) {
+                                node.toggleSelect();
+                                return false;
+                            }
+                        },
+                        onPostInit: function() {
+                            // Load the topics found in the querystring, when the topic_tree finishes initializing
+                            topic_paths_in_querystring = {{ form.topic_path|jsonify }};
+                            if (topic_paths_in_querystring.length == 0) {
+                                toggle_tree(true) // open tree, force callbacks
+                            }
+                            else {
+                                set_topic_paths_in_tree(this, topic_paths_in_querystring);
+                            }
+                        
+                        }
+                    })
+                })
+                .fail(function(resp) {
+                    communicate_api_failure(resp, "id_coachreports");
+                })
+        }, 200); //200= callback wait time.
+    });
 </script>
 {% endblock headjs %}
 
@@ -212,71 +277,3 @@ function plotTopics(topic_paths) {
     </div>
 {% endblock content %}
 
-{% block endjs %}{{ block.super }}
-<script type="text/javascript">
-
-    $(function() {  
-        window.showing_tree = false;
-
-        // Select the values in the 
-        $("#xaxis").val("{{ form.xaxis }}").change();
-        $("#yaxis").val("{{ form.yaxis }}").change().prop("disabled", false);
-        
-        
-        setTimeout(function() {
-            // Set some event functions, once objects are available to manipulate
-
-            // Register a callback
-            window.toggle_tree_callbacks.push(plotTopics);
-
-            // Make sure that each dropdown has a callback 
-            //   to replot upon selection.
-            $(".group_select").change(function(event) { changeData(event.target.id); plotTopics(null); });
-            $("#facility").change(function() { changeData("facility"); plotTopics(null); });
-
-            // When the button is clicked, toggle the view style
-            $("#content_tree_toggle").click(function() {
-                toggle_tree();
-            });
-
-            // Get the topic tree (starting on window load)            
-            doRequest("{% url get_topic_tree topic_path='/math/' %}", {})
-                .success(function(treeData) {
-                    $("#content_tree").dynatree({
-                        imagePath:"{% static 'images/' %}",
-                        checkbox: true,
-                        selectMode: 3,
-                        children: treeData,
-                        debugLevel: 0,
-                        onSelect: function(select, node) {
-                        
-                        },
-                        onDblClick: function(node, event) {
-                            node.toggleSelect();
-                        },
-                        onKeydown: function(node, event) {
-                            if( event.which == 32 ) {
-                                node.toggleSelect();
-                                return false;
-                            }
-                        },
-                        onPostInit: function() {
-                            // Load the topics found in the querystring, when the topic_tree finishes initializing
-                            topic_paths_in_querystring = {{ form.topic_path|jsonify }};
-                            if (topic_paths_in_querystring.length == 0) {
-                                toggle_tree(true) // open tree, force callbacks
-                            }
-                            else {
-                                set_topic_paths_in_tree(this, topic_paths_in_querystring);
-                            }
-                        
-                        }
-                    })
-                })
-                .fail(function(resp) {
-                    communicate_api_failure(resp, "id_coachreports");
-                })
-        }, 200); //200= callback wait time.
-    });
-</script>
-{% endblock endjs %}

@@ -27,7 +27,13 @@ def system_script_extension(system=None):
     """
     The extension for the one script that could be considered "the os script" for the given system..
     """
-    return ".bat" if is_windows(system) else ".sh"
+    exts = {
+        "windows": ".bat",
+        "darwin": ".command",
+        "linux": ".sh",
+    }
+    system = system or platform.system()
+    return exts.get(system.lower(), ".sh")
 
 
 def system_specific_scripts(system=None):
@@ -65,7 +71,7 @@ def system_specific_zipping(files_dict, zip_file=None, compression=ZIP_DEFLATED,
     if not zip_file:
         zip_file = tempfile.mkstemp()[1]
     with ZipFile(zip_file, "w", compression) as zfile:
-        for fi, (src_path, dest_path) in enumerate(files_dict.iteritems()):
+        for fi, (dest_path, src_path) in enumerate(files_dict.iteritems()):
             if callback:
                 callback(src_path, fi, len(files_dict))
             # All platforms besides windows need permissions set.
@@ -74,7 +80,7 @@ def system_specific_zipping(files_dict, zip_file=None, compression=ZIP_DEFLATED,
             # Add with exec perms
             else:
                 info = ZipInfo(dest_path)
-                info.external_attr = 0755 << 16L # give full access to included file
+                info.external_attr = 0775# << 16L # give full access to included file
                 with open(src_path, "r") as fh:
                     zfile.writestr(info, fh.read())
 

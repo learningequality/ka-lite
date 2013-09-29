@@ -41,7 +41,20 @@
           <script type="text/javascript" src="{% static 'js/backbone-min.js' %}"></script>
 
           <script type="text/javascript" src="{% static 'js/khan-lite.js' %}"></script>
-          
+
+            <script>
+            $(function() {
+                $(".header__horizontal-menu__right").addClass("js").before('<div id="menu">&#9776;</div>');
+                $("#menu").click(function(){
+                  $(".header__horizontal-menu__right").toggle();
+                });
+                $(window).resize(function(){
+                  if(window.innerWidth > 768) {
+                    $(".header__horizontal-menu__right").removeAttr("style");
+                  }
+                });
+            });
+            </script>
    
 
           {% block headjs %}{% endblock headjs %}
@@ -61,7 +74,7 @@
                             <ul class="header__horizontal-menu__right">
 
                                 <li><a href="{% url homepage %}" class="{% block home_active %}{% endblock home_active %}">{% trans "Home" %}</a></li>
-                                <li><a href="{% url wiki path='installation' %}" class="{% block install_active %}{% endblock install_active %}">{% trans "Install" %}</a></li>
+                                <li><a href="{% url install_wizard %}" class="{% block install_active %}{% endblock install_active %}">{% trans "Install" %}</a></li>
                                 <li><a href="{% url faq_topic_list %}" class="{% block faq_active %}{% endblock faq_active%}">{% trans "FAQ" %}</a></li>
                                 <li><a href="{% url contact_wizard %}"class="{% block contact_active %}{% endblock contact_active%}">{% trans "Contact" %}</a></li>
                                 <li><a href="{% url content_page page='about' %}" class="{% block about_active %}{% endblock about_active%}">{% trans "About Us" %}</a></li>
@@ -86,7 +99,7 @@
         </div>
 
 
-        {% if request.get_full_path = "/" or request.get_full_path = "/content/mission/" %} 
+        {% if request.get_full_path = "/"%} 
         
         {% block landing-page %}{% endblock landing-page %}
 
@@ -111,25 +124,7 @@
                 </div>
             </div>
         </div> <!-- .container -->
-        
         {% endif %}
-
-        
- {% block bodyjs %}
-  {% endblock bodyjs %}
-  
-        <script>
-        $(".header__horizontal-menu__right").addClass("js").before('<div id="menu">&#9776;</div>');
-        $("#menu").click(function(){
-          $(".header__horizontal-menu__right").toggle();
-        });
-        $(window).resize(function(){
-          if(window.innerWidth > 768) {
-            $(".header__horizontal-menu__right").removeAttr("style");
-          }
-        });
-        </script>
-
     </body>
     </html>
 

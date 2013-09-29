@@ -22,14 +22,15 @@ from config.models import Settings
 from control_panel.views import user_management_context
 from main import topicdata
 from main.models import VideoLog, ExerciseLog, VideoFile
-from securesync.engine.api_client import SyncClient
+from securesync.api_client import BaseClient
 from securesync.models import Facility, FacilityUser,FacilityGroup, Device
 from securesync.views import require_admin, facility_required
 from settings import LOG as logging
+from shared import topic_tools
 from shared.decorators import require_admin, backend_cache_page
 from shared.jobs import force_job
-from utils import topic_tools
-from utils.internet import am_i_online, is_loopback_connection, JsonResponse
+from shared.videos import get_video_urls, is_video_on_disk
+from utils.internet import is_loopback_connection, JsonResponse
 
 
 def check_setup_status(handler):
@@ -94,6 +95,21 @@ def splat_handler(request, splat):
         raise Http404
 
 
+def check_setup_status(handler):
+    def wrapper_fn(request, *args, **kwargs):
+        if not request.is_admin and Facility.objects.count() == 0:
+            messages.warning(request, mark_safe(
+                "Please <a href='%s?next=%s'>login</a> with the account you created while running the installation script, \
+                to complete the setup." % (reverse("login"), reverse("register_public_key"))))
+        if request.is_admin:
+            if not Settings.get("registered") and BaseClient().test_connection() == "success":
+                messages.warning(request, mark_safe("Please <a href='%s'>follow the directions to register your device</a>, so that it can synchronize with the central server." % reverse("register_public_key")))
+            elif Facility.objects.count() == 0:
+                messages.warning(request, mark_safe("Please <a href='%s'>create a facility</a> now. Users will not be able to sign up for accounts until you have made a facility." % reverse("add_facility")))
+        return handler(request, *args, **kwargs)
+    return wrapper_fn
+
+
 @backend_cache_page
 @render_to("topic.html")
 def topic_handler(request, topic):
@@ -109,12 +125,6 @@ def topic_context(topic):
     exercises = topic_tools.get_exercises(topic)
     topics    = topic_tools.get_live_topics(topic)
 
-    # Get video counts if they'll be used, on-demand only.
-    #
-    # Check in this order so that the initial counts are always updated
-    if topic_tools.video_counts_need_update() or not 'nvideos_local' in topic:
-        (topic,_,_) = topic_tools.get_video_counts(topic=topic, videos_path=settings.CONTENT_ROOT)
-
     my_topics = [dict((k, t[k]) for k in ('title', 'path', 'nvideos_local', 'nvideos_known')) for t in topics]
 
     context = {
@@ -124,21 +134,17 @@ def topic_context(topic):
         "videos": videos,
         "exercises": exercises,
         "topics": my_topics,
+        "backup_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),
     }
     return context
 
 
 @backend_cache_page
 @render_to("video.html")
-def video_handler(request, video, prev=None, next=None):
-    video_exists = VideoFile.objects.filter(pk=video['youtube_id']).exists()
+def video_handler(request, video, format="mp4", prev=None, next=None):
 
-    # If we detect that a video exists, but it's not on disk, then
-    #   force the database to update.  No race condition here for saving
-    #   progress in a VideoLog: it is not dependent on VideoFile.
-    if not video_exists and topic_tools.is_video_on_disk(video['youtube_id']):
-        force_job("videoscan")
-        video_exists = True
+    video_on_disk = is_video_on_disk(video['youtube_id'])
+    video_exists = video_on_disk or bool(settings.BACKUP_VIDEO_SOURCE)
 
     if not video_exists:
         if request.is_admin:
@@ -148,12 +154,18 @@ def video_handler(request, video, prev=None, next=None):
             messages.warning(request, _("This video was not found! Please contact your teacher or an admin to have it downloaded."))
         elif not request.is_logged_in:
             messages.warning(request, _("This video was not found! You must login as an admin/teacher to download the video."))
+
+    video["stream_type"] = "video/%s" % format
+
+    if video_exists and not video_on_disk:
+        messages.success(request, "Got video content from %s" % video["stream_url"])
+
     context = {
         "video": video,
         "title": video["title"],
-        "video_exists": video_exists,
         "prev": prev,
         "next": next,
+        "backup_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),
         "use_mplayer": settings.USE_MPLAYER and is_loopback_connection(request),
     }
     return context
@@ -166,32 +178,25 @@ def exercise_handler(request, exercise):
     Display an exercise
     """
     # Copy related videos (should be small), as we're going to tweak them
-    related_videos = [copy.copy(topicdata.NODE_CACHE["Video"].get(key, None)) for key in exercise["related_video_readable_ids"]]
-
-    videos_to_delete = []
-    for idx, video in enumerate(related_videos):
-        # Remove all videos that were not recognized or
-        #   simply aren't on disk.
-        #   Check on disk is relatively cheap, also executed infrequently
-        if not video or not topic_tools.is_video_on_disk(video["youtube_id"]):
-            videos_to_delete.append(idx)
+    related_videos = {}
+    for key in exercise["related_video_readable_ids"]:
+        video = topicdata.NODE_CACHE["Video"].get(key, None)
+        if not video:
             continue
-
-        # Resolve the most related path
-        video["path"] = video["paths"][0]  # default value
+        
+        related_videos[key] = copy.copy(video)
         for path in video["paths"]:
             if topic_tools.is_sibling({"path": path, "kind": "Video"}, exercise):
-                video["path"] = path
+                related_videos[key]["path"] = path
                 break
-        del video["paths"]
-    for idx in reversed(videos_to_delete):
-        del related_videos[idx]
+        if "path" not in related_videos[key]:
+            related_videos[key]["path"] = video["paths"][0]
 
     context = {
         "exercise": exercise,
         "title": exercise["title"],
         "exercise_template": "exercises/" + exercise["slug"] + ".html",
-        "related_videos": related_videos,
+        "related_videos": related_videos.values(),
     }
     return context
 
@@ -216,6 +221,7 @@ def homepage(request):
     context = topic_context(topicdata.TOPICS)
     context.update({
         "title": "Home",
+        "backup_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),
     })
     return context
 
@@ -294,26 +300,6 @@ Available stats:
             raise Exception("Unknown stat requested: %s" % stat_name)
 
     return val
-
-@require_admin
-@render_to("video_download.html")
-def update(request):
-    call_command("videoscan")  # Could potentially be very slow, blocking request.
-    force_job("videodownload", "Download Videos")
-    force_job("subtitledownload", "Download Subtitles")
-    default_language = Settings.get("subtitle_language") or "en"
-
-    device = Device.get_own_device()
-    zone = device.get_zone()
-
-    context = {
-        "default_language": default_language,
-        "registered": Settings.get("registered"),
-        "zone_id": zone.id if zone else None,
-        "device_id": device.id,
-        "video_count": VideoFile.objects.filter(percent_complete=100).count(),
-    }
-    return context
 
 
 @require_admin

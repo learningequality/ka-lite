@@ -57,6 +57,8 @@
     {% block navbar %}{{ block.super }}{% endblock navbar %}
 
 {% block student_report %}
+<!-- {% trans "Last login time" %}: {{ last_login_time }} -->
+
 {% if no_data %}
     {% if request.is_admin or is_central %}
         {% trans "No data for this user." %}
@@ -124,5 +126,4 @@
 </table>
 {% endif %}
 {% endblock student_report %}
-{% block endjs %}{{ block.super }}{% endblock endjs %}
 {% endblock content %}
