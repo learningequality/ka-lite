@@ -122,12 +122,7 @@ class Command(BaseCommand):
             default=True,
             help='FILE to save zip to',
             metavar="FILE"),
-        make_option('-c', '--clean',
-            action='store',
-            dest='install_clean',
-            default=None,
-            help='Install clean'),
-        )
+    )
 
     def handle(self, *args, **options):
         if not options["interactive"]:
@@ -183,25 +178,23 @@ class Command(BaseCommand):
             raise CommandError("You do not have permission to write to this directory!")
 
         database_file = settings.DATABASES["default"]["NAME"]
-        install_clean = options["install_clean"]
-        if install_clean is None:
-            install_clean = True
-            if os.path.exists(database_file):
-                # We found an existing database file.  By default,
-                #   we will upgrade it; users really need to work hard
-                #   to delete the file (but it's possible, which is nice).
-                sys.stdout.write("-------------------------------------------------------------------\n")
-                sys.stdout.write("WARNING: Database file already exists! \n")
-                sys.stdout.write("-------------------------------------------------------------------\n")
-                if not options["interactive"] \
-                   or raw_input_yn("Keep database file and upgrade to KA Lite version %s? " % version.VERSION) \
-                   or not raw_input_yn("Remove database file '%s' now? " % database_file) \
-                   or not raw_input_yn("WARNING: all data will be lost!  Are you sure? "):
-                    install_clean = False
-                    sys.stdout.write("Upgrading database to KA Lite version %s\n" % version.VERSION)
-            if install_clean:
-                # After all, don't delete--just move.
-                sys.stdout.write("OK.  We will run a clean install; database file will be moved to a deletable location.")
+        install_clean = True
+        if os.path.exists(database_file):
+            # We found an existing database file.  By default,
+            #   we will upgrade it; users really need to work hard
+            #   to delete the file (but it's possible, which is nice).
+            sys.stdout.write("-------------------------------------------------------------------\n")
+            sys.stdout.write("WARNING: Database file already exists! \n")
+            sys.stdout.write("-------------------------------------------------------------------\n")
+            if not options["interactive"] \
+               or raw_input_yn("Keep database file and upgrade to KA Lite version %s? " % version.VERSION) \
+               or not raw_input_yn("Remove database file '%s' now? " % database_file) \
+               or not raw_input_yn("WARNING: all data will be lost!  Are you sure? "):
+                install_clean = False
+                sys.stdout.write("Upgrading database to KA Lite version %s\n" % version.VERSION)
+        if install_clean:
+            # After all, don't delete--just move.
+            sys.stdout.write("OK.  We will run a clean install; database file will be moved to a deletable location.")
 
         # Do all input at once, at the beginning
         if install_clean and options["interactive"]:
@@ -228,8 +221,7 @@ class Command(BaseCommand):
         ########################
 
         # Move database file (if exists)
-        if install_clean:
-            if os.path.exists(database_file):
+        if install_clean and os.path.exists(database_file):
                 # This is an overwrite install; destroy the old db
                 dest_file = tempfile.mkstemp()[1]
                 sys.stdout.write("(Re)moving database file to temp location, starting clean install.  Recovery location: %s\n" % dest_file)

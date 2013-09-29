@@ -95,7 +95,7 @@ class Command(BaseCommand):
         except DatabaseError:
             self.stdout.write("Installing KA Lite; this may take a few minutes; please wait!\n")
 
-            call_command("install", interactive=False, install_clean=False)  # show output to the user
+            call_command("install", interactive=False)  # show output to the user
             #out = call_command_with_output("install", interactive=False)
             #if out[1] or out[2]:
             #    # Failed; report and exit
