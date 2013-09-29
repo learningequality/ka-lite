@@ -6,7 +6,7 @@ from annoying.functions import get_object_or_None
 
 from django.core.exceptions import ValidationError
 #from django.db import models, transaction
-from django.db.models import Q
+from django.db.models import Q, Max
 from django.db.models.fields.related import ForeignKey
 
 import settings
@@ -60,7 +60,7 @@ def get_local_device_unsynced_count():
     """
     count = 0
     for Model in _syncing_models:
-        count += Model.objects.filter(counter__isnull=True).count()
+        count += Model.objects.filter(Q(counter__isnull=True) | Q(signature__isnull=True)).count()
     return count
 
 
@@ -84,7 +84,7 @@ def get_device_counters(**kwargs):
     return device_counters
 
 
-def get_serialized_models(device_counters=None, limit=settings.SYNCING_MAX_RECORDS_PER_REQUEST, zone=None, include_count=False, dest_version=None):
+def get_models(device_counters=None, limit=settings.SYNCING_MAX_RECORDS_PER_REQUEST, zone=None, dest_version=None):
     """Serialize models for some intended version (dest_version)
     Default is our own version--i.e. include all known fields.
     If serializing for a device of a lower version, pass in that device's version!
@@ -111,35 +111,86 @@ def get_serialized_models(device_counters=None, limit=settings.SYNCING_MAX_RECOR
             del device_counters[device_id]
 
     models = []
+    remaining = limit
 
-    # loop through all the model classes marked as syncable
-    for Model in _syncing_models:
+    # loop through each of the devices of interest
+    #   Do devices first, because each device is independent.
+    #   Models within a device are highly dependent (on explicit dependencies,
+    #   as well as counter position)
+    for device_id, counter in device_counters.items():
+        device = Device.objects.get(pk=device_id)
 
-        # loop through each of the devices of interest
-        for device_id, counter in device_counters.items():
+        # We need to track the min counter position (send things above this value)
+        #   and the max (we're sending up to this value, so make sure nothing 
+        #   below it is left behind)
+        counter_min = counter + 1
+        counter_max = 0
 
+        # loop through all the model classes marked as syncable
+        #  (note: NEVER BREAK OUT OF THIS LOOP!  We need to ensure that
+        #    all models below the counter position selected are sent NOW,
+        #    otherwise they will be forgotten FOREVER)
+        for Model in _syncing_models:
             queryset = Model.objects.filter(Q(signed_by=device) | Q(signed_by__isnull=True))
 
             # for trusted (central) device, only include models with the correct fallback zone
             if not device.in_zone(zone):
-                if device.is_trusted():
-                    queryset = queryset.filter(zone_fallback=zone)
+                assert device.is_trusted(), "Should never include devices not ACTUALLY in the zone, except trusted devices."
+                queryset = queryset.filter(zone_fallback=zone)
+
+            # Now select relevant items that have been updated since the last sync event
+            queryset = queryset.filter(Q(counter__gte=counter_min) | Q(counter__isnull=True))
+            if not queryset:
+                continue
+
+            # Make sure you send anything that HAS to be sent (i.e. send anything that is BELOW
+            #   the max counter position that we do plan to send.  If we find things that we
+            #   unexpectedly need to send, make sure to add room for them.
+            if remaining is None:
+                new_models = queryset
+
+            else:
+                if counter_max is None:
+                    # If we're sending something with counter=None, then this will set
+                    #   the devicecounter above anything downstream, so these downstream items
+                    #   must be sent NOW
+                    remaining += max(0, (queryset.filter(counter__isnull=False).count() - remaining))
                 else:
-                    continue
+                    # If we're sending something with counter=10, then anything with a lower
+                    #   counter must be sent along with it.  So, squeeze it in
+                    remaining += max(0, (queryset.filter(counter__lt=counter_max).count() - remaining))
 
-            # Now select relevant items
-            queryset = queryset.filter(Q(counter__gt=counter) | Q(counter__isnull=True))
+                # Grab up to (remaining) model instances, then decrease the remaining to the total limit remaining
+                new_models = queryset[:remaining]
 
-            # Grab up to (limit) model instances, then decrease the limit to the total limit remaining
-            new_models = queryset[:limit]
+            if not new_models:
+                continue
+
+            if counter_max is not None:
+                # None is the most severe, so only check if we're not already sending things with None
+                counters = [m.counter for m in new_models]
+                if None in counters:
+                    counter_max = None
+                else:
+                    counter_max = max(counter_max, max(counters))
+
             models += new_models
-            limit -= new_models.count()
+            if remaining is not None:
+                remaining -= len(new_models)
 
-            # Check if we've hit the limit
-            if limit <= 0:
-                break;
-        if limit <= 0:
-            break;
+        # Must loop through all models (due to potential dependencies), but 
+        if remaining is not None and remaining <= 0:
+            break
+
+    return models
+
+
+def get_serialized_models(*args, **kwargs):
+    from securesync.devices.models import Device
+
+    models = get_models(*args, **kwargs)
+    dest_version = kwargs.get("dest_version", Device.get_own_device().get_version())
+    include_count = kwargs.get("include_count", False)
 
     # serialize the models we found
     serialized_models = serialize(models, ensure_ascii=False, dest_version=dest_version)

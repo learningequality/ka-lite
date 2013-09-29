@@ -225,7 +225,7 @@ def register(request, backend, success_url=None, form_class=None,
                 org.add_member(new_user)
 
                 # Now add a zone, and link to the org
-                zone = Zone(name=org_form.instance.name + " Default Zone")
+                zone = Zone(name=org_form.instance.name + " Sharing Network")
                 zone.save()
                 org.add_zone(zone)
 

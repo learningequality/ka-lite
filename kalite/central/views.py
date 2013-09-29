@@ -174,7 +174,7 @@ def organization_form(request, org_id):
 def delete_organization(request, org_id):
     org = Organization.objects.get(pk=org_id)
     if org.get_zones():
-        messages.error(request, "You cannot delete '%s' because it has %d zone(s) affiliated with it." %(org.name, len(org.get_zones())))
+        messages.error(request, "You cannot delete '%s' because it has %d sharing network(s) affiliated with it." %(org.name, len(org.get_zones())))
     else:
         messages.success(request, "You have successfully deleted " + org.name + ".")
         org.delete()
@@ -257,6 +257,7 @@ def install_multiple_server_edition(request):
         "version": kalite.VERSION,
         "platform": get_request_var(request, "platform", "all"),
         "locale": get_request_var(request, "locale", "en"),
+        "include_data": bool(get_request_var(request, "include_data", True)),
     }
 
     # Loop over orgs and zones, building the dict of all zones

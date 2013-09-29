@@ -31,7 +31,7 @@ class Organization(ExtendedModel):
     zones = models.ManyToManyField(Zone)
     owner = models.ForeignKey(User, related_name="owned_organizations", null=True)
 
-    HEADLESS_ORG_NAME = "Headless Zones"
+    HEADLESS_ORG_NAME = "Unclaimed Networks"
     HEADLESS_ORG_PK = None  # keep the primary key of the headless org around, for efficiency
     HEADLESS_ORG_SAVE_FLAG = "internally_safe_headless_org_save"  # indicates safe save() call
 

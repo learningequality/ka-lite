@@ -45,7 +45,6 @@ class VideoLog(DeferredCountSyncedModel):
             self.complete = (self.points >= VideoLog.POINTS_PER_VIDEO)
             if not already_complete and self.complete:
                 self.completion_timestamp = datetime.now()
-                self.completion_counter = Device.get_own_device().get_counter_position()
 
             # Tell logins that they are still active (ignoring validation failures).
             #   TODO(bcipolli): Could log video information in the future.
@@ -125,7 +124,6 @@ class ExerciseLog(DeferredCountSyncedModel):
             if not already_complete and self.complete:
                 self.struggling = False
                 self.completion_timestamp = datetime.now()
-                self.completion_counter = Device.get_own_device().get_counter_position()
                 self.attempts_before_completion = self.attempts
 
             # Tell logins that they are still active (ignoring validation failures).
