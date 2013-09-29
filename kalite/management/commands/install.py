@@ -4,6 +4,7 @@ import re
 import shutil
 import sys
 import tempfile
+from annoying.functions import get_object_or_None
 from optparse import make_option
 
 # This is necessary for this script to run before KA Lite has ever been installed.
@@ -22,7 +23,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 import settings
 import version
-from securesync.management.commands.initdevice import load_data_for_offline_install, Command as InitCommand
+from securesync.management.commands.initdevice import load_data_for_offline_install, confirm_or_generate_zone, initialize_facility, Command as InitCommand
 from securesync.models import Zone
 from utils.general import get_host_name
 from utils.platforms import is_windows, system_script_extension
@@ -121,14 +122,18 @@ class Command(BaseCommand):
             default=True,
             help='FILE to save zip to',
             metavar="FILE"),
+        make_option('-c', '--clean',
+            action='store',
+            dest='install_clean',
+            default=None,
+            help='Install clean'),
         )
 
     def handle(self, *args, **options):
         if not options["interactive"]:
-            options["username"] = getpass.getuser()
-            options["hostname"] = get_host_name()
+            options["username"] = options["username"] or settings.INSTALL_ADMIN_USERNAME or getpass.getuser()
+            options["hostname"] = options["hostname"] or get_host_name()
  
-    
         sys.stdout.write("  _   __  ___    _     _ _        \n")
         sys.stdout.write(" | | / / / _ \  | |   (_) |       \n")
         sys.stdout.write(" | |/ / / /_\ \ | |    _| |_ ___  \n")
@@ -177,55 +182,58 @@ class Command(BaseCommand):
         if not os.access(BASE_DIR, os.W_OK):
             raise CommandError("You do not have permission to write to this directory!")
 
-        install_clean = True
         database_file = settings.DATABASES["default"]["NAME"]
-        if os.path.exists(database_file):
-            # We found an existing database file.  By default,
-            #   we will upgrade it; users really need to work hard
-            #   to delete the file (but it's possible, which is nice).
-            sys.stdout.write("-------------------------------------------------------------------\n")
-            sys.stdout.write("WARNING: Database file already exists! \n")
-            sys.stdout.write("-------------------------------------------------------------------\n")
-            if not options["interactive"] \
-               or raw_input_yn("Keep database file and upgrade to KA Lite version %s? " % version.VERSION) \
-               or not raw_input_yn("Remove database file '%s' now? " % database_file) \
-               or not raw_input_yn("WARNING: all data will be lost!  Are you sure? "):
-                install_clean = False
-                sys.stdout.write("Upgrading database to KA Lite version %s\n" % version.VERSION)
-        if install_clean:
-            # After all, don't delete--just move.
-            sys.stdout.write("OK.  We will run a clean install; database file will be moved to a deletable location.")
+        install_clean = options["install_clean"]
+        if install_clean is None:
+            install_clean = True
+            if os.path.exists(database_file):
+                # We found an existing database file.  By default,
+                #   we will upgrade it; users really need to work hard
+                #   to delete the file (but it's possible, which is nice).
+                sys.stdout.write("-------------------------------------------------------------------\n")
+                sys.stdout.write("WARNING: Database file already exists! \n")
+                sys.stdout.write("-------------------------------------------------------------------\n")
+                if not options["interactive"] \
+                   or raw_input_yn("Keep database file and upgrade to KA Lite version %s? " % version.VERSION) \
+                   or not raw_input_yn("Remove database file '%s' now? " % database_file) \
+                   or not raw_input_yn("WARNING: all data will be lost!  Are you sure? "):
+                    install_clean = False
+                    sys.stdout.write("Upgrading database to KA Lite version %s\n" % version.VERSION)
+            if install_clean:
+                # After all, don't delete--just move.
+                sys.stdout.write("OK.  We will run a clean install; database file will be moved to a deletable location.")
 
         # Do all input at once, at the beginning
-        if install_clean:
-            if options["interactive"]:
-                if not options["username"] or not options["password"]:
-                    sys.stdout.write("\n")
-                    sys.stdout.write("Please choose a username and password for the admin account on this device.\n")
-                    sys.stdout.write("\tYou must remember this login information, as you will need to enter it to\n")
-                    sys.stdout.write("\tadminister this installation of KA Lite.\n")
-                    sys.stdout.write("\n")
-                (username, password) = get_username_password(options["username"], options["password"])
-                (hostname, description) = get_hostname_and_description(options["hostname"], options["description"])
-            else:
-                username = options["username"]
-                password = options["password"]
-                hostname = options["hostname"]
-                description = options["description"]
+        if install_clean and options["interactive"]:
+            if not options["username"] or not options["password"]:
+                sys.stdout.write("\n")
+                sys.stdout.write("Please choose a username and password for the admin account on this device.\n")
+                sys.stdout.write("\tYou must remember this login information, as you will need to enter it to\n")
+                sys.stdout.write("\tadminister this installation of KA Lite.\n")
+                sys.stdout.write("\n")
+            (username, password) = get_username_password(options["username"], options["password"])
+            (hostname, description) = get_hostname_and_description(options["hostname"], options["description"])
+        else:
+            username = options["username"] or settings.INSTALL_ADMIN_USERNAME
+            password = options["password"] or settings.INSTALL_ADMIN_PASSWORD
+            hostname = options["hostname"]
+            description = options["description"]
 
-                if not validate_username(username):
-                    raise CommandError("Username must contain only letters, digits, and underscores, and start with a letter.\n")
+        if username and not validate_username(username):
+            raise CommandError("Username must contain only letters, digits, and underscores, and start with a letter.\n")
+
 
         ########################
         # Now do stuff
         ########################
 
         # Move database file (if exists)
-        if install_clean and os.path.exists(database_file):
-            # This is an overwrite install; destroy the old db
-            dest_file = tempfile.mkstemp()[1]
-            sys.stdout.write("(Re)moving database file to temp location, starting clean install.  Recovery location: %s\n" % dest_file)
-            shutil.move(database_file, dest_file)
+        if install_clean:
+            if os.path.exists(database_file):
+                # This is an overwrite install; destroy the old db
+                dest_file = tempfile.mkstemp()[1]
+                sys.stdout.write("(Re)moving database file to temp location, starting clean install.  Recovery location: %s\n" % dest_file)
+                shutil.move(database_file, dest_file)
 
         # Got this far, it's OK to stop the server.
         import serverstop
@@ -241,24 +249,25 @@ class Command(BaseCommand):
         if install_clean:
             call_command("generatekeys", verbosity=options.get("verbosity"))
 
-            if options["password"]:  # blank password (non-interactive) means don't create a superuser
-                call_command("createsuperuser", username=username, email="dummy@learningequality.org", interactive=False, verbosity=options.get("verbosity"))
-                admin = User.objects.get(username=username)
-                admin.set_password(password)
-                admin.save()
-
-            call_command("initdevice", hostname, description, verbosity=options.get("verbosity"))
+            call_command("initdevice", hostname, description, facility_name=settings.DEFAULT_FACILITY_NAME, verbosity=options.get("verbosity"))
 
         elif os.path.exists(InitCommand.install_json_file):
             # This is a pathway to install zone-based data on a software upgrade.
             sys.stdout.write("Loading zone data from '%s'\n" % InitCommand.install_json_file)
             load_data_for_offline_install(in_file=InitCommand.install_json_file)
 
-        elif Zone.objects.all().count() == 0:
-            # This is another pathway to install zone-based data on a software upgrade.
-            #   It won't GET the central server object (necessary for easy upgrades),
-            #   but that can be packaged inside the update itself.
-            call_command("generate_zone")
+        confirm_or_generate_zone()
+
+        initialize_facility()
+
+        if password:  # blank password (non-interactive) means don't create a superuser
+            admin = get_object_or_None(User, username=username)
+            if not admin:
+                call_command("createsuperuser", username=username, email="dummy@learningequality.org", interactive=False, verbosity=options.get("verbosity"))
+                admin = User.objects.get(username=username)
+            admin.set_password(password)
+            admin.save()
+
 
         # Move scripts
         for script_name in ["start", "stop", "run_command"]:
