@@ -79,7 +79,7 @@ def facility_required(handler):
         if facility:
             return handler(request, facility, *args, **kwargs)
 
-        if Facility.objects.count() == 0:
+        if not request.session["facility_exists"]:
             if request.is_admin:
                 messages.error(request, _("To continue, you must first add a facility (e.g. for your school). ") \
                     + _("Please use the form below to add a facility."))

@@ -1,6 +1,4 @@
-from django.core.management import call_command
-from django.db import DatabaseError
-from django.http import HttpResponse
+from .models import Facility
 
 
 class AuthFlags:
@@ -22,4 +20,9 @@ class AuthFlags:
                 request.is_admin = True
                 request.is_teacher = True
             request.is_logged_in = True
+
+class FacilityCheck:
+    def process_request(self, request):
+        if not "facility_exists" in request.session:
+            request.session["facility_exists"] = Facility.objects.count() == 0
 

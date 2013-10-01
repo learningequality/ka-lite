@@ -189,6 +189,8 @@ else:
     ROOT_URLCONF = "main.urls"
     INSTALLED_APPS += ("updates",)
     MIDDLEWARE_CLASSES += (
+        "securesync.middleware.FacilityCheck",
+        "securesync.middleware.RegisteredCheck",
         "securesync.middleware.DBCheck",
         "securesync.middleware.AuthFlags",  # this must come before main.middleware.SessionLanguage
         "main.middleware.SessionLanguage",

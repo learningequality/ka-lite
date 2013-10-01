@@ -40,10 +40,6 @@ def check_setup_status(handler):
     so that it is run even when there is a cache hit.
     """
     def wrapper_fn(request, *args, **kwargs):
-        if not "facility_exists" in request.session:
-            request.session["facility_exists"] = Facility.objects.count() == 0
-            request.session["registered"] = Settings.get("registered")
-
         if request.is_admin:
             # TODO(bcipolli): move this to the client side?
             if not request.session["registered"] and SyncClient().test_connection() == "success":
