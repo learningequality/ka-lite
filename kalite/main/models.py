@@ -45,13 +45,12 @@ class VideoLog(DeferredCountSyncedModel):
             self.complete = (self.points >= VideoLog.POINTS_PER_VIDEO)
             if not already_complete and self.complete:
                 self.completion_timestamp = datetime.now()
-                self.completion_counter = Device.get_own_device().get_counter_position()
 
             # Tell logins that they are still active (ignoring validation failures).
             #   TODO(bcipolli): Could log video information in the future.
             if update_userlog:
                 try:
-                    UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()), language=language)
+                    UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()), language=self.language)
                 except ValidationError as e:
                     logging.error("Failed to update userlog during video: %s" % e)
 
@@ -125,14 +124,13 @@ class ExerciseLog(DeferredCountSyncedModel):
             if not already_complete and self.complete:
                 self.struggling = False
                 self.completion_timestamp = datetime.now()
-                self.completion_counter = Device.get_own_device().get_counter_position()
                 self.attempts_before_completion = self.attempts
 
             # Tell logins that they are still active (ignoring validation failures).
             #   TODO(bcipolli): Could log exercise information in the future.
             if update_userlog:
                 try:
-                    UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()), language=language)
+                    UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()), language=self.language)
                 except ValidationError as e:
                     logging.error("Failed to update userlog during exercise: %s" % e)
 

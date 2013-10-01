@@ -417,7 +417,7 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
         self.assertEqual(elog.attempts_before_completion, 10, "Student should have 10 attempts for completion.")
 
 
-@unittest.skipIf(settings.FAST_TESTS_ONLY, "Skipping slow test")
+@unittest.skipIf("medium" in settings.TESTS_TO_SKIP, "Skipping medium-length test")
 @distributed_server_test
 class LoadExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
     """Tests if the exercise is loaded without any JS error.

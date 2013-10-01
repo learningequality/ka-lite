@@ -38,7 +38,7 @@ if exist "%KALITE_DIR%\database\data.sqlite" (
 	echo Starting the cron server in the background.
 	start /B /I "%SCRIPT_DIR%\runhidden.vbs" "%SCRIPT_DIR%\cronstart.bat"
 	echo Running the web server in the background, on port %PORT%.
-	start /B /I "%SCRIPT_DIR%\runhidden.vbs" "%SCRIPT_DIR%\serverstart.bat %PORT%"
+	start /B /I "%SCRIPT_DIR%\runhidden.vbs" "%SCRIPT_DIR%\serverstart.bat"
 
 	echo The server should now be accessible locally at: http://127.0.0.1:%PORT%/
 	echo To access it from another connected computer, try the following:

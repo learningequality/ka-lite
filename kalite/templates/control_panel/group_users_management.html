@@ -5,13 +5,13 @@
 {% block title %}{{ group.name }} - User Management{% endblock title %}
 
 {% block headcss %}{{ block.super }}
-<link rel="stylesheet" type="text/css" href="{% static 'css/current_users.css' %}" />
+{% include_block "current_users.html" "headcss" %}
+{% include_block "current_users.html" "headjs" %}
 {% endblock headcss %}
 
 
 {% block control_panel_content %}
 <div id="content">
     {% include_block "current_users.html" "users_table" %}
-    {% include_block "current_users.html" "endjs" %}
 </div>
 {% endblock control_panel_content %}

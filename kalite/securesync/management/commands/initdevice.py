@@ -1,6 +1,7 @@
 import os
 import sys
 
+from django.core.exceptions import ValidationError
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.db import IntegrityError, transaction
@@ -44,8 +45,20 @@ def load_data_for_offline_install(in_file):
 
     # Everything else, import as is.
     for model in models:
-        logging.debug("Saving object %s" % model.object)
-        model.object.save(imported=True)
+        try:
+            logging.debug("Saving object %s" % model.object)
+            model.object.save(imported=True)
+
+            if isinstance(model.object, ZoneInvitation):
+                # Zone info existed in the data blob we received.  Use it to join the zone!
+                invitation = model.object
+                if invitation.used_by is None:
+                    invitation.claim(used_by=Device.get_own_device())
+        except ValidationError as e:
+            # Happens when there's duplication of data, sometimes.
+            #   Shouldn't happen, but keeping this here to make things
+            #   a bit more robust.
+            logging.error("Failed to import model %s" % model)
 
 
 class Command(BaseCommand):
@@ -72,7 +85,8 @@ class Command(BaseCommand):
             return
 
         # Now we're definitely not central server, so ... go for it!
-        # Import a zone (for machines sharing zones)
+        # Import a zone (for machines sharing zones), and join if it works!
+        invitation = None
         if not os.path.exists(data_file):
             sys.stderr.write("Could not find resource file %s.  This may cause warnings to appear when updating your KA Lite version.\n" % data_file)
         else:
@@ -82,21 +96,19 @@ class Command(BaseCommand):
                 # Doesn't hurt to keep data around.
                 #if not settings.DEBUG:
                 #    os.remove(data_file)
+                invitation = ZoneInvitation.objects.filter(used_by=own_device)
+                if invitation:
+                    invitation = invitation[0]
             except Exception as e:
                 raise CommandError("Error importing offline data from %s: %s\n" % (data_file, str(e))) 
 
-        # Join a zone, either by grabbing an open invitation, or by generating one.
-        unused_invitations = ZoneInvitation.objects.filter(used_by=None).exclude(private_key=None)
-        if unused_invitations:
-            # Zone info existed in the data blob we received.  Use it to join the zone!
-            invitation = unused_invitations[0]
-            invitation.claim(used_by=own_device)
-            self.stdout.write("Successfully joined existing zone %s, using invitation %s.\n" % (invitation.zone, invitation))
+        if invitation:
+            self.stdout.write("Successfully joined existing sharing network %s, using invitation %s.\n" % (invitation.zone, invitation))
 
         else:
             # Sorry dude, you weren't invited to the party.  You'll have to have your own!
             # Generate a zone (for stand-alone machines)
             call_command("generate_zone")
-            self.stdout.write("Successfully generated a stand-alone zone, and joined!.\n") 
+            self.stdout.write("Successfully generated a sharing network, and joined!.\n") 
 
         set_as_registered()  # would try to sync

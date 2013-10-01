@@ -145,19 +145,19 @@ class SyncClient(BaseClient):
         counters_to_download = {}
         counters_to_upload = {}
 
-        for device in client_counters:
-            if device not in server_counters:
-                devices_to_upload.append(device)
-                counters_to_upload[device] = 0
-            elif client_counters[device] > server_counters[device]:
-                counters_to_upload[device] = server_counters[device]
+        for device_id in client_counters:
+            if device_id not in server_counters:
+                devices_to_upload.append(device_id)
+                counters_to_upload[device_id] = 0
+            elif client_counters[device_id] > server_counters[device_id]:
+                counters_to_upload[device_id] = server_counters[device_id]
 
-        for device in server_counters:
-            if device not in client_counters:
-                devices_to_download.append(device)
-                counters_to_download[device] = 0
-            elif server_counters[device] > client_counters[device]:
-                counters_to_download[device] = client_counters[device]
+        for device_id in server_counters:
+            if device_id not in client_counters:
+                devices_to_download.append(device_id)
+                counters_to_download[device_id] = 0
+            elif server_counters[device_id] > client_counters[device_id]:
+                counters_to_download[device_id] = client_counters[device_id]
 
         response = json.loads(self.post("device/download", {"devices": devices_to_download}).content)
         # As usual, we're deserializing from the central server, so we assume that what we're getting

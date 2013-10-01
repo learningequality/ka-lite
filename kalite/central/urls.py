@@ -11,8 +11,8 @@ import control_panel.urls
 import faq.urls
 import registration.urls
 import securesync.urls
+import settings
 import stats.urls
-from kalite import settings
 from feeds import RssSiteNewsFeed, AtomSiteNewsFeed
 from utils.videos import OUTSIDE_DOWNLOAD_BASE_URL  # for video download redirects
 
@@ -80,6 +80,7 @@ urlpatterns += patterns('central.views',
     url(r'^download/kalite/(?P<version>[^\/]+)/(?P<platform>[^\/]+)/(?P<locale>[^\/]+)/$', 'download_kalite_public', {}, 'download_kalite_public'),
     # Downloads: private
     url(r'^download/kalite/(?P<version>[^\/]+)/(?P<platform>[^\/]+)/(?P<locale>[^\/]+)/(?P<zone_id>[^\/]+)/$', 'download_kalite_private', {}, 'download_kalite_private'),
+    url(r'^download/kalite/(?P<version>[^\/]+)/(?P<platform>[^\/]+)/(?P<locale>[^\/]+)/(?P<zone_id>[^\/]+)/(?P<include_data>[^\/]+)/$', 'download_kalite_private', {}, 'download_kalite_private'),
     # redirects for downloads
     url(r'^download/videos/(.*)$', lambda request, vpath: HttpResponseRedirect(OUTSIDE_DOWNLOAD_BASE_URL + vpath)),
 
