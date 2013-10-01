@@ -193,7 +193,6 @@ else:
         "securesync.middleware.AuthFlags",  # this must come before main.middleware.SessionLanguage
         "main.middleware.SessionLanguage",
     )
-    TEMPLATE_CONTEXT_PROCESSORS += ("main.custom_context_processors.languages",)
 
 
 ########################
@@ -321,6 +320,7 @@ TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
 
 # Django debug_toolbar config
 if getattr(local_settings, "USE_DEBUG_TOOLBAR", False):
+    assert CACHE_TIME == 0, "Debug toolbar must be set in conjunction with CACHE_TIME=0"
     INSTALLED_APPS += ('debug_toolbar',)
     MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
     DEBUG_TOOLBAR_PANELS = (

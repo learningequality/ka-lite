@@ -40,15 +40,22 @@ def check_setup_status(handler):
     so that it is run even when there is a cache hit.
     """
     def wrapper_fn(request, *args, **kwargs):
-        if not request.is_admin and Facility.objects.count() == 0:
+        if not "facility_exists" in request.session:
+            request.session["facility_exists"] = Facility.objects.count() == 0
+            request.session["registered"] = Settings.get("registered")
+
+        if request.is_admin:
+            # TODO(bcipolli): move this to the client side?
+            if not request.session["registered"] and SyncClient().test_connection() == "success":
+                messages.warning(request, mark_safe("Please <a href='%s'>follow the directions to register your device</a>, so that it can synchronize with the central server." % reverse("register_public_key")))
+            elif not request.session["facility_exists"]:
+                messages.warning(request, mark_safe("Please <a href='%s'>create a facility</a> now. Users will not be able to sign up for accounts until you have made a facility." % reverse("add_facility")))
+
+        elif not request.is_logged_in and not request.session["facility_exists"]:
             messages.warning(request, mark_safe(
                 "Please <a href='%s?next=%s'>login</a> with the account you created while running the installation script, \
                 to complete the setup." % (reverse("login"), reverse("register_public_key"))))
-        if request.is_admin:
-            if not Settings.get("registered") and SyncClient().test_connection() == "success":
-                messages.warning(request, mark_safe("Please <a href='%s'>follow the directions to register your device</a>, so that it can synchronize with the central server." % reverse("register_public_key")))
-            elif Facility.objects.count() == 0:
-                messages.warning(request, mark_safe("Please <a href='%s'>create a facility</a> now. Users will not be able to sign up for accounts until you have made a facility." % reverse("add_facility")))
+
         return handler(request, *args, **kwargs)
     return wrapper_fn
 
@@ -93,21 +100,6 @@ def splat_handler(request, splat):
         return exercise_handler(request, current_node)
     else:
         raise Http404
-
-
-def check_setup_status(handler):
-    def wrapper_fn(request, *args, **kwargs):
-        if not request.is_admin and Facility.objects.count() == 0:
-            messages.warning(request, mark_safe(
-                "Please <a href='%s?next=%s'>login</a> with the account you created while running the installation script, \
-                to complete the setup." % (reverse("login"), reverse("register_public_key"))))
-        if request.is_admin:
-            if not Settings.get("registered") and BaseClient().test_connection() == "success":
-                messages.warning(request, mark_safe("Please <a href='%s'>follow the directions to register your device</a>, so that it can synchronize with the central server." % reverse("register_public_key")))
-            elif Facility.objects.count() == 0:
-                messages.warning(request, mark_safe("Please <a href='%s'>create a facility</a> now. Users will not be able to sign up for accounts until you have made a facility." % reverse("add_facility")))
-        return handler(request, *args, **kwargs)
-    return wrapper_fn
 
 
 @backend_cache_page

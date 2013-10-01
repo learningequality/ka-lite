@@ -26,5 +26,4 @@ class SessionLanguage:
             request.session["django_language"] = Settings.get("default_language") or settings.LANGUAGE_CODE
 
         request.language = request.session["django_language"]
-        print "Language: %s" % (request.language or "None")
 

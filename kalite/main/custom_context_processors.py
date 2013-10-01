@@ -16,10 +16,15 @@ def custom(request):
 
 
 def languages(request):
-    default_language = Settings.get("default_language") or "en"
+    if "default_language" not in request.session:
+        request.session["default_language"] = str(Settings.get("default_language") or "en")
+    if "language_choices" not in request.session:
+        request.session["language_choices"] = list(LanguagePack.objects.all())
+
+    default_language = request.session["default_language"]
     return {
         "DEFAULT_LANGUAGE": default_language,
-        "language_choices": list(LanguagePack.objects.all()),
+        "language_choices": request.session["language_choices"],
         "current_language": request.session.get("django_language", default_language),
     }
 
