@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError
@@ -133,6 +133,9 @@ def add_facility_user(request, facility, is_teacher):
 
     # Data submitted to create the user.
     if request.method == "POST":  # now, teachers and students can belong to a group, so all use the same form.
+        if not request.is_admin and settings.package_selected("UserRestricted"):
+            raise PermissionDenied(_("Please contact a teacher or administrator to receive login information to this installation."))
+
         form = FacilityUserForm(request, data=request.POST, initial={"facility": facility})
         if form.is_valid():
             form.instance.set_password(form.cleaned_data["password"])
@@ -245,7 +248,7 @@ def login(request, facility):
             messages.success(request, _("You've been logged in! We hope you enjoy your time with KA Lite ") +
                                         _("-- be sure to log out when you finish."))
             landing_page = reverse("coach_reports") if form.get_user().is_teacher else None
-            landing_page = landing_page or (reverse("account_management") if settings.CONFIG_PACKAGE != "RPi" else reverse("homepage"))
+            landing_page = landing_page or (reverse("account_management") if settings.package_selected("RPi") else reverse("homepage"))
 
             return HttpResponseRedirect(form.non_field_errors() or request.next or landing_page)
         else:

@@ -4,7 +4,7 @@
 {% load staticfiles %}
 
 {% block basejs %}{{ block.super }}
-    
+
     <script>
         // the following variables are used by functions in distributed-server.js
         // TODO(jamalex): include these in some Backbone Model state instead, synced via AJAX
@@ -12,7 +12,7 @@
         var CENTRAL_SERVER_HOST = "{{ central_server_host }}";//xx
         var SECURESYNC_PROTOCOL = "{{ securesync_protocol }}";
     </script>
-    
+
     <script type="text/javascript" src="{% static 'js/distributed-server.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/purl.js' %}"></script>
 {% endblock basejs %}
@@ -26,8 +26,10 @@
     <span class="not-registered-only" style="float: right;"><a href="{% url register_public_key %}" id="nav_registerdevice" class="admin-only {% block register_active %}{% endblock register_active %}" title="Register this device with the central server">{% trans "Register device" %}</a></span>
     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
     <a href="{% url login %}" id="nav_login" class="not-logged-in-only {% block login_active %}{% endblock login_active %}" title="Login">{% trans "Login" %}</a>
-    {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-    <a href="{% url add_facility_student %}" id="nav_signup" class="not-logged-in-only {% block signup_active %}{% endblock signup_active %}" title="Register to start tracking your progress">{% trans "Sign Up" %}</a>
+    {% if not restricted %}
+        {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
+        <a href="{% url add_facility_student %}" id="nav_signup" class="not-logged-in-only {% block signup_active %}{% endblock signup_active %}" title="Register to start tracking your progress">{% trans "Sign Up" %}</a>
+    {% endif %}
     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
     <a href="{% url coach_reports %}" id="nav_coachreports" class="admin-only {% block coachreports_active %}{% endblock coachreports_active %}" title="Track the progress of your students">{% trans "Coach" %}</a>
     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
@@ -53,8 +55,8 @@
 {% block footerleft %}
 {% if language_choices %}
     <form id="language-preferences">
-        <select id="language_selector"> 
-            {% for lang in language_choices %} 
+        <select id="language_selector">
+            {% for lang in language_choices %}
                 <option value="{{ lang.lang_id }}" {% ifequal lang.lang_id current_language %}selected{% endifequal %}>{{ lang.lang_name }}</option>
             {% endfor %}
         </select>

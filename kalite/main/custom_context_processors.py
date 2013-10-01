@@ -1,4 +1,4 @@
-from django.conf import settings
+import settings
 from config.models import Settings
 from main.models import LanguagePack
 
@@ -12,6 +12,7 @@ def custom(request):
         "DATA_PATH": settings.DATA_PATH,
         "settings": settings,
         "is_central": False,
+        "restricted": settings.package_selected("UserRestricted")
     }
 
 
