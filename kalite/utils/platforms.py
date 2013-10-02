@@ -71,6 +71,7 @@ def system_specific_zipping(files_dict, zip_file=None, compression=ZIP_DEFLATED,
     if not zip_file:
         zip_file = tempfile.mkstemp()[1]
 
+    zfile = None
     try:
         zfile = ZipFile(zip_file, 'w', compression)
         for fi, (src_path, dest_path) in enumerate(files_dict.iteritems()):
@@ -86,8 +87,9 @@ def system_specific_zipping(files_dict, zip_file=None, compression=ZIP_DEFLATED,
                 with open(src_path, "r") as fh:
                     zfile.writestr(info, fh.read())
         zfile.close()
-    except BadZipfile:
-        zfile.close()
+    finally:
+        if zfile:
+            zfile.close()
 
 def _default_callback_unzip(afile, fi, nfiles):
     """
