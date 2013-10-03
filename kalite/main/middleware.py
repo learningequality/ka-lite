@@ -2,6 +2,7 @@ from django.http import HttpResponseRedirect
 
 import settings
 from config.models import Settings
+from settings import LOG as logging
 
 
 class GetNextParam:
@@ -26,5 +27,5 @@ class SessionLanguage:
             request.session["django_language"] = Settings.get("default_language") or settings.LANGUAGE_CODE
 
         request.language = request.session["django_language"]
-        print "Language: %s" % (request.language or "None")
+        logging.debug("Language: %s" % (request.language or "None"))
 
