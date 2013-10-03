@@ -130,13 +130,12 @@ def add_facility_user(request, facility, is_teacher):
 
     Each has its own message and redirect.
     """
-
     # Data submitted to create the user.
     if request.method == "POST":  # now, teachers and students can belong to a group, so all use the same form.
         if not request.is_admin and settings.package_selected("UserRestricted"):
             raise PermissionDenied(_("Please contact a teacher or administrator to receive login information to this installation."))
 
-        form = FacilityUserForm(request, data=request.POST, initial={"facility": facility})
+        form = FacilityUserForm(facility, data=request.POST)
         if form.is_valid():
             form.instance.set_password(form.cleaned_data["password"])
             form.instance.is_teacher = is_teacher
@@ -153,22 +152,12 @@ def add_facility_user(request, facility, is_teacher):
 
     # For GET requests
     else:
-        form = FacilityUserForm(
-            request,
-            initial={
-                "facility": facility,
-                "group": request.GET.get("group", None)
-            }
-        )
-
-    # Across POST and GET requests
-    form.fields["group"].queryset = FacilityGroup.objects.filter(facility=facility)
+        form = FacilityUserForm(facility, initial={"group": request.GET.get("group", None)})
 
     return {
         "form": form,
         "facility": facility,
         "singlefacility": (Facility.objects.count() == 1),
-        "teacher": is_teacher,
         "cur_url": request.path,
     }
 
