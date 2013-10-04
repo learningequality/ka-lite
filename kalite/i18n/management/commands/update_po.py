@@ -41,7 +41,7 @@ def generate_new_po_files():
 	ignore_pattern = ['python-packages/*']
 	management.call_command('makemessages', locale='en', ignore_patterns=ignore_pattern, no_obsolete=True)
 	# Generate english po file for javascript
-	ignore_pattern = ['kalite/static/admin/js/*']
+	ignore_pattern = ['kalite/static/admin/js/*', 'python-packages/*']
 	management.call_command('makemessages', domain='djangojs', locale='en', ignore_patterns=ignore_pattern, no_obsolete=True)
 
 
