@@ -133,7 +133,7 @@ def create_local_settings_file(location, server_type="local", locale=None, centr
         ls.write("LANGUAGE_CODE = '%s'\n" % locale)
     if server_type == "local" and central_server:
         ls.write("CENTRAL_SERVER_HOST = '%s'\n" % central_server)
-        ls.write("SECURESYNC_PROTOCOL = '%s'\n" % "http" if settings.DEBUG or "playground" in central_server else "https")
+        ls.write("SECURESYNC_PROTOCOL = '%s'\n" % ("http" if settings.DEBUG or ":" in central_server else "https"))
     ls.close()
 
     return fil

@@ -215,6 +215,9 @@ class Command(BaseCommand):
 
                 if not validate_username(username):
                     raise CommandError("Username must contain only letters, digits, and underscores, and start with a letter.\n")
+        else:
+            username = options["username"]
+            password = options["password"]
 
         ########################
         # Now do stuff
@@ -241,7 +244,7 @@ class Command(BaseCommand):
         if install_clean:
             call_command("generatekeys", verbosity=options.get("verbosity"))
 
-            if options["password"]:  # blank password (non-interactive) means don't create a superuser
+            if password:  # blank password (non-interactive) means don't create a superuser
                 call_command("createsuperuser", username=username, email="dummy@learningequality.org", interactive=False, verbosity=options.get("verbosity"))
                 admin = User.objects.get(username=username)
                 admin.set_password(password)
