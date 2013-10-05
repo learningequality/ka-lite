@@ -13,7 +13,6 @@ from kalite import settings
 from utils.testing.decorators import distributed_server_test
 
 
-@unittest.skip
 @distributed_server_test
 class FixtureTestCases(TestCase):
     """ """
