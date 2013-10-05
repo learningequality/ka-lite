@@ -1,14 +1,14 @@
 jQuery.fn["software-keyboardPost"] = function() {
 	var isAndroid = /android/i.test(navigator.userAgent.toLowerCase());
 	
-	if (isAndroid){
+	// if (isAndroid){
 	var softwareKeyboard = jQuery( "#software-keyboard" ),
 		solutionarea = jQuery( "#solutionarea" ),
 		inputs = solutionarea.find( ":input" )
 			.prop( "readonly", true )
 			.css( "-webkit-tap-highlight-color", "rgba(0, 0, 0, 0)" ),
 		field = inputs.first();
-	};
+	// };
 	
 
 	var keyPressed = function( key ) {
