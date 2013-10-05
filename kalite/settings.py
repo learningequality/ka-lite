@@ -73,10 +73,6 @@ DATABASES      = getattr(local_settings, "DATABASES", {
     }
 })
 
-DATA_PATH      = os.path.realpath(getattr(local_settings, "DATA_PATH", PROJECT_PATH + "/static/data/")) + "/"
-
-SUBTITLES_DATA_ROOT = os.path.realpath(getattr(local_settings, "SUBTITLES_DATA_ROOT", DATA_PATH + "subtitles/")) + "/"
-
 CONTENT_ROOT   = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", PROJECT_PATH + "/../content/")) + "/"
 CONTENT_URL    = getattr(local_settings, "CONTENT_URL", "/content/")
 
@@ -111,6 +107,11 @@ MEDIA_URL      = getattr(local_settings, "MEDIA_URL", "/media/")
 MEDIA_ROOT     = os.path.realpath(getattr(local_settings, "MEDIA_ROOT", PROJECT_PATH + "/media/")) + "/"
 STATIC_URL     = getattr(local_settings, "STATIC_URL", "/static/")
 STATIC_ROOT    = os.path.realpath(getattr(local_settings, "STATIC_ROOT", PROJECT_PATH + "/static/")) + "/"
+
+# Other defined paths
+DATA_PATH      = os.path.realpath(getattr(local_settings, "DATA_PATH", PROJECT_PATH + "/static/data/")) + "/"
+SUBTITLES_DATA_ROOT = os.path.realpath(getattr(local_settings, "SUBTITLES_DATA_ROOT", DATA_PATH + "subtitles/")) + "/"
+LANGUAGE_PACK_ROOT = os.path.realpath(getattr(local_settings, "LANGUAGE_PACK_ROOT", STATIC_ROOT + "language_packs/")) + "/"
 
  # Make this unique, and don't share it with anybody.
 SECRET_KEY     = getattr(local_settings, "SECRET_KEY", "8qq-!fa$92i=s1gjjitd&%s@4%ka9lj+=@n7a&fzjpwu%3kd#u")

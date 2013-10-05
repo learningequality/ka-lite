@@ -84,3 +84,31 @@ def get_subtitle_counts(request):
         # Regular request
         response = JsonResponse(json.dumps(subtitle_counts, sort_keys=True), status=200)
         return response
+
+
+@api_handle_error_with_json
+def get_available_language_packs(request):
+    """Return dict of available language packs"""
+    # On central, loop through available language packs in static/language_packs/
+    language_packs_path = settings.LANGUAGE_PACK_ROOT
+    try:
+        language_packs_available = json.loads(open(os.path.join(language_packs_path, "language_packs_available.json")).read())
+    except:
+        raise Http404
+
+    if request.GET.get("callback",None):
+        # JSONP response
+        response = HttpResponse("%s(%s);" % (request.GET["callback"], json.dumps(language_packs_available, sort_keys=True)))
+        response["Access-Control-Allow-Headers"] = "*"
+        response["Content-Type"] = "text/javascript"
+        return response
+
+    else:
+        # Regular request
+        response = JsonResponse(json.dumps(language_packs_available, sort_keys=True), status=200)
+        return response
+
+
+
+
+
