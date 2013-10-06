@@ -185,6 +185,8 @@ if CENTRAL_SERVER:
     CSRF_COOKIE_NAME        = "csrftoken_central"
     LANGUAGE_COOKIE_NAME    = "django_language_central"
     SESSION_COOKIE_NAME     = "sessionid_central"
+    CROWDIN_PROJECT_ID      = getattr(local_settings, "CROWDIN_PROJECT_ID", "khanacademy")
+    CROWDIN_PROJECT_KEY     = getattr(local_settings, "CROWDIN_PROJECT_KEY", None)
 
 else:
     ROOT_URLCONF = "main.urls"

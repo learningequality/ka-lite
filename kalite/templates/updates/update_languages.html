@@ -243,7 +243,7 @@ var video_callbacks = {
     <h2>Installed Languages</h2>
     {% if installed_languages %}
         {% for lang in installed_languages %}
-            {{lang.name}} - {{lang.percent_complete}}% Complete
+            {{lang.name}} - {{lang.percent_translated}}% Complete
         {% endfor %}
     {% else %}
         <p>You currently have no languages installed.</p>

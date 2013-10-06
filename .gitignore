@@ -14,6 +14,7 @@ kalite/static/data/subtitles/srts_download_status.json
 kalite/static/data/subtitles/subtitle_counts.json
 kalite/static/data/subtitles/languages/*
 kalite/static/data/i18n/dubbed_video_mappings.json
+kalite/static/language_packs/*
 kalite/static/srt/*
 kalite/static/pot/*.pot
 kalite/private_key.pem

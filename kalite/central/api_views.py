@@ -14,6 +14,7 @@ from .models import Organization, get_or_create_user_profile
 from .views import get_central_server_host
 from securesync.models import Zone
 from utils.internet import allow_jsonp, api_handle_error_with_json, JsonResponse
+from i18n.management.commands.cache_translations import LANGUAGE_PACK_AVAILABILITY_FILENAME
 
 
 @allow_jsonp
@@ -92,7 +93,7 @@ def get_available_language_packs(request):
     # On central, loop through available language packs in static/language_packs/
     language_packs_path = settings.LANGUAGE_PACK_ROOT
     try:
-        language_packs_available = json.loads(open(os.path.join(language_packs_path, "language_packs_available.json")).read())
+        language_packs_available = json.loads(open(os.path.join(language_packs_path, LANGUAGE_PACK_AVAILABILITY_FILENAME)).read())
     except:
         raise Http404
 
