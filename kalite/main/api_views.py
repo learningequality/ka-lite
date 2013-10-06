@@ -246,12 +246,18 @@ def _update_video_log_with_points(seconds_watched, video_length, youtube_id, fac
 
 @gzip_page
 def flat_topic_tree(request):
-    categories = copy.deepcopy(get_node_cache())
+    categories = copy.deepcopy(get_node_cache()) # so we dont clobber global node cache
     # make sure that we only get the slug of child of a topic
     # to avoid redundancy
     topics = categories['Topic']
     for topic_slug in topics:
         topic = topics[topic_slug]
+        # remove unneccessary fields from topics TODO: move to khanload
+        del topic['hide']
+        del topic['x_pos']
+        del topic['y_pos']
+        del topic['nvideos_local']
+        del topic['node_slug']
         for i, child in enumerate(topic['children']):
             topic['children'][i] = child['slug']
     return HttpResponse(json.dumps(categories),
