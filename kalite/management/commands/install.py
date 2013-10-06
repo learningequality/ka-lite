@@ -241,7 +241,7 @@ class Command(BaseCommand):
         if install_clean:
             call_command("generatekeys", verbosity=options.get("verbosity"))
 
-            call_command("initdevice", hostname, description, facility_name=settings.DEFAULT_FACILITY_NAME, verbosity=options.get("verbosity"))
+            call_command("initdevice", hostname, description, facility_name=settings.INSTALL_FACILITY_NAME, verbosity=options.get("verbosity"))
 
         elif os.path.exists(InitCommand.install_json_file):
             # This is a pathway to install zone-based data on a software upgrade.
