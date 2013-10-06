@@ -1,3 +1,4 @@
+from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 from functools import partial
 
@@ -36,7 +37,6 @@ def distributed_server_only(handler):
             raise Http404(_("This path is only available on distributed servers."))
         return handler(*args, **kwargs)
     return wrapper_fn
-
 
 
 def facility_from_request(handler=None, request=None, *args, **kwargs):
@@ -88,6 +88,12 @@ def facility_required(handler):
                     _("You must first have the administrator of this server log in below to add a facility."))
             return HttpResponseRedirect(reverse("add_facility"))
         else:
+            @distributed_server_only
+            @render_to("securesync/facility_selection.html")
+            def facility_selection(request):
+                facilities = Facility.objects.all()
+                context = {"facilities": facilities}
+                return context
             return facility_selection(request)
 
     return inner_fn
