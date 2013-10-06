@@ -1,0 +1,17 @@
+{% extends 'base_distributed.html' %}
+
+{% block content %}
+<h2>Search results</h2>
+  {% for category, subresults in results.iteritems %}
+    <h3 style="margin:20px 0px 5px 0px">{{ category }}</h3>
+    <ul>
+    {% for result in subresults %}
+      <li>
+	<a href="{{ result.1}}">
+	  {{ result.0 }}
+	</a>
+      </li>
+    {% endfor %}
+    </ul>
+  {% endfor %}
+{% endblock %}

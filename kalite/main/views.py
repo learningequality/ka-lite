@@ -338,17 +338,24 @@ def device_redirect(request):
     else:
         raise Http404(_("This device is not on any zone."))
 
+@render_to('search_page.html')
 def search(request):
     if 'query' in request.GET:
         query = request.GET['query']
         # search for topic, video or exercise with matching title
         nodes_ = topic_tools.get_node_cache()
         nodes = []
+        possible_matches = {'Topic': [], 'Video': [], 'Exercise': []}
         for _, node_dict in nodes_.iteritems():
-            nodes += [(node['title'], node['path']) for node in node_dict.values()]
+            nodes += [(node['title'], node['path'], node['kind']) for node in node_dict.values()]
         for node in nodes:
             if node[0] == query:
                 return HttpResponseRedirect(node[1])
+            elif query in node[0]:
+                possible_matches[node[2]].append(node)
+        else:
+            return {'results': possible_matches}
+
     else:
         return HttpResponseRedirect('/')
 
