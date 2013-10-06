@@ -50,7 +50,7 @@ class VideoLog(DeferredCountSyncedModel):
             #   TODO(bcipolli): Could log video information in the future.
             if update_userlog:
                 try:
-                    UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()), language=language)
+                    UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()), language=self.language)
                 except ValidationError as e:
                     logging.error("Failed to update userlog during video: %s" % e)
 
@@ -130,7 +130,7 @@ class ExerciseLog(DeferredCountSyncedModel):
             #   TODO(bcipolli): Could log exercise information in the future.
             if update_userlog:
                 try:
-                    UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()), language=language)
+                    UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()), language=self.language)
                 except ValidationError as e:
                     logging.error("Failed to update userlog during exercise: %s" % e)
 
