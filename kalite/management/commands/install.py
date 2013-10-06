@@ -241,16 +241,18 @@ class Command(BaseCommand):
         if install_clean:
             call_command("generatekeys", verbosity=options.get("verbosity"))
 
-            call_command("initdevice", hostname, description, facility_name=settings.INSTALL_FACILITY_NAME, verbosity=options.get("verbosity"))
+            call_command("initdevice", hostname, description, verbosity=options.get("verbosity"))
 
-        elif os.path.exists(InitCommand.install_json_file):
-            # This is a pathway to install zone-based data on a software upgrade.
-            sys.stdout.write("Loading zone data from '%s'\n" % InitCommand.install_json_file)
-            load_data_for_offline_install(in_file=InitCommand.install_json_file)
+        else:
+            if os.path.exists(InitCommand.install_json_file):
+                # This is a pathway to install zone-based data on a software upgrade.
+                sys.stdout.write("Loading zone data from '%s'\n" % InitCommand.install_json_file)
+                load_data_for_offline_install(in_file=InitCommand.install_json_file)
 
-        confirm_or_generate_zone()
+            confirm_or_generate_zone()
 
-        initialize_facility()
+            initialize_facility()
+
 
         if password:  # blank password (non-interactive) means don't create a superuser
             admin = get_object_or_None(User, username=username)
