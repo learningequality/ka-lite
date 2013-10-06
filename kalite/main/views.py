@@ -1,6 +1,6 @@
 import copy
 import json
-import re 
+import re
 import sys
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
@@ -183,7 +183,7 @@ def exercise_handler(request, exercise):
         video = topicdata.NODE_CACHE["Video"].get(key, None)
         if not video:
             continue
-        
+
         related_videos[key] = copy.copy(video)
         for path in video["paths"]:
             if topic_tools.is_sibling({"path": path, "kind": "Video"}, exercise):
@@ -338,6 +338,19 @@ def device_redirect(request):
     else:
         raise Http404(_("This device is not on any zone."))
 
+def search(request):
+    if 'query' in request.GET:
+        query = request.GET['query']
+        # search for topic, video or exercise with matching title
+        nodes_ = topic_tools.get_node_cache()
+        nodes = []
+        for _, node_dict in nodes_.iteritems():
+            nodes += [(node['title'], node['path']) for node in node_dict.values()]
+        for node in nodes:
+            if node[0] == query:
+                return HttpResponseRedirect(node[1])
+    else:
+        return HttpResponseRedirect('/')
 
 def handler_403(request, *args, **kwargs):
     context = RequestContext(request)
