@@ -440,6 +440,8 @@ def user_management_context(request, facility_id, group_id, page=1, per_page=25)
         "facility": facility,
         "users": users,
         "groups": groups,
+        "group_id": group_id,
+        "facility_id": facility_id,
     }
     if users:
         context["pageurls"] = {"next_page": next_page_url, "prev_page": previous_page_url}

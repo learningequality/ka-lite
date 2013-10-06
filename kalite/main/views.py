@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
-from django.db.models import Sum
+from django.db.models import Sum, Count
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound, HttpResponseRedirect, Http404, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
@@ -305,13 +305,29 @@ Available stats:
 @require_admin
 @facility_required
 @render_to("current_users.html")
-def user_list(request,facility):
-    return user_management_context(
+def user_list(request, facility):
+
+    # Use default group
+    group_id = request.REQUEST.get("group")
+    if not group_id:
+        groups = FacilityGroup.objects \
+            .annotate(Count("facilityuser")) \
+            .filter(facilityuser__count__gt=0)
+        ngroups = groups.count()
+        ngroups += int(FacilityUser.objects.filter(group__isnull=True).count() > 0)
+        if ngroups == 1:
+            group_id = groups[0].id if groups.count() else "Ungrouped"
+
+    context = user_management_context(
         request=request,
         facility_id=facility.id,
-        group_id=request.REQUEST.get("group",""),
+        group_id=group_id,
         page=request.REQUEST.get("page","1"),
     )
+    context.update({
+        "singlefacility": Facility.objects.count() == 1,
+    })
+    return context
 
 
 @require_admin
