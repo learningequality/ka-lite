@@ -9,5 +9,8 @@ $(document).ready(function() {
 	    }
 	}
     });
-    $("#search").autocomplete({source: results});
+    $("#search").autocomplete({minLength: 3, source: function(request, response) {
+	var results_filtered = $.ui.autocomplete.filter(results, request.term); // do some filtering here already
+	response(results_filtered.slice(0, 15));
+    }});
 });
