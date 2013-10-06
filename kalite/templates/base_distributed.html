@@ -4,7 +4,7 @@
 {% load staticfiles %}
 
 {% block basejs %}{{ block.super }}
-    
+
     <script>
         // the following variables are used by functions in distributed-server.js
         // TODO(jamalex): include these in some Backbone Model state instead, synced via AJAX
@@ -12,9 +12,12 @@
         var CENTRAL_SERVER_HOST = "{{ central_server_host }}";//xx
         var SECURESYNC_PROTOCOL = "{{ securesync_protocol }}";
     </script>
-    
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script> <!-- TODO (aron): cleanup since we have so many jquery versions -->
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
     <script type="text/javascript" src="{% static 'js/distributed-server.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/purl.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/search_autocomplete.js' %}"></script>
 {% endblock basejs %}
 
 {# Note that the following links are listed in the opposite order to how they will be displayed, as they are float:right #}
@@ -53,8 +56,8 @@
 {% block footerleft %}
 {% if language_choices %}
     <form id="language-preferences">
-        <select id="language_selector"> 
-            {% for lang in language_choices %} 
+        <select id="language_selector">
+            {% for lang in language_choices %}
                 <option value="{{ lang.lang_id }}" {% ifequal lang.lang_id current_language %}selected{% endifequal %}>{{ lang.lang_name }}</option>
             {% endfor %}
         </select>
