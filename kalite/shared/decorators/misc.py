@@ -81,10 +81,10 @@ def facility_required(handler):
 
         if Facility.objects.count() == 0:
             if request.is_admin:
-                messages.error(request, _("To continue, you must first add a facility (e.g. for your school). ") \
+                messages.warning(request, _("To continue, you must first add a facility (e.g. for your school). ") \
                     + _("Please use the form below to add a facility."))
             else:
-                messages.error(request,
+                messages.warning(request,
                     _("You must first have the administrator of this server log in below to add a facility."))
             return HttpResponseRedirect(reverse("add_facility"))
         else:
