@@ -84,11 +84,14 @@ def confirm_or_generate_zone(invitation=None):
 
 
 def initialize_facility(facility_name=None):
+    facility_name = facility_name or settings.INSTALL_FACILITY_NAME
 
     # Finally, install a facility--would help users get off the ground
-    if facility_name or settings.INSTALL_FACILITY_NAME:
-        facility = Facility(name=(facility_name or settings.INSTALL_FACILITY_NAME))
-        facility.save()
+    if facility_name:
+        facility = get_object_or_None(Facility, name=facility_name)
+        if not facility:
+            facility = Facility(name=facility_name)
+            facility.save()
         Settings.set("default_facility", facility.id)
 
 
@@ -141,4 +144,5 @@ class Command(BaseCommand):
                 raise CommandError("Error importing offline data from %s: %s\n" % (data_file, str(e))) 
 
         confirm_or_generate_zone(invitation)
+
         initialize_facility(options["facility_name"])
