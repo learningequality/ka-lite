@@ -53,6 +53,7 @@ from selenium.webdriver.common.by import By
 
 from . import base
 from main.models import ExerciseLog, VideoLog, UserLog
+from main.topicdata import NODE_CACHE
 from securesync.models import Facility, FacilityUser, FacilityGroup
 from shared.testing.browser import BrowserTestCase
 
@@ -126,21 +127,43 @@ class OneThousandRandomReads(base.Common):
         return {"total_records_accessed": 1000}
 
 
-class OneHundredRandomLogUpdates(base.Common):
+class OneHundredRandomLogUpdates(base.UserCommon):
     """
     One hundred random accesses and updates tothe video and exercise logs (50 of each)
     The I/O here is SELECT and UPDATE - update will normally generate physical media access
     """
     
-    def _setup(self, **kwargs):
+    def _setup(self, num_logs=50, **kwargs):
         super(OneHundredRandomLogUpdates, self)._setup(**kwargs)
 
+        self.user = FacilityUser.objects.get(username=self.username)
+        self.num_logs = num_logs
         #give the platform a chance to cache the logs
-        self.exercise_list = ExerciseLog.objects.get_query_set()
-        self.video_list = VideoLog.objects.get_query_set()
-        self.exercise_count = ExerciseLog.objects.count()
-        self.video_count = VideoLog.objects.count()
-             
+        ExerciseLog.objects.filter(user=self.user).delete()
+        for x in range(num_logs):
+            while True:
+                ex_idx = int(self.random.random() * len(NODE_CACHE["Exercise"].keys()))
+                ex_id = NODE_CACHE["Exercise"].keys()[ex_idx]
+                if not ExerciseLog.objects.filter(user=self.user, exercise_id=ex_id):
+                    break
+            ex = ExerciseLog(user=self.user, exercise_id=ex_id)
+            ex.save()
+        self.exercise_list = ExerciseLog.objects.filter(user=self.user)
+        self.exercise_count = self.exercise_list.count()
+
+        VideoLog.objects.filter(user=self.user).delete()
+        for x in range(num_logs):
+            while True:
+                vid_idx = int(self.random.random() * len(NODE_CACHE["Video"].keys()))
+                vid_id = NODE_CACHE["Video"][NODE_CACHE["Video"].keys()[vid_idx]]["youtube_id"]
+                if not VideoLog.objects.filter(user=self.user, youtube_id=vid_id):
+                    break
+            vid = VideoLog(user=self.user, youtube_id=vid_id)
+            vid.save()
+        self.video_list = VideoLog.objects.filter(user=self.user)
+        self.video_count = self.video_list.count()
+
+
     def _execute(self):
         for x in range(50):
             this_video = VideoLog.objects.get(id=self.video_list[int(self.random.random()*self.video_count)].id)
