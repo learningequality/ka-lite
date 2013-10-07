@@ -231,7 +231,7 @@ class Command(BaseCommand):
         import serverstop
 
         # Should clean_pyc for (clean) reinstall purposes
-        call_command("clean_pyc", migrate=True, interactive=False, verbosity=options.get("verbosity"))
+        call_command("clean_pyc", interactive=False, verbosity=options.get("verbosity"))
 
         # Migrate the database
         call_command("syncdb", interactive=False, verbosity=options.get("verbosity"))

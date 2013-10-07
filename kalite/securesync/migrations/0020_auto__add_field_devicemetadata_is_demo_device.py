@@ -20,6 +20,12 @@ class Migration(SchemaMigration):
 
 
     models = {
+        'securesync.cachedpassword': {
+            'Meta': {'object_name': 'CachedPassword'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['securesync.FacilityUser']", 'unique': 'True'})
+        },
         'securesync.device': {
             'Meta': {'object_name': 'Device'},
             'counter': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
