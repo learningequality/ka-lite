@@ -270,10 +270,9 @@ def start_subtitle_download(request):
     except HTTPError:
         return JsonResponse({"error": "No subtitles available on central server for language code: %s; aborting." % language}, status=500)
 
+    videofiles = VideoFile.objects.filter(subtitle_download_in_progress=False)
     if update_set == "existing":
-        videofiles = VideoFile.objects.filter(subtitles_downloaded=False, subtitle_download_in_progress=False)
-    else:
-        videofiles = VideoFile.objects.filter(subtitle_download_in_progress=False)
+        videofiles = VideoFile.objects.filter(subtitles_downloaded=False)
 
     queue_count = 0
     for chunk in break_into_chunks(available_srts):
@@ -431,8 +430,8 @@ def _update_video_log_with_points(seconds_watched, video_length, youtube_id, fac
         return  # in other places, we signal to the user that info isn't being saved, but can't do it here.
                 #   adding this code for consistency / documentation purposes.
 
-    new_points = (float(seconds_watched) / video_length) * VideoLog.POINTS_PER_VIDEO
-    
+    new_points = VideoLog.calc_points(seconds_watched, video_length)
+
     videolog = VideoLog.update_video_log(
         facility_user=facility_user,
         youtube_id=youtube_id,

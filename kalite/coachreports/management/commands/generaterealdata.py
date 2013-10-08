@@ -20,7 +20,6 @@
 # Perhaps worth having the ability to target only particular existing users to further
 #   generate data?
 """
-
 import datetime
 import random
 import re
@@ -29,6 +28,7 @@ from math import exp, sqrt, ceil, floor
 
 from django.contrib.auth.hashers import make_password
 from django.core.management.base import BaseCommand, CommandError
+from django.db import transaction
 
 import settings
 import securesync
@@ -36,8 +36,8 @@ from main import topicdata
 from main.models import ExerciseLog, VideoLog, UserLog
 from securesync.models import Facility, FacilityUser, FacilityGroup, Device, DeviceMetadata
 from settings import LOG as logging
+from shared.topic_tools import get_topic_videos, get_topic_exercises
 from utils.general import datediff
-from utils.topic_tools import get_topic_videos, get_topic_exercises
 
 
 firstnames = ["Vuzy", "Liz", "Ben", "Richard", "Kwame", "Jamie", "Alison", "Nadia", "Zenab", "Guan", "Dylan", "Vicky",
@@ -306,16 +306,17 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
                     seconds_per_attempt = 10 * (1 + user_settings["speed_of_learning"] * random.random())
                     time_to_navigate = 15 * (0.5 + random.random())  #between 7.5s and 22.5s
                     time_to_logout = 5 * (0.5 + random.random()) # between 2.5 and 7.5s
-                    ulog = UserLog(
-                        user=facility_user,
-                        activity_type=1,
-                        start_datetime = date_completed - datetime.timedelta(seconds=int(attempts * seconds_per_attempt + time_to_navigate)),
-                        end_datetime = date_completed + datetime.timedelta(seconds=time_to_logout),
-                        last_active_datetime = date_completed,
-                    )
-                    ulog.full_clean()
-                    ulog.save()
-                    user_logs.append(ulog)
+                    if settings.USER_LOG_MAX_RECORDS_PER_USER != 0:
+                        ulog = UserLog(
+                            user=facility_user,
+                            activity_type=1,
+                            start_datetime = date_completed - datetime.timedelta(seconds=int(attempts * seconds_per_attempt + time_to_navigate)),
+                            end_datetime = date_completed + datetime.timedelta(seconds=time_to_logout),
+                            last_active_datetime = date_completed,
+                        )
+                        ulog.full_clean()
+                        ulog.save()
+                        user_logs.append(ulog)
                 exercise_logs.append(elog)
 
     return (exercise_logs, user_logs)
@@ -484,6 +485,7 @@ def generate_fake_coachreport_logs():
     return logs
 
 
+@transaction.commit_on_success
 class Command(BaseCommand):
     args = "<data_type=[facility,facility_users,facility_groups,default=exercises,videos]>"
 

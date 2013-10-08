@@ -5,8 +5,9 @@ from django.utils import unittest
 
 import settings
 from securesync import crypto
-from kalite.utils.django_utils import call_command_with_output
 from securesync.models import Facility, FacilityUser, FacilityGroup
+from shared.testing import KALiteTestCase
+from utils.django_utils import call_command_with_output
 
 
 @unittest.skipIf(not crypto.M2CRYPTO_EXISTS, "Skipping M2Crypto tests as it does not appear to be installed.")
@@ -197,4 +198,57 @@ class TestPasswordSetting(unittest.TestCase):
         with self.assertRaises(AssertionError):
             fu.set_password(hashed_password=self.__class__.hashed_blah)	
         settings.DEBUG = dbg_mode 
-            
+
+
+import os
+import tempfile
+from securesync.models import Device
+
+class TestSignLargeFile(KALiteTestCase):
+    """Special code for signing large files.  Test that it works!"""
+    def setUp(self):
+        self.filename = tempfile.mkstemp()[1]
+        self.key = Device.get_own_device().get_key()
+
+    def tearDown(self):
+        if os.path.exists(self.filename):
+            os.remove(self.filename)
+
+    def test_valid_empty_file(self):
+        signature = self.key.sign_large_file(self.filename)
+        self.assertTrue(self.key.verify_large_file(self.filename, signature), "Should verify signature for empty file.")
+
+    def test_valid_file(self):
+        nchars = int(2E5)
+        with open(self.filename, "w") as fp:
+            fp.write("a" * nchars)
+
+        # One-shot signing
+        signature = self.key.sign_large_file(self.filename)
+        self.assertTrue(self.key.verify_large_file(self.filename, signature, chunk_size=nchars), "Should verify signature for file w/ %d bytes." % nchars)
+
+        # Uneven chunking
+        signature = self.key.sign_large_file(self.filename, chunk_size=1)
+        self.assertTrue(self.key.verify_large_file(self.filename, signature, chunk_size=nchars-1), "Should verify signature for file w/ %d bytes." % nchars)
+
+        # Single-byte chunking
+        signature = self.key.sign_large_file(self.filename)
+        self.assertTrue(self.key.verify_large_file(self.filename, signature, chunk_size=1), "Should verify signature for file w/ %d bytes." % nchars)
+
+
+    def test_invalid_signature(self):
+        nchars = int(2E5)
+        with open(self.filename, "w") as fp:
+            fp.write("a" * nchars)
+            signature = self.key.sign_large_file(self.filename)
+            fp.write("x")
+
+        # One-shot signing
+        self.assertFalse(self.key.verify_large_file(self.filename, signature, chunk_size=nchars), "Should verify signature for file w/ %d bytes." % nchars)
+
+        # Uneven chunking
+        self.assertFalse(self.key.verify_large_file(self.filename, signature, chunk_size=nchars-1), "Should verify signature for file w/ %d bytes." % nchars)
+
+        # Single-byte chunking
+        self.assertFalse(self.key.verify_large_file(self.filename, signature, chunk_size=1), "Should verify signature for file w/ %d bytes." % nchars)
+

@@ -5,7 +5,6 @@ import functools
 import os
 import pdb
 import sys
-import logging
 
 from django.test.simple import DjangoTestSuiteRunner
 from django.core import management

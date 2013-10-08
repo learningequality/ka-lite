@@ -159,5 +159,6 @@ function drawJsonChart(chart_div, json, xaxis, yaxis) {
       vAxis: {title: stat2name(yaxis), stat: yaxis},
     };
     var dataTable = json2dataTable(json, xaxis, yaxis);
+    $("#summary").remove();
     drawChart("#chart_div", dataTable, options);
 }

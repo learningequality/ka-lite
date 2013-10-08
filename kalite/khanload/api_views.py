@@ -166,20 +166,20 @@ def update_all_central_callback(request):
 
         # Only save video logs for videos that we recognize.
         if youtube_id not in ID2SLUG_MAP:
-            logging.debug("Skipping unknown video %s" % youtube_id)
+            logging.warn("Skipping unknown video %s" % youtube_id)
             continue
 
         try:
             video_logs.append({
                 "youtube_id": youtube_id,
                 "total_seconds_watched": video['seconds_watched'],
-                "points": video['points'],
+                "points": VideoLog.calc_points(video['seconds_watched'], video['duration']),
                 "complete": video['completed'],
                 "completion_timestamp": convert_ka_date(video['last_watched']) if video['completed'] else None,
             })
             logging.debug("Got video log for %s: %s" % (youtube_id, video_logs[-1]))
         except KeyError:  # 
-            logging.debug("Could not save video log for data with missing values: %s" % video)
+            logging.error("Could not save video log for data with missing values: %s" % video)
 
     # Save exercises
     exercise_logs = []
@@ -191,23 +191,24 @@ def update_all_central_callback(request):
         # Only save video logs for videos that we recognize.
         slug = exercise.get('exercise', "")
         if slug not in NODE_CACHE['Exercise']:
-            logging.debug("Skipping unknown video %s" % slug)
+            logging.warn("Skipping unknown video %s" % slug)
             continue
 
         try:
             completed = exercise['streak'] >= 10
+            basepoints = NODE_CACHE['Exercise'][slug]['basepoints']
             exercise_logs.append({
                 "exercise_id": slug,
-                "streak_progress": min(100, 100*exercise['streak']/10),  # duplicates logic elsewhere
+                "streak_progress": min(100, 100 * exercise['streak']/10),  # duplicates logic elsewhere
                 "attempts": exercise['total_done'],
-                "points": min(10, exercise['total_correct']) * 12,
+                "points": ExerciseLog.calc_points(basepoints, ncorrect=exercise['streak'], add_randomness=False),  # no randomness when importing from KA
                 "complete": completed,
                 "attempts_before_completion": exercise['total_done'] if not exercise['practiced'] else None,  #can't figure this out if they practiced after mastery.
                 "completion_timestamp": convert_ka_date(exercise['proficient_date']) if completed else None,
             })
             logging.debug("Got exercise log for %s: %s" % (slug, exercise_logs[-1]))
         except KeyError:
-            logging.debug("Could not save exercise log for data with missing values: %s" % exercise)
+            logging.error("Could not save exercise log for data with missing values: %s" % exercise)
 
     # POST the data back to the distributed server
     dthandler = lambda obj: obj.isoformat() if isinstance(obj, datetime.datetime) else None
@@ -272,7 +273,7 @@ def update_all_distributed_callback(request):
 
         # Only save video logs for videos that we recognize.
         if youtube_id not in ID2SLUG_MAP:
-            logging.debug("Skipping unknown video %s" % youtube_id)
+            logging.warn("Skipping unknown video %s" % youtube_id)
             continue
 
         try:
@@ -283,7 +284,7 @@ def update_all_distributed_callback(request):
             vl.save()
             n_videos_uploaded += 1
         except KeyError:  # 
-            logging.debug("Could not save video log for data with missing values: %s" % video)
+            logging.error("Could not save video log for data with missing values: %s" % video)
         except Exception as e:
             error_message = "Unexpected error importing videos: %s" % e
             return JsonResponse({"error": error_message}, status=500)
@@ -293,7 +294,7 @@ def update_all_distributed_callback(request):
     for exercise in exercises:
         # Only save video logs for videos that we recognize.
         if exercise['exercise_id'] not in NODE_CACHE['Exercise']:
-            logging.debug("Skipping unknown video %s" % exercise['exercise_id'])
+            logging.warn("Skipping unknown video %s" % exercise['exercise_id'])
             continue
 
         try:
@@ -304,7 +305,7 @@ def update_all_distributed_callback(request):
             el.save()
             n_exercises_uploaded += 1
         except KeyError:
-            logging.debug("Could not save exercise log for data with missing values: %s" % exercise)
+            logging.error("Could not save exercise log for data with missing values: %s" % exercise)
         except Exception as e:
             error_message = "Unexpected error importing exercises: %s" % e
             return JsonResponse({"error": error_message}, status=500)
