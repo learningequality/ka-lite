@@ -9,7 +9,7 @@ admin.site.register(RegisteredDevicePublicKey, RegisteredDevicePublicKeyAdmin)
 
 
 class DeviceMetadataAdmin(admin.ModelAdmin):
-    list_display = ("device", "is_trusted", "is_own_device", "counter_position",)
+    list_display = ("device", "is_trusted", "is_own_device", "is_demo_device", "counter_position",)
 admin.site.register(DeviceMetadata, DeviceMetadataAdmin)
 
 
@@ -25,7 +25,7 @@ admin.site.register(DeviceZone, DeviceZoneAdmin)
 
 
 class DeviceAdmin(admin.ModelAdmin):
-    list_display = ("device_id", "name", "description", "is_own_device", "is_trusted", "get_zone", "version")
+    list_display = ("device_id", "name", "description", "is_own_device", "is_trusted", "is_demo_device", "get_zone", "version")
     
     def is_own_device(self, obj):
         return obj.devicemetadata.is_own_device
@@ -36,6 +36,11 @@ class DeviceAdmin(admin.ModelAdmin):
         return obj.devicemetadata.is_trusted
     is_trusted.boolean = True
     is_trusted.admin_order_field = "devicemetadata__is_trusted"
+
+    def is_demo_device(self, obj):
+        return obj.devicemetadata.is_demo_device
+    is_demo_device.boolean = False
+    is_demo_device.admin_order_field = "devicemetadata__is_demo_device"
 
     def device_id(self, obj):
         return obj.id[0:5]

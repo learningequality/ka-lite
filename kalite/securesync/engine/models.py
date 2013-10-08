@@ -91,7 +91,7 @@ class SyncedModelManager(models.Manager):
     def by_zone(self, zone):
         # get model instances that were signed by devices in the zone,
         # or signed by a trusted authority that said they were for the zone
-        return self.filter(Q(signed_by__devicezone__zone=zone) |
+        return self.filter(Q(signed_by__devicezone__zone=zone, signed_by__devicezone__revoked=False) |
             Q(signed_by__devicemetadata__is_trusted=True, zone_fallback=zone))
 
 
@@ -205,7 +205,7 @@ class SyncedModel(ExtendedModel):
 
         return "&".join(chunks)
 
-    def save(self, own_device=None, imported=False, increment_counters=True, *args, **kwargs):
+    def save(self, imported=False, increment_counters=True, *args, **kwargs):
         """
         Some of the heavy lifting happens here.  There are two saving scenarios:
         (a) We are saving an imported model.
@@ -214,10 +214,6 @@ class SyncedModel(ExtendedModel):
             In this case, we need to mark the model with appropriate fields, so that
             it can be sync'd (self.counter), and that it will verify (self.signature)
         """
-        # we allow for the "own device" to be passed in so that a device can sign itself (before existing)
-        own_device = own_device or _get_own_device()
-        assert own_device, "own_device is None--this should never happen, as get_own_device should create if not found."
-
         if imported:
             # imported models are signed by other devices; make sure they check out
             if not self.signed_by_id:
@@ -225,6 +221,8 @@ class SyncedModel(ExtendedModel):
             if not self.verify():
                 raise ValidationError("Imported model's signature did not match.")
         else:
+            own_device = _get_own_device()
+
             # Two critical things to do:
             # 1. local models need to be signed by us
             # 2. and get our counter position

@@ -14,9 +14,9 @@ from django.core.management import call_command
 
 import settings
 from settings import LOG as logging
+from shared.topic_tools import get_node_cache
 from utils.general import convert_date_input, ensure_dir
-from utils.subtitles import subtitle_utils
-from utils.topic_tools import get_node_cache
+from utils.subtitles import make_request
 
 
 headers = {
@@ -48,7 +48,7 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
             with open(out_file, "r") as fp:
                 srts_dict = json.load(fp)
         except Exception as e:
-            logging.debug("JSON file corrupted, using empty json and starting from scratch.\n%s" % e)
+            logging.error("JSON file corrupted, using empty json and starting from scratch (%s)" % e)
             srts_dict = {}
         else:
             logging.info("Loaded %d mappings." % (len(srts_dict)))
@@ -130,7 +130,7 @@ def update_video_entry(youtube_id, entry={}):
     """
     request_url = "https://www.amara.org/api2/partners/videos/?format=json&video_url=http://www.youtube.com/watch?v=%s" % (
         youtube_id)
-    r = subtitle_utils.make_request(headers, request_url)
+    r = make_request(headers, request_url)
     # add api response first to prevent empty json on errors
     entry["last_attempt"] = unicode(datetime.datetime.now().date())
 
@@ -217,8 +217,8 @@ def update_language_srt_map():
         else:
             try:
                 lang_map = json.loads(open(lang_map_filepath).read())
-            except:
-                logging.debug("Language download status mapping for (%s) is corrupted, rewriting it." % lang_code)
+            except Exception as e:
+                logging.error("Language download status mapping for (%s) is corrupted (%s), rewriting it." % (lang_code, e))
                 lang_map = {}
 
         # First, check to see if it's empty (e.g. no subtitles available for any videos)

@@ -17,10 +17,10 @@ from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
 
 import settings
+from .forms import FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
+from .models import Facility, FacilityGroup
 from config.models import Settings
 from main.models import UserLog
-from securesync.forms import FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
-from securesync.models import Facility, FacilityGroup
 from settings import LOG as logging
 from shared.decorators import require_admin, central_server_only, distributed_server_only, facility_required, facility_from_request
 from shared.jobs import force_job
@@ -98,14 +98,6 @@ def facility_edit(request, id=None):
     return {
         "form": form
     }
-
-
-@distributed_server_only
-@render_to("securesync/facility_selection.html")
-def facility_selection(request):
-    facilities = Facility.objects.all()
-    context = {"facilities": facilities}
-    return context
 
 
 @distributed_server_only
@@ -239,7 +231,7 @@ def login(request, facility):
             try:
                 UserLog.begin_user_activity(user, activity_type="login")  # Success! Log the event (ignoring validation failures)
             except ValidationError as e:
-                logging.debug("Failed to begin_user_activity upon login: %s" % e)
+                logging.error("Failed to begin_user_activity upon login: %s" % e)
             request.session["facility_user"] = user
             messages.success(request, _("You've been logged in! We hope you enjoy your time with KA Lite ") +
                                         _("-- be sure to log out when you finish."))
@@ -270,7 +262,7 @@ def logout(request):
         try:
             UserLog.end_user_activity(request.session["facility_user"], activity_type="login")
         except ValidationError as e:
-            logging.debug("Failed to end_user_activity upon logout: %s" % e)
+            logging.error("Failed to end_user_activity upon logout: %s" % e)
         del request.session["facility_user"]
     auth_logout(request)
     next = request.GET.get("next", reverse("homepage"))

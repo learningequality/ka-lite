@@ -220,6 +220,7 @@ class Command(BaseCommand):
         # Now do stuff
         ########################
 
+        # Move database file (if exists)
         if install_clean and os.path.exists(database_file):
             # This is an overwrite install; destroy the old db
             dest_file = tempfile.mkstemp()[1]
@@ -230,11 +231,13 @@ class Command(BaseCommand):
         import serverstop
 
         # Should clean_pyc for (clean) reinstall purposes
-        call_command("clean_pyc", migrate=True, interactive=False, verbosity=options.get("verbosity"))
+        call_command("clean_pyc", interactive=False, verbosity=options.get("verbosity"))
 
-        # 
-        call_command("syncdb", migrate=True, interactive=False, verbosity=options.get("verbosity"))
+        # Migrate the database
+        call_command("syncdb", interactive=False, verbosity=options.get("verbosity"))
+        call_command("migrate", merge=True, verbosity=options.get("verbosity"))
 
+        # Install data
         if install_clean:
             call_command("generatekeys", verbosity=options.get("verbosity"))
 
@@ -245,8 +248,16 @@ class Command(BaseCommand):
 
             call_command("initdevice", hostname, description, verbosity=options.get("verbosity"))
 
+        # Move scripts
+        for script_name in ["start", "stop", "run_command"]:
+            script_file = script_name + system_script_extension()
+            dest_dir = os.path.join(settings.PROJECT_PATH, "..")
+            src_dir = os.path.join(dest_dir, "scripts")
+            shutil.copyfile(os.path.join(src_dir, script_file), os.path.join(dest_dir, script_file))
+            shutil.copystat(os.path.join(src_dir, script_file), os.path.join(dest_dir, script_file))
+
         sys.stdout.write("\n")
         sys.stdout.write("CONGRATULATIONS! You've finished installing the KA Lite server software.\n")
-        sys.stdout.write("\tPlease run './start.%s' to start the server, and then load the url\n" % system_script_extension())
+        sys.stdout.write("\tPlease run './start%s' to start the server, and then load the url\n" % system_script_extension())
         sys.stdout.write("\thttp://127.0.0.1:%d/ to complete the device configuration.\n" % settings.PRODUCTION_PORT)
         sys.stdout.write("\n")

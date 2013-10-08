@@ -21,9 +21,9 @@ from securesync.models import Facility, FacilityGroup, FacilityUser
 from settings import LOG as logging
 from shared.testing.browser import BrowserTestCase
 from shared.testing.decorators import distributed_server_test
+from shared.topic_tools import get_exercise_paths
 from utils.django_utils import call_command_with_output
 from utils.general import isnumeric
-from utils.topic_tools import get_exercise_paths
 
 
 @distributed_server_test
@@ -417,7 +417,7 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
         self.assertEqual(elog.attempts_before_completion, 10, "Student should have 10 attempts for completion.")
 
 
-@unittest.skipIf(settings.FAST_TESTS_ONLY, "Skipping slow test")
+@unittest.skipIf("medium" in settings.TESTS_TO_SKIP, "Skipping medium-length test")
 @distributed_server_test
 class LoadExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
     """Tests if the exercise is loaded without any JS error.
@@ -438,10 +438,9 @@ class LoadExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
             self.browser.get(self.live_server_url + path)
             error_list = self.browser.execute_script("return window.js_errors;")
             if error_list:
-                logging.debug("Found JS error(s) while loading path: " + path)
-                logging.debug("JS errors reported:")
+                logging.error("Found JS error(s) while loading path: " + path)
                 for e in error_list:
-                    logging.debug(e)    
+                    logging.error(e)    
             self.assertFalse(error_list)
 
 

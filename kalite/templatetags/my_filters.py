@@ -1,8 +1,14 @@
 # based on: http://www.djangosnippets.org/snippets/1926/
-from django.template import Library, Node, TemplateSyntaxError
+from django import template
 from django.db.models.query import QuerySet
+from django.template import Library, Node, TemplateSyntaxError
+from django.template.defaultfilters import floatformat
 from django.utils import simplejson
 from django.utils.safestring import mark_safe
+
+import settings
+from shared.serializers import serialize
+from utils.internet.classes import _dthandler
 
 
 register = Library()
@@ -22,9 +28,11 @@ class RangeNode(Node):
         context[self.context_name] = range(*resolved_ranges)
         return ""
 
+
 @register.filter
 def get_item(dictionary, key):
     return dictionary.get(key)
+
 
 @register.tag
 def mkrange(parser, token):
@@ -77,14 +85,16 @@ def mkrange(parser, token):
 
 @register.filter
 def jsonify(object):
-    if isinstance(object, QuerySet):
-        return serialize('json', object)
-    return mark_safe(simplejson.dumps(object))
+    try:
+        if isinstance(object, QuerySet):
+            return serialize('json', object)
+    except:
+        pass
 
-from django import template
-
-from django.template.defaultfilters import floatformat
-
+    str = mark_safe(simplejson.dumps(object, default=_dthandler))
+    if str == "null":
+        str = mark_safe("[%s]" % (",".join([simplejson.dumps(o, default=_dthandler) for o in object])))
+    return str
 
 @register.filter
 def percent(value, precision):
@@ -118,3 +128,7 @@ def format_name(user, format="first_last"):
 
     else:
         raise NotImplementedError("Unrecognized format string: %s" % format)
+
+@register.simple_tag
+def central_server_api(path, securesync=False):
+    return "%s://%s%s" % ((settings.SECURESYNC_PROTOCOL if securesync else "http"), settings.CENTRAL_SERVER_HOST, path)
