@@ -246,14 +246,17 @@ def _update_video_log_with_points(seconds_watched, video_length, youtube_id, fac
 
 @gzip_page
 def flat_topic_tree(request):
-    categories = copy.deepcopy(get_node_cache()) # so we dont clobber global node cache
+    categories = get_node_cache()
+    result = dict()
     # make sure that we only get the slug of child of a topic
     # to avoid redundancy
     for category_name, category in categories.iteritems():
+        result[category_name] = {}
         for node_name, node in category.iteritems():
             relevant_data = {'title': node['title'],
                              'path': node['path'],
+                             'kind': node['kind'],
             }
-            categories[category_name][node_name] = relevant_data
-    return HttpResponse(json.dumps(categories),
+            result[category_name][node_name] = relevant_data
+    return HttpResponse(json.dumps(result),
                         content_type='application/json')
