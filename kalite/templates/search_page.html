@@ -5,11 +5,23 @@
   {% for category, subresults in results.iteritems %}
     <h3 style="margin:20px 0px 5px 0px">{{ category }}</h3>
     <ul>
-    {% for result in subresults %}
+    {% for node in subresults %}
       <li>
-	<a href="{{ result.1}}">
-	  {{ result.0 }}
-	</a>
+	{% if node.kind == 'Topic' %}
+	    {% if node.nvideos_local == 0 %}
+		<a href="{{ node.path }}" class="topic-unavailable">{{ node.title }}</a>
+	    {% else %}
+		<a href="{{ node.path }}" class="topic-available">{{ node.title }}</a>
+	    {% endif %}
+	{% elif node.kind == 'Video' %}
+	    {% if node.video_on_disk %}
+		<a href="{{ node.path }}" class="video-available">{{ node.title }}</a>
+	    {% else %}
+		<a class="video-unavailable">{{ node.title }}</a>
+	    {% endif %}
+	{% else %}
+	    <a href="{{ node.path }}">{{ node.title }}</a>
+	{% endif %}
       </li>
     {% endfor %}
     </ul>
