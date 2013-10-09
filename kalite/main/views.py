@@ -354,7 +354,8 @@ def search(request):
             elif query in node['title']:
                 possible_matches[node['kind']].append(node)
         else:
-            return {'results': possible_matches}
+            return {'results': possible_matches,
+                    'query': query}
 
     else:
         return HttpResponseRedirect('/')
