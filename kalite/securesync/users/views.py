@@ -240,6 +240,7 @@ def logout(request):
         except ValidationError as e:
             logging.error("Failed to end_user_activity upon logout: %s" % e)
         del request.session["facility_user"]
+
     auth_logout(request)
     next = request.GET.get("next", reverse("homepage"))
     if next[0] != "/":

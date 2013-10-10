@@ -18,7 +18,7 @@ import version
 from .models import *
 from config.models import Settings
 from main.models import VideoLog, ExerciseLog, VideoFile
-from shared.decorators import distributed_server_only
+from shared.decorators import distributed_server_only, allow_api_profiling
 from utils.internet import allow_jsonp, api_handle_error_with_json, JsonResponse
 
 
@@ -26,6 +26,7 @@ from utils.internet import allow_jsonp, api_handle_error_with_json, JsonResponse
 # requests will be possible. Since `status` is always loaded, it's a good place for this.
 @ensure_csrf_cookie
 @distributed_server_only
+@allow_api_profiling
 @api_handle_error_with_json
 def status(request):
     """In order to promote (efficient) caching on (low-powered)

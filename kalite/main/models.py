@@ -418,7 +418,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
             cur_log = None
 
         # Create a new entry
-        logging.debug("%s: BEGIN activity(%d) @ %s"%(user.username, activity_type, start_datetime))
+        logging.debug("%s: BEGIN activity(%d) @ %s" % (user.username, activity_type, start_datetime))
         cur_log = cls(user=user, activity_type=activity_type, start_datetime=start_datetime, last_active_datetime=start_datetime, language=language)
         cur_log.save()
 
@@ -447,7 +447,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
                 raise ValidationError("Update time must always be later than the login time.")
         else:
             # No unstopped starts.  Start should have been called first!
-            logging.warn("%s: Had to create a user log entry on an UPDATE(%d)! @ %s"%(user.username, activity_type, update_datetime))
+            logging.warn("%s: Had to create a user log entry on an UPDATE(%d)! @ %s" % (user.username, activity_type, update_datetime))
             cur_log = cls.begin_user_activity(user=user, activity_type=activity_type, start_datetime=update_datetime)
 
         logging.debug("%s: UPDATE activity (%d) @ %s"%(user.username, activity_type, update_datetime))
@@ -473,6 +473,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
         activity_type = cls.get_activity_int(activity_type)
 
         cur_log = cls.get_latest_open_log_or_None(user=user, activity_type=activity_type)
+
         if cur_log:
             # How could you start after you ended??
             if cur_log.start_datetime > end_datetime:
@@ -482,7 +483,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
             logging.warn("%s: Had to BEGIN a user log entry, but ENDING(%d)! @ %s"%(user.username, activity_type, end_datetime))
             cur_log = cls.begin_user_activity(user=user, activity_type=activity_type, start_datetime=end_datetime)
 
-        logging.debug("%s: Logging LOGOUT activity @ %s"%(user.username, end_datetime))
+        logging.debug("%s: Logging LOGOUT activity @ %s" % (user.username, end_datetime))
         cur_log.end_datetime = end_datetime
         cur_log.save()  # total-seconds will be computed here.
         return cur_log
