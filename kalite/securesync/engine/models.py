@@ -14,6 +14,7 @@ import kalite
 import settings
 from . import add_syncing_models
 from config.models import Settings
+from settings import LOG as logging
 from utils.django_utils import validate_via_booleans, ExtendedModel
 
 
@@ -165,21 +166,22 @@ class SyncedModel(ExtendedModel):
         except:
             return False
 
-    def _hashable_fields(self, fields=None):
+    @classmethod
+    def _hashable_fields(cls, fields=None):
 
         # if no fields were specified, build a list of all the model's field names
         if not fields:
-            fields = [field.name for field in self._meta.fields if field.name not in self.__class__._unhashable_fields]
+            fields = [field.name for field in cls._meta.fields if field.name not in cls._unhashable_fields and not hasattr(field, "minversion")]
             # sort the list of fields, for consistency
             fields.sort()
 
         # certain fields should always be included
-        for field in self.__class__._always_hash_fields:
+        for field in cls._always_hash_fields:
             if field not in fields:
                 fields = [field] + fields
 
         # certain fields should never be included
-        fields = [field for field in fields if field not in self.__class__._unhashable_fields]
+        fields = [field for field in fields if field not in cls._unhashable_fields]
 
         return fields
 
