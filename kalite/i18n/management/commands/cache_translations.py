@@ -3,7 +3,6 @@
 2. Store meta data incl: percent translated, version number, language
 3. Compile po to mo
 4. Zip everything up at exposed URL 
-5. Update JSON file used by API to tell distributed server about language pack availability
 """
 
 import json
@@ -21,7 +20,7 @@ from django.core.management.base import BaseCommand, CommandError
 import settings
 from utils.general import ensure_dir
 from central.management.commands.cache_subtitles import get_language_name
-from update_po import move_to_project_root
+from update_po import compile_all_po_files
 
 LOCALE_ROOT = settings.LOCALE_PATHS[0]
 LANGUAGE_PACK_AVAILABILITY_FILENAME = "language_pack_availability.json"
@@ -131,12 +130,6 @@ def increment_version(lang_code, percent_translated, lang_locale_path):
 			version = old_version
 	return version
 
-
-def compile_all_po_files():
-	"""Compile all po files in locale directory"""
-	# before running compilemessages, ensure in correct directory
-	move_to_project_root()
-	management.call_command('compilemessages')
 
 
 def zip_language_packs():
