@@ -2,15 +2,16 @@ from annoying.decorators import render_to
 from collections import OrderedDict
 from datetime import timedelta  # this is OK; central server code can be 2.7+
 
-from django.db.models import Sum, Max, Count, F
+from django.db.models import Sum, Max, Count, F, Q, Min
 
-from securesync.models import SyncSession
+from main.models import ExerciseLog, VideoLog
+from securesync.models import SyncSession, Device
 from shared.decorators import require_authorized_admin
 
 
 @require_authorized_admin
 @render_to("stats/admin_summary_page.html")
-def admin_summary_page(request, org_id=None, max_zones=20, chunk_size=100, ndays=None):
+def recent_syncing(request, org_id=None, max_zones=20, chunk_size=100, ndays=None):
     ndays = ndays or int(request.GET.get("days", 7))
 
     ss = SyncSession.objects \
@@ -60,3 +61,39 @@ def admin_summary_page(request, org_id=None, max_zones=20, chunk_size=100, ndays
         "zones": zones,
     }
 
+
+@require_authorized_admin
+@render_to("stats/timelines.html")
+def timelines(request):
+
+    do = Device.objects \
+        .exclude(devicemetadata__is_demo_device=True) \
+        .annotate( \
+            first_sess=Min("client_sessions__timestamp"),\
+            nsess=Count("client_sessions", distinct=True), \
+        ) \
+        .order_by("first_sess") \
+        .filter(nsess__gt=0) \
+        .values("first_sess","nsess", "name", "devicezone__zone__name")
+
+    # Exercises completed (by date)
+    eo = ExerciseLog.objects \
+        .all() \
+        .values("completion_timestamp", "signed_by__name", "signed_by__devicezone__zone__name") \
+        .order_by("completion_timestamp") \
+        .exclude(signed_by__devicemetadata__is_demo_device=True) \
+        .filter(complete=True)
+
+    # Videos completed (by date)
+    vo = VideoLog.objects \
+        .all() \
+        .values("completion_timestamp", "signed_by__name", "signed_by__devicezone__zone__name") \
+        .order_by("completion_timestamp") \
+    .exclude(signed_by__devicemetadata__is_demo_device=True) \
+        .filter(complete=True)
+
+    return {
+        "registrations": do,
+        "exercises": eo,
+        "videos": vo,
+    }
