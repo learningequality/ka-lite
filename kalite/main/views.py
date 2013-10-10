@@ -42,7 +42,7 @@ def check_setup_status(handler):
     def wrapper_fn(request, *args, **kwargs):
         if request.is_admin:
             # TODO(bcipolli): move this to the client side?
-            if not request.session["registered"] and SyncClient().test_connection() == "success":
+            if not request.session["registered"] and BaseClient().test_connection() == "success":
                 messages.warning(request, mark_safe("Please <a href='%s'>follow the directions to register your device</a>, so that it can synchronize with the central server." % reverse("register_public_key")))
             elif not request.session["facility_exists"]:
                 messages.warning(request, mark_safe("Please <a href='%s'>create a facility</a> now. Users will not be able to sign up for accounts until you have made a facility." % reverse("add_facility")))

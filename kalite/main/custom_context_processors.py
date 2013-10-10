@@ -18,7 +18,7 @@ def custom(request):
 def languages(request):
     if "default_language" not in request.session:
         request.session["default_language"] = str(Settings.get("default_language") or "en")
-    if "language_choices" not in request.session:
+    if "language_choices" not in request.session or request.is_admin:  # don't cache for admins
         request.session["language_choices"] = list(LanguagePack.objects.all())
 
     default_language = request.session["default_language"]

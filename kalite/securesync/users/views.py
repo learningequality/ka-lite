@@ -122,7 +122,7 @@ def add_facility_user(request, facility, is_teacher):
     return {
         "form": form,
         "facility": facility,
-        "singlefacility": (Facility.objects.count() == 1),
+        "singlefacility": request.session["facility_count"] == 1,
         "teacher": is_teacher,
         "cur_url": request.path,
     }

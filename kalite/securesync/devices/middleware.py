@@ -18,5 +18,5 @@ class DBCheck:
 
 class RegisteredCheck:
     def process_request(self, request):
-        if not "registered" in request.session:
+        if not "registered" in request.session or request.is_admin:
             request.session["registered"] = Settings.get("registered")

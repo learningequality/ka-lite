@@ -23,6 +23,11 @@ class AuthFlags:
 
 class FacilityCheck:
     def process_request(self, request):
-        if not "facility_exists" in request.session:
-            request.session["facility_exists"] = Facility.objects.count() == 0
+        """
+        Cache facility data in the session,
+          while making sure anybody who can create facilities sees the real (non-cached) data
+        """
+        if not "facility_exists" in request.session or request.is_admin:  
+            request.session["facility_count"] = Facility.objects.count()
+            request.session["facility_exists"] = request.session["facility_count"] == 0
 
