@@ -174,7 +174,7 @@ def add_group(request, facility):
 @facility_from_request
 @render_to("securesync/login.html")
 def login(request, facility):
-    facilities = Facility.objects.all()
+    facilities = list(Facility.objects.all())
     facility_id = facility and facility.id or None
 
     if request.method == 'POST':
