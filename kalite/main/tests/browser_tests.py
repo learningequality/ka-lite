@@ -36,7 +36,15 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
     default_password = "socrates"
     default_facility_name = "middle of nowhere"
     
-    
+    def tearDown(self):
+        """
+        """
+        
+        # Must clean up, as browser sessions could persist
+        if self.persistent_browser:
+            self.browser_logout_user()  
+        super(KALiteDistributedBrowserTestCase, self).tearDown()
+
     def create_student(self, username=default_username, password=default_password, facility_name=default_facility_name):
         facilities = Facility.objects.filter(name=facility_name)
         facility = facilities[0] if facilities else self.create_facility()
