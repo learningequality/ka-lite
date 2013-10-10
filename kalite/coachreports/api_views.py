@@ -132,6 +132,9 @@ def get_data_form(request, *args, **kwargs):
         group = get_object_or_404(FacilityGroup, id=form.data["group"])
         form.data["facility"] = getattr(group.facility, "id")
 
+    if type(form.data["facility"]) == Facility:
+        form.data["facility"] = form.data["facility"].id
+
     return form
 
 

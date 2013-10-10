@@ -60,14 +60,6 @@ def facility_edit(request, id=None):
 
 
 @distributed_server_only
-@render_to("securesync/facility_selection.html")
-def facility_selection(request):
-    facilities = Facility.objects.all()
-    context = {"facilities": facilities}
-    return context
-
-
-@distributed_server_only
 @require_admin
 def add_facility_teacher(request):
     return add_facility_user(request, is_teacher=True)
@@ -231,6 +223,7 @@ def logout(request):
         except ValidationError as e:
             logging.error("Failed to end_user_activity upon logout: %s" % e)
         del request.session["facility_user"]
+
     auth_logout(request)
     next = request.GET.get("next", reverse("homepage"))
     if next[0] != "/":
