@@ -114,7 +114,7 @@ def add_facility_user(request, facility, is_teacher):
     return {
         "form": form,
         "facility": facility,
-        "singlefacility": (Facility.objects.count() == 1),
+        "singlefacility": request.session["facility_count"] == 1,
         "teacher": is_teacher,
         "cur_url": request.path,
     }
@@ -166,7 +166,7 @@ def add_group(request, facility):
 @facility_from_request
 @render_to("securesync/login.html")
 def login(request, facility):
-    facilities = Facility.objects.all()
+    facilities = list(Facility.objects.all())
     facility_id = facility and facility.id or None
 
     if request.method == 'POST':
@@ -210,7 +210,7 @@ def login(request, facility):
 
     return {
         "form": form,
-        "facilities": facilities
+        "facilities": facilities,
     }
 
 

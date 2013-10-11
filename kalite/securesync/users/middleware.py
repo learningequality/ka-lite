@@ -1,6 +1,4 @@
-from django.core.management import call_command
-from django.db import DatabaseError
-from django.http import HttpResponse
+from .models import Facility
 
 
 class AuthFlags:
@@ -22,4 +20,14 @@ class AuthFlags:
                 request.is_admin = True
                 request.is_teacher = True
             request.is_logged_in = True
+
+class FacilityCheck:
+    def process_request(self, request):
+        """
+        Cache facility data in the session,
+          while making sure anybody who can create facilities sees the real (non-cached) data
+        """
+        if not "facility_exists" in request.session or request.is_admin:  
+            request.session["facility_count"] = Facility.objects.count()
+            request.session["facility_exists"] = request.session["facility_count"] > 0
 
