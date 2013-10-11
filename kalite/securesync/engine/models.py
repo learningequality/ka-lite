@@ -14,6 +14,7 @@ import kalite
 import settings
 from . import add_syncing_models
 from config.models import Settings
+from settings import LOG as logging
 from utils.django_utils import validate_via_booleans, ExtendedModel
 
 
@@ -99,6 +100,21 @@ class SyncedModel(ExtendedModel):
     
     A model that is cross-computer syncable.  All models sync'd across computers
     should inherit from this base class.
+
+    NOTE on signed_version (bcipolli; 2013/10/10):
+    signed_version is part of a design where schema changes forced models into ImportPurgatory,
+    where they would stay until a software upgrade.
+
+    Due to the deployment (and worldwide use) of code with a bug in the implementation of that design, 
+    a second design was implemented and deployed.  There, unknown models and model fields (judged by
+    comparing the model/field's "minversion" property with the remote server's version) are
+    simply not shared over the wire.  This system only works for distributed-central interactions,
+    and interactions between peers of the same (schema) version, and will not work for any
+    mixed version P2P syncing.
+
+    For backwards compatibility reasons, signed_version must remain, and would be used
+    in future designs/implementations reusing the original (elegant) design that is appropriate
+    for mixed version P2P sync.
     """
     id = models.CharField(primary_key=True, max_length=ID_MAX_LENGTH, editable=False)
     counter = models.IntegerField(default=None, blank=True, null=True)
@@ -110,7 +126,7 @@ class SyncedModel(ExtendedModel):
 
     objects = SyncedModelManager()
     _unhashable_fields = ["signature", "signed_by"] # fields of this class to avoid serializing
-    _always_hash_fields = ["signed_version", "id"]  # fields of this class to always serialize
+    _always_hash_fields = ["signed_version", "id"]  # fields of this class to always serialize (see note above for signed_version)
 
     class Meta:
         abstract = True
@@ -165,21 +181,22 @@ class SyncedModel(ExtendedModel):
         except:
             return False
 
-    def _hashable_fields(self, fields=None):
+    @classmethod
+    def _hashable_fields(cls, fields=None):
 
         # if no fields were specified, build a list of all the model's field names
         if not fields:
-            fields = [field.name for field in self._meta.fields if field.name not in self.__class__._unhashable_fields]
+            fields = [field.name for field in cls._meta.fields if field.name not in cls._unhashable_fields and not hasattr(field, "minversion")]
             # sort the list of fields, for consistency
             fields.sort()
 
         # certain fields should always be included
-        for field in self.__class__._always_hash_fields:
+        for field in cls._always_hash_fields:
             if field not in fields:
                 fields = [field] + fields
 
         # certain fields should never be included
-        fields = [field for field in fields if field not in self.__class__._unhashable_fields]
+        fields = [field for field in fields if field not in cls._unhashable_fields]
 
         return fields
 

@@ -85,7 +85,7 @@ class Command(BaseCommand):
 
             elif not Device.objects.count():
                 # Nothing we can do to recover
-                raise CommandException("You are screwed, buddy.")
+                raise CommandError("You are screwed, buddy--you went through the install but have no devices!")
 
             else:
                 # Force hitting recovery code, by raising a generic error
@@ -95,16 +95,12 @@ class Command(BaseCommand):
         except DatabaseError:
             self.stdout.write("Installing KA Lite; this may take a few minutes; please wait!\n")
 
-            out = call_command_with_output("install", interactive=False)
-            if out[1] or out[2]:
-                # Failed; report and exit
-                self.stderr.write(out[1])
-                raise CommandError("Failed to recover.")
-
-            if not Facility.objects.count():
-                # Install went through, but no facility and no admin.
-                # So, need to add a default
-                Facility(name=_("Default Facility")).save()
+            call_command("install", interactive=False)  # show output to the user
+            #out = call_command_with_output("install", interactive=False)
+            #if out[1] or out[2]:
+            #    # Failed; report and exit
+            #    self.stderr.write(out[1])
+            #    raise CommandError("Failed to install/recover.")
 
         # Now call the proper command
         if options["run_in_proc"]:

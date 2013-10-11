@@ -202,6 +202,14 @@ else:
 
 ZERO_CONFIG   = getattr(local_settings, "ZERO_CONFIG", False)
 
+# With zero config, no admin (by default)
+INSTALL_ADMIN_USERNAME = getattr(local_settings, "INSTALL_ADMIN_USERNAME", None)
+INSTALL_ADMIN_PASSWORD = getattr(local_settings, "INSTALL_ADMIN_PASSWORD", None)
+assert bool(INSTALL_ADMIN_USERNAME) + bool(INSTALL_ADMIN_PASSWORD) != 1, "Must specify both admin username and password, or neither."
+
+# With zero config, always a default facility
+INSTALL_FACILITY_NAME = getattr(local_settings, "INSTALL_FACILITY_NAME", None if not ZERO_CONFIG else "Default Facility")
+
 
 ########################
 # Syncing and synced data
