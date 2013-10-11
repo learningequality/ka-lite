@@ -29,5 +29,5 @@ class FacilityCheck:
         """
         if not "facility_exists" in request.session or request.is_admin:  
             request.session["facility_count"] = Facility.objects.count()
-            request.session["facility_exists"] = request.session["facility_count"] == 0
+            request.session["facility_exists"] = request.session["facility_count"] > 0
 
