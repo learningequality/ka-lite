@@ -214,17 +214,20 @@ def launch_mplayer(request):
 
     youtube_id = request.REQUEST["youtube_id"]
     facility_user = request.session.get("facility_user")
+
     callback = partial(
         _update_video_log_with_points,
         youtube_id=youtube_id,
         facility_user=facility_user,
+        language=request.language,
     )
+
     play_video_in_new_thread(youtube_id, content_root=settings.CONTENT_ROOT, callback=callback)
 
     return JsonResponse({})
 
 
-def _update_video_log_with_points(seconds_watched, video_length, youtube_id, facility_user):
+def _update_video_log_with_points(seconds_watched, video_length, youtube_id, facility_user, language):
     """Handle the callback from the mplayer thread, saving the VideoLog. """
     # TODO (bcipolli) add language info here
 
@@ -239,4 +242,5 @@ def _update_video_log_with_points(seconds_watched, video_length, youtube_id, fac
         youtube_id=youtube_id,
         additional_seconds_watched=seconds_watched,
         new_points=new_points,
+        language=language,
     )
