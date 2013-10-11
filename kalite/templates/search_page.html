@@ -1,7 +1,7 @@
 {% extends 'base_distributed.html' %}
 
 {% block content %}
-<h2>Search results for '{{ query }}'</h2>
+<h2>Search results for <b>'{{ query }}'</b></h2>
   {% for category, subresults in results.iteritems %}
     <h3 style="margin:20px 0px 5px 0px">{{ category }}</h3>
     <ul>
