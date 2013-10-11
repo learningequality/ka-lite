@@ -348,10 +348,12 @@ def search(request):
         possible_matches = {'Topic': [], 'Video': [], 'Exercise': []}
         for _, node_dict in nodes_.iteritems():
             nodes += node_dict.values()
+        query = query.lower()
         for node in nodes:
-            if node['title'] == query:
+            title = node['title'].lower()
+            if title == query:
                 return HttpResponseRedirect(node['path'])
-            elif query in node['title']:
+            elif query in title:
                 possible_matches[node['kind']].append(node)
         else:
             return {'results': possible_matches,
