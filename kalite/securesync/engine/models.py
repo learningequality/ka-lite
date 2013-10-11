@@ -100,6 +100,21 @@ class SyncedModel(ExtendedModel):
     
     A model that is cross-computer syncable.  All models sync'd across computers
     should inherit from this base class.
+
+    NOTE on signed_version (bcipolli; 2013/10/10):
+    signed_version is part of a design where schema changes forced models into ImportPurgatory,
+    where they would stay until a software upgrade.
+
+    Due to the deployment (and worldwide use) of code with a bug in the implementation of that design, 
+    a second design was implemented and deployed.  There, unknown models and model fields (judged by
+    comparing the model/field's "minversion" property with the remote server's version) are
+    simply not shared over the wire.  This system only works for distributed-central interactions,
+    and interactions between peers of the same (schema) version, and will not work for any
+    mixed version P2P syncing.
+
+    For backwards compatibility reasons, signed_version must remain, and would be used
+    in future designs/implementations reusing the original (elegant) design that is appropriate
+    for mixed version P2P sync.
     """
     id = models.CharField(primary_key=True, max_length=ID_MAX_LENGTH, editable=False)
     counter = models.IntegerField(default=None, blank=True, null=True)
@@ -111,7 +126,7 @@ class SyncedModel(ExtendedModel):
 
     objects = SyncedModelManager()
     _unhashable_fields = ["signature", "signed_by"] # fields of this class to avoid serializing
-    _always_hash_fields = ["signed_version", "id"]  # fields of this class to always serialize
+    _always_hash_fields = ["signed_version", "id"]  # fields of this class to always serialize (see note above for signed_version)
 
     class Meta:
         abstract = True
