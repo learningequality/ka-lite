@@ -28,7 +28,7 @@ class TestChainOfTrust(TestCase):
 
         new_device = Device(name="new_device")  # make a new device
         new_device.set_key(Key())
-        new_device.save(own_device=new_device)  # get an ID
+        new_device.save()  # get an ID
         new_device.get_metadata().save()
 
         # Now create an invitation, and claim that invitation for the new device.
@@ -56,7 +56,7 @@ class TestChainOfTrust(TestCase):
 
         new_device = Device(name="new_device")  # make a new device
         new_device.set_key(Key())
-        new_device.save(own_device=new_device)  # get an ID
+        new_device.save()  # get an ID
         new_device.get_metadata().save()
 
         # Now create an invitation, and claim that invitation for the new device.
@@ -85,7 +85,7 @@ class TestChainOfTrust(TestCase):
 
         new_device = Device(name="new_device")  # make a new device
         new_device.set_key(Key())
-        new_device.save(own_device=new_device)  # get an ID
+        new_device.save()  # get an ID
         new_device.get_metadata().save()
 
         # Now create an illegal invitation--one that's not signed by the zone creator
