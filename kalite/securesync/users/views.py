@@ -28,48 +28,6 @@ from shared.jobs import force_job
 from utils.internet import set_query_params
 
 
-def get_facility_from_request(request):
-    if "facility" in request.GET:
-        facility = get_object_or_None(Facility, pk=request.GET["facility"])
-        if "set_default" in request.GET and request.is_admin and facility:
-            Settings.set("default_facility", facility.id)
-    elif "facility_user" in request.session:
-        facility = request.session["facility_user"].facility
-    elif Facility.objects.count() == 1:
-        facility = Facility.objects.all()[0]
-    else:
-        facility = get_object_or_None(Facility, pk=Settings.get("default_facility"))
-    return facility
-
-
-def facility_required(handler):
-    def inner_fn(request, *args, **kwargs):
-
-        if Facility.objects.count() == 0:
-            if request.is_admin:
-                messages.error(
-                    request,
-                    _("To continue, you must first add a facility (e.g. for your school). ")
-                    + _("Please use the form below to add a facility."))
-            else:
-                messages.error(
-                    request,
-                    _("You must first have the administrator of this server log in below to add a facility.")
-                )
-            redir_url = reverse("add_facility")
-            redir_url = set_query_params(redir_url, {"prev": request.META.get("HTTP_REFERER", "")})
-            return HttpResponseRedirect(redir_url)
-
-        else:
-            facility = get_facility_from_request(request)
-        if facility:
-            return handler(request, facility, *args, **kwargs)
-        else:
-            return facility_selection(request)
-
-    return inner_fn
-
-
 @require_admin
 @distributed_server_only
 @render_to("securesync/facility_admin.html")
@@ -99,14 +57,6 @@ def facility_edit(request, id=None):
     return {
         "form": form
     }
-
-
-@distributed_server_only
-@render_to("securesync/facility_selection.html")
-def facility_selection(request):
-    facilities = Facility.objects.all()
-    context = {"facilities": facilities}
-    return context
 
 
 @distributed_server_only
@@ -157,7 +107,8 @@ def add_facility_user(request, facility, is_teacher):
     return {
         "form": form,
         "facility": facility,
-        "singlefacility": (Facility.objects.count() == 1),
+        "singlefacility": request.session["facility_count"] == 1,
+        "teacher": is_teacher,
         "cur_url": request.path,
     }
 
@@ -208,7 +159,7 @@ def add_group(request, facility):
 @facility_from_request
 @render_to("securesync/login.html")
 def login(request, facility):
-    facilities = Facility.objects.all()
+    facilities = list(Facility.objects.all())
     facility_id = facility and facility.id or None
 
     if request.method == 'POST':
@@ -252,7 +203,7 @@ def login(request, facility):
 
     return {
         "form": form,
-        "facilities": facilities
+        "facilities": facilities,
     }
 
 
@@ -265,6 +216,7 @@ def logout(request):
         except ValidationError as e:
             logging.error("Failed to end_user_activity upon logout: %s" % e)
         del request.session["facility_user"]
+
     auth_logout(request)
     next = request.GET.get("next", reverse("homepage"))
     if next[0] != "/":
