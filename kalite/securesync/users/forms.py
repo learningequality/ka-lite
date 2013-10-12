@@ -20,6 +20,10 @@ class FacilityUserForm(forms.ModelForm):
         self.fields["password"].required = self.instance.pk == ""
         self.fields["password_recheck"].required = self.instance.pk == ""
 
+        # Across POST and GET requests
+        self.fields["group"].queryset = FacilityGroup.objects.filter(facility=facility)
+        self.fields["facility"].initial = facility
+
     class Meta:
         model = FacilityUser
         fields = ("group", "username", "first_name", "last_name", "password", "password_recheck", "facility", "is_teacher")

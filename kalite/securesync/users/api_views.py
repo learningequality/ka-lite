@@ -18,7 +18,7 @@ import version
 from .models import *
 from config.models import Settings
 from main.models import VideoLog, ExerciseLog, VideoFile
-from shared.decorators import distributed_server_only, allow_api_profiling
+from shared.decorators import allow_api_profiling, distributed_server_only
 from utils.internet import allow_jsonp, api_handle_error_with_json, JsonResponse
 
 
@@ -61,7 +61,7 @@ def status(request):
     # Default data
     data = {
         "is_logged_in": request.is_logged_in,
-        "registered": bool(Settings.get("registered")),
+        "registered": request.session["registered"],
         "is_admin": request.is_admin,
         "is_django_user": request.is_django_user,
         "points": 0,
