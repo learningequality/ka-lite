@@ -8,13 +8,15 @@ from config.models import Settings
 
 class DBCheck:
     def process_request(self, request):
-        try:
-            count = Device.objects.count()
-        except DatabaseError:
+        if not request.session.get("install_validated"):
             try:
-                call_command("migrate", merge=True)
+                count = Device.objects.count()
+                request.session["install_validated"] = (count > 0)
             except DatabaseError:
-                return HttpResponse("Please run 'python manage.py syncdb' and create an administrator user, before running the server.")
+                try:
+                    call_command("migrate", merge=True)
+                except DatabaseError:
+                    return HttpResponse("Please run 'python manage.py syncdb' and create an administrator user, before running the server.")
 
 class RegisteredCheck:
     def process_request(self, request):
