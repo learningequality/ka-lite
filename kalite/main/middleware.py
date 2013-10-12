@@ -27,7 +27,7 @@ class SessionLanguage:
         elif request.GET.get("set_language"):
             request.session["django_language"] = request.GET.get("set_language")
             return HttpResponseRedirect(request.path)
-        else:
+        elif "django_language" not in request.session:
             request.session["django_language"] = Settings.get("default_language") or settings.LANGUAGE_CODE
 
         request.language = request.session["django_language"]
