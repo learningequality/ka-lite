@@ -12,9 +12,12 @@ class FacilityUserForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput, label=_("Password"))
     password_recheck = forms.CharField(widget=forms.PasswordInput, label=_("Confirm password"))
 
-    def __init__(self, request, *args, **kwargs):
-        self.request = request
+    def __init__(self, facility, *args, **kwargs):
         super(FacilityUserForm, self).__init__(*args, **kwargs)
+
+        # Across POST and GET requests
+        self.fields["group"].queryset = FacilityGroup.objects.filter(facility=facility)
+        self.fields["facility"].initial = facility
 
     class Meta:
         model = FacilityUser

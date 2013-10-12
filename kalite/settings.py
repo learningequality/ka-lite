@@ -34,7 +34,7 @@ DEBUG          = getattr(local_settings, "DEBUG", False)
 
 
 ##############################
-# Basic App Settings 
+# Basic App Settings
 ##############################
 
 CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
@@ -82,7 +82,7 @@ CONTENT_URL    = getattr(local_settings, "CONTENT_URL", "/content/")
 
 
 ##############################
-# Basic Django settings 
+# Basic Django settings
 ##############################
 
 INTERNAL_IPS   = getattr(local_settings, "INTERNAL_IPS", ("127.0.0.1",))
@@ -371,13 +371,21 @@ assert not AUTO_LOAD_TEST or not CENTRAL_SERVER, "AUTO_LOAD_TEST only on local s
 # everything that follows is overriding default settings, depending on CONFIG_PACKAGE
 
 # config_package (None|RPi) alters some defaults e.g. different defaults for Raspberry Pi(RPi)
-CONFIG_PACKAGE = getattr(local_settings, "CONFIG_PACKAGE", None)
+CONFIG_PACKAGE = getattr(local_settings, "CONFIG_PACKAGE", [])
+if isinstance(CONFIG_PACKAGE, basestring):
+    CONFIG_PACKAGE = [CONFIG_PACKAGE]
+CONFIG_PACKAGE = [cp.lower() for cp in CONFIG_PACKAGE]
+
+def package_selected(package_name):
+    global CONFIG_PACKAGE
+    return bool(CONFIG_PACKAGE) and bool(package_name) and package_name.lower() in CONFIG_PACKAGE
+
 
 # Config for Raspberry Pi distributed server
 #     nginx will normally be on 8008 so default to 7007
 #     18 is the sweet-spot for cherrypy threads
 #    /tmp is deleted on boot, so use /var/tmp for a persistent cache instead
-if CONFIG_PACKAGE == "RPi":
+if package_selected("RPi"):
     PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 7007)
     CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 18)
     #SYNCING_THROTTLE_WAIT_TIME = getattr(local_settings, "SYNCING_THROTTLE_WAIT_TIME", 1.0)
@@ -388,3 +396,6 @@ if CONFIG_PACKAGE == "RPi":
     PASSWORD_ITERATIONS_STUDENT = getattr(local_settings, "PASSWORD_ITERATIONS_STUDENT", 1000)
     if CACHE_TIME != 0:
         CACHES["web_cache"]['LOCATION'] = getattr(local_settings, "CACHE_LOCATION", '/var/tmp/kalite_web_cache')
+
+if package_selected("UserRestricted"):
+    KEY_PREFIX += "|restricted"  # this option changes templates
