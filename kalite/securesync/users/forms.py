@@ -9,11 +9,16 @@ from .models import FacilityUser, Facility, FacilityGroup
 
 class FacilityUserForm(forms.ModelForm):
 
-    password = forms.CharField(widget=forms.PasswordInput, label=_("Password"))
+    password         = forms.CharField(widget=forms.PasswordInput, label=_("Password"))
     password_recheck = forms.CharField(widget=forms.PasswordInput, label=_("Confirm password"))
 
     def __init__(self, facility, *args, **kwargs):
         super(FacilityUserForm, self).__init__(*args, **kwargs)
+        self.fields["facility"].initial = facility.id
+        
+        # Passwords only required on new, not on edit
+        self.fields["password"].required = self.instance.pk == ""
+        self.fields["password_recheck"].required = self.instance.pk == ""
 
         # Across POST and GET requests
         self.fields["group"].queryset = FacilityGroup.objects.filter(facility=facility)
@@ -21,9 +26,10 @@ class FacilityUserForm(forms.ModelForm):
 
     class Meta:
         model = FacilityUser
-        fields = ("facility", "group", "username", "first_name", "last_name",)
+        fields = ("group", "username", "first_name", "last_name", "password", "password_recheck", "facility", "is_teacher")
         widgets = {
-            'facility': forms.HiddenInput(),
+            "facility": forms.HiddenInput(),
+            "is_teacher": forms.HiddenInput(),
         }
 
     def clean_username(self):
@@ -43,6 +49,7 @@ class FacilityUserForm(forms.ModelForm):
 
         if self.cleaned_data.get('password') != self.cleaned_data.get('password_recheck'):
             raise forms.ValidationError(_("The passwords didn't match. Please re-enter the passwords."))
+        return self.cleaned_data['password_recheck']
 
 
 class FacilityForm(forms.ModelForm):
