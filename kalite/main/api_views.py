@@ -18,7 +18,7 @@ from .api_forms import ExerciseLogForm, VideoLogForm
 from .models import FacilityUser, VideoLog, ExerciseLog, VideoFile
 from config.models import Settings
 from securesync.models import FacilityGroup
-from shared.decorators import require_admin
+from shared.decorators import allow_api_profiling, require_admin
 from shared.jobs import force_job, job_status
 from shared.videos import delete_downloaded_files
 from shared.topic_tools import get_node_cache
@@ -115,6 +115,7 @@ def save_exercise_log(request):
     return JsonResponse({})
 
 
+@allow_api_profiling
 @student_log_api(logged_out_message=_("Progress not loaded."))
 def get_video_logs(request):
     """
@@ -151,6 +152,7 @@ def _get_video_log_dict(request, user, youtube_id):
     }
 
 
+@allow_api_profiling
 @student_log_api(logged_out_message=_("Progress not loaded."))
 def get_exercise_logs(request):
     """

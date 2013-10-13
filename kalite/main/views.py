@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
-from django.db.models import Sum
+from django.db.models import Sum, Count
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound, HttpResponseRedirect, Http404, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
@@ -40,15 +40,18 @@ def check_setup_status(handler):
     so that it is run even when there is a cache hit.
     """
     def wrapper_fn(request, *args, **kwargs):
-        if not request.is_admin and Facility.objects.count() == 0:
+        if request.is_admin:
+            # TODO(bcipolli): move this to the client side?
+            if not request.session["registered"] and BaseClient().test_connection() == "success":
+                messages.warning(request, mark_safe("Please <a href='%s'>follow the directions to register your device</a>, so that it can synchronize with the central server." % reverse("register_public_key")))
+            elif not request.session["facility_exists"]:
+                messages.warning(request, mark_safe("Please <a href='%s'>create a facility</a> now. Users will not be able to sign up for accounts until you have made a facility." % reverse("add_facility")))
+
+        elif not request.is_logged_in and not request.session["facility_exists"]:
             messages.warning(request, mark_safe(
                 "Please <a href='%s?next=%s'>login</a> with the account you created while running the installation script, \
                 to complete the setup." % (reverse("login"), reverse("register_public_key"))))
-        if request.is_admin:
-            if not Settings.get("registered") and SyncClient().test_connection() == "success":
-                messages.warning(request, mark_safe("Please <a href='%s'>follow the directions to register your device</a>, so that it can synchronize with the central server." % reverse("register_public_key")))
-            elif Facility.objects.count() == 0:
-                messages.warning(request, mark_safe("Please <a href='%s'>create a facility</a> now. Users will not be able to sign up for accounts until you have made a facility." % reverse("add_facility")))
+
         return handler(request, *args, **kwargs)
     return wrapper_fn
 
@@ -93,21 +96,6 @@ def splat_handler(request, splat):
         return exercise_handler(request, current_node)
     else:
         raise Http404
-
-
-def check_setup_status(handler):
-    def wrapper_fn(request, *args, **kwargs):
-        if not request.is_admin and Facility.objects.count() == 0:
-            messages.warning(request, mark_safe(
-                "Please <a href='%s?next=%s'>login</a> with the account you created while running the installation script, \
-                to complete the setup." % (reverse("login"), reverse("register_public_key"))))
-        if request.is_admin:
-            if not Settings.get("registered") and BaseClient().test_connection() == "success":
-                messages.warning(request, mark_safe("Please <a href='%s'>follow the directions to register your device</a>, so that it can synchronize with the central server." % reverse("register_public_key")))
-            elif Facility.objects.count() == 0:
-                messages.warning(request, mark_safe("Please <a href='%s'>create a facility</a> now. Users will not be able to sign up for accounts until you have made a facility." % reverse("add_facility")))
-        return handler(request, *args, **kwargs)
-    return wrapper_fn
 
 
 @backend_cache_page
@@ -305,13 +293,29 @@ Available stats:
 @require_admin
 @facility_required
 @render_to("current_users.html")
-def user_list(request,facility):
-    return user_management_context(
+def user_list(request, facility):
+
+    # Use default group
+    group_id = request.REQUEST.get("group")
+    if not group_id:
+        groups = FacilityGroup.objects \
+            .annotate(Count("facilityuser")) \
+            .filter(facilityuser__count__gt=0)
+        ngroups = groups.count()
+        ngroups += int(FacilityUser.objects.filter(group__isnull=True).count() > 0)
+        if ngroups == 1:
+            group_id = groups[0].id if groups.count() else "Ungrouped"
+
+    context = user_management_context(
         request=request,
         facility_id=facility.id,
-        group_id=request.REQUEST.get("group",""),
+        group_id=group_id,
         page=request.REQUEST.get("page","1"),
     )
+    context.update({
+        "singlefacility": Facility.objects.count() == 1,
+    })
+    return context
 
 
 @require_admin
