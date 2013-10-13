@@ -25,6 +25,8 @@ urlpatterns = patterns('main.api_views',
     url(r'^delete_users$', 'delete_users', {}, 'delete_users'),
 
     url(r'^launch_mplayer$', 'launch_mplayer', {}, 'launch_mplayer'),
+
+    url(r'^status$', 'status', {}, 'status'),
 )
 
 urlpatterns += patterns('updates.api_views',

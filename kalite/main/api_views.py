@@ -1,21 +1,26 @@
+import cgi
 import json
 import re
-import requests
 from annoying.functions import get_object_or_None
 from functools import partial
-from requests.exceptions import ConnectionError, HTTPError
 
+from django.contrib import messages
+from django.contrib.messages.api import get_messages
 from django.core.exceptions import ValidationError, PermissionDenied
 from django.db.models import Q
 from django.http import HttpResponse
 from django.utils import simplejson
+from django.utils.safestring import SafeString, SafeUnicode, mark_safe
 from django.utils.translation import ugettext as _
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
+from django.views.decorators.gzip import gzip_page
 
 import settings
+import version
 from .api_forms import ExerciseLogForm, VideoLogForm
-from .models import FacilityUser, VideoLog, ExerciseLog, VideoFile
+from .models import VideoLog, ExerciseLog, VideoFile
 from config.models import Settings
-from securesync.models import FacilityGroup
+from securesync.models import FacilityGroup, FacilityUser
 from shared.decorators import allow_api_profiling, require_admin
 from shared.jobs import force_job, job_status
 from shared.videos import delete_downloaded_files
@@ -246,3 +251,65 @@ def _update_video_log_with_points(seconds_watched, video_length, youtube_id, fac
         new_points=new_points,
         language=language,
     )
+
+
+def compute_total_points(user):
+    return VideoLog.get_points_for_user(user) + ExerciseLog.get_points_for_user(user)
+
+
+# On pages with no forms, we want to ensure that the CSRF cookie is set, so that AJAX POST
+# requests will be possible. Since `status` is always loaded, it's a good place for this.
+@ensure_csrf_cookie
+@allow_api_profiling
+@api_handle_error_with_json
+def status(request):
+    """In order to promote (efficient) caching on (low-powered)
+    distributed devices, we do not include ANY user data in our
+    templates.  Instead, an AJAX request is made to download user
+    data, and javascript used to update the page.
+
+    This view is the view providing the json blob of user information,
+    for each page view on the distributed server.
+
+    Besides basic user data, we also provide access to the
+    Django message system through this API, again to promote
+    caching by excluding any dynamic information from the server-generated
+    templates.
+    """
+    # Build a list of messages to pass to the user.
+    #   Iterating over the messages removes them from the
+    #   session storage, thus they only appear once.
+    message_dicts = []
+    for message in get_messages(request):
+        # Make sure to escape strings not marked as safe.
+        # Note: this duplicates a bit of Django template logic.
+        msg_txt = message.message
+        if not (isinstance(msg_txt, SafeString) or isinstance(msg_txt, SafeUnicode)):
+            msg_txt = cgi.escape(str(msg_txt))
+
+        message_dicts.append({
+            "tags": message.tags,
+            "text": msg_txt,
+        })
+
+    # Default data
+    data = {
+        "is_logged_in": request.is_logged_in,
+        "registered": request.session["registered"],
+        "is_admin": request.is_admin,
+        "is_django_user": request.is_django_user,
+        "points": 0,
+        "messages": message_dicts,
+    }
+    # Override properties using facility data
+    if "facility_user" in request.session:  # Facility user
+        user = request.session["facility_user"]
+        data["is_logged_in"] = True
+        data["username"] = user.get_name()
+        data["points"] = compute_total_points(user)
+    # Override data using django data
+    if request.user.is_authenticated():  # Django user
+        data["is_logged_in"] = True
+        data["username"] = request.user.username
+
+    return JsonResponse(data)

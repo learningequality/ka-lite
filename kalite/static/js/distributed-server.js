@@ -118,7 +118,7 @@ $(function(){
 
     // Do the AJAX request to async-load user and message data
     $("[class$=-only]").hide();
-    doRequest("/securesync/api/status")
+    doRequest("/api/status")
         .success(function(data){
 
             // store the data on the global user model, so that info about the current user can be accessed and bound to by any view
