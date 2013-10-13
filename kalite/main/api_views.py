@@ -260,7 +260,6 @@ def _update_video_log_with_points(seconds_watched, video_length, youtube_id, fac
         language=language,
     )
 
-<<<<<<< HEAD
     if "points" in request.session:
         request.session["points"] = compute_total_points(user)
 

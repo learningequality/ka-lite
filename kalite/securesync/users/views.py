@@ -215,7 +215,7 @@ def login(request, facility):
             messages.success(request, _("You've been logged in! We hope you enjoy your time with KA Lite ") +
                                         _("-- be sure to log out when you finish."))
             landing_page = reverse("coach_reports") if form.get_user().is_teacher else None
-            landing_page = landing_page or (reverse("account_management") if settings.package_selected("RPi") else reverse("homepage"))
+            landing_page = landing_page or (reverse("account_management") if not settings.package_selected("RPi") else reverse("homepage"))
 
             return HttpResponseRedirect(form.non_field_errors() or request.next or landing_page)
         else:
