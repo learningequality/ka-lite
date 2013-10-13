@@ -1,3 +1,4 @@
+import copy
 import json
 import re
 import requests
@@ -10,6 +11,7 @@ from django.db.models import Q
 from django.http import HttpResponse
 from django.utils import simplejson
 from django.utils.translation import ugettext as _
+from django.views.decorators.gzip import gzip_page
 
 import settings
 from .api_forms import ExerciseLogForm, VideoLogForm
@@ -19,6 +21,7 @@ from securesync.models import FacilityGroup
 from shared.decorators import allow_api_profiling, require_admin
 from shared.jobs import force_job, job_status
 from shared.videos import delete_downloaded_files
+from shared.topic_tools import get_node_cache
 from utils.general import break_into_chunks
 from utils.internet import api_handle_error_with_json, JsonResponse
 from utils.mplayer_launcher import play_video_in_new_thread
@@ -207,10 +210,10 @@ def launch_mplayer(request):
     """
     Launch an mplayer instance in a new thread, to play the video requested via the API.
     """
-    
+
     if not settings.USE_MPLAYER:
         raise PermissionDenied("You can only initiate mplayer if USE_MPLAYER is set to True.")
-    
+
     if "youtube_id" not in request.REQUEST:
         return JsonResponse({"error": "no youtube_id specified"}, status=500)
 
@@ -246,3 +249,20 @@ def _update_video_log_with_points(seconds_watched, video_length, youtube_id, fac
         new_points=new_points,
         language=language,
     )
+
+@gzip_page
+def flat_topic_tree(request):
+    categories = get_node_cache()
+    result = dict()
+    # make sure that we only get the slug of child of a topic
+    # to avoid redundancy
+    for category_name, category in categories.iteritems():
+        result[category_name] = {}
+        for node_name, node in category.iteritems():
+            relevant_data = {'title': node['title'],
+                             'path': node['path'],
+                             'kind': node['kind'],
+            }
+            result[category_name][node_name] = relevant_data
+    return HttpResponse(json.dumps(result),
+                        content_type='application/json')

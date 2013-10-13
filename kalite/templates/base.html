@@ -17,12 +17,12 @@
         {% block basecss %}{% endblock basecss %}
         {% block headcss %}{% endblock headcss %}
         <link rel="shortcut icon" href="{% static "images/favicon.ico" %}">
-        
+
         {# In some versions of IE, console isn't defined, which can lead to JS errors #}
         <script type="text/javascript">
             window.console = window.console || {log: function() {}};
         </script>
-        
+
         {# Older versions of IE didn't have a JSON object, so this library adds it back in if needed #}
         <script type="text/javascript" src="{% static "js/json2.js" %}"></script>
 
@@ -30,7 +30,7 @@
         <!--[if lt IE 8]>
         {# <script src="{% static "js/IE8.js" %}"></script> #}
         <![endif]-->
-        
+
         {% block jqueryjs %}
         <script>
             window.onerror=function(msg){
@@ -101,7 +101,7 @@
                     {% block footerleft %}
                     {% endblock footerleft %}
                     <div id="copyright" class="tiny">
-                        {% trans "Videos and Exercises" %} &copy; 2013 Khan Academy 
+                        {% trans "Videos and Exercises" %} &copy; 2013 Khan Academy
                         <a rel="license" id="creative-commons-link" href="http://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank"></a>
                     </div>
                 </div>
@@ -110,4 +110,3 @@
         {% comment %}These will disappear with cleanup item #234{% endcomment %}
     </body>
 </html>
-
