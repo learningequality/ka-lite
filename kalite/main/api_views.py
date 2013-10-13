@@ -254,7 +254,10 @@ def _update_video_log_with_points(seconds_watched, video_length, youtube_id, fac
 
 
 def compute_total_points(user):
-    return VideoLog.get_points_for_user(user) + ExerciseLog.get_points_for_user(user)
+    if user.is_teacher:
+        return None
+    else:
+        return VideoLog.get_points_for_user(user) + ExerciseLog.get_points_for_user(user)
 
 
 # On pages with no forms, we want to ensure that the CSRF cookie is set, so that AJAX POST
