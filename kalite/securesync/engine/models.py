@@ -245,31 +245,39 @@ class SyncedModel(ExtendedModel):
                 raise ValidationError("Imported models must be signed.")
             if not self.verify():
                 raise ValidationError("Could not verify the imported model.")  #Imported model's signature did not match.")
-        else:
-            own_device = _get_own_device()
 
+            # call the base Django Model save to write to the DB
+            super(SyncedModel, self).save(*args, **kwargs)
+
+            # For imported models, we want to keep track of the counter position we're at for that device.
+            #   so, if it's ahead of what we had, set it!
+            if increment_counters:
+                self.signed_by.set_counter_position(self.counter, soft_set=True)
+
+
+        else:
             # Two critical things to do:
             # 1. local models need to be signed by us
             # 2. and get our counter position
+
+            own_device = _get_own_device()
+
             if increment_counters:
                 self.counter = own_device.increment_counter_position()
             else:
                 self.counter = None  # will set this when we sync
 
             if sign:
+                assert self.counter is not None, "Only sign data where count is set"
                 # Always sign on the central server.
                 self.sign(device=own_device)
             else:
-                self.set_id()  # = self.id or self.get_uuid()
+                self.set_id()
                 self.signature = None  # make sure the signature will be recomputed on sync
 
-        # call the base Django Model save to write to the DB
-        super(SyncedModel, self).save(*args, **kwargs)
+            # call the base Django Model save to write to the DB
+            super(SyncedModel, self).save(*args, **kwargs)
 
-        # For imported models, we want to keep track of the counter position we're at for that device.
-        #   so, if it's ahead of what we had, set it!
-        if imported and increment_counters:
-            self.signed_by.set_counter_position(self.counter, soft_set=True)
 
     def set_id(self):
         self.id = self.id or self.get_uuid()
@@ -332,22 +340,23 @@ class DeferredCountSyncedModel(DeferredSignSyncedModel):
     Defer incrementing counters until syncing.
     """
     def save(self, increment_counters=None, *args, **kwargs):
-        remove_counter = False   # see comment below
+        """
+        Note that increment_counters will set counters to None,
+        and that if the object must be created, counter will be incremented
+        and temporarily set, to create the object ID.
+        """
+        super(DeferredCountSyncedModel, self).save(*args, increment_counters=settings.CENTRAL_SERVER, **kwargs)
 
-        if increment_counters is None:
-            # We need to set counters upon the first save, or if we're on the central server.
-            #   Need the counter on the first save in order to create a UUID
-            increment_counters = settings.CENTRAL_SERVER or not self.id
-            remove_counter = not self.id
-        super(DeferredCountSyncedModel, self).save(*args, increment_counters=increment_counters, **kwargs)
-
-        if remove_counter:
-            # On create, we have to add a counter value in order to set the ID.
-            # In order to simplify syncing later, remove that counter after that save.
-            #
-            # You get a double-save now, but in the end... it's all good.
-            self.counter = False
-            super(DeferredCountSyncedModel, self).save(*args, increment_counters=False, **kwargs)
+    def set_id(self):
+        if self.id:
+            pass
+        elif self.counter:
+            self.id = self.get_uuid()
+        else:
+            own_device = _get_own_device()
+            self.counter = own_device.increment_counter_position()
+            self.id = self.get_uuid()
+            self.counter = None
 
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         app_label = "securesync"
