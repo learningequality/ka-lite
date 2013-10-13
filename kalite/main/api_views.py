@@ -69,8 +69,12 @@ def save_video_log(request):
             points=data["points"],
             language=data.get("language") or request.language,
         )
+
     except ValidationError as e:
         return JsonResponse({"error": "Could not save VideoLog: %s" % e}, status=500)
+
+    if "points" in request.session:
+        request.session["points"] = compute_total_points(user)
 
     return JsonResponse({
         "points": videolog.points,
@@ -93,9 +97,9 @@ def save_exercise_log(request):
     data = form.data
 
     # More robust extraction of previous object
-    (exerciselog, was_created) = ExerciseLog.get_or_initialize(user=request.session["facility_user"], exercise_id=data["exercise_id"])
+    user = request.session["facility_user"]
+    (exerciselog, was_created) = ExerciseLog.get_or_initialize(user=user, exercise_id=data["exercise_id"])
     previously_complete = exerciselog.complete
-
 
     exerciselog.attempts = data["attempts"]  # don't increment, because we fail to save some requests
     exerciselog.streak_progress = data["streak_progress"]
@@ -108,6 +112,9 @@ def save_exercise_log(request):
     except ValidationError as e:
         return JsonResponse({"error": _("Could not save ExerciseLog") + u": %s" % e}, status=500)
 
+    if "points" in request.session:
+        request.session["points"] = compute_total_points(user)
+        
     # Special message if you've just completed.
     #   NOTE: it's important to check this AFTER calling save() above.
     if not previously_complete and exerciselog.complete:
@@ -252,6 +259,9 @@ def _update_video_log_with_points(seconds_watched, video_length, youtube_id, fac
         language=language,
     )
 
+    if "points" in request.session:
+        request.session["points"] = compute_total_points(user)
+
 
 def compute_total_points(user):
     return VideoLog.get_points_for_user(user) + ExerciseLog.get_points_for_user(user)
@@ -306,7 +316,9 @@ def status(request):
         user = request.session["facility_user"]
         data["is_logged_in"] = True
         data["username"] = user.get_name()
-        data["points"] = compute_total_points(user)
+        if "points" not in request.session:
+            request.session["points"] = compute_total_points(user)
+        data["points"] = request.session["points"]
     # Override data using django data
     if request.user.is_authenticated():  # Django user
         data["is_logged_in"] = True
