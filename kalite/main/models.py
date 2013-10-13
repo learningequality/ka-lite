@@ -74,15 +74,15 @@ class VideoLog(DeferredCountSyncedModel):
     @classmethod
     def update_video_log(cls, facility_user, youtube_id, total_seconds_watched, language, points=0, new_points=0):
         assert facility_user and youtube_id, "Updating a video log requires both a facility user and a YouTube ID"
-        
+
         # retrieve the previous video log for this user for this video, or make one if there isn't already one
         (videolog, _) = cls.get_or_initialize(user=facility_user, youtube_id=youtube_id)
-        
+
         # combine the previously watched counts with the new counts
         #
         # Set total_seconds_watched directly, rather than incrementally, for robustness
         #   as sometimes an update request fails, and we'd miss the time update!
-        videolog.total_seconds_watched = total_seconds_watched  
+        videolog.total_seconds_watched = total_seconds_watched
         videolog.points = min(max(points, videolog.points + new_points), cls.POINTS_PER_VIDEO)
         videolog.language = language
 

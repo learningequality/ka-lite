@@ -4,7 +4,7 @@ from django.http import HttpResponse
 import settings
 import updates.api_urls
 
-# Note that these patterns are all under /api/, 
+# Note that these patterns are all under /api/,
 # due to the way they've been included into main/urls.py
 urlpatterns = patterns('main.api_views',
 
@@ -23,6 +23,9 @@ urlpatterns = patterns('main.api_views',
     url(r'^remove_from_group$', 'remove_from_group', {}, 'remove_from_group'),
     url(r'^move_to_group$', 'move_to_group', {}, 'move_to_group'),
     url(r'^delete_users$', 'delete_users', {}, 'delete_users'),
+
+    # data used by the frontend search code
+    url(r'^flat_topic_tree$', 'flat_topic_tree', {}, 'flat_topic_tree'),
 
     url(r'^launch_mplayer$', 'launch_mplayer', {}, 'launch_mplayer'),
 )
