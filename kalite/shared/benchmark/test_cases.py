@@ -577,6 +577,6 @@ class SeleniumStudent(base.SeleniumCommon):
 
 class SeleniumStudentExercisesOnly(SeleniumStudent):
     def _execute(self):
-        self.activity["decide"]["nextstep"] = [(.10, "decide"), (.99, "exercise"), (1.00, "end")]
+        self.activity["decide"]["nextstep"] = [(.10, "decide"), (1.00, "exercise")]
         self.activity["do_esub2"]["nextstep"] =[(.03, "decide"), (.75, "do_esub2"), (1.00, "eadd2")]
         super(SeleniumStudentExercisesOnly, self)._execute()

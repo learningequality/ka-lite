@@ -114,7 +114,7 @@ class UserCommon(Common):
         self.password = password
 
 
-class SeleniumCommon(Common):
+class SeleniumCommon(UserCommon):
     def _setup(self, url="http://localhost:8008/", timeout=30, **kwargs):
         # Note: user must exist
         super(SeleniumCommon, self)._setup(**kwargs)
