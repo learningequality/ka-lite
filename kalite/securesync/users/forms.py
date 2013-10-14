@@ -2,6 +2,7 @@ import re
 
 from django import forms
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
 from .models import FacilityUser, Facility, FacilityGroup
@@ -15,7 +16,7 @@ class FacilityUserForm(forms.ModelForm):
     def __init__(self, facility, *args, **kwargs):
         super(FacilityUserForm, self).__init__(*args, **kwargs)
         self.fields["facility"].initial = facility.id
-        
+
         # Passwords only required on new, not on edit
         self.fields["password"].required = self.instance.pk == ""
         self.fields["password_recheck"].required = self.instance.pk == ""
@@ -58,6 +59,12 @@ class FacilityForm(forms.ModelForm):
     class Meta:
         model = Facility
         fields = ("name", "description", "address", "address_normalized", "latitude", "longitude", "zoom", "contact_name", "contact_phone", "contact_email", "user_count",)
+
+    def clean_user_count(self):
+        user_count = self.cleaned_data['user_count']
+        if user_count < 1:
+            raise ValidationError(_('Given user count should not be less than 1'),
+                                  code='invalid_user_count')
 
 
 class FacilityGroupForm(forms.ModelForm):
