@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html data-require="math graphie graphie-3d math-format interactive">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>Solid geometry</title>
     <script src="../khan-exercise.js"></script>
     <script type="text/javascript">
@@ -79,6 +79,9 @@
                 ]</var>
                 <var id="GRAPH">{}</var>
                 <var id="UNWRAPGRAPH">{}</var>
+
+                <var id="BASE_TEXT">$._("base")</var>
+                <var id="HEIGHT_TEXT">$._("height")</var>
             </div>
 
             <p class="question">
@@ -116,6 +119,8 @@
                         fill: "#000", opacity: 0.0
                     });
                     $(mouseTarget[0]).bind("vmousedown", function(event) {
+                        event.preventDefault();
+
                         GRAPH.lastX = event.pageX;
                         GRAPH.lastY = event.pageY;
 
@@ -156,7 +161,7 @@
                     <code>\times</code> depth.</p>
                 <p>In this object, one of the triangles is the base.</p>
                 <p>We know the area of a triangle is
-                    <code>\frac{1}{2}\ \text{base} \times \text{height}</code>.
+                    <code>\frac{1}{2}\ \text{<var>BASE_TEXT</var>} \times \text{<var>HEIGHT_TEXT</var>}</code>.
                 </p>
                 <div>
                     <p>Orient the triangle like this, and find the
@@ -262,7 +267,7 @@
                 What is the volume of this box? Drag on the box to rotate it.
             </p>
 
-            <div class="solution">
+            <div class="solution" data-forms="integer">
                 <var>LENGTH * WIDTH * HEIGHT</var>
             </div>
 
@@ -297,7 +302,7 @@
                 Drag on the box to rotate it.
             </p>
 
-            <div class="solution">
+            <div class="solution" data-forms="integer">
                 <var>2 * LENGTH * WIDTH +
                     2 * LENGTH * HEIGHT +
                     2 * WIDTH * HEIGHT</var>
@@ -308,9 +313,7 @@
                 of each of the faces, and add all the areas up.</p>
                 <div>
                     <p>To see this better, let's try unwrapping the box:
-                    <input type="submit" value="Unwrap!"
-                        onclick="KhanUtil.tmpl.getVAR('UNWRAPGRAPH.unwrap()')"
-                    /></p>
+                    <input onclick="KhanUtil.tmpl.getVAR('UNWRAPGRAPH.unwrap()')" type="submit" value="Unwrap!"/></p>
                     <div class="graphie">
                         var verts = [
                             [LENGTH/MAX, WIDTH/MAX, HEIGHT/MAX],
@@ -448,7 +451,7 @@
                         };
                     </div>
                 </div>
-                <div id="unwrapped" data-unwrap>
+                <div id="unwrapped" data-unwrap="">
                     <div>
                         <p>We can group the faces together
                             based on size and color:</p>
@@ -562,7 +565,7 @@
             </p>
 
             <div class="hints" data-apply="appendContents">
-                <div id="unwrapped" data-unwrap>
+                <div id="unwrapped" data-unwrap="">
                     <p>Here, we can see that all of the
                         six sides have the same size.</p>
                     <div>
@@ -631,13 +634,8 @@
                 </div>
             </div>
 
-            <div class="solution" data-type="multiple">
-                <p>
-                    <span class="sol" data-forms="pi">
-                        <var>Math.PI * r * r * h</var>
-                    </span>
-                    Cubic Units
-                </p>
+            <div class="solution" data-forms="pi">
+                <var>Math.PI * r * r * h</var>
             </div>
 
             <div class="hints">
@@ -686,13 +684,8 @@
                 </div>
             </div>
 
-            <div class="solution" data-type="multiple">
-                <p>
-                    <span class="sol" data-forms="pi">
-                        <var>Math.PI * 2 * r * ( r + h )</var>
-                    </span>
-                    Square Units
-                </p>
+            <div class="solution" data-forms="pi">
+                <var>Math.PI * 2 * r * ( r + h )</var>
             </div>
 
             <div class="hints">

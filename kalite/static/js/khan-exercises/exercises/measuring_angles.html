@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html data-require="math graphie angles interactive">
-    <head>
+<head>
         <title>Measuring angles</title>
         <script src="../khan-exercise.js"></script>
     </head>
@@ -30,11 +30,11 @@
                             arc( [0, 0], 1, ANGLE_ONE, ANGLE_TWO );
 
                             addMouseLayer();
-                            graph.protractor = new Protractor([ 14, -8 ]);
+                            graph.protractor = protractor([14, -8]);
                         </div>
                     </div>
                     <div class="solution" data-type="multiple">
-                        <span class="sol" data-type="rational" data-inexact data-max-error="5"><var>DIFF</var></span><code>{}^{\circ}</code>
+                        <span class="sol" data-forms="integer" data-inexact="" data-max-error="5"><var>DIFF</var></span><code>{}^{\circ}</code>
                     </div>
                 </div>
             </div>
@@ -42,24 +42,24 @@
             <div class="hints">
                 <p>
                     First, align the origin of the protractor with the vertex of the angle.
-                    <button onClick="javascript: KhanUtil.currentGraph.graph.protractor.moveTo( 0, 0 ); ">Show me</button>
+                    <button onclick="javascript: KhanUtil.currentGraph.graph.protractor.moveTo( 0, 0 ); ">Show me</button>
                 </p>
                 <p>
                     Next, rotate the protractor so that the <code>0^{\circ}</code> mark lines up with one side of the angle.
-                    <button onClick="javascript:
+                    <button onclick="javascript:
                         KhanUtil.currentGraph.graph.protractor.moveTo( 0, 0 );
-                        KhanUtil.currentGraph.graph.protractor.rotateTo( 360 - KhanUtil.tmpl.getVAR('ANGLE_ONE') );
+                        KhanUtil.currentGraph.graph.protractor.rotateTo(KhanUtil.tmpl.getVAR('540 - ANGLE_ONE - DIFF'));
                     ">Show me</button>
                 </p>
                 <div>
                     <div class="graphie" data-update="angle">
                         graph.protractor.moveTo( 0, 0 );
-                        graph.protractor.rotateTo( 360 - ANGLE_ONE );
-                        label( [ 9 * cos( toRadians( ANGLE_ONE + DIFF ) ), 9 * sin( toRadians( ANGLE_ONE + DIFF ) ) ], "\\color{" + PINK + "}{" + DIFF + "^{\\circ}}" );
+                        graph.protractor.rotateTo( 540 - ANGLE_ONE - DIFF );
+                        label( [ 9 * cos( toRadians( ANGLE_ONE ) ), 9 * sin( toRadians( ANGLE_ONE ) ) ], "\\color{" + PINK + "}{" + DIFF + "^{\\circ}}" );
                     </div>
                     <p>The angle is <code><var>DIFF</var></code> degrees.</p>
                 </div>
             </div>
         </div>
-    </body>
+</body>
 </html>
