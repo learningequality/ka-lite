@@ -344,27 +344,53 @@ def device_redirect(request):
 
 @render_to('search_page.html')
 def search(request):
-    if 'query' in request.GET:
-        query = request.GET['query']
-        # search for topic, video or exercise with matching title
-        nodes_ = topic_tools.get_node_cache()
-        nodes = []
-        possible_matches = {'Topic': [], 'Video': [], 'Exercise': []}
-        for _, node_dict in nodes_.iteritems():
-            nodes += node_dict.values()
-        query = query.lower()
-        for node in nodes:
-            title = node['title'].lower()
-            if title == query:
-                return HttpResponseRedirect(node['path'])
-            elif query in title:
-                possible_matches[node['kind']].append(node)
-        else:
-            return {'results': possible_matches,
-                    'query': query}
+    # Inputs
+    query = request.GET.get('query')
+    category = request.GET.get('category')
+    max_results_per_category = request.GET.get('max_results', 25)
+
+    # Outputs
+    query_error = None
+    possible_matches = {}
+    hit_max = {}
+
+    if query is None:
+        query_error = _("Error: query not specified.")
+
+#    elif len(query) < 3:
+#        query_error = _("Error: query too short.")
 
     else:
-        return HttpResponseRedirect('/')
+        query = query.lower()
+        # search for topic, video or exercise with matching title
+        nodes = []
+        for node_type, node_dict in topicdata.NODE_CACHE.iteritems():
+            if category and node_type != category:
+                # Skip categories that don't match (if specified)
+                continue
+
+            possible_matches[node_type] = []  # make dict only for non-skipped categories
+            for node in node_dict.values():
+                title = node['title'].lower()  # this could be done once and stored.
+                if title == query:
+                    # Redirect to an exact match
+                    return HttpResponseRedirect(node['path'])
+
+                elif len(possible_matches[node_type]) < max_results_per_category and query in title:
+                    # For efficiency, don't do substring matches when we've got lots of results
+                    possible_matches[node_type].append(node)
+
+            hit_max[node_type] = len(possible_matches[node_type]) == max_results_per_category
+
+    return {
+        'title': _("Search results for '%s'") % (query if query else ""),
+        'query_error': query_error,
+        'results': possible_matches,
+        'hit_max': hit_max,
+        'query': query,
+        'max_results': max_results_per_category,
+        'category': category,
+    }
 
 def handler_403(request, *args, **kwargs):
     context = RequestContext(request)
