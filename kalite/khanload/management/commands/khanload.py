@@ -49,9 +49,6 @@ kind_blacklist = [None, "Separator", "CustomStack", "Scratchpad", "Article"]
 
 slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res", "partner-content", "cs"]
 
-# blacklist of particular exercises that currently have problems being rendered
-slug_blacklist += ["ordering_improper_fractions_and_mixed_numbers", "ordering_numbers", "conditional_statements_2"]
-
 def download_khan_data(url, debug_cache_file=None, debug_cache_dir=settings.PROJECT_PATH + "../_khanload_cache"):
     """Download data from the given url.
     
