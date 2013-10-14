@@ -183,6 +183,9 @@ def exercise_handler(request, exercise):
         video = topicdata.NODE_CACHE["Video"].get(key, None)
         if not video:
             continue
+            
+        if not video.get("on_disk", False) and not settings.BACKUP_VIDEO_SOURCE:
+            continue
         
         related_videos[key] = copy.copy(video)
         for path in video["paths"]:
