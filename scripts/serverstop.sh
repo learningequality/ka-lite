@@ -10,7 +10,7 @@ then
     echo
     if ! kill `cat "$KALITE_DIR/runcherrypyserver.pid"` > /dev/null 2>&1; then
         echo "We couldn't stop the server. Perhaps becoming root might help."
-        exit
+        exit 1
     fi
     rm "$KALITE_DIR/runcherrypyserver.pid"
 else
