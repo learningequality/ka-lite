@@ -6,7 +6,7 @@
       "ck12-org--more-empirical-rule-and-z-score-practice", 
       "ck12-org-normal-distribution-problems--z-score"
     ], 
-    "v_position": -23, 
+    "v_position": 21, 
     "path": "/math/probability/statistics-inferential/normal_distribution/e/empirical_rule/", 
     "id": "empirical_rule", 
     "paths": [
@@ -22,13 +22,13 @@
       "statistics-inferential", 
       "normal_distribution"
     ], 
-    "seconds_per_fast_problem": 36.0, 
     "description": "", 
     "basepoints": 26.0, 
-    "h_position": 21, 
+    "h_position": -23, 
     "slug": "empirical_rule", 
     "kind": "Exercise", 
     "name": "empirical_rule", 
+    "seconds_per_fast_problem": 36.0, 
     "prerequisites": [
       "exploring_standard_deviation_1", 
       "standard_deviation"
@@ -39,7 +39,7 @@
       "ck12-org-normal-distribution-problems--z-score", 
       "ck12-org--more-empirical-rule-and-z-score-practice"
     ], 
-    "v_position": -24, 
+    "v_position": 21, 
     "path": "/math/probability/statistics-inferential/normal_distribution/e/z_scores_1/", 
     "id": "z_scores_1", 
     "paths": [
@@ -55,13 +55,13 @@
       "statistics-inferential", 
       "normal_distribution"
     ], 
-    "seconds_per_fast_problem": 14.0, 
     "description": "Find the z-score of a particular measurement given the mean and standard deviation.\n", 
     "basepoints": 19.0, 
-    "h_position": 21, 
+    "h_position": -24, 
     "slug": "z_scores_1", 
     "kind": "Exercise", 
     "name": "z_scores_1", 
+    "seconds_per_fast_problem": 14.0, 
     "prerequisites": [
       "exploring_standard_deviation_1", 
       "standard_deviation"
@@ -73,7 +73,7 @@
       "ck12-org-normal-distribution-problems--z-score", 
       "ck12-org-normal-distribution-problems--empirical-rule"
     ], 
-    "v_position": -24, 
+    "v_position": 22, 
     "path": "/math/probability/statistics-inferential/normal_distribution/e/z_scores_2/", 
     "id": "z_scores_2", 
     "paths": [
@@ -89,13 +89,13 @@
       "statistics-inferential", 
       "normal_distribution"
     ], 
-    "seconds_per_fast_problem": 25.0, 
     "description": "Use a z-table to find the probability of a particular measurement.\n", 
     "basepoints": 23.0, 
-    "h_position": 22, 
+    "h_position": -24, 
     "slug": "z_scores_2", 
     "kind": "Exercise", 
     "name": "z_scores_2", 
+    "seconds_per_fast_problem": 25.0, 
     "prerequisites": [
       "z_scores_1"
     ]
@@ -105,7 +105,7 @@
       "ck12-org-normal-distribution-problems--z-score", 
       "ck12-org--more-empirical-rule-and-z-score-practice"
     ], 
-    "v_position": -24, 
+    "v_position": 23, 
     "path": "/math/probability/statistics-inferential/normal_distribution/e/z_scores_3/", 
     "id": "z_scores_3", 
     "paths": [
@@ -121,13 +121,13 @@
       "statistics-inferential", 
       "normal_distribution"
     ], 
-    "seconds_per_fast_problem": 60.0, 
     "description": "Use a z-table to find the probability that a particular measurement is in a range.\n", 
     "basepoints": 29.0, 
-    "h_position": 23, 
+    "h_position": -24, 
     "slug": "z_scores_3", 
     "kind": "Exercise", 
     "name": "z_scores_3", 
+    "seconds_per_fast_problem": 60.0, 
     "prerequisites": [
       "z_scores_2"
     ]

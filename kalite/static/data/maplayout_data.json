@@ -1,12 +1,12 @@
 {
   "topics": {
-    "circles": {
-      "icon_url": "/images/power-mode/badges/circles-40x40.png", 
-      "translated_standalone_title": "Circles", 
-      "y": 43.0, 
-      "x": -22.0, 
-      "standalone_title": "Circles", 
-      "id": "circles"
+    "fractions": {
+      "icon_url": "/images/power-mode/badges/fractions-40x40.png", 
+      "translated_standalone_title": "Fractions", 
+      "y": 22.0, 
+      "x": -10.0, 
+      "standalone_title": "Fractions", 
+      "id": "fractions"
     }, 
     "probability": {
       "icon_url": "/images/power-mode/badges/probability-40x40.png", 
@@ -136,13 +136,21 @@
       "standalone_title": "Applying mathematical reasoning", 
       "id": "applying-math-reasoning-topic"
     }, 
-    "fractions": {
-      "icon_url": "/images/power-mode/badges/fractions-40x40.png", 
-      "translated_standalone_title": "Fractions", 
-      "y": 22.0, 
-      "x": -10.0, 
-      "standalone_title": "Fractions", 
-      "id": "fractions"
+    "circles": {
+      "icon_url": "/images/power-mode/badges/circles-40x40.png", 
+      "translated_standalone_title": "Circles", 
+      "y": 43.0, 
+      "x": -22.0, 
+      "standalone_title": "Circles", 
+      "id": "circles"
+    }, 
+    "order-of-operations": {
+      "icon_url": "/images/power-mode/badges/order-of-operations-40x40.png", 
+      "translated_standalone_title": "Arithmetic properties", 
+      "y": 14.0, 
+      "x": -4.0, 
+      "standalone_title": "Arithmetic properties", 
+      "id": "order-of-operations"
     }, 
     "exponents-radicals": {
       "icon_url": "/images/power-mode/badges/exponents-radicals-40x40.png", 
@@ -199,14 +207,6 @@
       "x": -25.0, 
       "standalone_title": "Inferential statistics", 
       "id": "statistics-inferential"
-    }, 
-    "complex-numbers": {
-      "icon_url": "/images/power-mode/badges/complex-numbers-40x40.png", 
-      "translated_standalone_title": "Complex numbers", 
-      "y": 49.0, 
-      "x": -12.0, 
-      "standalone_title": "Complex numbers", 
-      "id": "complex-numbers"
     }, 
     "rates-and-ratios": {
       "icon_url": "/images/power-mode/badges/rates-and-ratios-40x40.png", 
@@ -272,13 +272,13 @@
       "standalone_title": "Trigonometry and precalculus", 
       "id": "trigonometry"
     }, 
-    "order-of-operations": {
-      "icon_url": "/images/power-mode/badges/order-of-operations-40x40.png", 
-      "translated_standalone_title": "Arithmetic properties", 
-      "y": 14.0, 
-      "x": -4.0, 
-      "standalone_title": "Arithmetic properties", 
-      "id": "order-of-operations"
+    "complex-numbers": {
+      "icon_url": "/images/power-mode/badges/complex-numbers-40x40.png", 
+      "translated_standalone_title": "Complex numbers", 
+      "y": 49.0, 
+      "x": -12.0, 
+      "standalone_title": "Complex numbers", 
+      "id": "complex-numbers"
     }
   }, 
   "polylines": [
