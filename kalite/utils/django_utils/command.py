@@ -61,7 +61,7 @@ def call_command_async(cmd, *args, **kwargs):
     # Make sure to call the manage.py from this project.
     call_args = [sys.executable, os.path.join(manage_py_dir, "manage.py"), cmd]
     call_args += list(args)
-    for key,val in kwargs:
+    for key,val in kwargs.iteritems():
         call_args.append("--%s=%s" % (key, val))
 
     # We don't need to hold onto the process handle.
@@ -94,16 +94,13 @@ def call_outside_command_with_output(command, *args, **kwargs):
             cmd += ("%s%s" % (prefix, key),)
         else:
             cmd += ("%s%s=%s" % (prefix, key, str(val)),)
-    #logging.debug(cmd)
 
     # Execute the command, using subprocess/Popen
     cwd = os.getcwd()
-    os.chdir(kalite_location + "/kalite")
+    os.chdir(manage_py_dir)
     p = subprocess.Popen(cmd, shell=False, cwd=os.path.split(cmd[0])[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out = p.communicate()
     os.chdir(cwd)
-
-    #logging.debug(out[1] if out[1] else out[0])
 
     # tuple output of stdout, stderr, and exit code
     return out + (1 if out[1] else 0,)

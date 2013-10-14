@@ -23,9 +23,9 @@ from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone,
 from securesync.views import facility_required
 from settings import LOG as logging
 from shared.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
+from shared.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics
 from utils.general import max_none
 from utils.internet import StatusException
-from utils.topic_tools import get_topic_exercises, get_topic_videos, get_all_midlevel_topics
 
 
 def get_accessible_objects_from_logged_in_user(request):
@@ -111,8 +111,8 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
     Context done separately, to be importable for similar pages.
     """
     user = get_user_from_request(request=request)
-    topics = get_all_midlevel_topics()
-    topic_slugs = [t["id"] for t in topics]
+    topic_slugs = [t["id"] for t in get_knowledgemap_topics()]
+    topics = [NODE_CACHE["Topic"][slug] for slug in topic_slugs]
 
     user_id = user.id
     exercise_logs = list(ExerciseLog.objects \
@@ -131,7 +131,11 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
 
     # Categorize every exercise log into a "midlevel" exercise
     for elog in exercise_logs:
-        topic = set(NODE_CACHE["Exercise"][elog["exercise_id"]]["parents"]).intersection(set(topic_slugs))
+        parents = NODE_CACHE["Exercise"][elog["exercise_id"]]["parents"]
+        topic = set(parents).intersection(set(topic_slugs))
+        if not topic:
+            logging.error("Could not find a topic for exercise %s (parents=%s)" % (elog["exercise_id"], parents))
+            continue
         topic = topic.pop()
         if not topic in topic_exercises:
             topic_exercises[topic] = get_topic_exercises(path=NODE_CACHE["Topic"][topic]["path"])
@@ -139,7 +143,12 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
 
     # Categorize every video log into a "midlevel" exercise.
     for vlog in video_logs:
-        topic = set(NODE_CACHE["Video"][ID2SLUG_MAP[vlog["youtube_id"]]]["parents"]).intersection(set(topic_slugs)).pop()
+        parents = NODE_CACHE["Video"][ID2SLUG_MAP[vlog["youtube_id"]]]["parents"]
+        topic = set(parents).intersection(set(topic_slugs))
+        if not topic:
+            logging.error("Could not find a topic for video %s (parents=%s)" % (vlog["youtube_id"], parents))
+            continue
+        topic = topic.pop()
         if not topic in topic_videos:
             topic_videos[topic] = get_topic_videos(path=NODE_CACHE["Topic"][topic]["path"])
         videos_by_topic[topic] = videos_by_topic.get(topic, []) + [vlog]
@@ -221,7 +230,7 @@ def tabular_view(request, facility, report_type="exercise"):
     """Tabular view also gets data server-side."""
 
     # Get a list of topics (sorted) and groups
-    topics = get_all_midlevel_topics()
+    topics = get_knowledgemap_topics()
     (groups, facilities) = get_accessible_objects_from_logged_in_user(request)
     context = plotting_metadata_context(request, facility=facility)
     context.update({
@@ -284,10 +293,11 @@ def tabular_view(request, facility, report_type="exercise"):
                 log_table[exlogs[exlog_idx]["exercise_id"]] = exlogs[exlog_idx]
                 exlog_idx += 1
 
-            context["students"].append({
+            context["students"].append({  # this could be DRYer
                 "first_name": user.first_name,
                 "last_name": user.last_name,
                 "username": user.username,
+                "name": user.get_name(),
                 "id": user.id,
                 "exercise_logs": log_table,
             })
@@ -313,10 +323,11 @@ def tabular_view(request, facility, report_type="exercise"):
                 log_table[vidlogs[vidlog_idx]["youtube_id"]] = vidlogs[vidlog_idx]
                 vidlog_idx += 1
 
-            context["students"].append({
+            context["students"].append({  # this could be DRYer
                 "first_name": user.first_name,
                 "last_name": user.last_name,
                 "username": user.username,
+                "name": user.get_name(),
                 "id": user.id,
                 "video_logs": log_table,
             })
@@ -333,6 +344,6 @@ def tabular_view(request, facility, report_type="exercise"):
             UserLog.end_user_activity(user, activity_type="coachreport")
         except ValidationError as e:
             # Never report this error; don't want this logging to block other functionality.
-            logging.debug("Failed to update Teacher userlog activity login: %s" % e)
+            logging.error("Failed to update Teacher userlog activity login: %s" % e)
 
     return context

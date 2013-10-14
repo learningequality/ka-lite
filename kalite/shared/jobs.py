@@ -1,6 +1,5 @@
 from datetime import datetime
 from chronograph.models import Job
-from croncount import get_count
 
 import settings
 from settings import LOG as logging
@@ -30,10 +29,13 @@ def force_job(command, name="", frequency="YEARLY", stop=False, launch_cron=True
         # Just start cron directly, so that the process starts immediately.
         # Note that if you're calling force_job frequently, then 
         # you probably want to avoid doing this on every call.
-        if get_count() and not job_status(command):
+        if get_ready_count() > 0:
             logging.debug("Ready to launch command '%s'" % command)
             call_command_async("cron", manage_py_dir=settings.PROJECT_PATH)
 
+
+def get_ready_count():
+    return Job.objects.filter(disabled=False, is_running=False, next_run__lte=datetime.now()).count()
 
 def job_status(command):
     return Job.objects.filter(command=command, is_running=True).count() > 0

@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 import urllib
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
@@ -8,7 +6,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError
@@ -17,56 +15,17 @@ from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
 
 import settings
+from .forms import FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
+from .models import Facility, FacilityGroup
 from config.models import Settings
 from main.models import UserLog
+from securesync.devices.views import *
 from securesync.forms import FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
-from securesync.models import Facility, FacilityGroup
+from securesync.models import Facility, FacilityGroup, FacilityUser
 from settings import LOG as logging
 from shared.decorators import require_admin, central_server_only, distributed_server_only, facility_required, facility_from_request
 from shared.jobs import force_job
 from utils.internet import set_query_params
-
-
-def get_facility_from_request(request):
-    if "facility" in request.GET:
-        facility = get_object_or_None(Facility, pk=request.GET["facility"])
-        if "set_default" in request.GET and request.is_admin and facility:
-            Settings.set("default_facility", facility.id)
-    elif "facility_user" in request.session:
-        facility = request.session["facility_user"].facility
-    elif Facility.objects.count() == 1:
-        facility = Facility.objects.all()[0]
-    else:
-        facility = get_object_or_None(Facility, pk=Settings.get("default_facility"))
-    return facility
-
-
-def facility_required(handler):
-    def inner_fn(request, *args, **kwargs):
-
-        if Facility.objects.count() == 0:
-            if request.is_admin:
-                messages.error(
-                    request,
-                    _("To continue, you must first add a facility (e.g. for your school). ")
-                    + _("Please use the form below to add a facility."))
-            else:
-                messages.error(
-                    request,
-                    _("You must first have the administrator of this server log in below to add a facility.")
-                )
-            redir_url = reverse("add_facility")
-            redir_url = set_query_params(redir_url, {"prev": request.META.get("HTTP_REFERER", "")})
-            return HttpResponseRedirect(redir_url)
-
-        else:
-            facility = get_facility_from_request(request)
-        if facility:
-            return handler(request, facility, *args, **kwargs)
-        else:
-            return facility_selection(request)
-
-    return inner_fn
 
 
 @require_admin
@@ -101,28 +60,20 @@ def facility_edit(request, id=None):
 
 
 @distributed_server_only
-@render_to("securesync/facility_selection.html")
-def facility_selection(request):
-    facilities = Facility.objects.all()
-    context = {"facilities": facilities}
-    return context
-
-
-@distributed_server_only
 @require_admin
 def add_facility_teacher(request):
-    return add_facility_user(request, is_teacher=True)
+    return edit_facility_user(request, id="new", is_teacher=True)
 
 
 @distributed_server_only
 def add_facility_student(request):
-    return add_facility_user(request, is_teacher=False)
+    return edit_facility_user(request, id="new", is_teacher=False)
 
 
 @distributed_server_only
 @render_to("securesync/add_facility_user.html")
 @facility_required
-def add_facility_user(request, facility, is_teacher):
+def edit_facility_user(request, facility, is_teacher=None, id=None):
     """Different codepaths for the following:
     * Django admin/teacher creates user, teacher
     * Student creates self
@@ -130,40 +81,59 @@ def add_facility_user(request, facility, is_teacher):
     Each has its own message and redirect.
     """
 
+    user = get_object_or_404(FacilityUser, id=id) if id != "new" else None
+    title = ""
+
     # Data submitted to create the user.
     if request.method == "POST":  # now, teachers and students can belong to a group, so all use the same form.
-        form = FacilityUserForm(request, data=request.POST, initial={"facility": facility})
+        if not request.is_admin and settings.package_selected("UserRestricted"):
+            raise PermissionDenied(_("Please contact a teacher or administrator to receive login information to this installation."))
+
+        form = FacilityUserForm(facility, data=request.POST, instance=user)
         if form.is_valid():
-            form.instance.set_password(form.cleaned_data["password"])
-            form.instance.is_teacher = is_teacher
+            if form.cleaned_data["password"]:
+                form.instance.set_password(form.cleaned_data["password"])
             form.save()
 
             # Admins create users while logged in.
-            if request.is_logged_in:
-                assert request.is_admin, "Regular users can't create users while logged in."
-                messages.success(request, _("You successfully created the user."))
-                return HttpResponseRedirect(request.META.get("PATH_INFO", reverse("homepage")))  # allow them to add more of the same thing.
+            if id == "new":
+                if request.is_logged_in:
+                    assert request.is_admin, "Regular users can't create users while logged in."
+                    messages.success(request, _("You successfully created the user."))
+                    return HttpResponseRedirect(request.META.get("PATH_INFO", reverse("homepage")))  # allow them to add more of the same thing.
+                else:
+                    messages.success(request, _("You successfully registered."))
+                    return HttpResponseRedirect("%s?facility=%s" % (reverse("login"), form.data["facility"]))
             else:
-                messages.success(request, _("You successfully registered."))
-                return HttpResponseRedirect("%s?facility=%s" % (reverse("login"), form.data["facility"]))
+                messages.success(request, _("User changes saved!"))
+                if request.next:
+                    return HttpResponseRedirect(request.next)
 
     # For GET requests
-    else:
-        form = FacilityUserForm(
-            request,
-            initial={
-                "facility": facility,
-                "group": request.GET.get("group", None)
-            }
-        )
+    elif user:
+        form = FacilityUserForm(facility=facility, instance=user)
+        title = _("Edit user") + " " + user.username
 
-    # Across POST and GET requests
-    form.fields["group"].queryset = FacilityGroup.objects.filter(facility=facility)
+    else:
+        assert is_teacher is not None, "Must call this function with is_teacher set."
+        form = FacilityUserForm(facility, initial={
+            "group": request.GET.get("group", None),
+            "is_teacher": is_teacher,
+        })
+        if not request.is_admin:
+            title = _("Sign up for an account")
+        elif is_teacher:
+            title = _("Add a new teacher")
+        else:
+            title = _("Add a new student")
 
     return {
+        "title": title,
+        "user_id": id,
         "form": form,
         "facility": facility,
-        "singlefacility": (Facility.objects.count() == 1),
+        "singlefacility": request.session["facility_count"] == 1,
+        "num_groups": form.fields["group"].choices.queryset.count(),
         "teacher": is_teacher,
         "cur_url": request.path,
     }
@@ -207,7 +177,8 @@ def add_group(request, facility):
     return {
         "form": form,
         "facility": facility,
-        "groups": groups
+        "groups": groups,
+        "singlefacility": request.session["facility_count"] == 1,
     }
 
 
@@ -215,7 +186,7 @@ def add_group(request, facility):
 @facility_from_request
 @render_to("securesync/login.html")
 def login(request, facility):
-    facilities = Facility.objects.all()
+    facilities = list(Facility.objects.all())
     facility_id = facility and facility.id or None
 
     if request.method == 'POST':
@@ -237,17 +208,16 @@ def login(request, facility):
             user = form.get_user()
 
             try:
-                UserLog.begin_user_activity(user, activity_type="login")  # Success! Log the event (ignoring validation failures)
+                UserLog.begin_user_activity(user, activity_type="login", language=request.language)  # Success! Log the event (ignoring validation failures)
             except ValidationError as e:
-                logging.debug("Failed to begin_user_activity upon login: %s" % e)
+                logging.error("Failed to begin_user_activity upon login: %s" % e)
             request.session["facility_user"] = user
             messages.success(request, _("You've been logged in! We hope you enjoy your time with KA Lite ") +
                                         _("-- be sure to log out when you finish."))
-            return HttpResponseRedirect(
-                form.non_field_errors()
-                or request.next
-                or reverse("coach_reports") if form.get_user().is_teacher else reverse("account_management")
-            )
+            landing_page = reverse("coach_reports") if form.get_user().is_teacher else None
+            landing_page = landing_page or (reverse("account_management") if not settings.package_selected("RPi") else reverse("homepage"))
+
+            return HttpResponseRedirect(form.non_field_errors() or request.next or landing_page)
         else:
             messages.error(
                 request,
@@ -260,7 +230,7 @@ def login(request, facility):
 
     return {
         "form": form,
-        "facilities": facilities
+        "facilities": facilities,
     }
 
 
@@ -271,8 +241,9 @@ def logout(request):
         try:
             UserLog.end_user_activity(request.session["facility_user"], activity_type="login")
         except ValidationError as e:
-            logging.debug("Failed to end_user_activity upon logout: %s" % e)
+            logging.error("Failed to end_user_activity upon logout: %s" % e)
         del request.session["facility_user"]
+
     auth_logout(request)
     next = request.GET.get("next", reverse("homepage"))
     if next[0] != "/":

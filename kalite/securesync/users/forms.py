@@ -4,23 +4,33 @@ from django import forms
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
-from models import FacilityUser, Facility, FacilityGroup
+from .models import FacilityUser, Facility, FacilityGroup
 
 
 class FacilityUserForm(forms.ModelForm):
 
-    password = forms.CharField(widget=forms.PasswordInput, label=_("Password"))
+    password         = forms.CharField(widget=forms.PasswordInput, label=_("Password"))
     password_recheck = forms.CharField(widget=forms.PasswordInput, label=_("Confirm password"))
 
-    def __init__(self, request, *args, **kwargs):
-        self.request = request
+    def __init__(self, facility, *args, **kwargs):
         super(FacilityUserForm, self).__init__(*args, **kwargs)
+        self.fields["facility"].initial = facility.id
+        
+        # Passwords only required on new, not on edit
+        self.fields["password"].required = self.instance.pk == ""
+        self.fields["password_recheck"].required = self.instance.pk == ""
+
+        # Across POST and GET requests
+        self.fields["group"].queryset = FacilityGroup.objects.filter(facility=facility)
+        self.fields["facility"].initial = facility
 
     class Meta:
         model = FacilityUser
-        fields = ("facility", "group", "username", "first_name", "last_name",)
+        # Note: must preserve order
+        fields = ("facility", "group", "username", "first_name", "last_name", "password", "password_recheck", "is_teacher")
         widgets = {
-            'facility': forms.HiddenInput(),
+            "facility": forms.HiddenInput(),
+            "is_teacher": forms.HiddenInput(),
         }
 
     def clean_username(self):
@@ -40,6 +50,7 @@ class FacilityUserForm(forms.ModelForm):
 
         if self.cleaned_data.get('password') != self.cleaned_data.get('password_recheck'):
             raise forms.ValidationError(_("The passwords didn't match. Please re-enter the passwords."))
+        return self.cleaned_data['password_recheck']
 
 
 class FacilityForm(forms.ModelForm):

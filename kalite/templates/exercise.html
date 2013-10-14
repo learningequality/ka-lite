@@ -37,6 +37,7 @@
 <script src="{% static "js/khan-exercises/utils/jquery-ui.js" %}"></script>
 <script>
     var exerciseData = {
+        "basepoints": {{ exercise.basepoints }},
         "description": "{{ exercise.description|linebreaksbr }}",
         "title": "{{ exercise.display_name }}",
         "exerciseModel": {
@@ -60,10 +61,7 @@
 {% block content %}
 
     <div class="exercises-header">
-        {% if request.META.HTTP_REFERER %}
-        {% comment %} Translators: Return in this sense, means to go back. {% endcomment %}
-        <a class="return-link" href="{{ request.META.HTTP_REFERER }}">&#60; {% trans "Return" %}</a>
-        {% endif %}
+        <a href="{% if request.META.HTTP_REFERER %}{{ request.META.HTTP_REFERER }}{% else %}javascript.history.go(-1){% endif %}" class="return-link" >&#60;{% trans "Return" %}</a>
         <h2>
             <span class="practice-exercise-topic-context">{% trans "Practicing" %}</span> {% trans title %}
             {% if exercise.description %}<br/><span class="practice-exercise-description">{% trans exercise.description %}</span>{% endif %}
@@ -124,7 +122,7 @@
                                                         <div class="thumbnail">
                                                             <a class="related-video" href="{{ video.path }}" title="{% trans video.title %}" target="_blank">
                                                                 <div class="thumb">
-                                                                    <img class="thumbimage" src="{{ CONTENT_URL }}{{ video.youtube_id }}.png"/>
+                                                                    <img class="thumbimage" {% if video.thumbnail_url %}src="{{ video.thumbnail_url }}{% endif %}"/>
                                                                     <div class="thumbnail_label" style="margin-top: 68px; ">
                                                                         <div class="thumbnail_desc">
                                                                             <span class="progress-circle" data-youtube-id="{{ video.youtube_id }}"></span>

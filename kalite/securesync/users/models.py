@@ -17,10 +17,11 @@ import kalite
 import settings
 from config.models import Settings
 from securesync import engine
-from securesync.engine.models import SyncedModel
+from securesync.engine.models import DeferredCountSyncedModel
+from settings import LOG as logging
 
 
-class Facility(SyncedModel):
+class Facility(DeferredCountSyncedModel):
     name = models.CharField(verbose_name=_("Name"), help_text=_("(This is the name that students/teachers will see when choosing their facility; it can be in the local language.)"), max_length=100)
     description = models.TextField(blank=True, verbose_name=_("Description"))
     address = models.CharField(verbose_name=_("Address"), help_text=_("(Please provide as detailed an address as possible.)"), max_length=400, blank=True)
@@ -45,7 +46,6 @@ class Facility(SyncedModel):
     def is_default(self):
         return self.id == Settings.get("default_facility")
 
-
     @classmethod
     def from_zone(cls, zone):
         """Our best approximation of how to map facilities to zones"""
@@ -59,18 +59,18 @@ class Facility(SyncedModel):
         return facilities
 
 
-class FacilityGroup(SyncedModel):
+class FacilityGroup(DeferredCountSyncedModel):
     facility = models.ForeignKey(Facility, verbose_name=_("Facility"))
     name = models.CharField(max_length=30, verbose_name=_("Name"))
-
-    def __unicode__(self):
-        return self.name
 
     class Meta:
         app_label = "securesync"
 
+    def __unicode__(self):
+        return self.name
 
-class FacilityUser(SyncedModel):
+
+class FacilityUser(DeferredCountSyncedModel):
     # Translators: This is a label in a form.
     facility = models.ForeignKey(Facility, verbose_name=_("Facility"))
     # Translators: This is a label in a form.
@@ -94,15 +94,28 @@ class FacilityUser(SyncedModel):
         return u"%s (Facility: %s)" % (self.get_name(), self.facility)
 
     def check_password(self, raw_password):
-        if self.password.split("$", 1)[0] == "sha1":
-            # use Django's built-in password checker for SHA1-hashed passwords
-            return check_password(raw_password, self.password)
-        if self.password.split("$", 2)[1] == "p5k2":
-            # use PBKDF2 password checking
-            return self.password == crypt(raw_password, self.password)
+        cached_password = CachedPassword.get_cached_password(self)
+        cur_password = cached_password or self.password
 
-    def set_password(self, raw_password=None, hashed_password=None):
-        """Set a password with the raw password string, or the pre-hashed password."""
+        # Check the password
+        if cur_password.split("$", 1)[0] == "sha1":
+            # use Django's built-in password checker for SHA1-hashed passwords
+            okie_dokie = check_password(raw_password, cur_password)
+        elif cur_password.split("$", 2)[1] == "p5k2":
+            # use PBKDF2 password checking
+            okie_dokie = cur_password == crypt(raw_password, cur_password)
+        else:
+            raise ValidationException("Unknown password format.")
+
+        # Update on cached password-relevant stuff
+        if okie_dokie and not cached_password and self.id:  # only can create if the user's been saved
+            CachedPassword.set_cached_password(self, raw_password=raw_password)
+
+        return okie_dokie
+
+    def set_password(self, raw_password=None, hashed_password=None, cached_password=None):
+        """Set a password with the raw password string, or the pre-hashed password.
+        If using the raw string, """
 
         assert hashed_password is None or settings.DEBUG, "Only use hashed_password in debug mode."
         assert raw_password is not None or hashed_password is not None, "Must be passing in raw or hashed password"
@@ -110,8 +123,18 @@ class FacilityUser(SyncedModel):
 
         if hashed_password:
             self.password = hashed_password
+
+            # Can't save a cached password from a hash, so just make sure there is none.
+            # Note: Need to do this, even if they're not enabled--we don't want to risk
+            #   being out of sync (if people turn on/off/on the feature
+            CachedPassword.invalidate_cached_password(user=self)
+
         else:
-            self.password = crypt(raw_password, iterations=Settings.get("password_hash_iterations", 2000 if self.is_teacher else 1000))
+            n_iters = settings.PASSWORD_ITERATIONS_TEACHER_SYNCED if self.is_teacher else settings.PASSWORD_ITERATIONS_STUDENT_SYNCED
+            self.password = crypt(raw_password, iterations=n_iters)
+
+            if self.id:
+                CachedPassword.set_cached_password(self, raw_password)
 
     def get_name(self):
         if self.first_name and self.last_name:
@@ -119,5 +142,73 @@ class FacilityUser(SyncedModel):
         else:
             return self.username
 
+class CachedPassword(models.Model):
+    """
+    Local store of password hashes, using a locally settable # of password hash iterations.
+    """
+    user = models.ForeignKey("FacilityUser", unique=True)
+    password = models.CharField(max_length=128)
+
+    @classmethod
+    def is_enabled(cls):
+        # 0 is an illegal value, so 0 or None means disabled
+        # Force both to be set; otherwise, assumptions below can break
+        return bool(settings.PASSWORD_ITERATIONS_TEACHER and settings.PASSWORD_ITERATIONS_STUDENT)
+
+    @classmethod
+    def iters_for_user_type(cls, user):
+        return settings.PASSWORD_ITERATIONS_TEACHER if user.is_teacher else settings.PASSWORD_ITERATIONS_STUDENT
+
+    @classmethod
+    def get_cached_password(cls, user):
+        if not cls.is_enabled():
+            return None
+
+        # Cache miss because there is no row in the table for this user.
+        cached_password = cls.is_enabled() and get_object_or_None(cls, user=user)
+        if not cached_password:
+            logging.debug("Cached password MISS (does not exist) for user=%s" % user.username)
+            return None
+        
+        n_cached_iters = int(cached_password.password.split("$")[2], 16)  # this was determined 
+        if n_cached_iters == cls.iters_for_user_type(user):
+            # Cache hit!
+            logging.debug("Cached password hit for user=%s; cached iters=%d" % (user.username, n_cached_iters))
+            return cached_password.password
+        else:
+            # Cache miss because the row is invalid (# hashes doesn't match the current cache setting)
+            logging.debug("Cached password MISS (invalid) for user=%s" % user.username)
+            cached_password.delete()
+            return None
+
+    @classmethod
+    def invalidate_cached_password(cls, user):
+        cls.objects.filter(user=user).delete()
+
+    @classmethod
+    def set_cached_password(cls, user, raw_password):
+        assert user.id, "Your user must have an ID before calling this function."
+
+        if not cls.is_enabled():
+            # Must delete, to make sure we don't get out of sync.
+            cls.invalidate_cached_password(user=user)
+
+        else:
+            try:
+                # Set the cached password.
+                n_cached_iters = cls.iters_for_user_type(user)
+                # TODO(bcipolli) Migrate this to an extended django class
+                #   that uses get_or_initialize
+                cached_password = get_object_or_None(cls, user=user) or cls(user=user)
+                cached_password.password = crypt(raw_password, iterations=n_cached_iters)
+                cached_password.save()
+                logging.debug("Set cached password for user=%s; iterations=%d" % (user.username, n_cached_iters))
+            except Exception as e:
+                # If we fail to create a cache item... just keep going--functionality
+                #   can still move forward.
+                logging.error(e)
+
+    class Meta:
+        app_label = "securesync"
 
 engine.add_syncing_models([Facility, FacilityGroup, FacilityUser])
