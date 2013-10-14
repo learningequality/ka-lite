@@ -8,7 +8,10 @@ then
     echo "Closing server instance."
     echo "----------------------------------------------------------------"
     echo
-    kill `cat "$KALITE_DIR/runcherrypyserver.pid"`
+    if ! kill `cat "$KALITE_DIR/runcherrypyserver.pid"` > /dev/null 2>&1; then
+        echo "We couldn't stop the server. Perhaps becoming root might help."
+        exit
+    fi
     rm "$KALITE_DIR/runcherrypyserver.pid"
 else
     echo "----------------------------------------------------------------"
