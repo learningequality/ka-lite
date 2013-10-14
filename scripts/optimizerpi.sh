@@ -11,8 +11,9 @@ echo "Step 1. -- change KA Lite local_settings.py"
 
 echo 'CONFIG_PACKAGE = "RPi"' >> $KALITE_DIR/local_settings.py
 
-echo "Step 2 - Install nginx and Configure to work with KA Lite"
+echo "Step 2 - Install M2Crypto and nginx, Configure to work with KA Lite"
 
+sudo apt-get -y install python-m2crypto
 sudo apt-get -y install nginx 
 sudo rm /etc/nginx/sites-enabled/default 
 sudo touch /etc/nginx/sites-enabled/kalite 
