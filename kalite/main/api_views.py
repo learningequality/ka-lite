@@ -11,6 +11,7 @@ from django.db.models import Q
 from django.http import HttpResponse
 from django.utils import simplejson
 from django.utils.translation import ugettext as _
+from django.views.decorators.cache import cache_control, cache_page
 from django.views.decorators.gzip import gzip_page
 
 import settings
@@ -18,10 +19,10 @@ from .api_forms import ExerciseLogForm, VideoLogForm
 from .models import FacilityUser, VideoLog, ExerciseLog, VideoFile
 from config.models import Settings
 from securesync.models import FacilityGroup
-from shared.decorators import allow_api_profiling, require_admin
+from shared.decorators import allow_api_profiling, backend_cache_page, require_admin
 from shared.jobs import force_job, job_status
+from shared.topic_tools import get_flat_topic_tree 
 from shared.videos import delete_downloaded_files
-from shared.topic_tools import get_node_cache
 from utils.general import break_into_chunks
 from utils.internet import api_handle_error_with_json, JsonResponse
 from utils.mplayer_launcher import play_video_in_new_thread
@@ -250,19 +251,8 @@ def _update_video_log_with_points(seconds_watched, video_length, youtube_id, fac
         language=language,
     )
 
-@gzip_page
+
+@backend_cache_page
 def flat_topic_tree(request):
-    categories = get_node_cache()
-    result = dict()
-    # make sure that we only get the slug of child of a topic
-    # to avoid redundancy
-    for category_name, category in categories.iteritems():
-        result[category_name] = {}
-        for node_name, node in category.iteritems():
-            relevant_data = {'title': node['title'],
-                             'path': node['path'],
-                             'kind': node['kind'],
-            }
-            result[category_name][node_name] = relevant_data
-    return HttpResponse(json.dumps(result),
-                        content_type='application/json')
+    return JsonResponse(get_flat_topic_tree())
+
