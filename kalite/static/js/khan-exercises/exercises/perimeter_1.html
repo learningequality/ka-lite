@@ -9,17 +9,28 @@
 <div class="exercise">
     <div class="vars">
         <var id="UNIT,UNIT_TEXT">randFromArray([
-            ["in", "inch"],
-            ["ft", "foot"],
-            ["m", "meter"],
-            ["cm", "centimeter"],
-            ["", "unit"]
+            ["in", new Plural(function(num) {
+                return $.ngettext("inch", "inches", num);
+            })],
+            ["ft", new Plural(function(num) {
+                return $.ngettext("foot", "feet", num);
+            })],
+            ["m", new Plural(function(num) {
+                return $.ngettext("meter", "meters", num);
+            })],
+            ["cm", new Plural(function(num) {
+                return $.ngettext("centimeter", "centimeters", num);
+            })],
+            ["", new Plural(function(num) {
+                return $.ngettext("unit", "units", num);
+            })]
         ])</var>
     </div>
     <div class="problems">
         <div id="square" data-weight="1">
             <div class="vars">
                 <var id="S">randRange(2, 9)</var>
+                <var id="PERIMETER">$._("perimeter")</var>
             </div>
 
             <p class="question">
@@ -35,7 +46,7 @@
             </div>
 
             <div class="solution" data-type="multiple">
-                <span class="sol"><var>4 * S</var></span> <var>plural(UNIT_TEXT)</var>
+                <span class="sol" data-forms="integer"><var>4 * S</var></span> <var>plural_form(UNIT_TEXT)</var>
             </div>
 
             <div class="hints">
@@ -52,11 +63,11 @@
                     <p>
                         Add up the lengths of the sides:
                     </p>
-                    <p><code>\qquad\text{perimeter} =
+                    <p><code>\qquad\text{<var>PERIMETER</var>} =
                         \pink{<var>S</var>} + \blue{<var>S</var>} + \purple{<var>S</var>} + \green{<var>S</var>}
                     </code></p>
                 </div>
-                <p><code>\qquad\text{perimeter} = <var>S * 4</var>\text{ <var>UNIT</var>}</code></p>
+                <p><code>\qquad\text{<var>PERIMETER</var>} = <var>S * 4</var>\text{ <var>UNIT</var>}</code></p>
             </div>
         </div>
 
@@ -64,6 +75,7 @@
             <div class="vars" data-ensure="L !== W">
                 <var id="L">randRange(2, 9)</var>
                 <var id="W">randRange(2, 9)</var>
+                <var id="PERIMETER">$._("perimeter")</var>
             </div>
 
             <p class="question">
@@ -80,7 +92,7 @@
             </div>
 
             <div class="solution" data-type="multiple">
-                <span class="sol"><var>L * 2 + W * 2</var></span> <var>plural(UNIT_TEXT)</var>
+                <span class="sol" data-forms="integer"><var>L * 2 + W * 2</var></span> <var>plural_form(UNIT_TEXT)</var>
             </div>
 
             <div class="hints">
@@ -97,19 +109,20 @@
                     <p>
                         Add up the lengths of the sides:
                     </p>
-                    <p><code>\qquad\text{perimeter} =
+                    <p><code>\qquad\text{<var>PERIMETER</var>} =
                         \pink{<var>W</var>} + \blue{<var>L</var>} + \purple{<var>W</var>} + \green{<var>L</var>}
                     </code></p>
                 </div>
-                <p><code>\qquad\text{perimeter} = <var>L * 2 + W * 2</var>\text{ <var>UNIT</var>}</code></p>
+                <p><code>\qquad\text{<var>PERIMETER</var>} = <var>L * 2 + W * 2</var>\text{ <var>UNIT</var>}</code></p>
             </div>
         </div>
 
         <div id="triangle" data-weight="2">
-            <div class="vars" data-ensure="A < B + C && B < A + C && C < A + B">
+            <div class="vars" data-ensure="A &lt; B + C &amp;&amp; B &lt; A + C &amp;&amp; C &lt; A + B">
                 <var id="A,B,C">randRange(2, 9, 3)</var>
                 <var id="X">((A * A + B * B - C * C) / (2 * A * B)) * B</var>
                 <var id="Y">sqrt(B * B - X * X)</var>
+                <var id="PERIMETER">$._("perimeter")</var>
             </div>
 
             <p class="question">
@@ -127,7 +140,7 @@
             </div>
 
             <div class="solution" data-type="multiple">
-                <span class="sol"><var>A + B + C</var></span> <var>plural(UNIT_TEXT)</var>
+                <span class="sol" data-forms="integer"><var>A + B + C</var></span> <var>plural_form(UNIT_TEXT)</var>
             </div>
 
             <div class="hints">
@@ -143,11 +156,11 @@
                     <p>
                         Add up the lengths of the sides:
                     </p>
-                    <p><code>\qquad\text{perimeter} =
+                    <p><code>\qquad\text{<var>PERIMETER</var>} =
                         \pink{<var>B</var>} + \blue{<var>C</var>} + \green{<var>A</var>}
                     </code></p>
                 </div>
-                <p><code>\qquad\text{perimeter} = <var>A + B + C</var>\text{ <var>UNIT</var>}</code></p>
+                <p><code>\qquad\text{<var>PERIMETER</var>} = <var>A + B + C</var>\text{ <var>UNIT</var>}</code></p>
             </div>
         </div>
 
@@ -155,13 +168,14 @@
             <div class="vars">
                 <var id="S">randRange(2, 3)</var>
                 <var id="SIDES,POLYGON">randFromArray([
-                    [5, "pentagon"],
-                    [6, "hexagon"],
-                    [8, "octagon"]
+                    [5, $._("pentagon")],
+                    [6, $._("hexagon")],
+                    [8, $._("octagon")]
                 ])</var>
                 <var id="ANGLE">(2 * PI) / SIDES</var>
                 <var id="RADIUS">S / (2 * sin(PI / SIDES))</var>
                 <var id="APOTHEM">S / (2 * tan(PI / SIDES))</var>
+                <var id="PERIMETER">$._("perimeter")</var>
             </div>
 
             <p class="question">
@@ -183,7 +197,7 @@
             </div>
 
             <div class="solution" data-type="multiple">
-                <span class="sol"><var>S * SIDES</var></span> <var>plural(UNIT_TEXT)</var>
+                <span class="sol" data-forms="integer"><var>S * SIDES</var></span> <var>plural_form(UNIT_TEXT)</var>
             </div>
 
             <div class="hints">
@@ -212,13 +226,13 @@
                     <p>
                         Since there are <span class="hint_blue"><code><var>SIDES</var></code> sides</span>
                         that are all <span class="hint_green"><code><var>S</var></code>
-                        <var>plural(UNIT_TEXT)</var></span> long, we can multiply:
+                        <var>plural_form(UNIT_TEXT, S)</var></span> long, we can multiply:
                     </p>
-                    <p><code>\qquad\text{perimeter} =
+                    <p><code>\qquad\text{<var>PERIMETER</var>} =
                         \blue{<var>SIDES</var>} \times \green{<var>S</var>}
                     </code></p>
                 </div>
-                <p><code>\qquad\text{perimeter} = <var>S * SIDES</var>\text{ <var>UNIT</var>}</code></p>
+                <p><code>\qquad\text{<var>PERIMETER</var>} = <var>S * SIDES</var>\text{ <var>UNIT</var>}</code></p>
             </div>
         </div>
 
@@ -226,8 +240,7 @@
             <div class="vars">
                 <var id="WIDTH">randRange(5, 10)</var>
                 <var id="HEIGHT">randRange(5, 10)</var>
-                <var id="SHAPE"
-                    data-ensure="SHAPE.numSides <= 10 && SHAPE.numSides > 4">
+                <var id="SHAPE" data-ensure="SHAPE.numSides &lt;= 10 &amp;&amp; SHAPE.numSides &gt; 4">
                     createOddShape({
                         width: WIDTH,
                         height: HEIGHT
@@ -262,8 +275,8 @@
             </div>
 
             <div class="solution" data-type="multiple">
-                <span class="sol"><var>SHAPE.perimeter</var></span>
-                <var>plural(UNIT_TEXT)</var>
+                <span class="sol" data-forms="integer"><var>SHAPE.perimeter</var></span>
+                <var>plural_form(UNIT_TEXT)</var>
             </div>
 
             <div class="hints">
@@ -290,7 +303,7 @@
                 </div>
                 <p>
                     The perimeter is <code><var>SHAPE.perimeter</var></code>
-                    <var>plural(UNIT_TEXT)</var>.
+                    <var>plural_form(UNIT_TEXT, SHAPE.perimeter)</var>.
                 </p>
             </div>
         </div>

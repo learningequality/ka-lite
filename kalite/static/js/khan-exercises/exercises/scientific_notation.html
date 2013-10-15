@@ -15,17 +15,21 @@
             <var id="E">ZEROES + ( NUMBER_SEED_LENGTH - 1 )</var>
 
             <var id="BASE">NUMBER_SEED / pow( 10, E - ZEROES )</var>
+            <var id="BASE_STR">localeToFixed(BASE, E - ZEROES)</var>
 
             <var id="LEADING">floor( BASE )</var>
-            <var id="TRAIL">( BASE + "" ).substring( 1 )</var>
+            <var id="TRAIL">BASE_STR.substring( 1 )</var>
 
             <var id="DECIMAL">
-                ZEROES > 0 ?
+                ZEROES &gt; 0 ?
                     NUMBER_SEED * pow( 10, ZEROES ) :
-                    ( NUMBER_SEED * pow( 10, ZEROES ) ).toFixed( -1 * ZEROES )
+                    // NOTE: Don't use toFixed unless you have a good reason,
+                    // use localeToFixed instead. Here, since we're passing off
+                    // to commafy, we need toFixed.
+                    (NUMBER_SEED * pow( 10, ZEROES )).toFixed(-1 * ZEROES)
             </var>
             <var id="PRETTY_DECIMAL">commafy( DECIMAL )</var>
-            <var id="SCIENTIFIC">BASE + " \\times 10^{" + E + "}"</var>
+            <var id="SCIENTIFIC">BASE_STR + " \\times 10^{" + E + "}"</var>
 
             <code>\newcommand{\exponentColor}[1]{\color{purple}{#1}}\newcommand{\leadingColor}[1]{\color{green}{#1}}</code>
         </div>
@@ -38,17 +42,17 @@
                 <p class="problem"><code><var>PRETTY_DECIMAL</var></code></p>
 
                 <div class="solution" data-type="multiple">
-                    <span class="sol base"><var>BASE</var></span>
+                    <span class="sol base short40" data-forms="integer, decimal"><var>BASE</var></span>
                     <code> \times 10 </code>
-                    <sup class="sol exp" style="width: 20px;"><var>E</var></sup>
+                    <sup class="sol exp short20" data-forms="integer, decimal"><var>E</var></sup>
                 </div>
 
                 <div class="hints">
-                    <div class="digits" data-unwrap>
+                    <div class="digits" data-unwrap="">
                         <p data-if="E > 0">There are <code>\exponentColor{<var>E</var>}</code> digits to the right of the leading <code>\leadingColor{<var>LEADING</var>}</code> (and to the left of the decimal).</p>
-                        <div data-unwrap data-else>
-                            <p>Count the zeroes to the right of the decimal point before the leading <code>\leadingColor{<var>LEADING</var>}</code>: there <span data-if="E + 1 === -1">is 1 zero</span><span data-else>are <code><var>(E + 1) * -1</var></code> zeroes</span>.</p>
-                            <p>If you count the leading digit <code>\leadingColor{<var>LEADING</var>}</code><span data-if="E + 1 < -1"> and those zeroes</span><span data-else-if="E + 1 === -1"> and the 1 zero</span>, there <var>E === -1 ? "is" : "are"</var> <code>\exponentColor{<var>E * -1</var>}</code> <var>E === -1 ? "digit" : "digits"</var> to the <span style="color: purple;">right</span> of the decimal point.</p>
+                        <div data-else="" data-unwrap="">
+                            <p>Count the zeroes to the right of the decimal point before the leading <code>\leadingColor{<var>LEADING</var>}</code>: there <span data-if="E + 1 === -1">is 1 zero</span><span data-else="">are <code><var>(E + 1) * -1</var></code> zeroes</span>.</p>
+                            <p data-if="E === -1">If you count the leading digit <code>\leadingColor{<var>LEADING</var>}</code><span data-if="E + 1 < -1"> and those zeroes</span><span data-else-if="E + 1 === -1"> and the 1 zero</span>, there is <code>\exponentColor{<var>E * -1</var>}</code> digit to the <span style="color: purple;">right</span> of the decimal point.</p><p data-else="">If you count the leading digit <code>\leadingColor{<var>LEADING</var>}</code><span data-if="E + 1 < -1"> and those zeroes</span><span data-else-if="E + 1 === -1"> and the 1 zero</span>, there are <code>\exponentColor{<var>E * -1</var>}</code> digits to the <span style="color: purple;">right</span> of the decimal point.</p>
                         </div>
                     </div>
 
@@ -66,8 +70,8 @@
                 <p class="solution"><var>DECIMAL</var></p>
 
                 <div class="hints">
-                    <p class="digits"><code><var>SCIENTIFIC</var> = <var>BASE</var> \times <var>TEN_POWER</var></code></p>
-                    <p class="answer"><code><var>BASE</var> \times <var>TEN_POWER</var> = <var>PRETTY_DECIMAL</var></code></p>
+                    <p class="digits"><code><var>SCIENTIFIC</var> = <var>BASE_STR</var> \times <var>TEN_POWER</var></code></p>
+                    <p class="answer"><code><var>BASE_STR</var> \times <var>TEN_POWER</var> = <var>PRETTY_DECIMAL</var></code></p>
                 </div>
             </div>
         </div>

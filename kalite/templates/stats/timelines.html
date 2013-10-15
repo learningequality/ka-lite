@@ -2,7 +2,7 @@
 {% load my_filters %}
 
 {% block headjs %}{{ block.super }}
-    <script type="text/javascript" src="http://kalite.learningequality.org/static/js/jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" src="{% static "js/jquery-1.9.1.min.js" %}"></script>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript">
           google.load("visualization", "1", {packages:["corechart"]});
