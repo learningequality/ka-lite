@@ -59,12 +59,15 @@ function updatePercentCompleted(correct) {
 };
 
 $(function() {
-    $(Exercises).trigger("problemTemplateRendered");
-    $(Exercises).trigger("readyForNextProblem", {userExercise: exerciseData});
-    $(Khan).bind("checkAnswer", function(ev, data) {
-        updatePercentCompleted(data.pass);
+
+    $(Khan).bind("loaded", function() {
+        $(Exercises).trigger("problemTemplateRendered");
+        $(Exercises).trigger("readyForNextProblem", {userExercise: exerciseData});
     });
-    $(Khan).bind("hintUsed", function(ev, data) {
+    $(Exercises).bind("checkAnswer", function(ev, data) {
+        updatePercentCompleted(data.correct);
+    });
+    $(Exercises).bind("hintUsed", function(ev, data) {
         if (exerciseData.hintUsed) { // only register the first hint used on a question
             return;
         }

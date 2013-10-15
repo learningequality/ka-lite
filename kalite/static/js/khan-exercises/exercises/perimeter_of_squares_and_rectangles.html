@@ -2,34 +2,48 @@
 <html data-require="math graphie word-problems">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Perimeter of squares and rectangles</title>
+    <title>Finding dimensions given perimeter</title>
     <script src="../khan-exercise.js"></script>
 </head>
 <body>
 <div class="exercise">
     <div class="vars">
         <var id="UNIT,UNIT_TEXT">randFromArray([
-            ["in", "inch"],
-            ["ft", "foot"],
-            ["m", "meter"],
-            ["cm", "centimeter"],
-            ["", "unit"]
+            ["in", new Plural(function(num) {
+                return $.ngettext("inch", "inches", num);
+            })],
+            ["ft", new Plural(function(num) {
+                return $.ngettext("foot", "feet", num);
+            })],
+            ["m", new Plural(function(num) {
+                return $.ngettext("meter", "meters", num);
+            })],
+            ["cm", new Plural(function(num) {
+                return $.ngettext("centimeter", "centimeters", num);
+            })],
+            ["", new Plural(function(num) {
+                return $.ngettext("unit", "units", num);
+            })]
         ])</var>
     </div>
     <div class="problems">
         <div id="square-s-to-P">
             <div class="vars">
                 <var id="S">randRange(1, 8)</var>
+                <var id="PERIMETER">$._("perimeter")</var>
             </div>
 
-            <p class="question">
+            <p class="question"><span data-if="isSingular(S)" data-unwrap="">
                 One side of a square is <code><var>S</var></code>
-                <var>plural(UNIT_TEXT, S)</var> long. What is its perimeter?
-            </p>
+                <var>UNIT_TEXT</var> long. What is its perimeter?
+            </span><span data-else="" data-unwrap="">
+                One side of a square is <code><var>S</var></code>
+                <var>plural_form(UNIT_TEXT, S)</var> long. What is its perimeter?
+            </span></p>
 
             <div class="solution" data-type="multiple">
-                <span class="sol"><var>4 * S</var></span>
-                <var>plural(UNIT_TEXT)</var>
+                <span class="sol" data-forms="integer"><var>4 * S</var></span>
+                <var>plural_form(UNIT_TEXT)</var>
             </div>
 
             <div class="hints">
@@ -59,12 +73,12 @@
                     <p>
                         Add up the lengths of the sides:
                     </p>
-                    <p><code>\qquad\text{perimeter} =
+                    <p><code>\qquad\text{<var>PERIMETER</var>} =
                         \pink{<var>S</var>} + \blue{<var>S</var>} +
                         \purple{<var>S</var>} + \green{<var>S</var>}
                     </code></p>
                 </div>
-                <p><code>\qquad\text{perimeter} =
+                <p><code>\qquad\text{<var>PERIMETER</var>} =
                     <var>S * 4</var>\text{ <var>UNIT</var>}
                 </code></p>
             </div>
@@ -77,12 +91,12 @@
 
             <p class="question">
                 The perimeter of a square is <code><var>4 * S</var></code>
-                <var>plural(UNIT_TEXT)</var>. How long is each side?
+                <var>plural_form(UNIT_TEXT, 4 * S)</var>. How long is each side?
             </p>
 
             <div class="solution" data-type="multiple">
-                <span class="sol"><var>S</var></span>
-                <var>plural(UNIT_TEXT)</var>
+                <span class="sol" data-forms="integer"><var>S</var></span>
+                <var>plural_form(UNIT_TEXT)</var>
             </div>
 
             <div class="hints">
@@ -92,7 +106,7 @@
                         path([[0, 0], [5, 0], [5, 5], [0, 5], true],
                             { stroke: BLUE, fill: "#eee" });
                         path([[0, 0], [0, 5]], { "stroke": PINK });
-                        label([0, 2.5], "\\text{? " + UNIT + "}", "left",
+                        label([0, 2.5], "\\text{" + $._("? %(UNIT)s", {UNIT: UNIT}) + "}", "left",
                             { "color": PINK });
                     </div>
                 </div>
@@ -121,10 +135,14 @@
                         \purple{<var>S</var>} + \green{<var>S</var>} =
                         <var>4 * S</var>\text{ <var>UNIT</var>}
                     </code></p>
-                    <p>
+                    <p data-if="isSingular(S)">
                         The sides of a square are all the same length, so each
                         side must be <code><var>S</var></code>
-                        <var>plural(UNIT_TEXT, S)</var> long.
+                        <var>UNIT_TEXT</var> long.
+                    </p><p data-else="">
+                        The sides of a square are all the same length, so each
+                        side must be <code><var>S</var></code>
+                        <var>plural_form(UNIT_TEXT, S)</var> long.
                     </p>
                 </div>
             </div>
@@ -134,19 +152,24 @@
             <div class="vars" data-ensure="L !== W">
                 <var id="L">randRange(1, 8)</var>
                 <var id="W">randRange(1, 8)</var>
+                <var id="PERIMETER">$._("perimeter")</var>
             </div>
 
             <p class="question">
-                A rectangle is
-                <code><var>L</var></code> <var>plural(UNIT_TEXT, L)</var>
-                long and
-                <code><var>W</var></code> <var>plural(UNIT_TEXT, W)</var>
-                wide. What is its perimeter?
+                <span data-if="isSingular(L)">A rectangle is
+                <code><var>L</var></code> <var>UNIT_TEXT</var>
+                long.</span><span data-else="">A rectangle is
+                <code><var>L</var></code> <var>plural_form(UNIT_TEXT, L)</var>
+                long.</span><span data-if="isSingular(W)">The rectangle is also
+                <code><var>W</var></code> <var>UNIT_TEXT</var>
+                wide. What is its perimeter?</span><span data-else="">The rectangle is also
+                <code><var>W</var></code> <var>plural_form(UNIT_TEXT, W)</var>
+                wide. What is its perimeter?</span>
             </p>
 
             <div class="solution" data-type="multiple">
-                <span class="sol"><var>2 * L + 2 * W</var></span>
-                <var>plural(UNIT_TEXT)</var>
+                <span class="sol" data-forms="integer"><var>2 * L + 2 * W</var></span>
+                <var>plural_form(UNIT_TEXT)</var>
             </div>
 
             <div class="hints">
@@ -176,12 +199,12 @@
                     <p>
                         Add up the lengths of the sides:
                     </p>
-                    <p><code>\qquad\text{perimeter} =
+                    <p><code>\qquad\text{<var>PERIMETER</var>} =
                         \pink{<var>W</var>} + \blue{<var>L</var>} +
                         \purple{<var>W</var>} + \green{<var>L</var>}
                     </code></p>
                 </div>
-                <p><code>\qquad\text{perimeter} =
+                <p><code>\qquad\text{<var>PERIMETER</var>} =
                     <var>2 * L + 2 * W</var>\text{ <var>UNIT</var>}
                 </code></p>
             </div>

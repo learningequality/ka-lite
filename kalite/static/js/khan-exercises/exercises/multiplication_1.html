@@ -1,60 +1,85 @@
 <!DOCTYPE html>
-<html data-require="math graphie graphie-helpers-arithmetic word-problems">
+<html data-require="math">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Multiplication 1</title>
+    <title>Multiplying by multiples of 10</title>
     <script src="../khan-exercise.js"></script>
 </head>
 <body>
     <div class="exercise">
         <div class="vars">
-            <var id="A">randRange( 1, 10 )</var>
-            <var id="B">randRange( 0, 10 )</var>
+            <var id="BIGFACTOR">randRange(2, 9) * 10</var>
+            <var id="SMALLFACTOR">randRange(1, 9)</var>
+        </div>
+        <div class="solution" data-type="multiple">
+            <code>\Large{?} = {}</code>
+            <span class="sol" data-forms="integer"><var>BIGFACTOR * SMALLFACTOR</var></span>
         </div>
 
         <div class="problems">
-            <div>
-                <div class="graphie" id="numbers">
-                    init({
-                        range: [ [ -1, 12], [ -3, B + 1 ] ],
-                        scale: [ 50, 50 ]
-                    });
-                    KhanUtil.currentGraph.labelHolder = label( [ 0, B ],
-                        "\\Huge{\\color{#6495ED}{" + A + "} \\times \\color{#28AE7B}{" + B + "} = {?}}", "right" );
-                </div>
-                <div class="solution"><var>A * B</var></div>
-            </div>
-        </div>
-        <div class="hints">
-            <div data-if="B > 0" data-unwrap>
-                <div>
-                    <div class="graphie" data-update="numbers">
-                        label( [ 0, B - 1 ], "Draw " + plural( A, "circle" ) + ".", "right", false );
-                        drawRow( A, B - 3, "#6495ED", 1 );
-                    </div>
-                </div>
-                <div>
-                    <div class="graphie" data-update="numbers">
-                        label( [ 0, B - 2 ],
-                              "If there" + ( B === 1 ? " is " : " are " ) + plural( B, "row" )
-                            + " with " + plural( A, "circle" ) +  ( B === 1 ? "" : " each" )
-                            + ",&lt;br&gt;there are a total of how many circles?",
-                            "right", false );
-                        for ( var i = 1; i &lt; B; i++ ) {
-                            drawRow( A, B - 3 - i, "#28AE7B", A * i + 1 );
-                        }
-                    </div>
+            <div id="bigfirst-left">
+                <p class="question">
+                    <code>\Huge{\blue{<var>BIGFACTOR</var>} \times \green{<var>SMALLFACTOR</var>} = {?}}</code>
+                </p>
+                <div class="hints">
+                    <p><code>
+                        <code>\huge{\blue{10} \times \blue{<var>BIGFACTOR / 10</var>} \times \green{<var>SMALLFACTOR</var>} = {?}}</code>
+                    </code></p>
+                    <p><code>
+                        <code>\huge{\blue{10} \times <var>BIGFACTOR / 10 * SMALLFACTOR</var> = {?}}</code>
+                    </code></p>
+                    <p><code>
+                        <code>\huge{{?} = <var>BIGFACTOR * SMALLFACTOR</var>}</code>
+                    </code></p>
                 </div>
             </div>
-            <div data-else>
-                <div class="graphie" data-update="numbers">
-                    label( [ 0, B - 1 ], "\\large{\\text{Multiplying any number by 0 equals 0.}}", "right" );
+            <div id="bigfirst-right">
+                <p class="question">
+                    <code>\Huge{{?} = \blue{<var>BIGFACTOR</var>} \times \green{<var>SMALLFACTOR</var>}}</code>
+                </p>
+                <div class="hints">
+                    <p><code>
+                        <code>\huge{{?} = \blue{10} \times \blue{<var>BIGFACTOR / 10</var>} \times \green{<var>SMALLFACTOR</var>}}</code>
+                    </code></p>
+                    <p><code>
+                        <code>\huge{{?} = \blue{10} \times <var>BIGFACTOR / 10 * SMALLFACTOR</var>}</code>
+                    </code></p>
+                    <p><code>
+                        <code>\huge{{?} = <var>BIGFACTOR * SMALLFACTOR</var>}</code>
+                    </code></p>
                 </div>
             </div>
-            <div class="graphie" data-update="numbers">
-                KhanUtil.currentGraph.labelHolder.remove();
-                label( [ 0, B ],
-                    "\\Huge{\\color{#6495ED}{" + A + "} \\times \\color{#28AE7B}{" + B + "} = " + ( A  * B ) + "}", "right" );
+            <div id="smallfirst-left">
+                <p class="question">
+                    <code>\Huge{\blue{<var>SMALLFACTOR</var>} \times \green{<var>BIGFACTOR</var>} = {?}}</code>
+                </p>
+                <div class="hints">
+                    <p><code>
+                        <code>\huge{\blue{<var>SMALLFACTOR</var>} \times \green{<var>BIGFACTOR / 10</var>} \times \green{10} = {?}}</code>
+                    </code></p>
+                    <p><code>
+                        <code>\huge{<var>BIGFACTOR / 10 * SMALLFACTOR</var> \times \green{10} = {?}}</code>
+                    </code></p>
+                    <p><code>
+                        <code>\huge{{?} = <var>BIGFACTOR * SMALLFACTOR</var>}</code>
+                    </code></p>
+                </div>
+            </div>
+            <div id="smallfirst-right">
+                <p class="question">
+                    <code>\Huge{{?} = \blue{<var>SMALLFACTOR</var>} \times \green{<var>BIGFACTOR</var>}}</code>
+                </p>
+                <div class="hints">
+                    <p><code>
+                        <code>\huge{{?} = \blue{<var>SMALLFACTOR</var>} \times \green{<var>BIGFACTOR / 10</var>} \times \green{10}}</code>
+                    </code></p>
+                    <p><code>
+                        <code>\huge{{?} = <var>BIGFACTOR / 10 * SMALLFACTOR</var> \times \green{10}}</code>
+                    </code></p>
+                    <p><code>
+                        <code>\huge{{?} = <var>BIGFACTOR * SMALLFACTOR</var>}</code>
+                    </code></p>
+                </div>
             </div>
         </div>
     </div>
