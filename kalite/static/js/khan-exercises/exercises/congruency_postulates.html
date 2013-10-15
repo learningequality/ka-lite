@@ -2,7 +2,7 @@
 <html data-require="math graphie graphie-helpers graphie-geometry math-format interactive triangle-congruence">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Congruency Postulates</title>
+    <title>Congruency postulates</title>
     <script src="../khan-exercise.js"></script>
     <style>
         div#triangles {
@@ -23,18 +23,18 @@
                 ensure the resulting shape can make two visually distinct triangles
                 -->
                 <div class="vars" data-ensure="
-                        ( abs( ANGLES[0] - ANGLES[1] ) > 10 ) &&
-                        ( abs( ANGLES[1] - ANGLES[2] ) > 10 ) &&
-                        ( abs( ANGLES[0] - ANGLES[2] ) > 10 ) &&
-                        ( ( TYPE !== 'SSA' ) || ( (TRIANGLE.niceSideLengths[0] + 1) < TRIANGLE.niceSideLengths[1] && abs(ANGLES[0] - 90) > 10 ) )">
+                        ( abs( ANGLES[0] - ANGLES[1] ) &gt; 10 ) &amp;&amp;
+                        ( abs( ANGLES[1] - ANGLES[2] ) &gt; 10 ) &amp;&amp;
+                        ( abs( ANGLES[0] - ANGLES[2] ) &gt; 10 ) &amp;&amp;
+                        ( ( TYPE !== 'SSA' ) || ( (TRIANGLE.niceSideLengths[0] + 1) &lt; TRIANGLE.niceSideLengths[1] &amp;&amp; abs(ANGLES[0] - 90) &gt; 10 ) )">
                     <var id="TYPE">randFromArray([ "SSS", "SAS", "SAA", "ASA", "SSA", "SSA", "AAA" ])</var>
                     <var id="NAME">{
-                            "SSS": "Side-Side-Side",
-                            "SAS": "Side-Angle-Side",
-                            "SAA": "Side-Angle-Angle",
-                            "ASA": "Angle-Side-Angle",
-                            "SSA": "Side-Side-Angle",
-                            "AAA": "Angle-Angle-Angle"
+                            "SSS": $._("Side-Side-Side"),
+                            "SAS": $._("Side-Angle-Side"),
+                            "SAA": $._("Side-Angle-Angle"),
+                            "ASA": $._("Angle-Side-Angle"),
+                            "SSA": $._("Side-Side-Angle"),
+                            "AAA": $._("Angle-Angle-Angle")
                         }[ TYPE ]
                     </var>
                     <var id="ANGLES">randomTriangleAngles.triangle()</var>
@@ -45,12 +45,19 @@
                     <var id="ROTATION">randRange( 0, 360 )</var>
                 </div>
                 <p class="problem">
-                    <strong>Is <em><var>NAME</var></em> a triangle congruency postulate?</strong><br />
-                    Answer the question by clicking and dragging the points below to see how many different triangles you can construct.<br />
-                    If you can only construct congruent triangles, then the <var>NAME</var> postulate is true. The <var>NAME</var> postulate is not true if you can construct two or more different triangles using the given information.
+                    <strong>Is <em><var>NAME</var></em> a triangle congruency
+                        postulate?</strong><br>
+                    Answer the question by clicking and dragging the points
+                    below to see how many different triangles you can
+                    construct.<br>
+                    If you can only construct congruent triangles, then the
+                    <var>NAME</var> postulate is true. The <var>NAME</var>
+                    postulate is not true if you can construct two or more
+                    different triangles using the given information.
                 </p>
                 <div class="question">
-                    <em>Your triangle can be anywhere. There is no need to line up the two triangles.</em>
+                    <em>Your triangle can be anywhere. There is no need to line
+                        up the two triangles.</em>
                     <div class="graphie" id="triangles">
                         init({
                             range: [ [ -6.2, 6.2 ], [ -5.9, 6.5 ] ]
@@ -73,10 +80,10 @@
                 <div class="solution" data-type="custom">
                     <div class="instruction">
                         <ul>
-                            <li><label><input type="radio" name="solution" value="Yes"><span class="value">
+                            <li><label><input name="solution" type="radio" value="Yes"><span class="value">
                                 Yes &mdash; And I've constructed a congruent triangle, and this is the <strong>ONLY</strong> triangle I can construct with these conditions.
                             </span></label></li>
-                            <li><label><input type="radio" name="solution" value="No"><span class="value">
+                            <li><label><input name="solution" type="radio" value="No"><span class="value">
                                 No &mdash; And I've proven it by constructing an incongruent triangle (a counterexample).
                             </span></label></li>
                         </ul>
@@ -109,9 +116,9 @@
                         } else if ( guess[0] !== ANSWER ) {
                             return false;
                         } else if ( !isTriangle ) {
-                            return "Your answer is almost correct, but you haven't constructed a triangle.";
+                            return $._("Your answer is almost correct, but you havent constructed a triangle.");
                         } else if ( ANSWER === "No" &amp;&amp; isCongruent ) {
-                            return "Your answer is almost correct, but the two triangles are congruent. Prove your answer by trying to construct an incongruent triangle.";
+                            return $._("Your answer is almost correct, but the two triangles are congruent. Prove your answer by trying to construct an incongruent triangle.");
                         } else {
                             return true;
                         }
@@ -133,7 +140,7 @@
                 <div class="hints">
                     <p>
                         To be a congruency postulate, there must be one, <em>and only one</em>, way to make a triangle
-                        that's the same as the original triangle&mdash;except for being moved, rotated, or reflected.
+                        that's the same as the original triangle—except for being moved, rotated, or reflected.
                     </p>
                     <p data-if="ANSWER === 'Yes'">
                         With the constraints of <var>NAME</var>, there is exactly one way to make a triangle.
@@ -148,7 +155,7 @@
                     </p>
                     <div data-if="TYPE === 'SSA'">
                         <p>Both of these triangles have the same adjacent Side, Side, and Angle, but they are not congruent:
-                        <div class="graphie">
+                        </p><div class="graphie">
                             var triangle = new Triangle( [ 0, 0 ], ANGLES, SCALE, {} );
                             triangle.rotate( -ANGLES[1] );
                             init({ range: triangle.boundingRange( 0.4 ) });
@@ -186,7 +193,7 @@
                     </p>
                     <div data-if="TYPE === 'AAA'">
                         <p>Both of these triangles have the same three angles, but they are not congruent (just similar):
-                        <div class="graphie" style="float: left">
+                        </p><div class="graphie" style="float: left">
                             style({ stroke: "#b1c9f5", "stroke-width": 5 });
                             init({ range: TRIANGLE.boundingRange( 0.4 ) });
                             addMouseLayer();

@@ -2,18 +2,28 @@
 <html data-require="math graphie word-problems subhints graphie-geometry">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Areas of trapezoids, rhombi, and kites</title>
+    <title>Area of trapezoids, rhombi, and kites</title>
     <script src="../khan-exercise.js"></script>
 </head>
 <body>
     <div class="exercise">
         <div class="vars">
             <var id="UNIT,UNIT_TEXT">randFromArray([
-                ["in", "inch"],
-                ["ft", "foot"],
-                ["m", "meter"],
-                ["cm", "centimeter"],
-                ["", "unit"]
+                ["in", new Plural(function(num) {
+                    return $.ngettext("inch", "inches", num);
+                })],
+                ["ft", new Plural(function(num) {
+                    return $.ngettext("foot", "feet", num);
+                })],
+                ["m", new Plural(function(num) {
+                    return $.ngettext("meter", "meters", num);
+                })],
+                ["cm", new Plural(function(num) {
+                    return $.ngettext("centimeter", "centimeters", num);
+                })],
+                ["", new Plural(function(num) {
+                    return $.ngettext("unit", "units", num);
+                })]
             ])</var>
         </div>
 
@@ -58,18 +68,18 @@
 
                 <div class="solution" data-type="multiple">
                     <span class="sol"><var>K</var></span>
-                    square <var>plural(UNIT_TEXT)</var>
+                    square <var>plural_form(UNIT_TEXT)</var>
                 </div>
 
                 <div class="hints">
-                    <p>This figure is a quadrilateral with a pair of parallel sides (the top and bottom sides), so it&#39;s a trapezoid.</p>
+                    <p>This figure is a quadrilateral with a pair of parallel sides (the top and bottom sides), so it's a trapezoid.</p>
                     <div>
                         <p>
                             area of a trapezoid <code>= \dfrac12 \cdot (b_1 + b_2) \cdot h</code>
                             [<a href="#" class="show-subhint" data-subhint="area-trapezoid">Show me why</a>]
                         </p>
                         <div class="subhint" id="area-trapezoid">
-                            <p>Let&#39;s draw a line between the opposite ends of the two bases.</p>
+                            <p>Let's draw a line between the opposite ends of the two bases.</p>
                             <div class="graphie" data-update="figure">
                                 var showSubHint = function() {
                                     graph.subhint.show();
@@ -94,14 +104,14 @@
                                 hideSubHint();
                             </div>
                             <p>Notice that the line divides the trapezoid into two triangles: one triangle with base <code>b_1 = <var>B1</var></code>, and another triangle with base <code>b_2 = <var>B2</var></code>. Both triangles have height <code>h = <var>H</var></code>.</p>
-                            <p>The area of the trapezoid is equal to the sum of the areas of the two trapezoids.</p>
+                            <p>The area of the trapezoid is equal to the sum of the areas of the two triangles.</p>
                             <p><code>A = \dfrac12 \cdot b_1 \cdot h + \dfrac12 \cdot b_2 \cdot h</code></p>
                             <p>Factor out <code>\dfrac12 \cdot h</code> to get the formula for the area of a trapezoid:</p>
                             <p><code>A = \dfrac12 \cdot h \cdot (b_1 + b_2) = \dfrac12 \cdot (b_1 + b_2) \cdot h</code></p>
                         </div>
                     </div>
                     <div>
-                        <p>Now use this formula to calculate the trapezoid&#39;s area.</p>
+                        <p>Now use this formula to calculate the trapezoid's area.</p>
                         <p><code>b_1 = <var>B1</var></code></p>
                         <p><code>b_2 = <var>B2</var></code></p>
                         <p><code>h = <var>H</var></code></p>
@@ -190,7 +200,7 @@
 
                 <div class="solution" data-type="multiple">
                     <span class="sol"><var>K</var></span>
-                    square <var>plural(UNIT_TEXT)</var>
+                    square <var>plural_form(UNIT_TEXT)</var>
                 </div>
 
                 <div class="hints">
@@ -204,7 +214,11 @@
                             [<a href="#" class="show-subhint" data-subhint="area-kite">Show me why</a>]
                         </p>
                         <div class="subhint" id="area-kite">
-                            <p>The <span data-if="ORIENT === 'h'">horizontal</span><span data-else>vertical</span> diagonal in the center splits the kite into two congruent triangles.</p>
+                            <p data-if="ORIENT === 'h'">
+                                The horizontal diagonal in the center splits the kite into two congruent triangles.
+                            </p><p data-else>
+                                The vertical diagonal in the center splits the kite into two congruent triangles.
+                            </p>
                             <div class="graphie" data-update="figure">
                                 var showSubHint = function() {
                                     graph.subhint.show();

@@ -49,9 +49,6 @@ kind_blacklist = [None, "Separator", "CustomStack", "Scratchpad", "Article"]
 
 slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res", "partner-content", "cs"]
 
-# blacklist of particular exercises that currently have problems being rendered
-slug_blacklist += ["ordering_improper_fractions_and_mixed_numbers", "ordering_numbers", "conditional_statements_2"]
-
 def download_khan_data(url, debug_cache_file=None, debug_cache_dir=settings.PROJECT_PATH + "../_khanload_cache"):
     """Download data from the given url.
     
@@ -421,6 +418,7 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
         """
 
         def adjust_coord(children, prop_name):
+            
             allX = [ch[prop_name] for ch in children]
             minX = min(allX)
             maxX = max(allX)
@@ -450,20 +448,26 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
                 
             return children
 
+        # mark the children as not yet having been flipped, so we can avoid flipping twice later
+        for children in knowledge_topics.itervalues():
+            for ch in children:
+                ch["unflipped"] = True
+
         # NOTE that we are not adjusting any coordinates in 
         #   the knowledge map, or in the polylines.
         for slug, children in knowledge_topics.iteritems():
-            # Flip coordinates
+            # Flip coordinates, but only once per node
             for ch in children:
-                ch["v_position"], ch["h_position"] = ch["h_position"], ch["v_position"]
-            
+                if ch.get("unflipped", False):
+                    ch["v_position"], ch["h_position"] = ch["h_position"], ch["v_position"]
+                    del ch["unflipped"]
+
             # Adjust coordinates
             adjust_coord(children, "v_position")  # side-effect directly into 'children'
             adjust_coord(children, "h_position")
             
-
-
         return knowledge_map, knowledge_topics
+    
     normalize_tree(knowledge_map, knowledge_topics)
 
     # Dump the knowledge map
