@@ -7,7 +7,7 @@
 </head>
 <body>
     <div class="exercise">
-        <div class="vars" data-ensure="( (B*B) - 4*A*C ) >= 0">
+        <div class="vars" data-ensure="( (B*B) - 4*A*C ) &gt;= 0">
             <var id="A">randRangeNonZero(-10, 10)</var>
             <var id="B">randRangeNonZero(-10, 10)</var>
             <var id="C">randRangeNonZero(-10, 10)</var>
@@ -32,8 +32,8 @@
                         var good_gcd = getGCD( A, B, C );
                         var bad_gcd = getGCD( bad_a, bad_b, bad_c );
 
-                        while ((    abs(A*bad_gcd) === abs(bad_a*good_gcd) &&
-                                    abs(B*bad_gcd) === abs(bad_b*good_gcd) &&
+                        while ((    abs(A*bad_gcd) === abs(bad_a*good_gcd) &amp;&amp;
+                                    abs(B*bad_gcd) === abs(bad_b*good_gcd) &amp;&amp;
                                     abs(C*bad_gcd) === abs(bad_c*good_gcd) ) ||
 
                                     (( (bad_b * bad_b) - (4 * bad_a * bad_c) ) &lt; 0))
@@ -76,15 +76,15 @@
 
             <div>
                 <p>Use the quadratic formula to solve <code>ax^2 + bx + c = 0</code>:</p>
-                <p><code>x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}</code></p>
+                <p><code>x = \dfrac{-b \pm \sqrt{b^2 - 4ac}}{2a}</code></p>
             </div>
 
             <p><code>a = <var>A</var>, b = <var>B</var>, c = <var>C</var></code></p>
-            <p><code> x = \frac{-<var>B</var> \pm \sqrt{<var>B</var>^2 - 4 \cdot <var>A</var> \cdot <var>C</var>}}{2 \cdot <var>A</var>}</code></p>
+            <p><code> x = \dfrac{-<var>B</var> \pm \sqrt{<var>expr(["^", B, 2])</var> - 4 \cdot <var>A</var> \cdot <var>C</var>}}{2 \cdot <var>A</var>}</code></p>
 
-            <p><code> x = \frac{<var>-1*B</var> \pm \sqrt{<var>B*B - 4*A*C</var>}}{<var>2*A</var>}</code></p>
+            <p><code> x = \dfrac{<var>-1*B</var> \pm \sqrt{<var>B*B - 4*A*C</var>}}{<var>2*A</var>}</code></p>
 
-            <p><code> x = \frac{<var>-1*B</var> \pm <var>formattedSquareRootOf(B*B-4*A*C)</var>}{<var>2*A</var>}</code></p>
+            <p><code> x = \dfrac{<var>-1*B</var> \pm <var>formattedSquareRootOf(B*B-4*A*C)</var>}{<var>2*A</var>}</code></p>
             <p><code><var>quadraticRoots(A, B, C)</var></code></p>
 
         </div>

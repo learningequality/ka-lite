@@ -11,10 +11,11 @@
         <var id="FACTOR">0</var>
         <!-- ensure equal probability of yes or no -->
         <var id="DIVISIBLE">randFromArray([true, false])</var>
-        <var id="NUMBER"
-            data-ensure="!DIVISIBLE ^ (NUMBER % FACTOR === 0)">
+        <var id="NUMBER" data-ensure="!DIVISIBLE ^ (NUMBER % FACTOR === 0)">
             randRange(10000, 1000000)
         </var>
+        <var id="YES">$._("Yes")</var>
+        <var id="NO">$._("No")</var>
     </div>
 
     <p class="question">
@@ -22,10 +23,10 @@
         <code><var>FACTOR</var></code>?
     </p>
 
-    <p class="solution"><var>DIVISIBLE ? "Yes" : "No"</var></p>
+    <p class="solution"><var>DIVISIBLE ? YES : NO</var></p>
     <ul class="choices" data-category="true">
-        <li>Yes</li>
-        <li>No</li>
+        <li><var>YES</var></li>
+        <li><var>NO</var></li>
     </ul>
 
     <div class="problems">
@@ -40,7 +41,7 @@
                     <code><var>NUMBER</var></code> is even, so yes, it is
                     divisible by <code>2</code>.
                 </p>
-                <p class="final_answer" data-else>
+                <p class="final_answer" data-else="">
                     <code><var>NUMBER</var></code> is odd, so it is
                     not divisible by <code>2</code>.
                 </p>
@@ -81,8 +82,7 @@
                         A number is divisible by <code><var>FACTOR</var></code>
                         if the sum of its digits is divisible by
                         <code><var>FACTOR</var></code>.
-                        [<a href="#" class="show-subhint"
-                        data-subhint="explain-three">Why?</a>]
+                        [<a href="#" class="show-subhint" data-subhint="explain-three">Why?</a>]
                     </p>
                     <div class="subhint" id="explain-three">
                         <p>
@@ -139,8 +139,8 @@
                         <p>
                             Any number consisting only of <code>9</code>s is
                             a multiple of <code><var>FACTOR</var></code>, so
-                            the first <var>cardinal(integerToDigits(NUMBER)
-                            .length - 1)</var> terms must all be multples of
+                            the first <var>cardinalThrough20(integerToDigits(NUMBER)
+                            .length - 1)</var> terms must all be multiples of
                             <code><var>FACTOR</var></code>.
                         </p>
                         <p>
@@ -176,7 +176,7 @@
                     <code>\blue{<var>NUMBER</var>}</code>
                     must also be divisible by <code><var>FACTOR</var></code>.
                 </p>
-                <p class="final_answer" data-else>
+                <p class="final_answer" data-else="">
                     <code><var>_.last(STEPS).sum</var></code> is not divisible
                     by <code><var>FACTOR</var></code>, therefore
                     <code>\blue{<var>NUMBER</var>}</code>
@@ -195,8 +195,7 @@
                     <p>
                         A number is divisible by <code>4</code> if the last
                         two digits are divisible by <code>4</code>.
-                        [<a href="#" class="show-subhint"
-                        data-subhint="explain-four">Why?</a>]
+                        [<a href="#" class="show-subhint" data-subhint="explain-four">Why?</a>]
                     </p>
                     <div class="subhint" id="explain-four">
                         <p>
@@ -235,7 +234,7 @@
                     <code><var>NUMBER</var></code> must also be divisible by
                     <code>4</code>.
                 </p>
-                <p class="final_answer" data-else>
+                <p class="final_answer" data-else="">
                     No, <code><var>NUMBER % 100</var></code> is not
                     divisible by <code>4</code>, so
                     <code><var>NUMBER</var></code> is also not divisible by
@@ -260,7 +259,7 @@
                     <code><var>NUMBER</var></code> is divisible by
                     <code>5</code>.
                 </p>
-                <p class="final_answer" data-else>
+                <p class="final_answer" data-else="">
                     The last digit of <code><var>NUMBER</var></code> is
                     <code><var>NUMBER % 10</var></code>, so no
                     <code><var>NUMBER</var></code> is not divisible by
@@ -291,7 +290,7 @@
                     <code><var>NUMBER</var></code> is divisible by
                     <code>10</code>.
                 </p>
-                <p class="final_answer" data-else>
+                <p class="final_answer" data-else="">
                     The last digit of <code><var>NUMBER</var></code> is
                     <code><var>NUMBER % 10</var></code>, so no
                     <code><var>NUMBER</var></code> is not divisible by

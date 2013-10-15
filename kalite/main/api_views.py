@@ -1,4 +1,5 @@
 import cgi
+import copy
 import json
 import re
 from annoying.functions import get_object_or_None
@@ -12,6 +13,7 @@ from django.http import HttpResponse
 from django.utils import simplejson
 from django.utils.safestring import SafeString, SafeUnicode, mark_safe
 from django.utils.translation import ugettext as _
+from django.views.decorators.cache import cache_control, cache_page
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.gzip import gzip_page
 
@@ -22,7 +24,9 @@ from .models import VideoLog, ExerciseLog, VideoFile
 from config.models import Settings
 from securesync.models import FacilityGroup, FacilityUser
 from shared.decorators import allow_api_profiling, require_admin
+from shared.decorators import allow_api_profiling, backend_cache_page, require_admin
 from shared.jobs import force_job, job_status
+from shared.topic_tools import get_flat_topic_tree 
 from shared.videos import delete_downloaded_files
 from utils.general import break_into_chunks
 from utils.internet import api_handle_error_with_json, JsonResponse
@@ -212,10 +216,10 @@ def launch_mplayer(request):
     """
     Launch an mplayer instance in a new thread, to play the video requested via the API.
     """
-    
+
     if not settings.USE_MPLAYER:
         raise PermissionDenied("You can only initiate mplayer if USE_MPLAYER is set to True.")
-    
+
     if "youtube_id" not in request.REQUEST:
         return JsonResponse({"error": "no youtube_id specified"}, status=500)
 
@@ -316,3 +320,8 @@ def status(request):
         data["username"] = request.user.username
 
     return JsonResponse(data)
+
+
+@backend_cache_page
+def flat_topic_tree(request):
+    return JsonResponse(get_flat_topic_tree())

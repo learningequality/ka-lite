@@ -17,6 +17,8 @@
 }
 </style>
 
+<style id="exercise-inline-style"></style>
+
 {% endblock headcss %}
 
 {% block headjs %}
@@ -29,12 +31,23 @@
             getUid: function() { return 0; },
             getCustomStackID: function() { return 0; }
         },
-        incompleteStack: [0]
+        currentCard: {
+            attributes: {},
+            get: function() {}
+        },
+        RelatedVideos: {
+            render: function() {}
+        },
+        getCurrentFramework: function() { return "khan-exercises"; },
+        incompleteStack: [0],
+        PerseusBridge: {
+            cleanupProblem: function() {}
+        },
     };
+        
 </script>
 <script type="text/javascript" src="/jsi18n/"></script>
 <script src="{% static "js/khan-exercises/khan-exercise.js" %}"></script>
-<script src="{% static "js/khan-exercises/utils/jquery-ui.js" %}"></script>
 <script>
     var exerciseData = {
         "basepoints": {{ exercise.basepoints }},
@@ -45,13 +58,18 @@
             "name": "{{ exercise.name }}",
             "secondsPerFastProblem": {{ exercise.seconds_per_fast_problem }},
             "authorName": "{{ exercise.author_name }}",
-            "relatedVideos": []
+            "relatedVideos": [],
+            "fileName": "{{ exercise.name }}.html"
         },
         "readOnly": false,
         "percentCompleted": 0,
         "points": 0,
         "starting_points": 0,
-        "attempts": 0
+        "attempts": 0,
+        "exerciseProgress": {
+            "level": ""
+        },
+        "lastCountHints": 0
     };    
 </script>
 <script src="{% static "js/exercises.js" %}"></script>

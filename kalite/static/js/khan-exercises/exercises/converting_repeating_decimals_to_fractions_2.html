@@ -2,12 +2,12 @@
 <html data-require="math math-format">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Converting repeating decimals to fractions 2</title>
+    <title>Converting multi-digit repeating decimals to fractions</title>
     <script src="../khan-exercise.js"></script>
 </head>
 <body>
     <div class="exercise">
-    <div class="vars" data-ensure="( N3 % 10 ) !== floor( N3 / 10 ) && N2 !== ( N3 % 10 )">
+    <div class="vars" data-ensure="( N3 % 10 ) !== floor( N3 / 10 ) &amp;&amp; N2 !== ( N3 % 10 )">
         <var id="N1">randRangeWeighted( 0, 3, 0, 0.5 )</var>
         <var id="N2">randRange( 1, 8 )</var>
         <var id="N3">randRange( 10, 99 )</var>
@@ -75,8 +75,8 @@
 
     <div class="hints">
         <p>Let <code>x</code> equal the decimal. Set up two equations such that the digits after the decimal point are identical.</p>
-        <p><code>\large{\begin{align*}<var>MULT1</var>x &= <var>RES1</var>...\\
-        <var>MULT2</var>x &= <var>RES2</var>...\end{align*}}</code></p>
+        <p><code>\large{\begin{align*}<var>MULT1</var>x &amp;= <var>RES1</var>...\\
+        <var>MULT2</var>x &amp;= <var>RES2</var>...\end{align*}}</code></p>
         <div>
             <p>Subtracting the two equations, we have:</p>
             <p><code>\large{<var>(MULT1 - MULT2)</var>x = <var>DIFF</var>}</code></p>

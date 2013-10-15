@@ -135,8 +135,13 @@ class OneHundredRandomLogUpdates(base.UserCommon):
     
     def _setup(self, num_logs=50, **kwargs):
         super(OneHundredRandomLogUpdates, self)._setup(**kwargs)
-
-        self.user = FacilityUser.objects.get(username=self.username)
+        try:
+            self.user = FacilityUser.objects.get(username=self.username)
+        except:
+            #take username from ExerciseLog
+            all_exercises = ExerciseLog.objects.all()
+            self.user = FacilityUser.objects.get(id=all_exercises[0].user_id)
+            print self.username, " not in FacilityUsers, using ", self.user
         self.num_logs = num_logs
         #give the platform a chance to cache the logs
         ExerciseLog.objects.filter(user=self.user).delete()
@@ -577,6 +582,6 @@ class SeleniumStudent(base.SeleniumCommon):
 
 class SeleniumStudentExercisesOnly(SeleniumStudent):
     def _execute(self):
-        self.activity["decide"]["nextstep"] = [(.10, "decide"), (.99, "exercise"), (1.00, "end")]
+        self.activity["decide"]["nextstep"] = [(.10, "decide"), (1.00, "exercise")]
         self.activity["do_esub2"]["nextstep"] =[(.03, "decide"), (.75, "do_esub2"), (1.00, "eadd2")]
         super(SeleniumStudentExercisesOnly, self)._execute()

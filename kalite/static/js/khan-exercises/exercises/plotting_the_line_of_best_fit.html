@@ -2,7 +2,7 @@
 <html data-require="math math-format graphie interactive">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Plotting the line of best fit</title>
+    <title>Estimating the line of best fit</title>
     <script src="../khan-exercise.js"></script>
     <style type="text/css">
         .graphie.float {
@@ -15,7 +15,7 @@
 <div class="exercise">
     <div class="problems">
         <div id="linear">
-            <div class="vars">
+            <div class="vars" data-ensure="VALIDATOR(REALSLOPE, REALINTERCEPT)">
                 <var id="SLOPE">randRange(-80, 80) / 20</var>
                 <var id="INTERCEPT">randRange(-5, 5)</var>
                 <var id="FUNC">function(x) { return SLOPE * x + INTERCEPT }</var>
@@ -107,6 +107,65 @@
                     return [realSlope, realIntercept];
                 })()</var>
                 <var id="GRAPH">{}</var>
+                <var id="VALIDATOR">function(slope, intercept) {
+                    var low = _.first(POINTS), high = _.last(POINTS);
+
+                    var slopeadd = 1 / REALSLOPE + REALSLOPE;
+
+                    lowx = (1 / REALSLOPE * low[0] + low[1] - REALINTERCEPT) /
+                        slopeadd;
+                    highx = (1 / REALSLOPE * high[0] + high[1] - REALINTERCEPT) /
+                        slopeadd;
+
+                    var lowfunc = function(x) {
+                        return -1 / REALSLOPE * (x - low[0]) + low[1];
+                    };
+
+                    var highfunc = function(x) {
+                        return -1 / REALSLOPE * (x - high[0]) + high[1];
+                    };
+
+                    lowIntersectx = (1 / REALSLOPE * low[0] +
+                                        low[1] - intercept) /
+                                    (slope + 1 / REALSLOPE);
+                    highIntersectx = (1 / REALSLOPE * high[0] +
+                                         high[1] - intercept) /
+                                     (slope + 1 / REALSLOPE);
+
+                    // the differences between the least squares line and the
+                    // given line, at the highest and lowest points
+                    var lowDiff = sqrt(pow(lowfunc(lowx) -
+                                           lowfunc(lowIntersectx), 2) +
+                                       pow(lowx - lowIntersectx, 2));
+                    var highDiff = sqrt(pow(highfunc(highx) -
+                                            highfunc(highIntersectx), 2) +
+                                        pow(highx - highIntersectx, 2));
+
+                    // whether or not each of the points are above or below
+                    // the given line
+                    var updown = _.map(POINTS, function(pt) {
+                        var x = pt[0], y = pt[1],
+                            est = slope * x + intercept;
+                        return y &gt;= est ? 1 : -1;
+                    });
+
+                    // sort and reverse-sort updown
+                    var updownSorted = sortNumbers(updown);
+                    var updownReversed = updownSorted.slice(0).reverse();
+
+                    // ensure:
+                    // all the points are not up, ..., up, down, ..., down
+                    return !_.isEqual(updown, updownSorted) &amp;&amp;
+                        // all the points are not down, ..., down, up, ..., up
+                        !_.isEqual(updown, updownReversed) &amp;&amp;
+                        // one point is above/below
+                        _.include(updown, 1) &amp;&amp;
+                        _.include(updown, -1) &amp;&amp;
+                        // the differences are between some proportion
+                        // of the offset
+                        lowDiff &lt; 1.3 * OFFSET &amp;&amp;
+                        highDiff &lt; 1.3 * OFFSET;
+                }</var>
             </div>
 
             <p class="question">Find the line of best fit,
@@ -228,16 +287,13 @@
                     <ul>
                         <li>
                             <label>
-                                <input type="radio" name="linear" id="exists"
-                                    onclick="KhanUtil.tmpl.getVAR('GRAPH').showLine()"
-                                    checked>
+                                <input id="exists" checked name="linear" onclick="KhanUtil.tmpl.getVAR('GRAPH').showLine()" type="radio">
                                 <span>A good best fit line exists</span>
                             </label>
                         </li>
                         <li>
                             <label>
-                                <input type="radio" name="linear" id="notexists"
-                                    onclick="KhanUtil.tmpl.getVAR('GRAPH').hideLine()">
+                                <input id="notexists" name="linear" onclick="KhanUtil.tmpl.getVAR('GRAPH').hideLine()" type="radio">
                                 <span>No good best fit line exists</span>
                             </label>
                         </li>
@@ -245,84 +301,24 @@
                 </div>
                 <div class="guess">[
                     GRAPH.pointA.coord, GRAPH.pointB.coord,
-                    $("input[@name='linear']:checked").attr("id")
+                    $("input[name='linear']:checked").attr("id")
                 ]</div>
                 <div class="validator-function">
                     if (_.isEqual(guess, [[-5, 5], [5, 5], "exists"])) {
                         return "";
                     }
 
-                    var low = _.first(POINTS), high = _.last(POINTS);
-
-                    var slopeadd = 1 / REALSLOPE + REALSLOPE;
-
-                    lowx = (1 / REALSLOPE * low[0] + low[1] - REALINTERCEPT) /
-                        slopeadd;
-                    highx = (1 / REALSLOPE * high[0] + high[1] - REALINTERCEPT) /
-                        slopeadd;
-
-                    var lowfunc = function(x) {
-                        return -1 / REALSLOPE * (x - low[0]) + low[1];
-                    };
-
-                    var highfunc = function(x) {
-                        return -1 / REALSLOPE * (x - high[0]) + high[1];
-                    };
+                    // Check that the right checkbox is checked
+                    if (guess[2] !== "exists") {
+                        return false;
+                    }
 
                     var slope = (guess[1][1] - guess[0][1]) /
                                 (guess[1][0] - guess[0][0]);
                     var intercept = slope * -guess[0][0] + guess[0][1];
 
-                    lowIntersectx = (1 / REALSLOPE * low[0] +
-                                        low[1] - intercept) /
-                                    (slope + 1 / REALSLOPE);
-                    highIntersectx = (1 / REALSLOPE * high[0] +
-                                         high[1] - intercept) /
-                                     (slope + 1 / REALSLOPE);
-
-                    // the differences between the least squares line and the
-                    // given line, at the highest and lowest points
-                    var lowDiff = sqrt(pow(lowfunc(lowx) -
-                                           lowfunc(lowIntersectx), 2) +
-                                       pow(lowx - lowIntersectx, 2));
-                    var highDiff = sqrt(pow(highfunc(highx) -
-                                            highfunc(highIntersectx), 2) +
-                                        pow(highx - highIntersectx, 2));
-
-                    // whether or not each of the points are above or below
-                    // the given line
-                    var updown = _.map(POINTS, function(pt) {
-                        var x = pt[0], y = pt[1],
-                            est = slope * x + intercept;
-                        return y &gt;= est ? 1 : -1;
-                    });
-
-                    // sort and reverse-sort updown
-                    var updownSorted = sortNumbers(updown);
-                    var updownReversed = updownSorted.slice(0).reverse();
-
-                    var normLength = pow((guess[1][0] - guess[0][0]), 2) +
-                        pow((guess[1][1] - guess[0][1]), 2);
-                    // calculate the distance from a point to the line
-                    var distTo = function(pt) {
-                        return abs((pt[0] - guess[0][0]) * (guess[1][1] - guess[0][1]) -
-                                   (pt[1] - guess[0][1]) * (guess[1][0] - guess[0][0])) / normLength;
-                    };
-
-                    // ensure:
-                    // all the points are not up, ..., up, down, ..., down
-                    return !_.isEqual(updown, updownSorted) &amp;&amp;
-                        // all the points are not down, ..., down, up, ..., up
-                        !_.isEqual(updown, updownReversed) &amp;&amp;
-                        // one point is above/below
-                        _.include(updown, 1) &amp;&amp;
-                        _.include(updown, -1) &amp;&amp;
-                        // the differences are between some proportion
-                        // of the offset
-                        lowDiff &lt; 1.3 * OFFSET &amp;&amp;
-                        highDiff &lt; 1.3 * OFFSET &amp;&amp;
-                        // they left 'a line exists' checked
-                        guess[2] === "exists";
+                    // Validate the line
+                    return VALIDATOR(slope, intercept);
                 </div>
                 <div class="show-guess">
                     GRAPH.pointA.setCoord(guess[0]);
@@ -355,7 +351,7 @@
 
                             line([-5, -4], [5, -3], { stroke: BLUE });
 
-                            label([0, 4], "Bad", "center", false)
+                            label([0, 4], $._("Bad"), "center", false)
                                 .css("color", "red")
                                 .css("font-size", "20px");
                         </div>
@@ -370,7 +366,7 @@
 
                             line([-5, -2.5], [5, -1.5], { stroke: BLUE });
 
-                            label([0, 4], "Okay", "center", false)
+                            label([0, 4], $._("Okay"), "center", false)
                                 .css("color", "orange")
                                 .css("font-size", "20px");
                         </div>
@@ -392,7 +388,7 @@
 
                             line([-5, -2.5], [5, -1.5], { stroke: BLUE });
 
-                            label([0, 4], "Okay", "center", false)
+                            label([0, 4], $._("Okay"), "center", false)
                                 .css("color", "orange")
                                 .css("font-size", "20px");
                         </div>
@@ -407,7 +403,7 @@
 
                             line([-5, -3.5], [3, 5], { stroke: BLUE });
 
-                            label([0, 4], "Better", "center", false)
+                            label([0, 4], $._("Better"), "center", false)
                                 .css("color", "#8EEB00")
                                 .css("font-size", "20px");
                         </div>
@@ -429,7 +425,7 @@
 
                             line([-5, -3.5], [3, 5], { stroke: BLUE });
 
-                            label([0, 4], "Better", "center", false)
+                            label([0, 4], $._("Better"), "center", false)
                                 .css("color", "#9FEE00")
                                 .css("font-size", "20px");
                         </div>
@@ -444,7 +440,7 @@
 
                             line([-4, -5], [3, 5], { stroke: BLUE });
 
-                            label([0, 4], "Good", "center", false)
+                            label([0, 4], $._("Good"), "center", false)
                                 .css("color", "#00C322")
                                 .css("font-size", "20px");
                         </div>
@@ -452,9 +448,11 @@
                 </div>
                 <p>
                     There are several lines that satisfy this.
-                    <input type="submit" value="Click here"
+                    <a class="simple-button" href="javascript:void(0)"
                         onclick="javascript:KhanUtil.tmpl
-                            .getVAR('GRAPH').showSolution()"/>
+                            .getVAR('GRAPH').showSolution()">
+                            Click here
+                    </a>
                     to show one of them.
                 </p>
             </div>
@@ -474,16 +472,13 @@
                     <ul>
                         <li>
                             <label>
-                                <input type="radio" name="nonlinear" id="exists"
-                                    onclick="KhanUtil.tmpl.getVAR('GRAPH').showLine()"
-                                    checked>
+                                <input id="exists" checked name="nonlinear" onclick="KhanUtil.tmpl.getVAR('GRAPH').showLine()" type="radio">
                                 <span>A good best fit line exists</span>
                             </label>
                         </li>
                         <li>
                             <label>
-                                <input type="radio" name="nonlinear" id="notexists"
-                                    onclick="KhanUtil.tmpl.getVAR('GRAPH').hideLine()">
+                                <input id="notexists" name="nonlinear" onclick="KhanUtil.tmpl.getVAR('GRAPH').hideLine()" type="radio">
                                 <span>No good best fit line exists</span>
                             </label>
                         </li>
@@ -491,7 +486,7 @@
                 </div>
                 <div class="guess">[
                     GRAPH.pointA.coord, GRAPH.pointB.coord,
-                    $("input[@name='linear']:checked").attr("id")
+                    $("input[name='nonlinear']:checked").attr("id")
                 ]</div>
                 <div class="validator-function">
                     if (_.isEqual(guess, [[-5, 5], [5, 5], "exists"])) {

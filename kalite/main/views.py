@@ -1,6 +1,6 @@
 import copy
 import json
-import re 
+import re
 import sys
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
@@ -170,6 +170,9 @@ def exercise_handler(request, exercise):
     for key in exercise["related_video_readable_ids"]:
         video = topicdata.NODE_CACHE["Video"].get(key, None)
         if not video:
+            continue
+            
+        if not video.get("on_disk", False) and not settings.BACKUP_VIDEO_SOURCE:
             continue
         
         related_videos[key] = copy.copy(video)
@@ -342,6 +345,55 @@ def device_redirect(request):
     else:
         raise Http404(_("This device is not on any zone."))
 
+@render_to('search_page.html')
+def search(request):
+    # Inputs
+    query = request.GET.get('query')
+    category = request.GET.get('category')
+    max_results_per_category = request.GET.get('max_results', 25)
+
+    # Outputs
+    query_error = None
+    possible_matches = {}
+    hit_max = {}
+
+    if query is None:
+        query_error = _("Error: query not specified.")
+
+#    elif len(query) < 3:
+#        query_error = _("Error: query too short.")
+
+    else:
+        query = query.lower()
+        # search for topic, video or exercise with matching title
+        nodes = []
+        for node_type, node_dict in topicdata.NODE_CACHE.iteritems():
+            if category and node_type != category:
+                # Skip categories that don't match (if specified)
+                continue
+
+            possible_matches[node_type] = []  # make dict only for non-skipped categories
+            for node in node_dict.values():
+                title = node['title'].lower()  # this could be done once and stored.
+                if title == query:
+                    # Redirect to an exact match
+                    return HttpResponseRedirect(node['path'])
+
+                elif len(possible_matches[node_type]) < max_results_per_category and query in title:
+                    # For efficiency, don't do substring matches when we've got lots of results
+                    possible_matches[node_type].append(node)
+
+            hit_max[node_type] = len(possible_matches[node_type]) == max_results_per_category
+
+    return {
+        'title': _("Search results for '%s'") % (query if query else ""),
+        'query_error': query_error,
+        'results': possible_matches,
+        'hit_max': hit_max,
+        'query': query,
+        'max_results': max_results_per_category,
+        'category': category,
+    }
 
 def handler_403(request, *args, **kwargs):
     context = RequestContext(request)
