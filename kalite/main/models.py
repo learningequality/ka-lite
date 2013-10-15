@@ -34,7 +34,7 @@ class VideoLog(DeferredCountSyncedModel):
         pass
 
     def __unicode__(self):
-        return u"user=%s, youtube_id=%s, seconds=%d, points=%d%s" % (self.user, self.youtube_id, self.total_seconds_watched, self.points, " (completed)" if self.complete else "")
+        return u"user=%s, youtube_id=%s, seconds=%d, points=%d, language=%s%s" % (self.user, self.youtube_id, self.total_seconds_watched, self.points, self.language, " (completed)" if self.complete else "")
 
     def save(self, update_userlog=True, *args, **kwargs):
         if not kwargs.get("imported", False):
@@ -72,19 +72,20 @@ class VideoLog(DeferredCountSyncedModel):
         return ceil(float(seconds_watched) / video_length* VideoLog.POINTS_PER_VIDEO)
 
     @classmethod
-    def update_video_log(cls, facility_user, youtube_id, total_seconds_watched, points=0, new_points=0):
+    def update_video_log(cls, facility_user, youtube_id, total_seconds_watched, language, points=0, new_points=0):
         assert facility_user and youtube_id, "Updating a video log requires both a facility user and a YouTube ID"
-        
+
         # retrieve the previous video log for this user for this video, or make one if there isn't already one
         (videolog, _) = cls.get_or_initialize(user=facility_user, youtube_id=youtube_id)
-        
+
         # combine the previously watched counts with the new counts
         #
         # Set total_seconds_watched directly, rather than incrementally, for robustness
         #   as sometimes an update request fails, and we'd miss the time update!
-        videolog.total_seconds_watched = total_seconds_watched  
+        videolog.total_seconds_watched = total_seconds_watched
         videolog.points = min(max(points, videolog.points + new_points), cls.POINTS_PER_VIDEO)
-        
+        videolog.language = language
+
         # write the video log to the database, overwriting any old video log with the same ID
         # (and since the ID is computed from the user ID and YouTube ID, this will behave sanely)
         videolog.full_clean()
@@ -110,7 +111,7 @@ class ExerciseLog(DeferredCountSyncedModel):
         pass
 
     def __unicode__(self):
-        return u"user=%s, exercise_id=%s, points=%d%s" % (self.user, self.exercise_id, self.points, " (completed)" if self.complete else "")
+        return u"user=%s, exercise_id=%s, points=%d, language=%s%s" % (self.user, self.exercise_id, self.points, self.language, " (completed)" if self.complete else "")
 
     def save(self, update_userlog=True, *args, **kwargs):
         if not kwargs.get("imported", False):
@@ -296,6 +297,13 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
         return settings.USER_LOG_MAX_RECORDS_PER_USER != 0
 
 
+    def __unicode__(self):
+        if self.end_datetime:
+            return u"%s (%s): logged in @ %s; for %s seconds"%(self.user.username, self.language, self.start_datetime, self.total_seconds)
+        else:
+            return u"%s (%s): logged in @ %s; last active @ %s"%(self.user.username, self.language, self.start_datetime, self.last_active_datetime)
+
+
     @transaction.commit_on_success
     def save(self, *args, **kwargs):
         """When this model is saved, check if the activity is ended.
@@ -357,13 +365,6 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
         super(UserLog, self).save(*args, **kwargs)
 
 
-    def __unicode__(self):
-        if self.end_datetime:
-            return u"%s: logged in @ %s; for %s seconds"%(self.user.username,self.start_datetime, self.total_seconds)
-        else:
-            return u"%s: logged in @ %s; last active @ %s"%(self.user.username, self.start_datetime, self.last_active_datetime)
-
-
     @classmethod
     def get_activity_int(cls, activity_type):
         """Helper function converts from string or int to the underlying int"""
@@ -418,7 +419,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
             cur_log = None
 
         # Create a new entry
-        logging.debug("%s: BEGIN activity(%d) @ %s"%(user.username, activity_type, start_datetime))
+        logging.debug("%s: BEGIN activity(%d) @ %s" % (user.username, activity_type, start_datetime))
         cur_log = cls(user=user, activity_type=activity_type, start_datetime=start_datetime, last_active_datetime=start_datetime, language=language)
         cur_log.save()
 
@@ -447,7 +448,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
                 raise ValidationError("Update time must always be later than the login time.")
         else:
             # No unstopped starts.  Start should have been called first!
-            logging.warn("%s: Had to create a user log entry on an UPDATE(%d)! @ %s"%(user.username, activity_type, update_datetime))
+            logging.warn("%s: Had to create a user log entry on an UPDATE(%d)! @ %s" % (user.username, activity_type, update_datetime))
             cur_log = cls.begin_user_activity(user=user, activity_type=activity_type, start_datetime=update_datetime)
 
         logging.debug("%s: UPDATE activity (%d) @ %s"%(user.username, activity_type, update_datetime))
@@ -473,6 +474,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
         activity_type = cls.get_activity_int(activity_type)
 
         cur_log = cls.get_latest_open_log_or_None(user=user, activity_type=activity_type)
+
         if cur_log:
             # How could you start after you ended??
             if cur_log.start_datetime > end_datetime:
@@ -482,7 +484,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
             logging.warn("%s: Had to BEGIN a user log entry, but ENDING(%d)! @ %s"%(user.username, activity_type, end_datetime))
             cur_log = cls.begin_user_activity(user=user, activity_type=activity_type, start_datetime=end_datetime)
 
-        logging.debug("%s: Logging LOGOUT activity @ %s"%(user.username, end_datetime))
+        logging.debug("%s: Logging LOGOUT activity @ %s" % (user.username, end_datetime))
         cur_log.end_datetime = end_datetime
         cur_log.save()  # total-seconds will be computed here.
         return cur_log

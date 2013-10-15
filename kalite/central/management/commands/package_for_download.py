@@ -162,6 +162,9 @@ class Command(BaseCommand):
                     models += list(devices) + list(devicezones)
                     models += engine.get_models(zone=zone, limit=None)  # get all models on this zone
 
+                # 
+                if include_data:
+                    models += engine.get_models(zone=zone)  # get all models on this zone
             models_file = tempfile.mkstemp()[1]
             with open(models_file, "w") as fp:
                 fp.write(engine.serialize(models))

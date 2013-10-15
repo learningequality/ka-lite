@@ -105,14 +105,21 @@ class Common(object):
     def _get_post_execute_info(self): pass
 
 
-class SeleniumCommon(Common):
-    def _setup(self, url="http://localhost:8008/", username="s1", password="s1", timeout=30, **kwargs):
+class UserCommon(Common):
+    def _setup(self, username="s1", password="s1", **kwargs):
+        # Note: user must exist
+        super(UserCommon, self)._setup(**kwargs)
+
+        self.username = username
+        self.password = password
+
+
+class SeleniumCommon(UserCommon):
+    def _setup(self, url="http://localhost:8008/", timeout=30, **kwargs):
         # Note: user must exist
         super(SeleniumCommon, self)._setup(**kwargs)
 
         self.url = url
-        self.username = username
-        self.password = password
 
         self.browser = webdriver.Firefox()
         self.timeout = timeout

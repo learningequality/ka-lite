@@ -1,5 +1,7 @@
 import os
 import sys
+from annoying.functions import get_object_or_None
+from optparse import make_option
 
 from django.core.exceptions import ValidationError
 from django.core.management import call_command
@@ -8,8 +10,9 @@ from django.db import IntegrityError, transaction
 
 import settings
 import version
+from config.models import Settings
 from securesync import engine
-from securesync.models import Device, DeviceMetadata, Zone, ZoneInvitation
+from securesync.models import Device, DeviceMetadata, Zone, ZoneInvitation, Facility
 from securesync.views import set_as_registered
 from settings import LOG as logging
 from utils.general import get_host_name
@@ -44,6 +47,7 @@ def load_data_for_offline_install(in_file):
     central_server.save(imported=True, is_trusted=True)
 
     # Everything else, import as is.
+    invitation = None
     for model in models:
         try:
             logging.debug("Saving object %s" % model.object)
@@ -60,11 +64,50 @@ def load_data_for_offline_install(in_file):
             #   a bit more robust.
             logging.error("Failed to import model %s" % model)
 
+    return invitation
+
+
+def confirm_or_generate_zone(invitation=None):
+
+    invitation = invitation or get_object_or_None(ZoneInvitation, used_by=Device.get_own_device())
+
+    if invitation:
+        sys.stdout.write("Successfully joined existing sharing network %s, using invitation %s.\n" % (invitation.zone, invitation))
+
+    else:
+        # Sorry dude, you weren't invited to the party.  You'll have to have your own!
+        # Generate a zone (for stand-alone machines)
+        call_command("generate_zone")
+        sys.stdout.write("Successfully generated a sharing network, and joined!.\n") 
+
+    set_as_registered()  # would try to sync
+
+
+def initialize_facility(facility_name=None):
+    facility_name = facility_name or settings.INSTALL_FACILITY_NAME
+
+    # Finally, install a facility--would help users get off the ground
+    if facility_name:
+        facility = get_object_or_None(Facility, name=facility_name)
+        if not facility:
+            facility = Facility(name=facility_name)
+            facility.save()
+        Settings.set("default_facility", facility.id)
+
 
 class Command(BaseCommand):
     args = "\"<name of device>\" \"<description of device>\""
     help = "Initialize device with optional name and description"
 
+    option_list = BaseCommand.option_list + (
+        # Basic options
+        # Functional options
+        make_option('-f', '--facility',
+            action='store',
+            dest='facility_name',
+            default=None,
+            help='Default facility name'),
+        )
     install_json_filename = "install_data.json"
     install_json_file = os.path.join(settings.STATIC_ROOT, "data", install_json_filename)
 
@@ -91,24 +134,15 @@ class Command(BaseCommand):
             sys.stderr.write("Could not find resource file %s.  This may cause warnings to appear when updating your KA Lite version.\n" % data_file)
         else:
             try:
-                load_data_for_offline_install(in_file=data_file)
+                invitation = load_data_for_offline_install(in_file=data_file)
                 self.stdout.write("Successfully imported offline data from %s\n" % data_file)
+
                 # Doesn't hurt to keep data around.
                 #if not settings.DEBUG:
                 #    os.remove(data_file)
-                invitation = ZoneInvitation.objects.filter(used_by=own_device)
-                if invitation:
-                    invitation = invitation[0]
             except Exception as e:
                 raise CommandError("Error importing offline data from %s: %s\n" % (data_file, str(e))) 
 
-        if invitation:
-            self.stdout.write("Successfully joined existing sharing network %s, using invitation %s.\n" % (invitation.zone, invitation))
+        confirm_or_generate_zone(invitation)
 
-        else:
-            # Sorry dude, you weren't invited to the party.  You'll have to have your own!
-            # Generate a zone (for stand-alone machines)
-            call_command("generate_zone")
-            self.stdout.write("Successfully generated a sharing network, and joined!.\n") 
-
-        set_as_registered()  # would try to sync
+        initialize_facility(options["facility_name"])

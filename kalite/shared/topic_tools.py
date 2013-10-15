@@ -51,12 +51,37 @@ def get_knowledgemap_topics(force=False):
         KNOWLEDGEMAP_TOPICS = sorted(kmap["topics"].values(), key=lambda k: (k["y"], k["x"]))
     return KNOWLEDGEMAP_TOPICS
 
+
 ID2SLUG_MAP = None
 def get_id2slug_map(force=False):
     global ID2SLUG_MAP, video_remap_file
     if ID2SLUG_MAP is None or force:
         ID2SLUG_MAP     = json.loads(open(os.path.join(settings.DATA_PATH, video_remap_file)).read())
     return ID2SLUG_MAP
+
+
+FLAT_TOPIC_TREE = None
+def get_flat_topic_tree(force=False):
+    global FLAT_TOPIC_TREE
+    if FLAT_TOPIC_TREE is None or force:
+        FLAT_TOPIC_TREE = generate_flat_topic_tree(get_node_cache(force=force))
+    return FLAT_TOPIC_TREE
+
+
+def generate_flat_topic_tree(node_cache=None):
+    categories = node_cache or get_node_cache()
+    result = dict()
+    # make sure that we only get the slug of child of a topic
+    # to avoid redundancy
+    for category_name, category in categories.iteritems():
+        result[category_name] = {}
+        for node_name, node in category.iteritems():
+            relevant_data = {'title': node['title'],
+                             'path': node['path'],
+                             'kind': node['kind'],
+            }
+            result[category_name][node_name] = relevant_data
+    return result
 
 
 def generate_node_cache(topictree=None):#, output_dir=settings.DATA_PATH):

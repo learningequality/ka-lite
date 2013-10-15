@@ -14,6 +14,7 @@ import kalite
 import settings
 from . import add_syncing_models
 from config.models import Settings
+from settings import LOG as logging
 from utils.django_utils import validate_via_booleans, ExtendedModel
 
 
@@ -99,6 +100,21 @@ class SyncedModel(ExtendedModel):
     
     A model that is cross-computer syncable.  All models sync'd across computers
     should inherit from this base class.
+
+    NOTE on signed_version (bcipolli; 2013/10/10):
+    signed_version is part of a design where schema changes forced models into ImportPurgatory,
+    where they would stay until a software upgrade.
+
+    Due to the deployment (and worldwide use) of code with a bug in the implementation of that design, 
+    a second design was implemented and deployed.  There, unknown models and model fields (judged by
+    comparing the model/field's "minversion" property with the remote server's version) are
+    simply not shared over the wire.  This system only works for distributed-central interactions,
+    and interactions between peers of the same (schema) version, and will not work for any
+    mixed version P2P syncing.
+
+    For backwards compatibility reasons, signed_version must remain, and would be used
+    in future designs/implementations reusing the original (elegant) design that is appropriate
+    for mixed version P2P sync.
     """
     id = models.CharField(primary_key=True, max_length=ID_MAX_LENGTH, editable=False)
     counter = models.IntegerField(default=None, blank=True, null=True)
@@ -110,7 +126,7 @@ class SyncedModel(ExtendedModel):
 
     objects = SyncedModelManager()
     _unhashable_fields = ["signature", "signed_by"] # fields of this class to avoid serializing
-    _always_hash_fields = ["signed_version", "id"]  # fields of this class to always serialize
+    _always_hash_fields = ["signed_version", "id"]  # fields of this class to always serialize (see note above for signed_version)
 
     class Meta:
         abstract = True
@@ -165,21 +181,22 @@ class SyncedModel(ExtendedModel):
         except:
             return False
 
-    def _hashable_fields(self, fields=None):
+    @classmethod
+    def _hashable_fields(cls, fields=None):
 
         # if no fields were specified, build a list of all the model's field names
         if not fields:
-            fields = [field.name for field in self._meta.fields if field.name not in self.__class__._unhashable_fields]
+            fields = [field.name for field in cls._meta.fields if field.name not in cls._unhashable_fields and not hasattr(field, "minversion")]
             # sort the list of fields, for consistency
             fields.sort()
 
         # certain fields should always be included
-        for field in self.__class__._always_hash_fields:
+        for field in cls._always_hash_fields:
             if field not in fields:
                 fields = [field] + fields
 
         # certain fields should never be included
-        fields = [field for field in fields if field not in self.__class__._unhashable_fields]
+        fields = [field for field in fields if field not in cls._unhashable_fields]
 
         return fields
 
@@ -228,31 +245,39 @@ class SyncedModel(ExtendedModel):
                 raise ValidationError("Imported models must be signed.")
             if not self.verify():
                 raise ValidationError("Could not verify the imported model.")  #Imported model's signature did not match.")
-        else:
-            own_device = _get_own_device()
 
+            # call the base Django Model save to write to the DB
+            super(SyncedModel, self).save(*args, **kwargs)
+
+            # For imported models, we want to keep track of the counter position we're at for that device.
+            #   so, if it's ahead of what we had, set it!
+            if increment_counters:
+                self.signed_by.set_counter_position(self.counter, soft_set=True)
+
+
+        else:
             # Two critical things to do:
             # 1. local models need to be signed by us
             # 2. and get our counter position
+
+            own_device = _get_own_device()
+
             if increment_counters:
                 self.counter = own_device.increment_counter_position()
             else:
                 self.counter = None  # will set this when we sync
 
             if sign:
+                assert self.counter is not None, "Only sign data where count is set"
                 # Always sign on the central server.
                 self.sign(device=own_device)
             else:
-                self.set_id()  # = self.id or self.get_uuid()
+                self.set_id()
                 self.signature = None  # make sure the signature will be recomputed on sync
 
-        # call the base Django Model save to write to the DB
-        super(SyncedModel, self).save(*args, **kwargs)
+            # call the base Django Model save to write to the DB
+            super(SyncedModel, self).save(*args, **kwargs)
 
-        # For imported models, we want to keep track of the counter position we're at for that device.
-        #   so, if it's ahead of what we had, set it!
-        if imported and increment_counters:
-            self.signed_by.set_counter_position(self.counter, soft_set=True)
 
     def set_id(self):
         self.id = self.id or self.get_uuid()
@@ -315,22 +340,23 @@ class DeferredCountSyncedModel(DeferredSignSyncedModel):
     Defer incrementing counters until syncing.
     """
     def save(self, increment_counters=None, *args, **kwargs):
-        remove_counter = False   # see comment below
+        """
+        Note that increment_counters will set counters to None,
+        and that if the object must be created, counter will be incremented
+        and temporarily set, to create the object ID.
+        """
+        super(DeferredCountSyncedModel, self).save(*args, increment_counters=settings.CENTRAL_SERVER, **kwargs)
 
-        if increment_counters is None:
-            # We need to set counters upon the first save, or if we're on the central server.
-            #   Need the counter on the first save in order to create a UUID
-            increment_counters = settings.CENTRAL_SERVER or not self.id
-            remove_counter = not self.id
-        super(DeferredCountSyncedModel, self).save(*args, increment_counters=increment_counters, **kwargs)
-
-        if remove_counter:
-            # On create, we have to add a counter value in order to set the ID.
-            # In order to simplify syncing later, remove that counter after that save.
-            #
-            # You get a double-save now, but in the end... it's all good.
-            self.counter = False
-            super(DeferredCountSyncedModel, self).save(*args, increment_counters=False, **kwargs)
+    def set_id(self):
+        if self.id:
+            pass
+        elif self.counter:
+            self.id = self.get_uuid()
+        else:
+            own_device = _get_own_device()
+            self.counter = own_device.increment_counter_position()
+            self.id = self.get_uuid()
+            self.counter = None
 
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         app_label = "securesync"

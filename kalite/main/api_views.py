@@ -1,3 +1,4 @@
+import copy
 import json
 import re
 import requests
@@ -10,14 +11,17 @@ from django.db.models import Q
 from django.http import HttpResponse
 from django.utils import simplejson
 from django.utils.translation import ugettext as _
+from django.views.decorators.cache import cache_control, cache_page
+from django.views.decorators.gzip import gzip_page
 
 import settings
 from .api_forms import ExerciseLogForm, VideoLogForm
 from .models import FacilityUser, VideoLog, ExerciseLog, VideoFile
 from config.models import Settings
 from securesync.models import FacilityGroup
-from shared.decorators import require_admin
+from shared.decorators import allow_api_profiling, backend_cache_page, require_admin
 from shared.jobs import force_job, job_status
+from shared.topic_tools import get_flat_topic_tree 
 from shared.videos import delete_downloaded_files
 from utils.general import break_into_chunks
 from utils.internet import api_handle_error_with_json, JsonResponse
@@ -112,6 +116,7 @@ def save_exercise_log(request):
     return JsonResponse({})
 
 
+@allow_api_profiling
 @student_log_api(logged_out_message=_("Progress not loaded."))
 def get_video_logs(request):
     """
@@ -148,6 +153,7 @@ def _get_video_log_dict(request, user, youtube_id):
     }
 
 
+@allow_api_profiling
 @student_log_api(logged_out_message=_("Progress not loaded."))
 def get_exercise_logs(request):
     """
@@ -205,26 +211,29 @@ def launch_mplayer(request):
     """
     Launch an mplayer instance in a new thread, to play the video requested via the API.
     """
-    
+
     if not settings.USE_MPLAYER:
         raise PermissionDenied("You can only initiate mplayer if USE_MPLAYER is set to True.")
-    
+
     if "youtube_id" not in request.REQUEST:
         return JsonResponse({"error": "no youtube_id specified"}, status=500)
 
     youtube_id = request.REQUEST["youtube_id"]
     facility_user = request.session.get("facility_user")
+
     callback = partial(
         _update_video_log_with_points,
         youtube_id=youtube_id,
         facility_user=facility_user,
+        language=request.language,
     )
+
     play_video_in_new_thread(youtube_id, content_root=settings.CONTENT_ROOT, callback=callback)
 
     return JsonResponse({})
 
 
-def _update_video_log_with_points(seconds_watched, video_length, youtube_id, facility_user):
+def _update_video_log_with_points(seconds_watched, video_length, youtube_id, facility_user, language):
     """Handle the callback from the mplayer thread, saving the VideoLog. """
     # TODO (bcipolli) add language info here
 
@@ -239,4 +248,11 @@ def _update_video_log_with_points(seconds_watched, video_length, youtube_id, fac
         youtube_id=youtube_id,
         additional_seconds_watched=seconds_watched,
         new_points=new_points,
+        language=language,
     )
+
+
+@backend_cache_page
+def flat_topic_tree(request):
+    return JsonResponse(get_flat_topic_tree())
+
