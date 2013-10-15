@@ -141,7 +141,7 @@ class OneHundredRandomLogUpdates(base.UserCommon):
             #take username from ExerciseLog
             all_exercises = ExerciseLog.objects.all()
             self.user = FacilityUser.objects.get(id=all_exercises[0].user_id)
-        print self.username, " not in FacilityUsers, using ", self.user
+            print self.username, " not in FacilityUsers, using ", self.user
         self.num_logs = num_logs
         #give the platform a chance to cache the logs
         ExerciseLog.objects.filter(user=self.user).delete()
