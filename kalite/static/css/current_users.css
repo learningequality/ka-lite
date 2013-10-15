@@ -33,7 +33,7 @@ th.username {
     text-overflow: ellipsis;
 }
 td, th {
-    width:33%;
+    width:25%;
     padding: 5px;
 }
 th {
