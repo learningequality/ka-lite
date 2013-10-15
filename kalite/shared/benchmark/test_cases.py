@@ -135,8 +135,13 @@ class OneHundredRandomLogUpdates(base.UserCommon):
     
     def _setup(self, num_logs=50, **kwargs):
         super(OneHundredRandomLogUpdates, self)._setup(**kwargs)
-
-        self.user = FacilityUser.objects.get(username=self.username)
+        try:
+            self.user = FacilityUser.objects.get(username=self.username)
+        except:
+            #take username from ExerciseLog
+            all_exercises = ExerciseLog.objects.all()
+            self.user = FacilityUser.objects.get(id=all_exercises[0].user_id)
+        print self.username, " not in FacilityUsers, using ", self.user
         self.num_logs = num_logs
         #give the platform a chance to cache the logs
         ExerciseLog.objects.filter(user=self.user).delete()
