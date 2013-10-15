@@ -183,7 +183,7 @@
                 <table>
                     <tbody>
                         <tr>
-                            <th class="headrowuser">
+                            <th class="headrowuser selectcol">
                                 {% trans "Select" %} (<a id="all" href="#">{% trans "All" %}</a>/<a id="none" href="#">{% trans "None" %}</a>)
                             </th>
                             <th class="headrowuser">
@@ -201,7 +201,7 @@
                         </tr>
                         {% for user in users %}
                             <tr>
-                                <td>
+                                <td class="selectcol">
                                     <input type="checkbox" value="{{ user.username }}">
                                 </td>
                                 <td>
