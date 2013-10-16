@@ -33,13 +33,15 @@ function fetchTopicTree() {
 
 $(document).ready(function() {
 
-    if (isLocalStorageAvailable()) {
-	results = JSON.parse(localStorage.getItem("flat_topic_tree")); // coerce string back to JSON
-    }
+    $("#search").focus(function() {
+	if (isLocalStorageAvailable()) {
+	    results = JSON.parse(localStorage.getItem("flat_topic_tree")); // coerce string back to JSON
+	}
 
-    if (results === null) {
-	fetchTopicTree();
-    }
+	if (results === null) {
+	    fetchTopicTree();
+	}
+    });
 
     $("#search").autocomplete({
         minLength: 3,
