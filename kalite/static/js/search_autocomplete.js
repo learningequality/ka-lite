@@ -1,3 +1,6 @@
+var results = null;
+var timeout_length = 1000 * 20; // 20 seconds
+
 function isLocalStorageAvailable() {
     var testString = "hello peeps"
     try {
@@ -8,13 +11,12 @@ function isLocalStorageAvailable() {
     }
 }
 
-var results = null;
-
 function fetchTopicTree() {
     $.ajax({
         url: "/api/flat_topic_tree",
         cache: true,
         dataType: "json",
+	timeout: timeout_length;
         success: function(categories) {
             results = [];
             for (var category_name in categories) { // category is either Video, Exercise or Topic
@@ -39,8 +41,7 @@ $(document).ready(function() {
         }
 
         if (results === null) {
-            var timeout = 1000 * 20 // 20 second timeout
-            setTimeout(fetchTopicTree(), timeout);
+	    fetchTopicTree();
         }
     });
 
