@@ -7,7 +7,7 @@ pyexec=`"$SCRIPT_DIR/python.sh"`
 port=`"$SCRIPT_DIR/get_setting.sh" PRODUCTION_PORT`
 nthreads=`"$SCRIPT_DIR/get_setting.sh" CHERRYPY_THREAD_COUNT`
 
-$SCRIPT_DIR/serverstop.sh
+"$SCRIPT_DIR/serverstop.sh"
 
 if [ $? != 0 ]; then
     exit 1
