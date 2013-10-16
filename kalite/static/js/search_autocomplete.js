@@ -8,32 +8,37 @@ function isLocalStorageAvailable() {
     }
 }
 
+var results = null;
+
+function fetchTopicTree() {
+    $.ajax({
+	url: "/api/flat_topic_tree",
+	cache: true,
+	dataType: "json",
+	success: function(categories) {
+	    results = [];
+	    for (var category_name in categories) { // category is either Video, Exercise or Topic
+		var category = categories[category_name];
+		for (var node_name in category) {
+		    node = category[node_name];
+		    results.push(node.title);
+		}
+	    }
+	    if (isLocalStorageAvailable()) {
+		localStorage.setItem("flat_topic_tree", JSON.stringify(results)); // we can only store strings in localStorage
+	    }
+	}
+    });
+}
+
 $(document).ready(function() {
-    var results = null;
 
     if (isLocalStorageAvailable()) {
 	results = JSON.parse(localStorage.getItem("flat_topic_tree")); // coerce string back to JSON
     }
 
     if (results === null) {
-	$.ajax({
-	    url: "/api/flat_topic_tree",
-	    cache: true,
-	    dataType: "json",
-	    success: function(categories) {
-		results = [];
-		for (var category_name in categories) { // category is either Video, Exercise or Topic
-		    var category = categories[category_name];
-		    for (var node_name in category) {
-			node = category[node_name];
-			results.push(node.title);
-		    }
-		}
-		if (isLocalStorageAvailable()) {
-		    localStorage.setItem("flat_topic_tree", JSON.stringify(results)); // we can only store strings in localStorage
-		}
-	    }
-	});
+	fetchTopicTree();
     }
 
     $("#search").autocomplete({
