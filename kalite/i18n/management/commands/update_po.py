@@ -24,6 +24,10 @@ class Command(BaseCommand):
 		move_to_project_root()
 		## (safety measure) prevent any english or test translations from being uploaded 
 		delete_current_templates()
+
+		## Create new files 
+		run_makemessages()
+
 		## Handle flags
 		if options.get("test_wrappings"):
 			generate_test_files()
@@ -56,8 +60,6 @@ def run_makemessages():
 
 def update_templates():
 	"""Update template po files"""
-	## generate new files
-	run_makemessages()
 	
 	## post them to exposed URL
 	static_path = os.path.join(settings.STATIC_ROOT, "pot/")
@@ -75,8 +77,6 @@ def compile_all_po_files():
 
 def generate_test_files():
 	"""Insert asterisks as translations in po files"""
-	# Generate new files
-	run_makemessages()
 
 	# Open them up and insert asterisks for all empty msgstrs
 	en_po_dir = os.path.join(settings.LOCALE_PATHS[0], "en/LC_MESSAGES/")
@@ -86,7 +86,9 @@ def generate_test_files():
 		else:
 			with open(os.path.join(en_po_dir, "tmp.po"), 'w') as temp_file:
 				msgstr_pattern = re.compile(r'msgstr \"\"')
+				empty_translation = re.compile(r'\"\"')
 				variables_pattern = re.compile(r'%\(\w+\)[s,d]')
+				new_msgstr = "msgstr \"*********\""
 				lines = open(os.path.join(en_po_dir, po_file), 'r').readlines()
 				counter = 0 
 				variables = []
@@ -95,12 +97,19 @@ def generate_test_files():
 						temp_file.write(line)
 					else:
 						variables += re.findall(variables_pattern, line)
-						new_line = msgstr_pattern.sub("msgstr \"*****\"", line)
-						# Check to see if we've stored up variables and are on a msgstr, if so insert variables
-						if new_line != line and variables:
-							variables_str = " ".join(variables)
-							new_line = "msgstr \"***** %s\"" % variables_str
-							variables = [] # reset
+						msgid_content = re.search('(?<=msgid ").+(?=")', line) or ""
+						if msgid_content:
+							new_msgstr = "msgstr \"*%s*\"" % msgid_content.group(0)
+							
+							# new_line = msgstr_pattern.sub("msgstr \"*****\"", line) #replaces line with asterisks
+						
+						new_line = msgstr_pattern.sub(new_msgstr, line)
+ 						# insert variables if necessary
+ 						# if new_line != line and variables:
+ 						# 	import pdb; pdb.set_trace()
+							# variables_str = " ".join(variables)
+							# new_line += variables_str
+							# variables = [] # reset
 						temp_file.write(new_line)
 					counter += 1
 				temp_file.close()

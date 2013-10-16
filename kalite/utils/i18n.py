@@ -25,7 +25,8 @@ def get_installed_languages():
 		try:
 			lang_meta = json.loads(open(os.path.join(locale_dir, lang, "%s_metadata.json" % lang)).read())
 		except:
-			raise MetaDataNotFound()
+			lang_meta = {}
+			# raise MetaDataNotFound()
 		lang = lang_meta
 		installed_languages.append(lang)
 
