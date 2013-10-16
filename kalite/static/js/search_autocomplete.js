@@ -39,7 +39,8 @@ $(document).ready(function() {
 	}
 
 	if (results === null) {
-	    fetchTopicTree();
+	    var timeout = 1000 * 20 // 20 second timeout
+	    setTimeout(fetchTopicTree(), timeout);
 	}
     });
 
