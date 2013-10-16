@@ -63,9 +63,9 @@ a.btn:link,a.btn:visited{
                     <img src="{% static 'images/system_update.png' %}" />
                   </a>
                     <div class="caption">
-                      <h2>System Updates</h2>
-                      <p>Update KA Lite to the latest version and see more features. </p>
-                      <span class="download"><a href="{% url update_software %}" class="btn btn-large btn-primary">Update KA Lite</a></span>
+                      <h2>{% trans "System Updates" %}</h2>
+                      <p>{% trans "Update KA Lite to the latest version and see more features" %}.</p>
+                      <span class="download"><a href="{% url update_software %}" class="btn btn-large btn-primary">{% trans "Update KA Lite" %}</a></span>
                     </div>
                 </div>
               </li>
@@ -76,9 +76,9 @@ a.btn:link,a.btn:visited{
                     <img src="{% static 'images/subtitle_download.png' %}" />
                   </a>
                     <div class="caption">
-                      <h2>Language Packs</h2>
-                      <p>Get KA Lite in the language of your choice! Browse and install different language packs to get UI translations and subtitles.</p>
-                      <span class="download"><a href="{% url update_languages %}" class="btn btn-large btn-primary">Get Language Packs</a></span>
+                      <h2>{% trans "Language Packs" %}</h2>
+                      <p>{% trans "Get KA Lite in the language of your choice! Browse and install different language packs to get UI translations and subtitles." %}</p>
+                      <span class="download"><a href="{% url update_languages %}" class="btn btn-large btn-primary">{% trans "Get Language Packs" %}</a></span>
                     </div>
                 </div>
               </li>
@@ -89,9 +89,9 @@ a.btn:link,a.btn:visited{
                     <img src="{% static 'images/video_download.png' %}" />
                   </a>
                     <div class="caption">
-                      <h2>Video Manage</h2>
-                      <p>Dowload and delete videos on this KA Lite server. </p>
-                      <span class="download"><a href="{% url update_videos %}" class="btn btn-large btn-primary">Download Videos</a></span>
+                      <h2>{% trans "Video Manage" %}</h2>
+                      <p>{% trans "Dowload and delete videos on this KA Lite server" %}.</p>
+                      <span class="download"><a href="{% url update_videos %}" class="btn btn-large btn-primary">{% trans "Download Videos" %}</a></span>
                     </div>
                 </div>
               </li>

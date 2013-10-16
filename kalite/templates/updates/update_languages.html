@@ -240,13 +240,13 @@ var video_callbacks = {
 
 {% block content %}
 <div class="installed-languages">
-    <h2>Installed Languages</h2>
+    <h2>{% trans "Installed Languages" %}</h2>
     {% if installed_languages %}
         {% for lang in installed_languages %}
-            {{lang.name}} - {{lang.percent_translated}}% Complete
+            {{lang.name}} - {{lang.percent_translated}} {% trans "Complete" %}
         {% endfor %}
     {% else %}
-        <p>You currently have no languages installed.</p>
+        <p>{% trans "You currently have no languages installed" %}</p>
     {% endif %}
     
 </div>
