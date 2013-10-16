@@ -10,6 +10,7 @@ from django.http import HttpResponse, Http404
 import kalite
 import settings
 import version
+from .classes import JsonpResponse
 from .models import Organization, get_or_create_user_profile
 from .views import get_central_server_host
 from securesync.models import Zone
@@ -57,6 +58,7 @@ def get_download_urls(request):
     return JsonResponse(downloads)
 
 
+@allow_jsonp
 @api_handle_error_with_json
 def get_subtitle_counts(request):
     """
@@ -74,19 +76,20 @@ def get_subtitle_counts(request):
 
     # Return an appropriate response
     # TODO(dylan): Use jsonp decorator once it becomes available
-    if request.GET.get("callback",None):
+    if request.GET.get("callback", None):
         # JSONP response
-        response = HttpResponse("%s(%s);" % (request.GET["callback"], json.dumps(subtitle_counts, sort_keys=True)))
+        response = JsonpResponse("%s(%s);" % (request.GET["callback"], json.dumps(subtitle_counts, sort_keys=True)))
         response["Access-Control-Allow-Headers"] = "*"
         response["Content-Type"] = "text/javascript"
         return response
 
     else:
         # Regular request
-        response = JsonResponse(json.dumps(subtitle_counts, sort_keys=True), status=200)
+        response = JsonResponse(json.dumps(subtitle_counts, sort_keys=True))
         return response
 
 
+@allow_jsonp
 @api_handle_error_with_json
 def get_available_language_packs(request):
     """Return dict of available language packs"""
@@ -97,16 +100,16 @@ def get_available_language_packs(request):
     except:
         raise Http404
 
-    if request.GET.get("callback",None):
+    if request.GET.get("callback", None):
         # JSONP response
-        response = HttpResponse("%s(%s);" % (request.GET["callback"], json.dumps(language_packs_available, sort_keys=True)))
+        response = JsonpResponse("%s(%s);" % (request.GET["callback"], json.dumps(language_packs_available, sort_keys=True)))
         response["Access-Control-Allow-Headers"] = "*"
         response["Content-Type"] = "text/javascript"
         return response
 
     else:
         # Regular request
-        response = JsonResponse(json.dumps(language_packs_available, sort_keys=True), status=200)
+        response = JsonResponse(json.dumps(language_packs_available, sort_keys=True))
         return response
 
 

@@ -5,6 +5,7 @@
 4. Zip everything up at exposed URL 
 """
 
+import glob
 import json
 import os
 import re
@@ -50,13 +51,12 @@ def cache_translations():
 	zip_language_packs()
 
 
-def download_latest_translations():
+def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID, project_key=settings.CROWDIN_PROJECT_KEY):
 	"""Download latest translations from CrowdIn to corresponding locale directory."""
 	# Note this won't download anything that we haven't manually created a folder for. 
 	# CrowdIn API docs on downloading translations: http://crowdin.net/page/api/download
 	# CrowdIn API docs for exporting entire project to zip archive: http://crowdin.net/page/api/export
-	project_id = settings.CROWDIN_PROJECT_ID
-	project_key = settings.CROWDIN_PROJECT_KEY
+
 	for lang in os.listdir(LOCALE_ROOT):
 		# Download zipfile & dump into the correct locale folder
 		request_url = "http://api.crowdin.net/api/project/%s/download/%s.zip?key=%s" %(project_id, lang, project_key)
@@ -76,23 +76,20 @@ def generate_metadata():
 		master_file = []
 
 	# loop through all languages in locale, generate and write metadata, update master file
-	for lang in os.listdir(LOCALE_ROOT):
-		if lang.endswith(".json"):
-			continue
-		else:
-			percent_translated = calculate_percent_translated(os.path.join(LOCALE_ROOT, lang, "LC_MESSAGES"))
-			lang_metadata = {
-				"code": lang,
-				"name": get_language_name(lang),
-				"percent_translated": percent_translated,
-				"version": increment_version(lang, percent_translated, os.path.join(LOCALE_ROOT, lang))
-			}
-			# Write local TODO(Dylan): probably don't need to write this local version - seems like a duplication of effort
-			with open(os.path.join(LOCALE_ROOT, lang, "%s_metadata.json" % lang), 'w') as output:
-				json.dump(lang_metadata, output)
-			
-			# Update master
-			master_file.append(lang_metadata)
+	for lang in glob.glob('%s*/' % LOCALE_ROOT):
+		percent_translated = calculate_percent_translated(os.path.join(LOCALE_ROOT, lang, "LC_MESSAGES"))
+		lang_metadata = {
+			"code": lang,
+			"name": get_language_name(lang),
+			"percent_translated": percent_translated,
+			"version": increment_version(lang, percent_translated, os.path.join(LOCALE_ROOT, lang))
+		}
+		# Write local TODO(Dylan): probably don't need to write this local version - seems like a duplication of effort
+		with open(os.path.join(LOCALE_ROOT, lang, "%s_metadata.json" % lang), 'w') as output:
+			json.dump(lang_metadata, output)
+		
+		# Update master
+		master_file.append(lang_metadata)
 
 	# Save updated master
 	with open(os.path.join(settings.LANGUAGE_PACK_ROOT, LANGUAGE_PACK_AVAILABILITY_FILENAME), 'w') as output:
@@ -103,12 +100,11 @@ def calculate_percent_translated(po_file_path):
 	"""Return total percent translated of entire language"""
 	# add up totals for each file
 	total_strings, total_translated = 0, 0
-	for po_file in os.listdir(po_file_path):
-		if po_file.endswith(".po"):
-			# Read it, count up filled msgids and filled msgstrs
-			po_as_string = open(os.path.join(po_file_path, po_file)).read()
-			total_strings += len(re.findall(r'msgid \".+\"', po_as_string))
-			total_translated += len(re.findall(r'msgstr \".+\"', po_as_string))
+	for po_file in glob.glob('%s/*.po' % po_file_path):
+		# Read it, count up filled msgids and filled msgstrs
+		po_as_string = open(os.path.join(po_file_path, po_file)).read()
+		total_strings += len(re.findall(r'msgid \".+\"', po_as_string))
+		total_translated += len(re.findall(r'msgstr \".+\"', po_as_string))
 
 	# Calc percent
 	percent_trans = round(float(total_translated)/float(total_strings), 3) # without floats, too inexact
@@ -139,12 +135,11 @@ def zip_language_packs():
 		# Create a zipfile for this language
 		z = zipfile.ZipFile(os.path.join(settings.LANGUAGE_PACK_ROOT, "%s_lang_pack.zip" % lang), 'w')
 		# Get every single file in the directory and zip it up
-		for root, dirs, files in os.walk(os.path.join(LOCALE_ROOT, lang)):
-			for f in files:
-				if f.endswith(".json"):
-					z.write(os.path.join(root, f), arcname=os.path.basename(f))	
-				else:
-					z.write(os.path.join(root, f), arcname=os.path.join("LC_MESSAGES", os.path.basename(f)))	
+		lang_locale_path = os.path.join(LOCALE_ROOT, lang)
+		for metadata_file in glob.glob('%s/*.json' % lang_locale_path):
+			z.write(os.path.join(lang_locale_path, metadata_file), arcname=os.path.basename(metadata_file))	
+		for po_file in glob.glob('%s/LC_MESSAGES/*.po' % lang_locale_path):
+			z.write(os.path.join(lang_locale_path, po_file), arcname=os.path.join("LC_MESSAGES", os.path.basename(po_file)))	
 		z.close()
 
 

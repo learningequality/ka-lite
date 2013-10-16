@@ -33,7 +33,7 @@ from shared import topic_tools
 from shared.decorators import require_admin
 from shared.jobs import force_job
 from utils.internet import am_i_online, JsonResponse
-from utils.i18n import get_installed_languages
+from utils.django_utils.i18n import get_installed_languages
 
 
 def update_context(request):
