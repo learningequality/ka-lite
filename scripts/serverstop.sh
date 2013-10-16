@@ -18,3 +18,4 @@ else
     echo "Server does not appear to be running."
     echo "----------------------------------------------------------------"    
 fi
+exit 0
