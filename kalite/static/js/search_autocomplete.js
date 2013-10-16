@@ -1,10 +1,10 @@
 function isLocalStorageAvailable() {
     var testString = "hello peeps"
     try {
-	localStorage[testString] = testString;
-	return true;
+        localStorage[testString] = testString;
+        return true;
     } catch(e) {
-	return false;
+        return false;
     }
 }
 
@@ -12,36 +12,36 @@ var results = null;
 
 function fetchTopicTree() {
     $.ajax({
-	url: "/api/flat_topic_tree",
-	cache: true,
-	dataType: "json",
-	success: function(categories) {
-	    results = [];
-	    for (var category_name in categories) { // category is either Video, Exercise or Topic
-		var category = categories[category_name];
-		for (var node_name in category) {
-		    node = category[node_name];
-		    results.push(node.title);
-		}
-	    }
-	    if (isLocalStorageAvailable()) {
-		localStorage.setItem("flat_topic_tree", JSON.stringify(results)); // we can only store strings in localStorage
-	    }
-	}
+        url: "/api/flat_topic_tree",
+        cache: true,
+        dataType: "json",
+        success: function(categories) {
+            results = [];
+            for (var category_name in categories) { // category is either Video, Exercise or Topic
+                var category = categories[category_name];
+                for (var node_name in category) {
+                    node = category[node_name];
+                    results.push(node.title);
+                }
+            }
+            if (isLocalStorageAvailable()) {
+                localStorage.setItem("flat_topic_tree", JSON.stringify(results)); // we can only store strings in localStorage
+            }
+        }
     });
 }
 
 $(document).ready(function() {
 
     $("#search").focus(function() {
-	if (isLocalStorageAvailable()) {
-	    results = JSON.parse(localStorage.getItem("flat_topic_tree")); // coerce string back to JSON
-	}
+        if (isLocalStorageAvailable()) {
+            results = JSON.parse(localStorage.getItem("flat_topic_tree")); // coerce string back to JSON
+        }
 
-	if (results === null) {
-	    var timeout = 1000 * 20 // 20 second timeout
-	    setTimeout(fetchTopicTree(), timeout);
-	}
+        if (results === null) {
+            var timeout = 1000 * 20 // 20 second timeout
+            setTimeout(fetchTopicTree(), timeout);
+        }
     });
 
     $("#search").autocomplete({
