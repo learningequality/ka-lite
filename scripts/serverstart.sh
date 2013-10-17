@@ -7,12 +7,10 @@ pyexec=`"$SCRIPT_DIR/python.sh"`
 port=`"$SCRIPT_DIR/get_setting.sh" PRODUCTION_PORT`
 nthreads=`"$SCRIPT_DIR/get_setting.sh" CHERRYPY_THREAD_COUNT`
 
-if [ -f "$KALITE_DIR/runcherrypyserver.pid" ];
-then
-    pid=`cat "$KALITE_DIR/runcherrypyserver.pid"`
-    echo "(Warning: Web server may still be running; attempting to stop old process ($pid) first)"
-    kill $pid 2> /dev/null
-    rm "$KALITE_DIR/runcherrypyserver.pid"
+source "$SCRIPT_DIR/serverstop.sh"
+
+if [ "$SERVER_STOPPED" != "true" ]; then
+    exit 1
 fi
 
 echo "Running the web server on port $port."
