@@ -22,15 +22,12 @@ import settings
 from utils.general import ensure_dir
 from central.management.commands.cache_subtitles import get_language_name
 from update_po import compile_all_po_files
+from utils.general import ensure_dir
 
 LOCALE_ROOT = settings.LOCALE_PATHS[0]
 LANGUAGE_PACK_AVAILABILITY_FILENAME = "language_pack_availability.json"
 
 class Command(BaseCommand):
-	option_list = BaseCommand.option_list + (
-		# make_option('--test', '-t', dest='test_wrappings', action="store_true", default=False, help='Running with -t will fill in current po files msgstrs with asterisks. This will allow you to quickly identify unwrapped strings in the codebase and wrap them in translation tags! Remember to delete after your finished testing.'),
-		# make_option('--update_templates', '-u', dest='update_templates', action="store_true", default=False, help='Running with -n will update exposed template files with current wrapped strings.'),
-	)
 	help = 'Caches latest translations from CrowdIn'
 
 	def handle(self, **options):
@@ -39,32 +36,64 @@ class Command(BaseCommand):
 
 def cache_translations():
 	## Download from CrowdIn
-	# download_latest_translations() # this fcn will be broken until we get set up on CrowdIn, hopefully by next week
-	
+	download_latest_translations() # this fcn will be broken until we get set up on CrowdIn, hopefully by next week
+
 	## Loop through them, create/update meta data
-	generate_metadata()
+	# generate_metadata()
 	
 	## Compile
-	compile_all_po_files()
+	# compile_all_po_files()
 	
 	## Zip
-	zip_language_packs()
+	# zip_language_packs()
 
 
-def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID, project_key=settings.CROWDIN_PROJECT_KEY):
+def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID, project_key=settings.CROWDIN_PROJECT_KEY, language_code="all"):
 	"""Download latest translations from CrowdIn to corresponding locale directory."""
 	# Note this won't download anything that we haven't manually created a folder for. 
 	# CrowdIn API docs on downloading translations: http://crowdin.net/page/api/download
 	# CrowdIn API docs for exporting entire project to zip archive: http://crowdin.net/page/api/export
 
-	for lang in os.listdir(LOCALE_ROOT):
-		# Download zipfile & dump into the correct locale folder
-		request_url = "http://api.crowdin.net/api/project/%s/download/%s.zip?key=%s" %(project_id, lang, project_key)
-		r = requests.get(request_url)
-		r.raise_for_status()
-		z = zipfile.ZipFile(StringIO.StringIO(r.content))
-		lang_dir = os.path.join(LOCALE_ROOT, lang, "LC_MESSAGES")
-		z.extractall(lang_dir)
+	## Build latest package
+	build_translations()
+
+	## Get zip file of translations
+	request_url = "http://api.crowdin.net/api/project/%s/download/%s.zip?key=%s" % (project_id, language_code, project_key)
+	r = requests.get(request_url)
+	r.raise_for_status()
+	
+	## Unpack into temp dir
+	z = zipfile.ZipFile(StringIO.StringIO(r.content))
+	tmp_dir_path = os.path.join(LOCALE_ROOT, "tmp")
+	z.extractall(tmp_dir_path)
+
+	## Copy over new translations
+	extract_new_po(tmp_dir_path)
+
+	# Clean up tracks
+	if os.path.exists(tmp_dir_path):
+		shutil.rmtree(tmp_dir_path)
+
+
+def build_translations(project_id=settings.CROWDIN_PROJECT_ID, project_key=settings.CROWDIN_PROJECT_KEY):
+	"""Build latest translations into zip archive on CrowdIn"""
+
+	request_url = "http://api.crowdin.net/api/project/%s/export?key=%s" % (project_id, project_key)
+	r = requests.get(request_url)
+	r.raise_for_status()
+
+
+def extract_new_po(tmp_dir_path=os.path.join(LOCALE_ROOT, "tmp")):
+	"""Move newly downloaded po files to correct location in locale direction"""
+
+	for lang in os.listdir(tmp_dir_path):
+		# ensure directory exists in locale folder, and then overwrite local po files with new ones 
+		ensure_dir(os.path.join(LOCALE_ROOT, lang, "LC_MESSAGES"))
+		for po_file in glob.glob(os.path.join(tmp_dir_path, lang, "*/*.po")): 
+			if "js" in os.path.basename(po_file):
+				shutil.copy(po_file, os.path.join(LOCALE_ROOT, lang, "LC_MESSAGES", "djangojs.po"))
+			else:
+				shutil.copy(po_file, os.path.join(LOCALE_ROOT, lang, "LC_MESSAGES", "django.po"))
 
 
 def generate_metadata():
