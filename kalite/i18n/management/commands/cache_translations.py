@@ -19,8 +19,6 @@ from django.core import management
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
-from utils.general import ensure_dir
-from central.management.commands.cache_subtitles import get_language_name
 from update_po import compile_all_po_files
 from utils.general import ensure_dir
 
@@ -36,10 +34,10 @@ class Command(BaseCommand):
 
 def cache_translations():
 	## Download from CrowdIn
-	download_latest_translations() # this fcn will be broken until we get set up on CrowdIn, hopefully by next week
+	# download_latest_translations() # this fcn will be broken until we get set up on CrowdIn, hopefully by next week
 
 	## Loop through them, create/update meta data
-	# generate_metadata()
+	generate_metadata()
 	
 	## Compile
 	# compile_all_po_files()
@@ -98,61 +96,65 @@ def extract_new_po(tmp_dir_path=os.path.join(LOCALE_ROOT, "tmp")):
 
 def generate_metadata():
 	"""Loop through locale folder, create or update language specific meta and create or update master file."""
-	# Open master file 
-	try: 
-		master_file = json.loads(open(os.path.join(LOCALE_ROOT, LANGUAGE_PACK_AVAILABILITY_FILENAME)).read())
-	except:
-		master_file = []
 
-	# loop through all languages in locale, generate and write metadata, update master file
-	for lang in glob.glob('%s*/' % LOCALE_ROOT):
-		percent_translated = calculate_percent_translated(os.path.join(LOCALE_ROOT, lang, "LC_MESSAGES"))
-		lang_metadata = {
-			"code": lang,
-			"name": get_language_name(lang),
-			"percent_translated": percent_translated,
-			"version": increment_version(lang, percent_translated, os.path.join(LOCALE_ROOT, lang))
+	master_file = []
+
+	# loop through all languages in locale, update master file
+	crowdin_meta_dict = get_crowdin_meta()
+
+	for lang in os.listdir(LOCALE_ROOT):
+		if not os.path.isdir(os.path.join(LOCALE_ROOT, lang)):
+			continue
+		crowdin_meta = next((meta for meta in crowdin_meta_dict if meta["code"] == lang), None)
+		try: 
+			local_meta = json.loads(open(os.path.join(LOCALE_ROOT, lang, "%s_metadata.json" % lang)).read())
+		except:
+			local_meta = {
+				"code": crowdin_meta.get("code"),
+				"name": crowdin_meta.get("name"),
+			}
+
+		updated_metadata = {
+			"percent_approved_translations": crowdin_meta.get("approved_progress"),
+			"total_strings": crowdin_meta.get("phrases"),
+			"total_translated": crowdin_meta.get("approved"),
+			"version": increment_version(local_meta, crowdin_meta),
 		}
+
+		local_meta.update(updated_metadata)
+
 		# Write local TODO(Dylan): probably don't need to write this local version - seems like a duplication of effort
 		with open(os.path.join(LOCALE_ROOT, lang, "%s_metadata.json" % lang), 'w') as output:
-			json.dump(lang_metadata, output)
+			json.dump(local_meta, output)
 		
 		# Update master
-		master_file.append(lang_metadata)
+		master_file.append(local_meta)
 
 	# Save updated master
 	with open(os.path.join(settings.LANGUAGE_PACK_ROOT, LANGUAGE_PACK_AVAILABILITY_FILENAME), 'w') as output:
 		json.dump(master_file, output) 
 
 
-def calculate_percent_translated(po_file_path):
-	"""Return total percent translated of entire language"""
-	# add up totals for each file
-	total_strings, total_translated = 0, 0
-	for po_file in glob.glob('%s/*.po' % po_file_path):
-		# Read it, count up filled msgids and filled msgstrs
-		po_as_string = open(os.path.join(po_file_path, po_file)).read()
-		total_strings += len(re.findall(r'msgid \".+\"', po_as_string))
-		total_translated += len(re.findall(r'msgstr \".+\"', po_as_string))
+def get_crowdin_meta(project_id=settings.CROWDIN_PROJECT_ID, project_key=settings.CROWDIN_PROJECT_KEY):
+	"""Return tuple in format (total_strings, total_translated, percent_translated)"""
 
-	# Calc percent
-	percent_trans = round(float(total_translated)/float(total_strings), 3) # without floats, too inexact
-	return percent_trans
+	request_url = "http://api.crowdin.net/api/project/%s/status?key=%s&json=True" % (project_id, project_key)
+	r = requests.get(request_url)
+	r.raise_for_status()
+
+	crowdin_meta_dict = json.loads(r.content)
+	return crowdin_meta_dict
 
 
-def increment_version(lang_code, percent_translated, lang_locale_path):
+def increment_version(local_meta, crowdin_meta):
 	"""Increment language pack version if translations have been updated"""
-	#TODO(Dylan): this actually isn't that good of a way of knowing if things changed.. could be tricked easily.
-	try:
-		old_metadata = json.loads(open(os.path.join(lang_locale_path, "%s_metadata.json" % lang_code)).read())
-	except:
+	total_translated = local_meta.get("total_translated")
+	if not total_translated:
 		version = 1
+	elif total_translated == crowdin_meta.get("approved"):
+		version = local_meta.get("version") or 1
 	else:
-		old_version = old_metadata.get("version")
-		if old_metadata.get("percent_translated") != percent_translated:
-			version = old_version + 1
-		else: 
-			version = old_version
+		version = local_meta.get("version") + 1
 	return version
 
 
