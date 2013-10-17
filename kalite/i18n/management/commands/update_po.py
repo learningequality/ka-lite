@@ -11,6 +11,7 @@ from django.core import management
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
+from settings import LOG as logging
 from utils.general import ensure_dir
 
 class Command(BaseCommand):
@@ -36,6 +37,7 @@ class Command(BaseCommand):
 			
 def move_to_project_root():
 	"""Change into the project root directory to run i18n commands"""
+	logging.info("Moving to project root directory")
 	project_root = os.path.join(settings.PROJECT_PATH, "../")
 	os.chdir(project_root)
 	ensure_dir(os.path.join(project_root, "locale/"))
@@ -43,6 +45,7 @@ def move_to_project_root():
 
 def delete_current_templates():
 	"""Delete existing en po files"""
+	logging.info("Deleting English language locale directory")
 	english_path = os.path.join(settings.LOCALE_PATHS[0], "en")
 	if os.path.exists(english_path):
 		shutil.rmtree(english_path)
@@ -50,6 +53,7 @@ def delete_current_templates():
 
 def run_makemessages():
 	"""Run makemessages command for english po files"""
+	logging.info("Executing makemessages command")
 	# Generate english po file
 	ignore_pattern = ['python-packages/*']
 	management.call_command('makemessages', locale='en', ignore_patterns=ignore_pattern, no_obsolete=True)
@@ -60,7 +64,7 @@ def run_makemessages():
 
 def update_templates():
 	"""Update template po files"""
-	
+	logging.info("Posting template po files to static/pot/")
 	## post them to exposed URL
 	static_path = os.path.join(settings.STATIC_ROOT, "pot/")
 	ensure_dir(static_path)
@@ -71,6 +75,7 @@ def update_templates():
 def compile_all_po_files():
 	"""Compile all po files in locale directory"""
 	# before running compilemessages, ensure in correct directory
+	logging.info("Running compilemessages")
 	move_to_project_root()
 	management.call_command('compilemessages')
 
@@ -79,6 +84,7 @@ def generate_test_files():
 	"""Insert asterisks as translations in po files"""
 
 	# Open them up and insert asterisks for all empty msgstrs
+	logging.info("Generating test po files")
 	en_po_dir = os.path.join(settings.LOCALE_PATHS[0], "en/LC_MESSAGES/")
 	for po_file in os.listdir(en_po_dir):
 		if not po_file.endswith(".po"):

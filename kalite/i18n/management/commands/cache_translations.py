@@ -19,6 +19,7 @@ from django.core import management
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
+from settings import LOG as logging
 from update_po import compile_all_po_files
 from utils.general import ensure_dir
 
@@ -53,10 +54,16 @@ def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID, project
 	build_translations()
 
 	## Get zip file of translations
+	logging.info("Attempting to download a zip archive of current translations")
 	request_url = "http://api.crowdin.net/api/project/%s/download/%s.zip?key=%s" % (project_id, language_code, project_key)
 	r = requests.get(request_url)
-	r.raise_for_status()
-	
+	try:
+		r.raise_for_status()
+	except Exception as e:
+		logging.error(e)
+	else:
+		logging.info("Successfully downloaded zip archive")
+
 	## Unpack into temp dir
 	z = zipfile.ZipFile(StringIO.StringIO(r.content))
 	tmp_dir_path = os.path.join(LOCALE_ROOT, "tmp")
@@ -73,14 +80,19 @@ def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID, project
 def build_translations(project_id=settings.CROWDIN_PROJECT_ID, project_key=settings.CROWDIN_PROJECT_KEY):
 	"""Build latest translations into zip archive on CrowdIn"""
 
+	logging.info("Requesting that CrowdIn build a fresh zip of our translations")
 	request_url = "http://api.crowdin.net/api/project/%s/export?key=%s" % (project_id, project_key)
 	r = requests.get(request_url)
-	r.raise_for_status()
+	try:
+		r.raise_for_status()
+	except Exception as e:
+		logging.error(e)
 
 
 def extract_new_po(tmp_dir_path=os.path.join(LOCALE_ROOT, "tmp")):
 	"""Move newly downloaded po files to correct location in locale direction"""
 
+	logging.info("Unpacking new translations")
 	for lang in os.listdir(tmp_dir_path):
 		# ensure directory exists in locale folder, and then overwrite local po files with new ones 
 		ensure_dir(os.path.join(LOCALE_ROOT, lang, "LC_MESSAGES"))
@@ -94,6 +106,7 @@ def extract_new_po(tmp_dir_path=os.path.join(LOCALE_ROOT, "tmp")):
 def generate_metadata():
 	"""Loop through locale folder, create or update language specific meta and create or update master file."""
 
+	logging.info("Generating new po file metadata")
 	master_file = []
 
 	# loop through all languages in locale, update master file
@@ -130,6 +143,7 @@ def generate_metadata():
 	# Save updated master
 	with open(os.path.join(settings.LANGUAGE_PACK_ROOT, LANGUAGE_PACK_AVAILABILITY_FILENAME), 'w') as output:
 		json.dump(master_file, output) 
+	logging.info("Local record of translations updated")
 
 
 def get_crowdin_meta(project_id=settings.CROWDIN_PROJECT_ID, project_key=settings.CROWDIN_PROJECT_KEY):
@@ -158,6 +172,7 @@ def increment_version(local_meta, crowdin_meta):
 
 def zip_language_packs():
 	"""Zip up and expose all language packs"""
+	logging.info("Zipping up language packs")
 	ensure_dir(settings.LANGUAGE_PACK_ROOT)
 	for lang in os.listdir(LOCALE_ROOT):
 		if not os.path.isdir(os.path.join(LOCALE_ROOT, lang)):
@@ -168,9 +183,10 @@ def zip_language_packs():
 		lang_locale_path = os.path.join(LOCALE_ROOT, lang)
 		for metadata_file in glob.glob('%s/*.json' % lang_locale_path):
 			z.write(os.path.join(lang_locale_path, metadata_file), arcname=os.path.basename(metadata_file))	
-		for po_file in glob.glob('%s/LC_MESSAGES/*.po' % lang_locale_path):
-			z.write(os.path.join(lang_locale_path, po_file), arcname=os.path.join("LC_MESSAGES", os.path.basename(po_file)))	
+		for mo_file in glob.glob('%s/LC_MESSAGES/*.mo' % lang_locale_path):
+			z.write(os.path.join(lang_locale_path, mo_file), arcname=os.path.join("LC_MESSAGES", os.path.basename(mo_file)))	
 		z.close()
+	logging.info("Done.")
 
 
 
