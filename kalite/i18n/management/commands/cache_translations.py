@@ -34,23 +34,20 @@ class Command(BaseCommand):
 
 def cache_translations():
 	## Download from CrowdIn
-	# download_latest_translations() # this fcn will be broken until we get set up on CrowdIn, hopefully by next week
+	download_latest_translations() # this fcn will be broken until we get set up on CrowdIn, hopefully by next week
 
 	## Loop through them, create/update meta data
 	generate_metadata()
 	
 	## Compile
-	# compile_all_po_files()
+	compile_all_po_files()
 	
 	## Zip
-	# zip_language_packs()
+	zip_language_packs()
 
 
 def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID, project_key=settings.CROWDIN_PROJECT_KEY, language_code="all"):
 	"""Download latest translations from CrowdIn to corresponding locale directory."""
-	# Note this won't download anything that we haven't manually created a folder for. 
-	# CrowdIn API docs on downloading translations: http://crowdin.net/page/api/download
-	# CrowdIn API docs for exporting entire project to zip archive: http://crowdin.net/page/api/export
 
 	## Build latest package
 	build_translations()
@@ -163,6 +160,8 @@ def zip_language_packs():
 	"""Zip up and expose all language packs"""
 	ensure_dir(settings.LANGUAGE_PACK_ROOT)
 	for lang in os.listdir(LOCALE_ROOT):
+		if not os.path.isdir(os.path.join(LOCALE_ROOT, lang)):
+			continue
 		# Create a zipfile for this language
 		z = zipfile.ZipFile(os.path.join(settings.LANGUAGE_PACK_ROOT, "%s_lang_pack.zip" % lang), 'w')
 		# Get every single file in the directory and zip it up
