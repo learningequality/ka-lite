@@ -126,8 +126,8 @@ def generate_metadata():
 
 		updated_metadata = {
 			"percent_approved_translations": crowdin_meta.get("approved_progress"),
-			"total_strings": crowdin_meta.get("phrases"),
-			"total_translated": crowdin_meta.get("approved"),
+			"phrases": crowdin_meta.get("phrases"),
+			"translations_approved": crowdin_meta.get("approved"),
 			"version": increment_version(local_meta, crowdin_meta),
 		}
 

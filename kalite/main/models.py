@@ -504,10 +504,13 @@ class VideoFile(ExtendedModel):
 
 
 class LanguagePack(ExtendedModel):
-    lang_id = models.CharField(max_length=5, primary_key=True)
-    lang_version = models.CharField(max_length=5)
+    code = models.CharField(max_length=5, primary_key=True)
+    name = models.CharField(max_length=50)
+    phrases = models.PositiveIntegerField()
+    approved_translations = models.PositiveIntegerField()
+    percent_translated = models.PositiveIntegerField()
+    version = models.PositiveIntegerField()
     software_version = models.CharField(max_length=12)
-    lang_name = models.CharField(max_length=30)
 
 
 engine.add_syncing_models([VideoLog, ExerciseLog, UserLogSummary])
