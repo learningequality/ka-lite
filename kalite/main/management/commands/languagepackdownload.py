@@ -1,8 +1,9 @@
 import json
 import os
-import optparse 
 import requests
 import zipfile
+from optparse import make_option
+from StringIO import StringIO
 
 from django.core.management.base import BaseCommand, CommandError
 
@@ -45,7 +46,7 @@ def get_language_pack(code):
     """Download language pack for specified language"""
 
     logging.info("Retrieving language pack: %s" % code)
-    request_url = "%s/static/language_packs/%s.zip" % (settings.CENTRAL_SERVER_HOST, code)
+    request_url = "http://%s/static/language_packs/%s.zip" % (settings.CENTRAL_SERVER_HOST, code)
     r = requests.get(request_url)
     try:
         r.raise_for_status()
@@ -61,15 +62,16 @@ def unpack_language(code, zip_file):
     ensure_dir(os.path.join(LOCALE_ROOT, code, "LC_MESSAGES"))
     
     ## Unpack into temp dir
-    z = zipfile.ZipFile(StringIO.StringIO(zip_file))
+    z = zipfile.ZipFile(StringIO(zip_file))
     z.extractall(os.path.join(LOCALE_ROOT, code))
 
 
 def update_database(code):
     """Create/update LanguagePack table in database based on given languages metadata"""
 
+    import pdb; pdb.set_trace()
     try:
-        metadata = json.loads(open(os.path.join(LOCALE_ROOT, code, "%s_metadata.json" % code)))
+        metadata = json.loads(open(os.path.join(LOCALE_ROOT, code, "%s_metadata.json" % code)).read())
     except Exception as e:
         logging.error(e)
 
