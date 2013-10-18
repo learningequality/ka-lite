@@ -141,6 +141,7 @@ def generate_metadata():
 		master_file.append(local_meta)
 
 	# Save updated master
+	ensure_dir(settings.LANGUAGE_PACK_ROOT)
 	with open(os.path.join(settings.LANGUAGE_PACK_ROOT, LANGUAGE_PACK_AVAILABILITY_FILENAME), 'w') as output:
 		json.dump(master_file, output) 
 	logging.info("Local record of translations updated")
@@ -178,7 +179,7 @@ def zip_language_packs():
 		if not os.path.isdir(os.path.join(LOCALE_ROOT, lang)):
 			continue
 		# Create a zipfile for this language
-		z = zipfile.ZipFile(os.path.join(settings.LANGUAGE_PACK_ROOT, "%s_lang_pack.zip" % lang), 'w')
+		z = zipfile.ZipFile(os.path.join(settings.LANGUAGE_PACK_ROOT, "%s.zip" % lang), 'w')
 		# Get every single file in the directory and zip it up
 		lang_locale_path = os.path.join(LOCALE_ROOT, lang)
 		for metadata_file in glob.glob('%s/*.json' % lang_locale_path):

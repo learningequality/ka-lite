@@ -510,7 +510,11 @@ class LanguagePack(ExtendedModel):
     approved_translations = models.PositiveIntegerField()
     percent_translated = models.PositiveIntegerField()
     version = models.PositiveIntegerField()
-    software_version = models.CharField(max_length=12)
+    # Dylan: just realizing that software versioning will be a huge headache - as strings get added and subtracted, 
+    # the latest po files might not cover old versions of the interface.. 
+
+    def __unicode__(self):
+        return "%s: %s" % self.code, self.name
 
 
 engine.add_syncing_models([VideoLog, ExerciseLog, UserLogSummary])
