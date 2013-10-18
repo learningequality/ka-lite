@@ -14,7 +14,9 @@ from securesync.engine.api_client import SyncClient
 class Command(BaseCommand):
     args = "<target server host (protocol://domain:port)> <num_retries>"
     help = "Synchronize the local SyncedModels with a remote server"
-
+    from utils import set_process_priority
+    set_process_priority.low()
+    
     def stdout_writeln(self, str):  self.stdout.write("%s\n"%str)
     def stderr_writeln(self, str):  self.stderr.write("%s\n"%str)
 
