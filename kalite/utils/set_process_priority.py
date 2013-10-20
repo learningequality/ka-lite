@@ -74,7 +74,7 @@ def _set_linux_mac_priority(priority):
         sys.stdout.write("Cannot set priority; probably insufficient privilege\n")  
         return False
         
-    return
+    return priority
 
 
 def _set_priority(priority):
