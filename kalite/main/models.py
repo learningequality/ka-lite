@@ -506,10 +506,16 @@ class VideoFile(ExtendedModel):
 
 
 class LanguagePack(ExtendedModel):
-    lang_id = models.CharField(max_length=5, primary_key=True)
-    lang_version = models.CharField(max_length=5)
-    software_version = models.CharField(max_length=12)
-    lang_name = models.CharField(max_length=30)
+    code = models.CharField(max_length=5, primary_key=True)
+    name = models.CharField(max_length=50)
+    phrases = models.PositiveIntegerField(default=0)
+    approved_translations = models.PositiveIntegerField(default=0)
+    percent_translated = models.PositiveIntegerField(default=0)
+    crowdin_version = models.PositiveIntegerField(default=1)
+    software_version = models.CharField(max_length=20, default=None)
+
+    def __unicode__(self):
+        return "%s: %s" % (self.code, self.name)
 
 
 engine.add_syncing_models([VideoLog, ExerciseLog, UserLogSummary])

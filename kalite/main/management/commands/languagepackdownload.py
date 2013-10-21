@@ -8,6 +8,7 @@ from StringIO import StringIO
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
+import version
 from settings import LOG as logging
 from utils.general import ensure_dir
 from main.models import LanguagePack
@@ -25,15 +26,24 @@ class Command(BaseCommand):
                     default=None,
                     metavar="LANG_CODE",
                     help="Specify a particular language code to download language pack for."),
+        make_option('-s', '--software_version',
+                    action='store',
+                    dest='software_version',
+                    default=None,
+                    metavar="SOFT_VERS",
+                    help="Specify the software version to download a language pack for."),
     )
 
     def handle(self, *args, **options):
         code = options["lang_code"]
+        software_version = options["software_version"]
         if not code:
             raise CommandError("You must specify a language to download a language pack for.")
+        if not software_version:
+            raise CommandError("You must specify a software version to download a language pack for.")
 
         ## Download the language pack
-        zip_file = get_language_pack(code)
+        zip_file = get_language_pack(code, software_version)
 
         ## Unpack into locale directory
         unpack_language(code, zip_file)
@@ -42,16 +52,16 @@ class Command(BaseCommand):
         update_database(code)
 
 
-def get_language_pack(code):
+def get_language_pack(code, software_version):
     """Download language pack for specified language"""
 
     logging.info("Retrieving language pack: %s" % code)
-    request_url = "http://%s/static/language_packs/%s.zip" % (settings.CENTRAL_SERVER_HOST, code)
+    request_url = "http://%s/static/language_packs/%s/%s.zip" % (settings.CENTRAL_SERVER_HOST, software_version, code)
     r = requests.get(request_url)
     try:
         r.raise_for_status()
     except Exception as e:
-        logging.error(e)
+        raise CommandError(e)
 
     return r.content
 
