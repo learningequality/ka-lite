@@ -1,8 +1,14 @@
 """
-1. Download latest translations from CrowdIn
-2. Store meta data incl: percent translated, version number, language
-3. Compile po to mo
-4. Zip everything up at exposed URL 
+This command can be run periodically to update the translations we offer for 
+download with the latest from crowdin. Basically it uses the crowdin api to download a 
+specific languages po files, calculates meta data, compiles them, zips the metadata and 
+mo files into a language pack, and moves it to the static dir to be exposed for download.
+
+Steps:
+	1. Download latest translations from CrowdIn
+	2. Store meta data incl: percent translated, version number, language
+	3. Compile po to mo
+	4. Zip everything up and post to exposed URL 
 """
 
 import glob

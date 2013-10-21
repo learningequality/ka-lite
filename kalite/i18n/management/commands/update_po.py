@@ -1,5 +1,13 @@
 """
-Update po files, write them to exposed URL. With -t, generate test files to identify unwrapped strings.
+This command automates the process of generating template po files, which can be uploaded to crowdin. 
+It runs the django commands makemessages and compilemessages and moves the created files to an 
+exposed url, so that they can be downloaded from the web by KA's scripts.
+
+It has an optional flag, -t, which inserts asterisks around the strings in the po files, and 
+compiles them, so that when you run the server, English has been translated to *English* in the 
+hope of making it easy to identify unwrapped strings.
+
+This can be run independently of cache_translations
 """
 
 import re
