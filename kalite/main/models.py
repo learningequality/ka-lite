@@ -504,17 +504,10 @@ class VideoFile(ExtendedModel):
 
 
 class LanguagePack(ExtendedModel):
-    code = models.CharField(max_length=5, primary_key=True)
-    name = models.CharField(max_length=50)
-    phrases = models.PositiveIntegerField()
-    approved_translations = models.PositiveIntegerField()
-    percent_translated = models.PositiveIntegerField()
-    version = models.PositiveIntegerField()
-    # Dylan: just realizing that software versioning will be a huge headache - as strings get added and subtracted, 
-    # the latest po files might not cover old versions of the interface.. 
-
-    def __unicode__(self):
-        return "%s: %s" % self.code, self.name
+    lang_id = models.CharField(max_length=5, primary_key=True)
+    lang_version = models.CharField(max_length=5)
+    software_version = models.CharField(max_length=12)
+    lang_name = models.CharField(max_length=30)
 
 
 engine.add_syncing_models([VideoLog, ExerciseLog, UserLogSummary])

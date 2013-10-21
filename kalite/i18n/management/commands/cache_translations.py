@@ -10,7 +10,6 @@ Steps:
 	3. Compile po to mo
 	4. Zip everything up and post to exposed URL 
 """
-
 import glob
 import json
 import os
@@ -25,9 +24,10 @@ from django.core import management
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
+import version
 from settings import LOG as logging
 from update_po import compile_all_po_files
-from utils.general import ensure_dir
+from utils.general import ensure_dir, version_diff
 
 LOCALE_ROOT = settings.LOCALE_PATHS[0]
 LANGUAGE_PACK_AVAILABILITY_FILENAME = "language_pack_availability.json"
@@ -131,10 +131,11 @@ def generate_metadata():
 			}
 
 		updated_metadata = {
-			"percent_approved_translations": crowdin_meta.get("approved_progress"),
-			"phrases": crowdin_meta.get("phrases"),
-			"translations_approved": crowdin_meta.get("approved"),
-			"version": increment_version(local_meta, crowdin_meta),
+			"percent_translated": int(crowdin_meta.get("approved_progress")),
+			"phrases": int(crowdin_meta.get("phrases")),
+			"approved_translations": int(crowdin_meta.get("approved")),
+			"software_version": version.VERSION,
+			"crowdin_version": increment_crowdin_version(local_meta, crowdin_meta),
 		}
 
 		local_meta.update(updated_metadata)
@@ -164,16 +165,17 @@ def get_crowdin_meta(project_id=settings.CROWDIN_PROJECT_ID, project_key=setting
 	return crowdin_meta_dict
 
 
-def increment_version(local_meta, crowdin_meta):
-	"""Increment language pack version if translations have been updated"""
+def increment_crowdin_version(local_meta, crowdin_meta):
+	"""Increment language pack version if translations have been updated (start over if software version has incremented)"""
 	total_translated = local_meta.get("total_translated")
-	if not total_translated:
-		version = 1
+	if not total_translated or version_diff(local_meta.get("software_version"), version.VERSION) < 0:
+		# set to one for the first time, or if this is the first build of a new software version
+		crowdin_version = 1
 	elif total_translated == crowdin_meta.get("approved"):
-		version = local_meta.get("version") or 1
+		crowdin_version = local_meta.get("crowdin_version") or 1
 	else:
-		version = local_meta.get("version") + 1
-	return version
+		crowdin_version = local_meta.get("crowdin_version") + 1
+	return crowdin_version
 
 
 
@@ -185,7 +187,9 @@ def zip_language_packs():
 		if not os.path.isdir(os.path.join(LOCALE_ROOT, lang)):
 			continue
 		# Create a zipfile for this language
-		z = zipfile.ZipFile(os.path.join(settings.LANGUAGE_PACK_ROOT, "%s.zip" % lang), 'w')
+		zip_path = os.path.join(settings.LANGUAGE_PACK_ROOT, version.VERSION)
+		ensure_dir(zip_path)
+		z = zipfile.ZipFile(os.path.join(zip_path, "%s.zip" % lang), 'w')
 		# Get every single file in the directory and zip it up
 		lang_locale_path = os.path.join(LOCALE_ROOT, lang)
 		for metadata_file in glob.glob('%s/*.json' % lang_locale_path):
