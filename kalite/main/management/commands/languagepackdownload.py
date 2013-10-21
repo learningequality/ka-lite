@@ -28,7 +28,7 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
-        code = options.get("lang_code")
+        code = options["lang_code"]
         if not code:
             raise CommandError("You must specify a language to download a language pack for.")
 
@@ -69,25 +69,16 @@ def unpack_language(code, zip_file):
 def update_database(code):
     """Create/update LanguagePack table in database based on given languages metadata"""
 
-    import pdb; pdb.set_trace()
-    try:
-        metadata = json.loads(open(os.path.join(LOCALE_ROOT, code, "%s_metadata.json" % code)).read())
-    except Exception as e:
-        logging.error(e)
+    metadata = json.loads(open(os.path.join(LOCALE_ROOT, code, "%s_metadata.json" % code)).read())
 
     logging.info("Updating database for language pack: %s" % code)
-    try:
-        pack, created = LanguagePack.objects.get_or_create(code=code, name=metadata.get("name"))
-        pack.phrases = metadata.get("phrases")
-        pack.approved_translations = metadata.get("translations_approved")
-        pack.percent_translated = metadata.get("percent_approved_translations")
-        pack.version = metadata.get("version")
+        
+    pack, created = LanguagePack.objects.get_or_create(code=code, name=metadata["name"])
+    for key, value in metadata.items():
+        setattr(pack, key, value)
+    pack.save()
 
-        pack.save()
-    except Exception as e:
-        logging.error(e)
-    else:
-        logging.info("Successfully updated database.")
+    logging.info("Successfully updated database.")
 
 
 

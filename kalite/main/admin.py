@@ -29,6 +29,6 @@ class VideoFileAdmin(admin.ModelAdmin):
 admin.site.register(VideoFile, VideoFileAdmin)
 
 class LanguagePackAdmin(admin.ModelAdmin):
-    list_display = ("lang_id", "lang_name")
-    list_filter = ("lang_id", "lang_name")
+    list_display = ("code", "name", "phrases", "approved_translations", "percent_translated", "version")
+    list_filter = ("code", "name", "phrases", "approved_translations", "percent_translated", "version")
 admin.site.register(LanguagePack, LanguagePackAdmin)
