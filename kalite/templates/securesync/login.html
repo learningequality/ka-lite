@@ -13,7 +13,7 @@
     
     <h2>{% trans "Login" %}</h2>
 
-    <div style="{% if facilities.count < 2 %}display: none;{% endif %}">
+    <div style="{% if facilities|length < 2 %}display: none;{% endif %}">
         {{ form.facility.errors }}
         <p>
             {% comment %}Translators: This will be a label in a form.{% endcomment %} 

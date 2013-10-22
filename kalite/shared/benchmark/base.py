@@ -32,7 +32,10 @@ class Common(object):
         self.return_dict['class']=type(self).__name__
         self.return_dict['uname'] = platform.uname()
         self.return_dict['fixture'] = fixture
-        self.verbosity = int(kwargs.get("verbosity"))
+        try:
+            self.verbosity = int(kwargs.get("verbosity"))
+        except:
+            self.verbosity = 1
                                 
         try:
             branch = subprocess.Popen(["git", "describe", "--contains", "--all", "HEAD"], stdout=subprocess.PIPE).communicate()[0]
@@ -95,9 +98,9 @@ class Common(object):
         All benchmarks can take a random seed,
         all should clean / recompile
         """
+        self.random=random.Random() #thread-safe local instance of random
         if behavior_profile:
             self.behavior_profile = behavior_profile
-            self.random=random.Random() #thread-safe local instance of random
             self.random.seed(self.behavior_profile)
 
     def _execute(self): pass
@@ -105,14 +108,21 @@ class Common(object):
     def _get_post_execute_info(self): pass
 
 
-class SeleniumCommon(Common):
-    def _setup(self, url="http://localhost:8008/", username="s1", password="s1", timeout=30, **kwargs):
+class UserCommon(Common):
+    def _setup(self, username="s1", password="s1", **kwargs):
+        # Note: user must exist
+        super(UserCommon, self)._setup(**kwargs)
+
+        self.username = username
+        self.password = password
+
+
+class SeleniumCommon(UserCommon):
+    def _setup(self, url="http://localhost:8008/", timeout=30, **kwargs):
         # Note: user must exist
         super(SeleniumCommon, self)._setup(**kwargs)
 
         self.url = url
-        self.username = username
-        self.password = password
 
         self.browser = webdriver.Firefox()
         self.timeout = timeout

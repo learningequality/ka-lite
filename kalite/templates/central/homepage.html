@@ -5,21 +5,10 @@
 {% block title %}Home{% endblock title %}
 {% block home_active %}active{% endblock home_active %}
 
-{% block jqueryjs %}
-<script type="text/javascript" src="{% static 'js/jquery-1.8.3.min.js' %}"></script> 
-{% endblock jqueryjs %}
-
 {% block analytics %}{% include 'central/web_analytics.html' %}{% endblock analytics %}
 
 
 {% block landing-page %}
-<div id="announcements">
-    <div class="alert alert-info">
-        <div class="center-text max-width-container">
-            The KA Lite team is participating in two hackathons this weekend: the <a href="http://kalite.learningequality.org:7007/wiki/contribute/hackathons/code-for-good-stanford-2013" class="alert-link">Code for Good Hackathon for Girls’ Education</a> at Stanford University sponsored by our friends at UNICEF and Intel and <a href="http://hack4good.io/">#hack4Good</a> hosted by our friends at Geekli.st. Click on the links to get more information and find out how you can join in on the fun!
-        </div>
-    </div>
-</div>
 <div class="row-fluid quotes-container">
    <div class="row-fluid">
         <div class="span12">

@@ -2,14 +2,14 @@
 System = Windows, Linux, etc
 Platform = WindowsXP-SP3, etc.
 
-This file is for functions that take system- and platform-specific 
+This file is for functions that take system- and platform-specific
 information, and try to make them accessible generically (at least for our purposes).
 """
 import os
 import platform
 import sys
 import tempfile
-from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED, is_zipfile
+from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED, is_zipfile, BadZipfile
 
 ALL_SYSTEMS = ["windows", "darwin", "linux"]
 
@@ -70,8 +70,11 @@ def system_specific_zipping(files_dict, zip_file=None, compression=ZIP_DEFLATED,
 
     if not zip_file:
         zip_file = tempfile.mkstemp()[1]
-    with ZipFile(zip_file, "w", compression) as zfile:
-        for fi, (dest_path, src_path) in enumerate(files_dict.iteritems()):
+
+    zfile = None
+    try:
+        zfile = ZipFile(zip_file, 'w', compression)
+        for fi, (src_path, dest_path) in enumerate(files_dict.iteritems()):
             if callback:
                 callback(src_path, fi, len(files_dict))
             # All platforms besides windows need permissions set.
@@ -80,10 +83,13 @@ def system_specific_zipping(files_dict, zip_file=None, compression=ZIP_DEFLATED,
             # Add with exec perms
             else:
                 info = ZipInfo(dest_path)
-                info.external_attr = 0775# << 16L # give full access to included file
+                info.external_attr = 0775 # << 16L # give full access to included file
                 with open(src_path, "r") as fh:
                     zfile.writestr(info, fh.read())
-
+        zfile.close()
+    finally:
+        if zfile:
+            zfile.close()
 
 def _default_callback_unzip(afile, fi, nfiles):
     """

@@ -125,12 +125,18 @@ def get_data_form(request, *args, **kwargs):
 
     # Fill in backwards: a user implies a group
     if form.data.get("user") and not form.data.get("group"):
-        user = get_object_or_404(FacilityUser, id=form.data["user"])
+        if "facility_user" in request.session and form.data["user"] == request.session["facility_user"].id:
+            user = request.session["facility_user"]
+        else:
+            user = get_object_or_404(FacilityUser, id=form.data["user"])
         form.data["group"] = getattr(user.group, "id", None)
 
     if form.data.get("group") and not form.data.get("facility"):
         group = get_object_or_404(FacilityGroup, id=form.data["group"])
         form.data["facility"] = getattr(group.facility, "id")
+
+    if type(form.data["facility"]) == Facility:
+        form.data["facility"] = form.data["facility"].id
 
     return form
 

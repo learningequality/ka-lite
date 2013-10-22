@@ -7,16 +7,26 @@
     "v_position": 36, 
     "path": "/math/geometry/similarity/triangle_similarlity/e/similar_triangles_1/", 
     "id": "similar_triangles_1", 
+    "paths": [
+      "/math/geometry/similarity/triangle_similarlity/e/similar_triangles_1/"
+    ], 
     "display_name": "Similar triangles 1", 
     "title": "Similar triangles 1", 
     "live": true, 
+    "parents": [
+      "", 
+      "math", 
+      "geometry", 
+      "similarity", 
+      "triangle_similarlity"
+    ], 
+    "seconds_per_fast_problem": 8.0, 
     "description": "", 
     "basepoints": 15.0, 
     "h_position": -33, 
     "slug": "similar_triangles_1", 
     "kind": "Exercise", 
     "name": "similar_triangles_1", 
-    "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "congruent_triangles_2"
     ]
@@ -30,16 +40,26 @@
     "v_position": 37, 
     "path": "/math/geometry/similarity/triangle_similarlity/e/similar_triangles_2/", 
     "id": "similar_triangles_2", 
+    "paths": [
+      "/math/geometry/similarity/triangle_similarlity/e/similar_triangles_2/"
+    ], 
     "display_name": "Similar triangles 2", 
     "title": "Similar triangles 2", 
     "live": true, 
+    "parents": [
+      "", 
+      "math", 
+      "geometry", 
+      "similarity", 
+      "triangle_similarlity"
+    ], 
+    "seconds_per_fast_problem": 10.0, 
     "description": "", 
     "basepoints": 17.0, 
     "h_position": -33, 
     "slug": "similar_triangles_2", 
     "kind": "Exercise", 
     "name": "similar_triangles_2", 
-    "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "proportions_1"
     ]
@@ -52,16 +72,26 @@
     "v_position": 38, 
     "path": "/math/geometry/similarity/triangle_similarlity/e/solving_similar_triangles_1/", 
     "id": "solving_similar_triangles_1", 
+    "paths": [
+      "/math/geometry/similarity/triangle_similarlity/e/solving_similar_triangles_1/"
+    ], 
     "display_name": "Solving similar triangles 1", 
     "title": "Solving similar triangles 1", 
     "live": true, 
+    "parents": [
+      "", 
+      "math", 
+      "geometry", 
+      "similarity", 
+      "triangle_similarlity"
+    ], 
+    "seconds_per_fast_problem": 16.0, 
     "description": "", 
-    "basepoints": 19.0, 
+    "basepoints": 20.0, 
     "h_position": -33, 
     "slug": "solving_similar_triangles_1", 
     "kind": "Exercise", 
     "name": "solving_similar_triangles_1", 
-    "seconds_per_fast_problem": 15.0, 
     "prerequisites": [
       "similar_triangles_2", 
       "similar_triangles_1"
@@ -72,16 +102,26 @@
     "v_position": 39, 
     "path": "/math/geometry/similarity/triangle_similarlity/e/solving_similar_triangles_2/", 
     "id": "solving_similar_triangles_2", 
+    "paths": [
+      "/math/geometry/similarity/triangle_similarlity/e/solving_similar_triangles_2/"
+    ], 
     "display_name": "Solving similar triangles 2", 
     "title": "Solving similar triangles 2", 
     "live": false, 
+    "parents": [
+      "", 
+      "math", 
+      "geometry", 
+      "similarity", 
+      "triangle_similarlity"
+    ], 
+    "seconds_per_fast_problem": 22.0, 
     "description": "", 
     "basepoints": 22.0, 
     "h_position": -32, 
     "slug": "solving_similar_triangles_2", 
     "kind": "Exercise", 
     "name": "solving_similar_triangles_2", 
-    "seconds_per_fast_problem": 22.0, 
     "prerequisites": []
   }
 ]

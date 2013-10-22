@@ -107,8 +107,17 @@
 {% block content %}
 <div id="content">
     {% block navbar %}
-    <div class="facility"><h2>{% blocktrans %}User List for {{ facility }}{% endblocktrans %} (<a href="?facility=select">{% trans "Change Facility" %}</a>)</h2></div>
+    <div class="facility">
+        <h2>
+            {% trans "User List" %}
+            {% if not singlefacility %}
+                {% trans "for" %} {{ facility }}
+                (<a href="?facility=select">{% trans "Change Facility" %}</a>)
+            {% endif %}
+        </h2>
+    </div>
     {% endblock %}
+
     {% block selectionbar %}
     <div id="selection-bar">
         <div class="selection">
@@ -121,11 +130,11 @@
                 <a style="margin-left: 10px" href="{% url add_group %}?next={% url user_list %}">({% trans "Add a group" %})</a>
             </div>
             <select id="group">
-            <option {% if not request.GET.group %}selected{% endif %}>----</option>
+            <option {% if not group_id %}selected{% endif %}>----</option>
             {% for group in groups %}
-            <option value="{{ group.id }}" {% if request.GET.group == group.id %}selected{% endif %}>{{ group }}</option>
+            <option value="{{ group.id }}" {% if group_id == group.id %}selected{% endif %}>{{ group }}</option>
             {% endfor %}
-            <option {% if request.GET.group == "Ungrouped" %}selected{% endif %}>Ungrouped</option>
+            <option {% if group_id == "Ungrouped" %}selected{% endif %}>Ungrouped</option>
             </select>
         </div>
     </div>
@@ -141,17 +150,19 @@
     {% else %}
     <div class="selection">
         <div class="subtitle">{% trans "Select Action" %}</div>
+        {% if groups %}
         <button id="movegroup">{% trans "Move Users to Group" %}</button>
         <select id="movegrouplist">
                 <option selected>----</option>
                 {% for group in groups %}
-                    {% if not request.GET.group == group.id %}
+                    {% if not group_id == group.id %}
                         <option value="{{ group.id }}">{{ group }}</option>
                     {% endif %}
                 {% endfor %}
         </select>
+        {% endif %}
         
-         {% if not request.GET.group == "Ungrouped" %}
+         {% if not group_id == "Ungrouped" %}
          	     <button id="removegroup">{% trans "Remove Users from Group" %}</button>
          {% endif %} 
 <!--         <button id="newuser">{% trans "Add New User to Group" %}</button> -->
@@ -172,7 +183,7 @@
                 <table>
                     <tbody>
                         <tr>
-                            <th class="headrowuser">
+                            <th class="headrowuser selectcol">
                                 {% trans "Select" %} (<a id="all" href="#">{% trans "All" %}</a>/<a id="none" href="#">{% trans "None" %}</a>)
                             </th>
                             <th class="headrowuser">
@@ -190,27 +201,35 @@
                         </tr>
                         {% for user in users %}
                             <tr>
-                                <td>
+                                <td class="selectcol">
                                     <input type="checkbox" value="{{ user.username }}">
                                 </td>
                                 <td>
                                     <span title="{{ user.first_name }}">
-                                        {{ user.first_name }}
+                                        <a href="{% url edit_facility_user id=user.id %}">
+                                            {{ user.first_name }}
+                                        </a>
                                     </span>
                                 </td>
                                 <td>
                                     <span title="{{ user.last_name }}">
-                                        {{ user.last_name }}
+                                        <a href="{% url edit_facility_user id=user.id %}">
+                                            {{ user.last_name }}
+                                        </a>
                                     </span>
                                 </td>
                                 <td>
                                     <span title="{{ user.username }}">
-                                        {{ user.username }}
+                                        <a href="{% url edit_facility_user id=user.id %}">
+                                            {{ user.username }}
+                                        </a>
                                     </span>
                                 </td>
                                 <td>
                                     <span title="{{ user.group }}">
-                                        {{ user.group }}
+                                        <a href="{% url edit_facility_user id=user.id %}">
+                                            {{ user.group }}
+                                        </a>
                                     </span>
                                 </td>
                             </tr>
