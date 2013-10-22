@@ -23,13 +23,13 @@ class Command(BaseCommand):
         make_option('-l', '--language',
                     action='store',
                     dest='lang_code',
-                    default=None,
+                    default=settings.LANGUAGE_CODE,
                     metavar="LANG_CODE",
                     help="Specify a particular language code to download language pack for."),
         make_option('-s', '--software_version',
                     action='store',
                     dest='software_version',
-                    default=None,
+                    default=version.VERSION,
                     metavar="SOFT_VERS",
                     help="Specify the software version to download a language pack for."),
     )
@@ -37,10 +37,10 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         code = options["lang_code"]
         software_version = options["software_version"]
-        if not code:
-            raise CommandError("You must specify a language to download a language pack for.")
-        if not software_version:
-            raise CommandError("You must specify a software version to download a language pack for.")
+        if code == settings.LANGUAGE_CODE:
+            logging.info("Note: language code set to default language. This is fine (and may be intentional), but you may specify a language other than '%s' with -l" % code)
+        if software_version == version.VERSION:
+            logging.info("Note: software version set to default version. This is fine (and may be intentional), but you may specify a software version other than '%s' with -s" % version.VERSION)
 
         ## Download the language pack
         zip_file = get_language_pack(code, software_version)
