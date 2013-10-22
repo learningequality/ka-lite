@@ -520,7 +520,7 @@ class LanguagePack(ExtendedModel):
         increment software version.
         - software_version: the software version that the language pack applies to ex: 0.11.0
     """
-    code = models.CharField(max_length=5, primary_key=True)
+    code = models.CharField(max_length=8, primary_key=True)
     name = models.CharField(max_length=50)
     phrases = models.PositiveIntegerField(default=0)
     approved_translations = models.PositiveIntegerField(default=0)
