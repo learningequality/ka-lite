@@ -254,7 +254,8 @@ CACHES = {
 _5_years = 5 * 365 * 24 * 60 * 60
 _100_years = 100 * 365 * 24 * 60 * 60
 _max_cache_time = min(_100_years, sys.maxint - time.time() - _5_years)
-CACHE_TIME = getattr(local_settings, "CACHE_TIME", _max_cache_time)
+# CACHE_TIME = getattr(local_settings, "CACHE_TIME", _max_cache_time)
+CACHE_TIME = 0
 
 # Cache is activated in every case,
 #   EXCEPT: if CACHE_TIME=0
