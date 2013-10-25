@@ -5,6 +5,7 @@ General string, integer, date functions.
 """
 import datetime
 import os
+import errno
 
 
 class InvalidDateFormat(Exception):
@@ -127,17 +128,17 @@ def version_diff(v1, v2):
     return 0
 
 
+# http://stackoverflow.com/questions/600268/mkdir-p-functionality-in-python
 def ensure_dir(path):
     """Create the entire directory path, if it doesn't exist already."""
-    path_parts = path.split("/")
-    full_path = "/"
-    for part in path_parts:
-        if "." in part:
-            raise InvalidDirectoryFormat()
-        if part is not '':
-            full_path += part + "/"
-            if not os.path.exists(full_path):
-                os.makedirs(full_path)
+    try:
+        os.makedirs(path)
+    except OSError, e:
+        if e.errno == errno.EEXIST:
+            if not os.path.isdir(path):
+                raise InvalidDirectoryFormat()
+        else:
+            raise
 
 # http://code.activestate.com/recipes/82465-a-friendly-mkdir/
 #def _mkdir(newdir):
