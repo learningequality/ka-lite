@@ -64,6 +64,10 @@ class Command(UpdatesDynamicCommand):
         caching_enabled = settings.CACHE_TIME != 0
         handled_video_ids = []  # stored to deal with caching
         failed_video_ids = []  # stored to avoid requerying failures.
+
+        from utils import set_process_priority
+        set_process_priority.lowest()
+        
         try:
             while True: # loop until the method is aborted
                 if VideoFile.objects.filter(download_in_progress=True).count() > 0:
