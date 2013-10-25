@@ -11,6 +11,7 @@ import settings
 import version
 from settings import LOG as logging
 from utils.general import ensure_dir
+from utils.languages import convert_language_code
 from main.models import LanguagePack
 
 
@@ -35,7 +36,7 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
-        code = options["lang_code"]
+        code = convert_language_code(options["lang_code"])
         software_version = options["software_version"]
         if code == settings.LANGUAGE_CODE:
             logging.info("Note: language code set to default language. This is fine (and may be intentional), but you may specify a language other than '%s' with -l" % code)

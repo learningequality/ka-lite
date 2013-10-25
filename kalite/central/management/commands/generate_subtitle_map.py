@@ -16,7 +16,7 @@ import settings
 from settings import LOG as logging
 from shared.topic_tools import get_node_cache
 from utils.general import convert_date_input, ensure_dir
-from utils.subtitles import make_request
+from utils.languages import make_request
 
 
 headers = {

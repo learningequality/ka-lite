@@ -22,7 +22,7 @@ import settings
 from generate_subtitle_map import SRTS_JSON_FILENAME, headers, get_lang_map_filepath
 from settings import LOG as logging
 from utils.general import convert_date_input, ensure_dir
-from utils.subtitles import make_request
+from utils.languages import make_request, get_language_name
 
 
 DOWNLOAD_PATH = settings.STATIC_ROOT + "srt/"  # kalite/static/
@@ -245,38 +245,6 @@ def update_json(youtube_id, lang_code, downloaded, api_response, time_of_attempt
     return True
 
 
-def generate_zipped_srts(lang_codes_to_update, download_path=DOWNLOAD_PATH):
-
-    # Create media directory if it doesn't yet exist
-    ensure_dir(settings.MEDIA_ROOT)
-    zip_path = settings.MEDIA_ROOT + "subtitles/"
-    ensure_dir(zip_path)
-    lang_codes_to_update = lang_codes_to_update or os.listdir(download_path)
-
-    for lang_code in lang_codes_to_update:
-        srt_dir = os.path.join(download_path, lang_code, "subtitles")
-        zip_file = os.path.join(zip_path, "%s_subtitles.zip" % lang_code)
-
-        # Remove any old version (as we may not re-create)
-        if os.path.exists(zip_file):
-            os.remove(zip_file)
-
-        if not os.path.exists(srt_dir):
-            logging.warn("No srt directory for %s; skipping." % lang_code)
-            continue
-
-        srts = glob.glob(os.path.join(srt_dir, "*.srt"))
-        if len(srts) == 0:
-            logging.warn("No srts for %s; skipping." % lang_code)
-            continue
-
-        logging.info("Zipping up a new pack for language code: %s" % lang_code)
-        zf = zipfile.ZipFile(zip_file, 'w')
-        for f in srts:
-            zf.write(f, arcname=os.path.basename(f))
-        zf.close()
-
-
 def get_new_counts(language_code, data_path=settings.SUBTITLES_DATA_ROOT, download_path=DOWNLOAD_PATH):
     """Write a new dictionary of srt file counts in respective download folders"""
 
@@ -298,25 +266,6 @@ def get_new_counts(language_code, data_path=settings.SUBTITLES_DATA_ROOT, downlo
 
     write_new_json(language_subtitle_count, data_path)
 
-
-def get_language_name(lang_code):
-    """Return full language name from ISO 639-1 language code, raise exception if it isn't hardcoded yet"""
-    lang_lookup_filename = "languagelookup.json"
-    lang_lookup_path = os.path.join(settings.SUBTITLES_DATA_ROOT, lang_lookup_filename)
-    LANGUAGE_LOOKUP = json.loads(open(lang_lookup_path).read())
-    
-    language_name = LANGUAGE_LOOKUP.get(lang_code)
-    if not language_name:
-        logging.info("Couldn't find language code %s. Updating our language lookup file." % lang_code)
-        get_all_languages(lang_lookup_path)
-        LANGUAGE_LOOKUP = json.loads(open(lang_lookup_path).read())
-        if lang_code not in LANGUAGE_LOOKUP:
-            # This should never happen, but just in case..
-            raise CommandError("Something has gone wrong. Amara doesn't support language code %s" % lang_code)
-        else:
-            language_name = LANGUAGE_LOOKUP.get(lang_code)
-
-    return language_name
 
 def write_new_json(subtitle_counts, data_path):
     """Write JSON to file in static/data/subtitles/"""
@@ -357,15 +306,6 @@ def update_srt_availability(lang_code):
         json.dump(srts_dict, fp)
 
     return yt_ids
-
-
-def get_all_languages(save_path):
-    """Update the languagelookup file"""
-    get_langs = requests.get('https://amara.org/api2/partners/languages/?format=json')
-    langs = json.loads(get_langs.content)
-    langs = langs['languages']
-    with open(save_path ,'wb') as updates:
-        json.dump(langs, updates)
 
 
 class Command(BaseCommand):
@@ -425,6 +365,6 @@ class Command(BaseCommand):
 
             logging.info(
                 "Executed successfully! Re-zipping changed language packs!")
-            generate_zipped_srts(lang_codes_to_update=lang_codes)
+            call_command("update_language_packs")
 
             logging.info("Process complete.")

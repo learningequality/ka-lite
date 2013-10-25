@@ -20,7 +20,6 @@ import zipfile
 import StringIO
 
 from optparse import make_option
-from django.core import management
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
@@ -28,6 +27,7 @@ import version
 from settings import LOG as logging
 from update_po import compile_all_po_files
 from utils.general import ensure_dir, version_diff
+from utils.languages import get_language_name, convert_language_code
 
 LOCALE_ROOT = settings.LOCALE_PATHS[0]
 LANGUAGE_PACK_AVAILABILITY_FILENAME = "language_pack_availability.json"
@@ -36,14 +36,18 @@ class Command(BaseCommand):
 	help = 'Caches latest translations from CrowdIn'
 
 	def handle(self, **options):
-		cache_translations()
+		update_language_packs()
 
 
-def cache_translations():
-	## Download from CrowdIn
-	download_latest_translations() # this fcn will be broken until we get set up on CrowdIn, hopefully by next week
+def update_language_packs():
+	## Download latest UI translations from CrowdIn
+	download_latest_translations() 
 
-	## Loop through them, create/update meta data
+	## For now, we move srt files from static dir to the locale dir (to preserve existing functionality)
+	## Once we migrate over to LanguagePacks completely, cache_subtitles should save them there. 
+	move_existing_srts()
+
+	## Loop through new UI translations & subtitles, create/update unified meta data
 	generate_metadata()
 	
 	## Compile
@@ -100,13 +104,34 @@ def extract_new_po(tmp_dir_path=os.path.join(LOCALE_ROOT, "tmp")):
 
 	logging.info("Unpacking new translations")
 	for lang in os.listdir(tmp_dir_path):
+		converted_code = convert_language_code(lang)
 		# ensure directory exists in locale folder, and then overwrite local po files with new ones 
-		ensure_dir(os.path.join(LOCALE_ROOT, lang, "LC_MESSAGES"))
+		ensure_dir(os.path.join(LOCALE_ROOT, converted_code, "LC_MESSAGES"))
 		for po_file in glob.glob(os.path.join(tmp_dir_path, lang, "*/*.po")): 
 			if "js" in os.path.basename(po_file):
-				shutil.copy(po_file, os.path.join(LOCALE_ROOT, lang, "LC_MESSAGES", "djangojs.po"))
+				shutil.copy(po_file, os.path.join(LOCALE_ROOT, converted_code, "LC_MESSAGES", "djangojs.po"))
 			else:
-				shutil.copy(po_file, os.path.join(LOCALE_ROOT, lang, "LC_MESSAGES", "django.po"))
+				shutil.copy(po_file, os.path.join(LOCALE_ROOT, converted_code, "LC_MESSAGES", "django.po"))
+
+
+def move_existing_srts():
+	"""Move srt files from static/srt to locale directory and file them by language code"""
+	# Establish context
+	srt_root = os.path.join(settings.STATIC_ROOT, "srt")
+	locale_root = settings.LOCALE_PATHS[0]
+
+	# For each language in static, move those files to locale/<langcode>/srt/*.srt
+	for lang in os.listdir(srt_root):
+		# Skips if not a directory
+		if not os.path.isdir(os.path.join(srt_root, lang)):
+			continue
+		lang_srt_path = os.path.join(srt_root, lang, "subtitles")
+		lang_locale_path = os.path.join(locale_root, lang)
+		ensure_dir(lang_locale_path)
+		dst = os.path.join(lang_locale_path, "srt")
+		if os.path.exists(dst):
+			shutil.rmtree(dst)
+		shutil.copytree(lang_srt_path, dst)
 
 
 def generate_metadata():
@@ -117,11 +142,12 @@ def generate_metadata():
 
 	# loop through all languages in locale, update master file
 	crowdin_meta_dict = get_crowdin_meta()
-
+	subtitle_counts = json.loads(open(settings.SUBTITLES_DATA_ROOT + "subtitle_counts.json").read())
 	for lang in os.listdir(LOCALE_ROOT):
+		# skips anything not a directory
 		if not os.path.isdir(os.path.join(LOCALE_ROOT, lang)):
 			continue
-		crowdin_meta = next((meta for meta in crowdin_meta_dict if meta["code"] == lang), None)
+		crowdin_meta = next((meta for meta in crowdin_meta_dict if meta["code"] == convert_language_code(lang_code=lang, for_crowdin=True)), None)
 		try: 
 			local_meta = json.loads(open(os.path.join(LOCALE_ROOT, lang, "%s_metadata.json" % lang)).read())
 		except:
@@ -130,21 +156,30 @@ def generate_metadata():
 				"name": crowdin_meta.get("name"),
 			}
 
+		# Obtain number of subtitles
+		entry = subtitle_counts.get(get_language_name(lang))
+		if entry:
+			srt_count = entry.get("count")
+		else:
+			srt_count = 0
+
+
 		updated_metadata = {
 			"percent_translated": int(crowdin_meta.get("approved_progress")),
 			"phrases": int(crowdin_meta.get("phrases")),
 			"approved_translations": int(crowdin_meta.get("approved")),
 			"software_version": version.VERSION,
 			"crowdin_version": increment_crowdin_version(local_meta, crowdin_meta),
+			"subtitle_count": srt_count,
 		}
 
 		local_meta.update(updated_metadata)
 
-		# Write local TODO(Dylan): probably don't need to write this local version - seems like a duplication of effort
+		# Write locally (this is used on download by distributed server to update it's database)
 		with open(os.path.join(LOCALE_ROOT, lang, "%s_metadata.json" % lang), 'w') as output:
 			json.dump(local_meta, output)
 		
-		# Update master
+		# Update master (this is used for central server to handle API requests for data)
 		master_file.append(local_meta)
 
 	# Save updated master
@@ -189,7 +224,7 @@ def zip_language_packs():
 		# Create a zipfile for this language
 		zip_path = os.path.join(settings.LANGUAGE_PACK_ROOT, version.VERSION)
 		ensure_dir(zip_path)
-		z = zipfile.ZipFile(os.path.join(zip_path, "%s.zip" % lang), 'w')
+		z = zipfile.ZipFile(os.path.join(zip_path, "%s.zip" % convert_language_code(lang)), 'w')
 		# Get every single file in the directory and zip it up
 		lang_locale_path = os.path.join(LOCALE_ROOT, lang)
 		for metadata_file in glob.glob('%s/*.json' % lang_locale_path):
