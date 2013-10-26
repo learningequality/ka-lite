@@ -527,6 +527,7 @@ class LanguagePack(ExtendedModel):
     percent_translated = models.PositiveIntegerField(default=0)
     crowdin_version = models.PositiveIntegerField(default=1)
     software_version = models.CharField(max_length=20, default=None)
+    subtitle_count = models.PositiveIntegerField(default=0)
 
     def __unicode__(self):
         return "%s: %s" % (self.code, self.name)
