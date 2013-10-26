@@ -11,5 +11,12 @@ if [ "$pids" ]; then
     source "$SCRIPT_DIR/cronstop.sh"
 fi
 
+pids=`ps aux | grep cronserver | grep manage | grep -v "grep" | awk '{print $2}'`
+
+if [ "$pids" ]; then
+    echo "Error: old Cron server is still be running; will not start another process"
+    exit
+fi
+
 freq=`"$SCRIPT_DIR/get_setting.sh" CRONSERVER_FREQUENCY`
 "$pyexec" "$KALITE_DIR/manage.py" cronserver "$freq" &

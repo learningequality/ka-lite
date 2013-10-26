@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
-import logging, sys, os, signal, time, errno
+import logging, sys, os, signal, socket, time, errno
 from socket import gethostname
+from urllib import urlopen
 from django.core.management.base import BaseCommand
 import django.contrib.admin
 from django_cherrypy_wsgiserver import cherrypyserver
@@ -111,25 +112,70 @@ def poll_process(pid):
                 raise Exception
     return True
 
+
 def stop_server(pidfile):
     """
     Stop process whose pid was written to supplied pidfile. 
-    First try SIGTERM and if it fails, SIGKILL. If process is still running, an exception is raised.
     """
     if os.path.exists(pidfile):
         pid = int(open(pidfile).read())
-        try:
-            os.kill(pid, signal.SIGTERM)
-        except OSError: #process does not exist
-            os.remove(pidfile)
-            return
-        if poll_process(pid):
-            #process didn't exit cleanly, make one last effort to kill it
-            os.kill(pid, signal.SIGKILL)
-            #if still_alive(pid):
-            if poll_process(pid):
-                raise OSError, "Process %s did not stop."
         os.remove(pidfile)
+        stop_server_using_pid(pid)
+    else:
+        pass
+
+        
+def stop_server_using_pid(pid):
+    """
+    Stop process whose pid is supplied
+    First try SIGTERM and if it fails, SIGKILL. If process is still running, an exception is raised.
+    """
+    logging.warn("attempting to stop process %s" % pid)
+    try:
+        os.kill(pid, signal.SIGTERM)
+    except OSError: #process does not exist
+        return
+    if poll_process(pid):
+        #process didn't exit cleanly, make one last effort to kill it
+        os.kill(pid, signal.SIGKILL)
+        #if still_alive(pid):
+        if poll_process(pid):
+            raise OSError, "Process %s did not stop."
+
+
+def port_is_available(host, port):
+    """
+    Validates if the cherrypy server port is free;  This is needed in case the PID file
+    for a currently running process does not exist or has the incorrect process ID recorded.
+    """
+    if port < 1024:
+        logging.error("Port id %s is too low, must be bigger than 1024" % port)
+        return False
+
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    ip = socket.gethostbyname(host)
+    result = sock.connect_ex((ip, int(port)))
+    sock.close()
+    if result != 0:
+        logging.info("Port %s is available" % port)
+        return True
+    else:
+        logging.warn("Port %s is busy" % port)
+        return False
+
+
+def ka_lite_is_using_port(host, port):
+    """
+    Tries the port with a /getpid/ url
+    if there is a numeric response, that will be the pid of the cherrypyserver process
+    This is needed in case the PID file has been deleted, but the server continues to run
+    """
+    try:
+        pid = urlopen("http://"+host+":"+port+"/getpid/").read()
+        logging.warn("Existing KA-Lite server found, PID %s" % pid)
+        return int(pid)
+    except:
+        pass
 
 
 def runcherrypyserver(argset=[], **kwargs):
@@ -152,7 +198,21 @@ def runcherrypyserver(argset=[], **kwargs):
     if "stop" in options:
         stop_server(options['pidfile'])
         return True
-    
+
+    if port_is_available(options['host'], options['port']):
+        pass
+    else:
+        # is kalite running on that port?
+        existing_server_pid = ka_lite_is_using_port(options['host'], options['port'])
+        if existing_server_pid:
+            stop_server_using_pid(existing_server_pid)
+            # try again, is kalite still running on that port?
+            existing_server_pid = ka_lite_is_using_port(options['host'], options['port'])
+            if existing_server_pid:
+                raise Exception("Existing kalite process cannot be stopped")
+        else:
+            raise Exception("Port %s is currently in use by another process, cannot continue" % options['port'])
+
     cherrypyserver.run_cherrypy_server(**options)
 
 

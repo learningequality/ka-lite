@@ -11,8 +11,7 @@ if [ -f "$KALITE_DIR/runcherrypyserver.pid" ];
 then
     pid=`cat "$KALITE_DIR/runcherrypyserver.pid"`
     echo "(Warning: Web server may still be running; attempting to stop old process ($pid) first)"
-    kill $pid 2> /dev/null
-    rm "$KALITE_DIR/runcherrypyserver.pid"
+    "$pyexec" "$KALITE_DIR/manage.py" runcherrypyserver stop pidfile=$KALITE_DIR/runcherrypyserver.pid
 fi
 
 echo "Running the web server on port $port."

@@ -68,6 +68,7 @@ if "tests.loadtesting" in settings.INSTALLED_APPS:
 # Front-end
 urlpatterns += patterns('main.views',
     url(r'^$', 'homepage', {}, 'homepage'),
+    url(r'^getpid/$', 'getpid', {}, 'getpid'),
     url(r'^exercisedashboard/$', 'exercise_dashboard', {}, 'exercise_dashboard'),
     url(r'^search/$', 'search', {}, 'search'),
     # the following pattern is a catch-all, so keep it last:
