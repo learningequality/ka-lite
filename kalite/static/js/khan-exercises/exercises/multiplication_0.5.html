@@ -2,14 +2,14 @@
 <html data-require="math graphie graphie-helpers-arithmetic word-problems">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Multiplication 0.5</title>
+    <title>Multiplying 1-digit numbers</title>
     <script src="../khan-exercise.js"></script>
 </head>
 <body>
     <div class="exercise">
         <div class="vars">
-            <var id="A">randRange( 1, 10 )</var>
-            <var id="B">randFromArray( [ 0, 1, 2, 3, 5, 10 ] )</var>
+            <var id="A">randRange(0, 10)</var>
+            <var id="B">randRange(0, 10)</var>
         </div>
 
         <div class="problems">
@@ -26,29 +26,40 @@
             </div>
         </div>
         <div class="hints">
-            <div data-if="B > 0" data-unwrap>
+            <div data-if="B > 0" data-unwrap="">
                 <div>
                     <div class="graphie" data-update="numbers">
-                        label( [ 0, B - 1 ], "Draw " + plural( A, "circle" ) + ".", "right", false );
+                        label( [ 0, B - 1 ],
+                            $.ngettext("Draw %(num)s circle.", "Draw %(num)s circles.", A),
+                            "right", false );
                         drawRow( A, B - 3, "#6495ED", 1 );
                     </div>
                 </div>
                 <div>
                     <div class="graphie" data-update="numbers">
-                        label( [ 0, B - 2 ],
-                              "If there" + ( B === 1 ? " is " : " are " ) + plural( B, "row" )
-                            + " with " + plural( A, "circle" ) +  ( B === 1 ? "" : " each" )
-                            + ",&lt;br&gt;there are a total of how many circles?",
-                            "right", false );
+                        if (isSingular(A)) {
+                            label( [ 0, B - 2 ],
+                                $.ngettext(
+                                    "If there is %(num)s row with %(a)s circle, &lt;br&gt; there are a total of how many circles?",
+                                    "If there are %(num)s rows with %(a)s circle each, &lt;br&gt;there are a total of how many circles?",
+                                    B, {a: A}), "right", false );
+                        } else {
+                            label( [ 0, B - 2 ],
+                                $.ngettext(
+                                    "If there is %(num)s row with %(a)s circles, &lt;br&gt; there are a total of how many circles?",
+                                    "If there are %(num)s rows with %(a)s circles each, &lt;br&gt;there are a total of how many circles?",
+                                    B, {a: A}), "right", false );
+
+                        }
                         for ( var i = 1; i &lt; B; i++ ) {
                             drawRow( A, B - 3 - i, "#28AE7B", A * i + 1 );
                         }
                     </div>
                 </div>
             </div>
-            <div data-else>
+            <div data-else="">
                 <div class="graphie" data-update="numbers">
-                    label( [ 0, B - 1 ], "\\large{\\text{Multiplying any number by 0 equals 0.}}", "right" );
+                    label( [ 0, B - 1 ], "\\large{\\text{" + $._("Multiplying any number by 0 equals 0.") + "}}", "right" );
                 </div>
             </div>
             <div class="graphie" data-update="numbers">

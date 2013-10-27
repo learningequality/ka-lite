@@ -158,7 +158,6 @@
             <select id="topic">
                 <option {% if not request.GET.topic %}selected{% endif %}>----</option>
                 {% for topic in topics %}
-                    
                     <option value="{{ topic.id }}"{% if request.GET.topic == topic.id %}selected{% endif %}>{{ topic.standalone_title }}</option>
                 {% endfor %}
             </select>

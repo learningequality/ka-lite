@@ -4,6 +4,7 @@ import re
 import shutil
 import sys
 import tempfile
+from annoying.functions import get_object_or_None
 from optparse import make_option
 
 # This is necessary for this script to run before KA Lite has ever been installed.
@@ -22,8 +23,10 @@ from django.core.management.base import BaseCommand, CommandError
 
 import settings
 import version
-from kalite.utils.general import get_host_name
-from kalite.utils.platforms import is_windows, system_script_extension
+from securesync.management.commands.initdevice import load_data_for_offline_install, confirm_or_generate_zone, initialize_facility, Command as InitCommand
+from securesync.models import Zone
+from utils.general import get_host_name
+from utils.platforms import is_windows, system_script_extension
 
 
 def raw_input_yn(prompt):
@@ -119,14 +122,13 @@ class Command(BaseCommand):
             default=True,
             help='FILE to save zip to',
             metavar="FILE"),
-        )
+    )
 
     def handle(self, *args, **options):
         if not options["interactive"]:
-            options["username"] = getpass.getuser()
-            options["hostname"] = get_host_name()
+            options["username"] = options["username"] or settings.INSTALL_ADMIN_USERNAME or getpass.getuser()
+            options["hostname"] = options["hostname"] or get_host_name()
  
-    
         sys.stdout.write("  _   __  ___    _     _ _        \n")
         sys.stdout.write(" | | / / / _ \  | |   (_) |       \n")
         sys.stdout.write(" | |/ / / /_\ \ | |    _| |_ ___  \n")
@@ -175,8 +177,8 @@ class Command(BaseCommand):
         if not os.access(BASE_DIR, os.W_OK):
             raise CommandError("You do not have permission to write to this directory!")
 
-        install_clean = True
         database_file = settings.DATABASES["default"]["NAME"]
+        install_clean = True
         if os.path.exists(database_file):
             # We found an existing database file.  By default,
             #   we will upgrade it; users really need to work hard
@@ -195,26 +197,24 @@ class Command(BaseCommand):
             sys.stdout.write("OK.  We will run a clean install; database file will be moved to a deletable location.")
 
         # Do all input at once, at the beginning
-        if install_clean:
-            if options["interactive"]:
-                if not options["username"] or not options["password"]:
-                    sys.stdout.write("\n")
-                    sys.stdout.write("Please choose a username and password for the admin account on this device.\n")
-                    sys.stdout.write("\tYou must remember this login information, as you will need to enter it to\n")
-                    sys.stdout.write("\tadminister this installation of KA Lite.\n")
-                    sys.stdout.write("\n")
-                (username, password) = get_username_password(options["username"], options["password"])
-                (hostname, description) = get_hostname_and_description(options["hostname"], options["description"])
-            else:
-                username = options["username"]
-                password = options["password"]
-                hostname = options["hostname"]
-                description = options["description"]
+        if install_clean and options["interactive"]:
+            if not options["username"] or not options["password"]:
+                sys.stdout.write("\n")
+                sys.stdout.write("Please choose a username and password for the admin account on this device.\n")
+                sys.stdout.write("\tYou must remember this login information, as you will need to enter it to\n")
+                sys.stdout.write("\tadminister this installation of KA Lite.\n")
+                sys.stdout.write("\n")
+            (username, password) = get_username_password(options["username"], options["password"])
+            (hostname, description) = get_hostname_and_description(options["hostname"], options["description"])
+        else:
+            username = options["username"] or settings.INSTALL_ADMIN_USERNAME
+            password = options["password"] or settings.INSTALL_ADMIN_PASSWORD
+            hostname = options["hostname"]
+            description = options["description"]
 
-                if not validate_username(username):
-                    raise CommandError("Username must contain only letters, digits, and underscores, and start with a letter.\n")
-                elif not password:
-                    raise CommandError("Password cannot be blank.\n")
+        if username and not validate_username(username):
+            raise CommandError("Username must contain only letters, digits, and underscores, and start with a letter.\n")
+
 
         ########################
         # Now do stuff
@@ -222,10 +222,10 @@ class Command(BaseCommand):
 
         # Move database file (if exists)
         if install_clean and os.path.exists(database_file):
-            # This is an overwrite install; destroy the old db
-            dest_file = tempfile.mkstemp()[1]
-            sys.stdout.write("(Re)moving database file to temp location, starting clean install.  Recovery location: %s\n" % dest_file)
-            shutil.move(database_file, dest_file)
+                # This is an overwrite install; destroy the old db
+                dest_file = tempfile.mkstemp()[1]
+                sys.stdout.write("(Re)moving database file to temp location, starting clean install.  Recovery location: %s\n" % dest_file)
+                shutil.move(database_file, dest_file)
 
         # Got this far, it's OK to stop the server.
         import serverstop
@@ -241,12 +241,27 @@ class Command(BaseCommand):
         if install_clean:
             call_command("generatekeys", verbosity=options.get("verbosity"))
 
-            call_command("createsuperuser", username=username, email="dummy@learningequality.org", interactive=False, verbosity=options.get("verbosity"))
-            admin = User.objects.get(username=username)
+            call_command("initdevice", hostname, description, verbosity=options.get("verbosity"))
+
+        else:
+            if os.path.exists(InitCommand.install_json_file):
+                # This is a pathway to install zone-based data on a software upgrade.
+                sys.stdout.write("Loading zone data from '%s'\n" % InitCommand.install_json_file)
+                load_data_for_offline_install(in_file=InitCommand.install_json_file)
+
+            confirm_or_generate_zone()
+
+            initialize_facility()
+
+
+        if password:  # blank password (non-interactive) means don't create a superuser
+            admin = get_object_or_None(User, username=username)
+            if not admin:
+                call_command("createsuperuser", username=username, email="dummy@learningequality.org", interactive=False, verbosity=options.get("verbosity"))
+                admin = User.objects.get(username=username)
             admin.set_password(password)
             admin.save()
 
-            call_command("initdevice", hostname, description, verbosity=options.get("verbosity"))
 
         # Move scripts
         for script_name in ["start", "stop", "run_command"]:

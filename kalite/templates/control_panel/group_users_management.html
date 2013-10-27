@@ -3,7 +3,6 @@
 {% load include_block %}
 
 {% block title %}{{ group.name }} - User Management{% endblock title %}
-{% block control_panel_active %}active{% endblock control_panel_active %}
 
 {% block headcss %}{{ block.super }}
 {% include_block "current_users.html" "headcss" %}

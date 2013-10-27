@@ -1,9 +1,9 @@
 import json
-import os
 import logging
+import os
 import sys
-import time
 import tempfile
+import time
 import uuid
 import version  # in danger of a circular import.  NEVER add settings stuff there--should all be hard-coded.
 
@@ -34,7 +34,7 @@ DEBUG          = getattr(local_settings, "DEBUG", False)
 
 
 ##############################
-# Basic App Settings 
+# Basic App Settings
 ##############################
 
 CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
@@ -82,7 +82,7 @@ CONTENT_URL    = getattr(local_settings, "CONTENT_URL", "/content/")
 
 
 ##############################
-# Basic Django settings 
+# Basic Django settings
 ##############################
 
 INTERNAL_IPS   = getattr(local_settings, "INTERNAL_IPS", ("127.0.0.1",))
@@ -187,12 +187,29 @@ if CENTRAL_SERVER:
 
 else:
     ROOT_URLCONF = "main.urls"
+    INSTALLED_APPS += ("updates",)
     MIDDLEWARE_CLASSES += (
+        "securesync.middleware.AuthFlags",  # this must come first in app-dependent middleware--many others depend on it.
+        "securesync.middleware.FacilityCheck",
+        "securesync.middleware.RegisteredCheck",
         "securesync.middleware.DBCheck",
-        "securesync.middleware.AuthFlags",
         "main.middleware.SessionLanguage",
     )
-    TEMPLATE_CONTEXT_PROCESSORS += ("main.custom_context_processors.languages",)
+
+
+########################
+# Zero-config options
+########################
+
+ZERO_CONFIG   = getattr(local_settings, "ZERO_CONFIG", False)
+
+# With zero config, no admin (by default)
+INSTALL_ADMIN_USERNAME = getattr(local_settings, "INSTALL_ADMIN_USERNAME", None)
+INSTALL_ADMIN_PASSWORD = getattr(local_settings, "INSTALL_ADMIN_PASSWORD", None)
+assert bool(INSTALL_ADMIN_USERNAME) + bool(INSTALL_ADMIN_PASSWORD) != 1, "Must specify both admin username and password, or neither."
+
+# With zero config, always a default facility
+INSTALL_FACILITY_NAME = getattr(local_settings, "INSTALL_FACILITY_NAME", None if not ZERO_CONFIG else "Default Facility")
 
 
 ########################
@@ -202,6 +219,11 @@ else:
 SECURESYNC_PROTOCOL   = getattr(local_settings, "SECURESYNC_PROTOCOL",   "https")
 
 CRONSERVER_FREQUENCY = getattr(local_settings, "CRONSERVER_FREQUENCY", 600) # 10 mins (in seconds)
+
+SYNCING_THROTTLE_WAIT_TIME = getattr(local_settings, "SYNCING_THROTTLE_WAIT_TIME", None)  # default: don't throttle syncing
+
+SYNCING_MAX_RECORDS_PER_REQUEST = getattr(local_settings, "SYNCING_MAX_RECORDS_PER_REQUEST", 100)  # 100 records per http request
+
 
 # Here, None === no limit
 SYNC_SESSIONS_MAX_RECORDS = getattr(local_settings, "SYNC_SESSIONS_MAX_RECORDS", None if CENTRAL_SERVER else 10)
@@ -235,7 +257,7 @@ assert PASSWORD_ITERATIONS_STUDENT_SYNCED >= 2500, "PASSWORD_ITERATIONS_STUDENT_
 
 # Sessions use the default cache, and we want a local memory cache for that.
 # Separate session caching from file caching.
-SESSION_ENGINE = getattr(local_settings, "SESSION_ENGINE", 'django.contrib.sessions.backends.cached_db')
+SESSION_ENGINE = getattr(local_settings, "SESSION_ENGINE", 'django.contrib.sessions.backends.cache')
 
 MESSAGE_STORAGE = 'utils.django_utils.NoDuplicateMessagesSessionStorage'
 
@@ -308,6 +330,7 @@ TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
 
 # Django debug_toolbar config
 if getattr(local_settings, "USE_DEBUG_TOOLBAR", False):
+    assert CACHE_TIME == 0, "Debug toolbar must be set in conjunction with CACHE_TIME=0"
     INSTALLED_APPS += ('debug_toolbar',)
     MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
     DEBUG_TOOLBAR_PANELS = (
@@ -348,17 +371,31 @@ assert not AUTO_LOAD_TEST or not CENTRAL_SERVER, "AUTO_LOAD_TEST only on local s
 # everything that follows is overriding default settings, depending on CONFIG_PACKAGE
 
 # config_package (None|RPi) alters some defaults e.g. different defaults for Raspberry Pi(RPi)
-CONFIG_PACKAGE = getattr(local_settings, "CONFIG_PACKAGE", None)
+CONFIG_PACKAGE = getattr(local_settings, "CONFIG_PACKAGE", [])
+if isinstance(CONFIG_PACKAGE, basestring):
+    CONFIG_PACKAGE = [CONFIG_PACKAGE]
+CONFIG_PACKAGE = [cp.lower() for cp in CONFIG_PACKAGE]
+
+def package_selected(package_name):
+    global CONFIG_PACKAGE
+    return bool(CONFIG_PACKAGE) and bool(package_name) and package_name.lower() in CONFIG_PACKAGE
+
 
 # Config for Raspberry Pi distributed server
 #     nginx will normally be on 8008 so default to 7007
 #     18 is the sweet-spot for cherrypy threads
 #    /tmp is deleted on boot, so use /var/tmp for a persistent cache instead
-if CONFIG_PACKAGE == "RPi":
+if package_selected("RPi"):
     PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 7007)
     CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 18)
+    #SYNCING_THROTTLE_WAIT_TIME = getattr(local_settings, "SYNCING_THROTTLE_WAIT_TIME", 1.0)
+    #SYNCING_MAX_RECORDS_PER_REQUEST = getattr(local_settings, "SYNCING_MAX_RECORDS_PER_REQUEST", 10)
+
+
     PASSWORD_ITERATIONS_TEACHER = getattr(local_settings, "PASSWORD_ITERATIONS_TEACHER", 2000)
     PASSWORD_ITERATIONS_STUDENT = getattr(local_settings, "PASSWORD_ITERATIONS_STUDENT", 1000)
     if CACHE_TIME != 0:
         CACHES["web_cache"]['LOCATION'] = getattr(local_settings, "CACHE_LOCATION", '/var/tmp/kalite_web_cache')
 
+if package_selected("UserRestricted"):
+    KEY_PREFIX += "|restricted"  # this option changes templates

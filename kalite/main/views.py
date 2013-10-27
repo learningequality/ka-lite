@@ -1,6 +1,6 @@
 import copy
 import json
-import re 
+import re
 import sys
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
-from django.db.models import Sum
+from django.db.models import Sum, Count
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound, HttpResponseRedirect, Http404, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
@@ -22,7 +22,7 @@ from config.models import Settings
 from control_panel.views import user_management_context
 from main import topicdata
 from main.models import VideoLog, ExerciseLog, VideoFile
-from securesync.engine.api_client import SyncClient
+from securesync.api_client import BaseClient
 from securesync.models import Facility, FacilityUser,FacilityGroup, Device
 from securesync.views import require_admin, facility_required
 from settings import LOG as logging
@@ -30,7 +30,7 @@ from shared import topic_tools
 from shared.decorators import require_admin, backend_cache_page
 from shared.jobs import force_job
 from shared.videos import get_video_urls, is_video_on_disk, video_counts_need_update, get_video_counts
-from utils.internet import am_i_online, is_loopback_connection, JsonResponse
+from utils.internet import is_loopback_connection, JsonResponse
 
 
 def check_setup_status(handler):
@@ -40,15 +40,18 @@ def check_setup_status(handler):
     so that it is run even when there is a cache hit.
     """
     def wrapper_fn(request, *args, **kwargs):
-        if not request.is_admin and Facility.objects.count() == 0:
+        if request.is_admin:
+            # TODO(bcipolli): move this to the client side?
+            if not request.session["registered"] and BaseClient().test_connection() == "success":
+                messages.warning(request, mark_safe("Please <a href='%s'>follow the directions to register your device</a>, so that it can synchronize with the central server." % reverse("register_public_key")))
+            elif not request.session["facility_exists"]:
+                messages.warning(request, mark_safe("Please <a href='%s'>create a facility</a> now. Users will not be able to sign up for accounts until you have made a facility." % reverse("add_facility")))
+
+        elif not request.is_logged_in and not request.session["facility_exists"]:
             messages.warning(request, mark_safe(
                 "Please <a href='%s?next=%s'>login</a> with the account you created while running the installation script, \
                 to complete the setup." % (reverse("login"), reverse("register_public_key"))))
-        if request.is_admin:
-            if not Settings.get("registered") and SyncClient().test_connection() == "success":
-                messages.warning(request, mark_safe("Please <a href='%s'>follow the directions to register your device</a>, so that it can synchronize with the central server." % reverse("register_public_key")))
-            elif Facility.objects.count() == 0:
-                messages.warning(request, mark_safe("Please <a href='%s'>create a facility</a> now. Users will not be able to sign up for accounts until you have made a facility." % reverse("add_facility")))
+
         return handler(request, *args, **kwargs)
     return wrapper_fn
 
@@ -174,6 +177,9 @@ def exercise_handler(request, exercise):
         video = topicdata.NODE_CACHE["Video"].get(key, None)
         if not video:
             continue
+            
+        if not video.get("on_disk", False) and not settings.BACKUP_VIDEO_SOURCE:
+            continue
         
         related_videos[key] = copy.copy(video)
         for path in video["paths"]:
@@ -292,37 +298,33 @@ Available stats:
 
     return val
 
-@require_admin
-@render_to("video_download.html")
-def update(request):
-    call_command("videoscan")  # Could potentially be very slow, blocking request.
-    force_job("videodownload", "Download Videos")
-    force_job("subtitledownload", "Download Subtitles")
-    default_language = Settings.get("subtitle_language") or "en"
-
-    device = Device.get_own_device()
-    zone = device.get_zone()
-
-    context = {
-        "default_language": default_language,
-        "registered": Settings.get("registered"),
-        "zone_id": zone.id if zone else None,
-        "device_id": device.id,
-        "video_count": VideoFile.objects.filter(percent_complete=100).count(),
-    }
-    return context
-
 
 @require_admin
 @facility_required
 @render_to("current_users.html")
-def user_list(request,facility):
-    return user_management_context(
+def user_list(request, facility):
+
+    # Use default group
+    group_id = request.REQUEST.get("group")
+    if not group_id:
+        groups = FacilityGroup.objects \
+            .annotate(Count("facilityuser")) \
+            .filter(facilityuser__count__gt=0)
+        ngroups = groups.count()
+        ngroups += int(FacilityUser.objects.filter(group__isnull=True).count() > 0)
+        if ngroups == 1:
+            group_id = groups[0].id if groups.count() else "Ungrouped"
+
+    context = user_management_context(
         request=request,
         facility_id=facility.id,
-        group_id=request.REQUEST.get("group",""),
+        group_id=group_id,
         page=request.REQUEST.get("page","1"),
     )
+    context.update({
+        "singlefacility": Facility.objects.count() == 1,
+    })
+    return context
 
 
 @require_admin
@@ -349,6 +351,55 @@ def device_redirect(request):
     else:
         raise Http404(_("This device is not on any zone."))
 
+@render_to('search_page.html')
+def search(request):
+    # Inputs
+    query = request.GET.get('query')
+    category = request.GET.get('category')
+    max_results_per_category = request.GET.get('max_results', 25)
+
+    # Outputs
+    query_error = None
+    possible_matches = {}
+    hit_max = {}
+
+    if query is None:
+        query_error = _("Error: query not specified.")
+
+#    elif len(query) < 3:
+#        query_error = _("Error: query too short.")
+
+    else:
+        query = query.lower()
+        # search for topic, video or exercise with matching title
+        nodes = []
+        for node_type, node_dict in topicdata.NODE_CACHE.iteritems():
+            if category and node_type != category:
+                # Skip categories that don't match (if specified)
+                continue
+
+            possible_matches[node_type] = []  # make dict only for non-skipped categories
+            for node in node_dict.values():
+                title = node['title'].lower()  # this could be done once and stored.
+                if title == query:
+                    # Redirect to an exact match
+                    return HttpResponseRedirect(node['path'])
+
+                elif len(possible_matches[node_type]) < max_results_per_category and query in title:
+                    # For efficiency, don't do substring matches when we've got lots of results
+                    possible_matches[node_type].append(node)
+
+            hit_max[node_type] = len(possible_matches[node_type]) == max_results_per_category
+
+    return {
+        'title': _("Search results for '%s'") % (query if query else ""),
+        'query_error': query_error,
+        'results': possible_matches,
+        'hit_max': hit_max,
+        'query': query,
+        'max_results': max_results_per_category,
+        'category': category,
+    }
 
 def handler_403(request, *args, **kwargs):
     context = RequestContext(request)

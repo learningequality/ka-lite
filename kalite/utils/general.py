@@ -129,15 +129,8 @@ def version_diff(v1, v2):
 
 def ensure_dir(path):
     """Create the entire directory path, if it doesn't exist already."""
-    path_parts = path.split("/")
-    full_path = "/"
-    for part in path_parts:
-        if "." in part:
-            raise InvalidDirectoryFormat()
-        if part is not '':
-            full_path += part + "/"
-            if not os.path.exists(full_path):
-                os.makedirs(full_path)
+    if not os.path.exists(path):
+        os.makedirs(path)
 
 # http://code.activestate.com/recipes/82465-a-friendly-mkdir/
 #def _mkdir(newdir):
@@ -169,6 +162,18 @@ def convert_date_input(date_to_convert):
         return converted_date
     else:
         return date_to_convert
+
+
+def get_module_source_file(module_name):
+    """
+    http://stackoverflow.com/questions/247770/retrieving-python-module-path
+    http://stackoverflow.com/questions/8718885/import-module-from-string-variable
+    """
+    module_name.split
+    source_file = __import__(module_name, fromlist=[""]).__file__
+    if source_file.endswith(".pyc"):
+        return source_file[0:-1]
+    return source_file
 
 
 def max_none(data):

@@ -6,6 +6,7 @@ import re
 
 from django.core.management import call_command
 from django.core.management.base import CommandError
+from django.utils import unittest
 
 import settings
 from .base import MainTestCase
@@ -16,6 +17,8 @@ from shared.testing.client import KALiteClient
 from shared.testing.decorators import distributed_server_test
 from utils.django_utils import call_command_with_output
 
+
+@unittest.skipIf(settings.CACHE_TIME == 0, "Caching is disabled.")
 @distributed_server_test
 class VideoScanTests(MainTestCase):
 

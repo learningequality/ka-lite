@@ -1,0 +1,48 @@
+{% extends 'base_distributed.html' %}
+{% load i18n %}
+{% load my_filters %}
+
+{% block headcss %}
+<style>
+    h3 {
+        margin:20px 0px 5px 0px;
+    }
+</style>
+{% endblock headcss %}
+
+{% block content %}
+{% if query_error %}
+    <h2 class="errorlist">{{ query_error }}</h2>
+
+{% else %}
+    <h2>{{ title }}</h2>
+
+    {% for category, subresults in results.iteritems %}
+        <h3>{{ category }}{% if hit_max|get_item:category %} ({% trans "showing first " %}{{ max_results }} {% trans " results" %}){% endif %}</h3>
+        <ul>
+        {% for node in subresults %}
+            <li>
+            {% if node.kind == 'Topic' %}
+                {% if node.nvideos_local == 0 %}
+                <a href="{{ node.path }}" class="topic-unavailable">{{ node.title }}</a>
+                {% else %}
+                <a href="{{ node.path }}" class="topic-available">{{ node.title }}</a>
+                {% endif %}
+            {% elif node.kind == 'Video' %}
+                {% if node.video_on_disk %}
+                <a href="{{ node.path }}" class="video-available">{{ node.title }}</a>
+                {% else %}
+                <a class="video-unavailable">{{ node.title }}</a>
+                {% endif %}
+            {% else %}
+                <a href="{{ node.path }}">{{ node.title }}</a>
+            {% endif %}
+            </li>
+        {% endfor %}
+        {% if hit_max|get_item:category %}
+            <li>...</li>
+        {% endif %}
+        </ul>
+    {% endfor %}
+{% endif %}
+{% endblock %}

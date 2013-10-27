@@ -15,6 +15,7 @@ kalite/static/data/subtitles/subtitle_counts.json
 kalite/static/data/subtitles/languages/*
 kalite/static/data/i18n/dubbed_video_mappings.json
 kalite/static/srt/*
+kalite/static/pot/*.pot
 kalite/private_key.pem
 kalite/secrets.py
 .project
@@ -35,8 +36,11 @@ content/*.png
 content/*.mp4
 content/*.json
 content/*.srt
+kalite/static/srt/
+kalite/static/data/subtitles/
+kalite/media/
+*.zip
 node_modules
 locale/*
 kalite/media/*
 _khanload_cache
-

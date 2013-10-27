@@ -16,7 +16,7 @@
                     <var id="ANGLE_RADIANS">ANGLE*2*PI/360</var>
                     <var id="PRETTY_ANGLE">ANGLE + "^{\\circ}"</var>
                     <var id="FN">randFromArray( [ "cos", "sin" ] )</var>
-                    <var id="FNNAME">{ "cos": "cosine", "sin": "sine"}[FN]</var>
+                    <var id="FNNAME">{ "cos": $._("cosine"), "sin": $._("sine")}[FN]</var>
                     <var id="COORD">{ "cos": "x", "sin": "y"}[FN]</var>
                     <var id="SOLUTION">roundTo(3, { "cos": Math.cos(ANGLE * (Math.PI/180)), "sin": Math.sin(ANGLE * (Math.PI/180)) }[FN])
                     </var>
@@ -27,7 +27,7 @@
                 </p>
 
                 <div class="solution" data-type="multiple">
-                    <div class="sol" data-type="decimal" data-inexact data-max-error="0.001" required><var>SOLUTION</var></div>
+                    <div class="sol" data-inexact="" data-max-error="0.001"><var>SOLUTION</var></div>
 
                     <div class="sol" data-type="custom">
                         <div class="instruction"></div>
@@ -54,14 +54,12 @@
                         <div class="show-guess">
                             KhanUtil.setAngle( guess );
                         </div>
-                        <div class="example"></div>
-
                     </div>
                 </div>
 
                 <div class="problem">
                     <p>
-                        Move the orange point around the unit circle to the angle indicated inside the <var>FNNAME</var> expression above. <br />
+                        Move the orange point around the unit circle to the angle indicated inside the <var>FNNAME</var> expression above. <br>
                         Indicate the <var>FNNAME</var> value in the answer field.
                     </p>
                     <div class="graphie" id="unitcircle">
@@ -111,7 +109,7 @@
                     <var id="ANGLE_RADIANS">ANGLE</var>
                     <var id="PRETTY_ANGLE">piFraction(ANGLE)</var>
                     <var id="FN">randFromArray( [ "cos", "sin" ] )</var>
-                    <var id="FNNAME">{ "cos": "cosine", "sin": "sine"}[FN]</var>
+                    <var id="FNNAME">{ "cos": $._("cosine"), "sin": $._("sine")}[FN]</var>
                     <var id="COORD">{ "cos": "x", "sin": "y"}[FN]</var>
                     <var id="SOLUTION">roundTo(3, { "cos": Math.cos(ANGLE), "sin": Math.sin(ANGLE) }[FN])
                     </var>

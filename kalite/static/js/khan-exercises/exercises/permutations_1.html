@@ -2,7 +2,7 @@
 <html data-require="math math-format word-problems">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Permutations 1</title>
+    <title>Permutations</title>
     <script src="../khan-exercise.js"></script>
 </head>
 <body>
@@ -19,13 +19,13 @@
                 <p class="solution" data-forms="integer"><var>ANSWER</var></p>
                 <div class="hints">
                     <div>
-                        Let's try building the re-arrangements (or permutations) letter by letter. The word is <var>WORD.length</var>
-                        letters long:
+                        <p>Let's try building the re-arrangements (or permutations) letter by letter. The word is <var>WORD.length</var>
+                        letters long:</p>
                         <p><var>_.map(_.range(WORD.length), function(l){ return "_ "; }).join("")</var></p>
                         <p>Now, for the first blank, we have <var>WORD.length</var> choices of letters to put in.
-                    </div>
+                    </p></div>
                     <div>
-                        After we put in the first letter, let's say it's <var>PERM[0]</var>, we have <var>WORD.length-1</var> blanks left.
+                        <p>After we put in the first letter, let's say it's <var>PERM[0]</var>, we have <var>WORD.length-1</var> blanks left.</p>
                         <p><var>PERM[0]+" "+_.map(_.range(WORD.length-1), function(l){ return "_ "; }).join("")</var></p>
                         <p>For the second blank, we only have <var>WORD.length-1</var> choices of letters left to put in. So far, there were
                             <code><var>WORD.length</var> \cdot <var>WORD.length-1</var></code> unique choices we could have made.</p>
@@ -33,7 +33,7 @@
                     <div>
                         We can continue in this fashion to put in a third letter, then a fourth, and so on. At each step, we have one fewer unique choice to
                         make, until we get to the last letter, and there's only one we can put in.
-                    </br></br>
+                    <br><br>
                     </div>
                     <div>
                         So, the total number of unique re-arrangements must be <code><var>_.map(_.range(WORD.length).reverse(), function(l){ return (++l);}).join("\\cdot")</var>.</code> Another way of writing this is <code><var>WORD.length</var>!</code>, 
