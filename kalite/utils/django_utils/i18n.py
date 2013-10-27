@@ -6,6 +6,7 @@ import os
 import json
 
 import settings
+from utils.general import ensure_dir
 
 class MetaDataNotFound(Exception):
 
@@ -19,6 +20,7 @@ def get_installed_languages():
 
 	# Loop through locale folder
 	locale_dir = settings.LOCALE_PATHS[0]
+	ensure_dir(locale_dir)
 
 	for lang in os.listdir(locale_dir):
 		# Inside each folder, read from the JSON file - language name, % UI trans, version number
