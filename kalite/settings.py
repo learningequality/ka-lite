@@ -307,10 +307,11 @@ if CENTRAL_SERVER:
     KHAN_API_CONSUMER_KEY = getattr(local_settings, "KHAN_API_CONSUMER_KEY", "")
     KHAN_API_CONSUMER_SECRET = getattr(local_settings, "KHAN_API_CONSUMER_SECRET", "")
     
-    # Enable Postmask in "test mode", which will print out the email that would be sent to the console
-    POSTMARK_API_KEY = ""
-    POSTMARK_SENDER = "kalite@adhocsync.com"
-    POSTMARK_TEST_MODE = True
+    # Postmark settings, to enable sending registration/invitation emails
+    POSTMARK_API_KEY = getattr(local_settings, "POSTMARK_API_KEY", "")
+    POSTMARK_SENDER = getattr(local_settings, "POSTMARK_SENDER", "kalite@adhocsync.com")
+    # Default to "test mode" if no API key, to print out the email to the console, rather than trying to send
+    POSTMARK_TEST_MODE = getattr(local_settings, "POSTMARK_TEST_MODE", POSTMARK_API_KEY == "")
 
 else:
     # enable this to use a background mplayer instance instead of playing the video in the browser, on loopback connections
