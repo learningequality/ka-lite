@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -31,3 +32,8 @@ class UserRegistration(KALiteTestCase):
         self.data['username'] = self.admin.username
         response = self.client.post(reverse('add_facility_student'), self.data)
         self.assertFormError(response, 'form', 'username', 'The specified username is unavailable. Please choose a new username and try again.')
+
+    def test_password_length_enforced(self):
+        self.data['password'] = self.data['password_recheck'] =  'short'
+        response = self.client.post(reverse('add_facility_student'), self.data)
+        self.assertFormError(response, 'form', 'password', "Password should be at least %d character/s" % settings.MIN_PASSWORD_LENGTH)

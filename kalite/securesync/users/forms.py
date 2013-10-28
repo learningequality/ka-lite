@@ -1,6 +1,7 @@
 import re
 
 from django import forms
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
@@ -46,6 +47,12 @@ class FacilityUserForm(forms.ModelForm):
             raise forms.ValidationError(_("The specified username is unavailable. Please choose a new username and try again."))
 
         return self.cleaned_data['username']
+
+    def clean_password(self):
+        password = self.cleaned_data.get('password', "")
+        if len(password) < settings.MIN_PASSWORD_LENGTH:
+            raise forms.ValidationError(_("Password should be at least %d character/s" % settings.MIN_PASSWORD_LENGTH))
+        return self.cleaned_data['password']
 
     def clean_password_recheck(self):
 
