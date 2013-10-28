@@ -1,6 +1,7 @@
 import cgi
 import copy
 import json
+import os
 import re
 from annoying.functions import get_object_or_None
 from functools import partial
@@ -332,6 +333,14 @@ def status(request):
         data["username"] = request.user.username
 
     return JsonResponse(data)
+
+
+def getpid(request):
+    #who am I?  return the PID; used to kill the webserver process if the PID file is missing
+    try:
+        return HttpResponse(os.getpid())
+    except:
+        return HttpResponse("")
 
 
 @backend_cache_page

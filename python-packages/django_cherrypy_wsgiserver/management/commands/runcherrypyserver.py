@@ -149,8 +149,7 @@ def port_is_available(host, port):
     for a currently running process does not exist or has the incorrect process ID recorded.
     """
     if port < 1024:
-        logging.error("Port id %s is too low, must be bigger than 1024" % port)
-        return False
+        logging.warn("Ports less than 1024 will only work if you are root" % port)
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     ip = socket.gethostbyname(host)
@@ -171,7 +170,7 @@ def ka_lite_is_using_port(host, port):
     This is needed in case the PID file has been deleted, but the server continues to run
     """
     try:
-        pid = urlopen("http://"+host+":"+port+"/getpid/").read()
+        pid = urlopen("http://"+host+":"+port+"/api/getpid").read()
         logging.warn("Existing KA-Lite server found, PID %s" % pid)
         return int(pid)
     except:
@@ -207,6 +206,7 @@ def runcherrypyserver(argset=[], **kwargs):
         if existing_server_pid:
             stop_server_using_pid(existing_server_pid)
             # try again, is kalite still running on that port?
+            time.sleep(5.0)
             existing_server_pid = ka_lite_is_using_port(options['host'], options['port'])
             if existing_server_pid:
                 raise Exception("Existing kalite process cannot be stopped")

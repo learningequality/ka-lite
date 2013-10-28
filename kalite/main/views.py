@@ -1,6 +1,5 @@
 import copy
 import json
-import os
 import re
 import sys
 from annoying.decorators import render_to
@@ -216,15 +215,6 @@ def homepage(request):
         "backup_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),
     })
     return context
-
-
-def getpid(request):
-    #who am I?  return the PID; used to kill the webserver process if the PID file is missing
-    try:
-        return HttpResponse(os.getpid())
-    except:
-        return HttpResponse("")
-
 
 @require_admin
 @check_setup_status
