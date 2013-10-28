@@ -121,7 +121,8 @@ class FacilityUser(DeferredCountSyncedModel):
         assert hashed_password is None or settings.DEBUG, "Only use hashed_password in debug mode."
         assert raw_password is not None or hashed_password is not None, "Must be passing in raw or hashed password"
         assert not (raw_password is not None and hashed_password is not None), "Must be specifying only one--not both."
-        assert len(raw_password) >= settings.MIN_PASSWORD_LENGTH, "Password must be greater than %d characters." % settings.MIN_PASSWORD_LENGTH
+        if raw_password:
+            assert len(raw_password) >= settings.MIN_PASSWORD_LENGTH, "Password must be greater than %d characters." % settings.MIN_PASSWORD_LENGTH
 
         if hashed_password:
             self.password = hashed_password
