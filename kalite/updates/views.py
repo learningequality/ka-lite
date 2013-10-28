@@ -31,9 +31,9 @@ from securesync.models import Facility, FacilityUser, FacilityGroup, Device
 from securesync.views import require_admin, facility_required
 from shared import topic_tools
 from shared.decorators import require_admin
+from shared.i18n import get_installed_languages
 from shared.jobs import force_job
 from utils.internet import am_i_online, JsonResponse
-from utils.django_utils.i18n import get_installed_languages
 
 
 def update_context(request):
