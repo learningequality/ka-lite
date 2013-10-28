@@ -4,6 +4,7 @@ import random
 import string
 from optparse import make_option
 
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.db import DEFAULT_DB_ALIAS
 
@@ -15,7 +16,7 @@ def generate_random_password(length=10, charset=(string.ascii_letters + string.d
     random.seed = (os.urandom(1024))
 
     return ''.join(random.choice(charset) for i in range(length))
-    
+
 
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
@@ -51,13 +52,17 @@ class Command(BaseCommand):
         if options['noinput']:
             p1 = generate_random_password()
             self.stdout.write("Generated new password for user '%s': '%s'\n" % (username, p1))
-            
+
         else:
             MAX_TRIES = 3
             count = 0
             p1, p2 = 1, 2  # To make them initially mismatch.
             while p1 != p2 and count < MAX_TRIES:
                 p1 = self._get_pass()
+                if len(p1) < settings.MIN_PASSWORD_LENGTH:
+                    self.stdout.write("Password is too short. It should be at least %d characters long.\n" % settings.MIN_PASSWORD_LENGTH)
+                    count += 1
+                    continue
                 p2 = self._get_pass("Password (again): ")
                 if p1 != p2:
                     self.stdout.write("Passwords do not match. Please try again.\n")
