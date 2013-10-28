@@ -309,7 +309,7 @@ if CENTRAL_SERVER:
     
     # Postmark settings, to enable sending registration/invitation emails
     POSTMARK_API_KEY = getattr(local_settings, "POSTMARK_API_KEY", "")
-    POSTMARK_SENDER = getattr(local_settings, "POSTMARK_SENDER", "kalite@adhocsync.com")
+    POSTMARK_SENDER = getattr(local_settings, "POSTMARK_SENDER", CENTRAL_FROM_EMAIL)
     # Default to "test mode" if no API key, to print out the email to the console, rather than trying to send
     POSTMARK_TEST_MODE = getattr(local_settings, "POSTMARK_TEST_MODE", POSTMARK_API_KEY == "")
 
