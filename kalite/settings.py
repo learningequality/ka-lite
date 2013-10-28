@@ -306,6 +306,11 @@ if CENTRAL_SERVER:
     #   We do this so that we have control over our own key/secret (secretly, of course!)
     KHAN_API_CONSUMER_KEY = getattr(local_settings, "KHAN_API_CONSUMER_KEY", "")
     KHAN_API_CONSUMER_SECRET = getattr(local_settings, "KHAN_API_CONSUMER_SECRET", "")
+    
+    # Enable Postmask in "test mode", which will print out the email that would be sent to the console
+    POSTMARK_API_KEY = ""
+    POSTMARK_SENDER = "kalite@adhocsync.com"
+    POSTMARK_TEST_MODE = True
 
 else:
     # enable this to use a background mplayer instance instead of playing the video in the browser, on loopback connections
