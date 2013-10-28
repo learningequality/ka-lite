@@ -25,20 +25,20 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
     def test_query_login_teacher(self):
         """Check the # of queries when logging in as a teacher."""
         teacher = FacilityUser(is_teacher=True, username="t1", facility=self.facility, password="dummy")
-        teacher.set_password("t1")
+        teacher.set_password("t1t1t1")
         teacher.save()
 
         with self.assertNumQueries(36 + 4*UserLog.is_enabled()):
-            self.browser_login_teacher("t1", "t1", self.facility)
+            self.browser_login_teacher("t1", "t1t1t1", self.facility)
 
     def test_query_login_student(self):
         """Check the # of queries when logging in as a student."""
         student = FacilityUser(is_teacher=False, username="s1", facility=self.facility, password="dummy")
-        student.set_password("s1")
+        student.set_password("t1t1t1")
         student.save()
 
         with self.assertNumQueries(40 + 4*UserLog.is_enabled()):
-            self.browser_login_student("s1", "s1", self.facility)
+            self.browser_login_student("s1", "t1t1t1", self.facility)
 
 
     def test_query_status_admin(self):
