@@ -83,7 +83,7 @@ def system_specific_zipping(files_dict, zip_file=None, compression=ZIP_DEFLATED,
             # Add with exec perms
             else:
                 info = ZipInfo(dest_path)
-                info.external_attr = 0775 # << 16L # give full access to included file
+                info.external_attr = 0775 << 16L # give full access to included file
                 with open(src_path, "r") as fh:
                     zfile.writestr(info, fh.read())
         zfile.close()
