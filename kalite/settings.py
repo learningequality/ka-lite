@@ -400,5 +400,7 @@ if package_selected("RPi"):
     if CACHE_TIME != 0:
         CACHES["web_cache"]['LOCATION'] = getattr(local_settings, "CACHE_LOCATION", '/var/tmp/kalite_web_cache')
 
+    ENABLE_CLOCK_SET = True
+
 if package_selected("UserRestricted"):
     KEY_PREFIX += "|restricted"  # this option changes templates

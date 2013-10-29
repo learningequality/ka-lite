@@ -35,3 +35,8 @@ urlpatterns = patterns('main.api_views',
 urlpatterns += patterns('updates.api_views',
     url(r'^', include(updates.api_urls)),
 )
+
+if settings.ENABLE_CLOCK_SET:
+    urlpatterns += patterns('main.api_views',
+        url(r'^time_set/$', 'time_set', {}, 'time_set'),
+        )

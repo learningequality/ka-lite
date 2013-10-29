@@ -1,10 +1,16 @@
 {% extends 'base_distributed.html' %}
 
 {% load i18n %}
+{% load staticfiles %}
 
 {% block easyadmin_active %}active{% endblock easyadmin_active %}
 
 {% block headcss %}
+
+{% if clock_set %}
+    <link rel="stylesheet" type="text/css" href='{% static "css/bootstrap-timepicker.min.css" %}' />
+{% endif %}
+
 <style>
 
 div.help {
@@ -38,8 +44,73 @@ td.title {
 .green_button {
     margin-right: 20px;
 }
+
+/*TODO: Delete this after Bootstrap integration on Distributed Server*/
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  display: none;
+  float: left;
+  min-width: 160px;
+  padding: 5px 0;
+  margin: 2px 0 0;
+  font-size: 14px;
+  list-style: none;
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+          box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+  background-clip: padding-box;
+}
+
+i.icon-chevron-up:before {
+    content: "∧";
+}
+
+i.icon-chevron-down:before {
+    content: "∨";
+}
+
 </style>
 {% endblock headcss %}
+
+{% if clock_set %}
+
+    {% block headjs %}
+    <script type="text/javascript" src='{% static "js/bootstrap-timepicker.min.js" %}'></script>
+    <script type="text/javascript">
+    $(function() {
+        $('#time_select').timepicker({
+            disableFocus: true,
+            showMeridian: false,
+            minuteStep: 5
+            });
+        $('#date_select').datepicker({
+            dateFormat: "yy-mm-dd"
+        });
+
+        $('#set_time').click(
+            function () {
+                var data = {
+                    date_time: $('#date_select').val() + " " + $('#time_select').val()
+                };
+                doRequest("/api/time_set/", data)
+                    .success(function(data) {
+                        show_api_messages(data, "id_set_time");
+                    })
+                    .fail(function(resp) {
+                        communicate_api_failure(resp, "id_set_time");
+                });
+            });
+    });
+    </script>
+    {% endblock headjs %}
+
+{% endif %}
 
 {% block title %}{% trans "Administration Panel" %}{% endblock title %}
 
@@ -58,7 +129,7 @@ td.title {
         <tr>
             <td class="title" colspan="2">
                 <h2>{% trans "(Offline) Management Tools" %}</h2>
-            </td.
+            </td>
         </tr>
         {% if in_a_zone %}
         <tr>
@@ -79,6 +150,27 @@ td.title {
         <tr>
             <td class="link"><a href="{% url summary_stats %}">{% trans "Summary stats" %}</a></td>
             <td class="desc">{% trans "Summary stats for this installation" %}</td>
+        </tr>
+        {% endif %}
+
+        {% if clock_set %}
+        <tr>
+            <td class="title" colspan="2">
+                <h2>{% trans "Server Management Tools" %}</h2>
+            </td>
+        </tr>
+        <tr>
+            <td><div class="bootstrap-timepicker"><input id="time_select" type="text"></div></td>
+            <td class="desc">{% trans "Input current time (HH:MM)" %}</td>
+        </tr>
+        <tr>
+            <td><div class="date"><input id="date_select" type="text"></div></td>
+            <td class="desc">{% trans "Input current date (YYYY-MM-DD)" %}</td>
+        </tr>
+        <tr>
+            <td class="title" colspan="2">
+                <input id="set_time" type="submit" value='{% trans "Update Server Date-Time" %}'>
+            </td>
         </tr>
         {% endif %}
         

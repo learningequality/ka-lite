@@ -34,3 +34,7 @@ class VideoLogForm(forms.Form):
         if not self.cleaned_data.get("youtube_id", "") in ID2SLUG_MAP:
             raise forms.ValidationError(_("Youtube ID not recognized."))
 
+class DateTimeForm(forms.Form):
+    """Form that validates DateTimes to be set on the server for the RPi"""
+
+    date_time = forms.DateTimeField()

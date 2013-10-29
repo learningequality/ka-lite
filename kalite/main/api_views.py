@@ -2,6 +2,7 @@ import cgi
 import copy
 import json
 import re
+import os
 from annoying.functions import get_object_or_None
 from functools import partial
 
@@ -19,7 +20,7 @@ from django.views.decorators.gzip import gzip_page
 
 import settings
 import version
-from .api_forms import ExerciseLogForm, VideoLogForm
+from .api_forms import ExerciseLogForm, VideoLogForm, DateTimeForm
 from .models import VideoLog, ExerciseLog, VideoFile
 from config.models import Settings
 from securesync.models import FacilityGroup, FacilityUser
@@ -182,6 +183,36 @@ def get_exercise_logs(request):
             .filter(user=user, exercise_id__in=data) \
             .values("exercise_id", "streak_progress", "complete", "points", "struggling", "attempts"))
     )
+
+@require_admin
+@api_handle_error_with_json
+def time_set(request):
+    """
+    Receives a date-time string and sets the system date-time
+    RPi only.
+    """
+
+    # Form does all the data validation, including the youtube_id
+    form = DateTimeForm(data=simplejson.loads(request.raw_post_data))
+    if not form.is_valid():
+        raise ValidationError(form.errors)
+    data = form.data
+
+    if not settings.ENABLE_CLOCK_SET:
+        return JsonResponse({"error": "This can only be done on Raspberry Pi systems"}, status=403)
+
+    date_time = data["date_time"]
+
+    try:
+
+        if os.system('date +%%F%%T -s "%s"' % date_time):
+            raise PermissionDenied
+
+    except PermissionDenied as e:
+        return JsonResponse({"error": "System permissions prevented time setting, please run as root"}, status=500)
+
+    return JsonResponse({"success": "Date and Time set to: %s" % date_time})
+
 
 # Functions below here focused on users
 
