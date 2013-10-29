@@ -1,5 +1,10 @@
-"""Retrieve and store information from Amara's API that we can use
-to somewhat intelligently download subtitles from them"""
+"""
+Command used to cache data from Amara's API about which languages videos
+have been subtitled in. This data is then used by the command cache_subtitles 
+to intelligently request srt files from Amara's API, rather than blindly requesting 
+tons of srt files that don't exist. This command should be run infrequently, but 
+regularly, to ensure we are at least putting in requests for the srts that exist.
+"""
 
 import datetime
 import json
@@ -29,11 +34,19 @@ LANGUAGE_SRT_SUFFIX = "_download_status.json"
 
 class OutDatedSchema(Exception):
     def __str__(self):
-        return "The current data schema is outdated and doesn't store the important bits. Please run 'generate_subtitles_map.py -N' to generate a totally new file and the correct schema."
+        return "The current data schema is outdated and doesn't store the important bits. Please run 'generate_subtitles_map.py -f' to generate a totally new file and the correct schema."
 
 
 def create_all_mappings(force=False, frequency_to_save=100, response_to_check=None, date_to_check=None):
-    """Write or update JSON file that maps from YouTube ID to Amara code and languages available"""
+    """
+    Write or update JSON file that maps from YouTube ID to Amara code and languages available.
+
+    This command updates the json file that records what languages videos have been subtitled in. 
+    It loops through all video ids, records a list of which languages Amara says it has been subtitled in
+    and meta data about the request (e.g. date, response code).
+        
+    See the schema in the docstring for fcn update_video_entry.
+    """
     videos = get_node_cache('Video')
 
     # Initialize the data
@@ -181,7 +194,10 @@ def update_video_entry(youtube_id, entry={}):
 
 
 def update_language_srt_map():
-    """Update the language_srt_map from the api_info_map"""
+    """
+    Translate the srts_remote_availability dictionary into language specific files
+    that can be used by the cache_subtitles command. 
+    """
     # Load the current download status
     try:
         api_info_map = json.loads(open(settings.SUBTITLES_DATA_ROOT + SRTS_JSON_FILENAME).read())

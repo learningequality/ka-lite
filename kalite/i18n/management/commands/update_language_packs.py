@@ -1,15 +1,15 @@
 """
-This command can be run periodically to update the translations we offer for 
-download with the latest from crowdin. Basically it uses the crowdin api to download a 
-specific languages po files, calculates meta data, compiles them, zips the metadata and 
-mo files into a language pack, and moves it to the static dir to be exposed for download.
+This command is the master command for language packs. Based on 
+command line arguments provided, it calls all i18n commands
+necessary to update language packs. 
 
-Steps:
-	1. Download latest translations from CrowdIn
-	2. Store meta data incl: percent translated, version number, language
-	3. Compile po to mo
-	4. Zip everything up and post to exposed URL 
+1. Updates all cached srt files  from Amara
+2. Downloads latest translations from CrowdIn
+3. Generates metadata on language packs (subtitles and UI translations)
+4. Compiles the UI translations
+5. Zips up the packs and exposes them at a static url 
 """
+import datetime
 import glob
 import json
 import os
@@ -21,6 +21,7 @@ import StringIO
 
 from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
+from django.core.management import call_command
 
 import settings
 import version
@@ -35,15 +36,35 @@ LANGUAGE_PACK_AVAILABILITY_FILENAME = "language_pack_availability.json"
 
 class Command(BaseCommand):
 	help = 'Updates all language packs'
+
+	option_list = BaseCommand.option_list + (
+        make_option('-d', '--days',
+                    action='store',
+                    dest='days',
+                    default=None,
+                    metavar="NUM_DAYS",
+                    help="Update any and all subtitles that haven't been refreshed in the numebr of days given. If not specified, subtitles will not be updated."),
+	)
 	
 	def handle(self, **options):
+		## Ensure that central server is using the correct schema to store srt files
+		raise_if_outdated_srt_schema()
+		if options["days"]:
+			update_srts(options["days"])
 		update_language_packs()
 
 
-def update_language_packs():
+def update_srts(days):
+	"""
+	Run the commands to update subtitles that haven't been updated in the number of days provided.
+	Default is to update all srt files that haven't been requested in 30 days
+	"""
+	date = '{0.month}/{0.day}/{0.year}'.format(datetime.date.today()-datetime.timedelta(int(days)))
+	logging.info("Updating subtitles that haven't been refreshed since %s" % date)
+	call_command("generate_subtitle_map", date_since_attempt=date)
+	call_command("cache_subtitles", date_since_attempt=date, lang_code='all')
 
-	## For now, we move srt files from static dir to the locale dir (to preserve existing functionality)
-	copy_existing_srts()
+def update_language_packs():
 
 	## Download latest UI translations from CrowdIn
 	download_latest_translations() 
@@ -56,6 +77,12 @@ def update_language_packs():
 	
 	## Zip
 	zip_language_packs()
+
+
+def raise_if_outdated_srt_schema():
+	"""Raise CommandError if srt files have not been manually moved"""
+	if os.path.exists(os.path.join(settings.STATIC_ROOT, "srt")):
+		raise CommandError("Please run the command 'move_existing_srts' before continuing.")
 
 
 def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID, project_key=settings.CROWDIN_PROJECT_KEY, language_code="all"):
@@ -113,26 +140,6 @@ def extract_new_po(tmp_dir_path=os.path.join(LOCALE_ROOT, "tmp")):
 				shutil.copy(po_file, os.path.join(LOCALE_ROOT, converted_code, "LC_MESSAGES", "djangojs.po"))
 			else:
 				shutil.copy(po_file, os.path.join(LOCALE_ROOT, converted_code, "LC_MESSAGES", "django.po"))
-
-
-def copy_existing_srts():
-	"""Move srt files from static/srt to locale directory and file them by language code"""
-	# Establish context
-	srt_root = os.path.join(settings.STATIC_ROOT, "srt")
-	locale_root = settings.LOCALE_PATHS[0]
-
-	# For each language in static, move those files to locale/<langcode>/srt/*.srt
-	for lang in os.listdir(srt_root):
-		# Skips if not a directory
-		if not os.path.isdir(os.path.join(srt_root, lang)):
-			continue
-		lang_srt_path = os.path.join(srt_root, lang, "subtitles")
-		lang_locale_path = os.path.join(locale_root, lang)
-		ensure_dir(lang_locale_path)
-		dst = os.path.join(lang_locale_path, "srt")
-		if os.path.exists(dst):
-			shutil.rmtree(dst)
-		shutil.copytree(lang_srt_path, dst)
 
 
 def generate_metadata():
