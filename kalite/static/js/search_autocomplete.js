@@ -16,7 +16,7 @@ function fetchTopicTree() {
         url: "/api/flat_topic_tree",
         cache: true,
         dataType: "json",
-	timeout: timeout_length;
+        timeout: timeout_length,
         success: function(categories) {
             results = [];
             for (var category_name in categories) { // category is either Video, Exercise or Topic
