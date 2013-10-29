@@ -128,6 +128,7 @@ def version_diff(v1, v2):
     return 0
 
 
+# http://stackoverflow.com/questions/600268/mkdir-p-functionality-in-python
 def ensure_dir(path):
     """Create the entire directory path, if it doesn't exist already."""
     try:
