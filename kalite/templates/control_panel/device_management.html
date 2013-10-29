@@ -1,7 +1,7 @@
 {% extends "control_panel/base.html" %}
 {% load i18n %}
 
-{% block title %}{{ device.name }} : Device Syncing History{% endblock title %}
+{% block title %}{{ device.name }}{% trans "Device Syncing History" %}{% endblock title %}
 
 {% block buttons %}{{ block.super }}
     {% if not is_central %}
@@ -16,14 +16,14 @@
 
     {% if is_central %}
     <div class="device_metadata">
-        <h2>Device Metadata</h2>
+        <h2>{% trans "Device Metadata" %}</h2>
 
         <ul>
         {% if not shown_sessions %}
-            <li><b>Version:</b> {{ device.version }}</li>
+            <li><b>{% trans "Version" %}:</b> {{ device.version }}</li>
         {% else %}
-            <li><b>Version:</b> {{ shown_sessions.0.client_version }}</li>
-            <li><b>OS:</b>  {{ shown_sessions.0.client_os }}</li>
+            <li><b>{% trans "Version" %}:</b> {{ shown_sessions.0.client_version }}</li>
+            <li><b>{% trans "OS" %}:</b>  {{ shown_sessions.0.client_os }}</li>
         {% endif %}
         </ul>
     </div>
@@ -31,20 +31,22 @@
 
     <div class="sync_sessions">
         <div>
-            <h2>Sync Sessions</h2>
+            <h2>{% trans "Sync Sessions" %}</h2>
         </div>
 
         {% if not shown_sessions %}
-            <p>This device has never synced with the central server</p>
+            <p>{% trans "This device has never synced with the central server" %}</p>
         {% else %}
-            <span>(showing {{ shown_sessions|length }} of {{ total_sessions }})</span>
+            {% with shown_sessions|length as shown_count %}
+            <span>{% blocktrans %}(showing {{ shown_count }} of {{ total_sessions }}){% endblocktrans %}</span>
+            {% endwith %}
             <table class="simple-table">
                 <tr>
-                    <th width="250px">Sync date</th>
-                    <th width="250px">Sync IP address</th>
-                    <th width="200px"># models uploaded</th>
-                    <th width="200px"># models downloaded</th>
-                    <th width="200px"># errors</th>
+                    <th width="250px">{% trans "Sync date" %}</th>
+                    <th width="250px">{% trans "Sync IP address" %}</th>
+                    <th width="200px">{% trans "# models uploaded" %}</th>
+                    <th width="200px">{% trans "# models downloaded" %}</th>
+                    <th width="200px">{% trans "# errors" %}</th>
                 </tr>
                 {% for sync_session in shown_sessions %}
                     <tr>

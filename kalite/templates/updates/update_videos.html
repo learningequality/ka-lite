@@ -370,6 +370,11 @@ var video_callbacks = {
     <button id="delete-videos" type="button">{% trans "Delete " %}<span class="old-video-count">0</span>{% trans " selected videos" %}</button>
 </div>
 
+<div id="download-language-packs">
+    <h2>{% trans "Currently Available Language Packs" %}</h2>
+    <a href="{% url update_languages %}">{% trans "Install more languages" %}</a>
+</div>
+
 <div>
     <!-- note: id must match the "updates" app process name -->
     <div id="videodownload-progressbar">

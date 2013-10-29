@@ -73,10 +73,6 @@ DATABASES      = getattr(local_settings, "DATABASES", {
     }
 })
 
-DATA_PATH      = os.path.realpath(getattr(local_settings, "DATA_PATH", PROJECT_PATH + "/static/data/")) + "/"
-
-SUBTITLES_DATA_ROOT = os.path.realpath(getattr(local_settings, "SUBTITLES_DATA_ROOT", DATA_PATH + "subtitles/")) + "/"
-
 CONTENT_ROOT   = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", PROJECT_PATH + "/../content/")) + "/"
 CONTENT_URL    = getattr(local_settings, "CONTENT_URL", "/content/")
 
@@ -97,7 +93,7 @@ TIME_ZONE      = getattr(local_settings, "TIME_ZONE", "America/Los_Angeles")
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE  = getattr(local_settings, "LANGUAGE_CODE", "en-us")
+LANGUAGE_CODE  = getattr(local_settings, "LANGUAGE_CODE", "en")
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
@@ -111,6 +107,11 @@ MEDIA_URL      = getattr(local_settings, "MEDIA_URL", "/media/")
 MEDIA_ROOT     = os.path.realpath(getattr(local_settings, "MEDIA_ROOT", PROJECT_PATH + "/media/")) + "/"
 STATIC_URL     = getattr(local_settings, "STATIC_URL", "/static/")
 STATIC_ROOT    = os.path.realpath(getattr(local_settings, "STATIC_ROOT", PROJECT_PATH + "/static/")) + "/"
+
+# Other defined paths
+DATA_PATH      = os.path.realpath(getattr(local_settings, "DATA_PATH", PROJECT_PATH + "/static/data/")) + "/"
+SUBTITLES_DATA_ROOT = os.path.realpath(getattr(local_settings, "SUBTITLES_DATA_ROOT", DATA_PATH + "subtitles/")) + "/"
+LANGUAGE_PACK_ROOT = os.path.realpath(getattr(local_settings, "LANGUAGE_PACK_ROOT", STATIC_ROOT + "language_packs/")) + "/"
 
  # Make this unique, and don't share it with anybody.
 SECRET_KEY     = getattr(local_settings, "SECRET_KEY", "8qq-!fa$92i=s1gjjitd&%s@4%ka9lj+=@n7a&fzjpwu%3kd#u")
@@ -184,6 +185,8 @@ if CENTRAL_SERVER:
     CSRF_COOKIE_NAME        = "csrftoken_central"
     LANGUAGE_COOKIE_NAME    = "django_language_central"
     SESSION_COOKIE_NAME     = "sessionid_central"
+    CROWDIN_PROJECT_ID      = getattr(local_settings, "CROWDIN_PROJECT_ID", "ka-lite")
+    CROWDIN_PROJECT_KEY     = getattr(local_settings, "CROWDIN_PROJECT_KEY", None)
 
 else:
     ROOT_URLCONF = "main.urls"
@@ -276,10 +279,7 @@ CACHES = {
 _5_years = 5 * 365 * 24 * 60 * 60
 _100_years = 100 * 365 * 24 * 60 * 60
 _max_cache_time = min(_100_years, sys.maxint - time.time() - _5_years)
-
-# HACK: temporarily disable caching, by default, until we can get it sorted out
-# CACHE_TIME = getattr(local_settings, "CACHE_TIME", _max_cache_time)
-CACHE_TIME = getattr(local_settings, "CACHE_TIME", 0)
+CACHE_TIME = getattr(local_settings, "CACHE_TIME", _max_cache_time)
 
 # Cache is activated in every case,
 #   EXCEPT: if CACHE_TIME=0
@@ -309,7 +309,7 @@ if CENTRAL_SERVER:
     
     # Postmark settings, to enable sending registration/invitation emails
     POSTMARK_API_KEY = getattr(local_settings, "POSTMARK_API_KEY", "")
-    POSTMARK_SENDER = getattr(local_settings, "POSTMARK_SENDER", "kalite@adhocsync.com")
+    POSTMARK_SENDER = getattr(local_settings, "POSTMARK_SENDER", CENTRAL_FROM_EMAIL)
     # Default to "test mode" if no API key, to print out the email to the console, rather than trying to send
     POSTMARK_TEST_MODE = getattr(local_settings, "POSTMARK_TEST_MODE", POSTMARK_API_KEY == "")
 

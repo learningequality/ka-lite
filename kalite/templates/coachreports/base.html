@@ -4,7 +4,7 @@
 {% load my_filters %}
 
 {% block coachreports_active %}active{% endblock coachreports_active %}
-{% block title %}Coach Reports {{ block.super }}{% endblock title %}
+{% block title %}{% trans "Coach Reports" %}{{ block.super }}{% endblock title %}
 {% block headcss %}{{ block.super }}
     <style>
     .selection {
@@ -151,12 +151,12 @@
                 <div id="{{ groupobject.facility }}" class="group_div">
                     <select id="{{ groupobject.facility }}_group_select" class="group_select">
                         {% if groupobject.groups %}
-                                <option value="">[all groups]</option>
+                                <option value="">{% trans "[all groups]" %}</option>
                                 {% for group in groupobject.groups %}
                                 <option value="{{ group.id }}">{{ group }}</option>
                                 {% endfor %}
                         {% else %}
-                            <option value="" selected>[no groups]</option>
+                            <option value="" selected>{% trans "[no groups]" %}</option>
                         {% endif %}
                     </select>
                     {% if groupobject.groups|length > 1 %}
@@ -174,7 +174,7 @@
             {% block navbar_makelink %}
             <div id="link-box">
                 <input name="url" id="url" type="text" style="display:none"></input>
-                <a href="javascript:display_link()">(share)</a>
+                <a href="javascript:display_link()">{% trans "(share)" %}</a>
             </div>
             {% endblock navbar_makelink %}
         </div>

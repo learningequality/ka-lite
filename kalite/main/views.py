@@ -29,7 +29,7 @@ from settings import LOG as logging
 from shared import topic_tools
 from shared.decorators import require_admin, backend_cache_page
 from shared.jobs import force_job
-from shared.videos import get_video_urls, is_video_on_disk
+from shared.videos import get_video_urls, is_video_on_disk, video_counts_need_update, get_video_counts
 from utils.internet import is_loopback_connection, JsonResponse
 
 
@@ -112,6 +112,12 @@ def topic_context(topic):
     videos    = topic_tools.get_videos(topic)
     exercises = topic_tools.get_exercises(topic)
     topics    = topic_tools.get_live_topics(topic)
+
+    # Get video counts if they'll be used, on-demand only.
+    #
+    # Check in this order so that the initial counts are always updated
+    if video_counts_need_update() or not 'nvideos_local' in topic:
+        (topic,_,_) = get_video_counts(topic=topic, videos_path=settings.CONTENT_ROOT)
 
     my_topics = [dict((k, t[k]) for k in ('title', 'path', 'nvideos_local', 'nvideos_known')) for t in topics]
 

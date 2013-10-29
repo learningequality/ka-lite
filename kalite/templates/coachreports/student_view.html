@@ -6,8 +6,8 @@
 
 {% block coachreports_active %}{% endblock coachreports_active %}
 {% block selfreports_active %}active{% endblock selfreports_active %}
-{% block report_title %}User report{% endblock report_title %}
-{% block title %}User report{% endblock title%}
+{% block report_title %}{% trans "User report" %}{% endblock report_title %}
+{% block title %}{% trans "User report" %}{% endblock title%}
 
 {% block headcss %}{{ block.super }}
     <style>
@@ -75,7 +75,7 @@
         <th colspan="5" class="super-header">{% trans "Videos" %}</th>
     </tr>
     <tr>
-        <th colspan="2" class="" >Topic</th>
+        <th colspan="2" class="" >{% trans "Topic" %}</th>
         {% for def in stat_defs %}
         <th>{{ def.title }}</th>
         {% endfor %}
