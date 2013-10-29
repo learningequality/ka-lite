@@ -21,8 +21,8 @@ from django.core.management import call_command
 import settings
 from generate_subtitle_map import SRTS_JSON_FILENAME, headers, get_lang_map_filepath
 from settings import LOG as logging
-from utils.general import convert_date_input, ensure_dir
-from utils.languages import make_request, get_language_name
+from shared.i18n import get_language_name
+from utils.general import convert_date_input, ensure_dir, make_request
 
 
 DOWNLOAD_PATH = settings.STATIC_ROOT + "srt/"  # kalite/static/

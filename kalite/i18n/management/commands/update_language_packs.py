@@ -25,27 +25,28 @@ from django.core.management.base import BaseCommand, CommandError
 import settings
 import version
 from settings import LOG as logging
+from shared.i18n import get_language_name, convert_language_code_format
 from update_po import compile_all_po_files
 from utils.general import ensure_dir, version_diff
-from utils.languages import get_language_name, convert_language_code
+
 
 LOCALE_ROOT = settings.LOCALE_PATHS[0]
 LANGUAGE_PACK_AVAILABILITY_FILENAME = "language_pack_availability.json"
 
 class Command(BaseCommand):
-	help = 'Caches latest translations from CrowdIn'
-
+	help = 'Updates all language packs'
+	
 	def handle(self, **options):
 		update_language_packs()
 
 
 def update_language_packs():
-	## Download latest UI translations from CrowdIn
-	download_latest_translations() 
 
 	## For now, we move srt files from static dir to the locale dir (to preserve existing functionality)
-	## Once we migrate over to LanguagePacks completely, cache_subtitles should save them there. 
-	move_existing_srts()
+	copy_existing_srts()
+
+	## Download latest UI translations from CrowdIn
+	download_latest_translations() 
 
 	## Loop through new UI translations & subtitles, create/update unified meta data
 	generate_metadata()
@@ -104,7 +105,7 @@ def extract_new_po(tmp_dir_path=os.path.join(LOCALE_ROOT, "tmp")):
 
 	logging.info("Unpacking new translations")
 	for lang in os.listdir(tmp_dir_path):
-		converted_code = convert_language_code(lang)
+		converted_code = convert_language_code_format(lang)
 		# ensure directory exists in locale folder, and then overwrite local po files with new ones 
 		ensure_dir(os.path.join(LOCALE_ROOT, converted_code, "LC_MESSAGES"))
 		for po_file in glob.glob(os.path.join(tmp_dir_path, lang, "*/*.po")): 
@@ -114,7 +115,7 @@ def extract_new_po(tmp_dir_path=os.path.join(LOCALE_ROOT, "tmp")):
 				shutil.copy(po_file, os.path.join(LOCALE_ROOT, converted_code, "LC_MESSAGES", "django.po"))
 
 
-def move_existing_srts():
+def copy_existing_srts():
 	"""Move srt files from static/srt to locale directory and file them by language code"""
 	# Establish context
 	srt_root = os.path.join(settings.STATIC_ROOT, "srt")
@@ -147,7 +148,7 @@ def generate_metadata():
 		# skips anything not a directory
 		if not os.path.isdir(os.path.join(LOCALE_ROOT, lang)):
 			continue
-		crowdin_meta = next((meta for meta in crowdin_meta_dict if meta["code"] == convert_language_code(lang_code=lang, for_crowdin=True)), None)
+		crowdin_meta = next((meta for meta in crowdin_meta_dict if meta["code"] == convert_language_code_format(lang_code=lang, for_crowdin=True)), None)
 		try: 
 			local_meta = json.loads(open(os.path.join(LOCALE_ROOT, lang, "%s_metadata.json" % lang)).read())
 		except:
@@ -224,7 +225,7 @@ def zip_language_packs():
 		# Create a zipfile for this language
 		zip_path = os.path.join(settings.LANGUAGE_PACK_ROOT, version.VERSION)
 		ensure_dir(zip_path)
-		z = zipfile.ZipFile(os.path.join(zip_path, "%s.zip" % convert_language_code(lang)), 'w')
+		z = zipfile.ZipFile(os.path.join(zip_path, "%s.zip" % convert_language_code_format(lang)), 'w')
 		# Get every single file in the directory and zip it up
 		lang_locale_path = os.path.join(LOCALE_ROOT, lang)
 		for metadata_file in glob.glob('%s/*.json' % lang_locale_path):

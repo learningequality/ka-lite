@@ -15,8 +15,7 @@ from django.core.management import call_command
 import settings
 from settings import LOG as logging
 from shared.topic_tools import get_node_cache
-from utils.general import convert_date_input, ensure_dir
-from utils.languages import make_request
+from utils.general import convert_date_input, ensure_dir, make_request
 
 
 headers = {
@@ -304,7 +303,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         try:
             converted_date = convert_date_input(options.get("date_since_attempt"))
-            # create_all_mappings(force=options.get("force"), frequency_to_save=5, response_to_check=options.get("response_code"), date_to_check=converted_date)
+            create_all_mappings(force=options.get("force"), frequency_to_save=5, response_to_check=options.get("response_code"), date_to_check=converted_date)
             logging.info("Executed successfully. Updating language => subtitle mapping to record any changes!")
 
             language_srt_map = update_language_srt_map()
