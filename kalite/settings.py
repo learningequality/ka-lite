@@ -407,8 +407,6 @@ if package_selected("RPi"):
 
     PASSWORD_ITERATIONS_TEACHER = getattr(local_settings, "PASSWORD_ITERATIONS_TEACHER", 2000)
     PASSWORD_ITERATIONS_STUDENT = getattr(local_settings, "PASSWORD_ITERATIONS_STUDENT", 1000)
-    if CACHE_TIME != 0:
-        CACHES["web_cache"]['LOCATION'] = getattr(local_settings, "CACHE_LOCATION", '/var/tmp/kalite_web_cache')
 
 if package_selected("UserRestricted"):
     KEY_PREFIX += "|restricted"  # this option changes templates
