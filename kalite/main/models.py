@@ -493,12 +493,9 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
 class VideoFile(ExtendedModel):
     youtube_id = models.CharField(max_length=20, primary_key=True)
     flagged_for_download = models.BooleanField(default=False)
-    flagged_for_subtitle_download = models.BooleanField(default=False)
     download_in_progress = models.BooleanField(default=False)
-    subtitle_download_in_progress = models.BooleanField(default=False)
     priority = models.IntegerField(default=0)
     percent_complete = models.IntegerField(default=0)
-    subtitles_downloaded = models.BooleanField(default=False)
     cancel_download = models.BooleanField(default=False)
 
     class Meta:
