@@ -48,7 +48,8 @@ class Command(BaseCommand):
 	
 	def handle(self, **options):
 		## Ensure that central server is using the correct schema to store srt files
-		raise_if_outdated_srt_schema()
+		if os.path.exists(os.path.join(settings.STATIC_ROOT, "srt")):
+			move_existing_srts()
 		if options["days"]:
 			update_srts(options["days"])
 		update_language_packs()
@@ -63,6 +64,7 @@ def update_srts(days):
 	logging.info("Updating subtitles that haven't been refreshed since %s" % date)
 	call_command("generate_subtitle_map", date_since_attempt=date)
 	call_command("cache_subtitles", date_since_attempt=date, lang_code='all')
+
 
 def update_language_packs():
 
@@ -79,10 +81,30 @@ def update_language_packs():
 	zip_language_packs()
 
 
-def raise_if_outdated_srt_schema():
-	"""Raise CommandError if srt files have not been manually moved"""
-	if os.path.exists(os.path.join(settings.STATIC_ROOT, "srt")):
-		raise CommandError("Please run the command 'move_existing_srts' before continuing.")
+def move_existing_srts():
+	"""Move srt files from static/srt to locale directory and file them by language code"""
+
+	logging.info("Outdated schema detected for storing srt files. Hang tight, the moving crew is on it.")
+	srt_root = os.path.join(settings.STATIC_ROOT, "srt")
+	locale_root = settings.LOCALE_PATHS[0]
+
+	for lang in os.listdir(srt_root):
+		# Skips if not a directory
+		if not os.path.isdir(os.path.join(srt_root, lang)):
+			continue
+		lang_srt_path = os.path.join(srt_root, lang, "subtitles/")
+		lang_locale_path = os.path.join(locale_root, lang)
+		ensure_dir(lang_locale_path)
+		dst = os.path.join(lang_locale_path, "subtitles")
+
+		for srt_file_path in glob.glob(os.path.join(lang_srt_path, "*.srt")):
+			base_path, srt_filename = os.path.split(srt_file_path)
+			if not os.path.exists(os.path.join(dst, srt_filename)):
+				ensure_dir(dst)
+				shutil.move(srt_file_path, os.path.join(dst, srt_filename))
+
+	shutil.rmtree(srt_root)
+	logging.info("Move completed.")
 
 
 def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID, project_key=settings.CROWDIN_PROJECT_KEY, language_code="all"):
@@ -156,6 +178,9 @@ def generate_metadata():
 		if not os.path.isdir(os.path.join(LOCALE_ROOT, lang)):
 			continue
 		crowdin_meta = next((meta for meta in crowdin_meta_dict if meta["code"] == convert_language_code_format(lang_code=lang, for_crowdin=True)), None)
+		if not crowdin_meta:
+			logging.info("Couldn't find crowdin metadata for language code 'lang'. Very strange. Skipping generation of metadata for this language.")
+			continue
 		try: 
 			local_meta = json.loads(open(os.path.join(LOCALE_ROOT, lang, "%s_metadata.json" % lang)).read())
 		except:
