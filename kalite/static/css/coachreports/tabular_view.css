@@ -59,7 +59,7 @@ th.username {
 }
 
 th.headrow {
-    /*width: 80px;*/
+    width: 80px;
     font-weight: bold;
     background-color: white;
 }
