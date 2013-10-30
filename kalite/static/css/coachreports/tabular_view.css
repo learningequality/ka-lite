@@ -58,7 +58,7 @@ th.username {
     text-overflow: ellipsis;
 }
 
-th.headrow {
+th.headrow, th.headrow div {
     width: 80px;
     font-weight: bold;
     background-color: white;
