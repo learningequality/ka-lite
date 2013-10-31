@@ -133,3 +133,4 @@ def compile_all_po_files():
 	(out, err, rc) = call_command_with_output('compilemessages')
 	if err:
 		logging.debug("Error executing compilemessages: %s" % err)
+	return out, err, rc

@@ -22,6 +22,7 @@ import StringIO
 from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
 from django.core.management import call_command
+from django.core.mail import mail_admins 
 
 import settings
 import version
@@ -41,15 +42,13 @@ class Command(BaseCommand):
         make_option('-d', '--days',
                     action='store',
                     dest='days',
-                    default=7,
+                    default=0,
                     metavar="NUM_DAYS",
-                    help="Update any and all subtitles that haven't been refreshed in the numebr of days given. Defaults to 7 days."),
+                    help="Update any and all subtitles that haven't been refreshed in the numebr of days given. Defaults to 0 days."),
 	)
 	
 	def handle(self, **options):
-		## Ensure that central server is using the correct schema to store srt files
-		if os.path.exists(os.path.join(settings.STATIC_ROOT, "srt")):
-			move_existing_srts()
+		obliterate_old_schema()
 		update_srts(options["days"])
 		update_language_packs()
 
@@ -61,49 +60,74 @@ def update_srts(days):
 	"""
 	date = '{0.month}/{0.day}/{0.year}'.format(datetime.date.today()-datetime.timedelta(int(days)))
 	logging.info("Updating subtitles that haven't been refreshed since %s" % date)
-	# call_command("generate_subtitle_map", date_since_attempt=date)
-	# call_command("cache_subtitles", date_since_attempt=date, lang_code='all')
+	call_command("generate_subtitle_map", date_since_attempt=date)
+	call_command("cache_subtitles", date_since_attempt=date, lang_code='all')
 
 
 def update_language_packs():
 
 	## Download latest UI translations from CrowdIn
 	download_latest_translations() 
-
-	## Loop through new UI translations & subtitles, create/update unified meta data
-	generate_metadata()
 	
 	## Compile
-	compile_all_po_files()
+	(out, err, rc) = compile_all_po_files()
+	broken_langs = handle_po_compile_errors(out=out, err=err, rc=rc)
+
+	## Loop through new UI translations & subtitles, create/update unified meta data
+	generate_metadata(broken_langs)
 	
 	## Zip
 	zip_language_packs()
 
 
-def move_existing_srts():
-	"""Move srt files from static/srt to locale directory and file them by language code"""
-
-	logging.info("Outdated schema detected for storing srt files. Hang tight, the moving crew is on it.")
+def obliterate_old_schema():
+	"""Move srt files from static/srt to locale directory and file them by language code, delete any old locale directories"""
 	srt_root = os.path.join(settings.STATIC_ROOT, "srt")
 	locale_root = settings.LOCALE_PATHS[0]
 
-	for lang in os.listdir(srt_root):
+	for lang in os.listdir(locale_root):
 		# Skips if not a directory
-		if not os.path.isdir(os.path.join(srt_root, lang)):
+		if not os.path.isdir(os.path.join(locale_root, lang)):
 			continue
-		lang_srt_path = os.path.join(srt_root, lang, "subtitles/")
-		lang_locale_path = os.path.join(locale_root, lang)
-		ensure_dir(lang_locale_path)
-		dst = os.path.join(lang_locale_path, "subtitles")
+		# If it isn't crowdin/django format, keeeeeeellllllll
+		if lang != convert_language_code_format(lang):
+			logging.info("Deleting %s directory because it does not fit our language code format standards" % lang)
+			shutil.rmtree(os.path.join(locale_root, lang))
 
-		for srt_file_path in glob.glob(os.path.join(lang_srt_path, "*.srt")):
-			base_path, srt_filename = os.path.split(srt_file_path)
-			if not os.path.exists(os.path.join(dst, srt_filename)):
-				ensure_dir(dst)
-				shutil.move(srt_file_path, os.path.join(dst, srt_filename))
+	if os.path.exists(os.path.join(settings.STATIC_ROOT, "srt")):
+		logging.info("Outdated schema detected for storing srt files. Hang tight, the moving crew is on it.")
+		for lang in os.listdir(srt_root):
+			# Skips if not a directory
+			if not os.path.isdir(os.path.join(srt_root, lang)):
+				continue
+			lang_srt_path = os.path.join(srt_root, lang, "subtitles/")
+			lang_locale_path = os.path.join(locale_root, lang)
+			ensure_dir(lang_locale_path)
+			dst = os.path.join(lang_locale_path, "subtitles")
 
-	shutil.rmtree(srt_root)
-	logging.info("Move completed.")
+			for srt_file_path in glob.glob(os.path.join(lang_srt_path, "*.srt")):
+				base_path, srt_filename = os.path.split(srt_file_path)
+				if not os.path.exists(os.path.join(dst, srt_filename)):
+					ensure_dir(dst)
+					shutil.move(srt_file_path, os.path.join(dst, srt_filename))
+
+		shutil.rmtree(srt_root)
+		logging.info("Move completed.")
+
+def handle_po_compile_errors(out=None, err=None, rc=None):
+	"""Return list of languages to not rezip due to errors in compile process. Email admins errors"""
+
+	codes = re.findall(r'(?<=ka-lite/locale/)\w+(?=/LC_MESSAGES)', err)
+	logging.info("Found %d errors while compiling in codes %s. Mailing admins report now." %(len(codes), ', '.join(codes)))
+	if codes:
+		subject = "Error while compiling po files"
+		message =  """The following codes had errors when compiling their po files: %s.
+					   Please rerun the compilemessages command for each language code,
+					   using -l, to see specific line numbers that need to be corrected on 
+					   CrowdIn, before we can update the language packs.""" % ', '.join(codes)
+		mail_admins(subject=subject, message=message)
+		logging.info("Report sent.")
+	return codes
 
 
 def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID, project_key=settings.CROWDIN_PROJECT_KEY, language_code="all"):
@@ -163,8 +187,8 @@ def extract_new_po(tmp_dir_path=os.path.join(LOCALE_ROOT, "tmp")):
 				shutil.copy(po_file, os.path.join(LOCALE_ROOT, converted_code, "LC_MESSAGES", "django.po"))
 
 
-def generate_metadata():
-	"""Loop through locale folder, create or update language specific meta and create or update master file."""
+def generate_metadata(broken_langs=None):
+	"""Loop through locale folder, create or update language specific meta and create or update master file, skipping broken languages"""
 
 	logging.info("Generating new po file metadata")
 	master_file = []
@@ -175,6 +199,10 @@ def generate_metadata():
 	for lang in os.listdir(LOCALE_ROOT):
 		# skips anything not a directory
 		if not os.path.isdir(os.path.join(LOCALE_ROOT, lang)):
+			logging.info("Skipping %s because it is not a directory" % lang)
+			continue
+		elif lang in broken_langs:
+			logging.info("Skipping %s because it triggered an error during compilemessages. The admins should have received a report about this and must fix it before this pack will be updateed." % lang)
 			continue
 		crowdin_meta = next((meta for meta in crowdin_meta_dict if meta["code"] == convert_language_code_format(lang_code=lang, for_crowdin=True)), None)
 		try:
