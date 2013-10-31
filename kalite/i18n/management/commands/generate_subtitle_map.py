@@ -53,6 +53,7 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
     out_file = settings.SUBTITLES_DATA_ROOT + SRTS_JSON_FILENAME
 
     if not os.path.exists(out_file):
+        ensure_dir(os.path.dirname(out_file))
         srts_dict = {}
     else:
         # Open the file, read, and clean out old videos.
@@ -317,13 +318,10 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
-        try:
-            converted_date = convert_date_input(options.get("date_since_attempt"))
-            create_all_mappings(force=options.get("force"), frequency_to_save=5, response_to_check=options.get("response_code"), date_to_check=converted_date)
-            logging.info("Executed successfully. Updating language => subtitle mapping to record any changes!")
+        converted_date = convert_date_input(options.get("date_since_attempt"))
+        create_all_mappings(force=options.get("force"), frequency_to_save=5, response_to_check=options.get("response_code"), date_to_check=converted_date)
+        logging.info("Executed successfully. Updating language => subtitle mapping to record any changes!")
 
-            language_srt_map = update_language_srt_map()
-            print_language_availability_table(language_srt_map)
-            logging.info("Process complete.")
-        except Exception as e:
-           raise CommandError(str(e))
+        language_srt_map = update_language_srt_map()
+        print_language_availability_table(language_srt_map)
+        logging.info("Process complete.")
