@@ -20,6 +20,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 import settings
 from settings import LOG as logging
+from utils.django_utils import call_command_with_output
 from utils.general import ensure_dir
 
 class Command(BaseCommand):
@@ -80,14 +81,6 @@ def update_templates():
 	shutil.copy(os.path.join(settings.LOCALE_PATHS[0], "en/LC_MESSAGES/djangojs.po"), os.path.join(static_path, "kalitejs.pot"))
 
 
-def compile_all_po_files():
-	"""Compile all po files in locale directory"""
-	# before running compilemessages, ensure in correct directory
-	logging.info("Running compilemessages")
-	move_to_project_root()
-	management.call_command('compilemessages')
-
-
 def generate_test_files():
 	"""Insert asterisks as translations in po files"""
 
@@ -137,6 +130,6 @@ def compile_all_po_files():
 	"""Compile all po files in locale directory"""
 	# before running compilemessages, ensure in correct directory
 	move_to_project_root()
-	management.call_command('compilemessages')
-
-
+	(out, err, rc) = call_command_with_output('compilemessages')
+	if err:
+		logging.debug("Error executing compilemessages: %s" % err)
