@@ -57,7 +57,7 @@ def find_owner(file):
     return getpass.getuser()
 
 def validate_username(username):
-    return username and (not re.match(r'^[^a-zA-Z]', username) and not re.match(r'[^a-zA-Z0-9_]+', username))
+    return bool(username and (not re.match(r'^[^a-zA-Z]', username) and not re.match(r'^.*[^a-zA-Z0-9_]+.*$', username)))
 
 def get_username(username):
     while not validate_username(username):
