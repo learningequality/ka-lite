@@ -4,6 +4,7 @@ the mapping generate by generate_subtitle_map to make requests of the
 Amara API. 
 """
 
+import copy
 import datetime
 import glob
 import json
@@ -122,11 +123,14 @@ def download_if_criteria_met(videos, lang_code, force, response_code, date_since
 
     if date_specified:
         logging.info("Filtering based on date...")
+        videos_copy = copy.deepcopy(videos)
         for k, v in videos.items():
             if not v["last_attempt"] or datetime.datetime.strptime(v["last_attempt"], '%Y-%m-%d') < date_specified:
                 continue
             else:
-                del videos[k]
+                del videos_copy[k]
+
+        videos = videos_copy
 
         logging.info("%4d of %4d videos need refreshing (last refresh more recent than %s)" %
                      (len(videos), n_videos, date_specified))
