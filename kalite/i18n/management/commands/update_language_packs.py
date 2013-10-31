@@ -134,7 +134,8 @@ def handle_po_compile_errors(out=None, err=None, rc=None):
                        Please rerun the compilemessages command for each language code,
                        using -l, to see specific line numbers that need to be corrected on 
                        CrowdIn, before we can update the language packs.""" % ', '.join(codes)
-        mail_admins(subject=subject, message=message)
+        if not settings.DEBUG:
+            mail_admins(subject=subject, message=message)
         logging.info("Report sent.")
     return codes
 
@@ -315,8 +316,3 @@ def zip_language_packs():
             z.write(os.path.join(lang_locale_path, srt_file), arcname=os.path.join("subtitles", os.path.basename(srt_file)))
         z.close()
     logging.info("Done.")
-
-
-
-
-

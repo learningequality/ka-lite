@@ -21,7 +21,7 @@ from django.core.management.base import BaseCommand, CommandError
 import settings
 from generate_subtitle_map import SRTS_JSON_FILENAME, headers, get_lang_map_filepath
 from settings import LOG as logging
-from shared.i18n import get_language_name
+from shared.i18n import get_language_name, convert_language_code_format
 from utils.general import convert_date_input, ensure_dir, make_request
 
 
@@ -88,12 +88,13 @@ def download_srt_from_3rd_party(*args, **kwargs):
                 logging.error(e)
                 raise CommandError("Error while downloading language srts: %s" % e)
     else: 
-        srt_list_path = get_lang_map_filepath(lang_code)
+        srt_list_path = get_lang_map_filepath(convert_language_code_format(lang_code))
         try:
             videos = json.loads(open(srt_list_path).read())
         except:
-            raise LanguageCodeDoesNotExist(lang_code)
-        download_if_criteria_met(videos, *args, **kwargs)
+            logging.warning("No subtitles available for download for language code %s. Skipping." % lang_code)
+        else:
+            download_if_criteria_met(videos, *args, **kwargs)
 
 
 def get_srt_path(lang_code, locale_root=LOCALE_ROOT):
@@ -177,15 +178,13 @@ def download_if_criteria_met(videos, lang_code, force, response_code, date_since
         n_loops += 1
         if n_loops % frequency_to_save == 0 or n_loops == len(videos.keys())-1:
             logging.info(
-                "On loop %d - generating new subtitle counts & updating srt availability!" % n_loops)
+                "On loop %d - generating new subtitle counts!" % n_loops)
             get_new_counts(language_code=lang_code)
-            update_srt_availability(lang_code=lang_code)
 
-    # One last call, to make sure we didn't miss anything.
-    srt_availability = update_srt_availability(lang_code=lang_code)
+    srt_availability = get_new_counts(language_code=lang_code)
 
     # Summarize output
-    logging.info("We now have %d subtitles (amara thought they had %d) for language '%s'!" % (len(srt_availability), n_videos, lang_code))
+    logging.info("We now have %d subtitles (amara thought they had %d) for language '%s'!" % (srt_availability, n_videos, lang_code))
 
 
 def download_subtitle(youtube_id, lang_code, format="srt"):
@@ -251,7 +250,6 @@ def update_json(youtube_id, lang_code, downloaded, api_response, time_of_attempt
 
 def get_new_counts(language_code, data_path=settings.SUBTITLES_DATA_ROOT, locale_root=LOCALE_ROOT):
     """Write a new dictionary of srt file counts in respective download folders"""
-
     language_subtitle_count = {}
     subtitles_path = get_srt_path(language_code)
     lang_name = get_language_name(language_code)
@@ -269,6 +267,7 @@ def get_new_counts(language_code, data_path=settings.SUBTITLES_DATA_ROOT, locale
         logging.info("%-4s subtitles for %-20s" % ("No", lang_name))
 
     write_new_json(language_subtitle_count, data_path)
+    return language_subtitle_count[lang_name].get("count")
 
 
 def write_new_json(subtitle_counts, data_path):
@@ -284,32 +283,6 @@ def write_new_json(subtitle_counts, data_path):
     logging.info("Writing fresh srt counts to %s" % filepath)
     with open(filepath, 'wb') as fp:
         json.dump(current_counts, fp)
-
-
-def update_srt_availability(lang_code):
-    """Update maps in srts_by_lanugage with ids of downloaded subs"""
-
-    srts_path = settings.STATIC_ROOT + "srt/"
-
-    # Get a list of all srt files
-    lang_srts_path = srts_path + lang_code + "/subtitles/"
-    if not os.path.exists(lang_srts_path):
-        # this happens when we tried to get srts, but none existed.
-        yt_ids = []
-    else:
-        files = os.listdir(lang_srts_path)
-        yt_ids = [f.rstrip(".srt") for f in files]
-    srts_dict = { "srt_files": yt_ids }
-
-    # Dump that to the language path
-    base_path = settings.SUBTITLES_DATA_ROOT + "languages/"
-    ensure_dir(base_path)
-    filename = "%s_available_srts.json" % lang_code
-    filepath = base_path + filename
-    with open(filepath, 'wb') as fp:  # overwrite file
-        json.dump(srts_dict, fp)
-
-    return yt_ids
 
 
 class Command(BaseCommand):
@@ -345,7 +318,7 @@ class Command(BaseCommand):
                     dest='frequency_to_save',
                     default=5,
                     metavar="FREQ_SAVE",
-                    help="How often to update the srt availability status. The script will go FREQ_SAVE loops before running update_srt_availability"),
+                    help="How often to update the srt availability status file. The script will go FREQ_SAVE loops before saving a new master file"),
     )
 
 
