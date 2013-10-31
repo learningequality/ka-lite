@@ -153,7 +153,10 @@ def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID, project
     try:
         r.raise_for_status()
     except Exception as e:
-        logging.error(e)
+        if r.status_code == 401:
+            raise CommandError("Error: 401 Unauthorized while trying to access the CrowdIn API. Be sure to set CROWDIN_PROJECT_ID and CROWDIN_PROJECT_KEY in local_settings.py.")
+        else:
+            raise CommandError("Error: %s - couldn't connect to CrowdIn API - cannot continue without that zip file!" % e)
     else:
         logging.info("Successfully downloaded zip archive")
 
