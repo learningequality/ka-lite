@@ -28,15 +28,6 @@ from utils.general import convert_date_input, ensure_dir, make_request
 LOCALE_ROOT = os.path.join(settings.LOCALE_PATHS[0])
 
 
-class LanguageCodeDoesNotExist(Exception):
-
-    def __init__(self, lang_code):
-        self.lang_code = lang_code
-
-    def __str__(self):
-        return "The language code specified (%s) does not have any available subtitles for download." % (self.lang_code)
-
-
 class LanguageNameDoesNotExist(Exception):
 
     def __init__(self, lang_code):
