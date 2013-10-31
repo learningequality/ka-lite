@@ -41,17 +41,16 @@ class Command(BaseCommand):
         make_option('-d', '--days',
                     action='store',
                     dest='days',
-                    default=None,
+                    default=7,
                     metavar="NUM_DAYS",
-                    help="Update any and all subtitles that haven't been refreshed in the numebr of days given. If not specified, subtitles will not be updated."),
+                    help="Update any and all subtitles that haven't been refreshed in the numebr of days given. Defaults to 7 days."),
 	)
 	
 	def handle(self, **options):
 		## Ensure that central server is using the correct schema to store srt files
 		if os.path.exists(os.path.join(settings.STATIC_ROOT, "srt")):
 			move_existing_srts()
-		if options["days"]:
-			update_srts(options["days"])
+		update_srts(options["days"])
 		update_language_packs()
 
 
@@ -62,8 +61,8 @@ def update_srts(days):
 	"""
 	date = '{0.month}/{0.day}/{0.year}'.format(datetime.date.today()-datetime.timedelta(int(days)))
 	logging.info("Updating subtitles that haven't been refreshed since %s" % date)
-	call_command("generate_subtitle_map", date_since_attempt=date)
-	call_command("cache_subtitles", date_since_attempt=date, lang_code='all')
+	# call_command("generate_subtitle_map", date_since_attempt=date)
+	# call_command("cache_subtitles", date_since_attempt=date, lang_code='all')
 
 
 def update_language_packs():
@@ -178,35 +177,43 @@ def generate_metadata():
 		if not os.path.isdir(os.path.join(LOCALE_ROOT, lang)):
 			continue
 		crowdin_meta = next((meta for meta in crowdin_meta_dict if meta["code"] == convert_language_code_format(lang_code=lang, for_crowdin=True)), None)
-		if not crowdin_meta:
-			logging.info("Couldn't find crowdin metadata for language code '%s'. Very strange. Skipping generation of metadata for this language." % lang)
-			continue
-		try: 
+		try:
 			local_meta = json.loads(open(os.path.join(LOCALE_ROOT, lang, "%s_metadata.json" % lang)).read())
 		except:
-			local_meta = {
+			local_meta = {}
+		if not crowdin_meta:
+			converted_lang_code = convert_language_code_format(lang)
+			updated_meta = {
+				"code": converted_lang_code,
+				"name": get_language_name(converted_lang_code),
+				"percent_translated": 0,
+				"phrases": 0,
+				"approved_translations": 0,
+			}
+		else:
+			updated_meta = {
 				"code": crowdin_meta.get("code"),
 				"name": crowdin_meta.get("name"),
+				"percent_translated": int(crowdin_meta.get("approved_progress")),
+				"phrases": int(crowdin_meta.get("phrases")),
+				"approved_translations": int(crowdin_meta.get("approved")),
 			}
 
-		# Obtain number of subtitles
+		# Obtain current number of subtitles
 		entry = subtitle_counts.get(get_language_name(lang))
 		if entry:
 			srt_count = entry.get("count")
 		else:
 			srt_count = 0
 
-
-		updated_metadata = {
-			"percent_translated": int(crowdin_meta.get("approved_progress")),
-			"phrases": int(crowdin_meta.get("phrases")),
-			"approved_translations": int(crowdin_meta.get("approved")),
+		updated_meta.update({
 			"software_version": version.VERSION,
-			"crowdin_version": increment_crowdin_version(local_meta, crowdin_meta),
 			"subtitle_count": srt_count,
-		}
+		})
 
-		local_meta.update(updated_metadata)
+		language_pack_version = increment_language_pack_version(local_meta, updated_meta)
+		updated_meta["language_pack_version"] = language_pack_version
+		local_meta.update(updated_meta)
 
 		# Write locally (this is used on download by distributed server to update it's database)
 		with open(os.path.join(LOCALE_ROOT, lang, "%s_metadata.json" % lang), 'w') as output:
@@ -233,17 +240,16 @@ def get_crowdin_meta(project_id=settings.CROWDIN_PROJECT_ID, project_key=setting
 	return crowdin_meta_dict
 
 
-def increment_crowdin_version(local_meta, crowdin_meta):
+def increment_language_pack_version(local_meta, updated_meta):
 	"""Increment language pack version if translations have been updated (start over if software version has incremented)"""
-	total_translated = local_meta.get("total_translated")
-	if not total_translated or version_diff(local_meta.get("software_version"), version.VERSION) < 0:
+	if not local_meta or version_diff(local_meta.get("software_version"), version.VERSION) < 0:
 		# set to one for the first time, or if this is the first build of a new software version
-		crowdin_version = 1
-	elif total_translated == crowdin_meta.get("approved"):
-		crowdin_version = local_meta.get("crowdin_version") or 1
+		language_pack_version = 1
+	elif local_meta.get("total_translated") == updated_meta.get("approved") and local_meta.get("subtitle_count") == updated_meta.get("subtitle_count"):
+		language_pack_version = local_meta.get("language_pack_version") or 1
 	else:
-		crowdin_version = local_meta.get("crowdin_version") + 1
-	return crowdin_version
+		language_pack_version = local_meta.get("language_pack_version") + 1
+	return language_pack_version
 
 
 
