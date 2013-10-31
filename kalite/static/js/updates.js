@@ -29,10 +29,10 @@ function has_a_val(key, obj) {
 function updatesStart(process_name, interval, callbacks) {
     // Starts looking for updates
     clear_message("id_" + process_name)
+
     // Store the info
     if (! process_name in process_names) {
         process_names[process_name] = true;
-//        = process_names.concat(process_name);
     }
     process_intervals[process_name] = interval ? interval : 5000;
     process_callbacks[process_name] = callbacks;
@@ -42,6 +42,7 @@ function updatesStart(process_name, interval, callbacks) {
         clearInterval(process_interval_handles[process_name]);
     }
 
+    // Set up the recurring callback
     process_interval_handles[process_name] = setInterval(
         function () { updatesStart_callback(process_name); },
         process_intervals[process_name]
@@ -51,44 +52,47 @@ function updatesStart(process_name, interval, callbacks) {
 }
 
 function updatesStart_callback(process_name) {
-        // Start the background process
-        doRequest("/api/updates/progress?process_name=" + process_name)
-            .success(function(progress_log) {
-                // Store the info
-                var process_name = progress_log.process_name
-                if (!process_name) {
-                    // Start failed; can exit because this will repeat.
-                    return;
-                }
-                if (!has_a_val(process_name, process_ids)) {
-                    process_ids[process_name] = progress_log.process_id
-                }
+    // Start may fail, so we need a looping callback
+    //   which detects when the update process has actually
+    //   started.
 
-                // Launch a looping timer to call into the update check function
-                if (!progress_log.completed) {
-                    // Clear interval for start
-                    if (has_a_val(process_name, process_interval_handles)) {
-                        clearInterval(process_interval_handles[process_name]);
-                    }
-                    // Create interval for check
-                    process_interval_handles[process_name] = setInterval( // call it soon
-                        function() { updatesCheck(process_name); }, 
-                        process_intervals[process_name]
-                    );
-                    updatesCheck(process_name);  // call it once directly
-                }
+    doRequest("/api/updates/progress?process_name=" + process_name)
+        .success(function(progress_log) {
+            // Store the info
+            var process_name = progress_log.process_name
+            if (!process_name) {
+                // Start failed; can exit because this will repeat.
+                return;
+            }
+            if (!has_a_val(process_name, process_ids)) {
+                process_ids[process_name] = progress_log.process_id
+            }
 
-                // Do callbacks
-                if (process_callbacks[process_name] && "start" in process_callbacks[process_name]) {
-                    process_callbacks[process_name]["start"](progress_log);
+            // Launch a looping timer to call into the update check function
+            if (!progress_log.completed) {
+                // Clear interval for start
+                if (has_a_val(process_name, process_interval_handles)) {
+                    clearInterval(process_interval_handles[process_name]);
                 }
-            }).fail(function(resp) {
-                show_message("error", "Error during updatesStart_callback: " + resp.responseText);
-                // Do callbacks
-                if (process_callbacks[process_name] && "start" in process_callbacks[process_name]) {
-                    process_callbacks[process_name]["start"](null, resp);
-                }
-            });
+                // Create interval for check
+                process_interval_handles[process_name] = setInterval( // call it soon
+                    function() { updatesCheck(process_name); }, 
+                    process_intervals[process_name]
+                );
+                updatesCheck(process_name);  // call it once directly
+            }
+
+            // Do callbacks
+            if (process_callbacks[process_name] && "start" in process_callbacks[process_name]) {
+                process_callbacks[process_name]["start"](progress_log);
+            }
+        }).fail(function(resp) {
+            show_message("error", "Error during updatesStart_callback: " + resp.responseText);
+            // Do callbacks, with error
+            if (process_callbacks[process_name] && "start" in process_callbacks[process_name]) {
+                process_callbacks[process_name]["start"](null, resp);
+            }
+        });
 }
 
 function updatesCheck(process_name, interval) {

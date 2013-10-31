@@ -126,7 +126,8 @@ def check_video_download(request):
 @require_admin
 @api_handle_error_with_json
 def retry_video_download(request):
-    """Clear any video still accidentally marked as in-progress, and restart the download job.
+    """
+    Clear any video still accidentally marked as in-progress, and restart the download job.
     """
     VideoFile.objects.filter(download_in_progress=True).update(download_in_progress=False, percent_complete=0)
     force_job("videodownload", "Download Videos")
@@ -179,9 +180,6 @@ def cancel_video_download(request):
     VideoFile.objects.filter(flagged_for_download=True).update(cancel_download=True, flagged_for_download=False)
 
     force_job("videodownload", stop=True)
-    log = UpdateProgressLog.get_active_log(process_name="videodownload", create_new=False)
-    if log:
-        log.cancel_progress()
 
     return JsonResponse({})
 
