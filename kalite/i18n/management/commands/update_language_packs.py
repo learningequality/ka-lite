@@ -8,6 +8,11 @@ necessary to update language packs.
 3. Generates metadata on language packs (subtitles and UI translations)
 4. Compiles the UI translations
 5. Zips up the packs and exposes them at a static url 
+
+Good test cases:
+
+./manage.py -l aa # language with subtitles, no translations
+./manage.py -l ur-PK # language with translations, no subtitles
 """
 import datetime
 import glob
@@ -55,8 +60,12 @@ class Command(BaseCommand):
     
     def handle(self, **options):
         obliterate_old_schema()
+        
+        # Raw language code for srts
         update_srts(days=options["days"], lang_code=options["lang_code"])
-        update_language_packs(lang_code=options["lang_code"])
+
+        # Converted language code for language packs
+        update_language_packs(lang_codes=[convert_language_code_format(options["lang_code"])] if options["lang_code"] != "all" else None)
 
 
 def update_srts(days, lang_code):
@@ -70,20 +79,20 @@ def update_srts(days, lang_code):
     call_command("cache_subtitles", date_since_attempt=date, lang_code=lang_code)
 
 
-def update_language_packs(lang_code):
+def update_language_packs(lang_codes=None):
 
     ## Download latest UI translations from CrowdIn
     download_latest_translations() 
     
     ## Compile
     (out, err, rc) = compile_all_po_files()
-    broken_langs = handle_po_compile_errors(out=out, err=err, rc=rc)
+    broken_langs = handle_po_compile_errors(lang_codes=lang_codes, out=out, err=err, rc=rc)
 
     ## Loop through new UI translations & subtitles, create/update unified meta data
-    generate_metadata(broken_langs)
+    generate_metadata(lang_codes=lang_codes, broken_langs=broken_langs)
     
     ## Zip
-    zip_language_packs()
+    zip_language_packs(lang_codes=lang_codes)
 
 
 def obliterate_old_schema():
@@ -123,26 +132,29 @@ def obliterate_old_schema():
         shutil.rmtree(srt_root)
         logging.info("Move completed.")
 
-def handle_po_compile_errors(out=None, err=None, rc=None):
+def handle_po_compile_errors(lang_codes=None, out=None, err=None, rc=None):
     """Return list of languages to not rezip due to errors in compile process. Email admins errors"""
 
-    codes = re.findall(r'(?<=ka-lite/locale/)\w+(?=/LC_MESSAGES)', err)
-    logging.warning("Found %d errors while compiling in codes %s. Mailing admins report now." %(len(codes), ', '.join(codes)))
-    if codes:
+    broken_codes = re.findall(r'(?<=ka-lite/locale/)\w+(?=/LC_MESSAGES)', err)
+    if lang_codes:
+        broken_codes = list(set(broken_codes) - set(lang_codes))
+
+    if broken_codes:
+        logging.warning("Found %d errors while compiling in codes %s. Mailing admins report now." %(len(broken_codes), ', '.join(broken_codes)))
         subject = "Error while compiling po files"
         commands = ""
-        for code in codes:
+        for code in broken_codes:
             commands += "\npython manage.py compilemessages -l %s" % code
         message =  """The following codes had errors when compiling their po files: %s.
-                       Please rerun the following commands to see specific line numbers 
-                       that need to be corrected on CrowdIn, before we can update the language packs.
-                       %s""" % (', '.join(codes), commands)
+                   Please rerun the following commands to see specific line numbers 
+                   that need to be corrected on CrowdIn, before we can update the language packs.
+                   %s""" % (', '.join(broken_codes), commands)
         if not settings.DEBUG:
             mail_admins(subject=subject, message=message)
             logging.info("Report sent.")
         else:
             logging.info("DEBUG is True so not sending email, but would have sent the following: SUBJECT: %s; MESSAGE: %s" %(subject, message))
-    return codes
+    return broken_codes
 
 
 def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID, project_key=settings.CROWDIN_PROJECT_KEY, language_code="all"):
@@ -209,7 +221,7 @@ def extract_new_po(tmp_dir_path=os.path.join(LOCALE_ROOT, "tmp"), language_codes
                 shutil.copy(po_file, os.path.join(LOCALE_ROOT, converted_code, "LC_MESSAGES", "django.po"))
 
 
-def generate_metadata(broken_langs=None):
+def generate_metadata(lang_codes=None, broken_langs=None):
     """Loop through locale folder, create or update language specific meta and create or update master file, skipping broken languages"""
 
     logging.info("Generating new po file metadata")
@@ -303,19 +315,27 @@ def increment_language_pack_version(local_meta, updated_meta):
 
 
 
-def zip_language_packs():
+def zip_language_packs(lang_codes=None):
     """Zip up and expose all language packs"""
-    logging.info("Zipping up language packs")
+
+    lang_codes = lang_codes or listdir(LOCALE_ROOT)
+    logging.info("Zipping up %d language pack(s)" % len(lang_codes))
+
     ensure_dir(settings.LANGUAGE_PACK_ROOT)
-    for lang in os.listdir(LOCALE_ROOT):
-        if not os.path.isdir(os.path.join(LOCALE_ROOT, lang)):
-            continue
+    for lang in lang_codes:
+        lang_locale_path = os.path.join(LOCALE_ROOT, lang)
+
+        if not os.path.exists(lang_locale_path):
+            logging.warn("Unexpectedly skipping missing directory: %s" % lang)
+        elif not os.path.isdir(lang_locale_path):
+            logging.error("Skipping language where a file exists: %s" % lang)
+
         # Create a zipfile for this language
         zip_path = os.path.join(settings.LANGUAGE_PACK_ROOT, version.VERSION)
         ensure_dir(zip_path)
         z = zipfile.ZipFile(os.path.join(zip_path, "%s.zip" % convert_language_code_format(lang)), 'w')
+
         # Get every single file in the directory and zip it up
-        lang_locale_path = os.path.join(LOCALE_ROOT, lang)
         for metadata_file in glob.glob('%s/*.json' % lang_locale_path):
             z.write(os.path.join(lang_locale_path, metadata_file), arcname=os.path.basename(metadata_file))    
         for mo_file in glob.glob('%s/LC_MESSAGES/*.mo' % lang_locale_path):
