@@ -30,13 +30,11 @@ urlpatterns = patterns('main.api_views',
     url(r'^launch_mplayer$', 'launch_mplayer', {}, 'launch_mplayer'),
 
     url(r'^status$', 'status', {}, 'status'),
+
+    #API endpoint for setting server time
+    url(r'^time_set/$', 'time_set', {}, 'time_set'),
 )
 
 urlpatterns += patterns('updates.api_views',
     url(r'^', include(updates.api_urls)),
 )
-
-if settings.ENABLE_CLOCK_SET:
-    urlpatterns += patterns('main.api_views',
-        url(r'^time_set/$', 'time_set', {}, 'time_set'),
-        )

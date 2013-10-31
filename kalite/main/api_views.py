@@ -193,11 +193,14 @@ def time_set(request):
     RPi only.
     """
 
+    if not settings.ENABLE_CLOCK_SET:
+        return JsonResponse({"error": _("This can only be done on Raspberry Pi systems")}, status=403)
+
     # Form does all the data validation - including ensuring that the data passed is a proper date time.
     # This is necessary to prevent arbitrary code being run on the system.
     form = DateTimeForm(data=simplejson.loads(request.raw_post_data))
     if not form.is_valid():
-        raise ValidationError(form.errors)
+        return JsonResponse({"error": _("Could not read date and time: Unrecognized input data format.")}, status=500)
 
     try:
 
@@ -207,7 +210,7 @@ def time_set(request):
     except PermissionDenied as e:
         return JsonResponse({"error": _("System permissions prevented time setting, please run with root permissions")}, status=500)
 
-    now = datetime.datetime.isoformat(" ").split(".")[0]
+    now = datetime.datetime.now().isoformat(" ").split(".")[0]
 
     return JsonResponse({"success": _("System time was reset successfully; current system time: %s" % now)})
 
