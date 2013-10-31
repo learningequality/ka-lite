@@ -319,6 +319,10 @@ BACKUP_VIDEO_SOURCE = getattr(local_settings, "BACKUP_VIDEO_SOURCE", None)
 BACKUP_THUMBNAIL_SOURCE = getattr(local_settings, "BACKUP_THUMBNAIL_SOURCE", None)
 assert not BACKUP_VIDEO_SOURCE or CACHE_TIME == 0, "If BACKUP_VIDEO_SOURCE, then CACHE_TIME must be 0"
 
+#Clock Setting disabled by default unless overriden.
+#Note: This will only work on Linux systems where the server is running as root.
+ENABLE_CLOCK_SET = getattr(local_settings, "ENABLE_CLOCK_SET", False)
+
 
 ########################
 # Debugging and testing
@@ -400,7 +404,7 @@ if package_selected("RPi"):
     if CACHE_TIME != 0:
         CACHES["web_cache"]['LOCATION'] = getattr(local_settings, "CACHE_LOCATION", '/var/tmp/kalite_web_cache')
 
-    ENABLE_CLOCK_SET = True
+    ENABLE_CLOCK_SET = getattr(local_settings, "ENABLE_CLOCK_SET", True)
 
 if package_selected("UserRestricted"):
     KEY_PREFIX += "|restricted"  # this option changes templates

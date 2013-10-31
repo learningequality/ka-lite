@@ -3,6 +3,7 @@ import copy
 import json
 import re
 import os
+import datetime
 from annoying.functions import get_object_or_None
 from functools import partial
 
@@ -192,26 +193,23 @@ def time_set(request):
     RPi only.
     """
 
-    # Form does all the data validation, including the youtube_id
+    # Form does all the data validation - including ensuring that the data passed is a proper date time.
+    # This is necessary to prevent arbitrary code being run on the system.
     form = DateTimeForm(data=simplejson.loads(request.raw_post_data))
     if not form.is_valid():
         raise ValidationError(form.errors)
-    data = form.data
-
-    if not settings.ENABLE_CLOCK_SET:
-        return JsonResponse({"error": "This can only be done on Raspberry Pi systems"}, status=403)
-
-    date_time = data["date_time"]
 
     try:
 
-        if os.system('date +%%F%%T -s "%s"' % date_time):
+        if os.system('sudo date +%%F%%T -s "%s"' % form.data["date_time"]):
             raise PermissionDenied
 
     except PermissionDenied as e:
-        return JsonResponse({"error": "System permissions prevented time setting, please run as root"}, status=500)
+        return JsonResponse({"error": _("System permissions prevented time setting, please run with root permissions")}, status=500)
 
-    return JsonResponse({"success": "Date and Time set to: %s" % date_time})
+    now = datetime.datetime.isoformat(" ").split(".")[0]
+
+    return JsonResponse({"success": _("System time was reset successfully; current system time: %s" % now)})
 
 
 # Functions below here focused on users

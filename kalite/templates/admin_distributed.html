@@ -98,7 +98,7 @@ i.icon-chevron-down:before {
                 var data = {
                     date_time: $('#date_select').val() + " " + $('#time_select').val()
                 };
-                doRequest("/api/time_set/", data)
+                doRequest("{% url time_set %}", data)
                     .success(function(data) {
                         show_api_messages(data, "id_set_time");
                     })
