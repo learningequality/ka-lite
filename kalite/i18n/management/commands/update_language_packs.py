@@ -127,16 +127,21 @@ def handle_po_compile_errors(out=None, err=None, rc=None):
     """Return list of languages to not rezip due to errors in compile process. Email admins errors"""
 
     codes = re.findall(r'(?<=ka-lite/locale/)\w+(?=/LC_MESSAGES)', err)
-    logging.info("Found %d errors while compiling in codes %s. Mailing admins report now." %(len(codes), ', '.join(codes)))
+    logging.warning("Found %d errors while compiling in codes %s. Mailing admins report now." %(len(codes), ', '.join(codes)))
     if codes:
         subject = "Error while compiling po files"
+        commands = ""
+        for code in codes:
+            commands += "\npython manage.py compilemessages -l %s" % code
         message =  """The following codes had errors when compiling their po files: %s.
-                       Please rerun the compilemessages command for each language code,
-                       using -l, to see specific line numbers that need to be corrected on 
-                       CrowdIn, before we can update the language packs.""" % ', '.join(codes)
+                       Please rerun the following commands to see specific line numbers 
+                       that need to be corrected on CrowdIn, before we can update the language packs.
+                       %s""" % (', '.join(codes), commands)
         if not settings.DEBUG:
             mail_admins(subject=subject, message=message)
-        logging.info("Report sent.")
+            logging.info("Report sent.")
+        else:
+            logging.info("DEBUG is True so not sending email, but would have sent the following: SUBJECT: %s; MESSAGE: %s" %(subject, message))
     return codes
 
 
