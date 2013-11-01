@@ -141,11 +141,10 @@ var video_callbacks = {
                 //
                 // Best to assume offline, as online check returns much faster than offline check.
                 if(!status){// || !status["online"]){
-                    show_message("error", "{% trans 'Distributed server is offline; cannot access video nor subtitle updates.' %}", " id_offline_message")
+                    show_message("error", "{% trans 'Distributed server is offline; cannot access video or language pack updates.' %}", " id_offline_message")
                 } else {
                     $("#help-info").show();
                     $("#download-videos").removeAttr("disabled");
-                    $(".download-subtitles").removeAttr("disabled");
                     clear_message("id_offline_message")
                 }
             });
@@ -188,7 +187,6 @@ var video_callbacks = {
                     },
                     onPostInit: function() {
                         updatesStart("videodownload", 5000, video_callbacks);
-                        //updatesStart("subtitledownload");
                     }
                 });
                         
@@ -246,39 +244,11 @@ var video_callbacks = {
             // Do the action
             doRequest("{% url cancel_video_download %}");
 
-            // Update the UI
-            $(".subtitle-section, #cancel-download").hide();
         });
        
         $("#retry-video-download").click(function() {
             doRequest("{% url start_video_download %}", {});
         });
-
-        // Subtitles stuff
-
-        $(".download-subtitles").click(function(event) {
-            // Confirm the action
-            var new_only = $(event.target).attr("new_only");
-            var language = $("#language option:selected").val();
-            if (new_only!="true") {
-                if(!confirm("{% trans 'You are about to download new subtitles for all downloaded videos. This may take a long time.' %}")) {
-                    return;
-                }
-            }
-            if (!language) {
-                alert("{% trans 'Please select a language first' %}");
-                return;
-            }
-
-            // Do the action and start the updating process        
-            doRequest("{% url start_subtitle_download %}", {language: language, new_only: new_only}).success(startSubtitleDownloadChecks);
-            updatesStart("subtitledownload")
-            
-            // Update the UI
-        });
-        
-
-
         // onload    
     });
 </script>

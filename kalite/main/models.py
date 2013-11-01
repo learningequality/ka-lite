@@ -493,12 +493,9 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
 class VideoFile(ExtendedModel):
     youtube_id = models.CharField(max_length=20, primary_key=True)
     flagged_for_download = models.BooleanField(default=False)
-    flagged_for_subtitle_download = models.BooleanField(default=False)
     download_in_progress = models.BooleanField(default=False)
-    subtitle_download_in_progress = models.BooleanField(default=False)
     priority = models.IntegerField(default=0)
     percent_complete = models.IntegerField(default=0)
-    subtitles_downloaded = models.BooleanField(default=False)
     cancel_download = models.BooleanField(default=False)
 
     class Meta:
@@ -515,18 +512,18 @@ class LanguagePack(ExtendedModel):
         - approved_translations: total number of translations approved on crowdin. note: crowdin differentiates
         between translations that have been submitted and those that have been approved. 
         - percent_translated: approved_translations/phrases 
-        - crowdin_version: the version of the language pack relative to software version. Starts at 1, and increments each time 
-        run the cache_subtitles command and more translations have been added on CrowdIn. It starts over at 1 when we 
-        increment software version.
-        - software_version: the software version that the language pack applies to ex: 0.11.0
+        - language_pack_version: the version of the language pack relative to software version. Starts at 1, 
+        increments each time translations or subtitles get added. 
+        - software_version: the software version that the language pack applies to
     """
     code = models.CharField(max_length=8, primary_key=True)
     name = models.CharField(max_length=50)
     phrases = models.PositiveIntegerField(default=0)
     approved_translations = models.PositiveIntegerField(default=0)
     percent_translated = models.PositiveIntegerField(default=0)
-    crowdin_version = models.PositiveIntegerField(default=1)
+    language_pack_version = models.PositiveIntegerField(default=1)
     software_version = models.CharField(max_length=20, default=None)
+    subtitle_count = models.PositiveIntegerField(default=0)
 
     def __unicode__(self):
         return "%s: %s" % (self.code, self.name)
