@@ -41,7 +41,6 @@ class Command(BaseCommand):
             self.stdout.write("Deleted %d VideoFile models (to mark them as not downloaded, since they were in a bad state)\n" % len(video_files_to_delete))
 
         files = glob.glob(settings.CONTENT_ROOT + "*.mp4")
-        subtitle_files = glob.glob(settings.CONTENT_ROOT + "*.srt")
         videos_marked_at_all = set([video.youtube_id for video in VideoFile.objects.all()])
         videos_marked_as_in_progress = set([video.youtube_id for video in VideoFile.objects.filter(download_in_progress=True)])
         videos_marked_as_unstarted = set([video.youtube_id for video in VideoFile.objects.filter(percent_complete=0, download_in_progress=False)])
@@ -50,9 +49,6 @@ class Command(BaseCommand):
         videos_in_filesystem_chunked = break_into_chunks(videos_in_filesystem)
 
         videos_flagged_for_download = set([video.youtube_id for video in VideoFile.objects.filter(flagged_for_download=True)])
-
-        subtitles_in_filesystem = set([path.replace("\\", "/").split("/")[-1].split(".")[0] for path in subtitle_files])
-        subtitles_in_filesystem_chunked = break_into_chunks(subtitles_in_filesystem)
         
         count = 0
         for chunk in videos_in_filesystem_chunked:
@@ -88,19 +84,6 @@ class Command(BaseCommand):
                     touched_video_ids.append(video_id)
         if count:
             self.stdout.write("Deleted %d VideoFile models (because the videos didn't exist in the filesystem)\n" % count)
-
-        count = 0
-        for chunk in subtitles_in_filesystem_chunked:
-            video_files_needing_model_update = VideoFile.objects.filter(subtitle_download_in_progress=False, subtitles_downloaded=False, youtube_id__in=chunk)
-            count += video_files_needing_model_update.count()
-            video_files_needing_model_update.update(subtitles_downloaded=True)
-            if caching_enabled:
-                for vf in video_files_needing_model_update:
-                    caching.invalidate_all_pages_related_to_video(video_id=vf.youtube_id)
-                    touched_video_ids.append(vf.youtube_id)
-                    
-        if count:
-            self.stdout.write("Updated %d VideoFile models (marked them as having subtitles)\n" % count)
 
         if options["auto_cache"] and caching_enabled and touched_video_ids:
             caching.regenerate_all_pages_related_to_videos(video_ids=touched_video_ids)

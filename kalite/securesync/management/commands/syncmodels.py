@@ -9,6 +9,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 import settings
 from securesync.engine.api_client import SyncClient
+from utils import set_process_priority
 
 
 class Command(BaseCommand):
@@ -24,8 +25,7 @@ class Command(BaseCommand):
         kwargs = {"host": args[0]} if len(args) >= 1 else {}
         max_retries = args[1] if len(args) >= 2 else 5
         
-        from utils import set_process_priority
-        set_process_priority.lowest()
+        set_process_priority.lowest(logging=settings.LOG)  # don't block users from web access due to syncing
 
         # Retry purgatory
         self.stdout_writeln(("Checking purgatory for unsaved models")+"...")
