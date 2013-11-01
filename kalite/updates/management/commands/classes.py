@@ -27,11 +27,13 @@ class UpdatesDynamicCommand(BaseCommand):
         if not self.progress_log.total_stages:
             raise Exception("Must set num-stages (through __init__ or set_stages()) before starting.")
 
+        notes_changed = (notes != self.progress_log.notes)
+
         self.check_if_cancel_requested()
         self.progress_log.update_stage(stage_name=stage_name, stage_percent=0, notes=notes)
 
-        if notes:
-            sys.stdout.write("%s\n" % notes)
+        if notes and notes_changed:
+            self.stdout.write("%s\n" % notes)
 
 
     def started(self):
@@ -43,11 +45,13 @@ class UpdatesDynamicCommand(BaseCommand):
         """
         Allow dynamic resetting of stages.
         """
+        notes_changed = (notes != self.progress_log.notes)
+
         self.check_if_cancel_requested()
         self.progress_log.update_total_stages(num_stages)
 
-        if notes:
-            sys.stdout.write("%s\n" % notes)
+        if notes and notes_changed:
+            self.stdout.write("%s\n" % notes)
 
 
     def next_stage(self, stage_name=None, notes=None):
@@ -55,35 +59,44 @@ class UpdatesDynamicCommand(BaseCommand):
         Allow dy
         """
         assert self.started(), "Must call start() before moving to a next stage!"
+
+        notes_changed = (notes != self.progress_log.notes)
+
         self.check_if_cancel_requested()
         self.progress_log.update_stage(stage_name=self.stage_name, stage_percent=1., notes=notes)
 
-        if notes:
-            sys.stdout.write("%s\n" % notes)
+        if notes and notes_changed:
+            self.stdout.write("%s\n" % notes)
 
 
     def update_stage(self, stage_name, stage_percent, notes=None):
+        notes_changed = (notes != self.progress_log.notes)
+
         self.check_if_cancel_requested()
         self.progress_log.update_stage(stage_name=stage_name, stage_percent=stage_percent, notes=notes)
 
-        if notes:
-            sys.stdout.write("%s\n" % notes)
+        if notes and notes_changed:
+            self.stdout.write("%s\n" % notes)
 
 
     def cancel(self, notes=None):
+        notes_changed = (notes != self.progress_log.notes)
+
         self.check_if_cancel_requested()
         self.progress_log.cancel_progress(notes=notes)
 
-        if notes:
-            sys.stdout.write("%s\n" % notes)
+        if notes and notes_changed:
+            self.stdout.write("%s\n" % notes)
 
 
     def complete(self, notes=None):
+        notes_changed = (notes != self.progress_log.notes)
+
         self.check_if_cancel_requested()
         self.progress_log.mark_as_completed(notes=notes)
 
-        if notes:
-            sys.stdout.write("%s\n" % notes)
+        if notes and notes_changed:
+            self.stdout.write("%s\n" % notes)
 
 
     def check_if_cancel_requested(self):
@@ -129,31 +142,39 @@ class UpdatesStaticCommand(BaseCommand):
         Allow dy
         """
         assert self.stage_index is not None, "Must call start function before next_stage()"
+        notes_changed = (notes != self.progress_log.notes)
+
         self.stage_index += 1
         self.progress_log.update_stage(stage_name=self.stages[self.stage_index], stage_percent=0, notes=notes)
 
-        if notes:
-            sys.stdout.write("%s\n" % notes)
+        if notes and notes_changed:
+            self.stdout.write("%s\n" % notes)
 
 
     def update_stage(self, stage_percent, notes=None):
+        notes_changed = (notes != self.progress_log.notes)
+
         self.progress_log.update_stage(stage_name=self.stages[self.stage_index], stage_percent=stage_percent, notes=notes)
 
-        if notes:
-            sys.stdout.write("%s\n" % notes)
+        if notes and notes_changed:
+            self.stdout.write("%s\n" % notes)
 
 
     def cancel(self, notes=None):
+        notes_changed = (notes != self.progress_log.notes)
+
         self.progress_log.cancel_progress(notes=notes)
         self.stage_index = None
 
-        if notes:
-            sys.stdout.write("%s\n" % notes)
+        if notes and notes_changed:
+            self.stdout.write("%s\n" % notes)
 
 
     def complete(self, notes=None):
+        notes_changed = (notes != self.progress_log.notes)
+
         self.progress_log.mark_as_completed(notes=notes)
         self.stage_index = None
 
-        if notes:
-            sys.stdout.write("%s\n" % notes)
+        if notes and notes_changed:
+            self.stdout.write("%s\n" % notes)

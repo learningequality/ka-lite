@@ -23,29 +23,28 @@ ul.dynatree-container li, .ui-widget-content {
     margin-top: 15px;
 }
 
-#cancel-download {
-    display: none;
-    margin-top: 10px;
-}
-
-#download-videos {
+#download-videos, #delete-videos, #retry-video-download, #cancel-video-download {
     font-weight: bold;
     padding: 4px 10px 5px 10px;
     margin-bottom: 5px;
+}
+#download-videos {
     color: #52A852;
 }
 
 #delete-videos {
     color: #AC4343;
-    padding: 0 10px 0 10px;
 }
 
-#retry-video-download, #retry-subtitle-download {
+#retry-video-download {
     color: red;
-    padding: 0 10px 0 10px;
-    display: none;
-    margin-top: 15px;
+    display:none;
 }
+
+#cancel-download {
+    display: none;
+}
+
 #help-info, #download-videos {
     display:none;
 }

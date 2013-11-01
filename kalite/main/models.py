@@ -504,6 +504,16 @@ class VideoFile(ExtendedModel):
     class Meta:
         ordering = ["priority", "youtube_id"]
 
+    def __unicode__(self):
+        if self.download_in_progress:
+            status = "downloading (%d%%)" % self.percent_complete
+        elif self.flagged_for_download:
+            status = "waiting to download"
+        elif self.percent_complete == 100:
+            status = "downloaded"
+        else:
+            status = "not downloaded"
+        return u"id: %s (%s)" % (self.youtube_id, status)
 
 class LanguagePack(ExtendedModel):
     """ 
@@ -529,7 +539,7 @@ class LanguagePack(ExtendedModel):
     software_version = models.CharField(max_length=20, default=None)
 
     def __unicode__(self):
-        return "%s: %s" % (self.code, self.name)
+        return u"%s: %s" % (self.code, self.name)
 
 
 engine.add_syncing_models([VideoLog, ExerciseLog, UserLogSummary])
