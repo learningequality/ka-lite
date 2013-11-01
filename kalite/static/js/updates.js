@@ -103,21 +103,8 @@ function updatesCheck(process_name, interval) {
     var path = "/api/updates/progress?process_" + (has_a_val(process_name, process_ids) ? ("id=" + process_ids[process_name]) : ("name=" + process_name));
     doRequest(path)
         .success(function(progress_log) {
-            var completed = !progress_log.process_name || progress_log.completed;
-
             // Reasons to exit
-            if (completed) {
-                // 
-                if (progress_log.process_percent == 1.) {
-                    show_message("info", "Completed update '" + process_name + "' successfully.", "id_" + process_name)
-                    updatesReset(process_name);
-                } else if (progress_log.process_name) {
-                    show_message("error", "Error during update: " + progress_log.notes, "id_" + process_name);
-                    updatesReset(process_name);
-                } else {
-                }
-                //return
-            } else if (!process_intervals[process_name]) {
+            if (!process_intervals[process_name]) {
                 // If cancelled, stop the madness!
                 return;
             }
@@ -133,13 +120,35 @@ function updatesCheck(process_name, interval) {
             if (process_callbacks[process_name] && "check" in process_callbacks[process_name]) {
                 process_callbacks[process_name]["check"](progress_log);
             }
+
+            var completed = !progress_log.process_name || progress_log.completed;
+            if (completed) {
+                // 
+                if (progress_log.process_percent == 1.) {
+                    show_message("success", "Completed update '" + process_name + "' successfully.", "id_" + process_name)
+                    updatesReset(process_name);
+                } else if (progress_log.completed) {
+                    show_message("info", "Update for '" + process_name + "' cancelled successfully.", "id_" + process_name)
+                    updatesReset(process_name);
+                } else if (progress_log.process_name) {
+                    show_message("error", "Error during update: " + progress_log.notes, "id_" + process_name);
+                    updatesReset(process_name);
+                } else {
+                }
+            }
         }).fail(function(resp) {
-            show_message("error", "Error during updatesCheck: " + resp.responseText);
-            updatesReset(process_name);
+            if (resp.responseText) {
+                show_message("error", "Error during updatesCheck: " + resp.responseText);
+            } else {
+                show_message("error", "Error during updatesCheck: unexpected server error.");
+            }
+
             // Do callbacks
             if (process_callbacks[process_name] && "check" in process_callbacks[process_name]) {
                 process_callbacks[process_name]["check"](null, resp);
             }
+
+            updatesReset(process_name);
         });
 }
 
@@ -153,20 +162,21 @@ function updateDisplay(process_name, progress_log) {
     window.process_name = process_name;
     if (progress_log.completed) {
         select_update_elements(process_name, ".progress-section").hide();
-    } else {
+    } else if (progress_log.total_stages) {
+
+        // Update the UI
+        //     Update the progress bars
+        select_update_elements(process_name, ".progressbar-current").progressbar({value: 100*progress_log.stage_percent});
+        select_update_elements(process_name, ".progressbar-overall").progressbar({value: 100*progress_log.process_percent});
+
+        select_update_elements(process_name, ".stage-current").text(progress_log.cur_stage_num);
+        select_update_elements(process_name, ".stage-total").text(progress_log.total_stages);
+
+        select_update_elements(process_name, ".stage-header").text(progress_log.notes);
+        select_update_elements(process_name, ".stage-name").text("");
+
         select_update_elements(process_name, ".progress-section").show();
     }
-
-    // Update the UI
-    //     Update the progress bars
-    select_update_elements(process_name, ".progressbar-current").progressbar({value: 100*progress_log.stage_percent});
-    select_update_elements(process_name, ".progressbar-overall").progressbar({value: 100*progress_log.process_percent});
-
-    select_update_elements(process_name, ".stage-current").text(progress_log.cur_stage_num);
-    select_update_elements(process_name, ".stage-total").text(progress_log.total_stages);
-
-    select_update_elements(process_name, ".stage-header").text(progress_log.notes);
-    select_update_elements(process_name, ".stage-name").text("");
 
     // Do callbacks
     if (process_callbacks[process_name] && "display" in process_callbacks[process_name]) {
