@@ -299,7 +299,7 @@ def device_management(request, device_id, org_id=None, zone_id=None, n_sessions=
     
     total_sessions = all_sessions.count()
     
-    shown_sessions = all_sessions.order_by("-timestamp")[:n_sessions]
+    shown_sessions = list(all_sessions.order_by("-timestamp")[:n_sessions])
 
     return {
         "org": org,
