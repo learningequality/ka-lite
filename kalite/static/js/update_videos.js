@@ -7,14 +7,23 @@ function video_start_callback(progress_log, resp) {
     }
 }
 
+var lastKey = null;
+
 function video_check_callback(progress_log, resp) {
     // When video status is checked
     if (progress_log) { // check succeeded
+        // Determine what changed, and what to update
+        var currentKey = progress_log.stage_name;
+        var keyCompleted = null;
+        if (currentKey != lastKey) {
+            keyCompleted = lastKey;
+        } else if (progress_log.stage_percent == 1.) {
+            keyCompleted = currentKey;
+        }
 
-        if (progress_log.stage_percent == 1.) {
+        if (keyCompleted) {
             // 100% done with the video
-            var currentKey = progress_log.stage_name;
-            setNodeClass(currentKey, "complete");
+            setNodeClass(keyCompleted, "complete");
             if (progress_log.process_percent == 1.) {
                 // 100% done with ALL videos.
                 $(".progress-section, #cancel-download").hide();
@@ -23,6 +32,8 @@ function video_check_callback(progress_log, resp) {
                     $("#cancel-download").hide();
                 }
                 return;
+            } else if (lastKey != currentKey) {
+                setNodeClass(currentKey, "partial");
             }
 
         } else if (progress_log.completed) {
@@ -31,10 +42,13 @@ function video_check_callback(progress_log, resp) {
             $("#cancel-download").hide();
         } else {
             // Everything's good for now!
+            setNodeClass(currentKey, "partial");
             $("#retry-video-download").hide();
             $("#cancel-download").show();
         }
-        $("#cancel-download").show();
+
+        lastKey = currentKey;
+
     } else { // check failed.
         switch (resp.status) {
             case 403:
@@ -50,7 +64,7 @@ function video_check_callback(progress_log, resp) {
 
 var video_callbacks = {
     start: video_start_callback,
-    check: video_check_callback,
+    check: video_check_callback
 };
 
 
