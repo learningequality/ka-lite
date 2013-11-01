@@ -2,7 +2,6 @@
 
 SCRIPT_DIR=`dirname "${BASH_SOURCE[0]}"`
 KALITE_DIR="$SCRIPT_DIR/../kalite"
-pyexec=`"$SCRIPT_DIR/python.sh"`
 
 port=`"$SCRIPT_DIR/get_setting.sh" PRODUCTION_PORT`
 nthreads=`"$SCRIPT_DIR/get_setting.sh" CHERRYPY_THREAD_COUNT`
@@ -11,7 +10,7 @@ if [ -f "$KALITE_DIR/runcherrypyserver.pid" ];
 then
     pid=`cat "$KALITE_DIR/runcherrypyserver.pid"`
     echo "(Warning: Web server may still be running; attempting to stop old process ($pid) first)"
-    "$pyexec" "$KALITE_DIR/manage.py" runcherrypyserver stop pidfile=$KALITE_DIR/runcherrypyserver.pid
+    source "$SCRIPT_DIR/serverstop.sh"
 fi
 
 echo "Running the web server on port $port."
