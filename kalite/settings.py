@@ -378,7 +378,7 @@ assert not BACKUP_VIDEO_SOURCE or CACHE_TIME == 0, "If BACKUP_VIDEO_SOURCE, then
 
 #Clock Setting disabled by default unless overriden.
 #Note: This will only work on Linux systems where the server is running as root.
-ENABLE_CLOCK_SET = getattr(local_settings, "ENABLE_CLOCK_SET", False)
+ENABLE_CLOCK_SET = False
 
 
 ########################
