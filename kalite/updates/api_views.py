@@ -98,11 +98,14 @@ def start_video_download(request):
     """
     youtube_ids = OrderedSet(simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", []))
 
+    # One query per video (slow)
     video_files_to_create = [id for id in youtube_ids if not get_object_or_None(VideoFile, youtube_id=id)]
     video_files_to_update = youtube_ids - OrderedSet(video_files_to_create)
 
+    # One query per set
     VideoFile.objects.bulk_create([VideoFile(youtube_id=id, flagged_for_download=True) for id in video_files_to_create])
 
+    # One query per chunk
     for chunk in break_into_chunks(youtube_ids):
         video_files_needing_model_update = VideoFile.objects.filter(download_in_progress=False, youtube_id__in=chunk).exclude(percent_complete=100)
         video_files_needing_model_update.update(percent_complete=0, cancel_download=False, flagged_for_download=True)
@@ -146,26 +149,11 @@ def delete_videos(request):
         delete_downloaded_files(id)
 
         # Delete the file in the database
-        videofile = get_object_or_None(VideoFile, youtube_id=id)
-        if videofile:
-            videofile.cancel_download = True
-            videofile.flagged_for_download = False
-            videofile.flagged_for_subtitle_download = False
-            videofile.save()
+        VideoFile.objects.filter(youtube_id=id).delete()
 
-        # Refresh the cache
+        # Clear the cache
         invalidate_all_pages_related_to_video(video_id=id)
 
-    return JsonResponse({})
-
-
-@require_admin
-@api_handle_error_with_json
-def retry_video_download(request):
-    """Clear any video still accidentally marked as in-progress, and restart the download job.
-    """
-    VideoFile.objects.filter(download_in_progress=True).update(download_in_progress=False, percent_complete=0)
-    force_job("videodownload", "Download Videos")
     return JsonResponse({})
 
 
@@ -177,7 +165,7 @@ def cancel_video_download(request):
     VideoFile.objects.all().update(download_in_progress=False)
 
     # unflag all video downloads
-    VideoFile.objects.filter(flagged_for_download=True).update(cancel_download=True, flagged_for_download=False)
+    VideoFile.objects.filter(flagged_for_download=True).update(cancel_download=True, flagged_for_download=False, download_in_progress=False)
 
     force_job("videodownload", stop=True)
 
@@ -289,29 +277,6 @@ def start_subtitle_download(request):
             videofile.save()
         
     force_job("subtitledownload", "Download Subtitles")
-    return JsonResponse({})
-
-@require_admin
-@api_handle_error_with_json
-def check_subtitle_download(request):
-    videofiles = VideoFile.objects.filter(flagged_for_subtitle_download=True)
-    return JsonResponse(videofiles.count())
-
-@require_admin
-@api_handle_error_with_json
-def get_subtitle_download_list(request):
-    videofiles = VideoFile.objects.filter(flagged_for_subtitle_download=True).values("youtube_id")
-    video_ids = [video["youtube_id"] for video in videofiles]
-    return JsonResponse(video_ids)
-
-
-@require_admin
-@api_handle_error_with_json
-def cancel_subtitle_download(request):
-    # unflag all subtitle downloads
-    VideoFile.objects.filter(flagged_for_subtitle_download=True).update(cancel_download=True, flagged_for_subtitle_download=False)
-
-    force_job("subtitledownload", stop=True)
     return JsonResponse({})
 
 
