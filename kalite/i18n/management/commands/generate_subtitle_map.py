@@ -1,5 +1,10 @@
-"""Retrieve and store information from Amara's API that we can use
-to somewhat intelligently download subtitles from them"""
+"""
+Command used to cache data from Amara's API about which languages videos
+have been subtitled in. This data is then used by the command cache_subtitles 
+to intelligently request srt files from Amara's API, rather than blindly requesting 
+tons of srt files that don't exist. This command should be run infrequently, but 
+regularly, to ensure we are at least putting in requests for the srts that exist.
+"""
 
 import datetime
 import json
@@ -15,8 +20,7 @@ from django.core.management import call_command
 import settings
 from settings import LOG as logging
 from shared.topic_tools import get_node_cache
-from utils.general import convert_date_input, ensure_dir
-from utils.subtitles import make_request
+from utils.general import convert_date_input, ensure_dir, make_request
 
 
 headers = {
@@ -30,17 +34,26 @@ LANGUAGE_SRT_SUFFIX = "_download_status.json"
 
 class OutDatedSchema(Exception):
     def __str__(self):
-        return "The current data schema is outdated and doesn't store the important bits. Please run 'generate_subtitles_map.py -N' to generate a totally new file and the correct schema."
+        return "The current data schema is outdated and doesn't store the important bits. Please run 'generate_subtitles_map.py -f' to generate a totally new file and the correct schema."
 
 
 def create_all_mappings(force=False, frequency_to_save=100, response_to_check=None, date_to_check=None):
-    """Write or update JSON file that maps from YouTube ID to Amara code and languages available"""
+    """
+    Write or update JSON file that maps from YouTube ID to Amara code and languages available.
+
+    This command updates the json file that records what languages videos have been subtitled in. 
+    It loops through all video ids, records a list of which languages Amara says it has been subtitled in
+    and meta data about the request (e.g. date, response code).
+        
+    See the schema in the docstring for fcn update_video_entry.
+    """
     videos = get_node_cache('Video')
 
     # Initialize the data
     out_file = settings.SUBTITLES_DATA_ROOT + SRTS_JSON_FILENAME
 
     if not os.path.exists(out_file):
+        ensure_dir(os.path.dirname(out_file))
         srts_dict = {}
     else:
         # Open the file, read, and clean out old videos.
@@ -182,7 +195,10 @@ def update_video_entry(youtube_id, entry={}):
 
 
 def update_language_srt_map():
-    """Update the language_srt_map from the api_info_map"""
+    """
+    Translate the srts_remote_availability dictionary into language specific files
+    that can be used by the cache_subtitles command. 
+    """
     # Load the current download status
     try:
         api_info_map = json.loads(open(settings.SUBTITLES_DATA_ROOT + SRTS_JSON_FILENAME).read())
@@ -302,13 +318,10 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
-        try:
-            converted_date = convert_date_input(options.get("date_since_attempt"))
-            # create_all_mappings(force=options.get("force"), frequency_to_save=5, response_to_check=options.get("response_code"), date_to_check=converted_date)
-            logging.info("Executed successfully. Updating language => subtitle mapping to record any changes!")
+        converted_date = convert_date_input(options.get("date_since_attempt"))
+        create_all_mappings(force=options.get("force"), frequency_to_save=5, response_to_check=options.get("response_code"), date_to_check=converted_date)
+        logging.info("Executed successfully. Updating language => subtitle mapping to record any changes!")
 
-            language_srt_map = update_language_srt_map()
-            print_language_availability_table(language_srt_map)
-            logging.info("Process complete.")
-        except Exception as e:
-           raise CommandError(str(e))
+        language_srt_map = update_language_srt_map()
+        print_language_availability_table(language_srt_map)
+        logging.info("Process complete.")

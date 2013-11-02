@@ -1,11 +1,12 @@
 {% extends "coachreports/base_d3_visualization.html" %}
 
+{% load i18n %}
 {% load repeatblock %}
 {% load my_filters %}
 {% load staticfiles %}
 
-{% block title %}Scatter plot {{ block.super }}{% endblock title %}
-{% block report_title %}Scatter plot {% endblock report_title %}
+{% block title %}{% trans "Scatter plot" %}{{ block.super }}{% endblock title %}
+{% block report_title %}{% trans "Scatter plot" %}{% endblock report_title %}
 
 {% block headjs %} {{ block.super }}
 <script type="text/javascript" src="{% static 'js/coachreports/d3.scatter.js' %}"></script>

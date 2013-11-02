@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ "$(id -u)" != "0" ]; then
+    echo "You need to be root in order to start KA-Lite"
+    exit 1
+fi
+
 SCRIPT_DIR=`dirname "${BASH_SOURCE[0]}"`
 if [ -e "$SCRIPT_DIR/python.sh" ]; then
     KALITE_DIR=$SCRIPT_DIR/../kalite

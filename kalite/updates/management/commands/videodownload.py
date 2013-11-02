@@ -10,6 +10,7 @@ from shared.jobs import force_job
 from shared.topic_tools import get_video_by_youtube_id
 from shared.videos import download_video, DownloadCancelled, URLNotFound
 from updates.management.commands.classes import UpdatesDynamicCommand
+from utils import set_process_priority
 
 
 class Command(UpdatesDynamicCommand):
@@ -64,6 +65,9 @@ class Command(UpdatesDynamicCommand):
         caching_enabled = settings.CACHE_TIME != 0
         handled_video_ids = []  # stored to deal with caching
         failed_video_ids = []  # stored to avoid requerying failures.
+
+        set_process_priority.lowest(logging=settings.LOG)
+        
         try:
             while True: # loop until the method is aborted
                 if VideoFile.objects.filter(download_in_progress=True).count() > 0:

@@ -11,6 +11,9 @@ then
     pid=`cat "$KALITE_DIR/runcherrypyserver.pid"`
     echo "(Warning: Web server may still be running; attempting to stop old process ($pid) first)"
     source "$SCRIPT_DIR/serverstop.sh"
+    if [ "$SERVER_STOPPED" != "true" ]; then
+        exit 1
+    fi
 fi
 
 echo "Trying to start the web server on port $port."

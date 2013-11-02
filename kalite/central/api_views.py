@@ -13,7 +13,8 @@ import version
 from .models import Organization, get_or_create_user_profile
 from .views import get_central_server_host
 from securesync.models import Zone
-from utils.internet import allow_jsonp, api_handle_error_with_json, JsonResponse
+from utils.internet import allow_jsonp, api_handle_error_with_json, JsonResponse, JsonpResponse
+from i18n.management.commands.cache_translations import LANGUAGE_PACK_AVAILABILITY_FILENAME
 
 
 @allow_jsonp
@@ -56,6 +57,7 @@ def get_download_urls(request):
     return JsonResponse(downloads)
 
 
+@allow_jsonp
 @api_handle_error_with_json
 def get_subtitle_counts(request):
     """
@@ -73,14 +75,43 @@ def get_subtitle_counts(request):
 
     # Return an appropriate response
     # TODO(dylan): Use jsonp decorator once it becomes available
-    if request.GET.get("callback",None):
+    if request.GET.get("callback", None):
         # JSONP response
-        response = HttpResponse("%s(%s);" % (request.GET["callback"], json.dumps(subtitle_counts, sort_keys=True)))
+        response = JsonpResponse("%s(%s);" % (request.GET["callback"], json.dumps(subtitle_counts, sort_keys=True)))
         response["Access-Control-Allow-Headers"] = "*"
         response["Content-Type"] = "text/javascript"
         return response
 
     else:
         # Regular request
-        response = JsonResponse(json.dumps(subtitle_counts, sort_keys=True), status=200)
+        response = JsonResponse(json.dumps(subtitle_counts, sort_keys=True))
         return response
+
+
+@allow_jsonp
+@api_handle_error_with_json
+def get_available_language_packs(request):
+    """Return dict of available language packs"""
+    # On central, loop through available language packs in static/language_packs/
+    language_packs_path = settings.LANGUAGE_PACK_ROOT
+    try:
+        language_packs_available = json.loads(open(os.path.join(language_packs_path, LANGUAGE_PACK_AVAILABILITY_FILENAME)).read())
+    except:
+        raise Http404
+
+    if request.GET.get("callback", None):
+        # JSONP response
+        response = JsonpResponse("%s(%s);" % (request.GET["callback"], json.dumps(language_packs_available, sort_keys=True)))
+        response["Access-Control-Allow-Headers"] = "*"
+        response["Content-Type"] = "text/javascript"
+        return response
+
+    else:
+        # Regular request
+        response = JsonResponse(json.dumps(language_packs_available, sort_keys=True))
+        return response
+
+
+
+
+
