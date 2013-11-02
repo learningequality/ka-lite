@@ -2,7 +2,7 @@
 SCRIPT_DIR=`dirname "${BASH_SOURCE[0]}"`
 KALITE_DIR="$SCRIPT_DIR/../kalite"
 pyexec=`"$SCRIPT_DIR/python.sh"`
-SERVER_STOPPED=true
+
 
 if [ -f "$KALITE_DIR/runcherrypyserver.pid" ];
 then
@@ -13,8 +13,7 @@ then
     "$pyexec" "$KALITE_DIR/manage.py" runcherrypyserver stop pidfile=$KALITE_DIR/runcherrypyserver.pid
     rc=$?
     if [[ $rc != 0 ]] ; then
-        echo "We couldn't stop the server. Perhaps becoming root might help."
-        SERVER_STOPPED=false
+        echo "We couldn't stop the server"
     fi
 
 else
