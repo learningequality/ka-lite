@@ -75,7 +75,7 @@ def zone_management(request, zone_id, org_id=None):
 
         device_data[device.id] = {
             "name": device.name or device.id,
-            "is_demo_device": device.devicemetadata.is_demo_device,
+            "is_demo_device": device.get_metadata().is_demo_device,
             "num_times_synced": sync_sessions.count() if sync_sessions is not None else None,
             "last_time_synced": sync_sessions.aggregate(Max("timestamp"))["timestamp__max"] if sync_sessions is not None else None,
             "is_demo_device": device.get_metadata().is_demo_device,
