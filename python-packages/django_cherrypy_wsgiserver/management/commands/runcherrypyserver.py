@@ -200,9 +200,15 @@ def runcherrypyserver(argset=[], **kwargs):
         return
         
     if "stop" in options:
-        stop_server(options['pidfile'])
-        return True
-
+        if options['pidfile']:
+            stop_server(options['pidfile'])
+            return True
+        if options['host'] and options['port']:
+            #fall through into the following host/port shutdown sequence
+            pass
+        else:
+            raise Exception("must have pidfile or host+port")
+        
     if port_is_available(options['host'], options['port']):
         pass
     else:
@@ -226,7 +232,11 @@ def runcherrypyserver(argset=[], **kwargs):
             pass
         else:
             raise Exception("Port %s is currently in use by another process, cannot continue" % options['port'])
-                        
+
+    if "stop" in options:
+        #we are done, get out
+        return True
+        
     cherrypyserver.run_cherrypy_server(**options)
 
 
