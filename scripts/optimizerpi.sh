@@ -7,18 +7,22 @@ else
     KALITE_DIR=$current_dir/kalite
 fi
 
-echo "Step 1. -- change KA Lite local_settings.py"
+echo "Step 1. -- Install M2Crypto, psutil and nginx"
 
-echo 'CONFIG_PACKAGE = "RPi"' >> $KALITE_DIR/local_settings.py
+sudo apt-get -y install python-m2crypto python-psutil nginx
 
-echo "Step 2 - Install M2Crypto, psutil and nginx, Configure to work with KA Lite"
+echo "Step 2 - Configure nginx to work with KA Lite"
 
-sudo apt-get -y install python-m2crypto
-sudo apt-get -y install python-psutil
-sudo apt-get -y install nginx 
-sudo rm /etc/nginx/sites-enabled/default 
-sudo touch /etc/nginx/sites-enabled/kalite 
-sudo sh -c "$KALITE_DIR/manage.py nginxconfig > /etc/nginx/sites-enabled/kalite" 
+if [ -f /etc/nginx/sites-enabled/default ]; then
+    sudo rm /etc/nginx/sites-enabled/default 
+fi
+if [ -f /etc/nginx/sites-enabled/kalite ]; then
+    sudo rm /etc/nginx/sites-enabled/kalite
+fi
+
+sudo touch /etc/nginx/sites-available/kalite 
+sudo sh -c "$KALITE_DIR/manage.py nginxconfig > /etc/nginx/sites-available/kalite" 
+sudo ln -s /etc/nginx/sites-available/kalite /etc/nginx/sites-enabled/kalite
 
 echo "Step 3 - Optimize nginx configuration"
 

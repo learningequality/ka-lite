@@ -378,12 +378,19 @@ assert not BACKUP_VIDEO_SOURCE or CACHE_TIME == 0, "If BACKUP_VIDEO_SOURCE, then
 assert not AUTO_LOAD_TEST or not CENTRAL_SERVER, "AUTO_LOAD_TEST only on local server"
 
 
+
 ########################
 # IMPORTANT: Do not add new settings below this line
 # everything that follows is overriding default settings, depending on CONFIG_PACKAGE
 
 # config_package (None|RPi) alters some defaults e.g. different defaults for Raspberry Pi(RPi)
-CONFIG_PACKAGE = getattr(local_settings, "CONFIG_PACKAGE", [])
+# autodetect if this is a Raspberry Pi-type device, and auto-set the config_package
+#  to override the auto-detection, set CONFIG_PACKAGE=None in the local_settings
+
+CONFIG_PACKAGE = getattr(local_settings, "CONFIG_PACKAGE",
+                      ("RPi" if os.uname()[0] == "Linux" and os.uname()[4] == "armv6l" and not CENTRAL_SERVER
+                         else []))
+                        
 if isinstance(CONFIG_PACKAGE, basestring):
     CONFIG_PACKAGE = [CONFIG_PACKAGE]
 CONFIG_PACKAGE = [cp.lower() for cp in CONFIG_PACKAGE]
@@ -396,7 +403,6 @@ def package_selected(package_name):
 # Config for Raspberry Pi distributed server
 #     nginx will normally be on 8008 so default to 7007
 #     18 is the sweet-spot for cherrypy threads
-#    /tmp is deleted on boot, so use /var/tmp for a persistent cache instead
 if package_selected("RPi"):
     PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 7007)
     CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 18)
