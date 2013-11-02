@@ -31,6 +31,11 @@ function doRequest(url, data) {
     });
 }
 
+function unique(array) {
+    return $.grep(array, function(el, index) {
+        return index == $.inArray(el, array);
+    });
+}
 
 // Generic functions for client-side message passing
 //   through our Django-based server-side API

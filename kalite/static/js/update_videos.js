@@ -2,8 +2,7 @@
 
 function video_start_callback(progress_log, resp) {
     if (!progress_log) {
-        clear_messages()
-        show_message("error", resp.status_code + resp.responseText);
+        show_message("error", resp.responseText, "id_videod_start_callback_error");
     }
 }
 
@@ -37,8 +36,8 @@ function video_check_callback(progress_log, resp) {
             }
 
         } else if (progress_log.completed) {
-            // Completed without 100% done means there was a problem.
-            $("#retry-video-download").show();
+            // Completed without 100% done means the videos were cancelled.
+            $("#retry-video-download").hide();
             $("#cancel-download").hide();
         } else {
             // Everything's good for now!
@@ -50,15 +49,8 @@ function video_check_callback(progress_log, resp) {
         lastKey = currentKey;
 
     } else { // check failed.
-        switch (resp.status) {
-            case 403:
-                window.location.reload()  // Only happens if we were remotely logged out.
-                break;
-            default:
-                show_message("error", "Error downloading videos: " + resp.responseText);
-                clearInterval(window.download_subtitle_check_interval)
-                break;
-        }
+        handleFailedAPI(resp, "Error downloading videos");
+        clearInterval(window.download_subtitle_check_interval);
     }
 }
 
@@ -100,8 +92,8 @@ $(function() {
                 debugLevel: 0,
                 onSelect: function(select, node) {
                 
-                    var newVideoCount = findSelectedIncompleteVideos().length;
-                    var oldVideoCount = findSelectedStartedVideos().length;
+                    var newVideoCount = getSelectedIncompleteVideoIDs().length;
+                    var oldVideoCount = getSelectedStartedVideoIDs().length;
                     
                     $("#download-videos").hide();
                     $("#delete-videos").hide();
@@ -136,14 +128,10 @@ $(function() {
     $("#download-videos").click(function() {
         // Prep
         // Get all videos to download
-        var videos = findSelectedIncompleteVideos();
-        var video_queue = $.map(videos, function(node) {
-            return node.data.key;
-        });
-        updatesStart("videodownload", 5000, video_callbacks)
+        var video_ids = getSelectedIncompleteVideoIDs();
 
         // Do the request
-        doRequest(URL_START_VIDEO_DOWNLOADS, {youtube_ids: video_queue})
+        doRequest(URL_START_VIDEO_DOWNLOADS, {youtube_ids: video_ids})
             .success(function() {
                 updatesStart("videodownload", 5000, video_callbacks)
             })
@@ -157,7 +145,7 @@ $(function() {
         //$(".progress-section").hide();
 
         // Send event
-        ga_track("send", "event", "update", "click-download-videos", "Download Videos", videos.length);
+        ga_track("send", "event", "update", "click-download-videos", "Download Videos", video_ids.length);
     });
 
     // Delete existing videos
@@ -167,15 +155,12 @@ $(function() {
 
         // Prep
         // Get all videos marked for download
-        var videos = findSelectedStartedVideos();
-        var video_queue = $.map(videos, function(node) {
-            return node.data.key;
-        });
+        var video_ids = getSelectedStartedVideoIDs();
 
         // Do the request
-        doRequest(URL_DELETE_VIDEOS, {youtube_ids: video_queue})
+        doRequest(URL_DELETE_VIDEOS, {youtube_ids: video_ids})
             .success(function() {
-                $.each(video_queue, function(ind, id) {
+                $.each(video_ids, function(ind, id) {
                     setNodeClass(id, "unstarted");
                 });
             })
@@ -188,7 +173,7 @@ $(function() {
         unselectAllNodes();
 
         // Send event
-        ga_track("send", "event", "update", "click-delete-videos", "Delete Videos", videos.length);
+        ga_track("send", "event", "update", "click-delete-videos", "Delete Videos", video_ids.length);
     });
 
     // Cancel current downloads
@@ -264,18 +249,34 @@ function unselectAllNodes() {
     });
 }
 
-function findSelectedIncompleteVideos() {
+function getSelectedIncompleteVideos() {
     var arr = $("#content_tree").dynatree("getSelectedNodes");
-    return $.grep(arr, function(node) { 
+    return unique($.grep(arr, function(node) { 
         return node.data.addClass != "complete" && node.childList == null;
-    });
+    }));
 }
 
-function findSelectedStartedVideos() {
+function getSelectedStartedVideos() {
     var arr = $("#content_tree").dynatree("getSelectedNodes");
-    return $.grep(arr, function(node) { 
+    return unique($.grep(arr, function(node) { 
         return node.data.addClass != "unstarted" && node.childList == null;
-    });
+    }));
+}
+
+function getSelectedIncompleteVideoIDs() {
+    var videos = getSelectedIncompleteVideos();
+    var video_ids = unique($.map(videos, function(node) {
+        return node.data.key;
+    }));
+    return video_ids;
+}
+
+function getSelectedStartedVideoIDs() {
+    var videos = getSelectedStartedVideos();
+    var video_ids = unique($.map(videos, function(node) {
+        return node.data.key;
+    }));
+    return video_ids;
 }
 
 function withNodes(nodeKey, callback, currentNode) {

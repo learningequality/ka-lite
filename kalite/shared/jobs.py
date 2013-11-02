@@ -29,7 +29,7 @@ def force_job(command, name="", frequency="YEARLY", stop=False, launch_cron=True
         job.next_run = datetime.now()
     job.save()
 
-    if launch_cron:
+    if launch_cron and not job.is_running:  # don't run the same job twice
         # Just start cron directly, so that the process starts immediately.
         # Note that if you're calling force_job frequently, then 
         # you probably want to avoid doing this on every call.

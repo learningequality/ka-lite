@@ -27,7 +27,10 @@ class Command(UpdatesDynamicCommand):
 
 
     def download_progress_callback(self, videofile, percent):
-        if self.video and (percent - self.video.percent_complete) < 1 and percent != 100:
+        video_changed = (not self.video) or self.video.pk != videofile.pk
+        video_done = self.video and percent == 100
+
+        if self.video and (percent - self.video.percent_complete) < 1 and not video_done and not video_changed:
             return
 
         self.video = VideoFile.objects.get(pk=videofile.pk)
@@ -36,7 +39,7 @@ class Command(UpdatesDynamicCommand):
             if self.video.cancel_download:
                 raise DownloadCancelled()
 
-            elif (percent - self.video.percent_complete) >= 1 or percent == 100:
+            elif (percent - self.video.percent_complete) >= 1 or video_done or video_changed:
                 # Update to output (saved in chronograph log, so be a bit more efficient
                 if int(percent) % 5 == 0 or percent == 100:
                     self.stdout.write("%d\n" % percent)
@@ -83,8 +86,11 @@ class Command(UpdatesDynamicCommand):
         try:
             while True: # loop until the method is aborted
                 # Grab any video that hasn't been tried yet
-                videos = list(VideoFile.objects.filter(flagged_for_download=True, download_in_progress=False).exclude(youtube_id__in=failed_video_ids))
-                if len(videos) == 0:
+                videos = VideoFile.objects \
+                    .filter(flagged_for_download=True, download_in_progress=False) \
+                    .exclude(youtube_id__in=failed_video_ids)
+                video_count = videos.count()
+                if video_count == 0:
                     self.stdout.write("Nothing to download; exiting.\n")
                     break
 
@@ -97,7 +103,7 @@ class Command(UpdatesDynamicCommand):
                 self.stdout.write("Downloading video '%s'...\n" % video.youtube_id)
 
                 # Update the progress logging
-                self.set_stages(num_stages=len(videos) + len(handled_video_ids) + len(failed_video_ids) + int(options["auto_cache"]))
+                self.set_stages(num_stages=video_count + len(handled_video_ids) + len(failed_video_ids) + int(options["auto_cache"]))
                 if not self.started():
                     self.start(stage_name=video.youtube_id)
 
