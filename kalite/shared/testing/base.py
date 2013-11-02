@@ -11,8 +11,10 @@ import tempfile
 from django import conf
 from django.contrib.auth.models import User
 from django.core import cache
-from django.test.client import Client
+from django.core.cache.backends.filebased import FileBasedCache
+from django.core.cache.backends.locmem import LocMemCache
 from django.core.urlresolvers import reverse
+from django.test.client import Client
 from django.test import LiveServerTestCase
 
 import settings
@@ -99,6 +101,18 @@ class KALiteTestCase(LiveServerTestCase):
         shutil.rmtree(self.cache_dir)
         #for path in glob.glob(os.path.join(self.cache_dir, "*")):
         #    os.remove(path)
+
+    def is_cache_empty(self):
+        return self.get_num_cache_entries() == 0
+
+    def get_num_cache_entries(self):
+        if isinstance(self.web_cache, FileBasedCache):
+            return self.web_cache._num_entries
+
+        elif isinstance(self.web_cache, LocMemCache):
+            return len(self.web_cache._expire_info)
+        else:
+            assert False, "Only currently support FileBasedCache and LocMemCache"
 
     def reverse(self, url_name, args=None, kwargs=None):
         """Given a URL name, returns the full central URL to that URL"""
