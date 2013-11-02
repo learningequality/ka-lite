@@ -4,12 +4,13 @@ import random
 import string
 from optparse import make_option
 
-from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand, CommandError
 from django.db import DEFAULT_DB_ALIAS
 
 import settings
 from securesync.models import FacilityUser
+from utils.users import verify_raw_password
 
 
 def generate_random_password(length=10, charset=(string.ascii_letters + string.digits + '!@#$%^&*()')):
@@ -59,8 +60,10 @@ class Command(BaseCommand):
             p1, p2 = 1, 2  # To make them initially mismatch.
             while p1 != p2 and count < MAX_TRIES:
                 p1 = self._get_pass()
-                if len(p1) < settings.MIN_PASSWORD_LENGTH:
-                    self.stdout.write("Password is too short. It should be at least %d characters long.\n" % settings.MIN_PASSWORD_LENGTH)
+                try:
+                    verify_raw_password(p1)
+                except ValidationError as e:
+                    self.stderr.write(str(e) + "\n")
                     count += 1
                     continue
                 p2 = self._get_pass("Password (again): ")
