@@ -118,9 +118,14 @@ def stop_server(pidfile):
     Stop process whose pid was written to supplied pidfile. 
     """
     if os.path.exists(pidfile):
-        pid = int(open(pidfile).read())
-        os.remove(pidfile)
+        handle = open(pidfile)
+        pid = int(handle.read())
+        handle.close()
+        
         stop_server_using_pid(pid)
+        # if stop_server_using_pid did not raise an exception,
+        #  we drop into the next line to remove the pidfile
+        os.remove(pidfile)
     else:
         pass
 
