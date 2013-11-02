@@ -61,6 +61,7 @@ class SyncClient(BaseClient):
             raise Exception("The server is not trusted, don't make a session with THAT.")
         self.session.verified = True
         self.session.timestamp = session.timestamp
+
         self.session.save()
 
         # Request two: create your own session, and
@@ -177,9 +178,10 @@ class SyncClient(BaseClient):
             if not d.get_counter_position():  # this would be nonzero if the device sync'd models
                 d.set_counter_position(counters_to_download[device_id])
 
-
         self.session.models_downloaded += download_results["saved_model_count"]
         self.session.errors += download_results.has_key("error")
+
+        self.session.save()
 
         # TODO(jamalex): upload local devices as well? only needed once we have P2P syncing
 
@@ -235,5 +237,7 @@ class SyncClient(BaseClient):
         except Exception as e:
             upload_results["error"] = e
             self.session.errors += 1
+
+        self.session.save()
 
         return {"download_results": download_results, "upload_results": upload_results}
