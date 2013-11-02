@@ -62,6 +62,8 @@ class SyncClient(BaseClient):
         self.session.verified = True
         self.session.timestamp = session.timestamp
 
+        self.session.ip = self.parsed_url.netloc
+
         self.session.save()
 
         # Request two: create your own session, and
