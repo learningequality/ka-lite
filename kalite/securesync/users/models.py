@@ -20,6 +20,7 @@ from config.models import Settings
 from securesync import engine
 from securesync.engine.models import DeferredCountSyncedModel
 from settings import LOG as logging
+from utils.users import verify_raw_password
 
 
 class Facility(DeferredCountSyncedModel):
@@ -122,8 +123,8 @@ class FacilityUser(DeferredCountSyncedModel):
         assert raw_password is not None or hashed_password is not None, "Must be passing in raw or hashed password"
         assert not (raw_password is not None and hashed_password is not None), "Must be specifying only one--not both."
 
-        if raw_password and len(password) < settings.MIN_PASSWORD_LENGTH:
-            raise ValidationError("Password must be greater than %d characters." % settings.MIN_PASSWORD_LENGTH)
+        if raw_password:
+            verify_raw_password(raw_password)
 
         if hashed_password:
             self.password = hashed_password
@@ -145,6 +146,7 @@ class FacilityUser(DeferredCountSyncedModel):
             return u"%s %s" % (self.first_name, self.last_name)
         else:
             return self.username
+
 
 class CachedPassword(models.Model):
     """

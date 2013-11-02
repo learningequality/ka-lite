@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
 from .models import FacilityUser, Facility, FacilityGroup
-
+from utils.users import verify_raw_password
 
 class FacilityUserForm(forms.ModelForm):
 
@@ -50,8 +50,7 @@ class FacilityUserForm(forms.ModelForm):
 
     def clean_password(self):
         password = self.cleaned_data.get('password', "")
-        if len(password) < settings.MIN_PASSWORD_LENGTH:
-            raise forms.ValidationError(_("Password should be at least %d character/s" % settings.MIN_PASSWORD_LENGTH))
+        verify_raw_password(password)
         return self.cleaned_data['password']
 
     def clean_password_recheck(self):
