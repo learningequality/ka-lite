@@ -130,7 +130,7 @@ def stop_server_using_pid(pid):
     Stop process whose pid is supplied
     First try SIGTERM and if it fails, SIGKILL. If process is still running, an exception is raised.
     """
-    logging.warn("attempting to stop process %s" % pid)
+    logging.info("attempting to stop process %s" % pid)
     try:
         os.kill(pid, signal.SIGTERM)
     except OSError: #process does not exist
@@ -148,8 +148,8 @@ def port_is_available(host, port):
     Validates if the cherrypy server port is free;  This is needed in case the PID file
     for a currently running process does not exist or has the incorrect process ID recorded.
     """
-    if port < 1024:
-        logging.warn("Ports less than 1024 will only work if you are root" % port)
+    if int(port) < 1024 and os.geteuid() != 0:
+        raise Exception("Port %s is less than 1024: you must be root to do this" % port)
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     ip = socket.gethostbyname(host)
@@ -212,7 +212,16 @@ def runcherrypyserver(argset=[], **kwargs):
                 raise Exception("Existing kalite process cannot be stopped")
         else:
             raise Exception("Port %s is currently in use by another process, cannot continue" % options['port'])
-
+    
+        if port_is_available(options['host'], options['port']):
+            # Make a final check that the port is free.  This is needed in case someone downloaded
+            #  and started another copy of KA Lite, and ran it with the default settings
+            #  (port 8008, taken by Nginx), then it would kill the other server without
+            # freeing up the port, so we need to raise an exception.
+            pass
+        else:
+            raise Exception("Port %s is currently in use by another process, cannot continue" % options['port'])
+                        
     cherrypyserver.run_cherrypy_server(**options)
 
 
