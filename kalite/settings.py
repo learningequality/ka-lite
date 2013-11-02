@@ -41,6 +41,8 @@ DEBUG          = getattr(local_settings, "DEBUG", False)
 CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
 
 PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 8008 if not CENTRAL_SERVER else 8001)
+#proxy port is used by nginx and is used by Raspberry Pi optimizations
+PROXY_PORT = getattr(local_settings, "PROXY_PORT", None)
 CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 50 if not DEBUG else 5)
 
 # Note: this MUST be hard-coded for backwards-compatibility reasons.
@@ -401,10 +403,13 @@ def package_selected(package_name):
 
 
 # Config for Raspberry Pi distributed server
-#     nginx will normally be on 8008 so default to 7007
-#     18 is the sweet-spot for cherrypy threads
 if package_selected("RPi"):
+    # nginx proxy will normally be on 8008 and production port on 7007
+    # If ports are overridden in local_settings, run the optimizerpi script
     PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 7007)
+    PROXY_PORT = getattr(local_settings, "PROXY_PORT", 8008)
+    assert PRODUCTION_PORT != PROXY_PORT, "PRODUCTION_PORT and PROXY_PORT must not be the same"
+    # 18 is the sweet-spot for cherrypy threads
     CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 18)
     #SYNCING_THROTTLE_WAIT_TIME = getattr(local_settings, "SYNCING_THROTTLE_WAIT_TIME", 1.0)
     #SYNCING_MAX_RECORDS_PER_REQUEST = getattr(local_settings, "SYNCING_MAX_RECORDS_PER_REQUEST", 10)
