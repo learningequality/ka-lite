@@ -21,7 +21,6 @@ else
 
 	echo
 	source "$SCRIPT_DIR/cronstart.sh"
-    sleep 5
 	echo
 	source "$SCRIPT_DIR/serverstart.sh"
 fi
