@@ -339,13 +339,13 @@ class DeferredCountSyncedModel(DeferredSignSyncedModel):
     """
     Defer incrementing counters until syncing.
     """
-    def save(self, increment_counters=None, *args, **kwargs):
+    def save(self, increment_counters=settings.CENTRAL_SERVER, *args, **kwargs):
         """
         Note that increment_counters will set counters to None,
         and that if the object must be created, counter will be incremented
         and temporarily set, to create the object ID.
         """
-        super(DeferredCountSyncedModel, self).save(*args, increment_counters=settings.CENTRAL_SERVER, **kwargs)
+        super(DeferredCountSyncedModel, self).save(*args, increment_counters=increment_counters, **kwargs)
 
     def set_id(self):
         if self.id:
