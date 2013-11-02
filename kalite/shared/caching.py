@@ -70,10 +70,10 @@ def create_cache(path=None, url_name=None, cache=None, force=False):
         logging.warn("Did not create cache entry for %s" % path)
 
 
-def expire_page(path=None,url_name=None):
+def expire_page(path=None, url_name=None, failure_ok=False):
     assert (path or url_name) and not (path and url_name), "Must have path or url_name parameter, but not both"
     
-    key = get_cache_key(path=path, url_name=url_name)
+    key = get_cache_key(path=path, url_name=url_name, failure_ok=failure_ok)
     
     if get_web_cache().has_key(key):
         get_web_cache().delete(key)

@@ -73,7 +73,8 @@ class KALiteTestCase(LiveServerTestCase):
             #reload(caching)
             self.web_cache = cache.get_cache("web_cache")
             self.web_cache.clear()
-            self.assertEqual(self.web_cache._num_entries, 0, "Check that cache is empty.")
+            if hasattr(self.web_cache, '_num_entries'):
+                self.assertEqual(self.web_cache._num_entries, 0, "Check that cache is empty.")
 
     def setUp_fake_device(self):
         """
