@@ -11,6 +11,20 @@ from shared import topic_tools
 from utils.internet import generate_all_paths
 
 
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
+from main.models import VideoFile
+
+@receiver(post_save, sender=VideoFile)
+def my_handler1(sender, **kwargs):
+    if kwargs.get("created", False):
+        invalidate_all_pages_related_to_video(video_id=kwargs['instance'].youtube_id)
+
+@receiver(post_delete, sender=VideoFile)
+def my_handler2(sender, **kwargs):
+    invalidate_all_pages_related_to_video(video_id=kwargs['instance'].youtube_id)
+
+
 def caching_is_enabled():
     return settings.CACHE_TIME != 0
 

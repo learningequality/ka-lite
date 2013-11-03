@@ -15,7 +15,6 @@ import settings
 from .models import UpdateProgressLog
 from main.models import VideoFile
 from main import topicdata
-from shared.caching import invalidate_all_pages_related_to_video
 from shared.decorators import require_admin
 from shared.jobs import force_job, job_status
 from shared.videos import delete_downloaded_files
@@ -102,8 +101,9 @@ def start_video_download(request):
     video_files_to_create = [id for id in youtube_ids if not get_object_or_None(VideoFile, youtube_id=id)]
     video_files_to_update = youtube_ids - OrderedSet(video_files_to_create)
 
-    # One query per set
-    VideoFile.objects.bulk_create([VideoFile(youtube_id=id, flagged_for_download=True) for id in video_files_to_create])
+    # Do one create (no bulk_create), to trigger cache invalidation via save
+    for id in video_files_to_create:
+        VideoFile(youtube_id=id, flagged_for_download=True).save()
 
     # One query per chunk
     for chunk in break_into_chunks(youtube_ids):
@@ -150,9 +150,6 @@ def delete_videos(request):
 
         # Delete the file in the database
         VideoFile.objects.filter(youtube_id=id).delete()
-
-        # Clear the cache
-        invalidate_all_pages_related_to_video(video_id=id)
 
     return JsonResponse({})
 

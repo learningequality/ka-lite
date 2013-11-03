@@ -77,7 +77,6 @@ class Command(UpdatesDynamicCommand):
     def handle(self, *args, **options):
         self.video = None
 
-        caching_enabled = settings.CACHE_TIME != 0
         handled_video_ids = []  # stored to deal with caching
         failed_video_ids = []  # stored to avoid requerying failures.
 
@@ -122,12 +121,8 @@ class Command(UpdatesDynamicCommand):
                     failed_video_ids.append(video.youtube_id)
                     continue
 
-                # Expire, but don't regenerate until the very end, for efficiency.
-                if caching_enabled:
-                    caching.invalidate_all_pages_related_to_video(video_id=video.youtube_id)
-
             # This can take a long time, without any further update, so ... best to avoid.
-            if options["auto_cache"] and caching_enabled and handled_video_ids:
+            if options["auto_cache"] and caching.caching_is_enabled() and handled_video_ids:
                 self.update_stage(stage_name=self.video.youtube_id, stage_percent=0, notes="Generating all pages related to videos.")
                 caching.regenerate_all_pages_related_to_videos(video_ids=handled_video_ids)
 
