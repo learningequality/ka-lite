@@ -12,6 +12,7 @@ from django.views.decorators.http import condition
 
 import settings
 
+
 def calc_last_modified(request, *args, **kwargs):
     """
     Returns the file's modified time as the last-modified date
@@ -44,7 +45,7 @@ def calc_last_modified(request, *args, **kwargs):
     return last_modified
 
 
-def backend_cache_page(handler, cache_time=settings.CACHE_TIME, cache_name="web_cache"):
+def backend_cache_page(handler, cache_time=settings.CACHE_TIME, cache_name=settings.CACHE_NAME):
     """
     Applies all logic for getting a page to cache in our backend,
     and never in the browser, so we can control things from Django/Python.

@@ -69,14 +69,13 @@ class KALiteTestCase(LiveServerTestCase):
     def setUp_fake_cache(self):
         if settings.CACHE_TIME != 0:
             # Hackish way to create a temporary new file cache
-            #settings.CACHES["web_cache"]["LOCATION"] = self.cache_dir
-            #conf.settings.CACHES["web_cache"]["LOCATION"] = self.cache_dir
+            #settings.CACHES["file_based_cache"]["LOCATION"] = self.cache_dir
+            #conf.settings.CACHES["file_based_cache"]["LOCATION"] = self.cache_dir
             #reload(cache)
             #reload(caching)
-            self.web_cache = cache.get_cache("web_cache")
+            self.web_cache = cache.get_cache(settings.CACHE_NAME)
             self.web_cache.clear()
-            if hasattr(self.web_cache, '_num_entries'):
-                self.assertEqual(self.web_cache._num_entries, 0, "Check that cache is empty.")
+            self.assertTrue(self.is_cache_empty(), "Check that cache is empty.")
 
     def setUp_fake_device(self):
         """

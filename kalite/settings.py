@@ -308,7 +308,7 @@ assert PASSWORD_ITERATIONS_STUDENT_SYNCED >= 2500, "PASSWORD_ITERATIONS_STUDENT_
 
 # Sessions use the default cache, and we want a local memory cache for that.
 # Separate session caching from file caching.
-SESSION_ENGINE = getattr(local_settings, "SESSION_ENGINE", 'django.contrib.sessions.backends.cache')
+SESSION_ENGINE = getattr(local_settings, "SESSION_ENGINE", 'django.contrib.sessions.backends.cache' + ('d_db' if DEBUG else ''))
 
 MESSAGE_STORAGE = 'utils.django_utils.NoDuplicateMessagesSessionStorage'
 
@@ -332,9 +332,11 @@ CACHE_TIME = getattr(local_settings, "CACHE_TIME", _max_cache_time)
 # Cache is activated in every case,
 #   EXCEPT: if CACHE_TIME=0
 if CACHE_TIME != 0:  # None can mean infinite caching to some functions
+    KEY_PREFIX = version.VERSION
+
+    # File-based cache
     CACHE_LOCATION = getattr(local_settings, "CACHE_LOCATION", os.path.join(tempfile.gettempdir(), "kalite_web_cache_" + (getpass.getuser() or "unknown_user"))) + "/"
-    LOG.debug("Cache location = %s" % CACHE_LOCATION)
-    CACHES["web_cache"] = {
+    CACHES["file_based_cache"] = {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
         'LOCATION': CACHE_LOCATION, # this is kind of OS-specific, so dangerous.
         'TIMEOUT': CACHE_TIME, # should be consistent
@@ -342,7 +344,22 @@ if CACHE_TIME != 0:  # None can mean infinite caching to some functions
             'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
         },
     }
-    KEY_PREFIX = version.VERSION
+
+    # Memory-based cache
+    CACHES["mem_cache"] = {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+        'TIMEOUT': CACHE_TIME, # should be consistent
+        'OPTIONS': {
+            'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
+        },
+    }
+
+    # The chosen cache
+    CACHE_NAME = getattr(local_settings, "CACHE_NAME", "file_based_cache")
+    if CACHE_NAME == "file_base_cache":
+        LOG.debug("Cache location = %s" % CACHE_LOCATION)
+
 
 
 ########################

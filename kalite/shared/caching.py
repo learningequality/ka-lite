@@ -15,7 +15,7 @@ def caching_is_enabled():
     return settings.CACHE_TIME != 0
 
 def get_web_cache():
-    return get_cache("web_cache") if caching_is_enabled() else None
+    return get_cache(settings.CACHE_NAME) if caching_is_enabled() else None
 
 
 def get_cache_key(path=None, url_name=None, cache=None, failure_ok=False):
