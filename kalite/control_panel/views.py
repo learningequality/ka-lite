@@ -201,7 +201,7 @@ def _get_user_usage_data(users, period_start=None, period_end=None):
 
     # compute period start and end
     # Now compute stats, based on queried data
-    len_all_exercises = len(topicdata.NODE_CACHE['Exercise'])
+    num_exercises = len(topicdata.NODE_CACHE['Exercise'])
     user_data = OrderedDict()
     group_data = OrderedDict()
 
@@ -248,7 +248,7 @@ def _get_user_usage_data(users, period_start=None, period_end=None):
 
     for elog in exercise_logs:
         user_data[elog["user__pk"]]["total_exercises"] += 1
-        user_data[elog["user__pk"]]["pct_mastery"] += 1. / len_all_exercises
+        user_data[elog["user__pk"]]["pct_mastery"] += 1. / num_exercises
         user_data[elog["user__pk"]]["exercises_mastered"].append(elog["exercise_id"])
 
     for vlog in video_logs:

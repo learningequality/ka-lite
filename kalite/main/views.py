@@ -174,10 +174,10 @@ def exercise_handler(request, exercise):
     # Copy related videos (should be small), as we're going to tweak them
     related_videos = {}
     for key in exercise["related_video_readable_ids"]:
-        video = topicdata.NODE_CACHE["Video"].get(key, None)
-        if not video:
+        video_nodes = topicdata.NODE_CACHE["Video"].get(key, None)
+        if not video_nodes:
             continue
-            
+        video = video_nodes[0]
         if not video.get("on_disk", False) and not settings.BACKUP_VIDEO_SOURCE:
             continue
         
@@ -202,11 +202,11 @@ def exercise_handler(request, exercise):
 @render_to("knowledgemap.html")
 def exercise_dashboard(request):
     # Just grab the first path, whatever it is
-    paths = dict((key, val["paths"][0]) for key, val in topicdata.NODE_CACHE["Exercise"].items())
+    paths = dict((key, val[0]["path"]) for key, val in topicdata.NODE_CACHE["Exercise"].iteritems())
     slug = request.GET.get("topic")
 
     context = {
-        "title": topicdata.NODE_CACHE["Topic"][slug]["title"] if slug else _("Your Knowledge Map"),
+        "title": topicdata.NODE_CACHE["Topic"][slug][0]["title"] if slug else _("Your Knowledge Map"),
         "exercise_paths": json.dumps(paths),
     }
     return context
@@ -379,7 +379,8 @@ def search(request):
                 continue
 
             possible_matches[node_type] = []  # make dict only for non-skipped categories
-            for node in node_dict.values():
+            for nodearr in node_dict.values():
+                node = nodearr[0]
                 title = node['title'].lower()  # this could be done once and stored.
                 if title == query:
                     # Redirect to an exact match
