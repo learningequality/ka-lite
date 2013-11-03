@@ -1,29 +1,42 @@
 from django.core.cache import cache
-from django.http import HttpRequest
-from django.utils.cache import get_cache_key as django_get_cache_key, get_cache, _generate_cache_key
 from django.core.urlresolvers import reverse
-from django.utils import translation
+from django.db.models.signals import post_save,pre_delete
+from django.dispatch import receiver
+from django.http import HttpRequest
 from django.test.client import Client
+from django.utils.cache import get_cache_key as django_get_cache_key, get_cache, _generate_cache_key
+from django.utils import translation
 
 import settings
+from main.models import VideoFile
 from settings import LOG as logging
 from shared import topic_tools
 from utils.internet import generate_all_paths
 
 
-from django.db.models.signals import post_save, post_delete
-from django.dispatch import receiver
-from main.models import VideoFile
-
 @receiver(post_save, sender=VideoFile)
 def my_handler1(sender, **kwargs):
-    if kwargs.get("created", False):
-        invalidate_all_pages_related_to_video(video_id=kwargs['instance'].youtube_id)
+    """
+    Listen in to see when videos become available.
+    """
+    # Can only do full check in Django 1.5+, but shouldn't matter--we should only save with
+    # percent_complete == 100 once.
+    just_now_available = kwargs["instance"].percent_complete == 100 #and "percent_complete" in kwargs["updated_fields"]
+    if just_now_available:
+        # This event should only happen once, so don't bother checking if
+        #   this is the field that changed.
+        logging.debug("Invalidating cache on save for %s" % kwargs["instance"])
+        invalidate_all_pages_related_to_video(video_id=kwargs["instance"].youtube_id)
 
-@receiver(post_delete, sender=VideoFile)
+@receiver(pre_delete, sender=VideoFile)
 def my_handler2(sender, **kwargs):
-    invalidate_all_pages_related_to_video(video_id=kwargs['instance'].youtube_id)
-
+    """
+    Listen in to see when available videos become unavailable.
+    """
+    was_available = kwargs["instance"].percent_complete == 100
+    if was_available:
+        logging.debug("Invalidating cache on delete for %s" % kwargs["instance"])
+        invalidate_all_pages_related_to_video(video_id=kwargs["instance"].youtube_id)
 
 def caching_is_enabled():
     return settings.CACHE_TIME != 0
