@@ -194,15 +194,16 @@ class Command(BaseCommand):
                 sys.stdout.write("Upgrading database to KA Lite version %s\n" % version.VERSION)
         if install_clean:
             # After all, don't delete--just move.
-            sys.stdout.write("OK.  We will run a clean install; database file will be moved to a deletable location.")
+            sys.stdout.write("OK.  We will run a clean install; \n")
+            sys.stdout.write("the database file will be moved to a deletable location.\n")
 
         # Do all input at once, at the beginning
         if install_clean and options["interactive"]:
             if not options["username"] or not options["password"]:
                 sys.stdout.write("\n")
                 sys.stdout.write("Please choose a username and password for the admin account on this device.\n")
-                sys.stdout.write("\tYou must remember this login information, as you will need to enter it to\n")
-                sys.stdout.write("\tadminister this installation of KA Lite.\n")
+                sys.stdout.write("\tYou must remember this login information, as you will need\n")
+                sys.stdout.write("\tto enter it to administer this installation of KA Lite.\n")
                 sys.stdout.write("\n")
             (username, password) = get_username_password(options["username"], options["password"])
             (hostname, description) = get_hostname_and_description(options["hostname"], options["description"])

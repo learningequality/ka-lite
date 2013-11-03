@@ -6,7 +6,7 @@ pyexec=`"$SCRIPT_DIR"/python.sh`
 "$pyexec" "$current_dir/kalite/manage.py" install
 
 we_are_rpi=`"$SCRIPT_DIR/get_setting.sh" package_selected\(\"RPi\"\)`
-if [ $we_are_rpi ]; then
+if [ $we_are_rpi = "True" ]; then
     while true
     do
         echo
@@ -22,7 +22,7 @@ if [ $we_are_rpi ]; then
                 sudo "$SCRIPT_DIR/runatboot.sh"
                 sudo "$SCRIPT_DIR/optimizerpi.sh"
                 echo
-                break
+                exit
                 ;;
             n|N)
                 echo
@@ -30,7 +30,6 @@ if [ $we_are_rpi ]; then
                 ;;
         esac
     done
-    exit
 fi
 
 initd_available=`command -v update-rc.d`
