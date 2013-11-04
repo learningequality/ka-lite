@@ -39,7 +39,9 @@ class FacilityUserForm(forms.ModelForm):
         username = self.cleaned_data.get('username', "")
 
         # check if given username is unique on both facility users and admins, whatever the casing
-        if FacilityUser.objects.filter(username__iexact=username, facility=facility).count() > 0:
+        username_taken = FacilityUser.objects.filter(username__iexact=username, facility=facility).count() > 0
+        username_changed = not self.instance or self.instance.username != username
+        if username_taken and username_changed:
             raise forms.ValidationError(_("A user with this username at this facility already exists. Please choose a new username (or select a different facility) and try again."))
 
         if User.objects.filter(username__iexact=username).count() > 0:

@@ -81,8 +81,10 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
     Each has its own message and redirect.
     """
 
-    user = get_object_or_404(FacilityUser, id=id) if id != "new" else None
     title = ""
+    user = get_object_or_404(FacilityUser, id=id) if id != "new" else None
+    if user and not request.is_admin and user != request.session.get("facility_user"):
+        raise PermissionDenied()
 
     # Data submitted to create the user.
     if request.method == "POST":  # now, teachers and students can belong to a group, so all use the same form.
@@ -93,21 +95,27 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
         if form.is_valid():
             if form.cleaned_data["password"]:
                 form.instance.set_password(form.cleaned_data["password"])
+            elif user:
+                old_password = FacilityUser.objects.get(id=user.id).password
+                form.instance.set_password(hashed_password=old_password)
             form.save()
-
+            request.session["facility_user"] = form.instance
+            
             # Admins create users while logged in.
-            if id == "new":
-                if request.is_logged_in:
-                    assert request.is_admin, "Regular users can't create users while logged in."
-                    messages.success(request, _("You successfully created the user."))
-                    return HttpResponseRedirect(request.META.get("PATH_INFO", reverse("homepage")))  # allow them to add more of the same thing.
-                else:
-                    messages.success(request, _("You successfully registered."))
-                    return HttpResponseRedirect("%s?facility=%s" % (reverse("login"), form.data["facility"]))
-            else:
+            if id != "new":
                 messages.success(request, _("User changes saved!"))
                 if request.next:
                     return HttpResponseRedirect(request.next)
+            elif request.is_admin:
+                assert request.is_admin, "Regular users can't create users while logged in."
+                messages.success(request, _("You successfully created the user."))
+                return HttpResponseRedirect(request.META.get("PATH_INFO", reverse("homepage")))  # allow them to add more of the same thing.
+            elif request.is_logged_in:
+                messages.success(request, _("You successfully updated your user settings."))
+                return HttpResponseRedirect("%s?facility=%s" % (reverse("login"), form.data["facility"]))
+            else:
+                messages.success(request, _("You successfully registered."))
+                return HttpResponseRedirect("%s?facility=%s" % (reverse("login"), form.data["facility"]))
 
     # For GET requests
     elif user:

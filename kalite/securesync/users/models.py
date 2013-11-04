@@ -93,6 +93,25 @@ class FacilityUser(DeferredCountSyncedModel):
     def __unicode__(self):
         return u"%s (Facility: %s)" % (self.get_name(), self.facility)
 
+    def save(self, *args, **kwargs):
+        """
+        Validate password format before saving
+        """
+        # Now, validate password.
+        if self.password.split("$", 1)[0] == "sha1":
+            # Django's built-in password checker for SHA1-hashed passwords
+            pass
+
+        elif self.password.split("$", 2)[1] == "p5k2":
+            # PBKDF2 password checking
+            # Could fail if password doesn't split into parts nicely
+            pass
+
+        else:
+            raise ValidationException("Unknown password format.")
+
+        super(FacilityUser, self).save(*args, **kwargs)
+
     def check_password(self, raw_password):
         cached_password = CachedPassword.get_cached_password(self)
         cur_password = cached_password or self.password
@@ -116,7 +135,6 @@ class FacilityUser(DeferredCountSyncedModel):
     def set_password(self, raw_password=None, hashed_password=None, cached_password=None):
         """Set a password with the raw password string, or the pre-hashed password.
         If using the raw string, """
-
         assert hashed_password is None or settings.DEBUG, "Only use hashed_password in debug mode."
         assert raw_password is not None or hashed_password is not None, "Must be passing in raw or hashed password"
         assert not (raw_password is not None and hashed_password is not None), "Must be specifying only one--not both."
