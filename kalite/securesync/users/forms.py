@@ -9,8 +9,13 @@ from .models import FacilityUser, Facility, FacilityGroup
 
 
 class FacilityUserForm(forms.ModelForm):
+    """This form is used for 1) signing up, 2) creating users, and 3) editing users.
 
-    password         = forms.CharField(widget=forms.PasswordInput, label=_("Password"))
+    The views contain manual logic for processing passwords (hashing them, etc), so we use
+    custom fields here for the "password" and "confirm password" fields.
+    """
+
+    password_first   = forms.CharField(widget=forms.PasswordInput, label=_("Password"))
     password_recheck = forms.CharField(widget=forms.PasswordInput, label=_("Confirm password"))
 
     def __init__(self, facility, *args, **kwargs):
@@ -18,7 +23,7 @@ class FacilityUserForm(forms.ModelForm):
         self.fields["facility"].initial = facility.id
 
         # Passwords only required on new, not on edit
-        self.fields["password"].required = self.instance.pk == ""
+        self.fields["password_first"].required = self.instance.pk == ""
         self.fields["password_recheck"].required = self.instance.pk == ""
 
         # Across POST and GET requests
@@ -28,7 +33,7 @@ class FacilityUserForm(forms.ModelForm):
     class Meta:
         model = FacilityUser
         # Note: must preserve order
-        fields = ("facility", "group", "username", "first_name", "last_name", "password", "password_recheck", "is_teacher")
+        fields = ("facility", "group", "username", "first_name", "last_name", "password_first", "password_recheck", "is_teacher")
         widgets = {
             "facility": forms.HiddenInput(),
             "is_teacher": forms.HiddenInput(),
@@ -51,7 +56,7 @@ class FacilityUserForm(forms.ModelForm):
 
     def clean_password_recheck(self):
 
-        if self.cleaned_data.get('password') != self.cleaned_data.get('password_recheck'):
+        if self.cleaned_data.get('password_first') != self.cleaned_data.get('password_recheck'):
             raise forms.ValidationError(_("The passwords didn't match. Please re-enter the passwords."))
         return self.cleaned_data['password_recheck']
 
