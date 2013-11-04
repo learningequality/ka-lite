@@ -93,16 +93,12 @@ class SyncedModelManager(models.Manager):
         or not signed at all and we're looking for models in our own zone.
         """
 
-        # TODO(jamalex): it would be nice not to have to do this import here, but because of
-        # how split apart these subapps now are, it may be the only way to avoid circular imports
-        from securesync.devices.models import Device
-
         condition = \
             Q(signed_by__devicezone__zone=zone, signed_by__devicezone__revoked=False) | \
             Q(signed_by__devicemetadata__is_trusted=True, zone_fallback=zone)
 
-        # due to deferred signing, we need to consider completely unsigned models to be in our own zone
-        if zone == Device.get_own_device().get_zone():
+        # Due to deferred signing, we need to consider completely unsigned models to be in our own zone.
+        if zone == _get_own_device().get_zone():
             condition = condition | Q(signed_by=None)
 
         return self.filter(condition)
