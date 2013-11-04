@@ -3,7 +3,9 @@ These use a web-browser, along selenium, to simulate user actions.
 """
 from django.utils import unittest
 
+import random
 import settings
+import string
 from .browser_tests import KALiteDistributedWithFacilityBrowserTestCase
 from main.models import UserLog
 from securesync.models import FacilityUser
@@ -15,8 +17,13 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
     """"""
     def __init__(self, *args, **kwargs):
         """To guarantee state across tests, clear browser state every time."""
+        random.seed('ben') # to make password reproducible
         self.persistent_browser = False
         super(QueryTest, self).__init__(*args, **kwargs)
+
+    @staticmethod
+    def _gen_valid_password():
+        return ''.join(random.sample(string.ascii_lowercase, settings.PASSWORD_CONSTRAINTS['min_length']))
 
     def test_query_login_admin(self):
         with self.assertNumQueries(39 + 0*UserLog.is_enabled()):
@@ -25,20 +32,22 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
     def test_query_login_teacher(self):
         """Check the # of queries when logging in as a teacher."""
         teacher = FacilityUser(is_teacher=True, username="t1", facility=self.facility, password="dummy")
-        teacher.set_password("t1t1t1")
+        passwd = self._gen_valid_password()
+        teacher.set_password(passwd)
         teacher.save()
 
         with self.assertNumQueries(36 + 4*UserLog.is_enabled()):
-            self.browser_login_teacher("t1", "t1t1t1", self.facility)
+            self.browser_login_teacher("t1", passwd, self.facility)
 
     def test_query_login_student(self):
         """Check the # of queries when logging in as a student."""
         student = FacilityUser(is_teacher=False, username="s1", facility=self.facility, password="dummy")
-        student.set_password("t1t1t1")
+        passwd = self._gen_valid_password()
+        student.set_password(passwd)
         student.save()
 
         with self.assertNumQueries(40 + 4*UserLog.is_enabled()):
-            self.browser_login_student("s1", "t1t1t1", self.facility)
+            self.browser_login_student("s1", passwd, self.facility)
 
 
     def test_query_status_admin(self):
