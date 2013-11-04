@@ -33,6 +33,11 @@ class UserRegistration(KALiteTestCase):
         response = self.client.post(reverse('add_facility_student'), self.data)
         self.assertFormError(response, 'form', 'username', 'The specified username is unavailable. Please choose a new username and try again.')
 
+    def test_password_length_valid(self):
+        self.data['password'] = self.data['password_recheck'] = 'k' * settings.PASSWORD_CONSTRAINTS['min_length']
+        response = self.client.post(reverse('add_facility_student'), self.data)
+        FacilityUser.objects.get(username=self.data['username']) # should not raise error
+
     def test_password_length_enforced(self):
         # always make passwd shorter than passwd min length setting
         self.data['password'] = self.data['password_recheck'] =  self.data['password'][:settings.PASSWORD_CONSTRAINTS['min_length']-1]
