@@ -29,15 +29,15 @@
   <div class="errorlist">
       Please correct the errors below:
       <br/>
-       {{ form.non_field_errors }}
-       <br/>
+      {{ form.non_field_errors }}
+      <br/>
    </div>
   {% endif %}
 
   <h1>Create an account</h1>
   
   <form method="post" action="" class="wide basic-form">
-	{% csrf_token %}
+  {% csrf_token %}
     <input type="hidden" name="username"/>
     <div class="form-section">
         <div class="form-label"><label for="id_first_name">First Name:</label></div>
@@ -68,7 +68,9 @@
       {% endif %}
     </div>
     <div class="form-section">
-        <div class="form-label"><span style="margin-left:25px"><a href="#" onclick="$('#org_details').toggle()">Add details of your organization</a></span></div>
+        <div class="form-label">
+            <span style="margin-left:25px"><a href="#" onclick="$('#org_details').toggle()">Add details of your organization</a></span>
+        </div>
     </div>
     <div class="form-section" id="org_details">
         <div class="form-section">
@@ -123,15 +125,10 @@
     </div>
     <div class="form-section">
       <div class="form-label"><label for="id_tos1"></label></div>
-      <div class="form-element checkbox"><input type="checkbox" name="email_subscribe"{% if subscribe %} checked="checked"{% endif %} />
-      Subscribe to our "General Announcements" newsletter
-      </div>
-    </div>
-    <div class="form-section">
-      <div class="form-label"><label for="id_tos1"></label></div>
-      <div class="form-element checkbox">{{ form.tos1 }}
-      I acknowledge that the Khan Academy videos and exercises used within KA Lite are for
-      <a href="http://www.khanacademy.org/about/tos#7" target="_blank">non-commercial purposes only</a>.
+      <div class="form-element checkbox">
+        {{ form.tos1 }}
+        I acknowledge that the Khan Academy videos and exercises used within KA Lite are for
+        <a href="http://www.khanacademy.org/about/tos#7" target="_blank">non-commercial purposes only</a>.
       </div>
       {% if form.tos1.errors %}
         <div class="errorlist">{{ form.tos1.errors.as_text }}</div>
@@ -139,12 +136,21 @@
     </div>
     <div class="form-section">
       <div class="form-label"><label for="id_tos2"></label></div>
-      <div class="form-element checkbox">{{ form.tos2 }}
-      I acknowledge having read the <a href="http://www.khanacademy.org/about/api-tos" target="_blank">
-      Khan Academy API terms of service</a>, and that KA Lite uses this API.
+      <div class="form-element checkbox">
+        {{ form.tos2 }}
+        I acknowledge having read the <a href="http://www.khanacademy.org/about/api-tos" target="_blank">
+        Khan Academy API terms of service</a>, and that KA Lite uses this API.
+      </div>
       {% if form.tos2.errors %}
         <div class="errorlist">{{ form.tos2.errors.as_text }}</div>
       {% endif %}
+    </div>
+    <div class="form-section">
+      <div class="form-label"><label for="id_email_subscribe"></label></div>
+      <div class="form-element checkbox">
+        <input type="checkbox" name="email_subscribe"{% if subscribe %} checked="checked"{% endif %} />
+        Subscribe to our "General Announcements" newsletter
+      </div>
     </div>
     <br>
     <div class="form-section">
