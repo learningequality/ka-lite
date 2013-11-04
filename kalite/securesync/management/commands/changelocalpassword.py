@@ -10,7 +10,7 @@ from django.db import DEFAULT_DB_ALIAS
 
 import settings
 from securesync.models import FacilityUser
-from utils.users import verify_raw_password
+from utils.django_utils import verify_raw_password
 
 
 def generate_random_password(length=10, charset=(string.ascii_letters + string.digits + '!@#$%^&*()')):

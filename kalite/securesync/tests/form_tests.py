@@ -36,4 +36,4 @@ class UserRegistration(KALiteTestCase):
     def test_password_length_enforced(self):
         self.data['password'] = self.data['password_recheck'] =  'short'
         response = self.client.post(reverse('add_facility_student'), self.data)
-        self.assertFormError(response, 'form', 'password', "Password should be at least %d characters." % settings.MIN_PASSWORD_LENGTH)
+        self.assertFormError(response, 'form', 'password', "Password should be at least %d characters." % settings.PASSWORD_CONSTRAINTS['min_length'])
