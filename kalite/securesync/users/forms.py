@@ -62,6 +62,8 @@ class FacilityForm(forms.ModelForm):
 
     def clean_user_count(self):
         user_count = self.cleaned_data['user_count']
+        if user_count is None:
+            return
         if user_count < 1:
             raise ValidationError(_('Given user count should not be less than 1'),
                                   code='invalid_user_count')

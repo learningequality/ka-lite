@@ -7,7 +7,7 @@ It has an optional flag, -t, which inserts asterisks around the strings in the p
 compiles them, so that when you run the server, English has been translated to *English* in the 
 hope of making it easy to identify unwrapped strings.
 
-This can be run independently of cache_translations
+This can be run independently of the "update_language_packs" command
 """
 
 import re
