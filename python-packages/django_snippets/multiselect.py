@@ -1,7 +1,9 @@
 # taken from http://djangosnippets.org/snippets/1200/
-from django.db import models
 from django import forms
+from django.core.exceptions import ValidationError
+from django.db import models
 from django.utils.text import capfirst
+
 
 class MultiSelectFormField(forms.MultipleChoiceField):
     widget = forms.CheckboxSelectMultiple
@@ -62,7 +64,19 @@ class MultiSelectField(models.Field):
         if self.choices:
             func = lambda self, fieldname = name, choicedict = dict(self.choices):",".join([choicedict.get(value,value) for value in getattr(self,fieldname)])
             setattr(cls, 'get_%s_display' % self.name, func)
-            
+
+    def validate(self, value, model_instance):
+        """
+        Extension to properly validate.
+        """
+        assert self.choices, "Choices must be set."
+        if value:
+            # Make sure all values are in the acceptable set
+            set_diff = set(value) - set([c[0] for c in self.choices])
+            if set_diff:
+                raise ValidationError("Unrecognized choices: %s" % set_diff)
+
+
 # Bcipolli: I added this to make database migrations work.
 #
 # See: http://south.aeracode.org/wiki/MyFieldsDontWork
