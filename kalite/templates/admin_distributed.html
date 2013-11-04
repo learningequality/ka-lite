@@ -45,6 +45,9 @@ td.title {
     margin-right: 20px;
 }
 
+#standard-date {
+    visibility: hidden;
+}
 /*TODO: Delete this after Bootstrap integration on Distributed Server*/
 .dropdown-menu {
   position: absolute;
@@ -90,7 +93,9 @@ i.icon-chevron-down:before {
             minuteStep: 5
             });
         $('#date_select').datepicker({
-            dateFormat: "yy-mm-dd"
+            dateFormat: "dd-mm-yy",
+            altField: "#standard-date",
+            altFormat: "yy-mm-dd"
         });
 
         $("#date_select").datepicker('setDate', new Date());
@@ -98,7 +103,7 @@ i.icon-chevron-down:before {
         $('#set_time').click(
             function () {
                 var data = {
-                    date_time: $('#date_select').val() + " " + $('#time_select').val()
+                    date_time: $('#standard-date').val() + " " + $('#time_select').val()
                 };
                 doRequest("{% url time_set %}", data)
                     .success(function(data) {
@@ -163,11 +168,11 @@ i.icon-chevron-down:before {
         </tr>
         <tr>
             <td><div class="bootstrap-timepicker"><input id="time_select" type="text"></div></td>
-            <td class="desc">{% trans "Input current time (HH:MM)" %}</td>
+            <td class="desc">{% trans "Input current time (HH:MM - 24 Hour)" %}</td>
         </tr>
         <tr>
-            <td><div class="date"><input id="date_select" type="text"></div></td>
-            <td class="desc">{% trans "Input current date (YYYY-MM-DD)" %}</td>
+            <td><div class="date"><input id="date_select" type="text"><input type="text" id="standard-date"></div></td>
+            <td class="desc">{% trans "Input current date (DD-MM-YYYY)" %}</td>
         </tr>
         <tr>
             <td class="title" colspan="2">
