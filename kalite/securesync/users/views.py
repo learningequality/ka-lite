@@ -93,11 +93,8 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
 
         form = FacilityUserForm(facility, data=request.POST, instance=user)
         if form.is_valid():
-            if form.cleaned_data["password"]:
-                form.instance.set_password(form.cleaned_data["password"])
-            elif user:
-                old_password = FacilityUser.objects.get(id=user.id).password
-                form.instance.set_password(hashed_password=old_password)
+            if form.cleaned_data["password_first"]:
+                form.instance.set_password(form.cleaned_data["password_first"])
             form.save()
 
             if getattr(request.session.get("facility_user"), "id", None) == form.instance.id:
