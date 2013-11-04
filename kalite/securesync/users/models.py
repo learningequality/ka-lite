@@ -102,7 +102,7 @@ class FacilityUser(DeferredCountSyncedModel):
             # Django's built-in password checker for SHA1-hashed passwords
             pass
 
-        elif self.password.split("$", 2)[1] == "p5k2":
+        elif len(self.password.split("$", 2)) == 2 and self.password.split("$", 2)[1] == "p5k2":
             # PBKDF2 password checking
             # Could fail if password doesn't split into parts nicely
             pass
