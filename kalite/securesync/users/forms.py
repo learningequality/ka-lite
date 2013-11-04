@@ -9,6 +9,11 @@ from .models import FacilityUser, Facility, FacilityGroup
 
 
 class FacilityUserForm(forms.ModelForm):
+    """This form is used for 1) signing up, 2) creating users, and 3) editing users.
+
+    The views contain manual logic for processing passwords (hashing them, etc), so we use
+    custom fields here for the "password" and "confirm password" fields.
+    """
 
     password_first   = forms.CharField(widget=forms.PasswordInput, label=_("Password"))
     password_recheck = forms.CharField(widget=forms.PasswordInput, label=_("Confirm password"))
