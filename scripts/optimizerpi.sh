@@ -28,9 +28,9 @@ if [ $? != 0 ] ; then to_install="$to_install nginx"; fi
 # check network (by trying some likely sites), but only if packages need installing
 if [ "$to_install" != "" ] ; then
     echo "Info: Need to install: $to_install, testing connection"
-    wget -q http://adhocsync.org
-    if [ $? != 0 ] ; then wget -q http://mirrordirector.raspbian.org
-        if [ $? != 0 ] ; then wget -q http://google.com
+    wget -q http://adhocsync.org >/dev/null 2>&1
+    if [ $? != 0 ] ; then wget -q http://mirrordirector.raspbian.org >/dev/null 2>&1
+        if [ $? != 0 ] ; then wget -q http://google.com >/dev/null 2>&1
             if [ $? != 0 ] ; then
                 echo "Error: internet connection isn't working, cannot continue"
                 read WAITING
