@@ -81,8 +81,10 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
     Each has its own message and redirect.
     """
 
-    user = get_object_or_404(FacilityUser, id=id) if id != "new" else None
     title = ""
+    user = get_object_or_404(FacilityUser, id=id) if id != "new" else None
+    if user and not request.is_admin and user != request.session.get("facility_user"):
+        raise PermissionDenied()
 
     # Data submitted to create the user.
     if request.method == "POST":  # now, teachers and students can belong to a group, so all use the same form.
@@ -91,23 +93,31 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
 
         form = FacilityUserForm(facility, data=request.POST, instance=user)
         if form.is_valid():
-            if form.cleaned_data["password"]:
-                form.instance.set_password(form.cleaned_data["password"])
+            if form.cleaned_data["password_first"]:
+                form.instance.set_password(form.cleaned_data["password_first"])
             form.save()
 
-            # Admins create users while logged in.
-            if id == "new":
-                if request.is_logged_in:
-                    assert request.is_admin, "Regular users can't create users while logged in."
-                    messages.success(request, _("You successfully created the user."))
-                    return HttpResponseRedirect(request.META.get("PATH_INFO", reverse("homepage")))  # allow them to add more of the same thing.
-                else:
-                    messages.success(request, _("You successfully registered."))
-                    return HttpResponseRedirect("%s?facility=%s" % (reverse("login"), form.data["facility"]))
-            else:
-                messages.success(request, _("User changes saved!"))
+            if getattr(request.session.get("facility_user"), "id", None) == form.instance.id:
+                # Edited: own account; refresh the facility_user setting
+                request.session["facility_user"] = form.instance
+                messages.success(request, _("You successfully updated your user settings."))
+                return HttpResponseRedirect(request.next or reverse("account_management"))
+
+            elif id != "new":
+                # Edited: by admin; someone else's ID
+                messages.success(request, _("User changes saved for user '%s'") % form.instance.get_name())
                 if request.next:
                     return HttpResponseRedirect(request.next)
+
+            elif request.is_admin:
+                # Created: by admin
+                messages.success(request, _("You successfully created user '%s'") % form.instance.get_name())
+                return HttpResponseRedirect(request.META.get("PATH_INFO", request.next or reverse("homepage")))  # allow them to add more of the same thing.
+
+            else:
+                # Created: by self
+                messages.success(request, _("You successfully registered."))
+                return HttpResponseRedirect(request.next or "%s?facility=%s" % (reverse("login"), form.data["facility"]))
 
     # For GET requests
     elif user:
