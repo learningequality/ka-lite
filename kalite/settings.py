@@ -2,6 +2,7 @@ import getpass
 import json
 import logging
 import os
+import platform
 import sys
 import tempfile
 import time
@@ -390,8 +391,8 @@ assert not AUTO_LOAD_TEST or not CENTRAL_SERVER, "AUTO_LOAD_TEST only on local s
 #  to override the auto-detection, set CONFIG_PACKAGE=None in the local_settings
 
 CONFIG_PACKAGE = getattr(local_settings, "CONFIG_PACKAGE",
-                      ("RPi" if os.uname()[0] == "Linux" and os.uname()[4] == "armv6l" and not CENTRAL_SERVER
-                         else []))
+                   ("RPi" if platform.uname()[0] == "Linux" and platform.uname()[4] == "armv6l" and not CENTRAL_SERVER
+                   else []))
                         
 if isinstance(CONFIG_PACKAGE, basestring):
     CONFIG_PACKAGE = [CONFIG_PACKAGE]
