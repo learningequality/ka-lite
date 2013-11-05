@@ -75,7 +75,7 @@ class Command(BaseCommand):
             
         try:
             sys.stdout.write("Starting cronserver.  Jobs will run every %d seconds.\n" % time_wait)
-            sys.stdout.write("Quit the server with CONTROL-C.\n")
+            #sys.stdout.write("Quit the server with CONTROL-C.\n")
                         
             # Run server until killed
             while True:

@@ -32,7 +32,7 @@ class CachingTest(KALiteTestCase):
         video_path = topicdata.NODE_CACHE['Video'][video_slug]['paths'][0]
 
         # Clean the cache for this item
-        caching.expire_page(path=video_path)
+        caching.expire_page(path=video_path, failure_ok=True)
         
         # Create the cache item, and check it
         self.assertTrue(not caching.has_cache_key(path=video_path), "expect: no cache key after expiring the page")
@@ -57,7 +57,7 @@ class CachingTest(KALiteTestCase):
         video_path = topicdata.NODE_CACHE['Video'][video_slug]['paths'][0]
 
         # Clean the cache for this item
-        caching.expire_page(path=video_path)
+        caching.expire_page(path=video_path, failure_ok=True)
         self.assertTrue(not caching.has_cache_key(path=video_path), "expect: No cache key after expiring the page")
                 
         # Set up the cache with Django client
