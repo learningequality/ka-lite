@@ -192,10 +192,11 @@ class Command(BaseCommand):
                or not raw_input_yn("WARNING: all data will be lost!  Are you sure? "):
                 install_clean = False
                 sys.stdout.write("Upgrading database to KA Lite version %s\n" % version.VERSION)
-        if install_clean:
-            # After all, don't delete--just move.
-            sys.stdout.write("OK.  We will run a clean install; \n")
-            sys.stdout.write("the database file will be moved to a deletable location.\n")
+
+            if install_clean:
+                # After all, don't delete--just move.
+                sys.stdout.write("OK.  We will run a clean install; \n")
+                sys.stdout.write("the database file will be moved to a deletable location.\n")
 
         # Do all input at once, at the beginning
         if install_clean and options["interactive"]:
