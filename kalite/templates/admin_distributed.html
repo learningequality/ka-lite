@@ -1,89 +1,21 @@
 {% extends 'base_distributed.html' %}
-
 {% load i18n %}
 {% load staticfiles %}
 
 {% block easyadmin_active %}active{% endblock easyadmin_active %}
 
-{% block headcss %}
+{% block title %}{% trans "Administration Panel" %}{% endblock title %}
 
-{% if clock_set %}
+
+{% block headcss %}{{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/admin_distributed.css' %}">
+    {% if clock_set %}
     <link rel="stylesheet" type="text/css" href='{% static "css/bootstrap-timepicker.min.css" %}' />
-{% endif %}
-
-<style>
-
-div.help {
-    margin-top:25px;
-}
-ul {
-    margin-left:20px;
-}
-
-.warn {
-    font-weight:bold;
-    color:#f00;
-}
-.floatleft {
-    float: left;
-}
-.link-div {
-    width: 250px;
-    float: left
-}
-.link { 
-    padding-left: 25px;
-    width: 120px;
-}
-.description {
-    width: 100%;
-}
-td.title { 
-    padding-top: 25px;
-}
-.green_button {
-    margin-right: 20px;
-}
-
-#standard-date {
-    visibility: hidden;
-}
-/*TODO: Delete this after Bootstrap integration on Distributed Server*/
-.dropdown-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  z-index: 1000;
-  display: none;
-  float: left;
-  min-width: 160px;
-  padding: 5px 0;
-  margin: 2px 0 0;
-  font-size: 14px;
-  list-style: none;
-  background-color: #ffffff;
-  border: 1px solid #cccccc;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  border-radius: 4px;
-  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-          box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-  background-clip: padding-box;
-}
-
-i.icon-chevron-up:before {
-    content: "∧";
-}
-
-i.icon-chevron-down:before {
-    content: "∨";
-}
-
-</style>
+    {% endif %}
 {% endblock headcss %}
 
-{% if clock_set %}
-
-    {% block headjs %}
+{% block headjs %}
+    {% if clock_set %}
     <script type="text/javascript" src='{% static "js/bootstrap-timepicker.min.js" %}'></script>
     <script type="text/javascript">
     $(function() {
@@ -111,19 +43,17 @@ i.icon-chevron-down:before {
                     })
                     .fail(function(resp) {
                         communicate_api_failure(resp, "id_set_time");
-                });
+                    });
             });
     });
     </script>
-    {% endblock headjs %}
+    {% endif %}
+{% endblock headjs %}
 
-{% endif %}
-
-{% block title %}{% trans "Administration Panel" %}{% endblock title %}
 
 {% block content %}
 <div id="content">
-  {% trans "This page can help you administer your installation of KA Lite." %}
+    {% trans "This page can help you administer your installation of KA Lite." %}
     {% if in_a_zone %}
     <div style="float:right" class="server-online-only">
         <div class="registered-only">
@@ -133,9 +63,30 @@ i.icon-chevron-down:before {
     {% endif %}
 
     <table>
+        {% if clock_set %}
         <tr>
             <td class="title" colspan="2">
-                <h2>{% trans "(Offline) Management Tools" %}</h2>
+                <h2>{% trans "Raspberry Pi Clock Reset" %}</h2>
+            </td>
+        </tr>
+        <tr>
+            <td><div class="link bootstrap-timepicker"><input id="time_select" type="text"></div></td>
+            <td class="desc">{% trans "Input current time (HH:MM - 24 Hour)" %}</td>
+        </tr>
+        <tr>
+            <td><div class="link date"><input id="date_select" type="text"><input type="text" id="standard-date"></div></td>
+            <td class="desc">{% trans "Input current date (DD-MM-YYYY)" %}</td>
+        </tr>
+        <tr>
+            <td class="link" colspan="2">
+                <input id="set_time" type="submit" value='{% trans "Update Server Date & Time" %}'>
+            </td>
+        </tr>
+        {% endif %}
+        
+        <tr>
+            <td class="title" colspan="2">
+                <h2>{% trans "(Offline) Management and Reporting Tools" %}</h2>
             </td>
         </tr>
         {% if in_a_zone %}
@@ -160,27 +111,6 @@ i.icon-chevron-down:before {
         </tr>
         {% endif %}
 
-        {% if clock_set %}
-        <tr>
-            <td class="title" colspan="2">
-                <h2>{% trans "Server Management Tools" %}</h2>
-            </td>
-        </tr>
-        <tr>
-            <td><div class="bootstrap-timepicker"><input id="time_select" type="text"></div></td>
-            <td class="desc">{% trans "Input current time (HH:MM - 24 Hour)" %}</td>
-        </tr>
-        <tr>
-            <td><div class="date"><input id="date_select" type="text"><input type="text" id="standard-date"></div></td>
-            <td class="desc">{% trans "Input current date (DD-MM-YYYY)" %}</td>
-        </tr>
-        <tr>
-            <td class="title" colspan="2">
-                <input id="set_time" type="submit" value='{% trans "Update Server Date-Time" %}'>
-            </td>
-        </tr>
-        {% endif %}
-        
         <tr class="client-online-only">
             <td class="title" colspan="2">
                 <h2>{% trans "(Online) help documents" %}</h2>
