@@ -55,14 +55,14 @@ class FacilityUserForm(forms.ModelForm):
 
         return self.cleaned_data['username']
 
-    def clean_password(self):
-        password = self.cleaned_data.get('password', "")
+    def clean_password_first(self):
+        password = self.cleaned_data.get('password_first', "")
         verify_raw_password(password)
-        return self.cleaned_data['password']
+        return password
 
     def clean_password_recheck(self):
-
-        if self.cleaned_data.get('password_first') != self.cleaned_data.get('password_recheck'):
+        
+        if self.cleaned_data.get("password_first") and self.cleaned_data.get('password_first') != self.cleaned_data.get('password_recheck'):
             raise forms.ValidationError(_("The passwords didn't match. Please re-enter the passwords."))
         return self.cleaned_data['password_recheck']
 
