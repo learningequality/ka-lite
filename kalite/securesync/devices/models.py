@@ -146,6 +146,7 @@ class Device(SyncedModel):
 
     objects = DeviceManager()
     key = None
+    own_device = None  # cached property, shared globally.
 
     class Meta:
         app_label = "securesync"
@@ -193,7 +194,7 @@ class Device(SyncedModel):
         if soft_set and self.signed_by.get_counter_position() >= counter_position:
             return
 
-        assert counter_position > metadata.counter_position, "You should not be setting the counter position to a number lower than it's current value!"
+        assert counter_position > metadata.counter_position, "You should not be setting the counter position to a number lower than its current value!"
         metadata.counter_position = counter_position
         metadata.save()
 
@@ -231,12 +232,13 @@ class Device(SyncedModel):
 
     @classmethod
     def get_own_device(cls):
-        devices = DeviceMetadata.objects.filter(is_own_device=True)
-        if devices.count() == 0:
-            own_device = cls.initialize_own_device() # why don't we need name or description here?
-        else:
-            own_device = devices[0].device
-        return own_device
+        if not cls.own_device:
+            devices = DeviceMetadata.objects.filter(is_own_device=True)
+            if devices.count() == 0:
+                cls.own_device = cls.initialize_own_device() # why don't we need name or description here?
+            else:
+                cls.own_device = devices[0].device
+        return cls.own_device
 
     @classmethod
     def initialize_own_device(cls, **kwargs):

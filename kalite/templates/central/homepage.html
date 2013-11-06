@@ -1,13 +1,10 @@
 {% extends 'central/base.html' %}
 
+{% load i18n %}
 {% load staticfiles %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Home{% endblock title %}
 {% block home_active %}active{% endblock home_active %}
-
-{% block jqueryjs %}
-<script type="text/javascript" src="{% static 'js/jquery-1.8.3.min.js' %}"></script> 
-{% endblock jqueryjs %}
 
 {% block analytics %}{% include 'central/web_analytics.html' %}{% endblock analytics %}
 
@@ -114,7 +111,7 @@
 
             <div class="span6">
                 Videos and Exercises &copy; 2013 Khan Academy 
-            <a href="http://creativecommons.org/licenses/by-nc-sa/2.0/" target="_blank" ><img src="{% static 'images/creative-commons.png' %}" alt="" class="cc-logo"></a>
+            <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" ><img src="{% static 'images/creative-commons.png' %}" alt="" class="cc-logo"></a>
             </div>
             <div class="span6">
                <ul class="list-icons">

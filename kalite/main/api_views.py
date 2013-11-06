@@ -1,25 +1,33 @@
+import cgi
 import copy
 import json
+import os
 import re
-import requests
+import os
+import datetime
 from annoying.functions import get_object_or_None
 from functools import partial
-from requests.exceptions import ConnectionError, HTTPError
 
+from django.contrib import messages
+from django.contrib.messages.api import get_messages
 from django.core.exceptions import ValidationError, PermissionDenied
 from django.db.models import Q
 from django.http import HttpResponse
 from django.utils import simplejson
+from django.utils.safestring import SafeString, SafeUnicode, mark_safe
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import cache_control, cache_page
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.gzip import gzip_page
 
 import settings
-from .api_forms import ExerciseLogForm, VideoLogForm
-from .models import FacilityUser, VideoLog, ExerciseLog, VideoFile
+import version
+from .api_forms import ExerciseLogForm, VideoLogForm, DateTimeForm
+from .models import VideoLog, ExerciseLog, VideoFile
 from config.models import Settings
-from securesync.models import FacilityGroup
-from shared.decorators import allow_api_profiling, backend_cache_page, require_admin
+from securesync.models import FacilityGroup, FacilityUser
+from shared.caching import backend_cache_page
+from shared.decorators import allow_api_profiling, require_admin
 from shared.jobs import force_job, job_status
 from shared.topic_tools import get_flat_topic_tree 
 from shared.videos import delete_downloaded_files
@@ -68,8 +76,12 @@ def save_video_log(request):
             points=data["points"],
             language=data.get("language") or request.language,
         )
+
     except ValidationError as e:
         return JsonResponse({"error": "Could not save VideoLog: %s" % e}, status=500)
+
+    if "points" in request.session:
+        request.session["points"] = compute_total_points(user)
 
     return JsonResponse({
         "points": videolog.points,
@@ -92,9 +104,9 @@ def save_exercise_log(request):
     data = form.data
 
     # More robust extraction of previous object
-    (exerciselog, was_created) = ExerciseLog.get_or_initialize(user=request.session["facility_user"], exercise_id=data["exercise_id"])
+    user = request.session["facility_user"]
+    (exerciselog, was_created) = ExerciseLog.get_or_initialize(user=user, exercise_id=data["exercise_id"])
     previously_complete = exerciselog.complete
-
 
     exerciselog.attempts = data["attempts"]  # don't increment, because we fail to save some requests
     exerciselog.streak_progress = data["streak_progress"]
@@ -107,6 +119,9 @@ def save_exercise_log(request):
     except ValidationError as e:
         return JsonResponse({"error": _("Could not save ExerciseLog") + u": %s" % e}, status=500)
 
+    if "points" in request.session:
+        request.session["points"] = compute_total_points(user)
+        
     # Special message if you've just completed.
     #   NOTE: it's important to check this AFTER calling save() above.
     if not previously_complete and exerciselog.complete:
@@ -170,6 +185,36 @@ def get_exercise_logs(request):
             .filter(user=user, exercise_id__in=data) \
             .values("exercise_id", "streak_progress", "complete", "points", "struggling", "attempts"))
     )
+
+@require_admin
+@api_handle_error_with_json
+def time_set(request):
+    """
+    Receives a date-time string and sets the system date-time
+    RPi only.
+    """
+
+    if not settings.ENABLE_CLOCK_SET:
+        return JsonResponse({"error": _("This can only be done on Raspberry Pi systems")}, status=403)
+
+    # Form does all the data validation - including ensuring that the data passed is a proper date time.
+    # This is necessary to prevent arbitrary code being run on the system.
+    form = DateTimeForm(data=simplejson.loads(request.raw_post_data))
+    if not form.is_valid():
+        return JsonResponse({"error": _("Could not read date and time: Unrecognized input data format.")}, status=500)
+
+    try:
+
+        if os.system('sudo date +%%F%%T -s "%s"' % form.data["date_time"]):
+            raise PermissionDenied
+
+    except PermissionDenied as e:
+        return JsonResponse({"error": _("System permissions prevented time setting, please run with root permissions")}, status=500)
+
+    now = datetime.datetime.now().isoformat(" ").split(".")[0]
+
+    return JsonResponse({"success": _("System time was reset successfully; current system time: %s" % now)})
+
 
 # Functions below here focused on users
 
@@ -251,8 +296,85 @@ def _update_video_log_with_points(seconds_watched, video_length, youtube_id, fac
         language=language,
     )
 
+    if "points" in request.session:
+        request.session["points"] = compute_total_points(user)
+
+
+def compute_total_points(user):
+    if user.is_teacher:
+        return None
+    else:
+        return VideoLog.get_points_for_user(user) + ExerciseLog.get_points_for_user(user)
+
+
+# On pages with no forms, we want to ensure that the CSRF cookie is set, so that AJAX POST
+# requests will be possible. Since `status` is always loaded, it's a good place for this.
+@ensure_csrf_cookie
+@allow_api_profiling
+@api_handle_error_with_json
+def status(request):
+    """In order to promote (efficient) caching on (low-powered)
+    distributed devices, we do not include ANY user data in our
+    templates.  Instead, an AJAX request is made to download user
+    data, and javascript used to update the page.
+
+    This view is the view providing the json blob of user information,
+    for each page view on the distributed server.
+
+    Besides basic user data, we also provide access to the
+    Django message system through this API, again to promote
+    caching by excluding any dynamic information from the server-generated
+    templates.
+    """
+    # Build a list of messages to pass to the user.
+    #   Iterating over the messages removes them from the
+    #   session storage, thus they only appear once.
+    message_dicts = []
+    for message in get_messages(request):
+        # Make sure to escape strings not marked as safe.
+        # Note: this duplicates a bit of Django template logic.
+        msg_txt = message.message
+        if not (isinstance(msg_txt, SafeString) or isinstance(msg_txt, SafeUnicode)):
+            msg_txt = cgi.escape(str(msg_txt))
+
+        message_dicts.append({
+            "tags": message.tags,
+            "text": msg_txt,
+        })
+
+    # Default data
+    data = {
+        "is_logged_in": request.is_logged_in,
+        "registered": request.session["registered"],
+        "is_admin": request.is_admin,
+        "is_django_user": request.is_django_user,
+        "points": 0,
+        "messages": message_dicts,
+    }
+    # Override properties using facility data
+    if "facility_user" in request.session:  # Facility user
+        user = request.session["facility_user"]
+        data["is_logged_in"] = True
+        data["username"] = user.get_name()
+        if "points" not in request.session:
+            request.session["points"] = compute_total_points(user)
+        data["points"] = request.session["points"]
+    # Override data using django data
+    if request.user.is_authenticated():  # Django user
+        data["is_logged_in"] = True
+        data["username"] = request.user.username
+
+    return JsonResponse(data)
+
+
+def getpid(request):
+    #who am I?  return the PID; used to kill the webserver process if the PID file is missing
+    try:
+        return HttpResponse(os.getpid())
+    except:
+        return HttpResponse("")
+
 
 @backend_cache_page
 def flat_topic_tree(request):
     return JsonResponse(get_flat_topic_tree())
-

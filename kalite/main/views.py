@@ -27,11 +27,11 @@ from securesync.models import Facility, FacilityUser,FacilityGroup, Device
 from securesync.views import require_admin, facility_required
 from settings import LOG as logging
 from shared import topic_tools
-from shared.decorators import require_admin, backend_cache_page
+from shared.caching import backend_cache_page
+from shared.decorators import require_admin
 from shared.jobs import force_job
-from shared.videos import get_video_urls, is_video_on_disk
+from shared.videos import get_video_urls, is_video_on_disk, video_counts_need_update, get_video_counts
 from utils.internet import is_loopback_connection, JsonResponse
-
 
 def check_setup_status(handler):
     """
@@ -113,6 +113,12 @@ def topic_context(topic):
     exercises = topic_tools.get_exercises(topic)
     topics    = topic_tools.get_live_topics(topic)
 
+    # Get video counts if they'll be used, on-demand only.
+    #
+    # Check in this order so that the initial counts are always updated
+    if video_counts_need_update() or not 'nvideos_local' in topic:
+        (topic,_,_) = get_video_counts(topic=topic, videos_path=settings.CONTENT_ROOT)
+
     my_topics = [dict((k, t[k]) for k in ('title', 'path', 'nvideos_local', 'nvideos_known')) for t in topics]
 
     context = {
@@ -171,7 +177,10 @@ def exercise_handler(request, exercise):
         video = topicdata.NODE_CACHE["Video"].get(key, None)
         if not video:
             continue
-
+            
+        if not video.get("on_disk", False) and not settings.BACKUP_VIDEO_SOURCE:
+            continue
+        
         related_videos[key] = copy.copy(video)
         for path in video["paths"]:
             if topic_tools.is_sibling({"path": path, "kind": "Video"}, exercise):
@@ -222,6 +231,7 @@ def easy_admin(request):
         "wiki_url" : settings.CENTRAL_WIKI_URL,
         "central_server_host" : settings.CENTRAL_SERVER_HOST,
         "in_a_zone":  Device.get_own_device().get_zone() is not None,
+        "clock_set": settings.ENABLE_CLOCK_SET,
     }
     return context
 
@@ -344,27 +354,53 @@ def device_redirect(request):
 
 @render_to('search_page.html')
 def search(request):
-    if 'query' in request.GET:
-        query = request.GET['query']
-        # search for topic, video or exercise with matching title
-        nodes_ = topic_tools.get_node_cache()
-        nodes = []
-        possible_matches = {'Topic': [], 'Video': [], 'Exercise': []}
-        for _, node_dict in nodes_.iteritems():
-            nodes += node_dict.values()
-        query = query.lower()
-        for node in nodes:
-            title = node['title'].lower()
-            if title == query:
-                return HttpResponseRedirect(node['path'])
-            elif query in title:
-                possible_matches[node['kind']].append(node)
-        else:
-            return {'results': possible_matches,
-                    'query': query}
+    # Inputs
+    query = request.GET.get('query')
+    category = request.GET.get('category')
+    max_results_per_category = request.GET.get('max_results', 25)
+
+    # Outputs
+    query_error = None
+    possible_matches = {}
+    hit_max = {}
+
+    if query is None:
+        query_error = _("Error: query not specified.")
+
+#    elif len(query) < 3:
+#        query_error = _("Error: query too short.")
 
     else:
-        return HttpResponseRedirect('/')
+        query = query.lower()
+        # search for topic, video or exercise with matching title
+        nodes = []
+        for node_type, node_dict in topicdata.NODE_CACHE.iteritems():
+            if category and node_type != category:
+                # Skip categories that don't match (if specified)
+                continue
+
+            possible_matches[node_type] = []  # make dict only for non-skipped categories
+            for node in node_dict.values():
+                title = node['title'].lower()  # this could be done once and stored.
+                if title == query:
+                    # Redirect to an exact match
+                    return HttpResponseRedirect(node['path'])
+
+                elif len(possible_matches[node_type]) < max_results_per_category and query in title:
+                    # For efficiency, don't do substring matches when we've got lots of results
+                    possible_matches[node_type].append(node)
+
+            hit_max[node_type] = len(possible_matches[node_type]) == max_results_per_category
+
+    return {
+        'title': _("Search results for '%s'") % (query if query else ""),
+        'query_error': query_error,
+        'results': possible_matches,
+        'hit_max': hit_max,
+        'query': query,
+        'max_results': max_results_per_category,
+        'category': category,
+    }
 
 def handler_403(request, *args, **kwargs):
     context = RequestContext(request)

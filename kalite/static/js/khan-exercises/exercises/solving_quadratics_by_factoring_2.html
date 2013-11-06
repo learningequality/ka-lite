@@ -4,11 +4,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Solving quadratics by factoring 2</title>
     <script src="../khan-exercise.js"></script>
-    <style type="text/css">
-        #answer_area input[type=text] {
-            width: 35px;
-        }
-    </style>
 </head>
 <body>
     <div class="exercise">
@@ -29,14 +24,14 @@
                 <var id="SIMPLELINEAR">-A-B</var>
             </div>
 
-            <p class="problem">Determine where <code>f(x)</code> intersects the <code>x</code>-axis.</p>
-            <p class="question"><code>f(x) = <var>plus(SQUARE + "x^2")</var> + <var>plus( LINEAR + "x" )</var> + <var>CONSTANT</var></code></p>
+            <p class="question">Solve for <code>x</code>:</p>
+            <p class="problem"><code><var>plus(SQUARE + "x^2")</var> + <var>plus( LINEAR + "x" )</var> + <var>CONSTANT</var> = 0</code></p>
 
             <div class="solution" data-type="set">
                 <div class="set-sol"><var>A</var></div>
                 <div class="set-sol"><var>B</var></div>
                 <div class="input-format"><p style="font-size: 12px;">
-                    <code>x = {}</code><span class="entry"></span><code>\space \text{and} \space x = {}</code><span class="entry"></span>
+                    <code>x = {}</code><span class="entry short35" data-forms="integer"></span> and <code>x = {}</code><span class="entry short35" data-forms="integer"></span>
                 </p></div>
             </div>
 
@@ -53,13 +48,13 @@
                     </code></p>
                 </div>
                 <p id="hint2">
-                    So <code>(x <var>A &lt; 0 ? "+" : ""</var> \color{<var>PINK</var>}{<var>-A</var>})
-                    (x <var>B &lt; 0 ? "+" : ""</var> \color{<var>PINK</var>}{<var>-B</var>}) = 0</code>.
+                    <code>(x <var>A &lt; 0 ? "+" : ""</var> \color{<var>PINK</var>}{<var>-A</var>})
+                    (x <var>B &lt; 0 ? "+" : ""</var> \color{<var>PINK</var>}{<var>-B</var>}) = 0</code>
                 </p>
                 <p id="hint3">
-                    Since <code>(x <var>A &lt; 0 ? "+" : ""</var> <var>-A</var>)
-                    (x <var>B &lt; 0 ? "+" : ""</var> <var>-B</var>) = 0</code>,
-                    we know that one or both quantities must equal zero for the equation to be true.
+                    <span>Since the following equation is true we know that one or both quantities must equal zero.</span>
+                    <code>(x <var>A &lt; 0 ? "+" : ""</var> <var>-A</var>)
+                    (x <var>B &lt; 0 ? "+" : ""</var> <var>-B</var>) = 0</code>
                 </p>
                 <p id="hint4"><code>x + <var>-A</var> = 0</code> or <code>x + <var>-B</var> = 0</code></p>
                 <p id="hint5"><b>Thus, <code>x = <var>A</var></code> and <code>x = <var>B</var></code> are the solutions.</b></p>
@@ -67,17 +62,17 @@
         </div>
 
 
-        <div id="one-root" data-type="original" data-weight="1">
+        <div id="one-root" data-weight="1">
             <div class="vars">
                 <var id="CONSTANT">SQUARE * A * A</var>
                 <var id="SIMPLECONSTANT">A * A</var>
                 <var id="LINEAR">SQUARE * ( -2 * A )</var>
                 <var id="SIMPLELINEAR">-2 * A</var>
             </div>
-            <p class="problem">Determine where <code>f(x)</code> intersects the x-axis.</p>
-            <p class="question"><code>f(x) = <var>plus( SQUARE + "x^2")</var> + <var>plus( LINEAR + "x" )</var> + <var>CONSTANT</var></code></p>
+            <p class="question">Solve for <code>x</code>:</p>
+            <p class="problem"><code><var>plus( SQUARE + "x^2")</var> + <var>plus( LINEAR + "x" )</var> + <var>CONSTANT</var> = 0</code></p>
             <div class="solution" data-type="multiple">
-                <p><code>x = \quad</code><span class="sol"><var>A</var></span></p>
+                <p><code>x = {}</code><span class="sol" data-forms="integer"><var>A</var></span></p>
             </div>
             <div class="hints" data-apply="appendContents">
                 <div id="hint1">
@@ -91,7 +86,10 @@
                         \color{<var>BLUE</var>}{<var>SIMPLECONSTANT</var>}
                     </code></p>
                 </div>
-                <p id="hint2">So <code>(x <var>A &lt; 0 ? "+" : ""</var> \color{<var>PINK</var>}{<var>-A</var>})^2 = 0</code>.</p>
+                <div id="hint2" data-unwrap>
+                    <p data-if="A < 0">So <code>(x + \color{<var>PINK</var>}{<var>-A</var>})^2 = 0</code>.</p>
+                    <p data-else>So <code>(x - \color{<var>PINK</var>}{<var>A</var>})^2 = 0</code>.</p>
+                </div>
                 <p id="hint3"><code>x + <var>-A</var> = 0</code></p>
                 <p id="hint4"><b>Thus, <code>x = <var>A</var></code> is the solution.</b></p>
             </div>
@@ -99,23 +97,6 @@
     </div>
 
     <div class="hints">
-        <div data-if="SQUARE === 1">
-            <p>The function intersects the <code>x</code>-axis where <code>f(x) = 0</code>, so solve the equation:</p>
-            <p><code>
-                \qquad
-                <var>plus( SQUARE + "x^2" )</var>
-                <var>LINEAR &gt;= 0 ? "+" : ""</var>
-                <var>plus( "\\color{" + GREEN + "}{" + LINEAR + "}x" )</var>
-                <var>CONSTANT &gt;= 0 ? "+" : ""</var>
-                <var>plus( "\\color{" + BLUE + "}{" + CONSTANT + "}" )</var>
-                = 0
-            </code></p>
-        </div>
-        <div data-else>
-            <p>The function intersects the <code>x</code>-axis where <code>f(x) = 0</code>, so solve the equation:</p>
-            <p><code>\qquad <var>plus( SQUARE + "x^2", LINEAR + "x", CONSTANT )</var> = 0</code></p>
-        </div>
-
         <div data-if="SQUARE > 1">
             <p>Dividing both sides by <code><var>SQUARE</var></code> gives:</p>
             <p><code>

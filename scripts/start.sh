@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ "$(id -u)" = "0" ]; then
+    echo "Error: KA-Lite must be started by a regular user, not by root"
+    exit 1
+fi
+
 SCRIPT_DIR=`dirname "${BASH_SOURCE[0]}"`
 if [ -e "$SCRIPT_DIR/python.sh" ]; then
     KALITE_DIR=$SCRIPT_DIR/../kalite

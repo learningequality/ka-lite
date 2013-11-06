@@ -302,7 +302,7 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
                     seconds_per_attempt = 10 * (1 + user_settings["speed_of_learning"] * random.random())
                     time_to_navigate = 15 * (0.5 + random.random())  #between 7.5s and 22.5s
                     time_to_logout = 5 * (0.5 + random.random()) # between 2.5 and 7.5s
-                    if settings.USER_LOG_MAX_RECORDS_PER_USER != 0:
+                    if UserLog.is_enabled():
                         ulog = UserLog(
                             user=facility_user,
                             activity_type=1,

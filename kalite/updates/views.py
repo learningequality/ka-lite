@@ -31,6 +31,7 @@ from securesync.models import Facility, FacilityUser, FacilityGroup, Device
 from securesync.views import require_admin, facility_required
 from shared import topic_tools
 from shared.decorators import require_admin
+from shared.i18n import get_installed_languages
 from shared.jobs import force_job
 from utils.internet import am_i_online, JsonResponse
 
@@ -77,16 +78,15 @@ def update_videos(request):
 
 
 @require_admin
-@render_to("updates/update_subtitles.html")
-def update_subtitles(request):
-    force_job("subtitledownload", "Download Subtitles")
-
-    default_language = Settings.get("subtitle_language") or "en"
-
+@render_to("updates/update_languages.html")
+def update_languages(request):
+    # here we want to reference the language meta data we've loaded into memory
     context = update_context(request)
+
     context.update({
-        "default_language": default_language,
+        "installed_languages": get_installed_languages(),
     })
+
     return context
 
 
