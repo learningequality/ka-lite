@@ -6,6 +6,7 @@ import zlib
 from annoying.functions import get_object_or_None
 from pbkdf2 import crypt
 
+from django.conf import settings
 from django.contrib.auth.models import check_password
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models, transaction
@@ -19,6 +20,7 @@ from config.models import Settings
 from securesync import engine
 from securesync.engine.models import DeferredCountSyncedModel
 from settings import LOG as logging
+from utils.django_utils import verify_raw_password
 
 
 class Facility(DeferredCountSyncedModel):
@@ -93,6 +95,25 @@ class FacilityUser(DeferredCountSyncedModel):
     def __unicode__(self):
         return u"%s (Facility: %s)" % (self.get_name(), self.facility)
 
+    def save(self, *args, **kwargs):
+        """
+        Validate password format before saving
+        """
+        # Now, validate password.
+        if self.password.split("$", 1)[0] == "sha1":
+            # Django's built-in password checker for SHA1-hashed passwords
+            pass
+
+        elif len(self.password.split("$", 2)) == 3 and self.password.split("$", 2)[1] == "p5k2":
+            # PBKDF2 password checking
+            # Could fail if password doesn't split into parts nicely
+            pass
+
+        else:
+            raise ValidationError("Unknown password format.")
+
+        super(FacilityUser, self).save(*args, **kwargs)
+
     def check_password(self, raw_password):
         cached_password = CachedPassword.get_cached_password(self)
         cur_password = cached_password or self.password
@@ -105,7 +126,7 @@ class FacilityUser(DeferredCountSyncedModel):
             # use PBKDF2 password checking
             okie_dokie = cur_password == crypt(raw_password, cur_password)
         else:
-            raise ValidationException("Unknown password format.")
+            raise ValidationError("Unknown password format.")
 
         # Update on cached password-relevant stuff
         if okie_dokie and not cached_password and self.id:  # only can create if the user's been saved
@@ -116,10 +137,12 @@ class FacilityUser(DeferredCountSyncedModel):
     def set_password(self, raw_password=None, hashed_password=None, cached_password=None):
         """Set a password with the raw password string, or the pre-hashed password.
         If using the raw string, """
-
         assert hashed_password is None or settings.DEBUG, "Only use hashed_password in debug mode."
         assert raw_password is not None or hashed_password is not None, "Must be passing in raw or hashed password"
         assert not (raw_password is not None and hashed_password is not None), "Must be specifying only one--not both."
+
+        if raw_password:
+            verify_raw_password(raw_password)
 
         if hashed_password:
             self.password = hashed_password
@@ -141,6 +164,7 @@ class FacilityUser(DeferredCountSyncedModel):
             return u"%s %s" % (self.first_name, self.last_name)
         else:
             return self.username
+
 
 class CachedPassword(models.Model):
     """
@@ -169,8 +193,8 @@ class CachedPassword(models.Model):
         if not cached_password:
             logging.debug("Cached password MISS (does not exist) for user=%s" % user.username)
             return None
-        
-        n_cached_iters = int(cached_password.password.split("$")[2], 16)  # this was determined 
+
+        n_cached_iters = int(cached_password.password.split("$")[2], 16)  # this was determined
         if n_cached_iters == cls.iters_for_user_type(user):
             # Cache hit!
             logging.debug("Cached password hit for user=%s; cached iters=%d" % (user.username, n_cached_iters))

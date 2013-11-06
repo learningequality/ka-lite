@@ -2,6 +2,7 @@ import getpass
 import json
 import logging
 import os
+import platform
 import sys
 import tempfile
 import time
@@ -41,6 +42,8 @@ DEBUG          = getattr(local_settings, "DEBUG", False)
 CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
 
 PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 8008 if not CENTRAL_SERVER else 8001)
+#proxy port is used by nginx and is used by Raspberry Pi optimizations
+PROXY_PORT = getattr(local_settings, "PROXY_PORT", None)
 CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 50 if not DEBUG else 5)
 
 # Note: this MUST be hard-coded for backwards-compatibility reasons.
@@ -76,6 +79,9 @@ DATABASES      = getattr(local_settings, "DATABASES", {
 
 CONTENT_ROOT   = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", PROJECT_PATH + "/../content/")) + "/"
 CONTENT_URL    = getattr(local_settings, "CONTENT_URL", "/content/")
+PASSWORD_CONSTRAINTS = getattr(local_settings, "PASSWORD_CONSTRAINTS", {'min_length': getattr(local_settings,
+                                                                                              'PASSWORD_MIN_LENGTH',
+                                                                                              6)})
 
 
 ##############################
@@ -168,7 +174,6 @@ INSTALLED_APPS = (
     "control_panel",  # in both apps
     "coachreports",  # in both apps; reachable on central via control_panel
     "khanload",  # khan academy interactions
-    "i18n",
     "kalite",  # contains commands
 ) + INSTALLED_APPS  # append local_settings installed_apps, in case of dependencies
 
@@ -180,7 +185,7 @@ if CENTRAL_SERVER:
     ROOT_URLCONF = "central.urls"
     ACCOUNT_ACTIVATION_DAYS = getattr(local_settings, "ACCOUNT_ACTIVATION_DAYS", 7)
     DEFAULT_FROM_EMAIL      = getattr(local_settings, "DEFAULT_FROM_EMAIL", CENTRAL_FROM_EMAIL)
-    INSTALLED_APPS         += ("postmark", "kalite.registration", "central", "faq", "contact", "stats")
+    INSTALLED_APPS         += ("postmark", "kalite.registration", "central", "faq", "contact", "stats", "i18n")
     EMAIL_BACKEND           = getattr(local_settings, "EMAIL_BACKEND", "postmark.backends.PostmarkBackend")
     AUTH_PROFILE_MODULE     = "central.UserProfile"
     CSRF_COOKIE_NAME        = "csrftoken_central"
@@ -309,7 +314,7 @@ assert PASSWORD_ITERATIONS_STUDENT_SYNCED >= 2500, "PASSWORD_ITERATIONS_STUDENT_
 
 # Sessions use the default cache, and we want a local memory cache for that.
 # Separate session caching from file caching.
-SESSION_ENGINE = getattr(local_settings, "SESSION_ENGINE", 'django.contrib.sessions.backends.cache')
+SESSION_ENGINE = getattr(local_settings, "SESSION_ENGINE", 'django.contrib.sessions.backends.cache' + ('d_db' if DEBUG else ''))
 
 MESSAGE_STORAGE = 'utils.django_utils.NoDuplicateMessagesSessionStorage'
 
@@ -333,9 +338,11 @@ CACHE_TIME = getattr(local_settings, "CACHE_TIME", _max_cache_time)
 # Cache is activated in every case,
 #   EXCEPT: if CACHE_TIME=0
 if CACHE_TIME != 0:  # None can mean infinite caching to some functions
+    KEY_PREFIX = version.VERSION
+
+    # File-based cache
     CACHE_LOCATION = getattr(local_settings, "CACHE_LOCATION", os.path.join(tempfile.gettempdir(), "kalite_web_cache_" + (getpass.getuser() or "unknown_user"))) + "/"
-    LOG.debug("Cache location = %s" % CACHE_LOCATION)
-    CACHES["web_cache"] = {
+    CACHES["file_based_cache"] = {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
         'LOCATION': CACHE_LOCATION, # this is kind of OS-specific, so dangerous.
         'TIMEOUT': CACHE_TIME, # should be consistent
@@ -343,7 +350,22 @@ if CACHE_TIME != 0:  # None can mean infinite caching to some functions
             'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
         },
     }
-    KEY_PREFIX = version.VERSION
+
+    # Memory-based cache
+    CACHES["mem_cache"] = {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+        'TIMEOUT': CACHE_TIME, # should be consistent
+        'OPTIONS': {
+            'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
+        },
+    }
+
+    # The chosen cache
+    CACHE_NAME = getattr(local_settings, "CACHE_NAME", "file_based_cache")
+    if CACHE_NAME == "file_base_cache":
+        LOG.debug("Cache location = %s" % CACHE_LOCATION)
+
 
 
 ########################
@@ -431,12 +453,19 @@ AUTO_LOAD_TEST = getattr(local_settings, "AUTO_LOAD_TEST", False)
 assert not AUTO_LOAD_TEST or not CENTRAL_SERVER, "AUTO_LOAD_TEST only on local server"
 
 
+
 ########################
 # IMPORTANT: Do not add new settings below this line
 # everything that follows is overriding default settings, depending on CONFIG_PACKAGE
 
 # config_package (None|RPi) alters some defaults e.g. different defaults for Raspberry Pi(RPi)
-CONFIG_PACKAGE = getattr(local_settings, "CONFIG_PACKAGE", [])
+# autodetect if this is a Raspberry Pi-type device, and auto-set the config_package
+#  to override the auto-detection, set CONFIG_PACKAGE=None in the local_settings
+
+CONFIG_PACKAGE = getattr(local_settings, "CONFIG_PACKAGE",
+                   ("RPi" if platform.uname()[0] == "Linux" and platform.uname()[4] == "armv6l" and not CENTRAL_SERVER
+                   else []))
+                        
 if isinstance(CONFIG_PACKAGE, basestring):
     CONFIG_PACKAGE = [CONFIG_PACKAGE]
 CONFIG_PACKAGE = [cp.lower() for cp in CONFIG_PACKAGE]
@@ -447,11 +476,13 @@ def package_selected(package_name):
 
 
 # Config for Raspberry Pi distributed server
-#     nginx will normally be on 8008 so default to 7007
-#     18 is the sweet-spot for cherrypy threads
-#    /tmp is deleted on boot, so use /var/tmp for a persistent cache instead
 if package_selected("RPi"):
+    # nginx proxy will normally be on 8008 and production port on 7007
+    # If ports are overridden in local_settings, run the optimizerpi script
     PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 7007)
+    PROXY_PORT = getattr(local_settings, "PROXY_PORT", 8008)
+    assert PRODUCTION_PORT != PROXY_PORT, "PRODUCTION_PORT and PROXY_PORT must not be the same"
+    # 18 is the sweet-spot for cherrypy threads
     CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 18)
     #SYNCING_THROTTLE_WAIT_TIME = getattr(local_settings, "SYNCING_THROTTLE_WAIT_TIME", 1.0)
     #SYNCING_MAX_RECORDS_PER_REQUEST = getattr(local_settings, "SYNCING_MAX_RECORDS_PER_REQUEST", 10)

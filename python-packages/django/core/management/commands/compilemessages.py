@@ -11,7 +11,7 @@ def has_bom(fn):
             sample.startswith(codecs.BOM_UTF16_LE) or \
             sample.startswith(codecs.BOM_UTF16_BE)
 
-def compile_messages(stderr, locale=None):
+def compile_messages(stdout, stderr, locale=None):
     basedirs = [os.path.join('conf', 'locale'), 'locale']
     if os.environ.get('DJANGO_SETTINGS_MODULE'):
         from django.conf import settings
@@ -29,7 +29,7 @@ def compile_messages(stderr, locale=None):
         for dirpath, dirnames, filenames in os.walk(basedir):
             for f in filenames:
                 if f.endswith('.po'):
-                    stderr.write('processing file %s in %s\n' % (f, dirpath))
+                    stdout.write('processing file %s in %s\n' % (f, dirpath))
                     fn = os.path.join(dirpath, f)
                     if has_bom(fn):
                         raise CommandError("The %s file has a BOM (Byte Order Mark). Django only supports .po files encoded in UTF-8 and without any BOM." % fn)
@@ -45,8 +45,9 @@ def compile_messages(stderr, locale=None):
                         cmd = 'msgfmt --check-format -o "%djangocompilemo%" "%djangocompilepo%"'
                     else:
                         cmd = 'msgfmt --check-format -o "$djangocompilemo" "$djangocompilepo"'
-                    os.system(cmd)
-
+                    rc = os.system(cmd)
+                    if rc != 0:
+                        stderr.write("Failure for po == %s (return code = %d)\n" % (pf + ".po", rc))
 
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
@@ -60,4 +61,4 @@ class Command(BaseCommand):
 
     def handle(self, **options):
         locale = options.get('locale')
-        compile_messages(self.stderr, locale=locale)
+        compile_messages(self.stdout, self.stderr, locale=locale)

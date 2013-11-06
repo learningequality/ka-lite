@@ -6,7 +6,6 @@
 
 {% block title %}{% trans "Administration Panel" %}{% endblock title %}
 
-
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" href="{% static 'css/admin_distributed.css' %}">
     {% if clock_set %}
@@ -101,12 +100,12 @@
         </tr>
         {% if in_a_zone %}
         <tr>
-            <td class="link"><a href="{% url device_redirect %}">{% trans "Sync stats" %}</a></td>
+            <td class="link"><a href="{% url device_redirect %}">{% trans "Synchronization statistics" %}</a></td>
             <td class="desc">{%trans "Information about syncing," %}</td>
         </tr>
         {% else %}
         <tr>
-            <td class="link"><a href="{% url summary_stats %}">{% trans "Summary stats" %}</a></td>
+            <td class="link"><a href="{% url summary_stats %}">{% trans "Summary statistics" %}</a></td>
             <td class="desc">{% trans "Summary stats for this installation" %}</td>
         </tr>
         {% endif %}
@@ -118,7 +117,7 @@
         </tr>
         <tr class="client-online-only">
             <td class="link"><a href="{{wiki_url}}" target="_blank">{% trans "KA Lite Wiki" %}</a></td>
-            <td class="desc"> {% trans "Contains the latest information setting up and using KA Lite." %}</td>
+            <td class="desc"> {% trans "Contains the latest information about setting up and using KA Lite." %}</td>
         </tr>
         <tr class="client-online-only">
             <td class="link"><a href="http://{{central_server_host}}/faq" target="_blank">{% trans "FAQ" %}</a></td>

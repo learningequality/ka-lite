@@ -21,7 +21,7 @@ class TestM2Crypto(unittest.TestCase):
             use_m2crypto=False)
         self.message_actual = "Hello world! Please leave a message after the tone."
         self.message_fake = "Hello world! Please leave a message after the tone..."
-    
+
     def test_m2crypto_was_used(self):
         # make sure the key was generated using M2Crypto
         self.assertTrue(self.key._using_m2crypto)
@@ -59,10 +59,10 @@ class TestExistingKeysAndSignatures(unittest.TestCase):
     pub_key_with_pem_header = "-----BEGIN RSA PUBLIC KEY-----\nMIIBCgKCAQEAuABOgZEZ0pxp2hoYnTrY\nFoqQtzOEeTrjwTULV2v+zjyuT4f/IZylz4TH1MgmUMbn7/nu6dsfCYc87hx16fbh\ncUdZpiAW0Lb0mfnHxUwJKrBHmdr/MF8smN1a4OjOJ5O9ugAoijhG+Pb+SUh4tFSR\nv1vx68CyfxMSK2g/5jGJWlyh1K9YoBKXOtsXQQppl+4N4Stve9qFfsyjIW/FNlya\n3qmQDe9p9r5Ir7YEIS090rCOCEA3yiQ8gFThzCVK8Xlu3R/vclrhfvxhJWSJS5z5\nQRQ0QaZY+/A4b940yDLluRGViHKqagMvaKrcTO/fOAa257eSTFUyn7GjxAa9vy8i\n2QIDAQAB\n-----END RSA PUBLIC KEY-----\n"
     pub_key_with_no_headers = "MIIBCgKCAQEAuABOgZEZ0pxp2hoYnTrY\nFoqQtzOEeTrjwTULV2v+zjyuT4f/IZylz4TH1MgmUMbn7/nu6dsfCYc87hx16fbh\ncUdZpiAW0Lb0mfnHxUwJKrBHmdr/MF8smN1a4OjOJ5O9ugAoijhG+Pb+SUh4tFSR\nv1vx68CyfxMSK2g/5jGJWlyh1K9YoBKXOtsXQQppl+4N4Stve9qFfsyjIW/FNlya\n3qmQDe9p9r5Ir7YEIS090rCOCEA3yiQ8gFThzCVK8Xlu3R/vclrhfvxhJWSJS5z5\nQRQ0QaZY+/A4b940yDLluRGViHKqagMvaKrcTO/fOAa257eSTFUyn7GjxAa9vy8i\n2QIDAQAB"
     pub_key_with_both_headers_unicode = u"-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuABOgZEZ0pxp2hoYnTrY\nFoqQtzOEeTrjwTULV2v+zjyuT4f/IZylz4TH1MgmUMbn7/nu6dsfCYc87hx16fbh\ncUdZpiAW0Lb0mfnHxUwJKrBHmdr/MF8smN1a4OjOJ5O9ugAoijhG+Pb+SUh4tFSR\nv1vx68CyfxMSK2g/5jGJWlyh1K9YoBKXOtsXQQppl+4N4Stve9qFfsyjIW/FNlya\n3qmQDe9p9r5Ir7YEIS090rCOCEA3yiQ8gFThzCVK8Xlu3R/vclrhfvxhJWSJS5z5\nQRQ0QaZY+/A4b940yDLluRGViHKqagMvaKrcTO/fOAa257eSTFUyn7GjxAa9vy8i\n2QIDAQAB\n-----END PUBLIC KEY-----\n"
-    
+
     message_actual = "This is the real message."
     message_fake = "This is not the real message."
-    
+
     signature = """\xadkK\xae\xd1\xe4n.\xe7\x90}z\n\xf6\xb2f\xc4%\xa7\x0e\x9c\xe8\xce\xaf\x03\xab\x87\xea\xd4j\x0c"`R\xa3f4\xd7R&W\x1a\xa7\xc2\xa1Y\xd3S\x02m\x07j^W\xa0\x87^\xbcy\xb6z3<\xf5O\x8a\x90\x17bfu\xf9\xb0\x94\xd1\xe6\x1b\xf3\xdf\xc5\xc0\xa3\xf4\xcf\x89>\xd4;\xd1\xef\x89[\xce;\x14\t\xb2\xee/\xdd\rRI]\xae\xae\xff3j\x8ax\x90o\xde\xc3k\xa4\xfbT\xfd\x1a\xdf9<E\xbf\xf5\xfa\x83\xf0\xf6\xa4\xfc\xcc\xeb\x96?\x02\xdaG{\x0e\x06J\x82\xb4\xf3]\xd7\x94\xce(\xdb\x0e\xb7\x8e\x06\x8b)\x01\xe8|x\xc1f\x00\x82X\x8591\xbbn[\x9d\xce`c\x0c*\x9e/\xe7Pox>x8\xcc\xdcH\xbax\xd7xF\xe8a\x196&?\xab\x08\xeaN\x05\xb9\xe7\xaa\xc7\x05\xde\x9c\xdf\xe7\xeeFX\xce\xcd[\x19R\xaaR[\'\xad\xd8\x8fz\xae\x1d\xdf\xdao\xf5\tGU\x89Bl\x84\xc4\xab\x96\xab~RqYK\xa1"""
     signature_base64 = "rWtLrtHkbi7nkH16CvayZsQlpw6c6M6vA6uH6tRqDCJgUqNmNNdSJlcap8KhWdNTAm0Hal5XoIdevHm2ejM89U+KkBdiZnX5sJTR5hvz38XAo/TPiT7UO9HviVvOOxQJsu4v3Q1SSV2urv8zaop4kG/ew2uk+1T9Gt85PEW/9fqD8Pak/Mzrlj8C2kd7DgZKgrTzXdeUzijbDreOBospAeh8eMFmAIJYhTkxu25bnc5gYwwqni/nUG94Png4zNxIunjXeEboYRk2Jj+rCOpOBbnnqscF3pzf5+5GWM7NWxlSqlJbJ63Yj3quHd/ab/UJR1WJQmyExKuWq35ScVlLoQ=="
 
@@ -83,7 +83,7 @@ class TestExistingKeysAndSignatures(unittest.TestCase):
         key = crypto.Key(private_key_string=self.priv_key_without_pem_header, use_m2crypto=True)
         self.assertTrue(key.verify(self.message_actual, self.signature))
         self.assertFalse(key.verify(self.message_fake, self.signature))
-    
+
     @unittest.skipIf(not crypto.M2CRYPTO_EXISTS, "Skipping M2Crypto test as it does not appear to be installed.")
     def test_pub_key_with_both_headers_verification_m2crypto(self):
         key = crypto.Key(public_key_string=self.pub_key_with_both_headers, use_m2crypto=True)
@@ -128,7 +128,7 @@ class TestExistingKeysAndSignatures(unittest.TestCase):
         key = crypto.Key(private_key_string=self.priv_key_without_pem_header, use_m2crypto=False)
         self.assertTrue(key.verify(self.message_actual, self.signature))
         self.assertFalse(key.verify(self.message_fake, self.signature))
-    
+
     def test_pub_key_with_both_headers_verification_pyrsa(self):
         key = crypto.Key(public_key_string=self.pub_key_with_both_headers, use_m2crypto=False)
         self.assertTrue(key.verify(self.message_actual, self.signature))
@@ -164,40 +164,40 @@ class TestExistingKeysAndSignatures(unittest.TestCase):
 class TestPasswordSetting(unittest.TestCase):
 
     hashed_blah = "$p5k2$7d0$gTQ4yyg2$cixFA2fd5QUfmKLPWZYIVxoZwymFajCK"
-    
+
     def test_set_password_hash_ok(self):
         fu = FacilityUser(username="test_user")
         dbg_mode = settings.DEBUG; settings.DEBUG=True
-        fu.set_password(hashed_password=self.__class__.hashed_blah)	
-        settings.DEBUG = dbg_mode 
+        fu.set_password(hashed_password=self.__class__.hashed_blah)
+        settings.DEBUG = dbg_mode
         self.assertTrue(fu.check_password("blah"))
-            
+
     def test_set_password_raw_ok(self):
         fu = FacilityUser(username="test_user")
         dbg_mode = settings.DEBUG; settings.DEBUG=True
-        fu.set_password(raw_password="blah")
-        settings.DEBUG = dbg_mode 
-        self.assertTrue(fu.check_password("blah"))
-            
+        fu.set_password(raw_password="blahblah")
+        settings.DEBUG = dbg_mode
+        self.assertTrue(fu.check_password("blahblah"))
+
     def test_set_password_both_bad(self):
         fu = FacilityUser(username="test_user")
         dbg_mode = settings.DEBUG; settings.DEBUG=True
         with self.assertRaises(AssertionError):
             fu.set_password(raw_password="blue", hashed_password=self.__class__.hashed_blah)
-        settings.DEBUG = dbg_mode 
-            
+        settings.DEBUG = dbg_mode
+
     def test_set_password_neither_bad(self):
         fu = FacilityUser(username="test_user")
         dbg_mode = settings.DEBUG; settings.DEBUG=True
         with self.assertRaises(AssertionError):
-            fu.set_password()	
-            
+            fu.set_password()
+
     def test_set_password_hash_nodebug_bad(self):
         fu = FacilityUser(username="test_user")
         dbg_mode = settings.DEBUG; settings.DEBUG=False
         with self.assertRaises(AssertionError):
-            fu.set_password(hashed_password=self.__class__.hashed_blah)	
-        settings.DEBUG = dbg_mode 
+            fu.set_password(hashed_password=self.__class__.hashed_blah)
+        settings.DEBUG = dbg_mode
 
 
 import os
@@ -251,4 +251,3 @@ class TestSignLargeFile(KALiteTestCase):
 
         # Single-byte chunking
         self.assertFalse(self.key.verify_large_file(self.filename, signature, chunk_size=1), "Should verify signature for file w/ %d bytes." % nchars)
-

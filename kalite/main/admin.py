@@ -25,10 +25,10 @@ if UserLog.is_enabled() or settings.CENTRAL_SERVER:  # only enable admin if the 
 
 class VideoFileAdmin(admin.ModelAdmin):
     list_display = ("youtube_id", "flagged_for_download", "download_in_progress", "cancel_download", "percent_complete",)
-    list_filter = ("flagged_for_download", "download_in_progress", "flagged_for_subtitle_download", "subtitle_download_in_progress",)
+    list_filter = ("flagged_for_download", "download_in_progress",)
 admin.site.register(VideoFile, VideoFileAdmin)
 
 class LanguagePackAdmin(admin.ModelAdmin):
-    list_display = ("code", "name", "phrases", "approved_translations", "percent_translated", "crowdin_version", "software_version",)
-    list_filter = ("code", "name", "phrases", "approved_translations", "percent_translated", "crowdin_version", "software_version",)
+    list_display = ("code", "name", "phrases", "approved_translations", "percent_translated", "language_pack_version", "software_version", "subtitle_count",)
+    list_filter = ("code", "name", "phrases", "approved_translations", "percent_translated", "language_pack_version", "software_version", "subtitle_count",)
 admin.site.register(LanguagePack, LanguagePackAdmin)

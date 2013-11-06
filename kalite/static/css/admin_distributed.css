@@ -4,7 +4,6 @@ div.help {
 ul {
     margin-left:20px;
 }
-
 .warn {
     font-weight:bold;
     color:#f00;
@@ -16,14 +15,12 @@ ul {
     width: 250px;
     float: left
 }
-.link { 
-    padding-left: 25px;
+.link {
     width: 120px;
 }
-#time_select, #date_select {
-    width: 110px;
+.link, .desc { 
+    padding-left: 25px;
 }
-
 .description {
     width: 100%;
 }
@@ -34,6 +31,9 @@ td.title {
     margin-right: 20px;
 }
 
+#time_select, #date_select {
+    width: 110px;
+}
 #standard-date {
     visibility: hidden;
 }

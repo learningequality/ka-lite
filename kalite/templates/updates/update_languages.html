@@ -69,77 +69,6 @@
 <script src="{% static 'js/updates.js' %}"></script>
 
 <script type="text/javascript">
-// Callback functions 
-
-function video_start_callback(progress_log, resp) {
-    if (!progress_log) {
-        clear_messages()
-        show_message("error", resp.status_code + resp.responseText);
-    }
-}
-
-function video_check_callback(progress_log, resp) {
-    // When video status is checked
-    if (progress_log) { // check succeeded
-
-        if (progress_log.stage_percent == 1.) {
-            // 100% done with the video
-            setNodeClass(currentKey, "complete");
-            if (progress_log.process_percent == 1.) {
-                // 100% done with ALL videos.
-                $(".progress-section, #cancel-download").hide();
-                updatesReset(progress_log.process_name);
-                if ($(".subtitle-section:visible").length == 0) {
-                    $("#cancel-download").hide();
-                }
-                return;
-            }
-
-        } else if (progress_log.completed) {
-            // Completed without 100% done means there was a problem.
-            $("#retry-video-download").show();
-            $("#cancel-download").hide();
-        } else {
-            // Everything's good for now!
-            $("#retry-video-download").hide();
-            $("#cancel-download").show();
-        }
-        $("#cancel-download").show();
-    } else { // check failed.
-        switch (resp.status) {
-            case 403:
-                window.location.reload()  // Only happens if we were remotely logged out.
-                break;
-            default:
-                show_message("error", "Error downloading videos: " + resp.responseText);
-                clearInterval(window.download_subtitle_check_interval)
-                break;
-        }
-    }
-}
-
-function video_display_callback(progress_log) {
-    if (!progress_log) {
-        return;
-    }
-    //     Update the progress text
-    var currentKey = progress_log.stage_name;
-    if (!currentKey) {
-        return;
-    }
-    var currentNode = $("#content_tree").dynatree("getTree").getNodeByKey(currentKey);
-    $("#videodownload-progressbar .stage-header").text("Downloading video");
-    $("#videodownload-progressbar .stage-name").text(currentNode.data.title);
-}
-
-var video_callbacks = {
-    start: video_start_callback,
-    check: video_check_callback,
-    display: video_display_callback
-};
-</script>
-
-<script type="text/javascript">
     $(function() {
 
         setTimeout(function() {
@@ -153,70 +82,12 @@ var video_callbacks = {
                 } else {
                     $("#help-info").show();
                     $("#download-videos").removeAttr("disabled");
-                    $(".download-subtitles").removeAttr("disabled");
                     clear_message("id_offline_message")
                 }
             });
         }, 200);
-
-        // Mixed stuff
-
-        $("#cancel-download").click(function() {
-            // Reset ALL of the progress tracking
-            updatesReset()
-
-            // Do the action
-            doRequest("{% url cancel_subtitle_download %}");
-
-            // Update the UI
-            $(".subtitle-section, #cancel-download").hide();
-        });
-
-        // Subtitles stuff
-
-        $(".download-subtitles").click(function(event) {
-            // Confirm the action
-            var new_only = $(event.target).attr("new_only");
-            var language = $("#language option:selected").val();
-            if (new_only!="true") {
-                if(!confirm("{% trans 'You are about to download new subtitles for all downloaded videos. This may take a long time.' %}")) {
-                    return;
-                }
-            }
-            if (!language) {
-                alert("{% trans 'Please select a language first' %}");
-                return;
-            }
-
-            // Do the action and start the updating process        
-            doRequest("{% url start_subtitle_download %}", {language: language, new_only: new_only}).success(function() {
-                updatesStart("subtitledownload")
-            });
-            
-            // Update the UI
-        });
-        
-
-
                 // onload    
     });
-
-    function show_subtitle_counts(subtitleCounts) {
-        // gets the current number of subs per language
-        var defaultLanguage = "{{ default_language }}";
-        $.each(subtitleCounts, function(langName, langData) {
-            var langCode = langData["code"];
-            var srtCount = langData["count"];
-            // adds it to update page
-            if(srtCount > 0){
-                if(langCode === defaultLanguage) {
-                    $('#language').append('<option value="' + langCode + '" selected>' + langName + ' (' + srtCount +' {% trans "total" %})</option>')
-                } else {
-                    $('#language').append('<option value="' + langCode + '">'+ langName + ' (' + srtCount +')</option>')
-                }
-            }
-        });
-    }
 
     function show_language_packs(languagePacks) {
         // gets the current number of subs per language
@@ -300,7 +171,6 @@ var video_callbacks = {
 </div>
 
 <div style="clear: both;"></div>
-<!-- <script src="http://{{ central_server_host }}/api/subtitles/counts/?callback=show_subtitle_counts"></script> -->
 <script src="http://{{ central_server_host }}/api/language_packs/available/?callback=show_language_packs"></script>
 
 {% endblock content %}
