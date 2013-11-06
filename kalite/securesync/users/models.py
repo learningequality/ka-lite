@@ -6,6 +6,7 @@ import zlib
 from annoying.functions import get_object_or_None
 from pbkdf2 import crypt
 
+from django.conf import settings
 from django.contrib.auth.models import check_password
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models, transaction
@@ -19,6 +20,7 @@ from config.models import Settings
 from securesync import engine
 from securesync.engine.models import DeferredCountSyncedModel
 from settings import LOG as logging
+from utils.django_utils import verify_raw_password
 
 
 class Facility(DeferredCountSyncedModel):
@@ -139,6 +141,9 @@ class FacilityUser(DeferredCountSyncedModel):
         assert raw_password is not None or hashed_password is not None, "Must be passing in raw or hashed password"
         assert not (raw_password is not None and hashed_password is not None), "Must be specifying only one--not both."
 
+        if raw_password:
+            verify_raw_password(raw_password)
+
         if hashed_password:
             self.password = hashed_password
 
@@ -159,6 +164,7 @@ class FacilityUser(DeferredCountSyncedModel):
             return u"%s %s" % (self.first_name, self.last_name)
         else:
             return self.username
+
 
 class CachedPassword(models.Model):
     """
@@ -187,8 +193,8 @@ class CachedPassword(models.Model):
         if not cached_password:
             logging.debug("Cached password MISS (does not exist) for user=%s" % user.username)
             return None
-        
-        n_cached_iters = int(cached_password.password.split("$")[2], 16)  # this was determined 
+
+        n_cached_iters = int(cached_password.password.split("$")[2], 16)  # this was determined
         if n_cached_iters == cls.iters_for_user_type(user):
             # Cache hit!
             logging.debug("Cached password hit for user=%s; cached iters=%d" % (user.username, n_cached_iters))

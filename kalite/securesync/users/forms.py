@@ -1,12 +1,13 @@
 import re
 
 from django import forms
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
 from .models import FacilityUser, Facility, FacilityGroup
-
+from utils.django_utils import verify_raw_password
 
 class FacilityUserForm(forms.ModelForm):
     """This form is used for 1) signing up, 2) creating users, and 3) editing users.
@@ -53,6 +54,11 @@ class FacilityUserForm(forms.ModelForm):
             raise forms.ValidationError(_("The specified username is unavailable. Please choose a new username and try again."))
 
         return self.cleaned_data['username']
+
+    def clean_password(self):
+        password = self.cleaned_data.get('password', "")
+        verify_raw_password(password)
+        return self.cleaned_data['password']
 
     def clean_password_recheck(self):
 
