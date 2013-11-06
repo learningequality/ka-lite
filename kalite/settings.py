@@ -1,4 +1,5 @@
 import getpass
+import hashlib
 import json
 import logging
 import os
@@ -343,7 +344,10 @@ if not CENTRAL_SERVER:
         KEY_PREFIX = version.VERSION
 
         # File-based cache
-        CACHE_LOCATION = getattr(local_settings, "CACHE_LOCATION", os.path.join(tempfile.gettempdir(), "kalite_web_cache_" + (getpass.getuser() or "unknown_user"))) + "/"
+        install_location_hash = hashlib.sha1(PROJECT_PATH).hexdigest()
+        username = getpass.getuser() or "unknown_user"
+        cache_dir_name = "kalite_web_cache_%s_%s" % (install_location_hash, username)
+        CACHE_LOCATION = os.path.realpath(getattr(local_settings, "CACHE_LOCATION", os.path.join(tempfile.gettempdir(), cache_dir_name ))) + "/"
         CACHES["file_based_cache"] = {
             'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
             'LOCATION': CACHE_LOCATION, # this is kind of OS-specific, so dangerous.
