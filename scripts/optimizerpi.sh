@@ -7,18 +7,70 @@ else
     KALITE_DIR=$current_dir/kalite
 fi
 
-echo "Step 1. -- change KA Lite local_settings.py"
+we_are_rpi=`"$current_dir/get_setting.sh" package_selected\(\"RPi\"\)`
+if [ $we_are_rpi != "True" ]; then
+    echo "Error: we aren't configured as a Raspberry Pi, cannot continue"
+    read WAITING
+    exit
+fi
 
-echo 'CONFIG_PACKAGE = "RPi"' >> $KALITE_DIR/local_settings.py
+echo "Step 1 - Installing M2Crypto, psutil and nginx"
 
-echo "Step 2 - Install M2Crypto, psutil and nginx, Configure to work with KA Lite"
+# discover if packages are already installed
+to_install=""
+python -c "import M2Crypto" >/dev/null 2>&1
+if [ $? != 0 ] ; then to_install="python-m2crypto"; fi
+python -c "import psutil" >/dev/null 2>&1
+if [ $? != 0 ] ; then to_install="$to_install python-psutil"; fi
+nginx -v >/dev/null 2>&1
+if [ $? != 0 ] ; then to_install="$to_install nginx"; fi
 
-sudo apt-get -y install python-m2crypto
-sudo apt-get -y install python-psutil
-sudo apt-get -y install nginx 
-sudo rm /etc/nginx/sites-enabled/default 
-sudo touch /etc/nginx/sites-enabled/kalite 
-sudo sh -c "$KALITE_DIR/manage.py nginxconfig > /etc/nginx/sites-enabled/kalite" 
+# check network (by trying some likely sites), but only if packages need installing
+if [ "$to_install" != "" ] ; then
+    echo "Info: Need to install: $to_install, testing connection"
+    wget -q http://adhocsync.org >/dev/null 2>&1
+    if [ $? != 0 ] ; then wget -q http://mirrordirector.raspbian.org >/dev/null 2>&1
+        if [ $? != 0 ] ; then wget -q http://google.com >/dev/null 2>&1
+            if [ $? != 0 ] ; then
+                echo "Error: internet connection isn't working, cannot continue"
+                read WAITING
+                exit 1
+            fi
+        fi
+    fi
+else
+    echo "Info: Everything is already installed"
+fi
+
+if [ "$to_install" != "" ] ; then sudo apt-get -y install $to_install; fi
+
+# Finally, check the packages are installed, incase there was an apt-get failure
+sanity_check_ok="False"
+python -c "import M2Crypto" >/dev/null 2>&1
+if [ $? = 0 ] ; then python -c "import psutil" >/dev/null 2>&1
+    if [ $? = 0 ] ; then nginx -v >/dev/null 2>&1
+        if [ $? = 0 ] ; then sanity_check_ok="True"; fi
+    fi
+fi
+
+if [ $sanity_check_ok != "True" ] ; then
+    echo "Error: One or more modules are missing, cannot continue"
+    read WAITING
+    exit 1
+fi
+
+echo "Step 2 - Configure or reconfigure nginx to work with KA Lite"
+
+if [ -f /etc/nginx/sites-enabled/default ]; then
+    sudo rm /etc/nginx/sites-enabled/default 
+fi
+if [ -f /etc/nginx/sites-enabled/kalite ]; then
+    sudo rm /etc/nginx/sites-enabled/kalite
+fi
+
+sudo touch /etc/nginx/sites-available/kalite 
+sudo sh -c "$KALITE_DIR/manage.py nginxconfig > /etc/nginx/sites-available/kalite" 
+sudo ln -s /etc/nginx/sites-available/kalite /etc/nginx/sites-enabled/kalite
 
 echo "Step 3 - Optimize nginx configuration"
 
@@ -83,7 +135,7 @@ http {
 
 NGINX
 
-echo 'Step 4 - Finally'
+echo 'Step 4 - Finally... stopping and starting the background servers'
 
 sudo service kalite stop
 sudo service kalite start

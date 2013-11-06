@@ -2,19 +2,25 @@
 
 SCRIPT_DIR=`dirname "${BASH_SOURCE[0]}"`
 KALITE_DIR="$SCRIPT_DIR/../kalite"
-pyexec=`"$SCRIPT_DIR/python.sh"`
 
 port=`"$SCRIPT_DIR/get_setting.sh" PRODUCTION_PORT`
 nthreads=`"$SCRIPT_DIR/get_setting.sh" CHERRYPY_THREAD_COUNT`
 
-source "$SCRIPT_DIR/serverstop.sh"
-
-if [ "$SERVER_STOPPED" != "true" ]; then
-    exit 1
+if [ -f "$KALITE_DIR/runcherrypyserver.pid" ];
+then
+    pid=`cat "$KALITE_DIR/runcherrypyserver.pid"`
+    echo "(Warning: Web server may still be running; attempting to stop old process ($pid) first)"
+    source "$SCRIPT_DIR/serverstop.sh"
 fi
 
-echo "Running the web server on port $port."
+echo "Trying to start the web server on port $port."
 "$pyexec" "$KALITE_DIR/manage.py" runcherrypyserver host=0.0.0.0 port=$port threads=$nthreads daemonize=true pidfile=$KALITE_DIR/runcherrypyserver.pid
+rc=$?
+if [[ $rc != 0 ]] ; then
+    echo "Error: The web server was not started"
+    exit $rc
+fi
+
 echo "The server should now be accessible locally at: http://127.0.0.1:$port/"
 
 ifconfig_path=`command -v ifconfig`

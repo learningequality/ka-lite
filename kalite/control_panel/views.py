@@ -75,7 +75,6 @@ def zone_management(request, zone_id, org_id=None):
 
         device_data[device.id] = {
             "name": device.name or device.id,
-            "is_demo_device": device.devicemetadata.is_demo_device,
             "num_times_synced": sync_sessions.count() if sync_sessions is not None else None,
             "last_time_synced": sync_sessions.aggregate(Max("timestamp"))["timestamp__max"] if sync_sessions is not None else None,
             "is_demo_device": device.get_metadata().is_demo_device,
@@ -295,17 +294,18 @@ def device_management(request, device_id, org_id=None, zone_id=None, n_sessions=
     zone = get_object_or_None(Zone, pk=zone_id) if zone_id else None
     device = get_object_or_404(Device, pk=device_id)
 
-    sync_sessions = SyncSession.objects \
-        .filter(client_device=device) \
-        .order_by("-timestamp")
+    all_sessions = SyncSession.objects.filter(client_device=device)
+    
+    total_sessions = all_sessions.count()
+    
+    shown_sessions = list(all_sessions.order_by("-timestamp")[:n_sessions])
 
     return {
         "org": org,
         "zone": zone,
         "device": device,
-        "sync_sessions": sync_sessions[:n_sessions],
-        "total_sessions": sync_sessions.count(), 
-        "n_sessions": min(sync_sessions.count(), n_sessions),
+        "shown_sessions": shown_sessions,
+        "total_sessions": total_sessions,
     }
 
 

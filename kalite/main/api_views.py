@@ -1,6 +1,7 @@
 import cgi
 import copy
 import json
+import os
 import re
 from annoying.functions import get_object_or_None
 from functools import partial
@@ -23,8 +24,8 @@ from .api_forms import ExerciseLogForm, VideoLogForm
 from .models import VideoLog, ExerciseLog, VideoFile
 from config.models import Settings
 from securesync.models import FacilityGroup, FacilityUser
+from shared.caching import backend_cache_page
 from shared.decorators import allow_api_profiling, require_admin
-from shared.decorators import allow_api_profiling, backend_cache_page, require_admin
 from shared.jobs import force_job, job_status
 from shared.topic_tools import get_flat_topic_tree 
 from shared.videos import delete_downloaded_files
@@ -332,6 +333,14 @@ def status(request):
         data["username"] = request.user.username
 
     return JsonResponse(data)
+
+
+def getpid(request):
+    #who am I?  return the PID; used to kill the webserver process if the PID file is missing
+    try:
+        return HttpResponse(os.getpid())
+    except:
+        return HttpResponse("")
 
 
 @backend_cache_page

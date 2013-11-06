@@ -88,10 +88,20 @@ class SyncedModelManager(models.Manager):
         app_label = "securesync"
 
     def by_zone(self, zone):
-        # get model instances that were signed by devices in the zone,
-        # or signed by a trusted authority that said they were for the zone
-        return self.filter(Q(signed_by__devicezone__zone=zone, signed_by__devicezone__revoked=False) |
-            Q(signed_by__devicemetadata__is_trusted=True, zone_fallback=zone))
+        """Get model instances that were signed by devices in the zone,
+        or signed by a trusted authority that said they were for the zone,
+        or not signed at all and we're looking for models in our own zone.
+        """
+
+        condition = \
+            Q(signed_by__devicezone__zone=zone, signed_by__devicezone__revoked=False) | \
+            Q(signed_by__devicemetadata__is_trusted=True, zone_fallback=zone)
+
+        # Due to deferred signing, we need to consider completely unsigned models to be in our own zone.
+        if zone == _get_own_device().get_zone():
+            condition = condition | Q(signed_by=None)
+
+        return self.filter(condition)
 
 
 class SyncedModel(ExtendedModel):
@@ -339,13 +349,13 @@ class DeferredCountSyncedModel(DeferredSignSyncedModel):
     """
     Defer incrementing counters until syncing.
     """
-    def save(self, increment_counters=None, *args, **kwargs):
+    def save(self, increment_counters=settings.CENTRAL_SERVER, *args, **kwargs):
         """
         Note that increment_counters will set counters to None,
         and that if the object must be created, counter will be incremented
         and temporarily set, to create the object ID.
         """
-        super(DeferredCountSyncedModel, self).save(*args, increment_counters=settings.CENTRAL_SERVER, **kwargs)
+        super(DeferredCountSyncedModel, self).save(*args, increment_counters=increment_counters, **kwargs)
 
     def set_id(self):
         if self.id:
