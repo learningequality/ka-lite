@@ -104,13 +104,13 @@ class FacilityUser(DeferredCountSyncedModel):
             # Django's built-in password checker for SHA1-hashed passwords
             pass
 
-        elif len(self.password.split("$", 2)) == 2 and self.password.split("$", 2)[1] == "p5k2":
+        elif len(self.password.split("$", 2)) == 3 and self.password.split("$", 2)[1] == "p5k2":
             # PBKDF2 password checking
             # Could fail if password doesn't split into parts nicely
             pass
 
         else:
-            raise ValidationException("Unknown password format.")
+            raise ValidationError("Unknown password format.")
 
         super(FacilityUser, self).save(*args, **kwargs)
 
@@ -126,7 +126,7 @@ class FacilityUser(DeferredCountSyncedModel):
             # use PBKDF2 password checking
             okie_dokie = cur_password == crypt(raw_password, cur_password)
         else:
-            raise ValidationException("Unknown password format.")
+            raise ValidationError("Unknown password format.")
 
         # Update on cached password-relevant stuff
         if okie_dokie and not cached_password and self.id:  # only can create if the user's been saved
