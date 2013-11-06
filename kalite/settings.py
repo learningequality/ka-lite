@@ -129,7 +129,6 @@ TEMPLATE_DIRS  = tuple([os.path.realpath(td) + "/" for td in TEMPLATE_DIRS])
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
     "django.core.context_processors.debug",
-    "django.core.context_processors.i18n",
     "django.core.context_processors.media",
     "django.contrib.messages.context_processors.messages",
     "django.core.context_processors.request",
@@ -174,8 +173,6 @@ INSTALLED_APPS = (
     "control_panel",  # in both apps
     "coachreports",  # in both apps; reachable on central via control_panel
     "khanload",  # khan academy interactions
-    "stats",
-    "i18n",
     "kalite",  # contains commands
 ) + INSTALLED_APPS  # append local_settings installed_apps, in case of dependencies
 
@@ -206,6 +203,9 @@ else:
         "securesync.middleware.DBCheck",
         "main.middleware.SessionLanguage",
     )
+    if USE_I18N:
+        TEMPLATE_CONTEXT_PROCESSORS += ("django.core.context_processors.i18n",)
+        INSTALLED_APPS              += ("i18n",)
 
 
 ########################
