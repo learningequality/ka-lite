@@ -231,6 +231,7 @@ def easy_admin(request):
         "wiki_url" : settings.CENTRAL_WIKI_URL,
         "central_server_host" : settings.CENTRAL_SERVER_HOST,
         "in_a_zone":  Device.get_own_device().get_zone() is not None,
+        "clock_set": settings.ENABLE_CLOCK_SET,
     }
     return context
 

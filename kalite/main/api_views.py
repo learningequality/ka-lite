@@ -3,6 +3,8 @@ import copy
 import json
 import os
 import re
+import os
+import datetime
 from annoying.functions import get_object_or_None
 from functools import partial
 
@@ -20,7 +22,7 @@ from django.views.decorators.gzip import gzip_page
 
 import settings
 import version
-from .api_forms import ExerciseLogForm, VideoLogForm
+from .api_forms import ExerciseLogForm, VideoLogForm, DateTimeForm
 from .models import VideoLog, ExerciseLog, VideoFile
 from config.models import Settings
 from securesync.models import FacilityGroup, FacilityUser
@@ -183,6 +185,36 @@ def get_exercise_logs(request):
             .filter(user=user, exercise_id__in=data) \
             .values("exercise_id", "streak_progress", "complete", "points", "struggling", "attempts"))
     )
+
+@require_admin
+@api_handle_error_with_json
+def time_set(request):
+    """
+    Receives a date-time string and sets the system date-time
+    RPi only.
+    """
+
+    if not settings.ENABLE_CLOCK_SET:
+        return JsonResponse({"error": _("This can only be done on Raspberry Pi systems")}, status=403)
+
+    # Form does all the data validation - including ensuring that the data passed is a proper date time.
+    # This is necessary to prevent arbitrary code being run on the system.
+    form = DateTimeForm(data=simplejson.loads(request.raw_post_data))
+    if not form.is_valid():
+        return JsonResponse({"error": _("Could not read date and time: Unrecognized input data format.")}, status=500)
+
+    try:
+
+        if os.system('sudo date +%%F%%T -s "%s"' % form.data["date_time"]):
+            raise PermissionDenied
+
+    except PermissionDenied as e:
+        return JsonResponse({"error": _("System permissions prevented time setting, please run with root permissions")}, status=500)
+
+    now = datetime.datetime.now().isoformat(" ").split(".")[0]
+
+    return JsonResponse({"success": _("System time was reset successfully; current system time: %s" % now)})
+
 
 # Functions below here focused on users
 

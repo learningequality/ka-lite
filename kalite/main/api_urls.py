@@ -31,6 +31,9 @@ urlpatterns = patterns('main.api_views',
 
     url(r'^status$', 'status', {}, 'status'),
 
+    #API endpoint for setting server time
+    url(r'^time_set/$', 'time_set', {}, 'time_set'),
+
     # show pid for the running server (used bt stop to help kill the server)
     url(r'^getpid$', 'getpid', {}, 'getpid'),
 )

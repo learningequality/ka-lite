@@ -400,6 +400,58 @@ BACKUP_VIDEO_SOURCE = getattr(local_settings, "BACKUP_VIDEO_SOURCE", None)
 BACKUP_THUMBNAIL_SOURCE = getattr(local_settings, "BACKUP_THUMBNAIL_SOURCE", None)
 assert not BACKUP_VIDEO_SOURCE or CACHE_TIME == 0, "If BACKUP_VIDEO_SOURCE, then CACHE_TIME must be 0"
 
+#Clock Setting disabled by default unless overriden.
+#Note: This will only work on Linux systems where the server is running as root.
+ENABLE_CLOCK_SET = False
+
+
+########################
+# Debugging and testing
+########################
+
+# Set logging level based on the value of DEBUG (evaluates to 0 if False, 1 if True)
+logging.basicConfig()
+LOG = getattr(local_settings, "LOG", logging.getLogger("kalite"))
+LOG.setLevel(logging.DEBUG*DEBUG + logging.INFO*(1-DEBUG))
+
+TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
+
+# Django debug_toolbar config
+if getattr(local_settings, "USE_DEBUG_TOOLBAR", False):
+    assert CACHE_TIME == 0, "Debug toolbar must be set in conjunction with CACHE_TIME=0"
+    INSTALLED_APPS += ('debug_toolbar',)
+    MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
+    DEBUG_TOOLBAR_PANELS = (
+        'debug_toolbar.panels.version.VersionDebugPanel',
+        'debug_toolbar.panels.timer.TimerDebugPanel',
+        'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
+        'debug_toolbar.panels.headers.HeaderDebugPanel',
+        'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
+        'debug_toolbar.panels.template.TemplateDebugPanel',
+        'debug_toolbar.panels.sql.SQLDebugPanel',
+        'debug_toolbar.panels.signals.SignalDebugPanel',
+        'debug_toolbar.panels.logger.LoggingPanel',
+    )
+    DEBUG_TOOLBAR_CONFIG = {
+        'INTERCEPT_REDIRECTS': False,
+        'HIDE_DJANGO_SQL': False,
+        'ENABLE_STACKTRACES' : True,
+    }
+
+if DEBUG:
+    # add ?prof to URL, to see performance stats
+    MIDDLEWARE_CLASSES += ('django_snippets.profiling_middleware.ProfileMiddleware',)
+
+if not CENTRAL_SERVER and os.path.exists(PROJECT_PATH + "/tests/loadtesting/"):
+        INSTALLED_APPS += ("tests.loadtesting",)
+
+TEST_RUNNER = 'kalite.shared.testing.testrunner.KALiteTestRunner'
+
+TESTS_TO_SKIP = getattr(local_settings, "TESTS_TO_SKIP", ["long"])  # can be
+assert not (set(TESTS_TO_SKIP) - set(["fast", "medium", "long"])), "TESTS_TO_SKIP must contain only 'fast', 'medium', and 'long'"
+
+AUTO_LOAD_TEST = getattr(local_settings, "AUTO_LOAD_TEST", False)
+
 assert not AUTO_LOAD_TEST or not CENTRAL_SERVER, "AUTO_LOAD_TEST only on local server"
 
 
@@ -440,6 +492,8 @@ if package_selected("RPi"):
 
     PASSWORD_ITERATIONS_TEACHER = getattr(local_settings, "PASSWORD_ITERATIONS_TEACHER", 2000)
     PASSWORD_ITERATIONS_STUDENT = getattr(local_settings, "PASSWORD_ITERATIONS_STUDENT", 1000)
+
+    ENABLE_CLOCK_SET = getattr(local_settings, "ENABLE_CLOCK_SET", True)
 
 if package_selected("UserRestricted"):
     KEY_PREFIX += "|restricted"  # this option changes templates
