@@ -61,14 +61,14 @@ def backend_cache_page(handler, cache_time=settings.CACHE_TIME, cache_name=setti
 
     This function does this all with the settings we want, specified in settings.
     """
-    try:
+    if caching_is_enabled():
         @condition(last_modified_func=partial(calc_last_modified, cache_name=cache_name))
         @cache_control(no_cache=True)  # must appear before @cache_page
         @cache_page(cache_time, cache=cache_name)
         def wrapper_fn(request, *args, **kwargs):
             return handler(request, *args, **kwargs)
 
-    except InvalidCacheBackendError:
+    else:
         # Would happen if caching was disabled
         def wrapper_fn(request, *args, **kwargs):
             return handler(request, *args, **kwargs)
