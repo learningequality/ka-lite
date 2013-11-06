@@ -1,7 +1,7 @@
 #!/bin/bash
 
-if [ "$(id -u)" != "0" ]; then
-    echo "You need to be root in order to start KA-Lite"
+if [ "$(id -u)" = "0" ]; then
+    echo "Error: KA-Lite must be started by a regular user, not by root"
     exit 1
 fi
 

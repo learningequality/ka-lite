@@ -1,12 +1,13 @@
 import re
 
 from django import forms
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
 from .models import FacilityUser, Facility, FacilityGroup
-
+from utils.django_utils import verify_raw_password
 
 class FacilityUserForm(forms.ModelForm):
     """This form is used for 1) signing up, 2) creating users, and 3) editing users.
@@ -54,9 +55,14 @@ class FacilityUserForm(forms.ModelForm):
 
         return self.cleaned_data['username']
 
-    def clean_password_recheck(self):
+    def clean_password_first(self):
+        password = self.cleaned_data.get('password_first', "")
+        verify_raw_password(password)
+        return password
 
-        if self.cleaned_data.get('password_first') != self.cleaned_data.get('password_recheck'):
+    def clean_password_recheck(self):
+        
+        if self.cleaned_data.get("password_first") and self.cleaned_data.get('password_first') != self.cleaned_data.get('password_recheck'):
             raise forms.ValidationError(_("The passwords didn't match. Please re-enter the passwords."))
         return self.cleaned_data['password_recheck']
 
