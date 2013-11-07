@@ -171,23 +171,25 @@ def exercise_handler(request, exercise):
     """
     Display an exercise
     """
-    # Copy related videos (should be small), as we're going to tweak them
+    # Find related videos   
     related_videos = {}
     for key in exercise["related_video_readable_ids"]:
         video_nodes = topicdata.NODE_CACHE["Video"].get(key, None)
+        
+        # Make sure the IDs are recognized, and are available.
         if not video_nodes:
             continue
-        video = video_nodes[0]
-        if not video.get("on_disk", False) and not settings.BACKUP_VIDEO_SOURCE:
+        if not video_nodes[0].get("on_disk", False) and not settings.BACKUP_VIDEO_SOURCE:
             continue
         
-        related_videos[key] = copy.copy(video)
-        for path in video["paths"]:
-            if topic_tools.is_sibling({"path": path, "kind": "Video"}, exercise):
-                related_videos[key]["path"] = path
+        # Search for a sibling video node to add to related exercises.
+        for video in video_nodes:
+            if topic_tools.is_sibling({"path": video["path"], "kind": "Video"}, exercise):
+                related_videos[key] = video
                 break
-        if "path" not in related_videos[key]:
-            related_videos[key]["path"] = video["paths"][0]
+        # failed to find a sibling; just choose the first one.
+        if key not in related_videos:
+            related_videos[key] = video_node[0]
 
     context = {
         "exercise": exercise,
