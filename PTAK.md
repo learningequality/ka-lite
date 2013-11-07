@@ -9,3 +9,9 @@ youtube_to_slug_map.json
 and addition of files in the topicdata directory which groups
 exercises into collections.
 
+The mjp_release-0.11 branch included 4 homebrew exercises the first of which
+is just a direct copy of the absolute values khan academy exercise.
+The others demonstrate use of both pictures, sound, and some calls out to
+external resources which would not be available in an off-line environment.
+All sound and picture resoures are stored in a dedicated subdirectory in the
+ka-lite/kalite/static/js/khan-exercises/images subdirectory
