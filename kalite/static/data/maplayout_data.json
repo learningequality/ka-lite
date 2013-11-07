@@ -1,5 +1,13 @@
 {
   "topics": {
+    "ptak": {
+      "icon_url": "/images/power-mode/badges/fractions-40x40.png", 
+      "translated_standalone_title": "Ptak", 
+      "y": 10, 
+      "x": -10.0, 
+      "standalone_title": "Fractions", 
+      "id": "fractions"
+    }, 
     "fractions": {
       "icon_url": "/images/power-mode/badges/fractions-40x40.png", 
       "translated_standalone_title": "Fractions", 
