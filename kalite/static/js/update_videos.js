@@ -137,12 +137,13 @@ $(function() {
             })
             .fail(function(resp) {
                 handleFailedAPI(resp, "Error starting video download");
+                $("#download-videos").removeAttr("disabled");
             });
 
         // Update the UI
         unselectAllNodes();
         $("#cancel-download").show();
-        //$(".progress-section").hide();
+        $("#download-videos").attr("disabled", "disabled");
 
         // Send event
         ga_track("send", "event", "update", "click-download-videos", "Download Videos", video_ids.length);
@@ -187,6 +188,7 @@ $(function() {
                 updatesReset()
 
                 // Update the UI
+                $("#download-videos").removeAttr("disabled");
                 $("#cancel-download").hide();
             })
             .fail(function(resp) {
