@@ -1,5 +1,6 @@
 """
 """
+import datetime
 import json
 import re
 import math
@@ -35,9 +36,22 @@ def process_log_from_request(handler):
                 process_log = get_object_or_404(UpdateProgressLog, id=request.GET["process_id"])
 
         elif request.GET.get("process_name", None):
-            # Get the latest one of a particular name--indirect
+            import dateutil.parser
+            process_name = request.GET["process_name"]
+            start_time_str = request.GET.get("start_time")
+            start_time = dateutil.parser.parse(start_time_str) if start_time_str else datetime.datetime.now()
+            print start_time
             try:
-                process_log = UpdateProgressLog.get_active_log(process_name=request.GET["process_name"], create_new=False)
+                # Get the latest one of a particular name--indirect
+                process_log = UpdateProgressLog.get_active_log(process_name=process_name, create_new=False)
+
+                if not process_log:
+                    # Still waiting; get the very latest, at least.
+                    logs = UpdateProgressLog.objects \
+                        .filter(process_name=process_name, completed=True, end_time__gt=start_time) \
+                        .order_by("-end_time")
+                    if logs:
+                        process_log = logs[0]
             except Exception as e:
                 # The process finished before we started checking, or it's been deleted.
                 #   Best to complete silently, but for debugging purposes, will make noise for now.
