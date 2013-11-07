@@ -14,11 +14,14 @@
     font-size:14px;
     margin: 2px;
 }
+#post-download, #python-instructions {
+    margin-top: 30px; 
+}
 </style>
 {% endblock headcss %}
 
 {% block content %}
-<h1>Thank you for downloading KA Lite{% if version %}{{ version }}{% endif %}!</h1>
+<h1>Thank you for downloading KA Lite{% if version %} {{ version }}{% endif %}!</h1>
 
 {% if download_url %}
 <div>
@@ -30,22 +33,22 @@
 <div id="instructions">
     <div id="post-download">
         <h2>What do I do after download?</h2>
-        <ul>
-            <li>When the download completes, copy the file to your server(s).</li>
-            <li>From the server(s), unzip the zip file.</li>
-            <li>From the server(s), run the install_from_zip script file for your operating system</li>
-        </ul>
+        <ol>
+            <li>When the download completes, <b>copy the zip file to your server(s)</b>.</li>
+            <li>From the server(s), <b>unzip the zip file</b>.</li>
+            <li>From the server(s), <b>run the install_from_zip script</b> file for your operating system.</li>
+        </ol>
     </div>
     <div id="python-instructions">
         <h2>Do you have Python?</h2>
         Python is the program that runs KA Lite; some systems may not have it.
-        <ul>
+        <ol>
             <li>If you need it, <a target="_new" href="http://www.python.org/getit/releases/2.7.5/#download">download Python</a> (version 2.7).</li>
             <li>Copy the Python installer over to your server(s).</li>
-            <li>Install Python <b>before you install KA Lite</b></li>
-            <li>Make sure to add Python to your PATH (<a target="_new" href="https://www.google.com/search?q=add+python+to+path+tutorial+windows">Windows</a>, <a target="_new" href="https://www.google.com/search?q=add+python+to+path+tutorial+linux">Linux</a>, <a target="_new" href="https://www.google.com/search?q=add+python+to+path+tutorial+mac">MacOS</a>)</li>
-            <li>Then, install KA Lite (instructions above)</li>
-        </ul>
+            <li>Install Python <b>before you install KA Lite</b>.</li>
+            <li>Make sure to add Python to your PATH (<a target="_new" href="https://www.google.com/search?q=add+python+to+path+tutorial+windows">Windows</a>, <a target="_new" href="https://www.google.com/search?q=add+python+to+path+tutorial+linux">Linux</a>, <a target="_new" href="https://www.google.com/search?q=add+python+to+path+tutorial+mac">MacOS</a>).</li>
+            <li>Then, install KA Lite (instructions above).</li>
+        </ol>
     </div>
 
 </div>
