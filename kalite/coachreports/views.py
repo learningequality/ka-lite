@@ -112,6 +112,9 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
     Context done separately, to be importable for similar pages.
     """
     user = get_user_from_request(request=request)
+    if not user:
+        raise Http404
+
     topic_slugs = [t["id"] for t in get_knowledgemap_topics()]
     topics = [NODE_CACHE["Topic"][slug][0] for slug in topic_slugs]
 
@@ -135,6 +138,7 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
         if not elog["exercise_id"] in NODE_CACHE["Exercise"]:
             # Sometimes KA updates their topic tree and eliminates exercises;
             #   we also want to support 3rd party switching of trees arbitrarily.
+            logging.debug("Skip unknown exercise log for %s/%s" % (user_id, elog["exercise_id"]))
             continue
 
         parent_slugs = [p["slug"] for n in NODE_CACHE["Exercise"][elog["exercise_id"]] for p in n["parents"]]
@@ -152,6 +156,7 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
         if not vlog["youtube_id"] in ID2SLUG_MAP:
             # Sometimes KA updates their topic tree and eliminates videos;
             #   we also want to support 3rd party switching of trees arbitrarily.
+            logging.debug("Skip unknown video log for %s/%s" % (user_id, vlog["youtube_id"]))
             continue
 
         parent_slugs = [p["slug"] for n in NODE_CACHE["Video"][ID2SLUG_MAP[vlog["youtube_id"]]] for p in n["parents"]]
@@ -239,6 +244,8 @@ def landing_page(request, facility):
 @render_to("coachreports/tabular_view.html")
 def tabular_view(request, facility, report_type="exercise"):
     """Tabular view also gets data server-side."""
+    # Define how students are ordered--used to be as efficient as possible.
+    student_ordering = ["last_name", "first_name", "username"]
 
     # Get a list of topics (sorted) and groups
     topics = get_knowledgemap_topics()
@@ -260,7 +267,7 @@ def tabular_view(request, facility, report_type="exercise"):
     if group_id:
         # Narrow by group
         users = FacilityUser.objects.filter(
-            group=group_id, is_teacher=False).order_by("last_name", "first_name")
+            group=group_id, is_teacher=False).order_by(*student_ordering)
 
     elif facility:
         # Narrow by facility
@@ -270,14 +277,14 @@ def tabular_view(request, facility, report_type="exercise"):
         # Return groups and ungrouped
         search_groups = search_groups[0]  # make sure to include ungrouped students
         users = FacilityUser.objects.filter(
-            Q(group__in=search_groups) | Q(group=None, facility=facility), is_teacher=False).order_by("last_name", "first_name")
+            Q(group__in=search_groups) | Q(group=None, facility=facility), is_teacher=False).order_by(*student_ordering)
 
     else:
         # Show all (including ungrouped)
         for groups_dict in groups:
             search_groups += groups_dict["groups"]
         users = FacilityUser.objects.filter(
-            Q(group__in=search_groups) | Q(group=None), is_teacher=False).order_by("last_name", "first_name")
+            Q(group__in=search_groups) | Q(group=None), is_teacher=False).order_by(*student_ordering)
 
     # We have enough data to render over a group of students
     # Get type-specific information
@@ -293,7 +300,7 @@ def tabular_view(request, facility, report_type="exercise"):
         context["students"] = []
         exlogs = ExerciseLog.objects \
             .filter(user__in=users, exercise_id__in=exercise_names) \
-            .order_by("user__last_name", "user__first_name")\
+            .order_by(*["user__%s" % field for field in student_ordering]) \
             .values("user__id", "struggling", "complete", "exercise_id")
         exlogs = list(exlogs)  # force the query to be evaluated
 
@@ -323,7 +330,7 @@ def tabular_view(request, facility, report_type="exercise"):
         context["students"] = []
         vidlogs = VideoLog.objects \
             .filter(user__in=users, youtube_id__in=video_ids) \
-            .order_by("user__last_name", "user__first_name")\
+            .order_by(*["user__%s" % field for field in student_ordering])\
             .values("user__id", "complete", "youtube_id", "total_seconds_watched", "points")
         vidlogs = list(vidlogs)  # force the query to be executed now
 
