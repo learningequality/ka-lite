@@ -504,4 +504,5 @@ if package_selected("RPi"):
 if package_selected("UserRestricted"):
     LOG.info("UserRestricted package selected.")
 
-    KEY_PREFIX += "|restricted"  # this option changes caching, to avoid collisions.
+    if CACHE_TIME != 0 and not hasattr(local_settings, KEY_PREFIX):
+        KEY_PREFIX += "|restricted"  # this option changes templates

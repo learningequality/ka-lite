@@ -101,6 +101,7 @@ def add_subscription(request):
         messages.success(request, "A subscription for '%s' was added." % request.POST.get("email"))
     return HttpResponseRedirect(reverse("homepage"))
 
+
 @login_required
 def org_invite_action(request, invite_id):
     invite = OrganizationInvitation.objects.get(pk=invite_id)
@@ -201,7 +202,7 @@ def get_request_var(request, var_name, default_val="__empty__"):
     """
     return  request.POST.get(var_name, request.GET.get(var_name, default_val))
 
-@render_to("central/install_wizard.html")
+
 def install_wizard(request, edition=None):
     """
     NOTE that this wizard is ONLY PARTIALLY FUNCTIONAL (see below)
@@ -222,7 +223,10 @@ def install_wizard(request, edition=None):
     
     """
     if not edition and request.user.is_anonymous():
-        return {}
+        @render_to("central/install_wizard.html")
+        def wizard_fn(request):
+            return {}
+        return wizard_fn(request)
 
     elif edition == "multiple-server" or not request.user.is_anonymous():
         return install_multiple_server_edition(request)
@@ -234,17 +238,28 @@ def install_wizard(request, edition=None):
         raise Http404("Unknown server edition: %s" % edition)
 
 
+
+@render_to("central/download_thankyou.html")
+def download_thankyou(request, **kwargs):
+    return kwargs
+
+
 def install_single_server_edition(request):
     """
     """
     version = get_request_var(request, "version",  kalite.VERSION)
     platform = get_request_var(request, "platform", "all")
     locale = get_request_var(request, "locale", "en")
-    return HttpResponseRedirect(reverse("download_kalite_public", kwargs={
-        "version": kalite.VERSION,
-        "platform": platform,
-        "locale": locale,
-    }))
+
+    return download_thankyou(
+        request, 
+        version=kalite.VERSION,
+        download_url=reverse("download_kalite_public", kwargs={
+            "version": kalite.VERSION,
+            "platform": platform,
+            "locale": locale,
+        }),
+    )
 
 
 @login_required
@@ -268,7 +283,11 @@ def install_multiple_server_edition(request):
         for zone in org.zones.all().order_by("name"):
             if zone_id and zone_id == zone.id:
                 kwargs["zone_id"] = zone_id
-                return HttpResponseRedirect(reverse("download_kalite_private", kwargs=kwargs))
+                return download_thankyou(
+                    request, 
+                    version=kwargs["version"],
+                    download_url=reverse("download_kalite_private", kwargs=kwargs),
+                )
             else:
                 zones.append({
                     "id": zone.id,
@@ -288,11 +307,14 @@ def install_multiple_server_edition(request):
     if len(zones) == 1:
         zone_id = zones[0]["id"]
 
-    return {
-        "zones": zones,
-        "selected_zone": zone_id or (zones[0]["id"] if len(zones) == 1 else None),
-        "edition": "multiple-server",
-    }
+    @render_to("central/install_wizard.html")
+    def wizard_fn(request):
+        return {
+            "zones": zones,
+            "selected_zone": zone_id or (zones[0]["id"] if len(zones) == 1 else None),
+            "edition": "multiple-server",
+        }
+    return wizard_fn(request)
 
 
 def download_kalite_public(request, *args, **kwargs):

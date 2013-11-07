@@ -196,7 +196,7 @@ def update_all_central_callback(request):
 
         try:
             completed = exercise['streak'] >= 10
-            basepoints = NODE_CACHE['Exercise'][slug]['basepoints']
+            basepoints = NODE_CACHE['Exercise'][slug][0]['basepoints']
             exercise_logs.append({
                 "exercise_id": slug,
                 "streak_progress": min(100, 100 * exercise['streak']/10),  # duplicates logic elsewhere
