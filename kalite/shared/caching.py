@@ -1,8 +1,6 @@
-
 import datetime
 import os
 from functools import partial
-
 
 from django.core.cache import cache, InvalidCacheBackendError
 from django.core.cache.backends.filebased import FileBasedCache
@@ -161,10 +159,11 @@ def get_exercise_page_paths(video_id=None, video_slug=None):
 
     try:
         exercise_paths = set()
-        for exercise in get_related_exercises(video=topic_tools.get_node_cache("Video")[video_slug][0]):
-            exercise_paths = exercise_paths.union(set(exercise["paths"]))
+        for exercise in topic_tools.get_related_exercises(video=topic_tools.get_node_cache("Video")[video_slug][0]):
+            exercise_paths = exercise_paths.union(set([exercise["path"]]))
         return list(exercise_paths)
-    except:
+    except Exception as e:
+        logging.debug("Exception while getting exercise paths: %s" % e)
         return []
 
 
