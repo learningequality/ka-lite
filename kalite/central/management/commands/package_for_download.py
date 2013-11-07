@@ -206,6 +206,7 @@ class Command(BaseCommand):
             install_sh_file = self.install_py_file[:-3] + "_linux.sh"
             install_files[install_sh_file] = tempfile.mkstemp()[1]
             with open(install_files[install_sh_file], "w") as fp:
+                fp.write("echo 'Searching for python path...'\n")
                 fp.write(open(os.path.realpath(settings.PROJECT_PATH + "/../scripts/python.sh"), "r").read())
                 fp.write('\ncurrent_dir=`dirname "${BASH_SOURCE[0]}"`')
                 fp.write('\n$PYEXEC "$current_dir/%s"' % self.install_py_file)
