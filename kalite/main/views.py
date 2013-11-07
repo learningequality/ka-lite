@@ -27,11 +27,11 @@ from securesync.models import Facility, FacilityUser,FacilityGroup, Device
 from securesync.views import require_admin, facility_required
 from settings import LOG as logging
 from shared import topic_tools
-from shared.decorators import require_admin, backend_cache_page
+from shared.caching import backend_cache_page
+from shared.decorators import require_admin
 from shared.jobs import force_job
 from shared.videos import get_video_urls, is_video_on_disk, video_counts_need_update, get_video_counts
 from utils.internet import is_loopback_connection, JsonResponse
-
 
 def check_setup_status(handler):
     """
@@ -231,6 +231,7 @@ def easy_admin(request):
         "wiki_url" : settings.CENTRAL_WIKI_URL,
         "central_server_host" : settings.CENTRAL_SERVER_HOST,
         "in_a_zone":  Device.get_own_device().get_zone() is not None,
+        "clock_set": settings.ENABLE_CLOCK_SET,
     }
     return context
 

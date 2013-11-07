@@ -11,5 +11,6 @@ if [ "$pids" ]; then
     source "$SCRIPT_DIR/cronstop.sh"
 fi
 
+
 freq=`"$SCRIPT_DIR/get_setting.sh" CRONSERVER_FREQUENCY`
 "$pyexec" "$KALITE_DIR/manage.py" cronserver "$freq" &

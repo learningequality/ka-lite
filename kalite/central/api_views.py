@@ -14,7 +14,7 @@ from .models import Organization, get_or_create_user_profile
 from .views import get_central_server_host
 from securesync.models import Zone
 from utils.internet import allow_jsonp, api_handle_error_with_json, JsonResponse, JsonpResponse
-from i18n.management.commands.cache_translations import LANGUAGE_PACK_AVAILABILITY_FILENAME
+from i18n.management.commands.update_language_packs import LANGUAGE_PACK_AVAILABILITY_FILENAME
 
 
 @allow_jsonp

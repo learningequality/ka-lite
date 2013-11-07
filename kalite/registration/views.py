@@ -10,7 +10,7 @@ from django.contrib.auth import logout as auth_logout, views as auth_views, REDI
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError, transaction
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -29,7 +29,10 @@ from shared.decorators import central_server_only
 def complete(request, *args, **kwargs):
     messages.success(request, "Congratulations! Your account is now active. To get started, "
         + "login to the central server below, to administer organizations and zones.")
-    return redirect("auth_login")
+    if hasattr(request, "next") and request.next:
+        return HttpResponseRedirect(request.next)
+    else:
+        return redirect("auth_login")
 
 
 @central_server_only
@@ -97,11 +100,14 @@ def activate(request, backend,
     account = backend.activate(request, **kwargs)
 
     if account:
-        if success_url is None:
+        if success_url:
+            return redirect(success_url)
+        elif getattr(request, "next") and request.next:
+            to, args, kwargs = backend.post_activation_redirect(request, account)
+            return HttpResponseRedirect(reverse(to) + "?next=" + request.next, *args, **kwargs)
+        else:
             to, args, kwargs = backend.post_activation_redirect(request, account)
             return redirect(to, *args, **kwargs)
-        else:
-            return redirect(success_url)
 
     if extra_context is None:
         extra_context = {}
