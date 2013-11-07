@@ -137,10 +137,10 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
             #   we also want to support 3rd party switching of trees arbitrarily.
             continue
 
-        parents = [p for n in NODE_CACHE["Exercise"][elog["exercise_id"]] for p in n["parents"]]
-        topic = set(parents).intersection(set(topic_slugs))
+        parent_slugs = [p["slug"] for n in NODE_CACHE["Exercise"][elog["exercise_id"]] for p in n["parents"]]
+        topic = set(parent_slugs).intersection(set(topic_slugs))
         if not topic:
-            logging.error("Could not find a topic for exercise %s (parents=%s)" % (elog["exercise_id"], parents))
+            logging.error("Could not find a topic for exercise %s (parents=%s)" % (elog["exercise_id"], parent_slugs))
             continue
         topic = topic.pop()
         if not topic in topic_exercises:
@@ -154,10 +154,10 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
             #   we also want to support 3rd party switching of trees arbitrarily.
             continue
 
-        parents = [p for n in NODE_CACHE["Video"][ID2SLUG_MAP[vlog["youtube_id"]]] for p in n["parents"]]
-        topic = set(parents).intersection(set(topic_slugs))
+        parent_slugs = [p["slug"] for n in NODE_CACHE["Video"][ID2SLUG_MAP[vlog["youtube_id"]]] for p in n["parents"]]
+        topic = set(parent_slugs).intersection(set(topic_slugs))
         if not topic:
-            logging.error("Could not find a topic for video %s (parents=%s)" % (vlog["youtube_id"], parents))
+            logging.error("Could not find a topic for video %s (parents=%s)" % (vlog["youtube_id"], parent_slugs))
             continue
         topic = topic.pop()
         if not topic in topic_videos:
