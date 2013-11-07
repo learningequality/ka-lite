@@ -28,7 +28,7 @@ from utils.general import max_none
 from utils.internet import StatusException
 
 
-def get_accessible_objects_from_logged_in_user(request):
+def get_accessible_objects_from_logged_in_user(request, facility):
     """Given a request, get all the facility/group/user objects relevant to the request,
     subject to the permissions of the user type.
     """
@@ -40,6 +40,7 @@ def get_accessible_objects_from_logged_in_user(request):
         # for the list of groups at that facility.
         # TODO: Make this more efficient.
         groups = [{"facility": facilitie.id, "groups": FacilityGroup.objects.filter(facility=facilitie)} for facilitie in facilities]
+
     elif "facility_user" in request.session:
         user = request.session["facility_user"]
         if user.is_teacher:
@@ -66,7 +67,7 @@ def plotting_metadata_context(request, facility=None, topic_path=[], *args, **kw
     # Get the form, and retrieve the API data
     form = get_data_form(request, facility=facility, topic_path=topic_path, *args, **kwargs)
 
-    (groups, facilities) = get_accessible_objects_from_logged_in_user(request)
+    (groups, facilities) = get_accessible_objects_from_logged_in_user(request, facility=facility)
 
     return {
         "form": form.data,
@@ -231,7 +232,7 @@ def tabular_view(request, facility, report_type="exercise"):
 
     # Get a list of topics (sorted) and groups
     topics = get_knowledgemap_topics()
-    (groups, facilities) = get_accessible_objects_from_logged_in_user(request)
+    (groups, facilities) = get_accessible_objects_from_logged_in_user(request, facility=facility)
     context = plotting_metadata_context(request, facility=facility)
     context.update({
         "report_types": ("exercise", "video"),
