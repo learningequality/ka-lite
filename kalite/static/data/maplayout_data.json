@@ -3,10 +3,10 @@
     "ptak": {
       "icon_url": "/images/power-mode/badges/fractions-40x40.png", 
       "translated_standalone_title": "Ptak", 
-      "y": 10, 
-      "x": -10.0, 
-      "standalone_title": "Fractions", 
-      "id": "fractions"
+      "y": 1.5, 
+      "x": -30.0, 
+      "standalone_title": "ptak", 
+      "id": "ptak"
     }, 
     "fractions": {
       "icon_url": "/images/power-mode/badges/fractions-40x40.png", 
