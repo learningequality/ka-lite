@@ -132,6 +132,11 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
 
     # Categorize every exercise log into a "midlevel" exercise
     for elog in exercise_logs:
+        if not elog["exercise_id"] in NODE_CACHE["Exercise"]:
+            # Sometimes KA updates their topic tree and eliminates exercises;
+            #   we also want to support 3rd party switching of trees arbitrarily.
+            continue
+
         parents = [p for n in NODE_CACHE["Exercise"][elog["exercise_id"]] for p in n["parents"]]
         topic = set(parents).intersection(set(topic_slugs))
         if not topic:
@@ -144,6 +149,11 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
 
     # Categorize every video log into a "midlevel" exercise.
     for vlog in video_logs:
+        if not vlog["youtube_id"] in ID2SLUG_MAP:
+            # Sometimes KA updates their topic tree and eliminates videos;
+            #   we also want to support 3rd party switching of trees arbitrarily.
+            continue
+
         parents = [p for n in NODE_CACHE["Video"][ID2SLUG_MAP[vlog["youtube_id"]]] for p in n["parents"]]
         topic = set(parents).intersection(set(topic_slugs))
         if not topic:

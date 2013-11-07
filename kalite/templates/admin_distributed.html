@@ -3,7 +3,6 @@
 {% load staticfiles %}
 
 {% block easyadmin_active %}active{% endblock easyadmin_active %}
-
 {% block title %}{% trans "Administration Panel" %}{% endblock title %}
 
 {% block headcss %}{{ block.super }}
@@ -116,7 +115,11 @@
             </td>
         </tr>
         <tr class="client-online-only">
+<<<<<<< HEAD
             <td class="link"><a href="{{wiki_url}}" target="_blank">{% trans "KA Lite Wiki" %}</a></td>
+=======
+            <td class="link"><a href="{{wiki_url}}" target="_blank">KA Lite Wiki</a></td>
+>>>>>>> 74f204919c69b24943bf6521ed1100dda7cc16e9
             <td class="desc"> {% trans "Contains the latest information about setting up and using KA Lite." %}</td>
         </tr>
         <tr class="client-online-only">
