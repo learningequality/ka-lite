@@ -128,4 +128,4 @@ def system_specific_unzipping(zip_file, dest_dir, callback=_default_callback_unz
         zip.extract(afile, path=dest_dir)
         # If it's a unix script or manage.py, give permissions to execute
         if (not is_windows()) and (os.path.splitext(afile)[1] in system_specific_scripts() or afile.endswith("manage.py")):
-            os.chmod(os.path.realpath(dest_dir + "/" + afile), 0755 if is_osx() else (0755 << 16L))
+            os.chmod(os.path.realpath(dest_dir + "/" + afile), (0755) if is_osx() else (0755 << 16L))
