@@ -43,7 +43,6 @@ class Command(BaseCommand):
         
         videos_flagged_for_download = set([video.youtube_id for video in VideoFile.objects.filter(flagged_for_download=True)])
         videos_in_filesystem = set([path.replace("\\", "/").split("/")[-1].split(".")[0] for path in files])
-        videos_in_filesystem_chunked = break_into_chunks(videos_in_filesystem)
 
         # Files that exist, but are not in the DB, should be assumed to be good videos, 
         #   and just needing to be added to the DB.  Add them to the DB in this way,
@@ -59,7 +58,7 @@ class Command(BaseCommand):
         # Files that exist, are in the DB, but have percent_complete=0, download_in_progress=False
         #   These should be individually saved to be 100% complete, to trigger their availability (and cache invalidation)
         count = 0
-        for chunk in videos_in_filesystem_chunked:
+        for chunk in break_into_chunks(videos_in_filesystem):
             video_files_needing_model_update = VideoFile.objects.filter(percent_complete=0, download_in_progress=False, youtube_id__in=chunk)
             count += video_files_needing_model_update.count()
             for videofile in video_files_needing_model_update:
