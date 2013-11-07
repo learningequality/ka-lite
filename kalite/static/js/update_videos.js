@@ -251,21 +251,21 @@ function unselectAllNodes() {
 
 function getSelectedIncompleteVideos() {
     var arr = $("#content_tree").dynatree("getSelectedNodes");
-    return unique($.grep(arr, function(node) { 
+    return _.uniq($.grep(arr, function(node) { 
         return node.data.addClass != "complete" && node.childList == null;
     }));
 }
 
 function getSelectedStartedVideos() {
     var arr = $("#content_tree").dynatree("getSelectedNodes");
-    return unique($.grep(arr, function(node) { 
+    return _.uniq($.grep(arr, function(node) { 
         return node.data.addClass != "unstarted" && node.childList == null;
     }));
 }
 
 function getSelectedIncompleteVideoIDs() {
     var videos = getSelectedIncompleteVideos();
-    var video_ids = unique($.map(videos, function(node) {
+    var video_ids = _.uniq($.map(videos, function(node) {
         return node.data.key;
     }));
     return video_ids;
@@ -273,7 +273,7 @@ function getSelectedIncompleteVideoIDs() {
 
 function getSelectedStartedVideoIDs() {
     var videos = getSelectedStartedVideos();
-    var video_ids = unique($.map(videos, function(node) {
+    var video_ids = _.uniq($.map(videos, function(node) {
         return node.data.key;
     }));
     return video_ids;
