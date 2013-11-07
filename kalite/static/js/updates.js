@@ -172,7 +172,7 @@ function updateDisplay(process_name, progress_log) {
         select_update_elements(process_name, ".stage-current").text(progress_log.cur_stage_num);
         select_update_elements(process_name, ".stage-total").text(progress_log.total_stages);
 
-        select_update_elements(process_name, ".stage-header").text(progress_log.notes);
+        select_update_elements(process_name, ".stage-header").text(progress_log.notes || "Loading");
         select_update_elements(process_name, ".stage-name").text("");
 
         select_update_elements(process_name, ".progress-section").show();
@@ -212,7 +212,7 @@ function updatesReset(process_name) {
     process_intervals[process_name] = null;
     process_interval_handles[process_name];
 
-    if (process_name in process_names) { 
+    if (process_name in process_names) {
         delete process_names[process_name];
     }
 
