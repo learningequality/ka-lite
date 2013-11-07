@@ -142,30 +142,11 @@ def get_video_logs(request):
         return JsonResponse({"error": "Could not load VideoLog objects: Unrecognized input data format." % e}, status=500)
 
     user = request.session["facility_user"]
-    responses = []
-    for youtube_id in data:
-        response = _get_video_log_dict(request, user, youtube_id)
-        if response:
-            responses.append(response)
-    return JsonResponse(responses)
+    responses = VideoLog.objects \
+        .filter(youtube_id__in=data) \
+        .values("youtube_id", "complete", "total_seconds_watched", "points")
 
-
-def _get_video_log_dict(request, user, youtube_id):
-    """
-    Utility that converts a video log to a dictionary
-    """
-    if not youtube_id:
-        return {}
-    try:
-        videolog = VideoLog.objects.filter(user=user, youtube_id=youtube_id).latest("counter")
-    except VideoLog.DoesNotExist:
-        return {}
-    return {
-        "youtube_id": youtube_id,
-        "total_seconds_watched": videolog.total_seconds_watched,
-        "complete": videolog.complete,
-        "points": videolog.points,
-    }
+    return JsonResponse(list(responses))
 
 
 @allow_api_profiling
@@ -185,6 +166,7 @@ def get_exercise_logs(request):
             .filter(user=user, exercise_id__in=data) \
             .values("exercise_id", "streak_progress", "complete", "points", "struggling", "attempts"))
     )
+
 
 @require_admin
 @api_handle_error_with_json

@@ -500,4 +500,5 @@ if package_selected("RPi"):
     ENABLE_CLOCK_SET = getattr(local_settings, "ENABLE_CLOCK_SET", True)
 
 if package_selected("UserRestricted"):
-    KEY_PREFIX += "|restricted"  # this option changes templates
+    if CACHE_TIME != 0:
+        KEY_PREFIX += "|restricted"  # this option changes templates
