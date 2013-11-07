@@ -76,7 +76,7 @@ function updatesStart_callback(process_name) {
                 }
                 // Create interval for check
                 process_interval_handles[process_name] = setInterval( // call it soon
-                    function() { updatesCheck(process_name); }, 
+                    function() { updatesCheck(process_name); },
                     process_intervals[process_name]
                 );
                 updatesCheck(process_name);  // call it once directly
@@ -123,7 +123,7 @@ function updatesCheck(process_name, interval) {
 
             var completed = !progress_log.process_name || progress_log.completed;
             if (completed) {
-                // 
+                //
                 if (progress_log.process_percent == 1.) {
                     show_message("success", "Completed update '" + process_name + "' successfully.", "id_" + process_name)
                     updatesReset(process_name);
@@ -137,11 +137,14 @@ function updatesCheck(process_name, interval) {
                 }
             }
         }).fail(function(resp) {
-            if (resp.responseText) {
-                show_message("error", "Error during updatesCheck: " + resp.responseText);
-            } else {
-                show_message("error", "Error during updatesCheck: unexpected server error.");
+
+            var message = resp.responseText || "problem on server.";
+
+            if (resp.state() == "rejected") {
+                message = "could not connect to the server."
             }
+
+            show_message("error", "Error while checking update status: " + message, "id_" + process_name);
 
             // Do callbacks
             if (process_callbacks[process_name] && "check" in process_callbacks[process_name]) {
@@ -156,7 +159,7 @@ function select_update_elements(process_name, selector) {
     var pb_selector = "#" + process_name + "-progressbar";
     return  $(pb_selector + " " + selector);
 }
- 
+
 function updateDisplay(process_name, progress_log) {
     window.progress_log = progress_log;
     window.process_name = process_name;
@@ -172,7 +175,7 @@ function updateDisplay(process_name, progress_log) {
         select_update_elements(process_name, ".stage-current").text(progress_log.cur_stage_num);
         select_update_elements(process_name, ".stage-total").text(progress_log.total_stages);
 
-        select_update_elements(process_name, ".stage-header").text(progress_log.notes);
+        select_update_elements(process_name, ".stage-header").text(progress_log.notes || "Loading");
         select_update_elements(process_name, ".stage-name").text("");
 
         select_update_elements(process_name, ".progress-section").show();
@@ -212,7 +215,7 @@ function updatesReset(process_name) {
     process_intervals[process_name] = null;
     process_interval_handles[process_name];
 
-    if (process_name in process_names) { 
+    if (process_name in process_names) {
         delete process_names[process_name];
     }
 
