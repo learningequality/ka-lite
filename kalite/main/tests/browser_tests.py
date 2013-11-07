@@ -343,7 +343,7 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
         self.student = self.create_student(facility_name=self.facility_name)
         self.browser_login_student(self.student_username, self.student_password, facility_name=self.facility_name)
 
-        self.browse_to(self.live_server_url + NODE_CACHE["Exercise"][self.EXERCISE_SLUG]["paths"][0])
+        self.browse_to(self.live_server_url + NODE_CACHE["Exercise"][self.EXERCISE_SLUG][0]["path"])
         self.browser_check_django_message(num_messages=0)  # make sure no messages
 
     def browser_get_current_points(self):
