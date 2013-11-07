@@ -135,7 +135,7 @@ $(function() {
             .success(function() {
                 updatesStart("videodownload", 5000, video_callbacks)
             })
-            .fail(function(response) {
+            .fail(function(resp) {
                 handleFailedAPI(resp, "Error starting video download");
             });
 
@@ -227,7 +227,7 @@ function handleFailedAPI(resp, error_text, error_id) {
 
     switch (resp.status) {
         case 403:
-            show_message("error", error_text + ": " + "You are not authorized to complete the request.  Please <a href='{% url login %}' target='_blank'>login</a> as an administrator, then retry.", error_id)
+            show_message("error", error_text + ": " + "You are not authorized to complete the request.  Please <a href='/securesync/login/' target='_blank'>login</a> as an administrator, then retry.", error_id)
             break;
         default:
             //communicate_api_failure(resp)

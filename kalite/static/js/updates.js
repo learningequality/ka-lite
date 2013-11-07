@@ -87,7 +87,7 @@ function updatesStart_callback(process_name) {
                 process_callbacks[process_name]["start"](progress_log);
             }
         }).fail(function(resp) {
-            show_message("error", "Error during updatesStart_callback: " + resp.responseText);
+            show_message("error", "Error during updatesStart_callback: " + resp.responseText, "id_" + process_name);
             // Do callbacks, with error
             if (process_callbacks[process_name] && "start" in process_callbacks[process_name]) {
                 process_callbacks[process_name]["start"](null, resp);

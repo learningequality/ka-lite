@@ -64,18 +64,20 @@ def _process_log_to_dict(process_log):
     Utility function to convert a process log to a dict
     """
     
-    return {} if not process_log else {
-        "process_id": process_log.id,
-        "process_name": process_log.process_name,
-        "process_percent": process_log.process_percent,
-        "stage_name": process_log.stage_name,
-        "stage_percent": process_log.stage_percent,
-        "cur_stage_num": 1 + int(math.floor(process_log.total_stages * process_log.process_percent)),
-        "total_stages": process_log.total_stages,
-        "notes": process_log.notes,
-        "completed": process_log.completed or (process_log.end_time is not None),
-        #"start_time": process_log.start_time,
-    }
+    if not process_log or not process_log.total_stages:
+        return {} 
+    else:
+        return {
+            "process_id": process_log.id,
+            "process_name": process_log.process_name,
+            "process_percent": process_log.process_percent,
+            "stage_name": process_log.stage_name,
+            "stage_percent": process_log.stage_percent,
+            "cur_stage_num": 1 + int(math.floor(process_log.total_stages * process_log.process_percent)),
+            "total_stages": process_log.total_stages,
+            "notes": process_log.notes,
+            "completed": process_log.completed or (process_log.end_time is not None),
+        }
 
 @require_admin
 @api_handle_error_with_json
