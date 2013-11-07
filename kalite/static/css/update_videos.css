@@ -43,6 +43,7 @@ ul.dynatree-container li, .ui-widget-content {
 
 #cancel-download {
     display: none;
+    margin-top: 15px;
 }
 
 #help-info, #download-videos {
