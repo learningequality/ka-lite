@@ -71,8 +71,8 @@ def add_facility_student(request):
 
 
 @distributed_server_only
-@render_to("securesync/add_facility_user.html")
 @facility_required
+@render_to("securesync/add_facility_user.html")
 def edit_facility_user(request, facility, is_teacher=None, id=None):
     """Different codepaths for the following:
     * Django admin/teacher creates user, teacher
