@@ -84,7 +84,7 @@ def get_device_counters(**kwargs):
     return device_counters
 
 
-def get_models(device_counters=None, limit=settings.SYNCING_MAX_RECORDS_PER_REQUEST, zone=None, dest_version=None):
+def get_models(device_counters=None, limit=settings.SYNCING_MAX_RECORDS_PER_REQUEST, zone=None, dest_version=None, **kwargs):
     """Serialize models for some intended version (dest_version)
     Default is our own version--i.e. include all known fields.
     If serializing for a device of a lower version, pass in that device's version!
@@ -98,6 +98,7 @@ def get_models(device_counters=None, limit=settings.SYNCING_MAX_RECORDS_PER_REQU
 
     # use the current device's zone if one was not specified
     if not zone:
+        assert (not settings.CENTRAL_SERVER), "get_models should always be called with a zone, on the central server."
         zone = own_device.get_zone()
 
     # if no devices specified, assume we're starting from zero, and include all devices in the zone

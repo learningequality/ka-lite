@@ -10,8 +10,8 @@ import settings
 class BaseClient(object):
 
     def __init__(self, host="%s://%s/"%(settings.SECURESYNC_PROTOCOL,settings.CENTRAL_SERVER_HOST), require_trusted=True):
-        url = urllib2.urlparse.urlparse(host)
-        self.url = "%s://%s" % (url.scheme, url.netloc)
+        self.parsed_url = urllib2.urlparse.urlparse(host)
+        self.url = "%s://%s" % (self.parsed_url.scheme, self.parsed_url.netloc)
         self.require_trusted = require_trusted
 
     def path_to_url(self, path):

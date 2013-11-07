@@ -16,8 +16,6 @@ kind_slugs = {
     "Topic": ""
 }
 
-multipath_kinds = ["Exercise", "Video"]
-
 topics_file = "topics.json"
 map_layout_file = "maplayout_data.json"
 video_remap_file = "youtube_to_slug_map.json"
@@ -94,51 +92,22 @@ def generate_node_cache(topictree=None):#, output_dir=settings.DATA_PATH):
     node_cache = {}
 
 
-    def recurse_nodes(node, path="/", parents=[]):
+    def recurse_nodes(node, parents=[]):
         # Add the node to the node cache
         kind = node["kind"]
         node_cache[kind] = node_cache.get(kind, {})
         
-        if node["slug"] in node_cache[kind]:
-            # Existing node, so append the path to the set of paths
-            assert kind in multipath_kinds, "Make sure we expect to see multiple nodes map to the same slug (%s unexpected)" % kind
+        if node["slug"] not in node_cache[kind]:
+            node_cache[kind][node["slug"]] = []
+        node_cache[kind][node["slug"]] += [node]        # Append
 
-            # Before adding, let's validate some basic properties of the 
-            #   stored node and the new node:
-            # 1. Compare the keys, and make sure that they overlap 
-            #      (except the stored node will not have 'path', but instead 'paths')
-            # 2. For string args, check that values are the same
-            #      (most/all args are strings, and ... I feel we're already being darn
-            #      careful here.  So, I think it's enough.
-            node_shared_keys = set(node.keys()) - set(["path"])
-            stored_shared_keys = set(node_cache[kind][node["slug"]]) - set(["path", "paths", "parents"])
-            unshared_keys = node_shared_keys.symmetric_difference(stored_shared_keys)
-            shared_keys = node_shared_keys.intersection(stored_shared_keys)
-            assert not unshared_keys, "Node and stored node should have all the same keys."
-            for key in shared_keys:
-                # A cursory check on values, for strings only (avoid unsafe types)
-                if isinstance(node[key], basestring):
-                    assert node[key] == node_cache[kind][node["slug"]][key], "Node values don't match"
-
-            # We already added this node, it's just found at multiple paths.
-            #   So, save the new path
-            node_cache[kind][node["slug"]]["paths"].append(node["path"])
-            node_cache[kind][node["slug"]]["parents"] = list(set(node_cache[kind][node["slug"]]["parents"]).union(set(parents)))
-
-        else:
-            # New node, so copy off, massage, and store.
-            node_copy = node
-            if kind in multipath_kinds:
-                # If multiple paths can map to a single slug, need to store all paths.
-                node_copy["paths"] = [node_copy["path"]]
-            node_cache[kind][node["slug"]] = node_copy
-            # Add parents
-            node_cache[kind][node["slug"]]["parents"] = parents
+        # Add some attribute that should have been on there to start with.
+        node["parent"] = parents[-1] if parents else None
+        node["parents"] = parents
 
         # Do the recursion
         for child in node.get("children", []):
-            assert "path" in node and "paths" not in node, "This code can't handle nodes with multiple paths; it just generates them!"
-            recurse_nodes(child, node["path"], parents + [node["slug"]])
+            recurse_nodes(child, parents + [node])
 
     recurse_nodes(topictree)
 
@@ -216,10 +185,11 @@ def get_topic_leaves(topic_id=None, path=None, leaf_type=None):
     assert (topic_id or path) and not (topic_id and path), "Specify topic_id or path, not both."
 
     if not path:
-        topic_node = filter(partial(lambda node, name: node['slug'] == name, name=topic_id), get_node_cache('Topic').values())
+        topic_node = get_node_cache('Topic').get(topic_id, None)
         if not topic_node:
             return []
-        path = topic_node[0]['path']
+        else:
+            path = topic_node[0]['path']
 
     topic_node = get_topic_by_path(path)
     exercises = get_all_leaves(topic_node=topic_node, leaf_type=leaf_type)
@@ -252,7 +222,7 @@ def get_exercise_paths():
     """This function retrieves all the exercise paths.
     """
     exercises = get_node_cache("Exercise").values()
-    return [exercise["paths"][0] for exercise in exercises if len(exercise.get("paths", [])) > 0]
+    return [exercise[0]["path"] for exercise in exercises]
 
 
 def get_related_videos(exercises, topics=None, possible_videos=None):
@@ -266,11 +236,11 @@ def get_related_videos(exercises, topics=None, possible_videos=None):
     if not possible_videos:
         possible_videos = []
         for topic in (topics or get_node_cache('Topic').values()):
-            possible_videos += get_topic_videos(topic_id=topic['id'])
+            possible_videos += get_topic_videos(topic_id=topic[0]['id'])
 
     # Get exercises from videos
     exercise_ids = [ex["id"] if "id" in ex else ex['name'] for ex in exercises]
-    for video in videos:
+    for video in possible_videos:
         if "related_exercise" in video and video["related_exercise"]['id'] in exercise_ids:
             related_videos.append(video)
     return related_videos
@@ -278,7 +248,7 @@ def get_related_videos(exercises, topics=None, possible_videos=None):
 
 def get_video_by_youtube_id(youtube_id):
     slug = get_id2slug_map().get(youtube_id, None)
-    return get_node_cache("Video")[slug] if slug else None
+    return get_node_cache("Video")[slug][0] if slug else None
 
 
 def is_sibling(node1, node2):

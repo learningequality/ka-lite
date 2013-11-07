@@ -20,7 +20,8 @@ script_template = """
 case "$1" in
     start)
         echo "Starting ka-lite!"
-        "%(project_path)s/../scripts/start.sh"
+        #run ka-lite as the owner of the project folder, and not as root
+        su `stat --format="%(percent_U)s" "%(project_path)s/../"` -c "%(project_path)s/../start.sh"
         ;;
     stop)
         echo "Shutting down ka-lite!"
@@ -35,4 +36,4 @@ class Command(BaseCommand):
     help = "Print init.d startup script for the server daemon."
 
     def handle(self, *args, **options):
-        self.stdout.write(script_template % {"project_path": settings.PROJECT_PATH})
+        self.stdout.write(script_template % {"project_path": settings.PROJECT_PATH, "percent_U": "%U"})

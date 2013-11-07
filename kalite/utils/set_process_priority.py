@@ -1,3 +1,4 @@
+import logging
 import os
 import platform
 import sys
@@ -40,23 +41,23 @@ else:
     SYS_PLATFORM = None
 
     
-def _set_windows_priority(priority):
-    sys.stdout.write("Cannot set priority, not implemented for Windows\n")
+def _set_windows_priority(priority, logging=logging):
+    logging.debug("Cannot set priority, not implemented for Windows")
     return False
 
 
-def _set_linux_mac_priority(priority):        
+def _set_linux_mac_priority(priority, logging=logging):
 
     try:
         import psutil
     except:
-        sys.stdout.write("Cannot set priority, psutil module not installed\n")
+        logging.debug("Cannot set priority, psutil module not installed")
         return False
         
     this_process = psutil.Process(os.getpid())
     this_process.cmdline
     if "runcherrypyserver" in this_process.cmdline:
-        sys.stdout.write("Will not set priority, this is the webserver process\n")
+        logging.debug("Will not set priority, this is the webserver process")
         return False
             
     # Try here, because priority cannot be raised unless we are root.
@@ -71,30 +72,32 @@ def _set_linux_mac_priority(priority):
             this_process.nice = 0
             this_process.set_ionice(psutil.IOPRIO_CLASS_BE)
     except:
-        sys.stdout.write("Cannot set priority; probably insufficient privilege\n")  
+        logging.debug("Cannot set priority; probably insufficient privilege")  
         return False
         
     return priority
 
 
-def _set_priority(priority):
+def _set_priority(priority, logging=logging):
 
     if SYS_PLATFORM == "Windows":
-        return _set_windows_priority(priority)
+        return _set_windows_priority(priority, logging=logging)
     elif SYS_PLATFORM in ("Linux", "Mac"):
-        return _set_linux_mac_priority(priority)
+        return _set_linux_mac_priority(priority, logging=logging)
     else:
-        sys.stdout.write("Cannot set priority, Unsupported platform: '%s' \n" % sysPlatform)
+        logging.debug("Cannot set priority, Unsupported platform: '%s'" % sysPlatform)
         return False
-        
-            
-def low():
+
+
+def low(logging=logging):
     """ Process will execute with lower CPU priority """
-    return _set_priority("Low")
-def lowest():
+    return _set_priority("Low", logging=logging)
+
+def lowest(logging=logging):
     """ Process will only execute when system is idle """
-    return _set_priority("Lowest")    
-def normal():
+    return _set_priority("Lowest", logging=logging)    
+
+def normal(logging=logging):
     """ Process will try to reset to normal priority """
-    return _set_priority("Normal")
+    return _set_priority("Normal", logging=logging)
     

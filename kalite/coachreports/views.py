@@ -112,7 +112,7 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
     """
     user = get_user_from_request(request=request)
     topic_slugs = [t["id"] for t in get_knowledgemap_topics()]
-    topics = [NODE_CACHE["Topic"][slug] for slug in topic_slugs]
+    topics = [NODE_CACHE["Topic"][slug][0] for slug in topic_slugs]
 
     user_id = user.id
     exercise_logs = list(ExerciseLog.objects \
@@ -131,26 +131,26 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
 
     # Categorize every exercise log into a "midlevel" exercise
     for elog in exercise_logs:
-        parents = NODE_CACHE["Exercise"][elog["exercise_id"]]["parents"]
+        parents = [p for n in NODE_CACHE["Exercise"][elog["exercise_id"]] for p in n["parents"]]
         topic = set(parents).intersection(set(topic_slugs))
         if not topic:
             logging.error("Could not find a topic for exercise %s (parents=%s)" % (elog["exercise_id"], parents))
             continue
         topic = topic.pop()
         if not topic in topic_exercises:
-            topic_exercises[topic] = get_topic_exercises(path=NODE_CACHE["Topic"][topic]["path"])
+            topic_exercises[topic] = get_topic_exercises(path=NODE_CACHE["Topic"][topic][0]["path"])
         exercises_by_topic[topic] = exercises_by_topic.get(topic, []) + [elog]
 
     # Categorize every video log into a "midlevel" exercise.
     for vlog in video_logs:
-        parents = NODE_CACHE["Video"][ID2SLUG_MAP[vlog["youtube_id"]]]["parents"]
+        parents = [p for n in NODE_CACHE["Video"][ID2SLUG_MAP[vlog["youtube_id"]]] for p in n["parents"]]
         topic = set(parents).intersection(set(topic_slugs))
         if not topic:
             logging.error("Could not find a topic for video %s (parents=%s)" % (vlog["youtube_id"], parents))
             continue
         topic = topic.pop()
         if not topic in topic_videos:
-            topic_videos[topic] = get_topic_videos(path=NODE_CACHE["Topic"][topic]["path"])
+            topic_videos[topic] = get_topic_videos(path=NODE_CACHE["Topic"][topic][0]["path"])
         videos_by_topic[topic] = videos_by_topic.get(topic, []) + [vlog]
 
 

@@ -1,51 +1,58 @@
-{% extends 'base_distributed.html' %}
-
+{% extends base_template %}
 {% load i18n %}
+{% load staticfiles %}
 
 {% block easyadmin_active %}active{% endblock easyadmin_active %}
 
-{% block headcss %}
-<style>
+{% block title %}{% trans "Administration Panel" %}{% endblock title %}
 
-div.help {
-    margin-top:25px;
-}
-ul {
-    margin-left:20px;
-}
-
-.warn {
-    font-weight:bold;
-    color:#f00;
-}
-.floatleft {
-    float: left;
-}
-.link-div {
-    width: 250px;
-    float: left
-}
-.link { 
-    padding-left: 25px;
-    width: 120px;
-}
-.description {
-    width: 100%;
-}
-td.title { 
-    padding-top: 25px;
-}
-.green_button {
-    margin-right: 20px;
-}
-</style>
+{% block headcss %}{{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/admin_distributed.css' %}">
+    {% if clock_set %}
+    <link rel="stylesheet" type="text/css" href='{% static "css/bootstrap-timepicker.min.css" %}' />
+    {% endif %}
 {% endblock headcss %}
 
-{% block title %}{% trans "Administration Panel" %}{% endblock title %}
+{% block headjs %}
+    {% if clock_set %}
+    <script type="text/javascript" src='{% static "js/bootstrap-timepicker.min.js" %}'></script>
+    <script type="text/javascript">
+    $(function() {
+        $('#time_select').timepicker({
+            disableFocus: true,
+            showMeridian: false,
+            minuteStep: 5
+            });
+        $('#date_select').datepicker({
+            dateFormat: "dd-mm-yy",
+            altField: "#standard-date",
+            altFormat: "yy-mm-dd"
+        });
+
+        $("#date_select").datepicker('setDate', new Date());
+
+        $('#set_time').click(
+            function () {
+                var data = {
+                    date_time: $('#standard-date').val() + " " + $('#time_select').val()
+                };
+                doRequest("{% url time_set %}", data)
+                    .success(function(data) {
+                        show_api_messages(data, "id_set_time");
+                    })
+                    .fail(function(resp) {
+                        communicate_api_failure(resp, "id_set_time");
+                    });
+            });
+    });
+    </script>
+    {% endif %}
+{% endblock headjs %}
+
 
 {% block content %}
 <div id="content">
-  {% trans "This page can help you administer your installation of KA Lite." %}
+    {% trans "This page can help you administer your installation of KA Lite." %}
     {% if in_a_zone %}
     <div style="float:right" class="server-online-only">
         <div class="registered-only">
@@ -55,10 +62,31 @@ td.title {
     {% endif %}
 
     <table>
+        {% if clock_set %}
         <tr>
             <td class="title" colspan="2">
-                <h2>{% trans "(Offline) Management Tools" %}</h2>
-            </td.
+                <h2>{% trans "Raspberry Pi Clock Reset" %}</h2>
+            </td>
+        </tr>
+        <tr>
+            <td><div class="link bootstrap-timepicker"><input id="time_select" type="text"></div></td>
+            <td class="desc">{% trans "Input current time (HH:MM - 24 Hour)" %}</td>
+        </tr>
+        <tr>
+            <td><div class="link date"><input id="date_select" type="text"><input type="text" id="standard-date"></div></td>
+            <td class="desc">{% trans "Input current date (DD-MM-YYYY)" %}</td>
+        </tr>
+        <tr>
+            <td class="link" colspan="2">
+                <input id="set_time" type="submit" value='{% trans "Update Server Date & Time" %}'>
+            </td>
+        </tr>
+        {% endif %}
+        
+        <tr>
+            <td class="title" colspan="2">
+                <h2>{% trans "(Offline) Management and Reporting Tools" %}</h2>
+            </td>
         </tr>
         {% if in_a_zone %}
         <tr>
@@ -72,16 +100,16 @@ td.title {
         </tr>
         {% if in_a_zone %}
         <tr>
-            <td class="link"><a href="{% url device_redirect %}">{% trans "Sync stats" %}</a></td>
+            <td class="link"><a href="{% url device_redirect %}">{% trans "Synchronization statistics" %}</a></td>
             <td class="desc">{%trans "Information about syncing," %}</td>
         </tr>
         {% else %}
         <tr>
-            <td class="link"><a href="{% url summary_stats %}">{% trans "Summary stats" %}</a></td>
+            <td class="link"><a href="{% url summary_stats %}">{% trans "Summary statistics" %}</a></td>
             <td class="desc">{% trans "Summary stats for this installation" %}</td>
         </tr>
         {% endif %}
-        
+
         <tr class="client-online-only">
             <td class="title" colspan="2">
                 <h2>{% trans "(Online) help documents" %}</h2>
@@ -89,7 +117,7 @@ td.title {
         </tr>
         <tr class="client-online-only">
             <td class="link"><a href="{{wiki_url}}" target="_blank">{% trans "KA Lite Wiki" %}</a></td>
-            <td class="desc"> {% trans "Contains the latest information setting up and using KA Lite." %}</td>
+            <td class="desc"> {% trans "Contains the latest information about setting up and using KA Lite." %}</td>
         </tr>
         <tr class="client-online-only">
             <td class="link"><a href="http://{{central_server_host}}/faq" target="_blank">{% trans "FAQ" %}</a></td>

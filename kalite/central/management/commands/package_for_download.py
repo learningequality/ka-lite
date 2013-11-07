@@ -38,6 +38,10 @@ from utils.platforms import is_windows, system_script_extension, system_specific
 
 
 def install_from_package(install_json_file, signature_file, zip_file, dest_dir=None):
+    """
+    NOTE: This docstring (below this line) will be dumped as a README file.
+    Congratulations on downloading KA Lite!  These instructions will help you install KA Lite.
+    """
     import glob
     import os
     import shutil
@@ -162,9 +166,6 @@ class Command(BaseCommand):
                     models += list(devices) + list(devicezones)
                     models += engine.get_models(zone=zone, limit=None)  # get all models on this zone
 
-                # 
-                if include_data:
-                    models += engine.get_models(zone=zone)  # get all models on this zone
             models_file = tempfile.mkstemp()[1]
             with open(models_file, "w") as fp:
                 fp.write(engine.serialize(models))
@@ -195,7 +196,7 @@ class Command(BaseCommand):
                 fp.write("print 'Installation completed!'")
             
             # Create clickable scripts: unix
-            install_sh_file = self.install_py_file[:-3] + ".sh"
+            install_sh_file = self.install_py_file[:-3] + "_linux.sh"
             install_files[install_sh_file] = tempfile.mkstemp()[1]
             with open(install_files[install_sh_file], "w") as fp:
                 fp.write(open(os.path.realpath(settings.PROJECT_PATH + "/../scripts/python.sh"), "r").read())
@@ -203,23 +204,26 @@ class Command(BaseCommand):
                 fp.write('\n$PYEXEC "$current_dir/%s"' % self.install_py_file)
 
             # Create clickable scripts: mac
-            install_command_file = self.install_py_file[:-3] + ".command"
+            install_command_file = self.install_py_file[:-3] + "_mac.command"
             install_files[install_command_file] = tempfile.mkstemp()[1]
             with open(install_files[install_command_file], "w") as fp:
                 fp.write('\ncurrent_dir=`dirname "${BASH_SOURCE[0]}"`')
                 fp.write('\nsource "$current_dir/%s"' % install_sh_file)
 
             # Create clickable scripts: windows
-            install_bat_file = self.install_py_file[:-3] + ".bat"
+            install_bat_file = self.install_py_file[:-3] + "_windows.bat"
             install_files[install_bat_file] = tempfile.mkstemp()[1]
             with open(install_files[install_bat_file], "w") as fp:
                 fp.write("start /b /wait python.exe %s" % self.install_py_file)
 
-            # Change permissions--I WISH THIS WORKED!!
-            if not is_windows():
-                for fil in install_files.values():
-                    os.chmod(fil, 0775)
-
+            # Dump readme file
+            readme_file = "README"
+            install_files[readme_file] = tempfile.mkstemp()[1]
+            with open(install_files[readme_file], "w") as fp:
+                # First line of docstring is a message that the docstring will
+                #   be the readme.  Remove that, dump the rest raw!
+                fp.write(inspect.getdoc(install_from_package).split("\n", 2)[1])
+            
             return install_files
         install_files = create_install_files()
 

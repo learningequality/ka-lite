@@ -1,0 +1,52 @@
+{% extends "central/base.html" %}
+
+{% load i18n %}
+{% load my_filters %}
+{% load staticfiles %}
+
+{% block title %}{% trans "Thank you for installing KA Lite!" %}{% endblock %}
+
+{% block install_active %}active{% endblock install_active %}
+
+{% block headcss %}
+<style>
+#instructions li {
+    font-size:14px;
+    margin: 2px;
+}
+</style>
+{% endblock headcss %}
+
+{% block content %}
+<h1>Thank you for downloading KA Lite{% if version %}{{ version }}{% endif %}!</h1>
+
+{% if download_url %}
+<div>
+    <meta http-equiv="refresh" content="1;{{ download_url }}" />
+    <a href="{{ download_url }}">Click here</a> if download does not start within 5 seconds.</a>
+</div>
+{% endif %}
+
+<div id="instructions">
+    <div id="post-download">
+        <h2>What do I do after download?</h2>
+        <ul>
+            <li>When the download completes, copy the file to your server(s).</li>
+            <li>From the server(s), unzip the zip file.</li>
+            <li>From the server(s), run the install_from_zip script file for your operating system</li>
+        </ul>
+    </div>
+    <div id="python-instructions">
+        <h2>Do you have Python?</h2>
+        Python is the program that runs KA Lite; some systems may not have it.
+        <ul>
+            <li>If you need it, <a target="_new" href="http://www.python.org/getit/releases/2.7.5/#download">download Python</a> (version 2.7).</li>
+            <li>Copy the Python installer over to your server(s).</li>
+            <li>Install Python <b>before you install KA Lite</b></li>
+            <li>Make sure to add Python to your PATH (<a target="_new" href="https://www.google.com/search?q=add+python+to+path+tutorial+windows">Windows</a>, <a target="_new" href="https://www.google.com/search?q=add+python+to+path+tutorial+linux">Linux</a>, <a target="_new" href="https://www.google.com/search?q=add+python+to+path+tutorial+mac">MacOS</a>)</li>
+            <li>Then, install KA Lite (instructions above)</li>
+        </ul>
+    </div>
+
+</div>
+{% endblock %}
