@@ -187,9 +187,10 @@ def exercise_handler(request, exercise):
             if topic_tools.is_sibling({"path": video["path"], "kind": "Video"}, exercise):
                 related_videos[key] = video
                 break
+    
         # failed to find a sibling; just choose the first one.
         if key not in related_videos:
-            related_videos[key] = video_node[0]
+            related_videos[key] = video_nodes[0]
 
     context = {
         "exercise": exercise,
