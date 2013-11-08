@@ -220,7 +220,7 @@ class LoginLogout(base.SeleniumCommon):
         wait.until(expected_conditions.element_to_be_clickable((By.ID, "id_username")))         
         elem = self.browser.find_element_by_id("id_username")
         elem.send_keys(self.username)
-        elem = self.browser.find_element_by_id("id_password")
+        elem = self.browser.find_element_by_id("id_password_first")
         elem.send_keys(self.password + Keys.RETURN)
         
     def _get_post_execute_info(self):
@@ -549,7 +549,7 @@ class SeleniumStudent(base.SeleniumCommon):
         wait.until(expected_conditions.element_to_be_clickable((By.ID, "id_username")))         
         elem = self.browser.find_element_by_id("id_username")
         elem.send_keys(args["username"])
-        elem = self.browser.find_element_by_id("id_password")
+        elem = self.browser.find_element_by_id("id_password_first")
         elem.send_keys(args["password"])
         elem.send_keys(Keys.RETURN)
         wait = ui.WebDriverWait(self.browser, self.timeout)
