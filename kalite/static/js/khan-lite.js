@@ -99,11 +99,6 @@ function setGetParamDict(href, dict) {
 
 var csrftoken = getCookie("csrftoken") || "";
 
-// for dismisal of alerts 
-$(function () {
-    $(".alert").alert();
-});
-
 $.ajaxSetup({
     cache: false,
     crossDomain: false, // obviates need for sameOrigin test
