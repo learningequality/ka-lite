@@ -10,7 +10,7 @@ from functools import partial
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseServerError
+from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
@@ -53,9 +53,12 @@ def get_accessible_objects_from_logged_in_user(request, facility):
                 groups = []
             else:
                 groups = [{"facility": user.facility.id, "groups": FacilityGroup.objects.filter(id=request.session["facility_user"].group)}]
-    else:
+    elif facility:
         facilities = [facility]
         groups = [{"facility": facility.id, "groups": FacilityGroup.objects.filter(facility=facility)}]
+
+    else:
+        facilities = groups = None
 
     return (groups, facilities)
 
