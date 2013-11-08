@@ -83,18 +83,16 @@
                     <div id="container">
                         <article class="clearfix">
                             {% block precontent %}
-                            {% for message in messages %}
-                            <div id="messages">
-                              {% if messages %}
+                            {% if messages %}
+                                <div id="messages">
                                 {% for message in messages %}
                                   <div class="alert alert-{{message.tags}}">
-                                    <a class="close" data-dismiss="alert">×</a>
+                                    <a class="close" data-dismiss="alert" href="#">&times;</a>
                                     {{message}}
                                   </div>
                                 {% endfor %}
-                              {% endif %}
-                            </div>
-                            {% endfor %}
+                                </div>
+                            {% endif %}
                             {% endblock precontent %}
                             {% block content %}{% endblock content %}
                         </article>
