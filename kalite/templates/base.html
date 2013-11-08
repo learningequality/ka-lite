@@ -12,6 +12,7 @@
         {% block titletag %}
         <title>{% block title %}{{ title }}{% endblock title %} | KA Lite</title>
         {% endblock %}
+        <link rel="stylesheet" type="text/css" href="{% static "css/bootstrap/bootstrap.css" %}">
         <link rel="stylesheet" type="text/css" href="{% static "css/khan-site.css" %}">
         <link rel="stylesheet" type="text/css" href="{% static "css/khan-lite.css" %}">
         {% block basecss %}{% endblock basecss %}
@@ -42,6 +43,7 @@
         {% endblock jqueryjs %}
         <script type="text/javascript" src="{% static "js/underscore-min.js" %}"></script>
         <script type="text/javascript" src="{% static "js/backbone-min.js" %}"></script>
+        <script type="text/javascript" src="{% static "js/bootstrap.min.js" %}"></script>
         <script type="text/javascript" src="{% static "js/khan-lite.js" %}"></script>
         {% block headjs %}{% endblock headjs %}
         {% block basejs %}{% endblock basejs %}
@@ -82,7 +84,16 @@
                         <article class="clearfix">
                             {% block precontent %}
                             {% for message in messages %}
-                            <div class="{{ message.tags }} message">{{ message }}</div>
+                            <div id="messages">
+                              {% if messages %}
+                                {% for message in messages %}
+                                  <div class="alert alert-{{message.tags}}">
+                                    <a class="close" data-dismiss="alert">×</a>
+                                    {{message}}
+                                  </div>
+                                {% endfor %}
+                              {% endif %}
+                            </div>
                             {% endfor %}
                             {% endblock precontent %}
                             {% block content %}{% endblock content %}
