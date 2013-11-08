@@ -12,10 +12,12 @@
         {% block titletag %}
         <title>{% block title %}{{ title }}{% endblock title %} | KA Lite</title>
         {% endblock %}
+
         <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/jquery-ui.min.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/khan-site.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/khan-lite.css' %}">
-
+        <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-alerts.css' %}">
+        
         {% block basecss %}{% endblock basecss %}
         {% block headcss %}{% endblock headcss %}
         <link rel="shortcut icon" href="{% static "images/favicon.ico" %}">
@@ -45,6 +47,7 @@
         <script type="text/javascript" src="{% static 'js/underscore-min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/backbone-min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/jquery-ui/jquery-ui.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
 
         <script>
             // the following variables are used by functions in distributed-server.js
@@ -57,6 +60,7 @@
         <script type="text/javascript" src="{% static 'js/distributed-server.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/purl.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/search_autocomplete.js' %}"></script>
+
         {% block headjs %}{% endblock headjs %}
         {% block extra_head %}{% endblock extra_head %}
         {% block extrahead %}{% endblock extrahead %}
@@ -124,12 +128,18 @@
                     <div id="container">
                         <article class="clearfix">
                             {% block precontent %}
-                            <div id="message_container">
-                                <!-- add messages to this container via AJAX -->
+                            <div id="message_container"><!--Ajax messages from central server get inserted here--></div>
+                            {% if messages %}
+                                <!--Normal messages loaded from the view get inserted here-->
+                                <div id="messages">
                                 {% for message in messages %}
-                                <div class="{{ message.tags }} message">{{ message }}</div>
+                                  <div class="alert alert-{{message.tags}}">
+                                    <a class="close" data-dismiss="alert" href="#">&times;</a>
+                                    {{message}}
+                                  </div>
                                 {% endfor %}
-                            </div>
+                                </div>
+                            {% endif %}
                             {% endblock precontent %}
                             {% block content %}{% endblock content %}
                         </article>
