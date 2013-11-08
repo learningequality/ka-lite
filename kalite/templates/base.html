@@ -128,7 +128,9 @@
                     <div id="container">
                         <article class="clearfix">
                             {% block precontent %}
+                            <div id="message_container"><!--Ajax messages from central server get inserted here--></div>
                             {% if messages %}
+                                <!--Normal messages loaded from the view get inserted here-->
                                 <div id="messages">
                                 {% for message in messages %}
                                   <div class="alert alert-{{message.tags}}">
