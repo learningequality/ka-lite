@@ -100,7 +100,9 @@ function setGetParamDict(href, dict) {
 var csrftoken = getCookie("csrftoken") || "";
 
 // for dismisal of alerts 
-$(".alert").alert()
+$(function () {
+    $(".alert").alert();
+});
 
 $.ajaxSetup({
     cache: false,
