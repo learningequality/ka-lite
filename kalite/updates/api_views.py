@@ -1,5 +1,6 @@
 """
 """
+import datetime
 import json
 import re
 import math
@@ -34,9 +35,22 @@ def process_log_from_request(handler):
                 process_log = get_object_or_404(UpdateProgressLog, id=request.GET["process_id"])
 
         elif request.GET.get("process_name", None):
-            # Get the latest one of a particular name--indirect
+            import dateutil.parser
+            process_name = request.GET["process_name"]
+            start_time_str = request.GET.get("start_time")
+            start_time = dateutil.parser.parse(start_time_str) if start_time_str else datetime.datetime.now()
+            print start_time
             try:
-                process_log = UpdateProgressLog.get_active_log(process_name=request.GET["process_name"], create_new=False)
+                # Get the latest one of a particular name--indirect
+                process_log = UpdateProgressLog.get_active_log(process_name=process_name, create_new=False)
+
+                if not process_log:
+                    # Still waiting; get the very latest, at least.
+                    logs = UpdateProgressLog.objects \
+                        .filter(process_name=process_name, completed=True, end_time__gt=start_time) \
+                        .order_by("-end_time")
+                    if logs:
+                        process_log = logs[0]
             except Exception as e:
                 # The process finished before we started checking, or it's been deleted.
                 #   Best to complete silently, but for debugging purposes, will make noise for now.
@@ -63,18 +77,20 @@ def _process_log_to_dict(process_log):
     Utility function to convert a process log to a dict
     """
     
-    return {} if not process_log else {
-        "process_id": process_log.id,
-        "process_name": process_log.process_name,
-        "process_percent": process_log.process_percent,
-        "stage_name": process_log.stage_name,
-        "stage_percent": process_log.stage_percent,
-        "cur_stage_num": 1 + int(math.floor(process_log.total_stages * process_log.process_percent)),
-        "total_stages": process_log.total_stages,
-        "notes": process_log.notes,
-        "completed": process_log.completed or (process_log.end_time is not None),
-        #"start_time": process_log.start_time,
-    }
+    if not process_log or not process_log.total_stages:
+        return {} 
+    else:
+        return {
+            "process_id": process_log.id,
+            "process_name": process_log.process_name,
+            "process_percent": process_log.process_percent,
+            "stage_name": process_log.stage_name,
+            "stage_percent": process_log.stage_percent,
+            "cur_stage_num": 1 + int(math.floor(process_log.total_stages * process_log.process_percent)),
+            "total_stages": process_log.total_stages,
+            "notes": process_log.notes,
+            "completed": process_log.completed or (process_log.end_time is not None),
+        }
 
 @require_admin
 @api_handle_error_with_json

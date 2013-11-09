@@ -182,7 +182,7 @@ def get_video_page_paths(video_id=None, video_slug=None):
         if not video_slug:
             video_slug = topic_tools.get_id2slug_map()[video_id]
         
-        return topic_tools.get_node_cache("Video")[video_slug]['paths']
+        return [n["path"] for n in topic_tools.get_node_cache("Video")[video_slug]]
     except:
         return []
 
@@ -192,10 +192,11 @@ def get_exercise_page_paths(video_id=None, video_slug=None):
 
     try:
         exercise_paths = set()
-        for exercise in get_related_exercises(video=topic_tools.get_node_cache("Video")[video_slug]):
-            exercise_paths = exercise_paths.union(set(exercise["paths"]))
+        for exercise in topic_tools.get_related_exercises(video=topic_tools.get_node_cache("Video")[video_slug][0]):
+            exercise_paths = exercise_paths.union(set([exercise["path"]]))
         return list(exercise_paths)
-    except:
+    except Exception as e:
+        logging.debug("Exception while getting exercise paths: %s" % e)
         return []
 
 

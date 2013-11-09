@@ -69,7 +69,7 @@
     </div>
     <div class="form-section">
         <div class="form-label">
-            <a href="#" onclick="$('#org_details').toggle()">Click to add details of your organization</a>
+            <span style="margin-left:25px"><a href="#" onclick="$('#org_details').toggle()">Add details of your organization</a></span>
         </div>
     </div>
     <br/>
@@ -149,7 +149,7 @@
     <div class="form-section">
       <div class="form-label"><label for="id_email_subscribe"></label></div>
       <div class="form-element checkbox">
-        <input type="checkbox" name="email_subscribe"{% if subscribe %} checked="checked"{% endif %} />
+        <input type="checkbox" name="email_subscribe" checked="checked" />
         Subscribe to our quarterly newsletter, to stay up to date on KA Lite's progress.
       </div>
     </div>
@@ -158,8 +158,6 @@
         <div class="submit"><input class="button" type="submit" value="Register &rarr;"></div>
     </div>
   </form>
-</div>
-  
 {% endblock %}
 
 {% block content-related %}

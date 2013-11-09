@@ -116,6 +116,7 @@ class Command(UpdatesDynamicCommand):
                     #   and allow the loop to try other videos.
                     self.stderr.write("Error in downloading %s: %s\n" % (video.youtube_id, e))
                     video.download_in_progress = False
+                    video.flagged_for_download = not isinstance(e, URLNotFound)  # URLNotFound means, we won't try again
                     video.save()
                     # Rather than getting stuck on one video, continue to the next video.
                     failed_video_ids.append(video.youtube_id)
@@ -127,8 +128,8 @@ class Command(UpdatesDynamicCommand):
                 caching.regenerate_all_pages_related_to_videos(video_ids=handled_video_ids)
 
             # Update
-            self.complete()
+            self.complete(notes="Downloaded %d of %d videos successfully." % (len(handled_video_ids), len(handled_video_ids) + len(failed_video_ids)))
 
         except Exception as e:
             sys.stderr.write("Error: %s\n" % e)
-            self.cancel()
+            self.cancel(notes="Error: %s" % e)

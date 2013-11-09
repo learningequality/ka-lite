@@ -31,12 +31,6 @@ function doRequest(url, data) {
     });
 }
 
-function unique(array) {
-    return $.grep(array, function(el, index) {
-        return index == $.inArray(el, array);
-    });
-}
-
 // Generic functions for client-side message passing
 //   through our Django-based server-side API
 
@@ -50,12 +44,14 @@ function show_message(msg_class, msg_text, msg_id) {
         clear_message(msg_id);
     }
 
-    msg_html = "<div class='message " + msg_class + "'";
+    x_button = '<a class="close" data-dismiss="alert" href="#">&times;</a>';
+
+    msg_html = "<div class='alert alert-" + msg_class + "'";
     if (msg_id) {
         clear_message(msg_id);
         msg_html += " id='" + msg_id + "'";
     }
-    msg_html += ">" + msg_text + "</div>"
+    msg_html += ">" + x_button + msg_text + "</div>"
     $("#message_container").append(msg_html);
     return $("#message_container");
 }

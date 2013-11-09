@@ -37,7 +37,11 @@ from utils.general import get_module_source_file
 from utils.platforms import is_windows, system_script_extension, system_specific_zipping, system_specific_unzipping
 
 
-def install_from_package(install_json_file, signature_file, zip_file, dest_dir=None):
+def install_from_package(install_json_file, signature_file, zip_file, dest_dir=None, create_dest_dir=True):
+    """
+    NOTE: This docstring (below this line) will be dumped as a README file.
+    Congratulations on downloading KA Lite!  These instructions will help you install KA Lite.
+    """
     import glob
     import os
     import shutil
@@ -57,7 +61,14 @@ def install_from_package(install_json_file, signature_file, zip_file, dest_dir=N
     # get the destination directory
     while not dest_dir or not os.path.exists(dest_dir):
         if dest_dir:
-            sys.stderr.write("Path does not exist: %s" % dest_dir)
+            if not create_dest_dir:
+                sys.stderr.write("Path does not exist: %s" % dest_dir)
+            else:
+                try:
+                    os.makedirs(os.path.realpath(dest_dir)) # can't use ensure_dir; external dependency.
+                    break
+                except Exception as e:
+                    sys.stderr.write("Failed to create dest dir (%s): %s\n" % (dest_dir, e))
         dest_dir = raw_input("Please enter the directory where you'd like to install KA Lite (blank=%s): " % src_dir) or src_dir
 
     # unpack the inner zip to the destination
@@ -192,31 +203,35 @@ class Command(BaseCommand):
                 fp.write("print 'Installation completed!'")
             
             # Create clickable scripts: unix
-            install_sh_file = self.install_py_file[:-3] + ".sh"
+            install_sh_file = self.install_py_file[:-3] + "_linux.sh"
             install_files[install_sh_file] = tempfile.mkstemp()[1]
             with open(install_files[install_sh_file], "w") as fp:
+                fp.write("echo 'Searching for python path...'\n")
                 fp.write(open(os.path.realpath(settings.PROJECT_PATH + "/../scripts/python.sh"), "r").read())
                 fp.write('\ncurrent_dir=`dirname "${BASH_SOURCE[0]}"`')
                 fp.write('\n$PYEXEC "$current_dir/%s"' % self.install_py_file)
 
             # Create clickable scripts: mac
-            install_command_file = self.install_py_file[:-3] + ".command"
+            install_command_file = self.install_py_file[:-3] + "_mac.command"
             install_files[install_command_file] = tempfile.mkstemp()[1]
             with open(install_files[install_command_file], "w") as fp:
                 fp.write('\ncurrent_dir=`dirname "${BASH_SOURCE[0]}"`')
                 fp.write('\nsource "$current_dir/%s"' % install_sh_file)
 
             # Create clickable scripts: windows
-            install_bat_file = self.install_py_file[:-3] + ".bat"
+            install_bat_file = self.install_py_file[:-3] + "_windows.bat"
             install_files[install_bat_file] = tempfile.mkstemp()[1]
             with open(install_files[install_bat_file], "w") as fp:
                 fp.write("start /b /wait python.exe %s" % self.install_py_file)
 
-            # Change permissions--I WISH THIS WORKED!!
-            if not is_windows():
-                for fil in install_files.values():
-                    os.chmod(fil, 0775)
-
+            # Dump readme file
+            readme_file = "README"
+            install_files[readme_file] = tempfile.mkstemp()[1]
+            with open(install_files[readme_file], "w") as fp:
+                # First line of docstring is a message that the docstring will
+                #   be the readme.  Remove that, dump the rest raw!
+                fp.write(inspect.getdoc(install_from_package).split("\n", 2)[1])
+            
             return install_files
         install_files = create_install_files()
 

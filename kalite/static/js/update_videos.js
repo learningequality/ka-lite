@@ -1,4 +1,4 @@
-// Callback functions 
+// Callback functions
 
 function video_start_callback(progress_log, resp) {
     if (!progress_log) {
@@ -76,7 +76,7 @@ $(function() {
             // We assume the distributed server is offline; if it's online, then we enable buttons that only work with internet.
             // Best to assume offline, as online check returns much faster than offline check.
             if(!server_is_online){
-                show_message("error", "{% trans 'The server does not have internet access; new content cannot be downloaded at this time.' %}", "id_offline_message");
+                show_message("error", "The server does not have internet access; new content cannot be downloaded at this time.", "id_offline_message");
             } else {
                 $(".enable-when-server-online").removeAttr("disabled");
                 clear_message("id_offline_message")
@@ -91,15 +91,15 @@ $(function() {
                 children: treeData,
                 debugLevel: 0,
                 onSelect: function(select, node) {
-                
+
                     var newVideoCount = getSelectedIncompleteVideoIDs().length;
                     var oldVideoCount = getSelectedStartedVideoIDs().length;
-                    
+
                     $("#download-videos").hide();
                     $("#delete-videos").hide();
                     $("#download-legend-unselected").toggle((newVideoCount + oldVideoCount) == 0);
                     $("#help-info").toggle((newVideoCount + oldVideoCount) == 0);
-                    
+
                     if (newVideoCount > 0) {
                         $(".new-video-count").text(newVideoCount);
                         $("#download-videos").show();
@@ -124,7 +124,7 @@ $(function() {
             });
         });
     }, 200);
-    
+
     $("#download-videos").click(function() {
         // Prep
         // Get all videos to download
@@ -135,14 +135,15 @@ $(function() {
             .success(function() {
                 updatesStart("videodownload", 5000, video_callbacks)
             })
-            .fail(function(response) {
+            .fail(function(resp) {
                 handleFailedAPI(resp, "Error starting video download");
+                $("#download-videos").removeAttr("disabled");
             });
 
         // Update the UI
         unselectAllNodes();
         $("#cancel-download").show();
-        //$(".progress-section").hide();
+        $("#download-videos").attr("disabled", "disabled");
 
         // Send event
         ga_track("send", "event", "update", "click-download-videos", "Download Videos", video_ids.length);
@@ -187,6 +188,7 @@ $(function() {
                 updatesReset()
 
                 // Update the UI
+                $("#download-videos").removeAttr("disabled");
                 $("#cancel-download").hide();
             })
             .fail(function(resp) {
@@ -227,7 +229,7 @@ function handleFailedAPI(resp, error_text, error_id) {
 
     switch (resp.status) {
         case 403:
-            show_message("error", error_text + ": " + "You are not authorized to complete the request.  Please <a href='{% url login %}' target='_blank'>login</a> as an administrator, then retry.", error_id)
+            show_message("error", error_text + ": " + "You are not authorized to complete the request.  Please <a href='/securesync/login/' target='_blank'>login</a> as an administrator, then retry.", error_id)
             break;
         default:
             //communicate_api_failure(resp)
@@ -242,7 +244,7 @@ function handleFailedAPI(resp, error_text, error_id) {
     }
 }
 
-/* script functions for doing stuff with the topic tree*/    
+/* script functions for doing stuff with the topic tree*/
 function unselectAllNodes() {
     $.each($("#content_tree").dynatree("getSelectedNodes"), function(ind, node) {
         node.select(false);
@@ -251,21 +253,21 @@ function unselectAllNodes() {
 
 function getSelectedIncompleteVideos() {
     var arr = $("#content_tree").dynatree("getSelectedNodes");
-    return unique($.grep(arr, function(node) { 
+    return _.uniq($.grep(arr, function(node) { 
         return node.data.addClass != "complete" && node.childList == null;
     }));
 }
 
 function getSelectedStartedVideos() {
     var arr = $("#content_tree").dynatree("getSelectedNodes");
-    return unique($.grep(arr, function(node) { 
+    return _.uniq($.grep(arr, function(node) { 
         return node.data.addClass != "unstarted" && node.childList == null;
     }));
 }
 
 function getSelectedIncompleteVideoIDs() {
     var videos = getSelectedIncompleteVideos();
-    var video_ids = unique($.map(videos, function(node) {
+    var video_ids = _.uniq($.map(videos, function(node) {
         return node.data.key;
     }));
     return video_ids;
@@ -273,7 +275,7 @@ function getSelectedIncompleteVideoIDs() {
 
 function getSelectedStartedVideoIDs() {
     var videos = getSelectedStartedVideos();
-    var video_ids = unique($.map(videos, function(node) {
+    var video_ids = _.uniq($.map(videos, function(node) {
         return node.data.key;
     }));
     return video_ids;
@@ -297,7 +299,7 @@ function setNodeClass(nodeKey, className) {
         node.data.addClass = className;
         if (node.parent) {
             updateNodeClass(node.parent);
-        }            
+        }
     });
 }
 

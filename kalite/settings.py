@@ -97,7 +97,8 @@ MANAGERS       = getattr(local_settings, "MANAGERS", ADMINS)
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-TIME_ZONE      = getattr(local_settings, "TIME_ZONE", "America/Los_Angeles")
+TIME_ZONE      = getattr(local_settings, "TIME_ZONE", None)
+USE_TZ         = True  # needed for timezone-aware datetimes (particularly in updates code)
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -346,8 +347,8 @@ if not CENTRAL_SERVER:
         # File-based cache
         install_location_hash = hashlib.sha1(PROJECT_PATH).hexdigest()
         username = getpass.getuser() or "unknown_user"
-        cache_dir_name = "kalite_web_cache_%s_%s" % (install_location_hash, username)
-        CACHE_LOCATION = os.path.realpath(getattr(local_settings, "CACHE_LOCATION", os.path.join(tempfile.gettempdir(), cache_dir_name ))) + "/"
+        cache_dir_name = "kalite_web_cache_%s" % (username)
+        CACHE_LOCATION = os.path.realpath(getattr(local_settings, "CACHE_LOCATION", os.path.join(tempfile.gettempdir(), cache_dir_name, install_location_hash))) + "/"
         CACHES["file_based_cache"] = {
             'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
             'LOCATION': CACHE_LOCATION, # this is kind of OS-specific, so dangerous.
@@ -369,9 +370,10 @@ if not CENTRAL_SERVER:
 
         # The chosen cache
         CACHE_NAME = getattr(local_settings, "CACHE_NAME", "file_based_cache")
-        if CACHE_NAME == "file_base_cache":
+        if CACHE_NAME == "file_based_cache":
             LOG.debug("Cache location = %s" % CACHE_LOCATION)
-
+        else:
+            LOG.debug("Using %s caching" % CACHE_NAME)
 
 
 ########################
@@ -483,6 +485,7 @@ def package_selected(package_name):
 
 # Config for Raspberry Pi distributed server
 if package_selected("RPi"):
+    logging.info("RPi package selected.")
     # nginx proxy will normally be on 8008 and production port on 7007
     # If ports are overridden in local_settings, run the optimizerpi script
     PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 7007)
@@ -500,5 +503,7 @@ if package_selected("RPi"):
     ENABLE_CLOCK_SET = getattr(local_settings, "ENABLE_CLOCK_SET", True)
 
 if package_selected("UserRestricted"):
-    if CACHE_TIME != 0:
+    LOG.info("UserRestricted package selected.")
+
+    if CACHE_TIME != 0 and not hasattr(local_settings, KEY_PREFIX):
         KEY_PREFIX += "|restricted"  # this option changes templates
