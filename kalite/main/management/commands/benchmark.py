@@ -118,6 +118,8 @@ class Command(BaseCommand):
             cls = LoginLogout
         elif args[0] == "seleniumstudent":
             cls = SeleniumStudentExercisesOnly
+        elif args[0] == "ss_classic":
+            cls = SeleniumStudent
         elif args[0] == "generatedata":
             cls = GenerateRealData
         elif args[0] == "1000reads":
