@@ -233,7 +233,7 @@ def facility_user_management(request, facility_id, group_id="", org_id=None, zon
 @require_authorized_access_to_student_data
 @render_to("control_panel/account_management.html")
 def account_management(request, org_id=None):
- 
+
     # Only log 'coachreport' activity for students, 
     #   (otherwise it's hard to compare teachers)
     if "facility_user" in request.session and not request.session["facility_user"].is_teacher and reverse("login") not in request.META.get("HTTP_REFERER", ""):
