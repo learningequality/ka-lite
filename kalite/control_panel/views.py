@@ -294,19 +294,32 @@ def device_management(request, device_id, org_id=None, zone_id=None, n_sessions=
     zone = get_object_or_None(Zone, pk=zone_id) if zone_id else None
     device = get_object_or_404(Device, pk=device_id)
 
+    # Retrieve sync sessions
     all_sessions = SyncSession.objects.filter(client_device=device)
-    
     total_sessions = all_sessions.count()
-    
     shown_sessions = list(all_sessions.order_by("-timestamp")[:n_sessions])
 
-    return {
+    context = {
         "org": org,
         "zone": zone,
         "device": device,
         "shown_sessions": shown_sessions,
         "total_sessions": total_sessions,
     }
+
+    # If local, get device metadata
+    if device_id == Device.get_own_device().id:
+        from updates import views as updates
+        context = updates.update_context(request)
+        context.update({
+            "software_version": current_version,
+            "software_release_date": version.VERSION_INFO[current_version]["release_date"],
+            "install_dir": os.path.realpath(os.path.join(settings.PROJECT_PATH, "..")),
+            "database_last_updated": datetime.datetime.fromtimestamp(os.path.getctime(database_path)),
+            "database_size": os.stat(settings.DATABASES["default"]["NAME"]).st_size / float(1024**2),
+        })
+
+    return context
 
 
 @require_authorized_admin
