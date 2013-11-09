@@ -2,7 +2,7 @@ import re
 import json
 import tempfile
 from annoying.decorators import render_to
-from annoying.functions import get_object_or_None
+from annoying.functions import get_object_or_404, get_object_or_None
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -179,6 +179,17 @@ def delete_organization(request, org_id):
     else:
         messages.success(request, "You have successfully deleted " + org.name + ".")
         org.delete()
+    return HttpResponseRedirect(reverse("org_management"))
+
+
+@require_authorized_admin
+def delete_zone(request, org_id, zone_id):
+    zone = get_object_or_404(Zone, id=zone_id)
+    if not zone.has_dependencies(passable_classes=["Organization"]):
+        zone.delete()
+        messages.success(request, "You have successfully deleted " + zone.name + ".")
+    else:
+        messages.warning(request, "You cannot delete this zone because it is syncing data with with %d device(s)" % zone.devicezone_set.count())
     return HttpResponseRedirect(reverse("org_management"))
 
 
