@@ -47,10 +47,16 @@ class Common(object):
             self.return_dict['head'] = None            
 
         # if setup fails, what could we do?
+        #   let the exception bubble up is the best.
         try:
             self._setup(**kwargs)
         except Exception as e:
-            logging.error(e)
+            logging.debug("Failed setup (%s); trying to tear down" % e)
+            try:
+                self._teardown()
+            except:
+                pass
+            raise e
 
     def execute(self, iterations=1):
 
@@ -74,13 +80,15 @@ class Common(object):
             except Exception as e:
                 self.return_dict['individual_elapsed'][i+1] = None
                 self.return_dict['exceptions'][i+1].append(e)
-
+                logging.error("Exception running execute: %s" % e)
+    
             try:
                 self.return_dict['post_execute_info'][i+1] = self._get_post_execute_info()
             except Exception as e:
                 self.return_dict['post_execute_info'][i+1] = None
                 self.return_dict['exceptions'][i+1].append(e)
-
+                logging.error("Exception getting execute info: %s" % e)
+    
 
 
         mean = lambda vals: sum(vals)/float(len(vals)) if len(vals) else None
@@ -122,7 +130,7 @@ class SeleniumCommon(UserCommon):
         # Note: user must exist
         super(SeleniumCommon, self)._setup(**kwargs)
 
-        self.url = url
+        self.url = url if not url or url[-1] != "/" else url[:-1]
 
         self.browser = webdriver.Firefox()
         self.timeout = timeout
@@ -158,8 +166,8 @@ class SeleniumCommon(UserCommon):
         wait.until(expected_conditions.visibility_of_element_located(["id", "id_username"]))
         self.browser.find_element_by_id("id_username").send_keys(self.username)
         wait = ui.WebDriverWait(self.browser, self.timeout)
-        wait.until(expected_conditions.visibility_of_element_located(["id", "id_password"]))
-        self.browser.find_element_by_id("id_password").send_keys(self.password)
+        wait.until(expected_conditions.visibility_of_element_located(["id", "id_password_first"]))
+        self.browser.find_element_by_id("id_password_first").send_keys(self.password)
         self.browser.find_element_by_id("id_password_recheck").send_keys(self.password)
         self.browser.find_element_by_id("id_password_recheck").send_keys(Keys.TAB + Keys.RETURN)
         wait = ui.WebDriverWait(self.browser, self.timeout)

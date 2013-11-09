@@ -39,9 +39,9 @@ class Command(BaseCommand):
     def create_cache(self, force=False):
         for node_type in ['Topic', 'Video', 'Exercise']:
             self.stdout.write("Caching %ss:\n" % node_type)
-            for n in topicdata.NODE_CACHE[node_type].values():
-                for path in n["paths"] if node_type in topic_tools.multipath_kinds else [n["path"]]:
-                    self.create_page_cache(path=path, force=force)
+            for narr in topicdata.NODE_CACHE[node_type].values():
+                for n in narr:
+                    self.create_page_cache(path=n["path"], force=force)
 
 
     def create_page_cache(self, path, force=False):
@@ -72,19 +72,18 @@ class Command(BaseCommand):
 
         for node_type in ['Topic', 'Video', 'Exercise']:
             self.stdout.write("Cached %ss:\n" % node_type)
-            for n in topicdata.NODE_CACHE[node_type].values():
-                for path in n["paths"] if node_type in topic_tools.multipath_kinds else [n["path"]]:
-                    if caching.has_cache_key(path=path):
-                        self.stdout.write("\t%s\n" % path)
-        
-                
+            for narr in topicdata.NODE_CACHE[node_type].values():
+                for n in narr:
+                    if caching.has_cache_key(path=n["path"]):
+                        self.stdout.write("\t%s\n" % n["path"])
+
     def clear_cache(self):
         """Go through each cacheable page, and show which are cached and which are NOT"""
 
         for node_type in ['Topic', 'Video', 'Exercise']:
             self.stdout.write("Clearing %ss:\n" % node_type)
-            for n in topicdata.NODE_CACHE[node_type].values():
-                for path in n["paths"] if node_type in topic_tools.multipath_kinds else [n["path"]]:
-                    if caching.has_cache_key(path=path):
-                        self.stdout.write("\t%s\n" % path)
-                        caching.expire_page(path=path)
+            for narr in topicdata.NODE_CACHE[node_type].values():
+                for n in narr:
+                    if caching.has_cache_key(path=n["path"]):
+                        self.stdout.write("\t%s\n" % n["path"])
+                        caching.expire_page(path=n["path"])

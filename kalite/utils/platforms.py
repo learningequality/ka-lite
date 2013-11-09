@@ -78,7 +78,8 @@ def system_specific_zipping(files_dict, zip_file=None, compression=ZIP_DEFLATED,
             if callback:
                 callback(src_path, fi, len(files_dict))
             # All platforms besides windows need permissions set.
-            if os.path.splitext(dest_path)[1] not in not_system_specific_scripts(system="windows"):
+            ext = os.path.splitext(dest_path)[1]
+            if ext not in not_system_specific_scripts(system="windows"):
                 zfile.write(src_path, arcname=dest_path)
             # Add with exec perms
             else:

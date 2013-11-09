@@ -26,11 +26,11 @@
           <script type="text/javascript" src="{% static 'js/less.js' %}"></script>
 
           {% else %}
-
           <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap/bootstrap.css' %}"></link>
           <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap/responsive.css' %}"></link>
           <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"></link>
           {% endif %}
+          <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-alerts.css' %}"></link>
 
           {% block basecss %}{% endblock basecss %}
           {% block headcss %}{% endblock headcss %}
@@ -39,6 +39,7 @@
           <script type="text/javascript" src="{% static 'js/jquery-1.9.1.min.js' %}"></script> 
           <script type="text/javascript" src="{% static 'js/underscore-min.js' %}"></script>
           <script type="text/javascript" src="{% static 'js/backbone-min.js' %}"></script>
+          <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
 
           <script type="text/javascript" src="{% static 'js/khan-lite.js' %}"></script>
 
@@ -108,9 +109,17 @@
             <div class="row-fluid content"> 
                 <div class="span12 content-padding">
                   {% block precontent %}
-                    {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-                    {% endfor %}
+                      {% if messages %}
+                        <div id="messages">
+                        
+                          {% for message in messages %}
+                            <div class="alert alert-{{message.tags}}">
+                              <a class="close" data-dismiss="alert" href="#">&times;</a>
+                              {{message}}
+                            </div>
+                          {% endfor %}
+                        </div>
+                      {% endif %}
                   {% endblock precontent %}
                   {% block content %}{% endblock content %}
                 </div>
