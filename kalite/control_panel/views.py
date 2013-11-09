@@ -309,8 +309,8 @@ def device_management(request, device_id, org_id=None, zone_id=None, n_sessions=
         "total_sessions": total_sessions,
     }
 
-    # If local, get device metadata
-    if device_id == Device.get_own_device().id:
+    # If local (and, for security purposes, a distributed server), get device metadata
+    if not settings.CENTRAL_SERVER and device_id == Device.get_own_device().id:
         context.update(local_device_context(request))
 
     return context
