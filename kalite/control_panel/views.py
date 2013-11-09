@@ -1,4 +1,5 @@
 import datetime
+import os
 from annoying.decorators import render_to, wraps
 from annoying.functions import get_object_or_None
 from collections import OrderedDict, namedtuple
@@ -14,6 +15,7 @@ from django.template import RequestContext
 from django.utils.translation import ugettext as _
 
 import settings
+import version
 from .forms import ZoneForm, UploadFileForm
 try:
     from central.models import Organization
@@ -309,15 +311,7 @@ def device_management(request, device_id, org_id=None, zone_id=None, n_sessions=
 
     # If local, get device metadata
     if device_id == Device.get_own_device().id:
-        from updates import views as updates
-        context = updates.update_context(request)
-        context.update({
-            "software_version": current_version,
-            "software_release_date": version.VERSION_INFO[current_version]["release_date"],
-            "install_dir": os.path.realpath(os.path.join(settings.PROJECT_PATH, "..")),
-            "database_last_updated": datetime.datetime.fromtimestamp(os.path.getctime(database_path)),
-            "database_size": os.stat(settings.DATABASES["default"]["NAME"]).st_size / float(1024**2),
-        })
+        context.update(local_device_context(request))
 
     return context
 
@@ -414,6 +408,17 @@ def get_users_from_group(group_id, facility=None):
         return []
     else:
         return get_object_or_404(FacilityGroup, pk=group_id).facilityuser_set.order_by("first_name", "last_name")
+def local_device_context(request):
+    database_path = settings.DATABASES["default"]["NAME"]
+    current_version = request.GET.get("version", version.VERSION)  # allows easy development by passing a different version
+
+    return {
+        "software_version": current_version,
+        "software_release_date": version.VERSION_INFO[current_version]["release_date"],
+        "install_dir": os.path.realpath(os.path.join(settings.PROJECT_PATH, "..")),
+        "database_last_updated": datetime.datetime.fromtimestamp(os.path.getctime(database_path)),
+        "database_size": os.stat(settings.DATABASES["default"]["NAME"]).st_size / float(1024**2),
+    }
 
 
 def user_management_context(request, facility_id, group_id, page=1, per_page=25):

@@ -8,19 +8,19 @@
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" href="{% static 'css/admin_distributed.css' %}">
     {% if clock_set %}
-    <link rel="stylesheet" type="text/css" href='{% static "css/bootstrap-timepicker.min.css" %}' />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-timepicker.min.css' %}" />
     {% endif %}
 {% endblock headcss %}
 
 {% block headjs %}
     {% if clock_set %}
-    <script type="text/javascript" src='{% static "js/bootstrap-timepicker.min.js" %}'></script>
+    <script type="text/javascript" src="{% static 'js/bootstrap-timepicker.min.js' %}"></script>
     <script type="text/javascript">
     $(function() {
         $('#time_select').timepicker({
             disableFocus: true,
             showMeridian: false,
-            minuteStep: 5
+            minuteStep: 1
             });
         $('#date_select').datepicker({
             dateFormat: "dd-mm-yy",
@@ -99,8 +99,8 @@
         </tr>
         {% if in_a_zone %}
         <tr>
-            <td class="link"><a href="{% url device_redirect %}">{% trans "Synchronization statistics" %}</a></td>
-            <td class="desc">{%trans "Information about syncing," %}</td>
+            <td class="link"><a href="{% url device_redirect %}">{% trans "Device information" %}</a></td>
+            <td class="desc">{%trans "Information about your KA Lite install, as well as device synchronization." %}</td>
         </tr>
         {% else %}
         <tr>
