@@ -371,11 +371,7 @@ def facility_user_management(request, facility_id, group_id="", org_id=None, zon
         group_id=group_id,
         page=request.REQUEST.get("page","1"),
     )
-
-    context["org"] = get_object_or_None(Organization, pk=org_id) if org_id else None
-    context["zone"] = get_object_or_None(Zone, pk=zone_id) if zone_id else None
-    context["facility"] = get_object_or_404(Facility, pk=facility_id) if id != "new" else None
-    context["group"] = get_object_or_None(FacilityGroup, pk=group_id)
+    context.update(control_panel_context(request, facility_id=facility_id, group_id=group_id, org_id=org_id, zone_id=zone_id))
     return context
 
 
@@ -399,15 +395,21 @@ def account_management(request, org_id=None):
     return student_view_context(request)
 
 
-def get_users_from_group(group_id, facility=None):
-    if group_id == "Ungrouped":
-        return FacilityUser.objects \
-            .filter(facility=facility, group__isnull=True) \
-            .order_by("first_name", "last_name")
-    elif not group_id:
-        return []
-    else:
-        return get_object_or_404(FacilityGroup, pk=group_id).facilityuser_set.order_by("first_name", "last_name")
+# context functions
+
+def control_panel_context(request, **kwargs):
+    context = {}
+    if "org_id" in kwargs:
+        context["org"] = get_object_or_None(Organization, pk=kwargs["org_id"]) if kwargs["org_id"] else None
+    if "zone_id" in kwargs:
+        context["zone"] = get_object_or_None(Zone, pk=kwargs["zone_id"]) if kwargs["zone_id"] else None
+    if "facility_id" in kwargs:
+        context["facility"] = get_object_or_404(Facility, pk=kwargs["facility_id"]) if kwargs["facility_id"] != "new" else None
+    if "group_id" in kwargs:
+        context["group"] = get_object_or_None(FacilityGroup, pk=kwargs["group_id"])
+    return context
+
+
 def local_device_context(request):
     database_path = settings.DATABASES["default"]["NAME"]
     current_version = request.GET.get("version", version.VERSION)  # allows easy development by passing a different version
@@ -427,6 +429,18 @@ def user_management_context(request, facility_id, group_id, page=1, per_page=25)
         .filter(facility=facility) \
         .order_by("name")
 
+    # This could be moved into a function shared across files, if necessary.
+    #   For now, moving into function, as outside if function it looks more
+    #   general-purpose than it's being used / tested now.
+    def get_users_from_group(group_id, facility=None):
+        if group_id == "Ungrouped":
+            return FacilityUser.objects \
+                .filter(facility=facility, group__isnull=True) \
+                .order_by("first_name", "last_name")
+        elif not group_id:
+            return []
+        else:
+            return get_object_or_404(FacilityGroup, pk=group_id).facilityuser_set.order_by("first_name", "last_name", "username")
     user_list = get_users_from_group(group_id, facility=facility)
 
     # Get the user list from the group
