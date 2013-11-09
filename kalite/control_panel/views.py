@@ -59,12 +59,17 @@ def zone_form(request, zone_id, org_id=None):
 def zone_management(request, zone_id, org_id=None):
     context = control_panel_context(request, org_id=org_id, zone_id=zone_id)
     own_device = Device.get_own_device()
+    if not context["zone"] and (zone_id != "None" or Zone.objects.count() != 0 or settings.CENTRAL_SERVER):
+        raise Http404()  # on distributed server, we can make due if they're not registered.
 
     # Accumulate device data
     device_data = OrderedDict()
-    for device in list(Device.objects \
-        .filter(devicezone__zone=context["zone"]) \
-        .order_by("devicemetadata__is_demo_device", "name")):
+    if context["zone"]:
+        devices = Device.objects.filter(devicezone__zone=context["zone"])
+    else:
+        devices = Device.objects.filter(devicemetadata__is_trusted=False)
+
+    for device in list(devices.order_by("devicemetadata__is_demo_device", "name")):
 
         user_activity = UserLogSummary.objects.filter(device=device)
         sync_sessions = SyncSession.objects.filter(client_device=device)
@@ -84,7 +89,11 @@ def zone_management(request, zone_id, org_id=None):
 
     # Accumulate facility data
     facility_data = OrderedDict()
-    for facility in list(Facility.objects.by_zone(context["zone"]).order_by("name")):
+    if context["zone"]:
+        facilities = Facility.objects.by_zone(context["zone"])
+    else:
+        facilities = Facility.objects.all()
+    for facility in list(facilities.order_by("name")):
 
         user_activity = UserLogSummary.objects.filter(user__facility=facility)
         exercise_activity = ExerciseLog.objects.filter(user__facility=facility)
@@ -360,14 +369,19 @@ def control_panel_context(request, **kwargs):
     context = {}
     if "org_id" in kwargs:
         context["org"] = get_object_or_None(Organization, pk=kwargs["org_id"]) if kwargs["org_id"] else None
+        context["org_id"] = kwargs["org_id"]
     if "zone_id" in kwargs:
         context["zone"] = get_object_or_None(Zone, pk=kwargs["zone_id"]) if kwargs["zone_id"] else None
+        context["zone_id"] = kwargs["zone_id"]
     if "facility_id" in kwargs:
         context["facility"] = get_object_or_404(Facility, pk=kwargs["facility_id"]) if kwargs["facility_id"] != "new" else None
+        context["facility_id"] = kwargs["facility_id"]
     if "group_id" in kwargs:
         context["group"] = get_object_or_None(FacilityGroup, pk=kwargs["group_id"])
+        context["group_id"] = kwargs["group_id"]
     if "device_id" in kwargs:
         context["device"] = get_object_or_404(Device, pk=kwargs["device_id"])
+        context["device_id"] = kwargs["device_id"]
     return context
 
 
