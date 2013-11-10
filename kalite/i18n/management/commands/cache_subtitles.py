@@ -1,4 +1,6 @@
 """
+CENTRAL SERVER ONLY
+
 This command is used to cache srt files on the central server. It uses 
 the mapping generate by generate_subtitle_map to make requests of the 
 Amara API. 
@@ -318,6 +320,9 @@ class Command(BaseCommand):
 
 
     def handle(self, *args, **options):
+        if not settings.CENTRAL_SERVER:
+            raise CommandError("This must only be run on the central server.")
+
         lang_codes = [options["lang_code"]] if options["lang_code"] else None
 
         if len(args) == 1:

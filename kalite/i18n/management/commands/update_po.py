@@ -1,4 +1,6 @@
 """
+CENTRAL SERVER ONLY
+
 This command automates the process of generating template po files, which can be uploaded to crowdin. 
 It runs the django commands makemessages and compilemessages and moves the created files to an 
 exposed url, so that they can be downloaded from the web by KA's scripts.
@@ -30,6 +32,9 @@ class Command(BaseCommand):
     help = 'USAGE: \'python manage.py update_po\' defaults to creating new template files. If run with -t, will generate test po files that make it easy to identify strings that need wrapping.'
 
     def handle(self, **options):
+        if not settings.CENTRAL_SERVER:
+            raise CommandError("This must only be run on the central server.")
+
         ## All commands must be run from project root
         move_to_project_root()
         ## (safety measure) prevent any english or test translations from being uploaded 
