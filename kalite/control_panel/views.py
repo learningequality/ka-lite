@@ -83,7 +83,7 @@ def zone_management(request, zone_id, org_id=None):
             "num_times_synced": sync_sessions.count() if sync_sessions is not None else None,
             "last_time_synced": sync_sessions.aggregate(Max("timestamp"))["timestamp__max"] if sync_sessions is not None else None,
             "is_demo_device": device.get_metadata().is_demo_device,
-            "last_time_used":   exercise_activity.order_by("-completion_timestamp")[0:1] if user_activity.count() == 0 else user_activity.order_by("-end_datetime")[0],
+            "last_time_used":   exercise_activity.order_by("-completion_timestamp")[0:1] if user_activity.count() == 0 else user_activity.order_by("-last_activity_datetime", "-end_datetime")[0],
             "counter": device.get_counter_position(),
         }
 
@@ -103,7 +103,7 @@ def zone_management(request, zone_id, org_id=None):
             "num_users":  FacilityUser.objects.filter(facility=facility).count(),
             "num_groups": FacilityGroup.objects.filter(facility=facility).count(),
             "id": facility.id,
-            "last_time_used":   exercise_activity.order_by("-completion_timestamp")[0:1] if user_activity.count() == 0 else user_activity.order_by("-end_datetime")[0],
+            "last_time_used":   exercise_activity.order_by("-completion_timestamp")[0:1] if user_activity.count() == 0 else user_activity.order_by("-last_activity_datetime", "-end_datetime")[0],
         }
 
     context.update({
@@ -233,7 +233,7 @@ def facility_user_management(request, facility_id, group_id="", org_id=None, zon
 @require_authorized_access_to_student_data
 @render_to("control_panel/account_management.html")
 def account_management(request, org_id=None):
- 
+
     # Only log 'coachreport' activity for students, 
     #   (otherwise it's hard to compare teachers)
     if "facility_user" in request.session and not request.session["facility_user"].is_teacher and reverse("login") not in request.META.get("HTTP_REFERER", ""):

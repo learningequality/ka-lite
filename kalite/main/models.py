@@ -175,6 +175,7 @@ class UserLogSummary(DeferredCountSyncedModel):
     end_datetime = models.DateTimeField(blank=True, null=True)
     count = models.IntegerField(default=0, blank=False, null=False)
     total_seconds = models.IntegerField(default=0, blank=False, null=False)
+    last_activity_datetime = models.DateTimeField(blank=True, null=True); last_activity_datetime.minversion = "0.11.1"
 
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         pass
@@ -272,6 +273,7 @@ class UserLogSummary(DeferredCountSyncedModel):
         # Add the latest info
         log_summary.total_seconds += user_log.total_seconds
         log_summary.count += 1
+        log_summary.last_activity_datetime = user_log.last_active_datetime
         log_summary.save()
 
 
@@ -491,6 +493,10 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
 
 
 class VideoFile(ExtendedModel):
+    """
+    Used exclusively for downloading files, and in conjunction with files on disk
+    to determine what videos are available to users.
+    """
     youtube_id = models.CharField(max_length=20, primary_key=True)
     flagged_for_download = models.BooleanField(default=False)
     download_in_progress = models.BooleanField(default=False)

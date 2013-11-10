@@ -73,7 +73,6 @@
                 <th width="120px">{% trans "# users" %}</th>
                 <th width="120px">{% trans "# groups" %}</th>
                 <th width="200px">{% trans "Last Usage" %}</th>
-                <th></th>
             </tr>
 
             {% for id,facility in facilities.items %}
@@ -85,7 +84,15 @@
                     </td>
                     <td nowrap>{{ facility.num_users }}</td>
                     <td nowrap>{{ facility.num_groups }}</td>
-                    <td nowrap>{% if not facility.last_time_used %}{% trans "Never" %}{% else %}{{ facility.last_time_used.start_datetime|date }} - {{ facility.last_time_used.end_datetime|date }}{% endif %}</td>
+                    <td nowrap>
+                        {% if not facility.last_time_used %}
+                            {% trans "Never" %}
+                        {% elif facility.last_time_used.last_activity_datetime %}
+                            {{ facility.last_time_used.last_activity_datetime }}
+                        {% else %}
+                            {{ facility.last_time_used.start_datetime|date }} - {{ facility.last_time_used.end_datetime|date }}
+                        {% endif %}
+                    </td>
                 </tr>
             {% endfor %}
 
@@ -106,10 +113,10 @@
                     <th width="120px">{% trans "# Times Synced" %}</th>
                     <th width="120px">{% trans "Last Sync" %}</th>
                     <th width="200px">{% trans "Last Usage" %}</th>
-                    <th width="250px">
+                    <!--th width="250px">
                         {% trans "Counter" %}
                         <span class="glossary-link nudge-left" title="{% trans 'The counter is an integer &#39;timestamp&#39; for each update, and tells the last data update synced for a given device.' %}"></span>
-                    </th>
+                    </th-->
                 </tr>
                 {% for id,device in devices.items %}
                     <tr class="{% if device.is_demo_device %}demo-device{% else %}real{% endif %}">
@@ -138,11 +145,13 @@
                                 {% trans "Never" %}
                             {% elif device.last_time_used.completion_timestamp %}
                                 {{ device.last_time_used.completion_timestamp|date }}
+                            {% elif device.last_time_used.last_activity_datetime %}
+                                {{ device.last_time_used.last_activity_datetime }}
                             {% elif device.last_time_used.start_datetime %}
                                 {{ device.last_time_used.start_datetime|date }} - {{ device.last_time_used.end_datetime|date }}
                             {% endif %}
                         </td>
-                        <td nowrap>{{ device.counter }}</td>
+                        <!--td nowrap>{{ device.counter }}</td-->
                     </tr>
 
                 {% endfor %}
