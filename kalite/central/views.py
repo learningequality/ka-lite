@@ -182,6 +182,17 @@ def delete_organization(request, org_id):
     return HttpResponseRedirect(reverse("org_management"))
 
 
+@require_authorized_admin
+def delete_zone(request, org_id, zone_id):
+    zone = get_object_or_404(Zone, id=zone_id)
+    if not zone.has_dependencies(passable_classes=["Organization"]):
+        zone.delete()
+        messages.success(request, "You have successfully deleted " + zone.name + ".")
+    else:
+        messages.warning(request, "You cannot delete this zone because it is syncing data with with %d device(s)" % zone.devicezone_set.count())
+    return HttpResponseRedirect(reverse("org_management"))
+
+
 def content_page(request, page, **kwargs):
     context = RequestContext(request)
     context.update(kwargs)

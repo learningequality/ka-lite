@@ -341,7 +341,7 @@ def zone_redirect(request):
     if zone:
         return HttpResponseRedirect(reverse("zone_management", kwargs={"zone_id": zone.pk}))
     else:
-        raise Http404(_("This device is not on any zone."))
+        return HttpResponseRedirect(reverse("zone_management", kwargs={"zone_id": None}))
 
 @require_admin
 def device_redirect(request):
