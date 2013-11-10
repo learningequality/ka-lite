@@ -231,9 +231,8 @@ def login(request, facility):
                                         _("-- be sure to log out when you finish."))
 
             # Send them back from whence they came
-            home_page = reverse("homepage")
-            landing_page = form.cleaned_data["callback_url"] or home_page
-            if landing_page in [home_page, request.path]:
+            landing_page = form.cleaned_data["callback_url"]
+            if not landing_page:
                 # Just going back to the homepage?  We can do better than that.
                 landing_page = reverse("coach_reports") if form.get_user().is_teacher else None
                 landing_page = landing_page or (reverse("account_management") if not settings.package_selected("RPi") else reverse("homepage"))
@@ -248,7 +247,11 @@ def login(request, facility):
             )
 
     else:  # render the unbound login form
-        form = LoginForm(initial={"facility": facility_id, "callback_url": urlparse.urlparse(request.META.get("HTTP_REFERER")).path})
+        referer = urlparse.urlparse(request.META.get("HTTP_REFERER")).path
+        # never use the homepage as the referer
+        if referer == reverse("homepage"):
+            referer = None
+        form = LoginForm(initial={"facility": facility_id, "callback_url": referer})
 
     return {
         "form": form,
