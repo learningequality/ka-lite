@@ -37,11 +37,6 @@ urlpatterns += patterns('',
     }),
 )
 
-# Javascript translations
-urlpatterns += patterns('',
-    (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', {'packages': ('ka-lite.locale')}, 'i18n_javascript_catalog'),
-)
-
 urlpatterns += patterns('central.views',
     url(r'^$', 'homepage', {}, 'homepage'), 
     url(r'^content/(?P<page>\w+)/', 'content_page', {}, 'content_page'), # Example of a new landing page
