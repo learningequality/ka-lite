@@ -164,8 +164,8 @@ def device_management(request, device_id, org_id=None, zone_id=None, n_sessions=
         "total_sessions": total_sessions,
     })
 
-    # If local, get device metadata
-    if device_id == Device.get_own_device().id:
+    # If local (and, for security purposes, a distributed server), get device metadata
+    if not settings.CENTRAL_SERVER and device_id == Device.get_own_device().id:
         context.update(local_device_context(request))
 
     return context
@@ -368,6 +368,7 @@ def control_panel_context(request, **kwargs):
         context["group"] = get_object_or_None(FacilityGroup, pk=kwargs["group_id"])
     if "device_id" in kwargs:
         context["device"] = get_object_or_404(Device, pk=kwargs["device_id"])
+
     return context
 
 

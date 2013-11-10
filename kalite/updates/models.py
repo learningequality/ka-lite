@@ -14,7 +14,8 @@ class UpdateProgressLog(models.Model):
     process_percent = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(1.0)], default=0)
     stage_name = models.CharField(verbose_name="stage name", max_length=100, null=True)
     stage_percent = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(1.0)], default=0)
-    total_stages = models.IntegerField(default=1)
+    current_stage = models.IntegerField(blank=True, null=True)
+    total_stages = models.IntegerField(blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
     start_time = models.DateTimeField(auto_now_add=True)
     end_time = models.DateTimeField(null=True)
@@ -35,13 +36,14 @@ class UpdateProgressLog(models.Model):
 
 
     def save(self, *args, **kwargs):
-        assert 0 <= self.stage_percent and self.stage_percent <= 1
-        assert 0 <= self.process_percent and self.process_percent <= 1
+        assert 0 <= self.stage_percent and self.stage_percent <= 1, "Stage percent must be between 0 and 1"
+        assert 0 <= self.process_percent and self.process_percent <= 1, "Process percent must be between 0 and 1"
         super(UpdateProgressLog, self).save(*args, **kwargs)
 
     def restart(self):
         self.process_percent = 0
         self.stage_percent = 0
+        self.current_stage = None
         self.start_time = datetime.datetime.now()
         self.end_time = None
         self.completed = False
@@ -60,13 +62,14 @@ class UpdateProgressLog(models.Model):
         #   for whatever wasn't reported in finishing the previous stage,
         #   before adding in a percent for what's done for the current stage.
         if self.stage_name != stage_name:
-            if self.stage_name:
-                self.process_percent += (1 - self.stage_percent) / float(self.total_stages)
-                self.stage_percent = 0
+            if self.stage_name:  # moving to the next stage
                 self.notes = None  # reset notes after each stage
+                self.current_stage += 1
+            else:
+                self.current_stage = 1
             self.stage_name = stage_name
 
-        self.process_percent += (stage_percent - self.stage_percent) / float(self.total_stages)
+        self.process_percent = self._compute_process_percent()
         self.stage_percent = stage_percent
         self.notes = notes or self.notes
         self.save()
@@ -78,7 +81,6 @@ class UpdateProgressLog(models.Model):
         """
         logging.info("Cancelling stage %s of process %s" % (self.stage_name, self.process_name))
 
-        self.process_percent -= self.stage_percent / float(self.total_stages)
         self.stage_percent = 0.
         self.update_total_stages(self.total_stages - 1)
         self.stage_name = None
@@ -86,7 +88,7 @@ class UpdateProgressLog(models.Model):
         self.save()
 
 
-    def update_total_stages(self, total_stages):
+    def update_total_stages(self, total_stages, current_stage=None):
         """
         Need to be careful, as this affects the computation of process_percent.
         """
@@ -96,11 +98,20 @@ class UpdateProgressLog(models.Model):
         if total_stages == self.total_stages:
             return
 
-        logging.debug("Updating %s from %d to %d stages." % (self.process_name, self.total_stages, total_stages))
-        self.process_percent *= self.total_stages / float(total_stages) if total_stages > 0 else 0
+        if self.total_stages:
+            logging.debug("Updating %s from %d to %d stages." % (self.process_name, self.total_stages, total_stages))
+        else:
+            logging.debug("Setting %s to %d total stages." % (self.process_name, total_stages))
+
+
         self.total_stages = total_stages
+        if current_stage is not None:
+            self.current_stage = current_stage
+        self.process_percent = self._compute_process_percent()
         self.save()
 
+    def _compute_process_percent(self):
+        return (self.stage_percent + (self.current_stage or 1) - 1) / float(self.total_stages)
 
     def cancel_progress(self, notes=None):
         """
@@ -122,6 +133,7 @@ class UpdateProgressLog(models.Model):
 
         self.stage_percent = 1.
         self.process_percent = 1.
+        self.current_stage = self.total_stages
         self.end_time = datetime.datetime.now()
         self.completed = True
         self.notes = notes
