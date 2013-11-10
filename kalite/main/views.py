@@ -43,14 +43,24 @@ def check_setup_status(handler):
         if request.is_admin:
             # TODO(bcipolli): move this to the client side?
             if not request.session["registered"] and BaseClient().test_connection() == "success":
+                # Being able to register is more rare, so prioritize.
                 messages.warning(request, mark_safe("Please <a href='%s'>follow the directions to register your device</a>, so that it can synchronize with the central server." % reverse("register_public_key")))
             elif not request.session["facility_exists"]:
                 messages.warning(request, mark_safe("Please <a href='%s'>create a facility</a> now. Users will not be able to sign up for accounts until you have made a facility." % reverse("add_facility")))
 
-        elif not request.is_logged_in and not request.session["facility_exists"]:
-            messages.warning(request, mark_safe(
-                "Please <a href='%s?next=%s'>login</a> with the account you created while running the installation script, \
-                to complete the setup." % (reverse("login"), reverse("register_public_key"))))
+        elif not request.is_logged_in:
+            if not request.session["registered"] and BaseClient().test_connection() == "success":
+                # Being able to register is more rare, so prioritize.
+                redirect_url = reverse("register_public_key")
+            elif not request.session["facility_exists"]:
+                redirect_url = reverse("add_facility")
+            else:
+                redirect_url = None
+
+            if redirect_url:
+                messages.warning(request, mark_safe(
+                    "Please <a href='%s?next=%s'>login</a> with the account you created while running the installation script, \
+                    to complete the setup." % (reverse("login"), redirect_url)))
 
         return handler(request, *args, **kwargs)
     return wrapper_fn

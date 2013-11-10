@@ -27,7 +27,7 @@ class FacilityCheck:
         Cache facility data in the session,
           while making sure anybody who can create facilities sees the real (non-cached) data
         """
-        if not "facility_exists" in request.session or request.is_admin:  
+        if not "facility_exists" in request.session or request.is_admin:   # always refresh for admins
             request.session["facility_count"] = Facility.objects.count()
             request.session["facility_exists"] = request.session["facility_count"] > 0
 
