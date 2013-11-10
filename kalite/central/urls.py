@@ -56,7 +56,7 @@ urlpatterns += patterns('central.views',
     url(r'^organization/(?P<org_id>\w+)/$', 'organization_form', {}, 'organization_form'),
     url(r'^organization/invite_action/(?P<invite_id>\w+)/$', 'org_invite_action', {}, 'org_invite_action'),
     url(r'^organization/delete/(?P<org_id>\w+)/$', 'delete_organization', {}, 'delete_organization'),
-    url(r'zone/(?P<zone_id>\w+)/delete$', 'delete_zone', {}, 'delete_zone'),
+    url(r'^organization/(?P<org_id>\w+)/zone/(?P<zone_id>\w+)/delete$', 'delete_zone', {}, 'delete_zone'),
 
     # Zone, facility, device
     url(r'^organization/(?P<org_id>\w+)/', include(control_panel.urls)),

@@ -31,7 +31,6 @@ function doRequest(url, data) {
     });
 }
 
-
 // Generic functions for client-side message passing
 //   through our Django-based server-side API
 

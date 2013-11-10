@@ -20,6 +20,10 @@ class DownloadCancelled(Exception):
         return "Download has been cancelled"
 
 
+class URLNotFound(Exception):
+    pass
+
+
 def get_video_ids(topic_tree):
     if topic_tree["kind"] == "Video":
         return [topic_tree["youtube_id"]]
@@ -30,6 +34,7 @@ def get_video_ids(topic_tree):
         return results
     else:
         return []
+
 
 def get_video_ids_for_topic(topic_id, topic_tree=None):
     if topic_tree["kind"] != "Topic":
@@ -43,11 +48,13 @@ def get_video_ids_for_topic(topic_id, topic_tree=None):
                 return ids
         return []
 
+
 def download_all_videos(topic="root", download_path="../content/", download_url=OUTSIDE_DOWNLOAD_URL, format="mp4", callback=None):
     all_youtube_ids = get_video_ids_for_topic(topic)
     for id in all_youtube_ids:
         download_video(id, download_path, downlod_url=download_url, format=format, callback=callback)
         # print id
+
 
 def callback_percent_proxy(callback, start_percent=0, end_percent=100):
     if not callback:
@@ -63,8 +70,6 @@ def callback_percent_proxy(callback, start_percent=0, end_percent=100):
         callback(start_percent + int(fraction * percent_range_size))
     return inner_fn
 
-class URLNotFound(Exception):
-    pass
 
 def download_video(youtube_id, download_path="../content/", download_url=OUTSIDE_DOWNLOAD_URL, format="mp4", callback=None):
     """Downloads the video file to disk (note: this does NOT invalidate any of the cached html files in KA Lite)"""
@@ -78,7 +83,7 @@ def download_video(youtube_id, download_path="../content/", download_url=OUTSIDE
     thumb_filename = "%(id)s.png" % {"id": youtube_id}
     thumb_filepath = download_path + thumb_filename
     thumb_url = download_url % (video_filename, thumb_filename)
-        
+
     try:
         path, response = download_file(url, filepath, callback_percent_proxy(callback, end_percent=95))
         if not response.type.startswith("video"):
@@ -94,13 +99,15 @@ def download_video(youtube_id, download_path="../content/", download_url=OUTSIDE
     except Exception as e:
         delete_downloaded_files(youtube_id, download_path)
         raise
-    
+
+
 def delete_downloaded_files(youtube_id, download_path):
     for filepath in glob.glob(download_path + youtube_id + ".*"):
         try:
             os.remove(filepath)
         except OSError:
             pass
+
 
 def _reporthook(numblocks, blocksize, filesize, url=None):
     base = os.path.basename(url)
@@ -116,8 +123,10 @@ def _reporthook(numblocks, blocksize, filesize, url=None):
     if percent == 100:
         sys.stdout.write("\n")
 
+
 def _nullhook(*args, **kwargs):
     pass
+
 
 def download_file(url, dst, callback=None):
     if sys.stdout.isatty():
@@ -125,6 +134,7 @@ def download_file(url, dst, callback=None):
     else:
         callback = callback or _nullhook
     return urllib.urlretrieve(url, dst, lambda nb, bs, fs, url=url: callback(nb,bs,fs,url))
+
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
