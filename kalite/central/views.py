@@ -2,7 +2,7 @@ import re
 import json
 import tempfile
 from annoying.decorators import render_to
-from annoying.functions import get_object_or_404, get_object_or_None
+from annoying.functions import get_object_or_None
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
