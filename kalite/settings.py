@@ -98,7 +98,7 @@ MANAGERS       = getattr(local_settings, "MANAGERS", ADMINS)
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 TIME_ZONE      = getattr(local_settings, "TIME_ZONE", None)
-USE_TZ         = True  # needed for timezone-aware datetimes (particularly in updates code)
+#USE_TZ         = True  # needed for timezone-aware datetimes (particularly in updates code)
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
