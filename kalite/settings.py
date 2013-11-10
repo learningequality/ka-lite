@@ -131,7 +131,10 @@ TEMPLATE_DIRS  = tuple([os.path.realpath(td) + "/" for td in TEMPLATE_DIRS])
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
     "django.core.context_processors.debug",
-    "django.core.context_processors.i18n",
+)
+if USE_I18N:
+    TEMPLATE_CONTEXT_PROCESSORS += ("django.core.context_processors.i18n",)
+TEMPLATE_CONTEXT_PROCESSORS += (
     "django.core.context_processors.media",
     "django.contrib.messages.context_processors.messages",
     "django.core.context_processors.request",
@@ -206,6 +209,8 @@ else:
         "securesync.middleware.DBCheck",
         "main.middleware.SessionLanguage",
     )
+    if USE_I18N:
+        INSTALLED_APPS += ('i18n',)
 
 
 ########################

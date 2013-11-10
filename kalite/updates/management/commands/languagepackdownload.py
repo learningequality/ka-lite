@@ -36,6 +36,9 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
+        if settings.CENTRAL_SERVER:
+            raise CommandError("This must only be run on distributed servers server.")
+
         code = convert_language_code_format(options["lang_code"])
         software_version = options["software_version"]
         if code == settings.LANGUAGE_CODE:
