@@ -105,6 +105,7 @@ class FacilityGroupForm(forms.ModelForm):
 
 class LoginForm(forms.ModelForm):
     password = forms.CharField(label=_("Password"), widget=forms.PasswordInput)
+    callback_url = forms.CharField(widget=forms.HiddenInput, required=False)
 
     class Meta:
         model = FacilityUser
@@ -114,6 +115,8 @@ class LoginForm(forms.ModelForm):
         self.user_cache = None
         super(LoginForm, self).__init__(*args, **kwargs)
         self.fields['facility'].queryset = Facility.objects.all()
+        if self.fields["facility"].queryset.count() < 2:
+            self.fields["facility"].widget = forms.HiddenInput()
 
     def clean(self):
         username = self.cleaned_data.get('username', "")

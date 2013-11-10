@@ -1,4 +1,4 @@
-import urllib
+import urlparse
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 
@@ -225,13 +225,21 @@ def login(request, facility):
                 UserLog.begin_user_activity(user, activity_type="login", language=request.language)  # Success! Log the event (ignoring validation failures)
             except ValidationError as e:
                 logging.error("Failed to begin_user_activity upon login: %s" % e)
+
             request.session["facility_user"] = user
             messages.success(request, _("You've been logged in! We hope you enjoy your time with KA Lite ") +
                                         _("-- be sure to log out when you finish."))
-            landing_page = reverse("coach_reports") if form.get_user().is_teacher else None
-            landing_page = landing_page or (reverse("account_management") if not settings.package_selected("RPi") else reverse("homepage"))
+
+            # Send them back from whence they came
+            home_page = reverse("homepage")
+            landing_page = form.cleaned_data["callback_url"] or home_page
+            if landing_page in [home_page, request.path]:
+                # Just going back to the homepage?  We can do better than that.
+                landing_page = reverse("coach_reports") if form.get_user().is_teacher else None
+                landing_page = landing_page or (reverse("account_management") if not settings.package_selected("RPi") else reverse("homepage"))
 
             return HttpResponseRedirect(form.non_field_errors() or request.next or landing_page)
+
         else:
             messages.error(
                 request,
@@ -240,7 +248,7 @@ def login(request, facility):
             )
 
     else:  # render the unbound login form
-        form = LoginForm(initial={"facility": facility_id})
+        form = LoginForm(initial={"facility": facility_id, "callback_url": urlparse.urlparse(request.META.get("HTTP_REFERER")).path})
 
     return {
         "form": form,
