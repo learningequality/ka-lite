@@ -2,7 +2,7 @@
 
 function video_start_callback(progress_log, resp) {
     if (!progress_log) {
-        show_message("error", resp.responseText, "id_videod_start_callback_error");
+        //handleFailedAPI(resp, "Error starting updates process");
     }
 }
 
@@ -49,7 +49,7 @@ function video_check_callback(progress_log, resp) {
         lastKey = currentKey;
 
     } else { // check failed.
-        handleFailedAPI(resp, "Error downloading videos");
+        handleFailedAPI(resp, "Error downloading videos", "id_video_download");
         clearInterval(window.download_subtitle_check_interval);
     }
 }
@@ -133,10 +133,11 @@ $(function() {
         // Do the request
         doRequest(URL_START_VIDEO_DOWNLOADS, {youtube_ids: video_ids})
             .success(function() {
+                handleSuccessAPI("id_video_download");
                 updatesStart("videodownload", 5000, video_callbacks)
             })
             .fail(function(resp) {
-                handleFailedAPI(resp, "Error starting video download");
+                handleFailedAPI(resp, "Error starting video download", "id_video_download");
                 $("#download-videos").removeAttr("disabled");
             });
 
@@ -161,12 +162,13 @@ $(function() {
         // Do the request
         doRequest(URL_DELETE_VIDEOS, {youtube_ids: video_ids})
             .success(function() {
+                handleSuccessAPI("id_video_download");
                 $.each(video_ids, function(ind, id) {
                     setNodeClass(id, "unstarted");
                 });
             })
             .fail(function(resp) {
-                handleFailedAPI(resp, "Error downloading subtitles");
+                handleFailedAPI(resp, "Error downloading subtitles", "id_video_download");
                 $(".progress-waiting").hide();
             });
 
@@ -184,6 +186,7 @@ $(function() {
         // Do the request
         doRequest(URL_CANCEL_VIDEO_DOWNLOADS)
             .success(function() {
+                handleSuccessAPI("id_video_download");
                 // Reset ALL of the progress tracking
                 updatesReset()
 
@@ -192,7 +195,7 @@ $(function() {
                 $("#cancel-download").hide();
             })
             .fail(function(resp) {
-                handleFailedAPI(resp, "Error canceling downloads");
+                handleFailedAPI(resp, "Error canceling downloads", "id_video_download");
             });
 
         // Update the UI
@@ -207,8 +210,11 @@ $(function() {
 
         // Do the request
         doRequest(URL_START_VIDEO_DOWNLOADS, {})
+            .success(function(resp) {
+                handleSuccessAPI("id_video_download");
+            })
             .fail(function(resp) {
-                handleFailedAPI(resp, "Error restarting downloads");
+                handleFailedAPI(resp, "Error restarting downloads", "id_video_download");
             });
 
         // Update the UI
@@ -220,29 +226,6 @@ $(function() {
 
     // end onload functions
 });
-
-
-function handleFailedAPI(resp, error_text, error_id) {
-    if (error_id === undefined) {
-        error_id = "id_video_download";  // ID of message element
-    }
-
-    switch (resp.status) {
-        case 403:
-            show_message("error", error_text + ": " + "You are not authorized to complete the request.  Please <a href='/securesync/login/' target='_blank'>login</a> as an administrator, then retry.", error_id)
-            break;
-        default:
-            //communicate_api_failure(resp)
-            messages = $.parseJSON(resp.responseText);
-            if (messages && !("error" in messages)) {
-                // this should be an assert--should never happen
-                show_message("error", error_text + ": " + "Uninterpretable message received.", error_id);
-            } else {
-                show_message("error", error_text + ": " + messages["error"], error_id);
-            }
-            break;
-    }
-}
 
 /* script functions for doing stuff with the topic tree*/
 function unselectAllNodes() {

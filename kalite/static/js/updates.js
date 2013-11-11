@@ -62,6 +62,7 @@ function updatesStart_callback(process_name, start_time) {
 
     doRequest(request_url)
         .success(function(progress_log, textStatus, request) {
+            handleSuccessAPI()
             // Store the info
             if (!progress_log.process_name) {
                 if (!start_time) {
@@ -102,7 +103,7 @@ function updatesStart_callback(process_name, start_time) {
                 process_callbacks[process_name]["start"](progress_log);
             }
         }).fail(function(resp) {
-            show_message("error", "Error during updatesStart_callback: " + resp.responseText, "id_" + process_name);
+            handleFailedAPI(resp, "Error starting updates process");
             // Do callbacks, with error
             if (process_callbacks[process_name] && "start" in process_callbacks[process_name]) {
                 process_callbacks[process_name]["start"](null, resp);
@@ -236,3 +237,33 @@ function updatesReset(process_name) {
     }
 
 }
+
+function handleSuccessAPI(error_id) {
+    if (error_id === undefined) {
+        error_id = "id_updates";  // ID of message element
+    }
+    clear_message(error_id)
+}
+
+function handleFailedAPI(resp, error_text, error_id) {
+    if (error_id === undefined) {
+        error_id = "id_updates";  // ID of message element
+    }
+
+    switch (resp.status) {
+        case 403:
+            show_message("error", error_text + ": " + "You are not authorized to complete the request.  Please <a href='/securesync/login/' target='_blank'>login</a> as an administrator, then retry.", error_id)
+            break;
+        default:
+            //communicate_api_failure(resp)
+            messages = $.parseJSON(resp.responseText);
+            if (messages && !("error" in messages)) {
+                // this should be an assert--should never happen
+                show_message("error", error_text + ": " + "Uninterpretable message received.", error_id);
+            } else {
+                show_message("error", error_text + ": " + messages["error"], error_id);
+            }
+            break;
+    }
+}
+
