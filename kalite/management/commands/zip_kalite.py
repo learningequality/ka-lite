@@ -52,7 +52,7 @@ def select_package_dirs(dirnames, key_base, **kwargs):
             if base_name in ["kalite", "templates"]:  # remove central server apps & templates
                 in_dirs -= set(("contact", "faq", "registration"))
             elif base_name in ["static"]:
-                in_dirs -= set(["language_packs", "less", "srt", "pot", "jsi18n"])
+                in_dirs -= set(["language_packs", "less", "srt", "pot"])
             elif base_name in ["data"]:
                 in_dirs -= set(["subtitles"])
 
@@ -201,6 +201,9 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        if not settings.CENTRAL_SERVER:
+            raise CommandError("Disabled for distributed servers, until we can figure out what to do with ")
+        
         options['platform'] = options['platform'].lower() # normalize
 
         if options['platform'] not in ["all", "linux", "macos", "darwin", "windows"]:
