@@ -446,8 +446,8 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
 
 @receiver(pre_save, sender=UserLog)
 def add_to_summary(sender, **kwargs):
-    if not UserLog.is_enabled():
-        return
+    assert UserLog.is_enabled(), "We shouldn't be saving unless UserLog is enabled."
+    
     instance = kwargs["instance"]
 
     if not instance.start_datetime:
