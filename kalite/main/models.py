@@ -9,6 +9,8 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.db.models import Sum
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 import settings
 from securesync import engine
@@ -311,6 +313,8 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
         """When this model is saved, check if the activity is ended.
         If so, compute total_seconds and update the corresponding summary log."""
 
+        import pdb; pdb.set_trace()
+
         # Do nothing if the max # of records is zero
         # (i.e. this functionality is disabled)
         if not self.is_enabled():
@@ -321,16 +325,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
         if self.last_active_datetime and self.start_datetime > self.last_active_datetime:
             raise ValidationError("UserLog date consistency check for start_datetime and last_active_datetime")
 
-        if not self.end_datetime:
-            # Conflict_resolution
-            related_open_logs = UserLog.objects \
-                .filter(user=self.user, activity_type=self.activity_type, end_datetime__isnull=True) \
-                .exclude(pk=self.pk)
-            for log in related_open_logs:
-                log.end_datetime = datetime.now()
-                log.save()
-
-        elif not self.total_seconds:
+        if self.end_datetime and not self.total_seconds:
             # Compute total_seconds, save to summary
             #   Note: only supports setting end_datetime once!
             self.full_clean()
@@ -350,20 +345,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
             # Save only completed log items to the UserLogSummary
             UserLogSummary.add_log_to_summary(self)
 
-        # This is inefficient only if something goes awry.  Otherwise,
-        #   this will really only do something on ADD.
-        #   AND, if you're using recommended config (USER_LOG_MAX_RECORDS_PER_USER == 1),
-        #   this will be very efficient.
-        if settings.USER_LOG_MAX_RECORDS_PER_USER:  # Works for None, out of the box
-            current_models = UserLog.objects.filter(user=self.user, activity_type=self.activity_type)
-            if current_models.count() > settings.USER_LOG_MAX_RECORDS_PER_USER:
-                # Unfortunately, could not do an aggregate delete when doing a
-                #   slice in query
-                to_discard = current_models \
-                    .order_by("start_datetime")[0:current_models.count() - settings.USER_LOG_MAX_RECORDS_PER_USER]
-                UserLog.objects.filter(pk__in=to_discard).delete()
-
-        # Do it here, for efficiency of the above delete.
+        # Culling of records will be done as a post-save listener.
         super(UserLog, self).save(*args, **kwargs)
 
 
@@ -394,7 +376,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
         return None if not logs else logs[0]
 
     @classmethod
-    def begin_user_activity(cls, user, activity_type="login", start_datetime=None, language=None):
+    def begin_user_activity(cls, user, activity_type="login", start_datetime=None, language=None, suppress_save=False):
         """Helper function to create a user activity log entry."""
 
         # Do nothing if the max # of records is zero
@@ -417,19 +399,20 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
             # Note: this can be a recursive call
             logging.warn("%s: had to END activity on a begin(%d) @ %s" % (user.username, activity_type, start_datetime))
             # Don't mark current language when closing an old one
-            cls.end_user_activity(user=user, activity_type=activity_type, end_datetime=cur_log.last_active_datetime)
+            cls.end_user_activity(user=user, activity_type=activity_type, end_datetime=cur_log.last_active_datetime)  # can't suppress save
             cur_log = None
 
         # Create a new entry
         logging.debug("%s: BEGIN activity(%d) @ %s" % (user.username, activity_type, start_datetime))
         cur_log = cls(user=user, activity_type=activity_type, start_datetime=start_datetime, last_active_datetime=start_datetime, language=language)
-        cur_log.save()
+        if not suppress_save:
+            cur_log.save()
 
         return cur_log
 
 
     @classmethod
-    def update_user_activity(cls, user, activity_type="login", update_datetime=None, language=language):
+    def update_user_activity(cls, user, activity_type="login", update_datetime=None, language=language, suppress_save=False):
         """Helper function to update an existing user activity log entry."""
 
         # Do nothing if the max # of records is zero
@@ -451,17 +434,18 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
         else:
             # No unstopped starts.  Start should have been called first!
             logging.warn("%s: Had to create a user log entry on an UPDATE(%d)! @ %s" % (user.username, activity_type, update_datetime))
-            cur_log = cls.begin_user_activity(user=user, activity_type=activity_type, start_datetime=update_datetime)
+            cur_log = cls.begin_user_activity(user=user, activity_type=activity_type, start_datetime=update_datetime, suppress_save=True)
 
         logging.debug("%s: UPDATE activity (%d) @ %s"%(user.username, activity_type, update_datetime))
         cur_log.last_active_datetime = update_datetime
         cur_log.language = language or cur_log.language  # set the language to the current language, if there is one.
-        cur_log.save()
+        if not suppress_save:
+            cur_log.save()
         return cur_log
 
 
     @classmethod
-    def end_user_activity(cls, user, activity_type="login", end_datetime=None):  # don't accept language--we're just closing previous activity.
+    def end_user_activity(cls, user, activity_type="login", end_datetime=None, suppress_save=False):  # don't accept language--we're just closing previous activity.
         """Helper function to complete an existing user activity log entry."""
 
         # Do nothing if the max # of records is zero
@@ -483,13 +467,32 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
                 raise ValidationError("Update time must always be later than the login time.")
         else:
             # No unstopped starts.  Start should have been called first!
+            # Call UPDATE instead of BEGIN, so that both BEGIN and UPDATE info are recorded.
             logging.warn("%s: Had to BEGIN a user log entry, but ENDING(%d)! @ %s"%(user.username, activity_type, end_datetime))
-            cur_log = cls.begin_user_activity(user=user, activity_type=activity_type, start_datetime=end_datetime)
+            cur_log = cls.update_user_activity(user=user, activity_type=activity_type, start_datetime=end_datetime, suppress_save=True)
 
         logging.debug("%s: Logging LOGOUT activity @ %s" % (user.username, end_datetime))
         cur_log.end_datetime = end_datetime
-        cur_log.save()  # total-seconds will be computed here.
+        if not suppress_save:
+            cur_log.save()  # total-seconds will be computed here.
         return cur_log
+
+
+@receiver(post_save, sender=UserLog)
+def cull_records(sender, **kwargs):
+    """
+    Listen in to see when videos become available.
+    """
+    if settings.USER_LOG_MAX_RECORDS_PER_USER and kwargs["created"]:  # Works for None, out of the box
+        current_models = UserLog.objects.filter(user=kwargs["instance"].user, activity_type=kwargs["instance"].activity_type)
+        if current_models.count() > settings.USER_LOG_MAX_RECORDS_PER_USER:
+            # Unfortunately, could not do an aggregate delete when doing a
+            #   slice in query
+            to_discard = current_models \
+                .order_by("start_datetime")[0:current_models.count() - settings.USER_LOG_MAX_RECORDS_PER_USER]
+            UserLog.objects.filter(pk__in=to_discard).delete()
+
+
 
 
 class VideoFile(ExtendedModel):
