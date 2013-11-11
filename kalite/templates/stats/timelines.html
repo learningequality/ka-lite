@@ -1,8 +1,11 @@
 {% extends base_template %}
+{% load staticfiles %}
 {% load my_filters %}
 
+{% block title %}Timelines{% endblock title %}
+
 {% block headjs %}{{ block.super }}
-    <script type="text/javascript" src="{% static "js/jquery-1.9.1.min.js" %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery-1.9.1.min.js' %}"></script>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript">
           google.load("visualization", "1", {packages:["corechart"]});

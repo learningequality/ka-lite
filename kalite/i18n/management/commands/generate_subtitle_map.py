@@ -1,4 +1,6 @@
 """
+CENTRAL SERVER ONLY
+
 Command used to cache data from Amara's API about which languages videos
 have been subtitled in. This data is then used by the command cache_subtitles 
 to intelligently request srt files from Amara's API, rather than blindly requesting 
@@ -318,6 +320,9 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
+        if not settings.CENTRAL_SERVER:
+            raise CommandError("This must only be run on the central server.")
+
         converted_date = convert_date_input(options.get("date_since_attempt"))
         create_all_mappings(force=options.get("force"), frequency_to_save=5, response_to_check=options.get("response_code"), date_to_check=converted_date)
         logging.info("Executed successfully. Updating language => subtitle mapping to record any changes!")

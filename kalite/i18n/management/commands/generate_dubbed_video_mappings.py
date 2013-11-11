@@ -1,4 +1,5 @@
 """
+Command to import mappings from spreadsheet, convert to a json dictionary.
 """
 import csv
 import datetime

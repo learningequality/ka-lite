@@ -32,11 +32,6 @@ urlpatterns += patterns('',
     }),
 )
 
-# Javascript translations
-urlpatterns += patterns('',
-    (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', {'packages': ('ka-lite.locale')}, 'i18n_javascript_catalog'),
-)
-
 # Teaching / admin patterns
 urlpatterns += patterns('main.views',
     # For teachers

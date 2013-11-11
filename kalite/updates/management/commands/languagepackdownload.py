@@ -6,6 +6,8 @@ from optparse import make_option
 from StringIO import StringIO
 
 from django.core.management.base import BaseCommand, CommandError
+from django.http import HttpRequest
+from django.views.i18n import javascript_catalog
 
 import settings
 import version
@@ -36,6 +38,9 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
+        if settings.CENTRAL_SERVER:
+            raise CommandError("This must only be run on distributed servers server.")
+
         code = convert_language_code_format(options["lang_code"])
         software_version = options["software_version"]
         if code == settings.LANGUAGE_CODE:
@@ -43,15 +48,17 @@ class Command(BaseCommand):
         if software_version == version.VERSION:
             logging.info("Note: software version set to default version. This is fine (and may be intentional), but you may specify a software version other than '%s' with -s" % version.VERSION)
 
-        ## Download the language pack
+        # Download the language pack
         zip_file = get_language_pack(code, software_version)
 
-        ## Unpack into locale directory
+        # Unpack into locale directory
         unpack_language(code, zip_file)
 
-        ## Update database with meta info
+        # Update database with meta info
         update_database(code)
 
+        # 
+        add_jsi18n_file(code)
 
 def get_language_pack(code, software_version):
     """Download language pack for specified language"""
@@ -97,10 +104,15 @@ def update_database(code):
     logging.info("Successfully updated database.")
 
 
+def add_jsi18n_file(code):
+    output_dir = os.path.join(settings.STATIC_ROOT, "js", "i18n")
+    ensure_dir(output_dir)
+    output_file = os.path.join(output_dir, "%s.js" % code)
 
+    request = HttpRequest()
+    request.path = output_file
+    request.session = {'django_language': code}
 
-
-
-
-
-
+    response = javascript_catalog(request, packages=('ka-lite.locale',))
+    with open(output_file, "w") as fp:
+        fp.write(response.content)

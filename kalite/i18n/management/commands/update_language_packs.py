@@ -59,6 +59,9 @@ class Command(BaseCommand):
     )
     
     def handle(self, **options):
+        if not settings.CENTRAL_SERVER:
+            raise CommandError("This must only be run on the central server.")
+
         obliterate_old_schema()
         
         # Raw language code for srts
