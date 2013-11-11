@@ -449,7 +449,7 @@ def add_to_summary(sender, **kwargs):
     if not UserLog.is_enabled():
         return
     instance = kwargs["instance"]
-    import pdb; pdb.set_trace()
+
     if not instance.start_datetime:
         raise ValidationError("start_datetime cannot be None")
     if instance.last_active_datetime and instance.start_datetime > instance.last_active_datetime:

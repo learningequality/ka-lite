@@ -111,12 +111,6 @@ def generate_test_files():
                             # new_line = msgstr_pattern.sub("msgstr \"*****\"", line) #replaces line with asterisks
                         
                         new_line = msgstr_pattern.sub(new_msgstr, line)
-                         # insert variables if necessary
-                         # if new_line != line and variables:
-                         #     import pdb; pdb.set_trace()
-                            # variables_str = " ".join(variables)
-                            # new_line += variables_str
-                            # variables = [] # reset
                         temp_file.write(new_line)
                     counter += 1
                 temp_file.close()
