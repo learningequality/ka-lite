@@ -14,7 +14,7 @@ class NoDuplicateMessagesSessionStorage(SessionStorage):
     """
 
     def add(self, level, message, extra_tags=''):
-        for m in self._queued_messages:
+        for m in self._queued_messages + self._loaded_messages:
             if m.level == level and m.message == message and m.extra_tags == extra_tags:
                 return
         super(NoDuplicateMessagesSessionStorage, self).add(level, message, extra_tags)
