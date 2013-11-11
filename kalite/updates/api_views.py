@@ -1,16 +1,18 @@
 """
 """
 import datetime
+import dateutil.parser
 import json
 import re
 import math
 from annoying.functions import get_object_or_None
 
-from django.shortcuts import render_to_response, get_object_or_404
-from django.http import HttpResponseServerError
-from django.utils import simplejson
 from django.core.management import call_command
 from django.db.models import Q
+from django.http import HttpResponseServerError
+from django.shortcuts import render_to_response, get_object_or_404
+from django.utils import simplejson
+from django.utils.timezone import get_current_timezone, make_naive
 
 import settings
 from .models import UpdateProgressLog
@@ -35,11 +37,12 @@ def process_log_from_request(handler):
                 process_log = get_object_or_404(UpdateProgressLog, id=request.GET["process_id"])
 
         elif request.GET.get("process_name", None):
-            import dateutil.parser
             process_name = request.GET["process_name"]
-            start_time_str = request.GET.get("start_time")
-            start_time = dateutil.parser.parse(start_time_str) if start_time_str else datetime.datetime.now()
-            print start_time
+            if "start_time" not in request.GET:
+                start_time = datetime.datetime.now()
+            else:
+                start_time = make_naive(dateutil.parser.parse(request.GET["start_time"]), get_current_timezone())
+
             try:
                 # Get the latest one of a particular name--indirect
                 process_log = UpdateProgressLog.get_active_log(process_name=process_name, create_new=False)
