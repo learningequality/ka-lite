@@ -7,9 +7,9 @@ from dateutil import relativedelta
 
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
-from django.db import models, transaction
+from django.db import models
 from django.db.models import Sum
-from django.db.models.signals import post_save
+from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 
 import settings
@@ -300,54 +300,24 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
     def is_enabled():
         return settings.USER_LOG_MAX_RECORDS_PER_USER != 0
 
-
     def __unicode__(self):
         if self.end_datetime:
             return u"%s (%s): logged in @ %s; for %s seconds"%(self.user.username, self.language, self.start_datetime, self.total_seconds)
         else:
             return u"%s (%s): logged in @ %s; last active @ %s"%(self.user.username, self.language, self.start_datetime, self.last_active_datetime)
 
-
-    @transaction.commit_on_success
     def save(self, *args, **kwargs):
         """When this model is saved, check if the activity is ended.
         If so, compute total_seconds and update the corresponding summary log."""
-
-        import pdb; pdb.set_trace()
 
         # Do nothing if the max # of records is zero
         # (i.e. this functionality is disabled)
         if not self.is_enabled():
             return
 
-        if not self.start_datetime:
-            raise ValidationError("start_datetime cannot be None")
-        if self.last_active_datetime and self.start_datetime > self.last_active_datetime:
-            raise ValidationError("UserLog date consistency check for start_datetime and last_active_datetime")
-
-        if self.end_datetime and not self.total_seconds:
-            # Compute total_seconds, save to summary
-            #   Note: only supports setting end_datetime once!
-            self.full_clean()
-
-            # The top computation is more lenient: user activity is just time logged in, literally.
-            # The bottom computation is more strict: user activity is from start until the last "action"
-            #   recorded--in the current case, that means from login until the last moment an exercise or
-            #   video log was updated.
-            #self.total_seconds = datediff(self.end_datetime, self.start_datetime, units="seconds")
-            self.total_seconds = 0 if not self.last_active_datetime else datediff(self.last_active_datetime, self.start_datetime, units="seconds")
-
-            # Confirm the result (output info first for easier debugging)
-            logging.debug("%s: total time (%d): %d seconds" % (self.user.username, self.activity_type, self.total_seconds))
-            if self.total_seconds < 0:
-                raise ValidationError("Total learning time should always be non-negative.")
-
-            # Save only completed log items to the UserLogSummary
-            UserLogSummary.add_log_to_summary(self)
-
+        # Setting up data consistency now falls into the pre-save listener.
         # Culling of records will be done as a post-save listener.
         super(UserLog, self).save(*args, **kwargs)
-
 
     @classmethod
     def get_activity_int(cls, activity_type):
@@ -410,7 +380,6 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
 
         return cur_log
 
-
     @classmethod
     def update_user_activity(cls, user, activity_type="login", update_datetime=None, language=language, suppress_save=False):
         """Helper function to update an existing user activity log entry."""
@@ -443,7 +412,6 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
             cur_log.save()
         return cur_log
 
-
     @classmethod
     def end_user_activity(cls, user, activity_type="login", end_datetime=None, suppress_save=False):  # don't accept language--we're just closing previous activity.
         """Helper function to complete an existing user activity log entry."""
@@ -467,9 +435,8 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
                 raise ValidationError("Update time must always be later than the login time.")
         else:
             # No unstopped starts.  Start should have been called first!
-            # Call UPDATE instead of BEGIN, so that both BEGIN and UPDATE info are recorded.
             logging.warn("%s: Had to BEGIN a user log entry, but ENDING(%d)! @ %s"%(user.username, activity_type, end_datetime))
-            cur_log = cls.update_user_activity(user=user, activity_type=activity_type, start_datetime=end_datetime, suppress_save=True)
+            cur_log = cls.begin_user_activity(user=user, activity_type=activity_type, start_datetime=end_datetime, suppress_save=True)
 
         logging.debug("%s: Logging LOGOUT activity @ %s" % (user.username, end_datetime))
         cur_log.end_datetime = end_datetime
@@ -477,6 +444,36 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
             cur_log.save()  # total-seconds will be computed here.
         return cur_log
 
+@receiver(pre_save, sender=UserLog)
+def add_to_summary(sender, **kwargs):
+    if not UserLog.is_enabled():
+        return
+    instance = kwargs["instance"]
+    import pdb; pdb.set_trace()
+    if not instance.start_datetime:
+        raise ValidationError("start_datetime cannot be None")
+    if instance.last_active_datetime and instance.start_datetime > instance.last_active_datetime:
+        raise ValidationError("UserLog date consistency check for start_datetime and last_active_datetime")
+
+    if instance.end_datetime and not instance.total_seconds:
+        # Compute total_seconds, save to summary
+        #   Note: only supports setting end_datetime once!
+        instance.full_clean()
+
+        # The top computation is more lenient: user activity is just time logged in, literally.
+        # The bottom computation is more strict: user activity is from start until the last "action"
+        #   recorded--in the current case, that means from login until the last moment an exercise or
+        #   video log was updated.
+        #instance.total_seconds = datediff(instance.end_datetime, instance.start_datetime, units="seconds")
+        instance.total_seconds = 0 if not instance.last_active_datetime else datediff(instance.last_active_datetime, instance.start_datetime, units="seconds")
+
+        # Confirm the result (output info first for easier debugging)
+        if instance.total_seconds < 0:
+            raise ValidationError("Total learning time should always be non-negative.")
+        logging.debug("%s: total time (%d): %d seconds" % (instance.user.username, instance.activity_type, instance.total_seconds))
+
+        # Save only completed log items to the UserLogSummary
+        UserLogSummary.add_log_to_summary(instance)
 
 @receiver(post_save, sender=UserLog)
 def cull_records(sender, **kwargs):
