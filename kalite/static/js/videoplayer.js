@@ -391,7 +391,7 @@ window.PointView = Backbone.View.extend({
     Passively display the point count to the user (and listen to changes on the model to know when to update).
     */
 
-    el: $(".points-container"),
+    el: ".points-container",
 
     initialize: function() {
 
