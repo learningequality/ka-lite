@@ -169,7 +169,7 @@ class BrowserTestCase(KALiteTestCase):
         time.sleep(0.50) # wait for the message to get created via AJAX
 
         # Get messages (and limit by type)    
-        messages = self.browser.find_elements_by_class_name("alert" if settings.CENTRAL_SERVER else "message")
+        messages = self.browser.find_elements_by_class_name("alert")
         if message_type:
             messages = [m for m in messages if message_type in m.get_attribute("class")]
 

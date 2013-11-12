@@ -247,7 +247,7 @@ def login(request, facility):
             )
 
     else:  # render the unbound login form
-        referer = urlparse.urlparse(request.META.get("HTTP_REFERER")).path
+        referer = urlparse.urlparse(request.META["HTTP_REFERER"]).path if request.META.get("HTTP_REFERER") else None
         # never use the homepage as the referer
         if referer == reverse("homepage"):
             referer = None
