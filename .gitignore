@@ -16,8 +16,9 @@ kalite/static/data/subtitles/subtitle_counts.json
 kalite/static/data/subtitles/languages/*
 kalite/static/data/i18n/dubbed_video_mappings.json
 kalite/static/language_packs/*
-kalite/static/srt/*
 kalite/static/pot/*.pot
+kalite/static/srt/*
+kalite/static/subtitles/*
 kalite/private_key.pem
 kalite/secrets.py
 .project
