@@ -18,7 +18,7 @@ from django.utils.translation import ugettext as _
 
 from .api_views import get_data_form, stats_dict
 from main.topicdata import ID2SLUG_MAP, NODE_CACHE
-from main.models import VideoLog, ExerciseLog, VideoFile, UserLog
+from main.models import VideoLog, ExerciseLog, UserLog
 from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device
 from securesync.views import facility_required
 from settings import LOG as logging
