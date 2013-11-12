@@ -72,7 +72,7 @@ def add_facility_student(request):
 
 @distributed_server_only
 @facility_required
-@render_to("securesync/add_facility_user.html")
+@render_to("securesync/facility_user.html")
 def edit_facility_user(request, facility, is_teacher=None, id=None):
     """Different codepaths for the following:
     * Django admin/teacher creates user, teacher
@@ -134,6 +134,8 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
             "group": request.GET.get("group", None),
             "is_teacher": is_teacher,
         })
+
+    if not title:
         if not request.is_admin:
             title = _("Sign up for an account")
         elif is_teacher:
@@ -247,7 +249,7 @@ def login(request, facility):
             )
 
     else:  # render the unbound login form
-        referer = urlparse.urlparse(request.META.get("HTTP_REFERER")).path
+        referer = urlparse.urlparse(request.META["HTTP_REFERER"]).path if request.META.get("HTTP_REFERER") else None
         # never use the homepage as the referer
         if referer == reverse("homepage"):
             referer = None

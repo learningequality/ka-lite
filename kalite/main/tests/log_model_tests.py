@@ -18,7 +18,8 @@ class TestExerciseLogs(KALiteTestCase):
         # create a facility and user that can be referred to in models across tests
         self.facility = Facility(name="Test Facility")
         self.facility.save()
-        self.user = FacilityUser(username="testuser", password="dummy", facility=self.facility)
+        self.user = FacilityUser(username="testuser", facility=self.facility)
+        self.user.set_password("dumber")
         self.user.save()
 
         # create an initial ExerciseLog instance so we have something to collide with later
@@ -83,7 +84,8 @@ class TestVideoLogs(KALiteTestCase):
         # create a facility and user that can be referred to in models across tests
         self.facility = Facility(name="Test Facility")
         self.facility.save()
-        self.user = FacilityUser(username="testuser", password="dummy", facility=self.facility)
+        self.user = FacilityUser(username="testuser", facility=self.facility)
+        self.user.set_password("dumber")
         self.user.save()
 
         # create an initial VideoLog instance so we have something to collide with later
