@@ -135,12 +135,6 @@
                             {% if messages %}
                                 <!--Normal messages loaded from the view get inserted here-->
                                 <div id="messages">
-                                {% for message in messages %}
-                                  <div class="alert alert-{{message.tags}}">
-                                    <a class="close" data-dismiss="alert" href="#">&times;</a>
-                                    {{message}}
-                                  </div>
-                                {% endfor %}
                                 </div>
                             {% endif %}
                             {% endblock precontent %}

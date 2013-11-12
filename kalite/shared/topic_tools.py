@@ -213,7 +213,7 @@ def get_related_exercises(videos):
     """Given a set of videos, get all of their related exercises."""
     related_exercises = []
     for video in videos:
-        if "related_exercise" in video:
+        if video.get("related_exercise"):
             related_exercises.append(video['related_exercise'])
     return related_exercises
 

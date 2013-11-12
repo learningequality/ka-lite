@@ -191,8 +191,10 @@ def get_exercise_page_paths(video_id=None, video_slug=None):
     assert (video_id or video_slug) and not (video_id and video_slug), "One arg, not two" 
 
     try:
+        if not video_slug:
+            video_slug = topic_tools.get_id2slug_map()[video_id]
         exercise_paths = set()
-        for exercise in topic_tools.get_related_exercises(video=topic_tools.get_node_cache("Video")[video_slug][0]):
+        for exercise in topic_tools.get_related_exercises(videos=topic_tools.get_node_cache("Video")[video_slug]):
             exercise_paths = exercise_paths.union(set([exercise["path"]]))
         return list(exercise_paths)
     except Exception as e:
