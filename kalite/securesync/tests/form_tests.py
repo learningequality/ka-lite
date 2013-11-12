@@ -52,7 +52,7 @@ class UserRegistration(KALiteTestCase):
 
         response = self.client.post(reverse('add_facility_student'), self.data)
         self.assertEqual(response.status_code, 200, "Status code must be 200")
-        self.assertFormError(response, 'form', 'password', "Password should be at least %d characters." % settings.PASSWORD_CONSTRAINTS['min_length'])
+        self.assertFormError(response, 'form', 'password_first', "Password should be at least %d characters." % settings.PASSWORD_CONSTRAINTS['min_length'])
 
     def test_only_ascii_letters_allowed(self):
         self.data['password_first'] = string.whitespace.join([self.data['password_first']] * 2)
