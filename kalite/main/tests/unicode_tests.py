@@ -4,6 +4,7 @@ from datetime import datetime  # main.models imports this way, so we have this h
 from django.utils import unittest
 
 import settings
+import version
 from main.models import *
 from securesync.models import Device, Facility, FacilityGroup, FacilityUser
 from shared.testing import KALiteTestCase, UnicodeModelsTest
@@ -15,7 +16,7 @@ class MainUnicodeModelsTest(KALiteTestCase, UnicodeModelsTest):
         # Make sure we're testing all classes
         self.check_unicode_class_coverage(
             models_module="main.models",
-            known_classes = [ExerciseLog, UserLog, UserLogSummary, VideoLog],
+            known_classes = [ExerciseLog, UserLog, UserLogSummary, VideoLog, LanguagePack, VideoFile],
         )
 
 
@@ -68,3 +69,14 @@ class MainUnicodeModelsTest(KALiteTestCase, UnicodeModelsTest):
             end_datetime=datetime.now(),
         )
         self.assertNotIn(unicode(ulogsum), "Bad Unicode data", "UserLogSummary: Bad conversion to unicode.")
+
+        lpack = LanguagePack(code=self.korean_string, name=self.korean_string, software_version=version.VERSION)
+        self.assertNotIn(unicode(lpack), "Bad Unicode data", "LanguagePack: Bad conversion to unicode (before saving).")
+        lpack.save()
+        self.assertNotIn(unicode(lpack), "Bad Unicode data", "LanguagePack: Bad conversion to unicode (after saving).")
+
+        vfile = VideoFile(youtube_id=self.korean_string)
+        self.assertNotIn(unicode(vfile), "Bad Unicode data", "VideoFile: Bad conversion to unicode (before saving).")
+        vfile.save()
+        self.assertNotIn(unicode(vfile), "Bad Unicode data", "VideoFile: Bad conversion to unicode (after saving).")
+
