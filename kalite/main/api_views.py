@@ -23,7 +23,7 @@ from django.views.decorators.gzip import gzip_page
 import settings
 import version
 from .api_forms import ExerciseLogForm, VideoLogForm, DateTimeForm
-from .models import VideoLog, ExerciseLog, VideoFile
+from .models import VideoLog, ExerciseLog
 from config.models import Settings
 from securesync.models import FacilityGroup, FacilityUser
 from shared.caching import backend_cache_page

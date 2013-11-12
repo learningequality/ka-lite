@@ -15,8 +15,7 @@ from django.utils import simplejson
 from django.utils.timezone import get_current_timezone, make_naive
 
 import settings
-from .models import UpdateProgressLog
-from main.models import VideoFile
+from .models import UpdateProgressLog, VideoFile
 from main import topicdata
 from shared.decorators import require_admin
 from shared.jobs import force_job, job_status

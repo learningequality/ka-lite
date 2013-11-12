@@ -17,9 +17,9 @@ from django.views.decorators.cache import cache_page
 from django.views.decorators.http import condition 
 
 import settings
-from main.models import VideoFile
 from settings import LOG as logging
 from shared import topic_tools
+from updates.models import VideoFile
 from utils.internet import generate_all_paths
 
 
