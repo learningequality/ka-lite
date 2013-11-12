@@ -99,7 +99,7 @@ var TotalPointView = Backbone.View.extend({
 
 });
 
-
+// Related to showing elements on screen
 $(function(){
     // global Backbone model instance to store state related to the user (username, points, admin status, etc)
     window.userModel = new UserModel();
@@ -117,7 +117,7 @@ $(function(){
     }
 
     // Do the AJAX request to async-load user and message data
-    $("[class$=-only]").hide();
+    //$("[class$=-only]").hide();
     doRequest("/api/status")
         .success(function(data){
 
@@ -143,7 +143,10 @@ $(function(){
         .fail(function(resp) {
             communicate_api_failure(resp, "id_status")
         });
+});
 
+// Related to student log progress
+$(function(){
     // load progress data for all videos linked on page, and render progress circles
     var youtube_ids = $.map($(".progress-circle[data-youtube-id]"), function(el) { return $(el).data("youtube-id") });
     if (youtube_ids.length > 0) {
@@ -176,6 +179,17 @@ $(function(){
 
 });
 
+// Related to language bar function
+$(function(){
+    // If new language is selected, redirect after adding django_language session key
+    $("#language_selector").change(function() {
+        window.location = "?set_language=" + $("#language_selector").val();
+    });
+    // If user is admin, they can set currently selected language as the default
+    $("#make_default_language").click(function() {
+        window.location = "?set_default_language=" + $("#language_selector").val();
+    });
+});
 
 // Code related to checking internet connectivity status
 

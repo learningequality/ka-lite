@@ -2,6 +2,8 @@ import time
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
+from django.contrib.sessions.models import Session
+
 import settings
 from .base import create_test_admin, KALiteTestCase
 from settings import LOG as logging
@@ -76,7 +78,10 @@ class BrowserTestCase(KALiteTestCase):
         """Create a browser to use for test cases.  Try a bunch of different browsers; hopefully one of them works!"""
 
         super(BrowserTestCase, self).setUp()
-        
+
+        # Clear the session cache after ever test case, to keep things clean.
+        Session.objects.all().delete()
+
         # Can use already launched browser.
         if self.persistent_browser:
             (self.browser,self.admin_user,self.admin_pass) = setup_test_env(persistent_browser=self.persistent_browser)
@@ -92,7 +97,7 @@ class BrowserTestCase(KALiteTestCase):
 
         
     def tearDown(self):
-        if not self.persistent_browser:
+        if not self.persistent_browser and hasattr(self, "browser") and self.browser:
             self.browser.quit()
         return super(BrowserTestCase, self).tearDown()
 

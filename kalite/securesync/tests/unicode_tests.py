@@ -39,8 +39,8 @@ class SecuresyncUnicodeModelsTest(UnicodeModelsTest):
             last_name=self.korean_string, 
             username=self.korean_string,
             notes=self.korean_string,
-            password=self.korean_string * settings.PASSWORD_CONSTRAINTS["min_length"],
         )
+        fu.set_password(self.korean_string * settings.PASSWORD_CONSTRAINTS["min_length"]),
         self.assertNotIn(unicode(fu), "Bad Unicode data", "FacilityUser: Bad conversion to unicode.")
 
         syncsess = SyncSession(
