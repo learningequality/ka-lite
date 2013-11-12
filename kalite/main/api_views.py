@@ -67,10 +67,10 @@ def save_video_log(request):
     if not form.is_valid():
         raise ValidationError(form.errors)
     data = form.data
-
+    user = request.session["facility_user"]
     try:
         videolog = VideoLog.update_video_log(
-            facility_user=request.session["facility_user"],
+            facility_user=user,
             youtube_id=data["youtube_id"],
             total_seconds_watched=data["total_seconds_watched"],  # don't set incrementally, to avoid concurrency issues
             points=data["points"],
@@ -277,7 +277,7 @@ def _update_video_log_with_points(seconds_watched, video_length, youtube_id, fac
     )
 
     if "points" in request.session:
-        request.session["points"] = compute_total_points(user)
+        request.session["points"] = compute_total_points(facility_user)
 
 
 def compute_total_points(user):
