@@ -1,0 +1,7 @@
+def languages(request):
+    return {
+        "DEFAULT_LANGUAGE": request.session["default_language"],
+        "language_choices": request.session["language_choices"],
+        "current_language": request.session["django_language"],
+    }
+
