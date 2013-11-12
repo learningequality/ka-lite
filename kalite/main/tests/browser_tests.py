@@ -408,8 +408,8 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
             expected_min_points = points + 10
             expected_max_points = points + 20
             points = self.browser_submit_answer(answer)
-            self.assertGreaterEqual(points, expected_min_points, "Too few points were given: %d < %d" % (points, expected_min_points))
-            self.assertLessEqual(points, expected_max_points, "Too many points were given: %d > %d" % (points, expected_max_points))
+            self.assertGreaterEqual(points, expected_min_points, "Too few points were given: %s < %s" % (points, expected_min_points))
+            self.assertLessEqual(points, expected_max_points, "Too many points were given: %s > %s" % (points, expected_max_points))
             if ai < 9:
                 self.browser_check_django_message(num_messages=0)  # make sure no messages
             else:
