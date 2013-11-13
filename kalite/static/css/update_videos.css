@@ -28,16 +28,20 @@ ul.dynatree-container li, .ui-widget-content {
     padding: 4px 10px 5px 10px;
     margin-bottom: 5px;
 }
-#download-videos {
+
+#download-videos:enabled {
     color: #52A852;
 }
 
-#delete-videos {
+#delete-videos:enabled {
     color: #AC4343;
 }
 
-#retry-video-download {
+#retry-video-download:enabled {
     color: red;
+}
+
+#retry-video-download {
     display:none;
 }
 
@@ -53,3 +57,4 @@ ul.dynatree-container li, .ui-widget-content {
     padding: 5px 0px 0px 0px;
     display: none;
 }
+
