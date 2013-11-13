@@ -71,7 +71,7 @@ LOCALE_PATHS   = tuple([os.path.realpath(lp) + "/" for lp in LOCALE_PATHS])
 DATABASES      = getattr(local_settings, "DATABASES", {
     "default": {
         "ENGINE": getattr(local_settings, "DATABASE_TYPE", "django.db.backends.sqlite3"),
-        "NAME"  : getattr(local_settings, "DATABASE_PATH", PROJECT_PATH + "/database/data.sqlite"),
+        "NAME"  : getattr(local_settings, "DATABASE_PATH", os.path.join(PROJECT_PATH, "database", "data.sqlite")),
         "OPTIONS": {
             "timeout": 60,
         },
