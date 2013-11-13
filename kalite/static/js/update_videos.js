@@ -26,6 +26,7 @@ function video_check_callback(progress_log, resp) {
             if (progress_log.process_percent == 1.) {
                 // 100% done with ALL videos.
                 $(".progress-section, #cancel-download").hide();
+                $("#download-videos").removeAttr("disabled");
                 updatesReset(progress_log.process_name);
                 if ($(".subtitle-section:visible").length == 0) {
                     $("#cancel-download").hide();
@@ -39,6 +40,7 @@ function video_check_callback(progress_log, resp) {
             // Completed without 100% done means the videos were cancelled.
             $("#retry-video-download").hide();
             $("#cancel-download").hide();
+            $("#download-videos").removeAttr("disabled");
         } else {
             // Everything's good for now!
             setNodeClass(currentKey, "partial");
@@ -51,6 +53,7 @@ function video_check_callback(progress_log, resp) {
     } else { // check failed.
         handleFailedAPI(resp, "Error downloading videos", "id_video_download");
         clearInterval(window.download_subtitle_check_interval);
+        $("#download-videos").removeAttr("disabled");
     }
 }
 
