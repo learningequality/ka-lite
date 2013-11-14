@@ -149,10 +149,7 @@ window.VideoPlayerModel = Backbone.Model.extend({
         var duration = this.getDuration();
         if (duration === 0) return;
 
-        var secondsSinceSave = this.get("seconds_watched_since_save");
-        var percentSinceSave = Math.min(1.0, secondsSinceSave / duration);
-        var percentTotal = percentSinceSave +
-            (this.pointsSaved / this.get("possible_points"));
+        var percentTotal = this.get("total_seconds_watched") / duration;
         if (percentTotal > this.REQUIRED_PERCENT_FOR_FULL_POINTS) {
             percentTotal = 1.0;
         }
@@ -391,7 +388,7 @@ window.PointView = Backbone.View.extend({
     Passively display the point count to the user (and listen to changes on the model to know when to update).
     */
 
-    el: $(".points-container"),
+    el: ".points-container",
 
     initialize: function() {
 
