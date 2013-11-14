@@ -39,7 +39,7 @@ def zone_form(request, zone_id, org_id=None):
     context = control_panel_context(request, org_id=org_id, zone_id=zone_id)
 
     if request.method == "POST":
-        form = ZoneForm(data=request.POST, instance=zone)
+        form = ZoneForm(data=request.POST, instance=context["zone"])
         if form.is_valid():
             form.instance.save()
             if context["org"]:
