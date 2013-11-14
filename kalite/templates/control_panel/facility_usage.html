@@ -4,11 +4,53 @@
 
 {% block title %}{{ facility.name }}{% trans " - Facility Usage" %}{% endblock title %}
 
+{% block headjs %}
+
+    <script type="text/javascript">
+        var end_date = new Date({{ date_range.1 }})
+        var start_date = new Date({{ date_range.0 }})
+
+        console.log(end_date);
+
+        if (start_date >= end_date) {
+            start_date.setDate(end_date.getDate() - 30)
+        }
+        $(function() {
+            $('#start_date_select').datepicker({
+                dateFormat: "dd-mm-yy",
+                altField: "#start_standard_date",
+                altFormat: "yy-mm-dd"
+            });
+
+            $("#start_date_select").datepicker('setDate', start_date);
+
+            $('#end_date_select').datepicker({
+                dateFormat: "dd-mm-yy",
+                altField: "#end_standard_date",
+                altFormat: "yy-mm-dd"
+            });
+
+            $("#end_date_select").datepicker('setDate', end_date);
+
+            $("#CSV_EXPORT").click(function(){
+                window.location.href= "?format=csv&frequency={{ settings.USER_LOG_SUMMARY_FREQUENCY.1 }}&period_start=" + $("#start_standard_date").val() + "&period_end=" + $("#end_standard_date").val()
+            })
+        });
+    </script>
+
+{% endblock headjs %}
+
 {% block buttons %}{{ block.super }}
             <li>
-                <a class="button--large" href="?format=csv&frequency={{ settings.USER_LOG_SUMMARY_FREQUENCY.1 }}" title="User report for the previous month">
-                    {% trans "Export to CSV" %}
-                </a>
+                <div>
+                    <div class="date">Start Date:<input id="start_date_select" type="text"><input class="hidden" type="text" id="start_standard_date"></div>
+                    <div class="date">End Date:<input id="end_date_select" type="text"><input class="hidden" type="text" id="end_standard_date"></div>
+                    <div class="date">
+                        <a class="btn-large" id="CSV_EXPORT" title="User report for the previous month">
+                            {% trans "Export to CSV" %}
+                        </a>
+                    </div>
+                </div>
             </li>
 {% endblock buttons %}
 

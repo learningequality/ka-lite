@@ -12,3 +12,7 @@ class ZoneForm(ModelForm):
 class UploadFileForm(forms.Form):
     file  = forms.FileField()
 
+class DateForm(forms.Form):
+    """Form that validates Dates for CSV Export"""
+
+    date = forms.DateField()

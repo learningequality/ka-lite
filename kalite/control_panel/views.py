@@ -16,7 +16,7 @@ from django.utils.translation import ugettext as _
 
 import settings
 import version
-from .forms import ZoneForm, UploadFileForm
+from .forms import ZoneForm, UploadFileForm, DateForm
 try:
     from central.models import Organization
 except:
@@ -118,7 +118,7 @@ def zone_management(request, zone_id, org_id=None):
 @require_authorized_admin
 @render_to("control_panel/facility_usage.html")
 @render_to_csv(["students", "teachers"], key_label="user_id", order="stacked")
-def facility_usage(request, facility_id, org_id=None, zone_id=None, frequency=None):
+def facility_usage(request, facility_id, org_id=None, zone_id=None, frequency=None, period_start="", period_end=""):
     context = control_panel_context(request, org_id=org_id, zone_id=zone_id, facility_id=facility_id)
 
     # Basic data
@@ -131,29 +131,32 @@ def facility_usage(request, facility_id, org_id=None, zone_id=None, frequency=No
         .filter(facility=context["facility"], is_teacher=True) \
         .order_by("last_name", "first_name", "username") \
         .prefetch_related("group")
-    
+
     # Get the start and end date--based on csv.  A hack, yes...
     if request.GET.get("format", "") == "csv":
-        frequency = frequency or request.GET.get("fequency", "months")
-        (period_start, period_end) = _get_date_range(frequency)
-    else:
-        (period_start, period_end) = (None, None)
+        frequency = frequency or request.GET.get("frequency", "months")
+        period_start = period_start or request.GET.get("period_start", "")
+        period_end = period_end or request.GET.get("period_end", "")
+        try:
+            (period_start, period_end) = _get_date_range(frequency, period_start, period_end)
+        except ValidationError as e:
+            return JsonResponse({"error": "Could not load CSV: Unrecognized input date format."}, status=500)
 
     (student_data, group_data) = _get_user_usage_data(students, period_start=period_start, period_end=period_end)
     (teacher_data, _) = _get_user_usage_data(teachers, period_start=period_start, period_end=period_end)
 
     # Total hack for CSV-only
     if request.GET.get("format") == "csv":
-        (period_start, period_end) = _get_date_range(frequency)
-    else:
-        period_start = None
-        period_end = None
+        try:
+            (period_start, period_end) = _get_date_range(frequency, period_start, period_end)
+        except ValidationError as e:
+            return JsonResponse({"error": "Could not load CSV: Unrecognized input date format."}, status=500)
 
     context.update({
         "groups": group_data,
         "students": student_data,
         "teachers": teacher_data,
-        "date_range": [period_start, period_end] if frequency else [None, None],
+        "date_range": [period_start, period_end],
     })
     return context
 
@@ -252,20 +255,30 @@ def account_management(request, org_id=None):
 
 # data functions
 
-def _get_date_range(frequency):
+def _get_date_range(frequency, period_start, period_end):
     """
     Hack function (while CSV is in initial stages),
         returns dates of beginning and end of last month.
     Should be extended to do something more generic, based on
     "frequency", and moved into utils/general.py
     """
+    if period_start:
+        period_start = DateForm(data={"date": period_start}).data["date"]
+
+    if period_end:
+        period_end = DateForm(data={"date": period_end}).data["date"]
+
     assert frequency == "months"
 
     if frequency == "months":  # only works for months ATM
-        cur_date = datetime.datetime.now()
-        first_this_month = datetime.datetime(year=cur_date.year, month=cur_date.month, day=1, hour=0, minute=0, second=0)
-        period_end = first_this_month - datetime.timedelta(seconds=1)
-        period_start = datetime.datetime(year=period_end.year, month=period_end.month, day=1)
+        if not (period_start or period_end):
+            cur_date = datetime.datetime.now()
+            first_this_month = datetime.datetime(year=cur_date.year, month=cur_date.month, day=1, hour=0, minute=0, second=0)
+            period_end = first_this_month - datetime.timedelta(seconds=1)
+            period_start = datetime.datetime(year=period_end.year, month=period_end.month, day=1)
+        else:
+            period_end = period_end or period_start + datetime.timedelta(days=30)
+            period_start = period_start or period_end - datetime.timedelta(days=30)
     return (period_start, period_end)
 
 
