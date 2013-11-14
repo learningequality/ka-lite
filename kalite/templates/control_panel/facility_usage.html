@@ -10,8 +10,6 @@
         var end_date = new Date({{ date_range.1 }})
         var start_date = new Date({{ date_range.0 }})
 
-        console.log(end_date);
-
         if (start_date >= end_date) {
             start_date.setDate(end_date.getDate() - 30)
         }
