@@ -224,7 +224,6 @@ function get_server_status(options, fields, callback) {
     var request = $.ajax({
         url:  prefix + args.path,
         dataType: args.hostname ? "jsonp" : "json",
-        jsonpCallback: "temp_callback", // TODO(jamalex): remove this line once the central server has this endpoint properly running
         data: {fields: (fields || []).join(",")}
     }).success(function(data) {
         callback(data);
