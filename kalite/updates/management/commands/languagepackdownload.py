@@ -11,15 +11,16 @@ from django.views.i18n import javascript_catalog
 
 import settings
 import version
+from .classes import UpdatesStaticCommand
+from i18n.models import LanguagePack
 from settings import LOG as logging
 from shared.i18n import convert_language_code_format
-from updates.models import LanguagePack
 from utils.general import ensure_dir
 
 
 LOCALE_ROOT = settings.LOCALE_PATHS[0]
 
-class Command(BaseCommand):
+class Command(UpdatesStaticCommand):
     help = "Download language pack requested from central server"
 
     option_list = BaseCommand.option_list + (
@@ -37,6 +38,13 @@ class Command(BaseCommand):
                     help="Specify the software version to download a language pack for."),
     )
 
+    stages = (
+        "download_language_pack",
+        "unpack_language_pack",
+        "update_database",
+        "add_js18n_file",
+    )
+
     def handle(self, *args, **options):
         if settings.CENTRAL_SERVER:
             raise CommandError("This must only be run on distributed servers server.")
@@ -48,16 +56,21 @@ class Command(BaseCommand):
         if software_version == version.VERSION:
             logging.info("Note: software version set to default version. This is fine (and may be intentional), but you may specify a software version other than '%s' with -s" % version.VERSION)
 
+
         # Download the language pack
+        self.start("Downloading language pack '%s'" % code)
         zip_file = get_language_pack(code, software_version)
 
         # Unpack into locale directory
+        self.next_stage("Unpacking language pack '%s'" % code)
         unpack_language(code, zip_file)
 
         # Update database with meta info
+        self.next_stage("Updating database for language pack '%s'" % code)
         update_database(code)
 
-        # 
+        #
+        self.next_stage("Creating static files for language pack '%s'" % code)
         add_jsi18n_file(code)
 
 def get_language_pack(code, software_version):
