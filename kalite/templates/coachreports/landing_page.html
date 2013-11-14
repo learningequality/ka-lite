@@ -21,7 +21,7 @@
                 <div class="vertical-shadow suggested-action">
                     <a class="changeable-link" href="{% url tabular_view %}?{% block topic_paths %}{% for path in form.topic_path %}topic_path={{ path }}&{% endfor %}{% endblock topic_paths %}">
                         <div class="suggested-action-image-link" style="background-image: url({% static 'images/coachreports/coach-report-table.png' %});"></div>
-                        <h2 class="suggested-action-title">{% trans "Topic overview" %}</h2>
+                        <h2 class="suggested-action-title">{% trans "Progress by topic" %}</h2>
                     </a>
                 </div>
             </div>
