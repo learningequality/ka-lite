@@ -27,20 +27,7 @@ def get_subtitle_counts(request):
         raise Http404
     subtitle_counts = json.loads(open(subtitledata_path + "subtitle_counts.json").read())
 
-
-    # Return an appropriate response
-    # TODO(dylan): Use jsonp decorator once it becomes available
-    if request.GET.get("callback", None):
-        # JSONP response
-        response = JsonpResponse("%s(%s);" % (request.GET["callback"], json.dumps(subtitle_counts, sort_keys=True)))
-        response["Access-Control-Allow-Headers"] = "*"
-        response["Content-Type"] = "text/javascript"
-        return response
-
-    else:
-        # Regular request
-        response = JsonResponse(json.dumps(subtitle_counts, sort_keys=True))
-        return response
+    return JsonResponse(json.dumps(subtitle_counts, sort_keys=True))
 
 
 @central_server_only
@@ -48,6 +35,7 @@ def get_subtitle_counts(request):
 @api_handle_error_with_json
 def get_available_language_packs(request):
     """Return dict of available language packs"""
+
     # On central, loop through available language packs in static/language_packs/
     language_packs_path = settings.LANGUAGE_PACK_ROOT
     try:
@@ -55,14 +43,4 @@ def get_available_language_packs(request):
     except:
         raise Http404
 
-    if request.GET.get("callback", None):
-        # JSONP response
-        response = JsonpResponse("%s(%s);" % (request.GET["callback"], json.dumps(language_packs_available, sort_keys=True)))
-        response["Access-Control-Allow-Headers"] = "*"
-        response["Content-Type"] = "text/javascript"
-        return response
-
-    else:
-        # Regular request
-        response = JsonResponse(json.dumps(language_packs_available, sort_keys=True))
-        return response
+    return JsonResponse(language_packs_available)
