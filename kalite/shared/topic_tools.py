@@ -223,7 +223,7 @@ def get_exercise_paths():
     """This function retrieves all the exercise paths.
     """
     exercises = get_node_cache("Exercise").values()
-    return [exercise[0]["path"] for exercise in exercises]
+    return [n["path"] for exercise in exercises for n in exercise]
 
 
 def get_related_videos(exercises, topics=None, possible_videos=None):
