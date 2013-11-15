@@ -4,12 +4,12 @@ from functools import partial
 from optparse import make_option
 
 import settings
-from main.models import VideoFile
+from .classes import UpdatesDynamicCommand
 from shared import caching
 from shared.jobs import force_job
 from shared.topic_tools import get_video_by_youtube_id
 from shared.videos import download_video, DownloadCancelled, URLNotFound
-from updates.management.commands.classes import UpdatesDynamicCommand
+from updates.models import VideoFile
 from utils import set_process_priority
 
 

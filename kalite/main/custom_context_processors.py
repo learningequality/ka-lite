@@ -1,6 +1,4 @@
 import settings
-from config.models import Settings
-from main.models import LanguagePack
 
 def custom(request):
     return {
@@ -14,18 +12,3 @@ def custom(request):
         "is_central": False,
         "restricted": settings.package_selected("UserRestricted")
     }
-
-
-def languages(request):
-    if "default_language" not in request.session:
-        request.session["default_language"] = str(Settings.get("default_language") or "en")
-    if "language_choices" not in request.session or request.is_admin:  # don't cache for admins
-        request.session["language_choices"] = list(LanguagePack.objects.all())
-
-    default_language = request.session["default_language"]
-    return {
-        "DEFAULT_LANGUAGE": default_language,
-        "language_choices": request.session["language_choices"],
-        "current_language": request.session.get("django_language", default_language),
-    }
-
