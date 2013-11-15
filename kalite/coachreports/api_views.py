@@ -21,7 +21,7 @@ from django.utils.translation import ugettext as _
 from .forms import DataForm
 from config.models import Settings
 from main import topicdata
-from main.models import VideoLog, ExerciseLog, VideoFile, UserLog, UserLogSummary
+from main.models import VideoLog, ExerciseLog, UserLog, UserLogSummary
 from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device
 from securesync.views import facility_required
 from settings import LOG as logging

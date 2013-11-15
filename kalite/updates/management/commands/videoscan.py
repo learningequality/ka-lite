@@ -6,9 +6,9 @@ from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
-from main.models import VideoFile
 from shared import caching
 from shared.videos import download_video
+from updates.models import VideoFile
 from utils.general import break_into_chunks
 
 

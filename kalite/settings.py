@@ -209,7 +209,8 @@ else:
         "securesync.middleware.DBCheck",
     )
 #    if USE_I18N:
-    MIDDLEWARE_CLASSES += ("i18n.middleware.SessionLanguage"),
+    TEMPLATE_CONTEXT_PROCESSORS += ("i18n.custom_context_processors.languages",)
+    MIDDLEWARE_CLASSES += ("i18n.middleware.SessionLanguage",)
     INSTALLED_APPS += ('i18n',)
 
 

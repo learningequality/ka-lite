@@ -13,8 +13,8 @@ import settings
 import version
 from settings import LOG as logging
 from shared.i18n import convert_language_code_format
+from updates.models import LanguagePack
 from utils.general import ensure_dir
-from main.models import LanguagePack
 
 
 LOCALE_ROOT = settings.LOCALE_PATHS[0]

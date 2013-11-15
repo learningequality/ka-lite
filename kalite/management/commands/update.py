@@ -134,6 +134,7 @@ class Command(UpdatesStaticCommand):
             "clean_pyc",
             "git",
             "syncdb",
+            "videoscan",
         ]
 
         # step 1: clean_pyc (has to be first)
@@ -145,6 +146,7 @@ class Command(UpdatesStaticCommand):
         repo = git.Repo()
 
         try:
+<<<<<<< HEAD
             if not branch:
                 # old behavior--assume you're pulling to remote
                 self.stdout.write(repo.git.pull() + "\n")
@@ -168,6 +170,10 @@ class Command(UpdatesStaticCommand):
         call_command("syncdb")
         call_command("migrate", merge=True)
 
+        # step 4: run videoscan (in case we blew away the videofile in migration from main to updates)
+        self.next_stage("Refreshing list of video files")
+        call_command("videoscan")
+
         # Done!
         self.complete()
 
@@ -188,6 +194,7 @@ class Command(UpdatesStaticCommand):
             "copy in data",
             "update_local_settings",
             "move_files",
+            "
             "test_server",
             "move_to_final",
             "start_server",
@@ -420,6 +427,9 @@ class Command(UpdatesStaticCommand):
         out = call_outside_command_with_output("migrate", manage_py_dir=os.path.join(self.working_dir, "kalite"))
         out = call_outside_command_with_output("syncdb", migrate=True, manage_py_dir=os.path.join(self.working_dir, "kalite"))
         sys.stdout.write("\n")
+
+        # Run videoscan, in case we blew away the videofiles moving from main to updates app
+        out = call_outside_command_with_output("videoscan", manage_py_dir=os.path.join(self.working_dir, "kalite"))
 
 
     def update_local_settings(self):

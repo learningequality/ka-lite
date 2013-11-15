@@ -22,13 +22,3 @@ class UserLogSummaryAdmin(admin.ModelAdmin):
     pass
 if UserLog.is_enabled() or settings.CENTRAL_SERVER:  # only enable admin if the feature is enabled.
     admin.site.register(UserLogSummary, UserLogSummaryAdmin)
-
-class VideoFileAdmin(admin.ModelAdmin):
-    list_display = ("youtube_id", "flagged_for_download", "download_in_progress", "cancel_download", "percent_complete",)
-    list_filter = ("flagged_for_download", "download_in_progress",)
-admin.site.register(VideoFile, VideoFileAdmin)
-
-class LanguagePackAdmin(admin.ModelAdmin):
-    list_display = ("code", "name", "phrases", "approved_translations", "percent_translated", "language_pack_version", "software_version", "subtitle_count",)
-    list_filter = ("code", "name", "phrases", "approved_translations", "percent_translated", "language_pack_version", "software_version", "subtitle_count",)
-admin.site.register(LanguagePack, LanguagePackAdmin)
