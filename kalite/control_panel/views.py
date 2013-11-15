@@ -16,7 +16,7 @@ from django.utils.translation import ugettext as _
 
 import settings
 import version
-from .forms import ZoneForm, UploadFileForm, DateForm
+from .forms import ZoneForm, UploadFileForm, DateRangeForm
 try:
     from central.models import Organization
 except:
@@ -132,27 +132,20 @@ def facility_usage(request, facility_id, org_id=None, zone_id=None, frequency=No
         .order_by("last_name", "first_name", "username") \
         .prefetch_related("group")
 
-    # Get the start and end date--based on csv.  A hack, yes...
-    if request.GET.get("format", "") == "csv":
-        frequency = frequency or request.GET.get("frequency", "months")
-        period_start = period_start or request.GET.get("period_start", "")
-        period_end = period_end or request.GET.get("period_end", "")
-        try:
+    if request.method == "POST":
+        form = DateRangeForm(data=request.POST)
+        if form.is_valid():
+            frequency = frequency or request.GET.get("frequency", "months")
+            period_start = period_start or form.data["period_start"]
+            period_end = period_end or form.data["period_end"]
             (period_start, period_end) = _get_date_range(frequency, period_start, period_end)
-        except ValidationError as e:
-            return JsonResponse({"error": "Could not load CSV: Unrecognized input date format."}, status=500)
-
+    else:
+        form = DateRangeForm()
     (student_data, group_data) = _get_user_usage_data(students, period_start=period_start, period_end=period_end)
     (teacher_data, _) = _get_user_usage_data(teachers, period_start=period_start, period_end=period_end)
 
-    # Total hack for CSV-only
-    if request.GET.get("format") == "csv":
-        try:
-            (period_start, period_end) = _get_date_range(frequency, period_start, period_end)
-        except ValidationError as e:
-            return JsonResponse({"error": "Could not load CSV: Unrecognized input date format."}, status=500)
-
     context.update({
+        "form": form,
         "groups": group_data,
         "students": student_data,
         "teachers": teacher_data,
@@ -262,11 +255,6 @@ def _get_date_range(frequency, period_start, period_end):
     Should be extended to do something more generic, based on
     "frequency", and moved into utils/general.py
     """
-    if period_start:
-        period_start = DateForm(data={"date": period_start}).data["date"]
-
-    if period_end:
-        period_end = DateForm(data={"date": period_end}).data["date"]
 
     assert frequency == "months"
 

@@ -30,9 +30,6 @@
 
             $("#end_date_select").datepicker('setDate', end_date);
 
-            $("#CSV_EXPORT").click(function(){
-                window.location.href= "?format=csv&frequency={{ settings.USER_LOG_SUMMARY_FREQUENCY.1 }}&period_start=" + $("#start_standard_date").val() + "&period_end=" + $("#end_standard_date").val()
-            })
         });
     </script>
 
@@ -41,13 +38,14 @@
 {% block buttons %}{{ block.super }}
             <li>
                 <div>
-                    <div class="date">Start Date:<input id="start_date_select" type="text"><input class="hidden" type="text" id="start_standard_date"></div>
-                    <div class="date">End Date:<input id="end_date_select" type="text"><input class="hidden" type="text" id="end_standard_date"></div>
+                    <form method="post" action="?format=csv">
+                    {% csrf_token %}
+                    <div class="date">Start Date:<input id="start_date_select" type="text"><input class="hidden" type="text" name="period_start" id="start_standard_date"></div>
+                    <div class="date">End Date:<input id="end_date_select" type="text"><input class="hidden" type="text" name="period_end" id="end_standard_date"></div>
                     <div class="date">
-                        <a class="btn-large" id="CSV_EXPORT" title="User report for the previous month">
-                            {% trans "Export to CSV" %}
-                        </a>
+                        <input type="submit" class="btn-large" id="CSV_EXPORT" title="User report for the previous month" value="{% trans "Export to CSV" %}" />
                     </div>
+                    </form>
                 </div>
             </li>
 {% endblock buttons %}
