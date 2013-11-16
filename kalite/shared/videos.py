@@ -1,5 +1,8 @@
+import os
+
 import settings
 import utils.videos  # keep access to all functions
+from shared.i18n import get_srt_path_on_disk, get_srt_url
 from shared.topic_tools import get_topic_tree, get_videos
 from utils.videos import *  # get all into the current namespace, override some.
 
@@ -21,20 +24,19 @@ def delete_downloaded_files(youtube_id):
     return utils.videos.delete_downloaded_files(youtube_id, settings.CONTENT_ROOT)
 
 
-def get_video_urls(video_id, format, video_on_disk=True):
-    disk_path = settings.CONTENT_URL + video_id
-
+def get_video_urls(video_id, format, video_on_disk=True, language_codes=[]):
+    video_base_url = settings.CONTENT_URL + video_id
     if not video_on_disk and settings.BACKUP_VIDEO_SOURCE:
         dict_vals = {"video_id": video_id, "video_format": format, "thumb_format": "png" }
         stream_url = settings.BACKUP_VIDEO_SOURCE % dict_vals
         thumbnail_url = settings.BACKUP_THUMBNAIL_SOURCE % dict_vals if settings.BACKUP_THUMBNAIL_SOURCE else None
-        subtitles_url = disk_path + ".srt"
     else:
-        stream_url = disk_path + ".%s" % format
-        thumbnail_url = disk_path + ".png"
-        subtitles_url = disk_path + ".srt"
+        stream_url = video_base_url + ".%s" % format
+        thumbnail_url = video_base_url + ".png"
 
-    return (stream_url, thumbnail_url, subtitles_url)
+    subtitles_urls = dict(zip(language_codes, [get_srt_url(video_id, code) for code in language_codes if os.path.exists(get_srt_path_on_disk(video_id, code))]))
+
+    return (stream_url, thumbnail_url, subtitles_urls)
 
 
 def is_video_on_disk(youtube_id, videos_path=settings.CONTENT_ROOT, format="mp4"):

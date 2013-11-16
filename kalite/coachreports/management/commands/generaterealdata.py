@@ -134,7 +134,7 @@ def generate_fake_facility_groups(names=("Class 4E", "Class 5B"), facilities=Non
     return (facility_groups, facilities)
 
 
-def generate_fake_facility_users(nusers=20, facilities=None, facility_groups=None, password="blah"):
+def generate_fake_facility_users(nusers=20, facilities=None, facility_groups=None, password="hellothere"):
     """Add the given fake facility users to each of the given fake facilities.
     If no facilities are given, they are created."""
 
@@ -437,16 +437,13 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
 
     return video_logs
 
-def generate_fake_coachreport_logs():
-    teacher_password = make_password('hellothere')
+def generate_fake_coachreport_logs(password="hellothere"):
     t,_ = FacilityUser.objects.get_or_create(
         facility=Facility.objects.all()[0],
-        username=random.choice(firstnames),
-        defaults={
-            'password' : teacher_password,
-            'is_teacher' : True,
-        }
+        username=random.choice(firstnames)
     )
+    t.set_password(password)
+
     # TODO: create flags later
     num_logs = 20
     logs = []

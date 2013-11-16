@@ -193,7 +193,6 @@ class Command(UpdatesStaticCommand):
             "copy in data",
             "update_local_settings",
             "move_files",
-            "
             "test_server",
             "move_to_final",
             "start_server",

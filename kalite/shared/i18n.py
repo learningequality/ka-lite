@@ -8,6 +8,12 @@ import os
 import settings
 
 
+def get_srt_url(video_id, code):
+    return settings.STATIC_URL + "subtitles/%s/%s.srt" % (code, video_id)
+
+def get_srt_path_on_disk(video_id, code):
+    return os.path.join(settings.STATIC_ROOT, "subtitles", code, video_id + ".srt")
+
 def get_language_name(lang_code, native=False):
     """Return full English or native language name from ISO 639-1 language code; raise exception if it isn't hardcoded yet"""
     # Open lookup dictionary 
@@ -72,3 +78,20 @@ def get_installed_languages():
 
     # return installed_languages
     return installed_languages
+
+
+def get_installed_subtitles(video_id):
+    """
+    Returns a list of all language codes that contain subtitles for this video.
+    """
+
+    installed_subtitles = []
+
+    # Loop through locale folders
+    for locale_dir in settings.LOCALE_PATHS:
+        if not os.path.exists(locale_dir):
+            continue
+
+        installed_subtitles += [lang for lang in os.listdir(locale_dir) if os.path.exists(get_srt_path_on_disk(video_id, lang))]
+
+    return sorted(installed_subtitles)
