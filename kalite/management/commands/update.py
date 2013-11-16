@@ -146,7 +146,6 @@ class Command(UpdatesStaticCommand):
         repo = git.Repo()
 
         try:
-<<<<<<< HEAD
             if not branch:
                 # old behavior--assume you're pulling to remote
                 self.stdout.write(repo.git.pull() + "\n")
