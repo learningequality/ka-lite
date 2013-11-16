@@ -1,12 +1,12 @@
 """
 CENTRAL SERVER ONLY
 
-This command automates the process of generating template po files, which can be uploaded to crowdin. 
-It runs the django commands makemessages and compilemessages and moves the created files to an 
+This command automates the process of generating template po files, which can be uploaded to crowdin.
+It runs the django commands makemessages and compilemessages and moves the created files to an
 exposed url, so that they can be downloaded from the web by KA's scripts.
 
-It has an optional flag, -t, which inserts asterisks around the strings in the po files, and 
-compiles them, so that when you run the server, English has been translated to *English* in the 
+It has an optional flag, -t, which inserts asterisks around the strings in the po files, and
+compiles them, so that when you run the server, English has been translated to *English* in the
 hope of making it easy to identify unwrapped strings.
 
 This can be run independently of the "update_language_packs" command
@@ -27,7 +27,14 @@ from utils.general import ensure_dir
 
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
-        make_option('--test', '-t', dest='test_wrappings', action="store_true", default=False, help='Running with -t will fill in current po files msgstrs with asterisks. This will allow you to quickly identify unwrapped strings in the codebase and wrap them in translation tags! Remember to delete after your finished testing.'),
+        make_option(
+            '--test',
+            '-t',
+            dest='test_wrappings',
+            action="store_true",
+            default=False,
+            help='Running with -t will fill in current po files msgstrs with asterisks. This will allow you to quickly identify unwrapped strings in the codebase and wrap them in translation tags! Remember to delete after your finished testing.'
+        ),
     )
     help = 'USAGE: \'python manage.py update_po\' defaults to creating new template files. If run with -t, will generate test po files that make it easy to identify strings that need wrapping.'
 
@@ -37,10 +44,10 @@ class Command(BaseCommand):
 
         ## All commands must be run from project root
         move_to_project_root()
-        ## (safety measure) prevent any english or test translations from being uploaded 
+        ## (safety measure) prevent any english or test translations from being uploaded
         delete_current_templates()
 
-        ## Create new files 
+        ## Create new files
         run_makemessages()
 
         ## Handle flags
@@ -48,7 +55,7 @@ class Command(BaseCommand):
             generate_test_files()
         else:
             update_templates()
-            
+
 def move_to_project_root():
     """Change into the project root directory to run i18n commands"""
     logging.info("Moving to project root directory")
@@ -102,7 +109,7 @@ def generate_test_files():
                 variables_pattern = re.compile(r'%\(\w+\)[s,d]')
                 new_msgstr = "msgstr \"*********\""
                 lines = open(os.path.join(en_po_dir, po_file), 'r').readlines()
-                counter = 0 
+                counter = 0
                 variables = []
                 for line in lines:
                     if counter < 18: # the first 18 lines are descriptive and not part of the translations (this is a hack to skip the first empty msgstr without making a complicated regex)
@@ -112,9 +119,9 @@ def generate_test_files():
                         msgid_content = re.search('(?<=msgid ").+(?=")', line) or ""
                         if msgid_content:
                             new_msgstr = "msgstr \"*%s*\"" % msgid_content.group(0)
-                            
+
                             # new_line = msgstr_pattern.sub("msgstr \"*****\"", line) #replaces line with asterisks
-                        
+
                         new_line = msgstr_pattern.sub(new_msgstr, line)
                         temp_file.write(new_line)
                     counter += 1
@@ -122,14 +129,18 @@ def generate_test_files():
 
             # Once done replacing, rename temp file to overwrite original
             os.rename(os.path.join(en_po_dir, "tmp.po"), os.path.join(en_po_dir, po_file))
-            
-            compile_all_po_files()
 
-def compile_all_po_files():
+            (out, err, rc) = compile_all_po_files()
+            if err:
+                logging.debug("Error executing compilemessages: %s" % err)
+
+
+def compile_all_po_files(failure_ok=True):
     """Compile all po files in locale directory"""
     # before running compilemessages, ensure in correct directory
     move_to_project_root()
+    import pdb; pdb.set_trace()
     (out, err, rc) = call_command_with_output('compilemessages')
-    if err:
-        logging.debug("Error executing compilemessages: %s" % err)
+    if err and not failure_ok:
+        raise CommandError("Failure compiling po files: %s" % err)
     return out, err, rc
