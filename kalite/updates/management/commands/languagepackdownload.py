@@ -1,6 +1,8 @@
+import glob
 import json
 import os
 import requests
+import shutil
 import zipfile
 from optparse import make_option
 from StringIO import StringIO
@@ -11,9 +13,9 @@ from django.views.i18n import javascript_catalog
 
 import settings
 import version
+from i18n.models import LanguagePack
 from settings import LOG as logging
 from shared.i18n import convert_language_code_format
-from updates.models import LanguagePack
 from utils.general import ensure_dir
 
 
@@ -59,6 +61,9 @@ class Command(BaseCommand):
 
         # 
         add_jsi18n_file(code)
+        
+        # 
+        move_srts(code)
 
 def get_language_pack(code, software_version):
     """Download language pack for specified language"""
@@ -105,6 +110,11 @@ def update_database(code):
 
 
 def add_jsi18n_file(code):
+    """
+    For efficieny's sake, we want to cache Django's
+    js18n file.  So, generate that file here, then
+    save to disk--it won't change until the next language pack update!
+    """
     output_dir = os.path.join(settings.STATIC_ROOT, "js", "i18n")
     ensure_dir(output_dir)
     output_file = os.path.join(output_dir, "%s.js" % code)
@@ -116,3 +126,19 @@ def add_jsi18n_file(code):
     response = javascript_catalog(request, packages=('ka-lite.locale',))
     with open(output_file, "w") as fp:
         fp.write(response.content)
+
+def move_srts(code):
+    """
+    Srts live in the locale directory, but that's not exposed at any URL.  So instead,
+    we have to move the srts out to /static/subtitles/[code]/
+    """
+    subtitles_static_dir = os.path.join(settings.STATIC_ROOT, "subtitles")
+    srt_static_dir = os.path.join(subtitles_static_dir, code)
+    srt_locale_dir = os.path.join(LOCALE_ROOT, code, "subtitles")
+
+    ensure_dir(srt_static_dir)
+    for fil in glob.glob(os.path.join(srt_locale_dir, "*.srt")):
+        srt_dest_path = os.path.join(srt_static_dir, os.path.basename(fil))
+        if os.path.exists(srt_dest_path):
+            os.remove(srt_dest_path)
+        shutil.move(fil, srt_dest_path)

@@ -1,6 +1,6 @@
 def languages(request):
-    if not "default_language" in request.session:  # Crazy Django sometimes calls this before the middleware, then will call this AGAIN afterwards
-        return {}
+    if "default_language" not in request.session:
+        return {}  # temporarily skipped middleware, but we'll get back here again.  Tricky Django...
     return {
         "DEFAULT_LANGUAGE": request.session["default_language"],
         "language_choices": request.session["language_choices"],
