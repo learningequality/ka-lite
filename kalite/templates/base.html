@@ -16,12 +16,12 @@
         <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/jquery-ui.min.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/khan-site.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/khan-lite.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/search_autocomplete.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-alerts.css' %}">
         
         {% block basecss %}{% endblock basecss %}
         {% block headcss %}{% endblock headcss %}
         <link rel="shortcut icon" href="{% static "images/favicon.ico" %}">
-
         {# In some versions of IE, console isn't defined, which can lead to JS errors #}
         <script type="text/javascript">
             window.console = window.console || {log: function() {}};
@@ -62,6 +62,7 @@
         <script type="text/javascript" src="{% static 'js/khan-lite.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/distributed-server.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/purl.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/jquery.ui.autocomplete.html.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/search_autocomplete.js' %}"></script>
 
         {% block headjs %}{% endblock headjs %}
