@@ -33,14 +33,16 @@ class Command(BaseCommand):
             dest='test_wrappings',
             action="store_true",
             default=False,
-            help='Running with -t will fill in current po files msgstrs with asterisks. This will allow you to quickly identify unwrapped strings in the codebase and wrap them in translation tags! Remember to delete after your finished testing.'
+            help='Running with -t will fill in current po files msgstrs with asterisks. This will allow you to quickly identify unwrapped strings in the codebase and wrap them in translation tags! Remember to delete after your finished testing.',
         ),
     )
     help = 'USAGE: \'python manage.py update_po\' defaults to creating new template files. If run with -t, will generate test po files that make it easy to identify strings that need wrapping.'
 
     def handle(self, **options):
-        if not settings.CENTRAL_SERVER:
-            raise CommandError("This must only be run on the central server.")
+        if options['test_wrappings'] and settings.CENTRAL_SERVER:
+            raise CommandError("Test wrappings should be run on the distributed server.")
+        elif not options['test_wrappings'] and not settings.CENTRAL_SERVER:
+            raise CommandError("Wrappings should be run on the central server, and downloaded through languagepackdownload to the distributed server.")
 
         ## All commands must be run from project root
         move_to_project_root()
@@ -71,7 +73,6 @@ def delete_current_templates():
     if os.path.exists(english_path):
         shutil.rmtree(english_path)
 
-
 def run_makemessages():
     """Run makemessages command for english po files"""
     logging.info("Executing makemessages command")
@@ -79,7 +80,7 @@ def run_makemessages():
     ignore_pattern = ['python-packages/*']
     management.call_command('makemessages', locale='en', ignore_patterns=ignore_pattern, no_obsolete=True)
     # Generate english po file for javascript
-    ignore_pattern = ['kalite/static/admin/js/*', 'python-packages/*']
+    ignore_pattern = ['kalite/static/admin/js/*', 'python-packages/*', 'kalite/static/js/i18n/*']
     management.call_command('makemessages', domain='djangojs', locale='en', ignore_patterns=ignore_pattern, no_obsolete=True)
 
 
