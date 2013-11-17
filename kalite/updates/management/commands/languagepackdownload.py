@@ -8,14 +8,13 @@ from optparse import make_option
 from StringIO import StringIO
 
 from django.core.management.base import BaseCommand, CommandError
-from django.http import HttpRequest
-from django.views.i18n import javascript_catalog
 
 import settings
 import version
 from i18n.models import LanguagePack
+from i18n.management.commands.update_po import 
 from settings import LOG as logging
-from shared.i18n import convert_language_code_format
+from shared.i18n import convert_language_code_format, update_jsi18n_file
 from utils.general import ensure_dir
 
 
@@ -60,7 +59,7 @@ class Command(BaseCommand):
         update_database(code)
 
         # 
-        add_jsi18n_file(code)
+        update_jsi18n_file(code)
         
         # 
         move_srts(code)
@@ -108,24 +107,6 @@ def update_database(code):
 
     logging.info("Successfully updated database.")
 
-
-def add_jsi18n_file(code):
-    """
-    For efficieny's sake, we want to cache Django's
-    js18n file.  So, generate that file here, then
-    save to disk--it won't change until the next language pack update!
-    """
-    output_dir = os.path.join(settings.STATIC_ROOT, "js", "i18n")
-    ensure_dir(output_dir)
-    output_file = os.path.join(output_dir, "%s.js" % code)
-
-    request = HttpRequest()
-    request.path = output_file
-    request.session = {'django_language': code}
-
-    response = javascript_catalog(request, packages=('ka-lite.locale',))
-    with open(output_file, "w") as fp:
-        fp.write(response.content)
 
 def move_srts(code):
     """
