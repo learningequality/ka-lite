@@ -62,7 +62,7 @@ class RegistrationManager(models.Manager):
         return False
     
     def create_inactive_user(self, username, first_name, last_name, email, password,
-                             site, send_email=True):
+                             site, send_email=True, next=None):
         """
         Create a new, inactive ``User``, generate a
         ``RegistrationProfile`` and email its activation key to the
@@ -81,7 +81,7 @@ class RegistrationManager(models.Manager):
         registration_profile = self.create_profile(new_user)
 
         if send_email:
-            registration_profile.send_activation_email(site)
+            registration_profile.send_activation_email(site, next=next)
 
         return new_user
     create_inactive_user = transaction.commit_on_success(create_inactive_user)
@@ -205,11 +205,11 @@ class RegistrationProfile(models.Model):
                (self.user.date_joined + expiration_date <= datetime.datetime.now())
     activation_key_expired.boolean = True
 
-    def send_activation_email(self, site):
+    def send_activation_email(self, site, next=None):
         """
         Send an activation email to the user associated with this
-        ``RegistrationProfile``.
-        
+        ``RegistrationProfile``, then forward to url in 'next' (if specified.
+
         The activation email will make use of two templates:
 
         ``registration/activation_email_subject.txt``
@@ -245,10 +245,13 @@ class RegistrationProfile(models.Model):
         ``central_server_host``
             String containing the hostname of the KA Lite central server
         """
-        cdict = { 'activation_key': self.activation_key,
-                 'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS,
-                 'central_server_host': getattr(site, "domain", settings.CENTRAL_SERVER_HOST),# try to get dynamically
-                 'site': site }
+        cdict = {
+            'activation_key': self.activation_key,
+             'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS,
+             'central_server_host': getattr(site, "domain", settings.CENTRAL_SERVER_HOST),# try to get dynamically
+             'site': site,
+             'next': next,
+        }
         subject = render_to_string('registration/activation_email_subject.txt',
                                    cdict)
         # Email subject *must not* contain newlines

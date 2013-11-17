@@ -58,8 +58,10 @@ $.extend(KhanUtil, {
         return digits;
     },
 
-    placesLeftOfDecimal: ["one", "ten", "hundred", "thousand"],
-    placesRightOfDecimal: ["one", "tenth", "hundredth", "thousandth"],
+    placesLeftOfDecimal: [$._("one"), $._("ten"), $._("hundred"),
+        $._("thousand")],
+    placesRightOfDecimal: [$._("one"), $._("tenth"), $._("hundredth"),
+        $._("thousandth")],
 
     powerToPlace: function(power) {
         if (power < 0) {
@@ -82,7 +84,7 @@ $.extend(KhanUtil, {
         if (x <= 1) {
             return x;
         } else {
-            return x * KhanUtil.factorial(x-1);
+            return x * KhanUtil.factorial(x - 1);
         }
     },
 
@@ -267,6 +269,25 @@ $.extend(KhanUtil, {
         return [coefficient, radical];
     },
 
+    // splitCube(24) gives [2, 3] to mean 2 cube_root(3)
+    splitCube: function(n) {
+        if (n === 0) {
+            return [0, 1];
+        }
+
+        var coefficient = 1;
+        var radical = n;
+
+        for (var i = 2; i * i * i <= n; i++) {
+            while (radical % (i * i * i) === 0) {
+                radical /= i * i * i;
+                coefficient *= i;
+            }
+        }
+
+        return [coefficient, radical];
+    },
+
     // randRange(min, max) - Get a random integer between min and max, inclusive
     // randRange(min, max, count) - Get count random integers
     // randRange(min, max, rows, cols) - Get a rows x cols matrix of random integers
@@ -290,7 +311,7 @@ $.extend(KhanUtil, {
             return KhanUtil.randRange(min, max);
         } else {
             var toReturn = [];
-            for (var i = min; i < max; i++) {
+            for (var i = min; i <= max; i++) {
                 toReturn.push(i);
             }
 
@@ -305,7 +326,7 @@ $.extend(KhanUtil, {
             return KhanUtil.randRangeNonZero(min, max);
         } else {
             var toReturn = [];
-            for (var i = min; i < max; i++) {
+            for (var i = min; i <= max; i++) {
                 if (i === 0) {
                     continue;
                 }
@@ -482,12 +503,48 @@ $.extend(KhanUtil, {
     isInt: function(num) {
         return parseFloat(num) === parseInt(num, 10) && !isNaN(num);
     },
+
+
+    /**
+     * Add LaTeX color markup to a given value.
+     */
+    colorMarkup: function(val, color) {
+        return "\\color{" + color + "}{" + val + "}";
+    },
+
+    /**
+     * Like _.contains except using _.isEqual to verify if item is present.
+     * (Works for lists of non-primitive values.)
+     */
+    contains: function(list, item) {
+        return _.any(list, function(elem) {
+            if (_.isEqual(item, elem)) {
+                return true;
+            }
+            return false;
+        });
+    },
+
+    tagMarkup: function(val, tag, attr) {
+        attr = attr || "";
+        return "<" + tag + " " + attr + ">" + val + "</" + tag + ">";
+    },
+
+    /**
+     * Add hint color markup to a given value
+     */
+    hintColorMarkup: function(val, colorName) {
+        var hintCSS = "class='hint_" + colorName + "'";
+        return KhanUtil.tagMarkup(val, "span", hintCSS);
+    },
+
     BLUE: "#6495ED",
     ORANGE: "#FFA500",
     PINK: "#FF00AF",
     GREEN: "#28AE7B",
-    PURPLE: "purple",
-    RED: "red",
+    PURPLE: "#9D38BD",
+    RED: "#DF0030",
     GRAY: "gray",
+    BLACK: "black",
     BACKGROUND: "#FAFAFA"
 });

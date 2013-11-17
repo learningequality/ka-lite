@@ -1,3 +1,4 @@
+/* base distributed landing page */
 .suggested-action {
     background-color: #F7F7F7;
     color: #444!important;
@@ -32,7 +33,9 @@
     border-bottom: 1px solid #DCE0B3;
     display: block;
     height: 230px;
-    margin: -5px -14px -15px -14px;
+    /*margin: -5px -14px -15px -14px;*/
+    min-width: 100%;
+    background-position: center center;
 }
 
 .suggested-action-title {
@@ -40,6 +43,9 @@
     text-decoration: none;
     font-size: 21px;
     margin-bottom: 20px;
+    height: 35px;
+    padding-bottom: 8px;
+    text-align: center;
 }
 
 .message {
@@ -58,4 +64,44 @@ a:hover, a:hover .suggested-action-title {
 
 .front-page {
     padding-left: 7px;
+}
+
+/* coach reports and update page */
+
+#options {
+    width:100%;
+}
+.suggested-action {
+    margin: 0 auto;
+    width: 80%;
+}
+.separate {
+
+    display: block;
+    margin-bottom: 0;
+    position: relative;
+    width:30.245746691%;
+    /*width: 320px/1058;*/
+    float: left;
+    padding-bottom: 10px;
+    margin-left:2.835538752%;
+   /* margin-left: 30/1058px;*/
+    min-height: 225px;
+}
+.wrapit {
+    max-width: 1058px;
+/*   margin-left: auto;
+    margin-right: auto;*/
+}
+
+.other {
+    margin-top: 10px;
+    font-size:18px;
+    float:left;
+}
+.changeable-link{
+    clear:both;
+    font-size: 16px;
+    float:left;
+    width: 100%;
 }

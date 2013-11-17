@@ -10,7 +10,7 @@ from django.test.client import Client
 from django.utils import unittest
 
 import settings
-from kalite.main import topicdata
+from main import topicdata
 from shared import caching
 from shared.testing.base import KALiteTestCase
 from shared.testing.decorators import distributed_server_test
@@ -28,11 +28,11 @@ class CachingTest(KALiteTestCase):
         n_videos = len(topicdata.NODE_CACHE['Video'])
         video_slug = topicdata.NODE_CACHE['Video'].keys()[10]#random.choice(topicdata.NODE_CACHE['Video'].keys())
         sys.stdout.write("Testing on video_slug = %s\n" % video_slug)
-        youtube_id = topicdata.NODE_CACHE['Video'][video_slug]['youtube_id']
-        video_path = topicdata.NODE_CACHE['Video'][video_slug]['paths'][0]
+        youtube_id = topicdata.NODE_CACHE['Video'][video_slug][0]['youtube_id']
+        video_path = topicdata.NODE_CACHE['Video'][video_slug][0]['path']
 
         # Clean the cache for this item
-        caching.expire_page(path=video_path)
+        caching.expire_page(path=video_path, failure_ok=True)
         
         # Create the cache item, and check it
         self.assertTrue(not caching.has_cache_key(path=video_path), "expect: no cache key after expiring the page")
@@ -53,11 +53,11 @@ class CachingTest(KALiteTestCase):
         n_videos = len(topicdata.NODE_CACHE['Video'])
         video_slug = random.choice(topicdata.NODE_CACHE['Video'].keys())
         sys.stdout.write("Testing on video_slug = %s\n" % video_slug)
-        youtube_id = topicdata.NODE_CACHE['Video'][video_slug]['youtube_id']
-        video_path = topicdata.NODE_CACHE['Video'][video_slug]['paths'][0]
+        youtube_id = topicdata.NODE_CACHE['Video'][video_slug][0]['youtube_id']
+        video_path = topicdata.NODE_CACHE['Video'][video_slug][0]['path']
 
         # Clean the cache for this item
-        caching.expire_page(path=video_path)
+        caching.expire_page(path=video_path, failure_ok=True)
         self.assertTrue(not caching.has_cache_key(path=video_path), "expect: No cache key after expiring the page")
                 
         # Set up the cache with Django client

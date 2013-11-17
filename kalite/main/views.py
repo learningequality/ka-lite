@@ -1,6 +1,6 @@
 import copy
 import json
-import re 
+import re
 import sys
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
-from django.db.models import Sum
+from django.db.models import Sum, Count
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound, HttpResponseRedirect, Http404, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
@@ -21,17 +21,17 @@ import settings
 from config.models import Settings
 from control_panel.views import user_management_context
 from main import topicdata
-from main.models import VideoLog, ExerciseLog, VideoFile
-from securesync.engine.api_client import SyncClient
+from main.models import VideoLog, ExerciseLog
+from securesync.api_client import BaseClient
 from securesync.models import Facility, FacilityUser,FacilityGroup, Device
 from securesync.views import require_admin, facility_required
 from settings import LOG as logging
 from shared import topic_tools
-from shared.decorators import require_admin, backend_cache_page
+from shared.caching import backend_cache_page
+from shared.decorators import require_admin
 from shared.jobs import force_job
 from shared.videos import get_video_urls, is_video_on_disk, video_counts_need_update, get_video_counts
-from utils.internet import am_i_online, is_loopback_connection, JsonResponse
-
+from utils.internet import is_loopback_connection, JsonResponse
 
 def check_setup_status(handler):
     """
@@ -40,15 +40,28 @@ def check_setup_status(handler):
     so that it is run even when there is a cache hit.
     """
     def wrapper_fn(request, *args, **kwargs):
-        if not request.is_admin and Facility.objects.count() == 0:
-            messages.warning(request, mark_safe(
-                "Please <a href='%s?next=%s'>login</a> with the account you created while running the installation script, \
-                to complete the setup." % (reverse("login"), reverse("register_public_key"))))
         if request.is_admin:
-            if not Settings.get("registered") and SyncClient().test_connection() == "success":
+            # TODO(bcipolli): move this to the client side?
+            if not request.session["registered"] and BaseClient().test_connection() == "success":
+                # Being able to register is more rare, so prioritize.
                 messages.warning(request, mark_safe("Please <a href='%s'>follow the directions to register your device</a>, so that it can synchronize with the central server." % reverse("register_public_key")))
-            elif Facility.objects.count() == 0:
+            elif not request.session["facility_exists"]:
                 messages.warning(request, mark_safe("Please <a href='%s'>create a facility</a> now. Users will not be able to sign up for accounts until you have made a facility." % reverse("add_facility")))
+
+        elif not request.is_logged_in:
+            if not request.session["registered"] and BaseClient().test_connection() == "success":
+                # Being able to register is more rare, so prioritize.
+                redirect_url = reverse("register_public_key")
+            elif not request.session["facility_exists"]:
+                redirect_url = reverse("add_facility")
+            else:
+                redirect_url = None
+
+            if redirect_url:
+                messages.warning(request, mark_safe(
+                    "Please <a href='%s?next=%s'>login</a> with the account you created while running the installation script, \
+                    to complete the setup." % (reverse("login"), redirect_url)))
+
         return handler(request, *args, **kwargs)
     return wrapper_fn
 
@@ -168,20 +181,26 @@ def exercise_handler(request, exercise):
     """
     Display an exercise
     """
-    # Copy related videos (should be small), as we're going to tweak them
+    # Find related videos   
     related_videos = {}
     for key in exercise["related_video_readable_ids"]:
-        video = topicdata.NODE_CACHE["Video"].get(key, None)
-        if not video:
+        video_nodes = topicdata.NODE_CACHE["Video"].get(key, None)
+        
+        # Make sure the IDs are recognized, and are available.
+        if not video_nodes:
+            continue
+        if not video_nodes[0].get("on_disk", False) and not settings.BACKUP_VIDEO_SOURCE:
             continue
         
-        related_videos[key] = copy.copy(video)
-        for path in video["paths"]:
-            if topic_tools.is_sibling({"path": path, "kind": "Video"}, exercise):
-                related_videos[key]["path"] = path
+        # Search for a sibling video node to add to related exercises.
+        for video in video_nodes:
+            if topic_tools.is_sibling({"path": video["path"], "kind": "Video"}, exercise):
+                related_videos[key] = video
                 break
-        if "path" not in related_videos[key]:
-            related_videos[key]["path"] = video["paths"][0]
+    
+        # failed to find a sibling; just choose the first one.
+        if key not in related_videos:
+            related_videos[key] = video_nodes[0]
 
     context = {
         "exercise": exercise,
@@ -196,11 +215,11 @@ def exercise_handler(request, exercise):
 @render_to("knowledgemap.html")
 def exercise_dashboard(request):
     # Just grab the first path, whatever it is
-    paths = dict((key, val["paths"][0]) for key, val in topicdata.NODE_CACHE["Exercise"].items())
+    paths = dict((key, val[0]["path"]) for key, val in topicdata.NODE_CACHE["Exercise"].iteritems())
     slug = request.GET.get("topic")
 
     context = {
-        "title": topicdata.NODE_CACHE["Topic"][slug]["title"] if slug else _("Your Knowledge Map"),
+        "title": topicdata.NODE_CACHE["Topic"][slug][0]["title"] if slug else _("Your Knowledge Map"),
         "exercise_paths": json.dumps(paths),
     }
     return context
@@ -225,90 +244,7 @@ def easy_admin(request):
         "wiki_url" : settings.CENTRAL_WIKI_URL,
         "central_server_host" : settings.CENTRAL_SERVER_HOST,
         "in_a_zone":  Device.get_own_device().get_zone() is not None,
-    }
-    return context
-
-@require_admin
-@render_to("summary_stats.html")
-def summary_stats(request):
-    # TODO (bcipolli): allow specific stats to be requested (more efficient)
-
-    context = {
-        "video_stats" : get_stats(("total_video_views","total_video_time","total_video_points")),
-        "exercise_stats": get_stats(("total_exercise_attempts","total_exercise_points","total_exercise_status")),
-        "user_stats": get_stats(("total_users",)),
-        "group_stats": get_stats(("total_groups",)),
-    }
-    return context
-
-
-def get_stats(stat_names):
-    """Given a list of stat names, return a dictionary of stat values.
-    For efficiency purposes, best to request all related stats together.
-    In low-memory conditions should group requests by common source (video, exercise, user, group), but otherwise separate
-
-Available stats:
-    video:    total_video_views, total_video_time, total_video_points
-    exercise: total_exercise_attempts, total_exercise_points, total_exercise_status
-    users:    total_users
-    groups:   total_groups
-    """
-
-    val = {}
-    for stat_name in stat_names:
-
-        # Total time from videos
-        if stat_name == "total_video_views":
-            val[stat_name] = VideoLog.objects.count()
-
-        # Total time from videos
-        elif stat_name == "total_video_time":
-            val[stat_name] = VideoLog.objects.aggregate(Sum("total_seconds_watched"))['total_seconds_watched__sum'] or 0
-
-        elif stat_name == "total_video_points":
-            val[stat_name] = VideoLog.objects.aggregate(Sum("points"))['points__sum'] or 0
-
-        elif stat_name == "total_exercise_attempts":
-            val[stat_name] = ExerciseLog.objects.aggregate(Sum("attempts"))['attempts__sum'] or 0
-
-        elif stat_name == "total_exercise_points":
-            val[stat_name] = ExerciseLog.objects.aggregate(Sum("points"))['points__sum'] or 0
-
-        elif stat_name == "total_exercise_status":
-            val[stat_name] = {
-                "struggling": ExerciseLog.objects.aggregate(Sum("struggling"))['struggling__sum'] or 0,
-                "completed": ExerciseLog.objects.aggregate(Sum("complete"))['complete__sum'] or 0,
-            }
-            val[stat_name]["inprog"] = ExerciseLog.objects.count() - sum([stat for stat in val[stat_name].values()])
-
-        elif stat_name == "total_users":
-            val[stat_name] = FacilityUser.objects.count()
-
-        elif stat_name == "total_groups":
-            val[stat_name] = FacilityGroup.objects.count()
-
-        else:
-            raise Exception("Unknown stat requested: %s" % stat_name)
-
-    return val
-
-@require_admin
-@render_to("video_download.html")
-def update(request):
-    call_command("videoscan")  # Could potentially be very slow, blocking request.
-    force_job("videodownload", "Download Videos")
-    force_job("subtitledownload", "Download Subtitles")
-    default_language = Settings.get("subtitle_language") or "en"
-
-    device = Device.get_own_device()
-    zone = device.get_zone()
-
-    context = {
-        "default_language": default_language,
-        "registered": Settings.get("registered"),
-        "zone_id": zone.id if zone else None,
-        "device_id": device.id,
-        "video_count": VideoFile.objects.filter(percent_complete=100).count(),
+        "clock_set": settings.ENABLE_CLOCK_SET,
     }
     return context
 
@@ -316,13 +252,29 @@ def update(request):
 @require_admin
 @facility_required
 @render_to("current_users.html")
-def user_list(request,facility):
-    return user_management_context(
+def user_list(request, facility):
+
+    # Use default group
+    group_id = request.REQUEST.get("group")
+    if not group_id:
+        groups = FacilityGroup.objects \
+            .annotate(Count("facilityuser")) \
+            .filter(facilityuser__count__gt=0)
+        ngroups = groups.count()
+        ngroups += int(FacilityUser.objects.filter(group__isnull=True).count() > 0)
+        if ngroups == 1:
+            group_id = groups[0].id if groups.count() else "Ungrouped"
+
+    context = user_management_context(
         request=request,
         facility_id=facility.id,
-        group_id=request.REQUEST.get("group",""),
+        group_id=group_id,
         page=request.REQUEST.get("page","1"),
     )
+    context.update({
+        "singlefacility": Facility.objects.count() == 1,
+    })
+    return context
 
 
 @require_admin
@@ -335,7 +287,7 @@ def zone_redirect(request):
     if zone:
         return HttpResponseRedirect(reverse("zone_management", kwargs={"zone_id": zone.pk}))
     else:
-        raise Http404(_("This device is not on any zone."))
+        return HttpResponseRedirect(reverse("zone_management", kwargs={"zone_id": None}))
 
 @require_admin
 def device_redirect(request):
@@ -349,6 +301,56 @@ def device_redirect(request):
     else:
         raise Http404(_("This device is not on any zone."))
 
+@render_to('search_page.html')
+def search(request):
+    # Inputs
+    query = request.GET.get('query')
+    category = request.GET.get('category')
+    max_results_per_category = request.GET.get('max_results', 25)
+
+    # Outputs
+    query_error = None
+    possible_matches = {}
+    hit_max = {}
+
+    if query is None:
+        query_error = _("Error: query not specified.")
+
+#    elif len(query) < 3:
+#        query_error = _("Error: query too short.")
+
+    else:
+        query = query.lower()
+        # search for topic, video or exercise with matching title
+        nodes = []
+        for node_type, node_dict in topicdata.NODE_CACHE.iteritems():
+            if category and node_type != category:
+                # Skip categories that don't match (if specified)
+                continue
+
+            possible_matches[node_type] = []  # make dict only for non-skipped categories
+            for nodearr in node_dict.values():
+                node = nodearr[0]
+                title = node['title'].lower()  # this could be done once and stored.
+                if title == query:
+                    # Redirect to an exact match
+                    return HttpResponseRedirect(node['path'])
+
+                elif len(possible_matches[node_type]) < max_results_per_category and query in title:
+                    # For efficiency, don't do substring matches when we've got lots of results
+                    possible_matches[node_type].append(node)
+
+            hit_max[node_type] = len(possible_matches[node_type]) == max_results_per_category
+
+    return {
+        'title': _("Search results for '%s'") % (query if query else ""),
+        'query_error': query_error,
+        'results': possible_matches,
+        'hit_max': hit_max,
+        'query': query,
+        'max_results': max_results_per_category,
+        'category': category,
+    }
 
 def handler_403(request, *args, **kwargs):
     context = RequestContext(request)

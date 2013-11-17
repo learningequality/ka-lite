@@ -2,14 +2,12 @@
 <html data-require="math math-format exponents">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Exponents 4</title>
+    <title>Fractional exponents 2</title>
     <!-- Note: This exercise does not correspond to anything that is currently live. Instead, it covers material that Sal talks about in his Exponents 3 video, which is currently not tested. -->
     <script src="../khan-exercise.js"></script>
 </head>
 <body>
     <div class="exercise">
-        <p class="summary">This exercise covers exponential arithmemtic with (mainly negative, when possible) rational bases and (mainly nonunit numerator) rational exponents. This exercise covers the last chunk of material from the Level 3 Exponents video.</p>
-
         <div class="problems">
             <div>
                 <div class="vars">
@@ -18,7 +16,7 @@
                     <var id="EXP_NEG">random() &lt; 0.75</var>
                     <var id="EXP_D_ORIG">VALS.root</var>
 
-                    <var id="BASE_NEG">isOdd( EXP_D ) && ( random() &lt; 0.75 )</var>
+                    <var id="BASE_NEG">isOdd( EXP_D ) &amp;&amp; ( random() &lt; 0.75 )</var>
                     <var id="BASE_N">VALS.base_1</var>
                     <var id="BASE_D">VALS.base_2</var>
 
@@ -47,7 +45,7 @@
                     <var id="ROOT_N">round( pow( EXP_NEG ? BASE_D : BASE_N, 1 / EXP_D ) )</var>
                     <var id="ROOT_D">round( pow( EXP_NEG ? BASE_N : BASE_D, 1 / EXP_D ) )</var>
 
-                    <var id="SOL_NEG">ROOT_NEG && isOdd( EXP_N )</var>
+                    <var id="SOL_NEG">ROOT_NEG &amp;&amp; isOdd( EXP_N )</var>
                     <var id="SOL_N">round( pow( ROOT_N, EXP_N ) )</var>
                     <var id="SOL_D">round( pow( ROOT_D, EXP_N ) )</var>
                 </div>
@@ -65,10 +63,10 @@
                     <p data-if="EXP_N > 1"><code>= \left(<var>fracParens( BASEF_N, BASEF_D )</var>^{<var>fracSmall( 1, EXP_D )</var>}\right)^{<var>EXP_N</var>}</code></p>
 
                     <!-- "To simplify (4/9)^(1/2), figure out whta goes in the blank: ?^2 = 4/9" -->
-                    <p>To simplify <code><var>fracParens( BASEF_N, BASEF_D )</var>^{<var>fracSmall( 1, EXP_D )</var>}</code>, figure out what goes in the blank:<br /> <code>\left(? \right)^{<var>abs( EXP_D )</var>}=<var>frac( BASEF_N, BASEF_D )</var></code></p>
+                    <p>To simplify <code><var>fracParens( BASEF_N, BASEF_D )</var>^{<var>fracSmall( 1, EXP_D )</var>}</code>, figure out what goes in the blank:<br> <code>\left(? \right)^{<var>abs( EXP_D )</var>}=<var>frac( BASEF_N, BASEF_D )</var></code></p>
 
                     <!-- Replace the ? with 2/3 -->
-                    <p>To simplify <code><var>fracParens( BASEF_N, BASEF_D )</var>^{<var>fracSmall( 1, EXP_D )</var>}</code>, figure out what goes in the blank:<br /> <code>\left(\color{blue}{<var>frac( ROOT_N, ROOT_D )</var>}\right)^{<var>abs( EXP_D )</var>}=<var>frac( BASEF_N, BASEF_D )</var></code></p>
+                    <p>To simplify <code><var>fracParens( BASEF_N, BASEF_D )</var>^{<var>fracSmall( 1, EXP_D )</var>}</code>, figure out what goes in the blank:<br> <code>\left(\color{blue}{<var>frac( ROOT_N, ROOT_D )</var>}\right)^{<var>abs( EXP_D )</var>}=<var>frac( BASEF_N, BASEF_D )</var></code></p>
 
                     <!-- "So (4/9)^(1/2)." -->
                     <p>so <code>\quad<var>fracParens( BASEF_N, BASEF_D )</var>^{<var>fracSmall( 1, EXP_D )</var>}=<var>frac( ROOT_N, ROOT_D )</var></code></p>
@@ -79,11 +77,10 @@
                     <p data-if="EXP_N > 1 && reduces( ROOT_N, ROOT_D )"><code>= <var>fraction( ROOT_N, ROOT_D, true, true, false, true )</var>^{<var>EXP_N</var>}</code></p>
 
                     <!-- "=(2/3)(2/3)(2/3)" -->
-                    <p data-if="EXP_N > 1" data-each="expandFractionExponent( ROOT_N, ROOT_D, EXP_N ) as v"><code>= <var>v</var></code></p>
+                    <p data-each="expandFractionExponent( ROOT_N, ROOT_D, EXP_N ) as v" data-if="EXP_N > 1"><code>= <var>v</var></code></p>
                 </div>
             </div>
         </div>
     </div>
 </body>
 </html>
-

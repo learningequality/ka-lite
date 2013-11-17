@@ -49,9 +49,6 @@ kind_blacklist = [None, "Separator", "CustomStack", "Scratchpad", "Article"]
 
 slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res", "partner-content", "cs"]
 
-# blacklist of particular exercises that currently have problems being rendered
-slug_blacklist += ["ordering_improper_fractions_and_mixed_numbers", "ordering_numbers", "conditional_statements_2"]
-
 def download_khan_data(url, debug_cache_file=None, debug_cache_dir=settings.PROJECT_PATH + "../_khanload_cache"):
     """Download data from the given url.
     
@@ -303,8 +300,8 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
         Eliminate them from the knowledge map here.
         """
         for slug in knowledge_map["topics"].keys():
-            nodecache_node = node_cache["Topic"].get(slug)
-            topictree_node = topic_tools.get_topic_by_path(node_cache["Topic"][slug]["path"], root_node=topictree)
+            nodecache_node = node_cache["Topic"].get(slug, [{}])[0]
+            topictree_node = topic_tools.get_topic_by_path(nodecache_node.get("path"), root_node=topictree)
 
             if not nodecache_node or not topictree_node:
                 logging.warn("Removing unrecognized knowledge_map topic '%s'" % slug)
@@ -316,7 +313,6 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
                 continue
 
             del knowledge_map["topics"][slug]
-            nodecache_node["in_knowledge_map"] = False
             topictree_node["in_knowledge_map"] = False
     scrub_knowledge_map(knowledge_map, node_cache)
 
@@ -332,7 +328,8 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
             if node["slug"] not in knowledge_map["topics"]:
                 logging.debug("Not in knowledge map: %s" % node["slug"])
                 node["in_knowledge_map"] = False
-                node_cache["Topic"][node["slug"]]["in_knowledge_map"] = False
+                for node in node_cache["Topic"][node["slug"]]:
+                    node["in_knowledge_map"] = False
 
             knowledge_topics[node["slug"]] = topic_tools.get_all_leaves(node, leaf_type="Exercise")
 
@@ -341,7 +338,8 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
                 del knowledge_topics[node["slug"]]
                 del knowledge_map["topics"][node["slug"]]
                 node["in_knowledge_map"] = False
-                node_cache["Topic"][node["slug"]]["in_knowledge_map"] = False
+                for node in node_cache["Topic"][node["slug"]]:
+                    node["in_knowledge_map"] = False
         else:
             if node["slug"] in knowledge_map["topics"]:
                 sys.stderr.write("Removing topic from topic tree; does not belong. '%s'" % node["slug"])
@@ -421,6 +419,7 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
         """
 
         def adjust_coord(children, prop_name):
+            
             allX = [ch[prop_name] for ch in children]
             minX = min(allX)
             maxX = max(allX)
@@ -450,20 +449,26 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
                 
             return children
 
+        # mark the children as not yet having been flipped, so we can avoid flipping twice later
+        for children in knowledge_topics.itervalues():
+            for ch in children:
+                ch["unflipped"] = True
+
         # NOTE that we are not adjusting any coordinates in 
         #   the knowledge map, or in the polylines.
         for slug, children in knowledge_topics.iteritems():
-            # Flip coordinates
+            # Flip coordinates, but only once per node
             for ch in children:
-                ch["v_position"], ch["h_position"] = ch["h_position"], ch["v_position"]
-            
+                if ch.get("unflipped", False):
+                    ch["v_position"], ch["h_position"] = ch["h_position"], ch["v_position"]
+                    del ch["unflipped"]
+
             # Adjust coordinates
             adjust_coord(children, "v_position")  # side-effect directly into 'children'
             adjust_coord(children, "h_position")
             
-
-
         return knowledge_map, knowledge_topics
+    
     normalize_tree(knowledge_map, knowledge_topics)
 
     # Dump the knowledge map
@@ -495,8 +500,8 @@ def create_youtube_id_to_slug_map(node_cache=None, data_path=settings.PROJECT_PA
 
     # Make a map from youtube ID to video slug
     for v in node_cache['Video'].values():
-        assert v["youtube_id"] not in id2slug_map, "Make sure there's a 1-to-1 mapping between youtube_id and slug"
-        id2slug_map[v['youtube_id']] = v['slug']
+        assert v[0]["youtube_id"] not in id2slug_map, "Make sure there's a 1-to-1 mapping between youtube_id and slug"
+        id2slug_map[v[0]['youtube_id']] = v[0]['slug']
 
     # Save the map!
     with open(map_file, "w") as fp:
@@ -506,7 +511,8 @@ def create_youtube_id_to_slug_map(node_cache=None, data_path=settings.PROJECT_PA
 def validate_data(topictree, node_cache, knowledge_map):
 
     # Validate related videos
-    for exercise in node_cache['Exercise'].values():
+    for exercise_nodes in node_cache['Exercise'].values():
+        exercise = exercise_nodes[0]
         exercise_path = os.path.join(settings.PROJECT_PATH, "static", "js", "khan-exercises", "exercises", "%s.html" % exercise["slug"])
         if not os.path.exists(exercise_path):
             sys.stderr.write("Could not find exercise HTML file: %s\n" % exercise_path)
@@ -515,13 +521,15 @@ def validate_data(topictree, node_cache, knowledge_map):
                 sys.stderr.write("Could not find related video %s in node_cache (from exercise %s)\n" % (vid, exercise["slug"]))
 
     # Validate related exercises
-    for video in node_cache["Video"].values():
+    for video_nodes in node_cache["Video"].values():
+        video = video_nodes[0]
         ex = video["related_exercise"]
         if ex and not ex["slug"] in node_cache["Exercise"]:
             sys.stderr.write("Could not find related exercise %s in node_cache (from video %s)\n" % (ex["slug"], video["slug"]))
             
     # Validate all topics have leaves
-    for topic in node_cache["Topic"].values():
+    for topic_nodes in node_cache["Topic"].values():
+        topic = topic_nodes[0]
         if not topic_tools.get_topic_by_path(topic["path"], root_node=topictree).get("children"):
             sys.stderr.write("Could not find any children for topic %s\n" % (topic["path"]))
 
@@ -535,7 +543,8 @@ def validate_data(topictree, node_cache, knowledge_map):
             sys.stderr.write("Could not find topic data in topicdata directory: '%s'\n" % slug)
 
     # Validate all topics in node-cache are in (or out) of knowledge map, as requested.
-    for topic in node_cache["Topic"].values():
+    for topic_nodes in node_cache["Topic"].values():
+        topic = topic_nodes[0]
         if topic["in_knowledge_map"] and not topic["slug"] in knowledge_map["topics"]:
             sys.stderr.write("Topic '%-40s' not in knowledge map, but node_cache says it should be.\n" % topic["slug"])
 

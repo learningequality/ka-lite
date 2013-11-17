@@ -1,6 +1,8 @@
 {% extends "registration/base.html" %}
 
-{% block title %}Sign up{% endblock %}
+{% load i18n %}
+
+{% block title %}{% trans "Sign up" %}{% endblock %}
 
 {% block headcss %}
 <style>
@@ -70,6 +72,7 @@
             <span style="margin-left:25px"><a href="#" onclick="$('#org_details').toggle()">Add details of your organization</a></span>
         </div>
     </div>
+    <br/>
     <div class="form-section" id="org_details">
         <div class="form-section">
           <div class="form-label"><label for="id_org_url">Organization URL:</label></div>

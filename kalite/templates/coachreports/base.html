@@ -4,39 +4,40 @@
 {% load my_filters %}
 
 {% block coachreports_active %}active{% endblock coachreports_active %}
-{% block title %}Coach Reports {{ block.super }}{% endblock title %}
+{% block title %}{% trans "Coach Reports" %}{{ block.super }}{% endblock title %}
+
 {% block headcss %}{{ block.super }}
     <style>
-    .selection {
-        float: left;
-        padding: 0 10px 10px 0;
-    }
-    select {
-        margin-left: 10px;
-    }
-    .subtitle {
-        float:left;
-    }
-    #facility, .group_select {
-        display:none;
-    }
-    h2 {
-        width:100%;
-        margin: 0px;
-        margin-top: 10px;
-    }
-    h3 {
-        margin-left: 25px;
-        margin-bottom: 0px;
-    }
-    #link-box {
-        float:right;
-        margin-right:25px;
-    }
-    .group_div {
-        position: absolute;
-        margin-left: 20px;
-    }
+        .selection {
+            float: left;
+            padding: 0 10px 10px 0;
+        }
+        select {
+            margin-left: 10px;
+        }
+        .subtitle {
+            float:left;
+        }
+        #facility, .group_select {
+            display:none;
+        }
+        h2 {
+            width:100%;
+            margin: 0px;
+            margin-top: 10px;
+        }
+        h3 {
+            margin-left: 25px;
+            margin-bottom: 0px;
+        }
+        #link-box {
+            float:right;
+            margin-right:25px;
+        }
+        .group_div {
+            position: absolute;
+            margin-left: 20px;
+        }
     </style>
 {% endblock headcss %}
 
@@ -51,7 +52,6 @@
             for (pi in topic_paths) {
                 url += "&topic_path=" + topic_paths[pi];
             }
-            console.log(url);
             // Add axis information
             url = setGetParam(url, "xaxis", $("#xaxis option:selected").val());
             url = setGetParam(url, "yaxis", $("#yaxis option:selected").val());
@@ -64,16 +64,18 @@
     function display_link () {
         var url_field = $('input#url');
         var link_box = $('#link-box');
+        var link_text = null;
+
         if(url_field.is(":visible")){
             url_field.hide();
-            link_box.find('a').text("(share)");
+            link_text = gettext("share")
         }
         else{
             url_field.val(generate_current_link());
             url_field.show().focus().select().attr('readonly',true);
-
-            link_box.find('a').text("(hide)");
+            link_text = gettext("hide")
         }
+        link_box.find('a').text("(" + link_text + ")");
     }
     function changeData(type) {
         var opt = $("#" + type + " option:selected");
@@ -121,8 +123,10 @@
     {% block navbar_title %}
     <h2>
         <div style="float:left">
-            {% block report_title %}{% trans "Coach Reports" %}{% endblock %}
-             for&nbsp;
+            {% block report_title %}
+                {# Note to translators: following this phrase is the name of a class. #}
+                {% trans "Coach Reports for" %}
+            {% endblock %}
         </div>
         {% block navbar_facilities %}
         <div id="select-facilities" class="selection">
@@ -151,12 +155,12 @@
                 <div id="{{ groupobject.facility }}" class="group_div">
                     <select id="{{ groupobject.facility }}_group_select" class="group_select">
                         {% if groupobject.groups %}
-                                <option value="">[all groups]</option>
+                                <option value="">{% trans "[all groups]" %}</option>
                                 {% for group in groupobject.groups %}
                                 <option value="{{ group.id }}">{{ group }}</option>
                                 {% endfor %}
                         {% else %}
-                            <option value="" selected>[no groups]</option>
+                            <option value="" selected>{% trans "[no groups]" %}</option>
                         {% endif %}
                     </select>
                     {% if groupobject.groups|length > 1 %}
@@ -174,7 +178,7 @@
             {% block navbar_makelink %}
             <div id="link-box">
                 <input name="url" id="url" type="text" style="display:none"></input>
-                <a href="javascript:display_link()">(share)</a>
+                <a href="javascript:display_link()">({% trans "share" %})</a>
             </div>
             {% endblock navbar_makelink %}
         </div>

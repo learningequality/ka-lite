@@ -21,7 +21,7 @@ from django.utils.translation import ugettext as _
 from .forms import DataForm
 from config.models import Settings
 from main import topicdata
-from main.models import VideoLog, ExerciseLog, VideoFile, UserLog, UserLogSummary
+from main.models import VideoLog, ExerciseLog, UserLog, UserLogSummary
 from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device
 from securesync.views import facility_required
 from settings import LOG as logging
@@ -125,7 +125,10 @@ def get_data_form(request, *args, **kwargs):
 
     # Fill in backwards: a user implies a group
     if form.data.get("user") and not form.data.get("group"):
-        user = get_object_or_404(FacilityUser, id=form.data["user"])
+        if "facility_user" in request.session and form.data["user"] == request.session["facility_user"].id:
+            user = request.session["facility_user"]
+        else:
+            user = get_object_or_404(FacilityUser, id=form.data["user"])
         form.data["group"] = getattr(user.group, "id", None)
 
     if form.data.get("group") and not form.data.get("facility"):
@@ -200,11 +203,11 @@ def compute_data(data_types, who, where):
     # This lambda partial creates a function to return all items with a particular path from the NODECACHE.
     search_fun_single_path = partial(lambda t, p: t["path"].startswith(p), p=tuple(where))
     # This lambda partial creates a function to return all items with paths matching a list of paths from NODECACHE.
-    search_fun_multi_path = partial(lambda t, p: any([tp.startswith(p) for tp in t["paths"]]),  p=tuple(where))
+    search_fun_multi_path = partial(lambda ts, p: any([t["path"].startswith(p) for t in ts]),  p=tuple(where))
     # Functions that use the functions defined above to return topics, exercises, and videos based on paths.
-    query_topics = partial(lambda t, sf: t if t is not None else [t for t in filter(sf, topicdata.NODE_CACHE['Topic'].values())], sf=search_fun_single_path)
-    query_exercises = partial(lambda e, sf: e if e is not None else [ex["name"] for ex in filter(sf, topicdata.NODE_CACHE['Exercise'].values())], sf=search_fun_multi_path)
-    query_videos = partial(lambda v, sf: v if v is not None else [vid["youtube_id"] for vid in filter(sf, topicdata.NODE_CACHE['Video'].values())], sf=search_fun_multi_path)
+    query_topics = partial(lambda t, sf: t if t is not None else [t[0] for t in filter(sf, topicdata.NODE_CACHE['Topic'].values())], sf=search_fun_single_path)
+    query_exercises = partial(lambda e, sf: e if e is not None else [ex[0]["name"] for ex in filter(sf, topicdata.NODE_CACHE['Exercise'].values())], sf=search_fun_multi_path)
+    query_videos = partial(lambda v, sf: v if v is not None else [vid[0]["youtube_id"] for vid in filter(sf, topicdata.NODE_CACHE['Video'].values())], sf=search_fun_multi_path)
 
     # No users, don't bother.
     if len(who) > 0:
@@ -359,18 +362,17 @@ def api_data(request, xaxis="", yaxis=""):
         return HttpResponseNotFound("Must specify a topic path")
 
     # Query out the data: what?
-
     computed_data = compute_data(data_types=[form.data.get("xaxis"), form.data.get("yaxis")], who=users, where=form.data.get("topic_path"))
     json_data = {
         "data": computed_data["data"],
         "exercises": computed_data["exercises"],
         "videos": computed_data["videos"],
         "users": dict(zip([u.id for u in users],
-                            ["%s, %s" % (u.last_name, u.first_name) for u in users]
+                          ["%s, %s" % (u.last_name, u.first_name) for u in users]
                      )),
-        "groups":  dict(zip([g.id for g in groups],
-                             dict(zip(["id", "name"], [(g.id, g.name) for g in groups])),
-                      )),
+        "groups": dict(zip([g.id for g in groups],
+                           dict(zip(["id", "name"], [(g.id, g.name) for g in groups])),
+                     )),
         "facility": None if not facility else {
             "name": facility.name,
             "id": facility.id,
@@ -387,6 +389,6 @@ def api_data(request, xaxis="", yaxis=""):
         except ValidationError as e:
             # Never report this error; don't want this logging to block other functionality.
             logging.error("Failed to update Teacher userlog activity login: %s" % e)
-    
+
     # Now we have data, stream it back with a handler for date-times
     return JsonResponse(json_data)

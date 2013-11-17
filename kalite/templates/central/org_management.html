@@ -66,7 +66,7 @@ $(function() {
 			<div class="span9">
 				<div class="tooltip-container">
 					<h1>My Organization{{ organizations|pluralize }}</h1>
-					<div id="button-popover-org" class="button-popover" data-toggle="popover" data-placement="right" data-content="An Organization is a group of people responsible for administering a set of Zones and Facilities." title="" data-original-title="Organization">?</div>
+					<div id="button-popover-org" class="button-popover" data-toggle="popover" data-placement="right" data-content="An Organization is a group of people responsible for administering a set of Sharing Networks." title="" data-original-title="Organization">?</div>
 				</div>			
 			</div>
 			<div class="span3">
@@ -101,7 +101,7 @@ $(function() {
 				<div class="tooltip-container">
 					<h2>{{ org.name }}</h2>
 					{% if org.name == HEADLESS_ORG_NAME %}
-						<div id="button-popover-headless" class="button-popover" data-toggle="popover" data-placement="right" data-content="Headless zones are (auto-registered) zones not linked to any account." title="" data-original-title="Headless Zones">?</div>
+						<div id="button-popover-headless" class="button-popover" data-toggle="popover" data-placement="right" data-content="Unclaimed Networks are (auto-registered) sharing networks not linked to any account." title="" data-original-title="Unclaimed Networks">?</div>
 					{% endif %}
 					<ul class="options">
 						{% if org.name != HEADLESS_ORG_NAME %}
@@ -125,8 +125,8 @@ $(function() {
 			<div class="row-fluid organization-container">
 				<div class="span6">
 					<div class="tooltip-container">
-						<h3>Affiliated Zones</h3>
-						<div id="button-popover-zone-{{ forloop.counter0 }}" class="button-popover" data-toggle="popover" data-placement="right" data-content="A Zone is the area in which multiple devices may connect to share content with each other." title="" data-original-title="Zone">?</div>
+						<h3>Affiliated Sharing Networks</h3>
+						<div id="button-popover-zone-{{ forloop.counter0 }}" class="button-popover" data-toggle="popover" data-placement="right" data-content="A Sharing Network is a set of devices that may connect to share data with each other." title="" data-original-title="Sharing Network">?</div>
 					</div>
 					<table class="table">
 						{% for zone in zones|get_item:pk %}
@@ -147,7 +147,7 @@ $(function() {
 					</table>
 
 					<form method="link" action="{% url zone_form org_id=org.id zone_id='new' %}">
-						<input class="button--small" type="submit" value="Create a new zone">
+						<input class="button--small" type="submit" value="Create a new sharing network">
 					</form>
 				</div>
 
@@ -225,7 +225,7 @@ $(function() {
 
     <p>
         {% if not organizations %}
-            After creating an organization and adding a zone to it, above, you'll be 
+            After creating an organization and adding a sharing network to it, above, you'll be 
         {% else %}
             You're
         {% endif %}

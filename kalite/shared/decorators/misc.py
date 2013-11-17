@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.utils.safestring import mark_safe
@@ -48,21 +49,42 @@ def facility_from_request(handler=None, request=None, *args, **kwargs):
         handler = lambda request, facility, *args, **kwargs: facility
 
     def wrapper_fn(request, *args, **kwargs):
-        if kwargs.get("facility_id",None):
-            facility = get_object_or_None(pk=kwargs["facility_id"])
+        if kwargs.get("facility_id", None):  # avoid using blank
+            # Facility passed in directly
+            facility = get_object_or_None(Facility, pk=kwargs["facility_id"])
+
         elif "facility" in request.GET:
+            # Facility from querystring
             facility = get_object_or_None(Facility, pk=request.GET["facility"])
             if "set_default" in request.GET and request.is_admin and facility:
                 Settings.set("default_facility", facility.id)
-        elif "facility_user" in request.session:
-            facility = request.session["facility_user"].facility
+
         elif settings.CENTRAL_SERVER:  # following options are distributed-only
             facility = None
-        elif Facility.objects.count() == 1:
+
+        elif "facility_user" in request.session:
+            # Facility from currently logged-in facility user
+            facility = request.session["facility_user"].facility
+
+        elif request.session["facility_count"] == 1:
+            # There's only one facility
             facility = Facility.objects.all()[0]
+
+        elif request.session["facility_count"] > 0:
+            if Settings.get("default_facility"):
+                # There are multiple facilities--try to grab the default
+                facility = get_object_or_None(Facility, pk=Settings.get("default_facility"))
+
+            elif Facility.objects.filter(Q(signed_by__isnull=True) | Q(signed_by=Device.get_own_device())).count() == 1:
+                # Default to a locally created facility (if there are multiple, and none are specified)
+                facility = Facility.objects.filter(Q(signed_by__isnull=True) | Q(signed_by=Device.get_own_device()))[0]
+
+            else:
+                facility = None
         else:
-            facility = get_object_or_None(Facility, pk=Settings.get("default_facility"))
-        
+            # There's nothing; don't bother even hitting the DB
+            facility = None
+
         return handler(request, *args, facility=facility, **kwargs)
     return wrapper_fn if not request else wrapper_fn(request=request, *args, **kwargs)
 
@@ -79,12 +101,12 @@ def facility_required(handler):
         if facility:
             return handler(request, facility, *args, **kwargs)
 
-        if Facility.objects.count() == 0:
+        if not request.session["facility_exists"]:
             if request.is_admin:
-                messages.error(request, _("To continue, you must first add a facility (e.g. for your school). ") \
+                messages.warning(request, _("To continue, you must first add a facility (e.g. for your school). ") \
                     + _("Please use the form below to add a facility."))
             else:
-                messages.error(request,
+                messages.warning(request,
                     _("You must first have the administrator of this server log in below to add a facility."))
             return HttpResponseRedirect(reverse("add_facility"))
         else:

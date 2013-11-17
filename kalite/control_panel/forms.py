@@ -12,3 +12,8 @@ class ZoneForm(ModelForm):
 class UploadFileForm(forms.Form):
     file  = forms.FileField()
 
+class DateRangeForm(forms.Form):
+    """Form that validates Dates for CSV Export"""
+
+    period_start = forms.DateField()
+    period_end = forms.DateField()

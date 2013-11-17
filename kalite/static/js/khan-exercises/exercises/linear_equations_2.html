@@ -2,7 +2,7 @@
 <html data-require="math math-format">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Linear equations 2</title>
+    <title>2-step equations</title>
     <script src="../khan-exercise.js"></script>
 </head>
 <body>
@@ -27,7 +27,7 @@
 
         <div class="hints">
             <div>
-                <p><var>B > 0 ? "Subtract" : "Add"</var> <code><var>abs(B)</var></code> <var>B > 0 ? "from" : "to"</var> both sides:</p>
+                <p data-if="B > 0">Subtract <code><var>abs(B)</var></code> from both sides:</p><p data-else="">Add <code><var>abs(B)</var></code> to both sides:</p>
                 <p><code>(<var>A</var>x + <var>B</var>) + <var>-B</var> = <var>D</var> + <var>-B</var></code></p>
                 <p><code><var>A</var>x = <var>D - B</var></code></p>
             </div>

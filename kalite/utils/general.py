@@ -4,6 +4,8 @@ Miscellaneous utility functions (no dependence on non-standard packages, such as
 General string, integer, date functions.
 """
 import datetime
+import logging
+import requests
 import os
 
 
@@ -129,15 +131,8 @@ def version_diff(v1, v2):
 
 def ensure_dir(path):
     """Create the entire directory path, if it doesn't exist already."""
-    path_parts = path.split("/")
-    full_path = "/"
-    for part in path_parts:
-        if "." in part:
-            raise InvalidDirectoryFormat()
-        if part is not '':
-            full_path += part + "/"
-            if not os.path.exists(full_path):
-                os.makedirs(full_path)
+    if not os.path.exists(path):
+        os.makedirs(path)
 
 # http://code.activestate.com/recipes/82465-a-friendly-mkdir/
 #def _mkdir(newdir):
@@ -171,6 +166,18 @@ def convert_date_input(date_to_convert):
         return date_to_convert
 
 
+def get_module_source_file(module_name):
+    """
+    http://stackoverflow.com/questions/247770/retrieving-python-module-path
+    http://stackoverflow.com/questions/8718885/import-module-from-string-variable
+    """
+    module_name.split
+    source_file = __import__(module_name, fromlist=[""]).__file__
+    if source_file.endswith(".pyc"):
+        return source_file[0:-1]
+    return source_file
+
+
 def max_none(data):
     """
     Given a list of data, returns the max... removing None elements first, for comparison "safety".
@@ -185,3 +192,32 @@ def max_none(data):
         if d is not None:
             non_none_data.append(d)
     return max(non_none_data) if non_none_data else None
+
+
+def make_request(headers, url, max_retries=5):
+    """Return response from url; retry up to 5 times for server errors.
+    When returning an error, return human-readable status code.
+
+    codes: server-error, client-error
+    """
+    for retries in range(1, 1 + max_retries):
+        try:
+            r = requests.get(url, headers=headers)
+            if r.status_code > 499:
+                if retries == max_retries:
+                    logging.warn(
+                        "Error downloading %s: server-side error (%d)" % (url, r.status_code))
+                    r = "server-error"
+                    break;
+            elif r.status_code > 399:
+                logging.warn(
+                    "Error downloading %s: client-side error (%d)" % (url, r.status_code))
+                r = "client-error"
+                break
+            # TODO(dylan): if internet connection goes down, we aren't catching
+            # that, and things just break
+            else:
+                break
+        except Exception as e:
+            logging.warn("Error downloading %s: %s" % (url, e))
+    return r

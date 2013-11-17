@@ -17,7 +17,7 @@
 
 <p>Please note that this is the central server; you cannot log in here using your local server's account information.</p>
 
-<p>If you do not have an account on the central server, you can <a href="/accounts/register/">sign up here</a>.</p>
+<p>If you do not have an account on the central server, you can <a href="{% url registration_register %}{% if request.next %}?next={{ request.next }}{% endif %}">sign up here</a>.</p>
 
 {% if form.errors %}
   {% if debug %}
@@ -64,9 +64,8 @@
 	<br>
     <input type="hidden" name="{{ redirect.name }}" value="{{ redirect.url }}" />
 	<input type="submit" class="button" value="Log in" />
-
 </form>
 
-<p>If you've forgotten your password, you can <a href="/accounts/password/reset/">reset it here</a>.</p>
+<p>If you've forgotten your password, you can <a href="{% url auth_password_reset %}">reset it here</a>.</p>
 
 {% endblock %}
