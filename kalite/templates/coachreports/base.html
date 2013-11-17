@@ -121,8 +121,10 @@
     {% block navbar_title %}
     <h2>
         <div style="float:left">
-            {% block report_title %}{% trans "Coach Reports" %}{% endblock %}
-             for&nbsp;
+            {% block report_title %}
+                {# Note to translators: following this phrase is the name of a class. #}
+                {% trans "Coach Reports for" %}
+            {% endblock %}
         </div>
         {% block navbar_facilities %}
         <div id="select-facilities" class="selection">

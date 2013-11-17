@@ -51,7 +51,7 @@ function video_check_callback(progress_log, resp) {
         lastKey = currentKey;
 
     } else { // check failed.
-        handleFailedAPI(resp, "Error downloading videos", "id_video_download");
+        handleFailedAPI(resp, gettext("Error downloading videos"), "id_video_download");
         clearInterval(window.download_subtitle_check_interval);
         $("#download-videos").removeAttr("disabled");
     }
@@ -79,7 +79,7 @@ $(function() {
             // We assume the distributed server is offline; if it's online, then we enable buttons that only work with internet.
             // Best to assume offline, as online check returns much faster than offline check.
             if(!server_is_online){
-                show_message("error", "The server does not have internet access; new content cannot be downloaded at this time.", "id_offline_message");
+                show_message("error", gettext("The server does not have internet access; new content cannot be downloaded at this time."), "id_offline_message");
             } else {
                 $(".enable-when-server-online").removeAttr("disabled");
                 clear_message("id_offline_message")
@@ -140,7 +140,7 @@ $(function() {
                 updatesStart("videodownload", 5000, video_callbacks)
             })
             .fail(function(resp) {
-                handleFailedAPI(resp, "Error starting video download", "id_video_download");
+                handleFailedAPI(resp, gettext("Error starting video download"), "id_video_download");
                 $("#download-videos").removeAttr("disabled");
             });
 
@@ -149,7 +149,7 @@ $(function() {
         $("#cancel-download").show();
         $("#download-videos").attr("disabled", "disabled");
 
-        // Send event
+        // Send event.  NOTE: DO NOT WRAP STRINGS ON THIS CALL!!
         ga_track("send", "event", "update", "click-download-videos", "Download Videos", video_ids.length);
     });
 
@@ -171,14 +171,14 @@ $(function() {
                 });
             })
             .fail(function(resp) {
-                handleFailedAPI(resp, "Error downloading subtitles", "id_video_download");
+                handleFailedAPI(resp, gettext("Error downloading subtitles"), "id_video_download");
                 $(".progress-waiting").hide();
             });
 
         // Update the UI
         unselectAllNodes();
 
-        // Send event
+        // Send event.  NOTE: DO NOT WRAP STRINGS ON THIS CALL!!
         ga_track("send", "event", "update", "click-delete-videos", "Delete Videos", video_ids.length);
     });
 
@@ -198,12 +198,12 @@ $(function() {
                 $("#cancel-download").hide();
             })
             .fail(function(resp) {
-                handleFailedAPI(resp, "Error canceling downloads", "id_video_download");
+                handleFailedAPI(resp, gettext("Error canceling downloads"), "id_video_download");
             });
 
         // Update the UI
 
-        // Send event
+        // Send event.  NOTE: DO NOT WRAP STRINGS ON THIS CALL!!
         ga_track("send", "event", "update", "click-cancel-downloads", "Cancel Downloads");
     });
 
@@ -217,13 +217,13 @@ $(function() {
                 handleSuccessAPI("id_video_download");
             })
             .fail(function(resp) {
-                handleFailedAPI(resp, "Error restarting downloads", "id_video_download");
+                handleFailedAPI(resp, gettext("Error restarting downloads"), "id_video_download");
             });
 
         // Update the UI
         $(this).attr("disabled", "disabled");
 
-        // Send event
+        // Send event.  NOTE: DO NOT WRAP STRINGS ON THIS CALL!!
         ga_track("send", "event", "update", "click-retry-download", "Retry Download");
     });
 
