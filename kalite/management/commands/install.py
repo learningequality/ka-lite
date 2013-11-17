@@ -273,8 +273,10 @@ class Command(BaseCommand):
             shutil.copyfile(os.path.join(src_dir, script_file), os.path.join(dest_dir, script_file))
             shutil.copystat(os.path.join(src_dir, script_file), os.path.join(dest_dir, script_file))
 
+        start_script_path = os.path.realpath(os.path.join(settings.PROJECT_PATH, "..", "start%s" % system_script_extension()))
+
         sys.stdout.write("\n")
         sys.stdout.write("CONGRATULATIONS! You've finished installing the KA Lite server software.\n")
-        sys.stdout.write("\tPlease run './start%s' to start the server, and then load the url\n" % system_script_extension())
-        sys.stdout.write("\thttp://127.0.0.1:%d/ to complete the device configuration.\n" % settings.PRODUCTION_PORT)
+        sys.stdout.write("\tPlease run '%s' to start the server,\n" % start_script_path)
+        sys.stdout.write("\tthen load 'http://127.0.0.1:%d/' in your browser to complete the device configuration.\n" % settings.PRODUCTION_PORT)
         sys.stdout.write("\n")
