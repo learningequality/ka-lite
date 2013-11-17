@@ -6,9 +6,12 @@
 {% block title %}{{ group.name }} - {% trans "User Management" %} {{ block.super }}{% endblock title %}
 
 {% block headcss %}{{ block.super }}
-{% include_block "current_users.html" "headcss" %}
-{% include_block "current_users.html" "headjs" %}
+    {% include_block "current_users.html" "headcss" %}
 {% endblock headcss %}
+
+{% block headjs %}{{ block.super }}
+    {% include_block "current_users.html" "headjs" %}
+{% endblock headjs %}
 
 
 {% block control_panel_content %}

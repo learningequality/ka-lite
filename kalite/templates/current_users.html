@@ -5,6 +5,8 @@
 {% block currentusers_active %}active{% endblock currentusers_active %}
 {% block easyadmin_active %}active{% endblock easyadmin_active %}
 
+{% block title %}{% trans "Current Users" %}{% endblock title %}
+
 {% block headcss %}
     <link rel='stylesheet' type='text/css' href='{% static "css/current_users.css" %}'>
 {% endblock headcss %}
@@ -98,8 +100,6 @@
         });
     </script>
 {% endblock headjs %}
-
-{% block title %}{% trans "Current Users" %} {{ block.super }}{% endblock title %}
 
 {% block content %}
 <div id="content">
