@@ -11,17 +11,18 @@ hope of making it easy to identify unwrapped strings.
 
 This can be run independently of the "update_language_packs" command
 """
-
+import glob
 import re
 import os
 import shutil
-
 from optparse import make_option
+
 from django.core import management
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
 from settings import LOG as logging
+from shared.i18n import update_jsi18n_file
 from utils.django_utils import call_command_with_output
 from utils.general import ensure_dir
 
@@ -44,16 +45,17 @@ class Command(BaseCommand):
         elif not options['test_wrappings'] and not settings.CENTRAL_SERVER:
             raise CommandError("Wrappings should be run on the central server, and downloaded through languagepackdownload to the distributed server.")
 
-        ## All commands must be run from project root
+        # All commands must be run from project root
         move_to_project_root()
-        ## (safety measure) prevent any english or test translations from being uploaded
+
+        # (safety measure) prevent any english or test translations from being uploaded
         delete_current_templates()
 
-        ## Create new files
+        # Create new files
         run_makemessages()
 
-        ## Handle flags
-        if options.get("test_wrappings"):
+        # Handle flags
+        if options["test_wrappings"]:
             generate_test_files()
         else:
             update_templates()
@@ -100,47 +102,38 @@ def generate_test_files():
     # Open them up and insert asterisks for all empty msgstrs
     logging.info("Generating test po files")
     en_po_dir = os.path.join(settings.LOCALE_PATHS[0], "en/LC_MESSAGES/")
-    for po_file in os.listdir(en_po_dir):
-        if not po_file.endswith(".po"):
-            continue
-        else:
-            with open(os.path.join(en_po_dir, "tmp.po"), 'w') as temp_file:
-                msgstr_pattern = re.compile(r'msgstr \"\"')
-                empty_translation = re.compile(r'\"\"')
-                variables_pattern = re.compile(r'%\(\w+\)[s,d]')
-                new_msgstr = "msgstr \"*********\""
-                lines = open(os.path.join(en_po_dir, po_file), 'r').readlines()
-                counter = 0
-                variables = []
-                for line in lines:
-                    if counter < 18: # the first 18 lines are descriptive and not part of the translations (this is a hack to skip the first empty msgstr without making a complicated regex)
-                        temp_file.write(line)
-                    else:
-                        variables += re.findall(variables_pattern, line)
-                        msgid_content = re.search('(?<=msgid ").+(?=")', line) or ""
-                        if msgid_content:
-                            new_msgstr = "msgstr \"*%s*\"" % msgid_content.group(0)
+    for po_file in glob.glob(os.path.join(en_po_dir, "*.po")):
 
-                            # new_line = msgstr_pattern.sub("msgstr \"*****\"", line) #replaces line with asterisks
+        msgid_pattern = re.compile(r'msgid \"(.*)\"\nmsgstr', re.S | re.M)
 
-                        new_line = msgstr_pattern.sub(new_msgstr, line)
-                        temp_file.write(new_line)
-                    counter += 1
-                temp_file.close()
+        content = open(os.path.join(en_po_dir, po_file), 'r').read()
+        results = content.split("\n\n")
+        with open(os.path.join(en_po_dir, "tmp.po"), 'w') as temp_file:
+            # We know the first block is static, so just dump that.
+            temp_file.write(results[0])
 
-            # Once done replacing, rename temp file to overwrite original
-            os.rename(os.path.join(en_po_dir, "tmp.po"), os.path.join(en_po_dir, po_file))
+            # Now work through actual translations
+            for result in results[1:]:
+                try:
+                    msgid = re.findall(msgid_pattern, result)[0]
 
-            (out, err, rc) = compile_all_po_files()
-            if err:
-                logging.debug("Error executing compilemessages: %s" % err)
+                    temp_file.write("\n\n")
+                    temp_file.write(result.replace("msgstr \"\"", "msgstr \"***%s***\"" % msgid))
+                except Exception as e:
+                    logging.error("Failed to insert test string: %s\n\n%s\n\n" % (e, result))
+
+        # Once done replacing, rename temp file to overwrite original
+        os.rename(os.path.join(en_po_dir, "tmp.po"), os.path.join(en_po_dir, po_file))
+
+        (out, err, rc) = compile_all_po_files()
+        if err:
+            logging.debug("Error executing compilemessages: %s" % err)
 
 
 def compile_all_po_files(failure_ok=True):
     """Compile all po files in locale directory"""
     # before running compilemessages, ensure in correct directory
     move_to_project_root()
-    import pdb; pdb.set_trace()
     (out, err, rc) = call_command_with_output('compilemessages')
     if err and not failure_ok:
         raise CommandError("Failure compiling po files: %s" % err)
