@@ -10,6 +10,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core.management import call_command
 
 import settings
+import version
 from securesync.models import Device
 from utils.general import ensure_dir
 from utils.platforms import is_windows, not_system_specific_scripts, system_specific_zipping, _default_callback_zip
@@ -141,13 +142,15 @@ def create_local_settings_file(location, server_type="local", locale=None, centr
     return fil
 
 
-def create_default_archive_filename(options=dict()):
+def create_default_archive_filename(options):
     """Generate a filename for the archive"""
     out_file = "kalite"
     out_file += "-%s" % options['platform']    if options['platform']    else ""
     out_file += "-%s" % options['locale']      if options['locale']      else ""
     out_file += "-%s" % options['server_type'] if options['server_type'] else ""
-    out_file += "-v%s.zip" % Device.get_own_device().get_version()
+    out_file += "-v%s" % version.VERSION
+    out_file += "-%s" % version.get_build()
+    out_file += ".zip"
 
     return out_file
 
