@@ -91,7 +91,7 @@ var TotalPointView = Backbone.View.extend({
 
         // only display the points if they are greater than zero, and the user is logged in
         if (points > 0 && this.model.get("is_logged_in")) {
-            this.$el.text(gettext("Total Points:") + " " + points);
+            this.$el.text(gettext("Total Points") + ": " + points);
             this.$el.show();
         } else {
             this.$el.hide();
