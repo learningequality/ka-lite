@@ -6,6 +6,11 @@
 {% block watch_active %}active{% endblock watch_active %}
 
 {% block headcss %}
+    <style>
+        .not-client-online-only {
+            display:none;
+        }
+    </style>
     <!--[if IE]>
     <link href="{% static "video-js-4/video-js.mod.css" %}" rel="stylesheet" type="text/css">
     <![endif]-->
@@ -86,7 +91,7 @@
         </a>
     </h2>
 
-{% else %}
+{% elif video.on_disk or backup_vids_available %}
 
     <div id="video-player" {% if not video.on_disk %} class="{% if not backup_vids_available %}not-{% endif %}client-online-only"{% endif %}>
         <video id="video-element" class="video-js vjs-default-skin" controls preload="auto" width="100%" height="600" {% if video.thumbnail_url %}poster="{{ video.thumbnail_url }}" {% endif %}data-setup="{}">
