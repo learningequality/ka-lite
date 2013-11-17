@@ -55,8 +55,10 @@ class Command(BaseCommand):
         ## Handle flags
         if options.get("test_wrappings"):
             generate_test_files()
+            update_jsi18n_file()  # needed for test purposes only--regenerate the static js file
         else:
             update_templates()
+
 
 def move_to_project_root():
     """Change into the project root directory to run i18n commands"""

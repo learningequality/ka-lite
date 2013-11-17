@@ -15,7 +15,7 @@ kalite/static/data/subtitles/subtitle_counts.json
 kalite/static/data/subtitles/languages/*
 kalite/static/data/subtitles/srts_remote_availability.json
 kalite/static/data/i18n/dubbed_video_mappings.json
-kalite/static/js/i18n/
+kalite/static/js/i18n/*
 kalite/static/language_packs/*
 kalite/static/pot/*.pot
 kalite/static/srt/*
