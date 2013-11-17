@@ -1,5 +1,4 @@
 {% extends base_template %}
-
 {% load i18n %}
 {% load staticfiles %}
 
@@ -61,7 +60,7 @@
     {% if video.related_exercise %}
     <span style="float:right; margin-top: -17px; font-size: 14px;">
         <span class="progress-circle" data-exercise-id="{{ video.related_exercise.slug }}"></span>
-        {% comment %}Translators: Example usage=> Exercise: Name of Exercise {% endcomment %}
+        {# Translators: Example usage=> Exercise: Name of Exercise #}
         {% trans "Exercise" as exercise %}
         <a href="{{ video.related_exercise.path }}" class="simple-button green" title="{{ exercise }}: '{{ video.related_exercise.title }}'">{% trans "Practice this concept" %}</a>
     </span>
@@ -85,9 +84,9 @@
 
     <h2 id="video-player" {% if not video.on_disk %} class="{% if not backup_vids_available %}not-{% endif %}client-online-only"{% endif %}>
         <a href="" id="launch_mplayer">
-            <img class="video-thumb" src="{{ video.thumbnail_url }}" style="width: 100%;" title="Click to play!">
+            <img class="video-thumb" src="{{ video.thumbnail_url }}" style="width: 100%;" title="{% trans 'Click to play!' %}">
             <br/><br/>
-            Launch video in mplayer!
+            {% trans "Launch video in mplayer!" %}
         </a>
     </h2>
 

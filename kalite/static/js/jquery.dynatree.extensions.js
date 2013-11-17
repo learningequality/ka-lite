@@ -55,7 +55,7 @@ function do_callbacks(force) {
     // Show linked topics (to reopen the tree if clicked) if some are selected,
     //   or a non-clickable "None" if none are selected.
     $("#topic_paths").text(topics != "" ? topics : "");
-    $("#topic_paths_note").text(topics == "" ? "[None; Please select below]" : "");
+    $("#topic_paths_note").text(topics == "" ? ("[" + gettext("None; Please select now") + "]") : "");
 
     if (trigger_callbacks) {
         for (cbi in window.toggle_tree_callbacks) {
