@@ -93,9 +93,13 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
         raise PermissionDenied(_("Please contact a teacher or administrator to receive login information to this installation."))
 
     # Data submitted to create the user.
-    if request.method == "POST":  # now, teachers and students can belong to a group, so all use the same form.
-
-        form = FacilityUserForm(facility, data=request.POST, instance=user)
+    if request.method == "POST" or request.GET.get("create", ""):  # now, teachers and students can belong to a group, so all use the same form.
+        if request.method == "POST":
+            data = request.POST
+        else:
+            data = request.GET.copy()
+            data["password_first"] = data["password_recheck"] = data["password"]
+        form = FacilityUserForm(facility, data=data, instance=user)
         if form.is_valid():
             if form.cleaned_data["password_first"]:
                 form.instance.set_password(form.cleaned_data["password_first"])
@@ -120,7 +124,7 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
 
             else:
                 # Created: by self
-                messages.success(request, _("You successfully registered."))
+                messages.success(request, _("You successfully registered. Your username is '%s' Your password is '%s'" % (form.cleaned_data["username"], form.cleaned_data["password_first"])))
                 return HttpResponseRedirect(request.next or "%s?facility=%s" % (reverse("login"), form.data["facility"]))
 
     # For GET requests
