@@ -112,7 +112,7 @@
                                             <a href="{% url homepage %}" id="nav_watch" class="watch-navlink not-admin-only {% block watch_active %}{% endblock watch_active %}" title="{% trans 'Watch Videos' %}">{% trans "Watch" %}</a>
                                             <form action="/search" method="get" style="float: right;">
                                               <input type="text" name="query" id="search" method="get" placeholder="{% trans 'type a video, topic or exercise' %}"/>
-                                              <input type="submit" value="search" />
+                                              <input type="submit" value="{% trans 'search' %}" />
                                             </form>
                                         {% endblock sitewide_navigation %}
                                     </span>
