@@ -70,7 +70,7 @@
         {% block extrahead %}{% endblock extrahead %}
         {% block analytics %}{% endblock analytics %}
     </head>
-    {% load i18n %}
+
     <body class="light {% block bodyclass %}{% endblock %}">
         <div id="outer-wrapper">
             <div id="page-container">
@@ -82,7 +82,7 @@
                             <div class="clear"></div>
                             <div class="top-header-links">
                                 <nav>
-                                    <span class="nav-subheader">
+                                    <div class="nav-subheader">
                                         {# Note that the following links are listed in the opposite order to how they will be displayed, as they are float:right #}
                                         {% block sitewide_navigation %}
                                             {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
@@ -111,11 +111,11 @@
                                             {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                                             <a href="{% url homepage %}" id="nav_watch" class="watch-navlink not-admin-only {% block watch_active %}{% endblock watch_active %}" title="{% trans 'Watch Videos' %}">{% trans "Watch" %}</a>
                                             <form action="/search" method="get" style="float: right;">
-                                              <input type="text" name="query" id="search" method="get" placeholder="{% trans 'type a video, topic or exercise' %}"/>
+                                              <input type="text" name="query" id="search" placeholder="{% trans 'type a video, topic or exercise' %}" />
                                               <input type="submit" value="{% trans 'search' %}" />
                                             </form>
                                         {% endblock sitewide_navigation %}
-                                    </span>
+                                    </div>
                                 </nav>
                                 <div class="clear"></div>
                             </div>
@@ -128,16 +128,12 @@
                             <div class="clear"></div>
                         </div>
                     </header>
-                        {% block outer_content %}
+
+                    {% block outer_content %}
                     <div id="container">
                         <article class="clearfix">
                             {% block precontent %}
                             <div id="message_container"><!--Ajax messages from central server get inserted here--></div>
-                            {% if messages %}
-                                <!--Normal messages loaded from the view get inserted here-->
-                                <div id="messages">
-                                </div>
-                            {% endif %}
                             {% endblock precontent %}
                             {% block content %}{% endblock content %}
                         </article>
@@ -179,7 +175,6 @@
                 </div>
             </div>
         </footer>
-        {% comment %}These will disappear with cleanup item #234{% endcomment %}
     </body>
 </html>
 
