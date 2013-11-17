@@ -7,6 +7,8 @@
 
 {% block easyadmin_active %}active{% endblock easyadmin_active %}
 
+{% block title %}Current Users{% endblock title %}
+
 {% block headcss %}
 <link rel='stylesheet' type='text/css' href='{% static "css/current_users.css" %}'>
 {% endblock headcss %}
@@ -101,8 +103,6 @@
     });
 </script>
 {% endblock headjs %}
-
-{% block title %}Current Users{% endblock title %}
 
 {% block content %}
 <div id="content">
