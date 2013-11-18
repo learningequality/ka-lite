@@ -6,7 +6,6 @@ function isLocalStorageAvailable(item_index) {
     // Pass in no arg: test whether localStorage exists.
     // Pass in an arg: test if that item is in localStorage 
     //    (returns false if item doesn't exist, or if localStorage is not available)
-
     try {
         return (item_index in localStorage || (!item_index && localStorage));
     } catch(e) {
@@ -42,7 +41,7 @@ function fetchTopicTree() {
             }
             if (isLocalStorageAvailable()) {
                 // we can only store strings in localStorage
-                localStorage.setItem("flat_topic_tree", JSON.stringify(nodes));
+                localStorage.setItem("flat_topic_tree_v2", JSON.stringify(nodes));
             }
         }
     });
@@ -54,10 +53,10 @@ $(document).ready(function() {
         if (nodes !== null) {
             // No need to reload
             return;
-        } else if (isLocalStorageAvailable("flat_topic_tree")) {
+        } else if (isLocalStorageAvailable("flat_topic_tree_v2")) {
             // Get from local storage
             //console.log("LocalStore cache hit.")
-            nodes = JSON.parse(localStorage.getItem("flat_topic_tree")); // coerce string back to JSON
+            nodes = JSON.parse(localStorage.getItem("flat_topic_tree_v2")); // coerce string back to JSON
             for (title in nodes) {
                 titles.push(title);
             }

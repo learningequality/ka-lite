@@ -37,7 +37,7 @@ from utils.general import get_module_source_file
 from utils.platforms import is_windows, system_script_extension, system_specific_zipping, system_specific_unzipping
 
 
-def install_from_package(install_json_file, signature_file, zip_file, dest_dir=None, create_dest_dir=True):
+def install_from_package(install_json_file, signature_file, zip_file, dest_dir=None):
     """
     NOTE: This docstring (below this line) will be dumped as a README file.
     Congratulations on downloading KA Lite!  These instructions will help you install KA Lite.
@@ -59,16 +59,13 @@ def install_from_package(install_json_file, signature_file, zip_file, dest_dir=N
             raise Exception("Could not find expected file from zip package: %s" % file)
 
     # get the destination directory
-    while not dest_dir or not os.path.exists(dest_dir):
-        if dest_dir:
-            if not create_dest_dir:
-                sys.stderr.write("Path does not exist: %s" % dest_dir)
-            else:
-                try:
-                    os.makedirs(os.path.realpath(dest_dir)) # can't use ensure_dir; external dependency.
-                    break
-                except Exception as e:
-                    sys.stderr.write("Failed to create dest dir (%s): %s\n" % (dest_dir, e))
+    while not dest_dir or not os.path.exists(dest_dir) or raw_input("%s: Directory exists; install? [Y/n] " % dest_dir) not in ["", "y", "Y"]:
+        if dest_dir and raw_input("%s: Directory does not exist; Create and install? [y/N] " % dest_dir) in ["y","Y"]:
+            try:
+                os.makedirs(os.path.realpath(dest_dir)) # can't use ensure_dir; external dependency.
+                break
+            except Exception as e:
+                sys.stderr.write("Failed to create dest dir (%s): %s\n" % (dest_dir, e))
         dest_dir = raw_input("Please enter the directory where you'd like to install KA Lite (blank=%s): " % src_dir) or src_dir
 
     # unpack the inner zip to the destination

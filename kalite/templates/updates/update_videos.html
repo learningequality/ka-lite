@@ -68,9 +68,9 @@
         </div>
     </div>
 
-    <button id="download-videos" type="button" class="enable-when-server-online" disabled>{% trans "Download " %}<span class="new-video-count">0</span>{% trans " new selected videos" %}</button>
+    <button id="download-videos" type="button" class="enable-when-server-online" disabled>{% trans "Download " %}<span class="new-video-count">0</span> {% trans "new selected videos" %}</button>
 
-    <button id="delete-videos" type="button">{% trans "Delete " %}<span class="old-video-count">0</span>{% trans " selected videos" %}</button>
+    <button id="delete-videos" type="button">{% trans "Delete " %}<span class="old-video-count">0</span> {% trans "selected videos" %}</button>
 </div>
 
 <div class="download-actions vertical-shadow">
@@ -93,5 +93,5 @@
 </div>
 <div style="clear: both;"></div>
 
-<div id="content_tree"><br/><h2>{% trans " Loading topic tree... Please wait!" %}</h2></div>
+<div id="content_tree"><br/><h2>{% trans "Loading topic tree... Please wait!" %}</h2></div>
 {% endblock content %}

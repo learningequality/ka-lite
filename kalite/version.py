@@ -4,7 +4,7 @@ VERSION_INFO = {
 
     "0.11.1": {
         "release_date": "2013/11/28",
-        "git_commit": "bb2c7048d22abb76aa7dcfeb89e7a06820372480",
+        "git_commit": "cd55e92ebbd3ad5ac0283ddf3de302d1cd26b608",
         "new_features": {
             "all": ["over 5x faster performance"],
             "students": [],

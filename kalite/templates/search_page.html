@@ -18,7 +18,7 @@
     <h2>{{ title }}</h2>
 
     {% for category, subresults in results.iteritems %}
-        <h3>{{ category }}{% if hit_max|get_item:category %} ({% trans "showing first " %}{{ max_results }} {% trans " results" %}){% endif %}</h3>
+        <h3>{{ category }}{% if hit_max|get_item:category %} ({% blocktrans %}showing first {{ max_results }} results{% endblocktrans %}){% endif %}</h3>
         <ul>
         {% for node in subresults %}
             <li>

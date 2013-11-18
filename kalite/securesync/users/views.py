@@ -251,7 +251,7 @@ def login(request, facility):
     else:  # render the unbound login form
         referer = urlparse.urlparse(request.META["HTTP_REFERER"]).path if request.META.get("HTTP_REFERER") else None
         # never use the homepage as the referer
-        if referer == reverse("homepage"):
+        if referer in [reverse("homepage"), reverse("add_facility_student")]:
             referer = None
         form = LoginForm(initial={"facility": facility_id, "callback_url": referer})
 
