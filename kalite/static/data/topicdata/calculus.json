@@ -1,71 +1,41 @@
 [
   {
     "related_video_readable_ids": [
-      "limit-example-1"
+      "limit-factoring-cubic"
     ], 
-    "v_position": 56, 
-    "path": "/math/calculus/limits_topic/limits_tutorial/e/limits_1/", 
-    "id": "limits_1", 
-    "display_name": "Limits 1", 
-    "title": "Limits 1", 
+    "v_position": 79, 
+    "path": "/math/calculus/limits_topic/algebraic-limits/e/limits_2/", 
+    "id": "limits_2", 
+    "display_name": "Two-sided limits using advanced algebra", 
+    "title": "Two-sided limits using advanced algebra", 
     "live": true, 
-    "seconds_per_fast_problem": 9.0, 
     "description": "", 
-    "basepoints": 16.0, 
-    "h_position": -25, 
-    "slug": "limits_1", 
+    "basepoints": 26.0, 
+    "h_position": -4, 
+    "slug": "limits_2", 
     "kind": "Exercise", 
-    "name": "limits_1", 
+    "name": "limits_2", 
+    "seconds_per_fast_problem": 41.0, 
     "prerequisites": [
-      "quadratic_equation", 
-      "slope-of-secant-lines"
+      "two-sided-limits-using-algebra"
     ]
   }, 
   {
-    "related_video_readable_ids": [
-      "limit-example-1"
-    ], 
-    "v_position": 56, 
+    "related_video_readable_ids": [], 
+    "v_position": 80, 
     "path": "/math/calculus/limits_topic/old-limits-tutorial/e/limits_1/", 
     "id": "limits_1", 
     "display_name": "Limits 1", 
     "title": "Limits 1", 
-    "live": true, 
-    "seconds_per_fast_problem": 9.0, 
+    "live": false, 
     "description": "", 
-    "basepoints": 16.0, 
-    "h_position": -25, 
+    "basepoints": 15.0, 
+    "h_position": -6, 
     "slug": "limits_1", 
     "kind": "Exercise", 
     "name": "limits_1", 
-    "prerequisites": [
-      "quadratic_equation", 
-      "slope-of-secant-lines"
-    ]
-  }, 
-  {
-    "related_video_readable_ids": [
-      "limits-at-positive-and-negative-infinity", 
-      "more-limits-at-infinity", 
-      "limits-with-two-horizontal-asymptotes", 
-      "limits-and-infinity"
-    ], 
-    "v_position": 57, 
-    "path": "/math/calculus/limits_topic/limits-infinity/e/limits_2/", 
-    "id": "limits_2", 
-    "display_name": "Limits 2", 
-    "title": "Limits 2", 
-    "live": true, 
-    "seconds_per_fast_problem": 7.0, 
-    "description": "", 
-    "basepoints": 14.0, 
-    "h_position": -25, 
-    "slug": "limits_2", 
-    "kind": "Exercise", 
-    "name": "limits_2", 
-    "prerequisites": [
-      "limits_1"
-    ]
+    "seconds_per_fast_problem": 8.0, 
+    "prerequisites": []
   }, 
   {
     "related_video_readable_ids": [
@@ -73,29 +43,19 @@
       "calculus--derivatives-2-5--new-hd-version", 
       "calculus--derivatives-1"
     ], 
-    "v_position": 59, 
+    "v_position": 81, 
     "path": "/math/calculus/differential-calculus/derivative_intro/e/derivatives_1/", 
     "id": "derivatives_1", 
-    "paths": [
-      "/math/calculus/differential-calculus/derivative_intro/e/derivatives_1/"
-    ], 
     "display_name": "Derivatives 1", 
     "title": "Derivatives 1", 
     "live": true, 
-    "parents": [
-      "", 
-      "math", 
-      "calculus", 
-      "differential-calculus", 
-      "derivative_intro"
-    ], 
-    "seconds_per_fast_problem": 11.0, 
     "description": "", 
-    "basepoints": 17.0, 
-    "h_position": -25, 
+    "basepoints": 18.0, 
+    "h_position": -3, 
     "slug": "derivatives_1", 
     "kind": "Exercise", 
     "name": "derivatives_1", 
+    "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "derivative_intuition", 
       "recognizing_slope", 
@@ -108,29 +68,19 @@
       "calculus--derivatives-1--new-hd-version", 
       "derivative-intuition-module"
     ], 
-    "v_position": 58, 
+    "v_position": 80, 
     "path": "/math/calculus/differential-calculus/derivative_intro/e/recognizing_slope/", 
     "id": "recognizing_slope", 
-    "paths": [
-      "/math/calculus/differential-calculus/derivative_intro/e/recognizing_slope/"
-    ], 
     "display_name": "Recognizing slope of curves", 
     "title": "Recognizing slope of curves", 
     "live": true, 
-    "parents": [
-      "", 
-      "math", 
-      "calculus", 
-      "differential-calculus", 
-      "derivative_intro"
-    ], 
-    "seconds_per_fast_problem": 9.0, 
     "description": "Identify intervals with positive and negative slope on graphs of functions\n", 
     "basepoints": 16.0, 
-    "h_position": -26, 
+    "h_position": -2, 
     "slug": "recognizing_slope", 
     "kind": "Exercise", 
     "name": "recognizing_slope", 
+    "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "limits_2"
     ]
@@ -139,29 +89,19 @@
     "related_video_readable_ids": [
       "derivative-intuition-module"
     ], 
-    "v_position": 58, 
+    "v_position": 80, 
     "path": "/math/calculus/differential-calculus/visualizing-derivatives-tutorial/e/derivative_intuition/", 
     "id": "derivative_intuition", 
-    "paths": [
-      "/math/calculus/differential-calculus/visualizing-derivatives-tutorial/e/derivative_intuition/"
-    ], 
     "display_name": "Derivative intuition", 
     "title": "Derivative intuition", 
     "live": true, 
-    "parents": [
-      "", 
-      "math", 
-      "calculus", 
-      "differential-calculus", 
-      "visualizing-derivatives-tutorial"
-    ], 
-    "seconds_per_fast_problem": 36.0, 
     "description": "", 
-    "basepoints": 26.0, 
-    "h_position": -25, 
+    "basepoints": 25.0, 
+    "h_position": -3, 
     "slug": "derivative_intuition", 
     "kind": "Exercise", 
     "name": "derivative_intuition", 
+    "seconds_per_fast_problem": 31.0, 
     "prerequisites": [
       "limits_2"
     ]
@@ -170,29 +110,19 @@
     "related_video_readable_ids": [
       "visualizing-derivatives-exercise"
     ], 
-    "v_position": 60, 
+    "v_position": 82, 
     "path": "/math/calculus/differential-calculus/visualizing-derivatives-tutorial/e/visualizing_derivatives/", 
     "id": "visualizing_derivatives", 
-    "paths": [
-      "/math/calculus/differential-calculus/visualizing-derivatives-tutorial/e/visualizing_derivatives/"
-    ], 
     "display_name": "Visualizing derivatives", 
     "title": "Visualizing derivatives", 
     "live": true, 
-    "parents": [
-      "", 
-      "math", 
-      "calculus", 
-      "differential-calculus", 
-      "visualizing-derivatives-tutorial"
-    ], 
-    "seconds_per_fast_problem": 15.0, 
     "description": "", 
     "basepoints": 19.0, 
-    "h_position": -23, 
+    "h_position": -5, 
     "slug": "visualizing_derivatives", 
     "kind": "Exercise", 
     "name": "visualizing_derivatives", 
+    "seconds_per_fast_problem": 14.0, 
     "prerequisites": [
       "derivative_intuition", 
       "derivatives_1"
@@ -202,29 +132,19 @@
     "related_video_readable_ids": [
       "power-rule"
     ], 
-    "v_position": 60, 
+    "v_position": 82, 
     "path": "/math/calculus/differential-calculus/power_rule_tutorial/e/power_rule/", 
     "id": "power_rule", 
-    "paths": [
-      "/math/calculus/differential-calculus/power_rule_tutorial/e/power_rule/"
-    ], 
     "display_name": "Power rule", 
     "title": "Power rule", 
     "live": true, 
-    "parents": [
-      "", 
-      "math", 
-      "calculus", 
-      "differential-calculus", 
-      "power_rule_tutorial"
-    ], 
-    "seconds_per_fast_problem": 12.0, 
     "description": "", 
-    "basepoints": 18.0, 
-    "h_position": -26, 
+    "basepoints": 27.0, 
+    "h_position": -2, 
     "slug": "power_rule", 
     "kind": "Exercise", 
     "name": "power_rule", 
+    "seconds_per_fast_problem": 44.0, 
     "prerequisites": [
       "derivatives_1"
     ]
@@ -233,31 +153,19 @@
     "related_video_readable_ids": [
       "derivatives-of-sin-x--cos-x--tan-x--e-x-and-ln-x"
     ], 
-    "v_position": 60, 
+    "v_position": 82, 
     "path": "/math/calculus/differential-calculus/chain_rule/e/special_derivatives/", 
     "id": "special_derivatives", 
-    "paths": [
-      "/math/calculus/differential-calculus/chain_rule/e/special_derivatives/", 
-      "/math/calculus/differential-calculus/product_rule/e/special_derivatives/"
-    ], 
     "display_name": "Special derivatives", 
     "title": "Special derivatives", 
     "live": true, 
-    "parents": [
-      "", 
-      "calculus", 
-      "chain_rule", 
-      "differential-calculus", 
-      "product_rule", 
-      "math"
-    ], 
-    "seconds_per_fast_problem": 5.0, 
     "description": "", 
     "basepoints": 12.0, 
-    "h_position": -24, 
+    "h_position": -4, 
     "slug": "special_derivatives", 
     "kind": "Exercise", 
     "name": "special_derivatives", 
+    "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "derivatives_1"
     ]
@@ -265,31 +173,23 @@
   {
     "related_video_readable_ids": [
       "chain-rule-introduction", 
-      "chain-rule-definition-and-example"
+      "chain-rule-definition-and-example", 
+      "chain-rule-on-two-functions-example-1", 
+      "chain-rule-on-two-functions-example-2"
     ], 
-    "v_position": 61, 
+    "v_position": 83, 
     "path": "/math/calculus/differential-calculus/chain_rule/e/chain_rule_1/", 
     "id": "chain_rule_1", 
-    "paths": [
-      "/math/calculus/differential-calculus/chain_rule/e/chain_rule_1/"
-    ], 
-    "display_name": "Chain rule 1", 
-    "title": "Chain rule 1", 
+    "display_name": "Chain rule on two functions", 
+    "title": "Chain rule on two functions", 
     "live": true, 
-    "parents": [
-      "", 
-      "math", 
-      "calculus", 
-      "differential-calculus", 
-      "chain_rule"
-    ], 
-    "seconds_per_fast_problem": 14.0, 
     "description": "", 
     "basepoints": 19.0, 
-    "h_position": -27, 
+    "h_position": -1, 
     "slug": "chain_rule_1", 
     "kind": "Exercise", 
     "name": "chain_rule_1", 
+    "seconds_per_fast_problem": 15.0, 
     "prerequisites": [
       "power_rule", 
       "special_derivatives"
@@ -299,19 +199,19 @@
     "related_video_readable_ids": [
       "derivatives-of-sin-x--cos-x--tan-x--e-x-and-ln-x"
     ], 
-    "v_position": 60, 
+    "v_position": 82, 
     "path": "/math/calculus/differential-calculus/product_rule/e/special_derivatives/", 
     "id": "special_derivatives", 
     "display_name": "Special derivatives", 
     "title": "Special derivatives", 
     "live": true, 
-    "seconds_per_fast_problem": 5.0, 
     "description": "", 
     "basepoints": 12.0, 
-    "h_position": -24, 
+    "h_position": -4, 
     "slug": "special_derivatives", 
     "kind": "Exercise", 
     "name": "special_derivatives", 
+    "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "derivatives_1"
     ]
@@ -321,29 +221,19 @@
       "applying-the-product-rule-for-derivatives", 
       "product-rule"
     ], 
-    "v_position": 61, 
+    "v_position": 83, 
     "path": "/math/calculus/differential-calculus/product_rule/e/product_rule/", 
     "id": "product_rule", 
-    "paths": [
-      "/math/calculus/differential-calculus/product_rule/e/product_rule/"
-    ], 
     "display_name": "Product rule", 
     "title": "Product rule", 
     "live": true, 
-    "parents": [
-      "", 
-      "math", 
-      "calculus", 
-      "differential-calculus", 
-      "product_rule"
-    ], 
-    "seconds_per_fast_problem": 16.0, 
     "description": "", 
-    "basepoints": 20.0, 
-    "h_position": -26, 
+    "basepoints": 26.0, 
+    "h_position": -2, 
     "slug": "product_rule", 
     "kind": "Exercise", 
     "name": "product_rule", 
+    "seconds_per_fast_problem": 40.0, 
     "prerequisites": [
       "power_rule", 
       "special_derivatives"
@@ -354,29 +244,19 @@
       "quotient-rule-for-derivative-of-tan-x", 
       "quotient-rule-from-product-rule"
     ], 
-    "v_position": 61, 
+    "v_position": 83, 
     "path": "/math/calculus/differential-calculus/product_rule/e/quotient_rule/", 
     "id": "quotient_rule", 
-    "paths": [
-      "/math/calculus/differential-calculus/product_rule/e/quotient_rule/"
-    ], 
     "display_name": "Quotient rule", 
     "title": "Quotient rule", 
     "live": true, 
-    "parents": [
-      "", 
-      "math", 
-      "calculus", 
-      "differential-calculus", 
-      "product_rule"
-    ], 
-    "seconds_per_fast_problem": 18.0, 
     "description": null, 
-    "basepoints": 21.0, 
-    "h_position": -25, 
+    "basepoints": 29.0, 
+    "h_position": -3, 
     "slug": "quotient_rule", 
     "kind": "Exercise", 
     "name": "quotient_rule", 
+    "seconds_per_fast_problem": 60.0, 
     "prerequisites": [
       "power_rule", 
       "special_derivatives"
@@ -387,29 +267,19 @@
       "recognizing-concavity-exercise", 
       "concavity--concave-upwards-and-concave-downwards-intervals"
     ], 
-    "v_position": 60, 
+    "v_position": 82, 
     "path": "/math/calculus/derivative_applications/critical_points_graphing/e/recognizing_concavity/", 
     "id": "recognizing_concavity", 
-    "paths": [
-      "/math/calculus/derivative_applications/critical_points_graphing/e/recognizing_concavity/"
-    ], 
     "display_name": "Recognizing concavity", 
     "title": "Recognizing concavity", 
     "live": true, 
-    "parents": [
-      "", 
-      "math", 
-      "calculus", 
-      "derivative_applications", 
-      "critical_points_graphing"
-    ], 
-    "seconds_per_fast_problem": 10.0, 
     "description": "Identify concave upwards and concave downwards intervals on graphs of functions\n", 
     "basepoints": 17.0, 
-    "h_position": -28, 
+    "h_position": 0, 
     "slug": "recognizing_concavity", 
     "kind": "Exercise", 
     "name": "recognizing_concavity", 
+    "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "recognizing_slope", 
       "derivatives_1"
@@ -422,32 +292,67 @@
       "l-hopital-s-rule-example-2", 
       "l-hopital-s-rule-example-3"
     ], 
-    "v_position": 61, 
+    "v_position": 83, 
     "path": "/math/calculus/derivative_applications/lhopital_rule/e/lhopitals_rule/", 
     "id": "lhopitals_rule", 
-    "paths": [
-      "/math/calculus/derivative_applications/lhopital_rule/e/lhopitals_rule/"
-    ], 
     "display_name": "L'H\u00f4pital's rule", 
     "title": "L'H\u00f4pital's rule", 
     "live": true, 
-    "parents": [
-      "", 
-      "math", 
-      "calculus", 
-      "derivative_applications", 
-      "lhopital_rule"
-    ], 
-    "seconds_per_fast_problem": 9.0, 
     "description": "", 
-    "basepoints": 16.0, 
-    "h_position": -24, 
+    "basepoints": 14.0, 
+    "h_position": -5, 
     "slug": "lhopitals_rule", 
     "kind": "Exercise", 
     "name": "lhopitals_rule", 
+    "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "power_rule", 
       "special_derivatives"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "geometric-sequences--introduction", 
+      "geometric-sequences"
+    ], 
+    "v_position": 77, 
+    "path": "/math/calculus/sequences_series_approx_calc/seq_series_review/e/geometric_sequences_1/", 
+    "id": "geometric_sequences_1", 
+    "display_name": "Geometric sequences 1", 
+    "title": "Geometric sequences 1", 
+    "live": true, 
+    "description": "Find the next term in a geometric sequence.\n", 
+    "basepoints": 17.0, 
+    "h_position": 1, 
+    "slug": "geometric_sequences_1", 
+    "kind": "Exercise", 
+    "name": "geometric_sequences_1", 
+    "seconds_per_fast_problem": 11.0, 
+    "prerequisites": [
+      "arithmetic_sequences_1"
+    ]
+  }, 
+  {
+    "related_video_readable_ids": [
+      "geometric-sequences--introduction", 
+      "geometric-sequences"
+    ], 
+    "v_position": 78, 
+    "path": "/math/calculus/sequences_series_approx_calc/seq_series_review/e/geometric_sequences_2/", 
+    "id": "geometric_sequences_2", 
+    "display_name": "Geometric sequences 2", 
+    "title": "Geometric sequences 2", 
+    "live": true, 
+    "description": "Find the nth term of a geometric sequence.\n", 
+    "basepoints": 20.0, 
+    "h_position": 1, 
+    "slug": "geometric_sequences_2", 
+    "kind": "Exercise", 
+    "name": "geometric_sequences_2", 
+    "seconds_per_fast_problem": 16.0, 
+    "prerequisites": [
+      "geometric_sequences_1", 
+      "arithmetic_sequences_2"
     ]
   }
 ]
