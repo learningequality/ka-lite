@@ -1,7 +1,7 @@
 {% extends "control_panel/base.html" %}
 {% load i18n %}
 
-{% block title %}{{ zone.name }}{% trans "- Sharing Network Management Console" %}{% endblock title %}
+{% block title %}{{ zone.name }}{% trans "- Sharing Network Management Console" %} {{ block.super }}{% endblock title %}
 
 {% block headjs %}{{ block.super }}
 <script>
@@ -48,8 +48,8 @@
             <ul id="zone-management-options">
                 {% if not facilities and not devices %}{# can only happen on the central server #}
                     <li>
-                        <a class="zone-delete-link" href="{% url delete_zone org_id=org_id zone_id=zone_id %}" onclick="return confirm('Are you sure you want to delete {{zone.name}}?')">
-                            <i class="icon-trash" title="Delete this sharing network."></i>
+                        <a class="zone-delete-link" href="{% url delete_zone org_id=org_id zone_id=zone_id %}" onclick="return confirm(gettext('Are you sure you want to delete') + ' {{zone.name}}?');">
+                            <i class="icon-trash" title="{% trans 'Delete this sharing network.' %}"></i>
                         </a>    
                     </li>
                 {% endif %}

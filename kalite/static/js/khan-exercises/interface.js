@@ -511,6 +511,9 @@ $(window).unload(function() {
 });
 
 function request(method, data) {
+    // short circuit
+    return true;
+
     var apiBaseUrl = (Exercises.assessmentMode ?
             "/api/v1/user/assessment/exercises" : "/api/v1/user/exercises");
 
