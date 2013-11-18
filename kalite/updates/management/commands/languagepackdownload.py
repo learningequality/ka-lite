@@ -1,6 +1,8 @@
+import glob
 import json
 import os
 import requests
+import shutil
 import zipfile
 from optparse import make_option
 from StringIO import StringIO
@@ -9,10 +11,11 @@ from django.core.management.base import BaseCommand, CommandError
 
 import settings
 import version
+from i18n.models import LanguagePack
+from i18n.management.commands.update_po import 
 from settings import LOG as logging
-from shared.i18n import convert_language_code_format
+from shared.i18n import convert_language_code_format, update_jsi18n_file
 from utils.general import ensure_dir
-from main.models import LanguagePack
 
 
 LOCALE_ROOT = settings.LOCALE_PATHS[0]
@@ -36,6 +39,9 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
+        if settings.CENTRAL_SERVER:
+            raise CommandError("This must only be run on distributed servers server.")
+
         code = convert_language_code_format(options["lang_code"])
         software_version = options["software_version"]
         if code == settings.LANGUAGE_CODE:
@@ -43,15 +49,20 @@ class Command(BaseCommand):
         if software_version == version.VERSION:
             logging.info("Note: software version set to default version. This is fine (and may be intentional), but you may specify a software version other than '%s' with -s" % version.VERSION)
 
-        ## Download the language pack
+        # Download the language pack
         zip_file = get_language_pack(code, software_version)
 
-        ## Unpack into locale directory
+        # Unpack into locale directory
         unpack_language(code, zip_file)
 
-        ## Update database with meta info
+        # Update database with meta info
         update_database(code)
 
+        # 
+        update_jsi18n_file(code)
+        
+        # 
+        move_srts(code)
 
 def get_language_pack(code, software_version):
     """Download language pack for specified language"""
@@ -97,10 +108,18 @@ def update_database(code):
     logging.info("Successfully updated database.")
 
 
+def move_srts(code):
+    """
+    Srts live in the locale directory, but that's not exposed at any URL.  So instead,
+    we have to move the srts out to /static/subtitles/[code]/
+    """
+    subtitles_static_dir = os.path.join(settings.STATIC_ROOT, "subtitles")
+    srt_static_dir = os.path.join(subtitles_static_dir, code)
+    srt_locale_dir = os.path.join(LOCALE_ROOT, code, "subtitles")
 
-
-
-
-
-
-
+    ensure_dir(srt_static_dir)
+    for fil in glob.glob(os.path.join(srt_locale_dir, "*.srt")):
+        srt_dest_path = os.path.join(srt_static_dir, os.path.basename(fil))
+        if os.path.exists(srt_dest_path):
+            os.remove(srt_dest_path)
+        shutil.move(fil, srt_dest_path)

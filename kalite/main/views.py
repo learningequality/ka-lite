@@ -21,7 +21,7 @@ import settings
 from config.models import Settings
 from control_panel.views import user_management_context
 from main import topicdata
-from main.models import VideoLog, ExerciseLog, VideoFile
+from main.models import VideoLog, ExerciseLog
 from securesync.api_client import BaseClient
 from securesync.models import Facility, FacilityUser,FacilityGroup, Device
 from securesync.views import require_admin, facility_required
@@ -43,14 +43,24 @@ def check_setup_status(handler):
         if request.is_admin:
             # TODO(bcipolli): move this to the client side?
             if not request.session["registered"] and BaseClient().test_connection() == "success":
+                # Being able to register is more rare, so prioritize.
                 messages.warning(request, mark_safe("Please <a href='%s'>follow the directions to register your device</a>, so that it can synchronize with the central server." % reverse("register_public_key")))
             elif not request.session["facility_exists"]:
                 messages.warning(request, mark_safe("Please <a href='%s'>create a facility</a> now. Users will not be able to sign up for accounts until you have made a facility." % reverse("add_facility")))
 
-        elif not request.is_logged_in and not request.session["facility_exists"]:
-            messages.warning(request, mark_safe(
-                "Please <a href='%s?next=%s'>login</a> with the account you created while running the installation script, \
-                to complete the setup." % (reverse("login"), reverse("register_public_key"))))
+        elif not request.is_logged_in:
+            if not request.session["registered"] and BaseClient().test_connection() == "success":
+                # Being able to register is more rare, so prioritize.
+                redirect_url = reverse("register_public_key")
+            elif not request.session["facility_exists"]:
+                redirect_url = reverse("add_facility")
+            else:
+                redirect_url = None
+
+            if redirect_url:
+                messages.warning(request, mark_safe(
+                    "Please <a href='%s?next=%s'>login</a> with the account you created while running the installation script, \
+                    to complete the setup." % (reverse("login"), redirect_url)))
 
         return handler(request, *args, **kwargs)
     return wrapper_fn
@@ -187,9 +197,10 @@ def exercise_handler(request, exercise):
             if topic_tools.is_sibling({"path": video["path"], "kind": "Video"}, exercise):
                 related_videos[key] = video
                 break
+    
         # failed to find a sibling; just choose the first one.
         if key not in related_videos:
-            related_videos[key] = video_node[0]
+            related_videos[key] = video_nodes[0]
 
     context = {
         "exercise": exercise,
@@ -237,70 +248,6 @@ def easy_admin(request):
     }
     return context
 
-@require_admin
-@render_to("summary_stats.html")
-def summary_stats(request):
-    # TODO (bcipolli): allow specific stats to be requested (more efficient)
-
-    context = {
-        "video_stats" : get_stats(("total_video_views","total_video_time","total_video_points")),
-        "exercise_stats": get_stats(("total_exercise_attempts","total_exercise_points","total_exercise_status")),
-        "user_stats": get_stats(("total_users",)),
-        "group_stats": get_stats(("total_groups",)),
-    }
-    return context
-
-
-def get_stats(stat_names):
-    """Given a list of stat names, return a dictionary of stat values.
-    For efficiency purposes, best to request all related stats together.
-    In low-memory conditions should group requests by common source (video, exercise, user, group), but otherwise separate
-
-Available stats:
-    video:    total_video_views, total_video_time, total_video_points
-    exercise: total_exercise_attempts, total_exercise_points, total_exercise_status
-    users:    total_users
-    groups:   total_groups
-    """
-
-    val = {}
-    for stat_name in stat_names:
-
-        # Total time from videos
-        if stat_name == "total_video_views":
-            val[stat_name] = VideoLog.objects.count()
-
-        # Total time from videos
-        elif stat_name == "total_video_time":
-            val[stat_name] = VideoLog.objects.aggregate(Sum("total_seconds_watched"))['total_seconds_watched__sum'] or 0
-
-        elif stat_name == "total_video_points":
-            val[stat_name] = VideoLog.objects.aggregate(Sum("points"))['points__sum'] or 0
-
-        elif stat_name == "total_exercise_attempts":
-            val[stat_name] = ExerciseLog.objects.aggregate(Sum("attempts"))['attempts__sum'] or 0
-
-        elif stat_name == "total_exercise_points":
-            val[stat_name] = ExerciseLog.objects.aggregate(Sum("points"))['points__sum'] or 0
-
-        elif stat_name == "total_exercise_status":
-            val[stat_name] = {
-                "struggling": ExerciseLog.objects.aggregate(Sum("struggling"))['struggling__sum'] or 0,
-                "completed": ExerciseLog.objects.aggregate(Sum("complete"))['complete__sum'] or 0,
-            }
-            val[stat_name]["inprog"] = ExerciseLog.objects.count() - sum([stat for stat in val[stat_name].values()])
-
-        elif stat_name == "total_users":
-            val[stat_name] = FacilityUser.objects.count()
-
-        elif stat_name == "total_groups":
-            val[stat_name] = FacilityGroup.objects.count()
-
-        else:
-            raise Exception("Unknown stat requested: %s" % stat_name)
-
-    return val
-
 
 @require_admin
 @facility_required
@@ -340,7 +287,7 @@ def zone_redirect(request):
     if zone:
         return HttpResponseRedirect(reverse("zone_management", kwargs={"zone_id": zone.pk}))
     else:
-        raise Http404(_("This device is not on any zone."))
+        return HttpResponseRedirect(reverse("zone_management", kwargs={"zone_id": None}))
 
 @require_admin
 def device_redirect(request):

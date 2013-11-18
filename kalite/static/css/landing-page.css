@@ -33,7 +33,9 @@
     border-bottom: 1px solid #DCE0B3;
     display: block;
     height: 230px;
-    margin: -5px -14px -15px -14px;
+    /*margin: -5px -14px -15px -14px;*/
+    min-width: 100%;
+    background-position: center center;
 }
 
 .suggested-action-title {
@@ -41,6 +43,9 @@
     text-decoration: none;
     font-size: 21px;
     margin-bottom: 20px;
+    height: 35px;
+    padding-bottom: 8px;
+    text-align: center;
 }
 
 .message {
@@ -88,16 +93,7 @@ a:hover, a:hover .suggested-action-title {
 /*   margin-left: auto;
     margin-right: auto;*/
 }
-.suggested-action-image-link{
-    max-width: 280px;
-    background-repeat:no-repeat;
-    background-position: center center;
-}
-.suggested-action-title{
-    height: 35px;
-    padding-bottom: 8px;
-    text-align: center;
-}
+
 .other {
     margin-top: 10px;
     font-size:18px;
@@ -107,4 +103,5 @@ a:hover, a:hover .suggested-action-title {
     clear:both;
     font-size: 16px;
     float:left;
+    width: 100%;
 }

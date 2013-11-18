@@ -23,10 +23,10 @@ from django.views.decorators.cache import cache_page
 
 import settings
 import version
+from .models import VideoFile
 from config.models import Settings
-from control_panel.views import user_management_context
+from control_panel.views import local_device_context, user_management_context
 from main import topicdata
-from main.models import VideoLog, ExerciseLog, VideoFile
 from securesync.models import Facility, FacilityUser, FacilityGroup, Device
 from securesync.views import require_admin, facility_required
 from shared import topic_tools
@@ -93,15 +93,6 @@ def update_languages(request):
 @require_admin
 @render_to("updates/update_software.html")
 def update_software(request):
-    database_path = settings.DATABASES["default"]["NAME"]
-    current_version = request.GET.get("version", version.VERSION)  # allows easy development by passing a different version
-
     context = update_context(request)
-    context.update({
-        "software_version": current_version,
-        "software_release_date": version.VERSION_INFO[current_version]["release_date"],
-        "install_dir": os.path.realpath(os.path.join(settings.PROJECT_PATH, "..")),
-        "database_last_updated": datetime.datetime.fromtimestamp(os.path.getctime(database_path)),
-        "database_size": os.stat(settings.DATABASES["default"]["NAME"]).st_size / float(1024**2),
-    })
+    context.update(local_device_context(request))
     return context

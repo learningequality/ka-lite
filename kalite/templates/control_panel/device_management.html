@@ -1,33 +1,58 @@
 {% extends "control_panel/base.html" %}
 {% load i18n %}
+{% load staticfiles %}
 
 {% block title %}{{ device.name }}{% trans "Device Syncing History" %}{% endblock title %}
 
+{% block headcss %}{{ block.super }}
+<style>
+dl{margin-bottom:20px}dt,dd{line-height:20px}dt{font-weight:bold}dd{margin-left:10px}.dl-horizontal{*zoom:1}.dl-horizontal:before,.dl-horizontal:after{display:table;line-height:0;content:""}.dl-horizontal:after{clear:both}.dl-horizontal dt{float:left;width:160px;overflow:hidden;clear:left;text-align:right;text-overflow:ellipsis;white-space:nowrap}.dl-horizontal dd{margin-left:180px}
+</style>
+{% endblock headcss %}
+
 {% block buttons %}{{ block.super }}
     {% if not is_central %}
-        <!--li>
-            <a class="green_button" href="javascript:alert('NYI; sorry!');">{% trans "Sync device now!" %}</a>
-        </li-->
+        <div class="server-online-only">
+            <div class="registered-only">
+                <a class="green_button" href="javascript:force_sync()">{% trans "Sync Now!" %}</a>
+            </div>
+        </div>
     {% endif %}
 {% endblock buttons %}
 
 {% block control_panel_content %}
 <div id="zone_container">
 
-    {% if is_central %}
     <div class="device_metadata">
         <h2>{% trans "Device Metadata" %}</h2>
 
-        <ul>
-        {% if not shown_sessions %}
-            <li><b>{% trans "Version" %}:</b> {{ device.version }}</li>
+        <dl class="dl-horizontal">
+        {% if software_version %}
+            <!---Current System status -->
+            <dt>{% trans "Device ID" %}:</dt>
+            <dd>{{ device.id }}</dd>
+            <dt>{% trans "Current Version" %}:</dt>
+            <dd>{{ software_version }}</dd>
+            <dt>{% trans "Released Date" %}:</dt>
+            <dd>{{ software_release_date }}</dd>
+            <dt>{% trans "Database Size" %}:</dt>
+            <dd>{{ database_size|floatformat }} MB</dd>
+            <dt>{% trans "Database last update" %}:</dt>
+            <dd>{{ database_last_updated }}</dd>
+            <dt>{% trans "Install Directory" %}:</dt>
+            <dd>{{ install_dir }}</dd>
+
+        {% elif not shown_sessions %}
+
         {% else %}
-            <li><b>{% trans "Version" %}:</b> {{ shown_sessions.0.client_version }}</li>
-            <li><b>{% trans "OS" %}:</b>  {{ shown_sessions.0.client_os }}</li>
+            <!---Remote system status -->
+            <dt>{% trans "Version" %}:</dt>
+            <dd>{{ shown_sessions.0.client_version }}</dd>
+            <dt>{% trans "Operating System" %}:</dt>
+            <dd>{{ shown_sessions.0.client_os }}</dd>
         {% endif %}
-        </ul>
+        </dl>
     </div>
-    {% endif %}
 
     <div class="sync_sessions">
         <div>

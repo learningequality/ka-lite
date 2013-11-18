@@ -6,7 +6,10 @@
 {% block practice_active %}active{% endblock practice_active %}
 
 {% block headcss %}
-<link rel="stylesheet" type="text/css" href="{% static "js/khan-exercises/css/khan-exercise.css" %}"></link>
+<link rel="stylesheet" type="text/css" href="{% static 'js/khan-exercises/css/khan-exercise.css' %}"></link>
+
+<!-- Used by KA to dynamically add styling to the exercise -->
+<style id="exercise-inline-style"></style>
 
 <style>
 .return-link {
@@ -16,15 +19,12 @@
     margin-top: -2px;
 }
 </style>
-
-<style id="exercise-inline-style"></style>
-
 {% endblock headcss %}
 
 {% block headjs %}
 <script>
 
-    var urlBaseOverride = "{% static "js/khan-exercises/" %}";
+    var urlBaseOverride = "{% static 'js/khan-exercises/' %}";
     // some dummy features on the Exercises object to make khan-exercises.js happy
     Exercises = {
         completeStack: {
@@ -46,9 +46,9 @@
     };
         
 </script>
-<script type="text/javascript" src="/jsi18n/"></script>
-<script src="{% static "js/khan-exercises/khan-exercise.js" %}"></script>
+<script src="{% static 'js/khan-exercises/khan-exercise.js' %}"></script>
 <script>
+    {# No user data is stored here; that is recovered via an AJAX call, so that this page is fully cacheable #}
     var exerciseData = {
         "basepoints": {{ exercise.basepoints }},
         "description": "{{ exercise.description|linebreaksbr }}",
@@ -72,7 +72,7 @@
         "lastCountHints": 0
     };    
 </script>
-<script src="{% static "js/exercises.js" %}"></script>
+<script src="{% static 'js/exercises.js' %}"></script>
 
 {% endblock headjs %}
 

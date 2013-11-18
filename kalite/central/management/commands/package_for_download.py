@@ -59,9 +59,13 @@ def install_from_package(install_json_file, signature_file, zip_file, dest_dir=N
             raise Exception("Could not find expected file from zip package: %s" % file)
 
     # get the destination directory
-    while not dest_dir or not os.path.exists(dest_dir):
-        if dest_dir:
-            sys.stderr.write("Path does not exist: %s" % dest_dir)
+    while not dest_dir or not os.path.exists(dest_dir) or raw_input("%s: Directory exists; install? [Y/n] " % dest_dir) not in ["", "y", "Y"]:
+        if dest_dir and raw_input("%s: Directory does not exist; Create and install? [y/N] " % dest_dir) in ["y","Y"]:
+            try:
+                os.makedirs(os.path.realpath(dest_dir)) # can't use ensure_dir; external dependency.
+                break
+            except Exception as e:
+                sys.stderr.write("Failed to create dest dir (%s): %s\n" % (dest_dir, e))
         dest_dir = raw_input("Please enter the directory where you'd like to install KA Lite (blank=%s): " % src_dir) or src_dir
 
     # unpack the inner zip to the destination
@@ -199,6 +203,7 @@ class Command(BaseCommand):
             install_sh_file = self.install_py_file[:-3] + "_linux.sh"
             install_files[install_sh_file] = tempfile.mkstemp()[1]
             with open(install_files[install_sh_file], "w") as fp:
+                fp.write("echo 'Searching for python path...'\n")
                 fp.write(open(os.path.realpath(settings.PROJECT_PATH + "/../scripts/python.sh"), "r").read())
                 fp.write('\ncurrent_dir=`dirname "${BASH_SOURCE[0]}"`')
                 fp.write('\n$PYEXEC "$current_dir/%s"' % self.install_py_file)

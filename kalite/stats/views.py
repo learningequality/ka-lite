@@ -66,7 +66,7 @@ def recent_syncing(request, org_id=None, max_zones=20, chunk_size=100, ndays=Non
 @render_to("stats/timelines.html")
 def timelines(request):
 
-    do = Device.objects \
+    do = list(Device.objects \
         .exclude(devicemetadata__is_demo_device=True) \
         .annotate( \
             first_sess=Min("client_sessions__timestamp"),\
@@ -74,23 +74,21 @@ def timelines(request):
         ) \
         .order_by("first_sess") \
         .filter(nsess__gt=0) \
-        .values("first_sess","nsess", "name", "devicezone__zone__name")
+        .values("first_sess","nsess", "name", "devicezone__zone__name"))
 
     # Exercises completed (by date)
-    eo = ExerciseLog.objects \
-        .all() \
+    eo = list(ExerciseLog.objects \
         .values("completion_timestamp", "signed_by__name", "signed_by__devicezone__zone__name") \
         .order_by("completion_timestamp") \
         .exclude(signed_by__devicemetadata__is_demo_device=True) \
-        .filter(complete=True)
+        .filter(complete=True))
 
     # Videos completed (by date)
-    vo = VideoLog.objects \
-        .all() \
+    vo = list(VideoLog.objects \
         .values("completion_timestamp", "signed_by__name", "signed_by__devicezone__zone__name") \
         .order_by("completion_timestamp") \
-    .exclude(signed_by__devicemetadata__is_demo_device=True) \
-        .filter(complete=True)
+        .exclude(signed_by__devicemetadata__is_demo_device=True) \
+        .filter(complete=True))
 
     return {
         "registrations": do,

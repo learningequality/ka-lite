@@ -200,10 +200,6 @@ def get_server_info(request):
             device = device or Device.get_own_device()
             device_info[field] = device.get_version()
 
-        elif field == "video_count":
-            from main.models import VideoFile
-            device_info[field] = VideoFile.objects.filter(percent_complete=100).count() if not settings.CENTRAL_SERVER else 0
-
         elif field == "device_name":
             device = device or Device.get_own_device()
             device_info[field] = device.name

@@ -2,7 +2,7 @@ var results = null;
 var timeout_length = 1000 * 20; // 20 seconds
 
 function isLocalStorageAvailable() {
-    var testString = "hello peeps"
+    var testString = gettext("hello peeps");  // ;) fun for translators
     try {
         localStorage[testString] = testString;
         return true;

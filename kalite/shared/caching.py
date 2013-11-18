@@ -1,13 +1,13 @@
-
 import datetime
 import os
 from functools import partial
-
 
 from django.core.cache import cache, InvalidCacheBackendError
 from django.core.cache.backends.filebased import FileBasedCache
 from django.core.cache.backends.locmem import LocMemCache
 from django.core.urlresolvers import reverse
+from django.db.models.signals import post_save, pre_delete
+from django.dispatch import receiver
 from django.http import HttpRequest
 from django.test.client import Client
 from django.utils import translation
@@ -19,8 +19,37 @@ from django.views.decorators.http import condition
 import settings
 from settings import LOG as logging
 from shared import topic_tools
+from updates.models import VideoFile
 from utils.internet import generate_all_paths
 
+
+# Signals
+
+@receiver(post_save, sender=VideoFile)
+def my_handler1(sender, **kwargs):
+    """
+    Listen in to see when videos become available.
+    """
+    # Can only do full check in Django 1.5+, but shouldn't matter--we should only save with
+    # percent_complete == 100 once.
+    just_now_available = kwargs["instance"].percent_complete == 100 #and "percent_complete" in kwargs["updated_fields"]
+    if just_now_available:
+        # This event should only happen once, so don't bother checking if
+        #   this is the field that changed.
+        logging.debug("Invalidating cache on save for %s" % kwargs["instance"])
+        invalidate_all_pages_related_to_video(video_id=kwargs["instance"].youtube_id)
+
+@receiver(pre_delete, sender=VideoFile)
+def my_handler2(sender, **kwargs):
+    """
+    Listen in to see when available videos become unavailable.
+    """
+    was_available = kwargs["instance"].percent_complete == 100
+    if was_available:
+        logging.debug("Invalidating cache on delete for %s" % kwargs["instance"])
+        invalidate_all_pages_related_to_video(video_id=kwargs["instance"].youtube_id)
+
+# Decorators
 
 def calc_last_modified(request, *args, **kwargs):
     """
@@ -75,6 +104,8 @@ def backend_cache_page(handler, cache_time=settings.CACHE_TIME, cache_name=setti
 
     return wrapper_fn
 
+
+# Importable functions
 
 def caching_is_enabled():
     return settings.CACHE_TIME != 0
@@ -160,11 +191,14 @@ def get_exercise_page_paths(video_id=None, video_slug=None):
     assert (video_id or video_slug) and not (video_id and video_slug), "One arg, not two" 
 
     try:
+        if not video_slug:
+            video_slug = topic_tools.get_id2slug_map()[video_id]
         exercise_paths = set()
-        for exercise in get_related_exercises(video=topic_tools.get_node_cache("Video")[video_slug][0]):
-            exercise_paths = exercise_paths.union(set(exercise["paths"]))
+        for exercise in topic_tools.get_related_exercises(videos=topic_tools.get_node_cache("Video")[video_slug]):
+            exercise_paths = exercise_paths.union(set([exercise["path"]]))
         return list(exercise_paths)
-    except:
+    except Exception as e:
+        logging.debug("Exception while getting exercise paths: %s" % e)
         return []
 
 

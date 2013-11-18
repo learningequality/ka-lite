@@ -71,7 +71,7 @@ LOCALE_PATHS   = tuple([os.path.realpath(lp) + "/" for lp in LOCALE_PATHS])
 DATABASES      = getattr(local_settings, "DATABASES", {
     "default": {
         "ENGINE": getattr(local_settings, "DATABASE_TYPE", "django.db.backends.sqlite3"),
-        "NAME"  : getattr(local_settings, "DATABASE_PATH", PROJECT_PATH + "/database/data.sqlite"),
+        "NAME"  : getattr(local_settings, "DATABASE_PATH", os.path.join(PROJECT_PATH, "database", "data.sqlite")),
         "OPTIONS": {
             "timeout": 60,
         },
@@ -97,7 +97,8 @@ MANAGERS       = getattr(local_settings, "MANAGERS", ADMINS)
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-TIME_ZONE      = getattr(local_settings, "TIME_ZONE", "America/Los_Angeles")
+TIME_ZONE      = getattr(local_settings, "TIME_ZONE", None)
+#USE_TZ         = True  # needed for timezone-aware datetimes (particularly in updates code)
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -130,7 +131,10 @@ TEMPLATE_DIRS  = tuple([os.path.realpath(td) + "/" for td in TEMPLATE_DIRS])
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
     "django.core.context_processors.debug",
-    "django.core.context_processors.i18n",
+)
+if USE_I18N:
+    TEMPLATE_CONTEXT_PROCESSORS += ("django.core.context_processors.i18n",)
+TEMPLATE_CONTEXT_PROCESSORS += (
     "django.core.context_processors.media",
     "django.contrib.messages.context_processors.messages",
     "django.core.context_processors.request",
@@ -203,8 +207,11 @@ else:
         "securesync.middleware.FacilityCheck",
         "securesync.middleware.RegisteredCheck",
         "securesync.middleware.DBCheck",
-        "main.middleware.SessionLanguage",
     )
+#    if USE_I18N:
+    TEMPLATE_CONTEXT_PROCESSORS += ("i18n.custom_context_processors.languages",)
+    MIDDLEWARE_CLASSES += ("i18n.middleware.SessionLanguage",)
+    INSTALLED_APPS += ('i18n',)
 
 
 ########################
@@ -288,7 +295,7 @@ SYNC_SESSIONS_MAX_RECORDS = getattr(local_settings, "SYNC_SESSIONS_MAX_RECORDS",
 
 # Used for user logs.  By default, completely off.
 #  Note: None means infinite (just like caching)
-USER_LOG_MAX_RECORDS_PER_USER = getattr(local_settings, "USER_LOG_MAX_RECORDS_PER_USER", 0)
+USER_LOG_MAX_RECORDS_PER_USER = getattr(local_settings, "USER_LOG_MAX_RECORDS_PER_USER", 1)
 USER_LOG_SUMMARY_FREQUENCY = getattr(local_settings, "USER_LOG_SUMMARY_FREQUENCY", (1,"months"))
 
 
@@ -341,7 +348,7 @@ if not CENTRAL_SERVER:
     # Cache is activated in every case,
     #   EXCEPT: if CACHE_TIME=0
     if CACHE_TIME != 0:  # None can mean infinite caching to some functions
-        KEY_PREFIX = version.VERSION
+        KEY_PREFIX = version.VERSION_INFO[version.VERSION]["git_commit"][0:6]  # new cache for every build
 
         # File-based cache
         install_location_hash = hashlib.sha1(PROJECT_PATH).hexdigest()

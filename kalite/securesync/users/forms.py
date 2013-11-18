@@ -48,9 +48,14 @@ class FacilityUserForm(forms.ModelForm):
         username_taken = FacilityUser.objects.filter(username__iexact=username, facility=facility).count() > 0
         username_changed = not self.instance or self.instance.username != username
         if username_taken and username_changed:
-            raise forms.ValidationError(_("A user with this username at this facility already exists. Please choose a new username (or select a different facility) and try again."))
+            if self.fields["facility"].queryset and self.fields["facility"].queryset.count() > 1:
+                error_message = _("A user with this username at this facility already exists. Please choose a new username (or select a different facility) and try again.")
+            else:
+                error_message = _("A user with this username already exists. Please choose a new username and try again.")
+            raise forms.ValidationError(error_message)
 
-        if User.objects.filter(username__iexact=username).count() > 0:
+        elif User.objects.filter(username__iexact=username).count() > 0:
+            # Admin (django) user exists with the same name; we don't want overlap there!
             raise forms.ValidationError(_("The specified username is unavailable. Please choose a new username and try again."))
 
         return self.cleaned_data['username']
@@ -100,6 +105,7 @@ class FacilityGroupForm(forms.ModelForm):
 
 class LoginForm(forms.ModelForm):
     password = forms.CharField(label=_("Password"), widget=forms.PasswordInput)
+    callback_url = forms.CharField(widget=forms.HiddenInput, required=False)
 
     class Meta:
         model = FacilityUser
@@ -109,6 +115,8 @@ class LoginForm(forms.ModelForm):
         self.user_cache = None
         super(LoginForm, self).__init__(*args, **kwargs)
         self.fields['facility'].queryset = Facility.objects.all()
+        if self.fields["facility"].queryset.count() < 2:
+            self.fields["facility"].widget = forms.HiddenInput()
 
     def clean(self):
         username = self.cleaned_data.get('username', "")
@@ -124,7 +132,11 @@ class LoginForm(forms.ModelForm):
         try:
             self.user_cache = FacilityUser.objects.get(username=username, facility=facility)
         except FacilityUser.DoesNotExist as e:
-            raise forms.ValidationError(_("Username was not found for this facility. Did you type your username correctly, and choose the right facility?"))
+            if self.fields["facility"].queryset.count() > 1:
+                error_message = _("Username was not found for this facility. Did you type your username correctly, and choose the right facility?")
+            else:
+                error_message = _("Username was not found. Did you type your username correctly?")
+            raise forms.ValidationError(error_message)
 
         if not self.user_cache.check_password(password):
             self.user_cache = None

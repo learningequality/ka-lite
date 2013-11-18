@@ -51,6 +51,8 @@ def select_package_dirs(dirnames, key_base, **kwargs):
             in_dirs -= set(("central", "landing-page"))
             if base_name in ["kalite", "templates"]:  # remove central server apps & templates
                 in_dirs -= set(("contact", "faq", "registration"))
+            elif base_name in ["static"]:
+                in_dirs -= set(["language_packs", "less", "srt", "pot"])
             elif base_name in ["data"]:
                 in_dirs -= set(["subtitles"])
 
@@ -64,7 +66,7 @@ def file_in_blacklist_set(file_path):
 
     name = os.path.split(file_path)[1]
     ext = os.path.splitext(file_path)[1]
-    return (ext in [".pyc", ".sqlite", ".zip", ".xlsx", ".srt", ]) \
+    return (ext in [".pyc", ".sqlite", ".zip", ".xlsx", ".srt", "*.pot"]) \
         or (name in ["local_settings.py", ".gitignore", "tests.py", "faq", ".DS_Store", "Gruntfile.js", "package.json"])
 
 
@@ -199,6 +201,9 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        if not settings.CENTRAL_SERVER:
+            raise CommandError("Disabled for distributed servers, until we can figure out what to do with ")
+        
         options['platform'] = options['platform'].lower() # normalize
 
         if options['platform'] not in ["all", "linux", "macos", "darwin", "windows"]:

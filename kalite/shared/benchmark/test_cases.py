@@ -55,6 +55,7 @@ from . import base
 from main.models import ExerciseLog, VideoLog, UserLog
 from main.topicdata import NODE_CACHE
 from securesync.models import Facility, FacilityUser, FacilityGroup
+from settings import LOG as logging
 from shared.testing.browser import BrowserTestCase
 
 
@@ -260,28 +261,33 @@ class SeleniumStudent(base.SeleniumCommon):
         kwargs["timeout"] = kwargs.get("timeout", 240)
         super(SeleniumStudent, self)._setup(**kwargs)
 
+        self.return_list = []
+        self.duration = duration
+        self.host_url = self.url  # assume no trailing slash
+        self.exercise_count = 0
+        self.activity = self._setup_activities()
+
         def wait_until_starttime(starttime):
+            time_to_sleep = (self.random.random() * 10.0) + 10
             if self.verbosity >= 1:
-                print("(" + str(self.behavior_profile-24601) + ")" + "waiting until it's time to start.") 
-            time.sleep((self.random.random() * 10.0) + 10) #sleep 
+                print("(" + str(self.behavior_profile-24601) + ") waiting until it's time to start (%.1fs)." % time_to_sleep) 
+            time.sleep(time_to_sleep) #sleep 
             now = datetime.datetime.today()
             if now.hour >= int(starttime[:2]):
                 if now.minute >= int(starttime[-2:]):
                     return False
-            print "Go!"
+            logging.debug("Go!")
             return True
-        while wait_until_starttime(starttime): pass #wait until lesson starttime
+        while wait_until_starttime(starttime): 
+            pass #wait until lesson starttime
 
-        self.return_list = []
-        self.endtime = time.time() + (duration * 60.)
-        self.host_url = self.url
-        self.exercise_count = 0
-        
+    def _setup_activities(self):
+        """
         # self.activity simulates the classroom activity for the student
         # All students begin with activity "begin".
         # A random 2dp number <= 1.0 is then generated, and the next step is decided, working
         #  left to right through the list.
-        # This allows a pseudo-random system usage - the behaviour_profile seeds the random
+        # This allows a pseudo-random system usage - the behavior_profile seeds the random
         #  number generator, so identical behaviour profiles will follow the same route through
         #  the self.activity sequence.
         #
@@ -291,32 +297,33 @@ class SeleniumStudent(base.SeleniumCommon):
         #  o Subtraction 2
         #  o Example: 2-digit subtraction (no borrowing)
         #  o Level 2 Addition
-    
+        """
+
         self.activity = {}
         
-        self.activity["begin"]= {
+        self.activity["begin"]= {  # wait
                 "method":self._pass, "duration": 1+(self.random.random()*3),
                 "args":{},
                 "nextstep":[(1.00, "begin_2")]
                  }        
         
-        self.activity["begin_2"]= {
+        self.activity["begin_2"]= {  # go to the homepage
                 "method":self._get_path, "duration":1+(self.random.random()*3),
                 "args":{"path":""},
                 "nextstep":[(1.00, "begin_3")]
                 }
-        self.activity["begin_3"]= {
+        self.activity["begin_3"]= {  # click the login link
                 "method":self._click, "duration":2+(self.random.random()*3),
                 "args":{"find_by":By.ID, "find_text":"nav_login"},
                 "nextstep":[(1.00, "login")]
                  }
 
-        self.activity["login"]= {
+        self.activity["login"]= {  # enter login info
                 "method":self._do_login_step_1, "duration": 3,
                 "args":{"username":self.username, "password": self.password},
                 "nextstep":[(1.00, "login_2")]
                  }
-        self.activity["login_2"]= {
+        self.activity["login_2"]= {  # do nothing, just choose whereto go next
                 "method":self._do_login_step_2, "duration": 3,
                 "args":{},
                 "nextstep":[(1.00, "decide")]
@@ -475,29 +482,43 @@ class SeleniumStudent(base.SeleniumCommon):
                 "args":{},
                 "nextstep":[(1.00, "end")]
                  }
-                       
+        return self.activity
+
     def _execute(self):
         current_activity = "begin"
+        endtime = time.time() + (self.duration * 60.)
+
         while True:
-            if time.time() >= self.endtime:
+            if time.time() >= endtime:
                 current_activity = "end"
-            start_clock_time = datetime.datetime.today()
-            start_time = time.time()
-            result=self.activity[current_activity]["method"](self.activity[current_activity]["args"])
-            self.return_list.append((
-                    current_activity,
-                    '%02d:%02d:%02d' % (start_clock_time.hour,start_clock_time.minute,start_clock_time.second), 
-                    round((time.time() - start_time),2),
-                                    ))
+
+            # Prep and do the current activity
+            try:
+                start_clock_time = datetime.datetime.today()
+                start_time = time.time()
+                result=self.activity[current_activity]["method"](self.activity[current_activity]["args"])
+                self.return_list.append((
+                        current_activity,
+                        '%02d:%02d:%02d' % (start_clock_time.hour,start_clock_time.minute,start_clock_time.second), 
+                        round((time.time() - start_time),2),
+                                        ))
+            except Exception as e:
+                if current_activity != "end":
+                    raise
+                else:
+                    logging.error("Error on end: %s" % e)
+
+            if current_activity == "end":
+                break
+            
+            # Wait before the next activity
             if "duration" in self.activity[current_activity]:
                 if self.verbosity >= 2:
                     print "(" + str(self.behavior_profile-24601) + ")" + "sleeping for ", self.activity[current_activity]["duration"]
                 time.sleep(self.activity[current_activity]["duration"])
-            if current_activity == "end":
-                break
-            
-            next_activity_random = round(self.random.random(),2)
 
+            # Choose the next activity
+            next_activity_random = round(self.random.random(),2)
             for threshold, next_activity in self.activity[current_activity]["nextstep"]:
                 if threshold >= next_activity_random:
                     if self.verbosity >= 2:
@@ -568,11 +589,17 @@ class SeleniumStudent(base.SeleniumCommon):
         wait.until(expected_conditions.element_to_be_clickable((By.ID, "nav_login")))
                         
     def _get_path(self, args):
-        self.browser.get(self.host_url + args["path"])
+        assert args.get("path") is not None, "args['path'] must not be None"
+        path = self.host_url
+        if not args["path"] or args["path"][0] != "/":
+            path += "/"
+        path += args["path"]
+
+        self.browser.get(path)
 
     def _get_post_execute_info(self):
         #we are done! class over, lets get out of here
-        return {"timings":self.return_list, "behaviour_profile":self.behaviour_profile}
+        return {"timings":self.return_list, "behavior_profile":self.behavior_profile}
         
     def _teardown(self):
         if self.verbosity >= 1:
@@ -581,7 +608,7 @@ class SeleniumStudent(base.SeleniumCommon):
 
 
 class SeleniumStudentExercisesOnly(SeleniumStudent):
-    def _execute(self):
+    def _setup(self, *args, **kwargs):
+        super(SeleniumStudentExercisesOnly, self)._setup(*args, **kwargs)
         self.activity["decide"]["nextstep"] = [(.10, "decide"), (1.00, "exercise")]
         self.activity["do_esub2"]["nextstep"] =[(.03, "decide"), (.75, "do_esub2"), (1.00, "eadd2")]
-        super(SeleniumStudentExercisesOnly, self)._execute()
