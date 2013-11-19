@@ -8,6 +8,7 @@ from optparse import make_option
 from StringIO import StringIO
 
 from django.core.management.base import BaseCommand, CommandError
+from django.utils.translation import ugettext as _
 
 import settings
 import version
