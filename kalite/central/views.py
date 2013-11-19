@@ -75,7 +75,7 @@ def org_management(request, org_id=None):
     zones = {}
     for org in organizations.values():
         zones[org.pk] = []
-        for zone in org.get_zones():
+        for zone in list(org.get_zones()):
             zones[org.pk].append({
                 "id": zone.id,
                 "name": zone.name,
@@ -174,10 +174,14 @@ def organization_form(request, org_id):
 @require_authorized_admin
 def delete_organization(request, org_id):
     org = Organization.objects.get(pk=org_id)
-    if org.get_zones():
-        messages.error(request, _("You cannot delete '%s' because it has %d sharing network(s) affiliated with it.") %(org.name, len(org.get_zones())))
+    num_zones = org.get_zones().count()
+    if num_zones > 0:
+        messages.error(request, _("You cannot delete '%(name)' because it has %(num_zones) sharing network(s) affiliated with it.") % {
+            "name": org.name,
+            "num_zones": num_zones,
+        })))
     else:
-        messages.success(request, _("You have successfully deleted ") + org.name + ".")
+        messages.success(request, _("You have successfully deleted %(org_name).") {"org_name": org.name})
         org.delete()
     return HttpResponseRedirect(reverse("org_management"))
 
