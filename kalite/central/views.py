@@ -17,8 +17,8 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_exempt
 
-import kalite
 import settings
+import version
 from central.forms import OrganizationForm, OrganizationInvitationForm
 from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
 from securesync.engine.api_client import SyncClient
@@ -258,15 +258,15 @@ def download_thankyou(request, **kwargs):
 def install_single_server_edition(request):
     """
     """
-    version = get_request_var(request, "version",  kalite.VERSION)
+    ver = get_request_var(request, "version", version.VERSION)
     platform = get_request_var(request, "platform", "all")
     locale = get_request_var(request, "locale", "en")
 
     return download_thankyou(
         request, 
-        version=kalite.VERSION,
+        version=ver,
         download_url=reverse("download_kalite_public", kwargs={
-            "version": kalite.VERSION,
+            "version": ver,
             "platform": platform,
             "locale": locale,
         }),
@@ -280,7 +280,7 @@ def install_multiple_server_edition(request):
     # Get all data
     zone_id = get_request_var(request, "zone", None)
     kwargs={
-        "version": kalite.VERSION,
+        "version": version.VERSION,
         "platform": get_request_var(request, "platform", "all"),
         "locale": get_request_var(request, "locale", "en"),
         "include_data": bool(get_request_var(request, "include_data", True)),
@@ -364,11 +364,12 @@ def download_kalite(request, *args, **kwargs):
 
     # Parse args
     zone = get_object_or_None(Zone, id=kwargs.get('zone_id', None))
-    platform = kwargs.get("platform", "all")
-    locale = kwargs.get("locale", "en")
-    version = kwargs.get("version", kalite.VERSION)
-    if version == "latest":
-        version = kalite.VERSION
+    kwargs["platform"] = platform = kwargs.get("platform", "all")
+    kwargs["locale"] = locale = kwargs.get("locale", "en")
+    kwargs["version"] = ver = kwargs.get("version", version.VERSION)
+    if ver == "latest":
+        kwargs["version"] = ver = version.VERSION
+    kwargs["build"] = build = kwargs.get("build", version.get_build(ver))
 
     # Make sure this user has permission to admin this zone
     if zone and not request.user.is_authenticated():
@@ -390,7 +391,7 @@ def download_kalite(request, *args, **kwargs):
 
     # Build the outgoing filename."
     user_facing_filename = "kalite"
-    for val in [platform, locale, kalite.VERSION, zone.name if zone else None]:
+    for val in [platform, locale, ver, build, zone.name if zone else None]:
         user_facing_filename +=  ("-%s" % val) if val not in [None, "", "all"] else ""
     user_facing_filename += ".zip"
 

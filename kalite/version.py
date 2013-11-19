@@ -104,3 +104,6 @@ VERSION_INFO = {
         },
     },
 }
+
+def get_build(version=VERSION):
+    return VERSION_INFO[version]["git_commit"][0:6]
