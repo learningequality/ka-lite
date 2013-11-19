@@ -1,7 +1,8 @@
 import datetime
 
-from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
+from django.utils.translation import ugettext as _
 
 from settings import LOG as logging
 from utils.django_utils import ExtendedModel
@@ -11,9 +12,9 @@ class UpdateProgressLog(ExtendedModel):
     """
     Gets progress
     """
-    process_name = models.CharField(verbose_name="process name", max_length=100)
+    process_name = models.CharField(verbose_name=_("process name"), max_length=100)
     process_percent = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(1.0)], default=0)
-    stage_name = models.CharField(verbose_name="stage name", max_length=100, null=True)
+    stage_name = models.CharField(verbose_name=_("stage name"), max_length=100, null=True)
     stage_percent = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(1.0)], default=0)
     current_stage = models.IntegerField(blank=True, null=True)
     total_stages = models.IntegerField(blank=True, null=True)

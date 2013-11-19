@@ -83,8 +83,7 @@ class FacilityForm(forms.ModelForm):
         if user_count is None:
             return
         if user_count < 1:
-            raise ValidationError(_('Given user count should not be less than 1'),
-                                  code='invalid_user_count')
+            raise ValidationError(_("User count should should be at least one."), code='invalid_user_count')
 
 
 class FacilityGroupForm(forms.ModelForm):
@@ -141,7 +140,7 @@ class LoginForm(forms.ModelForm):
         if not self.user_cache.check_password(password):
             self.user_cache = None
             if password and "password" not in self._errors:
-                self._errors["password"] = self.error_class([_("The password did not match. Please try again.")])
+                self._errors["password"] = self.error_class([_("The passwords do not match. Please try again.")])
 
         return self.cleaned_data
 
