@@ -41,7 +41,7 @@ $(document).ready(function() {
         }
 
         if (results === null) {
-	    fetchTopicTree();
+           fetchTopicTree();
         }
     });
 
@@ -50,6 +50,10 @@ $(document).ready(function() {
         source: function(request, response) {
             var results_filtered = $.ui.autocomplete.filter(results, request.term); // do some filtering here already
             response(results_filtered.slice(0, 15));
+        },
+        select: function(event, ui) {
+            $(this).val(ui.item.label);
+            $(this).parent("form").submit();
         }
     });
 });
