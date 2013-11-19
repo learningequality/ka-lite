@@ -3,6 +3,7 @@ import json
 import os
 import requests
 import shutil
+import sys
 import zipfile
 from optparse import make_option
 from StringIO import StringIO
@@ -13,7 +14,6 @@ from django.utils.translation import ugettext as _
 import settings
 import version
 from i18n.models import LanguagePack
-from i18n.management.commands.update_po import 
 from settings import LOG as logging
 from shared.i18n import convert_language_code_format, update_jsi18n_file
 from utils.general import ensure_dir
@@ -51,7 +51,10 @@ class Command(BaseCommand):
             logging.info("Note: software version set to default version. This is fine (and may be intentional), but you may specify a software version other than '%s' with -s" % version.VERSION)
 
         # Download the language pack
-        zip_file = get_language_pack(code, software_version)
+        try:
+            zip_file = get_language_pack(code, software_version)
+        except CommandError as e: # 404
+            sys.exit('404 Not found: Could not download language pack file %s ' % _language_pack_url(code, software_version))
 
         # Unpack into locale directory
         unpack_language(code, zip_file)
@@ -59,17 +62,17 @@ class Command(BaseCommand):
         # Update database with meta info
         update_database(code)
 
-        # 
+        #
         update_jsi18n_file(code)
-        
-        # 
+
+        #
         move_srts(code)
 
 def get_language_pack(code, software_version):
     """Download language pack for specified language"""
 
     logging.info("Retrieving language pack: %s" % code)
-    request_url = "http://%s/static/language_packs/%s/%s.zip" % (settings.CENTRAL_SERVER_HOST, software_version, code)
+    request_url = _language_pack_url(code, software_version)
     r = requests.get(request_url)
     try:
         r.raise_for_status()
@@ -78,12 +81,15 @@ def get_language_pack(code, software_version):
 
     return r.content
 
+def _language_pack_url(code, software_version):
+    return "http://%s/static/language_packs/%s/%s.zip" % (settings.CENTRAL_SERVER_HOST, software_version, code)
+
 def unpack_language(code, zip_file):
     """Unpack zipped language pack into locale directory"""
 
     logging.info("Unpacking new translations")
     ensure_dir(os.path.join(LOCALE_ROOT, code, "LC_MESSAGES"))
-    
+
     ## Unpack into temp dir
     z = zipfile.ZipFile(StringIO(zip_file))
     z.extractall(os.path.join(LOCALE_ROOT, code))
@@ -95,10 +101,10 @@ def update_database(code):
     metadata = json.loads(open(os.path.join(LOCALE_ROOT, code, "%s_metadata.json" % code)).read())
 
     logging.info("Updating database for language pack: %s" % code)
-        
+
     pack, created = LanguagePack.objects.get_or_create(
-        code=code, 
-        name=metadata["name"], 
+        code=code,
+        name=metadata["name"],
         software_version=metadata["software_version"]
     )
 
@@ -107,7 +113,6 @@ def update_database(code):
     pack.save()
 
     logging.info("Successfully updated database.")
-
 
 def move_srts(code):
     """
