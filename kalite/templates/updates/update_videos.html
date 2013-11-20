@@ -2,16 +2,14 @@
 {% load i18n %}
 {% load staticfiles %}
 
-{% block title %}{% trans "Update Videos" %} {{ block.super }}{% endblock %}
+{% block title %}{% trans "Update Videos" %}{{ block.super }}{% endblock %}
 
 {% block headcss %}{{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/jquery-ui.min.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/plugins/ui.dynatree.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'css/update_videos.css' %}" />
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
-    <script type="text/javascript" src="{% static 'js/jquery-ui/jquery-ui.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/jquery.dynatree.min.js' %}"></script>
 
     <script type="text/javascript">
@@ -23,6 +21,10 @@
 
     <script type="text/javascript" src="{% static 'js/update_videos.js' %}"></script>
 {% endblock headjs %}
+
+{% block ga_setmetrics %}
+    ga('set', 'metric1', {{ video_count }});
+{% endblock ga_setmetrics %}
 
 {% block content %}
     <div class="download-actions vertical-shadow">
@@ -38,9 +40,17 @@
             </div>
         </div>
 
-        <button id="download-videos" type="button" class="enable-when-server-online" disabled>{% trans "Download " %}<span class="new-video-count">0</span> {% trans "new selected videos" %}</button>
+        <button id="download-videos" type="button" class="enable-when-server-online" disabled>
+            {% trans "Download" %}
+            <span class="new-video-count">0</span>
+            {% trans "new selected videos" %}
+        </button>
 
-        <button id="delete-videos" type="button">{% trans "Delete " %}<span class="old-video-count">0</span> {% trans "selected videos" %}</button>
+        <button id="delete-videos" type="button">
+            {% trans "Delete" %}
+            <span class="old-video-count">0</span>
+            {% trans "selected videos" %}
+        </button>
     </div>
 
     <div class="download-actions vertical-shadow">
