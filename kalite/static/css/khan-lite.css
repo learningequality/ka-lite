@@ -129,6 +129,7 @@ nav {
     display: block;
     left: 50%;
     margin-left: -5px;
+    width: 15px;
 }
 
 #nav_registerdevice {

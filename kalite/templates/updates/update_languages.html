@@ -2,10 +2,9 @@
 {% load i18n %}
 {% load staticfiles %}
 
-{% block title %}{% trans "Update Subtitles" %}{% endblock %}
+{% block title %}{% trans "Update Languages" %}{{ block.super }}{% endblock %}
 
-{% block headcss %}{{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/jquery-ui.min.css' %}" />
+{% block headcss %}
     <style>
         .download-actions {
             width: 400px;
@@ -65,7 +64,7 @@
     <script type="text/javascript" src="{% static 'js/jquery-ui/jquery-ui.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/update_languages.js' %}"></script>
     <script type="text/javascript">
-     $(setup("{% url get_server_info %}", "{{ default_language }}"))
+     $(setup("{% url get_server_info %}", "{{ central_server_host }}", "{{ default_language }}"))
     </script>
 {% endblock headjs %}
 
@@ -97,39 +96,4 @@
         <button class="download-subtitles" new_only=true type="button" disabled>{% trans "Get Missing Subtitles Only" %}</button>
 
     </div>
-    <!--
-    <div class="download-actions subtitles-download vertical-shadow">
-        <h2 class="button_text">{% trans "Download/update subtitles for existing videos" %}</h2>
-        <span class= "button_style">
-            <select id="language">
-                {% if languages %}
-                    {% for language in languages %}
-                        <option value="{{ language.id }}" {% ifequal language.id default_language %} selected {% endifequal %}>{{ language.name }}</option>
-                    {% endfor %}
-                {% endif %}
-            </select>
-        </span>
-
-        <button class="download-subtitles" type="button" disabled>{% trans "Get/Update All Subtitles" %}</button>
-        <button class="download-subtitles" new_only=true type="button" disabled>{% trans "Get Missing Subtitles Only" %}</button>
-
-    </div>
-
-    -->
-
-
-    <div>
-        <!-- note: id must match the "updates" app process name -->
-        <div id="subtitledownload-progressbar">
-            {% include "updates/progress-bar.html" %}
-            {# <button id="retry-subtitle-download" type="button">{% trans "Subtitle download error... click to retry" %}</button> #}
-        </div>
-
-        <div>
-            <button id="cancel-download" type="button">{% trans "Cancel All Downloads" %}</button>
-        </div>
-    </div>
-
-    <div style="clear: both;"></div>
-    <script src="http://{{ central_server_host }}/api/language_packs/available/?callback=show_language_packs"></script>
 {% endblock content %}

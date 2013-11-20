@@ -99,11 +99,7 @@
         </div>
 
 
-        {% if request.get_full_path = "/"%} 
-        
-        {% block landing-page %}{% endblock landing-page %}
-
-        {% else %}
+        {% block super-content %}
         <div class="container-fluid">
 
             <div class="row-fluid content"> 
@@ -132,7 +128,7 @@
                 </div>
             </div>
         </div> <!-- .container -->
-        {% endif %}
+        {% endblock super-content %}
     </body>
     </html>
 

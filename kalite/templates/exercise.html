@@ -1,83 +1,78 @@
 {% extends base_template %}
-
 {% load i18n %}
 {% load staticfiles %}
 
 {% block practice_active %}active{% endblock practice_active %}
 
-{% block headcss %}
-<link rel="stylesheet" type="text/css" href="{% static 'js/khan-exercises/css/khan-exercise.css' %}"></link>
+{% block headcss %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'js/khan-exercises/css/khan-exercise.css' %}"></link>
 
-<!-- Used by KA to dynamically add styling to the exercise -->
-<style id="exercise-inline-style"></style>
+    <!-- Used by KA to dynamically add styling to the exercise -->
+    <style id="exercise-inline-style"></style>
 
-<style>
-.return-link {
-    font-size: 13px;
-    padding-bottom: 4px;
-    opacity: 0.8;
-    margin-top: -2px;
-}
-</style>
+    <style>
+        .return-link {
+            font-size: 13px;
+            padding-bottom: 4px;
+            opacity: 0.8;
+            margin-top: -2px;
+        }
+    </style>
 {% endblock headcss %}
 
-{% block headjs %}
-<script>
-
-    var urlBaseOverride = "{% static 'js/khan-exercises/' %}";
-    // some dummy features on the Exercises object to make khan-exercises.js happy
-    Exercises = {
-        completeStack: {
-            getUid: function() { return 0; },
-            getCustomStackID: function() { return 0; }
-        },
-        currentCard: {
-            attributes: {},
-            get: function() {}
-        },
-        RelatedVideos: {
-            render: function() {}
-        },
-        getCurrentFramework: function() { return "khan-exercises"; },
-        incompleteStack: [0],
-        PerseusBridge: {
-            cleanupProblem: function() {}
-        },
-    };
-        
-</script>
-<script src="{% static 'js/khan-exercises/khan-exercise.js' %}"></script>
-<script>
-    {# No user data is stored here; that is recovered via an AJAX call, so that this page is fully cacheable #}
-    var exerciseData = {
-        "basepoints": {{ exercise.basepoints }},
-        "description": "{{ exercise.description|linebreaksbr }}",
-        "title": "{{ exercise.display_name }}",
-        "exerciseModel": {
-            "displayName": "{{ exercise.display_name }}",
-            "name": "{{ exercise.name }}",
-            "secondsPerFastProblem": {{ exercise.seconds_per_fast_problem }},
-            "authorName": "{{ exercise.author_name }}",
-            "relatedVideos": [],
-            "fileName": "{{ exercise.name }}.html"
-        },
-        "readOnly": false,
-        "percentCompleted": 0,
-        "points": 0,
-        "starting_points": 0,
-        "attempts": 0,
-        "exerciseProgress": {
-            "level": ""
-        },
-        "lastCountHints": 0
-    };    
-</script>
-<script src="{% static 'js/exercises.js' %}"></script>
-
+{% block headjs %}{{ block.super }}
+    <script>
+        var urlBaseOverride = "{% static 'js/khan-exercises/' %}";
+        // some dummy features on the Exercises object to make khan-exercises.js happy
+        Exercises = {
+            completeStack: {
+                getUid: function() { return 0; },
+                getCustomStackID: function() { return 0; }
+            },
+            currentCard: {
+                attributes: {},
+                get: function() {}
+            },
+            RelatedVideos: {
+                render: function() {}
+            },
+            getCurrentFramework: function() { return "khan-exercises"; },
+            incompleteStack: [0],
+            PerseusBridge: {
+                cleanupProblem: function() {}
+            },
+        };
+    </script>
+    <script src="{% static 'js/khan-exercises/khan-exercise.js' %}"></script>
+    <script>
+        {# No user data is stored here; that is recovered via an AJAX call, so that this page is fully cacheable #}
+        var exerciseData = {
+            "basepoints": {{ exercise.basepoints }},
+            "description": "{{ exercise.description|linebreaksbr }}",
+            "title": "{{ exercise.display_name }}",
+            "exerciseModel": {
+                "displayName": "{{ exercise.display_name }}",
+                "name": "{{ exercise.name }}",
+                "secondsPerFastProblem": {{ exercise.seconds_per_fast_problem }},
+                "authorName": "{{ exercise.author_name }}",
+                "relatedVideos": [],
+                "fileName": "{{ exercise.name }}.html"
+            },
+            "readOnly": false,
+            "percentCompleted": 0,
+            "points": 0,
+            "starting_points": 0,
+            "attempts": 0,
+            "exerciseProgress": {
+                "level": ""
+            },
+            "lastCountHints": 0
+        };    
+    </script>
+    <script src="{% static 'js/exercises.js' %}"></script>
 {% endblock headjs %}
 
 {% block content %}
-
     <div class="exercises-header">
         <a href="{% if request.META.HTTP_REFERER %}{{ request.META.HTTP_REFERER }}{% else %}javascript.history.go(-1){% endif %}" class="return-link" >&#60;{% trans "Return" %}</a>
         <h2>
@@ -187,5 +182,4 @@
             </div>
         </div>
     </div>
-    
 {% endblock content %}

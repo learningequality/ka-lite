@@ -5,10 +5,12 @@
 {% block update_active %}active{% endblock update_active %}
 
 {% block headcss %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/jquery-ui.min.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'css/updates.css' %}" />
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
+    <script type="text/javascript" src="{% static 'js/jquery-ui/jquery-ui.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/updates.js' %}"></script>
 
     <script type="text/javascript">
@@ -27,7 +29,9 @@
         ga("set", "dimension1", "{% if registered %}Registered{% else %}Unregistered{% endif %}");
         ga("set", "dimension2", "{% if zone_id %}{{ zone_id }}{% endif %}");
         ga("set", "dimension3", "{{ device_id }}");
-        ga('set', 'metric1', {{ video_count }});
+
+        {% block ga_setmetrics %}
+        {% endblock ga_setmetrics %}
 
         ga("send", "pageview");
     {% endif %}

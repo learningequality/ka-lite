@@ -175,9 +175,9 @@ def ka_lite_is_using_port(host, port):
     This is needed in case the PID file has been deleted, but the server continues to run
     """
     try:
-        pid = urlopen("http://"+host+":"+port+"/api/getpid").read()
-        logging.warn("Existing KA-Lite server found, PID %s" % pid)
-        return int(pid)
+        pid = int(urlopen("http://"+host+":"+port+"/api/getpid").read())
+        logging.warn("Existing KA-Lite server found, PID %d" % pid)
+        return pid
     except:
         pass
 
