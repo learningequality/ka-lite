@@ -63,45 +63,9 @@
 
 {% block headjs %}{{ block.super }}
     <script type="text/javascript" src="{% static 'js/jquery-ui/jquery-ui.min.js' %}"></script>
-
+    <script type="text/javascript" src="{% static 'js/update_languages.js' %}"></script>
     <script type="text/javascript">
-        $(function() {
-
-            setTimeout(function() {
-                get_server_status({path: "{% url get_server_info %}"}, ["online"], function(status){
-                    // We assume the distributed server is offline.
-                    //   if it's online, then we show all tools only usable when online.
-                    //
-                    // Best to assume offline, as online check returns much faster than offline check.
-                    if(!status || !status["online"]){
-                        show_message("error", "{% trans 'Distributed server is offline; cannot access video nor subtitle updates.' %}", " id_offline_message")
-                    } else {
-                        $("#help-info").show();
-                        $("#download-videos").removeAttr("disabled");
-                        clear_message("id_offline_message")
-                    }
-                });
-            }, 200);
-                    // onload    
-        });
-
-        function show_language_packs(languagePacks) {
-            // gets the current number of subs per language
-            var defaultLanguage = "{{ default_language }}";
-            $.each(languagePacks, function(langName, langData) {
-                // var langCode = langData["code"];
-                // var srtCount = langData["count"];
-                // // adds it to update page
-                // if(srtCount > 0){
-                //     if(langCode === defaultLanguage) {
-                //         $('#language').append('<option value="' + langCode + '" selected>' + langName + ' (' + srtCount +' {% trans "total" %})</option>')
-                //     } else {
-                //         $('#language').append('<option value="' + langCode + '">'+ langName + ' (' + srtCount +')</option>')
-                //     }
-                // }
-            });
-        }
-
+     $(setup("{% url get_server_info %}", "{{ default_language }}"))
     </script>
 {% endblock headjs %}
 
@@ -115,13 +79,13 @@
         {% else %}
             <p>{% trans "You currently have no languages installed" %}</p>
         {% endif %}
-    
+
     </div>
 
     <div class="download-actions subtitles-download vertical-shadow">
-        <h2 class="button_text">{% trans "Download or update Languages" %}</h2> 
-    <!-- Some logic here to Show/Disable Buttons comparing data from show_language_packs to installed_languages 
-        Assume we are getting something like: 
+        <h2 class="button_text">{% trans "Download or update Languages" %}</h2>
+    <!-- Some logic here to Show/Disable Buttons comparing data from show_language_packs to installed_languages
+        Assume we are getting something like:
         [{"en": "percent_complete": 100, etc.}, {"fr": "percent_complete": 80, etc.}, etc.]
     -->
         <span class= "button_style">
@@ -133,7 +97,7 @@
         <button class="download-subtitles" new_only=true type="button" disabled>{% trans "Get Missing Subtitles Only" %}</button>
 
     </div>
-    <!-- 
+    <!--
     <div class="download-actions subtitles-download vertical-shadow">
         <h2 class="button_text">{% trans "Download/update subtitles for existing videos" %}</h2>
         <span class= "button_style">
@@ -151,7 +115,7 @@
 
     </div>
 
-    --> 
+    -->
 
 
     <div>
