@@ -48,7 +48,7 @@ attribute_whitelists = {
 
 kind_blacklist = [None, "Separator", "CustomStack", "Scratchpad", "Article"]
 
-slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res", "partner-content", "cs"]
+slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res", "partner-content", "cs", "cc-third-grade-math", "cc-fourth-grade-math", "cc-fifth-grade-math", "cc-sixth-grade-math", "cc-seventh-grade-math", "cc-eighth-grade-math"]
 
 def download_khan_data(url, debug_cache_file=None, debug_cache_dir=settings.PROJECT_PATH + "../_khanload_cache"):
     """Download data from the given url.
@@ -481,7 +481,7 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
     if os.path.exists(topicdata_dir):
         shutil.rmtree(topicdata_dir)
     os.mkdir(topicdata_dir)
-    import pdb; pdb.set_trace()
+
     for key, value in knowledge_topics.items():
         with open(os.path.join(topicdata_dir, "%s.json" % key), "w") as fp:
             fp.write(json.dumps(delete_parents(value), indent=2))
