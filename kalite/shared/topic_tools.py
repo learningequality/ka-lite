@@ -75,9 +75,11 @@ def generate_flat_topic_tree(node_cache=None):
         result[category_name] = {}
         for node_name, node_list in category.iteritems():
             node = node_list[0]
-            relevant_data = {'title': node['title'],
-                             'path': node['path'],
-                             'kind': node['kind'],
+            relevant_data = {
+                'title': node['title'],
+                'path': node['path'],
+                'kind': node['kind'],
+                'available': node.get('on_disk', True) or bool(settings.BACKUP_VIDEO_SOURCE),
             }
             result[category_name][node_name] = relevant_data
     return result

@@ -6,13 +6,29 @@ li.autocomplete {
     background-repeat: no-repeat;
     background-position: left center;
     background-size: 25px 25px;
+    cursor: pointer;
 }
-li.exercise {
-    background-image:url(/static/images/type-exercise.png);
+li.exercise.available {
+    background-image:url(/static/images/search-exercise-available.png);
 }
-li.topic {
-    background-image:url(/static/images/type-topic.png);
+li.topic.available {
+    background-image:url(/static/images/search-topic-available.png);
 }
-li.video {
-    background-image:url(/static/images/type-video.png);
+li.video.available {
+    background-image:url(/static/images/search-video-available.png);
+}
+li.exercise.unavailable {
+    background-image:url(/static/images/search-exercise-unavailable.png);
+}
+li.topic.unavailable {
+    background-image:url(/static/images/search-topic-unavailable.png);
+}
+li.video.unavailable {
+    background-image:url(/static/images/search-video-unavailable.png);
+}
+.available {
+    color: black;
+}
+.unavailable {
+    color:gray;
 }

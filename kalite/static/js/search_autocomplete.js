@@ -30,21 +30,46 @@ function fetchTopicTree() {
                     if (title in nodes) {
                         continue;  // avoid duplicates
                     }
-
-                    nodes[node.title] = {
+                    if (!(category_name in nodes)) {
+                        // Store nodes by category
+                        nodes[category_name] = {};
+                    }
+                    nodes[category_name][node.title] = {
                         title: node.title,
                         type: category_name.toLowerCase(),
-                        path: node.path
+                        path: node.path,
+                        available: node.available,
                     };
-                    titles.push(node.title);
                 }
             }
             if (isLocalStorageAvailable()) {
                 // we can only store strings in localStorage
-                localStorage.setItem("flat_topic_tree_v2", JSON.stringify(nodes));
+                var node_types = [];
+                for (node_type in nodes) {
+                    node_types = node_types.concat(node_type);
+                    var item_name = "nodes_" + node_type + "_v1";
+                    localStorage.setItem(item_name, JSON.stringify(nodes[node_type]));
+                }
+                localStorage.setItem("node_types", JSON.stringify(node_types));
             }
+
+            // But for now, for search purposes, flatten
+            flattenNodes();
         }
     });
+}
+
+function flattenNodes() {
+    // now take that structured object, and reduce.
+    var flattened_nodes = {};
+    for (node_type in nodes) {
+        $.extend(flattened_nodes, nodes[node_type]);
+    }
+    console.log(flattened_nodes);
+    nodes = flattened_nodes;
+    for (title in nodes) {
+        titles.push(title);
+    }
 }
 
 $(document).ready(function() {
@@ -53,18 +78,27 @@ $(document).ready(function() {
         if (nodes !== null) {
             // No need to reload
             return;
-        } else if (isLocalStorageAvailable("flat_topic_tree_v2")) {
-            // Get from local storage
+
+        } else if (isLocalStorageAvailable("node_types")) {
             //console.log("LocalStore cache hit.")
-            nodes = JSON.parse(localStorage.getItem("flat_topic_tree_v2")); // coerce string back to JSON
-            for (title in nodes) {
-                titles.push(title);
+            // Get from local storage, grouped by type
+            var node_types = JSON.parse(localStorage.getItem("node_types"));
+            nodes = {};
+            for (idx in node_types) {
+                var node_type = node_types[idx];
+                var item_name = "nodes_" + node_type + "_v1";
+                nodes[node_type] = JSON.parse(localStorage.getItem(item_name)); // coerce string back to JSON
             }
+
+            // After getting by type, flatten
+            flattenNodes();
+
         } else {
             // Get from distributed server
             //console.log("LocalStore cache miss.")
             fetchTopicTree();
         }
+
     });
 
     $("#search").autocomplete({
@@ -80,7 +114,7 @@ $(document).ready(function() {
             var results = [];
             for (idx in titles_filtered) {
                 var node = nodes[titles_filtered[idx]];
-                var label = "<li class='autocomplete " + node.type + "'>" + node.title + "</li>";
+                var label = "<li class='autocomplete " + node.type + " " + (node.available ? "" : "un") + "available'>" + gettext(node.title) + "</li>";
                 results.push({
                     label: label,
                     value: node.title
@@ -94,11 +128,9 @@ $(document).ready(function() {
             if (nodes && title in nodes && nodes[title]) {
                 window.location.href = nodes[title].path;
             } else {
-                show_message("error", "Unexpected error: no search data found for selected item.  Please select another item.", "id_search_error");
+                show_message("error", gettext("Unexpected error: no search data found for selected item. Please select another item."), "id_search_error");
             }
         }
 
     });
-    
-    
 });
