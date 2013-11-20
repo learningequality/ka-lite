@@ -101,7 +101,7 @@ def get_available_language_packs(request):
 
     if request.GET.get("callback", None):
         # JSONP response
-        response = JsonpResponse("%s(%s);" % (request.GET["callback"], json.dumps(language_packs_available, sort_keys=True)))
+        response = JsonpResponse(str(json.dumps(language_packs_available, sort_keys=True)), request.GET['callback'])
         response["Access-Control-Allow-Headers"] = "*"
         response["Content-Type"] = "text/javascript"
         return response
@@ -110,8 +110,3 @@ def get_available_language_packs(request):
         # Regular request
         response = JsonResponse(json.dumps(language_packs_available, sort_keys=True))
         return response
-
-
-
-
-
