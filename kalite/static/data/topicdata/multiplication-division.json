@@ -112,8 +112,6 @@
   {
     "related_video_readable_ids": [
       "multiplication-and-division-word-problems-2", 
-      "comparisons-multiplication-addition", 
-      "comparisons-subtraction-division", 
       "division-word-problem-example-1", 
       "multiplication-word-problem-example-1"
     ], 
@@ -202,9 +200,7 @@
     ]
   }, 
   {
-    "related_video_readable_ids": [
-      "multiplying-2-digit-numbers"
-    ], 
+    "related_video_readable_ids": [], 
     "v_position": 9, 
     "path": "/math/arithmetic/multiplication-division/multi_digit_multiplication/e/multiplication_3/", 
     "id": "multiplication_3", 
@@ -245,10 +241,7 @@
     ]
   }, 
   {
-    "related_video_readable_ids": [
-      "long-division-without-remainder", 
-      "dividing-3-digit-by-1-digit-without-remainder"
-    ], 
+    "related_video_readable_ids": [], 
     "v_position": 8, 
     "path": "/math/arithmetic/multiplication-division/long_division/e/division_1.5/", 
     "id": "division_1.5", 
