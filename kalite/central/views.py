@@ -179,9 +179,9 @@ def delete_organization(request, org_id):
         messages.error(request, _("You cannot delete '%(name)' because it has %(num_zones) sharing network(s) affiliated with it.") % {
             "name": org.name,
             "num_zones": num_zones,
-        })))
+        })
     else:
-        messages.success(request, _("You have successfully deleted %(org_name).") {"org_name": org.name})
+        messages.success(request, _("You have successfully deleted %(org_name).") % {"org_name": org.name})
         org.delete()
     return HttpResponseRedirect(reverse("org_management"))
 

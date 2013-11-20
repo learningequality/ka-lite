@@ -40,9 +40,7 @@ class Command(BaseCommand):
     help = 'USAGE: \'python manage.py update_po\' defaults to creating new template files. If run with -t, will generate test po files that make it easy to identify strings that need wrapping.'
 
     def handle(self, **options):
-        if options['test_wrappings'] and settings.CENTRAL_SERVER:
-            raise CommandError("Test wrappings should be run on the distributed server.")
-        elif not options['test_wrappings'] and not settings.CENTRAL_SERVER:
+        if not settings.CENTRAL_SERVER and not options['test_wrappings']:
             raise CommandError("Wrappings should be run on the central server, and downloaded through languagepackdownload to the distributed server.")
 
         # All commands must be run from project root
