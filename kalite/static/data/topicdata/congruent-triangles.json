@@ -6,32 +6,21 @@
       "finding-congruent-triangles", 
       "more-on-why-ssa-is-not-a-postulate"
     ], 
-    "v_position": 31, 
+    "v_position": 20, 
     "path": "/math/geometry/congruent-triangles/cong_triangle/e/congruency_postulates/", 
     "id": "congruency_postulates", 
-    "paths": [
-      "/math/geometry/congruent-triangles/cong_triangle/e/congruency_postulates/"
-    ], 
     "display_name": "Congruency postulates", 
     "title": "Congruency postulates", 
     "live": true, 
-    "parents": [
-      "", 
-      "math", 
-      "geometry", 
-      "congruent-triangles", 
-      "cong_triangle"
-    ], 
-    "seconds_per_fast_problem": 14.0, 
     "description": "", 
-    "basepoints": 19.0, 
-    "h_position": -26, 
+    "basepoints": 18.0, 
+    "h_position": 1, 
     "slug": "congruency_postulates", 
     "kind": "Exercise", 
     "name": "congruency_postulates", 
+    "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
-      "parallel_lines_2", 
-      "angles_2"
+      "parallel_lines_2"
     ]
   }, 
   {
@@ -40,32 +29,21 @@
       "congruent-triangles-and-sss", 
       "other-triangle-congruence-postulates"
     ], 
-    "v_position": 31, 
+    "v_position": 20, 
     "path": "/math/geometry/congruent-triangles/cong_triangle/e/congruent_triangles_1/", 
     "id": "congruent_triangles_1", 
-    "paths": [
-      "/math/geometry/congruent-triangles/cong_triangle/e/congruent_triangles_1/"
-    ], 
     "display_name": "Congruent triangles 1", 
     "title": "Congruent triangles 1", 
     "live": true, 
-    "parents": [
-      "", 
-      "math", 
-      "geometry", 
-      "congruent-triangles", 
-      "cong_triangle"
-    ], 
-    "seconds_per_fast_problem": 6.0, 
     "description": "", 
-    "basepoints": 13.0, 
-    "h_position": -25, 
+    "basepoints": 12.0, 
+    "h_position": 0, 
     "slug": "congruent_triangles_1", 
     "kind": "Exercise", 
     "name": "congruent_triangles_1", 
+    "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
-      "parallel_lines_2", 
-      "angles_2"
+      "parallel_lines_2"
     ]
   }, 
   {
@@ -74,29 +52,19 @@
       "congruent-triangle-example-2", 
       "proof---opposite-angles-of-parallelogram-congruent"
     ], 
-    "v_position": 32, 
+    "v_position": 21, 
     "path": "/math/geometry/congruent-triangles/cong_triangle/e/congruent_triangles_2/", 
     "id": "congruent_triangles_2", 
-    "paths": [
-      "/math/geometry/congruent-triangles/cong_triangle/e/congruent_triangles_2/"
-    ], 
     "display_name": "Congruent triangles 2", 
     "title": "Congruent triangles 2", 
     "live": true, 
-    "parents": [
-      "", 
-      "math", 
-      "geometry", 
-      "congruent-triangles", 
-      "cong_triangle"
-    ], 
-    "seconds_per_fast_problem": 9.0, 
     "description": "", 
-    "basepoints": 16.0, 
-    "h_position": -25, 
+    "basepoints": 14.0, 
+    "h_position": 0, 
     "slug": "congruent_triangles_2", 
     "kind": "Exercise", 
     "name": "congruent_triangles_2", 
+    "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "congruent_triangles_1", 
       "congruency_postulates"
@@ -108,31 +76,21 @@
       "equilateral-triangle-sides-and-angles-congruent", 
       "equilateral-and-isosceles-example-problems"
     ], 
-    "v_position": 29, 
+    "v_position": 18, 
     "path": "/math/geometry/congruent-triangles/isoscleles_equil/e/triangle_types/", 
     "id": "triangle_types", 
-    "paths": [
-      "/math/geometry/congruent-triangles/isoscleles_equil/e/triangle_types/"
-    ], 
     "display_name": "Triangle types", 
     "title": "Triangle types", 
     "live": true, 
-    "parents": [
-      "", 
-      "math", 
-      "geometry", 
-      "congruent-triangles", 
-      "isoscleles_equil"
-    ], 
-    "seconds_per_fast_problem": 5.0, 
     "description": "", 
     "basepoints": 12.0, 
-    "h_position": -24, 
+    "h_position": 2, 
     "slug": "triangle_types", 
     "kind": "Exercise", 
     "name": "triangle_types", 
+    "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
-      "angle_addition_postulate"
+      "classifying-shapes-by-line-and-angle-types"
     ]
   }, 
   {
@@ -142,31 +100,22 @@
       "equilateral-and-isosceles-example-problems", 
       "another-isosceles-example-problem"
     ], 
-    "v_position": 30, 
+    "v_position": 19, 
     "path": "/math/geometry/congruent-triangles/isoscleles_equil/e/triangle_angles_1/", 
     "id": "triangle_angles_1", 
-    "paths": [
-      "/math/geometry/congruent-triangles/isoscleles_equil/e/triangle_angles_1/"
-    ], 
     "display_name": "Triangle angles 1", 
     "title": "Triangle angles 1", 
     "live": true, 
-    "parents": [
-      "", 
-      "math", 
-      "geometry", 
-      "congruent-triangles", 
-      "isoscleles_equil"
-    ], 
-    "seconds_per_fast_problem": 11.0, 
     "description": "", 
     "basepoints": 17.0, 
-    "h_position": -24, 
+    "h_position": -1, 
     "slug": "triangle_angles_1", 
     "kind": "Exercise", 
     "name": "triangle_angles_1", 
+    "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
-      "triangle_types"
+      "triangle_types", 
+      "linear_equations_2"
     ]
   }, 
   {
@@ -174,29 +123,19 @@
       "basic-triangle-proofs-module-example", 
       "basic-triangle-proofs-module-example-2"
     ], 
-    "v_position": 33, 
+    "v_position": 22, 
     "path": "/math/geometry/congruent-triangles/isoscleles_equil/e/geometry_proofs_intro/", 
     "id": "geometry_proofs_intro", 
-    "paths": [
-      "/math/geometry/congruent-triangles/isoscleles_equil/e/geometry_proofs_intro/"
-    ], 
     "display_name": "Basic triangle proofs", 
     "title": "Basic triangle proofs", 
     "live": true, 
-    "parents": [
-      "", 
-      "math", 
-      "geometry", 
-      "congruent-triangles", 
-      "isoscleles_equil"
-    ], 
-    "seconds_per_fast_problem": 60.0, 
     "description": "1 and 2-step triangle congruency proofs.\n", 
-    "basepoints": 29.0, 
-    "h_position": -26, 
+    "basepoints": 28.0, 
+    "h_position": 1, 
     "slug": "geometry_proofs_intro", 
     "kind": "Exercise", 
     "name": "geometry_proofs_intro", 
+    "seconds_per_fast_problem": 53.0, 
     "prerequisites": [
       "congruent_triangles_2", 
       "logical_arguments_deductive_reasoning", 
@@ -208,29 +147,19 @@
       "fill-in-the-blank-triangle-proofs-example-1", 
       "fill-in-the-blank-triangle-proofs-example-2"
     ], 
-    "v_position": 34, 
+    "v_position": 23, 
     "path": "/math/geometry/congruent-triangles/isoscleles_equil/e/geometry_proofs_1/", 
     "id": "geometry_proofs_1", 
-    "paths": [
-      "/math/geometry/congruent-triangles/isoscleles_equil/e/geometry_proofs_1/"
-    ], 
     "display_name": "Fill-in-the-blank triangle proofs", 
     "title": "Fill-in-the-blank triangle proofs", 
     "live": true, 
-    "parents": [
-      "", 
-      "math", 
-      "geometry", 
-      "congruent-triangles", 
-      "isoscleles_equil"
-    ], 
-    "seconds_per_fast_problem": 60.0, 
     "description": "Fill in the blanks in a triangle congruency proof.\n", 
     "basepoints": 29.0, 
-    "h_position": -26, 
+    "h_position": 1, 
     "slug": "geometry_proofs_1", 
     "kind": "Exercise", 
     "name": "geometry_proofs_1", 
+    "seconds_per_fast_problem": 60.0, 
     "prerequisites": [
       "geometry_proofs_intro"
     ]
@@ -239,29 +168,19 @@
     "related_video_readable_ids": [
       "wrong-statements-in-proofs-example-1"
     ], 
-    "v_position": 35, 
+    "v_position": 24, 
     "path": "/math/geometry/congruent-triangles/isoscleles_equil/e/geometry_proofs_2/", 
     "id": "geometry_proofs_2", 
-    "paths": [
-      "/math/geometry/congruent-triangles/isoscleles_equil/e/geometry_proofs_2/"
-    ], 
     "display_name": "Wrong statements in triangle proofs", 
     "title": "Wrong statements in triangle proofs", 
     "live": true, 
-    "parents": [
-      "", 
-      "math", 
-      "geometry", 
-      "congruent-triangles", 
-      "isoscleles_equil"
-    ], 
-    "seconds_per_fast_problem": 25.0, 
     "description": "Identify the wrong statement in a proof about triangle congruency.\n", 
-    "basepoints": 23.0, 
-    "h_position": -26, 
+    "basepoints": 24.0, 
+    "h_position": 1, 
     "slug": "geometry_proofs_2", 
     "kind": "Exercise", 
     "name": "geometry_proofs_2", 
+    "seconds_per_fast_problem": 27.0, 
     "prerequisites": [
       "geometry_proofs_1"
     ]
