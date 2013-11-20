@@ -68,7 +68,7 @@ def update(request):
 @render_to("updates/update_videos.html")
 def update_videos(request):
     call_command("videoscan")  # Could potentially be very slow, blocking request.
-    force_job("videodownload", "Download Videos")
+    force_job("videodownload", _("Download Videos"))
 
     context = update_context(request)
     context.update({

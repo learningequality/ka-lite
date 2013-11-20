@@ -110,7 +110,7 @@ class FacilityUser(DeferredCountSyncedModel):
             pass
 
         else:
-            raise ValidationError("Unknown password format.")
+            raise ValidationError(_("Unknown password format."))
 
         super(FacilityUser, self).save(*args, **kwargs)
 
@@ -126,7 +126,7 @@ class FacilityUser(DeferredCountSyncedModel):
             # use PBKDF2 password checking
             okie_dokie = cur_password == crypt(raw_password, cur_password)
         else:
-            raise ValidationError("Unknown password format.")
+            raise ValidationError(_("Unknown password format."))
 
         # Update on cached password-relevant stuff
         if okie_dokie and not cached_password and self.id:  # only can create if the user's been saved

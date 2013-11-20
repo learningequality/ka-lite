@@ -13,6 +13,7 @@ from django.http import HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404
 from django.utils import simplejson
 from django.utils.timezone import get_current_timezone, make_naive
+from django.utils.translation import ugettext as _
 
 import settings
 from .models import UpdateProgressLog, VideoFile
@@ -31,7 +32,7 @@ def process_log_from_request(handler):
         if request.GET.get("process_id", None):
             # Get by ID--direct!
             if not isnumeric(request.GET["process_id"]):
-                return JsonResponse({"error": "process_id is not numeric."}, status=500);
+                return JsonResponse({"error": _("process_id is not numeric.")}, status=500);
             else:
                 process_log = get_object_or_404(UpdateProgressLog, id=request.GET["process_id"])
 
@@ -58,7 +59,7 @@ def process_log_from_request(handler):
                 #   Best to complete silently, but for debugging purposes, will make noise for now.
                 return JsonResponse({"error": str(e)}, status=500);
         else:
-            return JsonResponse({"error": "Must specify process_id or process_name"})
+            return JsonResponse({"error": _("Must specify process_id or process_name")})
 
         return handler(request, process_log, *args, **kwargs)
     return wrapper_fn_pfr
@@ -127,7 +128,7 @@ def start_video_download(request):
         video_files_needing_model_update = VideoFile.objects.filter(download_in_progress=False, youtube_id__in=chunk).exclude(percent_complete=100)
         video_files_needing_model_update.update(percent_complete=0, cancel_download=False, flagged_for_download=True)
 
-    force_job("videodownload", "Download Videos")
+    force_job("videodownload", _("Download Videos"))
     return JsonResponse({})
 
 
@@ -150,7 +151,7 @@ def retry_video_download(request):
     Clear any video still accidentally marked as in-progress, and restart the download job.
     """
     VideoFile.objects.filter(download_in_progress=True).update(download_in_progress=False, percent_complete=0)
-    force_job("videodownload", "Download Videos")
+    force_job("videodownload", _("Download Videos"))
     return JsonResponse({})
 
 

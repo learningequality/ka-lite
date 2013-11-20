@@ -341,7 +341,7 @@ def _get_user_usage_data(users, period_start=None, period_end=None):
     # Add group data.  Allow a fake group "Ungrouped"
     for user in users:
         group_pk = getattr(user.group, "pk", None)
-        group_name = getattr(user.group, "name", "Ungrouped")
+        group_name = getattr(user.group, "name", _("Ungrouped"))
         if not group_pk in group_data:
             group_data[group_pk] = {
                 "name": group_name,
@@ -410,7 +410,7 @@ def user_management_context(request, facility_id, group_id, page=1, per_page=25)
     #   For now, moving into function, as outside if function it looks more
     #   general-purpose than it's being used / tested now.
     def get_users_from_group(group_id, facility=None):
-        if group_id == "Ungrouped":
+        if group_id == _("Ungrouped"):
             return FacilityUser.objects \
                 .filter(facility=facility, group__isnull=True) \
                 .order_by("first_name", "last_name")
