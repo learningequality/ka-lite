@@ -2,6 +2,7 @@
 Utilities for downloading Khan Academy topic tree and 
 massaging into data and files that we use in KA Lite.
 """
+import copy
 import datetime
 import json
 import os
@@ -47,7 +48,7 @@ attribute_whitelists = {
 
 kind_blacklist = [None, "Separator", "CustomStack", "Scratchpad", "Article"]
 
-slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res", "partner-content", "cs"]
+slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res", "partner-content", "cs", "cc-third-grade-math", "cc-fourth-grade-math", "cc-fifth-grade-math", "cc-sixth-grade-math", "cc-seventh-grade-math", "cc-eighth-grade-math"]
 
 def download_khan_data(url, debug_cache_file=None, debug_cache_dir=settings.PROJECT_PATH + "../_khanload_cache"):
     """Download data from the given url.
@@ -90,7 +91,7 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
     rebuild the KA Lite topictree cache (topics.json).
     """
 
-    topictree = download_khan_data("http://www.khanacademy.org/api/v1/topictree")
+    topictree = download_khan_data("http://www.khanacademy.org/api/v1/topictree?kind=Video,Exercise")
 
     related_exercise = {}  # Temp variable to save exercises related to particular videos
     related_videos = {}  # Similar idea, reverse direction
@@ -279,7 +280,7 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
 
         # Do the actual deletion
     with open(os.path.join(data_path, topic_tools.topics_file), "w") as fp:
-        fp.write(json.dumps(topictree, indent=2))
+        fp.write(json.dumps(delete_parents(topictree), indent=2))
 
     return topictree
 
@@ -479,13 +480,28 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
     topicdata_dir = os.path.join(data_path, "topicdata")
     if os.path.exists(topicdata_dir):
         shutil.rmtree(topicdata_dir)
-        os.mkdir(topicdata_dir)
+    os.mkdir(topicdata_dir)
+
     for key, value in knowledge_topics.items():
         with open(os.path.join(topicdata_dir, "%s.json" % key), "w") as fp:
-            fp.write(json.dumps(value, indent=2))
+            fp.write(json.dumps(delete_parents(value), indent=2))
 
     return knowledge_map, knowledge_topics
 
+
+def delete_parents(node, recurse=True):
+    if isinstance(node, (list, tuple)):
+        for n in node:
+            delete_parents(n, recurse=recurse)
+    if "parent" in node:
+        del node["parent"]
+    if "parents" in node:
+        del node["parents"]
+    if recurse and "children" in node:
+        for child in node["children"]:
+            delete_parents(child, recurse=recurse)
+
+    return node
 
 def create_youtube_id_to_slug_map(node_cache=None, data_path=settings.PROJECT_PATH + "/static/data/"):
     """

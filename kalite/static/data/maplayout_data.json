@@ -194,10 +194,10 @@
     }, 
     "quadratics": {
       "icon_url": "/images/power-mode/badges/quadratics-40x40.png", 
-      "translated_standalone_title": "Quadratics functions and equations", 
+      "translated_standalone_title": "Quadratic equations", 
       "y": 49.0, 
       "x": -1.0, 
-      "standalone_title": "Quadratics functions and equations", 
+      "standalone_title": "Quadratic equations", 
       "id": "quadratics"
     }, 
     "statistics-inferential": {
