@@ -46,7 +46,7 @@ stats_dict = [
 
 user_log_stats_dict = [
     { "key": "usersum:total_seconds", "name": _("Time Active (s)"), "type": "number", "description": _("Total time spent actively logged in.")},
-    { "key": "user:total_seconds", "name": _("Active Time Per Login"), "type": "number", "description": "Duration of each login session.", "noscatter": True, "timeline": True},
+    { "key": "user:total_seconds", "name": _("Active Time Per Login"), "type": "number", "description": _("Duration of each login session."), "noscatter": True, "timeline": True},
     { "key": "user:last_active_datetime", "name": _("Time Session Completed"),"type": "datetime", "description": _("Day/time the login session finished.")},
 ]
 
@@ -111,17 +111,17 @@ def get_data_form(request, *args, **kwargs):
         if not request.is_admin:
             if group and form.data["group"] and group.id != form.data["group"]:  # can't go outside group
                 # We could also redirect
-                raise PermissionDenied("You cannot choose a group outside of your group.")
+                raise PermissionDenied(_("You cannot choose a group outside of your group."))
             elif facility and form.data["facility"] and facility.id != form.data["facility"]:
                 # We could also redirect
-                raise PermissionDenied("You cannot choose a facility outside of your own facility.")
+                raise PermissionDenied(_("You cannot choose a facility outside of your own facility."))
             elif not request.is_admin:
                 if not form.data["user"]:
                     # We could also redirect
-                    raise PermissionDenied("You cannot choose facility/group-wide data.")
+                    raise PermissionDenied(_("You cannot choose facility/group-wide data."))
                 elif user and form.data["user"] and user.id != form.data["user"]:
                     # We could also redirect
-                    raise PermissionDenied("You cannot choose a user outside of yourself.")
+                    raise PermissionDenied(_("You cannot choose a user outside of yourself."))
 
     # Fill in backwards: a user implies a group
     if form.data.get("user") and not form.data.get("group"):
@@ -163,7 +163,8 @@ def query_logs(users, items, logtype, logdict):
         all_logs = UserLogSummary.objects.filter(user__in=users).values(
             'user', 'device', 'total_seconds').order_by('end_datetime')
     else:
-        raise Exception("Unknown log type: '%s'" % logtype)
+        assert False, "Unknown log type: '%s'" % logtype  # indicates a programming error
+
     for log in all_logs:
         logdict[log['user']].append(log)
     return logdict
@@ -355,11 +356,11 @@ def api_data(request, xaxis="", yaxis=""):
         groups = FacilityGroup.objects.filter(facility__in=[form.data.get("facility")])
         users = FacilityUser.objects.filter(facility__in=[form.data.get("facility")], is_teacher=False).order_by("last_name", "first_name")
     else:
-        return HttpResponseNotFound("Did not specify facility, group, nor user.")
+        return HttpResponseNotFound(_("Did not specify facility, group, nor user."))
 
     # Query out the data: where?
     if not form.data.get("topic_path"):
-        return HttpResponseNotFound("Must specify a topic path")
+        return HttpResponseNotFound(_("Must specify a topic path"))
 
     # Query out the data: what?
     computed_data = compute_data(data_types=[form.data.get("xaxis"), form.data.get("yaxis")], who=users, where=form.data.get("topic_path"))
