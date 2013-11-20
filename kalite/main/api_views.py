@@ -23,7 +23,7 @@ from django.views.decorators.gzip import gzip_page
 import settings
 import version
 from .api_forms import ExerciseLogForm, VideoLogForm, DateTimeForm
-from .models import VideoLog, ExerciseLog, VideoFile
+from .models import VideoLog, ExerciseLog
 from config.models import Settings
 from securesync.models import FacilityGroup, FacilityUser
 from shared.caching import backend_cache_page
@@ -81,7 +81,7 @@ def save_video_log(request):
         return JsonResponse({"error": "Could not save VideoLog: %s" % e}, status=500)
 
     if "points" in request.session:
-        request.session["points"] = compute_total_points(user)
+        del request.session["points"]  # will be recomputed when needed
 
     return JsonResponse({
         "points": videolog.points,
@@ -120,7 +120,7 @@ def save_exercise_log(request):
         return JsonResponse({"error": _("Could not save ExerciseLog") + u": %s" % e}, status=500)
 
     if "points" in request.session:
-        request.session["points"] = compute_total_points(user)
+        del request.session["points"]  # will be recomputed when needed
         
     # Special message if you've just completed.
     #   NOTE: it's important to check this AFTER calling save() above.
@@ -277,7 +277,7 @@ def _update_video_log_with_points(seconds_watched, video_length, youtube_id, fac
     )
 
     if "points" in request.session:
-        request.session["points"] = compute_total_points(facility_user)
+        del request.session["points"]  # will be recomputed when needed
 
 
 def compute_total_points(user):

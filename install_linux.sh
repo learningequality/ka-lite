@@ -11,13 +11,14 @@ if [ $we_are_rpi = "True" ]; then
     do
         echo
         echo "Do you wish to configure the Raspberry Pi optimizations for this server?"
-        echo "(you will need root/sudo privileges and an Internet connection)"
-        echo "Optimize will also start the KA Lite server now, and automatically on every reboot"
+        echo "You will need root/sudo privileges and an Internet connection."
         echo
-        echo -n "To optimize later, run ./scripts/optimizerpi.sh : Optimize now? [Y/N] "
+        echo -n "Optimize now? [Y/N] "
         read CONFIRM
         case $CONFIRM in
             y|Y)
+                echo "Optimize will start the KA Lite server now, "
+                echo "    and automatically on every system boot."
                 echo
                 sudo "$SCRIPT_DIR/runatboot.sh"
                 sudo "$SCRIPT_DIR/optimizerpi.sh"
@@ -25,6 +26,7 @@ if [ $we_are_rpi = "True" ]; then
                 exit
                 ;;
             n|N)
+                echo "To optimize later, run ./scripts/optimizerpi.sh"
                 echo
                 break
                 ;;

@@ -73,7 +73,8 @@ def generate_flat_topic_tree(node_cache=None):
     # to avoid redundancy
     for category_name, category in categories.iteritems():
         result[category_name] = {}
-        for node_name, node in category.iteritems():
+        for node_name, node_list in category.iteritems():
+            node = node_list[0]
             relevant_data = {'title': node['title'],
                              'path': node['path'],
                              'kind': node['kind'],
@@ -96,7 +97,7 @@ def generate_node_cache(topictree=None):#, output_dir=settings.DATA_PATH):
         # Add the node to the node cache
         kind = node["kind"]
         node_cache[kind] = node_cache.get(kind, {})
-        
+
         if node["slug"] not in node_cache[kind]:
             node_cache[kind][node["slug"]] = []
         node_cache[kind][node["slug"]] += [node]        # Append
@@ -114,17 +115,17 @@ def generate_node_cache(topictree=None):#, output_dir=settings.DATA_PATH):
     return node_cache
 
 
-def get_videos(topic): 
+def get_videos(topic):
     """Given a topic node, returns all video node children (non-recursively)"""
     return filter(lambda node: node["kind"] == "Video", topic["children"])
 
 
-def get_exercises(topic): 
+def get_exercises(topic):
     """Given a topic node, returns all exercise node children (non-recursively)"""
     return filter(lambda node: node["kind"] == "Exercise" and node["live"], topic["children"])
 
 
-def get_live_topics(topic): 
+def get_live_topics(topic):
     """Given a topic node, returns all children that are not hidden and contain at least one video (non-recursively)"""
     return filter(lambda node: node["kind"] == "Topic" and not node["hide"] and "Video" in node["contains"], topic["children"])
 
@@ -142,7 +143,7 @@ def get_topic_by_path(path, root_node=None):
         return root_node
     elif not path.startswith(root_node["path"]):
         return {}
-        
+
 
     # split into parts (remove trailing slash first)
     parts = path[len(root_node["path"]):-1].split("/")
@@ -222,7 +223,7 @@ def get_exercise_paths():
     """This function retrieves all the exercise paths.
     """
     exercises = get_node_cache("Exercise").values()
-    return [exercise[0]["path"] for exercise in exercises]
+    return [n["path"] for exercise in exercises for n in exercise]
 
 
 def get_related_videos(exercises, topics=None, possible_videos=None):

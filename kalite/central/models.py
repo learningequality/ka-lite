@@ -40,13 +40,13 @@ class Organization(ExtendedModel):
         return self.zones.add(zone)
 
     def get_zones(self):
-        return list(self.zones.all().order_by("name"))
+        return self.zones.all().order_by("name")
 
     def add_member(self, user):
         return self.users.add(user)
 
     def get_members(self):
-        return list(self.users.all())
+        return self.users.all()
 
     def is_member(self, user):
         return self.users.filter(pk=user.pk).count() > 0

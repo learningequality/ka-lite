@@ -1,3 +1,7 @@
+.button_text {
+    white-space: nowrap;
+}
+
 ul.dynatree-container li, .ui-widget-content {
     background-image: none;
 }

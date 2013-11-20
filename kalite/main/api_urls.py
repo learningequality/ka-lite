@@ -1,15 +1,13 @@
 from django.conf.urls.defaults import include, patterns, url
-from django.http import HttpResponse
+from django.http import HttpResponseServerError
 
 import settings
 import updates.api_urls
 
+
 # Note that these patterns are all under /api/,
 # due to the way they've been included into main/urls.py
 urlpatterns = patterns('main.api_views',
-
-    # toss out any requests made to actual KA site urls
-    url(r'^v1/', lambda x: HttpResponse("{}")),
 
     # For video / exercise pages
     url(r'^save_video_log$', 'save_video_log', {}, 'save_video_log'),
@@ -38,6 +36,13 @@ urlpatterns = patterns('main.api_views',
     url(r'^getpid$', 'getpid', {}, 'getpid'),
 )
 
+
 urlpatterns += patterns('updates.api_views',
     url(r'^', include(updates.api_urls)),
+)
+
+# Placed at the bottom, so that it's the last to be checked (not first)
+urlpatterns += patterns('',
+    # toss out any requests made to actual KA site urls
+    url(r'^v1/', lambda x: HttpResponseServerError("This is an assert--you should disable these calls from KA in the javascript code!")),
 )

@@ -18,7 +18,7 @@ from django.utils.translation import ugettext as _
 
 from .api_views import get_data_form, stats_dict
 from main.topicdata import ID2SLUG_MAP, NODE_CACHE
-from main.models import VideoLog, ExerciseLog, VideoFile, UserLog
+from main.models import VideoLog, ExerciseLog, UserLog
 from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device
 from securesync.views import facility_required
 from settings import LOG as logging
@@ -274,8 +274,8 @@ def tabular_view(request, facility, report_type="exercise"):
 
     elif facility:
         # Narrow by facility
-        search_groups = [dict["groups"] for dict in groups if dict["facility"] == facility.id]
-        assert len(search_groups) <= 1, "should only have one or zero matches."
+        search_groups = [groups_dict["groups"] for groups_dict in groups if groups_dict["facility"] == facility.id]
+        assert len(search_groups) <= 1, "Should only have one or zero matches."
 
         # Return groups and ungrouped
         search_groups = search_groups[0]  # make sure to include ungrouped students
@@ -354,7 +354,7 @@ def tabular_view(request, facility, report_type="exercise"):
             })
 
     else:
-        raise Http404("Unknown report_type: %s" % report_type)
+        raise Http404(_("Unknown report_type: %(report_type)") % {"report_type": report_type})
 
     if "facility_user" in request.session:
         try:

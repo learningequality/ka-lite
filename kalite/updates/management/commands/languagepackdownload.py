@@ -1,20 +1,22 @@
+import glob
 import json
 import os
 import requests
+import shutil
 import zipfile
 from optparse import make_option
 from StringIO import StringIO
 
 from django.core.management.base import BaseCommand, CommandError
-from django.http import HttpRequest
-from django.views.i18n import javascript_catalog
+from django.utils.translation import ugettext as _
 
 import settings
 import version
+from i18n.models import LanguagePack
+from i18n.management.commands.update_po import 
 from settings import LOG as logging
-from shared.i18n import convert_language_code_format
+from shared.i18n import convert_language_code_format, update_jsi18n_file
 from utils.general import ensure_dir
-from main.models import LanguagePack
 
 
 LOCALE_ROOT = settings.LOCALE_PATHS[0]
@@ -58,7 +60,10 @@ class Command(BaseCommand):
         update_database(code)
 
         # 
-        add_jsi18n_file(code)
+        update_jsi18n_file(code)
+        
+        # 
+        move_srts(code)
 
 def get_language_pack(code, software_version):
     """Download language pack for specified language"""
@@ -104,15 +109,18 @@ def update_database(code):
     logging.info("Successfully updated database.")
 
 
-def add_jsi18n_file(code):
-    output_dir = os.path.join(settings.STATIC_ROOT, "js", "i18n")
-    ensure_dir(output_dir)
-    output_file = os.path.join(output_dir, "%s.js" % code)
+def move_srts(code):
+    """
+    Srts live in the locale directory, but that's not exposed at any URL.  So instead,
+    we have to move the srts out to /static/subtitles/[code]/
+    """
+    subtitles_static_dir = os.path.join(settings.STATIC_ROOT, "subtitles")
+    srt_static_dir = os.path.join(subtitles_static_dir, code)
+    srt_locale_dir = os.path.join(LOCALE_ROOT, code, "subtitles")
 
-    request = HttpRequest()
-    request.path = output_file
-    request.session = {'django_language': code}
-
-    response = javascript_catalog(request, packages=('ka-lite.locale',))
-    with open(output_file, "w") as fp:
-        fp.write(response.content)
+    ensure_dir(srt_static_dir)
+    for fil in glob.glob(os.path.join(srt_locale_dir, "*.srt")):
+        srt_dest_path = os.path.join(srt_static_dir, os.path.basename(fil))
+        if os.path.exists(srt_dest_path):
+            os.remove(srt_dest_path)
+        shutil.move(fil, srt_dest_path)

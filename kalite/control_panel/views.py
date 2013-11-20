@@ -16,7 +16,7 @@ from django.utils.translation import ugettext as _
 
 import settings
 import version
-from .forms import ZoneForm, UploadFileForm
+from .forms import ZoneForm, UploadFileForm, DateRangeForm
 try:
     from central.models import Organization
 except:
@@ -118,7 +118,7 @@ def zone_management(request, zone_id, org_id=None):
 @require_authorized_admin
 @render_to("control_panel/facility_usage.html")
 @render_to_csv(["students", "teachers"], key_label="user_id", order="stacked")
-def facility_usage(request, facility_id, org_id=None, zone_id=None, frequency=None):
+def facility_usage(request, facility_id, org_id=None, zone_id=None, frequency=None, period_start="", period_end=""):
     context = control_panel_context(request, org_id=org_id, zone_id=zone_id, facility_id=facility_id)
 
     # Basic data
@@ -131,29 +131,25 @@ def facility_usage(request, facility_id, org_id=None, zone_id=None, frequency=No
         .filter(facility=context["facility"], is_teacher=True) \
         .order_by("last_name", "first_name", "username") \
         .prefetch_related("group")
-    
-    # Get the start and end date--based on csv.  A hack, yes...
-    if request.GET.get("format", "") == "csv":
-        frequency = frequency or request.GET.get("fequency", "months")
-        (period_start, period_end) = _get_date_range(frequency)
-    else:
-        (period_start, period_end) = (None, None)
 
+    if request.method == "POST":
+        form = DateRangeForm(data=request.POST)
+        if form.is_valid():
+            frequency = frequency or request.GET.get("frequency", "months")
+            period_start = period_start or form.data["period_start"]
+            period_end = period_end or form.data["period_end"]
+            (period_start, period_end) = _get_date_range(frequency, period_start, period_end)
+    else:
+        form = DateRangeForm()
     (student_data, group_data) = _get_user_usage_data(students, period_start=period_start, period_end=period_end)
     (teacher_data, _) = _get_user_usage_data(teachers, period_start=period_start, period_end=period_end)
 
-    # Total hack for CSV-only
-    if request.GET.get("format") == "csv":
-        (period_start, period_end) = _get_date_range(frequency)
-    else:
-        period_start = None
-        period_end = None
-
     context.update({
+        "form": form,
         "groups": group_data,
         "students": student_data,
         "teachers": teacher_data,
-        "date_range": [period_start, period_end] if frequency else [None, None],
+        "date_range": [period_start, period_end],
     })
     return context
 
@@ -252,20 +248,25 @@ def account_management(request, org_id=None):
 
 # data functions
 
-def _get_date_range(frequency):
+def _get_date_range(frequency, period_start, period_end):
     """
     Hack function (while CSV is in initial stages),
         returns dates of beginning and end of last month.
     Should be extended to do something more generic, based on
     "frequency", and moved into utils/general.py
     """
+
     assert frequency == "months"
 
     if frequency == "months":  # only works for months ATM
-        cur_date = datetime.datetime.now()
-        first_this_month = datetime.datetime(year=cur_date.year, month=cur_date.month, day=1, hour=0, minute=0, second=0)
-        period_end = first_this_month - datetime.timedelta(seconds=1)
-        period_start = datetime.datetime(year=period_end.year, month=period_end.month, day=1)
+        if not (period_start or period_end):
+            cur_date = datetime.datetime.now()
+            first_this_month = datetime.datetime(year=cur_date.year, month=cur_date.month, day=1, hour=0, minute=0, second=0)
+            period_end = first_this_month - datetime.timedelta(seconds=1)
+            period_start = datetime.datetime(year=period_end.year, month=period_end.month, day=1)
+        else:
+            period_end = period_end or period_start + datetime.timedelta(days=30)
+            period_start = period_start or period_end - datetime.timedelta(days=30)
     return (period_start, period_end)
 
 
@@ -340,7 +341,7 @@ def _get_user_usage_data(users, period_start=None, period_end=None):
     # Add group data.  Allow a fake group "Ungrouped"
     for user in users:
         group_pk = getattr(user.group, "pk", None)
-        group_name = getattr(user.group, "name", "Ungrouped")
+        group_name = getattr(user.group, "name", _("Ungrouped"))
         if not group_pk in group_data:
             group_data[group_pk] = {
                 "name": group_name,
@@ -409,7 +410,7 @@ def user_management_context(request, facility_id, group_id, page=1, per_page=25)
     #   For now, moving into function, as outside if function it looks more
     #   general-purpose than it's being used / tested now.
     def get_users_from_group(group_id, facility=None):
-        if group_id == "Ungrouped":
+        if group_id == _("Ungrouped"):
             return FacilityUser.objects \
                 .filter(facility=facility, group__isnull=True) \
                 .order_by("first_name", "last_name")

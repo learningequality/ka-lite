@@ -1,18 +1,20 @@
 import datetime
 
-from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
+from django.utils.translation import ugettext as _
 
 from settings import LOG as logging
+from utils.django_utils import ExtendedModel
 
 
-class UpdateProgressLog(models.Model):
+class UpdateProgressLog(ExtendedModel):
     """
     Gets progress
     """
-    process_name = models.CharField(verbose_name="process name", max_length=100)
+    process_name = models.CharField(verbose_name=_("process name"), max_length=100)
     process_percent = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(1.0)], default=0)
-    stage_name = models.CharField(verbose_name="stage name", max_length=100, null=True)
+    stage_name = models.CharField(verbose_name=_("stage name"), max_length=100, null=True)
     stage_percent = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(1.0)], default=0)
     current_stage = models.IntegerField(blank=True, null=True)
     total_stages = models.IntegerField(blank=True, null=True)
@@ -166,3 +168,30 @@ class UpdateProgressLog(models.Model):
         log = cls(**kwargs)
         log.save()
         return log
+
+
+class VideoFile(ExtendedModel):
+    """
+    Used exclusively for downloading files, and in conjunction with files on disk
+    to determine what videos are available to users.
+    """
+    youtube_id = models.CharField(max_length=20, primary_key=True)
+    flagged_for_download = models.BooleanField(default=False)
+    download_in_progress = models.BooleanField(default=False)
+    priority = models.IntegerField(default=0)
+    percent_complete = models.IntegerField(default=0)
+    cancel_download = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["priority", "youtube_id"]
+
+    def __unicode__(self):
+        if self.download_in_progress:
+            status = "downloading (%d%%)" % self.percent_complete
+        elif self.flagged_for_download:
+            status = "waiting to download"
+        elif self.percent_complete == 100:
+            status = "downloaded"
+        else:
+            status = "not downloaded"
+        return u"id: %s (%s)" % (self.youtube_id, status)

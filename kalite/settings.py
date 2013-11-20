@@ -209,7 +209,8 @@ else:
         "securesync.middleware.DBCheck",
     )
 #    if USE_I18N:
-    MIDDLEWARE_CLASSES += ("i18n.middleware.SessionLanguage"),
+    TEMPLATE_CONTEXT_PROCESSORS += ("i18n.custom_context_processors.languages",)
+    MIDDLEWARE_CLASSES += ("i18n.middleware.SessionLanguage",)
     INSTALLED_APPS += ('i18n',)
 
 
@@ -347,7 +348,7 @@ if not CENTRAL_SERVER:
     # Cache is activated in every case,
     #   EXCEPT: if CACHE_TIME=0
     if CACHE_TIME != 0:  # None can mean infinite caching to some functions
-        KEY_PREFIX = version.VERSION
+        KEY_PREFIX = version.VERSION_INFO[version.VERSION]["git_commit"][0:6]  # new cache for every build
 
         # File-based cache
         install_location_hash = hashlib.sha1(PROJECT_PATH).hexdigest()

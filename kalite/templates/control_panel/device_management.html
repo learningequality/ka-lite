@@ -29,7 +29,7 @@ dl{margin-bottom:20px}dt,dd{line-height:20px}dt{font-weight:bold}dd{margin-left:
         <dl class="dl-horizontal">
         {% if software_version %}
             <!---Current System status -->
-            <dt>Device ID:</dt>
+            <dt>{% trans "Device ID" %}:</dt>
             <dd>{{ device.id }}</dd>
             <dt>{% trans "Current Version" %}:</dt>
             <dd>{{ software_version }}</dd>

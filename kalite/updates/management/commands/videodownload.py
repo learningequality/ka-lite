@@ -3,13 +3,15 @@ import time
 from functools import partial
 from optparse import make_option
 
+from django.utils.translation import ugettext as _
+
 import settings
-from main.models import VideoFile
+from .classes import UpdatesDynamicCommand
 from shared import caching
 from shared.jobs import force_job
 from shared.topic_tools import get_video_by_youtube_id
 from shared.videos import download_video, DownloadCancelled, URLNotFound
-from updates.management.commands.classes import UpdatesDynamicCommand
+from updates.models import VideoFile
 from utils import set_process_priority
 
 
@@ -54,7 +56,7 @@ class Command(UpdatesDynamicCommand):
                 # update progress data
                 video_node = get_video_by_youtube_id(self.video.youtube_id)
                 video_title = video_node["title"] if video_node else self.video.youtube_id
-                self.update_stage(stage_name=self.video.youtube_id, stage_percent=percent/100., notes="Downloading '%s'" % video_title)
+                self.update_stage(stage_name=self.video.youtube_id, stage_percent=percent/100., notes=_("Downloading '%s'") % video_title)
 
                 if percent == 100:
                     self.video = None
@@ -124,12 +126,15 @@ class Command(UpdatesDynamicCommand):
 
             # This can take a long time, without any further update, so ... best to avoid.
             if options["auto_cache"] and caching.caching_is_enabled() and handled_video_ids:
-                self.update_stage(stage_name=self.video.youtube_id, stage_percent=0, notes="Generating all pages related to videos.")
+                self.update_stage(stage_name=self.video.youtube_id, stage_percent=0, notes=_("Generating all pages related to videos."))
                 caching.regenerate_all_pages_related_to_videos(video_ids=handled_video_ids)
 
             # Update
-            self.complete(notes="Downloaded %d of %d videos successfully." % (len(handled_video_ids), len(handled_video_ids) + len(failed_video_ids)))
+            self.complete(notes=_("Downloaded %(num_handled_videos) of %(num_total_videos) videos successfully.") % {
+                "num_handled_videos": len(handled_video_ids),
+                "num_total_videos": len(handled_video_ids) + len(failed_video_ids),
+            })
 
         except Exception as e:
             sys.stderr.write("Error: %s\n" % e)
-            self.cancel(notes="Error: %s" % e)
+            self.cancel(notes=_("Error: %s") % e)
