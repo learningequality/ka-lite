@@ -30,12 +30,12 @@ class Command(UpdatesStaticCommand):
     help = "Create a zip file with all code, that can be unpacked anywhere."
 
     option_list = BaseCommand.option_list + (
-        make_option('-r', '--repo',
+        make_option('-b', '--branch',
             action='store',
-            dest='repo',
+            dest='branch',
             default=None,
-            help='Git REPO to pull from',
-            metavar="REPO"),
+            help='Git BRANCH to switch to',
+            metavar="BRANCH"),
         make_option('-f', '--file',
             action='store',
             dest='zip_file',
@@ -72,7 +72,7 @@ class Command(UpdatesStaticCommand):
             exit(0)
 
         try:
-            if options.get("repo", None):
+            if options.get("branch", None):
                 # Specified a repo
                 self.update_via_git(**options)
 
@@ -84,9 +84,13 @@ class Command(UpdatesStaticCommand):
 
             elif options.get("url", None):
                 self.update_via_zip(**options)
-        
+
             elif os.path.exists(settings.PROJECT_PATH + "/../.git"):
-                # Without params, if we detect a git repo, try git
+                # If we detect a git repo, try git
+                if len(args) == 1 and not options["branch"]:
+                    options["branch"] = args[0]
+                elif len(args) != 0:
+                    raise CommandError("Specified too many command-line arguments")
                 self.update_via_git(**options)
 
             elif len(args) > 1:
@@ -122,41 +126,55 @@ class Command(UpdatesStaticCommand):
         assert not self.started(), "Subroutines should complete() if they start()!"
 
 
-    def update_via_git(self, repo=".", *args, **kwargs):
+    def update_via_git(self, branch=None, *args, **kwargs):
         """
         Full update via git
         """
         self.stages = [
-            "git pull",
             "clean_pyc",
+            "git",
             "syncdb",
             "videoscan",
         ]
 
+        # step 1: clean_pyc (has to be first)
+        call_command("clean_pyc")
+        self.start(notes="Clean up pyc files")
+
+        # Step 2: update via git
+        self.next_stage(notes="Updating via git%s" % (" to branch %s" % branch if branch else ""))
+        repo = git.Repo()
+
         try:
-            # Step 1: update via git repo
-            self.start(notes = "Updating via git; repo=%s" % (repo or "[default]") )
-            self.stdout.write(git.Repo(repo).git.pull() + "\n")
-        
-            # step 2: clean_pyc
-            self.next_stage("Cleaning PYC files")
-            call_command("clean_pyc")
+            if not branch:
+                # old behavior--assume you're pulling to remote
+                self.stdout.write(repo.git.pull() + "\n")
+            elif "/" not in branch:
+                self.stdout.write(repo.git.fetch() + "\n")  # update all branches across all repos, to make sure all branches exist
+                self.stdout.write(repo.git.checkout(branch) + "\n")
+            else:
+                self.stdout.write(repo.git.fetch("--all", "-p"), "\n")  # update all branches across all repos, to make sure all branches exist
+                self.stdout.write(repo.git.checkout("-t", branch) + "\n")
 
-            # step 3: syncdb
-            self.next_stage("Updating the database schema")
-            # call syncdb, then migrate with merging enabled (in case there were any out-of-order migration files)
-            call_command("syncdb")
-            call_command("migrate", merge=True)
+        except git.errors.GitCommandError as gce:
+            if not (branch and "There is no tracking information for the current branch" in gce.stderr):
+                # pull failed because the branch is local only. this is OK when you specify a branch (switch), but not when you don't (has to be a remote pull)
+                self.stderr.write("Error running %s\n" % gce.command)
+                self.stderr.write("%s\n" % gce.stderr)
+                exit(1)
 
-            # step 4: run videoscan (in case we blew away the videofile in migration from main to updates)
-            self.next_stage("Refreshing list of video files")
-            call_command("videoscan")
+        # step 3: syncdb
+        self.next_stage("Update the database")
+        # call syncdb, then migrate with merging enabled (in case there were any out-of-order migration files)
+        call_command("syncdb")
+        call_command("migrate", merge=True)
 
-            # Done!
-            self.complete()
-        except Exception as e:
-            self.cancel()
-            raise CommandError(str(e))
+        # step 4: run videoscan (in case we blew away the videofile in migration from main to updates)
+        self.next_stage("Refreshing list of video files")
+        call_command("videoscan")
+
+        # Done!
+        self.complete()
 
 
     def update_via_zip(self, zip_file=None, url=None, interactive=True, test_port=8008, *args, **kwargs):
@@ -365,7 +383,7 @@ class Command(UpdatesStaticCommand):
 
         try:
             system_specific_unzipping(
-                zip_file=zip_file, 
+                zip_file=zip_file,
                 dest_dir=self.working_dir,
                 callback = self._callback_unzip,
             )
@@ -611,7 +629,7 @@ class Command(UpdatesStaticCommand):
     def start_server(self, port=None):
         """
         Start the server, for real (not to test) (cron and web server)
-        
+
         Assumes the web server is shut down.
         """
         sys.stdout.write("* Starting the server\n")

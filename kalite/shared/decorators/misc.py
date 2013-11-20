@@ -24,7 +24,7 @@ def central_server_only(handler):
     """
     def wrapper_fn(*args, **kwargs):
         if not settings.CENTRAL_SERVER:
-            raise Http404("This path is only available on the central server.")
+            raise Http404(_("This path is only available on the central server."))
         return handler(*args, **kwargs)
     return wrapper_fn
 
