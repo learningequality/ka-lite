@@ -134,7 +134,6 @@ class Command(UpdatesStaticCommand):
             "clean_pyc",
             "git",
             "syncdb",
-            "videoscan",
         ]
 
         # step 1: clean_pyc (has to be first)
@@ -165,13 +164,7 @@ class Command(UpdatesStaticCommand):
 
         # step 3: syncdb
         self.next_stage("Update the database")
-        # call syncdb, then migrate with merging enabled (in case there were any out-of-order migration files)
-        call_command("syncdb")
-        call_command("migrate", merge=True)
-
-        # step 4: run videoscan (in case we blew away the videofile in migration from main to updates)
-        self.next_stage("Refreshing list of video files")
-        call_command("videoscan")
+        call_command("setup", interactive=False)
 
         # Done!
         self.complete()
@@ -429,12 +422,8 @@ class Command(UpdatesStaticCommand):
         # Run the syncdb
         sys.stdout.write("* Syncing database...")
         sys.stdout.flush()
-        out = call_outside_command_with_output("migrate", manage_py_dir=os.path.join(self.working_dir, "kalite"))
-        out = call_outside_command_with_output("syncdb", migrate=True, manage_py_dir=os.path.join(self.working_dir, "kalite"))
+        call_outside_command_with_output("setup", interactive=False, manage_py_dir=os.path.join(self.working_dir, "kalite"))
         sys.stdout.write("\n")
-
-        # Run videoscan, in case we blew away the videofiles moving from main to updates app
-        out = call_outside_command_with_output("videoscan", manage_py_dir=os.path.join(self.working_dir, "kalite"))
 
 
     def update_local_settings(self):
