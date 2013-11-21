@@ -1,11 +1,4 @@
-var defaultLanguage;
-function setup(server_info_url, central_server_url, default_language) {
-    defaultLanguage = default_language;
-    regularly_check_for_server(server_info_url);
-    fetch_language_packs(central_server_url);
-}
-
-function fetch_language_packs(central_server_url) {
+$(function() {
     // if prefix is empty, gives an absolute (local) url. If prefix, then fully qualified url.
     var url = "http://" + central_server_url +  "/api/i18n/language_packs/available/";
     var request = $.ajax({
@@ -15,7 +8,6 @@ function fetch_language_packs(central_server_url) {
 	languagePacks.forEach(function(langdata, langindex) {
             var srtcount = langdata["subtitle_count"];
             var langcode = langdata["code"];
-            console.log(langcode + " has " + srtcount);
             if(langcode === defaultLanguage) {
                 $('#language-packs').append('<option value="' + langcode + '" selected>' + langcode + ' (' + srtcount + ')</option>');
             }
@@ -26,10 +18,10 @@ function fetch_language_packs(central_server_url) {
     }).error(function() {
         console.log("404 from central server");
     });
-}
+});
 
-function regularly_check_for_server(server_info_url) {
-
+// TODO: see where this fits in
+$(function() {
     setTimeout(function() {
         get_server_status({path: server_info_url}, ["online"], function(status){
             // We assume the distributed server is offline.
@@ -37,7 +29,7 @@ function regularly_check_for_server(server_info_url) {
             //
             // Best to assume offline, as online check returns much faster than offline check.
             if(!status || !status["online"]){ // server offline
-                show_message("error", "{% trans 'Distributed server is offline; cannot access video nor subtitle updates.' %}", " id_offline_message")
+                show_message("error", "{% trans 'Distributed server is offline; cannot access video nor subtitle updates.' %}", " id_offline_message");
             } else { // server online
                 $("#help-info").show();
                 $("#download-videos").removeAttr("disabled");
