@@ -108,8 +108,8 @@ class Command(BaseCommand):
             default=None,
             help='Default facility name'),
         )
-    install_json_filename = "install_data.json"
-    install_json_file = os.path.join(settings.STATIC_ROOT, "data", install_json_filename)
+    data_json_filename = "network_data.json"
+    data_json_file = os.path.join(settings.STATIC_ROOT, "data", data_json_filename)
 
     def handle(self, *args, **options):
         if DeviceMetadata.objects.filter(is_own_device=True).count() > 0:
@@ -117,7 +117,7 @@ class Command(BaseCommand):
 
         name        = args[0] if (len(args) >= 1 and args[0]) else get_host_name()
         description = args[1] if (len(args) >= 2 and args[1]) else ""
-        data_file   = args[2] if (len(args) >= 3 and args[2]) else self.install_json_file
+        data_file   = args[2] if (len(args) >= 3 and args[2]) else self.data_json_file
 
         own_device = Device.initialize_own_device(name=name, description=description)
         self.stdout.write("Device '%s'%s has been successfully initialized.\n"

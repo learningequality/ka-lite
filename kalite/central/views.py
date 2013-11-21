@@ -218,7 +218,7 @@ def get_request_var(request, var_name, default_val="__empty__"):
     return  request.POST.get(var_name, request.GET.get(var_name, default_val))
 
 
-def install_wizard(request, edition=None):
+def download_wizard(request, edition=None):
     """
     NOTE that this wizard is ONLY PARTIALLY FUNCTIONAL (see below)
 
@@ -238,16 +238,16 @@ def install_wizard(request, edition=None):
     
     """
     if not edition and request.user.is_anonymous():
-        @render_to("central/install_wizard.html")
+        @render_to("central/download_wizard.html")
         def wizard_fn(request):
             return {}
         return wizard_fn(request)
 
     elif edition == "multiple-server" or not request.user.is_anonymous():
-        return install_multiple_server_edition(request)
+        return download_multiple_server_edition(request)
 
     elif edition == "single-server":
-        return install_single_server_edition(request)
+        return download_single_server_edition(request)
 
     else:
         raise Http404("Unknown server edition: %s" % edition)
@@ -259,7 +259,7 @@ def download_thankyou(request, **kwargs):
     return kwargs
 
 
-def install_single_server_edition(request):
+def download_single_server_edition(request):
     """
     """
     version = get_request_var(request, "version",  kalite.VERSION)
@@ -278,7 +278,7 @@ def install_single_server_edition(request):
 
 
 @login_required
-def install_multiple_server_edition(request):
+def download_multiple_server_edition(request):
     # get a list of all the organizations this user helps administer,
     #   then choose the selected organization (if possible)
     # Get all data
@@ -322,7 +322,7 @@ def install_multiple_server_edition(request):
     if len(zones) == 1:
         zone_id = zones[0]["id"]
 
-    @render_to("central/install_wizard.html")
+    @render_to("central/download_wizard.html")
     def wizard_fn(request):
         return {
             "zones": zones,
@@ -363,7 +363,7 @@ def download_kalite(request, *args, **kwargs):
     If with it, then we have to make sure it's OK for this user.
     
     This endpoint is also set up to deal with platform, locale, and version,
-    though right now only direct URLs would set this (not via the install_wizard).
+    though right now only direct URLs would set this (not via the download wizard).
     """
 
     # Parse args
