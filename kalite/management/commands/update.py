@@ -121,7 +121,7 @@ class Command(UpdatesStaticCommand):
         except Exception as e:
             if self.started():
                 self.cancel(notes=str(e))
-            raise CommandError(str(e))
+            raise
 
         assert not self.started(), "Subroutines should complete() if they start()!"
 
@@ -281,10 +281,15 @@ class Command(UpdatesStaticCommand):
 
         self.signature_file = os.path.join(self.working_dir, Command.signature_filename)
         self.inner_zip_file = os.path.join(self.working_dir, Command.inner_zip_filename)
-        key = Device.get_central_server().get_key()
+
+        central_server = Device.get_central_server()
         lines = open(self.signature_file, "r").read().split("\n")
         chunk_size = int(lines.pop(0))
-        if not key.verify_large_file(self.inner_zip_file, signature=lines, chunk_size=chunk_size):
+        if not central_server:
+            logging.warn("No central server device object found; trusting zip file because you asked me to...") 
+        elif central_server.key.verify_large_file(self.inner_zip_file, signature=lines, chunk_size=chunk_size):
+            logging.info("Verified file!")
+        else:
             raise Exception("Failed to verify inner zip file.")
         return self.inner_zip_file
 
@@ -341,9 +346,11 @@ class Command(UpdatesStaticCommand):
 
 
     def get_move_videos(self, interactive=True):
-        """See whether the user wants to move video files, or to keep them in the existing location.
+        """
+        See whether the user wants to move video files, or to keep them in the existing location.
 
-        Note that we have some meaningful cases where we don't need to prompt the user to set this."""
+        Note that we have some meaningful cases where we don't need to prompt the user to set this.
+        """
 
         self.videos_inside_install = -1 != settings.CONTENT_ROOT.find(self.current_dir)
         if not self.videos_inside_install:
