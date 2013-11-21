@@ -19,6 +19,7 @@ import settings
 from .models import UpdateProgressLog, VideoFile
 from main import topicdata
 from shared.decorators import require_admin
+from shared.i18n import get_installed_languages
 from shared.jobs import force_job, job_status
 from shared.videos import delete_downloaded_files
 from utils.django_utils import call_command_async
@@ -185,6 +186,11 @@ def cancel_video_download(request):
     force_job("videodownload", stop=True)
 
     return JsonResponse({})
+
+@api_handle_error_with_json
+def installed_language_packs(request):
+    langs = [l for l in get_installed_languages() if l] # filter out empty dictionaries
+    return JsonResponse(langs)
 
 @require_admin
 @api_handle_error_with_json
