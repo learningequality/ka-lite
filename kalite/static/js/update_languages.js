@@ -5,16 +5,6 @@ function setup(server_info_url, central_server_url, default_language) {
     fetch_language_packs(central_server_url);
 }
 
-// because concatenating strings is not fun, here's proper string interpolation
-String.prototype.supplant = function (o) {
-    return this.replace(/{([^{}]*)}/g,
-        function (a, b) {
-            var r = o[b];
-            return typeof r === 'string' || typeof r === 'number' ? r : a;
-        }
-    );
-};
-
 function fetch_language_packs(central_server_url) {
     // if prefix is empty, gives an absolute (local) url. If prefix, then fully qualified url.
     var url = "http://" + central_server_url +  "/api/i18n/language_packs/available/";
@@ -26,12 +16,11 @@ function fetch_language_packs(central_server_url) {
             var srtcount = langdata["subtitle_count"];
             var langcode = langdata["code"];
             console.log(langcode + " has " + srtcount);
+            if(langcode === defaultLanguage) {
+                $('#language-packs').append('<option value="' + langcode + '" selected>' + langcode + ' (' + srtcount + ')</option>');
+            }
             if (srtcount > 0) { // badass over here
-                if(langcode === defaultLanguage) {
-                    $('#language-packs').append('<option value="' + langcode + '" selected>' + langcode + ' (' + srtcount + gettext('total') + ')</option>');
-                } else {
-                    $('#language-packs').append('<option value="' + langcode + '">'+ langcode + ' (' + srtcount +')</option>');
-                }
+                $('#language-packs').append('<option value="' + langcode + '">'+ langcode + ' (' + srtcount +')</option>');
             }
 	});
     }).error(function() {
