@@ -37,7 +37,7 @@ from utils.general import get_module_source_file
 from utils.platforms import is_windows, system_script_extension, system_specific_zipping, system_specific_unzipping
 
 
-def install_from_package(data_json_file, signature_file, zip_file, dest_dir=None):
+def install_from_package(data_json_file, signature_file, zip_file, dest_dir=None, install_files=[]):
     """
     NOTE: This docstring (below this line) will be dumped as a README file.
     Congratulations on downloading KA Lite!  These instructions will help you install KA Lite.
@@ -91,6 +91,16 @@ def install_from_package(data_json_file, signature_file, zip_file, dest_dir=None
     shutil.move(signature_file, os.path.join(dest_dir, "kalite/static/zip/"))
     os.remove(data_json_file)  # was copied in earlier
 
+    # Remove the remaining install files
+    for f in install_files:
+        fpath = os.path.join(src_dir, f)
+        if not os.path.exists(fpath):
+            continue
+        try:
+            os.remove(fpath)
+            sys.stdout.write("Removed installation file %s\n" % fpath)
+        except Exception as e:
+            sys.stderr.write("Failed to delete installation file %s: %s\n" % (fpath, e))
 
 class Command(BaseCommand):
     """
@@ -177,28 +187,44 @@ class Command(BaseCommand):
         models_file = create_json_file(options["include_data"])
 
         # Pre-zip prep #2:
-        #   Create the install script.
-        def create_install_files():
-            install_files = {}
+        #   Generate the INNER zip
+        def create_inner_zip_file():
+            zip_file = os.path.join(settings.MEDIA_ROOT, "zip", os.path.basename(create_default_archive_filename(options)))
+            options["file"] = zip_file
+            if settings.DEBUG or not os.path.exists(zip_file):  # always regenerate in debug mode
+                call_command("zip_kalite", **options)
+            if not os.path.exists(zip_file):
+                raise CommandError("Failed to create kalite zip file.")
+            return zip_file
+        inner_zip_file = create_inner_zip_file()
 
-            # Create the install python script,
-            #   by outputting the install_from_package function (extracting here
-            #   through inspection and dumping line-by-line), and its dependencies
-            #   (utils.platforms, grabbed here through force).
-            #
-            # Also output a call to the function.
-            install_files[self.install_py_file] = tempfile.mkstemp()[1]
-            with open(install_files[self.install_py_file], "w") as fp:
-                for srcline in inspect.getsourcelines(install_from_package)[0]:
-                    fp.write(srcline)
-                fp.write("\n%s\n" % open(get_module_source_file("utils.platforms"), "r").read())
-                fp.write("\ninstall_from_package(\n")
-                fp.write("    zip_file='%s',\n" % UpdateCommand.inner_zip_filename)
-                fp.write("    signature_file='%s',\n" % UpdateCommand.signature_filename)
-                fp.write("    data_json_file='%s',\n" % InitCommand.data_json_filename)
-                fp.write(")\n")
-                fp.write("print 'Installation completed!'")
-            
+        # Pre-zip prep #3:
+        #   Create a file with the inner zip file signature.
+        def create_signature_file(inner_zip_file):
+            signature_file = os.path.splitext(inner_zip_file)[0] + "_signature.txt"
+            logging.debug("Generating signature; saving to %s" % signature_file)
+            if settings.DEBUG or not os.path.exists(signature_file):  # always regenerate in debug mode
+                key = Device.get_own_device().get_key()
+                chunk_size = int(2E5)  #200kb chunks
+                signature = key.sign_large_file(inner_zip_file, chunk_size=chunk_size)
+                with open(signature_file, "w") as fp:
+                    fp.write("%d\n" % chunk_size)
+                    fp.write(signature)
+            return signature_file
+        signature_file = create_signature_file(inner_zip_file)
+
+        # Gather files together
+        files_dict = {
+            UpdateCommand.inner_zip_filename: inner_zip_file,
+            UpdateCommand.signature_filename: signature_file,
+            InitCommand.data_json_filename:   models_file,
+        }
+
+        # Pre-zip prep #4:
+        #   Create the install scripts.
+        def create_install_files(files_dict={}):
+            install_files = {}  # need to keep track of, for later cleanup
+
             # Create clickable scripts: unix
             install_sh_file = self.install_py_file[:-3] + "_linux.sh"
             install_files[install_sh_file] = tempfile.mkstemp()[1]
@@ -228,43 +254,33 @@ class Command(BaseCommand):
                 # First line of docstring is a message that the docstring will
                 #   be the readme.  Remove that, dump the rest raw!
                 fp.write(inspect.getdoc(install_from_package).split("\n", 2)[1])
-            
+
+            # NOTE: do this last, so we can pass the set of install files in the 
+            #   function call, for effective cleanup.
+
+            # Create the install python script,
+            #   by outputting the install_from_package function (extracting here
+            #   through inspection and dumping line-by-line), and its dependencies
+            #   (utils.platforms, grabbed here through force).
+            #
+            # Also output a call to the function.
+            install_files[self.install_py_file] = tempfile.mkstemp()[1]
+            with open(install_files[self.install_py_file], "w") as fp:
+                for srcline in inspect.getsourcelines(install_from_package)[0]:
+                    fp.write(srcline)
+                fp.write("\n%s\n" % open(get_module_source_file("utils.platforms"), "r").read())
+                fp.write("\ninstall_from_package(\n")
+                fp.write("    zip_file='%s',\n" % UpdateCommand.inner_zip_filename)
+                fp.write("    signature_file='%s',\n" % UpdateCommand.signature_filename)
+                fp.write("    data_json_file='%s',\n" % InitCommand.data_json_filename)
+                fp.write("    install_files=%s,\n" % (files_dict.keys() + install_files.keys()))
+                fp.write(")\n")
+                fp.write("print 'Installation completed!'")
+
             return install_files
-        install_files = create_install_files()
+        install_files = create_install_files(files_dict=files_dict)
 
-        # Pre-zip prep #3:
-        #   Generate the INNER zip
-        def create_inner_zip_file():
-            zip_file = os.path.join(settings.MEDIA_ROOT, "zip", os.path.basename(create_default_archive_filename(options)))
-            options["file"] = zip_file
-            if settings.DEBUG or not os.path.exists(zip_file):  # always regenerate in debug mode
-                call_command("zip_kalite", **options)
-            if not os.path.exists(zip_file):
-                raise CommandError("Failed to create kalite zip file.")
-            return zip_file
-        inner_zip_file = create_inner_zip_file()
-
-        # Pre-zip prep #4:
-        #   Create a file with the inner zip file signature.
-        def create_signature_file(inner_zip_file):
-            signature_file = os.path.splitext(inner_zip_file)[0] + "_signature.txt"
-            logging.debug("Generating signature; saving to %s" % signature_file)
-            if settings.DEBUG or not os.path.exists(signature_file):  # always regenerate in debug mode
-                key = Device.get_own_device().get_key()
-                chunk_size = int(2E5)  #200kb chunks
-                signature = key.sign_large_file(inner_zip_file, chunk_size=chunk_size)
-                with open(signature_file, "w") as fp:
-                    fp.write("%d\n" % chunk_size)
-                    fp.write(signature)
-            return signature_file
-        signature_file = create_signature_file(inner_zip_file)
-
-        # Create the outer (wrapper) zip
-        files_dict = {
-            UpdateCommand.inner_zip_filename: inner_zip_file,
-            UpdateCommand.signature_filename: signature_file,
-            InitCommand.data_json_filename:   models_file,
-        }
+        # FINAL: Create the outer (wrapper) zip
         files_dict.update(install_files)
         system_specific_zipping(
             files_dict = files_dict,
