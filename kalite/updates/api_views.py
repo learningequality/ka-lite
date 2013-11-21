@@ -9,7 +9,7 @@ from annoying.functions import get_object_or_None
 
 from django.core.management import call_command
 from django.db.models import Q
-from django.http import HttpResponseServerError
+from django.http import HttpResponse, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404
 from django.utils import simplejson
 from django.utils.timezone import get_current_timezone, make_naive
@@ -189,7 +189,12 @@ def cancel_video_download(request):
 @require_admin
 @api_handle_error_with_json
 def start_languagepack_download(request):
-    return JsonResponse({'stub': True})
+    if request.POST:
+        data = json.loads(request.raw_post_data) # Django has some weird post processing into request.POST, so use raw_post_data
+        call_command_async('languagepackdownload',
+                           manage_py_dir=settings.PROJECT_PATH,
+                           language=data['lang']) # TODO: migrate to force_job once it can accept command_args
+        return JsonResponse({'success': True})
 
 
 def annotate_topic_tree(node, level=0, statusdict=None):
