@@ -64,7 +64,9 @@
     <script type="text/javascript" src="{% static 'js/jquery-ui/jquery-ui.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/update_languages.js' %}"></script>
     <script type="text/javascript">
-     $(setup("{% url get_server_info %}", "{{ central_server_host }}", "{{ default_language }}"))
+     $(function() {
+       setup("{% url get_server_info %}", "{{ central_server_host }}", "{{ default_language }}");
+     })
     </script>
 {% endblock headjs %}
 
