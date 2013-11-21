@@ -111,12 +111,12 @@ $(document).ready(function() {
             var titles_filtered = $.ui.autocomplete.filter(titles, request.term).slice(0, 15);
 
             // sort the titles again, since ordering was lost when we did autocomplete.filter
-            var node_types = JSON.parse(localStorage.getItem("node_types")).map(function(node_type) { return node_type.toLowerCase() });
+            var node_type_ordering = ["video", "exercise", "topic"] // custom ordering, with the last in the array appearing first
             titles_filtered.sort(function(title1, title2) {
                 var node1 = nodes[title1];
                 var node2 = nodes[title2];
                 // we use the ordering of types found in node_types
-                var compvalue = node_types.indexOf(node2.type) - node_types.indexOf(node1.type);
+                var compvalue = node_type_ordering.indexOf(node2.type) - node_type_ordering.indexOf(node1.type);
                 return compvalue;
             });
 
