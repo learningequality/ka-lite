@@ -79,9 +79,9 @@ def _process_log_to_dict(process_log):
     """
     Utility function to convert a process log to a dict
     """
-    
+
     if not process_log or not process_log.total_stages:
-        return {} 
+        return {}
     else:
         return {
             "process_id": process_log.id,
@@ -186,6 +186,10 @@ def cancel_video_download(request):
 
     return JsonResponse({})
 
+@require_admin
+@api_handle_error_with_json
+def start_languagepack_download(request):
+    return JsonResponse({'stub': True})
 
 
 def annotate_topic_tree(node, level=0, statusdict=None):

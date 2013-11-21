@@ -37,5 +37,35 @@ $(function() {
             }
         });
     }, 200);
-    // onload
+});
+
+//
+// Messy UI stuff incoming
+//
+
+// when we make a selection on the language pack select box, enable the 'Get Language' Button
+// TODO: change so that if they already have a valid selection, activate button anyway
+$(function() {
+    $("#language-packs").change(function(event) {
+        $("#download-subtitles").removeAttr("disabled");
+    });
+});
+
+// start download process once button is clicked
+$(function () {
+    $("#download-subtitles").click(function(event) {
+        var selected_lang = $("#language-packs").val();
+        // tell server to start languagepackdownload job
+        doRequest(start_languagepackdownload_url,
+                  { lang: selected_lang }).success(function(progress, status, req) {
+                      // insert updateStart call here
+                      show_message("success",
+                                   ["Download for language ", selected_lang, " started."].join(" "),
+                                  "id_progress_message");
+                  }).error(function(progress, status, req) {
+                      show_message("error",
+                                   "An error occurred while contacting the server to start the download process: " + [status, req].join(" - "),
+                                   "id_error_message");
+                  });
+    });
 });
