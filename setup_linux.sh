@@ -3,7 +3,7 @@ current_dir=`dirname "${BASH_SOURCE[0]}"`
 SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )/scripts"
 pyexec=`"$SCRIPT_DIR"/python.sh`
 
-"$pyexec" "$current_dir/kalite/manage.py" install
+"$pyexec" "$current_dir/kalite/manage.py" setup
 
 we_are_rpi=`"$SCRIPT_DIR/get_setting.sh" package_selected\(\"RPi\"\)`
 if [ $we_are_rpi = "True" ]; then

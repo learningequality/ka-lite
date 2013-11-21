@@ -1,6 +1,7 @@
 #!/bin/bash
 SCRIPT_DIR=`dirname "${BASH_SOURCE[0]}"`
 KALITE_DIR="$SCRIPT_DIR/../kalite"
+
 pyexec=`"$SCRIPT_DIR/python.sh"`
 port=`"$SCRIPT_DIR/get_setting.sh" PRODUCTION_PORT`
 
@@ -10,7 +11,7 @@ then
     echo "Closing server id:" `cat "$KALITE_DIR/runcherrypyserver.pid"`
     echo "----------------------------------------------------------------"
     echo
-    "$pyexec" "$KALITE_DIR/manage.py" runcherrypyserver stop pidfile=$KALITE_DIR/runcherrypyserver.pid
+    "$pyexec" "$KALITE_DIR/manage.py" runcherrypyserver stop pidfile="$KALITE_DIR/runcherrypyserver.pid"
     rc=$?
     if [[ $rc != 0 ]] ; then
         echo "Error when stopping the web server"
