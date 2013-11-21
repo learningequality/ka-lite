@@ -72,6 +72,7 @@ def install_from_package(data_json_file, signature_file, zip_file, dest_dir=None
     system_specific_unzipping(zip_file, dest_dir)
     sys.stdout.write("\n")
 
+    # Copy, so that if the installation fails, it can be restarted
     shutil.copy(data_json_file, os.path.join(dest_dir, "kalite/static/data/"))
 
     # Run the setup/start scripts
@@ -86,12 +87,14 @@ def install_from_package(data_json_file, signature_file, zip_file, dest_dir=None
         sys.exit(return_code)
 
     # move the data file to the expected location
-    os.mkdir(os.path.join(dest_dir, "kalite/static/zip"))
-    shutil.move(zip_file, os.path.join(dest_dir, "kalite/static/zip/"))
-    shutil.move(signature_file, os.path.join(dest_dir, "kalite/static/zip/"))
-    os.remove(data_json_file)  # was copied in earlier
+    static_zip_dir = os.path.join(dest_dir, "kalite/static/zip")
+    if not os.path.exists(static_zip_dir):
+        os.mkdir(static_zip_dir)
+    shutil.move(zip_file, static_zip_dir)
+    shutil.move(signature_file, static_zip_dir)
 
     # Remove the remaining install files
+    os.remove(data_json_file)  # was copied in earlier
     for f in install_files:
         fpath = os.path.join(src_dir, f)
         if not os.path.exists(fpath):
