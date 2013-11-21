@@ -37,7 +37,7 @@ from utils.general import get_module_source_file
 from utils.platforms import is_windows, system_script_extension, system_specific_zipping, system_specific_unzipping
 
 
-def install_from_package(install_json_file, signature_file, zip_file, dest_dir=None):
+def install_from_package(data_json_file, signature_file, zip_file, dest_dir=None):
     """
     NOTE: This docstring (below this line) will be dumped as a README file.
     Congratulations on downloading KA Lite!  These instructions will help you install KA Lite.
@@ -49,12 +49,12 @@ def install_from_package(install_json_file, signature_file, zip_file, dest_dir=N
 
     # Make the true paths
     src_dir = os.path.dirname(__file__) or os.getcwd()  # necessary on Windows
-    install_json_file = os.path.join(src_dir, install_json_file)
+    data_json_file = os.path.join(src_dir, data_json_file)
     signature_file = os.path.join(src_dir, signature_file)
     zip_file = os.path.join(src_dir, zip_file)
 
     # Validate the unpacked files
-    for file in [install_json_file, signature_file, zip_file]:
+    for file in [data_json_file, signature_file, zip_file]:
         if not os.path.exists(file):
             raise Exception("Could not find expected file from zip package: %s" % file)
 
@@ -72,13 +72,13 @@ def install_from_package(install_json_file, signature_file, zip_file, dest_dir=N
     system_specific_unzipping(zip_file, dest_dir)
     sys.stdout.write("\n")
 
-    shutil.copy(install_json_file, os.path.join(dest_dir, "kalite/static/data/"))
+    shutil.copy(data_json_file, os.path.join(dest_dir, "kalite/static/data/"))
 
-    # Run the install/start scripts
-    files = [f for f in glob.glob(os.path.join(dest_dir, "install*%s" % system_script_extension())) if not "from_zip" in f]
+    # Run the setup/start scripts
+    files = [f for f in glob.glob(os.path.join(dest_dir, "setup*%s" % system_script_extension())) if not "from_zip" in f]
     return_code = os.system('"%s"' % files[0])
     if return_code:
-        sys.stderr.write("Failed to install KA Lite: exit-code = %s" % return_code)
+        sys.stderr.write("Failed to set up KA Lite: exit-code = %s" % return_code)
         sys.exit(return_code)
     return_code = os.system('"%s"' % os.path.join(dest_dir, "start%s" % system_script_extension()))
     if return_code:
@@ -89,7 +89,7 @@ def install_from_package(install_json_file, signature_file, zip_file, dest_dir=N
     os.mkdir(os.path.join(dest_dir, "kalite/static/zip"))
     shutil.move(zip_file, os.path.join(dest_dir, "kalite/static/zip/"))
     shutil.move(signature_file, os.path.join(dest_dir, "kalite/static/zip/"))
-    os.remove(install_json_file)  # was copied in earlier
+    os.remove(data_json_file)  # was copied in earlier
 
 
 class Command(BaseCommand):
@@ -125,7 +125,7 @@ class Command(BaseCommand):
         ),
     )
     
-    install_py_file = "install_from_zip.py"
+    install_py_file = "install.py"
 
     def handle(self, *args, **options):
 
@@ -181,7 +181,7 @@ class Command(BaseCommand):
         def create_install_files():
             install_files = {}
 
-            # Create the install_from_package python script,
+            # Create the install python script,
             #   by outputting the install_from_package function (extracting here
             #   through inspection and dumping line-by-line), and its dependencies
             #   (utils.platforms, grabbed here through force).
@@ -195,7 +195,7 @@ class Command(BaseCommand):
                 fp.write("\ninstall_from_package(\n")
                 fp.write("    zip_file='%s',\n" % UpdateCommand.inner_zip_filename)
                 fp.write("    signature_file='%s',\n" % UpdateCommand.signature_filename)
-                fp.write("    install_json_file='%s',\n" % InitCommand.install_json_filename)
+                fp.write("    data_json_file='%s',\n" % InitCommand.data_json_filename)
                 fp.write(")\n")
                 fp.write("print 'Installation completed!'")
             
@@ -263,7 +263,7 @@ class Command(BaseCommand):
         files_dict = {
             UpdateCommand.inner_zip_filename: inner_zip_file,
             UpdateCommand.signature_filename: signature_file,
-            InitCommand.install_json_filename: models_file,
+            InitCommand.data_json_filename:   models_file,
         }
         files_dict.update(install_files)
         system_specific_zipping(

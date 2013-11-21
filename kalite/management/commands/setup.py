@@ -246,10 +246,10 @@ class Command(BaseCommand):
             call_command("initdevice", hostname, description, verbosity=options.get("verbosity"))
 
         else:
-            if os.path.exists(InitCommand.install_json_file):
+            if os.path.exists(InitCommand.data_json_file):
                 # This is a pathway to install zone-based data on a software upgrade.
-                sys.stdout.write("Loading zone data from '%s'\n" % InitCommand.install_json_file)
-                load_data_for_offline_install(in_file=InitCommand.install_json_file)
+                sys.stdout.write("Loading zone data from '%s'\n" % InitCommand.data_json_file)
+                load_data_for_offline_install(in_file=InitCommand.data_json_file)
 
             confirm_or_generate_zone()
 
