@@ -4,7 +4,7 @@ var timeout_length = 1000 * 20; // 20 seconds
 
 function isLocalStorageAvailable(item_index) {
     // Pass in no arg: test whether localStorage exists.
-    // Pass in an arg: test if that item is in localStorage 
+    // Pass in an arg: test if that item is in localStorage
     //    (returns false if item doesn't exist, or if localStorage is not available)
     try {
         return (item_index in localStorage || (!item_index && localStorage));
@@ -109,6 +109,16 @@ $(document).ready(function() {
 
             // Executed when we're requested to give a list of results
             var titles_filtered = $.ui.autocomplete.filter(titles, request.term).slice(0, 15);
+
+            // sort the titles again, since ordering was lost when we did autocomplete.filter
+            var node_type_ordering = ["video", "exercise", "topic"] // custom ordering, with the last in the array appearing first
+            titles_filtered.sort(function(title1, title2) {
+                var node1 = nodes[title1];
+                var node2 = nodes[title2];
+                // we use the ordering of types found in node_types
+                var compvalue = node_type_ordering.indexOf(node2.type) - node_type_ordering.indexOf(node1.type);
+                return compvalue;
+            });
 
             // From the filtered titles, produce labels (html) and values (for doing stuff)
             var results = [];
