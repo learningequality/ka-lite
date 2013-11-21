@@ -280,7 +280,7 @@ class Command(BaseCommand):
 
 
         # Run videoscan 
-        sys.stdout.write("Scanning for video files in the content directory (%s)\n" % settings.CONTENT_ROOOT)
+        sys.stdout.write("Scanning for video files in the content directory (%s)\n" % settings.CONTENT_ROOT)
         call_command("videoscan")
 
 

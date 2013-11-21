@@ -45,7 +45,7 @@ class UpdateProgressLog(ExtendedModel):
     def restart(self):
         self.process_percent = 0
         self.stage_percent = 0
-        self.current_stage = None
+        self.current_stage = None  # 1 to len(stages)
         self.start_time = datetime.datetime.now()
         self.end_time = None
         self.completed = False
@@ -67,7 +67,7 @@ class UpdateProgressLog(ExtendedModel):
             if self.stage_name:  # moving to the next stage
                 self.notes = None  # reset notes after each stage
                 self.current_stage += 1
-            else:
+            else: # just starting
                 self.current_stage = 1
             self.stage_name = stage_name
 

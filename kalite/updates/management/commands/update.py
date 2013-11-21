@@ -119,11 +119,11 @@ class Command(UpdatesStaticCommand):
                 self.update_via_zip(**options)
 
         except Exception as e:
-            if self.started():
+            if self.started() and not not self.ended():
                 self.cancel(notes=str(e))
             raise
 
-        assert not self.started(), "Subroutines should complete() if they start()!"
+        assert self.ended(), "Subroutines should complete() if they start()!"
 
 
     def update_via_git(self, branch=None, *args, **kwargs):

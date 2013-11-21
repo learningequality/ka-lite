@@ -21,6 +21,9 @@ class UpdatesCommand(BaseCommand):
             if notes and (not ignore_same or notes != self.progress_log.notes):
                 self.stdout.write("%s\n" % notes)
 
+    def ended(self):
+        return self.progress_log.end_time is not None
+
 
 class UpdatesDynamicCommand(UpdatesCommand):
     """
@@ -107,11 +110,12 @@ class UpdatesStaticCommand(UpdatesCommand):
 
     def next_stage(self, notes=None):
         assert self.progress_log.current_stage is not None, "Must call start function before next_stage()"
-        self.progress_log.update_stage(stage_name=self.stages[self.progress_log.current_stage + 1], stage_percent=0, notes=notes)
+        assert self.progress_log.current_stage < len(self.stages), "Must not be at the last stage already."
+        self.progress_log.update_stage(stage_name=self.stages[self.progress_log.current_stage], stage_percent=0, notes=notes)
         self.display_notes(notes)
 
     def update_stage(self, stage_percent, notes=None):
-        self.progress_log.update_stage(stage_name=self.stages[self.progress_log.current_stage], stage_percent=stage_percent, notes=notes)
+        self.progress_log.update_stage(stage_name=self.stages[self.progress_log.current_stage - 1], stage_percent=stage_percent, notes=notes)
         self.display_notes(notes)
 
     def cancel(self, notes=None):
