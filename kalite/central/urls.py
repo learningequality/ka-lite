@@ -67,9 +67,9 @@ urlpatterns += patterns('central.views',
 
     # The install wizard app has two views: both options available (here)
     #   or an "edition" selected (to get more info, or redirect to download, below)
-    url(r'^install/$', 'install_wizard', {}, 'install_wizard'),
-    url(r'^install/thankyou/$', 'download_thankyou', {}, 'download_thankyou'),
-    url(r'^install/(?P<edition>[\w-]+)/$', 'install_wizard', {}, 'install_wizard'),
+    url(r'^download/wizard/$', 'download_wizard', {}, 'download_wizard'),
+    url(r'^download/wizard/(?P<edition>[\w-]+)/$', 'download_wizard', {}, 'download_wizard'),
+    url(r'^download/thankyou/$', 'download_thankyou', {}, 'download_thankyou'),
 
     # Downloads: public
     url(r'^download/kalite/(?P<version>[^\/]+)/$', 'download_kalite_public', {}, 'download_kalite_public'),

@@ -4,9 +4,9 @@
 {% load my_filters %}
 {% load staticfiles %}
 
-{% block title %}{% trans "Installation" %}{% endblock %}
+{% block title %}{% trans "Download" %}{% endblock %}
 
-{% block install_active %}active{% endblock install_active %}
+{% block download_active %}active{% endblock download_active %}
 
 {% block headcss %}{{ block.super }}
 <style>
@@ -25,7 +25,7 @@
 
 {% comment "Form for downloading KALite is accessible only to authenticatd users" %}{% endcomment %}
 <div class="installation">
-    <h1>Installation</h1>
+    <h1>Downloads</h1> for Offline Installation / Upgrade
     <form name="test" method="post" class="basic-form">
     {% csrf_token %} 
 
@@ -63,12 +63,12 @@
             <tr>
                 <td>&nbsp;</td>
                 <td>
-                    <button class="button-install" type="button" onclick="javascript:window.location.href='single-server/'" title="Download and go!  Fully-featured KA Lite local installation.">
+                    <button class="button-download" type="button" onclick="javascript:window.location.href='single-server/'" title="Download and go!  Fully-featured KA Lite local installation.">
                         Download <br/>Single-server Edition
                     </button>
                 </td>
                 <td>
-                    <button class="button-install" type="button" onclick="javascript:window.location.href='multiple-server/'" title="Download KA Lite through your online user account, then use the zip file to install multiple machines.">
+                    <button class="button-download" type="button" onclick="javascript:window.location.href='multiple-server/'" title="Download KA Lite through your online user account, then use the zip file to install multiple machines.">
                         Login to get <br/>Multiple-servers Edition
                     </button>
                 </td>
@@ -109,7 +109,7 @@
             </div>
             <div class="row-fluid">
                 <div class="span12"> 
-                    <button class="button-install" type="submit" style="width:300px">
+                    <button class="button-download" type="submit" style="width:300px">
                         Download Multiple-servers Edition
                     </button>
                 </div>
@@ -118,7 +118,7 @@
     {% endif %}
 
         
-    </div><!-- installation -->
+    </div><!-- download  -->
 
 
     <div id="instructions" style="display:none">
