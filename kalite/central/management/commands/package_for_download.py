@@ -28,13 +28,13 @@ from django.core.management.base import BaseCommand, CommandError
 import settings
 import utils.platforms
 from kalite.management.commands.zip_kalite import create_default_archive_filename, Command as ZipCommand
-from kalite.management.commands.update import Command as UpdateCommand
 from securesync import engine
 from securesync.management.commands.initdevice import Command as InitCommand
 from securesync.models import Zone, DeviceZone, Device, ChainOfTrust, ZoneInvitation
 from settings import LOG as logging
 from utils.general import get_module_source_file
 from utils.platforms import is_windows, system_script_extension, system_specific_zipping, system_specific_unzipping
+from updates.management.commands.update import Command as UpdateCommand
 
 
 def install_from_package(data_json_file, signature_file, zip_file, dest_dir=None):
