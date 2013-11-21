@@ -58,7 +58,9 @@ $(function () {
         // tell server to start languagepackdownload job
         doRequest(start_languagepackdownload_url,
                   { lang: selected_lang }).success(function(progress, status, req) {
-                      // insert updateStart call here
+                      updatesStart("languagepackdownload",
+                                  2000, // 2 seconds
+                                  languagepack_callbacks);
                       show_message("success",
                                    ["Download for language ", selected_lang, " started."].join(" "),
                                   "id_progress_message");
@@ -69,3 +71,20 @@ $(function () {
                   });
     });
 });
+
+function languagepack_start_callback() {
+    return "stub";
+}
+
+function languagepack_check_callback(progress, resp) {
+    if (progress.stage_percent == 1.0) { // we're done!
+        show_message("success",
+                    "Language download complete!",
+                    "id_complete_message");
+    }
+}
+
+var languagepack_callbacks = {
+    start: languagepack_start_callback,
+    check: languagepack_check_callback
+}
