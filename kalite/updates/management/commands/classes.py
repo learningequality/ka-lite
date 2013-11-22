@@ -60,8 +60,9 @@ class UpdatesDynamicCommand(UpdatesCommand):
     def next_stage(self, stage_name=None, notes=None):
         assert self.started(), "Must call start() before moving to a next stage!"
         self.check_if_cancel_requested()
-        self.progress_log.update_stage(stage_name=self.stage_name, stage_percent=1., notes=notes)
-        self.display_notes(notes)
+        self.progress_log.update_stage(stage_name=self.stage_name, stage_percent=1., notes="Completed.")
+        self.stage_name = stage_name
+        self.display_notes(notes or "")
 
     def update_stage(self, stage_name, stage_percent, notes=None):
         self.check_if_cancel_requested()

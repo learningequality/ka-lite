@@ -35,7 +35,6 @@ def allow_jsonp(handler):
 
     """
     def wrapper_fn(request, *args, **kwargs):
-        
         response = handler(request, *args, **kwargs)
         
         # in case another type of response was returned for some reason, just pass it through
@@ -43,7 +42,6 @@ def allow_jsonp(handler):
             return response
 
         if "callback" in request.REQUEST:
-            
             if request.method == "GET":
                 # wrap the JSON data as a JSONP response
                 response = JsonpResponse(response.content, request.REQUEST["callback"])
