@@ -200,8 +200,9 @@ if CENTRAL_SERVER:
     CROWDIN_PROJECT_KEY     = getattr(local_settings, "CROWDIN_PROJECT_KEY", None)
 
 else:
+
     ROOT_URLCONF = "main.urls"
-    INSTALLED_APPS += ("updates",)
+    INSTALLED_APPS += ("i18n", "updates",)
     MIDDLEWARE_CLASSES += (
         "securesync.middleware.AuthFlags",  # this must come first in app-dependent middleware--many others depend on it.
         "securesync.middleware.FacilityCheck",
@@ -212,7 +213,6 @@ else:
     TEMPLATE_CONTEXT_PROCESSORS += ("i18n.custom_context_processors.languages",)
     MIDDLEWARE_CLASSES += ("i18n.middleware.SessionLanguage",)
     INSTALLED_APPS += ('i18n',)
-
 
 ########################
 # Debugging and testing

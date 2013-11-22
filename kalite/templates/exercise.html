@@ -46,6 +46,7 @@
     };
         
 </script>
+<script type="text/javascript" src="{% static 'js/i18n/'|add:request.language|add:'.js' %}"></script> 
 <script src="{% static 'js/khan-exercises/khan-exercise.js' %}"></script>
 <script>
     {# No user data is stored here; that is recovered via an AJAX call, so that this page is fully cacheable #}
