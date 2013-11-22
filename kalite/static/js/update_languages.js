@@ -14,12 +14,13 @@ $(function() {
         }).success(function(installedlangs) {
 	    languagePacks.forEach(function(langdata, langindex) {
                 var srtcount = langdata["subtitle_count"];
+                var percent_translated = langdata["percent_translated"];
                 var langcode = langdata["code"];
 
                 // if language already intalled, dont show in dropdown box
                 var installed_languages = installedlangs.map(function(elem) { return elem['code']; });
                 if ($.inArray(langcode, installed_languages) === -1) { // lang not yet installed
-                    if (srtcount > 0) {
+                    if (percent_translated > 0) {
                         $('#language-packs').append('<option value="' + langcode + '">'+ gettext(langdata['name']) + ' (' + langcode + ')</option>');
                     }
                 }
