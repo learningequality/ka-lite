@@ -1,8 +1,8 @@
 from django.utils import unittest
 
 from main.models import VideoLog, ExerciseLog
-from main.topicdata import ID2SLUG_MAP
 from securesync.models import Facility, FacilityUser
+from shared import i18n
 from shared.testing import KALiteTestCase
 
 class TestExerciseLogs(KALiteTestCase):
@@ -79,7 +79,7 @@ class TestVideoLogs(KALiteTestCase):
     NEW_POINTS = 22
     NEW_SECONDS_WATCHED = 5
     YOUTUBE_ID = "aNqG4ChKShI"
-    VIDEO_ID = ID2SLUG_MAP.get(YOUTUBE_ID, "dummy")
+    VIDEO_ID = i18n.get_video_id(YOUTUBE_ID) or "dummy"
 
     def setUp(self):
         super(TestVideoLogs, self).setUp()

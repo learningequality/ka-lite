@@ -7,9 +7,7 @@ from django.utils.translation import ugettext as _
 
 import settings
 from .classes import UpdatesDynamicCommand
-from main.topicdata import ID2SLUG_MAP
-from shared import caching
-from shared.jobs import force_job
+from shared import caching, i18n
 from shared.topic_tools import get_video_by_youtube_id
 from shared.videos import download_video, DownloadCancelled, URLNotFound
 from updates.models import VideoFile
@@ -128,7 +126,7 @@ class Command(UpdatesDynamicCommand):
             # This can take a long time, without any further update, so ... best to avoid.
             if options["auto_cache"] and caching.caching_is_enabled() and handled_youtube_ids:
                 self.update_stage(stage_name=self.video.youtube_id, stage_percent=0, notes=_("Generating all pages related to videos."))
-                caching.regenerate_all_pages_related_to_videos(video_ids=list(set([ID2SLUG_MAP.get(yid) for yid in handled_youtube_ids])))
+                caching.regenerate_all_pages_related_to_videos(video_ids=list(set([i18n.get_video_id.get(yid) for yid in handled_youtube_ids])))
 
             # Update
             self.complete(notes=_("Downloaded %(num_handled_videos) of %(num_total_videos) videos successfully.") % {

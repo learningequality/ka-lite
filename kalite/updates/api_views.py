@@ -212,7 +212,7 @@ def annotate_topic_tree(node, level=0, statusdict=None):
             "title": node["title"],
             "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
             "isFolder": True,
-            "key": node["slug"],
+            "key": node["id"],
             "children": children,
             "addClass": complete and "complete" or unstarted and "unstarted" or "partial",
             "expand": level < 1,

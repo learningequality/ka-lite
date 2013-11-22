@@ -17,7 +17,7 @@ from django.template.loader import render_to_string
 from django.utils.translation import ugettext as _
 
 from .api_views import get_data_form, stats_dict
-from main.topicdata import ID2SLUG_MAP, NODE_CACHE
+from main.topicdata import NODE_CACHE
 from main.models import VideoLog, ExerciseLog, UserLog
 from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device
 from securesync.views import facility_required
@@ -118,8 +118,8 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
     if not user:
         raise Http404
 
-    topic_slugs = [t["id"] for t in get_knowledgemap_topics()]
-    topics = [NODE_CACHE["Topic"][slug][0] for slug in topic_slugs]
+    topic_ids = [t["id"] for t in get_knowledgemap_topics()]
+    topics = [NODE_CACHE["Topic"][id][0] for id in topic_ids]
 
     user_id = user.id
     exercise_logs = list(ExerciseLog.objects \
@@ -144,10 +144,10 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
             logging.debug("Skip unknown exercise log for %s/%s" % (user_id, elog["exercise_id"]))
             continue
 
-        parent_slugs = [p["slug"] for n in NODE_CACHE["Exercise"][elog["exercise_id"]] for p in n["parents"]]
-        topic = set(parent_slugs).intersection(set(topic_slugs))
+        parent_ids = [topic["id"] for ex in NODE_CACHE["Exercise"][elog["exercise_id"]] for topic in ex["parents"]]
+        topic = set(parent_ids).intersection(set(topic_ids))
         if not topic:
-            logging.error("Could not find a topic for exercise %s (parents=%s)" % (elog["exercise_id"], parent_slugs))
+            logging.error("Could not find a topic for exercise %s (parents=%s)" % (elog["exercise_id"], parent_ids))
             continue
         topic = topic.pop()
         if not topic in topic_exercises:
@@ -162,10 +162,10 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
             logging.debug("Skip unknown video log for %s/%s" % (user_id, vlog["video_id"]))
             continue
 
-        parent_slugs = [p["slug"] for n in NODE_CACHE["Video"][vlog["video_id"]] for p in n["parents"]]
-        topic = set(parent_slugs).intersection(set(topic_slugs))
+        parent_ids = [topic["id"] for vid in NODE_CACHE["Video"][vlog["video_id"]] for topic in vid["parents"]]
+        topic = set(parent_ids).intersection(set(topic_ids))
         if not topic:
-            logging.error("Could not find a topic for video %s (parents=%s)" % (vlog["video_id"], parent_slugs))
+            logging.error("Could not find a topic for video %s (parents=%s)" % (vlog["video_id"], parent_ids))
             continue
         topic = topic.pop()
         if not topic in topic_videos:
@@ -174,20 +174,20 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
 
 
     # Now compute stats
-    for topic in topic_slugs:#set(topic_exercises.keys()).union(set(topic_videos.keys())):
-        n_exercises = len(topic_exercises.get(topic, []))
-        n_videos = len(topic_videos.get(topic, []))
+    for id in topic_ids:#set(topic_exercises.keys()).union(set(topic_videos.keys())):
+        n_exercises = len(topic_exercises.get(id, []))
+        n_videos = len(topic_videos.get(id, []))
 
-        exercises = exercises_by_topic.get(topic, [])
-        videos = videos_by_topic.get(topic, [])
+        exercises = exercises_by_topic.get(id, [])
+        videos = videos_by_topic.get(id, [])
         n_exercises_touched = len(exercises)
         n_videos_touched = len(videos)
 
-        exercise_sparklines[topic] = [el["completion_timestamp"] for el in filter(lambda n: n["complete"], exercises)]
+        exercise_sparklines[id] = [el["completion_timestamp"] for el in filter(lambda n: n["complete"], exercises)]
 
          # total streak currently a pct, but expressed in max 100; convert to
          # proportion (like other percentages here)
-        stats[topic] = {
+        stats[id] = {
             "ex:pct_mastery":      0 if not n_exercises_touched else sum([el["complete"] for el in exercises]) / float(n_exercises),
             "ex:pct_started":      0 if not n_exercises_touched else n_exercises_touched / float(n_exercises),
             "ex:average_points":   0 if not n_exercises_touched else sum([el["points"] for el in exercises]) / float(n_exercises_touched),
@@ -328,7 +328,7 @@ def tabular_view(request, facility, report_type="exercise"):
         context["videos"] = get_topic_videos(topic_id=topic_id)
 
         # More code, but much faster
-        video_ids = [vid["video_id"] for vid in context["videos"]]
+        video_ids = [vid["id"] for vid in context["videos"]]
         # Get students
         context["students"] = []
         vidlogs = VideoLog.objects \

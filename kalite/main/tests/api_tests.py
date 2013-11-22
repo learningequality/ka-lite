@@ -11,6 +11,7 @@ import settings
 from .base import MainTestCase
 from main.models import VideoLog, ExerciseLog
 from securesync.models import Facility, FacilityUser
+from shared import i18n
 from shared.testing import distributed_server_test, KALiteClient, KALiteTestCase
 
 
@@ -138,9 +139,9 @@ class TestSaveVideoLog(KALiteTestCase):
     NEW_POINTS = 32
     NEW_SECONDS_WATCHED = 15
     YOUTUBE_ID = "aNqG4ChKShI"
-    VIDEO_ID = ID2SLUG_MAP.get(YOUTUBE_ID, "dummy")
+    VIDEO_ID = i18n.get_video_id(YOUTUBE_ID) or "dummy"
     YOUTUBE_ID2 = "b22tMEc6Kko"
-    VIDEO_ID2 = ID2SLUG_MAP.get(YOUTUBE_ID2, "dummy2")
+    VIDEO_ID2 = i18n.get_video_id(YOUTUBE_ID2) or "dummy2"
     USERNAME = "testuser"
     PASSWORD = "dummies"
 

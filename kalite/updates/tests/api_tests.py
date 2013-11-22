@@ -38,7 +38,7 @@ class TestAdminApiCalls(MainTestCase):
         admin_user.save()
 
         # Choose, and create, a video
-        self.fake_video_file, self.youtube_id, self.video_id = self.create_random_video_file()
+        self.fake_video_file, self.video_id, self.youtube_id = self.create_random_video_file()
         self.assertEqual(VideoFile.objects.all().count(), 0, "Make sure there are no VideoFile objects, to start.")
 
         # login

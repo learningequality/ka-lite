@@ -5,7 +5,7 @@ from south.v2 import SchemaMigration
 from django.db import models
 
 from main.models import VideoLog
-from main.topicdata import ID2SLUG_MAP
+from shared import i18n
 
 
 class Migration(SchemaMigration):
@@ -13,7 +13,7 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         # Setting the video ID
         for vlog in VideoLog.objects.all():
-            vlog.video_id = ID2SLUG_MAP.get(vlog.youtube_id, vlog.youtube_id)
+            vlog.video_id = i18n.get_video_id(vlog.youtube_id) or vlog.youtube_id
 
 
     def backwards(self, orm):

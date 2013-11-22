@@ -16,6 +16,7 @@ import settings
 from securesync import engine
 from securesync.models import DeferredCountSyncedModel, SyncedModel, FacilityUser, Device
 from settings import LOG as logging
+from shared import i18n
 from utils.django_utils import ExtendedModel
 from utils.general import datediff, isnumeric
 
@@ -53,7 +54,7 @@ class VideoLog(DeferredCountSyncedModel):
         if not self.video_id:
             assert kwargs.get("imported", False), "video_id better be set by internal code."
             assert self.youtube_id, "If not video_id, you better have set youtube_id!"
-            self.video_id = ID2SLUG_MAP.get(self.youtube_id, self.youtube_id)  # for unknown videos, default to the youtube_id
+            self.video_id = i18n.get_video_id(self.youtube_id) or self.youtube_id  # for unknown videos, default to the youtube_id
         
         if not kwargs.get("imported", False):
             self.full_clean()

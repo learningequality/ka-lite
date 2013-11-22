@@ -6,8 +6,7 @@ from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
-from main.topicdata import ID2SLUG_MAP
-from shared import caching
+from shared import caching, i18n
 from shared.videos import download_video
 from updates.models import VideoFile
 from utils.general import break_into_chunks
@@ -33,7 +32,7 @@ class Command(BaseCommand):
         video_files_to_delete = VideoFile.objects.filter(download_in_progress=False, percent_complete__gt=0, percent_complete__lt=100)
         youtube_ids_to_delete = [d["youtube_id"] for d in video_files_to_delete.values("youtube_id")]
         video_files_to_delete.delete()
-        touched_video_ids += [ID2SLUG_MAP.get(yid) for yid in youtube_ids_to_delete]
+        touched_video_ids += [i18n.get_video_id(yid) for yid in youtube_ids_to_delete]
         if len(video_files_to_delete):
             self.stdout.write("Deleted %d VideoFile models (to mark them as not downloaded, since they were in a bad state)\n" % len(video_files_to_delete))
 
@@ -54,7 +53,7 @@ class Command(BaseCommand):
             # OK to do bulk_create; cache invalidation triggered via save download
             VideoFile.objects.bulk_create([VideoFile(youtube_id=id, percent_complete=0, download_in_progress=False) for id in video_ids_needing_model_creation])
             self.stdout.write("Created %d VideoFile models (to mark them as complete, since the files exist)\n" % len(video_ids_needing_model_creation))
-            touched_video_ids += [ID2SLUG_MAP.get(yid) for yid in video_ids_needing_model_creation]
+            touched_video_ids += [i18n.get_video_id.get(yid) for yid in video_ids_needing_model_creation]
 
         # Files that exist, are in the DB, but have percent_complete=0, download_in_progress=False
         #   These should be individually saved to be 100% complete, to trigger their availability (and cache invalidation)
@@ -76,7 +75,7 @@ class Command(BaseCommand):
             video_files_needing_model_deletion = VideoFile.objects.filter(youtube_id__in=chunk)
             count += video_files_needing_model_deletion.count()
             video_files_needing_model_deletion.delete()
-            touched_video_ids += [ID2SLUG_MAP.get(yid) for yid in chunk]
+            touched_video_ids += [i18n.get_video_id.get(yid) for yid in chunk]
         if count:
             self.stdout.write("Deleted %d VideoFile models (because the videos didn't exist in the filesystem)\n" % count)
 

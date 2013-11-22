@@ -413,7 +413,7 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
                     date_completed = datetime.datetime.now() - time_delta_completed
 
                 try:
-                    vlog = VideoLog.objects.get(user=facility_user, video_id=video["video_id"])
+                    vlog = VideoLog.objects.get(user=facility_user, video_id=video["id"])
                 except VideoLog.DoesNotExist:
 
                     logging.info("Creating video log: %-12s: %-45s (%4.1f%% watched, %d points)%s" % (
@@ -425,7 +425,7 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
                     ))
                     vlog = VideoLog(
                         user=facility_user,
-                        video_id=video["video_id"],
+                        video_id=video["id"],
                         youtube_id=video["youtube_id"],
                         total_seconds_watched=total_seconds_watched,
                         points=points,

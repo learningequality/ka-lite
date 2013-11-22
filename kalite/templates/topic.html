@@ -66,17 +66,17 @@
     <ol>
         {% for video in videos %}
         <li>
-            <span class="progress-circle" data-video-id="{{ video.video_id }}"></span>
+            <span class="progress-circle" data-video-id="{{ video.id }}"></span>
             {% comment %}Four scenarios:
             1. Offline, local video
             2. Offline, no local video
             3. Online, local video
             4. Online, no local video
             {% endcomment %}
-            <a href="v/{{ video.readable_id }}/" class="video-link client-online-only video-{% if not video.on_disk and not backup_vids_available %}un{% endif %}available">
+            <a href="v/{{ video.slug }}/" class="video-link client-online-only video-{% if not video.on_disk and not backup_vids_available %}un{% endif %}available">
                 {% trans video.title %}
             </a>
-            <a href="v/{{ video.readable_id }}/" class="video-link not-client-online-only video-{% if not video.on_disk %}un{% endif %}available">
+            <a href="v/{{ video.slug }}/" class="video-link not-client-online-only video-{% if not video.on_disk %}un{% endif %}available">
                 {% trans video.title %}
             </a>
         </li>

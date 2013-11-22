@@ -201,14 +201,14 @@ def compute_data(data_types, who, where):
     # Exercises: names (ids for ExerciseLog objects)
     # Videos: video_id (ids for VideoLog objects)
 
-    # This lambda partial creates a function to return all items with a particular path from the NODECACHE.
+    # This lambda partial creates a function to return all items with a particular path from the NODE_CACHE.
     search_fun_single_path = partial(lambda t, p: t["path"].startswith(p), p=tuple(where))
-    # This lambda partial creates a function to return all items with paths matching a list of paths from NODECACHE.
+    # This lambda partial creates a function to return all items with paths matching a list of paths from NODE_CACHE.
     search_fun_multi_path = partial(lambda ts, p: any([t["path"].startswith(p) for t in ts]),  p=tuple(where))
     # Functions that use the functions defined above to return topics, exercises, and videos based on paths.
-    query_topics = partial(lambda t, sf: t if t is not None else [t[0] for t in filter(sf, topicdata.NODE_CACHE['Topic'].values())], sf=search_fun_single_path)
-    query_exercises = partial(lambda e, sf: e if e is not None else [ex[0]["name"] for ex in filter(sf, topicdata.NODE_CACHE['Exercise'].values())], sf=search_fun_multi_path)
-    query_videos = partial(lambda v, sf: v if v is not None else [vid[0]["video_id"] for vid in filter(sf, topicdata.NODE_CACHE['Video'].values())], sf=search_fun_multi_path)
+    query_topics = partial(lambda t, sf: t if t is not None else [t[0]["id"] for t in filter(sf, topicdata.NODE_CACHE['Topic'].values())], sf=search_fun_single_path)
+    query_exercises = partial(lambda e, sf: e if e is not None else [ex[0]["id"] for ex in filter(sf, topicdata.NODE_CACHE['Exercise'].values())], sf=search_fun_multi_path)
+    query_videos = partial(lambda v, sf: v if v is not None else [vid[0]["id"] for vid in filter(sf, topicdata.NODE_CACHE['Video'].values())], sf=search_fun_multi_path)
 
     # No users, don't bother.
     if len(who) > 0:

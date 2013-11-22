@@ -138,7 +138,7 @@
                                                                     <img class="thumbimage" {% if video.thumbnail_url %}src="{{ video.thumbnail_url }}{% endif %}"/>
                                                                     <div class="thumbnail_label" style="margin-top: 68px; ">
                                                                         <div class="thumbnail_desc">
-                                                                            <span class="progress-circle" data-video-id="{{ video.video_id }}"></span>
+                                                                            <span class="progress-circle" data-video-id="{{ video.id }}"></span>
                                                                             <span>{% trans video.title %}</span>
                                                                         </div>
                                                                         <div class="thumbnail_teaser" style="height: 0px; ">{% if video.description %}{% trans video.description %}{% endif %}</div>
@@ -152,7 +152,7 @@
                                                     <li>
                                                         <a class="related-video related-video-inline" href="{{ video.path }}" title="{% trans video.title %}" target="_blank">
                                                             <span class="video-title">
-                                                                <span class="progress-circle" data-video-id="{{ video.video_id }}"></span>
+                                                                <span class="progress-circle" data-video-id="{{ video.id }}"></span>
                                                                 {% trans video.title %}
                                                             </span>
                                                         </a>
