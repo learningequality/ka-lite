@@ -25,7 +25,7 @@ class VideoScanTests(MainTestCase):
         super(VideoScanTests, self).setUp(*args, **kwargs)
 
         # Choose, and create, a video
-        self.fake_video_file, self.video_id = self.create_random_video_file()
+        self.fake_video_file, self.youtube_id, self.video_id = self.create_random_video_file()
         self.assertEqual(VideoFile.objects.all().count(), 0, "Make sure there are no VideoFile objects, to start.")
 
     def tearDown(self, *args, **kwargs):
@@ -42,7 +42,7 @@ class VideoScanTests(MainTestCase):
         # Call videoscan, and validate.
         out = call_command("videoscan")
         self.assertEqual(VideoFile.objects.all().count(), 1, "Make sure there is now one VideoFile object.")
-        self.assertEqual(VideoFile.objects.all()[0].youtube_id, self.video_id, "Make sure the video is the one we created.")
+        self.assertEqual(VideoFile.objects.all()[0].youtube_id, self.youtube_id, "Make sure the video is the one we created.")
         self.assertTrue(self.is_cache_empty(), "Check that cache is empty.")
 
 
@@ -53,7 +53,7 @@ class VideoScanTests(MainTestCase):
         # Call videoscan, and validate.
         out = call_command("videoscan", auto_cache=True)
         self.assertEqual(VideoFile.objects.all().count(), 1, "Make sure there is now one VideoFile object.")
-        self.assertEqual(VideoFile.objects.all()[0].youtube_id, self.video_id, "Make sure the video is the one we created.")
+        self.assertEqual(VideoFile.objects.all()[0].youtube_id, self.youtube_id, "Make sure the video is the one we created.")
         self.assertTrue(self.get_num_cache_entries() > 0, "Check that cache is not empty.")
         cached_paths = caching.get_video_page_paths(video_id=self.video_id)
         for path in cached_paths:

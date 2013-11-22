@@ -66,7 +66,7 @@
     <ol>
         {% for video in videos %}
         <li>
-            <span class="progress-circle" data-youtube-id="{{ video.youtube_id }}"></span>
+            <span class="progress-circle" data-video-id="{{ video.video_id }}"></span>
             {% comment %}Four scenarios:
             1. Offline, local video
             2. Offline, no local video

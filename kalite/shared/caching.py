@@ -37,7 +37,7 @@ def my_handler1(sender, **kwargs):
         # This event should only happen once, so don't bother checking if
         #   this is the field that changed.
         logging.debug("Invalidating cache on save for %s" % kwargs["instance"])
-        invalidate_all_pages_related_to_video(video_id=kwargs["instance"].youtube_id)
+        invalidate_all_pages_related_to_video(video_id=kwargs["instance"].video_id)
 
 @receiver(pre_delete, sender=VideoFile)
 def my_handler2(sender, **kwargs):
@@ -47,7 +47,7 @@ def my_handler2(sender, **kwargs):
     was_available = kwargs["instance"].percent_complete == 100
     if was_available:
         logging.debug("Invalidating cache on delete for %s" % kwargs["instance"])
-        invalidate_all_pages_related_to_video(video_id=kwargs["instance"].youtube_id)
+        invalidate_all_pages_related_to_video(video_id=kwargs["instance"].video_id)
 
 # Decorators
 
@@ -175,26 +175,18 @@ def expire_page(path=None, url_name=None, failure_ok=False):
         get_web_cache().delete(key)
 
 
-def get_video_page_paths(video_id=None, video_slug=None):
-    assert (video_id or video_slug) and not (video_id and video_slug), "One arg, not two" 
-
+def get_video_page_paths(video_id=None):
     try:
-        if not video_slug:
-            video_slug = topic_tools.get_id2slug_map()[video_id]
-        
-        return [n["path"] for n in topic_tools.get_node_cache("Video")[video_slug]]
+        return [n["path"] for n in topic_tools.get_node_cache("Video")[video_id]]
     except:
         return []
 
 
-def get_exercise_page_paths(video_id=None, video_slug=None):
-    assert (video_id or video_slug) and not (video_id and video_slug), "One arg, not two" 
+def get_exercise_page_paths(video_id=None):
 
     try:
-        if not video_slug:
-            video_slug = topic_tools.get_id2slug_map()[video_id]
         exercise_paths = set()
-        for exercise in topic_tools.get_related_exercises(videos=topic_tools.get_node_cache("Video")[video_slug]):
+        for exercise in topic_tools.get_related_exercises(videos=topic_tools.get_node_cache("Video")[video_id]):
             exercise_paths = exercise_paths.union(set([exercise["path"]]))
         return list(exercise_paths)
     except Exception as e:
@@ -202,15 +194,14 @@ def get_exercise_page_paths(video_id=None, video_slug=None):
         return []
 
 
-def invalidate_all_pages_related_to_video(video_id=None, video_slug=None):
+def invalidate_all_pages_related_to_video(video_id=None):
     """Given a video file, recurse backwards up the hierarchy and invalidate all pages.
     Also include video pages and related exercise pages.
     """
-    assert (video_id or video_slug) and not (video_id and video_slug), "One arg, not two" 
 
     # Expire all video files and related paths
-    video_paths = get_video_page_paths(video_id=video_id, video_slug=video_slug)
-    exercise_paths = get_exercise_page_paths(video_id=video_id, video_slug=video_slug)
+    video_paths = get_video_page_paths(video_id=video_id)
+    exercise_paths = get_exercise_page_paths(video_id=video_id)
     leaf_paths = set(video_paths).union(set(exercise_paths))
 
     for leaf_path in leaf_paths:

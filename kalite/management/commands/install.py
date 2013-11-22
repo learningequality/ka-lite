@@ -224,10 +224,10 @@ class Command(BaseCommand):
 
         # Move database file (if exists)
         if install_clean and os.path.exists(database_file):
-                # This is an overwrite install; destroy the old db
-                dest_file = tempfile.mkstemp()[1]
-                sys.stdout.write("(Re)moving database file to temp location, starting clean install.  Recovery location: %s\n" % dest_file)
-                shutil.move(database_file, dest_file)
+            # This is an overwrite install; destroy the old db
+            dest_file = tempfile.mkstemp()[1]
+            sys.stdout.write("(Re)moving database file to temp location, starting clean install.  Recovery location: %s\n" % dest_file)
+            shutil.move(database_file, dest_file)
 
         # Got this far, it's OK to stop the server.
         import serverstop

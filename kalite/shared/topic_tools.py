@@ -132,8 +132,8 @@ def get_live_topics(topic):
     return filter(lambda node: node["kind"] == "Topic" and not node["hide"] and "Video" in node["contains"], topic["children"])
 
 
-def get_downloaded_youtube_ids(videos_path=settings.CONTENT_ROOT):
-    return [path.split("/")[-1].split(".")[0] for path in glob.glob(videos_path + "*.mp4")]
+def get_downloaded_youtube_ids(videos_path=settings.CONTENT_ROOT, format="mp4"):
+    return [path.split("/")[-1].split(".")[0] for path in glob.glob(os.path.join(videos_path, "*.%s" % format))]
 
 
 def get_topic_by_path(path, root_node=None):

@@ -84,8 +84,8 @@ $(function() {
                 debugLevel: 0,
                 onSelect: function(select, node) {
 
-                    var newVideoCount = getSelectedIncompleteVideoIDs().length;
-                    var oldVideoCount = getSelectedStartedVideoIDs().length;
+                    var newVideoCount = getSelectedIncompleteYoutubeIDs().length;
+                    var oldVideoCount = getSelectedStartedYoutubeIDs().length;
 
                     $("#download-videos").hide();
                     $("#delete-videos").hide();
@@ -120,10 +120,10 @@ $(function() {
     $("#download-videos").click(function() {
         // Prep
         // Get all videos to download
-        var video_ids = getSelectedIncompleteVideoIDs();
+        var youtube_ids = getSelectedIncompleteYoutubeIDs();
 
         // Do the request
-        doRequest(URL_START_VIDEO_DOWNLOADS, {youtube_ids: video_ids})
+        doRequest(URL_START_VIDEO_DOWNLOADS, {youtube_ids: youtube_ids})
             .success(function() {
                 handleSuccessAPI("id_video_download");
                 updatesStart("videodownload", 5000, video_callbacks)
@@ -139,7 +139,7 @@ $(function() {
         $("#download-videos").attr("disabled", "disabled");
 
         // Send event.  NOTE: DO NOT WRAP STRINGS ON THIS CALL!!
-        ga_track("send", "event", "update", "click-download-videos", "Download Videos", video_ids.length);
+        ga_track("send", "event", "update", "click-download-videos", "Download Videos", youtube_ids.length);
     });
 
     // Delete existing videos
@@ -149,13 +149,13 @@ $(function() {
 
         // Prep
         // Get all videos marked for download
-        var video_ids = getSelectedStartedVideoIDs();
+        var youtube_ids = getSelectedStartedYoutubeIDs();
 
         // Do the request
-        doRequest(URL_DELETE_VIDEOS, {youtube_ids: video_ids})
+        doRequest(URL_DELETE_VIDEOS, {youtube_ids: youtube_ids})
             .success(function() {
                 handleSuccessAPI("id_video_download");
-                $.each(video_ids, function(ind, id) {
+                $.each(youtube_ids, function(ind, id) {
                     setNodeClass(id, "unstarted");
                 });
             })
@@ -168,7 +168,7 @@ $(function() {
         unselectAllNodes();
 
         // Send event.  NOTE: DO NOT WRAP STRINGS ON THIS CALL!!
-        ga_track("send", "event", "update", "click-delete-videos", "Delete Videos", video_ids.length);
+        ga_track("send", "event", "update", "click-delete-videos", "Delete Videos", youtube_ids.length);
     });
 
     // Cancel current downloads
@@ -240,20 +240,20 @@ function getSelectedStartedVideos() {
     }));
 }
 
-function getSelectedIncompleteVideoIDs() {
+function getSelectedIncompleteYoutubeIDs() {
     var videos = getSelectedIncompleteVideos();
-    var video_ids = _.uniq($.map(videos, function(node) {
+    var youtube_ids = _.uniq($.map(videos, function(node) {
         return node.data.key;
     }));
-    return video_ids;
+    return youtube_ids;
 }
 
-function getSelectedStartedVideoIDs() {
+function getSelectedStartedYoutubeIDs() {
     var videos = getSelectedStartedVideos();
-    var video_ids = _.uniq($.map(videos, function(node) {
+    var youtube_ids = _.uniq($.map(videos, function(node) {
         return node.data.key;
     }));
-    return video_ids;
+    return youtube_ids;
 }
 
 function withNodes(nodeKey, callback, currentNode) {

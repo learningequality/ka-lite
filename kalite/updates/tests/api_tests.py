@@ -38,7 +38,7 @@ class TestAdminApiCalls(MainTestCase):
         admin_user.save()
 
         # Choose, and create, a video
-        self.fake_video_file, self.video_id = self.create_random_video_file()
+        self.fake_video_file, self.youtube_id, self.video_id = self.create_random_video_file()
         self.assertEqual(VideoFile.objects.all().count(), 0, "Make sure there are no VideoFile objects, to start.")
 
         # login
@@ -63,7 +63,7 @@ class TestAdminApiCalls(MainTestCase):
         self.assertFalse(os.path.exists(self.fake_video_file), "Video file should not exist on disk.")
 
         # Delete a video file, make sure
-        result = self.client.delete_videos(youtube_ids=[self.video_id])
+        result = self.client.delete_videos(youtube_ids=[self.youtube_id])
         self.assertEqual(result.status_code, 200, "An error (%d) was thrown while deleting the video through the API: %s" % (result.status_code, result.content))
         self.assertEqual(VideoFile.objects.all().count(), 0, "Should have zero objects; found %d" % VideoFile.objects.all().count())
         self.assertFalse(os.path.exists(self.fake_video_file), "Video file should not exist on disk.")
@@ -72,13 +72,13 @@ class TestAdminApiCalls(MainTestCase):
         """
         Delete a video through the API, when only the videofile object exists
         """
-        VideoFile(youtube_id=self.video_id).save()
+        VideoFile(youtube_id=self.youtube_id).save()
         os.remove(self.fake_video_file)
         self.assertEqual(VideoFile.objects.all().count(), 1, "Should have 1 object; found %d" % VideoFile.objects.all().count())
         self.assertFalse(os.path.exists(self.fake_video_file), "Video file should not exist on disk.")
 
         # Delete a video file, make sure
-        result = self.client.delete_videos(youtube_ids=[self.video_id])
+        result = self.client.delete_videos(youtube_ids=[self.youtube_id])
         self.assertEqual(result.status_code, 200, "An error (%d) was thrown while deleting the video through the API: %s" % (result.status_code, result.content))
         self.assertEqual(VideoFile.objects.all().count(), 0, "Should have 0 objects; found %d" % VideoFile.objects.all().count())
         self.assertFalse(os.path.exists(self.fake_video_file), "Video file should not exist on disk.")
@@ -92,7 +92,7 @@ class TestAdminApiCalls(MainTestCase):
         self.assertTrue(os.path.exists(self.fake_video_file), "Video file should exist on disk.")
 
         # Delete a video file, make sure
-        result = self.client.delete_videos(youtube_ids=[self.video_id])
+        result = self.client.delete_videos(youtube_ids=[self.youtube_id])
         self.assertEqual(result.status_code, 200, "An error (%d) was thrown while deleting the video through the API: %s" % (result.status_code, result.content))
         self.assertEqual(VideoFile.objects.all().count(), 0, "Should have zero objects; found %d" % VideoFile.objects.all().count())
         self.assertFalse(os.path.exists(self.fake_video_file), "Video file should not exist on disk.")

@@ -154,8 +154,8 @@ def query_logs(users, items, logtype, logdict):
         all_logs = ExerciseLog.objects.filter(user__in=users, exercise_id__in=items).values(
                         'user', 'complete', 'exercise_id', 'attempts', 'points', 'struggling', 'completion_timestamp', 'streak_progress').order_by('completion_timestamp')
     elif logtype == "video":
-        all_logs = VideoLog.objects.filter(user__in=users, youtube_id__in=items).values(
-            'user', 'complete', 'youtube_id', 'total_seconds_watched', 'completion_timestamp', 'points').order_by('completion_timestamp')
+        all_logs = VideoLog.objects.filter(user__in=users, video_id__in=items).values(
+            'user', 'complete', 'video_id', 'total_seconds_watched', 'completion_timestamp', 'points').order_by('completion_timestamp')
     elif logtype == "activity" and UserLog.is_enabled():
         all_logs = UserLog.objects.filter(user__in=users).values(
             'user', 'last_active_datetime', 'total_seconds').order_by('last_active_datetime')
@@ -199,7 +199,7 @@ def compute_data(data_types, who, where):
     #   Only do them if they haven't been done yet (tell this by passing in a value to the lambda function)
     # Topics: topics.
     # Exercises: names (ids for ExerciseLog objects)
-    # Videos: youtube_id (ids for VideoLog objects)
+    # Videos: video_id (ids for VideoLog objects)
 
     # This lambda partial creates a function to return all items with a particular path from the NODECACHE.
     search_fun_single_path = partial(lambda t, p: t["path"].startswith(p), p=tuple(where))
@@ -208,7 +208,7 @@ def compute_data(data_types, who, where):
     # Functions that use the functions defined above to return topics, exercises, and videos based on paths.
     query_topics = partial(lambda t, sf: t if t is not None else [t[0] for t in filter(sf, topicdata.NODE_CACHE['Topic'].values())], sf=search_fun_single_path)
     query_exercises = partial(lambda e, sf: e if e is not None else [ex[0]["name"] for ex in filter(sf, topicdata.NODE_CACHE['Exercise'].values())], sf=search_fun_multi_path)
-    query_videos = partial(lambda v, sf: v if v is not None else [vid[0]["youtube_id"] for vid in filter(sf, topicdata.NODE_CACHE['Video'].values())], sf=search_fun_multi_path)
+    query_videos = partial(lambda v, sf: v if v is not None else [vid[0]["video_id"] for vid in filter(sf, topicdata.NODE_CACHE['Video'].values())], sf=search_fun_multi_path)
 
     # No users, don't bother.
     if len(who) > 0:
@@ -256,7 +256,7 @@ def compute_data(data_types, who, where):
             elif data_type.startswith("vid:") and data_type[4:] in [f.name for f in VideoLog._meta.fields]:
 
                 for user in data.keys():
-                    data[user][data_type] = OrderedDict([(v['youtube_id'], v[data_type[4:]]) for v in vid_logs[user]])
+                    data[user][data_type] = OrderedDict([(v['video_id'], v[data_type[4:]]) for v in vid_logs[user]])
 
             # Just querying out data directly: Exercise
             elif data_type.startswith("ex:") and data_type[3:] in [f.name for f in ExerciseLog._meta.fields]:

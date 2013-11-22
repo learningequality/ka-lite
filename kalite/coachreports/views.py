@@ -127,7 +127,7 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
         .values("exercise_id", "complete", "points", "attempts", "streak_progress", "struggling", "completion_timestamp"))
     video_logs = list(VideoLog.objects \
         .filter(user=user) \
-        .values("youtube_id", "complete", "total_seconds_watched", "points", "completion_timestamp"))
+        .values("video_id", "complete", "total_seconds_watched", "points", "completion_timestamp"))
 
     exercise_sparklines = dict()
     stats = dict()
@@ -156,16 +156,16 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
 
     # Categorize every video log into a "midlevel" exercise.
     for vlog in video_logs:
-        if not vlog["youtube_id"] in ID2SLUG_MAP:
+        if not vlog["video_id"] in NODE_CACHE["Video"]:
             # Sometimes KA updates their topic tree and eliminates videos;
             #   we also want to support 3rd party switching of trees arbitrarily.
-            logging.debug("Skip unknown video log for %s/%s" % (user_id, vlog["youtube_id"]))
+            logging.debug("Skip unknown video log for %s/%s" % (user_id, vlog["video_id"]))
             continue
 
-        parent_slugs = [p["slug"] for n in NODE_CACHE["Video"][ID2SLUG_MAP[vlog["youtube_id"]]] for p in n["parents"]]
+        parent_slugs = [p["slug"] for n in NODE_CACHE["Video"][vlog["video_id"]] for p in n["parents"]]
         topic = set(parent_slugs).intersection(set(topic_slugs))
         if not topic:
-            logging.error("Could not find a topic for video %s (parents=%s)" % (vlog["youtube_id"], parent_slugs))
+            logging.error("Could not find a topic for video %s (parents=%s)" % (vlog["video_id"], parent_slugs))
             continue
         topic = topic.pop()
         if not topic in topic_videos:
@@ -328,20 +328,20 @@ def tabular_view(request, facility, report_type="exercise"):
         context["videos"] = get_topic_videos(topic_id=topic_id)
 
         # More code, but much faster
-        video_ids = [vid["youtube_id"] for vid in context["videos"]]
+        video_ids = [vid["video_id"] for vid in context["videos"]]
         # Get students
         context["students"] = []
         vidlogs = VideoLog.objects \
-            .filter(user__in=users, youtube_id__in=video_ids) \
+            .filter(user__in=users, video_id__in=video_ids) \
             .order_by(*["user__%s" % field for field in student_ordering])\
-            .values("user__id", "complete", "youtube_id", "total_seconds_watched", "points")
+            .values("user__id", "complete", "video_id", "total_seconds_watched", "points")
         vidlogs = list(vidlogs)  # force the query to be executed now
 
         vidlog_idx = 0
         for user in users:
             log_table = {}
             while vidlog_idx < len(vidlogs) and vidlogs[vidlog_idx]["user__id"] == user.id:
-                log_table[vidlogs[vidlog_idx]["youtube_id"]] = vidlogs[vidlog_idx]
+                log_table[vidlogs[vidlog_idx]["video_id"]] = vidlogs[vidlog_idx]
                 vidlog_idx += 1
 
             context["students"].append({  # this could be DRYer

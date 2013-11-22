@@ -24,23 +24,22 @@ class CachingTest(KALiteTestCase):
     def test_cache_invalidation(self):
         """Create the cache item, then invalidate it and show that it is deleted."""
         
-        # Get a random youtube id
+        # Get a random video id
         n_videos = len(topicdata.NODE_CACHE['Video'])
-        video_slug = topicdata.NODE_CACHE['Video'].keys()[10]#random.choice(topicdata.NODE_CACHE['Video'].keys())
-        sys.stdout.write("Testing on video_slug = %s\n" % video_slug)
-        youtube_id = topicdata.NODE_CACHE['Video'][video_slug][0]['youtube_id']
-        video_path = topicdata.NODE_CACHE['Video'][video_slug][0]['path']
+        video_id = topicdata.NODE_CACHE['Video'].keys()[10]#random.choice(topicdata.NODE_CACHE['Video'].keys())
+        sys.stdout.write("Testing on video_id = %s\n" % video_id)
+        video_path = topicdata.NODE_CACHE['Video'][video_id][0]['path']
 
         # Clean the cache for this item
         caching.expire_page(path=video_path, failure_ok=True)
         
         # Create the cache item, and check it
         self.assertTrue(not caching.has_cache_key(path=video_path), "expect: no cache key after expiring the page")
-        caching.regenerate_all_pages_related_to_videos(video_ids=[youtube_id])
+        caching.regenerate_all_pages_related_to_videos(video_ids=[video_id])
         self.assertTrue(caching.has_cache_key(path=video_path), "expect: Cache key exists after Django Client get")
 
         # Invalidate the cache item, and check it
-        caching.invalidate_all_pages_related_to_video(video_id=youtube_id) # test the convenience function
+        caching.invalidate_all_pages_related_to_video(video_id=video_id) # test the convenience function
         self.assertTrue(not caching.has_cache_key(path=video_path), "expect: no cache key after expiring the page")
 
     
@@ -49,12 +48,11 @@ class CachingTest(KALiteTestCase):
         """Show that caching is accessible across all clients 
         (i.e. that different clients don't generate different cache keys)"""
         
-        # Get a random youtube id
+        # Get a random video id
         n_videos = len(topicdata.NODE_CACHE['Video'])
-        video_slug = random.choice(topicdata.NODE_CACHE['Video'].keys())
-        sys.stdout.write("Testing on video_slug = %s\n" % video_slug)
-        youtube_id = topicdata.NODE_CACHE['Video'][video_slug][0]['youtube_id']
-        video_path = topicdata.NODE_CACHE['Video'][video_slug][0]['path']
+        video_id = random.choice(topicdata.NODE_CACHE['Video'].keys())
+        sys.stdout.write("Testing on video_id = %s\n" % video_id)
+        video_path = topicdata.NODE_CACHE['Video'][video_id][0]['path']
 
         # Clean the cache for this item
         caching.expire_page(path=video_path, failure_ok=True)

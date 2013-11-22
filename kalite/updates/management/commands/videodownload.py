@@ -7,6 +7,7 @@ from django.utils.translation import ugettext as _
 
 import settings
 from .classes import UpdatesDynamicCommand
+from main.topicdata import ID2SLUG_MAP
 from shared import caching
 from shared.jobs import force_job
 from shared.topic_tools import get_video_by_youtube_id
@@ -79,8 +80,8 @@ class Command(UpdatesDynamicCommand):
     def handle(self, *args, **options):
         self.video = None
 
-        handled_video_ids = []  # stored to deal with caching
-        failed_video_ids = []  # stored to avoid requerying failures.
+        handled_youtube_ids = []  # stored to deal with caching
+        failed_youtube_ids = []  # stored to avoid requerying failures.
 
         set_process_priority.lowest(logging=settings.LOG)
         
@@ -89,7 +90,7 @@ class Command(UpdatesDynamicCommand):
                 # Grab any video that hasn't been tried yet
                 videos = VideoFile.objects \
                     .filter(flagged_for_download=True, download_in_progress=False) \
-                    .exclude(youtube_id__in=failed_video_ids)
+                    .exclude(youtube_id__in=failed_youtube_ids)
                 video_count = videos.count()
                 if video_count == 0:
                     self.stdout.write("Nothing to download; exiting.\n")
@@ -104,14 +105,14 @@ class Command(UpdatesDynamicCommand):
                 self.stdout.write("Downloading video '%s'...\n" % video.youtube_id)
 
                 # Update the progress logging
-                self.set_stages(num_stages=video_count + len(handled_video_ids) + len(failed_video_ids) + int(options["auto_cache"]))
+                self.set_stages(num_stages=video_count + len(handled_youtube_ids) + len(failed_youtube_ids) + int(options["auto_cache"]))
                 if not self.started():
                     self.start(stage_name=video.youtube_id)
 
                 # Initiate the download process
                 try:
                     download_video(video.youtube_id, callback=partial(self.download_progress_callback, video))
-                    handled_video_ids.append(video.youtube_id)
+                    handled_youtube_ids.append(video.youtube_id)
                     self.stdout.write("Download is complete!\n")
                 except Exception as e:
                     # On error, report the error, mark the video as not downloaded,
@@ -121,18 +122,18 @@ class Command(UpdatesDynamicCommand):
                     video.flagged_for_download = not isinstance(e, URLNotFound)  # URLNotFound means, we won't try again
                     video.save()
                     # Rather than getting stuck on one video, continue to the next video.
-                    failed_video_ids.append(video.youtube_id)
+                    failed_youtube_ids.append(video.youtube_id)
                     continue
 
             # This can take a long time, without any further update, so ... best to avoid.
-            if options["auto_cache"] and caching.caching_is_enabled() and handled_video_ids:
+            if options["auto_cache"] and caching.caching_is_enabled() and handled_youtube_ids:
                 self.update_stage(stage_name=self.video.youtube_id, stage_percent=0, notes=_("Generating all pages related to videos."))
-                caching.regenerate_all_pages_related_to_videos(video_ids=handled_video_ids)
+                caching.regenerate_all_pages_related_to_videos(video_ids=list(set([ID2SLUG_MAP.get(yid) for yid in handled_youtube_ids])))
 
             # Update
             self.complete(notes=_("Downloaded %(num_handled_videos) of %(num_total_videos) videos successfully.") % {
-                "num_handled_videos": len(handled_video_ids),
-                "num_total_videos": len(handled_video_ids) + len(failed_video_ids),
+                "num_handled_videos": len(handled_youtube_ids),
+                "num_total_videos": len(handled_youtube_ids) + len(failed_youtube_ids),
             })
 
         except Exception as e:
