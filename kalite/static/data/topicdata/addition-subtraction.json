@@ -16,7 +16,8 @@
     "kind": "Exercise", 
     "name": "addition_1", 
     "seconds_per_fast_problem": 4.0, 
-    "prerequisites": []
+    "prerequisites": [], 
+    "exercise_id": "addition_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -37,7 +38,8 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "addition_1"
-    ]
+    ], 
+    "exercise_id": "subtraction_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -58,7 +60,8 @@
     "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "addition_1"
-    ]
+    ], 
+    "exercise_id": "addition_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -79,7 +82,8 @@
     "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "subtraction_1"
-    ]
+    ], 
+    "exercise_id": "subtraction_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -102,7 +106,8 @@
     "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "addition_2"
-    ]
+    ], 
+    "exercise_id": "addition_3"
   }, 
   {
     "related_video_readable_ids": [
@@ -123,7 +128,8 @@
     "seconds_per_fast_problem": 20.0, 
     "prerequisites": [
       "understanding-place-value-1"
-    ]
+    ], 
+    "exercise_id": "addition_4"
   }, 
   {
     "related_video_readable_ids": [
@@ -149,7 +155,8 @@
     "seconds_per_fast_problem": 15.0, 
     "prerequisites": [
       "subtraction_2"
-    ]
+    ], 
+    "exercise_id": "subtraction_3"
   }, 
   {
     "related_video_readable_ids": [
@@ -171,7 +178,8 @@
     "seconds_per_fast_problem": 18.0, 
     "prerequisites": [
       "understanding-place-value-1"
-    ]
+    ], 
+    "exercise_id": "subtraction_4"
   }, 
   {
     "related_video_readable_ids": [
@@ -193,6 +201,7 @@
     "prerequisites": [
       "addition_2", 
       "subtraction_2"
-    ]
+    ], 
+    "exercise_id": "arithmetic_word_problems_1"
   }
 ]

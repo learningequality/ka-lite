@@ -20,7 +20,8 @@
     "seconds_per_fast_problem": 16.0, 
     "prerequisites": [
       "sample-spaces-for-compound-events"
-    ]
+    ], 
+    "exercise_id": "dice_probability"
   }, 
   {
     "related_video_readable_ids": [
@@ -45,7 +46,8 @@
     "seconds_per_fast_problem": 11.75, 
     "prerequisites": [
       "finding-probability"
-    ]
+    ], 
+    "exercise_id": "probability_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -71,7 +73,8 @@
     "seconds_per_fast_problem": 15.0, 
     "prerequisites": [
       "compound-events"
-    ]
+    ], 
+    "exercise_id": "independent_probability"
   }, 
   {
     "related_video_readable_ids": [
@@ -96,7 +99,8 @@
     "seconds_per_fast_problem": 23.0, 
     "prerequisites": [
       "probability_1"
-    ]
+    ], 
+    "exercise_id": "dependent_probability"
   }, 
   {
     "related_video_readable_ids": [
@@ -121,7 +125,8 @@
     "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "dependent_probability"
-    ]
+    ], 
+    "exercise_id": "basic_set_notation"
   }, 
   {
     "related_video_readable_ids": [
@@ -143,7 +148,8 @@
     "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "dice_probability"
-    ]
+    ], 
+    "exercise_id": "counting_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -166,7 +172,8 @@
     "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "counting_2"
-    ]
+    ], 
+    "exercise_id": "permutations_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -188,7 +195,8 @@
     "seconds_per_fast_problem": 14.0, 
     "prerequisites": [
       "permutations_1"
-    ]
+    ], 
+    "exercise_id": "combinations_1"
   }, 
   {
     "related_video_readable_ids": [], 
@@ -207,7 +215,8 @@
     "seconds_per_fast_problem": 16.0, 
     "prerequisites": [
       "combinations_1"
-    ]
+    ], 
+    "exercise_id": "permutations_and_combinations_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -237,7 +246,8 @@
     "seconds_per_fast_problem": 37.0, 
     "prerequisites": [
       "permutations_and_combinations_2"
-    ]
+    ], 
+    "exercise_id": "probability_with_perm_comb"
   }, 
   {
     "related_video_readable_ids": [
@@ -258,7 +268,8 @@
     "seconds_per_fast_problem": 20.0, 
     "prerequisites": [
       "independent_probability"
-    ]
+    ], 
+    "exercise_id": "expected_value"
   }, 
   {
     "related_video_readable_ids": [
@@ -280,7 +291,8 @@
     "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "division_3"
-    ]
+    ], 
+    "exercise_id": "mean_median_and_mode"
   }, 
   {
     "related_video_readable_ids": [
@@ -303,7 +315,8 @@
     "seconds_per_fast_problem": 43.0, 
     "prerequisites": [
       "mean_median_and_mode"
-    ]
+    ], 
+    "exercise_id": "exploring_mean_and_median"
   }, 
   {
     "related_video_readable_ids": [
@@ -325,7 +338,8 @@
     "seconds_per_fast_problem": 29.0, 
     "prerequisites": [
       "mean_median_and_mode"
-    ]
+    ], 
+    "exercise_id": "average_word_problems"
   }, 
   {
     "related_video_readable_ids": [
@@ -348,7 +362,8 @@
     "seconds_per_fast_problem": 54.0, 
     "prerequisites": [
       "mean_median_and_mode"
-    ]
+    ], 
+    "exercise_id": "creating_box_and_whisker_plots"
   }, 
   {
     "related_video_readable_ids": [
@@ -372,7 +387,8 @@
     "prerequisites": [
       "mean_median_and_mode", 
       "square_roots"
-    ]
+    ], 
+    "exercise_id": "variance"
   }, 
   {
     "related_video_readable_ids": [
@@ -396,7 +412,8 @@
     "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "variance"
-    ]
+    ], 
+    "exercise_id": "exploring_standard_deviation_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -419,7 +436,8 @@
     "seconds_per_fast_problem": 58.0, 
     "prerequisites": [
       "variance"
-    ]
+    ], 
+    "exercise_id": "standard_deviation"
   }, 
   {
     "related_video_readable_ids": [
@@ -441,7 +459,8 @@
     "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "linear-models-of-bivariate-data"
-    ]
+    ], 
+    "exercise_id": "plotting_the_line_of_best_fit"
   }, 
   {
     "related_video_readable_ids": [
@@ -466,7 +485,8 @@
     "prerequisites": [
       "exploring_standard_deviation_1", 
       "standard_deviation"
-    ]
+    ], 
+    "exercise_id": "empirical_rule"
   }, 
   {
     "related_video_readable_ids": [
@@ -489,7 +509,8 @@
     "prerequisites": [
       "exploring_standard_deviation_1", 
       "standard_deviation"
-    ]
+    ], 
+    "exercise_id": "z_scores_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -512,7 +533,8 @@
     "seconds_per_fast_problem": 23.0, 
     "prerequisites": [
       "z_scores_1"
-    ]
+    ], 
+    "exercise_id": "z_scores_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -534,6 +556,7 @@
     "seconds_per_fast_problem": 50.0, 
     "prerequisites": [
       "z_scores_2"
-    ]
+    ], 
+    "exercise_id": "z_scores_3"
   }
 ]

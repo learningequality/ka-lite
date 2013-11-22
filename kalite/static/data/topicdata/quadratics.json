@@ -20,7 +20,8 @@
     "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "factoring_polynomials_1"
-    ]
+    ], 
+    "exercise_id": "solving_quadratics_by_factoring"
   }, 
   {
     "related_video_readable_ids": [
@@ -43,7 +44,8 @@
     "seconds_per_fast_problem": 25.0, 
     "prerequisites": [
       "solving_quadratics_by_factoring"
-    ]
+    ], 
+    "exercise_id": "solving_quadratics_by_factoring_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -64,7 +66,8 @@
     "seconds_per_fast_problem": 19.0, 
     "prerequisites": [
       "factoring_polynomials_1"
-    ]
+    ], 
+    "exercise_id": "solving_quadratics_by_taking_the_square_root"
   }, 
   {
     "related_video_readable_ids": [
@@ -86,7 +89,8 @@
     "prerequisites": [
       "solving_quadratics_by_taking_the_square_root", 
       "solving_quadratics_by_factoring"
-    ]
+    ], 
+    "exercise_id": "completing_the_square_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -108,7 +112,8 @@
     "prerequisites": [
       "solving_quadratics_by_factoring_2", 
       "completing_the_square_1"
-    ]
+    ], 
+    "exercise_id": "completing_the_square_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -132,7 +137,8 @@
     "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
       "completing_the_square_2"
-    ]
+    ], 
+    "exercise_id": "quadratic_equation"
   }, 
   {
     "related_video_readable_ids": [
@@ -154,7 +160,8 @@
     "seconds_per_fast_problem": 17.0, 
     "prerequisites": [
       "quadratic_equation"
-    ]
+    ], 
+    "exercise_id": "solutions_to_quadratic_equations"
   }, 
   {
     "related_video_readable_ids": [
@@ -178,7 +185,8 @@
     "prerequisites": [
       "graphing_parabolas_0.5", 
       "completing_the_square_1"
-    ]
+    ], 
+    "exercise_id": "vertex_of_a_parabola"
   }, 
   {
     "related_video_readable_ids": [
@@ -200,7 +208,8 @@
     "seconds_per_fast_problem": 37.0, 
     "prerequisites": [
       "parabola_intuition_2"
-    ]
+    ], 
+    "exercise_id": "graphing_parabolas_0.5"
   }, 
   {
     "related_video_readable_ids": [
@@ -221,7 +230,8 @@
     "seconds_per_fast_problem": 30.0, 
     "prerequisites": [
       "graphing_parabolas_0.5"
-    ]
+    ], 
+    "exercise_id": "graphing_parabolas_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -245,7 +255,8 @@
     "prerequisites": [
       "graphing_parabolas_1", 
       "vertex_of_a_parabola"
-    ]
+    ], 
+    "exercise_id": "graphing_parabolas_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -266,6 +277,7 @@
     "seconds_per_fast_problem": 55.0, 
     "prerequisites": [
       "graphing_parabolas_2"
-    ]
+    ], 
+    "exercise_id": "parabola_intuition_3"
   }
 ]

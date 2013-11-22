@@ -21,7 +21,8 @@
       "radius_diameter_and_circumference", 
       "proportions_1", 
       "measuring_angles"
-    ]
+    ], 
+    "exercise_id": "circles_and_arcs"
   }, 
   {
     "related_video_readable_ids": [
@@ -44,7 +45,8 @@
       "proportions_1", 
       "area_of_a_circle", 
       "measuring_angles"
-    ]
+    ], 
+    "exercise_id": "areas_of_circles_and_sectors"
   }, 
   {
     "related_video_readable_ids": [
@@ -65,6 +67,7 @@
     "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "circles_and_arcs"
-    ]
+    ], 
+    "exercise_id": "inscribed_angles_1"
   }
 ]

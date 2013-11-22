@@ -18,7 +18,8 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "adding_and_subtracting_polynomials"
-    ]
+    ], 
+    "exercise_id": "recognizing_conic_sections"
   }, 
   {
     "related_video_readable_ids": [
@@ -40,7 +41,8 @@
     "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "circles_and_arcs"
-    ]
+    ], 
+    "exercise_id": "graphing_circles"
   }, 
   {
     "related_video_readable_ids": [
@@ -61,7 +63,8 @@
     "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "recognizing_conic_sections"
-    ]
+    ], 
+    "exercise_id": "equation_of_a_circle_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -84,7 +87,8 @@
     "seconds_per_fast_problem": 27.0, 
     "prerequisites": [
       "equation_of_a_circle_1"
-    ]
+    ], 
+    "exercise_id": "equation_of_a_circle_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -107,7 +111,8 @@
     "seconds_per_fast_problem": 30.0, 
     "prerequisites": [
       "graphing_circles"
-    ]
+    ], 
+    "exercise_id": "graphing_circles_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -128,7 +133,8 @@
     "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "equation_of_a_circle_1"
-    ]
+    ], 
+    "exercise_id": "equation_of_an_ellipse"
   }, 
   {
     "related_video_readable_ids": [
@@ -150,7 +156,8 @@
     "seconds_per_fast_problem": 14.0, 
     "prerequisites": [
       "recognizing_conic_sections"
-    ]
+    ], 
+    "exercise_id": "parabola_intuition_1"
   }, 
   {
     "related_video_readable_ids": [], 
@@ -169,7 +176,8 @@
     "seconds_per_fast_problem": 34.0, 
     "prerequisites": [
       "parabola_intuition_1"
-    ]
+    ], 
+    "exercise_id": "parabola_intuition_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -192,6 +200,7 @@
     "seconds_per_fast_problem": 14.0, 
     "prerequisites": [
       "equation_of_a_circle_1"
-    ]
+    ], 
+    "exercise_id": "equation_of_a_hyperbola"
   }
 ]

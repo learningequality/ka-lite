@@ -21,7 +21,8 @@
     "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
       "recognizing_rays_lines_and_line_segments"
-    ]
+    ], 
+    "exercise_id": "measuring_angles"
   }, 
   {
     "related_video_readable_ids": [
@@ -43,7 +44,8 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "benchmark-angles"
-    ]
+    ], 
+    "exercise_id": "angle_types"
   }, 
   {
     "related_video_readable_ids": [
@@ -64,7 +66,8 @@
     "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
       "naming-angles"
-    ]
+    ], 
+    "exercise_id": "exploring_angle_pairs_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -86,7 +89,8 @@
     "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "complementary_and_supplementary_angles"
-    ]
+    ], 
+    "exercise_id": "vertical_angles"
   }, 
   {
     "related_video_readable_ids": [
@@ -109,7 +113,8 @@
     "prerequisites": [
       "linear_equations_3", 
       "vertical_angles"
-    ]
+    ], 
+    "exercise_id": "vertical_angles_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -131,7 +136,8 @@
     "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "vertical_angles_2"
-    ]
+    ], 
+    "exercise_id": "congruent_angles"
   }, 
   {
     "related_video_readable_ids": [
@@ -153,7 +159,8 @@
     "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "complementary_and_supplementary_angles"
-    ]
+    ], 
+    "exercise_id": "parallel_lines_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -176,7 +183,8 @@
     "seconds_per_fast_problem": 31.0, 
     "prerequisites": [
       "parallel_lines_1"
-    ]
+    ], 
+    "exercise_id": "parallel_lines_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -200,7 +208,8 @@
     "seconds_per_fast_problem": 17.0, 
     "prerequisites": [
       "vertical_angles_2"
-    ]
+    ], 
+    "exercise_id": "angles_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -224,7 +233,8 @@
     "seconds_per_fast_problem": 16.0, 
     "prerequisites": [
       "angles_1"
-    ]
+    ], 
+    "exercise_id": "angles_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -245,7 +255,8 @@
     "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "triangle_angles_1"
-    ]
+    ], 
+    "exercise_id": "angles_of_a_polygon"
   }, 
   {
     "related_video_readable_ids": [
@@ -267,7 +278,8 @@
     "prerequisites": [
       "naming-angles", 
       "measuring_angles"
-    ]
+    ], 
+    "exercise_id": "complementary_and_supplementary_angles"
   }, 
   {
     "related_video_readable_ids": [
@@ -291,6 +303,7 @@
     "prerequisites": [
       "linear_equations_3", 
       "complementary_and_supplementary_angles"
-    ]
+    ], 
+    "exercise_id": "angle_addition_postulate"
   }
 ]

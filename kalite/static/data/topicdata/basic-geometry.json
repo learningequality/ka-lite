@@ -19,7 +19,8 @@
     "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "quadrilateral_types"
-    ]
+    ], 
+    "exercise_id": "area_of_triangles_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -42,7 +43,8 @@
     "prerequisites": [
       "circles_and_arcs", 
       "areas_of_circles_and_sectors"
-    ]
+    ], 
+    "exercise_id": "shaded_areas"
   }, 
   {
     "related_video_readable_ids": [
@@ -63,7 +65,8 @@
     "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "triangle_angles_1"
-    ]
+    ], 
+    "exercise_id": "triangle_inequality_theorem"
   }, 
   {
     "related_video_readable_ids": [
@@ -84,7 +87,8 @@
     "seconds_per_fast_problem": 43.0, 
     "prerequisites": [
       "shaded_areas"
-    ]
+    ], 
+    "exercise_id": "herons_formula"
   }, 
   {
     "related_video_readable_ids": [
@@ -105,7 +109,8 @@
     "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "division_0.5"
-    ]
+    ], 
+    "exercise_id": "radius_diameter_and_circumference"
   }, 
   {
     "related_video_readable_ids": [
@@ -127,7 +132,8 @@
     "prerequisites": [
       "radius_diameter_and_circumference", 
       "exponents_1"
-    ]
+    ], 
+    "exercise_id": "area_of_a_circle"
   }, 
   {
     "related_video_readable_ids": [
@@ -148,7 +154,8 @@
     "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "area_of_triangles_1"
-    ]
+    ], 
+    "exercise_id": "area_of_parallelograms"
   }, 
   {
     "related_video_readable_ids": [
@@ -171,7 +178,8 @@
     "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "area_of_triangles_1"
-    ]
+    ], 
+    "exercise_id": "areas_of_trapezoids_rhombi_and_kites"
   }, 
   {
     "related_video_readable_ids": [
@@ -196,6 +204,7 @@
       "area_of_a_circle", 
       "square_roots", 
       "volume_1"
-    ]
+    ], 
+    "exercise_id": "solid_geometry"
   }
 ]

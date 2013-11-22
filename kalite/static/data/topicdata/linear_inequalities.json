@@ -21,7 +21,8 @@
     "prerequisites": [
       "one_step_equations", 
       "inequalities-in-one-variable-1"
-    ]
+    ], 
+    "exercise_id": "one_step_inequalities"
   }, 
   {
     "related_video_readable_ids": [
@@ -46,7 +47,8 @@
     "prerequisites": [
       "interpretting-solving-linear-inequalities", 
       "multistep_equations_with_distribution"
-    ]
+    ], 
+    "exercise_id": "linear_inequalities"
   }, 
   {
     "related_video_readable_ids": [
@@ -70,6 +72,7 @@
     "seconds_per_fast_problem": 24.0, 
     "prerequisites": [
       "linear_inequalities"
-    ]
+    ], 
+    "exercise_id": "compound_inequalities"
   }
 ]

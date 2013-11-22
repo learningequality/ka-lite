@@ -20,7 +20,8 @@
     "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "writing-expressions-3"
-    ]
+    ], 
+    "exercise_id": "one_step_equation_intuition"
   }, 
   {
     "related_video_readable_ids": [], 
@@ -37,7 +38,8 @@
     "kind": "Exercise", 
     "name": "one_step_equations_0.5", 
     "seconds_per_fast_problem": 5.0, 
-    "prerequisites": []
+    "prerequisites": [], 
+    "exercise_id": "one_step_equations_0.5"
   }, 
   {
     "related_video_readable_ids": [], 
@@ -54,7 +56,8 @@
     "kind": "Exercise", 
     "name": "one_step_equations_0.5", 
     "seconds_per_fast_problem": 5.0, 
-    "prerequisites": []
+    "prerequisites": [], 
+    "exercise_id": "one_step_equations_0.5"
   }, 
   {
     "related_video_readable_ids": [
@@ -78,7 +81,8 @@
     "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "one_step_equation_intuition"
-    ]
+    ], 
+    "exercise_id": "linear_equations_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -102,7 +106,8 @@
     "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "one_step_equation_intuition"
-    ]
+    ], 
+    "exercise_id": "one_step_equations"
   }, 
   {
     "related_video_readable_ids": [
@@ -126,7 +131,8 @@
     "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "one_step_equations"
-    ]
+    ], 
+    "exercise_id": "linear_equations_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -147,7 +153,8 @@
     "seconds_per_fast_problem": 24.0, 
     "prerequisites": [
       "one_step_inequalities"
-    ]
+    ], 
+    "exercise_id": "linear_equation_word_problems"
   }, 
   {
     "related_video_readable_ids": [
@@ -172,7 +179,8 @@
     "prerequisites": [
       "linear-equation-world-problems-2", 
       "combining_like_terms_2"
-    ]
+    ], 
+    "exercise_id": "linear_equations_3"
   }, 
   {
     "related_video_readable_ids": [
@@ -197,7 +205,8 @@
     "seconds_per_fast_problem": 19.0, 
     "prerequisites": [
       "finding_percents"
-    ]
+    ], 
+    "exercise_id": "percentage_word_problems_1"
   }, 
   {
     "related_video_readable_ids": [], 
@@ -214,7 +223,8 @@
     "kind": "Exercise", 
     "name": "percentage_word_problems_2", 
     "seconds_per_fast_problem": 32.0, 
-    "prerequisites": []
+    "prerequisites": [], 
+    "exercise_id": "percentage_word_problems_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -238,7 +248,8 @@
     "seconds_per_fast_problem": 60.0, 
     "prerequisites": [
       "multistep_equations_with_distribution"
-    ]
+    ], 
+    "exercise_id": "solving_for_a_variable"
   }, 
   {
     "related_video_readable_ids": [
@@ -261,7 +272,8 @@
       "one_step_equations", 
       "linear_equations_1", 
       "combining_like_terms_1"
-    ]
+    ], 
+    "exercise_id": "converting_repeating_decimals_to_fractions_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -282,7 +294,8 @@
     "seconds_per_fast_problem": 24.0, 
     "prerequisites": [
       "converting_repeating_decimals_to_fractions_1"
-    ]
+    ], 
+    "exercise_id": "converting_repeating_decimals_to_fractions_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -305,7 +318,8 @@
     "seconds_per_fast_problem": 44.0, 
     "prerequisites": [
       "multistep_equations_with_distribution"
-    ]
+    ], 
+    "exercise_id": "age_word_problems"
   }, 
   {
     "related_video_readable_ids": [
@@ -328,7 +342,8 @@
     "prerequisites": [
       "multistep_equations_with_distribution", 
       "absolute-value-word-problems"
-    ]
+    ], 
+    "exercise_id": "absolute_value_equations"
   }, 
   {
     "related_video_readable_ids": [
@@ -353,7 +368,8 @@
     "seconds_per_fast_problem": 54.0, 
     "prerequisites": [
       "linear_equations_3"
-    ]
+    ], 
+    "exercise_id": "multistep_equations_with_distribution"
   }, 
   {
     "related_video_readable_ids": [
@@ -376,7 +392,8 @@
     "prerequisites": [
       "evaluating-expressions-3", 
       "multiplying_and_dividing_negative_numbers"
-    ]
+    ], 
+    "exercise_id": "expressions_with_unknown_variables"
   }, 
   {
     "related_video_readable_ids": [
@@ -398,7 +415,8 @@
     "seconds_per_fast_problem": 16.0, 
     "prerequisites": [
       "expressions_with_unknown_variables"
-    ]
+    ], 
+    "exercise_id": "expressions_with_unknown_variables_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -419,6 +437,7 @@
     "seconds_per_fast_problem": 29.0, 
     "prerequisites": [
       "linear_equations_3"
-    ]
+    ], 
+    "exercise_id": "integer_sums"
   }
 ]

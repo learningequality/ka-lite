@@ -18,7 +18,8 @@
     "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "addition_1"
-    ]
+    ], 
+    "exercise_id": "number_line"
   }, 
   {
     "related_video_readable_ids": [
@@ -40,7 +41,8 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "addition_2"
-    ]
+    ], 
+    "exercise_id": "multiplication_0.5"
   }, 
   {
     "related_video_readable_ids": [
@@ -61,7 +63,8 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "multiplication_0.5"
-    ]
+    ], 
+    "exercise_id": "division_0.5"
   }, 
   {
     "related_video_readable_ids": [
@@ -82,7 +85,8 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "division_0.5"
-    ]
+    ], 
+    "exercise_id": "division_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -107,7 +111,8 @@
       "multiplication_1", 
       "division_1", 
       "arithmetic_word_problems_1"
-    ]
+    ], 
+    "exercise_id": "arithmetic_word_problems_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -130,7 +135,8 @@
     "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "arithmetic_word_problems_2"
-    ]
+    ], 
+    "exercise_id": "arithmetic_word_problems"
   }, 
   {
     "related_video_readable_ids": [
@@ -151,7 +157,8 @@
     "seconds_per_fast_problem": 4.75, 
     "prerequisites": [
       "multiplication_0.5"
-    ]
+    ], 
+    "exercise_id": "multiplication_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -174,7 +181,8 @@
     "prerequisites": [
       "understanding-place-value-1", 
       "multiplication_0.5"
-    ]
+    ], 
+    "exercise_id": "multiplication_1.5"
   }, 
   {
     "related_video_readable_ids": [
@@ -197,7 +205,8 @@
     "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "multiplication_1.5"
-    ]
+    ], 
+    "exercise_id": "multiplication_2"
   }, 
   {
     "related_video_readable_ids": [], 
@@ -216,7 +225,8 @@
     "seconds_per_fast_problem": 17.0, 
     "prerequisites": [
       "multiplication_2"
-    ]
+    ], 
+    "exercise_id": "multiplication_3"
   }, 
   {
     "related_video_readable_ids": [
@@ -238,7 +248,8 @@
     "prerequisites": [
       "multiplication_3", 
       "patterns-in-zeros"
-    ]
+    ], 
+    "exercise_id": "multiplication_4"
   }, 
   {
     "related_video_readable_ids": [], 
@@ -257,7 +268,8 @@
     "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "division_2"
-    ]
+    ], 
+    "exercise_id": "division_1.5"
   }, 
   {
     "related_video_readable_ids": [
@@ -282,7 +294,8 @@
     "prerequisites": [
       "understanding-place-value-1", 
       "division_1"
-    ]
+    ], 
+    "exercise_id": "division_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -304,7 +317,8 @@
     "prerequisites": [
       "division_2", 
       "multiplication_4"
-    ]
+    ], 
+    "exercise_id": "division_3"
   }, 
   {
     "related_video_readable_ids": [
@@ -325,6 +339,7 @@
     "seconds_per_fast_problem": 47.0, 
     "prerequisites": [
       "division_3"
-    ]
+    ], 
+    "exercise_id": "division_4"
   }
 ]

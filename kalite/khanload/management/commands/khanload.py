@@ -121,9 +121,21 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
         
         kinds = set([kind])
 
-        # For each exercise, need to get related videos
-        #   and compute base points
-        if kind == "Exercise":
+        if kind == "Video":
+            # For each video, we need to set the video_id
+            #
+            # NOTE: for historical reasons, this MUST be set to the
+            #   english-language youtube ID.  Otherwise, global
+            #   UUIDs will change on some systems, and not others,
+            #   and the whole world will collapse :)
+            node["video_id"] = node["youtube_id"]
+
+        elif kind == "Exercise":
+            # For each exercise, need to set the exercise_id
+            #   get related videos
+            #   and compute base points
+            node["exercise_id"] = node["slug"]
+
             # compute base points
             # Paste points onto the exercise
             node["basepoints"] = ceil(7 * log(node["seconds_per_fast_problem"]));
@@ -132,31 +144,34 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
             related_video_readable_ids = [vid["readable_id"] for vid in download_khan_data("http://www.khanacademy.org/api/v1/exercises/%s/videos" % node["name"], node["name"] + ".json")]
             node["related_video_readable_ids"] = related_video_readable_ids
 
-            exercise = {
-                "slug": node[slug_key[kind]],
-                "title": node[title_key[kind]],
+            related_exercise_metadata = {
+                "slug": node["slug"],
+                "title": node["title"],
                 "path": node["path"],
             }
             for video_id in node.get("related_video_readable_ids", []):
-                related_exercise[video_id] = exercise
+                related_exercise[video_id] = related_exercise_metadata
 
 
         # Recurse through children, remove any blacklisted items
         children_to_delete = []
         for i, child in enumerate(node.get("children", [])):
             child_kind = child.get("kind", None)
+
+            # Blacklisted--remove
             if child_kind in kind_blacklist:
                 children_to_delete.append(i)
                 continue
-            if child[slug_key[child_kind]] in slug_blacklist:
+            elif child[slug_key[child_kind]] in slug_blacklist:
                 children_to_delete.append(i)
                 continue
-            if child_kind == "Video" and set(["mp4", "png"]) - set(child.get("download_urls", {}).keys()):
+            elif child_kind == "Video" and set(["mp4", "png"]) - set(child.get("download_urls", {}).keys()):
                 # for now, since we expect the missing videos to be filled in soon, 
                 #   we won't remove these nodes
                 sys.stderr.write("WARNING: No download link for video: %s: authors='%s'\n" % (child["youtube_id"], child["author_names"]))
-                # children_to_delete.append(i)
-                # continue
+                children_to_delete.append(i)
+                continue
+
             kinds = kinds.union(recurse_nodes(child, node["path"]))
         for i in reversed(children_to_delete):
             del node["children"][i]
@@ -221,12 +236,13 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
             # Recurse over children to delete
             elif child.get("children", None):
                 slugs_deleted += recurse_nodes_to_delete_exercise(child)
-                # Delete children without children (all their children were removed)
+
                 if not child.get("children", None):
+                    # Delete children without children (all their children were removed)
                     logging.warn("Removing now-childless topic node '%s'" % child["slug"])
                     children_to_delete.append(ci)
-                # If there are no longer exercises, be honest about it
                 elif not any([ch["kind"] == "Exercise" or "Exercise" in ch.get("contains", []) for ch in child["children"]]):
+                    # If there are no longer exercises, be honest about it
                     child["contains"] = list(set(child["contains"]) - set(["Exercise"]))
 
         # Do the actual deletion

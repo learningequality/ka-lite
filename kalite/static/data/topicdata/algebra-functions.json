@@ -21,7 +21,8 @@
     "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "interpreting_linear_equations"
-    ]
+    ], 
+    "exercise_id": "functions_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -48,7 +49,8 @@
     "prerequisites": [
       "functions_2", 
       "domain_and_range_0.5"
-    ]
+    ], 
+    "exercise_id": "domain_of_a_function"
   }, 
   {
     "related_video_readable_ids": [
@@ -74,7 +76,8 @@
     "prerequisites": [
       "functions_2", 
       "domain_and_range_0.5"
-    ]
+    ], 
+    "exercise_id": "range_of_a_function"
   }, 
   {
     "related_video_readable_ids": [
@@ -95,7 +98,8 @@
     "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "functions_1"
-    ]
+    ], 
+    "exercise_id": "domain_and_range_0.5"
   }, 
   {
     "related_video_readable_ids": [
@@ -118,7 +122,8 @@
     "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "interpreting_linear_equations"
-    ]
+    ], 
+    "exercise_id": "direct_and_inverse_variation"
   }, 
   {
     "related_video_readable_ids": [
@@ -142,7 +147,8 @@
     "seconds_per_fast_problem": 40.0, 
     "prerequisites": [
       "recognizing_functions"
-    ]
+    ], 
+    "exercise_id": "views_of_a_function"
   }, 
   {
     "related_video_readable_ids": [
@@ -163,7 +169,8 @@
     "seconds_per_fast_problem": 30.0, 
     "prerequisites": [
       "functions_1"
-    ]
+    ], 
+    "exercise_id": "functions_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -184,7 +191,8 @@
     "seconds_per_fast_problem": 56.0, 
     "prerequisites": [
       "functions_2"
-    ]
+    ], 
+    "exercise_id": "functions_3"
   }, 
   {
     "related_video_readable_ids": [
@@ -209,7 +217,8 @@
     "prerequisites": [
       "domain_of_a_function", 
       "range_of_a_function"
-    ]
+    ], 
+    "exercise_id": "inverses_of_functions"
   }, 
   {
     "related_video_readable_ids": [
@@ -230,7 +239,8 @@
     "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "interpreting_linear_equations"
-    ]
+    ], 
+    "exercise_id": "new_definitions_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -251,6 +261,7 @@
     "seconds_per_fast_problem": 28.0, 
     "prerequisites": [
       "new_definitions_1"
-    ]
+    ], 
+    "exercise_id": "new_definitions_2"
   }
 ]

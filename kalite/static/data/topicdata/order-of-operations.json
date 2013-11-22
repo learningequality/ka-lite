@@ -20,7 +20,8 @@
     "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "understanding-place-value-1"
-    ]
+    ], 
+    "exercise_id": "place_value"
   }, 
   {
     "related_video_readable_ids": [], 
@@ -37,7 +38,8 @@
     "kind": "Exercise", 
     "name": "representing_numbers", 
     "seconds_per_fast_problem": 8.0, 
-    "prerequisites": []
+    "prerequisites": [], 
+    "exercise_id": "representing_numbers"
   }, 
   {
     "related_video_readable_ids": [
@@ -60,7 +62,8 @@
     "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "understanding-whole-number-representations"
-    ]
+    ], 
+    "exercise_id": "rounding_whole_numbers"
   }, 
   {
     "related_video_readable_ids": [
@@ -81,7 +84,8 @@
     "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "comparing_whole_numbers"
-    ]
+    ], 
+    "exercise_id": "counting_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -105,7 +109,8 @@
     "prerequisites": [
       "adding_and_subtracting_rational_numbers", 
       "multiplying_and_dividing_negative_numbers"
-    ]
+    ], 
+    "exercise_id": "order_of_operations"
   }, 
   {
     "related_video_readable_ids": [
@@ -128,7 +133,8 @@
     "seconds_per_fast_problem": 25.0, 
     "prerequisites": [
       "equivalent-forms-of-expressions-1"
-    ]
+    ], 
+    "exercise_id": "distributive_property"
   }, 
   {
     "related_video_readable_ids": [], 
@@ -145,7 +151,8 @@
     "kind": "Exercise", 
     "name": "properties_of_numbers_1", 
     "seconds_per_fast_problem": 6.0, 
-    "prerequisites": []
+    "prerequisites": [], 
+    "exercise_id": "properties_of_numbers_1"
   }, 
   {
     "related_video_readable_ids": [], 
@@ -162,7 +169,8 @@
     "kind": "Exercise", 
     "name": "number_properties_terminology_1", 
     "seconds_per_fast_problem": 6.0, 
-    "prerequisites": []
+    "prerequisites": [], 
+    "exercise_id": "number_properties_terminology_1"
   }, 
   {
     "related_video_readable_ids": [], 
@@ -179,6 +187,7 @@
     "kind": "Exercise", 
     "name": "properties_of_numbers_2", 
     "seconds_per_fast_problem": 7.0, 
-    "prerequisites": []
+    "prerequisites": [], 
+    "exercise_id": "properties_of_numbers_2"
   }
 ]

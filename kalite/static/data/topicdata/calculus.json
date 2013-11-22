@@ -18,7 +18,8 @@
     "seconds_per_fast_problem": 41.0, 
     "prerequisites": [
       "two-sided-limits-using-algebra"
-    ]
+    ], 
+    "exercise_id": "limits_2"
   }, 
   {
     "related_video_readable_ids": [], 
@@ -35,7 +36,8 @@
     "kind": "Exercise", 
     "name": "limits_1", 
     "seconds_per_fast_problem": 8.0, 
-    "prerequisites": []
+    "prerequisites": [], 
+    "exercise_id": "limits_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -60,7 +62,8 @@
       "derivative_intuition", 
       "recognizing_slope", 
       "the-formal-and-alternate-form-of-the-derivative"
-    ]
+    ], 
+    "exercise_id": "derivatives_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -83,7 +86,8 @@
     "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "limits_2"
-    ]
+    ], 
+    "exercise_id": "recognizing_slope"
   }, 
   {
     "related_video_readable_ids": [
@@ -104,7 +108,8 @@
     "seconds_per_fast_problem": 31.0, 
     "prerequisites": [
       "limits_2"
-    ]
+    ], 
+    "exercise_id": "derivative_intuition"
   }, 
   {
     "related_video_readable_ids": [
@@ -126,7 +131,8 @@
     "prerequisites": [
       "derivative_intuition", 
       "derivatives_1"
-    ]
+    ], 
+    "exercise_id": "visualizing_derivatives"
   }, 
   {
     "related_video_readable_ids": [
@@ -147,7 +153,8 @@
     "seconds_per_fast_problem": 44.0, 
     "prerequisites": [
       "derivatives_1"
-    ]
+    ], 
+    "exercise_id": "power_rule"
   }, 
   {
     "related_video_readable_ids": [
@@ -168,7 +175,8 @@
     "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "derivatives_1"
-    ]
+    ], 
+    "exercise_id": "special_derivatives"
   }, 
   {
     "related_video_readable_ids": [
@@ -193,7 +201,8 @@
     "prerequisites": [
       "power_rule", 
       "special_derivatives"
-    ]
+    ], 
+    "exercise_id": "chain_rule_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -214,7 +223,8 @@
     "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "derivatives_1"
-    ]
+    ], 
+    "exercise_id": "special_derivatives"
   }, 
   {
     "related_video_readable_ids": [
@@ -237,7 +247,8 @@
     "prerequisites": [
       "power_rule", 
       "special_derivatives"
-    ]
+    ], 
+    "exercise_id": "product_rule"
   }, 
   {
     "related_video_readable_ids": [
@@ -260,7 +271,8 @@
     "prerequisites": [
       "power_rule", 
       "special_derivatives"
-    ]
+    ], 
+    "exercise_id": "quotient_rule"
   }, 
   {
     "related_video_readable_ids": [
@@ -283,7 +295,8 @@
     "prerequisites": [
       "recognizing_slope", 
       "derivatives_1"
-    ]
+    ], 
+    "exercise_id": "recognizing_concavity"
   }, 
   {
     "related_video_readable_ids": [
@@ -308,7 +321,8 @@
     "prerequisites": [
       "power_rule", 
       "special_derivatives"
-    ]
+    ], 
+    "exercise_id": "lhopitals_rule"
   }, 
   {
     "related_video_readable_ids": [
@@ -330,7 +344,8 @@
     "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "arithmetic_sequences_1"
-    ]
+    ], 
+    "exercise_id": "geometric_sequences_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -353,6 +368,7 @@
     "prerequisites": [
       "geometric_sequences_1", 
       "arithmetic_sequences_2"
-    ]
+    ], 
+    "exercise_id": "geometric_sequences_2"
   }
 ]

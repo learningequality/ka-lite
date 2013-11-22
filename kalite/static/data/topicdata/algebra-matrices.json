@@ -18,7 +18,8 @@
     "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "systems_of_equations_word_problems"
-    ]
+    ], 
+    "exercise_id": "matrix_dimensions"
   }, 
   {
     "related_video_readable_ids": [
@@ -39,7 +40,8 @@
     "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
       "matrix_dimensions"
-    ]
+    ], 
+    "exercise_id": "scalar_matrix_multiplication"
   }, 
   {
     "related_video_readable_ids": [
@@ -60,7 +62,8 @@
     "seconds_per_fast_problem": 17.0, 
     "prerequisites": [
       "matrix_dimensions"
-    ]
+    ], 
+    "exercise_id": "matrix_addition_and_subtraction"
   }, 
   {
     "related_video_readable_ids": [
@@ -81,7 +84,8 @@
     "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "matrix_dimensions"
-    ]
+    ], 
+    "exercise_id": "matrix_transpose"
   }, 
   {
     "related_video_readable_ids": [
@@ -104,7 +108,8 @@
     "prerequisites": [
       "matrix_addition_and_subtraction", 
       "scalar_matrix_multiplication"
-    ]
+    ], 
+    "exercise_id": "multiplying_a_matrix_by_a_vector"
   }, 
   {
     "related_video_readable_ids": [
@@ -127,7 +132,8 @@
     "prerequisites": [
       "matrix_addition_and_subtraction", 
       "scalar_matrix_multiplication"
-    ]
+    ], 
+    "exercise_id": "multiplying_a_matrix_by_a_matrix"
   }, 
   {
     "related_video_readable_ids": [
@@ -149,7 +155,8 @@
     "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "matrix_dimensions"
-    ]
+    ], 
+    "exercise_id": "defined_and_undefined_matrix_operations"
   }, 
   {
     "related_video_readable_ids": [
@@ -171,7 +178,8 @@
     "seconds_per_fast_problem": 43.0, 
     "prerequisites": [
       "multiplying_a_matrix_by_a_matrix"
-    ]
+    ], 
+    "exercise_id": "matrix_inverse_2x2"
   }, 
   {
     "related_video_readable_ids": [
@@ -193,7 +201,8 @@
     "seconds_per_fast_problem": 44.0, 
     "prerequisites": [
       "matrix_determinant"
-    ]
+    ], 
+    "exercise_id": "matrix_determinant_3x3"
   }, 
   {
     "related_video_readable_ids": [
@@ -218,6 +227,7 @@
     "prerequisites": [
       "matrix_inverse_2x2", 
       "matrix_determinant_3x3"
-    ]
+    ], 
+    "exercise_id": "matrix_inverse_3x3"
   }
 ]

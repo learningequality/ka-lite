@@ -21,7 +21,8 @@
     "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "number_line"
-    ]
+    ], 
+    "exercise_id": "graphing_points"
   }, 
   {
     "related_video_readable_ids": [
@@ -44,7 +45,8 @@
     "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "identifying_points_1"
-    ]
+    ], 
+    "exercise_id": "graphing_points_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -67,7 +69,8 @@
     "seconds_per_fast_problem": 19.0, 
     "prerequisites": [
       "number_line_2"
-    ]
+    ], 
+    "exercise_id": "identifying_points_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -90,7 +93,8 @@
     "seconds_per_fast_problem": 18.0, 
     "prerequisites": [
       "line_graph_intuition"
-    ]
+    ], 
+    "exercise_id": "plugging_in_values"
   }, 
   {
     "related_video_readable_ids": [
@@ -113,7 +117,8 @@
     "seconds_per_fast_problem": 20.0, 
     "prerequisites": [
       "graphing_linear_equations"
-    ]
+    ], 
+    "exercise_id": "identifying_points_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -134,7 +139,8 @@
     "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "identifying_points_2"
-    ]
+    ], 
+    "exercise_id": "interpreting_linear_equations"
   }, 
   {
     "related_video_readable_ids": [
@@ -160,7 +166,8 @@
       "graphing_linear_equations", 
       "solving-equations-and-inequalities-through-substitution", 
       "linear_equations_2"
-    ]
+    ], 
+    "exercise_id": "solving_for_the_x-intercept"
   }, 
   {
     "related_video_readable_ids": [
@@ -182,7 +189,8 @@
     "seconds_per_fast_problem": 60.0, 
     "prerequisites": [
       "expressing_ratios_as_fractions"
-    ]
+    ], 
+    "exercise_id": "rate_problems_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -204,7 +212,8 @@
     "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "graphing-proportional-relationships"
-    ]
+    ], 
+    "exercise_id": "slope_of_a_line"
   }, 
   {
     "related_video_readable_ids": [
@@ -227,7 +236,8 @@
     "prerequisites": [
       "identifying_points_2", 
       "slope_of_a_line"
-    ]
+    ], 
+    "exercise_id": "line_graph_intuition"
   }, 
   {
     "related_video_readable_ids": [
@@ -250,7 +260,8 @@
     "prerequisites": [
       "graphing-proportional-relationships", 
       "slope_of_a_line"
-    ]
+    ], 
+    "exercise_id": "graphing_linear_equations"
   }, 
   {
     "related_video_readable_ids": [
@@ -276,7 +287,8 @@
       "graphing_linear_equations", 
       "solving-equations-and-inequalities-through-substitution", 
       "linear_equations_2"
-    ]
+    ], 
+    "exercise_id": "solving_for_the_y-intercept"
   }, 
   {
     "related_video_readable_ids": [
@@ -300,7 +312,8 @@
     "seconds_per_fast_problem": 36.0, 
     "prerequisites": [
       "line_graph_intuition"
-    ]
+    ], 
+    "exercise_id": "slope_intercept_form"
   }, 
   {
     "related_video_readable_ids": [
@@ -322,7 +335,8 @@
     "seconds_per_fast_problem": 25.0, 
     "prerequisites": [
       "line_graph_intuition"
-    ]
+    ], 
+    "exercise_id": "point_slope_form"
   }, 
   {
     "related_video_readable_ids": [
@@ -343,7 +357,8 @@
     "seconds_per_fast_problem": 18.0, 
     "prerequisites": [
       "slope_intercept_form"
-    ]
+    ], 
+    "exercise_id": "converting_between_slope_intercept_and_standard_form"
   }, 
   {
     "related_video_readable_ids": [
@@ -367,7 +382,8 @@
     "prerequisites": [
       "point_slope_form", 
       "slope_intercept_form"
-    ]
+    ], 
+    "exercise_id": "converting_between_point_slope_and_slope_intercept"
   }, 
   {
     "related_video_readable_ids": [
@@ -392,7 +408,8 @@
     "prerequisites": [
       "converting_between_slope_intercept_and_standard_form", 
       "converting_between_point_slope_and_slope_intercept"
-    ]
+    ], 
+    "exercise_id": "equation_of_a_line"
   }, 
   {
     "related_video_readable_ids": [
@@ -413,7 +430,8 @@
     "seconds_per_fast_problem": 26.0, 
     "prerequisites": [
       "coordinate-plane-word-problems"
-    ]
+    ], 
+    "exercise_id": "midpoint_formula"
   }, 
   {
     "related_video_readable_ids": [
@@ -438,7 +456,8 @@
     "seconds_per_fast_problem": 20.0, 
     "prerequisites": [
       "square_roots_2"
-    ]
+    ], 
+    "exercise_id": "pythagorean_theorem_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -459,7 +478,8 @@
     "seconds_per_fast_problem": 32.0, 
     "prerequisites": [
       "pythagorean_theorem_1"
-    ]
+    ], 
+    "exercise_id": "distance_formula"
   }, 
   {
     "related_video_readable_ids": [
@@ -486,7 +506,8 @@
     "seconds_per_fast_problem": 19.0, 
     "prerequisites": [
       "equation_of_a_line"
-    ]
+    ], 
+    "exercise_id": "line_relationships"
   }, 
   {
     "related_video_readable_ids": [
@@ -509,7 +530,8 @@
     "seconds_per_fast_problem": 17.0, 
     "prerequisites": [
       "line_relationships"
-    ]
+    ], 
+    "exercise_id": "distance_between_point_and_line"
   }, 
   {
     "related_video_readable_ids": [
@@ -533,7 +555,8 @@
     "seconds_per_fast_problem": 21.0, 
     "prerequisites": [
       "slope_intercept_form"
-    ]
+    ], 
+    "exercise_id": "graphs_of_inequalities"
   }, 
   {
     "related_video_readable_ids": [
@@ -557,7 +580,8 @@
     "seconds_per_fast_problem": 20.0, 
     "prerequisites": [
       "slope_intercept_form"
-    ]
+    ], 
+    "exercise_id": "graphing_inequalities"
   }, 
   {
     "related_video_readable_ids": [
@@ -580,6 +604,7 @@
     "seconds_per_fast_problem": 29.0, 
     "prerequisites": [
       "graphing_inequalities"
-    ]
+    ], 
+    "exercise_id": "graphing_inequalities_2"
   }
 ]

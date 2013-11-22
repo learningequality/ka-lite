@@ -20,7 +20,8 @@
     "prerequisites": [
       "factoring_polynomials_with_two_variables", 
       "factoring_polynomials_by_grouping_1"
-    ]
+    ], 
+    "exercise_id": "dividing_polynomials_by_binomials_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -43,7 +44,8 @@
     "seconds_per_fast_problem": 20.0, 
     "prerequisites": [
       "dividing_polynomials_by_binomials_1"
-    ]
+    ], 
+    "exercise_id": "dividing_polynomials_by_binomials_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -66,7 +68,8 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "simplifying_rational_expressions_1"
-    ]
+    ], 
+    "exercise_id": "simplifying_rational_expressions_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -90,7 +93,8 @@
     "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "dividing_polynomials_by_binomials_2"
-    ]
+    ], 
+    "exercise_id": "dividing_polynomials_by_binomials_3"
   }, 
   {
     "related_video_readable_ids": [
@@ -113,7 +117,8 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "simplifying_rational_expressions_2"
-    ]
+    ], 
+    "exercise_id": "simplifying_rational_expressions_3"
   }, 
   {
     "related_video_readable_ids": [
@@ -137,7 +142,8 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "simplifying_rational_expressions_3"
-    ]
+    ], 
+    "exercise_id": "simplifying_rational_expressions_4"
   }, 
   {
     "related_video_readable_ids": [
@@ -164,7 +170,8 @@
       "factoring_polynomials_with_two_variables", 
       "factoring_polynomials_by_grouping_1", 
       "adding_and_subtracting_fractions"
-    ]
+    ], 
+    "exercise_id": "adding_and_subtracting_rational_expressions_0.5"
   }, 
   {
     "related_video_readable_ids": [
@@ -189,7 +196,8 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "adding_and_subtracting_rational_expressions_0.5"
-    ]
+    ], 
+    "exercise_id": "adding_and_subtracting_rational_expressions"
   }, 
   {
     "related_video_readable_ids": [
@@ -214,7 +222,8 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "adding_and_subtracting_rational_expressions"
-    ]
+    ], 
+    "exercise_id": "adding_and_subtracting_rational_expressions_1.5"
   }, 
   {
     "related_video_readable_ids": [
@@ -239,7 +248,8 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "adding_and_subtracting_rational_expressions_1.5"
-    ]
+    ], 
+    "exercise_id": "adding_and_subtracting_rational_expressions_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -262,7 +272,8 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "adding_and_subtracting_rational_expressions_2"
-    ]
+    ], 
+    "exercise_id": "adding_and_subtracting_rational_expressions_3"
   }, 
   {
     "related_video_readable_ids": [
@@ -286,7 +297,8 @@
     "prerequisites": [
       "factoring_polynomials_by_grouping_1", 
       "factoring_polynomials_with_two_variables"
-    ]
+    ], 
+    "exercise_id": "multiplying_and_dividing_rational_expressions_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -309,7 +321,8 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "multiplying_and_dividing_rational_expressions_1"
-    ]
+    ], 
+    "exercise_id": "multiplying_and_dividing_rational_expressions_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -331,7 +344,8 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "multiplying_and_dividing_rational_expressions_2"
-    ]
+    ], 
+    "exercise_id": "multiplying_and_dividing_rational_expressions_3"
   }, 
   {
     "related_video_readable_ids": [
@@ -353,7 +367,8 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "multiplying_and_dividing_rational_expressions_3"
-    ]
+    ], 
+    "exercise_id": "multiplying_and_dividing_rational_expressions_4"
   }, 
   {
     "related_video_readable_ids": [
@@ -375,7 +390,8 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "multiplying_and_dividing_rational_expressions_4"
-    ]
+    ], 
+    "exercise_id": "multiplying_and_dividing_rational_expressions_5"
   }, 
   {
     "related_video_readable_ids": [
@@ -398,7 +414,8 @@
     "seconds_per_fast_problem": 60.0, 
     "prerequisites": [
       "simplifying_rational_expressions_3"
-    ]
+    ], 
+    "exercise_id": "partial_fraction_expansion_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -419,7 +436,8 @@
     "seconds_per_fast_problem": 34.0, 
     "prerequisites": [
       "multistep_equations_with_distribution"
-    ]
+    ], 
+    "exercise_id": "linear_equations_4"
   }, 
   {
     "related_video_readable_ids": [
@@ -442,7 +460,8 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "linear_equations_4"
-    ]
+    ], 
+    "exercise_id": "solving_rational_equations_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -463,6 +482,7 @@
     "seconds_per_fast_problem": 19.0, 
     "prerequisites": [
       "simplifying_rational_expressions_3"
-    ]
+    ], 
+    "exercise_id": "extraneous_solutions"
   }
 ]

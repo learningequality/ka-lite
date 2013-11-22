@@ -21,7 +21,8 @@
     "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "classifying-shapes-by-line-and-angle-types"
-    ]
+    ], 
+    "exercise_id": "quadrilateral_types"
   }, 
   {
     "related_video_readable_ids": [
@@ -43,6 +44,7 @@
     "prerequisites": [
       "complementary_and_supplementary_angles", 
       "quadrilateral_types"
-    ]
+    ], 
+    "exercise_id": "quadrilateral_angles"
   }
 ]

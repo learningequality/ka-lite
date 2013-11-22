@@ -21,7 +21,8 @@
     "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "number_line"
-    ]
+    ], 
+    "exercise_id": "graphing_points"
   }, 
   {
     "related_video_readable_ids": [
@@ -44,7 +45,8 @@
     "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "identifying_points_1"
-    ]
+    ], 
+    "exercise_id": "graphing_points_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -67,7 +69,8 @@
     "seconds_per_fast_problem": 19.0, 
     "prerequisites": [
       "number_line_2"
-    ]
+    ], 
+    "exercise_id": "identifying_points_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -90,7 +93,8 @@
     "seconds_per_fast_problem": 20.0, 
     "prerequisites": [
       "graphing_linear_equations"
-    ]
+    ], 
+    "exercise_id": "identifying_points_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -111,7 +115,8 @@
     "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "identifying_points_2"
-    ]
+    ], 
+    "exercise_id": "interpreting_linear_equations"
   }, 
   {
     "related_video_readable_ids": [
@@ -133,7 +138,8 @@
     "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "graphing-proportional-relationships"
-    ]
+    ], 
+    "exercise_id": "slope_of_a_line"
   }, 
   {
     "related_video_readable_ids": [
@@ -156,7 +162,8 @@
     "prerequisites": [
       "identifying_points_2", 
       "slope_of_a_line"
-    ]
+    ], 
+    "exercise_id": "line_graph_intuition"
   }, 
   {
     "related_video_readable_ids": [
@@ -179,7 +186,8 @@
     "prerequisites": [
       "graphing-proportional-relationships", 
       "slope_of_a_line"
-    ]
+    ], 
+    "exercise_id": "graphing_linear_equations"
   }, 
   {
     "related_video_readable_ids": [
@@ -205,7 +213,8 @@
       "graphing_linear_equations", 
       "solving-equations-and-inequalities-through-substitution", 
       "linear_equations_2"
-    ]
+    ], 
+    "exercise_id": "solving_for_the_y-intercept"
   }, 
   {
     "related_video_readable_ids": [
@@ -229,7 +238,8 @@
     "seconds_per_fast_problem": 36.0, 
     "prerequisites": [
       "line_graph_intuition"
-    ]
+    ], 
+    "exercise_id": "slope_intercept_form"
   }, 
   {
     "related_video_readable_ids": [
@@ -251,7 +261,8 @@
     "seconds_per_fast_problem": 25.0, 
     "prerequisites": [
       "line_graph_intuition"
-    ]
+    ], 
+    "exercise_id": "point_slope_form"
   }, 
   {
     "related_video_readable_ids": [
@@ -272,7 +283,8 @@
     "seconds_per_fast_problem": 18.0, 
     "prerequisites": [
       "slope_intercept_form"
-    ]
+    ], 
+    "exercise_id": "converting_between_slope_intercept_and_standard_form"
   }, 
   {
     "related_video_readable_ids": [
@@ -296,7 +308,8 @@
     "prerequisites": [
       "point_slope_form", 
       "slope_intercept_form"
-    ]
+    ], 
+    "exercise_id": "converting_between_point_slope_and_slope_intercept"
   }, 
   {
     "related_video_readable_ids": [
@@ -321,7 +334,8 @@
     "prerequisites": [
       "converting_between_slope_intercept_and_standard_form", 
       "converting_between_point_slope_and_slope_intercept"
-    ]
+    ], 
+    "exercise_id": "equation_of_a_line"
   }, 
   {
     "related_video_readable_ids": [
@@ -342,7 +356,8 @@
     "seconds_per_fast_problem": 26.0, 
     "prerequisites": [
       "coordinate-plane-word-problems"
-    ]
+    ], 
+    "exercise_id": "midpoint_formula"
   }, 
   {
     "related_video_readable_ids": [
@@ -363,7 +378,8 @@
     "seconds_per_fast_problem": 32.0, 
     "prerequisites": [
       "pythagorean_theorem_1"
-    ]
+    ], 
+    "exercise_id": "distance_formula"
   }, 
   {
     "related_video_readable_ids": [
@@ -390,7 +406,8 @@
     "seconds_per_fast_problem": 19.0, 
     "prerequisites": [
       "equation_of_a_line"
-    ]
+    ], 
+    "exercise_id": "line_relationships"
   }, 
   {
     "related_video_readable_ids": [
@@ -413,7 +430,8 @@
     "seconds_per_fast_problem": 17.0, 
     "prerequisites": [
       "line_relationships"
-    ]
+    ], 
+    "exercise_id": "distance_between_point_and_line"
   }, 
   {
     "related_video_readable_ids": [
@@ -437,7 +455,8 @@
     "seconds_per_fast_problem": 21.0, 
     "prerequisites": [
       "slope_intercept_form"
-    ]
+    ], 
+    "exercise_id": "graphs_of_inequalities"
   }, 
   {
     "related_video_readable_ids": [
@@ -461,7 +480,8 @@
     "seconds_per_fast_problem": 20.0, 
     "prerequisites": [
       "slope_intercept_form"
-    ]
+    ], 
+    "exercise_id": "graphing_inequalities"
   }, 
   {
     "related_video_readable_ids": [
@@ -484,7 +504,8 @@
     "seconds_per_fast_problem": 29.0, 
     "prerequisites": [
       "graphing_inequalities"
-    ]
+    ], 
+    "exercise_id": "graphing_inequalities_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -508,7 +529,8 @@
     "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "interpreting_linear_equations"
-    ]
+    ], 
+    "exercise_id": "functions_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -529,7 +551,8 @@
     "seconds_per_fast_problem": 30.0, 
     "prerequisites": [
       "functions_1"
-    ]
+    ], 
+    "exercise_id": "functions_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -550,7 +573,8 @@
     "seconds_per_fast_problem": 56.0, 
     "prerequisites": [
       "functions_2"
-    ]
+    ], 
+    "exercise_id": "functions_3"
   }, 
   {
     "related_video_readable_ids": [
@@ -577,7 +601,8 @@
     "prerequisites": [
       "functions_2", 
       "domain_and_range_0.5"
-    ]
+    ], 
+    "exercise_id": "domain_of_a_function"
   }, 
   {
     "related_video_readable_ids": [
@@ -598,7 +623,8 @@
     "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "functions_1"
-    ]
+    ], 
+    "exercise_id": "domain_and_range_0.5"
   }, 
   {
     "related_video_readable_ids": [
@@ -625,7 +651,8 @@
     "prerequisites": [
       "functions_2", 
       "domain_and_range_0.5"
-    ]
+    ], 
+    "exercise_id": "domain_of_a_function"
   }, 
   {
     "related_video_readable_ids": [
@@ -651,7 +678,8 @@
     "prerequisites": [
       "functions_2", 
       "domain_and_range_0.5"
-    ]
+    ], 
+    "exercise_id": "range_of_a_function"
   }, 
   {
     "related_video_readable_ids": [
@@ -676,7 +704,8 @@
     "prerequisites": [
       "domain_of_a_function", 
       "range_of_a_function"
-    ]
+    ], 
+    "exercise_id": "inverses_of_functions"
   }, 
   {
     "related_video_readable_ids": [
@@ -697,7 +726,8 @@
     "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "functions_1"
-    ]
+    ], 
+    "exercise_id": "positive_and_negative_parts_of_functions"
   }, 
   {
     "related_video_readable_ids": [
@@ -719,7 +749,8 @@
     "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "functions_2"
-    ]
+    ], 
+    "exercise_id": "even_and_odd_functions"
   }, 
   {
     "related_video_readable_ids": [
@@ -742,7 +773,8 @@
       "domain_of_a_function", 
       "functions_3", 
       "range_of_a_function"
-    ]
+    ], 
+    "exercise_id": "shifting_and_reflecting_functions"
   }, 
   {
     "related_video_readable_ids": [
@@ -765,7 +797,8 @@
     "seconds_per_fast_problem": 22.0, 
     "prerequisites": [
       "factoring_linear_binomials"
-    ]
+    ], 
+    "exercise_id": "factoring_polynomials_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -788,7 +821,8 @@
     "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "factoring_polynomials_1"
-    ]
+    ], 
+    "exercise_id": "solving_quadratics_by_factoring"
   }, 
   {
     "related_video_readable_ids": [
@@ -809,7 +843,8 @@
     "seconds_per_fast_problem": 47.0, 
     "prerequisites": [
       "factoring_polynomials_1"
-    ]
+    ], 
+    "exercise_id": "factoring_polynomials_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -832,7 +867,8 @@
     "seconds_per_fast_problem": 25.0, 
     "prerequisites": [
       "solving_quadratics_by_factoring"
-    ]
+    ], 
+    "exercise_id": "solving_quadratics_by_factoring_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -854,7 +890,8 @@
     "prerequisites": [
       "multiplying_expressions_1", 
       "multiplying_polynomials"
-    ]
+    ], 
+    "exercise_id": "factoring_difference_of_squares_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -875,7 +912,8 @@
     "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "factoring_difference_of_squares_1"
-    ]
+    ], 
+    "exercise_id": "factoring_difference_of_squares_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -897,7 +935,8 @@
     "seconds_per_fast_problem": 25.0, 
     "prerequisites": [
       "factoring_difference_of_squares_2"
-    ]
+    ], 
+    "exercise_id": "factoring_difference_of_squares_3"
   }, 
   {
     "related_video_readable_ids": [
@@ -924,7 +963,8 @@
     "seconds_per_fast_problem": 46.0, 
     "prerequisites": [
       "factoring_polynomials_2"
-    ]
+    ], 
+    "exercise_id": "factoring_polynomials_by_grouping_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -945,7 +985,8 @@
     "seconds_per_fast_problem": 19.0, 
     "prerequisites": [
       "factoring_polynomials_1"
-    ]
+    ], 
+    "exercise_id": "solving_quadratics_by_taking_the_square_root"
   }, 
   {
     "related_video_readable_ids": [
@@ -967,7 +1008,8 @@
     "prerequisites": [
       "solving_quadratics_by_taking_the_square_root", 
       "solving_quadratics_by_factoring"
-    ]
+    ], 
+    "exercise_id": "completing_the_square_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -989,7 +1031,8 @@
     "prerequisites": [
       "solving_quadratics_by_factoring_2", 
       "completing_the_square_1"
-    ]
+    ], 
+    "exercise_id": "completing_the_square_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -1013,7 +1056,8 @@
     "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
       "completing_the_square_2"
-    ]
+    ], 
+    "exercise_id": "quadratic_equation"
   }, 
   {
     "related_video_readable_ids": [
@@ -1035,7 +1079,8 @@
     "seconds_per_fast_problem": 17.0, 
     "prerequisites": [
       "quadratic_equation"
-    ]
+    ], 
+    "exercise_id": "solutions_to_quadratic_equations"
   }, 
   {
     "related_video_readable_ids": [
@@ -1058,7 +1103,8 @@
     "seconds_per_fast_problem": 15.0, 
     "prerequisites": [
       "equation_of_a_line"
-    ]
+    ], 
+    "exercise_id": "adding_and_subtracting_polynomials"
   }, 
   {
     "related_video_readable_ids": [
@@ -1081,7 +1127,8 @@
     "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "multiplying_expressions_0.5"
-    ]
+    ], 
+    "exercise_id": "multiplying_polynomials"
   }, 
   {
     "related_video_readable_ids": [
@@ -1104,7 +1151,8 @@
     "seconds_per_fast_problem": 60.0, 
     "prerequisites": [
       "simplifying_rational_expressions_3"
-    ]
+    ], 
+    "exercise_id": "partial_fraction_expansion_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -1126,7 +1174,8 @@
     "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "radians_and_degrees"
-    ]
+    ], 
+    "exercise_id": "trigonometry_0.5"
   }, 
   {
     "related_video_readable_ids": [
@@ -1149,7 +1198,8 @@
     "prerequisites": [
       "trigonometry_0.5", 
       "unit_circle"
-    ]
+    ], 
+    "exercise_id": "trigonometry_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -1171,7 +1221,8 @@
     "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "trigonometry_1"
-    ]
+    ], 
+    "exercise_id": "reciprocal_trig_funcs"
   }, 
   {
     "related_video_readable_ids": [
@@ -1194,7 +1245,8 @@
     "seconds_per_fast_problem": 16.0, 
     "prerequisites": [
       "trigonometry_1"
-    ]
+    ], 
+    "exercise_id": "trigonometry_1.5"
   }, 
   {
     "related_video_readable_ids": [
@@ -1215,7 +1267,8 @@
     "seconds_per_fast_problem": 15.0, 
     "prerequisites": [
       "trigonometry_1.5"
-    ]
+    ], 
+    "exercise_id": "trigonometry_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -1241,7 +1294,8 @@
     "prerequisites": [
       "trigonometry_1", 
       "pythagorean_theorem_1"
-    ]
+    ], 
+    "exercise_id": "pythagorean_theorem_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -1264,7 +1318,8 @@
     "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "congruent_triangles_2"
-    ]
+    ], 
+    "exercise_id": "degrees_to_radians"
   }, 
   {
     "related_video_readable_ids": [
@@ -1287,7 +1342,8 @@
     "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "congruent_triangles_2"
-    ]
+    ], 
+    "exercise_id": "radians_to_degrees"
   }, 
   {
     "related_video_readable_ids": [
@@ -1312,7 +1368,8 @@
     "prerequisites": [
       "radians_to_degrees", 
       "degrees_to_radians"
-    ]
+    ], 
+    "exercise_id": "radians_and_degrees"
   }, 
   {
     "related_video_readable_ids": [
@@ -1338,7 +1395,8 @@
     "seconds_per_fast_problem": 15.0, 
     "prerequisites": [
       "radians_and_degrees"
-    ]
+    ], 
+    "exercise_id": "unit_circle"
   }, 
   {
     "related_video_readable_ids": [
@@ -1359,7 +1417,8 @@
     "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
       "trigonometry_2"
-    ]
+    ], 
+    "exercise_id": "graphs_of_sine_and_cosine"
   }, 
   {
     "related_video_readable_ids": [
@@ -1383,7 +1442,8 @@
     "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "trigonometry_2"
-    ]
+    ], 
+    "exercise_id": "inverse_trig_functions"
   }, 
   {
     "related_video_readable_ids": [
@@ -1407,7 +1467,8 @@
     "prerequisites": [
       "trigonometry_2", 
       "reciprocal_trig_funcs"
-    ]
+    ], 
+    "exercise_id": "pythagorean_identities"
   }, 
   {
     "related_video_readable_ids": [
@@ -1432,7 +1493,8 @@
     "seconds_per_fast_problem": 39.0, 
     "prerequisites": [
       "trigonometry_2"
-    ]
+    ], 
+    "exercise_id": "trig_addition_identities"
   }, 
   {
     "related_video_readable_ids": [
@@ -1454,7 +1516,8 @@
     "seconds_per_fast_problem": 46.0, 
     "prerequisites": [
       "pythagorean_identities"
-    ]
+    ], 
+    "exercise_id": "law_of_cosines"
   }, 
   {
     "related_video_readable_ids": [], 
@@ -1471,7 +1534,8 @@
     "kind": "Exercise", 
     "name": "law_of_sines", 
     "seconds_per_fast_problem": 36.5, 
-    "prerequisites": []
+    "prerequisites": [], 
+    "exercise_id": "law_of_sines"
   }, 
   {
     "related_video_readable_ids": [
@@ -1492,7 +1556,8 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "adding_and_subtracting_polynomials"
-    ]
+    ], 
+    "exercise_id": "recognizing_conic_sections"
   }, 
   {
     "related_video_readable_ids": [
@@ -1513,7 +1578,8 @@
     "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "recognizing_conic_sections"
-    ]
+    ], 
+    "exercise_id": "equation_of_a_circle_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -1535,7 +1601,8 @@
     "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "circles_and_arcs"
-    ]
+    ], 
+    "exercise_id": "graphing_circles"
   }, 
   {
     "related_video_readable_ids": [
@@ -1558,7 +1625,8 @@
     "seconds_per_fast_problem": 27.0, 
     "prerequisites": [
       "equation_of_a_circle_1"
-    ]
+    ], 
+    "exercise_id": "equation_of_a_circle_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -1581,7 +1649,8 @@
     "seconds_per_fast_problem": 30.0, 
     "prerequisites": [
       "graphing_circles"
-    ]
+    ], 
+    "exercise_id": "graphing_circles_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -1602,7 +1671,8 @@
     "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "equation_of_a_circle_1"
-    ]
+    ], 
+    "exercise_id": "equation_of_an_ellipse"
   }, 
   {
     "related_video_readable_ids": [
@@ -1624,7 +1694,8 @@
     "seconds_per_fast_problem": 14.0, 
     "prerequisites": [
       "recognizing_conic_sections"
-    ]
+    ], 
+    "exercise_id": "parabola_intuition_1"
   }, 
   {
     "related_video_readable_ids": [], 
@@ -1643,7 +1714,8 @@
     "seconds_per_fast_problem": 34.0, 
     "prerequisites": [
       "parabola_intuition_1"
-    ]
+    ], 
+    "exercise_id": "parabola_intuition_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -1664,7 +1736,8 @@
     "seconds_per_fast_problem": 55.0, 
     "prerequisites": [
       "graphing_parabolas_2"
-    ]
+    ], 
+    "exercise_id": "parabola_intuition_3"
   }, 
   {
     "related_video_readable_ids": [
@@ -1687,7 +1760,8 @@
     "seconds_per_fast_problem": 14.0, 
     "prerequisites": [
       "equation_of_a_circle_1"
-    ]
+    ], 
+    "exercise_id": "equation_of_a_hyperbola"
   }, 
   {
     "related_video_readable_ids": [
@@ -1708,7 +1782,8 @@
     "seconds_per_fast_problem": 50.0, 
     "prerequisites": [
       "graphing_linear_equations"
-    ]
+    ], 
+    "exercise_id": "graphing_systems_of_equations"
   }, 
   {
     "related_video_readable_ids": [
@@ -1734,7 +1809,8 @@
     "seconds_per_fast_problem": 44.0, 
     "prerequisites": [
       "linear_equations_2"
-    ]
+    ], 
+    "exercise_id": "systems_of_equations_with_elimination_0.5"
   }, 
   {
     "related_video_readable_ids": [], 
@@ -1753,7 +1829,8 @@
     "seconds_per_fast_problem": 60.0, 
     "prerequisites": [
       "linear_equations_2"
-    ]
+    ], 
+    "exercise_id": "systems_of_equations_with_elimination"
   }, 
   {
     "related_video_readable_ids": [
@@ -1778,7 +1855,8 @@
     "seconds_per_fast_problem": 56.0, 
     "prerequisites": [
       "linear_equations_2"
-    ]
+    ], 
+    "exercise_id": "systems_of_equations_with_substitution"
   }, 
   {
     "related_video_readable_ids": [
@@ -1809,7 +1887,8 @@
       "systems_of_equations_with_elimination", 
       "systems_of_equations_with_substitution", 
       "systems_of_equations_with_elimination_0.5"
-    ]
+    ], 
+    "exercise_id": "systems_of_equations"
   }, 
   {
     "related_video_readable_ids": [
@@ -1832,7 +1911,8 @@
     "prerequisites": [
       "systems_of_equations", 
       "graphing_systems_of_equations"
-    ]
+    ], 
+    "exercise_id": "systems_of_equations_word_problems"
   }, 
   {
     "related_video_readable_ids": [
@@ -1854,7 +1934,8 @@
     "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "graphing_systems_of_equations"
-    ]
+    ], 
+    "exercise_id": "solutions_to_systems_of_equations"
   }, 
   {
     "related_video_readable_ids": [
@@ -1877,7 +1958,8 @@
     "seconds_per_fast_problem": 48.0, 
     "prerequisites": [
       "graphing_inequalities_2"
-    ]
+    ], 
+    "exercise_id": "graphing_systems_of_inequalities"
   }, 
   {
     "related_video_readable_ids": [
@@ -1900,7 +1982,8 @@
     "seconds_per_fast_problem": 58.0, 
     "prerequisites": [
       "graphing_systems_of_inequalities"
-    ]
+    ], 
+    "exercise_id": "graphing_systems_of_inequalities_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -1923,7 +2006,8 @@
     "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "functions_3"
-    ]
+    ], 
+    "exercise_id": "arithmetic_sequences_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -1947,7 +2031,8 @@
     "seconds_per_fast_problem": 18.0, 
     "prerequisites": [
       "arithmetic_sequences_1"
-    ]
+    ], 
+    "exercise_id": "arithmetic_sequences_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -1969,7 +2054,8 @@
     "seconds_per_fast_problem": 40.0, 
     "prerequisites": [
       "arithmetic_sequences_2"
-    ]
+    ], 
+    "exercise_id": "arithmetic_series"
   }, 
   {
     "related_video_readable_ids": [
@@ -1991,7 +2077,8 @@
     "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "arithmetic_sequences_1"
-    ]
+    ], 
+    "exercise_id": "geometric_sequences_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -2014,7 +2101,8 @@
     "prerequisites": [
       "geometric_sequences_1", 
       "arithmetic_sequences_2"
-    ]
+    ], 
+    "exercise_id": "geometric_sequences_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -2039,7 +2127,8 @@
     "seconds_per_fast_problem": 11.75, 
     "prerequisites": [
       "finding-probability"
-    ]
+    ], 
+    "exercise_id": "probability_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -2065,7 +2154,8 @@
     "seconds_per_fast_problem": 15.0, 
     "prerequisites": [
       "compound-events"
-    ]
+    ], 
+    "exercise_id": "independent_probability"
   }, 
   {
     "related_video_readable_ids": [
@@ -2090,7 +2180,8 @@
     "seconds_per_fast_problem": 23.0, 
     "prerequisites": [
       "probability_1"
-    ]
+    ], 
+    "exercise_id": "dependent_probability"
   }, 
   {
     "related_video_readable_ids": [
@@ -2112,7 +2203,8 @@
     "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "dice_probability"
-    ]
+    ], 
+    "exercise_id": "counting_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -2135,7 +2227,8 @@
     "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "counting_2"
-    ]
+    ], 
+    "exercise_id": "permutations_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -2157,7 +2250,8 @@
     "seconds_per_fast_problem": 14.0, 
     "prerequisites": [
       "permutations_1"
-    ]
+    ], 
+    "exercise_id": "combinations_1"
   }, 
   {
     "related_video_readable_ids": [], 
@@ -2176,7 +2270,8 @@
     "seconds_per_fast_problem": 16.0, 
     "prerequisites": [
       "combinations_1"
-    ]
+    ], 
+    "exercise_id": "permutations_and_combinations_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -2206,7 +2301,8 @@
     "seconds_per_fast_problem": 37.0, 
     "prerequisites": [
       "permutations_and_combinations_2"
-    ]
+    ], 
+    "exercise_id": "probability_with_perm_comb"
   }, 
   {
     "related_video_readable_ids": [
@@ -2228,7 +2324,8 @@
     "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "equation_of_a_line"
-    ]
+    ], 
+    "exercise_id": "imaginary_unit_powers"
   }, 
   {
     "related_video_readable_ids": [
@@ -2252,7 +2349,8 @@
     "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "imaginary_unit_powers"
-    ]
+    ], 
+    "exercise_id": "the_complex_plane"
   }, 
   {
     "related_video_readable_ids": [
@@ -2273,7 +2371,8 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "the_complex_plane"
-    ]
+    ], 
+    "exercise_id": "complex_number_polar_form_intuition"
   }, 
   {
     "related_video_readable_ids": [], 
@@ -2292,7 +2391,8 @@
     "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "the_complex_plane"
-    ]
+    ], 
+    "exercise_id": "complex_plane_operations"
   }, 
   {
     "related_video_readable_ids": [
@@ -2316,7 +2416,8 @@
     "prerequisites": [
       "adding_and_subtracting_polynomials", 
       "complex_plane_operations"
-    ]
+    ], 
+    "exercise_id": "adding_and_subtracting_complex_numbers"
   }, 
   {
     "related_video_readable_ids": [
@@ -2339,7 +2440,8 @@
     "prerequisites": [
       "multiplying_expressions_1", 
       "adding_and_subtracting_complex_numbers"
-    ]
+    ], 
+    "exercise_id": "multiplying_complex_numbers"
   }, 
   {
     "related_video_readable_ids": [
@@ -2360,7 +2462,8 @@
     "seconds_per_fast_problem": 38.0, 
     "prerequisites": [
       "multiplying_complex_numbers"
-    ]
+    ], 
+    "exercise_id": "dividing_complex_numbers"
   }, 
   {
     "related_video_readable_ids": [
@@ -2383,7 +2486,8 @@
     "prerequisites": [
       "complex_number_polar_form_intuition", 
       "dividing_complex_numbers"
-    ]
+    ], 
+    "exercise_id": "multiplying_and_dividing_complex_number_polar_forms"
   }, 
   {
     "related_video_readable_ids": [
@@ -2404,7 +2508,8 @@
     "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
       "the_complex_plane"
-    ]
+    ], 
+    "exercise_id": "absolute_value_of_complex_numbers"
   }, 
   {
     "related_video_readable_ids": [
@@ -2425,7 +2530,8 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "the_complex_plane"
-    ]
+    ], 
+    "exercise_id": "complex_number_polar_form_intuition"
   }, 
   {
     "related_video_readable_ids": [
@@ -2448,7 +2554,8 @@
     "prerequisites": [
       "complex_number_polar_form_intuition", 
       "dividing_complex_numbers"
-    ]
+    ], 
+    "exercise_id": "multiplying_and_dividing_complex_number_polar_forms"
   }, 
   {
     "related_video_readable_ids": [], 
@@ -2467,7 +2574,8 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "multiplying_and_dividing_complex_number_polar_forms"
-    ]
+    ], 
+    "exercise_id": "powers_of_complex_numbers_1"
   }, 
   {
     "related_video_readable_ids": [], 
@@ -2484,7 +2592,8 @@
     "kind": "Exercise", 
     "name": "limits_1", 
     "seconds_per_fast_problem": 8.0, 
-    "prerequisites": []
+    "prerequisites": [], 
+    "exercise_id": "limits_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -2505,6 +2614,7 @@
     "seconds_per_fast_problem": 41.0, 
     "prerequisites": [
       "two-sided-limits-using-algebra"
-    ]
+    ], 
+    "exercise_id": "limits_2"
   }
 ]

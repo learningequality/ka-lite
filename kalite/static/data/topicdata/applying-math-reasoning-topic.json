@@ -16,7 +16,8 @@
     "kind": "Exercise", 
     "name": "reading_tables_1", 
     "seconds_per_fast_problem": 10.0, 
-    "prerequisites": []
+    "prerequisites": [], 
+    "exercise_id": "reading_tables_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -37,7 +38,8 @@
     "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "reading_tables_1"
-    ]
+    ], 
+    "exercise_id": "reading_tables_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -58,7 +60,8 @@
     "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "reading_tables_2"
-    ]
+    ], 
+    "exercise_id": "reading_stem_and_leaf_plots"
   }, 
   {
     "related_video_readable_ids": [
@@ -77,7 +80,8 @@
     "kind": "Exercise", 
     "name": "reading_pictographs_1", 
     "seconds_per_fast_problem": 9.0, 
-    "prerequisites": []
+    "prerequisites": [], 
+    "exercise_id": "reading_pictographs_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -98,7 +102,8 @@
     "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
       "reading_pictographs_1"
-    ]
+    ], 
+    "exercise_id": "reading_pictographs_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -119,7 +124,8 @@
     "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "creating_bar_charts_1"
-    ]
+    ], 
+    "exercise_id": "reading_bar_charts_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -138,7 +144,8 @@
     "kind": "Exercise", 
     "name": "creating_bar_charts_1", 
     "seconds_per_fast_problem": 27.0, 
-    "prerequisites": []
+    "prerequisites": [], 
+    "exercise_id": "creating_bar_charts_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -159,7 +166,8 @@
     "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "reading_bar_charts_1"
-    ]
+    ], 
+    "exercise_id": "reading_bar_charts_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -181,7 +189,8 @@
     "prerequisites": [
       "mean_median_and_mode", 
       "reading_bar_charts_2"
-    ]
+    ], 
+    "exercise_id": "reading_bar_charts_3"
   }, 
   {
     "related_video_readable_ids": [], 
@@ -198,7 +207,8 @@
     "kind": "Exercise", 
     "name": "reading_line_charts_1", 
     "seconds_per_fast_problem": 9.0, 
-    "prerequisites": []
+    "prerequisites": [], 
+    "exercise_id": "reading_line_charts_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -219,7 +229,8 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "number_line"
-    ]
+    ], 
+    "exercise_id": "comparing_whole_numbers"
   }, 
   {
     "related_video_readable_ids": [
@@ -240,6 +251,7 @@
     "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "number_line_2"
-    ]
+    ], 
+    "exercise_id": "inequalities_on_a_number_line"
   }
 ]

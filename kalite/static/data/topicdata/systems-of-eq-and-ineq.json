@@ -18,7 +18,8 @@
     "seconds_per_fast_problem": 50.0, 
     "prerequisites": [
       "graphing_linear_equations"
-    ]
+    ], 
+    "exercise_id": "graphing_systems_of_equations"
   }, 
   {
     "related_video_readable_ids": [
@@ -44,7 +45,8 @@
     "seconds_per_fast_problem": 44.0, 
     "prerequisites": [
       "linear_equations_2"
-    ]
+    ], 
+    "exercise_id": "systems_of_equations_with_elimination_0.5"
   }, 
   {
     "related_video_readable_ids": [], 
@@ -63,7 +65,8 @@
     "seconds_per_fast_problem": 60.0, 
     "prerequisites": [
       "linear_equations_2"
-    ]
+    ], 
+    "exercise_id": "systems_of_equations_with_elimination"
   }, 
   {
     "related_video_readable_ids": [
@@ -88,7 +91,8 @@
     "seconds_per_fast_problem": 56.0, 
     "prerequisites": [
       "linear_equations_2"
-    ]
+    ], 
+    "exercise_id": "systems_of_equations_with_substitution"
   }, 
   {
     "related_video_readable_ids": [
@@ -119,7 +123,8 @@
       "systems_of_equations_with_elimination", 
       "systems_of_equations_with_substitution", 
       "systems_of_equations_with_elimination_0.5"
-    ]
+    ], 
+    "exercise_id": "systems_of_equations"
   }, 
   {
     "related_video_readable_ids": [
@@ -142,7 +147,8 @@
     "prerequisites": [
       "systems_of_equations", 
       "graphing_systems_of_equations"
-    ]
+    ], 
+    "exercise_id": "systems_of_equations_word_problems"
   }, 
   {
     "related_video_readable_ids": [
@@ -163,7 +169,8 @@
     "seconds_per_fast_problem": 50.0, 
     "prerequisites": [
       "graphing_linear_equations"
-    ]
+    ], 
+    "exercise_id": "graphing_systems_of_equations"
   }, 
   {
     "related_video_readable_ids": [
@@ -188,7 +195,8 @@
     "seconds_per_fast_problem": 56.0, 
     "prerequisites": [
       "linear_equations_2"
-    ]
+    ], 
+    "exercise_id": "systems_of_equations_with_substitution"
   }, 
   {
     "related_video_readable_ids": [
@@ -214,7 +222,8 @@
     "seconds_per_fast_problem": 44.0, 
     "prerequisites": [
       "linear_equations_2"
-    ]
+    ], 
+    "exercise_id": "systems_of_equations_with_elimination_0.5"
   }, 
   {
     "related_video_readable_ids": [], 
@@ -233,7 +242,8 @@
     "seconds_per_fast_problem": 60.0, 
     "prerequisites": [
       "linear_equations_2"
-    ]
+    ], 
+    "exercise_id": "systems_of_equations_with_elimination"
   }, 
   {
     "related_video_readable_ids": [
@@ -264,7 +274,8 @@
       "systems_of_equations_with_elimination", 
       "systems_of_equations_with_substitution", 
       "systems_of_equations_with_elimination_0.5"
-    ]
+    ], 
+    "exercise_id": "systems_of_equations"
   }, 
   {
     "related_video_readable_ids": [
@@ -286,7 +297,8 @@
     "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "graphing_systems_of_equations"
-    ]
+    ], 
+    "exercise_id": "solutions_to_systems_of_equations"
   }, 
   {
     "related_video_readable_ids": [
@@ -307,7 +319,8 @@
     "seconds_per_fast_problem": 50.0, 
     "prerequisites": [
       "graphing_linear_equations"
-    ]
+    ], 
+    "exercise_id": "graphing_systems_of_equations"
   }, 
   {
     "related_video_readable_ids": [
@@ -329,7 +342,8 @@
     "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "graphing_systems_of_equations"
-    ]
+    ], 
+    "exercise_id": "solutions_to_systems_of_equations"
   }, 
   {
     "related_video_readable_ids": [
@@ -354,7 +368,8 @@
     "seconds_per_fast_problem": 56.0, 
     "prerequisites": [
       "linear_equations_2"
-    ]
+    ], 
+    "exercise_id": "systems_of_equations_with_substitution"
   }, 
   {
     "related_video_readable_ids": [
@@ -380,7 +395,8 @@
     "seconds_per_fast_problem": 44.0, 
     "prerequisites": [
       "linear_equations_2"
-    ]
+    ], 
+    "exercise_id": "systems_of_equations_with_elimination_0.5"
   }, 
   {
     "related_video_readable_ids": [], 
@@ -399,7 +415,8 @@
     "seconds_per_fast_problem": 60.0, 
     "prerequisites": [
       "linear_equations_2"
-    ]
+    ], 
+    "exercise_id": "systems_of_equations_with_elimination"
   }, 
   {
     "related_video_readable_ids": [
@@ -422,7 +439,8 @@
     "prerequisites": [
       "systems_of_equations", 
       "graphing_systems_of_equations"
-    ]
+    ], 
+    "exercise_id": "systems_of_equations_word_problems"
   }, 
   {
     "related_video_readable_ids": [
@@ -445,7 +463,8 @@
     "seconds_per_fast_problem": 48.0, 
     "prerequisites": [
       "graphing_inequalities_2"
-    ]
+    ], 
+    "exercise_id": "graphing_systems_of_inequalities"
   }, 
   {
     "related_video_readable_ids": [
@@ -468,6 +487,7 @@
     "seconds_per_fast_problem": 58.0, 
     "prerequisites": [
       "graphing_systems_of_inequalities"
-    ]
+    ], 
+    "exercise_id": "graphing_systems_of_inequalities_2"
   }
 ]

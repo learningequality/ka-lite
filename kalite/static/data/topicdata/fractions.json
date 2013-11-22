@@ -18,7 +18,8 @@
     "kind": "Exercise", 
     "name": "recognizing_fractions_0.5", 
     "seconds_per_fast_problem": 7.0, 
-    "prerequisites": []
+    "prerequisites": [], 
+    "exercise_id": "recognizing_fractions_0.5"
   }, 
   {
     "related_video_readable_ids": [
@@ -39,7 +40,8 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "recognizing_fractions_0.5"
-    ]
+    ], 
+    "exercise_id": "recognizing_fractions"
   }, 
   {
     "related_video_readable_ids": [
@@ -63,7 +65,8 @@
     "prerequisites": [
       "recognizing_fractions_0.5", 
       "number_line"
-    ]
+    ], 
+    "exercise_id": "fractions_on_the_number_line_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -86,7 +89,8 @@
     "prerequisites": [
       "adding_fractions_with_common_denominators", 
       "subtracting_fractions_with_common_denominators"
-    ]
+    ], 
+    "exercise_id": "fraction_word_problems_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -107,7 +111,8 @@
     "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "visualizing-equivalent-fractions"
-    ]
+    ], 
+    "exercise_id": "fractions_cut_and_copy_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -131,7 +136,8 @@
     "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "greatest_common_divisor"
-    ]
+    ], 
+    "exercise_id": "simplifying_fractions"
   }, 
   {
     "related_video_readable_ids": [
@@ -153,7 +159,8 @@
     "prerequisites": [
       "arithmetic_word_problems", 
       "comparing_fractions_1"
-    ]
+    ], 
+    "exercise_id": "equivalent_fractions"
   }, 
   {
     "related_video_readable_ids": [
@@ -175,7 +182,8 @@
     "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "equivalent_fractions"
-    ]
+    ], 
+    "exercise_id": "equivalent_fractions_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -198,7 +206,8 @@
     "prerequisites": [
       "fractions_on_the_number_line_1", 
       "recognizing_fractions"
-    ]
+    ], 
+    "exercise_id": "comparing_fractions_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -221,7 +230,8 @@
     "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "visualizing-equivalent-fractions"
-    ]
+    ], 
+    "exercise_id": "comparing_fractions_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -244,7 +254,8 @@
     "seconds_per_fast_problem": 17.0, 
     "prerequisites": [
       "comparing_fractions_2"
-    ]
+    ], 
+    "exercise_id": "ordering_fractions"
   }, 
   {
     "related_video_readable_ids": [
@@ -265,7 +276,8 @@
     "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "visualizing-equivalent-fractions"
-    ]
+    ], 
+    "exercise_id": "adding_fractions_with_common_denominators"
   }, 
   {
     "related_video_readable_ids": [
@@ -286,7 +298,8 @@
     "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "adding_fractions_with_common_denominators"
-    ]
+    ], 
+    "exercise_id": "subtracting_fractions_with_common_denominators"
   }, 
   {
     "related_video_readable_ids": [
@@ -311,7 +324,8 @@
     "prerequisites": [
       "comparing_fractions_2", 
       "adding_fractions_with_common_denominators"
-    ]
+    ], 
+    "exercise_id": "adding_fractions"
   }, 
   {
     "related_video_readable_ids": [
@@ -333,7 +347,8 @@
     "prerequisites": [
       "comparing_fractions_2", 
       "subtracting_fractions_with_common_denominators"
-    ]
+    ], 
+    "exercise_id": "subtracting_fractions"
   }, 
   {
     "related_video_readable_ids": [
@@ -357,7 +372,8 @@
     "seconds_per_fast_problem": 21.0, 
     "prerequisites": [
       "constructing-and-interpreting-absolute-value"
-    ]
+    ], 
+    "exercise_id": "adding_and_subtracting_fractions"
   }, 
   {
     "related_video_readable_ids": [
@@ -381,7 +397,8 @@
     "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "multiplying-fractions-and-whole-numbers-word-problems"
-    ]
+    ], 
+    "exercise_id": "multiplying_fractions_by_integers"
   }, 
   {
     "related_video_readable_ids": [
@@ -403,7 +420,8 @@
     "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "understanding-multiplying-fractions-by-fractions"
-    ]
+    ], 
+    "exercise_id": "multiplying_fractions_0.5"
   }, 
   {
     "related_video_readable_ids": [
@@ -426,7 +444,8 @@
     "prerequisites": [
       "multiplying_and_dividing_negative_numbers", 
       "multiplying-fractions-by-fractions-word-problems"
-    ]
+    ], 
+    "exercise_id": "multiplying_fractions"
   }, 
   {
     "related_video_readable_ids": [
@@ -449,7 +468,8 @@
     "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "multiplying_fractions_0.5"
-    ]
+    ], 
+    "exercise_id": "dividing_fractions_0.5"
   }, 
   {
     "related_video_readable_ids": [
@@ -473,7 +493,8 @@
     "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "multiplying_fractions_0.5"
-    ]
+    ], 
+    "exercise_id": "dividing_fractions"
   }, 
   {
     "related_video_readable_ids": [
@@ -496,7 +517,8 @@
     "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "multiplying_and_dividing_negative_numbers"
-    ]
+    ], 
+    "exercise_id": "dividing_fractions_2"
   }, 
   {
     "related_video_readable_ids": [], 
@@ -513,7 +535,8 @@
     "kind": "Exercise", 
     "name": "dividing_fractions_word_problems", 
     "seconds_per_fast_problem": 13.0, 
-    "prerequisites": []
+    "prerequisites": [], 
+    "exercise_id": "dividing_fractions_word_problems"
   }, 
   {
     "related_video_readable_ids": [
@@ -539,7 +562,8 @@
     "prerequisites": [
       "visualizing-equivalent-fractions", 
       "division_2"
-    ]
+    ], 
+    "exercise_id": "converting_mixed_numbers_and_improper_fractions"
   }, 
   {
     "related_video_readable_ids": [
@@ -560,7 +584,8 @@
     "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "fractions_on_the_number_line_1"
-    ]
+    ], 
+    "exercise_id": "fractions_on_the_number_line_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -581,7 +606,8 @@
     "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "comparing_fractions_2"
-    ]
+    ], 
+    "exercise_id": "comparing_improper_fractions_and_mixed_numbers"
   }, 
   {
     "related_video_readable_ids": [
@@ -603,7 +629,8 @@
     "kind": "Exercise", 
     "name": "ordering_improper_fractions_and_mixed_numbers", 
     "seconds_per_fast_problem": 25.0, 
-    "prerequisites": []
+    "prerequisites": [], 
+    "exercise_id": "ordering_improper_fractions_and_mixed_numbers"
   }, 
   {
     "related_video_readable_ids": [
@@ -624,7 +651,8 @@
     "seconds_per_fast_problem": 26.0, 
     "prerequisites": [
       "fractions_cut_and_copy_1"
-    ]
+    ], 
+    "exercise_id": "fractions_cut_and_copy_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -646,7 +674,8 @@
     "prerequisites": [
       "number_line_2", 
       "fractions_on_the_number_line_2"
-    ]
+    ], 
+    "exercise_id": "fractions_on_the_number_line_3"
   }, 
   {
     "related_video_readable_ids": [
@@ -670,7 +699,8 @@
       "adding_fractions_with_common_denominators", 
       "subtracting_fractions_with_common_denominators", 
       "converting_mixed_numbers_and_improper_fractions"
-    ]
+    ], 
+    "exercise_id": "adding_subtracting_mixed_numbers_0.5"
   }, 
   {
     "related_video_readable_ids": [
@@ -699,7 +729,8 @@
       "adding_subtracting_mixed_numbers_0.5", 
       "adding_fractions", 
       "subtracting_fractions"
-    ]
+    ], 
+    "exercise_id": "adding_subtracting_mixed_numbers_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -722,7 +753,8 @@
     "seconds_per_fast_problem": 36.0, 
     "prerequisites": [
       "multiplying_fractions_0.5"
-    ]
+    ], 
+    "exercise_id": "multiplying_mixed_numbers_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -747,7 +779,8 @@
     "prerequisites": [
       "understanding-fractions-as-division", 
       "dividing_decimals_0.5"
-    ]
+    ], 
+    "exercise_id": "converting_fractions_to_decimals"
   }, 
   {
     "related_video_readable_ids": [
@@ -771,7 +804,8 @@
     "prerequisites": [
       "converting_mixed_numbers_and_improper_fractions", 
       "converting_fractions_to_decimals_0.5"
-    ]
+    ], 
+    "exercise_id": "converting_decimals_to_fractions_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -793,7 +827,8 @@
     "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
       "rational-number-word-problems"
-    ]
+    ], 
+    "exercise_id": "converting_decimals_to_fractions_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -812,6 +847,7 @@
     "kind": "Exercise", 
     "name": "ordering_numbers", 
     "seconds_per_fast_problem": 18.0, 
-    "prerequisites": []
+    "prerequisites": [], 
+    "exercise_id": "ordering_numbers"
   }
 ]

@@ -24,7 +24,8 @@
     "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "patterns-in-zeros"
-    ]
+    ], 
+    "exercise_id": "exponents_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -46,7 +47,8 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "prime_factorization"
-    ]
+    ], 
+    "exercise_id": "square_roots"
   }, 
   {
     "related_video_readable_ids": [
@@ -67,7 +69,8 @@
     "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "square_roots"
-    ]
+    ], 
+    "exercise_id": "square_roots_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -92,7 +95,8 @@
     "prerequisites": [
       "exponent_rules", 
       "square_roots"
-    ]
+    ], 
+    "exercise_id": "simplifying_radicals"
   }, 
   {
     "related_video_readable_ids": [
@@ -114,7 +118,8 @@
     "seconds_per_fast_problem": 13.0, 
     "prerequisites": [
       "adding_and_subtracting_radicals"
-    ]
+    ], 
+    "exercise_id": "multiplying_radicals"
   }, 
   {
     "related_video_readable_ids": [
@@ -135,7 +140,8 @@
     "seconds_per_fast_problem": 20.0, 
     "prerequisites": [
       "simplifying_radicals"
-    ]
+    ], 
+    "exercise_id": "adding_and_subtracting_radicals"
   }, 
   {
     "related_video_readable_ids": [
@@ -158,7 +164,8 @@
     "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "prime_factorization"
-    ]
+    ], 
+    "exercise_id": "cube_roots"
   }, 
   {
     "related_video_readable_ids": [
@@ -180,7 +187,8 @@
     "seconds_per_fast_problem": 26.0, 
     "prerequisites": [
       "cube_roots"
-    ]
+    ], 
+    "exercise_id": "cube_roots_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -204,7 +212,8 @@
     "prerequisites": [
       "exponents_2", 
       "exponents_1"
-    ]
+    ], 
+    "exercise_id": "exponent_rules"
   }, 
   {
     "related_video_readable_ids": [
@@ -227,7 +236,8 @@
     "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "exponents_1"
-    ]
+    ], 
+    "exercise_id": "exponents_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -252,7 +262,8 @@
     "prerequisites": [
       "exponents_2", 
       "square_roots"
-    ]
+    ], 
+    "exercise_id": "exponents_3"
   }, 
   {
     "related_video_readable_ids": [
@@ -277,7 +288,8 @@
     "seconds_per_fast_problem": 18.0, 
     "prerequisites": [
       "exponents_3"
-    ]
+    ], 
+    "exercise_id": "exponents_4"
   }, 
   {
     "related_video_readable_ids": [
@@ -302,7 +314,8 @@
     "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "scientific_notation"
-    ]
+    ], 
+    "exercise_id": "scientific_notation_intuition"
   }, 
   {
     "related_video_readable_ids": [
@@ -328,7 +341,8 @@
     "prerequisites": [
       "exponents_1", 
       "exponents_2"
-    ]
+    ], 
+    "exercise_id": "scientific_notation"
   }, 
   {
     "related_video_readable_ids": [
@@ -353,6 +367,7 @@
     "prerequisites": [
       "exponent_rules", 
       "scientific_notation"
-    ]
+    ], 
+    "exercise_id": "multiplying_and_dividing_scientific_notation"
   }
 ]

@@ -19,7 +19,8 @@
     "seconds_per_fast_problem": 25.0, 
     "prerequisites": [
       "triangle_angles_1"
-    ]
+    ], 
+    "exercise_id": "angle_bisector_theorem"
   }, 
   {
     "related_video_readable_ids": [
@@ -43,6 +44,7 @@
     "prerequisites": [
       "parallel_lines_2", 
       "graphing_circles_2"
-    ]
+    ], 
+    "exercise_id": "constructions_1"
   }
 ]

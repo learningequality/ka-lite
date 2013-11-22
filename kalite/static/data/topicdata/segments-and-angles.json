@@ -16,7 +16,8 @@
     "kind": "Exercise", 
     "name": "recognizing_rays_lines_and_line_segments", 
     "seconds_per_fast_problem": 4.0, 
-    "prerequisites": []
+    "prerequisites": [], 
+    "exercise_id": "recognizing_rays_lines_and_line_segments"
   }, 
   {
     "related_video_readable_ids": [
@@ -38,7 +39,8 @@
     "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "recognizing_rays_lines_and_line_segments"
-    ]
+    ], 
+    "exercise_id": "points_lines_and_planes"
   }, 
   {
     "related_video_readable_ids": [
@@ -60,7 +62,8 @@
     "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "adding_and_subtracting_rational_numbers"
-    ]
+    ], 
+    "exercise_id": "measuring_segments"
   }, 
   {
     "related_video_readable_ids": [
@@ -81,7 +84,8 @@
     "seconds_per_fast_problem": 5.0, 
     "prerequisites": [
       "adding_and_subtracting_rational_numbers"
-    ]
+    ], 
+    "exercise_id": "congruent_segments"
   }, 
   {
     "related_video_readable_ids": [
@@ -103,7 +107,8 @@
     "prerequisites": [
       "linear_equations_2", 
       "combining_like_terms_1"
-    ]
+    ], 
+    "exercise_id": "segment_addition"
   }, 
   {
     "related_video_readable_ids": [
@@ -124,6 +129,7 @@
     "seconds_per_fast_problem": 38.0, 
     "prerequisites": [
       "linear_equations_3"
-    ]
+    ], 
+    "exercise_id": "midpoint_of_a_segment"
   }
 ]

@@ -19,7 +19,8 @@
     "seconds_per_fast_problem": 8.0, 
     "prerequisites": [
       "congruent_triangles_2"
-    ]
+    ], 
+    "exercise_id": "similar_triangles_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -42,7 +43,8 @@
     "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "similar_triangles_1"
-    ]
+    ], 
+    "exercise_id": "similar_triangles_2"
   }, 
   {
     "related_video_readable_ids": [
@@ -64,7 +66,8 @@
     "seconds_per_fast_problem": 15.0, 
     "prerequisites": [
       "similar_triangles_2"
-    ]
+    ], 
+    "exercise_id": "solving_similar_triangles_1"
   }, 
   {
     "related_video_readable_ids": [
@@ -86,6 +89,7 @@
     "seconds_per_fast_problem": 22.0, 
     "prerequisites": [
       "solving_similar_triangles_1"
-    ]
+    ], 
+    "exercise_id": "solving_similar_triangles_2"
   }
 ]
