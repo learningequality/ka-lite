@@ -286,7 +286,11 @@ class Command(BaseCommand):
 
         # done; notify the user.
         sys.stdout.write("\n")
-        sys.stdout.write("CONGRATULATIONS! You've finished installing the KA Lite server software.\n")
-        sys.stdout.write("\tPlease run '%s' to start the server,\n" % start_script_path)
-        sys.stdout.write("\tthen load 'http://127.0.0.1:%d/' in your browser to complete the device configuration.\n" % settings.PRODUCTION_PORT)
+        if install_clean:
+            sys.stdout.write("CONGRATULATIONS! You've finished setting up the KA Lite server software.\n")
+            sys.stdout.write("\tPlease run '%s' to start the server,\n" % start_script_path)
+            sys.stdout.write("\tthen load 'http://127.0.0.1:%d/' in your browser to complete the device configuration.\n" % settings.user_facing_port())
+        else:
+            sys.stdout.write("CONGRATULATIONS! You've finished updating the KA Lite server software.\n")
+            sys.stdout.write("\tPlease run '%s' to start the server.\n" % start_script_path)
         sys.stdout.write("\n")

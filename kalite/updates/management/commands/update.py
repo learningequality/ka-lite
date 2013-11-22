@@ -640,7 +640,7 @@ class Command(UpdatesStaticCommand):
 
         #running_port = out[0].split(" ")[-1]
         #sys.stdout.write("* Server accessible @ port %s.\n" % running_port)
-        sys.stdout.write("* Server should be accessible @ port %s.\n" % (port or settings.PRODUCTION_PORT))
+        sys.stdout.write("* Server should be accessible @ port %s.\n" % (port or settings.user_facing_port()))
 
 
     def print_footer(self):
