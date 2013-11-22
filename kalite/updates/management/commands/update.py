@@ -119,11 +119,11 @@ class Command(UpdatesStaticCommand):
                 self.update_via_zip(**options)
 
         except Exception as e:
-            if self.started():
+            if self.started() and not not self.ended():
                 self.cancel(notes=str(e))
-            raise CommandError(str(e))
+            raise
 
-        assert not self.started(), "Subroutines should complete() if they start()!"
+        assert self.ended(), "Subroutines should complete() if they start()!"
 
 
     def update_via_git(self, branch=None, *args, **kwargs):
@@ -134,7 +134,6 @@ class Command(UpdatesStaticCommand):
             "clean_pyc",
             "git",
             "syncdb",
-            "videoscan",
         ]
 
         # step 1: clean_pyc (has to be first)
@@ -165,13 +164,7 @@ class Command(UpdatesStaticCommand):
 
         # step 3: syncdb
         self.next_stage("Update the database")
-        # call syncdb, then migrate with merging enabled (in case there were any out-of-order migration files)
-        call_command("syncdb")
-        call_command("migrate", merge=True)
-
-        # step 4: run videoscan (in case we blew away the videofile in migration from main to updates)
-        self.next_stage("Refreshing list of video files")
-        call_command("videoscan")
+        call_command("setup", interactive=False)
 
         # Done!
         self.complete()
@@ -281,10 +274,15 @@ class Command(UpdatesStaticCommand):
 
         self.signature_file = os.path.join(self.working_dir, Command.signature_filename)
         self.inner_zip_file = os.path.join(self.working_dir, Command.inner_zip_filename)
-        key = Device.get_central_server().get_key()
+
+        central_server = Device.get_central_server()
         lines = open(self.signature_file, "r").read().split("\n")
         chunk_size = int(lines.pop(0))
-        if not key.verify_large_file(self.inner_zip_file, signature=lines, chunk_size=chunk_size):
+        if not central_server:
+            logging.warn("No central server device object found; trusting zip file because you asked me to...") 
+        elif central_server.key.verify_large_file(self.inner_zip_file, signature=lines, chunk_size=chunk_size):
+            logging.info("Verified file!")
+        else:
             raise Exception("Failed to verify inner zip file.")
         return self.inner_zip_file
 
@@ -341,9 +339,11 @@ class Command(UpdatesStaticCommand):
 
 
     def get_move_videos(self, interactive=True):
-        """See whether the user wants to move video files, or to keep them in the existing location.
+        """
+        See whether the user wants to move video files, or to keep them in the existing location.
 
-        Note that we have some meaningful cases where we don't need to prompt the user to set this."""
+        Note that we have some meaningful cases where we don't need to prompt the user to set this.
+        """
 
         self.videos_inside_install = -1 != settings.CONTENT_ROOT.find(self.current_dir)
         if not self.videos_inside_install:
@@ -422,12 +422,8 @@ class Command(UpdatesStaticCommand):
         # Run the syncdb
         sys.stdout.write("* Syncing database...")
         sys.stdout.flush()
-        out = call_outside_command_with_output("migrate", manage_py_dir=os.path.join(self.working_dir, "kalite"))
-        out = call_outside_command_with_output("syncdb", migrate=True, manage_py_dir=os.path.join(self.working_dir, "kalite"))
+        call_outside_command_with_output("setup", interactive=False, manage_py_dir=os.path.join(self.working_dir, "kalite"))
         sys.stdout.write("\n")
-
-        # Run videoscan, in case we blew away the videofiles moving from main to updates app
-        out = call_outside_command_with_output("videoscan", manage_py_dir=os.path.join(self.working_dir, "kalite"))
 
 
     def update_local_settings(self):
@@ -644,7 +640,7 @@ class Command(UpdatesStaticCommand):
 
         #running_port = out[0].split(" ")[-1]
         #sys.stdout.write("* Server accessible @ port %s.\n" % running_port)
-        sys.stdout.write("* Server should be accessible @ port %s.\n" % (port or settings.PRODUCTION_PORT))
+        sys.stdout.write("* Server should be accessible @ port %s.\n" % (port or settings.user_facing_port()))
 
 
     def print_footer(self):

@@ -10,6 +10,21 @@ import time
 import uuid
 import version  # in danger of a circular import.  NEVER add settings stuff there--should all be hard-coded.
 
+
+##############################
+# Functions for querying settings
+##############################
+
+def package_selected(package_name):
+    global CONFIG_PACKAGE
+    return bool(CONFIG_PACKAGE) and bool(package_name) and package_name.lower() in CONFIG_PACKAGE
+
+def user_facing_port():
+    global PROXY_PORT
+    global PRODUCTION_PORT
+    return PROXY_PORT or PRODUCTION_PORT
+
+
 ##############################
 # Basic setup (no options)
 ##############################
@@ -483,11 +498,6 @@ CONFIG_PACKAGE = getattr(local_settings, "CONFIG_PACKAGE",
 if isinstance(CONFIG_PACKAGE, basestring):
     CONFIG_PACKAGE = [CONFIG_PACKAGE]
 CONFIG_PACKAGE = [cp.lower() for cp in CONFIG_PACKAGE]
-
-def package_selected(package_name):
-    global CONFIG_PACKAGE
-    return bool(CONFIG_PACKAGE) and bool(package_name) and package_name.lower() in CONFIG_PACKAGE
-
 
 # Config for Raspberry Pi distributed server
 if package_selected("RPi"):

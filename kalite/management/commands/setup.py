@@ -241,21 +241,24 @@ class Command(BaseCommand):
 
         # Install data
         if install_clean:
+            # Create device, load on any zone data
             call_command("generatekeys", verbosity=options.get("verbosity"))
-
             call_command("initdevice", hostname, description, verbosity=options.get("verbosity"))
 
         else:
-            if os.path.exists(InitCommand.install_json_file):
+            # Device exists; load data if required.
+            #
+            # Hackish, as this duplicates code from initdevice.
+            # 
+            if os.path.exists(InitCommand.data_json_file):
                 # This is a pathway to install zone-based data on a software upgrade.
-                sys.stdout.write("Loading zone data from '%s'\n" % InitCommand.install_json_file)
-                load_data_for_offline_install(in_file=InitCommand.install_json_file)
+                sys.stdout.write("Loading zone data from '%s'\n" % InitCommand.data_json_file)
+                load_data_for_offline_install(in_file=InitCommand.data_json_file)
 
             confirm_or_generate_zone()
-
             initialize_facility()
 
-
+        # Create the admin user
         if password:  # blank password (non-interactive) means don't create a superuser
             admin = get_object_or_None(User, username=username)
             if not admin:
@@ -275,8 +278,19 @@ class Command(BaseCommand):
 
         start_script_path = os.path.realpath(os.path.join(settings.PROJECT_PATH, "..", "start%s" % system_script_extension()))
 
+
+        # Run videoscan 
+        sys.stdout.write("Scanning for video files in the content directory (%s)\n" % settings.CONTENT_ROOT)
+        call_command("videoscan")
+
+
+        # done; notify the user.
         sys.stdout.write("\n")
-        sys.stdout.write("CONGRATULATIONS! You've finished installing the KA Lite server software.\n")
-        sys.stdout.write("\tPlease run '%s' to start the server,\n" % start_script_path)
-        sys.stdout.write("\tthen load 'http://127.0.0.1:%d/' in your browser to complete the device configuration.\n" % settings.PRODUCTION_PORT)
+        if install_clean:
+            sys.stdout.write("CONGRATULATIONS! You've finished setting up the KA Lite server software.\n")
+            sys.stdout.write("\tPlease run '%s' to start the server,\n" % start_script_path)
+            sys.stdout.write("\tthen load 'http://127.0.0.1:%d/' in your browser to complete the device configuration.\n" % settings.user_facing_port())
+        else:
+            sys.stdout.write("CONGRATULATIONS! You've finished updating the KA Lite server software.\n")
+            sys.stdout.write("\tPlease run '%s' to start the server.\n" % start_script_path)
         sys.stdout.write("\n")
