@@ -46,6 +46,7 @@ function video_check_callback(progress_log, resp) {
             setNodeClass(currentKey, "partial");
             $("#retry-video-download").hide();
             $("#cancel-download").show();
+            $("#download-videos").removeAttr("disabled");
         }
 
         lastKey = currentKey;
