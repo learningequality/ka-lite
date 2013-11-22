@@ -86,7 +86,7 @@ def contact_wizard(request, type=""):
                        return handle_contact(request, contact_form, contribute_form, settings.CENTRAL_INFO_EMAIL, "contribute")
 
             else:
-                raise Exception(_("Unknown contact type: %s")%(contact_form.cleaned_data["type"]))
+                raise Exception(_("Unknown contact type: %s") % (contact_form.cleaned_data["type"]))
 
     # A GET request.  Create empty forms, fill in user details if available
     #   Auto-select the type, if relevant
@@ -118,7 +118,7 @@ def contact_wizard(request, type=""):
                 instance=Contact(
                     type=type,
                     user=request.user,
-                    name="%s %s"%(request.user.first_name, request.user.last_name),
+                    name="%s %s" % (request.user.first_name, request.user.last_name),
                     email=request.user.email,
                     org_name=org.name,
                     ip=get_request_ip(request),

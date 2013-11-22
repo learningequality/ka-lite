@@ -130,7 +130,7 @@ class Command(UpdatesDynamicCommand):
                 caching.regenerate_all_pages_related_to_videos(video_ids=handled_video_ids)
 
             # Update
-            self.complete(notes=_("Downloaded %(num_handled_videos) of %(num_total_videos) videos successfully.") % {
+            self.complete(notes=_("Downloaded %(num_handled_videos)s of %(num_total_videos)s videos successfully.") % {
                 "num_handled_videos": len(handled_video_ids),
                 "num_total_videos": len(handled_video_ids) + len(failed_video_ids),
             })
