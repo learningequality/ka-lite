@@ -197,9 +197,10 @@ def installed_language_packs(request):
 def start_languagepack_download(request):
     if request.POST:
         data = json.loads(request.raw_post_data) # Django has some weird post processing into request.POST, so use raw_post_data
-        call_command_async('languagepackdownload',
-                           manage_py_dir=settings.PROJECT_PATH,
-                           language=data['lang']) # TODO: migrate to force_job once it can accept command_args
+        call_command_async(
+            'languagepackdownload',
+            manage_py_dir=settings.PROJECT_PATH,
+            language=data['lang']) # TODO: migrate to force_job once it can accept command_args
         return JsonResponse({'success': True})
 
 

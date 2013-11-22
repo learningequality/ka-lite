@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load staticfiles %}
 
-{% block title %}{% trans "Update Languages" %}{{ block.super }}{% endblock %}
+{% block title %}{% trans "Update Languages" %}{% endblock %}
 
 {% block headcss %}
     <style>
@@ -63,8 +63,6 @@
 {% block headjs %}{{ block.super }}
     <script type="text/javascript" src="{% static 'js/jquery-ui/jquery-ui.min.js' %}"></script>
     <script type="text/javascript">
-     var central_server_url = "{{ central_server_host }}";
-     var server_info_url = "{% url get_server_info %}";
      var start_languagepackdownload_url = "{% url start_languagepack_download %}";
      var installed_languages_url = "{% url installed_language_packs %}"
      var defaultLanguage = "{{ default_language }}";
