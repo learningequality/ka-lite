@@ -49,17 +49,7 @@ def update_context(request):
 
 
 @require_admin
-@render_to("updates/update.html")
-def update(request):
-    context = update_context(request)
-    context.update({
-        "registered": Settings.get("registered"),
-        "video_count": VideoFile.objects.filter(percent_complete=100).count(),
-    })
-    return context
-
-@require_admin
-@render_to("updates/update.html")
+@render_to("updates/landing_page.html")
 def update(request):
     context = update_context(request)
     return context

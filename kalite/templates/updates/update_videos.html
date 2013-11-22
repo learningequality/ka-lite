@@ -2,18 +2,14 @@
 {% load i18n %}
 {% load staticfiles %}
 
-{% block update_active %}active{% endblock update_active %}
-
-{% block title %}{% trans "Update Videos" %}{% endblock %}
+{% block title %}{% trans "Update Videos" %}{{ block.super }}{% endblock %}
 
 {% block headcss %}{{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/jquery-ui.min.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/plugins/ui.dynatree.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'css/update_videos.css' %}" />
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
-    <script type="text/javascript" src="{% static 'js/jquery-ui/jquery-ui.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/jquery.dynatree.min.js' %}"></script>
 
     <script type="text/javascript">
@@ -31,7 +27,6 @@
 {% endblock ga_setmetrics %}
 
 {% block content %}
-
     <div class="download-actions vertical-shadow">
         <h2 id="download-legend-unselected" class="button_text">
             {% trans "Please select videos to download (below)" %}
@@ -44,6 +39,7 @@
                 </a>
             </div>
         </div>
+
         <button id="download-videos" type="button" class="enable-when-server-online" disabled>
             {% trans "Download" %}
             <span class="new-video-count">0</span>

@@ -2,12 +2,9 @@
 {% load i18n %}
 {% load staticfiles %}
 
-{% block update_active %}active{% endblock update_active %}
-
-{% block title %}{% trans "Update Languages" %}{% endblock %}
+{% block title %}{% trans "Update Languages" %}{{ block.super }}{% endblock %}
 
 {% block headcss %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/jquery-ui.min.css' %}" />
     <style>
         .download-actions {
             width: 400px;
