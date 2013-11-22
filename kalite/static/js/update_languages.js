@@ -20,7 +20,7 @@ $(function() {
                 var installed_languages = installedlangs.map(function(elem) { return elem['code']; });
                 if ($.inArray(langcode, installed_languages) === -1) { // lang not yet installed
                     if (srtcount > 0) {
-                        $('#language-packs').append('<option value="' + langcode + '">'+ langcode + ' (' + srtcount +')</option>');
+                        $('#language-packs').append('<option value="' + langcode + '">'+ langcode + ' </option>');
                     }
                 }
 
@@ -32,6 +32,27 @@ $(function() {
         console.log("404 from central server");
     });
 });
+
+function display_installed_languages() {
+    $.ajax({
+        url: installed_languages_url,
+        datatype: "json",
+    }).success(function(langs) {
+        // start from scratch
+        $("div.installed-languages").empty();
+        langs.forEach(function(lang, index) {
+            if (lang['name']) { // nonempty name
+                $("div.installed-languages").append("<p>" + lang['name'] + ' ' + lang['code'] + ' - ' + lang['percent_translated'] + "% " + gettext("Translated") + " - " + lang['subtitle_count'] + " " + gettext("Subtitles available") + "</p>");
+            }
+        });
+    });
+}
+
+$(function() {
+    setInterval(display_installed_languages, 1500); // query every 1.5 seconds
+});
+
+$(display_installed_languages);
 
 // TODO: see where this fits in
 $(function() {

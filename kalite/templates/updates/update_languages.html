@@ -73,20 +73,8 @@
 {% endblock headjs %}
 
 {% block content %}
+  <h2>{% trans "Installed Languages" %}</h2>
     <div class="installed-languages">
-        <h2>{% trans "Installed Languages" %}</h2>
-        {% if installed_languages %}
-            {% for lang in installed_languages %}
-              {% if lang.name %}
-                <p>
-                  {{lang.name}} ({{ lang.code }}) - {{lang.percent_translated}}% {% trans "Translated" %} - {{ lang.subtitle_count }} {% trans 'Subtitles available' %}
-                </p>
-              {% endif %}
-            {% endfor %}
-        {% else %}
-            <p>{% trans "You currently have no languages installed" %}</p>
-        {% endif %}
-
     </div>
 
     <div class="download-actions subtitles-download vertical-shadow">
@@ -97,6 +85,7 @@
     -->
         <span class= "button_style">
             <select id="language-packs">
+              <option>--</option>
             </select>
         </span>
 
