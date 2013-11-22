@@ -53,7 +53,7 @@ class Command(BaseCommand):
             # OK to do bulk_create; cache invalidation triggered via save download
             VideoFile.objects.bulk_create([VideoFile(youtube_id=id, percent_complete=0, download_in_progress=False) for id in video_ids_needing_model_creation])
             self.stdout.write("Created %d VideoFile models (to mark them as complete, since the files exist)\n" % len(video_ids_needing_model_creation))
-            touched_video_ids += [i18n.get_video_id.get(yid) for yid in video_ids_needing_model_creation]
+            touched_video_ids += [i18n.get_video_id(yid) or yid for yid in video_ids_needing_model_creation]
 
         # Files that exist, are in the DB, but have percent_complete=0, download_in_progress=False
         #   These should be individually saved to be 100% complete, to trigger their availability (and cache invalidation)
@@ -75,7 +75,7 @@ class Command(BaseCommand):
             video_files_needing_model_deletion = VideoFile.objects.filter(youtube_id__in=chunk)
             count += video_files_needing_model_deletion.count()
             video_files_needing_model_deletion.delete()
-            touched_video_ids += [i18n.get_video_id.get(yid) for yid in chunk]
+            touched_video_ids += [i18n.get_video_id(yid) or yid for yid in chunk]
         if count:
             self.stdout.write("Deleted %d VideoFile models (because the videos didn't exist in the filesystem)\n" % count)
 

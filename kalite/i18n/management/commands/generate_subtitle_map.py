@@ -118,7 +118,7 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
             continue
 
         if n_new_entries % frequency_to_save == 0:
-            logging.info("On loop %d dumping dictionary into %s" %(n_new_entries, out_file))
+            logging.info("On loop %d dumping dictionary into %s" % (n_new_entries, out_file))
             with open(out_file, 'wb') as fp:
                 json.dump(srts_dict, fp)
         n_new_entries += 1
@@ -150,7 +150,7 @@ def update_video_entry(youtube_id, entry={}):
     entry["last_attempt"] = unicode(datetime.datetime.now().date())
 
     if isinstance(r, basestring):  # string responses mean some type of error
-        logging.info("%s at %s" %(r, request_url))
+        logging.info("%s at %s" % (r, request_url))
         entry["api_response"] = r
         return entry
 
@@ -258,7 +258,7 @@ def update_language_srt_map():
                 lang_map[yt_id] = new_data.get(yt_id)
 
         if yt_ids_to_delete:
-            logging.info("Deleting %d old YouTube IDs from language (%s) because they are no longer supported." %(len(yt_ids_to_delete), lang_code))
+            logging.info("Deleting %d old YouTube IDs from language (%s) because they are no longer supported." % (len(yt_ids_to_delete), lang_code))
             for yt_id in yt_ids_to_delete:
                 lang_map.pop(yt_id, None)
 

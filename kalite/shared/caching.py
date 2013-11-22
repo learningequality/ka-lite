@@ -18,7 +18,7 @@ from django.views.decorators.http import condition
 
 import settings
 from settings import LOG as logging
-from shared import topic_tools
+from shared import i18n, topic_tools
 from updates.models import VideoFile
 from utils.internet import generate_all_paths
 
@@ -37,7 +37,7 @@ def my_handler1(sender, **kwargs):
         # This event should only happen once, so don't bother checking if
         #   this is the field that changed.
         logging.debug("Invalidating cache on save for %s" % kwargs["instance"])
-        invalidate_all_pages_related_to_video(video_id=kwargs["instance"].video_id)
+        invalidate_all_pages_related_to_video(video_id=i18n.get_video_id(kwargs["instance"].youtube_id))
 
 @receiver(pre_delete, sender=VideoFile)
 def my_handler2(sender, **kwargs):
@@ -47,7 +47,7 @@ def my_handler2(sender, **kwargs):
     was_available = kwargs["instance"].percent_complete == 100
     if was_available:
         logging.debug("Invalidating cache on delete for %s" % kwargs["instance"])
-        invalidate_all_pages_related_to_video(video_id=kwargs["instance"].video_id)
+        invalidate_all_pages_related_to_video(video_id=i18n.get_video_id(kwargs["instance"].youtube_id))
 
 # Decorators
 

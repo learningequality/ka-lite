@@ -322,9 +322,9 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
 
     def __unicode__(self):
         if self.end_datetime:
-            return u"%s (%s): logged in @ %s; for %s seconds"%(self.user.username, self.language, self.start_datetime, self.total_seconds)
+            return u"%s (%s): logged in @ %s; for %s seconds" % (self.user.username, self.language, self.start_datetime, self.total_seconds)
         else:
-            return u"%s (%s): logged in @ %s; last active @ %s"%(self.user.username, self.language, self.start_datetime, self.last_active_datetime)
+            return u"%s (%s): logged in @ %s; last active @ %s" % (self.user.username, self.language, self.start_datetime, self.last_active_datetime)
 
     def save(self, *args, **kwargs):
         """When this model is saved, check if the activity is ended.
@@ -425,7 +425,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
             logging.warn("%s: Had to create a user log entry on an UPDATE(%d)! @ %s" % (user.username, activity_type, update_datetime))
             cur_log = cls.begin_user_activity(user=user, activity_type=activity_type, start_datetime=update_datetime, suppress_save=True)
 
-        logging.debug("%s: UPDATE activity (%d) @ %s"%(user.username, activity_type, update_datetime))
+        logging.debug("%s: UPDATE activity (%d) @ %s" % (user.username, activity_type, update_datetime))
         cur_log.last_active_datetime = update_datetime
         cur_log.language = language or cur_log.language  # set the language to the current language, if there is one.
         if not suppress_save:
@@ -455,7 +455,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
                 raise ValidationError("Update time must always be later than the login time.")
         else:
             # No unstopped starts.  Start should have been called first!
-            logging.warn("%s: Had to BEGIN a user log entry, but ENDING(%d)! @ %s"%(user.username, activity_type, end_datetime))
+            logging.warn("%s: Had to BEGIN a user log entry, but ENDING(%d)! @ %s" % (user.username, activity_type, end_datetime))
             cur_log = cls.begin_user_activity(user=user, activity_type=activity_type, start_datetime=end_datetime, suppress_save=True)
 
         logging.debug("%s: Logging LOGOUT activity @ %s" % (user.username, end_datetime))
