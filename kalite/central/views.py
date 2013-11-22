@@ -176,12 +176,12 @@ def delete_organization(request, org_id):
     org = Organization.objects.get(pk=org_id)
     num_zones = org.get_zones().count()
     if num_zones > 0:
-        messages.error(request, _("You cannot delete '%(name)' because it has %(num_zones) sharing network(s) affiliated with it.") % {
+        messages.error(request, _("You cannot delete '%(name)s' because it has %(num_zones)s sharing network(s) affiliated with it.") % {
             "name": org.name,
             "num_zones": num_zones,
         })
     else:
-        messages.success(request, _("You have successfully deleted %(org_name).") % {"org_name": org.name})
+        messages.success(request, _("You have successfully deleted %(org_name)s.") % {"org_name": org.name})
         org.delete()
     return HttpResponseRedirect(reverse("org_management"))
 
