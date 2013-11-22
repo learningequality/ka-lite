@@ -354,7 +354,7 @@ def tabular_view(request, facility, report_type="exercise"):
             })
 
     else:
-        raise Http404(_("Unknown report_type: %(report_type)") % {"report_type": report_type})
+        raise Http404(_("Unknown report_type: %(report_type)s") % {"report_type": report_type})
 
     if "facility_user" in request.session:
         try:
