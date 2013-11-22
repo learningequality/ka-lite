@@ -80,6 +80,7 @@ class Command(UpdatesStaticCommand):
 
         #
         move_srts(code)
+        self.complete("Finished processing language pack %s" % code)
 
 def get_language_pack(code, software_version):
     """Download language pack for specified language"""

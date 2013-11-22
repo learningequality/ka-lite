@@ -54,7 +54,7 @@ class UpdateProgressLog(ExtendedModel):
     def update_stage(self, stage_name, stage_percent, notes=None):
         """
         Update a stage with it's percent, and process accordingly.
-        
+
         stage_percent should be between 0 and 1
         """
         assert 0. <= stage_percent <= 1., "stage percent must be between 0 and 1."
@@ -148,7 +148,7 @@ class UpdateProgressLog(ExtendedModel):
         For a given query, return the most recently opened, non-closed log.
         """
         #assert not args, "no positional args allowed to this method."
-    
+
         if not force_new:
             logs = cls.objects.filter(end_time=None, completed=False, **kwargs).order_by("-start_time")
             if logs.count() > 0:
