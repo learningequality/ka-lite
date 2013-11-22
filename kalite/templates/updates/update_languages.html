@@ -2,9 +2,9 @@
 {% load i18n %}
 {% load staticfiles %}
 
-{% block title %}{% trans "Update Languages" %}{% endblock %}
+{% block title %}{% trans "Update Languages" %}{{ block.super }}{% endblock %}
 
-{% block headcss %}
+{% block headcss %}{{ block.super }}
     <style>
         .download-actions {
             width: 400px;
@@ -63,9 +63,9 @@
 {% block headjs %}{{ block.super }}
     <script type="text/javascript" src="{% static 'js/jquery-ui/jquery-ui.min.js' %}"></script>
     <script type="text/javascript">
-     var start_languagepackdownload_url = "{% url start_languagepack_download %}";
-     var installed_languages_url = "{% url installed_language_packs %}"
-     var defaultLanguage = "{{ default_language }}";
+        var start_languagepackdownload_url = "{% url start_languagepack_download %}";
+        var installed_languages_url = "{% url installed_language_packs %}"
+        var defaultLanguage = "{{ default_language }}";
     </script>
     <script type="text/javascript" src="{% static 'js/update_languages.js' %}"></script>
 {% endblock headjs %}

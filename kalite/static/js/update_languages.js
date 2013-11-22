@@ -12,7 +12,7 @@ $(function() {
             url: installed_languages_url,
             dataType: "json",
         }).success(function(installedlangs) {
-	    languagePacks.forEach(function(langdata, langindex) {
+            languagePacks.forEach(function(langdata, langindex) {
                 var srtcount = langdata["subtitle_count"];
                 var percent_translated = langdata["percent_translated"];
                 var langcode = langdata["code"];
@@ -24,11 +24,10 @@ $(function() {
                         $('#language-packs').append('<option value="' + langcode + '">'+ gettext(langdata['name']) + ' (' + langcode + ')</option>');
                     }
                 }
-
             });
         }).error(function(data, status, error) {
             handleFailedAPI(data, [status, error].join(" "), "id_error_message");
-	});
+        });
     }).error(function(data, status, error) {
         handleFailedAPI(data, [status, error].join(" "), "id_error_message");
     });
@@ -74,21 +73,25 @@ $(function () {
         // tell server to start languagepackdownload job
         doRequest(
             start_languagepackdownload_url,
-            { lang: selected_lang }).success(function(progress, status, req) {
-                updatesStart(
-                    "languagepackdownload",
-                    2000, // 2 seconds
-                    languagepack_callbacks);
-                show_message(
-                    "success",
-                    ["Download for language ", selected_lang, " started."].join(" "),
-                    "id_progress_message");
-            }).error(function(progress, status, req) {
-                handleFailedAPI(
-                    progress,
-                    "An error occurred while contacting the server to start the download process: " + [status, req].join(" - "),
-                    "id_error_message");
-            });
+            { lang: selected_lang }
+        ).success(function(progress, status, req) {
+            updatesStart(
+                "languagepackdownload",
+                2000, // 2 seconds
+                languagepack_callbacks
+            );
+            show_message(
+                "success",
+                ["Download for language ", selected_lang, " started."].join(" "),  // TODO(bcipolli) @ruimalheiro add sprintf and gettext
+                "id_progress_message"
+            );
+        }).error(function(progress, status, req) {
+            handleFailedAPI(
+                progress,
+                gettext("An error occurred while contacting the server to start the download process") + ": " + [status, req].join(" - "),
+                "id_error_message"
+            );
+        });
     });
 });
 
@@ -97,10 +100,11 @@ function languagepack_check_callback(progress, resp) {
         show_message(
             "success",
             "Language download complete!",
-            "id_complete_message");
+            "id_complete_message"
+        );
     }
 }
 
 var languagepack_callbacks = {
     check: languagepack_check_callback
-}
+};
