@@ -1,17 +1,17 @@
 [
   {
-    "related_video_readable_ids": [
-      "divisibility-tests-for-2--3--4--5--6--9--10", 
-      "recognizing-divisibility", 
-      "the-why-of-the-3-divisibility-rule", 
-      "the-why-of-the-9-divisibility-rule"
-    ], 
     "v_position": 16, 
     "path": "/math/arithmetic/factors-multiples/divisibility_tests/e/divisibility_tests/", 
     "id": "divisibility_tests", 
     "display_name": "Divisibility tests", 
     "title": "Divisibility tests", 
     "live": true, 
+    "related_video_slugs": [
+      "divisibility-tests-for-2--3--4--5--6--9--10", 
+      "recognizing-divisibility", 
+      "the-why-of-the-3-divisibility-rule", 
+      "the-why-of-the-9-divisibility-rule"
+    ], 
     "description": "", 
     "basepoints": 13.0, 
     "h_position": 12, 
@@ -25,16 +25,16 @@
     "exercise_id": "divisibility_tests"
   }, 
   {
-    "related_video_readable_ids": [
-      "finding-factors-and-multiples", 
-      "finding-factors-of-a-number"
-    ], 
     "v_position": 12, 
     "path": "/math/arithmetic/factors-multiples/divisibility_and_factors/e/divisibility_0.5/", 
     "id": "divisibility_0.5", 
     "display_name": "Divisibility 0.5", 
     "title": "Divisibility 0.5", 
     "live": true, 
+    "related_video_slugs": [
+      "finding-factors-and-multiples", 
+      "finding-factors-of-a-number"
+    ], 
     "description": "", 
     "basepoints": 15.0, 
     "h_position": 10, 
@@ -48,16 +48,16 @@
     "exercise_id": "divisibility_0.5"
   }, 
   {
-    "related_video_readable_ids": [
-      "divisibility-intuition", 
-      "finding-factors-of-a-number"
-    ], 
     "v_position": 11, 
     "path": "/math/arithmetic/factors-multiples/divisibility_and_factors/e/divisibility_intuition/", 
     "id": "divisibility_intuition", 
     "display_name": "Divisibility intuition", 
     "title": "Divisibility intuition", 
     "live": true, 
+    "related_video_slugs": [
+      "divisibility-intuition", 
+      "finding-factors-of-a-number"
+    ], 
     "description": "", 
     "basepoints": 15.0, 
     "h_position": 10, 
@@ -71,16 +71,16 @@
     "exercise_id": "divisibility_intuition"
   }, 
   {
-    "related_video_readable_ids": [
-      "prime-numbers", 
-      "recognizing-prime-numbers"
-    ], 
     "v_position": 13, 
     "path": "/math/arithmetic/factors-multiples/prime_numbers/e/prime_numbers/", 
     "id": "prime_numbers", 
     "display_name": "Prime numbers", 
     "title": "Prime numbers", 
     "live": true, 
+    "related_video_slugs": [
+      "prime-numbers", 
+      "recognizing-prime-numbers"
+    ], 
     "description": "", 
     "basepoints": 14.0, 
     "h_position": 9, 
@@ -94,16 +94,16 @@
     "exercise_id": "prime_numbers"
   }, 
   {
-    "related_video_readable_ids": [
-      "recognizing-prime-numbers", 
-      "prime-numbers"
-    ], 
     "v_position": 14, 
     "path": "/math/arithmetic/factors-multiples/prime_numbers/e/composite_numbers/", 
     "id": "composite_numbers", 
     "display_name": "Composite numbers", 
     "title": "Composite numbers", 
     "live": true, 
+    "related_video_slugs": [
+      "recognizing-prime-numbers", 
+      "prime-numbers"
+    ], 
     "description": "", 
     "basepoints": 13.0, 
     "h_position": 11, 
@@ -117,16 +117,16 @@
     "exercise_id": "composite_numbers"
   }, 
   {
-    "related_video_readable_ids": [
-      "prime-factorization-exercise", 
-      "prime-factorization"
-    ], 
     "v_position": 15, 
     "path": "/math/arithmetic/factors-multiples/prime_factorization/e/prime_factorization/", 
     "id": "prime_factorization", 
     "display_name": "Prime factorization", 
     "title": "Prime factorization", 
     "live": true, 
+    "related_video_slugs": [
+      "prime-factorization-exercise", 
+      "prime-factorization"
+    ], 
     "description": "", 
     "basepoints": 16.0, 
     "h_position": 12, 
@@ -140,15 +140,15 @@
     "exercise_id": "prime_factorization"
   }, 
   {
-    "related_video_readable_ids": [
-      "the-fundamental-theorem-of-arithmetic"
-    ], 
     "v_position": 16, 
     "path": "/math/arithmetic/factors-multiples/prime_factorization/e/the_fundamental_theorem_of_arithmetic/", 
     "id": "the_fundamental_theorem_of_arithmetic", 
     "display_name": "The fundamental theorem of arithmetic", 
     "title": "The fundamental theorem of arithmetic", 
     "live": true, 
+    "related_video_slugs": [
+      "the-fundamental-theorem-of-arithmetic"
+    ], 
     "description": "", 
     "basepoints": 16.0, 
     "h_position": 11, 
@@ -162,15 +162,15 @@
     "exercise_id": "the_fundamental_theorem_of_arithmetic"
   }, 
   {
-    "related_video_readable_ids": [
-      "common-divisibility-examples"
-    ], 
     "v_position": 17, 
     "path": "/math/arithmetic/factors-multiples/prime_factorization/e/divisibility/", 
     "id": "divisibility", 
     "display_name": "Divisibility", 
     "title": "Divisibility", 
     "live": true, 
+    "related_video_slugs": [
+      "common-divisibility-examples"
+    ], 
     "description": "", 
     "basepoints": 17.0, 
     "h_position": 13, 
@@ -184,17 +184,17 @@
     "exercise_id": "divisibility"
   }, 
   {
-    "related_video_readable_ids": [
-      "least-common-multiple-exercise", 
-      "least-common-multiple-exercise-2", 
-      "least-common-multiple--lcm"
-    ], 
     "v_position": 15, 
     "path": "/math/arithmetic/factors-multiples/least_common_multiple/e/least_common_multiple/", 
     "id": "least_common_multiple", 
     "display_name": "Least common multiple", 
     "title": "Least common multiple", 
     "live": true, 
+    "related_video_slugs": [
+      "least-common-multiple-exercise", 
+      "least-common-multiple-exercise-2", 
+      "least-common-multiple--lcm"
+    ], 
     "description": "", 
     "basepoints": 17.0, 
     "h_position": 10, 
@@ -208,16 +208,16 @@
     "exercise_id": "least_common_multiple"
   }, 
   {
-    "related_video_readable_ids": [
-      "greatest-common-divisor-factor-exercise", 
-      "greatest-common-divisor"
-    ], 
     "v_position": 15, 
     "path": "/math/arithmetic/factors-multiples/greatest_common_divisor/e/greatest_common_divisor/", 
     "id": "greatest_common_divisor", 
     "display_name": "Greatest common divisor", 
     "title": "Greatest common divisor", 
     "live": true, 
+    "related_video_slugs": [
+      "greatest-common-divisor-factor-exercise", 
+      "greatest-common-divisor"
+    ], 
     "description": "", 
     "basepoints": 13.0, 
     "h_position": 9, 
@@ -231,15 +231,15 @@
     "exercise_id": "greatest_common_divisor"
   }, 
   {
-    "related_video_readable_ids": [
-      "lcm-and-gcf-greatest-common-factor--word-problems"
-    ], 
     "v_position": 16, 
     "path": "/math/arithmetic/factors-multiples/greatest_common_divisor/e/least_common_multiple_and_greatest_common_divisor_word_problems/", 
     "id": "least_common_multiple_and_greatest_common_divisor_word_problems", 
     "display_name": "LCM and GCD word problems", 
     "title": "LCM and GCD word problems", 
     "live": true, 
+    "related_video_slugs": [
+      "lcm-and-gcf-greatest-common-factor--word-problems"
+    ], 
     "description": "", 
     "basepoints": 23.0, 
     "h_position": 10, 

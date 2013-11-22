@@ -1,14 +1,14 @@
 [
   {
-    "related_video_readable_ids": [
-      "limit-factoring-cubic"
-    ], 
     "v_position": 79, 
     "path": "/math/calculus/limits_topic/algebraic-limits/e/limits_2/", 
     "id": "limits_2", 
     "display_name": "Two-sided limits using advanced algebra", 
     "title": "Two-sided limits using advanced algebra", 
     "live": true, 
+    "related_video_slugs": [
+      "limit-factoring-cubic"
+    ], 
     "description": "", 
     "basepoints": 26.0, 
     "h_position": -4, 
@@ -22,13 +22,13 @@
     "exercise_id": "limits_2"
   }, 
   {
-    "related_video_readable_ids": [], 
     "v_position": 80, 
     "path": "/math/calculus/limits_topic/old-limits-tutorial/e/limits_1/", 
     "id": "limits_1", 
     "display_name": "Limits 1", 
     "title": "Limits 1", 
     "live": false, 
+    "related_video_slugs": [], 
     "description": "", 
     "basepoints": 15.0, 
     "h_position": -6, 
@@ -40,17 +40,17 @@
     "exercise_id": "limits_1"
   }, 
   {
-    "related_video_readable_ids": [
-      "calculus--derivatives-1--new-hd-version", 
-      "calculus--derivatives-2-5--new-hd-version", 
-      "calculus--derivatives-1"
-    ], 
     "v_position": 81, 
     "path": "/math/calculus/differential-calculus/derivative_intro/e/derivatives_1/", 
     "id": "derivatives_1", 
     "display_name": "Derivatives 1", 
     "title": "Derivatives 1", 
     "live": true, 
+    "related_video_slugs": [
+      "calculus--derivatives-1--new-hd-version", 
+      "calculus--derivatives-2-5--new-hd-version", 
+      "calculus--derivatives-1"
+    ], 
     "description": "", 
     "basepoints": 18.0, 
     "h_position": -3, 
@@ -66,17 +66,17 @@
     "exercise_id": "derivatives_1"
   }, 
   {
-    "related_video_readable_ids": [
-      "interpreting-slope-of-a-curve-exercise", 
-      "calculus--derivatives-1--new-hd-version", 
-      "derivative-intuition-module"
-    ], 
     "v_position": 80, 
     "path": "/math/calculus/differential-calculus/derivative_intro/e/recognizing_slope/", 
     "id": "recognizing_slope", 
     "display_name": "Recognizing slope of curves", 
     "title": "Recognizing slope of curves", 
     "live": true, 
+    "related_video_slugs": [
+      "interpreting-slope-of-a-curve-exercise", 
+      "calculus--derivatives-1--new-hd-version", 
+      "derivative-intuition-module"
+    ], 
     "description": "Identify intervals with positive and negative slope on graphs of functions\n", 
     "basepoints": 16.0, 
     "h_position": -2, 
@@ -90,15 +90,15 @@
     "exercise_id": "recognizing_slope"
   }, 
   {
-    "related_video_readable_ids": [
-      "derivative-intuition-module"
-    ], 
     "v_position": 80, 
     "path": "/math/calculus/differential-calculus/visualizing-derivatives-tutorial/e/derivative_intuition/", 
     "id": "derivative_intuition", 
     "display_name": "Derivative intuition", 
     "title": "Derivative intuition", 
     "live": true, 
+    "related_video_slugs": [
+      "derivative-intuition-module"
+    ], 
     "description": "", 
     "basepoints": 25.0, 
     "h_position": -3, 
@@ -112,15 +112,15 @@
     "exercise_id": "derivative_intuition"
   }, 
   {
-    "related_video_readable_ids": [
-      "visualizing-derivatives-exercise"
-    ], 
     "v_position": 82, 
     "path": "/math/calculus/differential-calculus/visualizing-derivatives-tutorial/e/visualizing_derivatives/", 
     "id": "visualizing_derivatives", 
     "display_name": "Visualizing derivatives", 
     "title": "Visualizing derivatives", 
     "live": true, 
+    "related_video_slugs": [
+      "visualizing-derivatives-exercise"
+    ], 
     "description": "", 
     "basepoints": 19.0, 
     "h_position": -5, 
@@ -135,15 +135,15 @@
     "exercise_id": "visualizing_derivatives"
   }, 
   {
-    "related_video_readable_ids": [
-      "power-rule"
-    ], 
     "v_position": 82, 
     "path": "/math/calculus/differential-calculus/power_rule_tutorial/e/power_rule/", 
     "id": "power_rule", 
     "display_name": "Power rule", 
     "title": "Power rule", 
     "live": true, 
+    "related_video_slugs": [
+      "power-rule"
+    ], 
     "description": "", 
     "basepoints": 27.0, 
     "h_position": -2, 
@@ -157,15 +157,15 @@
     "exercise_id": "power_rule"
   }, 
   {
-    "related_video_readable_ids": [
-      "derivatives-of-sin-x--cos-x--tan-x--e-x-and-ln-x"
-    ], 
     "v_position": 82, 
     "path": "/math/calculus/differential-calculus/chain_rule/e/special_derivatives/", 
     "id": "special_derivatives", 
     "display_name": "Special derivatives", 
     "title": "Special derivatives", 
     "live": true, 
+    "related_video_slugs": [
+      "derivatives-of-sin-x--cos-x--tan-x--e-x-and-ln-x"
+    ], 
     "description": "", 
     "basepoints": 12.0, 
     "h_position": -4, 
@@ -179,18 +179,18 @@
     "exercise_id": "special_derivatives"
   }, 
   {
-    "related_video_readable_ids": [
-      "chain-rule-introduction", 
-      "chain-rule-definition-and-example", 
-      "chain-rule-on-two-functions-example-1", 
-      "chain-rule-on-two-functions-example-2"
-    ], 
     "v_position": 83, 
     "path": "/math/calculus/differential-calculus/chain_rule/e/chain_rule_1/", 
     "id": "chain_rule_1", 
     "display_name": "Chain rule on two functions", 
     "title": "Chain rule on two functions", 
     "live": true, 
+    "related_video_slugs": [
+      "chain-rule-introduction", 
+      "chain-rule-definition-and-example", 
+      "chain-rule-on-two-functions-example-1", 
+      "chain-rule-on-two-functions-example-2"
+    ], 
     "description": "", 
     "basepoints": 19.0, 
     "h_position": -1, 
@@ -205,15 +205,15 @@
     "exercise_id": "chain_rule_1"
   }, 
   {
-    "related_video_readable_ids": [
-      "derivatives-of-sin-x--cos-x--tan-x--e-x-and-ln-x"
-    ], 
     "v_position": 82, 
     "path": "/math/calculus/differential-calculus/product_rule/e/special_derivatives/", 
     "id": "special_derivatives", 
     "display_name": "Special derivatives", 
     "title": "Special derivatives", 
     "live": true, 
+    "related_video_slugs": [
+      "derivatives-of-sin-x--cos-x--tan-x--e-x-and-ln-x"
+    ], 
     "description": "", 
     "basepoints": 12.0, 
     "h_position": -4, 
@@ -227,16 +227,16 @@
     "exercise_id": "special_derivatives"
   }, 
   {
-    "related_video_readable_ids": [
-      "applying-the-product-rule-for-derivatives", 
-      "product-rule"
-    ], 
     "v_position": 83, 
     "path": "/math/calculus/differential-calculus/product_rule/e/product_rule/", 
     "id": "product_rule", 
     "display_name": "Product rule", 
     "title": "Product rule", 
     "live": true, 
+    "related_video_slugs": [
+      "applying-the-product-rule-for-derivatives", 
+      "product-rule"
+    ], 
     "description": "", 
     "basepoints": 26.0, 
     "h_position": -2, 
@@ -251,16 +251,16 @@
     "exercise_id": "product_rule"
   }, 
   {
-    "related_video_readable_ids": [
-      "quotient-rule-for-derivative-of-tan-x", 
-      "quotient-rule-from-product-rule"
-    ], 
     "v_position": 83, 
     "path": "/math/calculus/differential-calculus/product_rule/e/quotient_rule/", 
     "id": "quotient_rule", 
     "display_name": "Quotient rule", 
     "title": "Quotient rule", 
     "live": true, 
+    "related_video_slugs": [
+      "quotient-rule-for-derivative-of-tan-x", 
+      "quotient-rule-from-product-rule"
+    ], 
     "description": null, 
     "basepoints": 29.0, 
     "h_position": -3, 
@@ -275,16 +275,16 @@
     "exercise_id": "quotient_rule"
   }, 
   {
-    "related_video_readable_ids": [
-      "recognizing-concavity-exercise", 
-      "concavity--concave-upwards-and-concave-downwards-intervals"
-    ], 
     "v_position": 82, 
     "path": "/math/calculus/derivative_applications/critical_points_graphing/e/recognizing_concavity/", 
     "id": "recognizing_concavity", 
     "display_name": "Recognizing concavity", 
     "title": "Recognizing concavity", 
     "live": true, 
+    "related_video_slugs": [
+      "recognizing-concavity-exercise", 
+      "concavity--concave-upwards-and-concave-downwards-intervals"
+    ], 
     "description": "Identify concave upwards and concave downwards intervals on graphs of functions\n", 
     "basepoints": 17.0, 
     "h_position": 0, 
@@ -299,18 +299,18 @@
     "exercise_id": "recognizing_concavity"
   }, 
   {
-    "related_video_readable_ids": [
-      "introduction-to-l-hopital-s-rule", 
-      "l-hopital-s-rule-example-1", 
-      "l-hopital-s-rule-example-2", 
-      "l-hopital-s-rule-example-3"
-    ], 
     "v_position": 83, 
     "path": "/math/calculus/derivative_applications/lhopital_rule/e/lhopitals_rule/", 
     "id": "lhopitals_rule", 
     "display_name": "L'H\u00f4pital's rule", 
     "title": "L'H\u00f4pital's rule", 
     "live": true, 
+    "related_video_slugs": [
+      "introduction-to-l-hopital-s-rule", 
+      "l-hopital-s-rule-example-1", 
+      "l-hopital-s-rule-example-2", 
+      "l-hopital-s-rule-example-3"
+    ], 
     "description": "", 
     "basepoints": 14.0, 
     "h_position": -5, 
@@ -325,16 +325,16 @@
     "exercise_id": "lhopitals_rule"
   }, 
   {
-    "related_video_readable_ids": [
-      "geometric-sequences--introduction", 
-      "geometric-sequences"
-    ], 
     "v_position": 77, 
     "path": "/math/calculus/sequences_series_approx_calc/seq_series_review/e/geometric_sequences_1/", 
     "id": "geometric_sequences_1", 
     "display_name": "Geometric sequences 1", 
     "title": "Geometric sequences 1", 
     "live": true, 
+    "related_video_slugs": [
+      "geometric-sequences--introduction", 
+      "geometric-sequences"
+    ], 
     "description": "Find the next term in a geometric sequence.\n", 
     "basepoints": 17.0, 
     "h_position": 1, 
@@ -348,16 +348,16 @@
     "exercise_id": "geometric_sequences_1"
   }, 
   {
-    "related_video_readable_ids": [
-      "geometric-sequences--introduction", 
-      "geometric-sequences"
-    ], 
     "v_position": 78, 
     "path": "/math/calculus/sequences_series_approx_calc/seq_series_review/e/geometric_sequences_2/", 
     "id": "geometric_sequences_2", 
     "display_name": "Geometric sequences 2", 
     "title": "Geometric sequences 2", 
     "live": true, 
+    "related_video_slugs": [
+      "geometric-sequences--introduction", 
+      "geometric-sequences"
+    ], 
     "description": "Find the nth term of a geometric sequence.\n", 
     "basepoints": 20.0, 
     "h_position": 1, 

@@ -1,14 +1,14 @@
 [
   {
-    "related_video_readable_ids": [
-      "lines--line-segments--and-rays"
-    ], 
     "v_position": 9, 
     "path": "/math/geometry/segments-and-angles/intro_euclid/e/recognizing_rays_lines_and_line_segments/", 
     "id": "recognizing_rays_lines_and_line_segments", 
     "display_name": "Recognizing rays, lines, and line segments", 
     "title": "Recognizing rays, lines, and line segments", 
     "live": true, 
+    "related_video_slugs": [
+      "lines--line-segments--and-rays"
+    ], 
     "description": "", 
     "basepoints": 10.0, 
     "h_position": -14, 
@@ -20,16 +20,16 @@
     "exercise_id": "recognizing_rays_lines_and_line_segments"
   }, 
   {
-    "related_video_readable_ids": [
-      "lines--line-segments--and-rays", 
-      "specifying-planes-in-three-dimensions"
-    ], 
     "v_position": 13, 
     "path": "/math/geometry/segments-and-angles/intro_euclid/e/points_lines_and_planes/", 
     "id": "points_lines_and_planes", 
     "display_name": "Points, lines, and planes", 
     "title": "Points, lines, and planes", 
     "live": true, 
+    "related_video_slugs": [
+      "lines--line-segments--and-rays", 
+      "specifying-planes-in-three-dimensions"
+    ], 
     "description": "", 
     "basepoints": 14.0, 
     "h_position": -15, 
@@ -43,16 +43,16 @@
     "exercise_id": "points_lines_and_planes"
   }, 
   {
-    "related_video_readable_ids": [
-      "measuring-segments", 
-      "language-and-notation-of-basic-geometry"
-    ], 
     "v_position": 11, 
     "path": "/math/geometry/segments-and-angles/measuring-segments-tutorial/e/measuring_segments/", 
     "id": "measuring_segments", 
     "display_name": "Measuring segments", 
     "title": "Measuring segments", 
     "live": true, 
+    "related_video_slugs": [
+      "measuring-segments", 
+      "language-and-notation-of-basic-geometry"
+    ], 
     "description": "", 
     "basepoints": 12.0, 
     "h_position": -17, 
@@ -66,15 +66,15 @@
     "exercise_id": "measuring_segments"
   }, 
   {
-    "related_video_readable_ids": [
-      "congruent-segments"
-    ], 
     "v_position": 11, 
     "path": "/math/geometry/segments-and-angles/measuring-segments-tutorial/e/congruent_segments/", 
     "id": "congruent_segments", 
     "display_name": "Congruent segments", 
     "title": "Congruent segments", 
     "live": true, 
+    "related_video_slugs": [
+      "congruent-segments"
+    ], 
     "description": "", 
     "basepoints": 12.0, 
     "h_position": -16, 
@@ -88,15 +88,15 @@
     "exercise_id": "congruent_segments"
   }, 
   {
-    "related_video_readable_ids": [
-      "segment-addition"
-    ], 
     "v_position": 10, 
     "path": "/math/geometry/segments-and-angles/line-segment-algebra/e/segment_addition/", 
     "id": "segment_addition", 
     "display_name": "Segment addition", 
     "title": "Segment addition", 
     "live": true, 
+    "related_video_slugs": [
+      "segment-addition"
+    ], 
     "description": "", 
     "basepoints": 25.0, 
     "h_position": -18, 
@@ -111,15 +111,15 @@
     "exercise_id": "segment_addition"
   }, 
   {
-    "related_video_readable_ids": [
-      "midpoint-of-a-segment"
-    ], 
     "v_position": 12, 
     "path": "/math/geometry/segments-and-angles/line-segment-algebra/e/midpoint_of_a_segment/", 
     "id": "midpoint_of_a_segment", 
     "display_name": "Midpoint of a segment", 
     "title": "Midpoint of a segment", 
     "live": true, 
+    "related_video_slugs": [
+      "midpoint-of-a-segment"
+    ], 
     "description": "", 
     "basepoints": 26.0, 
     "h_position": -19, 

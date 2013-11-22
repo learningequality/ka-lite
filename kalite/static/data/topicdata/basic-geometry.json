@@ -1,15 +1,15 @@
 [
   {
-    "related_video_readable_ids": [
-      "triangle-area-proofs", 
-      "perimeter-and-area-basics"
-    ], 
     "v_position": 35, 
     "path": "/math/geometry/basic-geometry/perimeter_area_tutorial/e/area_of_triangles_1/", 
     "id": "area_of_triangles_1", 
     "display_name": "Area of triangles", 
     "title": "Area of triangles", 
     "live": true, 
+    "related_video_slugs": [
+      "triangle-area-proofs", 
+      "perimeter-and-area-basics"
+    ], 
     "description": "Find the area of right, acute, and obtuse triangles from a diagram.\n", 
     "basepoints": 13.0, 
     "h_position": 3, 
@@ -23,16 +23,16 @@
     "exercise_id": "area_of_triangles_1"
   }, 
   {
-    "related_video_readable_ids": [
-      "area-of-shaded-region-made-from-equilateral-triangles", 
-      "area-of-an-equilateral-triangle"
-    ], 
     "v_position": 40, 
     "path": "/math/geometry/basic-geometry/perimeter_area_tutorial/e/shaded_areas/", 
     "id": "shaded_areas", 
     "display_name": "Shaded areas", 
     "title": "Shaded areas", 
     "live": true, 
+    "related_video_slugs": [
+      "area-of-shaded-region-made-from-equilateral-triangles", 
+      "area-of-an-equilateral-triangle"
+    ], 
     "description": "Find the areas of shaded regions which are combinations of squares, triangles, and circles.\n", 
     "basepoints": 24.0, 
     "h_position": -1, 
@@ -47,15 +47,15 @@
     "exercise_id": "shaded_areas"
   }, 
   {
-    "related_video_readable_ids": [
-      "triangle-inqequality-theorem"
-    ], 
     "v_position": 39, 
     "path": "/math/geometry/basic-geometry/triangle_inequality_theorem/e/triangle_inequality_theorem/", 
     "id": "triangle_inequality_theorem", 
     "display_name": "Triangle inequality theorem", 
     "title": "Triangle inequality theorem", 
     "live": true, 
+    "related_video_slugs": [
+      "triangle-inqequality-theorem"
+    ], 
     "description": "", 
     "basepoints": 17.0, 
     "h_position": -2, 
@@ -69,15 +69,15 @@
     "exercise_id": "triangle_inequality_theorem"
   }, 
   {
-    "related_video_readable_ids": [
-      "heron-s-formula"
-    ], 
     "v_position": 41, 
     "path": "/math/geometry/basic-geometry/heron_formula_tutorial/e/herons_formula/", 
     "id": "herons_formula", 
     "display_name": "Heron's formula", 
     "title": "Heron's formula", 
     "live": true, 
+    "related_video_slugs": [
+      "heron-s-formula"
+    ], 
     "description": "", 
     "basepoints": 27.0, 
     "h_position": -1, 
@@ -91,15 +91,15 @@
     "exercise_id": "herons_formula"
   }, 
   {
-    "related_video_readable_ids": [
-      "circles--radius--diameter-and-circumference"
-    ], 
     "v_position": 37, 
     "path": "/math/geometry/basic-geometry/circum_area_circles/e/radius_diameter_and_circumference/", 
     "id": "radius_diameter_and_circumference", 
     "display_name": "Radius, diameter, and circumference", 
     "title": "Radius, diameter, and circumference", 
     "live": true, 
+    "related_video_slugs": [
+      "circles--radius--diameter-and-circumference"
+    ], 
     "description": "", 
     "basepoints": 13.0, 
     "h_position": 2, 
@@ -113,15 +113,15 @@
     "exercise_id": "radius_diameter_and_circumference"
   }, 
   {
-    "related_video_readable_ids": [
-      "area-of-a-circle"
-    ], 
     "v_position": 38, 
     "path": "/math/geometry/basic-geometry/circum_area_circles/e/area_of_a_circle/", 
     "id": "area_of_a_circle", 
     "display_name": "Area of a circle", 
     "title": "Area of a circle", 
     "live": true, 
+    "related_video_slugs": [
+      "area-of-a-circle"
+    ], 
     "description": "", 
     "basepoints": 15.0, 
     "h_position": 1, 
@@ -136,15 +136,15 @@
     "exercise_id": "area_of_a_circle"
   }, 
   {
-    "related_video_readable_ids": [
-      "area-of-a-parallelogram"
-    ], 
     "v_position": 36, 
     "path": "/math/geometry/basic-geometry/area_non_standard/e/area_of_parallelograms/", 
     "id": "area_of_parallelograms", 
     "display_name": "Area of parallelograms", 
     "title": "Area of parallelograms", 
     "live": true, 
+    "related_video_slugs": [
+      "area-of-a-parallelogram"
+    ], 
     "description": "Find the area of parallelograms given base and height.\n", 
     "basepoints": 13.0, 
     "h_position": 4, 
@@ -158,17 +158,17 @@
     "exercise_id": "area_of_parallelograms"
   }, 
   {
-    "related_video_readable_ids": [
-      "area-of-a-trapezoid-1", 
-      "area-of-a-kite", 
-      "area-of-a-parallelogram"
-    ], 
     "v_position": 36, 
     "path": "/math/geometry/basic-geometry/area_non_standard/e/areas_of_trapezoids_rhombi_and_kites/", 
     "id": "areas_of_trapezoids_rhombi_and_kites", 
     "display_name": "Area of trapezoids, rhombi, and kites", 
     "title": "Area of trapezoids, rhombi, and kites", 
     "live": true, 
+    "related_video_slugs": [
+      "area-of-a-trapezoid-1", 
+      "area-of-a-kite", 
+      "area-of-a-parallelogram"
+    ], 
     "description": "Find areas of trapezoids, rhombi, and kites given important lengths.\n", 
     "basepoints": 16.0, 
     "h_position": 3, 
@@ -182,17 +182,17 @@
     "exercise_id": "areas_of_trapezoids_rhombi_and_kites"
   }, 
   {
-    "related_video_readable_ids": [
-      "solid-geometry-volume", 
-      "cylinder-volume-and-surface-area", 
-      "volume-of-a-sphere"
-    ], 
     "v_position": 39, 
     "path": "/math/geometry/basic-geometry/volume_tutorial/e/solid_geometry/", 
     "id": "solid_geometry", 
     "display_name": "Solid geometry", 
     "title": "Solid geometry", 
     "live": true, 
+    "related_video_slugs": [
+      "solid-geometry-volume", 
+      "cylinder-volume-and-surface-area", 
+      "volume-of-a-sphere"
+    ], 
     "description": "", 
     "basepoints": 18.0, 
     "h_position": 0, 

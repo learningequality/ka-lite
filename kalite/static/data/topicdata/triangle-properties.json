@@ -1,15 +1,15 @@
 [
   {
-    "related_video_readable_ids": [
-      "angle-bisector-theorem-examples", 
-      "angle-bisector-theorem-proof"
-    ], 
     "v_position": 69, 
     "path": "/math/geometry/triangle-properties/angle_bisectors/e/angle_bisector_theorem/", 
     "id": "angle_bisector_theorem", 
     "display_name": "Angle bisector theorem", 
     "title": "Angle bisector theorem", 
     "live": true, 
+    "related_video_slugs": [
+      "angle-bisector-theorem-examples", 
+      "angle-bisector-theorem-proof"
+    ], 
     "description": "", 
     "basepoints": 23.0, 
     "h_position": -1, 
@@ -23,17 +23,17 @@
     "exercise_id": "angle_bisector_theorem"
   }, 
   {
-    "related_video_readable_ids": [
-      "constructing-a-perpendicular-bisector-using-a-compass-and-straightedge", 
-      "constructing-a-perpendicular-line-using-a-compass-and-straightedge", 
-      "constructing-an-angle-bisector-using-a-compass-and-straightedge"
-    ], 
     "v_position": 70, 
     "path": "/math/geometry/triangle-properties/geometric-constructions/e/constructions_1/", 
     "id": "constructions_1", 
     "display_name": "Compass constructions", 
     "title": "Compass constructions", 
     "live": true, 
+    "related_video_slugs": [
+      "constructing-a-perpendicular-bisector-using-a-compass-and-straightedge", 
+      "constructing-a-perpendicular-line-using-a-compass-and-straightedge", 
+      "constructing-an-angle-bisector-using-a-compass-and-straightedge"
+    ], 
     "description": "Circles and straight-edges, oh my!", 
     "basepoints": 23.0, 
     "h_position": 0, 

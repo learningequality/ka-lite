@@ -1,14 +1,14 @@
 [
   {
-    "related_video_readable_ids": [
-      "negative-numbers-introduction"
-    ], 
     "v_position": 36, 
     "path": "/math/arithmetic/absolute-value/add-sub-negatives/e/number_line_2/", 
     "id": "number_line_2", 
     "display_name": "Negative numbers on the number line", 
     "title": "Negative numbers on the number line", 
     "live": true, 
+    "related_video_slugs": [
+      "negative-numbers-introduction"
+    ], 
     "description": "Identify positive and negative integers on the number line\n", 
     "basepoints": 14.0, 
     "h_position": -4, 
@@ -23,16 +23,16 @@
     "exercise_id": "number_line_2"
   }, 
   {
-    "related_video_readable_ids": [
-      "number-line-3-exercise-example", 
-      "negative-numbers-introduction"
-    ], 
     "v_position": 37, 
     "path": "/math/arithmetic/absolute-value/add-sub-negatives/e/number_line_3/", 
     "id": "number_line_3", 
     "display_name": "Number line 3", 
     "title": "Number line 3", 
     "live": true, 
+    "related_video_slugs": [
+      "number-line-3-exercise-example", 
+      "negative-numbers-introduction"
+    ], 
     "description": "Identify positive and negative integers on the number line.", 
     "basepoints": 16.0, 
     "h_position": -3, 
@@ -46,15 +46,15 @@
     "exercise_id": "number_line_3"
   }, 
   {
-    "related_video_readable_ids": [
-      "ordering-negative-numbers"
-    ], 
     "v_position": 38, 
     "path": "/math/arithmetic/absolute-value/add-sub-negatives/e/ordering_negative_numbers/", 
     "id": "ordering_negative_numbers", 
     "display_name": "Ordering negative numbers", 
     "title": "Ordering negative numbers", 
     "live": true, 
+    "related_video_slugs": [
+      "ordering-negative-numbers"
+    ], 
     "description": "Put negative integers in order", 
     "basepoints": 16.0, 
     "h_position": -4, 
@@ -68,17 +68,17 @@
     "exercise_id": "ordering_negative_numbers"
   }, 
   {
-    "related_video_readable_ids": [
-      "negative-numbers-introduction", 
-      "adding-negative-numbers", 
-      "adding-integers-with-different-signs"
-    ], 
     "v_position": 41, 
     "path": "/math/arithmetic/absolute-value/adding_subtracting_negatives/e/adding_negative_numbers/", 
     "id": "adding_negative_numbers", 
     "display_name": "Adding negative numbers", 
     "title": "Adding negative numbers", 
     "live": true, 
+    "related_video_slugs": [
+      "negative-numbers-introduction", 
+      "adding-negative-numbers", 
+      "adding-integers-with-different-signs"
+    ], 
     "description": "Adding positive and negative single-digit numbers\n", 
     "basepoints": 13.0, 
     "h_position": -6, 
@@ -92,18 +92,18 @@
     "exercise_id": "adding_negative_numbers"
   }, 
   {
-    "related_video_readable_ids": [
-      "adding-and-subtracting-negative-number-examples", 
-      "adding-integers-with-different-signs", 
-      "negative-numbers-introduction", 
-      "why-subtracting-a-negative-equivalent-to-adding-a-positive"
-    ], 
     "v_position": 40, 
     "path": "/math/arithmetic/absolute-value/adding_subtracting_negatives/e/adding_and_subtracting_negative_numbers/", 
     "id": "adding_and_subtracting_negative_numbers", 
     "display_name": "Adding and subtracting negative numbers", 
     "title": "Adding and subtracting negative numbers", 
     "live": true, 
+    "related_video_slugs": [
+      "adding-and-subtracting-negative-number-examples", 
+      "adding-integers-with-different-signs", 
+      "negative-numbers-introduction", 
+      "why-subtracting-a-negative-equivalent-to-adding-a-positive"
+    ], 
     "description": "Add and subtract positive and negative single-digit integers\n", 
     "basepoints": 13.0, 
     "h_position": -5, 
@@ -117,16 +117,16 @@
     "exercise_id": "adding_and_subtracting_negative_numbers"
   }, 
   {
-    "related_video_readable_ids": [
-      "negative-number-word-problems-1", 
-      "u09-l1-t2-we4-adding-real-numbers-application"
-    ], 
     "v_position": 37, 
     "path": "/math/arithmetic/absolute-value/adding_subtracting_negatives/e/negative_number_word_problems/", 
     "id": "negative_number_word_problems", 
     "display_name": "Negative number word problems", 
     "title": "Negative number word problems", 
     "live": true, 
+    "related_video_slugs": [
+      "negative-number-word-problems-1", 
+      "u09-l1-t2-we4-adding-real-numbers-application"
+    ], 
     "description": "", 
     "basepoints": 20.0, 
     "h_position": -4, 
@@ -140,7 +140,13 @@
     "exercise_id": "negative_number_word_problems"
   }, 
   {
-    "related_video_readable_ids": [
+    "v_position": 42, 
+    "path": "/math/arithmetic/absolute-value/mult_div_negatives/e/multiplying_and_dividing_negative_numbers/", 
+    "id": "multiplying_and_dividing_negative_numbers", 
+    "display_name": "Multiplying and dividing negative numbers", 
+    "title": "Multiplying and dividing negative numbers", 
+    "live": true, 
+    "related_video_slugs": [
       "multiplying-positive-and-negative-numbers", 
       "dividing-positive-and-negative-numbers", 
       "multiplying-negative-real-numbers", 
@@ -148,12 +154,6 @@
       "why-a-negative-times-a-negative-makes-intuitive-sense", 
       "multiplying-and-dividing-negative-numbers"
     ], 
-    "v_position": 42, 
-    "path": "/math/arithmetic/absolute-value/mult_div_negatives/e/multiplying_and_dividing_negative_numbers/", 
-    "id": "multiplying_and_dividing_negative_numbers", 
-    "display_name": "Multiplying and dividing negative numbers", 
-    "title": "Multiplying and dividing negative numbers", 
-    "live": true, 
     "description": "Multiply or divide positive and negative integers. No remainder.", 
     "basepoints": 12.0, 
     "h_position": -5, 
@@ -167,17 +167,17 @@
     "exercise_id": "multiplying_and_dividing_negative_numbers"
   }, 
   {
-    "related_video_readable_ids": [
-      "absolute-value-and-number-lines", 
-      "absolute-value-1", 
-      "absolute-value-of-integers"
-    ], 
     "v_position": 38, 
     "path": "/math/arithmetic/absolute-value/abs_value_tutorial/e/absolute_value/", 
     "id": "absolute_value", 
     "display_name": "Finding absolute values", 
     "title": "Finding absolute values", 
     "live": true, 
+    "related_video_slugs": [
+      "absolute-value-and-number-lines", 
+      "absolute-value-1", 
+      "absolute-value-of-integers"
+    ], 
     "description": "Find the absolute value of a given number.", 
     "basepoints": 10.0, 
     "h_position": -5, 
@@ -191,15 +191,15 @@
     "exercise_id": "absolute_value"
   }, 
   {
-    "related_video_readable_ids": [
-      "comparing-absolute-values"
-    ], 
     "v_position": 39, 
     "path": "/math/arithmetic/absolute-value/abs_value_tutorial/e/comparing_absolute_values/", 
     "id": "comparing_absolute_values", 
     "display_name": "Comparing absolute values", 
     "title": "Comparing absolute values", 
     "live": true, 
+    "related_video_slugs": [
+      "comparing-absolute-values"
+    ], 
     "description": "Compare the absolute values of two numbers, or compare the absolute value of one number to another number.", 
     "basepoints": 12.0, 
     "h_position": -5, 
