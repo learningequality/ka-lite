@@ -1,19 +1,32 @@
+// this function doesn't look good. One too many callbacks!
 $(function() {
-    // if prefix is empty, gives an absolute (local) url. If prefix, then fully qualified url.
+    // basic flow: check with central server what we can install
+    // if that's successful, check with local server of what we have installed
+    // then dont show languages in dropdown box if already installed
     var url = "http://" + central_server_url +  "/api/i18n/language_packs/available/";
     var request = $.ajax({
         url: url,
         dataType: "jsonp",
     }).success(function(languagePacks) {
-	languagePacks.forEach(function(langdata, langindex) {
-            var srtcount = langdata["subtitle_count"];
-            var langcode = langdata["code"];
-            if(langcode === defaultLanguage) {
-                $('#language-packs').append('<option value="' + langcode + '" selected>' + langcode + ' (' + srtcount + ')</option>');
-            }
-            if (srtcount > 0) { // badass over here
-                $('#language-packs').append('<option value="' + langcode + '">'+ langcode + ' (' + srtcount +')</option>');
-            }
+        $.ajax({
+            url: installed_languages_url,
+            dataType: "json",
+        }).success(function(installedlangs) {
+	    languagePacks.forEach(function(langdata, langindex) {
+                var srtcount = langdata["subtitle_count"];
+                var langcode = langdata["code"];
+
+                // if language already intalled, dont show in dropdown box
+                var installed_languages = installedlangs.map(function(elem) { return elem['code']; });
+                if ($.inArray(langcode, installed_languages) === -1) { // lang not yet installed
+                    if (srtcount > 0) {
+                        $('#language-packs').append('<option value="' + langcode + '">'+ langcode + ' (' + srtcount +')</option>');
+                    }
+                }
+
+            });
+        }).error(function() {
+            show_message("error", gettext("Distributed server is offline; cannot request installed languages."));
 	});
     }).error(function() {
         console.log("404 from central server");

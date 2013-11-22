@@ -66,6 +66,7 @@
      var central_server_url = "{{ central_server_host }}";
      var server_info_url = "{% url get_server_info %}";
      var start_languagepackdownload_url = "{% url start_languagepack_download %}";
+     var installed_languages_url = "{% url installed_language_packs %}"
      var defaultLanguage = "{{ default_language }}";
     </script>
     <script type="text/javascript" src="{% static 'js/update_languages.js' %}"></script>
@@ -76,7 +77,11 @@
         <h2>{% trans "Installed Languages" %}</h2>
         {% if installed_languages %}
             {% for lang in installed_languages %}
-                {{lang.name}} - {{lang.percent_translated}} {% trans "Complete" %}
+              {% if lang.name %}
+                <p>
+                  {{lang.name}} ({{ lang.code }}) - {{lang.percent_translated}}% {% trans "Translated" %} - {{ lang.subtitle_count }} {% trans 'Subtitles available' %}
+                </p>
+              {% endif %}
             {% endfor %}
         {% else %}
             <p>{% trans "You currently have no languages installed" %}</p>
