@@ -12,11 +12,11 @@
     </p>
     {% else %}
     <p>
-        {% blocktrans with ndays="{{ expiration_days|apnumber }}" %}
-        Sorry, it didn't work.
+        {% blocktrans with ndays="{{ expiration_days|apnumber }}" %}Sorry, it didn't work.
         Either your activation link was incorrect, or the activation key for your account has expired.
         Activation keys are only valid for {{ ndays }} days after registration.
         If you think this could be the issue, try resubmitting your registration.
+        {% endblocktrans %}
     </p>
     {% endif %}
 {% endblock %}
