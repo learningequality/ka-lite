@@ -116,11 +116,11 @@ def refresh_topic_cache(handler, force=False):
             # Propertes not yet marked
             if node["kind"] == "Video":
                 if force or "urls" not in node:  #
-                    stamp_urls_on_video(node, force=force)  # must come second
+                    #stamp_urls_on_video(node, force=force)  # will be done by force below
                     recount_videos_and_invalidate_parents(node["parent"], force=True)
 
             elif node["kind"] == "Topic":
-                if force or not has_grandchildren or "nvideos_local" not in node:
+                if not force or not has_grandchildren or "nvideos_local" not in node:
                     for video in topic_tools.get_topic_videos(path=node["path"]):
                         stamp_urls_on_video(video, force=force)
                 recount_videos_and_invalidate_parents(node, force=force or not has_grandchildren)
