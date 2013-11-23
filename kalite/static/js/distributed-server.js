@@ -149,13 +149,13 @@ $(function(){
 // Related to student log progress
 $(function(){
     // load progress data for all videos linked on page, and render progress circles
-    var youtube_ids = $.map($(".progress-circle[data-youtube-id]"), function(el) { return $(el).data("youtube-id") });
-    if (youtube_ids.length > 0) {
-        doRequest("/api/get_video_logs", youtube_ids)
+    var video_ids = $.map($(".progress-circle[data-video-id]"), function(el) { return $(el).data("video-id") });
+    if (video_ids.length > 0) {
+        doRequest("/api/get_video_logs", video_ids)
             .success(function(data) {
                 $.each(data, function(ind, video) {
                     var newClass = video.complete ? "complete" : "partial";
-                    $("[data-youtube-id='" + video.youtube_id + "']").addClass(newClass);
+                    $("[data-video-id='" + video.video_id + "']").addClass(newClass);
                 });
             })
             .fail(function(resp) {

@@ -11,12 +11,11 @@ from StringIO import StringIO
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
-from main.topicdata import ID2SLUG_MAP
+from main.topicdata import NODE_CACHE
 from settings import LOG as logging
+from shared.i18n import DUBBED_VIDEOS_MAPPING_FILE
 from utils.general import ensure_dir, datediff
 
-
-DUBBED_VIDEOS_MAPPING_FILE = os.path.join(settings.STATIC_ROOT, "data", "i18n", "dubbed_video_mappings.json")
 
 DUBBED_VIDEOS_SPREADSHEET_CSV_URL = "https://docs.google.com/a/learningequality.org/spreadsheet/ccc?key=0AhvqOn88FUVedEM5U3drY3E1MENfeWlLMVBnbnczT3c&output=csv&ndplr=1#gid=13"
 
@@ -89,8 +88,8 @@ def generate_dubbed_video_mappings(download_url=DUBBED_VIDEOS_SPREADSHEET_CSV_UR
         pass
 
     # Now, validate the mappings with our topic data
-    missing_videos = set(ID2SLUG_MAP.keys()) - set(video_map["english"].keys())
-    extra_videos = set(video_map["english"].keys()) - set(ID2SLUG_MAP.keys())
+    missing_videos = set(NODE_CACHE.keys()) - set(video_map["english"].keys())
+    extra_videos = set(video_map["english"].keys()) - set(NODE_CACHE.keys())
     if missing_videos:
         logging.warn("There are %d known videos not in the list of dubbed videos" % len(missing_videos))
     if extra_videos:
@@ -123,8 +122,6 @@ class Command(BaseCommand):
                     fp.write(csv_data)
             except Exception as e:
                 logging.error("Failed to make a local cache of the CSV data: %s" % e)
-
-
 
         # Now we've built the map.  Save it.
         out_file = DUBBED_VIDEOS_MAPPING_FILE

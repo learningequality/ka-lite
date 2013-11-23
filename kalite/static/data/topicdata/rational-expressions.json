@@ -1,15 +1,15 @@
 [
   {
-    "related_video_readable_ids": [
-      "simplifying-rational-expressions-introduction", 
-      "simplifying-rational-expressions-1"
-    ], 
     "v_position": 69, 
     "path": "/math/algebra/rational-expressions/simplifying-rational-alg/e/dividing_polynomials_by_binomials_1/", 
     "id": "dividing_polynomials_by_binomials_1", 
     "display_name": "Dividing polynomials by binomials 1", 
     "title": "Dividing polynomials by binomials 1", 
     "live": true, 
+    "related_video_slugs": [
+      "simplifying-rational-expressions-introduction", 
+      "simplifying-rational-expressions-1"
+    ], 
     "description": "Simplify the ratio of a polynomial and a binomial.\n", 
     "basepoints": 14.0, 
     "h_position": -11, 
@@ -20,20 +20,21 @@
     "prerequisites": [
       "factoring_polynomials_with_two_variables", 
       "factoring_polynomials_by_grouping_1"
-    ]
+    ], 
+    "exercise_id": "dividing_polynomials_by_binomials_1"
   }, 
   {
-    "related_video_readable_ids": [
-      "simplifying-rational-expressions-introduction", 
-      "simplifying-rational-expressions-1", 
-      "simplifying-rational-expressions-2"
-    ], 
     "v_position": 70, 
     "path": "/math/algebra/rational-expressions/simplifying-rational-alg/e/dividing_polynomials_by_binomials_2/", 
     "id": "dividing_polynomials_by_binomials_2", 
     "display_name": "Dividing polynomials by binomials 2", 
     "title": "Dividing polynomials by binomials 2", 
     "live": true, 
+    "related_video_slugs": [
+      "simplifying-rational-expressions-introduction", 
+      "simplifying-rational-expressions-1", 
+      "simplifying-rational-expressions-2"
+    ], 
     "description": "Simplify the ratio of a polynomial and a binomial.\n", 
     "basepoints": 21.0, 
     "h_position": -11, 
@@ -43,20 +44,21 @@
     "seconds_per_fast_problem": 20.0, 
     "prerequisites": [
       "dividing_polynomials_by_binomials_1"
-    ]
+    ], 
+    "exercise_id": "dividing_polynomials_by_binomials_2"
   }, 
   {
-    "related_video_readable_ids": [
-      "simplifying-rational-expressions-introduction", 
-      "simplifying-rational-expressions-1", 
-      "simplifying-rational-expressions-2"
-    ], 
     "v_position": 70, 
     "path": "/math/algebra/rational-expressions/simplifying-rational-alg/e/simplifying_rational_expressions_2/", 
     "id": "simplifying_rational_expressions_2", 
     "display_name": "Simplifying rational expressions 2", 
     "title": "Simplifying rational expressions 2", 
     "live": true, 
+    "related_video_slugs": [
+      "simplifying-rational-expressions-introduction", 
+      "simplifying-rational-expressions-1", 
+      "simplifying-rational-expressions-2"
+    ], 
     "description": "Simplify the ratio of two polynomials.\n", 
     "basepoints": 10.0, 
     "h_position": -10, 
@@ -66,21 +68,22 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "simplifying_rational_expressions_1"
-    ]
+    ], 
+    "exercise_id": "simplifying_rational_expressions_2"
   }, 
   {
-    "related_video_readable_ids": [
-      "simplifying-rational-expressions-introduction", 
-      "simplifying-rational-expressions-1", 
-      "simplifying-rational-expressions-3", 
-      "simplifying-rational-expressions-2"
-    ], 
     "v_position": 71, 
     "path": "/math/algebra/rational-expressions/simplifying-rational-alg/e/dividing_polynomials_by_binomials_3/", 
     "id": "dividing_polynomials_by_binomials_3", 
     "display_name": "Dividing polynomials by binomials 3", 
     "title": "Dividing polynomials by binomials 3", 
     "live": true, 
+    "related_video_slugs": [
+      "simplifying-rational-expressions-introduction", 
+      "simplifying-rational-expressions-1", 
+      "simplifying-rational-expressions-3", 
+      "simplifying-rational-expressions-2"
+    ], 
     "description": "Simplify the ratio of a polynomial and a binomial.\n", 
     "basepoints": 17.0, 
     "h_position": -11, 
@@ -90,20 +93,21 @@
     "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "dividing_polynomials_by_binomials_2"
-    ]
+    ], 
+    "exercise_id": "dividing_polynomials_by_binomials_3"
   }, 
   {
-    "related_video_readable_ids": [
-      "simplifying-rational-expressions-introduction", 
-      "simplifying-rational-expressions-2", 
-      "simplifying-rational-expressions-3"
-    ], 
     "v_position": 71, 
     "path": "/math/algebra/rational-expressions/simplifying-rational-alg/e/simplifying_rational_expressions_3/", 
     "id": "simplifying_rational_expressions_3", 
     "display_name": "Simplifying rational expressions 3", 
     "title": "Simplifying rational expressions 3", 
     "live": true, 
+    "related_video_slugs": [
+      "simplifying-rational-expressions-introduction", 
+      "simplifying-rational-expressions-2", 
+      "simplifying-rational-expressions-3"
+    ], 
     "description": "Simplify the ratio of two polynomials.\n", 
     "basepoints": 10.0, 
     "h_position": -10, 
@@ -113,21 +117,22 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "simplifying_rational_expressions_2"
-    ]
+    ], 
+    "exercise_id": "simplifying_rational_expressions_3"
   }, 
   {
-    "related_video_readable_ids": [
-      "simplifying-rational-expressions-1", 
-      "simplifying-rational-expressions-2", 
-      "simplifying-rational-expressions-3", 
-      "simplifying-rational-expressions-example-2"
-    ], 
     "v_position": 72, 
     "path": "/math/algebra/rational-expressions/simplifying-rational-alg/e/simplifying_rational_expressions_4/", 
     "id": "simplifying_rational_expressions_4", 
     "display_name": "Simplifying rational expressions 4", 
     "title": "Simplifying rational expressions 4", 
     "live": true, 
+    "related_video_slugs": [
+      "simplifying-rational-expressions-1", 
+      "simplifying-rational-expressions-2", 
+      "simplifying-rational-expressions-3", 
+      "simplifying-rational-expressions-example-2"
+    ], 
     "description": "", 
     "basepoints": 10.0, 
     "h_position": -10, 
@@ -137,22 +142,23 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "simplifying_rational_expressions_3"
-    ]
+    ], 
+    "exercise_id": "simplifying_rational_expressions_4"
   }, 
   {
-    "related_video_readable_ids": [
-      "adding-and-subtracting-rational-expressions", 
-      "adding-and-subtracting-rational-expressions-2", 
-      "subtracting-rational-expressions", 
-      "simplifying-first-for-subtracting-rational-expressions", 
-      "adding-and-subtracting-rational-expressions-3"
-    ], 
     "v_position": 69, 
     "path": "/math/algebra/rational-expressions/rational_expressions/e/adding_and_subtracting_rational_expressions_0.5/", 
     "id": "adding_and_subtracting_rational_expressions_0.5", 
     "display_name": "Adding and subtracting rational expressions 0.5", 
     "title": "Adding and subtracting rational expressions 0.5", 
     "live": true, 
+    "related_video_slugs": [
+      "adding-and-subtracting-rational-expressions", 
+      "adding-and-subtracting-rational-expressions-2", 
+      "subtracting-rational-expressions", 
+      "simplifying-first-for-subtracting-rational-expressions", 
+      "adding-and-subtracting-rational-expressions-3"
+    ], 
     "description": "Adding and subtracting two expressions with\u00a0common denominator\u00a0and each of the form Ax/B or A/Bx.\n", 
     "basepoints": 10.0, 
     "h_position": -8, 
@@ -164,22 +170,23 @@
       "factoring_polynomials_with_two_variables", 
       "factoring_polynomials_by_grouping_1", 
       "adding_and_subtracting_fractions"
-    ]
+    ], 
+    "exercise_id": "adding_and_subtracting_rational_expressions_0.5"
   }, 
   {
-    "related_video_readable_ids": [
-      "adding-and-subtracting-rational-expressions", 
-      "adding-and-subtracting-rational-expressions-2", 
-      "subtracting-rational-expressions", 
-      "simplifying-first-for-subtracting-rational-expressions", 
-      "adding-and-subtracting-rational-expressions-3"
-    ], 
     "v_position": 70, 
     "path": "/math/algebra/rational-expressions/rational_expressions/e/adding_and_subtracting_rational_expressions/", 
     "id": "adding_and_subtracting_rational_expressions", 
     "display_name": "Adding and subtracting rational expressions 1", 
     "title": "Adding and subtracting rational expressions 1", 
     "live": true, 
+    "related_video_slugs": [
+      "adding-and-subtracting-rational-expressions", 
+      "adding-and-subtracting-rational-expressions-2", 
+      "subtracting-rational-expressions", 
+      "simplifying-first-for-subtracting-rational-expressions", 
+      "adding-and-subtracting-rational-expressions-3"
+    ], 
     "description": "Adding and subtracting expressions with a common denominator, where each is of the form (Ax+B)/(Cx+D).\n", 
     "basepoints": 10.0, 
     "h_position": -8, 
@@ -189,22 +196,23 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "adding_and_subtracting_rational_expressions_0.5"
-    ]
+    ], 
+    "exercise_id": "adding_and_subtracting_rational_expressions"
   }, 
   {
-    "related_video_readable_ids": [
-      "adding-and-subtracting-rational-expressions", 
-      "adding-and-subtracting-rational-expressions-2", 
-      "subtracting-rational-expressions", 
-      "simplifying-first-for-subtracting-rational-expressions", 
-      "adding-and-subtracting-rational-expressions-3"
-    ], 
     "v_position": 71, 
     "path": "/math/algebra/rational-expressions/rational_expressions/e/adding_and_subtracting_rational_expressions_1.5/", 
     "id": "adding_and_subtracting_rational_expressions_1.5", 
     "display_name": "Adding and subtracting rational expressions 1.5", 
     "title": "Adding and subtracting rational expressions 1.5", 
     "live": true, 
+    "related_video_slugs": [
+      "adding-and-subtracting-rational-expressions", 
+      "adding-and-subtracting-rational-expressions-2", 
+      "subtracting-rational-expressions", 
+      "simplifying-first-for-subtracting-rational-expressions", 
+      "adding-and-subtracting-rational-expressions-3"
+    ], 
     "description": "Adding and subtracting multiple variable expressions with the same denominators where each is an expression containing up to two terms and four variables.\n", 
     "basepoints": 10.0, 
     "h_position": -8, 
@@ -214,22 +222,23 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "adding_and_subtracting_rational_expressions"
-    ]
+    ], 
+    "exercise_id": "adding_and_subtracting_rational_expressions_1.5"
   }, 
   {
-    "related_video_readable_ids": [
-      "adding-and-subtracting-rational-expressions", 
-      "adding-and-subtracting-rational-expressions-2", 
-      "subtracting-rational-expressions", 
-      "simplifying-first-for-subtracting-rational-expressions", 
-      "adding-and-subtracting-rational-expressions-3"
-    ], 
     "v_position": 72, 
     "path": "/math/algebra/rational-expressions/rational_expressions/e/adding_and_subtracting_rational_expressions_2/", 
     "id": "adding_and_subtracting_rational_expressions_2", 
     "display_name": "Adding and subtracting rational expressions 2", 
     "title": "Adding and subtracting rational expressions 2", 
     "live": true, 
+    "related_video_slugs": [
+      "adding-and-subtracting-rational-expressions", 
+      "adding-and-subtracting-rational-expressions-2", 
+      "subtracting-rational-expressions", 
+      "simplifying-first-for-subtracting-rational-expressions", 
+      "adding-and-subtracting-rational-expressions-3"
+    ], 
     "description": "Adding and subtracting two expressions with different denominators, where each is of the form Ax/B or A/Bx.\n", 
     "basepoints": 10.0, 
     "h_position": -8, 
@@ -239,20 +248,21 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "adding_and_subtracting_rational_expressions_1.5"
-    ]
+    ], 
+    "exercise_id": "adding_and_subtracting_rational_expressions_2"
   }, 
   {
-    "related_video_readable_ids": [
-      "adding-and-subtracting-rational-expressions", 
-      "adding-and-subtracting-rational-expressions-2", 
-      "adding-and-subtracting-rational-expressions-3"
-    ], 
     "v_position": 73, 
     "path": "/math/algebra/rational-expressions/rational_expressions/e/adding_and_subtracting_rational_expressions_3/", 
     "id": "adding_and_subtracting_rational_expressions_3", 
     "display_name": "Adding and subtracting rational expressions 3", 
     "title": "Adding and subtracting rational expressions 3", 
     "live": true, 
+    "related_video_slugs": [
+      "adding-and-subtracting-rational-expressions", 
+      "adding-and-subtracting-rational-expressions-2", 
+      "adding-and-subtracting-rational-expressions-3"
+    ], 
     "description": "", 
     "basepoints": 10.0, 
     "h_position": -8, 
@@ -262,20 +272,21 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "adding_and_subtracting_rational_expressions_2"
-    ]
+    ], 
+    "exercise_id": "adding_and_subtracting_rational_expressions_3"
   }, 
   {
-    "related_video_readable_ids": [
-      "multiplying-and-dividing-rational-expressions-2", 
-      "multiplying-and-dividing-rational-expressions-3", 
-      "multiplying-and-dividing-rational-expressions-1"
-    ], 
     "v_position": 69, 
     "path": "/math/algebra/rational-expressions/rational_expressions/e/multiplying_and_dividing_rational_expressions_1/", 
     "id": "multiplying_and_dividing_rational_expressions_1", 
     "display_name": "Multiplying and dividing rational expressions  1", 
     "title": "Multiplying and dividing rational expressions  1", 
     "live": true, 
+    "related_video_slugs": [
+      "multiplying-and-dividing-rational-expressions-2", 
+      "multiplying-and-dividing-rational-expressions-3", 
+      "multiplying-and-dividing-rational-expressions-1"
+    ], 
     "description": "Multiplying a rational expression in the form (Ax+B)/(Cx+D) by a constant.\n", 
     "basepoints": 10.0, 
     "h_position": -9, 
@@ -286,20 +297,21 @@
     "prerequisites": [
       "factoring_polynomials_by_grouping_1", 
       "factoring_polynomials_with_two_variables"
-    ]
+    ], 
+    "exercise_id": "multiplying_and_dividing_rational_expressions_1"
   }, 
   {
-    "related_video_readable_ids": [
-      "multiplying-and-dividing-rational-expressions-2", 
-      "multiplying-and-dividing-rational-expressions-3", 
-      "multiplying-and-dividing-rational-expressions-1"
-    ], 
     "v_position": 70, 
     "path": "/math/algebra/rational-expressions/rational_expressions/e/multiplying_and_dividing_rational_expressions_2/", 
     "id": "multiplying_and_dividing_rational_expressions_2", 
     "display_name": "Multiplying and dividing rational expressions 2", 
     "title": "Multiplying and dividing rational expressions 2", 
     "live": true, 
+    "related_video_slugs": [
+      "multiplying-and-dividing-rational-expressions-2", 
+      "multiplying-and-dividing-rational-expressions-3", 
+      "multiplying-and-dividing-rational-expressions-1"
+    ], 
     "description": "Multiplying or dividing a rational expression in the form (Ax+B)/C by a variable Dx/E.\n", 
     "basepoints": 10.0, 
     "h_position": -9, 
@@ -309,19 +321,20 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "multiplying_and_dividing_rational_expressions_1"
-    ]
+    ], 
+    "exercise_id": "multiplying_and_dividing_rational_expressions_2"
   }, 
   {
-    "related_video_readable_ids": [
-      "multiplying-and-dividing-rational-expressions-2", 
-      "multiplying-and-dividing-rational-expressions-3"
-    ], 
     "v_position": 71, 
     "path": "/math/algebra/rational-expressions/rational_expressions/e/multiplying_and_dividing_rational_expressions_3/", 
     "id": "multiplying_and_dividing_rational_expressions_3", 
     "display_name": "Multiplying and dividing rational expressions 3", 
     "title": "Multiplying and dividing rational expressions 3", 
     "live": true, 
+    "related_video_slugs": [
+      "multiplying-and-dividing-rational-expressions-2", 
+      "multiplying-and-dividing-rational-expressions-3"
+    ], 
     "description": "", 
     "basepoints": 10.0, 
     "h_position": -9, 
@@ -331,19 +344,20 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "multiplying_and_dividing_rational_expressions_2"
-    ]
+    ], 
+    "exercise_id": "multiplying_and_dividing_rational_expressions_3"
   }, 
   {
-    "related_video_readable_ids": [
-      "multiplying-and-dividing-rational-expressions-2", 
-      "multiplying-and-dividing-rational-expressions-3"
-    ], 
     "v_position": 72, 
     "path": "/math/algebra/rational-expressions/rational_expressions/e/multiplying_and_dividing_rational_expressions_4/", 
     "id": "multiplying_and_dividing_rational_expressions_4", 
     "display_name": "Multiplying and dividing rational expressions 4", 
     "title": "Multiplying and dividing rational expressions 4", 
     "live": true, 
+    "related_video_slugs": [
+      "multiplying-and-dividing-rational-expressions-2", 
+      "multiplying-and-dividing-rational-expressions-3"
+    ], 
     "description": "", 
     "basepoints": 10.0, 
     "h_position": -9, 
@@ -353,19 +367,20 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "multiplying_and_dividing_rational_expressions_3"
-    ]
+    ], 
+    "exercise_id": "multiplying_and_dividing_rational_expressions_4"
   }, 
   {
-    "related_video_readable_ids": [
-      "multiplying-and-dividing-rational-expressions-2", 
-      "multiplying-and-dividing-rational-expressions-3"
-    ], 
     "v_position": 73, 
     "path": "/math/algebra/rational-expressions/rational_expressions/e/multiplying_and_dividing_rational_expressions_5/", 
     "id": "multiplying_and_dividing_rational_expressions_5", 
     "display_name": "Multiplying and dividing rational expressions 5", 
     "title": "Multiplying and dividing rational expressions 5", 
     "live": true, 
+    "related_video_slugs": [
+      "multiplying-and-dividing-rational-expressions-2", 
+      "multiplying-and-dividing-rational-expressions-3"
+    ], 
     "description": "", 
     "basepoints": 10.0, 
     "h_position": -9, 
@@ -375,20 +390,21 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "multiplying_and_dividing_rational_expressions_4"
-    ]
+    ], 
+    "exercise_id": "multiplying_and_dividing_rational_expressions_5"
   }, 
   {
-    "related_video_readable_ids": [
-      "partial-fraction-expansion-1", 
-      "partial-fraction-expansion-2", 
-      "partial-fraction-expansion-3"
-    ], 
     "v_position": 72, 
     "path": "/math/algebra/rational-expressions/partial-fraction-expan-alg/e/partial_fraction_expansion_1/", 
     "id": "partial_fraction_expansion_1", 
     "display_name": "Partial fraction expansion", 
     "title": "Partial fraction expansion", 
     "live": true, 
+    "related_video_slugs": [
+      "partial-fraction-expansion-1", 
+      "partial-fraction-expansion-2", 
+      "partial-fraction-expansion-3"
+    ], 
     "description": "Represent a complicated rational fraction as a sum of simpler fractions using partial fraction expansion.\n", 
     "basepoints": 29.0, 
     "h_position": -12, 
@@ -398,18 +414,19 @@
     "seconds_per_fast_problem": 60.0, 
     "prerequisites": [
       "simplifying_rational_expressions_3"
-    ]
+    ], 
+    "exercise_id": "partial_fraction_expansion_1"
   }, 
   {
-    "related_video_readable_ids": [
-      "ex-1-multi-step-equation"
-    ], 
     "v_position": 67, 
     "path": "/math/algebra/rational-expressions/solving-rational-equations/e/linear_equations_4/", 
     "id": "linear_equations_4", 
     "display_name": "Solving rational equations 1", 
     "title": "Solving rational equations 1", 
     "live": true, 
+    "related_video_slugs": [
+      "ex-1-multi-step-equation"
+    ], 
     "description": "Solve equations with variables in numerator and denominator. Solutions can be fractions.\n", 
     "basepoints": 25.0, 
     "h_position": -13, 
@@ -419,20 +436,21 @@
     "seconds_per_fast_problem": 34.0, 
     "prerequisites": [
       "multistep_equations_with_distribution"
-    ]
+    ], 
+    "exercise_id": "linear_equations_4"
   }, 
   {
-    "related_video_readable_ids": [
-      "solving-rational-equations-1", 
-      "solving-rational-equations-2", 
-      "solving-rational-equations-3"
-    ], 
     "v_position": 68, 
     "path": "/math/algebra/rational-expressions/solving-rational-equations/e/solving_rational_equations_2/", 
     "id": "solving_rational_equations_2", 
     "display_name": "Solving rational equations 2", 
     "title": "Solving rational equations 2", 
     "live": true, 
+    "related_video_slugs": [
+      "solving-rational-equations-1", 
+      "solving-rational-equations-2", 
+      "solving-rational-equations-3"
+    ], 
     "description": "", 
     "basepoints": 10.0, 
     "h_position": -13, 
@@ -442,18 +460,19 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "linear_equations_4"
-    ]
+    ], 
+    "exercise_id": "solving_rational_equations_2"
   }, 
   {
-    "related_video_readable_ids": [
-      "extraneous-solutions-to-rational-equations"
-    ], 
     "v_position": 72, 
     "path": "/math/algebra/rational-expressions/solving-rational-equations/e/extraneous_solutions/", 
     "id": "extraneous_solutions", 
     "display_name": "Extraneous solutions to rational equations", 
     "title": "Extraneous solutions to rational equations", 
     "live": true, 
+    "related_video_slugs": [
+      "extraneous-solutions-to-rational-equations"
+    ], 
     "description": "Solve a rational equation and ignore any extraneous solutions.", 
     "basepoints": 21.0, 
     "h_position": -11, 
@@ -463,6 +482,7 @@
     "seconds_per_fast_problem": 19.0, 
     "prerequisites": [
       "simplifying_rational_expressions_3"
-    ]
+    ], 
+    "exercise_id": "extraneous_solutions"
   }
 ]
