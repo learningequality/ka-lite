@@ -40,6 +40,6 @@
     {% endif %}
 
     {% if unregistered %}
-    <p>{% trans 'Please <a href="{{ registration_url }}">login to the central server and register this device in a sharing network.' %}</a></p>
+    <p>{% blocktrans %}Please <a href="{{ registration_url }}">login to the central server and register this device in a sharing network.{% endblocktrans %}</a></p>
     {% endif %}
 {% endblock content %}
