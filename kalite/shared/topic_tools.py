@@ -253,6 +253,29 @@ def get_video_by_youtube_id(youtube_id):
     slug = get_id2slug_map().get(youtube_id, None)
     return get_node_cache("Video")[slug][0] if slug else None
 
+def get_related_videos(exercise, limit_to_available=True):
+    """
+    Return topic tree cached data for each related video,
+    favoring videos that are sibling nodes to the exercises.
+    """
+    def find_most_related_video(videos, exercise):
+        # Search for a sibling video node to add to related exercises.
+        for video in videos:
+            if is_sibling({"path": video["path"], "kind": "Video"}, exercise):
+                return video
+        # failed to find a sibling; just choose the first one.
+        return videos[0] if videos else None
+
+    # Find related videos
+    related_videos = {}
+    for slug in exercise["related_video_readable_ids"]:
+        video_nodes = get_node_cache("Video").get(slug)
+
+        # Make sure the IDs are recognized, and are available.
+        if video_nodes and (not limit_to_available or video_nodes[0].get("available", False)):
+            related_videos[slug] = find_most_related_video(video_nodes, exercise)
+
+    return related_videos
 
 def is_sibling(node1, node2):
     """

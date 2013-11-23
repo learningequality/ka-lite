@@ -27,8 +27,8 @@
 
     <script>
     $(function() {
-    
-        // Keep this lean, in order to reduce caching filesize    
+
+        // Keep this lean, in order to reduce caching filesize
         initialize_video("{{ video.youtube_id }}");
 
     });
@@ -80,9 +80,9 @@
 {% endif %}
 <div class="clear"></div>
 
-{% if use_mplayer %}
+{% if use_mplayer and video.available %}
 
-    <h2 id="video-player" {% if not video.on_disk %} class="{% if not backup_vids_available %}not-{% endif %}client-online-only"{% endif %}>
+    <h2 id="video-player"{% if not video.on_disk %} class="client-online-only"{% endif %}>
         <a href="" id="launch_mplayer">
             <img class="video-thumb" src="{{ video.thumbnail_url }}" style="width: 100%;" title="{% trans 'Click to play!' %}">
             <br/><br/>
@@ -90,9 +90,9 @@
         </a>
     </h2>
 
-{% elif video.on_disk or backup_vids_available %}
+{% elif video.available %}
 
-    <div id="video-player" {% if not video.on_disk %} class="{% if not backup_vids_available %}not-{% endif %}client-online-only"{% endif %}>
+    <div id="video-player"{% if not video.on_disk %} class="client-online-only"{% endif %}>
         <video id="video-element" class="video-js vjs-default-skin" controls preload="auto" width="100%" height="600" {% if video.thumbnail_url %}poster="{{ video.thumbnail_url }}" {% endif %}data-setup="{}">
             <source src="{{ video.stream_url }}" type="{{ video.stream_type }}" />
             {% if video.subtitles_urls %}
