@@ -181,23 +181,23 @@ def exercise_handler(request, exercise):
     """
     Display an exercise
     """
-    # Find related videos   
+    # Find related videos
     related_videos = {}
     for slug in exercise["related_video_slugs"]:
         video_nodes = topicdata.NODE_CACHE["Video"].get(topicdata.SLUG2ID_MAP.get(slug), None)
-        
+
         # Make sure the IDs are recognized, and are available.
         if not video_nodes:
             continue
         if not video_nodes[0].get("on_disk", False) and not settings.BACKUP_VIDEO_SOURCE:
             continue
-        
+
         # Search for a sibling video node to add to related exercises.
         for video in video_nodes:
             if topic_tools.is_sibling({"path": video["path"], "kind": "Video"}, exercise):
                 related_videos[slug] = video
                 break
-    
+
         # failed to find a sibling; just choose the first one.
         if slug not in related_videos:
             related_videos[slug] = video_nodes[0]
