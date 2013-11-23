@@ -53,7 +53,7 @@ class MainUnicodeModelsTest(KALiteTestCase, UnicodeModelsTest):
         elog.save()
         self.assertNotIn(unicode(elog), "Bad Unicode data", "ExerciseLog: Bad conversion to unicode (after saving).")
 
-        vlog = VideoLog(user=user, youtube_id=self.korean_string)
+        vlog = VideoLog(user=user, video_id=self.korean_string, youtube_id=self.korean_string)
         self.assertNotIn(unicode(vlog), "Bad Unicode data", "VideoLog: Bad conversion to unicode (before saving).")
         vlog.save()
         self.assertNotIn(unicode(vlog), "Bad Unicode data", "VideoLog: Bad conversion to unicode (after saving).")

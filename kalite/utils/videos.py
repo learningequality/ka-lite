@@ -24,38 +24,6 @@ class URLNotFound(Exception):
     pass
 
 
-def get_video_ids(topic_tree):
-    if topic_tree["kind"] == "Video":
-        return [topic_tree["youtube_id"]]
-    elif topic_tree["kind"] == "Topic":
-        results = []
-        for kid in topic_tree.get("children", []):
-            results += get_video_ids(kid)
-        return results
-    else:
-        return []
-
-
-def get_video_ids_for_topic(topic_id, topic_tree=None):
-    if topic_tree["kind"] != "Topic":
-        return []
-    if topic_tree.get("id", "") == topic_id:
-        return list(set(get_video_ids(topic_tree)))
-    else:
-        for kid in topic_tree.get("children", []):
-            ids = get_video_ids_for_topic(topic_id, kid)
-            if ids:
-                return ids
-        return []
-
-
-def download_all_videos(topic="root", download_path="../content/", download_url=OUTSIDE_DOWNLOAD_URL, format="mp4", callback=None):
-    all_youtube_ids = get_video_ids_for_topic(topic)
-    for id in all_youtube_ids:
-        download_video(id, download_path, downlod_url=download_url, format=format, callback=callback)
-        # print id
-
-
 def callback_percent_proxy(callback, start_percent=0, end_percent=100):
     if not callback:
         return None
@@ -102,7 +70,7 @@ def download_video(youtube_id, download_path="../content/", download_url=OUTSIDE
 
 
 def delete_downloaded_files(youtube_id, download_path):
-    for filepath in glob.glob(download_path + youtube_id + ".*"):
+    for filepath in glob.glob(os.path.join(download_path, youtube_id + ".*")):
         try:
             os.remove(filepath)
         except OSError:
@@ -135,13 +103,3 @@ def download_file(url, dst, callback=None):
         callback = callback or _nullhook
     return urllib.urlretrieve(url, dst, lambda nb, bs, fs, url=url: callback(nb,bs,fs,url))
 
-
-if __name__ == '__main__':
-    if len(sys.argv) > 1:
-        if sys.argv[1].startswith("topic:"):
-            download_all_videos(sys.argv[1].split(":")[1])
-        else:
-            download_video(sys.argv[1])
-    else:
-        print "USAGE: python videos.py (<youtube_id> | topic:<topic_id>)"
-    

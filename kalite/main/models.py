@@ -16,6 +16,7 @@ import settings
 from securesync import engine
 from securesync.models import DeferredCountSyncedModel, SyncedModel, FacilityUser, Device
 from settings import LOG as logging
+from shared import i18n
 from utils.django_utils import ExtendedModel
 from utils.general import datediff, isnumeric
 
@@ -24,7 +25,8 @@ class VideoLog(DeferredCountSyncedModel):
     POINTS_PER_VIDEO = 750
 
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
-    youtube_id = models.CharField(max_length=20, db_index=True)
+    video_id = models.CharField(max_length=100, db_index=True); video_id.minversion="0.11.1"
+    youtube_id = models.CharField(max_length=20)
     total_seconds_watched = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
     language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.11.1"
@@ -36,9 +38,24 @@ class VideoLog(DeferredCountSyncedModel):
         pass
 
     def __unicode__(self):
-        return u"user=%s, youtube_id=%s, seconds=%d, points=%d, language=%s%s" % (self.user, self.youtube_id, self.total_seconds_watched, self.points, self.language, " (completed)" if self.complete else "")
+        return u"user=%s, video_id=%s, youtube_id=%s, seconds=%d, points=%d, language=%s%s" % (
+            self.user,
+            self.video_id,
+            self.youtube_id,
+            self.total_seconds_watched,
+            self.points,
+            self.language,
+            " (completed)" if self.complete else "",
+        )
 
     def save(self, update_userlog=True, *args, **kwargs):
+        # To deal with backwards compatibility,
+        #   check video_id, whether imported or not.
+        if not self.video_id:
+            assert kwargs.get("imported", False), "video_id better be set by internal code."
+            assert self.youtube_id, "If not video_id, you better have set youtube_id!"
+            self.video_id = i18n.get_video_id(self.youtube_id) or self.youtube_id  # for unknown videos, default to the youtube_id
+        
         if not kwargs.get("imported", False):
             self.full_clean()
 
@@ -63,7 +80,9 @@ class VideoLog(DeferredCountSyncedModel):
         assert self.youtube_id is not None, "Youtube ID required for get_uuid"
 
         namespace = uuid.UUID(self.user.id)
-        return uuid.uuid5(namespace, self.youtube_id.encode("utf-8")).hex
+        # can be video_id because that's set to the english youtube_id, to match past code.
+        return uuid.uuid5(namespace, self.video_id.encode("utf-8")).hex  
+        
 
     @staticmethod
     def get_points_for_user(user):
@@ -74,11 +93,11 @@ class VideoLog(DeferredCountSyncedModel):
         return ceil(float(seconds_watched) / video_length* VideoLog.POINTS_PER_VIDEO)
 
     @classmethod
-    def update_video_log(cls, facility_user, youtube_id, total_seconds_watched, language, points=0, new_points=0):
-        assert facility_user and youtube_id, "Updating a video log requires both a facility user and a YouTube ID"
+    def update_video_log(cls, facility_user, video_id, youtube_id, total_seconds_watched, language, points=0, new_points=0):
+        assert facility_user and video_id and youtube_id, "Updating a video log requires a facility user, video ID, and a YouTube ID"
 
         # retrieve the previous video log for this user for this video, or make one if there isn't already one
-        (videolog, _) = cls.get_or_initialize(user=facility_user, youtube_id=youtube_id)
+        (videolog, _) = cls.get_or_initialize(user=facility_user, video_id=video_id)
 
         # combine the previously watched counts with the new counts
         #
@@ -87,6 +106,7 @@ class VideoLog(DeferredCountSyncedModel):
         videolog.total_seconds_watched = total_seconds_watched
         videolog.points = min(max(points, videolog.points + new_points), cls.POINTS_PER_VIDEO)
         videolog.language = language
+        videolog.youtube_id = youtube_id
 
         # write the video log to the database, overwriting any old video log with the same ID
         # (and since the ID is computed from the user ID and YouTube ID, this will behave sanely)
