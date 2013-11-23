@@ -2,7 +2,7 @@ import copy
 import datetime
 import json
 import os
-import re 
+import re
 import sys
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
@@ -75,6 +75,7 @@ def update_languages(request):
 
     context.update({
         "installed_languages": get_installed_languages(),
+        "default_language": settings.LANGUAGE_CODE,
     })
 
     return context

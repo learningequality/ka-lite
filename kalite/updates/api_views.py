@@ -9,7 +9,7 @@ from annoying.functions import get_object_or_None
 
 from django.core.management import call_command
 from django.db.models import Q
-from django.http import HttpResponseServerError
+from django.http import HttpResponse, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404
 from django.utils import simplejson
 from django.utils.timezone import get_current_timezone, make_naive
@@ -19,6 +19,7 @@ import settings
 from .models import UpdateProgressLog, VideoFile
 from main import topicdata
 from shared.decorators import require_admin
+from shared.i18n import get_installed_languages
 from shared.jobs import force_job, job_status
 from shared.videos import delete_downloaded_files
 from utils.django_utils import call_command_async
@@ -79,9 +80,9 @@ def _process_log_to_dict(process_log):
     """
     Utility function to convert a process log to a dict
     """
-    
+
     if not process_log or not process_log.total_stages:
-        return {} 
+        return {}
     else:
         return {
             "process_id": process_log.id,
@@ -186,6 +187,21 @@ def cancel_video_download(request):
 
     return JsonResponse({})
 
+@api_handle_error_with_json
+def installed_language_packs(request):
+    langs = [l for l in get_installed_languages() if l] # filter out empty dictionaries
+    return JsonResponse(langs)
+
+@require_admin
+@api_handle_error_with_json
+def start_languagepack_download(request):
+    if request.POST:
+        data = json.loads(request.raw_post_data) # Django has some weird post processing into request.POST, so use raw_post_data
+        call_command_async(
+            'languagepackdownload',
+            manage_py_dir=settings.PROJECT_PATH,
+            language=data['lang']) # TODO: migrate to force_job once it can accept command_args
+        return JsonResponse({'success': True})
 
 
 def annotate_topic_tree(node, level=0, statusdict=None):

@@ -50,7 +50,3 @@ def get_download_urls(request):
         }
 
     return JsonResponse(downloads)
-
-
-
-
