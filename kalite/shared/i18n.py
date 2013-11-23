@@ -63,26 +63,56 @@ def get_srt_url(youtube_id, code):
 def get_srt_path_on_disk(youtube_id, code):
     return os.path.join(settings.STATIC_ROOT, "subtitles", code, youtube_id + ".srt")
 
+
+lang_lookup_filename = "languagelookup.json"
+lang_lookup_path = os.path.join(settings.DATA_PATH, lang_lookup_filename)
+CODE2LANG_MAP = None
+def get_code2lang_map(force=False):
+    global lang_lookup_path, CODE2LANG_MAP
+    if force or not CODE2LANG_MAP:
+        CODE2LANG_MAP = json.loads(open(lang_lookup_path).read())
+        # convert all upper to lower
+        for entry in CODE2LANG_MAP.values():
+            entry = dict(zip(entry.keys(), [v.lower() for v in entry.values()]))
+    return CODE2LANG_MAP
+
+LANG2CODE_MAP = None
+def get_langcode_map(force=False):
+    global lang_lookup_path, LANG2CODE_MAP
+    if force or not LANG2CODE_MAP:
+        LANG2CODE_MAP = {}
+        for code, entries in get_code2lang_map(force=force).iteritems():
+            for lang in entries.values():
+                if lang:
+                    LANG2CODE_MAP[lang.lower()] = code
+        print LANG2CODE_MAP
+    return LANG2CODE_MAP
+
 def get_language_name(lang_code, native=False):
     """Return full English or native language name from ISO 639-1 language code; raise exception if it isn't hardcoded yet"""
-    # Open lookup dictionary
-    lang_lookup_filename = "languagelookup.json"
-    lang_lookup_path = os.path.join(settings.DATA_PATH, lang_lookup_filename)
-    LANGUAGE_LOOKUP = json.loads(open(lang_lookup_path).read())
+    global lang_lookup_path
 
     # Convert code if neccessary
     lang_code = convert_language_code_format(lang_code)
 
-    language_entry = LANGUAGE_LOOKUP.get(lang_code)
+    language_entry = get_langcode_map().get(lang_code.lower())
     if not language_entry:
        raise Exception("We don't have language code '%s' saved in our lookup dictionary (location: %s). Please manually add it before re-running this command." % (lang_code, lang_lookup_path))
 
     if not native:
-        language_name = language_entry["name"]
+        return language_entry["name"]
     else:
-        language_name = language_entry["native_name"]
+        return language_entry["native_name"]
 
-    return language_name
+
+def get_language_code(language):
+    """Return ISO 639-1 language code full English or native language name from ; raise exception if it isn't hardcoded yet"""
+    global lang_lookup_path
+
+    lang_code = get_langcode_map().get(language.lower())
+    if not lang_code:
+       raise Exception("We don't have language '%s' saved in our lookup dictionary (location: %s). Please manually add it before re-running this command." % (language, lang_lookup_path))
+    return lang_code
 
 
 def convert_language_code_format(lang_code, for_crowdin=False):

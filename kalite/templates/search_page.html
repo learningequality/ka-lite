@@ -25,7 +25,7 @@
                 {% if node.kind == 'Topic' %}
                     <a href="{{ node.path }}" class="topic-{% if not node.available %}un{% endif %}available">{{ node.title }}</a>
                 {% elif node.kind == 'Video' %}
-                    <a {% if node.available %}href="{{ node.path }}" {% endif %}class="{% if not node.available %}un{% endif %}video-available">{{ node.title }}</a>
+                    <a {% if node.available %}href="{{ node.path }}" {% endif %}class="video-{% if not node.available %}un{% endif %}available">{{ node.title }}</a>
                 {% else %}
                     <a href="{{ node.path }}">{{ node.title }}</a>
                 {% endif %}

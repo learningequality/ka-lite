@@ -287,8 +287,8 @@ def get_related_videos(exercise, limit_to_available=True):
 
     # Find related videos
     related_videos = {}
-    for slug in exercise["related_video_readable_ids"]:
-        video_nodes = get_node_cache("Video").get(get_slug2id_map.get(slug, ""), [])
+    for slug in exercise["related_video_slugs"]:
+        video_nodes = get_node_cache("Video").get(get_slug2id_map().get(slug, ""), [])
 
         # Make sure the IDs are recognized, and are available.
         if video_nodes and (not limit_to_available or video_nodes[0].get("available", False)):
