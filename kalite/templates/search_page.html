@@ -23,17 +23,9 @@
             {% for node in subresults %}
                 <li>
                 {% if node.kind == 'Topic' %}
-                    {% if node.nvideos_local == 0 %}
-                    <a href="{{ node.path }}" class="topic-unavailable">{{ node.title }}</a>
-                    {% else %}
-                    <a href="{{ node.path }}" class="topic-available">{{ node.title }}</a>
-                    {% endif %}
+                    <a href="{{ node.path }}" class="topic-{% if not node.available %}un{% endif %}available">{{ node.title }}</a>
                 {% elif node.kind == 'Video' %}
-                    {% if node.video_on_disk %}
-                    <a href="{{ node.path }}" class="video-available">{{ node.title }}</a>
-                    {% else %}
-                    <a class="video-unavailable">{{ node.title }}</a>
-                    {% endif %}
+                    <a {% if node.available %}href="{{ node.path }}" {% endif %}class="{% if not node.available %}un{% endif %}video-available">{{ node.title }}</a>
                 {% else %}
                     <a href="{{ node.path }}">{{ node.title }}</a>
                 {% endif %}

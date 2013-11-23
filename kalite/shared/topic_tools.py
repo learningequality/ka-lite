@@ -97,7 +97,7 @@ def generate_flat_topic_tree(node_cache=None):
                 'title': node['title'],
                 'path': node['path'],
                 'kind': node['kind'],
-                'available': node.get('on_disk', True) or bool(settings.BACKUP_VIDEO_SOURCE),
+                'available': node.get('available', True),
             }
             result[category_name][node_name] = relevant_data
     return result
