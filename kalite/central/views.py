@@ -86,9 +86,10 @@ def org_management(request, org_id=None):
         "organizations": organizations,
         "zones": zones,
         "HEADLESS_ORG_NAME": Organization.HEADLESS_ORG_NAME,
-        "invitations": OrganizationInvitation.objects \
+        "my_invitations": list(OrganizationInvitation.objects \
             .filter(email_to_invite=request.user.email)
-            .order_by("organization__name")
+            .order_by("organization__name")),
+        "download_url": reverse("download_wizard"),
     }
 
 
