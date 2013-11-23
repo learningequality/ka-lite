@@ -18,7 +18,7 @@
         <link rel="stylesheet" type="text/css" href="{% static 'css/khan-lite.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/search_autocomplete.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-alerts.css' %}">
-        
+
         {% block basecss %}{% endblock basecss %}
         {% block headcss %}{% endblock headcss %}
         <link rel="shortcut icon" href="{% static "images/favicon.ico" %}">
@@ -29,7 +29,7 @@
 
         {# Older versions of IE didn't have a JSON object, so this library adds it back in if needed #}
         <script type="text/javascript" src="{% static 'js/json2.js' %}"></script>
-        <script type="text/javascript" src="{% static 'js/i18n/'|add:request.language|add:'.js' %}"></script> 
+        <script type="text/javascript" src="{% static 'js/i18n/'|add:request.language|add:'.js' %}"></script>
 
         {# Use JS to help IE5.5-IE8 support modern browser features, especially for CSS and PNGs #}
         <!--[if lt IE 8]>
@@ -111,8 +111,8 @@
                                             <a href="{% url exercise_dashboard %}" id="nav_practice" class="practice-navlink not-admin-only {% block practice_active %}{% endblock practice_active %}" title="{% trans 'Practice Lessons' %}">{% trans "Practice" %}</a>
                                             {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                                             <a href="{% url homepage %}" id="nav_watch" class="watch-navlink not-admin-only {% block watch_active %}{% endblock watch_active %}" title="{% trans 'Watch Videos' %}">{% trans "Watch" %}</a>
-                                            <form action="/search" method="get" style="float: right;">
-                                              <input type="text" name="query" id="search" method="get" placeholder="{% trans 'type a video, topic or exercise' %}"/>
+                                            <form action="{% url search %}" method="GET" id="search-box">
+                                              <input type="text" name="query" id="search" placeholder="{% trans 'video, topic, or exercise...' %}" />
                                               <input type="submit" value="{% trans 'search' %}" />
                                             </form>
                                         {% endblock sitewide_navigation %}
