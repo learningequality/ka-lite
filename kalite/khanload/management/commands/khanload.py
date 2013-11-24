@@ -1,5 +1,5 @@
 """
-Utilities for downloading Khan Academy topic tree and 
+Utilities for downloading Khan Academy topic tree and
 massaging into data and files that we use in KA Lite.
 """
 import copy
@@ -58,7 +58,7 @@ slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res", "pa
 
 def download_khan_data(url, debug_cache_file=None, debug_cache_dir=settings.PROJECT_PATH + "../_khanload_cache"):
     """Download data from the given url.
-    
+
     In DEBUG mode, these downloads are slow.  So for the sake of faster iteration,
     save the download to disk and re-serve it up again, rather than download again,
     if the file is less than a day old.
@@ -67,7 +67,7 @@ def download_khan_data(url, debug_cache_file=None, debug_cache_dir=settings.PROJ
     if not debug_cache_file:
         debug_cache_file = url.split("/")[-1] + ".json"
 
-    # Create a directory to store these cached json files 
+    # Create a directory to store these cached json files
     if not os.path.exists(debug_cache_dir):
         os.mkdir(debug_cache_dir)
     debug_cache_file = os.path.join(debug_cache_dir, debug_cache_file)
@@ -102,12 +102,12 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
     related_exercise = {}  # Temp variable to save exercises related to particular videos
     related_videos = {}  # Similar idea, reverse direction
 
-    def recurse_nodes(node, path=""):
+    def recurse_nodes(node, path="", ancestor_ids=[]):
         """
         Internal function for recursing over the topic tree, marking relevant metadata,
         and removing undesired attributes and children.
         """
-        
+
         kind = node["kind"]
 
         # Only keep key data we can use
@@ -124,7 +124,11 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
 
         node["path"] = path + topic_tools.kind_slugs[kind] + node["slug"] + "/"
         node["title"] = node[title_key[kind]]
-        
+
+        # Add some attribute that should have been on there to start with.
+        node["parent_id"] = ancestor_ids[-1] if ancestor_ids else None
+        node["ancestor_ids"] = ancestor_ids
+
         kinds = set([kind])
 
         if kind == "Exercise":
@@ -164,13 +168,13 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
                 children_to_delete.append(i)
                 continue
             elif child_kind == "Video" and set(["mp4", "png"]) - set(child.get("download_urls", {}).keys()):
-                # for now, since we expect the missing videos to be filled in soon, 
+                # for now, since we expect the missing videos to be filled in soon,
                 #   we won't remove these nodes
                 sys.stderr.write("WARNING: No download link for video: %s: authors='%s'\n" % (child["youtube_id"], child["author_names"]))
                 children_to_delete.append(i)
                 continue
 
-            kinds = kinds.union(recurse_nodes(child, node["path"]))
+            kinds = kinds.union(recurse_nodes(child, path=node["path"], ancestor_ids=ancestor_ids + [node["id"]]))
         for i in reversed(children_to_delete):
             del node["children"][i]
 
@@ -230,7 +234,7 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
             if child["kind"] == "Exercise":
                 if not os.path.exists(exercise_path % child["slug"]):
                     children_to_delete.append(ci)
-                
+
             # Recurse over children to delete
             elif child.get("children", None):
                 slugs_deleted += recurse_nodes_to_delete_exercise(child)
@@ -247,9 +251,9 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
         for i in reversed(children_to_delete):
             logging.warn("Deleting unknown exercise %s" % node["children"][i]["slug"])
             del node["children"][i]
-        
+
         return slugs_deleted
-    
+
     if remove_unknown_exercises:
         slugs_deleted = recurse_nodes_to_delete_exercise(topictree) # do this before [add related]
         for vid, ex in related_exercise.items():
@@ -294,14 +298,14 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
 
         # Do the actual deletion
     with open(os.path.join(data_path, topic_tools.topics_file), "w") as fp:
-        fp.write(json.dumps(delete_parents(topictree), indent=2))
+        fp.write(json.dumps(topictree, indent=2))
 
     return topictree
 
 
 def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH + "/static/data/", force_icons=False):
     """
-    Uses KA Lite topic data and supporting data from Khan Academy 
+    Uses KA Lite topic data and supporting data from Khan Academy
     to rebuild the knowledge map (maplayout.json) and topicdata files.
     """
 
@@ -426,22 +430,22 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
         """
         The knowledge map is currently arbitrary coordinates, with a lot of space
         between nodes.
-        
+
         The code below adjusts the space between nodes.  Our code
         in kmap-editor.js adjust coordinates based on screen size.
-        
+
         TODO(bcipolli): normalize coordinates to range [0,1]
         that will make code for expanding out to arbitrary screen
         sizes much more simple.
         """
 
         def adjust_coord(children, prop_name):
-            
+
             allX = [ch[prop_name] for ch in children]
             minX = min(allX)
             maxX = max(allX)
             rangeX = maxX - minX + 1
-            if not rangeX: 
+            if not rangeX:
                 return children
 
             filledX = [False] * rangeX
@@ -463,7 +467,7 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
             # shift each exercise to fill in the gaps
             for ch in children:
                 ch[prop_name] += shiftX[ch[prop_name] - minX]
-                
+
             return children
 
         # mark the children as not yet having been flipped, so we can avoid flipping twice later
@@ -471,7 +475,7 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
             for ch in children:
                 ch["unflipped"] = True
 
-        # NOTE that we are not adjusting any coordinates in 
+        # NOTE that we are not adjusting any coordinates in
         #   the knowledge map, or in the polylines.
         for slug, children in knowledge_topics.iteritems():
             # Flip coordinates, but only once per node
@@ -483,9 +487,9 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
             # Adjust coordinates
             adjust_coord(children, "v_position")  # side-effect directly into 'children'
             adjust_coord(children, "h_position")
-            
+
         return knowledge_map, knowledge_topics
-    
+
     normalize_tree(knowledge_map, knowledge_topics)
 
     # Dump the knowledge map
@@ -500,24 +504,9 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
 
     for key, value in knowledge_topics.items():
         with open(os.path.join(topicdata_dir, "%s.json" % key), "w") as fp:
-            fp.write(json.dumps(delete_parents(value), indent=2))
+            fp.write(json.dumps(value, indent=2))
 
     return knowledge_map, knowledge_topics
-
-
-def delete_parents(node, recurse=True):
-    if isinstance(node, (list, tuple)):
-        for n in node:
-            delete_parents(n, recurse=recurse)
-    if "parent" in node:
-        del node["parent"]
-    if "parents" in node:
-        del node["parents"]
-    if recurse and "children" in node:
-        for child in node["children"]:
-            delete_parents(child, recurse=recurse)
-
-    return node
 
 
 def validate_data(topictree, node_cache, slug2id_map, knowledge_map):
@@ -538,7 +527,7 @@ def validate_data(topictree, node_cache, slug2id_map, knowledge_map):
         ex = video["related_exercise"]
         if ex and ex["slug"] not in node_cache["Exercise"]:
             sys.stderr.write("Could not find related exercise %s in node_cache (from video %s)\n" % (ex["slug"], video["slug"]))
-            
+
     # Validate all topics have leaves
     for topic_nodes in node_cache["Topic"].values():
         topic = topic_nodes[0]

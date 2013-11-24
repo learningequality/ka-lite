@@ -61,7 +61,7 @@ def validate_username(username):
 
 def get_username(username):
     while not validate_username(username):
-        
+
         username = raw_input("Username (leave blank to use '%s'): " % getpass.getuser()) or getpass.getuser()
         if not validate_username(username):
             sys.stderr.write("\tError: Username must contain only letters, digits, and underscores, and start with a letter.\n")
@@ -128,7 +128,7 @@ class Command(BaseCommand):
         if not options["interactive"]:
             options["username"] = options["username"] or settings.INSTALL_ADMIN_USERNAME or getpass.getuser()
             options["hostname"] = options["hostname"] or get_host_name()
- 
+
         sys.stdout.write("  _   __  ___    _     _ _        \n")
         sys.stdout.write(" | | / / / _ \  | |   (_) |       \n")
         sys.stdout.write(" | |/ / / /_\ \ | |    _| |_ ___  \n")
@@ -249,7 +249,7 @@ class Command(BaseCommand):
             # Device exists; load data if required.
             #
             # Hackish, as this duplicates code from initdevice.
-            # 
+            #
             if os.path.exists(InitCommand.data_json_file):
                 # This is a pathway to install zone-based data on a software upgrade.
                 sys.stdout.write("Loading zone data from '%s'\n" % InitCommand.data_json_file)
@@ -279,9 +279,10 @@ class Command(BaseCommand):
         start_script_path = os.path.realpath(os.path.join(settings.PROJECT_PATH, "..", "start%s" % system_script_extension()))
 
 
-        # Run videoscan 
-        sys.stdout.write("Scanning for video files in the content directory (%s)\n" % settings.CONTENT_ROOT)
-        call_command("videoscan")
+        # Run videoscan, on the distributed server.
+        if not settings.CENTRAL_SERVER:
+            sys.stdout.write("Scanning for video files in the content directory (%s)\n" % settings.CONTENT_ROOT)
+            call_command("videoscan")
 
 
         # done; notify the user.

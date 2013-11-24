@@ -144,7 +144,7 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
             logging.debug("Skip unknown exercise log for %s/%s" % (user_id, elog["exercise_id"]))
             continue
 
-        parent_ids = [topic["id"] for ex in NODE_CACHE["Exercise"][elog["exercise_id"]] for topic in ex["parents"]]
+        parent_ids = [topic for ex in NODE_CACHE["Exercise"][elog["exercise_id"]] for topic in ex["ancestor_ids"]]
         topic = set(parent_ids).intersection(set(topic_ids))
         if not topic:
             logging.error("Could not find a topic for exercise %s (parents=%s)" % (elog["exercise_id"], parent_ids))
@@ -162,7 +162,7 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
             logging.debug("Skip unknown video log for %s/%s" % (user_id, vlog["video_id"]))
             continue
 
-        parent_ids = [topic["id"] for vid in NODE_CACHE["Video"][vlog["video_id"]] for topic in vid["parents"]]
+        parent_ids = [topic for vid in NODE_CACHE["Video"][vlog["video_id"]] for topic in vid["ancestor_ids"]]
         topic = set(parent_ids).intersection(set(topic_ids))
         if not topic:
             logging.error("Could not find a topic for video %s (parents=%s)" % (vlog["video_id"], parent_ids))

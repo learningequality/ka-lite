@@ -5,7 +5,20 @@
     "id": "quadrilateral_types", 
     "display_name": "Quadrilateral types", 
     "title": "Quadrilateral types", 
+    "parent_id": "quadrilaterals-and-polygons", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "geometry", 
+      "quadrilaterals-and-polygons"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "quadrilaterals-and-polygons"
+    ], 
     "related_video_slugs": [
       "quadrilateral-types-exercise", 
       "quadrilateral-overview", 
@@ -13,6 +26,7 @@
       "kites-as-a-mathematical-shape"
     ], 
     "description": "", 
+    "parent": "quadrilaterals-and-polygons", 
     "basepoints": 17.0, 
     "h_position": 2, 
     "slug": "quadrilateral_types", 
@@ -30,11 +44,25 @@
     "id": "quadrilateral_angles", 
     "display_name": "Quadrilateral angles", 
     "title": "Quadrilateral angles", 
+    "parent_id": "quadrilaterals-and-polygons", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "geometry", 
+      "quadrilaterals-and-polygons"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "quadrilaterals-and-polygons"
+    ], 
     "related_video_slugs": [
       "proof---opposite-angles-of-parallelogram-congruent"
     ], 
     "description": "", 
+    "parent": "quadrilaterals-and-polygons", 
     "basepoints": 14.0, 
     "h_position": 1, 
     "slug": "quadrilateral_angles", 

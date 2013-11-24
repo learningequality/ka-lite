@@ -29,7 +29,7 @@
                     <a href="{{ node.path }}" class="topic-available">{{ node.title }}</a>
                     {% endif %}
                 {% elif node.kind == 'Video' %}
-                    {% if node.video_on_disk %}
+                    {% if node.available or node.video_on_disk %}
                     <a href="{{ node.path }}" class="video-available">{{ node.title }}</a>
                     {% else %}
                     <a class="video-unavailable">{{ node.title }}</a>

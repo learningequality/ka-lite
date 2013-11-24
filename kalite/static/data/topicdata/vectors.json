@@ -5,13 +5,29 @@
     "id": "scaling_vectors", 
     "display_name": "Scaling vectors", 
     "title": "Scaling vectors", 
+    "parent_id": "vectors", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "linear-algebra", 
+      "vectors_and_spaces", 
+      "vectors"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "linear-algebra", 
+      "vectors_and_spaces", 
+      "vectors"
+    ], 
     "related_video_slugs": [
       "multiplying-vector-by-scalar", 
       "linear-algebra--vector-examples", 
       "vector-introduction-linear-algebra"
     ], 
     "description": "", 
+    "parent": "vectors", 
     "basepoints": 14.0, 
     "h_position": -20, 
     "slug": "scaling_vectors", 
@@ -29,13 +45,29 @@
     "id": "adding_vectors", 
     "display_name": "Adding vectors", 
     "title": "Adding vectors", 
+    "parent_id": "vectors", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "linear-algebra", 
+      "vectors_and_spaces", 
+      "vectors"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "linear-algebra", 
+      "vectors_and_spaces", 
+      "vectors"
+    ], 
     "related_video_slugs": [
       "intro-unit-vector-notation", 
       "vector-introduction-linear-algebra", 
       "adding-vectors"
     ], 
     "description": "", 
+    "parent": "vectors", 
     "basepoints": 14.0, 
     "h_position": -20, 
     "slug": "adding_vectors", 
