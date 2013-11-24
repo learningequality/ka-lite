@@ -44,7 +44,11 @@ def get_id2oklang_map(video_id, force=False):
                 cur_video_id = get_video_id(english_youtube_id)
                 ID2OKLANG_MAP[cur_video_id] = ID2OKLANG_MAP.get(english_youtube_id, {})
                 ID2OKLANG_MAP[cur_video_id][lang] = dubbed_youtube_id
-    return ID2OKLANG_MAP.get(video_id, {}) if video_id else ID2OKLANG_MAP
+    if video_id:
+        # Not all IDs made it into the spreadsheet, so by default, use the video_id as the youtube_id
+        return ID2OKLANG_MAP.get(video_id, {"english": get_youtube_id(video_id, None)})
+    else:
+        return ID2OKLANG_MAP
 
 def get_youtube_id(video_id, lang_code=settings.LANGUAGE_CODE):
     if not lang_code:  # looking for the base/default youtube_id
@@ -85,7 +89,6 @@ def get_langcode_map(force=False):
             for lang in entries.values():
                 if lang:
                     LANG2CODE_MAP[lang.lower()] = code
-        print LANG2CODE_MAP
     return LANG2CODE_MAP
 
 def get_language_name(lang_code, native=False):

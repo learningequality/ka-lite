@@ -44,8 +44,8 @@ def get_video_urls(video_id, format="mp4", videos_path=settings.CONTENT_ROOT):
     urls = {}
 
     # Get the subtitle urls
-    language_codes = get_installed_subtitles(youtube_id)
-    subtitles_tuple = [(code, get_srt_url(youtube_id, code)) for code in language_codes if os.path.exists(get_srt_path_on_disk(youtube_id, code))]
+    subtitle_lang_codes = get_installed_subtitles(youtube_id)
+    subtitles_tuple = [(code, get_srt_url(youtube_id, code)) for code in subtitle_lang_codes if os.path.exists(get_srt_path_on_disk(youtube_id, code))]
     subtitles_urls = dict(subtitles_tuple)
     #logging.debug("Subtitles for %s: %s" % (youtube_id, subtitles_urls))
 
@@ -54,9 +54,9 @@ def get_video_urls(video_id, format="mp4", videos_path=settings.CONTENT_ROOT):
         try:
             lang_code = get_language_code(language)
         except Exception as e:
-            logging.warn("Skipping unknown language '%s' (%s)" % (language, e))
+            logging.warn("Skipping unknown language '%s'" % (language))
             continue
-        urls[lang_code] = compute_urls(youtube_id, format, thumb_format="png", videos_path=videos_path)
+        urls[lang_code] = compute_urls(youtube_id, format, videos_path=videos_path)
         urls[lang_code]["subtitles"] = subtitles_urls.get(lang_code)
 
     # now scrub any values that don't actually exist
@@ -71,7 +71,7 @@ def stamp_urls_on_video(video, force=False):
     * whether the video is available (on disk or online)
     """
     if force or "urls" not in video:
-        logging.debug("Adding urls into video %s" % video["path"])
+        pass  #logging.debug("Adding urls into video %s" % video["path"])
 
     # Compute video URLs.  Must use videos from topics, as the NODE_CACHE doesn't contain all video objects. :-/
     video["urls"] = get_video_urls(
