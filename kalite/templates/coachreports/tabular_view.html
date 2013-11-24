@@ -5,69 +5,69 @@
 {% load my_filters %}
 
 {% block coachreports_active %}active{% endblock coachreports_active %}
-{% block title %}{% trans "Coach Reports" %}{% endblock title %}
+{% block title %}{% trans "Coach Reports" %} {{ block.super }}{% endblock title %}
 
 {% block headcss %}{{ block.super }}
-<link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/tabular_view.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/tabular_view.css' %}" />
 {% endblock headcss %}
 
 
 
 {% block headjs %}{{ block.super }}
-<script>
-    $(function() {
+    <script>
+        $(function() {
 
-        // Note: Unlike other coach reports, the tabular view is generated in server side templates.
-        // As such, changing any of the values of the items requires a change of URL and subsequent
-        // navigation event in order to produce the new report.
+            // Note: Unlike other coach reports, the tabular view is generated in server side templates.
+            // As such, changing any of the values of the items requires a change of URL and subsequent
+            // navigation event in order to produce the new report.
 
-        $("#report_type").change(function(){
-            window.location.href="{% url tabular_view %}"+$("#report_type option:selected").val()+window.location.search;
-        });
+            $("#report_type").change(function(){
+                window.location.href="{% url tabular_view %}"+$("#report_type option:selected").val()+ "/" + window.location.search;
+            });
 
-        $("#student").change(function(){
-            window.location.href = setGetParam(window.location.href, "user", $("#student option:selected").val());
-        });
+            $("#student").change(function(){
+                window.location.href = setGetParam(window.location.href, "user", $("#student option:selected").val());
+            });
 
-        $("#topic").change(function(){
-            window.location.href = setGetParam(window.location.href, "topic", $("#topic option:selected").val());
-        });
+            $("#topic").change(function(){
+                window.location.href = setGetParam(window.location.href, "topic", $("#topic option:selected").val());
+            });
 
-        $("#facility").change(function(){
-            window.location.href = setGetParamDict(window.location.href, {"facility": $("#facility option:selected").val(), "group": $("#" + $("#facility option:selected").val() + "_group_select").val()});
-        });
+            $("#facility").change(function(){
+                window.location.href = setGetParamDict(window.location.href, {"facility": $("#facility option:selected").val(), "group": $("#" + $("#facility option:selected").val() + "_group_select").val()});
+            });
 
-        $(".group_select").change(function(event){
-            window.location.href = setGetParam(window.location.href, "group", $(event.target).val());
-        });
+            $(".group_select").change(function(event){
+                window.location.href = setGetParam(window.location.href, "group", $(event.target).val());
+            });
 
-        // Selector to toggle visible elements is stored in each option value
-        cell_height = 27;
-        $("#disp_options").change(function(){
-            selector = $("#disp_options option:selected").val(); 
+            // Selector to toggle visible elements is stored in each option value
+            cell_height = 27;
+            $("#disp_options").change(function(){
+                selector = $("#disp_options option:selected").val(); 
 
-            // adjust the cell height
-            cell_height += 50*Math.pow(-1, 0+$(selector).is(":visible"));
+                // adjust the cell height
+                cell_height += 50*Math.pow(-1, 0+$(selector).is(":visible"));
         
-            // adjust view in data cells
-            $(selector).each(function () {
-                $(this).toggle()
-            });
-            $(selector).each(function () {
-                $(this).height(20);
-                $(this).parent().height(cell_height);
-            });
+                // adjust view in data cells
+                $(selector).each(function () {
+                    $(this).toggle()
+                });
+                $(selector).each(function () {
+                    $(this).height(20);
+                    $(this).parent().height(cell_height);
+                });
 
-            // Adjust student name cell heights
-            $("th.username").each(function () {
-                $(this).height(cell_height);
+                // Adjust student name cell heights
+                $("th.username").each(function () {
+                    $(this).height(cell_height);
+                });
             });
+            $(window).resize(function() {
+                $('.headrowuser').height($('.headrow.data').height()+1);
+            }).resize();
         });
-        $(window).resize(function() {
-            $('.headrowuser').height($('.headrow.data').height()+1);
-        }).resize();
-    });
-</script>
+    </script>
 {% endblock headjs %}
 
 {% block content %}
@@ -75,7 +75,7 @@
 
     <div id="selection-bar">
         <div class="selection">
-        {% comment %}Select the coach report type{% endcomment %}
+        {# Select the coach report type #}
         {% if report_types %}
             <div class="subtitle">{% trans "Select Report" %}</div>
             <select id="report_type">
@@ -214,18 +214,18 @@
                         {% for student in students %}
                             <tr>
                                 {% for video in videos %}
-                                    {% if not student.video_logs|get_item:video.youtube_id %}
+                                    {% if not student.video_logs|get_item:video.id %}
                                         <td class="status data" title="{% trans "Not Viewed" %}">
                                             &nbsp;
-                                    {% elif not student.video_logs|get_item:video.youtube_id|get_item:"complete" %}
+                                    {% elif not student.video_logs|get_item:video.id|get_item:"complete" %}
                                         <td class="status data partial" title="{% trans "Viewing" %}">
-                                            <div class="total_seconds_watched">{{ student.video_logs|get_item:video.youtube_id|get_item:"total_seconds_watched" }} {% trans "secs" %}</div>
+                                            <div class="total_seconds_watched">{{ student.video_logs|get_item:video.id|get_item:"total_seconds_watched" }} {% trans "secs" %}</div>
                                     {% else %}
                                         <td class="status data complete" title="{% trans "Viewed" %}">
                                             <div class="total_seconds_watched">100%</div>
                                     {% endif %}
-                                    {% if student.video_logs|get_item:video.youtube_id  %}
-                                            <div class="points">{{ student.video_logs|get_item:video.youtube_id|get_item:"points"  }} {% trans "points" %}</div>
+                                    {% if student.video_logs|get_item:video.id  %}
+                                            <div class="points">{{ student.video_logs|get_item:video.id|get_item:"points"  }} {% trans "points" %}</div>
                                     {% endif %}
                                         </td>
                                 {% endfor %}

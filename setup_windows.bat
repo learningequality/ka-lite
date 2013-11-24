@@ -5,14 +5,14 @@ setlocal enabledelayedexpansion
 
 copy %0 "%KALITE_DIR%\writetest.temp" > nul
 if %ERRORLEVEL% == 1 (
-	echo -------------------------------------------------------------------
-	echo You do not have permission to write to this directory!
-	echo -------------------------------------------------------------------
-	exit /B
+    echo -------------------------------------------------------------------
+    echo You do not have permission to write to this directory!
+    echo -------------------------------------------------------------------
+    exit /B
 ) else (
-	if exist "%KALITE_DIR%\writetest.temp" (
-		del "%KALITE_DIR%\writetest.temp" > nul
-	)
+    if exist "%KALITE_DIR%\writetest.temp" (
+        del "%KALITE_DIR%\writetest.temp" > nul
+    )
 )
 
 rem Check for Python
@@ -27,9 +27,9 @@ if !ERRORLEVEL! EQU 1 (
     exit /b
 )
 
-rem Installer script
+rem Setup script
 rem
-start /b /wait python.exe "%KALITE_DIR%\manage.py" install
+start /b /wait python.exe "%KALITE_DIR%\manage.py" setup
 
 rem Run at startup
 rem

@@ -1,27 +1,26 @@
 {% extends base_template %}
-
 {% load i18n %}
 {% load staticfiles %}
 
 {% block practice_active %}active{% endblock practice_active %}
 
-{% block headcss %}
-<link rel="stylesheet" type="text/css" href="{% static 'js/khan-exercises/css/khan-exercise.css' %}"></link>
+{% block headcss %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'js/khan-exercises/css/khan-exercise.css' %}"></link>
 
-<!-- Used by KA to dynamically add styling to the exercise -->
-<style id="exercise-inline-style"></style>
+    <!-- Used by KA to dynamically add styling to the exercise -->
+    <style id="exercise-inline-style"></style>
 
-<style>
-.return-link {
-    font-size: 13px;
-    padding-bottom: 4px;
-    opacity: 0.8;
-    margin-top: -2px;
-}
-</style>
+    <style>
+        .return-link {
+            font-size: 13px;
+            padding-bottom: 4px;
+            opacity: 0.8;
+            margin-top: -2px;
+        }
+    </style>
 {% endblock headcss %}
 
-{% block headjs %}
+{% block headjs %}{{ block.super }}
 <script>
 
     var urlBaseOverride = "{% static 'js/khan-exercises/' %}";
@@ -74,11 +73,9 @@
     };    
 </script>
 <script src="{% static 'js/exercises.js' %}"></script>
-
 {% endblock headjs %}
 
 {% block content %}
-
     <div class="exercises-header">
         <a href="{% if request.META.HTTP_REFERER %}{{ request.META.HTTP_REFERER }}{% else %}javascript.history.go(-1){% endif %}" class="return-link" >&#60;{% trans "Return" %}</a>
         <h2>
@@ -144,7 +141,7 @@
                                                                     <img class="thumbimage" {% if video.thumbnail_url %}src="{{ video.thumbnail_url }}{% endif %}"/>
                                                                     <div class="thumbnail_label" style="margin-top: 68px; ">
                                                                         <div class="thumbnail_desc">
-                                                                            <span class="progress-circle" data-youtube-id="{{ video.youtube_id }}"></span>
+                                                                            <span class="progress-circle" data-video-id="{{ video.id }}"></span>
                                                                             <span>{% trans video.title %}</span>
                                                                         </div>
                                                                         <div class="thumbnail_teaser" style="height: 0px; ">{% if video.description %}{% trans video.description %}{% endif %}</div>
@@ -158,7 +155,7 @@
                                                     <li>
                                                         <a class="related-video related-video-inline" href="{{ video.path }}" title="{% trans video.title %}" target="_blank">
                                                             <span class="video-title">
-                                                                <span class="progress-circle" data-youtube-id="{{ video.youtube_id }}"></span>
+                                                                <span class="progress-circle" data-video-id="{{ video.id }}"></span>
                                                                 {% trans video.title %}
                                                             </span>
                                                         </a>
@@ -188,5 +185,4 @@
             </div>
         </div>
     </div>
-    
 {% endblock content %}

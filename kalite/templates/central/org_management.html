@@ -1,11 +1,12 @@
-{% extends "central/base.html" %}
+{% extends base_template %}
+{% load i18n %}
 {% load staticfiles %}
 {% load my_filters %}
 
 {% block control_panel_active %}active{% endblock control_panel_active %}
 
 {% block headjs %}{{ block.super }}
-<script>
+    <script>
         // makes correct link submit form for removing admin & revoking invites
         $(function() {
             $('.remove-admin-submit, .remove-invite-submit').click(function(ev) {
@@ -15,87 +16,86 @@
 
             $('.glossary-link').wrap('<a href="{% url glossary %}"></a>');
         });
+    </script>
 
-</script>
+    <script src="{% static 'js/bootstrap/tooltip.js' %}"></script>
+    <script src="{% static 'js/bootstrap/popover.js' %}"></script>
+    <script>
+    $(function() {
+        var nbOrganization = {{ organizations|length }} - 1 ; //Start the counter at 0
 
-<script src="{% static 'js/bootstrap/tooltip.js' %}"></script>
-<script src="{% static 'js/bootstrap/popover.js' %}"></script>
-<script>
-$(function() {
-    var nbOrganization = {{ organizations|length }} - 1 ; //Start the counter at 0
-    
-    // Used <div> instead of <a> to avoid a dirty js hack to avoid the reload to top page.
-    for (var i=0;i<=nbOrganization;i++){ 
-        $('#button-popover-zone-'+(i.toString()) ).popover() //Each popover needs an individual callback
-        $('#button-popover-orgadmin-'+(i.toString()) ).popover() 
-    }
+        // Used <div> instead of <a> to avoid a dirty js hack to avoid the reload to top page.
+        for (var i=0;i<=nbOrganization;i++){
+            $('#button-popover-zone-'+(i.toString()) ).popover() //Each popover needs an individual callback
+            $('#button-popover-orgadmin-'+(i.toString()) ).popover()
+        }
 
-    $('#button-popover-org').popover()
-    $('#button-popover-headless').popover()
+        $('#button-popover-org').popover()
+        $('#button-popover-headless').popover()
 
-    $('body').on('click', function (e) {
-        $('.button-popover').each(function () {
-            //the 'is' for buttons that trigger popups
-            //the 'has' for icons within a button that triggers a popup
-            if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
-                $(this).popover('hide');
-            }
+        $('body').on('click', function (e) {
+            $('.button-popover').each(function () {
+                //the 'is' for buttons that trigger popups
+                //the 'has' for icons within a button that triggers a popup
+                if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+                    $(this).popover('hide');
+                }
+            });
         });
     });
-});
-</script>
+    </script>
 {% endblock headjs %}
 
 {% block headcss %}{{ block.super }}
-<style>
-.glossary-link {
-    background: url('/static/images/question_mark.png') no-repeat center;
-    display: inline-block;
-    width: 14px;
-    height: 10px;
-    float: center;
-    margin-bottom: -51px;
-    margin-left: -5px;
-    margin-right: -5px;
-}
-</style>
+    <style>
+        .glossary-link {
+            background: url('/static/images/question_mark.png') no-repeat center;
+            display: inline-block;
+            width: 14px;
+            height: 10px;
+            float: center;
+            margin-bottom: -51px;
+            margin-left: -5px;
+            margin-right: -5px;
+        }
+    </style>
 {% endblock headcss %}
 
 {% block content %}
-        <div class="row-fluid">
-            <div class="span9">
-                <div class="tooltip-container">
-                    <h1>My Organization{{ organizations|pluralize }}</h1>
-                    <div id="button-popover-org" class="button-popover" data-toggle="popover" data-placement="right" data-content="An Organization is a group of people responsible for administering a set of Sharing Networks." title="" data-original-title="Organization">?</div>
-                </div>            
-            </div>
-            <div class="span3">
-                <form method="link" action="/organization/new/" class="neworg-button">
-                    <input type="submit" class="button--large" value="Create a new organization">
-                </form>
+    <div class="row-fluid">
+        <div class="span9">
+            <div class="tooltip-container">
+                <h1>{% trans "My Organization" %}{{ organizations|pluralize }}</h1>
+                <div id="button-popover-org" class="button-popover" data-toggle="popover" data-placement="right" data-content="{% trans 'An Organization is a group of people responsible for administering a set of Sharing Networks.' %}" title="" data-original-title="Organization">?</div>
             </div>
         </div>
-        
-        {% for invite in invitations %}
-        <form method="post" action="{% url org_invite_action invite_id=invite.pk %}"> 
-            {% csrf_token %}
-            <div id="invite-text">
-                <p>You have been invited by <a href="mailto:{{invite.invited_by.email}}">{% firstof invite.invited_by.get_full_name invite.invited_by.username %}</a> to help administer "<span style="font-weight:bold">{{ invite.organization }}</span>". Please click below to join the organization or to decline this invitation.</p> 
-                <div class="inputs">
-                    <input type="submit" name="join" value="Join">
-                    <input type="submit" name="decline" value="Decline">
-                </div>
+        <div class="span3">
+            <form method="link" action="/organization/new/" class="neworg-button">
+                <input type="submit" class="button--large" value="Create a new organization">
+            </form>
+        </div>
+    </div>
+
+    {% for invite in my_invitations %}
+    <form method="post" action="{% url org_invite_action invite_id=invite.pk %}">
+        {% csrf_token %}
+        <div id="invite-text">
+            <p>You have been invited by <a href="mailto:{{invite.invited_by.email}}">{% firstof invite.invited_by.get_full_name invite.invited_by.username %}</a> to help administer "<span style="font-weight:bold">{{ invite.organization }}</span>". Please click below to join the organization or to decline this invitation.</p>
+            <div class="inputs">
+                <input type="submit" name="join" value="Join">
+                <input type="submit" name="decline" value="Decline">
             </div>
-        </form>
-        {% endfor %}
-        
+        </div>
+    </form>
+    {% endfor %}
+
 
     {% if not organizations %}
         <h2>You currently have no organizations. Would you like to <a href="/organization/new/">create a new organization</a>?</h2>
         <h2>To join an existing organization, contact one of its administrators to have them add you.</h2>
 
     {% else %}
-        {% for pk,org in organizations.items %}        
+        {% for pk,org in organizations.items %}
         <div class="row-fluid">
             <div class="span12 organization-title">
                 <div class="tooltip-container">
@@ -181,16 +181,16 @@ $(function() {
                         </tr>
                         {% endfor %}
 
-                        {% for invite in org.invitations.all %}
+                        {% for invite in org.invitations.all %}{# TODO(bcipolli) this is inefficient, convert to list (how?) #}
 
 
-                        <tr id="invited-tag">    
+                        <tr id="invited-tag">
                             <td>
                                 {{ invite.email_to_invite }} (invited)
 
                             </td>
 
-                            <td>            
+                            <td>
                                 <form method="post" action="{% url delete_invite org_id=org.id invite_id=invite.pk %}">
                                     {% csrf_token %}
                                     <a href="" class="remove-invite-submit">(Revoke Invite)</a>
@@ -224,13 +224,7 @@ $(function() {
     {% endif %}
 
     <p>
-        {% if not organizations %}
-            After creating an organization and adding a sharing network to it, above, you'll be 
-        {% else %}
-            You're
-        {% endif %}
-        ready to <a href="/install/">install KA Lite</a>
-        (either on this machine, or to download the installation package to install offline on another machine)
+        {% blocktrans %}You're ready to <a href="{{ download_url }}">download and install KA Lite</a>{% endblocktrans %}
     </p>
 
 {% endblock content %}

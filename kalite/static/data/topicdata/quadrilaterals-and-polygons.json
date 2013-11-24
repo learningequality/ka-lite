@@ -1,65 +1,78 @@
 [
   {
-    "related_video_readable_ids": [
+    "v_position": 24, 
+    "path": "/math/geometry/quadrilaterals-and-polygons/e/quadrilateral_types/", 
+    "id": "quadrilateral_types", 
+    "display_name": "Quadrilateral types", 
+    "title": "Quadrilateral types", 
+    "parent_id": "quadrilaterals-and-polygons", 
+    "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "geometry", 
+      "quadrilaterals-and-polygons"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "quadrilaterals-and-polygons"
+    ], 
+    "related_video_slugs": [
       "quadrilateral-types-exercise", 
       "quadrilateral-overview", 
       "quadrilateral-properties", 
       "kites-as-a-mathematical-shape"
     ], 
-    "v_position": 33, 
-    "path": "/math/geometry/quadrilaterals-and-polygons/e/quadrilateral_types/", 
-    "id": "quadrilateral_types", 
-    "paths": [
-      "/math/geometry/quadrilaterals-and-polygons/e/quadrilateral_types/"
-    ], 
-    "display_name": "Quadrilateral types", 
-    "title": "Quadrilateral types", 
-    "live": true, 
-    "parents": [
-      "", 
-      "math", 
-      "geometry", 
-      "quadrilaterals-and-polygons"
-    ], 
-    "seconds_per_fast_problem": 5.0, 
     "description": "", 
-    "basepoints": 12.0, 
-    "h_position": -15, 
+    "parent": "quadrilaterals-and-polygons", 
+    "basepoints": 17.0, 
+    "h_position": 2, 
     "slug": "quadrilateral_types", 
     "kind": "Exercise", 
     "name": "quadrilateral_types", 
+    "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
-      "angles_2"
-    ]
+      "classifying-shapes-by-line-and-angle-types"
+    ], 
+    "exercise_id": "quadrilateral_types"
   }, 
   {
-    "related_video_readable_ids": [
-      "proof---opposite-angles-of-parallelogram-congruent"
-    ], 
-    "v_position": 34, 
+    "v_position": 25, 
     "path": "/math/geometry/quadrilaterals-and-polygons/e/quadrilateral_angles/", 
     "id": "quadrilateral_angles", 
-    "paths": [
-      "/math/geometry/quadrilaterals-and-polygons/e/quadrilateral_angles/"
-    ], 
     "display_name": "Quadrilateral angles", 
     "title": "Quadrilateral angles", 
+    "parent_id": "quadrilaterals-and-polygons", 
     "live": true, 
     "parents": [
-      "", 
+      "root", 
       "math", 
       "geometry", 
       "quadrilaterals-and-polygons"
     ], 
-    "seconds_per_fast_problem": 8.0, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "quadrilaterals-and-polygons"
+    ], 
+    "related_video_slugs": [
+      "proof---opposite-angles-of-parallelogram-congruent"
+    ], 
     "description": "", 
-    "basepoints": 15.0, 
-    "h_position": -15, 
+    "parent": "quadrilaterals-and-polygons", 
+    "basepoints": 14.0, 
+    "h_position": 1, 
     "slug": "quadrilateral_angles", 
     "kind": "Exercise", 
     "name": "quadrilateral_angles", 
+    "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
+      "complementary_and_supplementary_angles", 
       "quadrilateral_types"
-    ]
+    ], 
+    "exercise_id": "quadrilateral_angles"
   }
 ]

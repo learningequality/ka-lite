@@ -47,7 +47,7 @@ def generate_po(nodes, filename):
             entry = polib.POEntry(
                 msgid= value,
                 msgstr= "",
-                comment="%s %s" %(node["kind"], key)
+                comment="%s %s" % (node["kind"], key)
             )
             po.append(entry)
 

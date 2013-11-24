@@ -61,7 +61,7 @@ def validate_username(username):
 
 def get_username(username):
     while not validate_username(username):
-        
+
         username = raw_input("Username (leave blank to use '%s'): " % getpass.getuser()) or getpass.getuser()
         if not validate_username(username):
             sys.stderr.write("\tError: Username must contain only letters, digits, and underscores, and start with a letter.\n")
@@ -128,7 +128,7 @@ class Command(BaseCommand):
         if not options["interactive"]:
             options["username"] = options["username"] or settings.INSTALL_ADMIN_USERNAME or getpass.getuser()
             options["hostname"] = options["hostname"] or get_host_name()
- 
+
         sys.stdout.write("  _   __  ___    _     _ _        \n")
         sys.stdout.write(" | | / / / _ \  | |   (_) |       \n")
         sys.stdout.write(" | |/ / / /_\ \ | |    _| |_ ___  \n")
@@ -224,10 +224,10 @@ class Command(BaseCommand):
 
         # Move database file (if exists)
         if install_clean and os.path.exists(database_file):
-                # This is an overwrite install; destroy the old db
-                dest_file = tempfile.mkstemp()[1]
-                sys.stdout.write("(Re)moving database file to temp location, starting clean install.  Recovery location: %s\n" % dest_file)
-                shutil.move(database_file, dest_file)
+            # This is an overwrite install; destroy the old db
+            dest_file = tempfile.mkstemp()[1]
+            sys.stdout.write("(Re)moving database file to temp location, starting clean install.  Recovery location: %s\n" % dest_file)
+            shutil.move(database_file, dest_file)
 
         # Got this far, it's OK to stop the server.
         import serverstop
@@ -241,21 +241,24 @@ class Command(BaseCommand):
 
         # Install data
         if install_clean:
+            # Create device, load on any zone data
             call_command("generatekeys", verbosity=options.get("verbosity"))
-
             call_command("initdevice", hostname, description, verbosity=options.get("verbosity"))
 
         else:
-            if os.path.exists(InitCommand.install_json_file):
+            # Device exists; load data if required.
+            #
+            # Hackish, as this duplicates code from initdevice.
+            #
+            if os.path.exists(InitCommand.data_json_file):
                 # This is a pathway to install zone-based data on a software upgrade.
-                sys.stdout.write("Loading zone data from '%s'\n" % InitCommand.install_json_file)
-                load_data_for_offline_install(in_file=InitCommand.install_json_file)
+                sys.stdout.write("Loading zone data from '%s'\n" % InitCommand.data_json_file)
+                load_data_for_offline_install(in_file=InitCommand.data_json_file)
 
             confirm_or_generate_zone()
-
             initialize_facility()
 
-
+        # Create the admin user
         if password:  # blank password (non-interactive) means don't create a superuser
             admin = get_object_or_None(User, username=username)
             if not admin:
@@ -275,8 +278,20 @@ class Command(BaseCommand):
 
         start_script_path = os.path.realpath(os.path.join(settings.PROJECT_PATH, "..", "start%s" % system_script_extension()))
 
+
+        # Run videoscan, on the distributed server.
+        if not settings.CENTRAL_SERVER:
+            sys.stdout.write("Scanning for video files in the content directory (%s)\n" % settings.CONTENT_ROOT)
+            call_command("videoscan")
+
+
+        # done; notify the user.
         sys.stdout.write("\n")
-        sys.stdout.write("CONGRATULATIONS! You've finished installing the KA Lite server software.\n")
-        sys.stdout.write("\tPlease run '%s' to start the server,\n" % start_script_path)
-        sys.stdout.write("\tthen load 'http://127.0.0.1:%d/' in your browser to complete the device configuration.\n" % settings.PRODUCTION_PORT)
+        if install_clean:
+            sys.stdout.write("CONGRATULATIONS! You've finished setting up the KA Lite server software.\n")
+            sys.stdout.write("\tPlease run '%s' to start the server,\n" % start_script_path)
+            sys.stdout.write("\tthen load 'http://127.0.0.1:%d/' in your browser to complete the device configuration.\n" % settings.user_facing_port())
+        else:
+            sys.stdout.write("CONGRATULATIONS! You've finished updating the KA Lite server software.\n")
+            sys.stdout.write("\tPlease run '%s' to start the server.\n" % start_script_path)
         sys.stdout.write("\n")

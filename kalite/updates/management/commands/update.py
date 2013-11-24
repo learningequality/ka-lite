@@ -30,12 +30,12 @@ class Command(UpdatesStaticCommand):
     help = "Create a zip file with all code, that can be unpacked anywhere."
 
     option_list = BaseCommand.option_list + (
-        make_option('-r', '--repo',
+        make_option('-b', '--branch',
             action='store',
-            dest='repo',
+            dest='branch',
             default=None,
-            help='Git REPO to pull from',
-            metavar="REPO"),
+            help='Git BRANCH to switch to',
+            metavar="BRANCH"),
         make_option('-f', '--file',
             action='store',
             dest='zip_file',
@@ -72,7 +72,7 @@ class Command(UpdatesStaticCommand):
             exit(0)
 
         try:
-            if options.get("repo", None):
+            if options.get("branch", None):
                 # Specified a repo
                 self.update_via_git(**options)
 
@@ -84,9 +84,13 @@ class Command(UpdatesStaticCommand):
 
             elif options.get("url", None):
                 self.update_via_zip(**options)
-        
+
             elif os.path.exists(settings.PROJECT_PATH + "/../.git"):
-                # Without params, if we detect a git repo, try git
+                # If we detect a git repo, try git
+                if len(args) == 1 and not options["branch"]:
+                    options["branch"] = args[0]
+                elif len(args) != 0:
+                    raise CommandError("Specified too many command-line arguments")
                 self.update_via_git(**options)
 
             elif len(args) > 1:
@@ -115,48 +119,55 @@ class Command(UpdatesStaticCommand):
                 self.update_via_zip(**options)
 
         except Exception as e:
-            if self.started():
+            if self.started() and not not self.ended():
                 self.cancel(notes=str(e))
-            raise CommandError(str(e))
+            raise
 
-        assert not self.started(), "Subroutines should complete() if they start()!"
+        assert self.ended(), "Subroutines should complete() if they start()!"
 
 
-    def update_via_git(self, repo=".", *args, **kwargs):
+    def update_via_git(self, branch=None, *args, **kwargs):
         """
         Full update via git
         """
         self.stages = [
-            "git pull",
             "clean_pyc",
+            "git",
             "syncdb",
-            "videoscan",
         ]
 
+        # step 1: clean_pyc (has to be first)
+        call_command("clean_pyc")
+        self.start(notes="Clean up pyc files")
+
+        # Step 2: update via git
+        self.next_stage(notes="Updating via git%s" % (" to branch %s" % branch if branch else ""))
+        repo = git.Repo()
+
         try:
-            # Step 1: update via git repo
-            self.start(notes = "Updating via git; repo=%s" % (repo or "[default]") )
-            self.stdout.write(git.Repo(repo).git.pull() + "\n")
-        
-            # step 2: clean_pyc
-            self.next_stage("Cleaning PYC files")
-            call_command("clean_pyc")
+            if not branch:
+                # old behavior--assume you're pulling to remote
+                self.stdout.write(repo.git.pull() + "\n")
+            elif "/" not in branch:
+                self.stdout.write(repo.git.fetch() + "\n")  # update all branches across all repos, to make sure all branches exist
+                self.stdout.write(repo.git.checkout(branch) + "\n")
+            else:
+                self.stdout.write(repo.git.fetch("--all", "-p"), "\n")  # update all branches across all repos, to make sure all branches exist
+                self.stdout.write(repo.git.checkout("-t", branch) + "\n")
 
-            # step 3: syncdb
-            self.next_stage("Updating the database schema")
-            # call syncdb, then migrate with merging enabled (in case there were any out-of-order migration files)
-            call_command("syncdb")
-            call_command("migrate", merge=True)
+        except git.errors.GitCommandError as gce:
+            if not (branch and "There is no tracking information for the current branch" in gce.stderr):
+                # pull failed because the branch is local only. this is OK when you specify a branch (switch), but not when you don't (has to be a remote pull)
+                self.stderr.write("Error running %s\n" % gce.command)
+                self.stderr.write("%s\n" % gce.stderr)
+                exit(1)
 
-            # step 4: run videoscan (in case we blew away the videofile in migration from main to updates)
-            self.next_stage("Refreshing list of video files")
-            call_command("videoscan")
+        # step 3: syncdb
+        self.next_stage("Update the database")
+        call_command("setup", interactive=False)
 
-            # Done!
-            self.complete()
-        except Exception as e:
-            self.cancel()
-            raise CommandError(str(e))
+        # Done!
+        self.complete()
 
 
     def update_via_zip(self, zip_file=None, url=None, interactive=True, test_port=8008, *args, **kwargs):
@@ -263,10 +274,15 @@ class Command(UpdatesStaticCommand):
 
         self.signature_file = os.path.join(self.working_dir, Command.signature_filename)
         self.inner_zip_file = os.path.join(self.working_dir, Command.inner_zip_filename)
-        key = Device.get_central_server().get_key()
+
+        central_server = Device.get_central_server()
         lines = open(self.signature_file, "r").read().split("\n")
         chunk_size = int(lines.pop(0))
-        if not key.verify_large_file(self.inner_zip_file, signature=lines, chunk_size=chunk_size):
+        if not central_server:
+            logging.warn("No central server device object found; trusting zip file because you asked me to...") 
+        elif central_server.key.verify_large_file(self.inner_zip_file, signature=lines, chunk_size=chunk_size):
+            logging.info("Verified file!")
+        else:
             raise Exception("Failed to verify inner zip file.")
         return self.inner_zip_file
 
@@ -323,9 +339,11 @@ class Command(UpdatesStaticCommand):
 
 
     def get_move_videos(self, interactive=True):
-        """See whether the user wants to move video files, or to keep them in the existing location.
+        """
+        See whether the user wants to move video files, or to keep them in the existing location.
 
-        Note that we have some meaningful cases where we don't need to prompt the user to set this."""
+        Note that we have some meaningful cases where we don't need to prompt the user to set this.
+        """
 
         self.videos_inside_install = -1 != settings.CONTENT_ROOT.find(self.current_dir)
         if not self.videos_inside_install:
@@ -365,7 +383,7 @@ class Command(UpdatesStaticCommand):
 
         try:
             system_specific_unzipping(
-                zip_file=zip_file, 
+                zip_file=zip_file,
                 dest_dir=self.working_dir,
                 callback = self._callback_unzip,
             )
@@ -404,12 +422,8 @@ class Command(UpdatesStaticCommand):
         # Run the syncdb
         sys.stdout.write("* Syncing database...")
         sys.stdout.flush()
-        out = call_outside_command_with_output("migrate", manage_py_dir=os.path.join(self.working_dir, "kalite"))
-        out = call_outside_command_with_output("syncdb", migrate=True, manage_py_dir=os.path.join(self.working_dir, "kalite"))
+        call_outside_command_with_output("setup", interactive=False, manage_py_dir=os.path.join(self.working_dir, "kalite"))
         sys.stdout.write("\n")
-
-        # Run videoscan, in case we blew away the videofiles moving from main to updates app
-        out = call_outside_command_with_output("videoscan", manage_py_dir=os.path.join(self.working_dir, "kalite"))
 
 
     def update_local_settings(self):
@@ -611,7 +625,7 @@ class Command(UpdatesStaticCommand):
     def start_server(self, port=None):
         """
         Start the server, for real (not to test) (cron and web server)
-        
+
         Assumes the web server is shut down.
         """
         sys.stdout.write("* Starting the server\n")
@@ -626,7 +640,7 @@ class Command(UpdatesStaticCommand):
 
         #running_port = out[0].split(" ")[-1]
         #sys.stdout.write("* Server accessible @ port %s.\n" % running_port)
-        sys.stdout.write("* Server should be accessible @ port %s.\n" % (port or settings.PRODUCTION_PORT))
+        sys.stdout.write("* Server should be accessible @ port %s.\n" % (port or settings.user_facing_port()))
 
 
     def print_footer(self):

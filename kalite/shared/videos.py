@@ -7,12 +7,6 @@ from shared.topic_tools import get_topic_tree, get_videos
 from utils.videos import *  # get all into the current namespace, override some.
 
 
-def get_video_ids_for_topic(topic_id, topic_tree=None):
-    """Nobody actually calls this, just for utility when using the shell."""
-    topic_tree = topic_tree or get_topic_tree()
-    return utils.videos.get_video_ids_for_topic(topic_id, topic_tree)
-
-
 def download_video(youtube_id, format="mp4", callback=None):
     """Downloads the video file to disk (note: this does NOT invalidate any of the cached html files in KA Lite)"""
 
@@ -24,17 +18,17 @@ def delete_downloaded_files(youtube_id):
     return utils.videos.delete_downloaded_files(youtube_id, settings.CONTENT_ROOT)
 
 
-def get_video_urls(video_id, format, video_on_disk=True, language_codes=[]):
-    video_base_url = settings.CONTENT_URL + video_id
+def get_video_urls(video_id, youtube_id, format, video_on_disk=True, language_codes=[]):
+    video_base_url = settings.CONTENT_URL + youtube_id
     if not video_on_disk and settings.BACKUP_VIDEO_SOURCE:
-        dict_vals = {"video_id": video_id, "video_format": format, "thumb_format": "png" }
+        dict_vals = {"video_id": video_id, "youtube_id": youtube_id, "video_format": format, "thumb_format": "png" }
         stream_url = settings.BACKUP_VIDEO_SOURCE % dict_vals
         thumbnail_url = settings.BACKUP_THUMBNAIL_SOURCE % dict_vals if settings.BACKUP_THUMBNAIL_SOURCE else None
     else:
         stream_url = video_base_url + ".%s" % format
         thumbnail_url = video_base_url + ".png"
 
-    subtitles_urls = dict(zip(language_codes, [get_srt_url(video_id, code) for code in language_codes if os.path.exists(get_srt_path_on_disk(video_id, code))]))
+    subtitles_urls = dict(zip(language_codes, [get_srt_url(youtube_id, code) for code in language_codes if os.path.exists(get_srt_path_on_disk(youtube_id, code))]))
 
     return (stream_url, thumbnail_url, subtitles_urls)
 

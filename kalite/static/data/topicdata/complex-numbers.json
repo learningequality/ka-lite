@@ -1,222 +1,239 @@
 [
   {
-    "related_video_readable_ids": [
+    "v_position": 71, 
+    "path": "/math/algebra/complex-numbers/imaginary_unit_i/e/imaginary_unit_powers/", 
+    "id": "imaginary_unit_powers", 
+    "display_name": "Imaginary unit powers", 
+    "title": "Imaginary unit powers", 
+    "parent_id": "imaginary_unit_i", 
+    "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "complex-numbers", 
+      "imaginary_unit_i"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "complex-numbers", 
+      "imaginary_unit_i"
+    ], 
+    "related_video_slugs": [
       "introduction-to-i-and-imaginary-numbers", 
       "calculating-i-raised-to-arbitrary-exponents"
     ], 
-    "v_position": 45, 
-    "path": "/math/algebra/complex-numbers/imaginary_unit_i/e/imaginary_unit_powers/", 
-    "id": "imaginary_unit_powers", 
-    "paths": [
-      "/math/algebra/complex-numbers/imaginary_unit_i/e/imaginary_unit_powers/", 
-      "/math/trigonometry/imaginary_complex_precalc/i_precalc/e/imaginary_unit_powers/"
-    ], 
-    "display_name": "Imaginary unit powers", 
-    "title": "Imaginary unit powers", 
-    "live": true, 
-    "parents": [
-      "", 
-      "algebra", 
-      "imaginary_complex_precalc", 
-      "complex-numbers", 
-      "imaginary_unit_i", 
-      "trigonometry", 
-      "math", 
-      "i_precalc"
-    ], 
-    "seconds_per_fast_problem": 6.0, 
     "description": "Solve problems with base i (square root of -1) raised to a positive exponent\n", 
+    "parent": "imaginary_unit_i", 
     "basepoints": 13.0, 
-    "h_position": -12, 
+    "h_position": 1, 
     "slug": "imaginary_unit_powers", 
     "kind": "Exercise", 
     "name": "imaginary_unit_powers", 
+    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "equation_of_a_line"
-    ]
+    ], 
+    "exercise_id": "imaginary_unit_powers"
   }, 
   {
-    "related_video_readable_ids": [
+    "v_position": 72, 
+    "path": "/math/algebra/complex-numbers/complex_numbers/e/the_complex_plane/", 
+    "id": "the_complex_plane", 
+    "display_name": "The complex plane", 
+    "title": "The complex plane", 
+    "parent_id": "complex_numbers", 
+    "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "complex-numbers", 
+      "complex_numbers"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "complex-numbers", 
+      "complex_numbers"
+    ], 
+    "related_video_slugs": [
       "plotting-complex-numbers-on-the-complex-plane", 
       "complex-numbers", 
       "complex-numbers--part-1", 
       "complex-numbers--part-2"
     ], 
-    "v_position": 46, 
-    "path": "/math/algebra/complex-numbers/complex_numbers/e/the_complex_plane/", 
-    "id": "the_complex_plane", 
-    "paths": [
-      "/math/algebra/complex-numbers/complex_numbers/e/the_complex_plane/", 
-      "/math/trigonometry/imaginary_complex_precalc/complex_num_precalc/e/the_complex_plane/"
-    ], 
-    "display_name": "The complex plane", 
-    "title": "The complex plane", 
-    "live": true, 
-    "parents": [
-      "", 
-      "algebra", 
-      "imaginary_complex_precalc", 
-      "complex-numbers", 
-      "complex_numbers", 
-      "complex_num_precalc", 
-      "trigonometry", 
-      "math"
-    ], 
-    "seconds_per_fast_problem": 6.0, 
     "description": "Plot complex numbers on the complex plane.\n", 
+    "parent": "complex_numbers", 
     "basepoints": 13.0, 
-    "h_position": -12, 
+    "h_position": 1, 
     "slug": "the_complex_plane", 
     "kind": "Exercise", 
     "name": "the_complex_plane", 
+    "seconds_per_fast_problem": 6.0, 
     "prerequisites": [
       "imaginary_unit_powers"
-    ]
+    ], 
+    "exercise_id": "the_complex_plane"
   }, 
   {
-    "related_video_readable_ids": [
+    "v_position": 74, 
+    "path": "/math/algebra/complex-numbers/complex_numbers/e/adding_and_subtracting_complex_numbers/", 
+    "id": "adding_and_subtracting_complex_numbers", 
+    "display_name": "Adding and subtracting complex numbers", 
+    "title": "Adding and subtracting complex numbers", 
+    "parent_id": "complex_numbers", 
+    "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "complex-numbers", 
+      "complex_numbers"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "complex-numbers", 
+      "complex_numbers"
+    ], 
+    "related_video_slugs": [
       "complex-numbers--part-1", 
       "adding-complex-numbers", 
       "subtracting-complex-numbers"
     ], 
-    "v_position": 48, 
-    "path": "/math/algebra/complex-numbers/complex_numbers/e/adding_and_subtracting_complex_numbers/", 
-    "id": "adding_and_subtracting_complex_numbers", 
-    "paths": [
-      "/math/algebra/complex-numbers/complex_numbers/e/adding_and_subtracting_complex_numbers/", 
-      "/math/trigonometry/imaginary_complex_precalc/complex_num_precalc/e/adding_and_subtracting_complex_numbers/"
-    ], 
-    "display_name": "Adding and subtracting complex numbers", 
-    "title": "Adding and subtracting complex numbers", 
-    "live": true, 
-    "parents": [
-      "", 
-      "algebra", 
-      "imaginary_complex_precalc", 
-      "complex-numbers", 
-      "complex_numbers", 
-      "complex_num_precalc", 
-      "trigonometry", 
-      "math"
-    ], 
-    "seconds_per_fast_problem": 11.0, 
     "description": "", 
-    "basepoints": 17.0, 
-    "h_position": -12, 
+    "parent": "complex_numbers", 
+    "basepoints": 16.0, 
+    "h_position": 1, 
     "slug": "adding_and_subtracting_complex_numbers", 
     "kind": "Exercise", 
     "name": "adding_and_subtracting_complex_numbers", 
+    "seconds_per_fast_problem": 9.0, 
     "prerequisites": [
       "adding_and_subtracting_polynomials", 
       "complex_plane_operations"
-    ]
+    ], 
+    "exercise_id": "adding_and_subtracting_complex_numbers"
   }, 
   {
-    "related_video_readable_ids": [
+    "v_position": 75, 
+    "path": "/math/algebra/complex-numbers/complex_numbers/e/multiplying_complex_numbers/", 
+    "id": "multiplying_complex_numbers", 
+    "display_name": "Multiplying complex numbers", 
+    "title": "Multiplying complex numbers", 
+    "parent_id": "complex_numbers", 
+    "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "complex-numbers", 
+      "complex_numbers"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "complex-numbers", 
+      "complex_numbers"
+    ], 
+    "related_video_slugs": [
       "multiplying-complex-numbers", 
       "complex-numbers"
     ], 
-    "v_position": 49, 
-    "path": "/math/algebra/complex-numbers/complex_numbers/e/multiplying_complex_numbers/", 
-    "id": "multiplying_complex_numbers", 
-    "paths": [
-      "/math/algebra/complex-numbers/complex_numbers/e/multiplying_complex_numbers/", 
-      "/math/trigonometry/imaginary_complex_precalc/complex_num_precalc/e/multiplying_complex_numbers/"
-    ], 
-    "display_name": "Multiplying complex numbers", 
-    "title": "Multiplying complex numbers", 
-    "live": true, 
-    "parents": [
-      "", 
-      "algebra", 
-      "imaginary_complex_precalc", 
-      "complex-numbers", 
-      "complex_numbers", 
-      "complex_num_precalc", 
-      "trigonometry", 
-      "math"
-    ], 
-    "seconds_per_fast_problem": 18.0, 
     "description": "", 
+    "parent": "complex_numbers", 
     "basepoints": 21.0, 
-    "h_position": -12, 
+    "h_position": 1, 
     "slug": "multiplying_complex_numbers", 
     "kind": "Exercise", 
     "name": "multiplying_complex_numbers", 
+    "seconds_per_fast_problem": 19.0, 
     "prerequisites": [
       "multiplying_expressions_1", 
       "adding_and_subtracting_complex_numbers"
-    ]
+    ], 
+    "exercise_id": "multiplying_complex_numbers"
   }, 
   {
-    "related_video_readable_ids": [
-      "dividing-complex-numbers"
-    ], 
-    "v_position": 50, 
+    "v_position": 76, 
     "path": "/math/algebra/complex-numbers/complex_numbers/e/dividing_complex_numbers/", 
     "id": "dividing_complex_numbers", 
-    "paths": [
-      "/math/algebra/complex-numbers/complex_numbers/e/dividing_complex_numbers/", 
-      "/math/trigonometry/imaginary_complex_precalc/complex_num_precalc/e/dividing_complex_numbers/"
-    ], 
     "display_name": "Dividing complex numbers", 
     "title": "Dividing complex numbers", 
+    "parent_id": "complex_numbers", 
     "live": true, 
     "parents": [
-      "", 
+      "root", 
+      "math", 
       "algebra", 
-      "imaginary_complex_precalc", 
       "complex-numbers", 
-      "complex_numbers", 
-      "complex_num_precalc", 
-      "trigonometry", 
-      "math"
+      "complex_numbers"
     ], 
-    "seconds_per_fast_problem": 57.0, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "complex-numbers", 
+      "complex_numbers"
+    ], 
+    "related_video_slugs": [
+      "dividing-complex-numbers"
+    ], 
     "description": "", 
-    "basepoints": 29.0, 
-    "h_position": -12, 
+    "parent": "complex_numbers", 
+    "basepoints": 26.0, 
+    "h_position": 1, 
     "slug": "dividing_complex_numbers", 
     "kind": "Exercise", 
     "name": "dividing_complex_numbers", 
+    "seconds_per_fast_problem": 38.0, 
     "prerequisites": [
       "multiplying_complex_numbers"
-    ]
+    ], 
+    "exercise_id": "dividing_complex_numbers"
   }, 
   {
-    "related_video_readable_ids": [
-      "absolute-value-of-a-complex-number"
-    ], 
-    "v_position": 47, 
+    "v_position": 73, 
     "path": "/math/algebra/complex-numbers/complex_numbers/e/absolute_value_of_complex_numbers/", 
     "id": "absolute_value_of_complex_numbers", 
-    "paths": [
-      "/math/algebra/complex-numbers/complex_numbers/e/absolute_value_of_complex_numbers/", 
-      "/math/trigonometry/imaginary_complex_precalc/complex_num_precalc/e/absolute_value_of_complex_numbers/"
-    ], 
     "display_name": "Absolute value of complex numbers", 
     "title": "Absolute value of complex numbers", 
+    "parent_id": "complex_numbers", 
     "live": true, 
     "parents": [
-      "", 
+      "root", 
+      "math", 
       "algebra", 
-      "imaginary_complex_precalc", 
       "complex-numbers", 
-      "complex_numbers", 
-      "complex_num_precalc", 
-      "trigonometry", 
-      "math"
+      "complex_numbers"
     ], 
-    "seconds_per_fast_problem": 13.0, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "complex-numbers", 
+      "complex_numbers"
+    ], 
+    "related_video_slugs": [
+      "absolute-value-of-a-complex-number"
+    ], 
     "description": "Find the absolute value of a complex number.\n", 
+    "parent": "complex_numbers", 
     "basepoints": 18.0, 
-    "h_position": -13, 
+    "h_position": 2, 
     "slug": "absolute_value_of_complex_numbers", 
     "kind": "Exercise", 
     "name": "absolute_value_of_complex_numbers", 
+    "seconds_per_fast_problem": 12.0, 
     "prerequisites": [
-      "the_complex_plane", 
-      "distance_formula"
-    ]
+      "the_complex_plane"
+    ], 
+    "exercise_id": "absolute_value_of_complex_numbers"
   }
 ]

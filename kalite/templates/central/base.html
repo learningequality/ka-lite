@@ -74,7 +74,7 @@
                             <ul class="header__horizontal-menu__right">
 
                                 <li><a href="{% url homepage %}" class="{% block home_active %}{% endblock home_active %}">{% trans "Home" %}</a></li>
-                                <li><a href="{% url install_wizard %}" class="{% block install_active %}{% endblock install_active %}">{% trans "Install" %}</a></li>
+                                <li><a href="{% url download_wizard %}" class="{% block download_active %}{% endblock download_active %}">{% trans "Download" %}</a></li>
                                 <li><a href="{% url faq_topic_list %}" class="{% block faq_active %}{% endblock faq_active%}">{% trans "FAQ" %}</a></li>
                                 <li><a href="{% url contact_wizard %}"class="{% block contact_active %}{% endblock contact_active%}">{% trans "Contact" %}</a></li>
                                 <li><a href="{% url content_page page='about' %}" class="{% block about_active %}{% endblock about_active%}">{% trans "About Us" %}</a></li>
@@ -99,11 +99,7 @@
         </div>
 
 
-        {% if request.get_full_path = "/"%} 
-        
-        {% block landing-page %}{% endblock landing-page %}
-
-        {% else %}
+        {% block super-content %}
         <div class="container-fluid">
 
             <div class="row-fluid content"> 
@@ -132,7 +128,7 @@
                 </div>
             </div>
         </div> <!-- .container -->
-        {% endif %}
+        {% endblock super-content %}
     </body>
     </html>
 

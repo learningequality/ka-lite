@@ -58,11 +58,11 @@ class student_log_api(object):
 @student_log_api(logged_out_message=_("Video progress not saved."))
 def save_video_log(request):
     """
-    Receives a youtube_id and relevant data,
+    Receives a video_id and relevant data,
     saves it to the currently authorized user.
     """
 
-    # Form does all the data validation, including the youtube_id
+    # Form does all the data validation, including the video_id
     form = VideoLogForm(data=simplejson.loads(request.raw_post_data))
     if not form.is_valid():
         raise ValidationError(form.errors)
@@ -71,6 +71,7 @@ def save_video_log(request):
     try:
         videolog = VideoLog.update_video_log(
             facility_user=user,
+            video_id=data["video_id"],
             youtube_id=data["youtube_id"],
             total_seconds_watched=data["total_seconds_watched"],  # don't set incrementally, to avoid concurrency issues
             points=data["points"],
@@ -135,7 +136,7 @@ def save_exercise_log(request):
 @student_log_api(logged_out_message=_("Progress not loaded."))
 def get_video_logs(request):
     """
-    Given a list of youtube_ids, retrieve a list of video logs for this user.
+    Given a list of video_ids, retrieve a list of video logs for this user.
     """
     data = simplejson.loads(request.raw_post_data or "[]")
     if not isinstance(data, list):
@@ -143,8 +144,8 @@ def get_video_logs(request):
 
     user = request.session["facility_user"]
     logs = VideoLog.objects \
-        .filter(user=user, youtube_id__in=data) \
-        .values("youtube_id", "complete", "total_seconds_watched", "points")
+        .filter(user=user, video_id__in=data) \
+        .values("video_id", "complete", "total_seconds_watched", "points")
 
     return JsonResponse(list(logs))
 
@@ -244,10 +245,12 @@ def launch_mplayer(request):
         return JsonResponse({"error": "no youtube_id specified"}, status=500)
 
     youtube_id = request.REQUEST["youtube_id"]
+    video_id = request.REQUEST["video_id"]
     facility_user = request.session.get("facility_user")
 
     callback = partial(
         _update_video_log_with_points,
+        video_id=video_id,
         youtube_id=youtube_id,
         facility_user=facility_user,
         language=request.language,
@@ -258,7 +261,7 @@ def launch_mplayer(request):
     return JsonResponse({})
 
 
-def _update_video_log_with_points(seconds_watched, video_length, youtube_id, facility_user, language):
+def _update_video_log_with_points(seconds_watched, video_id, video_length, youtube_id, facility_user, language):
     """Handle the callback from the mplayer thread, saving the VideoLog. """
     # TODO (bcipolli) add language info here
 
@@ -270,6 +273,7 @@ def _update_video_log_with_points(seconds_watched, video_length, youtube_id, fac
 
     videolog = VideoLog.update_video_log(
         facility_user=facility_user,
+        video_id=video_id,
         youtube_id=youtube_id,
         additional_seconds_watched=seconds_watched,
         new_points=new_points,
