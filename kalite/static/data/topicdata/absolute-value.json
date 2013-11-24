@@ -5,11 +5,27 @@
     "id": "number_line_2", 
     "display_name": "Negative numbers on the number line", 
     "title": "Negative numbers on the number line", 
+    "parent_id": "add-sub-negatives", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "absolute-value", 
+      "add-sub-negatives"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "absolute-value", 
+      "add-sub-negatives"
+    ], 
     "related_video_slugs": [
       "negative-numbers-introduction"
     ], 
     "description": "Identify positive and negative integers on the number line\n", 
+    "parent": "add-sub-negatives", 
     "basepoints": 14.0, 
     "h_position": -4, 
     "slug": "number_line_2", 
@@ -28,12 +44,28 @@
     "id": "number_line_3", 
     "display_name": "Number line 3", 
     "title": "Number line 3", 
+    "parent_id": "add-sub-negatives", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "absolute-value", 
+      "add-sub-negatives"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "absolute-value", 
+      "add-sub-negatives"
+    ], 
     "related_video_slugs": [
       "number-line-3-exercise-example", 
       "negative-numbers-introduction"
     ], 
     "description": "Identify positive and negative integers on the number line.", 
+    "parent": "add-sub-negatives", 
     "basepoints": 16.0, 
     "h_position": -3, 
     "slug": "number_line_3", 
@@ -51,11 +83,27 @@
     "id": "ordering_negative_numbers", 
     "display_name": "Ordering negative numbers", 
     "title": "Ordering negative numbers", 
+    "parent_id": "add-sub-negatives", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "absolute-value", 
+      "add-sub-negatives"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "absolute-value", 
+      "add-sub-negatives"
+    ], 
     "related_video_slugs": [
       "ordering-negative-numbers"
     ], 
     "description": "Put negative integers in order", 
+    "parent": "add-sub-negatives", 
     "basepoints": 16.0, 
     "h_position": -4, 
     "slug": "ordering_negative_numbers", 
@@ -73,13 +121,29 @@
     "id": "adding_negative_numbers", 
     "display_name": "Adding negative numbers", 
     "title": "Adding negative numbers", 
+    "parent_id": "adding_subtracting_negatives", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "absolute-value", 
+      "adding_subtracting_negatives"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "absolute-value", 
+      "adding_subtracting_negatives"
+    ], 
     "related_video_slugs": [
       "negative-numbers-introduction", 
       "adding-negative-numbers", 
       "adding-integers-with-different-signs"
     ], 
     "description": "Adding positive and negative single-digit numbers\n", 
+    "parent": "adding_subtracting_negatives", 
     "basepoints": 13.0, 
     "h_position": -6, 
     "slug": "adding_negative_numbers", 
@@ -97,7 +161,22 @@
     "id": "adding_and_subtracting_negative_numbers", 
     "display_name": "Adding and subtracting negative numbers", 
     "title": "Adding and subtracting negative numbers", 
+    "parent_id": "adding_subtracting_negatives", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "absolute-value", 
+      "adding_subtracting_negatives"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "absolute-value", 
+      "adding_subtracting_negatives"
+    ], 
     "related_video_slugs": [
       "adding-and-subtracting-negative-number-examples", 
       "adding-integers-with-different-signs", 
@@ -105,6 +184,7 @@
       "why-subtracting-a-negative-equivalent-to-adding-a-positive"
     ], 
     "description": "Add and subtract positive and negative single-digit integers\n", 
+    "parent": "adding_subtracting_negatives", 
     "basepoints": 13.0, 
     "h_position": -5, 
     "slug": "adding_and_subtracting_negative_numbers", 
@@ -122,12 +202,28 @@
     "id": "negative_number_word_problems", 
     "display_name": "Negative number word problems", 
     "title": "Negative number word problems", 
+    "parent_id": "adding_subtracting_negatives", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "absolute-value", 
+      "adding_subtracting_negatives"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "absolute-value", 
+      "adding_subtracting_negatives"
+    ], 
     "related_video_slugs": [
       "negative-number-word-problems-1", 
       "u09-l1-t2-we4-adding-real-numbers-application"
     ], 
     "description": "", 
+    "parent": "adding_subtracting_negatives", 
     "basepoints": 20.0, 
     "h_position": -4, 
     "slug": "negative_number_word_problems", 
@@ -145,7 +241,22 @@
     "id": "multiplying_and_dividing_negative_numbers", 
     "display_name": "Multiplying and dividing negative numbers", 
     "title": "Multiplying and dividing negative numbers", 
+    "parent_id": "mult_div_negatives", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "absolute-value", 
+      "mult_div_negatives"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "absolute-value", 
+      "mult_div_negatives"
+    ], 
     "related_video_slugs": [
       "multiplying-positive-and-negative-numbers", 
       "dividing-positive-and-negative-numbers", 
@@ -155,6 +266,7 @@
       "multiplying-and-dividing-negative-numbers"
     ], 
     "description": "Multiply or divide positive and negative integers. No remainder.", 
+    "parent": "mult_div_negatives", 
     "basepoints": 12.0, 
     "h_position": -5, 
     "slug": "multiplying_and_dividing_negative_numbers", 
@@ -172,13 +284,29 @@
     "id": "absolute_value", 
     "display_name": "Finding absolute values", 
     "title": "Finding absolute values", 
+    "parent_id": "abs_value_tutorial", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "absolute-value", 
+      "abs_value_tutorial"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "absolute-value", 
+      "abs_value_tutorial"
+    ], 
     "related_video_slugs": [
       "absolute-value-and-number-lines", 
       "absolute-value-1", 
       "absolute-value-of-integers"
     ], 
     "description": "Find the absolute value of a given number.", 
+    "parent": "abs_value_tutorial", 
     "basepoints": 10.0, 
     "h_position": -5, 
     "slug": "absolute_value", 
@@ -196,11 +324,27 @@
     "id": "comparing_absolute_values", 
     "display_name": "Comparing absolute values", 
     "title": "Comparing absolute values", 
+    "parent_id": "abs_value_tutorial", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "absolute-value", 
+      "abs_value_tutorial"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "absolute-value", 
+      "abs_value_tutorial"
+    ], 
     "related_video_slugs": [
       "comparing-absolute-values"
     ], 
     "description": "Compare the absolute values of two numbers, or compare the absolute value of one number to another number.", 
+    "parent": "abs_value_tutorial", 
     "basepoints": 12.0, 
     "h_position": -5, 
     "slug": "comparing_absolute_values", 

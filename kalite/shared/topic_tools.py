@@ -113,7 +113,7 @@ def generate_node_cache(topictree=None):#, output_dir=settings.DATA_PATH):
     node_cache = {}
 
 
-    def recurse_nodes(node, parents=[]):
+    def recurse_nodes(node):
         # Add the node to the node cache
         kind = node["kind"]
         node_cache[kind] = node_cache.get(kind, {})
@@ -122,14 +122,9 @@ def generate_node_cache(topictree=None):#, output_dir=settings.DATA_PATH):
             node_cache[kind][node["id"]] = []
         node_cache[kind][node["id"]] += [node]        # Append
 
-        # Add some attribute that should have been on there to start with.
-        node["parent"] = parents[-1] if parents else None
-        node["parents"] = parents
-
         # Do the recursion
         for child in node.get("children", []):
-            recurse_nodes(child, parents + [node])
-
+            recurse_nodes(child)
     recurse_nodes(topictree)
 
     return node_cache
@@ -193,7 +188,8 @@ def get_all_leaves(topic_node=None, leaf_type=None):
     if not "children" in topic_node:
         if leaf_type is None or topic_node['kind'] == leaf_type:
             leaves.append(topic_node)
-    else:
+
+    elif not leaf_type or leaf_type in topic_node["contains"]:
         for child in topic_node["children"]:
             leaves += get_all_leaves(topic_node=child, leaf_type=leaf_type)
 
@@ -282,3 +278,17 @@ def is_sibling(node1, node2):
 
     return parent_path1 == parent_path2
 
+
+def delete_parents(node, recurse=True):
+    if isinstance(node, (list, tuple)):
+        for n in node:
+            delete_parents(n, recurse=recurse)
+    if "parent" in node:
+        del node["parent"]
+    if "parents" in node:
+        del node["parents"]
+    if recurse and "children" in node:
+        for child in node["children"]:
+            delete_parents(child, recurse=recurse)
+
+    return node

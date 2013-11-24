@@ -5,12 +5,28 @@
     "id": "similar_triangles_1", 
     "display_name": "Similar triangles 1", 
     "title": "Similar triangles 1", 
+    "parent_id": "triangle_similarlity", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "geometry", 
+      "similarity", 
+      "triangle_similarlity"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "similarity", 
+      "triangle_similarlity"
+    ], 
     "related_video_slugs": [
       "similar-triangle-basics", 
       "similarity-postulates"
     ], 
     "description": "", 
+    "parent": "triangle_similarlity", 
     "basepoints": 15.0, 
     "h_position": 8, 
     "slug": "similar_triangles_1", 
@@ -28,13 +44,29 @@
     "id": "similar_triangles_2", 
     "display_name": "Similar triangles 2", 
     "title": "Similar triangles 2", 
+    "parent_id": "triangle_similarlity", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "geometry", 
+      "similarity", 
+      "triangle_similarlity"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "similarity", 
+      "triangle_similarlity"
+    ], 
     "related_video_slugs": [
       "similar-triangle-example-problems", 
       "similar-triangle-basics", 
       "similarity-postulates"
     ], 
     "description": "", 
+    "parent": "triangle_similarlity", 
     "basepoints": 17.0, 
     "h_position": 8, 
     "slug": "similar_triangles_2", 
@@ -52,12 +84,28 @@
     "id": "solving_similar_triangles_1", 
     "display_name": "Solving similar triangles 1", 
     "title": "Solving similar triangles 1", 
+    "parent_id": "triangle_similarlity", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "geometry", 
+      "similarity", 
+      "triangle_similarlity"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "similarity", 
+      "triangle_similarlity"
+    ], 
     "related_video_slugs": [
       "similarity-example-problems", 
       "similarity-example-where-same-side-plays-different-roles"
     ], 
     "description": "", 
+    "parent": "triangle_similarlity", 
     "basepoints": 19.0, 
     "h_position": 8, 
     "slug": "solving_similar_triangles_1", 
@@ -75,12 +123,28 @@
     "id": "solving_similar_triangles_2", 
     "display_name": "Solving similar triangles 2", 
     "title": "Solving similar triangles 2", 
+    "parent_id": "triangle_similarlity", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "geometry", 
+      "similarity", 
+      "triangle_similarlity"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "similarity", 
+      "triangle_similarlity"
+    ], 
     "related_video_slugs": [
       "similarity-example-problems", 
       "similarity-example-where-same-side-plays-different-roles"
     ], 
     "description": "", 
+    "parent": "triangle_similarlity", 
     "basepoints": 22.0, 
     "h_position": 8, 
     "slug": "solving_similar_triangles_2", 
