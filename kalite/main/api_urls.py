@@ -23,7 +23,7 @@ urlpatterns = patterns('main.api_views',
     url(r'^delete_users$', 'delete_users', {}, 'delete_users'),
 
     # data used by the frontend search code
-    url(r'^flat_topic_tree$', 'flat_topic_tree', {}, 'flat_topic_tree'),
+    url(r'^flat_topic_tree(?P<topic_path>.*)', 'flat_topic_tree', {}, 'flat_topic_tree'),
 
     url(r'^launch_mplayer$', 'launch_mplayer', {}, 'launch_mplayer'),
 
@@ -34,6 +34,7 @@ urlpatterns = patterns('main.api_views',
 
     # show pid for the running server (used bt stop to help kill the server)
     url(r'^getpid$', 'getpid', {}, 'getpid'),
+
 )
 
 

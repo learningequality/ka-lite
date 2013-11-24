@@ -69,7 +69,8 @@
         "exerciseProgress": {
             "level": ""
         },
-        "lastCountHints": 0
+        "lastCountHints": 0,
+        "seed": {% if exercise.seed %} {{ exercise.seed }} {% else %}Math.floor(Math.random() * 500){% endif %}
     };    
 </script>
 <script src="{% static 'js/exercises.js' %}"></script>

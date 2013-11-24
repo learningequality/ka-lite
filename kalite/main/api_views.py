@@ -29,7 +29,7 @@ from securesync.models import FacilityGroup, FacilityUser
 from shared.caching import backend_cache_page
 from shared.decorators import allow_api_profiling, require_admin
 from shared.jobs import force_job, job_status
-from shared.topic_tools import get_flat_topic_tree 
+from shared.topic_tools import get_flat_topic_tree, get_topic_leaves, get_topic_exercises, get_topic_videos
 from shared.videos import delete_downloaded_files
 from utils.general import break_into_chunks
 from utils.internet import api_handle_error_with_json, JsonResponse
@@ -356,5 +356,14 @@ def getpid(request):
 
 
 @backend_cache_page
-def flat_topic_tree(request):
-    return JsonResponse(get_flat_topic_tree())
+def flat_topic_tree(request, topic_path=None):
+    leaf_type = request.GET.get("leaf_type", None)
+    if topic_path:
+        topic_objects = []
+        # if not leaf_type == "Exercise":
+        #     topic_objects.extend(get_topic_videos(path=topic_path))
+        if not leaf_type == "Video":
+            topic_objects.extend(get_topic_exercises(path=topic_path))
+        return JsonResponse({"length":len(topic_objects)})
+    else:
+        return JsonResponse(get_flat_topic_tree())
