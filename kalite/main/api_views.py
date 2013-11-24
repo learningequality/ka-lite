@@ -364,10 +364,10 @@ def flat_topic_tree(request, topic_path=None):
     leaf_type = request.GET.get("leaf_type", None)
     if topic_path:
         topic_objects = []
-        # if not leaf_type == "Exercise":
-        #     topic_objects.extend(get_topic_videos(path=topic_path))
+        if not leaf_type == "Exercise":
+            topic_objects.extend(get_topic_videos(path=topic_path))
         if not leaf_type == "Video":
             topic_objects.extend(get_topic_exercises(path=topic_path))
-        return JsonResponse({"length":len(topic_objects)})
+        return JsonResponse(topic_objects)
     else:
         return JsonResponse(get_flat_topic_tree())
