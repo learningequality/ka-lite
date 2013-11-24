@@ -5,11 +5,27 @@
     "id": "matrix_dimensions", 
     "display_name": "Matrix dimensions", 
     "title": "Matrix dimensions", 
+    "parent_id": "Basic_matrix_operations", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "algebra-matrices", 
+      "Basic_matrix_operations"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "algebra-matrices", 
+      "Basic_matrix_operations"
+    ], 
     "related_video_slugs": [
       "introduction-to-the-matrix"
     ], 
     "description": "Identify the dimensions of a matrix\n", 
+    "parent": "Basic_matrix_operations", 
     "basepoints": 12.0, 
     "h_position": 19, 
     "slug": "matrix_dimensions", 
@@ -27,11 +43,27 @@
     "id": "scalar_matrix_multiplication", 
     "display_name": "Scalar matrix multiplication", 
     "title": "Scalar matrix multiplication", 
+    "parent_id": "Basic_matrix_operations", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "algebra-matrices", 
+      "Basic_matrix_operations"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "algebra-matrices", 
+      "Basic_matrix_operations"
+    ], 
     "related_video_slugs": [
       "scalar-multiplication"
     ], 
     "description": "Multiply a matrix by a scalar\n", 
+    "parent": "Basic_matrix_operations", 
     "basepoints": 18.0, 
     "h_position": 17, 
     "slug": "scalar_matrix_multiplication", 
@@ -49,11 +81,27 @@
     "id": "matrix_addition_and_subtraction", 
     "display_name": "Matrix addition and subtraction", 
     "title": "Matrix addition and subtraction", 
+    "parent_id": "Basic_matrix_operations", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "algebra-matrices", 
+      "Basic_matrix_operations"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "algebra-matrices", 
+      "Basic_matrix_operations"
+    ], 
     "related_video_slugs": [
       "matrix-addition-and-subtraction-1"
     ], 
     "description": "Add and subtract matrices\n", 
+    "parent": "Basic_matrix_operations", 
     "basepoints": 20.0, 
     "h_position": 18, 
     "slug": "matrix_addition_and_subtraction", 
@@ -71,11 +119,27 @@
     "id": "matrix_transpose", 
     "display_name": "Matrix transpose", 
     "title": "Matrix transpose", 
+    "parent_id": "Basic_matrix_operations", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "algebra-matrices", 
+      "Basic_matrix_operations"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "algebra-matrices", 
+      "Basic_matrix_operations"
+    ], 
     "related_video_slugs": [
       "transpose-of-a-matrix"
     ], 
     "description": "Transpose a matrix\n", 
+    "parent": "Basic_matrix_operations", 
     "basepoints": 17.0, 
     "h_position": 20, 
     "slug": "matrix_transpose", 
@@ -93,12 +157,28 @@
     "id": "multiplying_a_matrix_by_a_vector", 
     "display_name": "Multiplying a matrix by a vector", 
     "title": "Multiplying a matrix by a vector", 
+    "parent_id": "matrix_multiplication", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "algebra-matrices", 
+      "matrix_multiplication"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "algebra-matrices", 
+      "matrix_multiplication"
+    ], 
     "related_video_slugs": [
       "multiplying-a-matrix-by-a-column-vector", 
       "multiplying-a-matrix-by-a-matrix"
     ], 
     "description": "Multiply a matrix by a vector\n", 
+    "parent": "matrix_multiplication", 
     "basepoints": 24.0, 
     "h_position": 18, 
     "slug": "multiplying_a_matrix_by_a_vector", 
@@ -117,12 +197,28 @@
     "id": "multiplying_a_matrix_by_a_matrix", 
     "display_name": "Multiplying a matrix by a matrix", 
     "title": "Multiplying a matrix by a matrix", 
+    "parent_id": "matrix_multiplication", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "algebra-matrices", 
+      "matrix_multiplication"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "algebra-matrices", 
+      "matrix_multiplication"
+    ], 
     "related_video_slugs": [
       "multiplying-a-matrix-by-a-matrix", 
       "multiplying-a-matrix-by-a-column-vector"
     ], 
     "description": "Multiply two matrices\n", 
+    "parent": "matrix_multiplication", 
     "basepoints": 29.0, 
     "h_position": 17, 
     "slug": "multiplying_a_matrix_by_a_matrix", 
@@ -141,12 +237,28 @@
     "id": "defined_and_undefined_matrix_operations", 
     "display_name": "Defined and undefined matrix operations", 
     "title": "Defined and undefined matrix operations", 
+    "parent_id": "matrix_multiplication", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "algebra-matrices", 
+      "matrix_multiplication"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "algebra-matrices", 
+      "matrix_multiplication"
+    ], 
     "related_video_slugs": [
       "defined-and-undefined-matrix-operations", 
       "multiplying-a-matrix-by-a-matrix"
     ], 
     "description": "Determine whether the addition, subtraction, or multiplication of two matrices is defined\n", 
+    "parent": "matrix_multiplication", 
     "basepoints": 12.0, 
     "h_position": 19, 
     "slug": "defined_and_undefined_matrix_operations", 
@@ -164,12 +276,28 @@
     "id": "matrix_inverse_2x2", 
     "display_name": "Inverse of a 2x2 matrix", 
     "title": "Inverse of a 2x2 matrix", 
+    "parent_id": "inverting_matrices", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "algebra-matrices", 
+      "inverting_matrices"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "algebra-matrices", 
+      "inverting_matrices"
+    ], 
     "related_video_slugs": [
       "inverse-of-a-2x2-matrix", 
       "inverse-matrix--part-1"
     ], 
     "description": "Find the inverse of a 2x2 matrix\n", 
+    "parent": "inverting_matrices", 
     "basepoints": 27.0, 
     "h_position": 18, 
     "slug": "matrix_inverse_2x2", 
@@ -187,12 +315,28 @@
     "id": "matrix_determinant_3x3", 
     "display_name": "Determinant of a 3x3 matrix", 
     "title": "Determinant of a 3x3 matrix", 
+    "parent_id": "inverting_matrices", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "algebra-matrices", 
+      "inverting_matrices"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "algebra-matrices", 
+      "inverting_matrices"
+    ], 
     "related_video_slugs": [
       "finding-the-determinant-of-a-3x3-matrix-method-1", 
       "finding-the-determinant-of-a-3x3-matrix-method-2"
     ], 
     "description": "Find the determinant of a 3x3 matrix\n", 
+    "parent": "inverting_matrices", 
     "basepoints": 27.0, 
     "h_position": 17, 
     "slug": "matrix_determinant_3x3", 
@@ -210,7 +354,22 @@
     "id": "matrix_inverse_3x3", 
     "display_name": "Inverse of a 3x3 matrix", 
     "title": "Inverse of a 3x3 matrix", 
+    "parent_id": "inverting_matrices", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "algebra-matrices", 
+      "inverting_matrices"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "algebra-matrices", 
+      "inverting_matrices"
+    ], 
     "related_video_slugs": [
       "inverting-3x3-part-1--calculating-matrix-of-minors-and-cofactor-matrix", 
       "inverting-3x3-part-2--determinant-and-adjugate-of-a-matrix", 
@@ -218,6 +377,7 @@
       "inverting-matrices--part-3"
     ], 
     "description": "Find the inverse of a 3x3 matrix\n", 
+    "parent": "inverting_matrices", 
     "basepoints": 29.0, 
     "h_position": 17, 
     "slug": "matrix_inverse_3x3", 

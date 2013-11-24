@@ -5,13 +5,29 @@
     "id": "solving_quadratics_by_factoring", 
     "display_name": "Solving quadratics by factoring", 
     "title": "Solving quadratics by factoring", 
+    "parent_id": "factoring_quadratics", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "quadratics", 
+      "factoring_quadratics"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "quadratics", 
+      "factoring_quadratics"
+    ], 
     "related_video_slugs": [
       "factoring-quadratic-expressions", 
       "factoring-polynomials-1", 
       "factoring-trinomials-with-a-leading-1-coefficient"
     ], 
     "description": "Factor quadratics to find the x-intercepts. Solve a polynomial by factoring.\n", 
+    "parent": "factoring_quadratics", 
     "basepoints": 17.0, 
     "h_position": -9, 
     "slug": "solving_quadratics_by_factoring", 
@@ -29,13 +45,29 @@
     "id": "solving_quadratics_by_factoring_2", 
     "display_name": "Solving quadratics by factoring 2", 
     "title": "Solving quadratics by factoring 2", 
+    "parent_id": "factoring_quadratics", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "quadratics", 
+      "factoring_quadratics"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "quadratics", 
+      "factoring_quadratics"
+    ], 
     "related_video_slugs": [
       "Example 1: Solving a quadratic equation by factoring", 
       "factoring-trinomials-with-a-common-factor", 
       "Example 2: Solving a quadratic equation by factoring"
     ], 
     "description": "Solve quadratics by factoring, where A is not 1\n", 
+    "parent": "factoring_quadratics", 
     "basepoints": 23.0, 
     "h_position": -9, 
     "slug": "solving_quadratics_by_factoring_2", 
@@ -53,11 +85,27 @@
     "id": "solving_quadratics_by_taking_the_square_root", 
     "display_name": "Solving quadratics by taking the square root", 
     "title": "Solving quadratics by taking the square root", 
+    "parent_id": "completing_the_square", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "quadratics", 
+      "completing_the_square"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "quadratics", 
+      "completing_the_square"
+    ], 
     "related_video_slugs": [
       "solving-quadratic-equations-by-square-roots"
     ], 
     "description": "Solve quadratics by taking the square root.\n", 
+    "parent": "completing_the_square", 
     "basepoints": 21.0, 
     "h_position": -10, 
     "slug": "solving_quadratics_by_taking_the_square_root", 
@@ -75,11 +123,27 @@
     "id": "completing_the_square_1", 
     "display_name": "Solving quadratics by completing the square 1", 
     "title": "Solving quadratics by completing the square 1", 
+    "parent_id": "completing_the_square", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "quadratics", 
+      "completing_the_square"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "quadratics", 
+      "completing_the_square"
+    ], 
     "related_video_slugs": [
       "solving-quadratic-equations-by-completing-the-square"
     ], 
     "description": "Find the roots of a quadratic equation by completing the square.", 
+    "parent": "completing_the_square", 
     "basepoints": 19.0, 
     "h_position": -10, 
     "slug": "completing_the_square_1", 
@@ -98,11 +162,27 @@
     "id": "completing_the_square_2", 
     "display_name": "Solving quadratics by completing the square 2", 
     "title": "Solving quadratics by completing the square 2", 
+    "parent_id": "completing_the_square", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "quadratics", 
+      "completing_the_square"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "quadratics", 
+      "completing_the_square"
+    ], 
     "related_video_slugs": [
       "solving-quadratic-equations-by-completing-the-square"
     ], 
     "description": "Find the roots of a quadratic by completing the square. The leading coefficient isn't 1!", 
+    "parent": "completing_the_square", 
     "basepoints": 25.0, 
     "h_position": -9, 
     "slug": "completing_the_square_2", 
@@ -121,7 +201,22 @@
     "id": "quadratic_equation", 
     "display_name": "Using the quadratic formula", 
     "title": "Using the quadratic formula", 
+    "parent_id": "quadratic_formula", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "quadratics", 
+      "quadratic_formula"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "quadratics", 
+      "quadratic_formula"
+    ], 
     "related_video_slugs": [
       "using-the-quadratic-formula", 
       "proof-of-quadratic-formula", 
@@ -129,6 +224,7 @@
       "quadratic-equation-part-2"
     ], 
     "description": "Use the quadratic formula to find the roots of a quadratic function.", 
+    "parent": "quadratic_formula", 
     "basepoints": 18.0, 
     "h_position": -9, 
     "slug": "quadratic_equation", 
@@ -146,12 +242,28 @@
     "id": "solutions_to_quadratic_equations", 
     "display_name": "Solutions to quadratic equations", 
     "title": "Solutions to quadratic equations", 
+    "parent_id": "quadratic_formula", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "quadratics", 
+      "quadratic_formula"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "quadratics", 
+      "quadratic_formula"
+    ], 
     "related_video_slugs": [
       "discriminant-of-quadratic-equations", 
       "discriminant-for-types-of-solutions-for-a-quadratic"
     ], 
     "description": "Determine how many solutions a quadratic equation has and whether they are rational, irrational, or complex\n", 
+    "parent": "quadratic_formula", 
     "basepoints": 20.0, 
     "h_position": -9, 
     "slug": "solutions_to_quadratic_equations", 
@@ -169,13 +281,29 @@
     "id": "vertex_of_a_parabola", 
     "display_name": "Vertex of a parabola", 
     "title": "Vertex of a parabola", 
+    "parent_id": "solving_graphing_quadratics", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "quadratics", 
+      "solving_graphing_quadratics"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "quadratics", 
+      "solving_graphing_quadratics"
+    ], 
     "related_video_slugs": [
       "finding-the-vertex-of-a-parabola-example", 
       "quadratic-functions-2", 
       "quadratic-functions-3"
     ], 
     "description": "Find the vertex of a parabola in standard form.", 
+    "parent": "solving_graphing_quadratics", 
     "basepoints": 26.0, 
     "h_position": -10, 
     "slug": "vertex_of_a_parabola", 
@@ -194,12 +322,28 @@
     "id": "graphing_parabolas_0.5", 
     "display_name": "Graphing parabolas in standard form", 
     "title": "Graphing parabolas in standard form", 
+    "parent_id": "solving_graphing_quadratics", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "quadratics", 
+      "solving_graphing_quadratics"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "quadratics", 
+      "solving_graphing_quadratics"
+    ], 
     "related_video_slugs": [
       "quadratic-functions-3", 
       "graphing-a-quadratic-function"
     ], 
     "description": "Graph a parabola given the equation in the form ax^2+bx+c\n", 
+    "parent": "solving_graphing_quadratics", 
     "basepoints": 26.0, 
     "h_position": -11, 
     "slug": "graphing_parabolas_0.5", 
@@ -217,11 +361,27 @@
     "id": "graphing_parabolas_1", 
     "display_name": "Graphing parabolas in vertex form", 
     "title": "Graphing parabolas in vertex form", 
+    "parent_id": "solving_graphing_quadratics", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "quadratics", 
+      "solving_graphing_quadratics"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "quadratics", 
+      "solving_graphing_quadratics"
+    ], 
     "related_video_slugs": [
       "graphing-a-parabola-in-vertex-form"
     ], 
     "description": "Graph a parabola given the equation in the form a(x+b)^2+c\n", 
+    "parent": "solving_graphing_quadratics", 
     "basepoints": 24.0, 
     "h_position": -11, 
     "slug": "graphing_parabolas_1", 
@@ -239,13 +399,29 @@
     "id": "graphing_parabolas_2", 
     "display_name": "Graphing parabolas in all forms", 
     "title": "Graphing parabolas in all forms", 
+    "parent_id": "solving_graphing_quadratics", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "quadratics", 
+      "solving_graphing_quadratics"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "quadratics", 
+      "solving_graphing_quadratics"
+    ], 
     "related_video_slugs": [
       "graphing-a-parabola-in-vertex-form", 
       "graphing-a-parabola-using-roots-and-vertex", 
       "graphing-a-quadratic-function"
     ], 
     "description": "Graph a parabola in vertex or standard form.\n", 
+    "parent": "solving_graphing_quadratics", 
     "basepoints": 29.0, 
     "h_position": -10, 
     "slug": "graphing_parabolas_2", 
@@ -264,11 +440,27 @@
     "id": "parabola_intuition_3", 
     "display_name": "Parabola intuition 3", 
     "title": "Parabola intuition 3", 
+    "parent_id": "solving_graphing_quadratics", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "quadratics", 
+      "solving_graphing_quadratics"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "quadratics", 
+      "solving_graphing_quadratics"
+    ], 
     "related_video_slugs": [
       "using-the-focus-and-directrix-to-find-the-equation-of-a-parabola"
     ], 
     "description": "Make one parabola overlap with another by adjusting the focus coordinates and directrix. Find the equation of the parabola.\n", 
+    "parent": "solving_graphing_quadratics", 
     "basepoints": 29.0, 
     "h_position": -10, 
     "slug": "parabola_intuition_3", 

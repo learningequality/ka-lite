@@ -5,7 +5,22 @@
     "id": "measuring_angles", 
     "display_name": "Measuring angles", 
     "title": "Measuring angles", 
+    "parent_id": "Angle_basics", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "geometry", 
+      "parallel-and-perpendicular-lines", 
+      "Angle_basics"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "parallel-and-perpendicular-lines", 
+      "Angle_basics"
+    ], 
     "related_video_slugs": [
       "angle-basics", 
       "measuring-angles-in-degrees", 
@@ -13,6 +28,7 @@
       "measuring-angles"
     ], 
     "description": "", 
+    "parent": "Angle_basics", 
     "basepoints": 18.0, 
     "h_position": -5, 
     "slug": "measuring_angles", 
@@ -30,12 +46,28 @@
     "id": "angle_types", 
     "display_name": "Angle types", 
     "title": "Angle types", 
+    "parent_id": "Angle_basics", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "geometry", 
+      "parallel-and-perpendicular-lines", 
+      "Angle_basics"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "parallel-and-perpendicular-lines", 
+      "Angle_basics"
+    ], 
     "related_video_slugs": [
       "measuring-angles-in-degrees", 
       "acute-right-and-obtuse-angles"
     ], 
     "description": "", 
+    "parent": "Angle_basics", 
     "basepoints": 10.0, 
     "h_position": -5, 
     "slug": "angle_types", 
@@ -53,11 +85,27 @@
     "id": "exploring_angle_pairs_1", 
     "display_name": "Exploring angle pairs", 
     "title": "Exploring angle pairs", 
+    "parent_id": "Angle_basics", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "geometry", 
+      "parallel-and-perpendicular-lines", 
+      "Angle_basics"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "parallel-and-perpendicular-lines", 
+      "Angle_basics"
+    ], 
     "related_video_slugs": [
       "vertical--adjacent-and-linearly-paired-angles"
     ], 
     "description": "Find vertical angles, adjacent angles, and linearly paired angles.\n", 
+    "parent": "Angle_basics", 
     "basepoints": 18.0, 
     "h_position": -6, 
     "slug": "exploring_angle_pairs_1", 
@@ -75,12 +123,28 @@
     "id": "vertical_angles", 
     "display_name": "Vertical angles", 
     "title": "Vertical angles", 
+    "parent_id": "ang_intro", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "geometry", 
+      "parallel-and-perpendicular-lines", 
+      "ang_intro"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "parallel-and-perpendicular-lines", 
+      "ang_intro"
+    ], 
     "related_video_slugs": [
       "angles-at-the-intersection-of-two-lines", 
       "proof-vertical-angles-are-equal"
     ], 
     "description": "", 
+    "parent": "ang_intro", 
     "basepoints": 12.0, 
     "h_position": -8, 
     "slug": "vertical_angles", 
@@ -98,12 +162,28 @@
     "id": "vertical_angles_2", 
     "display_name": "Vertical angles 2", 
     "title": "Vertical angles 2", 
+    "parent_id": "ang_intro", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "geometry", 
+      "parallel-and-perpendicular-lines", 
+      "ang_intro"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "parallel-and-perpendicular-lines", 
+      "ang_intro"
+    ], 
     "related_video_slugs": [
       "using-algebra-to-find-the-measures-of-vertical-angles", 
       "angles-at-the-intersection-of-two-lines"
     ], 
     "description": "", 
+    "parent": "ang_intro", 
     "basepoints": 23.0, 
     "h_position": -12, 
     "slug": "vertical_angles_2", 
@@ -122,12 +202,28 @@
     "id": "congruent_angles", 
     "display_name": "Congruent angles", 
     "title": "Congruent angles", 
+    "parent_id": "ang_intro", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "geometry", 
+      "parallel-and-perpendicular-lines", 
+      "ang_intro"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "parallel-and-perpendicular-lines", 
+      "ang_intro"
+    ], 
     "related_video_slugs": [
       "angles-formed-by-parallel-lines-and-transversals", 
       "figuring-out-angles-between-transversal-and-parallel-lines"
     ], 
     "description": "Determine which angles must be congruent when parallel lines are crossed by a transversal.\n", 
+    "parent": "ang_intro", 
     "basepoints": 12.0, 
     "h_position": -13, 
     "slug": "congruent_angles", 
@@ -145,12 +241,28 @@
     "id": "parallel_lines_1", 
     "display_name": "Parallel lines 1", 
     "title": "Parallel lines 1", 
+    "parent_id": "ang_intro", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "geometry", 
+      "parallel-and-perpendicular-lines", 
+      "ang_intro"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "parallel-and-perpendicular-lines", 
+      "ang_intro"
+    ], 
     "related_video_slugs": [
       "angles-formed-by-parallel-lines-and-transversals", 
       "figuring-out-angles-between-transversal-and-parallel-lines"
     ], 
     "description": "", 
+    "parent": "ang_intro", 
     "basepoints": 13.0, 
     "h_position": -7, 
     "slug": "parallel_lines_1", 
@@ -168,13 +280,29 @@
     "id": "parallel_lines_2", 
     "display_name": "Parallel lines 2", 
     "title": "Parallel lines 2", 
+    "parent_id": "ang_intro", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "geometry", 
+      "parallel-and-perpendicular-lines", 
+      "ang_intro"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "parallel-and-perpendicular-lines", 
+      "ang_intro"
+    ], 
     "related_video_slugs": [
       "using-algebra-to-find-measures-of-angles-formed-from-transversal", 
       "figuring-out-angles-between-transversal-and-parallel-lines", 
       "angles-formed-by-parallel-lines-and-transversals"
     ], 
     "description": "", 
+    "parent": "ang_intro", 
     "basepoints": 25.0, 
     "h_position": -7, 
     "slug": "parallel_lines_2", 
@@ -192,7 +320,22 @@
     "id": "angles_1", 
     "display_name": "Angles 1", 
     "title": "Angles 1", 
+    "parent_id": "triang_prop_tut", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "geometry", 
+      "parallel-and-perpendicular-lines", 
+      "triang_prop_tut"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "parallel-and-perpendicular-lines", 
+      "triang_prop_tut"
+    ], 
     "related_video_slugs": [
       "triangle-angle-example-1", 
       "triangle-angle-example-2", 
@@ -200,6 +343,7 @@
       "finding-more-angles"
     ], 
     "description": "", 
+    "parent": "triang_prop_tut", 
     "basepoints": 20.0, 
     "h_position": -11, 
     "slug": "angles_1", 
@@ -217,7 +361,22 @@
     "id": "angles_2", 
     "display_name": "Angles 2", 
     "title": "Angles 2", 
+    "parent_id": "triang_prop_tut", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "geometry", 
+      "parallel-and-perpendicular-lines", 
+      "triang_prop_tut"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "parallel-and-perpendicular-lines", 
+      "triang_prop_tut"
+    ], 
     "related_video_slugs": [
       "finding-more-angles", 
       "triangle-angle-example-2", 
@@ -225,6 +384,7 @@
       "proof---sum-of-measures-of-angles-in-a-triangle-are-180"
     ], 
     "description": "", 
+    "parent": "triang_prop_tut", 
     "basepoints": 20.0, 
     "h_position": -11, 
     "slug": "angles_2", 
@@ -242,11 +402,27 @@
     "id": "angles_of_a_polygon", 
     "display_name": "Angles of a polygon", 
     "title": "Angles of a polygon", 
+    "parent_id": "triang_prop_tut", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "geometry", 
+      "parallel-and-perpendicular-lines", 
+      "triang_prop_tut"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "parallel-and-perpendicular-lines", 
+      "triang_prop_tut"
+    ], 
     "related_video_slugs": [
       "sum-of-interior-angles-of-a-polygon"
     ], 
     "description": "", 
+    "parent": "triang_prop_tut", 
     "basepoints": 13.0, 
     "h_position": -10, 
     "slug": "angles_of_a_polygon", 
@@ -264,11 +440,27 @@
     "id": "complementary_and_supplementary_angles", 
     "display_name": "Complementary and supplementary angles", 
     "title": "Complementary and supplementary angles", 
+    "parent_id": "complementary-supplementary-angl", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "geometry", 
+      "parallel-and-perpendicular-lines", 
+      "complementary-supplementary-angl"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "parallel-and-perpendicular-lines", 
+      "complementary-supplementary-angl"
+    ], 
     "related_video_slugs": [
       "complementary-and-supplementary-angles"
     ], 
     "description": "", 
+    "parent": "complementary-supplementary-angl", 
     "basepoints": 18.0, 
     "h_position": -9, 
     "slug": "complementary_and_supplementary_angles", 
@@ -287,13 +479,29 @@
     "id": "angle_addition_postulate", 
     "display_name": "Angle addition postulate", 
     "title": "Angle addition postulate", 
+    "parent_id": "complementary-supplementary-angl", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "geometry", 
+      "parallel-and-perpendicular-lines", 
+      "complementary-supplementary-angl"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "parallel-and-perpendicular-lines", 
+      "complementary-supplementary-angl"
+    ], 
     "related_video_slugs": [
       "example-using-algebra-to-find-measure-of-complementary-angles", 
       "example-using-algebra-to-find-measure-of-supplementary-angles", 
       "complementary-and-supplementary-angles"
     ], 
     "description": "", 
+    "parent": "complementary-supplementary-angl", 
     "basepoints": 27.0, 
     "h_position": -14, 
     "slug": "angle_addition_postulate", 
