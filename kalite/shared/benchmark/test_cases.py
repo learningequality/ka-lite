@@ -161,10 +161,10 @@ class OneHundredRandomLogUpdates(base.UserCommon):
         for x in range(num_logs):
             while True:
                 vid_idx = int(self.random.random() * len(NODE_CACHE["Video"].keys()))
-                vid_id = NODE_CACHE["Video"][NODE_CACHE["Video"].keys()[vid_idx]][0]["youtube_id"]
-                if not VideoLog.objects.filter(user=self.user, youtube_id=vid_id):
+                vid_id = NODE_CACHE["Video"].keys()[vid_idx]
+                if not VideoLog.objects.filter(user=self.user, video_id=vid_id):
                     break
-            vid = VideoLog(user=self.user, youtube_id=vid_id)
+            vid = VideoLog(user=self.user, video_id=vid_id)
             vid.save()
         self.video_list = VideoLog.objects.filter(user=self.user)
         self.video_count = self.video_list.count()

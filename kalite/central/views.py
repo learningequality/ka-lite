@@ -86,9 +86,10 @@ def org_management(request, org_id=None):
         "organizations": organizations,
         "zones": zones,
         "HEADLESS_ORG_NAME": Organization.HEADLESS_ORG_NAME,
-        "invitations": OrganizationInvitation.objects \
+        "my_invitations": list(OrganizationInvitation.objects \
             .filter(email_to_invite=request.user.email)
-            .order_by("organization__name")
+            .order_by("organization__name")),
+        "download_url": reverse("download_wizard"),
     }
 
 
@@ -176,12 +177,12 @@ def delete_organization(request, org_id):
     org = Organization.objects.get(pk=org_id)
     num_zones = org.get_zones().count()
     if num_zones > 0:
-        messages.error(request, _("You cannot delete '%(name)' because it has %(num_zones) sharing network(s) affiliated with it.") % {
+        messages.error(request, _("You cannot delete '%(name)s' because it has %(num_zones)s sharing network(s) affiliated with it.") % {
             "name": org.name,
             "num_zones": num_zones,
         })
     else:
-        messages.success(request, _("You have successfully deleted %(org_name).") % {"org_name": org.name})
+        messages.success(request, _("You have successfully deleted %(org_name)s.") % {"org_name": org.name})
         org.delete()
     return HttpResponseRedirect(reverse("org_management"))
 
@@ -218,7 +219,7 @@ def get_request_var(request, var_name, default_val="__empty__"):
     return  request.POST.get(var_name, request.GET.get(var_name, default_val))
 
 
-def install_wizard(request, edition=None):
+def download_wizard(request, edition=None):
     """
     NOTE that this wizard is ONLY PARTIALLY FUNCTIONAL (see below)
 
@@ -231,23 +232,23 @@ def install_wizard(request, edition=None):
     When they submit the form (to choose the zone), they get the download package.
 
     TODO(bcipolli):
-    * Don't show org, only show zone.  
+    * Don't show org, only show zone.
     * If a user has more than one organization, you only get zone information for the first zone.
     there's no way to show information from other orgs.
         If the user is logged in, theyIf not sent, the user has two options: "single server" or "multiple server".
-    
+
     """
     if not edition and request.user.is_anonymous():
-        @render_to("central/install_wizard.html")
+        @render_to("central/download_wizard.html")
         def wizard_fn(request):
             return {}
         return wizard_fn(request)
 
     elif edition == "multiple-server" or not request.user.is_anonymous():
-        return install_multiple_server_edition(request)
+        return download_multiple_server_edition(request)
 
     elif edition == "single-server":
-        return install_single_server_edition(request)
+        return download_single_server_edition(request)
 
     else:
         raise Http404("Unknown server edition: %s" % edition)
@@ -259,7 +260,7 @@ def download_thankyou(request, **kwargs):
     return kwargs
 
 
-def install_single_server_edition(request):
+def download_single_server_edition(request):
     """
     """
     version = get_request_var(request, "version",  kalite.VERSION)
@@ -267,7 +268,7 @@ def install_single_server_edition(request):
     locale = get_request_var(request, "locale", "en")
 
     return download_thankyou(
-        request, 
+        request,
         version=kalite.VERSION,
         download_url=reverse("download_kalite_public", kwargs={
             "version": kalite.VERSION,
@@ -278,7 +279,7 @@ def install_single_server_edition(request):
 
 
 @login_required
-def install_multiple_server_edition(request):
+def download_multiple_server_edition(request):
     # get a list of all the organizations this user helps administer,
     #   then choose the selected organization (if possible)
     # Get all data
@@ -292,14 +293,14 @@ def install_multiple_server_edition(request):
 
     # Loop over orgs and zones, building the dict of all zones
     #   while searching for the zone_id.
-    
+
     zones = []
     for org in request.user.organization_set.all().order_by("name"):
         for zone in org.zones.all().order_by("name"):
             if zone_id and zone_id == zone.id:
                 kwargs["zone_id"] = zone_id
                 return download_thankyou(
-                    request, 
+                    request,
                     version=kwargs["version"],
                     download_url=reverse("download_kalite_private", kwargs=kwargs),
                 )
@@ -322,7 +323,7 @@ def install_multiple_server_edition(request):
     if len(zones) == 1:
         zone_id = zones[0]["id"]
 
-    @render_to("central/install_wizard.html")
+    @render_to("central/download_wizard.html")
     def wizard_fn(request):
         return {
             "zones": zones,
@@ -345,7 +346,7 @@ def download_kalite_public(request, *args, **kwargs):
 @login_required
 def download_kalite_private(request, *args, **kwargs):
     """
-    Download with zone info--will authenticate that zone info 
+    Download with zone info--will authenticate that zone info
     below.
     """
     zone_id = kwargs.get("zone_id") or request.REQUEST.get("zone")
@@ -361,9 +362,9 @@ def download_kalite(request, *args, **kwargs):
     """
     A request to download KA Lite, either without zone info, or with it.
     If with it, then we have to make sure it's OK for this user.
-    
+
     This endpoint is also set up to deal with platform, locale, and version,
-    though right now only direct URLs would set this (not via the install_wizard).
+    though right now only direct URLs would set this (not via the download wizard).
     """
 
     # Parse args
@@ -403,7 +404,7 @@ def download_kalite(request, *args, **kwargs):
     response = HttpResponse(content=zh, mimetype='application/zip', content_type='application/zip')
     response['Content-Disposition'] = 'attachment; filename="%s"' % user_facing_filename
 
-    # Not sure if we could remove the zip file here; possibly not, 
+    # Not sure if we could remove the zip file here; possibly not,
     #   if it's a streaming response or byte-range reesponse
     return response
 
@@ -412,7 +413,7 @@ def download_kalite(request, *args, **kwargs):
 def crypto_login(request):
     """
     Remote admin endpoint, for login to a distributed server (given its IP address; see also securesync/views.py:crypto_login)
-    
+
     An admin login is negotiated using the nonce system inside SyncSession
     """
     if not request.user.is_superuser:

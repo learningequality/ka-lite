@@ -143,7 +143,7 @@ def handle_po_compile_errors(lang_codes=None, out=None, err=None, rc=None):
         broken_codes = list(set(broken_codes) - set(lang_codes))
 
     if broken_codes:
-        logging.warning("Found %d errors while compiling in codes %s. Mailing admins report now." %(len(broken_codes), ', '.join(broken_codes)))
+        logging.warning("Found %d errors while compiling in codes %s. Mailing admins report now."  % (len(broken_codes), ', '.join(broken_codes)))
         subject = "Error while compiling po files"
         commands = ""
         for code in broken_codes:
@@ -156,7 +156,7 @@ def handle_po_compile_errors(lang_codes=None, out=None, err=None, rc=None):
             mail_admins(subject=subject, message=message)
             logging.info("Report sent.")
         else:
-            logging.info("DEBUG is True so not sending email, but would have sent the following: SUBJECT: %s; MESSAGE: %s" %(subject, message))
+            logging.info("DEBUG is True so not sending email, but would have sent the following: SUBJECT: %s; MESSAGE: %s"  % (subject, message))
     return broken_codes
 
 

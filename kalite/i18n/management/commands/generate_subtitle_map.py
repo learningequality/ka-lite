@@ -49,7 +49,7 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
 
     See the schema in the docstring for fcn update_video_entry.
     """
-    videos = get_node_cache('Video')
+    videos = get_node_cache('Video').values()
 
     # Initialize the data
     out_file = settings.SUBTITLES_DATA_ROOT + SRTS_JSON_FILENAME
@@ -69,7 +69,7 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
             logging.info("Loaded %d mappings." % (len(srts_dict)))
 
         # Set of videos no longer used by KA Lite
-        removed_videos = set(srts_dict.keys()) - set([v[0]["youtube_id"] for v in videos.values()])
+        removed_videos = set(srts_dict.keys()) - set([v[0]["youtube_id"] for v in videos])
         if removed_videos:
             logging.info("Removing subtitle information for %d videos (no longer used)." % len(removed_videos))
             for vid in removed_videos:
@@ -79,7 +79,7 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
     # Once we have the current mapping, proceed through logic to update the mapping
     n_new_entries = 0
     n_failures = 0
-    for video_nodes in videos.values():
+    for video_nodes in videos:
         # Decide whether or not to update this video based on the arguments provided at the command line
         youtube_id = video_nodes[0]['youtube_id']
         cached = youtube_id in srts_dict
@@ -118,7 +118,7 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
             continue
 
         if n_new_entries % frequency_to_save == 0:
-            logging.info("On loop %d dumping dictionary into %s" %(n_new_entries, out_file))
+            logging.info("On loop %d dumping dictionary into %s" % (n_new_entries, out_file))
             with open(out_file, 'wb') as fp:
                 json.dump(srts_dict, fp)
         n_new_entries += 1
@@ -150,7 +150,7 @@ def update_video_entry(youtube_id, entry={}):
     entry["last_attempt"] = unicode(datetime.datetime.now().date())
 
     if isinstance(r, basestring):  # string responses mean some type of error
-        logging.info("%s at %s" %(r, request_url))
+        logging.info("%s at %s" % (r, request_url))
         entry["api_response"] = r
         return entry
 
@@ -258,7 +258,7 @@ def update_language_srt_map():
                 lang_map[yt_id] = new_data.get(yt_id)
 
         if yt_ids_to_delete:
-            logging.info("Deleting %d old YouTube IDs from language (%s) because they are no longer supported." %(len(yt_ids_to_delete), lang_code))
+            logging.info("Deleting %d old YouTube IDs from language (%s) because they are no longer supported." % (len(yt_ids_to_delete), lang_code))
             for yt_id in yt_ids_to_delete:
                 lang_map.pop(yt_id, None)
 
