@@ -9,54 +9,14 @@
         .download-actions {
             width: 400px;
             float: left;
-            margin-right: 10px;
-            margin-top: 5px;
+            margin: 5px 10px 20px 0px;
             height: 60px;
             padding: 10px;
         }
-
-        .subtitles-download {
+        .get-language {
             width: 500px;
         }
 
-        #download-legend-selected, #download-videos, #delete-videos {
-            display: none;
-        }
-
-        #content_tree {
-            margin-top: 15px;
-        }
-
-        #cancel-download {
-            display: none;
-            margin-top: 10px;
-        }
-
-        #download-videos {
-            font-weight: bold;
-            padding: 4px 10px 5px 10px;
-            margin-bottom: 5px;
-            color: #52A852;
-        }
-
-        #delete-videos {
-            color: #AC4343;
-            padding: 0 10px 0 10px;
-        }
-
-        #retry-video-download, #retry-subtitle-download {
-            color: red;
-            padding: 0 10px 0 10px;
-            display: none;
-            margin-top: 15px;
-        }
-        #help-info, #download-videos {
-            display:none;
-        }
-        .progress-waiting {
-            padding: 5px 0px 0px 0px;
-            display: none;
-        }
     </style>
 {% endblock headcss %}
 
@@ -71,11 +31,7 @@
 {% endblock headjs %}
 
 {% block content %}
-  <h2>{% trans "Installed Languages" %}</h2>
-    <div class="installed-languages">
-    </div>
-
-    <div class="download-actions subtitles-download vertical-shadow">
+    <div class="download-actions get-language vertical-shadow">
         <h2 class="button_text">{% trans "Download or update Languages" %}</h2>
     <!-- Some logic here to Show/Disable Buttons comparing data from show_language_packs to installed_languages
         Assume we are getting something like:
@@ -87,7 +43,13 @@
             </select>
         </span>
 
-        <button id="download-subtitles" type="button" disabled>{% trans "Get Language" %}</button>
+        <button id="get-language-button" type="button" disabled>{% trans "Get Language" %}</button>
+    </div>
+    <div class="clear"></div>
 
+    <div>
+        <h2>{% trans "Installed Languages" %}</h2>
+        <div class="installed-languages">
+        </div>
     </div>
 {% endblock content %}
