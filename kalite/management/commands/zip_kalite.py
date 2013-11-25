@@ -125,7 +125,7 @@ def create_local_settings_file(location, server_type="local", locale=None, centr
     elif os.path.exists(location):
         shutil.copy(location, fil)
 
-    ls = open(fil, "a") #append, to keep those settings, but override SOME
+    ls = open(fil, "a") # append, to keep those settings, but override SOME
 
     ls.write("\n") # never trust the previous file ended with a newline!
     if settings.DEBUG:

@@ -209,7 +209,7 @@ def save_serialized_models(data, increment_counters=True, src_version=None):
     If it is set to some value, then only fields of versions higher than ours are stripped off.
     By defaulting to src_version=None, we're expecting a perfect match when we come in
     (i.e. that wherever we got this data from, they were smart enough to "dumb it down" for us,
-    or they were old enough to have nothing unexpecting)
+    or they were old enough to have nothing unexpected)
 
     So, care must be taken in calling this function
 
