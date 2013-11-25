@@ -67,7 +67,7 @@ def file_in_blacklist_set(file_path):
     name = os.path.split(file_path)[1]
     ext = os.path.splitext(file_path)[1]
     return (ext in [".pyc", ".sqlite", ".zip", ".xlsx", ".srt", ".pot", ".sublime-project", ".sublime-workspace", ".patch"]) \
-        or (name in ["local_settings.py", ".gitignore", "tests.py", "faq", ".DS_Store", "Gruntfile.js", "package.json", "_khanload_cache"])
+        or (name in ["local_settings.py", ".gitignore", "tests.py", "faq", ".DS_Store", "Gruntfile.js", "package.json"])
 
 
 # Filter-less functions (just logic)
