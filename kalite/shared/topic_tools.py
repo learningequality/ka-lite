@@ -220,7 +220,7 @@ def get_all_leaves(topic_node=None, leaf_type=None):
 
 
 def get_topic_leaves(topic_id=None, path=None, leaf_type=None):
-    """Given a topic (identified by topic_id or path), return all descendant exercises"""
+    """Given a topic (identified by topic_id or path), return all descendent leaf nodes"""
     assert (topic_id or path) and not (topic_id and path), "Specify topic_id or path, not both."
 
     if not path:
