@@ -11,8 +11,9 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions, ui
 from selenium.webdriver.firefox.webdriver import WebDriver
 
-from django.test import TestCase
 from django.core.urlresolvers import reverse
+from django.test import TestCase
+from django.utils.translation import ugettext as _
 
 import settings
 from main.models import ExerciseLog
@@ -164,7 +165,7 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
             # We're on an unrecognized webpage
             return False
 
-        username_text = logged_in_name_text or logout_text[0:-len(" (LOGOUT)")]
+        username_text = logged_in_name_text or logout_text[0:-len(" (%s)" % _("Logout"))]
 
         # Just checking to see if ANYBODY is logged in
         if not expected_username:

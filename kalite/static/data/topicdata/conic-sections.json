@@ -1,15 +1,31 @@
 [
   {
-    "related_video_readable_ids": [
-      "introduction-to-conic-sections"
-    ], 
     "v_position": 72, 
     "path": "/math/algebra/conic-sections/conic_basics/e/recognizing_conic_sections/", 
     "id": "recognizing_conic_sections", 
     "display_name": "Recognizing conic sections", 
     "title": "Recognizing conic sections", 
+    "parent_id": "conic_basics", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "conic-sections", 
+      "conic_basics"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "conic-sections", 
+      "conic_basics"
+    ], 
+    "related_video_slugs": [
+      "introduction-to-conic-sections"
+    ], 
     "description": "Determine if the graph of a conic section shows a circle, hyperbola, parabola, or ellipse.\n", 
+    "parent": "conic_basics", 
     "basepoints": 10.0, 
     "h_position": -15, 
     "slug": "recognizing_conic_sections", 
@@ -18,20 +34,37 @@
     "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
       "adding_and_subtracting_polynomials"
-    ]
+    ], 
+    "exercise_id": "recognizing_conic_sections"
   }, 
   {
-    "related_video_readable_ids": [
-      "radius-and-center-for-a-circle-equation-in-standard-form", 
-      "conic-sections--intro-to-circles"
-    ], 
     "v_position": 74, 
     "path": "/math/algebra/conic-sections/conic_circles/e/graphing_circles/", 
     "id": "graphing_circles", 
     "display_name": "Graphing circles", 
     "title": "Graphing circles", 
+    "parent_id": "conic_circles", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "conic-sections", 
+      "conic_circles"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "conic-sections", 
+      "conic_circles"
+    ], 
+    "related_video_slugs": [
+      "radius-and-center-for-a-circle-equation-in-standard-form", 
+      "conic-sections--intro-to-circles"
+    ], 
     "description": "Graph circles from equations in standard form\n", 
+    "parent": "conic_circles", 
     "basepoints": 17.0, 
     "h_position": -13, 
     "slug": "graphing_circles", 
@@ -40,19 +73,36 @@
     "seconds_per_fast_problem": 11.0, 
     "prerequisites": [
       "circles_and_arcs"
-    ]
+    ], 
+    "exercise_id": "graphing_circles"
   }, 
   {
-    "related_video_readable_ids": [
-      "radius-and-center-for-a-circle-equation-in-standard-form"
-    ], 
     "v_position": 73, 
     "path": "/math/algebra/conic-sections/conic_circles/e/equation_of_a_circle_1/", 
     "id": "equation_of_a_circle_1", 
     "display_name": "Equation of a circle in factored form", 
     "title": "Equation of a circle in factored form", 
+    "parent_id": "conic_circles", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "conic-sections", 
+      "conic_circles"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "conic-sections", 
+      "conic_circles"
+    ], 
+    "related_video_slugs": [
+      "radius-and-center-for-a-circle-equation-in-standard-form"
+    ], 
     "description": "Find the center and radius of a circle given the equation in factored form.\n", 
+    "parent": "conic_circles", 
     "basepoints": 14.0, 
     "h_position": -16, 
     "slug": "equation_of_a_circle_1", 
@@ -61,21 +111,38 @@
     "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "recognizing_conic_sections"
-    ]
+    ], 
+    "exercise_id": "equation_of_a_circle_1"
   }, 
   {
-    "related_video_readable_ids": [
-      "completing-the-square-to-write-equation-in-standard-form-of-a-circle", 
-      "radius-and-center-for-a-circle-equation-in-standard-form", 
-      "conic-identification-3"
-    ], 
     "v_position": 74, 
     "path": "/math/algebra/conic-sections/conic_circles/e/equation_of_a_circle_2/", 
     "id": "equation_of_a_circle_2", 
     "display_name": "Equation of a circle in non-factored form", 
     "title": "Equation of a circle in non-factored form", 
+    "parent_id": "conic_circles", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "conic-sections", 
+      "conic_circles"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "conic-sections", 
+      "conic_circles"
+    ], 
+    "related_video_slugs": [
+      "completing-the-square-to-write-equation-in-standard-form-of-a-circle", 
+      "radius-and-center-for-a-circle-equation-in-standard-form", 
+      "conic-identification-3"
+    ], 
     "description": "Find the center and radius of a circle given the equation in unfactored form.\n", 
+    "parent": "conic_circles", 
     "basepoints": 24.0, 
     "h_position": -16, 
     "slug": "equation_of_a_circle_2", 
@@ -84,21 +151,38 @@
     "seconds_per_fast_problem": 27.0, 
     "prerequisites": [
       "equation_of_a_circle_1"
-    ]
+    ], 
+    "exercise_id": "equation_of_a_circle_2"
   }, 
   {
-    "related_video_readable_ids": [
-      "completing-the-square-to-write-equation-in-standard-form-of-a-circle", 
-      "radius-and-center-for-a-circle-equation-in-standard-form", 
-      "conic-identification-3"
-    ], 
     "v_position": 75, 
     "path": "/math/algebra/conic-sections/conic_circles/e/graphing_circles_2/", 
     "id": "graphing_circles_2", 
     "display_name": "Graphing circles 2", 
     "title": "Graphing circles 2", 
+    "parent_id": "conic_circles", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "conic-sections", 
+      "conic_circles"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "conic-sections", 
+      "conic_circles"
+    ], 
+    "related_video_slugs": [
+      "completing-the-square-to-write-equation-in-standard-form-of-a-circle", 
+      "radius-and-center-for-a-circle-equation-in-standard-form", 
+      "conic-identification-3"
+    ], 
     "description": "Graph circles from equations in general form\n", 
+    "parent": "conic_circles", 
     "basepoints": 24.0, 
     "h_position": -13, 
     "slug": "graphing_circles_2", 
@@ -107,19 +191,36 @@
     "seconds_per_fast_problem": 30.0, 
     "prerequisites": [
       "graphing_circles"
-    ]
+    ], 
+    "exercise_id": "graphing_circles_2"
   }, 
   {
-    "related_video_readable_ids": [
-      "conic-sections--intro-to-ellipses"
-    ], 
     "v_position": 74, 
     "path": "/math/algebra/conic-sections/conic_ellipses/e/equation_of_an_ellipse/", 
     "id": "equation_of_an_ellipse", 
     "display_name": "Equation of an ellipse", 
     "title": "Equation of an ellipse", 
+    "parent_id": "conic_ellipses", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "conic-sections", 
+      "conic_ellipses"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "conic-sections", 
+      "conic_ellipses"
+    ], 
+    "related_video_slugs": [
+      "conic-sections--intro-to-ellipses"
+    ], 
     "description": "Find the center and major and minor radius of an ellipse given its equation.\n", 
+    "parent": "conic_ellipses", 
     "basepoints": 17.0, 
     "h_position": -15, 
     "slug": "equation_of_an_ellipse", 
@@ -128,20 +229,37 @@
     "seconds_per_fast_problem": 10.0, 
     "prerequisites": [
       "equation_of_a_circle_1"
-    ]
+    ], 
+    "exercise_id": "equation_of_an_ellipse"
   }, 
   {
-    "related_video_readable_ids": [
-      "parabola-intuition-example-1", 
-      "shifting-and-scaling-parabolas"
-    ], 
     "v_position": 73, 
     "path": "/math/algebra/conic-sections/conic_parabolas/e/parabola_intuition_1/", 
     "id": "parabola_intuition_1", 
     "display_name": "Parabola intuition 1", 
     "title": "Parabola intuition 1", 
+    "parent_id": "conic_parabolas", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "conic-sections", 
+      "conic_parabolas"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "conic-sections", 
+      "conic_parabolas"
+    ], 
+    "related_video_slugs": [
+      "parabola-intuition-example-1", 
+      "shifting-and-scaling-parabolas"
+    ], 
     "description": "Make one parabola overlap with another by adjusting the leading coefficient and vertex coordinates.\n", 
+    "parent": "conic_parabolas", 
     "basepoints": 19.0, 
     "h_position": -14, 
     "slug": "parabola_intuition_1", 
@@ -150,17 +268,34 @@
     "seconds_per_fast_problem": 14.0, 
     "prerequisites": [
       "recognizing_conic_sections"
-    ]
+    ], 
+    "exercise_id": "parabola_intuition_1"
   }, 
   {
-    "related_video_readable_ids": [], 
     "v_position": 74, 
     "path": "/math/algebra/conic-sections/conic_parabolas/e/parabola_intuition_2/", 
     "id": "parabola_intuition_2", 
     "display_name": "Parabola intuition 2", 
     "title": "Parabola intuition 2", 
+    "parent_id": "conic_parabolas", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "conic-sections", 
+      "conic_parabolas"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "conic-sections", 
+      "conic_parabolas"
+    ], 
+    "related_video_slugs": [], 
     "description": "Make one parabola overlap with another by adjusting the focus coordinates and directrix.\n", 
+    "parent": "conic_parabolas", 
     "basepoints": 25.0, 
     "h_position": -14, 
     "slug": "parabola_intuition_2", 
@@ -169,21 +304,38 @@
     "seconds_per_fast_problem": 34.0, 
     "prerequisites": [
       "parabola_intuition_1"
-    ]
+    ], 
+    "exercise_id": "parabola_intuition_2"
   }, 
   {
-    "related_video_readable_ids": [
-      "conic-sections--intro-to-hyperbolas", 
-      "conic-sections--hyperbolas-2", 
-      "conic-sections--hyperbolas-3"
-    ], 
     "v_position": 74, 
     "path": "/math/algebra/conic-sections/hyperbolas-conic/e/equation_of_a_hyperbola/", 
     "id": "equation_of_a_hyperbola", 
     "display_name": "Equation of a hyperbola", 
     "title": "Equation of a hyperbola", 
+    "parent_id": "hyperbolas-conic", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "conic-sections", 
+      "hyperbolas-conic"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "conic-sections", 
+      "hyperbolas-conic"
+    ], 
+    "related_video_slugs": [
+      "conic-sections--intro-to-hyperbolas", 
+      "conic-sections--hyperbolas-2", 
+      "conic-sections--hyperbolas-3"
+    ], 
     "description": "Find the asymptotes of a hyperbola based on the equation.\n", 
+    "parent": "hyperbolas-conic", 
     "basepoints": 19.0, 
     "h_position": -17, 
     "slug": "equation_of_a_hyperbola", 
@@ -192,6 +344,7 @@
     "seconds_per_fast_problem": 14.0, 
     "prerequisites": [
       "equation_of_a_circle_1"
-    ]
+    ], 
+    "exercise_id": "equation_of_a_hyperbola"
   }
 ]

@@ -299,7 +299,7 @@ def _get_user_usage_data(users, period_start=None, period_end=None):
 
     # Force results in a single query
     exercise_logs = list(exercise_logs.values("exercise_id", "user__pk"))
-    video_logs = list(video_logs.values("youtube_id", "user__pk"))
+    video_logs = list(video_logs.values("video_id", "user__pk"))
     login_logs = list(login_logs.values("activity_type", "total_seconds", "user__pk"))
 
     for user in users:
@@ -329,7 +329,7 @@ def _get_user_usage_data(users, period_start=None, period_end=None):
 
     for vlog in video_logs:
         user_data[vlog["user__pk"]]["total_videos"] += 1
-        user_data[vlog["user__pk"]]["videos_watched"].append(vlog["youtube_id"])
+        user_data[vlog["user__pk"]]["videos_watched"].append(vlog["video_id"])
 
     for llog in login_logs:
         if llog["activity_type"] == UserLog.get_activity_int("coachreport"):
