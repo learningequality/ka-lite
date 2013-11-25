@@ -1,3 +1,3 @@
 @echo off
 TITLE Removing task to start KA Lite at system start
-schtasks /delete /tn "KALITE" & exit
+schtasks /delete /tn "KALite" & pause
