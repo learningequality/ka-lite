@@ -54,7 +54,7 @@ attribute_whitelists = {
 
 kind_blacklist = [None, "Separator", "CustomStack", "Scratchpad", "Article"]
 
-slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res", "partner-content", "cs", "cc-third-grade-math", "cc-fourth-grade-math", "cc-fifth-grade-math", "cc-sixth-grade-math", "cc-seventh-grade-math", "cc-eighth-grade-math"]
+slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res", "MoMA", "getty-museum", "stanford-medicine", "crash-course1", "mit-k12", "cs", "cc-third-grade-math", "cc-fourth-grade-math", "cc-fifth-grade-math", "cc-sixth-grade-math", "cc-seventh-grade-math", "cc-eighth-grade-math", "hour-of-code"]
 
 def download_khan_data(url, debug_cache_file=None, debug_cache_dir=settings.PROJECT_PATH + "../_khanload_cache"):
     """Download data from the given url.
