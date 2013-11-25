@@ -26,10 +26,10 @@ $(function() {
                 }
             });
         }).error(function(data, status, error) {
-            handleFailedAPI(data, [status, error].join(" "), "id_get_languages");
+            handleFailedAPI(data, [status, error].join(" "), "id_languagepackdownload");
         });
     }).error(function(data, status, error) {
-        handleFailedAPI(data, [status, error].join(" "), "id_get_languages");
+        handleFailedAPI(data, [status, error].join(" "), "id_languagepackdownload");
     });
 });
 
@@ -84,13 +84,13 @@ $(function () {
             show_message(
                 "success",
                 ["Download for language ", language_downloading, " started."].join(" "),  // TODO(bcipolli) @ruimalheiro add sprintf and gettext
-                "id_get_languages"
+                "id_languagepackdownload"
             );
         }).error(function(progress, status, req) {
             handleFailedAPI(
                 progress,
                 gettext("An error occurred while contacting the server to start the download process") + ": " + [status, req].join(" - "),
-                "id_get_languages"
+                "id_languagepackdownload"
             );
         });
     });
