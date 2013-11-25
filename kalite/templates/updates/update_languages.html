@@ -61,7 +61,6 @@
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
-    <script type="text/javascript" src="{% static 'js/jquery-ui/jquery-ui.min.js' %}"></script>
     <script type="text/javascript">
         var start_languagepackdownload_url = "{% url start_languagepack_download %}";
         var installed_languages_url = "{% url installed_language_packs %}"

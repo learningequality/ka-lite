@@ -27,6 +27,7 @@ def get_topic_tree(force=False):
     global TOPICS, topics_file
     if TOPICS is None or force:
         TOPICS = json.loads(open(os.path.join(settings.DATA_PATH, topics_file)).read())
+        validate_ancestor_ids(TOPICS)  # make sure ancestor_ids are set properly
     return TOPICS
 
 
@@ -65,6 +66,28 @@ def get_flat_topic_tree(force=False):
         FLAT_TOPIC_TREE = generate_flat_topic_tree(get_node_cache(force=force))
     return FLAT_TOPIC_TREE
 
+
+def validate_ancestor_ids(topictree=None):
+    """
+    Given the KA Lite topic tree, make sure all parent_id and ancestor_ids are stamped
+    """
+
+    if not topictree:
+        topictree = get_topic_tree()
+
+    def recurse_nodes(node, ancestor_ids=[]):
+        # Add ancestor properties
+        if not "parent_id" in node:
+            node["parent_id"] = ancestor_ids[-1] if ancestor_ids else None
+        if not "ancestor_ids" in node:
+            node["ancestor_ids"] = ancestor_ids
+
+        # Do the recursion
+        for child in node.get("children", []):
+            recurse_nodes(child, ancestor_ids=ancestor_ids + [node["id"]])
+    recurse_nodes(topictree)
+
+    return topictree
 
 
 def generate_slug_to_video_id_map(node_cache=None):
